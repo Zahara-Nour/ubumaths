@@ -2,7 +2,8 @@
  * Rattachement d'un modèle à ses points du référentiel — logique pure
  * ===================================================================
  *
- * Utilisé par `scripts/create-questions.ts`. Un fichier JSON de modèle peut porter un champ
+ * Utilisé par `scripts/create-questions.ts` et `scripts/link-template-points.ts` (les accès
+ * base communs sont dans `template-points-db.ts`). Un fichier JSON de modèle peut porter un champ
  * facultatif `"points": ["1SPE-135", …]` (codes de `curriculum_points`). Ce champ n'est PAS
  * une colonne de `question_templates` : il est retiré du modèle avant `checkTemplate` (dont le
  * schéma Zod strict le refuserait) et avant l'écriture. Les liens vivent dans
@@ -49,17 +50,50 @@ export interface PointLinkPlan {
 	extra: ExistingLink[];
 }
 
+/** Une ligne du mapping de `link-template-points.ts` */
+export interface MappingEntry {
+	id: string;
+	codes: string[];
+}
+
+export type MappingResult = { ok: true; entries: MappingEntry[] } | { ok: false; error: string };
+
+/** `add` : liens à écrire ; `nothing` : tout est déjà là ; `refused` : modèle publié sans drapeau */
+export type LinkAction = 'add' | 'nothing' | 'refused';
+
 // Constantes
 
 export const MAX_POINTS_PER_TEMPLATE = 20;
+export const MAX_MAPPING_ENTRIES = 500;
+
+const pointCodeSchema = z
+	.string()
+	.min(1, 'code vide')
+	.max(40, 'code trop long')
+	.regex(/^\S+$/, 'code avec espace');
 
 const pointsFieldSchema = z
-	.array(
-		z.string().min(1, 'code vide').max(40, 'code trop long').regex(/^\S+$/, 'code avec espace')
-	)
+	.array(pointCodeSchema)
 	.max(MAX_POINTS_PER_TEMPLATE, `au plus ${MAX_POINTS_PER_TEMPLATE} codes`);
 
+const mappingSchema = z
+	.array(
+		z
+			.object({
+				id: z.string().uuid('id qui n’est pas un uuid'),
+				points: pointsFieldSchema.min(1, 'au moins un code')
+			})
+			.strict()
+	)
+	.min(1, 'mapping vide')
+	.max(MAX_MAPPING_ENTRIES, `au plus ${MAX_MAPPING_ENTRIES} entrées`);
+
 // Fonctions
+
+/** Valeurs répétées d'une liste (vide si aucune) */
+function doublonsDe(valeurs: string[]): string[] {
+	return [...new Set(valeurs.filter((v, i) => valeurs.indexOf(v) !== i))];
+}
 
 /** Lit et retire le champ `points` d'un modèle brut ; rend le modèle sans ce champ */
 export function extractTemplatePoints(raw: unknown, file: string): ExtractResult {
@@ -77,11 +111,11 @@ export function extractTemplatePoints(raw: unknown, file: string): ExtractResult
 			error: `${file} : champ « points » invalide — ${issue.message} (attendu : tableau de codes, ex. ["1SPE-135"])`
 		};
 	}
-	const doublons = parsed.data.filter((code, i) => parsed.data.indexOf(code) !== i);
+	const doublons = doublonsDe(parsed.data);
 	if (doublons.length > 0) {
 		return {
 			ok: false,
-			error: `${file} : champ « points » — code en double : ${[...new Set(doublons)].join(', ')}`
+			error: `${file} : champ « points » — code en double : ${doublons.join(', ')}`
 		};
 	}
 	return { ok: true, template, codes: parsed.data };
@@ -121,4 +155,68 @@ export function planPointLinks(wanted: string[], existing: ExistingLink[]): Poin
 		present: wanted.filter((code) => enBase.has(code)),
 		extra: existing.filter((lien) => !voulus.has(lien.code))
 	};
+}
+
+/** `grades` comparés comme des ensembles : l'ordre (et un doublon) ne compte pas */
+export function sameGrades(a: readonly string[], b: readonly string[]): boolean {
+	const ea = new Set(a);
+	const eb = new Set(b);
+	return ea.size === eb.size && [...ea].every((g) => eb.has(g));
+}
+
+/** Ligne de simulation : liens à ajouter, déjà présents, et en base absents du fichier */
+export function describeLinkPlan(plan: PointLinkPlan, remplacer: boolean): string {
+	const parties: string[] = [];
+	if (plan.toAdd.length) parties.push(`+${plan.toAdd.length} à ajouter (${plan.toAdd.join(', ')})`);
+	if (plan.present.length) parties.push(`${plan.present.length} déjà présents`);
+	if (plan.extra.length) {
+		const codes = plan.extra.map((l) => l.code).join(', ');
+		parties.push(
+			remplacer
+				? `-${plan.extra.length} à supprimer (${codes})`
+				: `${plan.extra.length} en base absents du fichier, gardés (${codes})`
+		);
+	}
+	return `liens : ${parties.length ? parties.join(' ; ') : 'aucun'}`;
+}
+
+/** Mapping `[{ id, points }]` de `link-template-points.ts`, validé en entier (Zod strict) */
+export function parseMapping(raw: unknown): MappingResult {
+	const parsed = mappingSchema.safeParse(raw);
+	if (!parsed.success) {
+		const issue = parsed.error.issues[0];
+		const index = issue.path[0];
+		const ou = typeof index === 'number' ? `entrée ${index + 1} : ` : '';
+		return {
+			ok: false,
+			error: `mapping invalide — ${ou}${issue.message} (attendu : [{ "id": "<uuid>", "points": ["1SPE-050"] }])`
+		};
+	}
+	const entries: MappingEntry[] = [];
+	for (const [i, { id, points }] of parsed.data.entries()) {
+		const doublons = doublonsDe(points);
+		if (doublons.length > 0) {
+			return {
+				ok: false,
+				error: `mapping invalide — entrée ${i + 1} : code en double : ${doublons.join(', ')}`
+			};
+		}
+		entries.push({ id, codes: points });
+	}
+	const idsEnDouble = doublonsDe(entries.map((e) => e.id));
+	if (idsEnDouble.length > 0) {
+		return { ok: false, error: `mapping invalide — id en double : ${idsEnDouble.join(', ')}` };
+	}
+	return { ok: true, entries };
+}
+
+/** Ajout seulement : un modèle non brouillon n'est touché qu'avec `--liens-publies` */
+export function decideLinkAction(
+	status: string,
+	publishedAllowed: boolean,
+	plan: PointLinkPlan
+): LinkAction {
+	if (plan.toAdd.length === 0) return 'nothing';
+	if (status !== 'draft' && !publishedAllowed) return 'refused';
+	return 'add';
 }

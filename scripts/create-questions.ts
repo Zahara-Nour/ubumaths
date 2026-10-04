@@ -26,31 +26,35 @@
  *   pnpm tsx scripts/create-questions.ts --dir <dossier> --publier  (écrit)
  *   … --publier --mettre-a-jour   remplace aussi le contenu des modèles DÉJÀ en base, s'ils
  *                                 sont encore en brouillon (un modèle publié n'est jamais touché),
- *                                 et ajoute leurs liens manquants vers les points du fichier
+ *                                 et ajoute leurs liens manquants vers les points du fichier.
+ *                                 Contenu = variations, shared, options, test_specs ET grades
+ *                                 (comparés comme un ensemble). Les grades sont écrits AVANT les
+ *                                 liens ; un lien d'un ancien niveau reste en base, signalé
+ *                                 « en base absents du fichier » (retiré seulement avec
+ *                                 --remplacer-points)
  *   … --mettre-a-jour --remplacer-points   supprime en plus les liens en base absents du fichier
  *   … --mettre-a-jour --liens-publies      sur un modèle PUBLIÉ : AJOUTE seulement ses liens
  *                                 manquants (son contenu n'est jamais touché, aucun lien n'est
- *                                 retiré). Une carte publiée rattachée entre dans le paquet de
+ *                                 retiré ; ses grades ne changent pas, et les points sont
+ *                                 contrôlés contre les grades LUS EN BASE). Une carte publiée rattachée entre dans le paquet de
  *                                 révision « Programme » des élèves : simuler d'abord.
+ *
+ * Modèle sans fichier dans le dépôt : `scripts/link-template-points.ts --mapping`.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { checkTemplate } from '$lib/migration/review/check-template';
 import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
 import {
 	checkPointCodes,
+	describeLinkPlan,
 	extractTemplatePoints,
 	planPointLinks,
-	type ExistingLink,
-	type PointLinkPlan,
-	type ResolvedPoint
+	sameGrades
 } from './lib/template-points';
-
-type Client = SupabaseClient<Database>;
+import { readLinks, resolvePoints, writeLinks } from './lib/template-points-db';
 
 interface Entree {
 	fichier: string;
@@ -67,100 +71,6 @@ function canonique(valeur: unknown): string {
 			? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)))
 			: v
 	);
-}
-
-/** Tous les codes de tous les fichiers, en UNE requête ; seuls les points actifs reviennent */
-async function resoudrePoints(
-	supabase: Client,
-	codes: string[]
-): Promise<Map<string, ResolvedPoint>> {
-	const resolus = new Map<string, ResolvedPoint>();
-	if (codes.length === 0) return resolus;
-	const { data, error } = await supabase
-		.from('curriculum_points')
-		.select('id, code, curriculum_objectives(curriculum_themes(grade))')
-		.in('code', codes)
-		.is('archived_at', null);
-	if (error) throw new Error(`lecture des points du référentiel : ${error.message}`);
-	for (const ligne of data ?? []) {
-		const grade = ligne.curriculum_objectives?.curriculum_themes?.grade;
-		if (!grade) throw new Error(`point ${ligne.code} : niveau introuvable (objectif → thème)`);
-		resolus.set(ligne.code, { id: ligne.id, code: ligne.code, grade });
-	}
-	return resolus;
-}
-
-async function lireLiens(supabase: Client, templateId: string): Promise<ExistingLink[]> {
-	const { data, error } = await supabase
-		.from('question_template_points')
-		.select('point_id, curriculum_points(code)')
-		.eq('template_id', templateId);
-	if (error) throw new Error(`lecture des liens de ${templateId} : ${error.message}`);
-	return (data ?? []).map((l) => ({
-		pointId: l.point_id,
-		code: l.curriculum_points?.code ?? `(point ${l.point_id})`
-	}));
-}
-
-function decrireLiens(plan: PointLinkPlan, remplacer: boolean): string {
-	const parties: string[] = [];
-	if (plan.toAdd.length) parties.push(`+${plan.toAdd.length} à ajouter (${plan.toAdd.join(', ')})`);
-	if (plan.present.length) parties.push(`${plan.present.length} déjà présents`);
-	if (plan.extra.length) {
-		const codes = plan.extra.map((l) => l.code).join(', ');
-		parties.push(
-			remplacer
-				? `-${plan.extra.length} à supprimer (${codes})`
-				: `${plan.extra.length} en base absents du fichier, gardés (${codes})`
-		);
-	}
-	return `liens : ${parties.length ? parties.join(' ; ') : 'aucun'}`;
-}
-
-/** Ajoute (et, si demandé, supprime) les liens, puis relit : la RLS échoue en silence */
-async function ecrireLiens(
-	supabase: Client,
-	fichier: string,
-	templateId: string,
-	codes: string[],
-	plan: PointLinkPlan,
-	resolus: ReadonlyMap<string, ResolvedPoint>,
-	remplacer: boolean
-): Promise<void> {
-	if (plan.toAdd.length > 0) {
-		const lignes = plan.toAdd.map((code) => {
-			const point = resolus.get(code);
-			if (!point) throw new Error(`${fichier} : point ${code} non résolu`);
-			return { template_id: templateId, point_id: point.id };
-		});
-		const { data, error } = await supabase
-			.from('question_template_points')
-			.insert(lignes)
-			.select('point_id');
-		if (error || data?.length !== lignes.length)
-			throw new Error(
-				`${fichier} : ajout des liens non confirmé — ${error?.message ?? `${data?.length ?? 0}/${lignes.length} lignes`}`
-			);
-	}
-	if (remplacer && plan.extra.length > 0) {
-		const { data, error } = await supabase
-			.from('question_template_points')
-			.delete()
-			.eq('template_id', templateId)
-			.in(
-				'point_id',
-				plan.extra.map((l) => l.pointId)
-			)
-			.select('point_id');
-		if (error || data?.length !== plan.extra.length)
-			throw new Error(
-				`${fichier} : suppression des liens non confirmée — ${error?.message ?? `${data?.length ?? 0}/${plan.extra.length} lignes`}`
-			);
-	}
-	const relu = planPointLinks(codes, await lireLiens(supabase, templateId));
-	if (relu.toAdd.length > 0 || (remplacer && relu.extra.length > 0)) {
-		throw new Error(`${fichier} : liens relus incomplets — ${decrireLiens(relu, remplacer)}`);
-	}
 }
 
 async function main(): Promise<number> {
@@ -216,7 +126,7 @@ async function main(): Promise<number> {
 		entrees.push({ fichier, modele, codes: extrait.codes });
 	}
 	const tousLesCodes = [...new Set(entrees.flatMap((e) => e.codes ?? []))];
-	const resolus = await resoudrePoints(supabase, tousLesCodes);
+	const resolus = await resolvePoints(supabase, tousLesCodes);
 	const erreursPoints = checkPointCodes(
 		entrees.map((e) => ({ file: e.fichier, codes: e.codes, grades: e.modele.grades ?? [] })),
 		resolus
@@ -233,7 +143,7 @@ async function main(): Promise<number> {
 	for (const { fichier, modele, codes } of entrees) {
 		let requete = supabase
 			.from('question_templates')
-			.select('id, status, variations, shared, options, test_specs')
+			.select('id, status, grades, variations, shared, options, test_specs')
 			.eq('title', modele.title)
 			.eq('theme', modele.theme)
 			.eq('domain', modele.domain)
@@ -252,16 +162,22 @@ async function main(): Promise<number> {
 			}
 			const existant = existants[0];
 			const ligne = toTemplateInsertRow(modele, auteur);
-			// `points` n'est pas du contenu du modèle : comparé à part, sur les liens
+			// `points` n'est pas du contenu du modèle : comparé à part, sur les liens.
+			// `grades` : comparé comme un ensemble (l'ordre ne compte pas)
+			const memesGrades = sameGrades(existant.grades, ligne.grades);
 			const identique =
+				memesGrades &&
 				canonique(existant.variations) === canonique(ligne.variations) &&
 				canonique(existant.shared) === canonique(ligne.shared) &&
 				canonique(existant.options) === canonique(ligne.options) &&
 				canonique(existant.test_specs) === canonique(ligne.test_specs);
-			const plan = codes ? planPointLinks(codes, await lireLiens(supabase, existant.id)) : null;
+			const plan = codes ? planPointLinks(codes, await readLinks(supabase, existant.id)) : null;
 			const liensAEcrire =
 				!!plan && (plan.toAdd.length > 0 || (remplacerPoints && plan.extra.length > 0));
-			const noteLiens = plan ? `\n      ${decrireLiens(plan, remplacerPoints)}` : '';
+			const noteGrades = memesGrades
+				? ''
+				: `\n      grades : [${existant.grades.join(', ')}] → [${ligne.grades.join(', ')}]`;
+			const noteLiens = `${noteGrades}${plan ? `\n      ${describeLinkPlan(plan, remplacerPoints)}` : ''}`;
 			if ((identique && !liensAEcrire) || !mettreAJour) {
 				const aFaire = [
 					identique ? '' : 'CONTENU DIFFÉRENT',
@@ -279,6 +195,16 @@ async function main(): Promise<number> {
 					console.error(`⛔ ${fichier} : modèle ${existant.status}, jamais modifié par ce script`);
 					return 1;
 				}
+				// Les grades du fichier ne s'appliquent pas à un modèle publié : ses points doivent
+				// correspondre aux grades LUS EN BASE
+				const erreursPublie = checkPointCodes(
+					[{ file: fichier, codes, grades: existant.grades }],
+					resolus
+				);
+				if (erreursPublie.length > 0) {
+					for (const erreur of erreursPublie) console.error(`⛔ ${erreur} (grades en base)`);
+					return 1;
+				}
 				const noteContenu = identique ? '' : ' — contenu différent du fichier, NON touché';
 				if (plan.toAdd.length === 0) {
 					console.log(
@@ -293,7 +219,7 @@ async function main(): Promise<number> {
 					);
 					continue;
 				}
-				await ecrireLiens(supabase, fichier, existant.id, codes, plan, resolus, false);
+				await writeLinks(supabase, fichier, existant.id, codes, plan, resolus, false);
 				console.log(
 					`  ↻ ${fichier} : ${existant.status}, liens ajoutés (${existant.id})${noteContenu}${noteLiens}`
 				);
@@ -309,6 +235,7 @@ async function main(): Promise<number> {
 				const { data: maj, error: e3 } = await supabase
 					.from('question_templates')
 					.update({
+						grades: ligne.grades,
 						variations: ligne.variations,
 						shared: ligne.shared,
 						options: ligne.options,
@@ -316,14 +243,14 @@ async function main(): Promise<number> {
 					})
 					.eq('id', existant.id)
 					.eq('status', 'draft')
-					.select('id');
-				if (e3 || maj?.length !== 1)
+					.select('id, grades');
+				if (e3 || maj?.length !== 1 || !sameGrades(maj[0].grades, ligne.grades))
 					throw new Error(
 						`${fichier} : mise à jour non confirmée — ${e3?.message ?? 'aucune ligne'}`
 					);
 			}
 			if (codes && plan) {
-				await ecrireLiens(supabase, fichier, existant.id, codes, plan, resolus, remplacerPoints);
+				await writeLinks(supabase, fichier, existant.id, codes, plan, resolus, remplacerPoints);
 			}
 			console.log(
 				`  ↻ ${fichier} : ${identique ? 'liens' : 'contenu'} mis à jour (${existant.id})${noteLiens}`
@@ -334,7 +261,7 @@ async function main(): Promise<number> {
 
 		const specs = modele.testSpecs?.length ?? 0;
 		const planNeuf = codes ? planPointLinks(codes, []) : null;
-		const noteNeuf = planNeuf ? `\n      ${decrireLiens(planNeuf, false)}` : '';
+		const noteNeuf = planNeuf ? `\n      ${describeLinkPlan(planNeuf, false)}` : '';
 		if (!publier) {
 			console.log(`  ✓ ${fichier} : « ${modele.title} » (${specs} specs) — à créer${noteNeuf}`);
 			continue;
@@ -351,7 +278,7 @@ async function main(): Promise<number> {
 			);
 		}
 		if (codes && planNeuf) {
-			await ecrireLiens(supabase, fichier, cree.id, codes, planNeuf, resolus, false);
+			await writeLinks(supabase, fichier, cree.id, codes, planNeuf, resolus, false);
 		}
 		console.log(`  ✍️  ${fichier} : « ${cree.title} » créé en brouillon (${cree.id})${noteNeuf}`);
 		crees++;
