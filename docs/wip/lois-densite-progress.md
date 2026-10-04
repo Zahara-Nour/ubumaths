@@ -31,5 +31,6 @@ P(X > 5 | X > 2) ≈ 0,223 ; E 2 ; V 4 ; σ 2 ; quantile 99 % ≈ 9,21.
 
 ## Étapes
 
-- [x] Tests rouges · [x] Implémentation (non commitée) · [ ] Fiche compilée et regardée · [ ] Revue ·
-      [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation · [x] Fiche compilée et regardée (vrais exposants, titre
+      gardé avec sa figure en pleine largeur) · [x] Revue Opus (conditionnelle b < 0 affichée
+      fausse, aire décrite avec sa valeur, garde U([…[), décimaux) · [ ] PR, CI, merge
