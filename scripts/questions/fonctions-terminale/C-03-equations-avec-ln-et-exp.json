@@ -1,0 +1,346 @@
+{
+	"title": "Résoudre une équation avec ln ou exp",
+	"description": "ln x = a, eˣ = b, ln(ax+b) = c, e^{ax+b} = k, 2 ln x = ln a ; valeur exacte (pièges : ln et exp confondus, domaine x > 0 oublié, signe)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-036", "TCOMP-022", "TSPE-174", "TSPE-167"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Équations et inéquations",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $\\ln x={{a}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln x={{a}}\\iff x=e^{ {{a}} }$ (on compose par l'exponentielle).",
+					"$x=\\textcolor{{{color:primary.0}}}{e^{ {{a}} }}$, qui appartient bien à $\\left]0\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{x}={{b}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|4|5|6|7|8|9|10|12|15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\ln {{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{b}}>0$ : $e^{x}={{b}}\\iff x=\\ln {{b}}$.",
+					"$x=\\textcolor{{{color:primary.0}}}{\\ln {{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $\\ln\\left({{a}}x{{b;+}}\\right)={{c}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{if:c==1|e|e^{ {{c}} }}}{{eval:-b;+}}}{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln\\left({{a}}x{{b;+}}\\right)={{c}}\\iff {{a}}x{{b;+}}={{if:c==1|e|e^{ {{c}} }}}$ (et alors ${{a}}x{{b;+}}>0$ : la solution est dans le domaine).",
+					"$x=\\textcolor{{{color:primary.0}}}{\\dfrac{{{if:c==1|e|e^{ {{c}} }}}{{eval:-b;+}}}{ {{a}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{a}}x{{b;+}} }={{k}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{\\ln {{k}}{{eval:-b;+}}}{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$e^{ {{a}}x{{b;+}} }={{k}}\\iff {{a}}x{{b;+}}=\\ln {{k}}$.",
+					"$x=\\textcolor{{{color:primary.0}}}{\\dfrac{\\ln {{k}}{{eval:-b;+}}}{ {{a}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $2\\ln x=\\ln {{a}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2\\ln x=\\ln\\left(x^{2}\\right)$, donc l'équation équivaut à $x^{2}={{a}}$, soit $x=\\sqrt{ {{a}} }$ ou $x=-\\sqrt{ {{a}} }$.",
+					"Seule la solution positive est dans le domaine $\\left]0\\,;+\\infty\\right[$ : $x=\\textcolor{{{color:primary.0}}}{\\sqrt{ {{a}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : ln x = 3 → e³",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ln 3 (fonction inversée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\ln 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 3e (produit)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : ln x = −2 → e⁻²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2"
+			},
+			"answers": ["e^{-2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 1/e² pour e⁻² : ½ (form: warn, deux écritures)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2"
+			},
+			"answers": ["\\frac{1}{e^2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : eˣ = 5 → ln 5",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5"
+			},
+			"answers": ["\\ln 5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : e⁵",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5"
+			},
+			"answers": ["e^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : eˣ = 9 → 2 ln 3 accepté (#797)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9"
+			},
+			"answers": ["2\\ln 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : eˣ = 9 → ln 9",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9"
+			},
+			"answers": ["\\ln 9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : ln(b) mal lu : 9/e",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9"
+			},
+			"answers": ["\\frac{9}{e}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : ln(2x+1) = 3 → (e³−1)/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["\\frac{e^3-1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : e^c oublié → (3−1)/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : ln(2x+1) = 3 → ln 3 …",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["\\frac{\\ln 3-1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : e^{3x−2} = 5 → (ln 5 + 2)/3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"k": "5"
+			},
+			"answers": ["\\frac{\\ln 5+2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : signe de b",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"k": "5"
+			},
+			"answers": ["\\frac{\\ln 5-2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 2 ln x = ln 5 → √5",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : domaine oublié −√5",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["-\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 5/2 (division par 2 sous le ln)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	}
+}

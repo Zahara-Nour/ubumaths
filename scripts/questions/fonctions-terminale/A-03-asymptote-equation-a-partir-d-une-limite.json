@@ -1,0 +1,303 @@
+{
+	"title": "Asymptote parallèle à un axe : équation à partir d'une limite",
+	"description": "Lien limite ↔ asymptote : limite finie en ±∞ → y = b ; limite infinie en a → x = a ; lecture sur f(x) = b + k/(x−a) (pièges : x et y échangés, limite de la fraction seule)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-018", "TSPE-127", "TSPE-132"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Asymptotes",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{s}}\\infty}f(x)={{b}}$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "+|-"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{b}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une limite **finie** ${{b}}$ en ${{s}}\\infty$ donne une asymptote **horizontale** en ${{s}}\\infty$.",
+					"Son équation est $\\textcolor{{{color:primary.0}}}{y={{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{s}}\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "+|-"
+				},
+				{
+					"name": "a",
+					"expression": "-9..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x={{a}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une limite **infinie** en un réel ${{a}}$ donne une asymptote **verticale**.",
+					"Son équation est $\\textcolor{{{color:primary.0}}}{x={{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **horizontale** à $\\mathcal{C}_f$ en $+\\infty$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 0", "b != 0", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{b}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{k}} }{x{{eval:-a;+}}}=0$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{b}}$.",
+					"L'asymptote horizontale a pour équation $\\textcolor{{{color:primary.0}}}{y={{b}}}$ (et $x={{a}}$ est l'asymptote verticale)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **verticale** à $\\mathcal{C}_f$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 0", "b != 0", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "x={{a}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dénominateur s'annule en ${{a}}$ et le numérateur ${{k}}$ ne s'annule pas : $f$ a une limite infinie en ${{a}}$ (à gauche et à droite).",
+					"L'asymptote verticale a pour équation $\\textcolor{{{color:primary.0}}}{x={{a}}}$ (et $y={{b}}$ est l'asymptote horizontale)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : lim en +∞ = 3 → y = 3",
+			"variationIndex": 0,
+			"variables": {
+				"s": "+",
+				"b": "3"
+			},
+			"answers": ["y=3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : y − 3 = 0 (même droite)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "+",
+				"b": "3"
+			},
+			"answers": ["y-3=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : x = 3 (asymptote verticale à tort)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "+",
+				"b": "3"
+			},
+			"answers": ["x=3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : nombre seul 3",
+			"variationIndex": 0,
+			"variables": {
+				"s": "+",
+				"b": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : lim en 2 = +∞ → x = 2",
+			"variationIndex": 1,
+			"variables": {
+				"s": "+",
+				"a": "2"
+			},
+			"answers": ["x=2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : y = 2 (horizontale à tort)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "+",
+				"a": "2"
+			},
+			"answers": ["y=2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a = −4 → x = −4",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-",
+				"a": "-4"
+			},
+			"answers": ["x=-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe de a changé (x = 4)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-",
+				"a": "-4"
+			},
+			"answers": ["x=4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2 + 3/(x−1) → y = 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "3"
+			},
+			"answers": ["y=2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : verticale donnée (x = 1)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "3"
+			},
+			"answers": ["x=1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : y = 0 (limite de la fraction seule)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "3"
+			},
+			"answers": ["y=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : −1 + 5/(x+2) → x = −2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"b": "-1",
+				"k": "5"
+			},
+			"answers": ["x=-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : x = 2 (racine mal lue)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"b": "-1",
+				"k": "5"
+			},
+			"answers": ["x=2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : horizontale donnée (y = −1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"b": "-1",
+				"k": "5"
+			},
+			"answers": ["y=-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
