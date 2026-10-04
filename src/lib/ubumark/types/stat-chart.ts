@@ -189,6 +189,13 @@ export type SimulationMode = (typeof SIMULATION_MODES)[number];
  * Simulation d'une loi (v2, lot 3) : la loi telle qu'écrite, et de quoi refaire
  * les MÊMES tirages à l'écran et sur le PDF (graine fixe, Q70).
  */
+/** Une loi nommée dans un bloc ```simulation (manche 14) ; paramètres tels qu'écrits */
+export type SimulatedNamedLaw =
+	| { family: 'geometric'; p: string; upTo: number }
+	| { family: 'uniform'; a: number; b: number }
+	| { family: 'uniform-density'; a: string; b: string; classes: number }
+	| { family: 'exponential'; lambda: string; classes: number };
+
 export interface SimulationData {
 	/** Une lettre majuscule, autre que P */
 	variable: string;
@@ -200,6 +207,12 @@ export interface SimulationData {
 	draws: number;
 	/** Loi binomiale (`X ~ B(n ; p)`) : valeurs et probabilités calculées, sinon null */
 	binomial: { n: number; p: string } | null;
+	/**
+	 * Lois de maths complémentaires (manche 14) : G(p) (valeurs 1 à `upTo`, puis
+	 * « upTo + 1 ou plus »), U(a ; b), et les lois à densité (histogramme de
+	 * `classes` classes) ; sinon null
+	 */
+	named: SimulatedNamedLaw | null;
 	/** Mode `échantillons` : N échantillons… */
 	samples: number;
 	/** … de taille n */
@@ -390,6 +403,8 @@ export const STAT_CHART_LIMITS = {
 	simulationSamples: 1000,
 	/** Tirages en tout du mode `échantillons` (N × n) */
 	simulationSampleDraws: 100_000,
+	/** Classes de l'histogramme des tirages d'une loi à densité (`classes: N`, manche 14) */
+	simulationClasses: { default: 10, min: 2, max: 50 },
 	/** Valeurs différentes de deux séries : deux barres chacune (30 barres, Q115) */
 	twoSeriesCategories: 15,
 	/** Valeurs affichées d'une loi binomiale : au-delà, pas de tableau (Q138) */

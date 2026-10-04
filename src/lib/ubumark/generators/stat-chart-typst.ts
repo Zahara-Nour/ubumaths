@@ -293,6 +293,8 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 	const color = TYPST_COLORS[scene.color];
 	// Seconde série (Q117) : hachures diagonales, cadre de la même teinte
 	const hatch = scene.hatched === true ? TYPST_COLORS[scene.hatchColor ?? 'orange'] : null;
+	// Tirages d'une loi à densité (manche 14) : rectangles éclaircis, la courbe par-dessus
+	const fill = scene.densityCurve === undefined ? color : `${color}.lighten(55%)`;
 	const lines: string[] = ['  import cetz.draw: *'];
 
 	if (scene.mode === 'axe') lines.push('  // graduations', ...valueTicks(scene.ticks, W, Y));
@@ -303,7 +305,7 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 		lines.push(
 			hatch !== null
 				? `  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: hachures, stroke: 0.6pt + ${hatch})`
-				: `  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${rect.highlighted === false ? OUTSIDE_COLOR : color}, stroke: 0.8pt + white)`
+				: `  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${rect.highlighted === false ? OUTSIDE_COLOR : fill}, stroke: 0.8pt + white)`
 		);
 		// Au-dessus du rectangle, comme à l'écran : un rectangle bas ou nul le cachait
 		if (scene.showValues) {
@@ -311,6 +313,15 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 				`  content((${X((rect.lower + rect.upper) / 2)}, ${fmt(Number(Y(rect.height)) + 0.06)}), anchor: "south", text(size: 6.5pt)${textContent(rect.valueLabel)})`
 			);
 		}
+	}
+
+	// La courbe de la loi, APRÈS les rectangles : par-dessus (même trait que ```loi)
+	if (scene.densityCurve !== undefined) {
+		const path = scene.densityCurve.points.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ');
+		lines.push('  // courbe de densité');
+		lines.push(
+			`  line(${path}, stroke: (paint: ${TYPST_COLORS[scene.densityCurve.color]}, thickness: 1.1pt, join: "round"))`
+		);
 	}
 
 	// Mode carreaux : le quadrillage APRÈS les rectangles, pour y compter les carreaux

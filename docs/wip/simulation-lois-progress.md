@@ -22,5 +22,14 @@ résumé « 1 000 tirages ; moyenne observée ≈ … (E(X) = 2) » puis la grai
 
 ## Étapes
 
-- [ ] Tests rouges · [ ] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
+- [x] Tests rouges · [x] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
       [ ] PR, CI, merge
+
+## Décisions prises en implémentant (à valider à la revue)
+
+- G : inversion sur v = 1 − u ∈ ]0 ; 1] (pas de ln(0)), ramené à 1 si v = 1 ; E : −ln(1 − u)/λ.
+- Probabilités du tableau (G, U discrète) : exactes, arrondies au millième comme B(n ; p).
+- Histogramme en densité : rectangles éclaircis (opacité 0,4 à l'écran, `lighten(55%)` en
+  PDF) pour que la courbe, en couleur pleine, se lise par-dessus ; dernière classe de E notée
+  `[9 ; +∞[` ; mention « la dernière classe compte aussi les tirages au-delà de 10 (ici k) ».
+- `classes:` et `jusqu'à:` : mode tirages seulement (refusés en moyenne / échantillons).

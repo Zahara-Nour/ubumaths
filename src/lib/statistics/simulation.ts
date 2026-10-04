@@ -17,11 +17,24 @@
 import type { Fraction } from './fraction';
 import { failure, success, type Outcome } from './outcome';
 import { randomVariable, type RandomVariableLaw } from './random-variable';
+import { geometricMoments } from './geometric';
+import { uniformMoments } from './uniform';
+import { exponentialMoments, uniformDensityMoments } from './density';
 import type { RandomSource } from '../utils/random';
 
 // =============================================================================
 // Types
 // =============================================================================
+
+/**
+ * Une loi qu'on sait tirer (manche 14) : un tirage, et E, V, σ. Les lois de
+ * maths complémentaires se tirent par INVERSION du générateur à graine ; une
+ * loi finie écrite à la main, par ses probabilités cumulées.
+ */
+export interface LawSampler {
+	readonly draw: (random: RandomSource) => number;
+	readonly law: RandomVariableLaw;
+}
 
 export interface SimulatedCounts {
 	/** Effectif observé de chaque valeur, dans l'ordre des valeurs */
@@ -107,6 +120,71 @@ function prepareLaw(
 	return success({ law: law.value, draw });
 }
 
+/** Une loi finie écrite à la main : tirer une VALEUR (et non son indice) */
+export function discreteSampler(
+	values: readonly Fraction[],
+	probabilities: readonly Fraction[]
+): Outcome<LawSampler> {
+	const prepared = prepareLaw(values, probabilities);
+	if (!prepared.ok) return prepared;
+	const numbers = values.map((v) => v.toNumber());
+	const { law, draw } = prepared.value;
+	return success({ law, draw: (random) => numbers[draw(random)] });
+}
+
+/**
+ * G(p) par inversion : P(X > k) = q^k, donc X = ⌈ln(v)/ln(q)⌉ avec
+ * v = 1 − u ∈ ]0 ; 1] — jamais ln(0). v = 1 donnerait 0 : ramené à 1.
+ * G(1) : toujours 1 (ln(0) au dénominateur évité).
+ */
+export function geometricSampler(p: Fraction): LawSampler {
+	const chance = p.toNumber();
+	const logQ = Math.log1p(-chance);
+	return {
+		law: geometricMoments(p),
+		draw: (random) => {
+			const v = 1 - random();
+			if (chance >= 1) return 1;
+			return Math.max(1, Math.ceil(Math.log(v) / logQ));
+		}
+	};
+}
+
+/** U(a ; b), entiers : a + ⌊(b − a + 1)u⌋, de a à b (u < 1) */
+export function uniformSampler(a: number, b: number): LawSampler {
+	const count = b - a + 1;
+	return {
+		law: uniformMoments(a, b),
+		// `Math.min` : un garde-fou si un produit flottant touchait b + 1
+		draw: (random) => Math.min(b, a + Math.floor(count * random()))
+	};
+}
+
+/** U([a ; b]) : a + (b − a)u, dans [a ; b[ */
+export function uniformDensitySampler(a: Fraction, b: Fraction): LawSampler {
+	const low = a.toNumber();
+	const length = b.toNumber() - low;
+	return { law: uniformDensityMoments(a, b), draw: (random) => low + length * random() };
+}
+
+/** E(λ) par inversion : −ln(1 − u)/λ, fini (1 − u ∈ ]0 ; 1]) et positif */
+export function exponentialSampler(lambda: Fraction): LawSampler {
+	const rate = lambda.toNumber();
+	// `+ 0` : −0 pour u = 0 s'écrirait « −0 »
+	return { law: exponentialMoments(lambda), draw: (random) => -Math.log1p(-random()) / rate + 0 };
+}
+
+/** n tirages bruts d'une loi (manche 14) : les lois de maths complémentaires */
+export function simulateDraws(
+	sampler: LawSampler,
+	n: number,
+	random: RandomSource
+): Outcome<readonly number[]> {
+	const invalid = checkCount(n, SIMULATION_LIMITS.draws, 'n');
+	if (invalid) return failure(invalid);
+	return success(Array.from({ length: n }, () => sampler.draw(random)));
+}
+
 /** n tirages, résumés en effectifs par valeur (Q73) */
 export function simulateCounts(
 	values: readonly Fraction[],
@@ -133,17 +211,26 @@ export function simulateRunningMean(
 ): Outcome<SimulatedRunningMean> {
 	const invalid = checkCount(n, SIMULATION_LIMITS.runningDraws, 'n');
 	if (invalid) return failure(invalid);
-	const prepared = prepareLaw(values, probabilities);
-	if (!prepared.ok) return prepared;
+	const sampler = discreteSampler(values, probabilities);
+	if (!sampler.ok) return sampler;
+	return simulateLawRunningMean(sampler.value, n, random);
+}
 
-	const numbers = values.map((v) => v.toNumber());
+/** Moyenne des tirages selon n, pour une loi qu'on sait tirer (manche 14) */
+export function simulateLawRunningMean(
+	sampler: LawSampler,
+	n: number,
+	random: RandomSource
+): Outcome<SimulatedRunningMean> {
+	const invalid = checkCount(n, SIMULATION_LIMITS.runningDraws, 'n');
+	if (invalid) return failure(invalid);
 	const means: number[] = [];
 	let sum = 0;
 	for (let k = 1; k <= n; k++) {
-		sum += numbers[prepared.value.draw(random)];
+		sum += sampler.draw(random);
 		means.push(sum / k);
 	}
-	return success({ means, expectation: prepared.value.law.expectation });
+	return success({ means, expectation: sampler.law.expectation });
 }
 
 /** N échantillons de taille n, et l'écart de leur moyenne à μ (Q75) */
@@ -158,11 +245,24 @@ export function simulateSamples(
 		checkCount(sampleCount, SIMULATION_LIMITS.samples, 'N') ??
 		checkCount(sampleSize, SIMULATION_LIMITS.sampleSize, 'n');
 	if (invalid) return failure(invalid);
-	const prepared = prepareLaw(values, probabilities);
-	if (!prepared.ok) return prepared;
+	const sampler = discreteSampler(values, probabilities);
+	if (!sampler.ok) return sampler;
+	return simulateLawSamples(sampler.value, sampleCount, sampleSize, random);
+}
 
-	const { law, draw } = prepared.value;
-	const numbers = values.map((v) => v.toNumber());
+/** N échantillons de taille n, pour une loi qu'on sait tirer (manche 14) */
+export function simulateLawSamples(
+	sampler: LawSampler,
+	sampleCount: number,
+	sampleSize: number,
+	random: RandomSource
+): Outcome<SimulatedSamples> {
+	const invalid =
+		checkCount(sampleCount, SIMULATION_LIMITS.samples, 'N') ??
+		checkCount(sampleSize, SIMULATION_LIMITS.sampleSize, 'n');
+	if (invalid) return failure(invalid);
+
+	const { law, draw } = sampler;
 	const mu = law.expectation.toNumber();
 	const margin = (2 * law.deviation) / Math.sqrt(sampleSize);
 
@@ -170,7 +270,7 @@ export function simulateSamples(
 	let within = 0;
 	for (let s = 0; s < sampleCount; s++) {
 		let sum = 0;
-		for (let k = 0; k < sampleSize; k++) sum += numbers[draw(random)];
+		for (let k = 0; k < sampleSize; k++) sum += draw(random);
 		const mean = sum / sampleSize;
 		means.push(mean);
 		// Tolérance : une moyenne PILE sur la marge (loi discrète, n = 36 pour

@@ -265,7 +265,7 @@ describe('simulation — erreurs situées', () => {
 		expect(law).toContain('indicateurs');
 		expect(law).not.toContain('tirages');
 		expect(errorOf(`${DIE}\ntirage: beaucoup`)).toBe(
-			'Ligne 3 : option « tirage » inconnue (options : titre, taille, mode, tirages, graine, échantillons)'
+			"Ligne 3 : option « tirage » inconnue (options : titre, taille, mode, tirages, graine, échantillons, classes, jusqu'à)"
 		);
 	});
 });

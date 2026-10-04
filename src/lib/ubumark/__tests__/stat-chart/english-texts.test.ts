@@ -127,6 +127,16 @@ const BLOCKS: [string, StatChartKind, string][] = [
 	['loi uniforme, grande', 'loi', 'X ~ U(1 ; 100)\nindicateurs: variance'],
 	['simulation binomiale', 'simulation', 'X ~ B(10 ; 0,3)\ntirages: 20'],
 	['simulation, tirages', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\ntirages: 20'],
+	['simulation géométrique', 'simulation', "X ~ G(0,2)\njusqu'à: 5\ntirages: 50"],
+	['simulation uniforme', 'simulation', 'X ~ U(1 ; 6)\ntirages: 50'],
+	['simulation exponentielle', 'simulation', 'X ~ E(0,5)\nclasses: 8\ntirages: 300'],
+	['simulation uniforme continue', 'simulation', 'X ~ U([0 ; 10])\ntirages: 300'],
+	['simulation géométrique, moyenne', 'simulation', 'X ~ G(0,2)\nmode: moyenne'],
+	[
+		'simulation exponentielle, échantillons',
+		'simulation',
+		'X ~ E(1)\nmode: échantillons\néchantillons: 20\ntaille: 10'
+	],
 	[
 		'tableau d’effectifs',
 		'effectifs',

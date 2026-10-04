@@ -664,6 +664,7 @@
 							height={cy(0) - cy(rect.height)}
 							class:stat-rectangle-hors={rect.highlighted === false}
 							class:stat-rectangle-hachure={histogram.hatched === true}
+							class:stat-rectangle-sous-courbe={histogram.densityCurve !== undefined}
 							style:fill={histogram.hatched
 								? `url(#${hatchId})`
 								: rect.highlighted === false
@@ -684,6 +685,16 @@
 							>
 						{/if}
 					{/each}
+					{#if histogram.densityCurve}
+						<!-- Tirages d'une loi à densité (manche 14) : la courbe de la loi par-dessus -->
+						<polyline
+							class="stat-polygone stat-densite"
+							points={histogram.densityCurve.points
+								.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`)
+								.join(' ')}
+							style:stroke={COLOR_VAR[histogram.densityCurve.color]}
+						/>
+					{/if}
 				{/if}
 
 				<!-- Quadrillage du mode carreaux : APRÈS les rectangles, pour compter dedans -->
@@ -1144,6 +1155,11 @@
 	   tombaient sous 3:1 de contraste (WCAG 1.4.11, revue) */
 	.stat-rectangle-hors {
 		opacity: 1;
+	}
+
+	/* Tirages d'une loi à densité : rectangles clairs, la courbe en couleur pleine se lit dessus */
+	.stat-rectangle-sous-courbe {
+		fill-opacity: 0.4;
 	}
 
 	.stat-reference {

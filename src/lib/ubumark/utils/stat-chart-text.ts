@@ -102,6 +102,19 @@ interface StatText {
 		/** Lecture d'un exposant : « e puissance −1 » */
 		power: string;
 	};
+	/** Simulation des lois de maths complémentaires (manche 14) */
+	simulation: {
+		/** Dernière ligne d'une loi géométrique : « 11 ou plus » */
+		orMore: (k: string) => string;
+		/** Histogramme des tirages d'une loi à densité */
+		histogram: string;
+		/** Lu par le lecteur d'écran : les classes et leurs hauteurs */
+		histogramDescription: (draws: string, classes: string) => string;
+		/** « 1 000 tirages ; moyenne observée ≈ 2,013 (E(X) = 2) » */
+		summary: (draws: string, plural: boolean, mean: string, variable: string, e: string) => string;
+		/** Loi exponentielle : la dernière classe compte ce qui dépasse l'axe */
+		overflow: (bound: string, count: string) => string;
+	};
 }
 
 export const STAT_TEXT: Record<ContentLocale, StatText> = {
@@ -183,6 +196,16 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 				`F(x) = ${formula} pour x ∈ ${interval} ; 0 avant, 1 après`,
 			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) pour x ⩾ 0`,
 			power: 'puissance'
+		},
+		simulation: {
+			orMore: (k) => `${k} ou plus`,
+			histogram: 'Histogramme des tirages, en densité',
+			histogramDescription: (draws, classes) =>
+				`Histogramme des ${draws} tirages, en densité (fréquence divisée par l’amplitude), et courbe de densité de la loi : ${classes}.`,
+			summary: (draws, plural, mean, variable, e) =>
+				`${draws} tirage${plural ? 's' : ''} ; moyenne observée ≈ ${mean} (E(${variable}) = ${e})`,
+			overflow: (bound, count) =>
+				`la dernière classe compte aussi les tirages au-delà de ${bound} (ici ${count})`
 		}
 	},
 	en: {
@@ -264,6 +287,16 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			cdfUniform: (formula, interval) => `F(x) = ${formula} for x ∈ ${interval}; 0 before, 1 after`,
 			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) for x ⩾ 0`,
 			power: 'to the power'
+		},
+		simulation: {
+			orMore: (k) => `${k} or more`,
+			histogram: 'Histogram of the draws, as a density',
+			histogramDescription: (draws, classes) =>
+				`Histogram of the ${draws} draws, as a density (relative frequency divided by the class width), and the density curve of the distribution: ${classes}.`,
+			summary: (draws, plural, mean, variable, e) =>
+				`${draws} draw${plural ? 's' : ''}; observed mean ≈ ${mean} (E(${variable}) = ${e})`,
+			overflow: (bound, count) =>
+				`the last class also counts the draws beyond ${bound} (here ${count})`
 		}
 	}
 };
