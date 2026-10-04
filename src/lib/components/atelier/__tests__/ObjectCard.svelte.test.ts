@@ -313,3 +313,66 @@ describe('revue du lot 2a', () => {
 		expect(eye.getAttribute('aria-label')).toBe('Tracer f');
 	});
 });
+
+// =============================================================================
+// Lot 3a : la carte f′
+// =============================================================================
+
+describe('la carte f′', () => {
+	function derivativeCard(container: HTMLElement): HTMLElement {
+		const card = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f′'
+		);
+		if (!card) throw new Error('pas de carte f′');
+		return card as HTMLElement;
+	}
+
+	it('s’appelle f′ et montre la formule calculée, pas « f′(x) »', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' }, 'text');
+		atelier.createDerivative('f');
+		const { container } = await render(WithAtelier, { atelier });
+
+		const card = derivativeCard(container);
+		const spoken = card.querySelector('.definition .sr-only')?.textContent ?? '';
+
+		expect(spoken).not.toContain('prime');
+		expect(spoken).toMatch(/2/);
+		expect(spoken).toMatch(/3/);
+	});
+
+	// L2 : elle se calcule, elle ne se tape pas
+	it('n’a pas de champ : elle dit de quelle fonction elle est la dérivée', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		atelier.createDerivative('f');
+		const { container } = await render(WithAtelier, { atelier });
+
+		(derivativeCard(container).querySelector('.entete') as HTMLButtonElement).click();
+		await vi.waitFor(() =>
+			expect(derivativeCard(container).querySelector('.derivee')?.textContent).toContain(
+				'dérivée de f'
+			)
+		);
+
+		expect(derivativeCard(container).querySelector('math-field')).toBeNull();
+	});
+
+	it('cliquer « Dériver » fait apparaître la carte f′', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+
+		(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
+		const derive = await vi.waitFor(() => {
+			const button = [...cardFor(container, 'f').querySelectorAll('.action')].find(
+				(b) => b.textContent?.trim() === 'Dériver'
+			) as HTMLButtonElement | undefined;
+			expect(button).toBeTruthy();
+			return button!;
+		});
+		derive.click();
+
+		await vi.waitFor(() => expect(derivativeCard(container)).toBeTruthy());
+	});
+});

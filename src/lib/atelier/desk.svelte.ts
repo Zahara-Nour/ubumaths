@@ -17,21 +17,24 @@
 
 import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
+import {
+	runInput,
+	runAction,
+	promote,
+	derivativeNote,
+	type CalcResult,
+	type CalcSession
+} from './calcul';
 import { summarizeList, summarizeTable } from '$lib/statistics/describe';
 import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/statistics/format';
 import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
-import { differentiate } from '$lib/mathAST/differentiation';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { expressionOf } from './engine';
 import { syncPlots } from './plot-sync';
 import { isList, isQualitative, type ListObject } from './types';
 import { wordsReason } from './actions';
-import { astOf } from './parse';
 import { lawFractions } from './simulate';
-import { nextName } from './names';
+import { nextName, displayName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -351,62 +354,6 @@ export class CalcDesk {
 	}
 
 	/**
-	 * Garder la dérivée d'une fonction comme objet — décision D7.
-	 *
-	 * ⚠️ **Par voie symbolique, jamais par le texte.** Le lot 3 gardait un
-	 * résultat en relisant la sortie d'une commande ; mesuré, ça fabriquait des
-	 * objets faux avec un message de succès. Ici on dérive l'ARBRE de
-	 * l'expression substituée, et `toCustom` en refait une définition.
-	 *
-	 * Le nom porte l'apostrophe typographique (`f’`), celle que l'élève lit.
-	 */
-	#keepDerivative(name: string): void {
-		const substituted = expressionOf(this.atelier, name);
-		if (!substituted.ok) {
-			this.#push({ label: `Garder ${name}’`, text: substituted.message, failed: true });
-			return;
-		}
-
-		const ast = astOf(substituted.expression, this.atelier.get(name)?.provenance);
-		if (ast === null) {
-			this.#push({
-				label: `Garder ${name}’`,
-				text: `« ${substituted.expression} » ne se lit pas.`,
-				failed: true
-			});
-			return;
-		}
-
-		let definition: string;
-		try {
-			definition = toCustom(differentiate(ast));
-		} catch {
-			// Une dérivée qui n'aboutit pas est une réponse, pas une panne : on le
-			// dit en français plutôt que de laisser remonter l'exception.
-			this.#push({
-				label: `Garder ${name}’`,
-				text: `La dérivée de « ${name} » ne se calcule pas.`,
-				failed: true
-			});
-			return;
-		}
-
-		// ⚠️ Le nom n'est PAS `f’` : l'apostrophe n'est pas un caractère
-		// d'identifiant pour le parseur, donc un objet nommé ainsi ne pourrait
-		// jamais être cité dans une autre définition — `f’(x) + 1` ne le verrait
-		// pas. On prend le prochain nom libre, et le message dit de quoi il
-		// s'agit : l'objet reste utilisable, ce qui est le point du geste.
-		const chosen = nextName('function', this.atelier.names, [name]);
-
-		const created = this.atelier.create({ kind: 'function', name: chosen, definition }, 'text');
-		this.#push({
-			label: `Dérivée de ${name}`,
-			text: created.ok ? `${chosen}(x) = ${definition} — la dérivée de ${name}` : created.message,
-			failed: !created.ok
-		});
-	}
-
-	/**
 	 * Exécuter une action cliquée dans le panneau.
 	 *
 	 * « Image d'un nombre » a besoin d'un nombre : plutôt qu'une boîte de
@@ -460,10 +407,6 @@ export class CalcDesk {
 			this.notice = notice;
 			return 'ok';
 		}
-		if (root === 'keep-derivative') {
-			this.#keepDerivative(name);
-			return 'ok';
-		}
 		if (root === 'stats') {
 			if (partner === undefined) this.#describe(name);
 			else this.#describeWith(name, partner);
@@ -501,9 +444,19 @@ export class CalcDesk {
 		if (label === undefined) return 'unsupported';
 
 		const outcome = runAction(this.session, actionId, name);
+
+		// « Dériver » crée aussi la carte `f′` (phase 0 `/grapheur` §2 D1) : la
+		// ligne ci-dessous en garde le calcul, la carte en fait un objet
+		// Seulement si le calcul a abouti : sur une fonction en attente, la ligne
+		// dit déjà pourquoi, et une carte n'aurait rien à valoir
+		const derivative =
+			actionId === 'derive' && outcome.ok ? this.atelier.createDerivative(name) : null;
+		// L1 : déjà là, on le dit ; E3 : impossible, on dit pourquoi
+		const note = derivativeNote(derivative);
+
 		this.#push({
-			label: `${label} ${name}`,
-			text: outcome.ok ? outcome.output : outcome.message,
+			label: `${label} ${displayName(name)}`,
+			text: (outcome.ok ? outcome.output : outcome.message) + note,
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),

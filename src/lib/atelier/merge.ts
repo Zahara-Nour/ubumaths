@@ -14,7 +14,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierState } from './persistence';
-import { nextName } from './names';
+import { nextName, derivativeOf, displayName } from './names';
 
 // =============================================================================
 // Types
@@ -46,13 +46,39 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	const renamed: Array<{ from: string; to: string }> = [];
 	const refused: Array<{ name: string; reason: string }> = [];
 
-	for (const stored of state.objects) {
+	// Les fonctions renommées à l'arrivée : leurs dérivées doivent les suivre
+	const arrivedAs = new Map<string, string>();
+
+	// Les fonctions AVANT leurs dérivées : supprimer puis recréer `f` range `f′`
+	// devant elle, et `f′` aurait suivi la `f` locale (revue du lot 3a, C1)
+	const order = (name: string) => derivativeOf(name)?.order ?? 0;
+	const ordered = [...state.objects].sort((a, b) => order(a.name) - order(b.name));
+
+	for (const stored of ordered) {
 		const taken = atelier.names;
 		const wanted = stored.name;
-		const chosen = taken.includes(wanted) ? nextName(stored.kind, taken) : wanted;
+		const derivative = derivativeOf(wanted);
+		let chosen: string;
+		if (derivative !== null) {
+			// `f′` suit `f` : si `f` est arrivée sous le nom `g`, elle devient `g′`
+			const base = arrivedAs.get(derivative.base) ?? derivative.base;
+			chosen = `${base}${"'".repeat(derivative.order)}`;
+			if (taken.includes(chosen)) {
+				refused.push({ name: wanted, reason: `${displayName(chosen)} existe déjà.` });
+				continue;
+			}
+		} else {
+			chosen = taken.includes(wanted) ? nextName(stored.kind, taken) : wanted;
+		}
+		arrivedAs.set(wanted, chosen);
 
 		const created = atelier.create(
-			{ kind: stored.kind, name: chosen, definition: stored.definition },
+			{
+				kind: stored.kind,
+				name: chosen,
+				// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
+				definition: derivative !== null ? `${chosen}(x)` : stored.definition
+			},
 			// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au
 			// rangement, pour que l'aller-retour ne change pas le sens (D10).
 			'url'

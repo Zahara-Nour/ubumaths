@@ -137,6 +137,52 @@ Lot 2a mergé (#784) ; pied de page limité à l'accueil (#787, hors chantier).
 - Noté, à trancher (revue) : des bornes inversées (de 0 à −3) donnent une
   aire POSITIVE (`integralUnder` trie les bornes, comme le grapheur).
 
+## Lot 3a — « Dériver » crée la carte `f′`
+
+Branche `feat/atelier-deriver-carte`, worktree `../ubumaths-wt-deriver`.
+Lot 2b mergé (#795). Le lot 3 est coupé en deux PR (contenu inchangé) :
+3a = l'objet `f′` ; 3b = règle des actions (pas de bascule vers Calcul,
+repère « nouveau résultat », champ « Image »).
+
+Mesuré avant : `g(x) = f'(x)` valait déjà `2x-3` (dérivée vivante) ; le nom
+`f'` était refusé ; `f'(2)` se calcule même avec un objet `f'` présent (le
+moteur n'est donc pas touché).
+
+- [x] `names.ts` : `isDerivativeName`, `derivativeOf`, `derivativeName`,
+      `displayName` (`f'` s'affiche `f′`, `f''` → `f″`).
+- [x] `createDerivative` : objet `f'` défini par `f'(x)` (vivant), tracé si
+      `f` l'est, pas de doublon (`existed`), refusé sur vide / illisible /
+      en attente (message de l'objet) / non-fonction ; un objet `f'` défini
+      autrement est refusé (E1). Renommer `f` renomme `f′` ; la fusion d'un
+      lien emmène `f′` avec `f` renommée.
+- [x] « Dériver » (bouton) et `.dériver f` créent la carte ET écrivent la
+      ligne ; `.dériver x^2+1` ne crée rien ; `f'(x) = 3x` tapé est refusé.
+- [x] « Garder la dérivée » supprimée (action, code, et son fichier de test
+      — dont un test assertait l'inverse de G6) ; ses cas utiles repris.
+- [x] Carte `f′` : nom `f′`, formule calculée, pas de champ, « dérivée de f ».
+- Trouvé en route : sur une fonction en attente, « Dériver » ajoutait « ne
+  se lit pas » (faux) → la carte n'est tentée que si le calcul aboutit.
+- [x] Revue `code-reviewer` — corrigé, tests d'abord (7 rouges vus) :
+  - **B1 (bloquant)** : `differentiate` lève sur |x| ; la carte `f′` qui suit
+    `f` le rencontrait dès que `f` devenait `abs(x)` → carte, moteur et tracés
+    tombaient. `expressionOf` rattrape l'échec, la carte `f′` passe en erreur
+    (« La dérivée de « f » ne se calcule pas. »), aucune carte n'est créée
+    pour une fonction non dérivable.
+  - B2 : renommer `g` en `f` alors qu'une `f′` orpheline existe faisait deux
+    `f′` → refusé. C3 : renommer `f′` elle-même → refusé (« c'est f qu'on
+    renomme »). C1 : la fusion traite les fonctions avant leurs dérivées.
+    C2 : `.dériver f` dit « existe déjà » / « ne se calcule pas » comme le
+    bouton (`derivativeNote`, partagé).
+  - Noté, non traité : C4 (une `f′` orpheline peut arriver par sauvegarde ou
+    lien — sans danger, aucune saisie élève ne l'atteint) ; M1 (`f″` de x³
+    s'affiche `3*2x` : `differentiate` ne simplifie pas) ; M5 (L1 : la carte
+    existante n'est pas SÉLECTIONNÉE — avec le lot 3b, qui gère l'écran).
+- ⚠️ La bascule vers Calcul après « Dériver » reste jusqu'au lot 3b.
+- Tests : 32 serveur (27 rouges avant) + 3 navigateur ; suites atelier
+  236 navigateur, 2 120 serveur ; `check:incremental` 0 ; les 18
+  avertissements eslint des fichiers touchés sont antérieurs (aucun dans
+  les lignes modifiées, vérifié).
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

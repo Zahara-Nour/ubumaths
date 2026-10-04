@@ -27,6 +27,7 @@ import { substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
+import { derivativeOf } from './names';
 import { astOf } from './parse';
 
 // =============================================================================
@@ -303,7 +304,23 @@ export function expressionOf(
 	// Les dérivées AVANT le reste : `f'` doit devenir une expression avant que
 	// `substituteAll` cherche à y remplacer des noms. Et on les développe avec
 	// les bindings DÉRIVABLES — un objet en attente se dérive.
-	const expanded = expandDerivatives(ast, derivableFunctions);
+	// ⚠️ `differentiate` LÈVE sur ce qu'il ne sait pas dériver (`abs`, `floor`).
+	// Avec la carte `f′` qui suit `f`, il suffisait de changer `f` en |x| pour
+	// faire tomber la carte, le moteur et les tracés (revue du lot 3a) : un
+	// échec de dérivation est une RÉPONSE, pas une panne.
+	let expanded: MathNode;
+	try {
+		expanded = expandDerivatives(ast, derivableFunctions);
+	} catch {
+		const derivative = derivativeOf(name);
+		return {
+			ok: false,
+			message:
+				derivative !== null
+					? `La dérivée de « ${derivative.base} » ne se calcule pas.`
+					: `Une dérivée citée par « ${name} » ne se calcule pas.`
+		};
+	}
 	const substituted = substituteAll(expanded, variables, substituteFunction, {
 		functions: functions satisfies FunctionBindings
 	});
