@@ -35,6 +35,19 @@ function setScheme(scheme: 'light' | 'dark') {
 	document.documentElement.classList.toggle('dark', scheme === 'dark');
 }
 
+/** Fêtes de la table portant un badge, avec ce badge */
+function badges(container: HTMLElement): [string, string][] {
+	return [...container.querySelectorAll('tbody tr')]
+		.map((tr) => {
+			const head = tr.querySelector('th');
+			const badge = head?.querySelector('.next-badge')?.textContent?.trim();
+			if (!head || !badge) return null;
+			const name = (head.textContent ?? '').replace(badge, '').trim();
+			return [name, badge] as [string, string];
+		})
+		.filter((x): x is [string, string] => x !== null);
+}
+
 afterEach(() => {
 	document.documentElement.style.colorScheme = '';
 	document.documentElement.classList.remove('dark');
@@ -136,18 +149,36 @@ describe('/almanach', () => {
 	});
 
 	it('le jour d’une fête, elle est annoncée « aujourd’hui », pas « prochaine »', async () => {
-		// 17 Auroral = Jubilé du Cheval à Phynances
-		const screen = await renderWith(civilToPataphysical(2026, 4, 4), '2026-04-04');
+		// 37 Auroral = Jubilé du Cheval à Phynances
+		const screen = await renderWith(civilToPataphysical(2026, 4, 24), '2026-04-24');
 		const row = [...screen.container.querySelectorAll('tbody tr')].find((tr) =>
 			tr.textContent?.includes('Cheval à Phynances')
 		);
 		expect(row?.textContent).toContain('aujourd’hui');
 		expect(row?.textContent).not.toContain('prochaine');
-		// La suivante, première de l'An suivant, reste « prochaine »
-		const empochaille = [...screen.container.querySelectorAll('tbody tr')].find((tr) =>
-			tr.textContent?.includes('Grande Empochaille')
-		);
-		expect(empochaille?.textContent).toContain('prochaine');
+		expect(badges(screen.container)).toEqual([
+			['Le Jubilé du Cheval à Phynances', 'aujourd’hui'],
+			['La Foire aux Polyèdres', 'prochaine']
+		]);
+	});
+
+	it.each([
+		// Le lendemain de la Cloche : la rentrée n'est pas encore passée
+		[[2026, 8, 22], 'Le Grand Redémarrage'],
+		[[2026, 8, 23], 'Le Grand Redémarrage'],
+		[[2025, 9, 2], 'La Régate de la Passoire'],
+		[[2025, 12, 19], 'La Journée de L’Isle de la Réunion Pataphysique'],
+		[[2025, 12, 21], 'La Grande Empochaille'],
+		[[2026, 3, 2], 'Le Poisson à Phynances'],
+		[[2028, 3, 18], 'Le Poisson à Phynances'],
+		[[2026, 4, 2], 'Le Jubilé du Cheval à Phynances'],
+		[[2026, 5, 22], 'Le Décervelage Suprême'],
+		[[2026, 6, 16], 'La Proclamation Royale'],
+		[[2026, 7, 2], 'Le Grand Redémarrage']
+	] as const)('le %j, la prochaine fête est %s', async ([y, m, d], expected) => {
+		const iso = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+		const screen = await renderWith(civilToPataphysical(y, m, d), iso);
+		expect(badges(screen.container)).toEqual([[expected, 'prochaine']]);
 	});
 
 	it('la table des fêtes ne reprend aucune fête du Collège de ’Pataphysique', async () => {
@@ -157,33 +188,61 @@ describe('/almanach', () => {
 		);
 		expect(rows).toHaveLength(FEASTS.length);
 		const text = screen.container.textContent ?? '';
-		for (const name of ['Nativité', 'Bosse-de-Nage', 'Faustroll', 'Polyèdres']) {
+		// « Fête des Polyèdres » (Collège) ; la Foire aux Polyèdres est une fête Chiphre
+		for (const name of ['Nativité', 'Bosse-de-Nage', 'Faustroll', 'Fête des Polyèdres']) {
 			expect(text).not.toContain(name);
 		}
 	});
 
-	it('un mois sans fête garde une carte propre (Ambraire, Givraire)', async () => {
+	it('aucun texte ne mentionne une ancienne fête ni une ancienne date', async () => {
 		const screen = await renderWith(civilToPataphysical(2026, 5, 22), '2026-05-22');
-		for (const [index, name] of [
-			[0, 'Ambraire'],
-			[1, 'Givraire']
-		] as const) {
-			const card = screen.container.querySelector<HTMLElement>(`[data-month="${index}"]`);
-			if (!card) throw new Error(`carte ${name} introuvable`);
-			expect(card.querySelectorAll('[data-testid="month-feast"]')).toHaveLength(0);
-			const text = card.textContent ?? '';
-			expect(text).toContain(name);
-			expect(text).not.toMatch(/undefined|null|NaN/);
-			// Aucun élément vide laissé à la place de la fête
-			const empty = [...card.querySelectorAll('span, div')].filter(
+		const text = screen.container.textContent ?? '';
+		expect(text).not.toMatch(new RegExp(['phyn', 'anche'].join(''), 'i'));
+		expect(text).not.toContain('17 Auroral');
+		expect(text).not.toMatch(/(^|[^0-9])4 avril/);
+	});
+
+	it('une carte par mois, chacune avec ses événements', async () => {
+		const screen = await renderWith(civilToPataphysical(2026, 5, 22), '2026-05-22');
+		const expected: string[][] = [
+			['10 Ambraire : Le Grand Redémarrage'],
+			['26 Givraire : La Régate de la Passoire'],
+			[
+				'16 Glaglavose : La Journée de L’Isle de la Réunion Pataphysique',
+				'18 Glaglavose : La Grande Empochaille'
+			],
+			['35 Déglaçose : La Restauration de Bougrelas'],
+			['14 Auroral : Le Poisson à Phynances', '37 Auroral : Le Jubilé du Cheval à Phynances'],
+			['12 Lumenal : La Foire aux Polyèdres', '37 Lumenal : Le Décervelage Suprême'],
+			['1 Auguste : La Proclamation Royale']
+		];
+		const cards = [...screen.container.querySelectorAll<HTMLElement>('.month-card')];
+		expect(cards).toHaveLength(7);
+		cards.forEach((card, index) => {
+			expect(card.getAttribute('data-month')).toBe(String(index));
+			const feasts = [...card.querySelectorAll('[data-testid="month-feast"]')].map((el) =>
+				(el.textContent ?? '').replace(/\s+/g, ' ').trim()
+			);
+			expect(feasts).toEqual(expected[index]);
+			expect(card.textContent ?? '').not.toMatch(/undefined|null|NaN/);
+			// Aucun élément vide laissé dans la carte
+			const empty = [...card.querySelectorAll('span, div, p')].filter(
 				(el) => !el.classList.contains('month-band') && (el.textContent ?? '').trim() === ''
 			);
 			expect(empty).toEqual([]);
-		}
-		// Contrôle : un mois avec fête l'affiche bien
-		const glaglavose = screen.container.querySelector('[data-month="2"]');
-		expect(glaglavose?.querySelectorAll('[data-testid="month-feast"]')).toHaveLength(1);
-		expect(glaglavose?.textContent).toContain('18 Glaglavose : La Grande Empochaille');
+		});
+	});
+
+	it('la Mobilisation Royale est une période, annoncée sur la seule carte de Lumenal', async () => {
+		const screen = await renderWith(civilToPataphysical(2026, 5, 22), '2026-05-22');
+		const periods = [...screen.container.querySelectorAll('[data-testid="month-period"]')];
+		expect(periods).toHaveLength(1);
+		expect(periods[0].closest('.month-card')?.getAttribute('data-month')).toBe('5');
+		expect(periods[0].textContent).toContain('La Mobilisation Royale');
+		expect(periods[0].textContent).toContain('Décervelage Suprême');
+		// Pas une fête d'un jour : absente de la table
+		const rows = [...screen.container.querySelectorAll('tbody tr')].map((tr) => tr.textContent);
+		expect(rows.filter((r) => r?.includes('Mobilisation'))).toEqual([]);
 	});
 
 	it('les cartes des mois n’ont plus de pastilles de couleur', async () => {

@@ -1,8 +1,12 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+	DAYS_PER_MONTH,
 	FEASTS,
 	MONTH_NAMES,
 	civilToPataphysical,
+	fromPataphysicalDate,
 	formatLong,
 	formatMedium,
 	formatShort,
@@ -221,13 +225,44 @@ describe('fêtes', () => {
 		return p.kind === 'month' ? (p.feast?.id ?? null) : null;
 	}
 
-	it.each([
-		['empochaille', 2025, 12, 22],
-		['bougrelas', 2026, 3, 1],
-		['phynanche', 2026, 4, 1],
-		['cheval-a-phynances', 2026, 4, 4]
-	])('%s tombe à sa date grégorienne', (id, y, m, d) => {
-		expect(feastAt(y, m, d)).toBe(id);
+	// Calendrier validé par David (Compendium, section VIII, 2026-10-04) : id, date
+	// pataphysique, date grégorienne en An 130 (2025-2026, normal) et An 132 (2027-2028, bissextile)
+	const CALENDAR: [string, string, [number, number, number], [number, number, number]][] = [
+		['grand-redemarrage', '10 Ambraire', [2025, 9, 1], [2027, 9, 1]],
+		['regate-de-la-passoire', '26 Givraire', [2025, 11, 8], [2027, 11, 8]],
+		['isle-de-la-reunion', '16 Glaglavose', [2025, 12, 20], [2027, 12, 20]],
+		['empochaille', '18 Glaglavose', [2025, 12, 22], [2027, 12, 22]],
+		['bougrelas', '35 Déglaçose', [2026, 3, 1], [2028, 2, 29]],
+		['poisson-a-phynances', '14 Auroral', [2026, 4, 1], [2028, 4, 1]],
+		['cheval-a-phynances', '37 Auroral', [2026, 4, 24], [2028, 4, 24]],
+		['foire-aux-polyedres', '12 Lumenal', [2026, 5, 21], [2028, 5, 21]],
+		['decervelage-supreme', '37 Lumenal', [2026, 6, 15], [2028, 6, 15]],
+		['proclamation-royale', '1 Auguste', [2026, 7, 1], [2028, 7, 1]]
+	];
+
+	it.each(CALENDAR)('%s (%s) : date grégorienne en année normale', (id, _p, normal) => {
+		expect(feastAt(...normal)).toBe(id);
+	});
+
+	it.each(CALENDAR)('%s (%s) : date grégorienne en année bissextile', (id, _p, leap) => {
+		expect(feastAt(...leap)).toBe(id);
+	});
+
+	it.each(CALENDAR)('%s : conversion inverse depuis %s', (id, pata, normal, leap) => {
+		const feast = FEASTS.find((f) => f.id === id);
+		if (!feast) throw new Error(`fête ${id} absente`);
+		const month = feast.monthIndex + 1;
+		expect(fromPataphysicalDate({ year: 130, month, day: feast.day })).toEqual({
+			year: normal[0],
+			month: normal[1],
+			day: normal[2]
+		});
+		expect(fromPataphysicalDate({ year: 132, month, day: feast.day })).toEqual({
+			year: leap[0],
+			month: leap[1],
+			day: leap[2]
+		});
+		expect(`${feast.day} ${MONTH_NAMES[feast.monthIndex]}`).toBe(pata);
 	});
 
 	it('la Restauration de Bougrelas est le 35 Déglaçose : 29 février en 2028, 1ᵉʳ mars en 2027', () => {
@@ -236,14 +271,62 @@ describe('fêtes', () => {
 		expect(feastAt(2027, 3, 1)).toBe('bougrelas');
 	});
 
-	it('la table reprend les dates pataphysiques du Compendium', () => {
+	it('la table reprend exactement le calendrier du Compendium, dans l’ordre de l’An', () => {
 		const table = FEASTS.map((f) => `${f.id}:${f.day} ${MONTH_NAMES[f.monthIndex]}`);
-		expect(table).toEqual([
-			'empochaille:18 Glaglavose',
-			'bougrelas:35 Déglaçose',
-			'phynanche:14 Auroral',
-			'cheval-a-phynances:17 Auroral'
+		expect(table).toEqual(CALENDAR.map(([id, pata]) => `${id}:${pata}`));
+	});
+
+	it('noms, dates grégoriennes et provinces tels que le Compendium les écrit', () => {
+		expect(FEASTS.map((f) => [f.name, f.gregorian, f.province])).toEqual([
+			['Le Grand Redémarrage', '1ᵉʳ septembre', 'Glitchistan'],
+			['La Régate de la Passoire', '8 novembre', 'Patatovie'],
+			['La Journée de L’Isle de la Réunion Pataphysique', '20 décembre', null],
+			['La Grande Empochaille', '22 décembre', 'Nombrilie'],
+			['La Restauration de Bougrelas', '1ᵉʳ mars (29 février les années bissextiles)', 'Yoyolande'],
+			['Le Poisson à Phynances', '1ᵉʳ avril', null],
+			['Le Jubilé du Cheval à Phynances', '24 avril', 'Pifométrie'],
+			['La Foire aux Polyèdres', '21 mai', 'Bedonstan'],
+			['Le Décervelage Suprême', '15 juin', null],
+			['La Proclamation Royale', '1ᵉʳ juillet', null]
 		]);
+	});
+
+	it('chaque mois porte au moins un événement', () => {
+		for (let monthIndex = 0; monthIndex < MONTH_NAMES.length; monthIndex++) {
+			expect(
+				FEASTS.filter((f) => f.monthIndex === monthIndex),
+				MONTH_NAMES[monthIndex]
+			).not.toEqual([]);
+		}
+	});
+
+	it('aucune fête ne tombe sur un jour hors-mois', () => {
+		for (const f of FEASTS) {
+			expect(f.day).toBeGreaterThanOrEqual(1);
+			expect(f.day).toBeLessThanOrEqual(DAYS_PER_MONTH);
+		}
+		// Cloche (22 août) et Surnuméraire (18 mars bissextile) : jours sans fête
+		for (const [y, m, d] of [
+			[2026, 8, 22],
+			[2028, 8, 22],
+			[2028, 3, 18]
+		] as const) {
+			expect(civilToPataphysical(y, m, d)).toMatchObject({ kind: 'extra-day', feast: null });
+		}
+	});
+
+	it('l’ancien nom du Poisson à Phynances n’apparaît plus nulle part dans src/', () => {
+		// Mot reconstitué : ce test ne doit pas se trouver lui-même
+		const banned = new RegExp(['phyn', 'anche'].join(''), 'i');
+		const files = readdirSync('src', { recursive: true, withFileTypes: true })
+			.filter((e) => e.isFile() && /\.(ts|js|svelte|json|md)$/.test(e.name))
+			.map((e) => join(e.parentPath, e.name));
+		expect(files.length).toBeGreaterThan(100);
+		expect(files.filter((f) => banned.test(readFileSync(f, 'utf8')))).toEqual([]);
+	});
+
+	it('l’ancienne date du Jubilé (4 avril, 17 Auroral) n’a plus de fête', () => {
+		expect(feastAt(2026, 4, 4)).toBeNull();
 	});
 
 	it('un jour ordinaire n’a pas de fête', () => {
@@ -256,7 +339,13 @@ describe('fêtes', () => {
 		for (const id of ['nativite-jarry', 'bosse-de-nage', 'faustroll', 'polyedres']) {
 			expect(ids).not.toContain(id);
 		}
-		for (const name of ['Nativité d’Alfred Jarry', 'Bosse-de-Nage', 'Faustroll', 'Polyèdres']) {
+		// « Fête des Polyèdres » (Collège) ; la Foire aux Polyèdres est une fête Chiphre
+		for (const name of [
+			'Nativité d’Alfred Jarry',
+			'Bosse-de-Nage',
+			'Faustroll',
+			'Fête des Polyèdres'
+		]) {
 			expect(FEASTS.filter((f) => f.name.includes(name))).toEqual([]);
 		}
 	});

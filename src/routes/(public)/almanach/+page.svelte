@@ -34,6 +34,11 @@
 
 	const MONTH_INDEXES = MONTH_NAMES.map((_, i) => i as MonthIndex);
 
+	/** Périodes de plusieurs jours (Compendium, section VIII) : du texte, pas des fêtes */
+	const MONTH_PERIODS: Partial<Record<MonthIndex, string>> = {
+		5: 'La Mobilisation Royale : du 1 Lumenal à la veille du Décervelage Suprême.'
+	};
+
 	// Props
 	let { data }: PageProps = $props();
 
@@ -190,6 +195,9 @@
 					>
 					<span class="italic">{MONTH_PALETTES[monthIndex].ambiance}</span>
 					<span class="text-sm text-muted-foreground">{ETYMOLOGIES[monthIndex]}</span>
+					{#if MONTH_PERIODS[monthIndex]}
+						<span class="text-sm" data-testid="month-period">{MONTH_PERIODS[monthIndex]}</span>
+					{/if}
 					{#each feastsOf(monthIndex) as feast (feast.id)}
 						<span class="text-sm" data-testid="month-feast">
 							<span class="tabular-nums">{feast.day} {MONTH_NAMES[monthIndex]}</span> : {feast.name}
