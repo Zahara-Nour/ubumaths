@@ -357,3 +357,17 @@ Manche 14 (2026-10-04), suites des lois — recommandations suivies :
   identique (test de propriété). (b) simulation de G, U, U([a ; b]), E dans ```simulation #794 —
   inversion du générateur à graine, histogramme en densité + courbe, tests « or » figeant les
   simulations de main (bloc et atelier), en-têtes du tableau de simulation sans césure.
+
+Manche 15 (2026-10-04), statistique à deux variables (TCOMP-116 → 124) — recommandations suivies :
+
+166. Trois PR : (a) bloc ```nuage (nuage, point moyen, droite des moindres carrés, r,
+prévisions) ; (b) changement de variable ; (c) atelier : `.ajustement` complété.
+167. `x: …` / `y: …` (lecteur de nombres commun), `nom x:` / `nom y:` titres d'axes ; ≤ 100
+     points ; longueurs égales.
+168. Nuage seul par défaut ; `ajustement: affine` (droite de y en x + équation) ;
+     `indicateurs:` point moyen (G placé), équation, r — PAS r² (le programme dit r).
+169. `prévoir: x = …` / `prévoir: y = …`, interpolation ou extrapolation dite, pointillés.
+170. PR b : `ajustement: z = ln(y)` → z = ax + b, y = e^b × e^(ax), courbe sur le nuage ;
+     `nuage: z` ; liste fixe ln(y), ln(x), y², x², √y, √x, 1/y, 1/x.
+171. Axes adaptés aux données ; `origine: oui`.
+172. Moyennes, a, b exacts (fractions), arrondis une fois (millième, `arrondi:`) ; r décimal.
