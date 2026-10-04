@@ -26,11 +26,17 @@
 	let {
 		cell = $bindable() as NotebookCell,
 		isActive = false,
-		isReadonly = false
+		isReadonly = false,
+		restricted = false
 	}: {
 		cell: NotebookCell;
 		isActive?: boolean;
 		isReadonly?: boolean;
+		/**
+		 * Rendu restreint : carnet d'un élève lu par quelqu'un d'autre
+		 * (décision de David, 2026-10-04 — même moteur que le chat).
+		 */
+		restricted?: boolean;
 	} = $props();
 
 	// State
@@ -97,7 +103,7 @@
 					Double-cliquez pour éditer le markdown...
 				</p>
 			{:else}
-				<MarkdownRenderer content={cell.source} />
+				<MarkdownRenderer content={cell.source} {restricted} />
 			{/if}
 		</div>
 	{/if}

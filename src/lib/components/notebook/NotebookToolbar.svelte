@@ -42,6 +42,7 @@
 		notebook = null as NotebookStore | null,
 		isReadonly = false,
 		isTeacher = false,
+		executionLocked = false,
 		onSave = () => {},
 		onAddCodeCell = () => {},
 		onAddMarkdownCell = () => {},
@@ -55,6 +56,8 @@
 		notebook?: NotebookStore | null;
 		isReadonly?: boolean;
 		isTeacher?: boolean;
+		/** Carnet d'élève lu par autrui : aucun contrôle d'exécution affiché */
+		executionLocked?: boolean;
 		onSave?: () => void;
 		onAddCodeCell?: () => void;
 		onAddMarkdownCell?: () => void;
@@ -120,7 +123,11 @@
 			<ListTree class="size-4" />
 		</Button>
 
-		{#if isExecuting}
+		{#if executionLocked}
+			<!-- Carnet d'élève lu par autrui : ni « Tout exécuter » ni « Arrêter »
+			     (le store refuse aussi toute exécution) -->
+			<span class="text-sm text-muted-foreground">Lecture seule — exécution désactivée</span>
+		{:else if isExecuting}
 			<!-- Stop button -->
 			<Button
 				variant="destructive"

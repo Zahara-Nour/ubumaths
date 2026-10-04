@@ -29,6 +29,7 @@
 	import NotebookCodeSlide from '$lib/components/notebook/presentation/NotebookCodeSlide.svelte';
 	import NotebookCheckpointSlide from '$lib/components/notebook/presentation/NotebookCheckpointSlide.svelte';
 	import type { CheckpointCell } from '$lib/types/notebook';
+	import { provideRestrictedRendering } from '$lib/components/markdown/restricted-rendering';
 
 	let { data } = $props();
 
@@ -40,6 +41,10 @@
 	// student reviewing the notebook in presentation also follows the same
 	// rule for consistency. Recording is the editor route's job.
 	notebook.previewMode = true;
+
+	// Carnet d'élève lu par un autre (décision de David, 2026-10-04) : rendu
+	// restreint de tout le markdown et des sorties, et aucune exécution.
+	provideRestrictedRendering(() => data.foreignStudentNotebook);
 	let notebookLoaded = $state(false);
 
 	// Cells the Deck iterates over. Derived from the store so re-runs that
@@ -47,6 +52,8 @@
 	let cells = $derived(notebook.cells);
 
 	onMount(async () => {
+		// Verrou AVANT le chargement : le store ne crée alors aucun worker
+		if (data.foreignStudentNotebook) notebook.lockExecution();
 		const loaded = await notebook.loadNotebook(data.notebook.id);
 		if (!loaded) {
 			toaster.error('Échec du chargement du notebook');
@@ -98,6 +105,8 @@
 					<Loader2 class="size-3 animate-spin" />
 					Chargement notebook…
 				</span>
+			{:else if notebook.executionLocked}
+				Lecture seule : ce carnet n'est pas le vôtre, il ne peut pas être exécuté.
 			{:else if notebook.hasError}
 				<span class="text-destructive">Erreur Pyodide</span>
 			{:else if !notebook.isReady}

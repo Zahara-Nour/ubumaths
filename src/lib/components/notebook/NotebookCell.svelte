@@ -26,6 +26,8 @@
 		isActive = false,
 		isReadonly = false,
 		isTeacher = false,
+		restricted = false,
+		executionLocked = false,
 		notebook = null as NotebookStore | null,
 		onSelect = () => {},
 		onDelete = () => {},
@@ -35,6 +37,10 @@
 		isActive?: boolean;
 		isReadonly?: boolean;
 		isTeacher?: boolean;
+		/** Rendu restreint du markdown et des sorties (carnet d'élève lu par autrui) */
+		restricted?: boolean;
+		/** Exécution interdite (carnet d'élève lu par autrui) — le store refuse aussi */
+		executionLocked?: boolean;
 		notebook?: NotebookStore | null;
 		onSelect?: () => void;
 		onDelete?: () => void;
@@ -53,6 +59,11 @@
 	});
 
 	// Functions
+	function runCell(): void {
+		if (executionLocked) return;
+		onExecute();
+	}
+
 	function handleClick(): void {
 		if (!isActive) {
 			onSelect();
@@ -79,23 +90,27 @@
 		state={cell.state}
 		type={cell.type}
 		{isDirty}
-		canExecute={cell.type === 'code' && !isReadonly}
-		{onExecute}
+		canExecute={cell.type === 'code' && !isReadonly && !executionLocked}
+		onExecute={runCell}
 		onStop={() => notebook?.stopExecution()}
 	/>
 
 	<!-- Cell content -->
 	<div class="flex-1">
 		{#if cell.type === 'code'}
-			<CodeCell bind:cell {isActive} {isReadonly} {notebook} {onExecute} />
+			<CodeCell bind:cell {isActive} {isReadonly} {restricted} {notebook} onExecute={runCell} />
 		{:else if cell.type === 'checkpoint'}
 			{#if isTeacher && !isReadonly}
 				<CheckpointEditor bind:cell={cell as CheckpointCellType} {notebook} />
 			{:else}
-				<CheckpointCell cell={cell as CheckpointCellType} {notebook} {isReadonly} />
+				<CheckpointCell
+					cell={cell as CheckpointCellType}
+					{notebook}
+					isReadonly={isReadonly || executionLocked}
+				/>
 			{/if}
 		{:else}
-			<MarkdownCell bind:cell {isActive} {isReadonly} />
+			<MarkdownCell bind:cell {isActive} {isReadonly} {restricted} />
 		{/if}
 	</div>
 

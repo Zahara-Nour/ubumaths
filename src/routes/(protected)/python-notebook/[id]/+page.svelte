@@ -79,6 +79,7 @@
 		isReadonly={data.readonly}
 		isTeacher={isOwnerTeacher}
 		{previewMode}
+		foreignStudentNotebook={data.foreignStudentNotebook}
 	/>
 </div>
 

@@ -23,7 +23,8 @@
 	import NotebookCell from './NotebookCell.svelte';
 	import NotebookOutline from './NotebookOutline.svelte';
 	import { Alert } from '$lib/components/ui/alert';
-	import { Eye } from '@lucide/svelte';
+	import { Eye, Lock } from '@lucide/svelte';
+	import { provideRestrictedRendering } from '$lib/components/markdown/restricted-rendering';
 
 	const FLIP_MS = 200;
 
@@ -32,7 +33,8 @@
 		notebookId = null as string | null,
 		isReadonly = false,
 		isTeacher = false,
-		previewMode = false
+		previewMode = false,
+		foreignStudentNotebook = false
 	}: {
 		notebookId?: string | null;
 		isReadonly?: boolean;
@@ -51,7 +53,16 @@
 		 * polluted by the teacher's dry-runs. No-op when `!isTeacher`.
 		 */
 		previewMode?: boolean;
+		/**
+		 * Carnet d'un ÉLÈVE ouvert par quelqu'un d'autre (décision de David,
+		 * 2026-10-04) : rendu restreint et aucune exécution. Calculé côté serveur
+		 * par `isForeignStudentNotebook`.
+		 */
+		foreignStudentNotebook?: boolean;
 	} = $props();
+
+	// Tout markdown rendu sous cette vue (cellules, checkpoints) est restreint
+	provideRestrictedRendering(() => foreignStudentNotebook);
 
 	// Effective teacher-view flag — preview demotes the rendering to the
 	// student path so the inline "Vérifier" buttons appear and run locally.
@@ -84,6 +95,9 @@
 			toaster.error('Aucun ID de notebook fourni');
 			return;
 		}
+
+		// Verrou AVANT le chargement : le store ne crée alors aucun worker
+		if (foreignStudentNotebook) notebook.lockExecution();
 
 		const loaded = await notebook.loadNotebook(notebookId);
 		if (loaded) {
@@ -185,6 +199,7 @@
 	}
 
 	async function handleRunAll(): Promise<void> {
+		if (notebook.executionLocked) return;
 		await notebook.executeAllCells();
 	}
 
@@ -237,6 +252,7 @@
 	}
 
 	async function handleExecuteCell(cellId: string): Promise<void> {
+		if (notebook.executionLocked) return;
 		await notebook.executeCell(cellId);
 	}
 
@@ -288,8 +304,9 @@
 			return;
 		}
 
-		// Disable all other shortcuts in readonly mode
-		if (isReadonly) return;
+		// Disable all other shortcuts in readonly mode (a foreign student
+		// notebook is always readonly; checked explicitly all the same)
+		if (isReadonly || notebook.executionLocked) return;
 
 		// Only handle cell execution shortcuts if there's an active cell
 		if (!notebook.activeCell) {
@@ -421,6 +438,7 @@
 			{notebook}
 			{isReadonly}
 			isTeacher={effectiveIsTeacher}
+			executionLocked={notebook.executionLocked}
 			{outlineOpen}
 			onToggleOutline={() => (outlineOpen = !outlineOpen)}
 			onSave={handleSave}
@@ -446,7 +464,21 @@
 		{/if}
 
 		<!-- Readonly mode banner -->
-		{#if isReadonly}
+		{#if notebook.executionLocked}
+			<div class="border-b border-border bg-muted/50 px-4 py-3">
+				<Alert class="border-primary/50 bg-primary/10">
+					<Lock class="size-4 text-primary" />
+					<div class="ml-2">
+						<p class="text-sm font-medium text-foreground">
+							Lecture seule : ce carnet n'est pas le vôtre, il ne peut pas être exécuté.
+						</p>
+						<p class="text-xs text-muted-foreground">
+							Vous voyez le code et les sorties enregistrées par son auteur.
+						</p>
+					</div>
+				</Alert>
+			</div>
+		{:else if isReadonly}
 			<div class="border-b border-border bg-muted/50 px-4 py-3">
 				<Alert class="border-primary/50 bg-primary/10">
 					<Eye class="size-4 text-primary" />
@@ -503,6 +535,8 @@
 									isActive={notebook.activeCell === cellId}
 									{isReadonly}
 									isTeacher={effectiveIsTeacher}
+									restricted={foreignStudentNotebook}
+									executionLocked={notebook.executionLocked}
 									{notebook}
 									onSelect={() => handleSelectCell(cellId)}
 									onDelete={() => handleDeleteCell(cellId)}
