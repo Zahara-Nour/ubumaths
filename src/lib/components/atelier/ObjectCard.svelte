@@ -17,6 +17,7 @@
 	import { forMathlive } from '$lib/atelier/mathfield';
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
+	import CurveSettings from './CurveSettings.svelte';
 
 	interface Props {
 		object: AtelierObject;
@@ -153,6 +154,11 @@
 
 	{#if selected && editable}
 		<DefinitionField {object} />
+	{/if}
+
+	<!-- « Sur le graphique » : seulement pour une fonction tracée (§1 S1–S5) -->
+	{#if selected && isFunction(object) && object.plotted && object.display}
+		<CurveSettings {object} display={object.display} />
 	{/if}
 
 	{#if object.message}

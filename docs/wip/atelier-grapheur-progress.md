@@ -103,6 +103,25 @@ Le lot 2 est coupé en deux PR (contenu inchangé) : 2a = champ + carte fermée,
 - Noté pour le lot 3 : l'action « Tracer » (qui bascule vers Graphe) fait
   maintenant doublon avec 👁 — à trancher avec la règle des actions.
 
+## Lot 2b — « Sur le graphique » dans la carte
+
+Branche `feat/atelier-carte-reglages`, worktree `../ubumaths-wt-reglages2`.
+Lot 2a mergé (#784) ; pied de page limité à l'accueil (#787, hors chantier).
+
+- [x] `curveOf(atelier, graph, nom)` (`plot-sync.ts`) : la courbe dessinée
+      pour un objet, en lecture seule — 3 tests, rouges avant.
+- [x] `CurveSettings.svelte` : couleur, épaisseur, style, tangente (curseur
+      x₀, pente, cercle osculateur, κ), aire (bornes, aire signée, longueur).
+      Écrit dans l'atelier (`setDisplay`) ; calcule sur la courbe dessinée.
+      Pas de case f′ (Q1). Rien dans Calcul (S5). 8 tests navigateur, 7 rouges
+      avant (1 garde-fou).
+- [x] `AtelierContainer` fournit son grapheur par contexte à tout le
+      conteneur (la carte lit la courbe et la fenêtre visible).
+- Trouvé par le test : deux bornes modifiées coup sur coup — la seconde lisait
+  la prop périmée et effaçait la première → lecture de l'état courant de
+  l'atelier.
+- Suites : 335 navigateur, 1 379 serveur ; `check:incremental` 0 ; eslint propre.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.
