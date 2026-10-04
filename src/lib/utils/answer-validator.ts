@@ -62,6 +62,9 @@ import {
 } from '$lib/questions/intervals/interval-answer';
 import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
 import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
+import { judgePrimitiveAnswer } from '$lib/questions/calculus/primitive-answer';
+import { judgeDifferentialEquationAnswer } from '$lib/questions/calculus/differential-equation-answer';
+import type { CalculusVerdict } from '$lib/questions/calculus/calculus-reading';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
@@ -857,6 +860,9 @@ function validateBlankValue(
 		);
 	}
 
+	// Primitive, solution d'équation différentielle : jugées sur la dérivée / par substitution
+	if (isCalculusBlank(blank)) return calculusVerdict(userAnswer, blank).status === 'correct';
+
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
@@ -904,6 +910,7 @@ function roundingOnlyFeedback(
 		!blank.precision ||
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
+		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
 		return undefined;
@@ -1093,6 +1100,44 @@ function vectorCoordinatesForm(
 	return verdict;
 }
 
+/** Case « primitive » ou « solution-ed » (cf. questions/calculus/) */
+function isCalculusBlank(blank: InstanceBlank): boolean {
+	return blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed';
+}
+
+/** Verdict mathématique d'une case « primitive » ou « solution-ed » */
+function calculusVerdict(answer: string, blank: InstanceBlank): CalculusVerdict {
+	return blank.answerKind === 'primitive'
+		? judgePrimitiveAnswer(answer, blank)
+		: judgeDifferentialEquationAnswer(answer, blank);
+}
+
+/**
+ * Case « primitive » ou « solution-ed » : verdict de `questions/calculus/` dans
+ * la forme de `validateSingleBlank`. Une réponse juste voit ensuite son écriture
+ * jugée comme une case ordinaire comparée à ELLE-MÊME (seules restent les
+ * contraintes d'écriture : fraction simplifiable…), comme les coordonnées d'un
+ * vecteur colinéaire (cf. vectorCoordinatesForm).
+ */
+function calculusBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = calculusVerdict(answer, blank);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	if (status !== 'correct') return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+	const correct = { isCorrect: true, status: 'correct' as const };
+	const form = validateSingleBlank(
+		answer,
+		{ expectedAnswer: answer, type: 'math' },
+		answer,
+		instance
+	);
+	// Autre verdict (réponse lue autrement qu'en expression) : celui du calcul fait foi
+	return form.status === 'bad_form' || form.status === 'unoptimal_form' ? form : correct;
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
@@ -1136,6 +1181,11 @@ function validateSingleBlank(
 	// Vecteur dans une case : chaîne à part, cf. vectors/vector-answer.ts
 	if (blank.answerKind === 'vecteur') {
 		return vectorBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Primitive, solution d'équation différentielle : chaîne à part, cf. questions/calculus/
+	if (isCalculusBlank(blank)) {
+		return calculusBlankResult(userAnswerLatex || userAnswer, blank, instance);
 	}
 
 	// 1. Validation rules (pre-condition)
@@ -1720,6 +1770,11 @@ function matchedAnswerForm(
 	// Case « vecteur » appariée : même jugement que seule (écriture des coordonnées)
 	if (blank.answerKind === 'vecteur') {
 		const result = vectorBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « primitive » / « solution-ed » appariée : même jugement que seule
+	if (isCalculusBlank(blank)) {
+		const result = calculusBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 

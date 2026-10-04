@@ -23,7 +23,11 @@ import type {
 	ResolvedCorrection,
 	InstanceBlank,
 	RequiredForm,
-	ResolvedVariable
+	ResolvedVariable,
+	AnswerKind,
+	BlankDefaults,
+	CalculusBlankFields,
+	TemplateBlank
 } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
@@ -173,6 +177,60 @@ function normalizeAnswerExpression(
 		if (!resolvedVariables.some((v) => v.name === name)) return expression;
 	}
 	return normalizeExpression(expression);
+}
+
+/** Champs propres à chaque case de calcul (cf. `CalculusBlankFields`) */
+const CALCULUS_FIELDS: Partial<Record<AnswerKind, readonly (keyof CalculusBlankFields)[]>> = {
+	primitive: ['integrand', 'variable', 'interval'],
+	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial']
+};
+
+/** Champ sans lequel la case ne peut pas être jugée */
+const CALCULUS_REQUIRED_FIELD: Partial<Record<AnswerKind, keyof CalculusBlankFields>> = {
+	primitive: 'integrand',
+	'solution-ed': 'equation'
+};
+
+/** Champs dont les variables tirées sont résolues (`{{a}}x^2` → `3x^2`) */
+const CALCULUS_TEMPLATED_FIELDS = new Set<keyof CalculusBlankFields>([
+	'integrand',
+	'interval',
+	'equation',
+	'initial'
+]);
+
+/**
+ * Champs d'une case « primitive » ou « solution-ed » : case > blankDefaults,
+ * variables tirées résolues. Seuls ceux de son `answerKind` sont recopiés.
+ * Lève une erreur si le champ indispensable manque (`integrand`, `equation`).
+ */
+function resolveCalculusFields(
+	answerKind: AnswerKind | undefined,
+	blank: TemplateBlank,
+	defaults: BlankDefaults | undefined,
+	resolvedVariables: ResolvedVariable[],
+	random: RandomSource
+): CalculusBlankFields {
+	const fields = answerKind ? CALCULUS_FIELDS[answerKind] : undefined;
+	if (!answerKind || !fields) return {};
+	const resolved: Record<string, string> = {};
+	for (const field of fields) {
+		const raw = blank[field] ?? defaults?.[field];
+		if (raw === undefined) continue;
+		if (!CALCULUS_TEMPLATED_FIELDS.has(field)) {
+			resolved[field] = raw;
+			continue;
+		}
+		const text = resolveVariableConditionals(raw, resolvedVariables, { strict: true });
+		resolved[field] = text.includes('{{')
+			? resolveExpression(text, resolvedVariables, random)
+			: text;
+	}
+	const required = CALCULUS_REQUIRED_FIELD[answerKind];
+	if (required && !resolved[required]?.trim()) {
+		throw new Error(`Case « ${answerKind} » sans champ « ${required} »`);
+	}
+	return resolved as CalculusBlankFields;
 }
 
 /** Un marqueur `{{…}}`, imbrications comprises (`{{eval:{{a}}*2}}`) */
@@ -423,6 +481,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// this lookup silently returns undefined.
 				const expressionName = blankResult.expressionNameByIndex?.[i];
 				const vectorMode = blank.vectorMode ?? resolvedVariation.blankDefaults?.vectorMode;
+				const calculusFields = resolveCalculusFields(
+					answerKind,
+					blank,
+					resolvedVariation.blankDefaults,
+					resolvedVariables,
+					random
+				);
 				const resolved: InstanceBlank = {
 					expectedAnswer,
 					type: blankResult.blankTypes[i],
@@ -447,6 +512,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					}),
 					...(answerKind && { answerKind }),
 					...(answerKind === 'vecteur' && vectorMode && { vectorMode }),
+					...calculusFields,
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
 				};

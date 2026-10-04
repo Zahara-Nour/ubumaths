@@ -1,0 +1,316 @@
+{
+	"title": "Primitive de 1/x, eˣ, 1/x² ou 1/√x vérifiant une condition",
+	"description": "Primitives des fonctions de référence 1/x, eˣ, 1/x² et 1/√x, rendues uniques par une condition F(x₀) = y₀",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-048", "TCOMP-052", "TSPE-190", "TSPE-191"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Primitives des fonctions de référence",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $]0\\,;+\\infty[$ par $f(x)={{if:a<0|-}}\\dfrac{{{eval:abs(a)}}}{x}$.\n\nDétermine la primitive $F$ de $f$ sur $]0\\,;+\\infty[$ telle que $F(1)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|\\ln(x)}}{{if:a==-1|-\\ln(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\ln(x)}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $]0\\,;+\\infty[$, une primitive de $x\\mapsto\\dfrac{1}{x}$ est $x\\mapsto\\ln(x)$. Les primitives de $f$ sont donc les fonctions $F(x)={{if:a==1|\\ln(x)}}{{if:a==-1|-\\ln(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\ln(x)}}+k$.",
+					"$F(1)=k={{eval:y0}}$ car $\\ln(1)=0$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|\\ln(x)}}{{if:a==-1|-\\ln(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\ln(x)}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["y0 != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}{{if:y0-a>0|+{{eval:y0-a}}}}{{if:y0-a<0|{{eval:y0-a}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto e^{x}$ est $x\\mapsto e^{x}$. Les primitives de $f$ sont les fonctions $F(x)={{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}+k$.",
+					"$F(0)={{eval:a}}+k={{eval:y0}}$ car $e^{0}=1$ : $k={{eval:y0-a}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}{{if:y0-a>0|+{{eval:y0-a}}}}{{if:y0-a<0|{{eval:y0-a}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $]0\\,;+\\infty[$ telle que $F(1)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["y0 != -1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{x}{{if:y0+1>0|+{{eval:y0+1}}}}{{if:y0+1<0|{{eval:y0+1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{x^2}=x^{-2}$, dont une primitive est $\\dfrac{x^{-1}}{-1}=-\\dfrac{1}{x}$ (dérivée de $\\dfrac{1}{x}$ : $-\\dfrac{1}{x^2}$).",
+					"$F(x)=-\\dfrac{1}{x}+k$ et $F(1)=-1+k={{eval:y0}}$, donc $k={{eval:y0+1}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{x}{{if:y0+1>0|+{{eval:y0+1}}}}{{if:y0+1<0|{{eval:y0+1}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{\\sqrt{x}}$.\n\nDétermine la primitive $F$ de $f$ sur $]0\\,;+\\infty[$ telle que $F(1)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["y0 != 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "2\\sqrt{x}{{if:y0-2>0|+{{eval:y0-2}}}}{{if:y0-2<0|{{eval:y0-2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $\\sqrt{x}$ est $\\dfrac{1}{2\\sqrt{x}}$ : une primitive de $\\dfrac{1}{\\sqrt{x}}$ est donc $2\\sqrt{x}$.",
+					"$F(x)=2\\sqrt{x}+k$ et $F(1)=2+k={{eval:y0}}$, donc $k={{eval:y0-2}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{2\\sqrt{x}{{if:y0-2>0|+{{eval:y0-2}}}}{{if:y0-2<0|{{eval:y0-2}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3/x, F(1)=2 → 3ln x + 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["3\\ln(x)+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : sans parenthèses",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["3\\ln x+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : condition oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["3\\ln(x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : − 3/x² (dérivée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["-\\frac{3}{x^2}+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a=-1, y0=0 → −ln x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"y0": "0"
+			},
+			"answers": ["-\\ln(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 4eˣ, F(0)=1 → 4eˣ − 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"y0": "1"
+			},
+			"answers": ["4e^{x}-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : e⁰ pris égal à 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"y0": "1"
+			},
+			"answers": ["4e^{x}+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : constante libre laissée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"y0": "1"
+			},
+			"answers": ["4e^{x}+C"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a=-2, F(0)=3 → −2eˣ+5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"y0": "3"
+			},
+			"answers": ["-2e^{x}+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 1/x², F(1)=2 → −1/x + 3",
+			"variationIndex": 2,
+			"variables": {
+				"y0": "2"
+			},
+			"answers": ["-\\frac{1}{x}+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe oublié",
+			"variationIndex": 2,
+			"variables": {
+				"y0": "2"
+			},
+			"answers": ["\\frac{1}{x}+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : ln(x²) confondu",
+			"variationIndex": 2,
+			"variables": {
+				"y0": "2"
+			},
+			"answers": ["\\ln(x^2)+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : écrit 3 − 1/x",
+			"variationIndex": 2,
+			"variables": {
+				"y0": "2"
+			},
+			"answers": ["3-\\frac{1}{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 1/√x, F(1)=5 → 2√x + 3",
+			"variationIndex": 3,
+			"variables": {
+				"y0": "5"
+			},
+			"answers": ["2\\sqrt{x}+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : √x/2 (facteur inversé)",
+			"variationIndex": 3,
+			"variables": {
+				"y0": "5"
+			},
+			"answers": ["\\frac{\\sqrt{x}}{2}+\\frac{9}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : condition oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"y0": "5"
+			},
+			"answers": ["2\\sqrt{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : F(1)=0 → 2√x − 2",
+			"variationIndex": 3,
+			"variables": {
+				"y0": "0"
+			},
+			"answers": ["2\\sqrt{x}-2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	}
+}
