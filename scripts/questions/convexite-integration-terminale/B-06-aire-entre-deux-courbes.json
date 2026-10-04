@@ -203,8 +203,7 @@
 	],
 	"options": {
 		"constraints": {
-			"spaces": "off",
-			"form": "off"
+			"spaces": "off"
 		}
 	}
 }
