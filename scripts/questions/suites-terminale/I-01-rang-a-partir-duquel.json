@@ -1,0 +1,347 @@
+{
+	"title": "Définition de la limite : un rang à partir duquel tous les termes conviennent",
+	"description": "Donner UN entier N tel que tous les termes uₙ pour n ≥ N sont dans [A ; +∞[, dans ]ℓ − ε ; ℓ + ε[ ou dans ]−∞ ; −A] (toute réponse qui convient est juste ; pièges : rang trop petit, rang non entier)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-106", "TSPE-107", "TSPE-108"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Définition de la limite",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, $u_n=n^{2}$. La suite $(u_n)$ tend vers $+\\infty$ : tout intervalle $[A\\,;+\\infty[$ contient tous les termes à partir d'un certain rang.\n\nDonne un entier naturel $N$ tel que, pour tout $n\\geqslant N$, $u_n\\geqslant{{A}}$.\n\n$N=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..3"
+				},
+				{
+					"name": "A",
+					"expression": "eval:10^(2*t)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^t}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "0",
+							"max": "1000000000",
+							"inclusive": true
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						},
+						{
+							"type": "custom",
+							"expression": "answer^2 >= {{A}}",
+							"description": "Pour ce rang, $u_N<{{A}}$ : il est trop petit."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est croissante sur $\\mathbb{N}$ : dès que $u_N\\geqslant{{A}}$, tous les termes suivants aussi.",
+					"$n^{2}\\geqslant{{A}}\\iff n\\geqslant{{eval:10^t}}$ (pour $n\\geqslant0$). Le plus petit rang qui convient est $N=\\textcolor{{{color:primary.0}}}{ {{eval:10^t}} }$ ; tout entier plus grand convient aussi."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, $u_n={{L}}+\\dfrac{ {{a}} }{n}$. La suite $(u_n)$ converge vers ${{L}}$ : l'intervalle $\\left]{{eval:L-10^(-t);d}}\\,;{{eval:L+10^(-t);d}}\\right[$ contient tous les termes à partir d'un certain rang.\n\nDonne un entier $N\\geqslant1$ tel que, pour tout $n\\geqslant N$, $u_n$ appartient à cet intervalle.\n\n$N=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..2"
+				},
+				{
+					"name": "P",
+					"expression": "eval:a*10^t"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:P+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "0",
+							"max": "1000000000",
+							"inclusive": true
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						},
+						{
+							"type": "custom",
+							"expression": "answer > {{P}}",
+							"description": "Pour ce rang, $u_N$ n'est pas dans l'intervalle : il est trop petit."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n\\geqslant1$, $u_n>{{L}}$ ; il suffit que $\\dfrac{ {{a}} }{n}<{{eval:10^(-t);d}}$, soit $n>{{P}}$.",
+					"$\\dfrac{ {{a}} }{n}$ décroît : le plus petit rang qui convient est $N=\\textcolor{{{color:primary.0}}}{ {{eval:P+1}} }$ ; tout entier plus grand convient aussi."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, $u_n={{b}}-{{c}}n$. La suite $(u_n)$ tend vers $-\\infty$ : tout intervalle $]-\\infty\\,;-A]$ contient tous les termes à partir d'un certain rang.\n\nDonne un entier naturel $N$ tel que, pour tout $n\\geqslant N$, $u_n\\leqslant-{{A}}$.\n\n$N=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "A",
+					"expression": "100|1000"
+				},
+				{
+					"name": "N0",
+					"expression": "eval:ceil((A+b)/c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N0}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "0",
+							"max": "1000000000",
+							"inclusive": true
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						},
+						{
+							"type": "custom",
+							"expression": "{{b}} - {{c}}*answer <= -{{A}}",
+							"description": "Pour ce rang, $u_N>-{{A}}$ : il est trop petit."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est décroissante. $u_n\\leqslant-{{A}}\\iff{{b}}-{{c}}n\\leqslant-{{A}}\\iff n\\geqslant\\dfrac{ {{eval:A+b}} }{ {{c}} }$.",
+					"Le plus petit rang qui convient est $N=\\textcolor{{{color:primary.0}}}{ {{N0}} }$ ; tout entier plus grand convient aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 A=10⁴ : N=100",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"A": "10000"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : N=500 convient aussi",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"A": "10000"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : N=99 trop petit",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"A": "10000"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : N=50 (A/2 ÷ 100)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"A": "10000"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : rang non entier 100,5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"A": "10000"
+			},
+			"answers": ["100.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : rang négatif −200",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"A": "10000"
+			},
+			"answers": ["-200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 L=3, a=2, ε=0,01 : N=201",
+			"variationIndex": 1,
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "2",
+				"P": "200"
+			},
+			"answers": ["201"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : N=1000 convient",
+			"variationIndex": 1,
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "2",
+				"P": "200"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : N=200 (inégalité large)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "2",
+				"P": "200"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : N=100 (a oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "2",
+				"P": "200"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 b=5, c=2, A=100 : N=53",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "2",
+				"A": "100",
+				"N0": "53"
+			},
+			"answers": ["53"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : N=60 convient",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "2",
+				"A": "100",
+				"N0": "53"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : N=52 trop petit",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "2",
+				"A": "100",
+				"N0": "53"
+			},
+			"answers": ["52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : N=50 (b oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "2",
+				"A": "100",
+				"N0": "53"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

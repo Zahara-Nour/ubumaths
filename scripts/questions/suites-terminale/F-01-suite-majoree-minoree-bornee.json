@@ -1,0 +1,241 @@
+{
+	"title": "Suite majorée, minorée ou bornée",
+	"description": "QCM sur des suites usuelles : n² + a, a − bn, a + b/(n + 1), (−q)ⁿ, a + b(−1)ⁿ (pièges : croissante donc non majorée, minorée confondu avec positive)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-106", "TSPE-112"],
+	"theme": "Suites",
+	"domain": "Comportement global",
+	"subdomain": "Suites majorées, minorées, bornées",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"choices": [
+			{
+				"content": "$(u_n)$ est majorée, mais pas minorée"
+			},
+			{
+				"content": "$(u_n)$ est minorée, mais pas majorée"
+			},
+			{
+				"content": "$(u_n)$ est bornée"
+			},
+			{
+				"content": "$(u_n)$ n'est ni majorée ni minorée"
+			}
+		]
+	},
+	"variations": [
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=n^{2}{{a;+}}$.\n\nQuelle affirmation est vraie ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$n^{2}\\geqslant0$, donc $u_n\\geqslant{{a}}$ : $(u_n)$ est minorée par ${{a}}$.",
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty$ : aucun réel ne majore tous les termes. $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ est minorée, mais pas majorée}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}-{{b}}n$.\n\nQuelle affirmation est vraie ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$-{{b}}n\\leqslant0$, donc $u_n\\leqslant{{a}}$ : $(u_n)$ est majorée par ${{a}}$.",
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=-\\infty$ : aucun réel ne minore tous les termes. $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ est majorée, mais pas minorée}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}+\\dfrac{ {{b}} }{n+1}$.\n\nQuelle affirmation est vraie ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $0<\\dfrac{ {{b}} }{n+1}\\leqslant{{b}}$, donc ${{a}}<u_n\\leqslant{{eval:a+b}}$.",
+					"$(u_n)$ est minorée et majorée : $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ est bornée}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-{{q}}\\right)^{n}$.\n\nQuelle affirmation est vraie ?",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..4"
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"Les termes de rang pair ${{q}}^{n}$ dépassent tout réel, ceux de rang impair $-{{q}}^{n}$ deviennent inférieurs à tout réel.",
+					"$\\textcolor{{{color:primary.0}}}{(u_n)\\text{ n'est ni majorée ni minorée}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}+{{b}}\\times(-1)^{n}$.\n\nQuelle affirmation est vraie ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$(-1)^{n}$ vaut $1$ ou $-1$, donc $u_n$ vaut ${{eval:a+b}}$ ou ${{eval:a-b}}$ : ${{eval:a-b}}\\leqslant u_n\\leqslant{{eval:a+b}}$.",
+					"$\\textcolor{{{color:primary.0}}}{(u_n)\\text{ est bornée}}$ (elle n'a pourtant pas de limite)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 n²+3 : minorée pas majorée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : bornée refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 7 − 2n : majorée pas minorée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : minorée refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 2 + 5/(n+1) : bornée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : majorée seulement refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 (−2)ⁿ : ni l'un ni l'autre",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : bornée refusé",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 1 + 3(−1)ⁿ : bornée",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : ni l'un ni l'autre refusé (pas de limite ≠ non bornée)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

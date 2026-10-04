@@ -160,6 +160,10 @@ status: phase 0 VALIDÉE par David le 2026-10-04 (Q1, Q2 tranchées, reprise aba
 > réclame. `adoptGrapheurState` (`persistence.ts`, jamais appelée) devient du
 > code mort : à retirer au lot 6.
 
+> **Exception à A1, tranchée par David le 2026-10-04** : « Tableau croisé » et
+> « Simuler » PRÉPARENT une commande à compléter au clavier ; elles emmènent
+> donc dans Calcul (sans ça, le clic ne produirait rien de visible).
+
 ## Questions tranchées (2026-10-04)
 
 **Q1 — La case « f′ » du grapheur fait doublon avec « Dériver ».** ✅ **Tranché : la case est supprimée.** Dans le

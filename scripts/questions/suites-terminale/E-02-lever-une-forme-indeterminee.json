@@ -1,0 +1,413 @@
+{
+	"title": "Limite d'une suite : lever une forme indéterminée",
+	"description": "∞ − ∞ et ∞/∞ levées par factorisation du terme prépondérant : polynôme, n − a√n, quotients de polynômes de degrés égaux ou différents (pièges : 0 ou « pas de limite », a/c quel que soit le degré)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-110", "TSPE-113", "TSPE-131"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Formes indéterminées",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"signs": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{a}}n^{2}+{{eval:-sign(a)*bb}}n{{c;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "bb",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\infty-\\infty$ ». On factorise par le terme prépondérant : $u_n=n^{2}\\left({{a}}+\\dfrac{ {{eval:-sign(a)*bb}} }{n}+\\dfrac{ {{c}} }{n^{2}}\\right)$.",
+					"La parenthèse tend vers ${{a}}$ et $n^{2}$ vers $+\\infty$ : $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n=n-{{a}}\\sqrt{n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "+\\infty"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\infty-\\infty$ ». Pour $n>0$ : $u_n=\\sqrt{n}\\left(\\sqrt{n}-{{a}}\\right)$.",
+					"$\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{n}=+\\infty$ et $\\displaystyle\\lim_{n\\to+\\infty}\\left(\\sqrt{n}-{{a}}\\right)=+\\infty$ : par produit, $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{+\\infty}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n=\\dfrac{ {{a}}n^{2}{{b;+}} }{ {{c}}n^{2}+{{d}}n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ». On factorise par $n^{2}$ : $u_n=\\dfrac{ {{a}}+\\frac{ {{b}} }{n^{2} } }{ {{c}}+\\frac{ {{d}} }{n} }$.",
+					"Le numérateur tend vers ${{a}}$, le dénominateur vers ${{c}}$ : $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\dfrac{ {{a}} }{ {{c}} }=\\textcolor{{{color:primary.0}}}{ {{eval:a/c}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n=\\dfrac{ {{a}}n{{b;+}} }{ {{c}}n^{2}+{{d}} }$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ». Pour $n\\geqslant1$ : $u_n=\\dfrac{n\\left({{a}}+\\frac{ {{b}} }{n}\\right)}{n^{2}\\left({{c}}+\\frac{ {{d}} }{n^{2} }\\right)}=\\dfrac{1}{n}\\times\\dfrac{ {{a}}+\\frac{ {{b}} }{n} }{ {{c}}+\\frac{ {{d}} }{n^{2} } }$.",
+					"Le second facteur tend vers $\\dfrac{ {{a}} }{ {{c}} }$ et $\\dfrac{1}{n}$ vers $0$ : $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n=\\dfrac{ {{a}}n^{2}{{b;+}} }{ {{c}}n+{{d}} }$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ». Pour $n\\geqslant1$ : $u_n=n\\times\\dfrac{ {{a}}+\\frac{ {{b}} }{n^{2} } }{ {{c}}+\\frac{ {{d}} }{n} }$.",
+					"Le quotient tend vers $\\dfrac{ {{a}} }{ {{c}} }$, de même signe que ${{a}}$, et $n$ tend vers $+\\infty$ : $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2n² − 5n + 1 → +∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"bb": "5",
+				"c": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 0 (∞ − ∞ = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"bb": "5",
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −n² + 3n + 4 → −∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"bb": "3",
+				"c": "4"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : +∞ (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"bb": "3",
+				"c": "4"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : n − 4√n → +∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (3n²+1)/(2n²+5n) → 3/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2",
+				"d": "5"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2",
+				"d": "5"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : b/d",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2",
+				"d": "5"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 1 (∞/∞ = 1)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2",
+				"d": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (−4n²+2)/(6n²+n) → −2/3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-4",
+				"b": "2",
+				"c": "6",
+				"d": "1"
+			},
+			"answers": ["-\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : (5n−2)/(3n²+1) → 0",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "-2",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : a/c sans tenir compte des degrés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "-2",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : +∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "-2",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : (2n²+3)/(5n+1) → +∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5",
+				"d": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : a/c",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5",
+				"d": "1"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : (−3n²+1)/(2n+7) → −∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"b": "1",
+				"c": "2",
+				"d": "7"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,0 +1,210 @@
+{
+	"title": "Limite de qⁿ pour une raison négative",
+	"description": "QCM : (−q)ⁿ sans limite pour q ≥ 1, (q)ⁿ → 0 pour −1 < q < 0, et le piège −qⁿ = −(qⁿ) → −∞",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-111", "TSPE-113"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Suites géométriques",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"choices": [
+			{
+				"content": "$0$"
+			},
+			{
+				"content": "$+\\infty$"
+			},
+			{
+				"content": "$-\\infty$"
+			},
+			{
+				"content": "$1$"
+			},
+			{
+				"content": "La suite $(u_n)$ n'a pas de limite"
+			}
+		]
+	},
+	"variations": [
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-{{q}}\\right)^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correctChoiceIndex": ["4"],
+			"correction": {
+				"steps": [
+					"La raison $-{{q}}$ vérifie $-{{q}}\\leqslant-1$.",
+					"Les termes changent de signe à chaque rang ($u_0=1$, $u_1=-{{q}}$, $u_2={{eval:q^2}}$, $u_3=-{{eval:q^3}}$…) et leur valeur absolue ${{q}}^{n}$ tend vers $+\\infty$.",
+					"La suite $(u_n)$ $\\textcolor{{{color:primary.0}}}{\\text{n'a pas de limite}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=(-1)^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+			"correctChoiceIndex": ["4"],
+			"correction": {
+				"steps": [
+					"Les termes valent alternativement $1$ (rangs pairs) et $-1$ (rangs impairs).",
+					"Ils ne s'approchent d'aucun nombre : la suite $(u_n)$ $\\textcolor{{{color:primary.0}}}{\\text{n'a pas de limite}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-{{eval:k/10;d}}\\right)^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La raison $-{{eval:k/10;d}}$ vérifie $-1<-{{eval:k/10;d}}<1$.",
+					"Pour $-1<q<1$, $\\displaystyle\\lim_{n\\to+\\infty}q^{n}=0$ : les termes changent de signe mais leur valeur absolue ${{eval:k/10;d}}^{n}$ tend vers $0$.",
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=-{{q}}^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"Attention : $-{{q}}^{n}=-\\left({{q}}^{n}\\right)$, ce n'est pas $\\left(-{{q}}\\right)^{n}$.",
+					"${{q}}>1$ donc $\\displaystyle\\lim_{n\\to+\\infty}{{q}}^{n}=+\\infty$, et $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{-\\infty}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 (−2)ⁿ : pas de limite",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : +∞ refusé",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −∞ refusé",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 (−1)ⁿ : pas de limite",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 1 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 0 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 (−0,6)ⁿ → 0",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : pas de limite refusé (raison négative)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 −3ⁿ → −∞",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : confusion avec (−3)ⁿ refusée",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : +∞ refusé",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
