@@ -426,11 +426,11 @@
 		padding: 0.25rem;
 		border-radius: 0.375rem;
 		box-shadow: 0 2px 8px color-mix(in srgb, var(--color-foreground) 10%, transparent);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 	}
 
 	:global(.number-line-node-view[data-selected='true'] .line-container) {
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 		border-radius: 0.5rem;
 	}
@@ -475,7 +475,7 @@
 	.loading {
 		padding: 2rem;
 		text-align: center;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	/* ==================== */
@@ -488,7 +488,7 @@
 		gap: 0.25rem;
 		padding: 0.5rem;
 		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
-		border: 2px solid hsl(var(--ring));
+		border: 2px solid var(--color-ring);
 		border-radius: 0.375rem;
 	}
 
@@ -499,16 +499,16 @@
 		font-size: 0.8rem;
 		line-height: 1.5;
 		background: var(--color-background);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 0.25rem;
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 		resize: vertical;
 		min-height: 6rem;
 	}
 
 	.markdown-input:focus {
 		outline: none;
-		border-color: hsl(var(--ring));
+		border-color: var(--color-ring);
 		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 20%, transparent);
 	}
 
@@ -534,7 +534,7 @@
 	.status-label {
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	.status-icon {
@@ -577,7 +577,7 @@
 		display: flex;
 		gap: 1rem;
 		font-size: 0.75rem;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	.markdown-hint kbd {
@@ -586,7 +586,7 @@
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 		font-size: 0.6875rem;
 		background: var(--color-muted);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 0.25rem;
 		box-shadow: 0 1px 0 var(--color-border);
 	}
@@ -613,15 +613,15 @@
 		font-size: 0.8rem;
 		line-height: 1.5;
 		background: var(--color-background);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 		resize: vertical;
 	}
 
 	.dialog-textarea:focus {
 		outline: none;
-		border-color: hsl(var(--ring));
+		border-color: var(--color-ring);
 		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 20%, transparent);
 	}
 
@@ -635,7 +635,7 @@
 	.preview-title {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		margin-bottom: 0.75rem;
 	}
 

@@ -318,7 +318,7 @@
 		display: inline-block;
 		font-weight: 600;
 		letter-spacing: 0.05em;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		vertical-align: baseline;
 	}
 

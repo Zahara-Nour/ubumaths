@@ -167,7 +167,13 @@ le plus proche, ΔE OKLab). Les fonds sombres de référence (`DARK_BACKGROUNDS`
 égaux à `app.css` par test.
 
 **Une `var(--x)` dans un composant doit exister** : `src/lib/theme/__tests__/block-css-vars.test.ts`
-le vérifie pour les quatre blocs du lot 3 (app.css ou variable locale). Ne pas redéfinir de
+le vérifie (app.css, thème par défaut de Tailwind `node_modules/tailwindcss/theme.css`, ou
+variable locale hors bloc `.dark`) composant par composant pour les blocs, éditeurs et saisies
+élève, et **balaie tout `src/lib` + `src/routes`** : un fichier hors `KNOWN_DEBT` qui lit une
+variable inexistante (ou un `hsl(var(--x))`) fait échouer le test ; un fichier corrigé doit
+sortir de `KNOWN_DEBT`. Exceptions vérifiées à la source : préfixe `--bits-` (bits-ui), crochets
+à repli valide (`--slide-*`, `--primary-rgb`). Une variable posée **seulement** sous `.dark`
+n'existe pas en clair : c'était le bug des `--number-line-*`. Ne pas redéfinir de
 couleur sous `:global(.dark)` quand un token `light-dark()` existe : il bascule seul.
 
 geometry-core conserve le **nom canonique** jusqu'au rendu (`resolveStyle().color === 'rouge'`) ;
@@ -192,7 +198,13 @@ puisse atterrir sans passer la CI au rouge. Elle échoue si :
 - un fichier **descend** sous sa référence — c'est un progrès, mais la baseline
   doit être resserrée et committée, sinon la dette pourrait remonter en douce.
 
-## Dette résiduelle (2026-09-04, après la passe « fonds »)
+## Dette résiduelle
+
+**2026-10-04 (restes du lot 3)** : 66 occurrences dans 17 fichiers, tous écrans prof / admin /
+outils (liste : `KNOWN_DEBT` du test ci-dessus, et `docs/wip/couleurs-lot3-progress.md`).
+Éditeurs de blocs, saisies élève, blocs Markdown, corrections, cartes SRS : convertis.
+
+### État au 2026-09-04, après la passe « fonds »
 
 **147 occurrences dans 38 fichiers.** Les 88 déclarations `background` /
 `box-shadow` — les seules réellement visibles — ont été converties ; il ne reste

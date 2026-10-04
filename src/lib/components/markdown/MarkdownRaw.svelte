@@ -141,7 +141,7 @@
 <style>
 	.markdown-raw {
 		background: var(--color-muted);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 0.5rem;
 		padding: 1rem;
 		overflow-x: auto;
@@ -174,7 +174,7 @@
 	}
 
 	:global(.latex-highlight) {
-		color: hsl(var(--primary));
+		color: var(--color-primary);
 		font-style: italic;
 	}
 

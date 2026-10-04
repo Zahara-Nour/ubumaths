@@ -206,7 +206,7 @@
 		gap: calc(0.75rem * var(--font-scale, 1));
 		padding: calc(1rem * var(--font-scale, 1));
 		font-size: calc(1rem * var(--font-scale, 1));
-		border: 2px solid hsl(var(--border));
+		border: 2px solid var(--color-border);
 		border-radius: calc(0.5rem * var(--font-scale, 1));
 		background: var(--color-background);
 		cursor: move;
@@ -215,7 +215,7 @@
 	}
 
 	.ordering-item:hover:not(.disabled) {
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
@@ -226,7 +226,7 @@
 	}
 
 	.ordering-item.drop-target {
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 		background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 		border-style: dashed;
 	}
@@ -259,7 +259,7 @@
 	.drag-handle {
 		display: inline-flex;
 		align-items: center;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		cursor: grab;
 	}
 
@@ -278,7 +278,7 @@
 		font-size: calc(0.875rem * var(--font-scale, 1));
 		border-radius: calc(0.375rem * var(--font-scale, 1));
 		background: var(--color-muted);
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 
 	.ordering-item.correct .position-number {
@@ -304,6 +304,6 @@
 	.helper-text {
 		margin-top: calc(0.5rem * var(--font-scale, 1));
 		font-size: calc(0.75rem * var(--font-scale, 1));
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 </style>

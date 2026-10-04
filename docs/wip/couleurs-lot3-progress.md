@@ -55,9 +55,28 @@ les rallumer (décision de David de 2025 conservée) — **à trancher** si on v
 
 ## Reste
 
-- Éditeurs `NumberLineNodeView` / `VariationTableNodeView` : encore `var(--border)`,
-  `--foreground`, `--ring`… inexistants (14 occurrences chacun dans la baseline CSS).
-- `NumberLineInput` : habillage (`--number-line-*`, `hsl(var(--background))` en sombre).
+- ✅ (branche `fix/couleurs-restes`) Éditeurs `NumberLineNodeView` / `VariationTableNodeView`
+  (+ `ImageNodeView`, même gabarit) : `hsl(var(--x))` → `var(--color-x)`. Avant : bordures du
+  mode édition **absentes** (`border-style: none`), mesuré en navigateur
+  (`extensions/__tests__/node-views-theme.svelte.test.ts`).
+- ✅ `NumberLineInput` : halo du point placé sur `--color-background` (avant : `white` dans
+  les deux modes, `rgb(255, 255, 255)` mesuré), « ? » sur `--color-destructive`, bloc `.dark`
+  supprimé. **Les `fixedSegments` étaient analysés mais jamais dessinés** : rendu ajouté (même
+  gabarit que `NumberLine`, points ouverts sur la couleur du fond). Le composant n'est importé
+  nulle part aujourd'hui (seul `questions/types.ts` en décrit les props).
+- ✅ Balayage `src/lib` + `src/routes` (`block-css-vars.test.ts` généralisé) : 46 fichiers
+  signalés → 9 faux positifs vérifiés à la source (thème Tailwind : `--color-green-700`,
+  `--font-mono`, `--spacing`, `--radius-md` ; bits-ui : `--bits-select-anchor-width` ; crochets
+  à repli valide : `--slide-*`, `--primary-rgb`) → **36 composants réels**. **18 traités**
+  (éditeurs ×3, `NumberLineInput`, `FillBlanksInput`, `MathInput`, `OrderingInput`,
+  `MarkdownRaw`, `ImageDisplay`, `MathPrompt`, `ParagraphNode`, `CorrectionCard`, `FlashCard`,
+  `GeneratedStepsCorrection`, `CustomFlashCard`, `TemplateSelector`, `TestTimer`,
+  `ChallengeContainer`). Baseline `check:css-tokens` : 136 → 66 occurrences.
+- **Reportés (17, écrans prof / admin / outils)** — `KNOWN_DEBT` du test : `JsonViewer`,
+  `calculator/UnifiedInput`, `cas/HistoryEntry`, `cas/ReplInput`, `python/PythonSplitter`,
+  `rich-text/RichTextEditor`, `whiteboard/AnnotationToolbar`, `whiteboard/TemplatePickerModal`,
+  `admin/docs` (×2), `messages/{archived,drafts,inbox,sent}`, `spreadsheet`, `games/mathemo`,
+  `pere-ubu`. Conversion mécanique (`hsl(var(--x))` → `var(--color-x)`, `/ a` → `color-mix`).
 - `stat-chart`, DSL des figures interactives : pas d'avertissement de contraste (hors résolveur).
 - ± du tableau de variations : à colorer ou non (cf. constat ci-dessus).
 - Captures réelles clair / sombre non faites (tests navigateur sur la couleur rendue seulement).

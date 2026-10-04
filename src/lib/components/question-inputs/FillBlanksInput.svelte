@@ -688,6 +688,6 @@
 	.helper-text {
 		margin-top: calc(0.5rem * var(--font-scale, 1));
 		font-size: calc(0.75rem * var(--font-scale, 1));
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 </style>

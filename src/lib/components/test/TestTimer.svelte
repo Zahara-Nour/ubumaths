@@ -114,7 +114,7 @@
 	// Color: countdown uses gradient, stopwatch uses primary color
 	let hueValue = $derived(Math.max(0, Math.min(120, (progress / 100) * 120)));
 	let strokeColorStyle = $derived(
-		mode === 'countdown' ? `hsl(${hueValue}, 80%, 50%)` : 'hsl(var(--primary))'
+		mode === 'countdown' ? `hsl(${hueValue}, 80%, 50%)` : 'var(--color-primary)'
 	);
 
 	// Size configurations

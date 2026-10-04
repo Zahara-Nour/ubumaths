@@ -84,7 +84,7 @@
 		min-height: calc(3rem * var(--font-scale, 1));
 		padding: calc(0.75rem * var(--font-scale, 1));
 		font-size: calc(1.125rem * var(--font-scale, 1));
-		border: 2px solid hsl(var(--border));
+		border: 2px solid var(--color-border);
 		border-radius: calc(0.5rem * var(--font-scale, 1));
 		background: var(--color-background);
 		transition: all 0.2s ease;
@@ -92,7 +92,7 @@
 
 	:global(.math-input-field:focus) {
 		outline: none;
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
 	}
 
@@ -105,12 +105,12 @@
 	.helper-text {
 		margin-top: calc(0.5rem * var(--font-scale, 1));
 		font-size: calc(0.75rem * var(--font-scale, 1));
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	/* Dark mode adjustments */
 	:global(.dark .math-input-field) {
-		border-color: hsl(var(--border));
+		border-color: var(--color-border);
 		background: var(--color-background);
 	}
 </style>
