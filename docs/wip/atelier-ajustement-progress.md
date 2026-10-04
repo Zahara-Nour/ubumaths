@@ -15,4 +15,4 @@ Décisions Q173-Q177. Spec validée par David le 2026-10-04.
 
 ## Étapes
 
-- [x] Tests rouges · [x] Implémentation · [x] Revue Opus (même arrondi tracé / affiché, 100 points, insécable échappée) · [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation · [x] Revue Opus (même arrondi tracé / affiché, 100 points, insécable échappée) · [x] PR, CI, merge (#816)
