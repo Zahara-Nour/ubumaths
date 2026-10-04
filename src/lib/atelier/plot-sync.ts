@@ -238,3 +238,22 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 		if (Object.keys(changes).length > 0) graph.updateFunction(curveId, changes);
 	}
 }
+
+/**
+ * La courbe que la synchronisation a posée pour cet objet, s'il y en a une.
+ *
+ * Sert à la carte (lot 2b) : la pente, l'aire, la courbure et la longueur
+ * qu'elle affiche sont calculées sur CETTE courbe — celle qui est dessinée —
+ * et non sur une copie, pour que les nombres lus soient ceux du dessin.
+ * En lecture seule : la carte écrit ses réglages dans l'atelier.
+ */
+export function curveOf(
+	atelier: Atelier,
+	graph: GrapheurStore,
+	name: string
+): ExplicitFunction | undefined {
+	const id = posted.get(atelier)?.get(graph)?.get(name);
+	if (id === undefined) return undefined;
+	const curve = graph.getFunction(id);
+	return curve !== undefined && isExplicitFunction(curve) ? curve : undefined;
+}
