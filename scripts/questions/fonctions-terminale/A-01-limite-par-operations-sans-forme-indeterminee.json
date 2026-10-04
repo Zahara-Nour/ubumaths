@@ -1,0 +1,360 @@
+{
+	"title": "Limite d'une fonction par opérations, sans forme indéterminée",
+	"description": "Limites en ±∞ ou en 0 de sommes simples de fonctions de référence (1/x, 1/x², √x, x³, eˣ, ln) sans forme indéterminée (pièges : signe du coefficient, eˣ → 0 en −∞, ln 0 « = 0 »)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-019", "TCOMP-028", "TSPE-128", "TSPE-130", "TSPE-144", "TSPE-170"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Opérations sur les limites",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{a}}+\\dfrac{ {{b}} }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}x^{2}=+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{b}} }{x^{2}}=0$.",
+					"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{a}}+0=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}e^{x}{{b;+}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to-\\infty}e^{x}=0$, donc $\\displaystyle\\lim_{x\\to-\\infty}{{a}}e^{x}=0$.",
+					"Par somme, $\\displaystyle\\lim_{x\\to-\\infty}f(x)=0{{b;+}}=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)={{a}}x^{3}{{eval:sign(a)*bb;+}}\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "bb",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}x^{3}=+\\infty$ et $\\displaystyle\\lim_{x\\to+\\infty}\\sqrt{x}=+\\infty$.",
+					"Les coefficients ${{a}}$ et ${{eval:sign(a)*bb}}$ ont le même signe : les deux termes tendent vers {{if:a>0|+\\infty|-\\infty}}, pas de forme indéterminée.",
+					"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:b>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x$ tend vers $0$ avec $x>0$, $\\dfrac{1}{x}$ tend vers $+\\infty$ (inverse d'un nombre positif de plus en plus petit).",
+					"Donc ${{if:b>0|\\dfrac{ {{b}} }{x}|-\\dfrac{ {{eval:abs(b)}} }{x}}}$ tend vers {{if:b>0|$+\\infty$|$-\\infty$ (coefficient négatif)}}, et ${{a}}$ ne change rien : $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:b>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{b}}{{a;+}}\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|-\\infty|+\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$ (avec $x>0$).",
+					"Le coefficient ${{a}}$ est {{if:a>0|positif : ${{a}}\\ln x$ tend vers $-\\infty$|négatif : ${{a}}\\ln x$ tend vers $+\\infty$}}.",
+					"Par somme, $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|-\\infty|+\\infty}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3 + 5/x² → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a + b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : +∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −2eˣ + 4 → 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : limite de eˣ prise égale à 1 (a + b)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2x³ + 3√x → +∞",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"bb": "3"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : +∞ sans le +",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"bb": "3"
+			},
+			"answers": ["\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −3x³ − 4√x → −∞",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"bb": "4"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"bb": "4"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 2 + 3/x en 0⁺ → +∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : −5/x en 0⁺ → −∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : signe du coefficient ignoré",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : limite = a (1/x → 0 confondu)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 1 + 3 ln x en 0 → −∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : ln 0 = 0 → b",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 4 − 2 ln x en 0 → +∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : signe du coefficient oublié",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
