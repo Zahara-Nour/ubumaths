@@ -15,11 +15,6 @@
 			"acceptDecimal": true
 		}
 	},
-	"options": {
-		"constraints": {
-			"signs": "off"
-		}
-	},
 	"variations": [
 		{
 			"statement": "La suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$.\n\nDétermine le réel $\\ell$ tel que $\\ell={{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}$ (la suite constante égale à $\\ell$ vérifie la même relation).\n\n$\\ell=?$",

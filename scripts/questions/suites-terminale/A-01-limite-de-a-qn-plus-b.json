@@ -12,11 +12,6 @@
 	"shared": {
 		"cleanCoefficients": true
 	},
-	"options": {
-		"constraints": {
-			"signs": "off"
-		}
-	},
 	"variations": [
 		{
 			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}\\times{{q}}^{n}{{b;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",

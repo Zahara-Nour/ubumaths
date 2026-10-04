@@ -15,11 +15,6 @@
 			"acceptDecimal": true
 		}
 	},
-	"options": {
-		"constraints": {
-			"signs": "off"
-		}
-	},
 	"variations": [
 		{
 			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n={{a}}+\\dfrac{ {{b}} }{n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",

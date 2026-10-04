@@ -15,11 +15,6 @@
 			"acceptDecimal": true
 		}
 	},
-	"options": {
-		"constraints": {
-			"signs": "off"
-		}
-	},
 	"variations": [
 		{
 			"statement": "Pour tout entier naturel $n$, on pose $u_n={{a}}n^{2}+{{eval:-sign(a)*bb}}n{{c;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
