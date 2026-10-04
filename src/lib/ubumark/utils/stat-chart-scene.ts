@@ -51,6 +51,16 @@ import {
 	formatStatNumber
 } from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
+import {
+	bivariateFit,
+	isInterpolation,
+	predictX,
+	predictY,
+	readExactValue,
+	roundFraction,
+	toSafeNumber,
+	type BivariateFit
+} from '$lib/statistics/bivariate';
 import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
 import {
 	discreteSampler,
@@ -455,7 +465,33 @@ export interface DensityScene extends SceneCommon {
 	color: CourbeColor;
 }
 
+/**
+ * Nuage de points (```nuage, manche 15) : x de `xMin` à `xMax`, y de `yMin` à
+ * `yMax`, axes adaptés aux données (Q171) ; les axes se croisent en
+ * (`xMin` ; `yMin`), où aboutissent les pointillés des prévisions.
+ */
+export interface ScatterScene extends SceneCommon {
+	kind: 'nuage';
+	xMin: number;
+	xMax: number;
+	yMin: number;
+	yMax: number;
+	points: ScenePoint[];
+	xTicks: SceneTick[];
+	/** Graduations verticales, de `yMin` à `yMax` */
+	ticks: SceneTick[];
+	axisTitles: { x: string; y: string };
+	color: CourbeColor;
+	/** Droite des moindres carrés, sur toute la largeur du cadre ; null sans `ajustement:` */
+	line: [ScenePoint, ScenePoint] | null;
+	/** Point moyen G, placé (`indicateurs: point moyen`), sinon null */
+	mean: ScenePoint | null;
+	/** Points (x ; ŷ) des prévisions qui ont une solution, pointillés vers les deux axes */
+	predictions: ScenePoint[];
+}
+
 export type StatChartScene =
+	| ScatterScene
 	| DensityScene
 	| FrequencyTableScene
 	| ComparisonScene
@@ -1158,6 +1194,7 @@ function seriesSpec(
 		description: null,
 		indicators: [],
 		twoSeries: null,
+		scatter: null,
 		rawValues: two.values?.[series] ?? null,
 		series: null
 	};
@@ -1584,6 +1621,7 @@ function lawBars(
 		indicators: [],
 		law: null,
 		twoSeries: null,
+		scatter: null,
 		series: null,
 		rawValues: null
 	};
@@ -2778,6 +2816,254 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
 }
 
 // ============================================================================
+// NUAGE DE POINTS (manche 15)
+// ============================================================================
+
+/** Séparateur de milliers : espace insécable en français (comme `groupedCount`), virgule en anglais */
+const SCATTER_THOUSANDS: Record<ContentLocale, string> = { fr: '\u00a0', en: ',' };
+
+/**
+ * Groupe les milliers d'un nombre déjà écrit (`613642,857` → `613 642,857`) à
+ * partir de 10 000 seulement : une année ou « 1500 » (4 chiffres) ne se
+ * groupe jamais, règle typographique française usuelle (fiche compilée).
+ */
+function groupThousands(text: string, locale: ContentLocale): string {
+	const match = /^([−-]?)(\d+)(.*)$/.exec(text);
+	if (match === null || match[2].length < 5) return text;
+	const grouped = match[2].replace(/\B(?=(\d{3})+(?!\d))/g, SCATTER_THOUSANDS[locale]);
+	return `${match[1]}${grouped}${match[3]}`;
+}
+
+/** Un nombre arrondi une fois (Q172) : exact → écriture courte, sinon zéros gardés (`4,630`). */
+function scatterNumber(
+	value: Fraction,
+	places: number,
+	locale: ContentLocale
+): { text: string; exact: boolean } {
+	const { digits, exact } = roundFraction(value, places);
+	const shown = exact && digits.includes('.') ? digits.replace(/\.?0+$/, '') : digits;
+	const decimal = locale === 'en' ? shown : shown.replace('.', ',');
+	return { text: groupThousands(decimal.replace('-', '−'), locale), exact };
+}
+
+/** `y = 3,686x + 7,933`, `y = −x + 3`, `y = 2x`, `y = 5` : coefficients arrondis */
+function scatterEquation(fit: BivariateFit, places: number, locale: ContentLocale): string {
+	const a = scatterNumber(fit.slope, places, locale).text;
+	const b = scatterNumber(fit.intercept, places, locale).text;
+	const isZero = (text: string) => /^−?[0,.]+$/.test(text);
+	const slope = isZero(a) ? '' : a === '1' ? 'x' : a === '−1' ? '−x' : `${a}x`;
+	if (slope === '') return `y = ${b}`;
+	if (isZero(b)) return `y = ${slope}`;
+	return b.startsWith('−') ? `y = ${slope} − ${b.slice(1)}` : `y = ${slope} + ${b}`;
+}
+
+/** Pas candidats des graduations d'un nuage : 1, 2, 5 × 10^k */
+const SCATTER_STEP_MULTIPLIERS = [1, 2, 5];
+
+/** Écart minimal entre deux graduations, en px : abscisses, ordonnées */
+const SCATTER_MIN_SPACING = { x: TICK_TARGET_PX, y: 30 };
+
+/**
+ * Largeur d'un caractère d'étiquette, en px : le plus large des deux rendus
+ * (écran 11 px ; PDF 6,5 pt sur 6,5 cm pour 400 px ≈ 7 px)
+ */
+const SCATTER_LABEL_CHAR_PX = 7;
+
+/** Air entre deux étiquettes voisines, en px */
+const SCATTER_LABEL_GAP_PX = 8;
+
+/** Au-delà, un pas est écarté sans générer ses graduations */
+const SCATTER_MAX_TICKS = 200;
+
+/** Hauteur d'une étiquette des ordonnées, en px */
+const SCATTER_LABEL_HEIGHT_PX = 14;
+
+/** Une graduation d'un nuage : arrondie au pas, milliers groupés à partir de 10 000 */
+function scatterTick(value: number, locale: ContentLocale): SceneTick {
+	return { value, label: groupThousands(formatTick(value, locale), locale) };
+}
+
+/**
+ * Bornes et graduations d'un axe adapté aux données (Q171) : un peu de marge,
+ * des bornes rondes au pas des graduations ; pas sous 0 pour des données
+ * positives ; 0 compris avec `origine: oui`.
+ *
+ * Le pas (1, 2, 5 × 10^k) est le plus petit qui laisse la place aux
+ * étiquettes : leur largeur sur l'axe des x (« 2014,5 » ne tenait pas tous
+ * les 0,5 sur 400 px), leur hauteur sur l'axe des y.
+ */
+function scatterAxis(
+	values: readonly number[],
+	pixels: number,
+	withZero: boolean,
+	axis: 'x' | 'y',
+	locale: ContentLocale
+): { min: number; max: number; ticks: SceneTick[] } {
+	let low = Math.min(...values, ...(withZero ? [0] : []));
+	let high = Math.max(...values, ...(withZero ? [0] : []));
+	// Ordonnées toutes égales : un cadre autour de la valeur
+	if (high - low < 1e-12) {
+		const half = Math.abs(low) / 2 || 1;
+		[low, high] = [low - half, high + half];
+	}
+	const margin = (high - low) * 0.05;
+	const layout = (step: number) => {
+		let min = Math.floor((low - margin) / step + 1e-9) * step;
+		let max = Math.ceil((high + margin) / step - 1e-9) * step;
+		if (low >= 0 && min < 0) min = 0;
+		if (high <= 0 && max > 0) max = 0;
+		// ⚠️ Un compteur de graduations, pas `k++` sur min / step : à 10^15, k
+		// dépasse 2^53, `k++` ne bouge plus et la boucle ne finissait pas (revue)
+		const count = Math.round((max - min) / step);
+		const ticks =
+			count > SCATTER_MAX_TICKS
+				? []
+				: Array.from({ length: count + 1 }, (_, n) =>
+						scatterTick(Number((min + n * step).toPrecision(15)), locale)
+					);
+		return { min: Number(min.toPrecision(15)), max: Number(max.toPrecision(15)), ticks, count };
+	};
+	const fits = (step: number, laid: ReturnType<typeof layout>) => {
+		// Trop de graduations : écarté avant d'écrire la moindre étiquette
+		if (laid.count > SCATTER_MAX_TICKS || laid.ticks.length < 2) return false;
+		const spacing = (step * pixels) / (laid.max - laid.min);
+		const label =
+			axis === 'x'
+				? Math.max(...laid.ticks.map((t) => t.label.length)) * SCATTER_LABEL_CHAR_PX +
+					SCATTER_LABEL_GAP_PX
+				: SCATTER_LABEL_HEIGHT_PX;
+		return spacing >= Math.max(SCATTER_MIN_SPACING[axis], label);
+	};
+	// Du plus fin au plus large : le premier pas qui laisse la place
+	let power = 10 ** Math.floor(Math.log10((high - low) / 50));
+	for (let tries = 0; tries < 30; tries++, power *= 10) {
+		for (const multiplier of SCATTER_STEP_MULTIPLIERS) {
+			const step = Number((multiplier * power).toPrecision(12));
+			const laid = layout(step);
+			if (fits(step, laid)) return laid;
+		}
+	}
+	return layout(high - low + 2 * margin);
+}
+
+function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterScene {
+	const scatter = spec.scatter!;
+	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const height = width * STAT_CHART_ASPECT_RATIO;
+	const text = STAT_TEXT[locale].scatter;
+	const { places } = scatter;
+	// Le parseur a vérifié chaque valeur
+	const xs = scatter.xs.map((t) => readExactValue(t)!);
+	const ys = scatter.ys.map((t) => readExactValue(t)!);
+	const points = xs.map((x, i) => ({ x: toSafeNumber(x), y: toSafeNumber(ys[i]) }));
+	// Le parseur a refusé des abscisses toutes égales
+	const fit = bivariateFit(xs, ys)!;
+	const round = (value: Fraction) => scatterNumber(value, places, locale);
+	const relation = (value: Fraction) => {
+		const rounded = round(value);
+		return `${rounded.exact ? '=' : '≈'} ${rounded.text}`;
+	};
+
+	const meanText = text.meanPoint(round(fit.meanX).text, round(fit.meanY).text);
+	const equation = scatterEquation(fit, places, locale);
+	const showMean = scatter.indicators.includes('point-moyen');
+	const lines: string[] = [];
+	// L'équation va avec la droite : écrite d'office, une seule fois (Q168)
+	if (scatter.fit && !scatter.indicators.includes('equation')) lines.push(text.fitLine(equation));
+	for (const indicator of scatter.indicators) {
+		switch (indicator) {
+			case 'point-moyen':
+				lines.push(text.meanLine(meanText));
+				break;
+			case 'equation':
+				lines.push(text.fitLine(equation));
+				break;
+			case 'r': {
+				const r = fit.correlation!;
+				if (r.exact !== null) {
+					lines.push(text.correlation(relation(r.exact)));
+				} else {
+					const scale = 10 ** places;
+					const value = (Math.sign(r.value) * Math.round(Math.abs(r.value) * scale)) / scale;
+					const fixed = value.toFixed(places);
+					const shown = locale === 'en' ? fixed : fixed.replace('.', ',');
+					lines.push(text.correlation(`≈ ${shown.replace('-', '−')}`));
+				}
+				break;
+			}
+		}
+	}
+
+	// Prévisions (Q169) : la valeur, interpolation ou extrapolation (étendue des x observés)
+	const predicted: ScenePoint[] = [];
+	for (const { axis, value } of scatter.predictions) {
+		const given = `${axis} = ${groupThousands(asWritten(value.replaceAll('−', '-'), locale), locale)}`;
+		const known = readExactValue(value)!;
+		if (axis === 'x') {
+			const y = predictY(fit, known);
+			lines.push(text.prediction(given, `y ${relation(y)}`, isInterpolation(fit, known)));
+			predicted.push({ x: toSafeNumber(known), y: toSafeNumber(y) });
+			continue;
+		}
+		const x = predictX(fit, known);
+		if (x === null) {
+			lines.push(known.equals(fit.intercept) ? text.everyX(given) : text.noSolution(given));
+			continue;
+		}
+		lines.push(text.prediction(given, `x ${relation(x)}`, isInterpolation(fit, x)));
+		predicted.push({ x: toSafeNumber(x), y: toSafeNumber(known) });
+	}
+
+	// Axes : les données, les prévisions, puis la droite aux bords du cadre
+	const xAxis = scatterAxis(
+		[...points, ...predicted].map((p) => p.x),
+		width,
+		scatter.origin,
+		'x',
+		locale
+	);
+	const ends = scatter.fit
+		? [xAxis.min, xAxis.max].map((x) => ({
+				x,
+				y: toSafeNumber(fit.slope) * x + toSafeNumber(fit.intercept)
+			}))
+		: [];
+	const yAxis = scatterAxis(
+		[...points, ...predicted, ...ends].map((p) => p.y),
+		height,
+		scatter.origin,
+		'y',
+		locale
+	);
+
+	const spoken = [
+		text.points(points.length),
+		...(showMean ? [text.meanSpoken(meanText)] : []),
+		...(scatter.fit ? [text.fitSpoken(equation)] : [])
+	];
+	return {
+		kind: 'nuage',
+		title: spec.title,
+		accessibleTitle: text.title,
+		description: spec.description ?? `${spoken.join(locale === 'en' ? '; ' : ' ; ')}.`,
+		pixelSize: { width, height },
+		xMin: xAxis.min,
+		xMax: xAxis.max,
+		yMin: yAxis.min,
+		yMax: yAxis.max,
+		points,
+		xTicks: xAxis.ticks,
+		ticks: yAxis.ticks,
+		axisTitles: { x: scatter.names.x ?? 'x', y: scatter.names.y ?? 'y' },
+		color: spec.color,
+		line: scatter.fit ? [ends[0], ends[1]] : null,
+		mean: showMean ? { x: toSafeNumber(fit.meanX), y: toSafeNumber(fit.meanY) } : null,
+		predictions: predicted,
+		indicators: lines
+	};
+}
+
+// ============================================================================
 // SCÈNE
 // ============================================================================
 
@@ -2838,5 +3124,7 @@ function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartSc
 			return buildSimulationScene(spec, locale);
 		case 'effectifs':
 			return buildFrequencyTableScene(spec, locale);
+		case 'nuage':
+			return buildScatterScene(spec, locale);
 	}
 }

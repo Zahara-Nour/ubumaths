@@ -162,6 +162,7 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 		rawValues: null,
 		series: null,
 		twoSeries: null,
+		scatter: null,
 		frequencyTable: null
 	};
 

@@ -115,6 +115,26 @@ interface StatText {
 		/** Loi exponentielle : la dernière classe compte ce qui dépasse l'axe */
 		overflow: (bound: string, count: string) => string;
 	};
+	/** Nuage de points (```nuage, manche 15) ; nombres déjà écrits selon la langue */
+	scatter: {
+		title: string;
+		/** Début de la description lue : « Nuage de 6 points » */
+		points: (count: number) => string;
+		/** `G(3,5 ; 20,833)` : point-virgule en français, virgule en anglais */
+		meanPoint: (x: string, y: string) => string;
+		meanLine: (point: string) => string;
+		meanSpoken: (point: string) => string;
+		/** `equation` : « y = 3,686x + 7,933 » */
+		fitLine: (equation: string) => string;
+		fitSpoken: (equation: string) => string;
+		/** `relation` : « ≈ 0,998 » ou « = 1 » */
+		correlation: (relation: string) => string;
+		/** « Pour x = 4,5 : y ≈ 24,519 (interpolation) » */
+		prediction: (given: string, result: string, interpolation: boolean) => string;
+		/** Pente nulle, y ≠ b : aucun x ; y = b : tous */
+		noSolution: (given: string) => string;
+		everyX: (given: string) => string;
+	};
 }
 
 export const STAT_TEXT: Record<ContentLocale, StatText> = {
@@ -206,6 +226,20 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 				`${draws} tirage${plural ? 's' : ''} ; moyenne observée ≈ ${mean} (E(${variable}) = ${e})`,
 			overflow: (bound, count) =>
 				`la dernière classe compte aussi les tirages au-delà de ${bound} (ici ${count})`
+		},
+		scatter: {
+			title: 'Nuage de points',
+			points: (count) => `Nuage de ${count} points`,
+			meanPoint: (x, y) => `G(${x} ; ${y})`,
+			meanLine: (point) => `Point moyen : ${point}`,
+			meanSpoken: (point) => `point moyen ${point}`,
+			fitLine: (equation) => `Droite des moindres carrés : ${equation}`,
+			fitSpoken: (equation) => `droite des moindres carrés ${equation}`,
+			correlation: (relation) => `Coefficient de corrélation : r ${relation}`,
+			prediction: (given, result, interpolation) =>
+				`Pour ${given} : ${result} (${interpolation ? 'interpolation' : 'extrapolation'})`,
+			noSolution: (given) => `Pour ${given} : aucune solution (pente nulle)`,
+			everyX: (given) => `Pour ${given} : tout x convient (pente nulle)`
 		}
 	},
 	en: {
@@ -297,6 +331,20 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 				`${draws} draw${plural ? 's' : ''}; observed mean ≈ ${mean} (E(${variable}) = ${e})`,
 			overflow: (bound, count) =>
 				`the last class also counts the draws beyond ${bound} (here ${count})`
+		},
+		scatter: {
+			title: 'Scatter plot',
+			points: (count) => `Scatter plot of ${count} points`,
+			meanPoint: (x, y) => `G(${x}, ${y})`,
+			meanLine: (point) => `Mean point: ${point}`,
+			meanSpoken: (point) => `mean point ${point}`,
+			fitLine: (equation) => `Least squares line: ${equation}`,
+			fitSpoken: (equation) => `least squares line ${equation}`,
+			correlation: (relation) => `Correlation coefficient: r ${relation}`,
+			prediction: (given, result, interpolation) =>
+				`For ${given}: ${result} (${interpolation ? 'interpolation' : 'extrapolation'})`,
+			noSolution: (given) => `For ${given}: no solution (zero slope)`,
+			everyX: (given) => `For ${given}: every x works (zero slope)`
 		}
 	}
 };

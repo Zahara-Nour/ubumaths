@@ -679,6 +679,73 @@ describe('StatChart — simulation d’une loi à densité (manche 14, PR b)', (
 	});
 });
 
+describe('StatChart — nuage de points (manche 15)', () => {
+	const NUAGE =
+		'nom x: Rang\nnom y: Tonnes\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6\ny: 12 ; 15 ; 19 ; 22 ; 27 ; 30\najustement: affine\nindicateurs: point moyen\nprévoir: x = 4,5 ; x = 8 ; y = 25';
+
+	it('un point VISIBLE par donnée, la droite, G, et un pointillé par prévision', async () => {
+		const node = parseStatChartContent('nuage', NUAGE);
+		const scene = buildStatChartScene(node.spec!);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg[role="img"]')!;
+		const points = [...svg.querySelectorAll<SVGGElement>('.stat-nuage-point')];
+		const line = svg.querySelector<SVGLineElement>('line.stat-droite')!;
+		const mean = svg.querySelector('.stat-point-moyen')!;
+		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
+			(li) => li.textContent
+		);
+
+		expect(points).toHaveLength(6);
+		expect(points[0].getBBox().width).toBeGreaterThan(0);
+		expect(getComputedStyle(points[0].querySelector('line')!).stroke).not.toBe('none');
+		expect(line).not.toBeNull();
+		expect(getComputedStyle(line).stroke).not.toBe('none');
+		// La droite traverse tout le cadre, de la première à la dernière graduation
+		const ticks = [...svg.querySelectorAll('.stat-axes text')];
+		expect(Number(line.getAttribute('x2')) - Number(line.getAttribute('x1'))).toBeCloseTo(
+			scene.pixelSize.width,
+			0
+		);
+		expect(ticks.length).toBeGreaterThan(2);
+		expect(mean.textContent).toContain('G');
+		expect(svg.querySelectorAll('.stat-lecture')).toHaveLength(3);
+		expect([...svg.querySelectorAll('text.stat-titre-axe')].map((t) => t.textContent)).toEqual([
+			'Tonnes',
+			'Rang'
+		]);
+		expect(items).toEqual(scene.indicators);
+		expect(items[1]).toBe('Point moyen : G(3,5 ; 20,833)');
+	});
+
+	it('grandes ordonnées : chaque étiquette y reste dans le SVG (marge gauche adaptée)', async () => {
+		const node = parseStatChartContent(
+			'nuage',
+			'x: 1 ; 2 ; 3 ; 4\ny: 1250000 ; 1310000 ; 1405000 ; 1480000'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector<SVGSVGElement>('svg[role="img"]')!;
+		const labels = [...svg.querySelectorAll<SVGTextElement>('.stat-graduations text')];
+
+		expect(labels.length).toBeGreaterThan(2);
+		expect(labels.some((t) => (t.textContent ?? '').length >= 9)).toBe(true);
+		for (const label of labels) {
+			expect(label.getBBox().x, label.textContent ?? '').toBeGreaterThanOrEqual(0);
+		}
+	});
+
+	it('accessible : titre et description (nombre de points, G, équation)', async () => {
+		const node = parseStatChartContent('nuage', NUAGE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg[role="img"]')!;
+
+		expect(svg.querySelector('title')?.textContent).toBe('Nuage de points');
+		const desc = svg.querySelector('desc')?.textContent ?? '';
+		expect(desc).toContain('6 points');
+		expect(desc).toContain('G(3,5 ; 20,833)');
+		expect(desc).toContain('y = 3,686x + 7,933');
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 
