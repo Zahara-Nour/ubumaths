@@ -44,7 +44,9 @@ const ALWAYS: readonly ObjectAction[] = [
 
 /** Ce que chaque type sait produire, avant toute considération d'état. */
 const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> = {
-	value: [{ id: 'slider', label: 'Régler le curseur' }],
+	// « Régler le curseur » n'est plus un bouton : le curseur est dans la carte
+	// (phase 0 `/grapheur` §4)
+	value: [],
 	function: [
 		{ id: 'plot', label: 'Tracer' },
 		{ id: 'derive', label: 'Dériver' },

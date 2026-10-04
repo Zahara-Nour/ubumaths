@@ -60,7 +60,13 @@ const storedObjectSchema = z.object({
 	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
 	 * serait disproportionné. Tracée, elle recevra une couleur neuve.
 	 */
-	display: storedDisplaySchema.optional().catch(undefined)
+	display: storedDisplaySchema.optional().catch(undefined),
+	/** Curseur réglé d'une valeur. Abîmé : oublié, l'objet gardé (même règle). */
+	slider: z
+		.object({ min: z.number(), max: z.number(), step: z.number().positive() })
+		.refine((s) => s.min < s.max)
+		.optional()
+		.catch(undefined)
 });
 
 /**
@@ -78,6 +84,7 @@ export interface StoredObject {
 	readonly definition: string;
 	readonly plotted?: boolean;
 	readonly display?: StoredDisplay;
+	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
 }
 
 export interface AtelierState {

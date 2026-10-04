@@ -16,7 +16,7 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isFunction, isList } from './types';
+import { MAX_LISTS, isFunction, isList, isValue } from './types';
 import type {
 	AtelierObject,
 	CurveDisplay,
@@ -24,6 +24,7 @@ import type {
 	ObjectKind,
 	ObjectStatus,
 	ListObject,
+	Slider,
 	ValueObject
 } from './types';
 import {
@@ -35,7 +36,9 @@ import {
 	displayName
 } from './names';
 import type { Provenance } from './parse';
-import { parseDefinition, referencesOf, renameInDefinition } from './parse';
+import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
+import { z } from 'zod';
+import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
 import { expressionOf } from './engine';
@@ -113,6 +116,44 @@ export interface CreateInput {
 
 /** Bornes d'un curseur neuf — décision D3, reprises du grapheur. */
 const DEFAULT_SLIDER = { min: -10, max: 10, step: 0.1 } as const;
+
+/** Ce qu'un réglage de curseur peut changer — mêmes bornes que le grapheur. */
+const sliderPatchSchema = z
+	.object({
+		min: z.number().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT),
+		max: z.number().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT),
+		step: z.number().positive().max(COORDINATE_LIMIT)
+	})
+	.partial()
+	.strict();
+
+function isDefaultSlider(slider: Slider): boolean {
+	return (
+		slider.min === DEFAULT_SLIDER.min &&
+		slider.max === DEFAULT_SLIDER.max &&
+		slider.step === DEFAULT_SLIDER.step
+	);
+}
+
+/**
+ * Le curseur élargi pour contenir la valeur tapée (§4 L1) : `a = 25` sur un
+ * curseur [−10 ; 10] le porte à [−10 ; 25] plutôt que de coller le pouce au bord.
+ */
+function widenedSlider(slider: Slider, definition: string): Slider {
+	const value = readNumber(definition);
+	if (value === null) return { ...slider };
+	return { ...slider, min: Math.min(slider.min, value), max: Math.max(slider.max, value) };
+}
+
+/**
+ * Le nombre écrit par le curseur : arrondi au pas (pas de 0,30000000000000004)
+ * et avec la virgule, comme l'élève l'écrit (lu 0,5 — mesuré).
+ */
+function formatSliderValue(value: number, step: number): string {
+	const decimals = (String(step).split('.')[1] ?? '').length;
+	const rounded = Number(value.toFixed(decimals));
+	return String(rounded === 0 ? 0 : rounded).replace('.', ',');
+}
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
@@ -316,6 +357,66 @@ export class Atelier {
 	}
 
 	// ---------------------------------------------------------------------------
+	// Curseurs (phase 0 `/grapheur` §4)
+	// ---------------------------------------------------------------------------
+
+	/**
+	 * Régler les bornes et le pas du curseur d'une valeur (K1).
+	 *
+	 * Refusé avec sa raison, l'ancien réglage gardé (E1). Pas de recalcul : un
+	 * réglage de curseur ne change aucune valeur — seul le compteur bouge, pour
+	 * la sauvegarde.
+	 */
+	setSlider(name: string, patch: Partial<Slider>): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isValue(current) || current.slider === undefined) {
+			return {
+				ok: false,
+				message:
+					current !== undefined && isValue(current) && current.unit !== undefined
+						? `« ${name} » est une grandeur en ${current.unit} : un curseur n’aurait pas de sens ici.`
+						: `« ${name} » n'a pas de curseur.`
+			};
+		}
+		const read = sliderPatchSchema.safeParse(patch);
+		if (!read.success) return { ok: false, message: 'Ce réglage du curseur n’est pas valable.' };
+		const next = { ...current.slider, ...read.data };
+		if (next.min >= next.max) {
+			return { ok: false, message: 'Le minimum doit être plus petit que le maximum.' };
+		}
+		if (next.step > next.max - next.min) {
+			return { ok: false, message: 'Le pas doit tenir entre les deux bornes.' };
+		}
+		this.items[index] = { ...current, slider: next };
+		this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Bouger le curseur : la valeur devient ce nombre, arrondi au pas et gardé
+	 * dans les bornes (K2). Les fonctions qui la citent suivent.
+	 *
+	 * ⚠️ Refusé sur une valeur CALCULÉE (`a = b + 1`) : y écrire un nombre
+	 * effacerait la formule de l'élève.
+	 */
+	slideTo(name: string, value: number): Updated | Refused {
+		const current = this.get(name);
+		if (current === undefined || !isValue(current) || current.slider === undefined) {
+			return { ok: false, message: `« ${name} » n'a pas de curseur.` };
+		}
+		if (readNumber(current.definition) === null) {
+			return {
+				ok: false,
+				message: `« ${name} » est calculée à partir d'autres objets : le curseur effacerait sa formule.`
+			};
+		}
+		const { min, max, step } = current.slider;
+		const clamped = Math.min(max, Math.max(min, value));
+		return this.update(name, formatSliderValue(clamped, step), 'text');
+	}
+
+	// ---------------------------------------------------------------------------
 	// Renommage
 	// ---------------------------------------------------------------------------
 
@@ -430,10 +531,17 @@ export class Atelier {
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
 		const rebuilt = this.build(name, previous.kind, definition, provenance);
+		// K3 (dette n° 2) : le curseur réglé survit à la définition — `build()`
+		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
+		const keptSlider =
+			isValue(previous) && previous.slider && isValue(rebuilt) && rebuilt.slider
+				? widenedSlider(previous.slider, definition)
+				: undefined;
 		this.items[index] = {
 			...rebuilt,
 			...(previous.plotted && { plotted: true }),
-			...(isFunction(previous) && previous.display && { display: previous.display })
+			...(isFunction(previous) && previous.display && { display: previous.display }),
+			...(keptSlider && { slider: keptSlider })
 		} as AtelierObject;
 		this.recomputeAll();
 
@@ -539,7 +647,11 @@ export class Atelier {
 			...(o.plotted ? { plotted: true } : {}),
 			// Recopié champ par champ : `display` est un objet, donc un proxy
 			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
-			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {})
+			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
+			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
+			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
+				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
+				: {})
 		}));
 		return { version: ATELIER_STATE_VERSION, objects };
 	}
@@ -573,6 +685,7 @@ export class Atelier {
 			// Les réglages AVANT le tracé : sinon `setPlotted` attribuerait une
 			// couleur neuve à une courbe qui avait déjà la sienne.
 			if (stored.display) this.adoptDisplay(stored.name, stored.display);
+			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
 			if (stored.plotted) this.setPlotted(stored.name, true);
 		}
 
@@ -640,6 +753,14 @@ export class Atelier {
 	 * Poser des réglages relus (sauvegarde, lien) sans recalcul : l'appelant
 	 * recalcule une fois à la fin.
 	 */
+	/** Poser un curseur relu (sauvegarde, lien) sans recalcul. */
+	adoptSlider(name: string, slider: Slider): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isValue(current) || current.slider === undefined) return;
+		this.items[index] = { ...current, slider: widenedSlider(slider, current.definition) };
+	}
+
 	adoptDisplay(name: string, stored: StoredDisplay): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
@@ -721,7 +842,9 @@ export class Atelier {
 				const value: ValueObject = {
 					...base,
 					kind: 'value',
-					...(parsed.unit ? { unit: parsed.unit } : { slider: { ...DEFAULT_SLIDER } })
+					...(parsed.unit
+						? { unit: parsed.unit }
+						: { slider: widenedSlider(DEFAULT_SLIDER, definition) })
 				};
 				return value;
 			}
