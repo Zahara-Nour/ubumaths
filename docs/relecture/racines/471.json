@@ -86,10 +86,15 @@
 				"answers": ["\\sqrt{81}"],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": ["reducedRadicals", "form"]
 				}
 			}
-		]
+		],
+		"options": {
+			"constraints": {
+				"reducedRadicals": "strict"
+			}
+		}
 	},
 	"editNotes": "Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28)."
 }
