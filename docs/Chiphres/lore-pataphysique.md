@@ -363,7 +363,7 @@ Située hors des Six Provinces, **L'Isle de la Réunion Pataphysique** est un te
 
 #### Fête possible (proposition pour l'Almanach)
 
-🚧 **Idée à canoniser** : une **journée annuelle de L'Isle de la Réunion Pataphysique** pourrait être ajoutée à l'Almanach des Chiphres (Section VIII). Date possible : le **20 décembre** (date réelle de l'abolition de l'esclavage à La Réunion, ce qui ferait un clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants). Décision à prendre.
+✅ **Adoptée le 2026-10-04** : la **Journée de L'Isle de la Réunion Pataphysique**, le **20 décembre** (16 Glaglavose), date réelle de l'abolition de l'esclavage à La Réunion — clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants. Voir Section VIII.
 
 ### Fiches détaillées des Provinces
 
@@ -1217,16 +1217,32 @@ L'Almanach des Chiphres comporte des **fêtes provinciales** (une par province) 
 
 #### Les six Fêtes Provinciales
 
-Chaque province a sa fête annuelle, **toutes inventions Chiphre** 🟡. Trois provinces attendent leur nouvelle fête (retrait des fêtes du Collège, 2026-10-04).
+Chaque province a sa fête annuelle, **toutes inventions Chiphre** 🟡 (calendrier validé par David le 2026-10-04). Les personnages viennent de Jarry et sont libres ; les fêtes, leurs noms et leurs dates sont propres à Chiphre. **Chaque mois de l'Almanach porte au moins un événement.**
 
 | #   | Province                              | Fête                                | Date pataphysique | Date grégorienne                             | Statut     |
 | --- | ------------------------------------- | ----------------------------------- | ----------------- | -------------------------------------------- | ---------- |
-| 1   | **Glitchistan** _(Bosse-de-Nage)_     | _à créer_                           | —                 | —                                            | —          |
-| 2   | **Patatovie** _(Faustroll)_           | _à créer_                           | —                 | —                                            | —          |
+| 1   | **Glitchistan** _(Bosse-de-Nage)_     | **Le Grand Redémarrage**            | 10 Ambraire       | 1ᵉʳ septembre                                | 🟡 Chiphre |
+| 2   | **Patatovie** _(Faustroll)_           | **La Régate de la Passoire**        | 26 Givraire       | 8 novembre                                   | 🟡 Chiphre |
 | 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre                                  | 🟡 Chiphre |
 | 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars (29 février les années bissextiles) | 🟡 Chiphre |
-| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 17 Auroral        | 4 avril                                      | 🟡 Chiphre |
-| 6   | **Bedonstan** _(Achras)_              | _à créer_                           | —                 | —                                            | —          |
+| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 37 Auroral        | 24 avril                                     | 🟡 Chiphre |
+| 6   | **Bedonstan** _(Achras)_              | **La Foire aux Polyèdres**          | 12 Lumenal        | 21 mai                                       | 🟡 Chiphre |
+
+##### 🟡 Le Grand Redémarrage — 10 Ambraire (1ᵉʳ septembre)
+
+**Province** : Glitchistan.
+
+**Date** : le jour de la **rentrée scolaire réelle**. Turingrad redémarre toutes ses machines pour l'An nouveau.
+
+**Tradition Chiphre** : Bosse-de-Nage, qui n'articule que « ha ha », accueille chaque Galopin à son retour. Les compteurs de bugs de Glitchistan repartent de zéro, et les Galopins écrivent leur premier programme de l'An. **Bonus de gidouilles** pour le premier programme qui tourne sans planter.
+
+##### 🟡 La Régate de la Passoire — 26 Givraire (8 novembre)
+
+**Province** : Patatovie.
+
+**Date** : le milieu du mois de Givraire (52 ÷ 2 = 26).
+
+**Tradition Chiphre** : le docteur Faustroll mène sa flottille de bateaux-passoires sur la Vistule. Les Galopins classent dans des patates-diagrammes ce qui flotte et ce qui coule, ce qui passe à travers la passoire et ce qui reste. **Bonus de gidouilles** pour la partition la plus élégante.
 
 ##### 🟡 La Grande Empochaille — 18 Glaglavose (22 décembre)
 
@@ -1246,15 +1262,33 @@ Chaque province a sa fête annuelle, **toutes inventions Chiphre** 🟡. Trois p
 
 **Tradition Chiphre** : tous les Galopins de Yoyolande tracent une fonction qui monte et descend en signe de restauration cyclique. **Bonus de gidouilles** pour la fonction la plus harmonique. Bougrelas apparaît brièvement en majesté printanière.
 
-##### 🟡 Le Jubilé du Cheval à Phynances — 17 Auroral (4 avril)
+##### 🟡 Le Jubilé du Cheval à Phynances — 37 Auroral (24 avril)
 
 **Province** : Pifométrie.
 
+**Date** : le 37ᵉ jour d'Auroral, comme les **37 cases de la Roulette Royale** de Bonneteau-sur-Vistule. (L'ancienne date, le 4 avril, venait d'un mois du calendrier du Collège ; redatée le 2026-10-04.)
+
 **Tradition Chiphre** : tous les Galopins de Pifométrie nourrissent le Cheval à Phynances avec une gidouille. **Le Cheval** parade dans Bonneteau-sur-Vistule. **Bonus de gidouilles** pour qui résout l'énigme probabiliste du jour.
+
+##### 🟡 La Foire aux Polyèdres — 12 Lumenal (21 mai)
+
+**Province** : Bedonstan.
+
+**Date** : le 12, comme les **12 faces du dodécaèdre**, la forme des murailles de Lobatchevsk.
+
+**Tradition Chiphre** : le Professeur Achras, qui élève ses polyèdres comme du bétail, les mène à la foire de Lobatchevsk. Les Galopins construisent, identifient et « achètent » des polyèdres en comptant faces, arêtes et sommets. **Bonus de gidouilles** pour le polyèdre le plus rare identifié.
 
 ### Les événements transversaux
 
-En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événements transversaux** qui rythment l'année du Galopin.
+En plus des six fêtes provinciales, l'Almanach comporte **plusieurs événements transversaux** qui rythment l'année du Galopin.
+
+#### 🟡 La Journée de L'Isle de la Réunion Pataphysique — 16 Glaglavose (20 décembre)
+
+**Statut** : invention Chiphre 🟡, adoptée le 2026-10-04 (voir Section II, L'Isle de la Réunion Pataphysique).
+
+**Date** : le **20 décembre**, date réelle de l'abolition de l'esclavage à La Réunion (1848) — fait historique libre de droit.
+
+**Esprit** : l'Isle est l'outre-mer du Royaume où s'étudie l'**équivalence des contraires** ; ce jour-là, tous les Galopins y sont également libres et également étudiants. Tradition à préciser.
 
 #### 🟡 Le Poisson à Phynances — 14 Auroral (1ᵉʳ avril)
 
@@ -1264,24 +1298,32 @@ En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événemen
 
 **Tradition Chiphre** : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 heures. À midi pile, restitution. Père Ubu apparaît grimé en mathématicien fou. _« Cornegidouille ! Nos Mathres ont rencontré le nombre transcendant. »_
 
-#### 🟡 La Mobilisation Royale — mois de Lumenal (mi-mai à fin juin)
+#### 🟡 La Mobilisation Royale — mois de Lumenal (10 mai → 14 juin)
 
 **Statut** : invention Chiphre assumée 🟡, mode permanent du mois.
 
-**Esprit** : tout le mois de Lumenal, le Père Ubu déclare la **Mobilisation Générale** contre le Czar Alexis. C'est la période de **préparation intensive aux examens** (brevet en fin de Troyz'esme, bac en fin de Phinalle). Le site bascule en mode révisions :
+**Esprit** : tout le mois de Lumenal, jusqu'au Décervelage Suprême, le Père Ubu déclare la **Mobilisation Générale** contre le Czar Alexis. C'est la période de **préparation intensive aux examens** (brevet en fin de Troyz'esme, bac en fin de Phinalle). Le site bascule en mode révisions :
 
 - Entraînements ciblés sur le programme
 - Bouton « Mobilisation Royale » mis en avant
-- Compte à rebours sur la home
+- Compte à rebours sur la home, calculé sur les **dates officielles** du bac et du brevet de l'année (publiées par le ministère ; à tenir à jour chaque année)
 - **Apparitions plus fréquentes du Czar Alexis** : _« Da, Galopinski. Par Saint Georges, vous aurez à m'affronter. »_
 
-#### 🟡 Le Décervelage Suprême — mois d'Auguste (juillet)
+#### 🟡 Le Décervelage Suprême — 37 Lumenal (15 juin)
 
 **Statut** : événement majeur déjà canonisé en Section VII.
 
-**Esprit** : le mois d'Auguste est canoniquement le **mois du Décervelage Suprême** — bac (épreuves de Phinalle) et brevet (Petit Décervelage, épreuves de Troyz'esme). La culmination de l'année se situe au cœur d'Auguste, avant la grande pause estivale qui occupe la seconde moitié du mois.
+**Date** (décision de David, 2026-10-04) : **fixe**, le 37 Lumenal, vers l'ouverture du bac en France (mi-juin). La fête de l'Almanach ne bouge pas d'une année sur l'autre ; les **dates officielles** des épreuves servent seulement au compte à rebours de la Mobilisation.
 
-**Tradition Chiphre** : cinématique solennelle de fin d'examens, podium des Maîtres Phynanciers de l'An, distribution des cartes légendaires, intronisation des nouveaux Pataphysiciens Royaux.
+**Esprit** : l'épreuve suprême — bac (épreuves de Phinalle) et brevet (Petit Décervelage, épreuves de Troyz'esme). Point d'orgue de la Mobilisation Royale.
+
+#### 🟡 La Proclamation Royale — 1 Auguste (1ᵉʳ juillet)
+
+**Statut** : invention Chiphre 🟡 (2026-10-04), seconde moitié de l'ancienne tradition du Décervelage Suprême.
+
+**Esprit** : après l'épreuve, la récompense. Le premier jour d'Auguste, le mois solaire et majestueux, le Royaume proclame ses lauréats.
+
+**Tradition Chiphre** : cinématique solennelle, podium des Maîtres Phynanciers de l'An, distribution des cartes légendaires, intronisation des nouveaux Pataphysiciens Royaux.
 
 ### Tableau de synthèse des dates pataphysiques
 
@@ -1290,18 +1332,22 @@ Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'ann�
 | Date grégorienne                    | Jour pataphysique   | Événement                                                   |
 | ----------------------------------- | ------------------- | ----------------------------------------------------------- |
 | 23 août                             | 1 Ambraire          | Début de l'An E.R.                                          |
-| 1ᵉʳ septembre                       | 10 Ambraire         | Rentrée scolaire française réelle                           |
+| **1ᵉʳ septembre**                   | **10 Ambraire**     | **Le Grand Redémarrage** 🟡 (rentrée réelle)                |
 | 14 octobre                          | 1 Givraire          | Début de Givraire                                           |
+| **8 novembre**                      | **26 Givraire**     | **La Régate de la Passoire** 🟡                             |
 | 5 décembre                          | 1 Glaglavose        | Début de Glaglavose                                         |
+| **20 décembre**                     | **16 Glaglavose**   | **La Journée de L'Isle de la Réunion Pataphysique** 🟡      |
 | **22 décembre**                     | **18 Glaglavose**   | **La Grande Empochaille** 🟡                                |
 | 26 janvier                          | 1 Déglaçose         | Début de Déglaçose                                          |
 | **1ᵉʳ mars** _(29 fév. bissextile)_ | **35 Déglaçose**    | **La Restauration de Bougrelas** 🟡                         |
-| 19 mars                             | 1 Auroral           | Début d'Auroral                                             |
 | **18 mars** _(bissextile)_          | **Le Surnuméraire** | **Jour hors-mois quadriennal** (équivalence des contraires) |
+| 19 mars                             | 1 Auroral           | Début d'Auroral                                             |
 | **1ᵉʳ avril**                       | **14 Auroral**      | **Le Poisson à Phynances** 🟡                               |
-| **4 avril**                         | **17 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                      |
+| **24 avril**                        | **37 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                      |
 | 10 mai                              | 1 Lumenal           | Début de Lumenal — début de la Mobilisation Royale 🟡       |
-| 1ᵉʳ juillet                         | 1 Auguste           | Début d'Auguste — début du Décervelage Suprême 🟡           |
+| **21 mai**                          | **12 Lumenal**      | **La Foire aux Polyèdres** 🟡                               |
+| **15 juin**                         | **37 Lumenal**      | **Le Décervelage Suprême** 🟡                               |
+| **1ᵉʳ juillet**                     | **1 Auguste**       | **La Proclamation Royale** 🟡                               |
 | 22 août                             | —                   | **La Cloche du Grand Reset** 🟡                             |
 
 ### Vocabulaire de l'Almanach
