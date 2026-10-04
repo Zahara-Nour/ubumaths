@@ -1,0 +1,328 @@
+{
+	"title": "Théorème des valeurs intermédiaires : nombre de solutions de f(x) = k",
+	"description": "Compter les solutions de f(x) = k à partir d'un tableau de variations (fonction continue, strictement monotone par morceaux), limites aux bornes comprises (pièges : une solution par intervalle quoi qu'il arrive, limite non atteinte)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-032", "TCOMP-020", "TSPE-159", "TSPE-157", "TSPE-158"],
+	"theme": "Fonctions",
+	"domain": "Continuité",
+	"subdomain": "Théorème des valeurs intermédiaires",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n```variation\nvariable: x\ndomain: -3, -1, 2, 4\n\nvariation: f(x)\n  -3: {{p0}}, bottom\n  -1: {{p1}}, top\n  2: {{p2}}, bottom\n  4: {{p3}}, top\n```\n\nCombien de solutions l'équation $f(x)={{k}}$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "2..6"
+				},
+				{
+					"name": "d0",
+					"expression": "2..8"
+				},
+				{
+					"name": "p0",
+					"expression": "{{eval:p1-d0}}"
+				},
+				{
+					"name": "p2",
+					"expression": "-6..-2"
+				},
+				{
+					"name": "d3",
+					"expression": "2..8"
+				},
+				{
+					"name": "p3",
+					"expression": "{{eval:p2+d3}}"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["k != p0", "k != p1", "k != p2", "k != p3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(sign(p0-k)-sign(p1-k))/2+abs(sign(p1-k)-sign(p2-k))/2+abs(sign(p2-k)-sign(p3-k))/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left[-3\\,;-1\\right]$, $f$ est continue et strictement croissante de ${{p0}}$ à ${{p1}}$ : {{if:(p0-k)*(p1-k)<0|${{k}}$ est compris entre ces valeurs, **une** solution (TVI)|${{k}}$ n'est pas compris entre ces valeurs, aucune solution}}.",
+					"Sur $\\left[-1\\,;2\\right]$, $f$ est continue et strictement décroissante de ${{p1}}$ à ${{p2}}$ : {{if:(p1-k)*(p2-k)<0|${{k}}$ est compris entre ces valeurs, **une** solution (TVI)|${{k}}$ n'est pas compris entre ces valeurs, aucune solution}}.",
+					"Sur $\\left[2\\,;4\\right]$, $f$ est continue et strictement croissante de ${{p2}}$ à ${{p3}}$ : {{if:(p2-k)*(p3-k)<0|${{k}}$ est compris entre ces valeurs, **une** solution (TVI)|${{k}}$ n'est pas compris entre ces valeurs, aucune solution}}.",
+					"Au total, l'équation $f(x)={{k}}$ admet $\\textcolor{{{color:primary.0}}}{{{eval:abs(sign(p0-k)-sign(p1-k))/2+abs(sign(p1-k)-sign(p2-k))/2+abs(sign(p2-k)-sign(p3-k))/2}}}$ solution(s) sur $\\left[-3\\,;4\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{a}}, +inf\n\nvariation: f(x)\n  -inf: +inf, top\n  {{a}}: {{m}}, bottom\n  +inf: {{L}}, top\n```\n\nCombien de solutions l'équation $f(x)={{k}}$ admet-elle sur $\\mathbb{R}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "m",
+					"expression": "-6..0"
+				},
+				{
+					"name": "dL",
+					"expression": "2..6"
+				},
+				{
+					"name": "L",
+					"expression": "{{eval:m+dL}}"
+				},
+				{
+					"name": "k",
+					"expression": "-7..7"
+				}
+			],
+			"conditions": ["k != m", "k != L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+sign(k-m))/2*(1+(1+sign(L-k))/2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]-\\infty\\,;{{a}}\\right]$, $f$ est continue, strictement décroissante, de $+\\infty$ à ${{m}}$ : {{if:k>m|${{k}}>{{m}}$, **une** solution|${{k}}<{{m}}$, aucune solution}}.",
+					"Sur $\\left[{{a}}\\,;+\\infty\\right[$, $f$ est continue, strictement croissante, de ${{m}}$ vers ${{L}}$ (limite **non atteinte**) : {{if:(k-m)*(L-k)>0|${{k}}$ est entre ${{m}}$ et ${{L}}$, **une** solution|${{k}}$ n'est pas entre ${{m}}$ et ${{L}}$, aucune solution}}.",
+					"Au total : $\\textcolor{{{color:primary.0}}}{{{eval:(1+sign(k-m))/2*(1+(1+sign(L-k))/2)}}}$ solution(s)."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n```variation\nvariable: x\ndomain: 0, {{a}}, +inf\n\nvariation: f(x)\n  0: -inf, bottom\n  {{a}}: {{M}}, top\n  +inf: 0, bottom\n```\n\nCombien de solutions l'équation $f(x)={{k}}$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "M",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "-5..7"
+				}
+			],
+			"conditions": ["k != M", "k != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+sign(M-k))/2*(1+(1+sign(k))/2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left]0\\,;{{a}}\\right]$, $f$ est continue, strictement croissante, de $-\\infty$ à ${{M}}$ : {{if:k<M|${{k}}<{{M}}$, **une** solution|${{k}}>{{M}}$, aucune solution}}.",
+					"Sur $\\left[{{a}}\\,;+\\infty\\right[$, $f$ est continue, strictement décroissante, de ${{M}}$ vers $0$ (limite **non atteinte**) : {{if:k*(M-k)>0|${{k}}$ est entre $0$ et ${{M}}$, **une** solution|${{k}}$ n'est pas entre $0$ et ${{M}}$, aucune solution}}.",
+					"Au total : $\\textcolor{{{color:primary.0}}}{{{eval:(1+sign(M-k))/2*(1+(1+sign(k))/2)}}}$ solution(s)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : k = 1 → 3 solutions",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "4",
+				"d0": "5",
+				"p0": "-1",
+				"p2": "-3",
+				"d3": "6",
+				"p3": "3",
+				"k": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : k = 1, une seule solution (unicité supposée)",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "4",
+				"d0": "5",
+				"p0": "-1",
+				"p2": "-3",
+				"d3": "6",
+				"p3": "3",
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : k = 5 > max → 0",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "4",
+				"d0": "5",
+				"p0": "-1",
+				"p2": "-3",
+				"d3": "6",
+				"p3": "3",
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : k = 5, nombre d'intervalles de monotonie",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "4",
+				"d0": "5",
+				"p0": "-1",
+				"p2": "-3",
+				"d3": "6",
+				"p3": "3",
+				"k": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : k = −2 → 2 solutions",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "4",
+				"d0": "5",
+				"p0": "-1",
+				"p2": "-3",
+				"d3": "6",
+				"p3": "3",
+				"k": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : m = −2, L = 3, k = 1 → 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "-2",
+				"dL": "5",
+				"L": "3",
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : k = 5 > L → 1 (limite non atteinte)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "-2",
+				"dL": "5",
+				"L": "3",
+				"k": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : k = 5, branche droite comptée à tort",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "-2",
+				"dL": "5",
+				"L": "3",
+				"k": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : k = −4 < m → 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"m": "-2",
+				"dL": "5",
+				"L": "3",
+				"k": "-4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : M = 4, k = 2 → 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"M": "4",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : k = −3 → 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"M": "4",
+				"k": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : k = −3, branche droite comptée (limite 0 ignorée)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"M": "4",
+				"k": "-3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : k = 6 > M → 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"M": "4",
+				"k": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,0 +1,276 @@
+{
+	"title": "Limite en un point : dénominateur qui tend vers 0",
+	"description": "Limite à droite, à gauche ou des deux côtés de k/(x−a), k/(x−a)², (x+b)/(x−a) : signe du dénominateur selon le côté (pièges : côté oublié, signe du numérateur, 0 au lieu de ±∞)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-018", "TCOMP-028", "TSPE-126", "TSPE-130", "TSPE-144"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Limite en un point",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x>{{a}}$, $x{{eval:-a;+}}>0$ et $x{{eval:-a;+}}$ tend vers $0$ : $\\dfrac{1}{x{{eval:-a;+}}}$ tend vers $+\\infty$.",
+					"Le numérateur vaut ${{k}}$, {{if:k>0|positif|négatif}} : par produit, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$ (à droite)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à gauche** (pour $x<{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|-\\infty|+\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x<{{a}}$, $x{{eval:-a;+}}<0$ et $x{{eval:-a;+}}$ tend vers $0$ : $\\dfrac{1}{x{{eval:-a;+}}}$ tend vers $-\\infty$.",
+					"Le numérateur vaut ${{k}}$, {{if:k>0|positif|négatif}} : par produit (règle des signes), $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|-\\infty|+\\infty}}}$ (à gauche)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{\\left(x{{eval:-a;+}}\\right)^{2}}$.\n\nDétermine la limite de $f$ en ${{a}}$.\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est positif : quand $x$ tend vers ${{a}}$, $\\left(x{{eval:-a;+}}\\right)^{2}$ tend vers $0$ **par valeurs positives**, des deux côtés.",
+					"Donc $\\dfrac{1}{\\left(x{{eval:-a;+}}\\right)^{2}}$ tend vers $+\\infty$ et, le numérateur ${{k}}$ étant {{if:k>0|positif|négatif}}, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)=\\dfrac{x{{b;+}}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != 0", "a + b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a+b>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le numérateur tend vers ${{a}}{{b;+}}={{eval:a+b}}$, {{if:a+b>0|positif|négatif}}.",
+					"Le dénominateur tend vers $0$ par valeurs positives (car $x>{{a}}$).",
+					"Par quotient, $\\displaystyle\\lim_{x\\to {{a}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a+b>0|+\\infty|-\\infty}}}$ (à droite)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3/(x−2) à droite → +∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 0 (limite de 1/x à l'infini confondue)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −5/(x+1) à droite → −∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"k": "-5"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe du numérateur oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"k": "-5"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3/(x−2) à gauche → −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : côté oublié (+∞)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −4/(x+3) à gauche → +∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"k": "-4"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 2/(x−1)² → +∞",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"k": "2"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −7/(x+4)² → −∞",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-4",
+				"k": "-7"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : « pas de limite » remplacé par +∞ malgré k < 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-4",
+				"k": "-7"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : (x+1)/(x−3) à droite → +∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : (x−5)/(x−3) à droite → −∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : quotient des coefficients (1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
