@@ -224,6 +224,24 @@ d'intervalles, mêmes valeurs de bornes, chaque borne de l'élève ouverte dès 
 ℝ et ∅ n'ont rien à ouvrir. Sans l'option, rien ne change (mesure du 2026-10-04 : 0 verdict
 changé sur 1 711 modèles, dont 418 réponses « bornes ouvertes » sur des cases intervalles réelles).
 
+### Constante e dans une borne
+
+Une borne est un **nombre**, jamais une expression en x : la lettre `e` y est **toujours** la
+constante d'Euler, et `\exp(u)` s'y lit `e^{u}` (`withEulerConstant` dans
+`mathAST/domain/validation/parse-student-domain.ts`). La comparaison reste **exacte**
+(`compareNumericNodes`) : `\frac{1}{e}` = `e^{-1}` = `\exp(-1)`, `\frac{1}{e^2}` = `e^{-2}`,
+`\sqrt{e}` = `e^{\frac12}`, `\frac{e}{2}` = `e/2`, `\exp(2)` = `e^{2}` ; `\pi` et `\ln 2`
+(`\ln 4` = `2\ln 2`) se comparent de même. Le corrigé affiché écrit `e`, pas `\exponentialE`.
+
+Défaut de la sonde du 2026-10-04 : le parseur LaTeX lisait `e` comme une variable
+(`\frac{1}{e}`), le parseur maison (borne sans `\`, `e^{-1}`) comme la constante, et
+`\exp(2) - e^{2}` n'était nul qu'au flottant près : `[\frac{1}{e};+\infty[` pour
+`[e^{-1};+\infty[` était **faux**. Mesure (dépôt + `REAL_TEMPLATES` + 880 modèles de prod en
+lecture, 1 778 modèles, 29 002 verdicts dont 608 sur une borne en e) : 0 verdict changé sur les
+specs et les réponses attendues ; 57 réponses « autre écriture de e » passées de faux à juste
+(46 synthétiques, 5 sur la carte C-04 de `feat/cartes-fonctions-terminale`, 6 sur deux brouillons
+de prod).
+
 ## Réponse « équation » : même ensemble de points (case `answerKind: "equation"`)
 
 `areEquivalent` compare deux équations comme deux relations : `2x-y+1=0` et `y=2x+1` ne sont pas

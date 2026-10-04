@@ -11,10 +11,12 @@
  */
 
 import type { MathNode } from '../../types';
-import { number } from '$lib/mathAST/factory';
+import { number, euler, superscript } from '$lib/mathAST/factory';
+import { mapNode } from '../../transforms';
 import { parseLatexSafe } from '../../parser';
 import { parseCustom } from '../../parser/custom';
 import { evaluate } from '../../eval';
+import { substitute } from '../../eval/substitute';
 import type { Domain, Interval } from '../types';
 import type {
 	ParseStudentDomainResult,
@@ -714,8 +716,25 @@ function parseEndpointValue(input: string): MathNode | null {
 		.trim();
 	if (latex.length === 0) return null;
 
-	const node = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
+	const parsed = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
+	const node = parsed && withEulerConstant(parsed);
 	return node && isRealConstant(node) ? node : null;
+}
+
+/**
+ * Une borne est un nombre : la lettre `e` y est toujours la constante d'Euler,
+ * et `\\exp(u)` s'écrit `e^{u}`. Le parseur LaTeX lit `e` comme une variable
+ * (`\\frac{1}{e}`), le parseur maison comme la constante (`e^-1`) ; et
+ * `exp(2) - e^2` n'est nul qu'au flottant près. Sans cette unification, la
+ * comparaison exacte ne reconnaît ni `\\frac{1}{e}` = `e^{-1}` ni
+ * `\\exp(2)` = `e^{2}` (sonde du 2026-10-04).
+ */
+function withEulerConstant(node: MathNode): MathNode {
+	return mapNode(substitute(node, { e: euler() }), (n) =>
+		n.type === 'function' && n.name === 'exp' && n.args.length === 1
+			? superscript(euler(), n.args[0])
+			: n
+	);
 }
 
 /** Longueur maximale d'une borne (la plus longue utile : `\\dfrac{-3-\\sqrt{13}}{4}`, 22) */
@@ -755,7 +774,7 @@ function parseCustomBound(text: string): MathNode | null {
 	}
 }
 
-/** Nombre réel calculable (aucune variable libre, hors constantes comme e) */
+/** Nombre réel calculable (aucune variable libre) */
 function isRealConstant(node: MathNode): boolean {
 	try {
 		const result = evaluate(node, { mode: 'decimal' });

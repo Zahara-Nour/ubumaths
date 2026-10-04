@@ -368,7 +368,12 @@ function withoutFractionParentheses(node: MathNode): MathNode {
 /** Borne en LaTeX, décimal à virgule (`0{,}5`) */
 function boundLatex(value: MathNode): string {
 	if (isInfinity(value)) return isPositiveInfinity(value) ? '+\\infty' : '-\\infty';
-	return toLatex(withoutFractionParentheses(value)).replace(/(\d)\.(\d)/g, '$1{,}$2');
+	return (
+		toLatex(withoutFractionParentheses(value))
+			.replace(/(\d)\.(\d)/g, '$1{,}$2')
+			// Constante d'Euler : écrite `e`, comme l'auteur et l'élève l'écrivent
+			.replace(/\\exponentialE(?![a-zA-Z])/g, 'e')
+	);
 }
 
 function intervalLatex(interval: Interval): string {

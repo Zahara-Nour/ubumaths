@@ -418,3 +418,57 @@ describe('bornes ouvrables (option openableBounds, validée par David le 2026-10
 		expect(judgeIntervalAnswer(']2;+\\infty[', '[2;+\\infty[').status).toBe('incorrect');
 	});
 });
+
+describe('constante e dans une borne (sonde du 2026-10-04)', () => {
+	// Une borne est un nombre : `e` y est toujours la constante d'Euler, quelle que
+	// soit l'écriture (LaTeX de MathLive ou syntaxe maison du modèle)
+	it.each([
+		['\\left[\\frac{1}{e};+\\infty\\right[', '[e^{-1};+\\infty['],
+		['[e^{-1};+\\infty[', '[\\frac{1}{e};+\\infty['],
+		['[\\frac{1}{e};+\\infty[', '[\\frac{1}{e};+\\infty['],
+		[']0;e[', ']0;e['],
+		[']0;\\exp(-1)[', ']0;\\frac{1}{e}['],
+		[']0;\\frac{1}{e}[', ']0;\\exp(-1)['],
+		['[\\frac{1}{e^2};+\\infty[', '[e^{-2};+\\infty['],
+		['[e^{-2};+\\infty[', '[\\frac{1}{e^{2}};+\\infty['],
+		[']-\\infty;\\frac{1}{e^3}[', ']-\\infty;e^{-3}['],
+		[']0;2e[', ']0;2\\mathrm{e}['],
+		[']0;\\frac{e}{2}[', ']0;e/2['],
+		[']0;\\sqrt{e}[', ']0;e^{\\frac12}['],
+		[']0;e^{\\frac{1}{2}}[', ']0;\\sqrt{e}['],
+		[']\\frac{1}{e};e[', ']e^{-1};e['],
+		['[e^{-1};e^2]', '[\\frac{1}{e};e^{2}]'],
+		[']-\\infty;\\frac{1}{e}[\\cup]e;+\\infty[', ']-\\infty;e^{-1}[\\cup]e;+\\infty['],
+		['[\\exp(2);+\\infty[', '[e^{ 2 };+\\infty['],
+		[']0;\\exp(3)[', ']0;e^3['],
+		[']0;e^{3}[', ']0;\\exp(3)['],
+		['[\\frac{1}{\\exp(2)};+\\infty[', '[e^{-2};+\\infty[']
+	])('%s pour %s : juste', (answer, expected) => {
+		expect(judgeIntervalAnswer(answer, expected).status).toBe('correct');
+	});
+
+	it.each([
+		['[\\frac{1}{e};+\\infty[', '[e^{-2};+\\infty['],
+		['[\\frac{1}{e^2};+\\infty[', '[e^{-1};+\\infty['],
+		[']0;\\frac{e}{2}[', ']0;2e['],
+		[']0;e[', ']0;\\frac{1}{e}['],
+		[']\\frac{1}{e};+\\infty[', '[e^{-1};+\\infty[']
+	])('%s pour %s : faux', (answer, expected) => {
+		expect(judgeIntervalAnswer(answer, expected).status).toBe('incorrect');
+	});
+
+	it('π et ln 2 dans une borne', () => {
+		expect(judgeIntervalAnswer(']0;\\frac{\\pi}{2}[', ']0;\\frac12\\pi[').status).toBe('correct');
+		expect(judgeIntervalAnswer(']0;\\ln 2[', ']0;\\ln(2)[').status).toBe('correct');
+		expect(judgeIntervalAnswer(']0;\\ln 4[', ']0;2\\ln 2[').status).toBe('correct');
+		expect(judgeIntervalAnswer(']0;\\ln 3[', ']0;\\ln 2[').status).toBe('incorrect');
+		expect(judgeIntervalAnswer('[\\ln 2;+\\infty[', '[-\\ln\\frac{1}{2};+\\infty[').status).toBe(
+			'correct'
+		);
+	});
+
+	it('corrigé affiché : e reste e', () => {
+		expect(expectedIntervalsLatex('[e^{-1};+\\infty[')).toBe('[e^{-1};+\\infty[');
+		expect(expectedIntervalsLatex(']0;\\frac{1}{e}[')).toMatch(/\\[d]?frac\{1\}\{e\}/);
+	});
+});
