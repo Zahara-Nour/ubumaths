@@ -1,8 +1,8 @@
 {
 	"title": "Tableau croisé : probabilité de A sachant B",
 	"description": "Calculer P_B(A) dans un tableau à double entrée, d'effectifs ou de pourcentages, sans la confondre avec P_A(B)",
-	"grades": ["1_SPE"],
-	"points": [],
+	"grades": ["2"],
+	"points": ["2-182", "2-185"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Tableaux croisés",
