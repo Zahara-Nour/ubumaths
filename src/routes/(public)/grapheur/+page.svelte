@@ -5,40 +5,52 @@
 	 * Décisions de David (phase 0 `docs/wip/atelier-grapheur-phase0.md`, G1/G2) :
 	 * l'atelier est l'entrée unique, et cette adresse continue de marcher (favoris,
 	 * liens notés). Elle ouvre l'atelier PERSONNEL sur la vue Graphe, « Mes objets »
-	 * ouvert ; un atelier vide reçoit une carte `f` prête à taper (B3).
+	 * visible ; un atelier vide reçoit une carte `f` prête à taper (B3).
 	 *
-	 * Un lien `/grapheur?f=x^2-3x+1` est l'entrée « projection » (B4, B5) : ces
-	 * seules courbes, dans un atelier ÉPHÉMÈRE — l'atelier personnel n'est ni lu
-	 * ni écrit. Un lien abîmé le dit et ouvre l'atelier personnel (B6).
+	 * `/grapheur?f=x^2-3x+1` est l'entrée « projection » (B4, B5) et
+	 * `/grapheur?a=…` un atelier partagé depuis cette page (revue du lot 6, B1) :
+	 * tous deux ÉPHÉMÈRES — l'atelier personnel n'est ni lu ni écrit. Un lien
+	 * abîmé le dit et ouvre l'atelier personnel (B6).
 	 */
-	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { atelierFromCurves, curvesFromLink } from '$lib/atelier/grapheur-link';
+	import { openLink } from '$lib/atelier/grapheur-link';
 	import type { AtelierState } from '$lib/atelier/persistence';
 
-	let atelier = $state<Atelier>(new Atelier());
-	let received = $state<AtelierState | null>(null);
-	let notice = $state<string | null>(null);
-	let ready = $state(false);
+	interface Opened {
+		atelier: Atelier;
+		received: AtelierState | null;
+		notice: string | null;
+	}
 
-	onMount(() => {
-		const link = curvesFromLink(page.url.searchParams);
-		if (link.kind === 'invalid') {
-			notice = `${link.message} Voici ton atelier.`;
-		} else if (link.kind === 'curves') {
-			const built = atelierFromCurves(link.definitions);
-			if (built.ok) {
-				atelier = built.atelier;
-				// Sa présence fait le mode éphémère, et le bandeau qui dit que
-				// l'atelier personnel n'est pas touché (ShareBar)
-				received = built.atelier.serialize();
+	/**
+	 * Ce que l'adresse ouvre — relu quand elle change : passer d'un lien à un
+	 * autre sans recharger la page doit changer l'écran (revue du lot 6, M1).
+	 * Navigateur seulement : le décodage d'un lien `?a=` est asynchrone.
+	 */
+	let opened = $state<Opened | null>(null);
+
+	$effect(() => {
+		const search = page.url.search;
+		let cancelled = false;
+		openLink(new URLSearchParams(search)).then((link) => {
+			if (cancelled) return;
+			if (link.kind === 'received') {
+				opened = { atelier: link.atelier, received: link.state, notice: link.notice };
 			} else {
-				notice = `${built.message} Voici ton atelier.`;
+				// Un lien abîmé ne donne pas une page morte : on le dit, et SON
+				// atelier s'ouvre (§6 E1, B6)
+				opened = {
+					atelier: new Atelier(),
+					received: null,
+					notice: link.kind === 'invalid' ? `${link.message} Voici ton atelier.` : null
+				};
 			}
-		}
-		ready = true;
+		});
+		return () => {
+			cancelled = true;
+		};
 	});
 </script>
 
@@ -51,15 +63,18 @@
 </svelte:head>
 
 <div class="page">
-	{#if ready}
-		<AtelierContainer
-			{atelier}
-			ephemeral={received !== null}
-			{received}
-			{notice}
-			view="graphe"
-			startWith={received === null ? 'function' : undefined}
-		/>
+	{#if opened}
+		{#key opened}
+			<AtelierContainer
+				atelier={opened.atelier}
+				ephemeral={opened.received !== null}
+				received={opened.received}
+				notice={opened.notice}
+				view="graphe"
+				startWith={opened.received === null ? 'function' : undefined}
+				heading="Grapheur"
+			/>
+		{/key}
 	{/if}
 </div>
 

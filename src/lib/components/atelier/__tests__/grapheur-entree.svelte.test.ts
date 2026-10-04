@@ -99,3 +99,68 @@ describe('repartir de zéro (B7)', () => {
 		expect(reset).toBeUndefined();
 	});
 });
+
+describe('revues du lot 6', () => {
+	// C2 : la simple visite enregistrait une carte vide
+	it('la carte d’accueil n’est pas enregistrée tant qu’on n’y touche pas', async () => {
+		await render(AtelierContainer, {
+			atelier: new Atelier(),
+			view: 'graphe',
+			startWith: 'function'
+		});
+
+		await new Promise((r) => setTimeout(r, 800));
+
+		expect(localStorage.getItem(KEY)).toBeNull();
+	});
+
+	// C3 : l'historique de Calcul restait, sur des objets supprimés
+	it('« Repartir de zéro » vide aussi l’historique de Calcul', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const { container } = await render(AtelierContainer, { atelier });
+		const input = container.querySelector(
+			'input[aria-label="Calcul, définition ou commande"]'
+		) as HTMLInputElement;
+		input.value = 'f(3)';
+		input.dispatchEvent(new Event('input', { bubbles: true }));
+		(input.form as HTMLFormElement).requestSubmit();
+		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(1));
+
+		(
+			[...container.querySelectorAll('button')].find(
+				(b) => b.textContent?.trim() === 'Repartir de zéro'
+			) as HTMLButtonElement
+		).click();
+		const confirm = await vi.waitFor(() => {
+			const found = [...document.querySelectorAll('[role="dialog"] button')].find((b) =>
+				b.textContent?.includes('Vider')
+			) as HTMLButtonElement | undefined;
+			expect(found).toBeTruthy();
+			return found!;
+		});
+		confirm.click();
+
+		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(0));
+	});
+
+	// A11y : un titre de niveau 1, et un bouton qui ne sert à rien est désactivé
+	it('la page a un titre de niveau 1', async () => {
+		const { container } = await render(AtelierContainer, {
+			atelier: new Atelier(),
+			ephemeral: true,
+			heading: 'Grapheur'
+		});
+
+		expect(container.querySelector('h1')?.textContent?.trim()).toBe('Grapheur');
+	});
+
+	it('« Repartir de zéro » est désactivé sur un atelier vide', async () => {
+		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
+
+		const reset = [...container.querySelectorAll('button')].find(
+			(b) => b.textContent?.trim() === 'Repartir de zéro'
+		) as HTMLButtonElement;
+		expect(reset.disabled).toBe(true);
+	});
+});

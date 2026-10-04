@@ -379,6 +379,25 @@ Lot 5b mergé (#809). Reprise des courbes de l'ancien grapheur : ABANDONNÉE
   autres garde-fous) ; test de la barre latérale mis en accord (G1). Suites :
   393 + 123 navigateur, 1 270 + 1 195 serveur ; `check:incremental` 0 ;
   lint propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord :
+  - **B1 (bloquant)** : « Partager » depuis `/grapheur` fabriquait
+    `/grapheur?a=…`, que la page ne lisait pas (le camarade voyait son propre
+    atelier, sans un mot) → porte unique `openLink` (`?a=` et `?f=`) pour
+    `/atelier` et `/grapheur`, relue quand l'adresse change (M1) ;
+  - C1 : « Garder dans mon atelier » versait dans l'atelier ÉPHÉMÈRE (copies
+    renommées, rien d'enregistré) → `keepReceived` verse dans l'atelier
+    PERSONNEL et l'enregistre ; 2 anciens tests qui assertaient le défaut
+    réécrits ;
+  - C2 : la simple visite enregistrait la carte vide → n'est enregistrée que
+    si l'élève y touche ; C3 : « Repartir de zéro » vide aussi l'historique et
+    retrouve l'écran d'arrivée ; C4 : `?f=y=2x` (courbe en attente) refusé ;
+  - a11y : `h1` (« Grapheur » / « Atelier ») ; `section` au lieu d'un `main`
+    imbriqué ; notice d'un lien abîmé écrite APRÈS le montage (annoncée) ;
+    « Repartir de zéro » plus grand, désactivé sur un atelier vide ;
+  - décision n° 5 du cadrage marquée « remplacée par G1/G2/B2 ».
+  - Gardé, signalé : le curseur dans le champ à l'arrivée (B3 validé par
+    David ; clavier virtuel MathLive en mode `manual`, il ne s'ouvre pas seul).
+- Suites : 454 navigateur, 2 474 serveur ; `check:incremental` 0 ; lint propre.
 
 ## Lots suivants
 

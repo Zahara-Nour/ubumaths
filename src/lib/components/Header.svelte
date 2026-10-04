@@ -118,7 +118,7 @@
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			// Sans `roles` : ni l'atelier ni les démos de géométrie ne lisent de
 			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
-			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore)
+			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{

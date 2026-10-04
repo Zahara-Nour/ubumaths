@@ -64,3 +64,88 @@ describe('l’atelier d’un lien', () => {
 		if (!result.ok) expect(result.message).toContain('2 + * 3');
 	});
 });
+
+// =============================================================================
+// Revues du lot 6
+// =============================================================================
+
+import { openLink } from '../grapheur-link';
+import { encodeAtelier } from '../url';
+import { Atelier } from '../atelier.svelte';
+import { keepReceived } from '../merge';
+import { loadAtelier, saveAtelier, ATELIER_STORAGE_KEY } from '../persistence';
+
+function memoryStorage(): Storage {
+	const data = new Map<string, string>();
+	return {
+		get length() {
+			return data.size;
+		},
+		clear: () => data.clear(),
+		getItem: (k) => data.get(k) ?? null,
+		key: (i) => [...data.keys()][i] ?? null,
+		removeItem: (k) => void data.delete(k),
+		setItem: (k, v) => void data.set(k, v)
+	};
+}
+
+describe('revue du lot 6', () => {
+	// B1 (bloquant) : « Partager » depuis /grapheur fabrique /grapheur?a=…
+	it('un lien `?a=` est relu, sur /grapheur comme sur /atelier', async () => {
+		const shared = new Atelier();
+		shared.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const encoded = await encodeAtelier(shared.serialize());
+
+		const opened = await openLink(new URLSearchParams(`a=${encoded.payload}`));
+
+		expect(opened.kind).toBe('received');
+		if (opened.kind === 'received') expect(opened.atelier.names).toEqual(['f']);
+	});
+
+	it('un lien `?a=` abîmé le dit', async () => {
+		const opened = await openLink(new URLSearchParams('a=nimportequoi'));
+
+		expect(opened.kind).toBe('invalid');
+	});
+
+	it('`?f=` passe par la même porte', async () => {
+		const opened = await openLink(new URLSearchParams('f=x%5E2'));
+
+		expect(opened.kind).toBe('received');
+	});
+
+	it('sans paramètre : rien à ouvrir', async () => {
+		expect((await openLink(new URLSearchParams(''))).kind).toBe('none');
+	});
+
+	// C4 : `y=2x` ou `a*x+b` donnaient une carte en attente, sans courbe ni message
+	it.each([['y=2x'], ['a*x+b'], ["f'(x)"]])('refuse une courbe en attente : %s', (definition) => {
+		const result = atelierFromCurves([definition]);
+
+		expect(result.ok).toBe(false);
+		if (!result.ok) expect(result.message).toContain(definition);
+	});
+
+	it('une courbe peut citer la suivante', () => {
+		expect(atelierFromCurves(['g(x)+1', 'x^2']).ok).toBe(true);
+	});
+
+	// C1 : « Garder » versait dans l'atelier ÉPHÉMÈRE, et rien n'était enregistré
+	it('« Garder » verse dans l’atelier PERSONNEL, et l’enregistre', () => {
+		const storage = memoryStorage();
+		const personal = new Atelier();
+		personal.create({ kind: 'function', name: 'f', definition: 'x' }, 'text');
+		saveAtelier(storage, personal.serialize());
+		const received = new Atelier();
+		received.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+
+		const report = keepReceived(storage, received.serialize());
+
+		expect(report.ok).toBe(true);
+		const loaded = loadAtelier(storage);
+		expect(loaded.kind).toBe('loaded');
+		if (loaded.kind !== 'loaded') return;
+		expect(loaded.state.objects.map((o) => o.definition)).toEqual(['x', 'x^2']);
+		expect(storage.getItem(ATELIER_STORAGE_KEY)).not.toBeNull();
+	});
+});

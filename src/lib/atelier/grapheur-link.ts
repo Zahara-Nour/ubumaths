@@ -11,6 +11,8 @@
 
 import { z } from 'zod';
 import { Atelier } from './atelier.svelte';
+import { decodeAtelier } from './url';
+import type { AtelierState } from './persistence';
 
 // =============================================================================
 // Constantes
@@ -55,31 +57,89 @@ export function curvesFromLink(params: URLSearchParams): LinkCurves {
 	if (!read.success) {
 		return {
 			kind: 'invalid',
-			message: `Ce lien n'est pas valable : il faut entre 1 et ${MAX_LINK_CURVES} courbes, chacune non vide et de moins de ${MAX_LINK_CURVE_LENGTH} caractères.`
+			message: `Ce lien n'est pas valable : il faut entre 1 et ${MAX_LINK_CURVES} courbes, chacune non vide et d’au plus ${MAX_LINK_CURVE_LENGTH} caractères.`
 		};
 	}
 	return { kind: 'curves', definitions: read.data };
 }
 
 /**
- * Un atelier neuf où chaque courbe du lien est une fonction TRACÉE : `f`, `g`,
- * `h`… dans l'ordre. Une courbe illisible fait refuser tout le lien, avec sa
+ * Un atelier neuf où chaque courbe du lien est une fonction TRACÉE, nommée
+ * dans l'ordre (`f`, `g`, `h`, puis `f_1`, `f_2`…). Une courbe illisible fait refuser tout le lien, avec sa
  * citation (B6) : la page ouvre alors l'atelier personnel et le dit.
  */
 export function atelierFromCurves(
 	definitions: readonly string[]
 ): { ok: true; atelier: Atelier } | { ok: false; message: string } {
 	const atelier = new Atelier();
+	const created: { name: string; definition: string }[] = [];
 	for (const definition of definitions) {
-		const created = atelier.create({ kind: 'function', definition }, 'text');
-		if (!created.ok) return { ok: false, message: created.message };
-		if (created.object.status === 'error') {
+		const result = atelier.create({ kind: 'function', definition }, 'text');
+		if (!result.ok) return { ok: false, message: result.message };
+		created.push({ name: result.object.name, definition });
+	}
+	// ⚠️ Vérifié APRÈS toutes les créations : une courbe peut citer la suivante
+	// (`?f=g(x)+1&f=x^2`). Une courbe « en attente » (`y=2x`, `a*x+b`) n'est pas
+	// moins muette qu'une illisible : sans courbe à l'écran, on le dit (revue).
+	for (const { name, definition } of created) {
+		if (atelier.get(name)?.status !== 'ok') {
 			return {
 				ok: false,
-				message: `Le lien contient une courbe illisible : « ${definition} ».`
+				message: `Le lien contient une courbe qui ne se trace pas : « ${definition} ».`
 			};
 		}
-		atelier.setPlotted(created.object.name, true);
+		atelier.setPlotted(name, true);
 	}
 	return { ok: true, atelier };
+}
+
+/** Ce qu'une adresse ouvre : rien de particulier, un atelier reçu, ou un lien abîmé. */
+export type OpenedLink =
+	| { readonly kind: 'none' }
+	| {
+			readonly kind: 'received';
+			readonly atelier: Atelier;
+			readonly state: AtelierState;
+			/** Ce qui n'a pas pu être relu, s'il y en a. */
+			readonly notice: string | null;
+	  }
+	| { readonly kind: 'invalid'; readonly message: string };
+
+/**
+ * La porte UNIQUE des liens, pour `/atelier` et `/grapheur` (revue du lot 6,
+ * B1 : « Partager » depuis `/grapheur` fabrique `/grapheur?a=…`, que la page
+ * ne lisait pas — le camarade voyait son propre atelier, sans un mot).
+ *
+ * `?a=` porte un atelier entier (partage), `?f=` des courbes (projection).
+ */
+export async function openLink(params: URLSearchParams): Promise<OpenedLink> {
+	const payload = params.get('a');
+	if (payload !== null) {
+		const decoded = await decodeAtelier(payload);
+		if (!decoded.ok) return { kind: 'invalid', message: decoded.message };
+		const atelier = new Atelier();
+		const report = atelier.restore(decoded.state);
+		const lost = decoded.dropped + report.skipped.length;
+		return {
+			kind: 'received',
+			atelier,
+			state: decoded.state,
+			notice:
+				lost === 0
+					? null
+					: `${lost} objet${lost > 1 ? 's' : ''} du lien n’${lost > 1 ? 'ont' : 'a'} pas pu être relu${lost > 1 ? 's' : ''}.`
+		};
+	}
+
+	const curves = curvesFromLink(params);
+	if (curves.kind === 'none') return { kind: 'none' };
+	if (curves.kind === 'invalid') return { kind: 'invalid', message: curves.message };
+	const built = atelierFromCurves(curves.definitions);
+	if (!built.ok) return { kind: 'invalid', message: built.message };
+	return {
+		kind: 'received',
+		atelier: built.atelier,
+		state: built.atelier.serialize(),
+		notice: null
+	};
 }

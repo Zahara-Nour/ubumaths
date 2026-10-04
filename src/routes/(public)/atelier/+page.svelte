@@ -5,53 +5,49 @@
 	 * Public et sans compte : aucune donnée ne quitte le navigateur (décision
 	 * figée n° 2 du cadrage). Cadrage : `docs/wip/atelier-recherche-eleve.md`.
 	 *
-	 * ⚠️ Une URL porteuse de contenu ouvre en **mode éphémère** : ce qui est
-	 * affiché vient du lien, l'atelier personnel n'est ni lu ni écrit. C'est la
-	 * garantie du §6 — recevoir un énoncé ne doit pas coûter son travail.
+	 * ⚠️ Une URL porteuse de contenu (`?a=`, `?f=`) ouvre en **mode éphémère** :
+	 * ce qui est affiché vient du lien, l'atelier personnel n'est ni lu ni écrit.
+	 * C'est la garantie du §6 — recevoir un énoncé ne doit pas coûter son travail.
 	 */
-	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { decodeAtelier } from '$lib/atelier/url';
+	import { openLink } from '$lib/atelier/grapheur-link';
 	import type { AtelierState } from '$lib/atelier/persistence';
 
-	/** La charge portée par l'URL, s'il y en a une. */
-	const payload = $derived(page.url.searchParams.get('a'));
-
-	let received = $state<AtelierState | null>(null);
-	let notice = $state<string | null>(null);
-	let ready = $state(false);
+	interface Opened {
+		atelier: Atelier;
+		received: AtelierState | null;
+		notice: string | null;
+	}
 
 	/**
-	 * L'atelier montré : celui du lien en mode éphémère, le sien sinon.
-	 *
-	 * Créé une fois pour toutes — le remplacer en cours de route viderait
-	 * l'écran sous les doigts de l'élève.
+	 * Ce que l'adresse ouvre — relu quand elle change : passer d'un lien à un
+	 * autre sans recharger la page doit changer l'écran (revue du lot 6, M1).
+	 * Navigateur seulement : le décodage d'un lien `?a=` est asynchrone.
 	 */
-	const atelier = new Atelier();
+	let opened = $state<Opened | null>(null);
 
-	onMount(async () => {
-		if (payload === null) {
-			ready = true;
-			return;
-		}
-
-		const decoded = await decodeAtelier(payload);
-		if (!decoded.ok) {
-			// §6 E1 : on le dit, et on ouvre SON atelier — pas une page morte.
-			notice = decoded.message;
-			ready = true;
-			return;
-		}
-
-		const report = atelier.restore(decoded.state);
-		received = decoded.state;
-		const perdus = decoded.dropped + report.skipped.length;
-		if (perdus > 0) {
-			notice = `${perdus} objet${perdus > 1 ? 's' : ''} du lien n’${perdus > 1 ? 'ont' : 'a'} pas pu être relu${perdus > 1 ? 's' : ''}.`;
-		}
-		ready = true;
+	$effect(() => {
+		const search = page.url.search;
+		let cancelled = false;
+		openLink(new URLSearchParams(search)).then((link) => {
+			if (cancelled) return;
+			if (link.kind === 'received') {
+				opened = { atelier: link.atelier, received: link.state, notice: link.notice };
+			} else {
+				// Un lien abîmé ne donne pas une page morte : on le dit, et SON
+				// atelier s'ouvre (§6 E1, B6)
+				opened = {
+					atelier: new Atelier(),
+					received: null,
+					notice: link.kind === 'invalid' ? `${link.message} Voici ton atelier.` : null
+				};
+			}
+		});
+		return () => {
+			cancelled = true;
+		};
 	});
 </script>
 
@@ -64,8 +60,16 @@
 </svelte:head>
 
 <div class="page">
-	{#if ready}
-		<AtelierContainer {atelier} ephemeral={received !== null} {received} {notice} />
+	{#if opened}
+		{#key opened}
+			<AtelierContainer
+				atelier={opened.atelier}
+				ephemeral={opened.received !== null}
+				received={opened.received}
+				notice={opened.notice}
+				heading="Atelier"
+			/>
+		{/key}
 	{/if}
 </div>
 

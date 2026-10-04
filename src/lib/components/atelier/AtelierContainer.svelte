@@ -42,6 +42,8 @@
 		 * c'est l'ouverture de `/grapheur` (phase 0 §6 B3 : pas de x² d'office).
 		 */
 		startWith?: 'function';
+		/** Le titre de la page (niveau 1, pour les lecteurs d'écran — revue a11y). */
+		heading?: string;
 	}
 
 	type ViewId = 'calcul' | 'graphe' | 'donnees';
@@ -58,7 +60,8 @@
 		ephemeral = false,
 		received = null,
 		notice = null,
-		startWith
+		startWith,
+		heading = 'Atelier'
 	}: Props = $props();
 
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
@@ -67,7 +70,12 @@
 	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
 	function handleReset() {
 		atelier.restore({ version: ATELIER_STATE_VERSION, objects: [] });
+		// L'historique aussi : il parlait d'objets supprimés (revue du lot 6, C3)
+		desk.clear();
+		seen = 0;
 		selected = null;
+		// Sur `/grapheur`, on retrouve l'écran d'arrivée : une carte prête à taper
+		startIfEmpty();
 		announce('L’atelier est vide.');
 	}
 
@@ -120,10 +128,13 @@
 			target: window,
 			onNotice: (notice) => (notices = [...notices, notice])
 		});
+		// La carte d'accueil AVANT de noter la révision de départ : sinon la simple
+		// visite de `/grapheur` enregistrait une carte vide (revue du lot 6, C2) —
+		// elle ne l'est que si l'élève y touche.
+		startIfEmpty();
 		// Le chargement initial compte comme une modification : on note la
 		// révision de départ pour ne pas ré-enregistrer ce qu'on vient de lire.
 		lastSeenRevision = atelier.revision;
-		startIfEmpty();
 		return () => {
 			session?.close();
 			session = null;
@@ -284,11 +295,19 @@
 <div class="atelier">
 	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
 
-	<main class="zone">
+	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
+	     et deux repères `main` perturbent la navigation (revue a11y du lot 6) -->
+	<section class="zone" aria-labelledby="titre-atelier">
+		<h1 id="titre-atelier" class="sr-only">{heading}</h1>
 		<div class="barre">
 			<ShareBar {received} {notice} />
 			{#if !ephemeral}
-				<button type="button" class="vider" onclick={() => (confirmReset = true)}>
+				<button
+					type="button"
+					class="vider"
+					disabled={atelier.objects.length === 0}
+					onclick={() => (confirmReset = true)}
+				>
 					Repartir de zéro
 				</button>
 			{/if}
@@ -296,7 +315,7 @@
 		<ConfirmDialog
 			bind:open={confirmReset}
 			title="Repartir de zéro ?"
-			description="Tous les objets de l’atelier seront effacés : fonctions, valeurs, suites et listes. Un lien de partage déjà copié les garde."
+			description="Tous les objets de l’atelier seront effacés — fonctions, valeurs, suites et listes —, ainsi que l’historique de calcul. Un lien de partage déjà copié les garde."
 			confirmLabel="Vider l’atelier"
 			variant="destructive"
 			onConfirm={handleReset}
@@ -349,7 +368,7 @@
 				<DataView />
 			{/if}
 		</section>
-	</main>
+	</section>
 </div>
 
 <style>
@@ -373,8 +392,13 @@
 		justify-content: space-between;
 		gap: 0.5rem;
 	}
+	.vider:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 	.vider {
-		min-height: 1.75rem;
+		/* Lisible et visable en projection (revue a11y du lot 6) */
+		min-height: 2.5rem;
 		padding: 0.125rem 0.625rem;
 		margin-right: 0.625rem;
 		border: 1px solid var(--color-border);
