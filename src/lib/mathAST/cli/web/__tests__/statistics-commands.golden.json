@@ -30,22 +30,22 @@
 	{
 		"command": ".linreg 1,2,3,4,5 : 1,3,2,4,5",
 		"success": true,
-		"output": "Ajustement affine (n = 5) :\n  y = 0,9x + 0,3\n  Coefficient directeur a = 0,9\n  Ordonnée à l’origine b = 0,3\n  R² = 0,81",
-		"outputHtml": "Ajustement affine (n = 5) :<br>y = 0,9x + 0,3<br>Coefficient directeur a = 0,9<br>Ordonnée à l’origine b = 0,3<br>R² = 0,81",
+		"output": "Ajustement affine (n = 5) :\n  y = 0,9x + 0,3\n  Coefficient directeur a = 0,9\n  Ordonnée à l’origine b = 0,3\n  Point moyen : G(3 ; 3)\n  Coefficient de corrélation : r = 0,9",
+		"outputHtml": "Ajustement affine (n = 5) :<br>y = 0,9x + 0,3<br>Coefficient directeur a = 0,9<br>Ordonnée à l’origine b = 0,3<br>Point moyen : G(3 ; 3)<br>Coefficient de corrélation : r = 0,9",
 		"latex": "y = 0.9x + 0.3"
 	},
 	{
 		"command": ".linreg 0,1,2 : 1,3,5",
 		"success": true,
-		"output": "Ajustement affine (n = 3) :\n  y = 2x + 1\n  Coefficient directeur a = 2\n  Ordonnée à l’origine b = 1\n  R² = 1",
-		"outputHtml": "Ajustement affine (n = 3) :<br>y = 2x + 1<br>Coefficient directeur a = 2<br>Ordonnée à l’origine b = 1<br>R² = 1",
+		"output": "Ajustement affine (n = 3) :\n  y = 2x + 1\n  Coefficient directeur a = 2\n  Ordonnée à l’origine b = 1\n  Point moyen : G(1 ; 3)\n  Coefficient de corrélation : r = 1",
+		"outputHtml": "Ajustement affine (n = 3) :<br>y = 2x + 1<br>Coefficient directeur a = 2<br>Ordonnée à l’origine b = 1<br>Point moyen : G(1 ; 3)<br>Coefficient de corrélation : r = 1",
 		"latex": "y = 2x + 1"
 	},
 	{
 		"command": ".linreg 1,2,3 : 6,4,2",
 		"success": true,
-		"output": "Ajustement affine (n = 3) :\n  y = −2x + 8\n  Coefficient directeur a = −2\n  Ordonnée à l’origine b = 8\n  R² = 1",
-		"outputHtml": "Ajustement affine (n = 3) :<br>y = −2x + 8<br>Coefficient directeur a = −2<br>Ordonnée à l’origine b = 8<br>R² = 1",
+		"output": "Ajustement affine (n = 3) :\n  y = −2x + 8\n  Coefficient directeur a = −2\n  Ordonnée à l’origine b = 8\n  Point moyen : G(2 ; 4)\n  Coefficient de corrélation : r = −1",
+		"outputHtml": "Ajustement affine (n = 3) :<br>y = −2x + 8<br>Coefficient directeur a = −2<br>Ordonnée à l’origine b = 8<br>Point moyen : G(2 ; 4)<br>Coefficient de corrélation : r = −1",
 		"latex": "y = -2x + 8"
 	},
 	{

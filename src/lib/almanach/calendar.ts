@@ -101,8 +101,40 @@ export const EXTRA_DAY_NAMES: Record<ExtraDay, string> = {
 	surnumeraire: 'Le Surnuméraire'
 };
 
-/** Fêtes datées de l'Almanach (section VIII), dans l'ordre de l'An */
+/**
+ * Fêtes datées de l'Almanach (section VIII, calendrier validé par David le
+ * 2026-10-04), dans l'ordre de l'An : les six Fêtes Provinciales et les
+ * événements transversaux d'un jour (province null). La Mobilisation Royale,
+ * période et non fête d'un jour, n'y figure pas.
+ */
 export const FEASTS: readonly Feast[] = [
+	{
+		id: 'grand-redemarrage',
+		name: 'Le Grand Redémarrage',
+		monthIndex: 0,
+		day: 10,
+		gregorian: '1ᵉʳ septembre',
+		province: 'Glitchistan',
+		canon: false
+	},
+	{
+		id: 'regate-de-la-passoire',
+		name: 'La Régate de la Passoire',
+		monthIndex: 1,
+		day: 26,
+		gregorian: '8 novembre',
+		province: 'Patatovie',
+		canon: false
+	},
+	{
+		id: 'isle-de-la-reunion',
+		name: 'La Journée de L’Isle de la Réunion Pataphysique',
+		monthIndex: 2,
+		day: 16,
+		gregorian: '20 décembre',
+		province: null,
+		canon: false
+	},
 	{
 		id: 'empochaille',
 		name: 'La Grande Empochaille',
@@ -122,8 +154,8 @@ export const FEASTS: readonly Feast[] = [
 		canon: false
 	},
 	{
-		id: 'phynanche',
-		name: 'La Phynanche Pataphysique',
+		id: 'poisson-a-phynances',
+		name: 'Le Poisson à Phynances',
 		monthIndex: 4,
 		day: 14,
 		gregorian: '1ᵉʳ avril',
@@ -134,9 +166,36 @@ export const FEASTS: readonly Feast[] = [
 		id: 'cheval-a-phynances',
 		name: 'Le Jubilé du Cheval à Phynances',
 		monthIndex: 4,
-		day: 17,
-		gregorian: '4 avril',
+		day: 37,
+		gregorian: '24 avril',
 		province: 'Pifométrie',
+		canon: false
+	},
+	{
+		id: 'foire-aux-polyedres',
+		name: 'La Foire aux Polyèdres',
+		monthIndex: 5,
+		day: 12,
+		gregorian: '21 mai',
+		province: 'Bedonstan',
+		canon: false
+	},
+	{
+		id: 'decervelage-supreme',
+		name: 'Le Décervelage Suprême',
+		monthIndex: 5,
+		day: 37,
+		gregorian: '15 juin',
+		province: null,
+		canon: false
+	},
+	{
+		id: 'proclamation-royale',
+		name: 'La Proclamation Royale',
+		monthIndex: 6,
+		day: 1,
+		gregorian: '1ᵉʳ juillet',
+		province: null,
 		canon: false
 	}
 ];

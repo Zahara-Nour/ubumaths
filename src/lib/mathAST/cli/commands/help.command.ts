@@ -244,7 +244,16 @@ export class HelpCommand extends BaseCommand {
 			'<div class="pl-2"><span class="text-cyan-400">.stats</span> <span class="text-foreground/70">- Statistiques (moyenne, médiane, quartiles…)</span></div>'
 		);
 		htmlParts.push(
-			'<div class="pl-2"><span class="text-cyan-400">.linreg</span> <span class="text-foreground/70">- Ajustement affine</span></div>'
+			'<div class="pl-2"><span class="text-cyan-400">.linreg</span> <span class="text-foreground/70">- Ajustement affine : droite, point moyen G, coefficient de corrélation r</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-4 text-foreground/70">.linreg 1,2,3,4 : 2,4,5,8 ; x = 6 ; y = 7 — prévisions (interpolation / extrapolation)</div>'
+		);
+		htmlParts.push(
+			'<div class="pl-4 text-foreground/70">.linreg 0,1,2,3 : 2.1,3,4.6,6.9 ; z = ln(y) — changement de variable : z = ln(y), y², √y, 1/y ; t = ln(x), x², √x, 1/x</div>'
+		);
+		htmlParts.push(
+			'<div class="pl-4 text-foreground/70">Dans les données, la virgule sépare les valeurs (point décimal : 2.1) ; dans une option, la virgule est décimale (x = 1,5)</div>'
 		);
 
 		// Keyboard shortcuts - inline

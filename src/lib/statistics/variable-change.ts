@@ -12,6 +12,8 @@
  * @module statistics/variable-change
  */
 
+import { readExactValue, toSafeNumber } from './bivariate';
+
 // =============================================================================
 // Types
 // =============================================================================
@@ -50,9 +52,83 @@ export interface DecimalFit {
  */
 export const MAX_COMPUTED_VALUE = 1e15;
 
+/**
+ * Changements de variable (Q170), tels que l'auteur les écrit, et leurs
+ * variantes (`y^2`, `sqrt(y)`), espaces retirées. Partagés par le bloc
+ * ```nuage et la commande `.ajustement` (PR c).
+ */
+const VARIABLE_CHANGES: { written: string; spellings: string[]; change: VariableChange }[] = (
+	[
+		['ln', (v: string) => [`ln(${v})`]],
+		['square', (v: string) => [`${v}²`, `${v}^2`]],
+		['sqrt', (v: string) => [`√${v}`, `√(${v})`, `sqrt(${v})`]],
+		['inverse', (v: string) => [`1/${v}`]]
+	] as const
+).flatMap(([fn, spell]) =>
+	(
+		[
+			['z', 'y'],
+			['t', 'x']
+		] as const
+	).map(([variable, on]) => ({
+		written: `${variable} = ${spell(on)[0]}`,
+		spellings: spell(on).map((form) => `${variable}=${form}`),
+		change: { variable, on, fn }
+	}))
+);
+
+/** Les huit formes, pour les messages : les quatre en z, puis les quatre en t */
+export const VARIABLE_CHANGE_LIST = [
+	...VARIABLE_CHANGES.filter((c) => c.change.variable === 'z'),
+	...VARIABLE_CHANGES.filter((c) => c.change.variable === 't')
+]
+	.map((c) => c.written)
+	.join(', ');
+
 // =============================================================================
 // Fonctions
 // =============================================================================
+
+/** `z = ln(y)`, `t=x^2`, `Z = SQRT(y)` : un des huit changements de variable, ou null */
+export function readVariableChange(text: string): VariableChange | null {
+	const compact = text.replace(/\s+/g, '').toLowerCase();
+	return VARIABLE_CHANGES.find((c) => c.spellings.includes(compact))?.change ?? null;
+}
+
+/** Écriture d'une fonction dans les messages : `ln(y)`, `y²`, `√y`, `1/y` */
+function changeName(change: VariableChange): string {
+	return VARIABLE_CHANGES.find(
+		(c) => c.change.fn === change.fn && c.change.on === change.on
+	)!.written.split(' = ')[1];
+}
+
+/**
+ * Une valeur interdite par le changement de variable, avec le point
+ * (« ln(y) : y = −2 au point 3 n’est pas strictement positif »), ou null.
+ * `texts` : les valeurs telles qu'écrites, toutes lisibles par `readExactValue`.
+ */
+export function changeDomainProblem(
+	change: VariableChange,
+	texts: readonly string[]
+): string | null {
+	const name = changeName(change);
+	const values = texts.map((text) => toSafeNumber(readExactValue(text)!));
+	if (change.fn === 'square') {
+		const signs = squaredSign(values);
+		return 'mixed' in signs
+			? `${name} : ${change.on} change de signe au point ${signs.mixed} (une seule branche de √ possible)`
+			: null;
+	}
+	const index = values.findIndex((v) => transformValue(change.fn, v) === null);
+	if (index === -1) return null;
+	const reason =
+		change.fn === 'ln'
+			? 'n’est pas strictement positif'
+			: change.fn === 'sqrt'
+				? 'est négatif'
+				: 'est nul';
+	return `${name} : ${change.on} = ${texts[index]} au point ${index + 1} ${reason}`;
+}
 
 /** Une valeur calculée : finie et pas trop grande, sinon 'overflow' */
 function computed(value: number): number | 'overflow' {

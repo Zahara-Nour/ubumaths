@@ -382,3 +382,12 @@ Manche 15, PR (c) — atelier, recommandations suivies (2026-10-04) :
      la fonction de la relation (traçable sur le nuage d'origine).
 177. Calcul par le module exact du bloc (`bivariate.ts` / `variable-change.ts`), arrondi au
      millième ; `fitAffine` reste pour ce qui en dépend.
+
+- **Manche 15 TERMINÉE** (2026-10-04) — statistique à deux variables (TCOMP-116 → 124) :
+  (a) bloc ```nuage #804 (nuage, G, moindres carrés exacts, r, prévisions ; graduations 1-2-5,
+milliers groupés ; revue : boucle des graduations bloquante corrigée) ; (b) changement de
+variable #810 (8 formes, courbe, `nuage: z`; revue : valeurs trop grandes → message, arrondi
+décimal exact) ; (c) atelier`.ajustement` #816 (r au lieu de R², G, prévisions, changement
+  de variable par écrit ; même arrondi tracé / affiché ; 100 points). Q176 révisée par David :
+  la carte ne trace pas la relation ; menu « Ajuster avec… » plus tard, sur besoin.
+  Le programme de maths complémentaires a désormais un outil pour chaque partie.

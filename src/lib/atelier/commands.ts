@@ -384,8 +384,10 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 		'linreg',
 		{
 			french: 'ajustement',
-			description: 'Ajustement affine de deux séries',
-			example: '.ajustement 1,2,3 : 2,4,6'
+			// PR c (Q173-Q177) : mêmes calculs et mêmes textes que le bloc ```nuage
+			description:
+				'Ajustement affine de deux séries : droite, point moyen G, r ; après « ; », prévisions (x = 10, y = 7) ou changement de variable (z = ln(y), t = x²…)',
+			example: '.ajustement 1,2,3,4,5,6 : 12,15,19,22,27,30 ; x = 8'
 		}
 	],
 	['exact', { french: 'exact', description: 'Passer aux valeurs exactes' }],
