@@ -1,0 +1,304 @@
+{
+	"title": "Intervalle de croissance ou de décroissance d'une fonction avec ln",
+	"description": "Signe de f′ pour x − a ln x, a ln x − bx, x ln x − ax sur ]0 ; +∞[ ; réponse en intervalle, bornes fermées ouvrables (pièges : domaine x > 0 oublié, sens, (x ln x)′)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-029", "TCOMP-025", "TCOMP-027", "TSPE-145", "TSPE-169", "TSPE-143"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Variations",
+	"level": 3,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles",
+			"openableBounds": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-{{a}}\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{a}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=1-\\dfrac{ {{a}} }{x}=\\dfrac{x-{{a}}}{x}$ ; sur $\\left]0\\,;+\\infty\\right[$, $x>0$, donc $f'(x)$ est du signe de $x-{{a}}$.",
+					"$f'(x)\\geqslant0\\iff x\\geqslant{{a}}$ : $f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;+\\infty\\right[}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-{{a}}\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **décroissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "]0;{{a}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=1-\\dfrac{ {{a}} }{x}=\\dfrac{x-{{a}}}{x}$, du signe de $x-{{a}}$ car $x>0$.",
+					"$f'(x)\\leqslant0\\iff 0<x\\leqslant{{a}}$ : $f$ est décroissante sur $\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{a}}\\right]}$ ($0$ est exclu : $\\ln 0$ n'existe pas)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}\\ln x-{{b}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "]0;{{eval:a/b}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=\\dfrac{ {{a}} }{x}-{{b}}=\\dfrac{ {{a}}-{{b}}x}{x}$, du signe de ${{a}}-{{b}}x$ car $x>0$.",
+					"$f'(x)\\geqslant0\\iff x\\leqslant{{eval:a/b}}$ : $f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{eval:a/b}}\\right]}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x\\ln x-{{a}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{if:a==2|e|e^{ {{eval:a-1}} }}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=1\\times\\ln x+x\\times\\dfrac{1}{x}-{{a}}=\\ln x-{{eval:a-1}}$.",
+					"$f'(x)\\geqslant0\\iff\\ln x\\geqslant{{eval:a-1}}\\iff x\\geqslant {{if:a==2|e|e^{ {{eval:a-1}} }}}$ (la fonction exponentielle est croissante).",
+					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{if:a==2|e|e^{ {{eval:a-1}} }}}\\,;+\\infty\\right[}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : x − 3 ln x → [3;+∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["[3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : borne ouverte ]3;+∞[ (openableBounds)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["]3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : intervalle de décroissance",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["]0;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : racine de f′ mal lue ([1/3;+∞[)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["[\\frac{1}{3};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : x − 3 ln x → ]0;3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["]0;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : ]0;3[ (borne ouverte)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["]0;3["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : domaine oublié ]−∞;3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["]-\\infty;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 0 fermé [0;3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["[0;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 ln x − 2x → ]0;3/2]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["]0;\\frac{3}{2}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : décimal 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["]0;1.5]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : quotient inversé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["]0;\\frac{2}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : sens inversé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["[\\frac{3}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : x ln x − 2x → [e;+∞[",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["[e;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : e^1 écrit",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["[e^{1};+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : x ln x − 3x → [e²;+∞[",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["[e^2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : (x ln x)′ = 1/x oublié le produit → [a;+∞[",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["[3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : ln 2 au lieu de e²",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["[\\ln 2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

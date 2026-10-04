@@ -1,0 +1,191 @@
+{
+	"title": "Continuité lue sur une courbe : saut ou point anguleux",
+	"description": "Reconnaître sur un graphique une discontinuité (saut) et distinguer continuité et dérivabilité (point anguleux : continue, non dérivable)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-018", "TSPE-154", "TSPE-155"],
+	"theme": "Fonctions",
+	"domain": "Continuité",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-3}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = 0.5*(x-{{c}})+{{k}} sur [{{eval:c-3}} ; {{c}}]   bleu\ng(x) = 0.5*(x-{{c}})+{{eval:k+2}} sur ]{{c}} ; {{eval:c+3}}]   bleu\ntaille: moyenne\ndescription: Courbe en deux morceaux de droites parallèles ; en x = {{c}}, la courbe saute de {{k}} à {{eval:k+2}}.\n```\n\nQue peut-on dire de la continuité de $f$ ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"choices": [
+				{
+					"content": "$f$ n'est pas continue en ${{c}}$."
+				},
+				{
+					"content": "$f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$."
+				},
+				{
+					"content": "$f$ n'est pas continue en ${{eval:c-3}}$ ni en ${{eval:c+3}}$, extrémités de l'intervalle."
+				},
+				{
+					"content": "$f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$, car elle est définie en ${{c}}$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Une fonction est continue sur un intervalle quand sa courbe se trace **sans lever le crayon**.",
+					"Ici, la courbe saute en $x={{c}}$ : \\textcolor{{{color:primary.0}}}{f\\text{ n'est pas continue en }{{c}}} (elle l'est sur $\\left[{{eval:c-3}}\\,;{{c}}\\right]$ et sur $\\left]{{c}}\\,;{{eval:c+3}}\\right]$)."
+				]
+			}
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-3}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{k}}-{{s}}*0.8*(x-{{c}}) sur [{{eval:c-3}} ; {{c}}]   bleu\ng(x) = {{k}}+{{s}}*0.8*(x-{{c}}) sur [{{c}} ; {{eval:c+3}}]   bleu\ntaille: moyenne\ndescription: Courbe en forme de V {{if:s>0|pointé vers le bas|pointé vers le haut}}, d'un seul tenant, avec un point anguleux en x = {{c}}.\n```\n\nQue peut-on dire de la continuité de $f$ ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"choices": [
+				{
+					"content": "$f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$."
+				},
+				{
+					"content": "$f$ n'est pas continue en ${{c}}$, car sa courbe y forme un angle."
+				},
+				{
+					"content": "$f$ n'est pas continue en ${{c}}$, car elle n'y est pas dérivable."
+				},
+				{
+					"content": "$f$ n'est continue que sur $\\left[{{eval:c-3}}\\,;{{c}}\\right[$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La courbe se trace **sans lever le crayon** : \\textcolor{{{color:primary.0}}}{f\\text{ est continue sur }\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]}.",
+					"Le point anguleux en $x={{c}}$ montre que $f$ n'y est pas **dérivable** (deux demi-tangentes différentes) : ce n'est pas un défaut de continuité. Une fonction dérivable est continue, mais une fonction continue n'est pas toujours dérivable."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : saut → pas continue en c",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : continue (saut non vu)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : extrémités",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : définie donc continue",
+			"variationIndex": 0,
+			"variables": {
+				"c": "-1",
+				"k": "-1"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : point anguleux → continue",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"k": "0",
+				"s": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : angle pris pour discontinuité",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"k": "0",
+				"s": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : non dérivable ⇒ non continue",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "1",
+				"s": "-1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : continue seulement d'un côté",
+			"variationIndex": 1,
+			"variables": {
+				"c": "-2",
+				"k": "-1",
+				"s": "-1"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"shuffleChoices": true
+	}
+}
