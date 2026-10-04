@@ -371,3 +371,14 @@ prévisions) ; (b) changement de variable ; (c) atelier : `.ajustement` complét
      `nuage: z` ; liste fixe ln(y), ln(x), y², x², √y, √x, 1/y, 1/x.
 171. Axes adaptés aux données ; `origine: oui`.
 172. Moyennes, a, b exacts (fractions), arrondis une fois (millième, `arrondi:`) ; r décimal.
+
+Manche 15, PR (c) — atelier, recommandations suivies (2026-10-04) :
+
+173. `.ajustement` / `.linreg` ET l'action « Ajuster » de la carte : r au lieu de R² (R² disparaît).
+174. Point moyen G ajouté aux deux endroits.
+175. `.ajustement X : Y ; x = 10 ; y = 7` : prévisions (mêmes textes / valeurs que le bloc,
+     sans pointillés).
+176. `.ajustement X : Y ; z = ln(y)` (8 formes du bloc) : z = ax + b + relation ; la carte crée
+     la fonction de la relation (traçable sur le nuage d'origine).
+177. Calcul par le module exact du bloc (`bivariate.ts` / `variable-change.ts`), arrondi au
+     millième ; `fitAffine` reste pour ce qui en dépend.
