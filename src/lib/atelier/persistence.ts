@@ -15,7 +15,7 @@
 import { z } from 'zod';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH } from './types';
-import { storedDisplaySchema, type StoredDisplay } from './display';
+import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
 // =============================================================================
@@ -80,7 +80,9 @@ const storedObjectSchema = z.object({
 	 */
 	mode: z.enum(['explicit', 'recurrence']).optional().catch(undefined),
 	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
-	firstTerm: z.string().max(20).optional().catch(undefined)
+	firstTerm: z.string().max(20).optional().catch(undefined),
+	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
+	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined)
 });
 
 /**
@@ -102,6 +104,7 @@ export interface StoredObject {
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
+	readonly sequenceDisplay?: unknown;
 }
 
 export interface AtelierState {

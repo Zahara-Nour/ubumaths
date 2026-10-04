@@ -14,7 +14,8 @@
 import { z } from 'zod';
 import { CURVE_COLORS, getNextSlot } from '$lib/grapheur/colors';
 import { COORDINATE_LIMIT, LINE_STYLES, LINE_WIDTHS } from '$lib/grapheur/types';
-import type { CurveDisplay } from './types';
+import type { CurveDisplay, SequenceDisplay } from './types';
+import { DEFAULT_COBWEB_STEPS } from '$lib/grapheur/sequence';
 
 // =============================================================================
 // Constantes
@@ -79,7 +80,9 @@ const DEFAULTS: Omit<CurveDisplay, 'color' | 'lineStyle'> = {
  * premier couple encore libre parmi ceux des autres fonctions. Sans ça, deux
  * courbes tracées l'une après l'autre auraient la même apparence.
  */
-export function newDisplay(others: readonly CurveDisplay[]): CurveDisplay {
+export function newDisplay(
+	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
+): CurveDisplay {
 	const slot = getNextSlot(others);
 	return { color: slot.color, lineStyle: slot.lineStyle, ...DEFAULTS };
 }
@@ -140,5 +143,60 @@ export function plainDisplay(display: CurveDisplay): CurveDisplay {
 			display.integral === null ? null : { from: display.integral.from, to: display.integral.to },
 		showOsculating: display.showOsculating,
 		showArcLength: display.showArcLength
+	};
+}
+
+// =============================================================================
+// Suites (lot 5b)
+// =============================================================================
+
+/** Plus d'escalier que ça ne se lit plus. */
+const MAX_COBWEB_STEPS = 100;
+
+/** Ce qu'un réglage complet de suite doit valoir — pour la relecture. */
+export const sequenceDisplaySchema = z.object({
+	color: z.enum(CURVE_COLORS),
+	lineStyle: z.enum(LINE_STYLES),
+	lineWidth: z.number().refine((w) => (LINE_WIDTHS as readonly number[]).includes(w)),
+	representation: z.enum(['ranks', 'cobweb']),
+	cobwebSteps: z.number().int().min(1).max(MAX_COBWEB_STEPS)
+});
+
+const sequencePatchSchema = sequenceDisplaySchema.partial().strict();
+
+/** Les réglages d'une suite qu'on trace pour la première fois : un nuage. */
+export function newSequenceDisplay(
+	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
+): SequenceDisplay {
+	const slot = getNextSlot(others);
+	return {
+		color: slot.color,
+		lineStyle: slot.lineStyle,
+		lineWidth: DEFAULT_LINE_WIDTH,
+		representation: 'ranks',
+		cobwebSteps: DEFAULT_COBWEB_STEPS
+	};
+}
+
+/** Lire une modification venue d'ailleurs (même règle que `readDisplayPatch`). */
+export function readSequenceDisplayPatch(
+	patch: unknown
+): { ok: true; patch: Partial<SequenceDisplay> } | { ok: false; message: string } {
+	const parsed = sequencePatchSchema.safeParse(patch);
+	if (!parsed.success) return { ok: false, message: 'Ce réglage de la suite n’est pas valable.' };
+	const patchOut = Object.fromEntries(
+		Object.entries(parsed.data).filter(([, value]) => value !== undefined)
+	) as Partial<SequenceDisplay>;
+	return { ok: true, patch: patchOut };
+}
+
+/** Une copie faite de valeurs ordinaires (clonable). */
+export function plainSequenceDisplay(display: SequenceDisplay): SequenceDisplay {
+	return {
+		color: display.color,
+		lineStyle: display.lineStyle,
+		lineWidth: display.lineWidth,
+		representation: display.representation,
+		cobwebSteps: display.cobwebSteps
 	};
 }

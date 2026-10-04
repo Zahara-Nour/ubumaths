@@ -160,6 +160,22 @@ export interface SequenceObject extends AtelierObjectBase {
 	 * pour une suite explicite.
 	 */
 	readonly firstTerm: string;
+	/**
+	 * Réglages du tracé, nés au premier tracé (lot 5b, U2) : nuage des rangs ou
+	 * escalier, comme le panneau du grapheur.
+	 */
+	readonly display?: SequenceDisplay;
+}
+
+/** Comment une suite est dessinée — repris du panneau du grapheur (U2). */
+export interface SequenceDisplay {
+	readonly color: CurveColor;
+	readonly lineStyle: LineStyle;
+	readonly lineWidth: number;
+	/** Nuage des points (n, uₙ), ou escalier (récurrence seulement). */
+	readonly representation: 'ranks' | 'cobweb';
+	/** Nombre de marches de l'escalier. */
+	readonly cobwebSteps: number;
 }
 
 export interface ListObject extends AtelierObjectBase {

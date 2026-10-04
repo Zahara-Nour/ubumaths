@@ -313,6 +313,46 @@ récurrence répondait par une erreur en anglais (« free variables: u »,
     par le premier terme (comme les définitions, comportement antérieur).
 - Suites : 1 245 serveur, 263 navigateur ; `check:incremental` 0 ; lint propre.
 
+## Lot 5b — les suites : carte et tracé
+
+Branche `feat/atelier-suites-carte`, worktree `../ubumaths-wt-suites2`.
+Lot 5a mergé (#805).
+
+- [x] `SequenceObject.display` (couleur, trait, nuage ou escalier, marches),
+      né au premier tracé, couples couleur/style partagés avec les fonctions ;
+      `setSequenceDisplay` validé ; escalier refusé avec sa raison sur une
+      suite explicite ou une récurrence qui dépend de n (le `n` de `u_n` ne
+      compte pas — trouvé par le test).
+- [x] `plot-sync` pose les suites dans le grapheur (`addSequence` /
+      `updateSequence`, n'écrit que ce qui diffère) : LaTeX `u_n` produit par
+      `graphLatexOf` (noms substitués, `u(n)` réécrit), premier terme
+      numérique (`firstTermValue`, qui suit un curseur), masquée tant qu'elle
+      ne peut rien produire.
+- [x] « Premiers termes » (U3) : dix termes dans Calcul, sans changer de vue ;
+      « Tracer en nuage / escalier » ne sont plus des boutons (👁 + U2).
+- [x] Carte : `u(n+1) =` / `u(n) =` selon le mode, champ MathLive (vérifié :
+      `0{,}5u\left(n\right)+3` donne les bons termes), mode, rang, premier
+      terme (nombre ou valeur), 👁 et pastille, « Sur le graphique ».
+- Tests : 18 serveur (15 rouges avant) + 11 navigateur (10 rouges avant) ; un
+  ancien test (les deux boutons de tracé) mis en accord. Suites : 367
+  navigateur, 1 263 serveur ; `check:incremental` 0 ; lint propre.
+- [x] **Tranché par David (revue du lot 5b)** : le mode CHOISI d'une suite est
+      gardé à la modification, sauf si la définition se met à se citer
+      (→ récurrence). Calcul dit le mode par la forme tapée : `u(n) =` remet en
+      explicite (le cas B1 du lot 5a reste couvert), `u(n+1) =` en récurrence.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord :
+  - escalier refusé à tort pour une suite `p(n)` (lue p·(n), noms de
+    fonctions absents) ;
+  - suite « ok » qui ne dessinait rien : le moteur garde l'ARBRE substitué
+    (`substitutedAstOf`) au lieu de passer par le texte — `e^(-n)` devenait
+    `\euler^{-n}`, illisible ; `v_n` d'une autre suite explicite est remplacé ;
+    une suite qui ne se calcule ou ne se trace pas est en erreur ;
+  - a11y : noms qui commencent par le mot visible (« nuage », « escalier »,
+    « u(0) = », « marches », le mode) ; refus relié au seul champ fautif,
+    annoncé en quittant le champ (plus d'alerte à chaque touche) ; coche ✓ et
+    bordure pour l'état choisi ; 44 px au doigt ; focus visible.
+- Suites : 368 navigateur, 1 269 serveur ; `check:incremental` 0 ; lint propre.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

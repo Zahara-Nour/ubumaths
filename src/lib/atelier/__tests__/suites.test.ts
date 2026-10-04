@@ -287,13 +287,27 @@ describe('revue du lot 5a', () => {
 		expect(output(calc(atelier, 'u(3)'))).toBe('7');
 	});
 
-	it('modifier la définition redéduit le mode', () => {
+	// Tranché par David (2026-10-04, revue du lot 5b) : le mode CHOISI est
+	// gardé — sauf si la définition se met à se citer (→ récurrence). C'est
+	// Calcul qui dit le mode par la forme tapée (`u(n) =` / `u(n+1) =`), et le
+	// test précédent (B1) le vérifie.
+	it('modifier la définition garde le mode choisi', () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'sequence', name: 'u', definition: 'u_n + 2' }, 'text');
+		atelier.create({ kind: 'sequence', name: 'u', definition: '3' }, 'text');
+		atelier.setSequence('u', { mode: 'recurrence', firstTerm: '1' });
 
-		atelier.update('u', '2n + 1', 'text');
+		atelier.update('u', '4', 'text');
 
-		expect(sequenceOf(atelier).mode).toBe('explicit');
+		expect(sequenceOf(atelier).mode).toBe('recurrence');
+	});
+
+	it('une définition qui se met à se citer devient une récurrence', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'u', definition: '2n + 1' }, 'text');
+
+		atelier.update('u', 'u_n + 2', 'text');
+
+		expect(sequenceOf(atelier).mode).toBe('recurrence');
 	});
 
 	it('`u(n+1) = 3` reste une récurrence constante', () => {
