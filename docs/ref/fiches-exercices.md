@@ -536,7 +536,10 @@ variables tirées sont résolues dans `integrand`, `interval`, `equation`, `init
 Corrigés dans le moteur (ne plus contourner) : `\frac{x^3}{3}` et `\frac{1}{3}x^3` (et
 `\frac{-x^2}{4}`, `-\frac{1}{4}x^2`) sont une seule forme dans une case ordinaire, une fraction
 simplifiable restant perfectible (2026-10-04) ; `\ln|x|` a la forme de `\ln(x)` quand
-`options.answerAssumptions` déclare x > 0 (2026-10-04) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
+`options.answerAssumptions` déclare x > 0 (2026-10-04) ; `\ln 9` et `2\ln 3` (et `\ln 8` /
+`3\ln 2`, `\ln\frac{1}{2}` / `-\ln 2`, `3\ln 4` / `\ln 64`) sont une seule forme : plus besoin
+de `form: "off"` pour eux (2026-10-04 ; `\ln 6` / `\ln 2+\ln 3` et `\ln\frac{4}{3}` /
+`\ln 4-\ln 3` restent deux formes) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
 cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code
 et liste dans l'énoncé d'une question à trous (#607).

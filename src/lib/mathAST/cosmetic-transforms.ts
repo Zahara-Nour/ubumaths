@@ -25,7 +25,8 @@ import {
 	subtract,
 	percentage,
 	variable,
-	superscript
+	superscript,
+	func
 } from './factory';
 import {
 	isDivision,
@@ -1111,6 +1112,154 @@ function absoluteUnderAssumptionsAST(assumptions: AnswerAssumptions | undefined)
 	};
 }
 
+/** Plus grand entier écrit en argument d'un ln que la règle des puissances lit */
+const MAX_LOG_ARGUMENT = 1e12;
+
+/** Multiple rationnel `num/den` (den > 0, irréductible) de `\ln base` */
+interface LogMultiple {
+	num: number;
+	den: number;
+	base: number;
+}
+
+function gcd(a: number, b: number): number {
+	return b === 0 ? Math.abs(a) : gcd(b, a % b);
+}
+
+function logMultiple(num: number, den: number, base: number): LogMultiple {
+	const g = gcd(num, den) || 1;
+	const sign = den < 0 ? -1 : 1;
+	return { num: (sign * num) / g, den: (sign * den) / g, base };
+}
+
+/** Entier positif écrit en chiffres (`9`), sinon null */
+function writtenInteger(node: MathNode): number | null {
+	if (!isNumber(node) || !/^\d+$/.test(node.value)) return null;
+	const value = Number(node.value);
+	return Number.isSafeInteger(value) && value <= MAX_LOG_ARGUMENT ? value : null;
+}
+
+/** `n = b^k` avec `b` qui n'est pas lui-même une puissance : `[b, k]` (`8` → `[2, 3]`) */
+function perfectPower(n: number): [number, number] {
+	for (let k = Math.floor(Math.log2(n)); k >= 2; k--) {
+		const b = Math.round(n ** (1 / k));
+		if (b >= 2 && b ** k === n) return [b, k];
+	}
+	return [n, 1];
+}
+
+/**
+ * Argument d'un ln lu comme `b^r` (b entier ≥ 2 qui n'est pas une puissance, r
+ * rationnel) : entier (`9`), puissance entière d'un entier (`3^2`), inverse
+ * d'un entier (`\frac{1}{2}`), racine d'un entier (`\sqrt{3}`, `\sqrt[3]{2}`),
+ * sinon null.
+ */
+function logArgument(node: MathNode): LogMultiple | null {
+	const integer = writtenInteger(node);
+	if (integer !== null) {
+		if (integer < 2) return null;
+		const [base, k] = perfectPower(integer);
+		return logMultiple(k, 1, base);
+	}
+	if (node.type === 'superscript') {
+		const exponent = writtenInteger(node.superscript);
+		const inner = writtenInteger(node.base) !== null ? logArgument(node.base) : null;
+		return exponent !== null && exponent > 0 && inner
+			? logMultiple(inner.num * exponent, inner.den, inner.base)
+			: null;
+	}
+	if (
+		isDivision(node) &&
+		node.displayStyle === 'fraction' &&
+		writtenInteger(node.numerator) === 1
+	) {
+		const inner = writtenInteger(node.denominator) !== null ? logArgument(node.denominator) : null;
+		return inner ? logMultiple(-inner.num, inner.den, inner.base) : null;
+	}
+	if (node.type === 'function' && node.name === 'sqrt' && node.args.length === 1) {
+		const index = node.base ? writtenInteger(node.base) : 2;
+		const inner = writtenInteger(node.args[0]) !== null ? logArgument(node.args[0]) : null;
+		return index !== null && index >= 2 && inner
+			? logMultiple(inner.num, inner.den * index, inner.base)
+			: null;
+	}
+	return null;
+}
+
+/** `\ln(u)` d'argument lisible par `logArgument`, sinon null */
+function lnOfPower(node: MathNode): LogMultiple | null {
+	if (node.type !== 'function' || node.name !== 'ln' || node.args.length !== 1) return null;
+	if (node.power || node.base) return null;
+	return logArgument(node.args[0]);
+}
+
+/** Coefficient d'un ln : entier non nul, fraction de deux entiers, ou leur opposé */
+function logCoefficient(node: MathNode): [number, number] | null {
+	if (isOpposite(node)) {
+		const inner = logCoefficient(node.operand);
+		return inner && [-inner[0], inner[1]];
+	}
+	const integer = writtenInteger(node);
+	if (integer !== null) return integer === 0 ? null : [integer, 1];
+	if (isDivision(node) && node.displayStyle === 'fraction') {
+		const num = writtenInteger(node.numerator);
+		const den = writtenInteger(node.denominator);
+		return num !== null && den !== null && num !== 0 && den !== 0 ? [num, den] : null;
+	}
+	return null;
+}
+
+/** `\ln(u)`, `-\ln(u)`, `k\ln(u)` (produit IMPLICITE) : multiple de `\ln b`, sinon null */
+function logTerm(node: MathNode): LogMultiple | null {
+	if (isOpposite(node)) {
+		const inner = logTerm(node.operand);
+		return inner && { ...inner, num: -inner.num };
+	}
+	if (isMultiplication(node) && node.displayStyle === 'implicit') {
+		const coefficient = logCoefficient(node.left);
+		const log = coefficient && lnOfPower(node.right);
+		return coefficient && log
+			? logMultiple(coefficient[0] * log.num, coefficient[1] * log.den, log.base)
+			: null;
+	}
+	return lnOfPower(node);
+}
+
+/** Écriture unique de `|num/den|·\ln base` : `\ln 3`, `2\ln 3`, `\frac{1}{2}\ln 3` */
+function logTermNode({ num, den, base }: LogMultiple): MathNode {
+	const ln = func('ln', [number(base)]);
+	const abs = Math.abs(num);
+	if (den === 1 && abs === 1) return ln;
+	const coefficient = den === 1 ? number(abs) : divide(number(abs), number(den), 'fraction');
+	return multiply(coefficient, ln, 'implicit');
+}
+
+/**
+ * Une seule écriture du logarithme d'une puissance pour comparer les formes :
+ * `\ln 9`, `\ln(3^2)` et `2\ln 3` deviennent `2\ln 3` ; `\ln\frac{1}{2}` devient
+ * `-\ln 2` ; `\ln\sqrt{3}` devient `\frac{1}{2}\ln 3` ; `3\ln 4` et `\ln 64`
+ * deviennent `6\ln 2`. Ce sont des notations, pas des formes (défaut validé par
+ * David le 2026-10-04, sœur des règles du monôme fractionnaire et des angles en π).
+ * Placée APRÈS les contraintes : `\frac{2}{4}\ln 3` reste signalé par
+ * `reducedFractions`. Exclus (gardent leur jugement) : `\ln(ab)` / `\ln a+\ln b`,
+ * `\ln\frac{a}{b}` (a ≠ 1) / `\ln a-\ln b`, `\frac{\ln 3}{2}`, `\ln e^{2}`, un
+ * produit explicite. Une forme imposée (`requiredForm`) ne passe pas par ici.
+ */
+function unifyLogPowerNotationAST(ast: MathNode): MathNode {
+	return mapNodeTopDown(ast, (node) => {
+		// a + (−k\ln b) → a − k\ln b ; a − (−k\ln b) → a + k\ln b
+		if (node.type === 'addition' || node.type === 'subtraction') {
+			const term = logTerm(node.right);
+			if (!term || term.num > 0) return node;
+			const positive = logTermNode(term);
+			return node.type === 'addition' ? subtract(node.left, positive) : add(node.left, positive);
+		}
+		const term = logTerm(node);
+		if (!term) return node;
+		return term.num < 0 ? opposite(logTermNode(term)) : logTermNode(term);
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
@@ -1128,6 +1277,7 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		{ transform: removeSignsAST, constraintId: 'signs' },
 		{ transform: removeFactorsOneAST, constraintId: 'factorOne' },
 		{ transform: removeMultOperatorAST, constraintId: 'products' },
+		{ transform: unifyLogPowerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
 	];
 }

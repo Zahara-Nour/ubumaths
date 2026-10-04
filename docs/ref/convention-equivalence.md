@@ -177,6 +177,20 @@ faux positifs), 3 680 faux → vrai (tous vérifiés numériquement). Échantill
 0 écart. Seconde passe après la revue de #524 (exposants, `log_b(b^u)`) : 70 194 paires, 0 faux
 positif ; 177 vrai → faux (exactement les 177 faux positifs de `main`), 4 051 faux → vrai.
 
+**La forme : `\ln 9` et `2\ln 3`** (2026-10-04). Dans une case ordinaire, le logarithme d'une
+puissance et le multiple d'un logarithme sont une seule écriture (`unifyLogPowerNotationAST`,
+`cosmetic-transforms.ts`, sœur des règles du monôme fractionnaire et des angles en π) : `\ln 9` ≡
+`2\ln 3`, `\ln 8` ≡ `3\ln 2`, `\ln(3^2)` ≡ `2\ln 3`, `\ln\frac{1}{2}` ≡ `-\ln 2`, `3\ln 4` ≡
+`\ln 64` ≡ `6\ln 2`, `\ln\sqrt{3}` ≡ `\frac{1}{2}\ln 3` (argument entier, puissance d'entier,
+inverse d'entier, racine d'entier ; coefficient entier ou fraction d'entiers). Placée après les
+contraintes : `\frac{2}{4}\ln 3` reste perfectible. Exclus, jugés comme avant : `\ln 6` /
+`\ln 2+\ln 3`, `\ln\frac{4}{3}` / `\ln 4-\ln 3`, `\frac{\ln 3}{2}`, `\ln e^{2}`, un produit
+explicite ; une forme imposée (`requiredForm`, ex. `{ "pattern": "u*ln(v)" }`) distingue toujours.
+Limite de VALEUR (hors périmètre, `simplify` non touché) : `areEquivalent` ne relie pas encore
+`\ln\sqrt{3}` et `\frac{1}{2}\ln 3` (« faux » avant comme après). Mesure : 25 111 verdicts sur
+1 711 modèles (dépôt + prod du 2026-10-04 en lecture), 0 changement réel ; 20 changements, tous
+sur des modèles synthétiques `a\ln(n)` (bad_form → correct).
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :
