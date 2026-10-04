@@ -1,0 +1,410 @@
+{
+	"title": "Espace : intersection d'une droite et d'un plan",
+	"description": "Reporter une représentation paramétrique dans l'équation du plan : paramètre t puis coordonnées du point d'intersection (pièges : signe de t, t mal reporté, point de la droite recopié)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-061", "TSPE-091", "TSPE-099", "TSPE-100"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Intersections",
+	"level": 2,
+	"status": "draft",
+	"delay": 150,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t=?$ et $I(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "z0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t0",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:x0+t0*u1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:y0+t0*u2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:z0+t0*u3}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:-(a*ix+b*iy+c*iz)}}"
+				}
+			],
+			"conditions": ["a*u1+b*u2+c*u3 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t0}}"
+				},
+				{
+					"expectedAnswer": "{{ix}}"
+				},
+				{
+					"expectedAnswer": "{{iy}}"
+				},
+				{
+					"expectedAnswer": "{{iz}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On reporte $x$, $y$, $z$ dans l'équation de $\\mathcal{P}$ et on regroupe les termes en $t$.",
+					"Soit ${{eval:a*u1+b*u2+c*u3}}t{{eval:a*x0+b*y0+c*z0+d;+}}=0$, donc $\\textcolor{{{color:primary.0}}}{ t={{t0}} }$.",
+					"En remplaçant $t$ par ${{t0}}$ dans la représentation : $\\textcolor{{{color:primary.0}}}{ I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}}) }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$, et le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$.\n\nLa droite $(AB)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "z0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t0",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:x0+t0*u1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:y0+t0*u2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:z0+t0*u3}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:-(a*ix+b*iy+c*iz)}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:x0+u1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:y0+u2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:z0+u3}}"
+				}
+			],
+			"conditions": ["a*u1+b*u2+c*u3 != 0", "t0 != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ix}}"
+				},
+				{
+					"expectedAnswer": "{{iy}}"
+				},
+				{
+					"expectedAnswer": "{{iz}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ dirige $(AB)$ : $(AB)$ admet la représentation $x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}$, $y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}$, $z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}$.",
+					"En reportant dans l'équation de $\\mathcal{P}$ : ${{eval:a*u1+b*u2+c*u3}}t{{eval:a*x0+b*y0+c*z0+d;+}}=0$, donc $t={{t0}}$.",
+					"$\\textcolor{{{color:primary.0}}}{ I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}}) }$"
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$ et le plan $\\mathcal{P}$ d'équation $z={{h}}$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "z0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u3",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "t0",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:z0+t0*u3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:x0+t0*u1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:y0+t0*u2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ix}}"
+				},
+				{
+					"expectedAnswer": "{{iy}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$z={{h}}$ donne ${{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}={{h}}$, donc $t={{t0}}$.",
+					"$x={{x0}}+{{u1;()}}\\times{{t0;()}}$, $y={{y0}}+{{u2;()}}\\times{{t0;()}}$ : $\\textcolor{{{color:primary.0}}}{ I({{ix}}\\,;\\,{{iy}}\\,;\\,{{h}}) }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : t = 2, I(3 ; -2 ; 4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["2", "3", "-2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe de t",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["-2", "-1", "2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : point de paramètre 0 recopié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["2", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : I(3 ; -2 ; 4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["3", "-2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : A recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : B recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["2", "-1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : I(3 ; -2 ; 4)",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["3", "-2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : t pris pour la cote",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "1",
+				"y0": "0",
+				"z0": "2",
+				"u1": "1",
+				"u2": "-1",
+				"u3": "1",
+				"t0": "2"
+			},
+			"answers": ["5", "-4", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

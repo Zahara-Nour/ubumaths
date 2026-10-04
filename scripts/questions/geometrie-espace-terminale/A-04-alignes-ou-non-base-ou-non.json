@@ -1,0 +1,314 @@
+{
+	"title": "Espace : points alignés ? vecteurs formant une base ?",
+	"description": "Décider (QCM) si trois points sont alignés, si trois vecteurs forment une base de l'espace (colinéarité, coplanarité par un système)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-057", "TSPE-062", "TSPE-064", "TSPE-099", "TSPE-100"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Colinéarité et coplanarité",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nLes points $A$, $B$ et $C$ sont-ils alignés ?",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "w1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "w3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+w3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+k*w1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+k*w2+o}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+k*w3}}"
+				}
+			],
+			"choices": [
+				{
+					"content": "Oui, les points $A$, $B$ et $C$ sont alignés."
+				},
+				{
+					"content": "Non, les points $A$, $B$ et $C$ ne sont pas alignés."
+				}
+			],
+			"correctChoiceIndex": ["{{o}}"],
+			"correction": {
+				"steps": [
+					"$A$, $B$, $C$ sont alignés si et seulement si $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires. $\\overrightarrow{AB}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:k*w1}}\\\\{{eval:k*w2+o}}\\\\{{eval:k*w3}}\\end{pmatrix}$.",
+					"Les abscisses imposent $\\overrightarrow{AC}={{k}}\\,\\overrightarrow{AB}$ si les vecteurs sont colinéaires. Or ${{k}}\\times{{w2;()}}={{eval:k*w2}}{{if:o==0|=}}{{if:o==1|\\neq}}{{eval:k*w2+o}}$.",
+					"{{if:o==0|On a bien $\\overrightarrow{AC}={{k}}\\,\\overrightarrow{AB}$ : les points **sont alignés**.}}{{if:o==1|Les vecteurs ne sont pas colinéaires : les points **ne sont pas alignés**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$ et $\\vec{w}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$, $\\vec{v}$, $\\vec{w}$ forment-ils une base de l'espace ?",
+			"variables": [
+				{
+					"name": "u2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1"
+				},
+				{
+					"name": "v2",
+					"expression": "1"
+				},
+				{
+					"name": "pa",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "pb",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:pa*u1+pb*v1}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:pa*u2+pb*v2}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:pa*u3+pb*v3+o}}"
+				}
+			],
+			"conditions": ["u2*v1 != 1"],
+			"choices": [
+				{
+					"content": "Oui, $(\\vec{u},\\vec{v},\\vec{w})$ est une base de l'espace."
+				},
+				{
+					"content": "Non, ces trois vecteurs ne forment pas une base."
+				}
+			],
+			"correctChoiceIndex": ["{{eval:1-o}}"],
+			"correction": {
+				"steps": [
+					"$\\vec{u}$ et $\\vec{v}$ ne sont pas colinéaires. Les trois vecteurs forment une base si et seulement si $\\vec{w}$ ne s'écrit pas $a\\,\\vec{u}+b\\,\\vec{v}$ (vecteurs non coplanaires).",
+					"Les deux premières coordonnées de $\\vec{w}=a\\,\\vec{u}+b\\,\\vec{v}$ donnent $a={{pa}}$ et $b={{pb}}$. Troisième : ${{pa}}\\times{{u3;()}}+{{pb;()}}\\times{{v3;()}}={{eval:pa*u3+pb*v3}}{{if:o==0|=}}{{if:o==1|\\neq}}{{w3}}$.",
+					"{{if:o==0|$\\vec{w}=a\\,\\vec{u}+b\\,\\vec{v}$ avec $a={{pa}}$ et $b={{pb}}$ : les vecteurs sont coplanaires, ils **ne forment pas une base**.}}{{if:o==1|Aucun couple $(a\\,;b)$ ne convient : les vecteurs ne sont pas coplanaires, ils **forment une base**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : alignés → Oui",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1",
+				"k": "3",
+				"o": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : alignés, Non coché",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1",
+				"k": "3",
+				"o": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : non alignés → Non",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1",
+				"k": "3",
+				"o": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : non alignés, Oui coché",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1",
+				"k": "3",
+				"o": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : coplanaires → Non",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1",
+				"o": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : coplanaires, Oui coché",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1",
+				"o": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : base → Oui",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1",
+				"o": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : base, Non coché",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1",
+				"o": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

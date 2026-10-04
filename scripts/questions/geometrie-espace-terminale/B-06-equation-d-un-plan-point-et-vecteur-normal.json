@@ -1,0 +1,331 @@
+{
+	"title": "Espace : équation cartésienne d'un plan (calculer d)",
+	"description": "Plan passant par un point, de vecteur normal donné (aussi plan médiateur, plan parallèle) : a, b, c imposés, l'élève calcule d (pièges : signe de d, z oublié, A au lieu du milieu)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-075", "TSPE-085", "TSPE-092", "TSPE-095"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Équation cartésienne d'un plan",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A\\in\\mathcal{P}$ : ses coordonnées vérifient l'équation, donc ${{a}}\\times{{ax;()}}+{{b;()}}\\times{{ay;()}}+{{c;()}}\\times{{az;()}}+d=0$, soit ${{eval:a*ax+b*ay+c*az}}+d=0$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ d={{eval:-(a*ax+b*ay+c*az)}} }$ et $\\mathcal{P}$ : ${{a}}x+({{b}})y+({{c}})z+({{dd}})=0$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nLe plan médiateur de $[AB]$ a une équation de la forme ${{n1}}x+({{n2}})y+({{n3}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "w1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "w3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:2*w1}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:2*w2}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:2*w3}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+n1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+n2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+n3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:az+w3}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(n1*ix+n2*iy+n3*iz)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le plan médiateur de $[AB]$ passe par le milieu $I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}})$ et admet $\\overrightarrow{AB}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix}$ pour vecteur normal.",
+					"$I$ appartient au plan : ${{n1}}\\times{{ix;()}}+{{n2;()}}\\times{{iy;()}}+{{n3;()}}\\times{{iz;()}}+d=0$, donc $\\textcolor{{{color:primary.0}}}{ d={{eval:-(n1*ix+n2*iy+n3*iz)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le plan $\\mathcal{Q}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{q}})=0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*ax+b*ay+c*az+q != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{P}$ est parallèle à $\\mathcal{Q}$ : il a le même vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$, mais pas le même $d$ ($A\\notin\\mathcal{Q}$).",
+					"$A\\in\\mathcal{P}$ : ${{a}}\\times{{ax;()}}+{{b;()}}\\times{{ay;()}}+{{c;()}}\\times{{az;()}}+d=0$, donc $\\textcolor{{{color:primary.0}}}{ d={{eval:-(a*ax+b*ay+c*az)}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : d = 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe de d (-8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : z oublié (d = 2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : d = -10",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "-1",
+				"w3": "2"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : A au lieu du milieu (d = 2)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "-1",
+				"w3": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : signe",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "-1",
+				"w3": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : d = -2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"ax": "3",
+				"ay": "0",
+				"az": "1",
+				"q": "5"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : d de Q recopié (5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"ax": "3",
+				"ay": "0",
+				"az": "1",
+				"q": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : signe",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"ax": "3",
+				"ay": "0",
+				"az": "1",
+				"q": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

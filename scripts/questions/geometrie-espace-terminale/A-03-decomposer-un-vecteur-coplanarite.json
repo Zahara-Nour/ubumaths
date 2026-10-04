@@ -1,0 +1,266 @@
+{
+	"title": "Espace : décomposer un vecteur, vecteurs coplanaires",
+	"description": "Trouver a et b tels que w = a u + b v, ou AD = a AB + b AC pour un point D du plan (ABC) (pièges : a et b échangés, signe)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-056", "TSPE-058", "TSPE-064", "TSPE-099", "TSPE-100"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Coplanarité, décomposition",
+	"level": 2,
+	"status": "draft",
+	"delay": 120,
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$ et $\\vec{w}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$.\n\nDétermine les réels $a$ et $b$ tels que $\\vec{w}=a\\,\\vec{u}+b\\,\\vec{v}$ (les trois vecteurs sont donc coplanaires).\n\n$a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "u2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1"
+				},
+				{
+					"name": "v2",
+					"expression": "1"
+				},
+				{
+					"name": "pa",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "pb",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:pa*u1+pb*v1}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:pa*u2+pb*v2}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:pa*u3+pb*v3}}"
+				}
+			],
+			"conditions": ["u2*v1 != 1", "pa != pb", "abs(u3)+abs(v3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{pa}}"
+				},
+				{
+					"expectedAnswer": "{{pb}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{w}=a\\,\\vec{u}+b\\,\\vec{v}$ s'écrit, coordonnée par coordonnée : $a\\times{{u1;()}}+b\\times{{v1;()}}={{w1}}$, $a\\times{{u2;()}}+b\\times{{v2;()}}={{w2}}$ et $a\\times{{u3;()}}+b\\times{{v3;()}}={{w3}}$.",
+					"Les deux premières équations donnent $a={{pa}}$ et $b={{pb}}$ ; on vérifie la troisième : ${{pa}}\\times{{u3;()}}+{{pb;()}}\\times{{v3;()}}={{w3}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ a={{pa}} }$ et $\\textcolor{{{color:primary.0}}}{ b={{pb}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$, $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$ et $D({{dx}}\\,;\\,{{dy}}\\,;\\,{{dz}})$.\n\nLe point $D$ appartient au plan $(ABC)$ : détermine les réels $a$ et $b$ tels que $\\overrightarrow{AD}=a\\,\\overrightarrow{AB}+b\\,\\overrightarrow{AC}$.\n\n$a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "v1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "v3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "pa",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "pb",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+u2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+u3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+v1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+1}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+v3}}"
+				},
+				{
+					"name": "dx",
+					"expression": "{{eval:ax+pa+pb*v1}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{eval:ay+pa*u2+pb}}"
+				},
+				{
+					"name": "dz",
+					"expression": "{{eval:az+pa*u3+pb*v3}}"
+				}
+			],
+			"conditions": ["u2*v1 != 1", "pa != pb", "abs(u3)+abs(v3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{pa}}"
+				},
+				{
+					"expectedAnswer": "{{pb}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}1\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, $\\overrightarrow{AC}\\begin{pmatrix}{{v1}}\\\\1\\\\{{v3}}\\end{pmatrix}$, $\\overrightarrow{AD}\\begin{pmatrix}{{eval:pa+pb*v1}}\\\\{{eval:pa*u2+pb}}\\\\{{eval:pa*u3+pb*v3}}\\end{pmatrix}$.",
+					"Le système $a+b\\times{{v1;()}}={{eval:pa+pb*v1}}$, $a\\times{{u2;()}}+b={{eval:pa*u2+pb}}$ donne $a={{pa}}$ et $b={{pb}}$ ; la cote est vérifiée : ${{pa}}\\times{{u3;()}}+{{pb;()}}\\times{{v3;()}}={{eval:pa*u3+pb*v3}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ a={{pa}} }$ et $\\textcolor{{{color:primary.0}}}{ b={{pb}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : a = 2, b = -1",
+			"variationIndex": 0,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1"
+			},
+			"answers": ["2", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a et b échangés",
+			"variationIndex": 0,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1"
+			},
+			"answers": ["-1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : signe de b",
+			"variationIndex": 0,
+			"variables": {
+				"u2": "2",
+				"u3": "-1",
+				"v1": "-1",
+				"v3": "3",
+				"u1": "1",
+				"v2": "1",
+				"pa": "2",
+				"pb": "-1"
+			},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a = -1, b = 2",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "0",
+				"ay": "1",
+				"az": "-1",
+				"u2": "1",
+				"u3": "2",
+				"v1": "2",
+				"v3": "-1",
+				"pa": "-1",
+				"pb": "2"
+			},
+			"answers": ["-1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : échangés",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "0",
+				"ay": "1",
+				"az": "-1",
+				"u2": "1",
+				"u3": "2",
+				"v1": "2",
+				"v3": "-1",
+				"pa": "-1",
+				"pb": "2"
+			},
+			"answers": ["2", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
