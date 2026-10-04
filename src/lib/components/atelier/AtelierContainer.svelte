@@ -175,16 +175,19 @@
 		const before = desk.entries.length;
 		const outcome = desk.runFromPanel(action.id, object.name, graph);
 		if (outcome === 'unsupported') return;
-		if (derivativeExisted) selected = derivative;
+		// …seulement si elle vaut quelque chose (f = |x| : la ligne dit pourquoi)
+		if (derivativeExisted && atelier.get(derivative)?.status === 'ok') selected = derivative;
 
-		// Une commande PRÉPARÉE (« Tableau croisé », « Comparer ») se termine au
-		// clavier, dans Calcul : y aller est le geste lui-même, pas une bascule
+		// Une commande PRÉPARÉE (« Tableau croisé », « Simuler ») se termine au
+		// clavier, dans Calcul : y aller est le geste lui-même, pas une bascule.
+		// ⚠️ Écart avec A1, qui range `.simuler` parmi les actions sans bascule :
+		// signalé à David (le geste ne produit rien tant que n n'est pas validé)
 		if (outcome === 'needs-argument') {
 			showView('calcul');
 			return;
 		}
 		if (desk.entries.length > before && activeView !== 'calcul') {
-			announce('Résultat ajouté dans l’onglet Calcul.');
+			announce('Nouvelle ligne dans l’onglet Calcul.');
 		}
 
 		// Un nuage se voit dans le Graphe, un diagramme dans les Données : c'est là
@@ -221,18 +224,19 @@
 	let seen = $state(0);
 
 	/** Les résultats arrivés dans Calcul pendant qu'on regardait ailleurs (A3). */
-	const unseen = $derived(activeView === 'calcul' ? 0 : desk.entries.length - seen);
+	const unseen = $derived(activeView === 'calcul' ? 0 : Math.max(0, desk.entries.length - seen));
 
 	function showView(next: ViewId) {
 		if (activeView === 'calcul' || next === 'calcul') seen = desk.entries.length;
 		activeView = next;
 	}
 
-	/** L'image d'un nombre, demandée depuis une carte (A4). */
+	/**
+	 * L'image d'un nombre, demandée depuis une carte (A4). Pas d'annonce ici :
+	 * la carte annonce déjà « f(3) = 9 » ; deux annonces se bousculeraient.
+	 */
 	function handleImage(name: string, value: string) {
-		const result = desk.image(name, value);
-		if (activeView !== 'calcul') announce('Résultat ajouté dans l’onglet Calcul.');
-		return result;
+		return desk.image(name, value);
 	}
 
 	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
@@ -258,11 +262,10 @@
 					{item.label}
 					{#if item.id === 'calcul' && unseen > 0}
 						<!-- A3 : un résultat attend dans Calcul -->
-						<span class="nouveau">
-							<span aria-hidden="true">•</span>
-							<span class="sr-only">
-								— {unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}
-							</span>
+						<!-- Un NOMBRE contrasté, pas un point orange (revue a11y : 2,2:1) -->
+						<span class="nouveau" aria-hidden="true">{unseen}</span>
+						<span class="sr-only">
+							— {unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}
 						</span>
 					{/if}
 				</button>
@@ -332,9 +335,18 @@
 		white-space: nowrap;
 	}
 	.nouveau {
-		margin-left: 0.25rem;
+		display: inline-block;
+		min-width: 1.125rem;
+		margin-left: 0.375rem;
+		padding: 0 0.3125rem;
+		border-radius: 9999px;
+		font-size: 0.75rem;
 		font-weight: 700;
-		color: var(--color-primary);
+		line-height: 1.125rem;
+		text-align: center;
+		/* Inversé : le contraste du texte courant, dans les deux thèmes */
+		background: var(--color-foreground);
+		color: var(--color-background);
 	}
 	.onglet[aria-current='page'] {
 		background: var(--color-background);

@@ -54,16 +54,18 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(d.entries[0].text).toMatch(/5/);
 	});
 
-	// « Image d'un nombre » a besoin d'un nombre : on prépare la saisie plutôt
-	// que d'ouvrir une boîte de dialogue.
-	it('image prépare la saisie au lieu de répondre à vide', () => {
+	// « Image d'un nombre » n'est plus une action du panneau : c'est un champ de
+	// la carte (phase 0 `/grapheur` §3 A4), qui ne touche pas au brouillon
+	it('image calcule depuis la carte sans toucher au brouillon de Calcul', () => {
 		const d = desk();
+		d.draft = '2+';
 
-		const outcome = d.runFromPanel('image', 'f');
+		const result = d.image('f', '2');
 
-		expect(outcome).toBe('needs-argument');
-		expect(d.draft).toBe('f(');
-		expect(d.entries.length).toBe(0);
+		expect(result.failed).toBe(false);
+		expect(d.draft).toBe('2+');
+		expect(d.entries).toHaveLength(1);
+		expect(d.runFromPanel('image', 'f')).toBe('unsupported');
 	});
 
 	it('dit pourquoi quand l’objet ne peut rien produire', () => {

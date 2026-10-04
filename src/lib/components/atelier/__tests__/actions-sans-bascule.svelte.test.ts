@@ -222,3 +222,141 @@ describe('l’image d’un nombre', () => {
 		expect(labels).not.toContain('Image d’un nombre');
 	});
 });
+
+// =============================================================================
+// Revue d'accessibilité du lot 3b
+// =============================================================================
+
+describe('revue a11y du lot 3b', () => {
+	function imageField(container: HTMLElement): HTMLInputElement {
+		return cardFor(container, 'f').querySelector(
+			'input[aria-label="Image par f : valeur de x"]'
+		) as HTMLInputElement;
+	}
+
+	// Bloquant : sur tablette, le clavier décimal n'a pas de touche Entrée
+	it('l’image se calcule avec un bouton, sans touche Entrée', async () => {
+		const { container } = await onGraph('x^2');
+		await userEvent.click(imageField(container));
+		await userEvent.keyboard('-2');
+
+		(
+			cardFor(container, 'f').querySelector(
+				'button[aria-label="Calculer l’image par f"]'
+			) as HTMLButtonElement
+		).click();
+
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('4')
+		);
+		expect(imageField(container).getAttribute('inputmode')).toBeNull();
+	});
+
+	// Le résultat se lit AVEC son contexte : « f(3) = 9 », pas « 9 »
+	it('le résultat annoncé dit de quoi il est le résultat', async () => {
+		const { container } = await onGraph('x^2');
+		await userEvent.click(imageField(container));
+		await userEvent.keyboard('3{Enter}');
+
+		await vi.waitFor(() => {
+			const status = cardFor(container, 'f').querySelector('[role="status"]');
+			expect(status?.textContent?.replace(/\s+/g, '')).toContain('f(3)=9');
+		});
+	});
+
+	// Un résultat ne doit pas rester à côté d'une autre valeur de x
+	it('le résultat s’efface quand on change x', async () => {
+		const { container } = await onGraph('x^2');
+		await userEvent.click(imageField(container));
+		await userEvent.keyboard('3{Enter}');
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('9')
+		);
+
+		await userEvent.keyboard('{Backspace}5');
+
+		await vi.waitFor(() =>
+			expect(
+				cardFor(container, 'f').querySelector('.image-resultat')?.textContent ?? ''
+			).not.toContain('9')
+		);
+	});
+
+	it('une erreur se dit en toutes lettres, pas seulement en couleur', async () => {
+		const { container } = await onGraph('x^2');
+		await userEvent.click(imageField(container));
+		await userEvent.keyboard('bonjour{Enter}');
+
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain(
+				'Erreur'
+			)
+		);
+	});
+
+	// Contraste : le repère porte un NOMBRE lisible, pas seulement un point orange
+	it('le repère de l’onglet Calcul montre le nombre de résultats', async () => {
+		const { container } = await onGraph();
+
+		await clickAction(container, 'f', 'Dériver');
+
+		await vi.waitFor(() =>
+			expect(tab(container, 'Calcul').querySelector('.nouveau')?.textContent?.trim()).toBe('1')
+		);
+	});
+});
+
+// =============================================================================
+// Revue de code du lot 3b
+// =============================================================================
+
+describe('revue de code du lot 3b', () => {
+	// C1 : le résultat de l'image ne survit pas à un changement de définition
+	it('le résultat de l’image s’efface quand f change', async () => {
+		const { atelier, container } = await onGraph('x^2');
+		const field = cardFor(container, 'f').querySelector(
+			'input[aria-label="Image par f : valeur de x"]'
+		) as HTMLInputElement;
+		await userEvent.click(field);
+		await userEvent.keyboard('2{Enter}');
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('4')
+		);
+
+		atelier.update('f', 'x^3', 'text');
+
+		await vi.waitFor(() =>
+			expect(
+				cardFor(container, 'f').querySelector('.image-resultat')?.textContent ?? ''
+			).not.toContain('4')
+		);
+	});
+
+	// C3 / A5 : « Nuage » se VOIT dans le Graphe, il n'écrit pas dans Calcul
+	it('« Nuage » n’écrit pas dans Calcul quand il n’a rien à dire', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
+		atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5 ; 6' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		tab(container, 'Données').click();
+		(cardFor(container, 'L').querySelector('.entete') as HTMLButtonElement).click();
+
+		await clickAction(container, 'L', 'Nuage avec M');
+
+		await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));
+		expect(hasMarker(container)).toBe(false);
+	});
+
+	// M2 : f devenue |x| — « Dériver » reste actif, mais la dérivée échoue ;
+	// on ne sélectionne pas une carte f′ en erreur
+	it('ne sélectionne pas f′ quand la dérivation échoue', async () => {
+		const { atelier, container } = await onGraph('x^2');
+		atelier.createDerivative('f');
+		atelier.update('f', 'abs(x)', 'text');
+
+		await clickAction(container, 'f', 'Dériver');
+
+		await vi.waitFor(() => expect(hasMarker(container)).toBe(true));
+		expect(cardFor(container, 'f′').classList.contains('selected')).toBe(false);
+	});
+});

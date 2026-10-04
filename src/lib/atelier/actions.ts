@@ -81,7 +81,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
  */
 const NOT_YET: ReadonlySet<string> = new Set([
 	// 'plot' est câblé depuis le lot « vue Graphe ».
-	// 'derive', 'solve', 'variations' et 'image' le sont depuis la vue Calcul.
+	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' est
+	// devenu un champ de la carte, lot 3b).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
 	// depuis le lot 5 des outils statistiques.
 	'plot-points',

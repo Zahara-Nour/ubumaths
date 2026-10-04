@@ -31,18 +31,36 @@
 
 	let { object, selected = false, onSelect, onAction, onImage }: Props = $props();
 
+	const atelier = useAtelier();
+
 	/** La valeur de x tapée pour l'image (A4), et ce qu'elle a donné. */
 	let imageInput = $state('');
-	let imageResult = $state<{ text: string; failed: boolean; at: string } | null>(null);
+	let imageResult = $state<{
+		text: string;
+		failed: boolean;
+		at: string;
+		revision: number;
+	} | null>(null);
+
+	/**
+	 * Le résultat affiché, seulement s'il vaut ENCORE : même x, et un atelier
+	 * qui n'a pas changé depuis (revues du lot 3b). `revision` couvre aussi la
+	 * carte `f′`, dont la définition ne bouge pas quand `f` change.
+	 */
+	const shownImage = $derived(
+		imageResult !== null &&
+			imageResult.at === imageInput.trim() &&
+			imageResult.revision === atelier.revision
+			? imageResult
+			: null
+	);
 
 	function handleImageSubmit(event: SubmitEvent) {
 		event.preventDefault();
 		if (!onImage || imageInput.trim() === '') return;
 		const value = imageInput.trim();
-		imageResult = { ...onImage(object.name, value), at: value };
+		imageResult = { ...onImage(object.name, value), at: value, revision: atelier.revision };
 	}
-
-	const atelier = useAtelier();
 
 	/**
 	 * ⚠️ Avec l'atelier : sans lui, `actionsFor` retombe sur le catalogue de
@@ -195,18 +213,30 @@
 	{#if selected && object.kind === 'function' && onImage}
 		<form class="image" onsubmit={handleImageSubmit}>
 			<span class="image-prefixe" aria-hidden="true">{displayName(object.name)}(</span>
+			<!-- Pas d'`inputmode="decimal"` : sur iOS ce clavier n'a ni touche
+			     Entrée, ni signe « - » (x peut valoir −2 ou π) — revue a11y -->
 			<input
 				class="image-x"
 				type="text"
-				inputmode="decimal"
 				autocomplete="off"
+				enterkeyhint="go"
 				bind:value={imageInput}
 				aria-label={`Image par ${displayName(object.name)} : valeur de x`}
 				placeholder="x"
 			/>
-			<span class="image-prefixe" aria-hidden="true">) =</span>
-			<span class="image-resultat" class:refus={imageResult?.failed} aria-live="polite">
-				{imageResult ? imageResult.text : '…'}
+			<span class="image-prefixe" aria-hidden="true">)</span>
+			<!-- Un vrai bouton : valider sans touche Entrée (tablette) -->
+			<button
+				type="submit"
+				class="image-calculer"
+				aria-label={`Calculer l’image par ${displayName(object.name)}`}>=</button
+			>
+			<!-- La zone annonce le résultat AVEC son contexte (« f(3) = 9 ») -->
+			<span class="image-resultat" class:refus={shownImage?.failed} role="status">
+				{#if shownImage}
+					<span class="sr-only">{displayName(object.name)}({shownImage.at}) =</span>
+					{shownImage.failed ? `Erreur : ${shownImage.text}` : shownImage.text}
+				{/if}
 			</span>
 		</form>
 	{/if}
@@ -426,8 +456,19 @@
 	.image-resultat {
 		font-variant-numeric: tabular-nums;
 	}
+	.image-calculer {
+		min-width: 1.75rem;
+		min-height: 1.75rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+		cursor: pointer;
+	}
+	/* L'erreur se dit en toutes lettres (« Erreur : … ») : la couleur n'est
+	   qu'un appoint, et le texte garde le contraste du texte courant */
 	.image-resultat.refus {
-		color: var(--color-destructive);
+		font-weight: 600;
 	}
 	.derivee {
 		margin: 0;
