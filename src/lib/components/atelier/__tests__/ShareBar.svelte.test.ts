@@ -10,6 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { ATELIER_STORAGE_KEY, loadAtelier, saveAtelier } from '$lib/atelier/persistence';
 
 async function settle() {
 	await tick();
@@ -90,29 +91,41 @@ describe('recevoir', () => {
 		expect(buttonNamed(container, 'Partager')).toBeUndefined();
 	});
 
-	it('garde ce qu’on a reçu', async () => {
-		const { container, atelier } = await open({ received: recu });
+	// ⚠️ Revue du lot 6 (C1) : ces tests vérifiaient l'atelier AFFICHÉ — l'atelier
+	// éphémère du lien, qui contient déjà ce qu'on a reçu. Ils assertaient le
+	// défaut. C'est l'atelier PERSONNEL, enregistré, qui doit recevoir.
+	it('garde ce qu’on a reçu dans l’atelier personnel, enregistré', async () => {
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+		const { container } = await open({ received: recu });
 
 		buttonNamed(container, 'Garder dans mon atelier')!.click();
 		await settle();
 
-		expect(atelier.names).toContain('f');
+		const loaded = loadAtelier(localStorage);
+		expect(loaded.kind === 'loaded' && loaded.state.objects.map((o) => o.name)).toContain('f');
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
 	});
 
 	it('dit sous quel nom, quand il a fallu renommer', async () => {
-		const atelier = new Atelier();
-		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = await open({ atelier, received: recu });
+		const personal = new Atelier();
+		personal.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+		saveAtelier(localStorage, personal.serialize());
+		const { container } = await open({ received: recu });
 
 		buttonNamed(container, 'Garder dans mon atelier')!.click();
 		await settle();
 
 		expect(container.querySelector('.retour-partage')?.textContent).toMatch(/gardé sous/);
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
 	});
 
 	it('montre ce que la relecture a eu à dire', async () => {
 		const { container } = await open({ notice: 'Ce lien est incomplet ou abîmé.' });
 
-		expect(container.querySelector('.retour-partage')?.textContent).toContain('abîmé');
+		// Écrite après le montage, pour être annoncée (revue a11y du lot 6)
+		await vi.waitFor(() =>
+			expect(container.querySelector('.retour-partage')?.textContent).toContain('abîmé')
+		);
 	});
 });

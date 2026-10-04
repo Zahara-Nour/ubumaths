@@ -12,8 +12,8 @@
  * @module atelier/merge
  */
 
-import { sequenceInputOf, type Atelier } from './atelier.svelte';
-import type { AtelierState } from './persistence';
+import { Atelier, sequenceInputOf } from './atelier.svelte';
+import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
 import { nextName, derivativeOf, displayName } from './names';
 
 // =============================================================================
@@ -97,9 +97,43 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		// tracées s'ouvre avec ses courbes tracées, et de leurs couleurs. Les
 		// réglages AVANT le tracé, sinon `setPlotted` en attribuerait de neufs.
 		if (stored.display) atelier.adoptDisplay(chosen, stored.display);
+		if (stored.sequenceDisplay) atelier.adoptSequenceDisplay(chosen, stored.sequenceDisplay);
 		if (stored.slider) atelier.adoptSlider(chosen, stored.slider);
 		if (stored.plotted) atelier.setPlotted(chosen, true);
 	}
 
 	return { added, renamed, refused };
+}
+
+/**
+ * « Garder dans mon atelier » : verser un atelier reçu dans l'atelier
+ * PERSONNEL, celui du navigateur, et l'enregistrer.
+ *
+ * ⚠️ Revue du lot 6 (C1) : la barre de partage versait dans l'atelier affiché
+ * — l'atelier ÉPHÉMÈRE du lien, qui contenait déjà ces objets. Il en sortait
+ * des copies renommées, et rien n'était enregistré.
+ */
+export function keepReceived(
+	storage: Storage | null,
+	received: AtelierState
+): { ok: true; report: MergeReport } | { ok: false; message: string } {
+	const personal = new Atelier();
+	const loaded = loadAtelier(storage);
+	if (loaded.kind === 'loaded') personal.restore(loaded.state);
+	else if (
+		loaded.kind === 'too-recent' ||
+		loaded.kind === 'corrupt' ||
+		loaded.kind === 'unavailable'
+	) {
+		return {
+			ok: false,
+			message: 'Ton atelier enregistré ne peut pas être ouvert ici : rien n’a été versé.'
+		};
+	}
+	const report = mergeInto(personal, received);
+	const saved = saveAtelier(storage, personal.serialize());
+	if (saved.kind !== 'saved') {
+		return { ok: false, message: 'Ton atelier n’a pas pu être enregistré : rien n’a été versé.' };
+	}
+	return { ok: true, report };
 }

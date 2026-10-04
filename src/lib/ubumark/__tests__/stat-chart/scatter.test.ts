@@ -59,7 +59,9 @@ describe('```nuage — analyse', () => {
 			indicators: [],
 			predictions: [],
 			places: 3,
-			origin: false
+			origin: false,
+			change: null,
+			transformedCloud: false
 		});
 	});
 

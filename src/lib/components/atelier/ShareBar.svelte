@@ -7,7 +7,8 @@
 	 */
 	import { useAtelier } from '$lib/atelier/context';
 	import { encodeAtelier, MAX_URL_PAYLOAD } from '$lib/atelier/url';
-	import { mergeInto } from '$lib/atelier/merge';
+	import { keepReceived } from '$lib/atelier/merge';
+	import { onMount } from 'svelte';
 	import type { AtelierState } from '$lib/atelier/persistence';
 	import { Button } from '$lib/components/ui/button';
 
@@ -23,6 +24,17 @@
 	const atelier = useAtelier();
 
 	let link = $state<string | null>(null);
+
+	/**
+	 * La notice (lien abîmé, objets écartés) est écrite APRÈS le montage : une
+	 * région `aria-live` qui apparaît avec son texte déjà dedans n'est pas
+	 * annoncée — l'élève ne saurait pas que son lien est cassé (revue a11y).
+	 */
+	let shownNotice = $state<string | null>(null);
+	onMount(() => {
+		const timer = setTimeout(() => (shownNotice = notice), 0);
+		return () => clearTimeout(timer);
+	});
 	let message = $state<string | null>(null);
 	let busy = $state(false);
 
@@ -62,10 +74,28 @@
 		}
 	}
 
-	/** Verser dans son atelier ce qu'on a reçu — décision Q2. */
+	/**
+	 * Verser dans son atelier ce qu'on a reçu — décision Q2.
+	 *
+	 * ⚠️ Dans l'atelier PERSONNEL (celui du navigateur), pas dans l'atelier
+	 * affiché : celui-ci est l'atelier éphémère du lien, qui contient déjà ces
+	 * objets — on en faisait des copies, et rien n'était enregistré (revue du
+	 * lot 6, C1).
+	 */
 	function keep() {
 		if (received === null) return;
-		const report = mergeInto(atelier, received);
+		let storage: Storage | null = null;
+		try {
+			storage = window.localStorage;
+		} catch {
+			storage = null;
+		}
+		const kept = keepReceived(storage, received);
+		if (!kept.ok) {
+			message = kept.message;
+			return;
+		}
+		const report = kept.report;
 
 		const parts: string[] = [];
 		if (report.added > 0)
@@ -76,7 +106,10 @@
 		if (report.refused.length > 0)
 			parts.push(`${report.refused.length} refusé${report.refused.length > 1 ? 's' : ''}`);
 
-		message = parts.length === 0 ? 'Il n’y avait rien à garder.' : parts.join(' · ');
+		message =
+			parts.length === 0
+				? 'Il n’y avait rien à garder.'
+				: `${parts.join(' · ')} dans ton atelier — tu le retrouves dans « Atelier ».`;
 	}
 </script>
 
@@ -94,8 +127,12 @@
 		<Button size="sm" variant="outline" disabled={busy} onclick={share}>Partager…</Button>
 	{/if}
 
-	<p class="retour-partage" aria-live="polite" class:vide={message === null && notice === null}>
-		{message ?? notice ?? ''}
+	<p
+		class="retour-partage"
+		aria-live="polite"
+		class:vide={message === null && shownNotice === null}
+	>
+		{message ?? shownNotice ?? ''}
 	</p>
 
 	{#if link !== null}

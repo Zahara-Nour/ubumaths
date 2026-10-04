@@ -585,6 +585,18 @@ export function runInput(
 	if (definition !== null) {
 		const [, name, parameter, body] = definition;
 		const result = defineObject(session, name, parameter, body, provenance);
+		// `u(n) = …` dit « explicite » (S3) : le mode d'une suite étant gardé à la
+		// modification, c'est ici qu'une récurrence retapée en explicite le devient
+		// — sinon u(3) valait 5 au lieu de 7 (revue du lot 5a, B1)
+		const defined = session.atelier.get(name);
+		if (
+			result.kind === 'definition' &&
+			parameter === 'n' &&
+			defined?.kind === 'sequence' &&
+			defined.mode === 'recurrence'
+		) {
+			session.atelier.setSequence(name, { mode: 'explicit' });
+		}
 		// L'objet a changé : le moteur doit le savoir pour le calcul suivant.
 		syncEngine(session.atelier, session.engine);
 		return result;

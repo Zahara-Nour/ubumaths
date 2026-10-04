@@ -15,7 +15,7 @@
 import { z } from 'zod';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH } from './types';
-import { storedDisplaySchema, type StoredDisplay } from './display';
+import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
 // =============================================================================
@@ -80,7 +80,9 @@ const storedObjectSchema = z.object({
 	 */
 	mode: z.enum(['explicit', 'recurrence']).optional().catch(undefined),
 	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
-	firstTerm: z.string().max(20).optional().catch(undefined)
+	firstTerm: z.string().max(20).optional().catch(undefined),
+	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
+	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined)
 });
 
 /**
@@ -102,6 +104,7 @@ export interface StoredObject {
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
+	readonly sequenceDisplay?: unknown;
 }
 
 export interface AtelierState {
@@ -249,90 +252,6 @@ export function saveAtelier(storage: Storage | null, state: AtelierState): SaveO
 		}
 		return { kind: 'unavailable' };
 	}
-}
-
-// =============================================================================
-// Reprendre un atelier venu du grapheur (§5 L5)
-// =============================================================================
-
-/** La clé du grapheur. ⚠️ On y touche en LECTURE seule. */
-const GRAPHEUR_STORAGE_KEY = 'chiphre-grapheur-state';
-
-/** Lettres proposées aux fonctions du grapheur, qui n'ont pas de nom. */
-const ADOPTED_NAMES = ['f', 'g', 'h', 'p', 'q', 'r'] as const;
-
-/** Une courbe du grapheur, réduite à ce qui nous intéresse. */
-const grapheurCurveSchema = z.object({ latex: z.string() });
-
-/** Ce que le grapheur range, réduit à ce qui nous intéresse. */
-const grapheurStateSchema = z.object({
-	// Volontairement permissif : un `.max()` ou une forme stricte ici ferait
-	// échouer TOUTE la validation dès qu'une courbe sort du moule — donc zéro
-	// reprise. Chaque courbe est jugée dans la boucle, une par une.
-	functions: z.array(z.unknown()).optional()
-});
-
-export type AdoptOutcome =
-	| { readonly kind: 'adopted'; readonly state: AtelierState }
-	/** L'atelier a déjà son propre état : on ne l'écrase pas. */
-	| { readonly kind: 'skipped' }
-	/** Rien à reprendre — pas d'état de grapheur, vide, ou illisible. */
-	| { readonly kind: 'nothing' };
-
-/**
- * Proposer à l'atelier ce que l'élève avait tracé dans le grapheur.
- *
- * Les courbes du grapheur n'ont **pas de nom** : elles reçoivent ici `f`, `g`,
- * `h`… puisqu'un objet d'atelier se désigne par son nom (§1).
- *
- * ⚠️ **L'état du grapheur est laissé intact** : `/grapheur` continue de vivre sa
- * vie, et l'élève ne perd rien s'il y retourne. C'est une copie, pas un
- * déménagement — la reprise ne se fait donc qu'une fois, quand l'atelier n'a
- * encore rien à lui.
- */
-export function adoptGrapheurState(storage: Storage | null): AdoptOutcome {
-	if (!storage) return { kind: 'nothing' };
-
-	// Un atelier qui a déjà son état n'est pas à reprendre.
-	const existing = loadAtelier(storage);
-	if (existing.kind !== 'empty') return { kind: 'skipped' };
-
-	let raw: string | null;
-	try {
-		raw = storage.getItem(GRAPHEUR_STORAGE_KEY);
-	} catch {
-		return { kind: 'nothing' };
-	}
-	if (raw === null) return { kind: 'nothing' };
-
-	let parsed: unknown;
-	try {
-		parsed = JSON.parse(raw);
-	} catch {
-		return { kind: 'nothing' };
-	}
-
-	const check = grapheurStateSchema.safeParse(parsed);
-	if (!check.success) return { kind: 'nothing' };
-
-	const objects: StoredObject[] = [];
-	for (const candidate of check.data.functions ?? []) {
-		const curve = grapheurCurveSchema.safeParse(candidate);
-		// Une courbe qu'on ne sait pas lire — ou sans expression — n'a rien à
-		// reprendre, et elle ne doit pas coûter les autres.
-		if (!curve.success) continue;
-		const definition = curve.data.latex.trim();
-		if (definition === '') continue;
-		const name = ADOPTED_NAMES[objects.length];
-		if (name === undefined) break;
-		// `plotted` : une courbe reprise de `/grapheur` était TRACÉE là-bas. Sans
-		// ce mot, elle arriverait en objet non tracé et la vue Graphe serait vide
-		// sans explication.
-		objects.push({ name, kind: 'function', definition, plotted: true });
-	}
-
-	if (objects.length === 0) return { kind: 'nothing' };
-	return { kind: 'adopted', state: { version: ATELIER_STATE_VERSION, objects } };
 }
 
 // =============================================================================

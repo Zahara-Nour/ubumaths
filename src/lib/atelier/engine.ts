@@ -26,6 +26,7 @@ import {
 import { substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { derivativeOf } from './names';
 import { astOf, readNumber } from './parse';
@@ -281,11 +282,20 @@ export function expandInput(atelier: Atelier, text: string): string {
 	return toCustom(expanded);
 }
 
-export function expressionOf(
+/**
+ * L'ARBRE d'un objet, tous les noms qu'il cite remplacés — voir `expressionOf`.
+ *
+ * ⚠️ Les suites s'en servent directement : repasser par le texte (`toCustom`
+ * puis relecture) perdait des constantes — `e^(-n)` devenait `\\euler^{-n}`,
+ * illisible au retour (revue du lot 5b).
+ */
+export function substitutedAstOf(
 	atelier: Atelier,
 	name: string,
 	options?: { readonly forDerivation?: boolean }
-): Substituted {
+):
+	| { readonly ok: true; readonly ast: MathNode }
+	| { readonly ok: false; readonly message: string } {
 	const object = atelier.get(name);
 	if (object === undefined) {
 		return { ok: false, message: `« ${name} » n'existe pas dans l'atelier.` };
@@ -333,11 +343,38 @@ export function expressionOf(
 					: `Une dérivée citée par « ${name} » ne se calcule pas.`
 		};
 	}
-	const substituted = substituteAll(expanded, variables, substituteFunction, {
+	// Une autre suite explicite écrite `v_n` (et non `v(n)`) est un APPEL : sans
+	// cette réécriture elle n'était pas remplacée, et le grapheur refusait la
+	// suite qui la cite (revue du lot 5b)
+	const withCalls = subscriptsAsCalls(expanded, functions, name);
+	const substituted = substituteAll(withCalls, variables, substituteFunction, {
 		functions: functions satisfies FunctionBindings
 	});
 
-	return { ok: true, expression: toCustom(substituted) };
+	return { ok: true, ast: substituted };
+}
+
+export function expressionOf(
+	atelier: Atelier,
+	name: string,
+	options?: { readonly forDerivation?: boolean }
+): Substituted {
+	const result = substitutedAstOf(atelier, name, options);
+	return result.ok ? { ok: true, expression: toCustom(result.ast) } : result;
+}
+
+/** `v_n` → `v(n)` pour chaque autre suite explicite liée. */
+function subscriptsAsCalls(
+	ast: MathNode,
+	functions: Readonly<Record<string, FunctionDefinition>>,
+	self: string
+): MathNode {
+	return transformAST(ast, {
+		enterSubscript: (node) =>
+			node.base.type === 'variable' && node.base.name !== self && node.base.name in functions
+				? { type: 'function', name: node.base.name, args: [node.subscript] }
+				: undefined
+	});
 }
 
 // =============================================================================
@@ -362,10 +399,9 @@ export function termsOf(atelier: Atelier, name: string, lastIndex: number): Term
 	if (object === undefined || object.kind !== 'sequence') {
 		return { ok: false, message: `« ${name} » n'est pas une suite.` };
 	}
-	const substituted = expressionOf(atelier, name);
+	const substituted = substitutedAstOf(atelier, name);
 	if (!substituted.ok) return substituted;
-	const parsed = astOf(substituted.expression, 'text', [...atelier.functionNames, name]);
-	if (parsed === null) return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
+	const parsed = substituted.ast;
 
 	let ast: MathNode;
 	try {
@@ -389,7 +425,7 @@ export function termsOf(atelier: Atelier, name: string, lastIndex: number): Term
 }
 
 /** La valeur numérique du premier terme : un nombre, ou une valeur de l'atelier. */
-function firstTermValue(atelier: Atelier, firstTerm: string): number | string {
+export function firstTermValue(atelier: Atelier, firstTerm: string): number | string {
 	const plain = readNumber(firstTerm.replace(/\{,\}/g, ','));
 	if (plain !== null) return plain;
 	const cited = atelier.get(firstTerm);
@@ -426,4 +462,24 @@ function previousTermAsVariable(ast: MathNode, name: string): MathNode {
 			return { type: 'variable', name: PREV_TERM_VARIABLE };
 		}
 	});
+}
+
+/**
+ * Le LaTeX qu'attend le grapheur pour tracer une suite, ou `null`.
+ *
+ * Les autres noms sont remplacés (valeurs, fonctions explicites), et le terme
+ * précédent est écrit `u_n` — la seule forme que `parseSequence` du grapheur
+ * relit ; l'élève, lui, a pu écrire `u(n)` (décision S2).
+ */
+export function graphLatexOf(atelier: Atelier, name: string): string | null {
+	const substituted = substitutedAstOf(atelier, name);
+	if (!substituted.ok) return null;
+	const parsed = substituted.ast;
+	const rewritten = transformAST(parsed, {
+		enterFunction: (node) =>
+			node.name === name && node.args.length === 1
+				? { type: 'subscript', base: { type: 'variable', name }, subscript: node.args[0] }
+				: undefined
+	});
+	return toLatex(rewritten);
 }

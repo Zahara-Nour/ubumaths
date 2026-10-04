@@ -40,6 +40,7 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/upsilon', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/presques-evaluations', priority: 0.4, changefreq: 'monthly' },
 	{ path: '/pere-ubu', priority: 0.4, changefreq: 'yearly' },
+	{ path: '/almanach', priority: 0.4, changefreq: 'daily' },
 	{ path: '/legal/mentions-legales', priority: 0.3, changefreq: 'yearly' },
 	{ path: '/legal/confidentialite', priority: 0.3, changefreq: 'yearly' },
 	{ path: '/legal/cgu', priority: 0.3, changefreq: 'yearly' }

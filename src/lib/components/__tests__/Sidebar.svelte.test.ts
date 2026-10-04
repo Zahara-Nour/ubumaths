@@ -34,17 +34,20 @@ describe('Sidebar (Outils libres)', () => {
 			await expect.element(page.getByText('Atelier', { exact: true })).toBeInTheDocument();
 		});
 
-		it('affiche Grapheur et Géométrie pour un visiteur', async () => {
-			await render(Sidebar, { profile: null });
+		// G1 (décision de David, 2026-10-04) : l'atelier est l'entrée unique —
+		// `/grapheur` reste une adresse valable, mais n'a plus d'entrée à lui
+		it('affiche Géométrie, et plus d’entrée Grapheur', async () => {
+			const { container } = await render(Sidebar, { profile: null });
 
-			await expect.element(page.getByText('Grapheur', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Géométrie', { exact: true })).toBeInTheDocument();
+			expect(container.textContent).not.toContain('Grapheur');
 		});
 
 		it('pointe vers les bonnes routes', async () => {
 			const { container } = await render(Sidebar, { profile: null });
 
-			expect(container.querySelector('a[href="/grapheur"]')).not.toBeNull();
+			expect(container.querySelector('a[href="/atelier"]')).not.toBeNull();
+			expect(container.querySelector('a[href="/grapheur"]')).toBeNull();
 			expect(container.querySelector('a[href="/geometry-demo"]')).not.toBeNull();
 		});
 
@@ -53,7 +56,7 @@ describe('Sidebar (Outils libres)', () => {
 
 			// Une icône Lucide manquante ne casse pas le rendu : le lien s'afficherait
 			// sans son SVG. On vérifie donc explicitement sa présence.
-			for (const href of ['/grapheur', '/geometry-demo']) {
+			for (const href of ['/atelier', '/geometry-demo']) {
 				const link = container.querySelector(`a[href="${href}"]`);
 				expect(link?.querySelector('svg')).not.toBeNull();
 			}

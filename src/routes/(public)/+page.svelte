@@ -1,6 +1,15 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
+	import { formatMedium } from '$lib/almanach/calendar';
+	import { MONTH_PALETTES, ambianceMonthIndex } from '$lib/almanach/palettes';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
+
+	const todayLabel = $derived(formatMedium(data.almanach));
+	// Un jour hors-mois prend l'ambiance du mois qui le précède (cf. palettes.ts)
+	const ambiance = $derived(MONTH_PALETTES[ambianceMonthIndex(data.almanach)]);
 </script>
 
 <svelte:head>
@@ -15,11 +24,30 @@
 <div
 	class="container mx-auto flex h-full flex-col items-center justify-center space-y-20 p-4 text-center"
 >
-	<h1 class="mb-8 text-4xl font-bold">
-		Les maths de la chandelle <span class="text-primary">verte</span>
-	</h1>
+	<div class="mb-8 flex flex-col items-center gap-3">
+		<h1 class="text-4xl font-bold">
+			Les maths de la chandelle <span class="text-primary">verte</span>
+		</h1>
+		<p class="text-lg">
+			<a
+				href={resolve('/almanach')}
+				class="rounded-sm text-muted-foreground italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+			>
+				{todayLabel}<span class="sr-only"> : ouvrir l’Almanach des Chiphres</span>
+			</a>
+		</p>
+	</div>
 
-	<figure>
+	<figure
+		style:--halo-1-light={ambiance.light.h1}
+		style:--halo-2-light={ambiance.light.h2}
+		style:--halo-3-light={ambiance.light.h3}
+		style:--ubu-stroke-light={ambiance.light.stroke}
+		style:--halo-1-dark={ambiance.dark.h1}
+		style:--halo-2-dark={ambiance.dark.h2}
+		style:--halo-3-dark={ambiance.dark.h3}
+		style:--ubu-stroke-dark={ambiance.dark.stroke}
+	>
 		<div class="img-bg"></div>
 		<a href={resolve('/dashboard/chat')} aria-label="Découvre qui est Père Ubu et tchat avec lui.">
 			<svg
@@ -49,7 +77,7 @@
 						d="M354.582 402.887C353.18 402.887 351.25 401.398 349.708 401.012C345.152 399.873 336.228 400.437 332.461 403.262C310.941 419.402 312.569 444.45 321.588 467C323.728 472.348 322.883 479.849 326.462 484.621C328.515 487.358 328.483 491.488 330.212 494.369C337.627 506.728 347.36 518.67 363.58 514.615C387.985 508.514 383.033 484.217 385.326 465.875C386.463 456.777 383.977 448.264 383.076 439.255C381.298 421.47 380.242 402.413 371.079 387.14C366.823 380.048 364.023 372.739 356.082 368.769C346.478 363.967 333.647 367.182 323.838 369.144C310.549 371.801 301.432 386.233 295.344 396.888C274.06 434.134 286.026 480.288 298.718 518.365C304.561 535.894 315.358 566.776 339.96 561.856C351.561 559.536 361.665 550.254 372.204 544.984C375.428 543.372 378.388 540.252 381.952 539.361C389.106 537.572 401.447 533.831 406.322 527.738C410.168 522.93 410.089 517.152 411.196 511.616C412.363 505.781 413.492 499.43 414.945 493.619C416.083 489.067 414.28 483.654 414.945 478.997C417.178 463.371 415.763 448.59 412.696 433.256C410.894 424.246 413.02 415.109 410.071 406.261C406.753 396.308 401.149 388.08 397.324 378.517C393.702 369.462 391.711 359.164 386.451 350.397C382.777 344.274 377.132 339.097 372.953 333.526C367.671 326.483 355.791 327.885 348.208 329.401C340.19 331.005 329.936 329.421 322.338 327.902C313.815 326.197 297.782 331.322 290.844 336.525C278.963 345.436 270.091 360.665 264.599 374.393C262.229 380.319 256.77 385.463 255.226 391.639C253.042 400.377 249.255 409.093 247.728 418.259C241.813 453.75 253.177 487.559 266.099 519.864C269.084 527.327 273.148 536.436 275.097 544.235C275.902 547.453 276.035 551.095 278.097 553.983C280.159 556.869 282.926 559.477 285.22 562.231C303.366 584.006 344.856 583.593 369.204 573.854C379.707 569.653 388.01 562.547 395.824 554.733C404.89 545.666 406.106 529.563 411.196 518.365"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -58,7 +86,7 @@
 						d="M289.848 336.792C292.738 336.168 295.99 333.025 298.586 331.489C303.008 328.872 311.431 326.917 316.571 326.628C321.935 326.327 327.576 326.433 332.959 325.956C340.221 325.313 348.011 328.509 355.266 328.398"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -67,7 +95,7 @@
 						d="M339.441 329.132C333.689 329.22 328.316 330.595 322.742 330.908C313.926 331.403 304.285 331.258 296.219 335.783C292.644 337.788 286.733 338.356 284.338 342.07"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -76,7 +104,7 @@
 						d="M309.507 375.557C311.452 373.996 314.212 373.211 316.353 371.944C319.267 370.219 321.898 368.047 324.944 366.245C333.176 361.372 349.178 363.707 356.747 368.588"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -85,7 +113,7 @@
 						d="M326.57 366.992C326.451 366.937 319.589 370.825 317.747 371.337C303.436 375.321 296.769 391.557 291.561 404.325"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -94,7 +122,7 @@
 						d="M265.821 519.735C267.705 522.107 270.076 527.404 270.466 530.367C270.659 531.836 270.404 534.124 271.02 535.481C273.446 540.822 274.814 547.158 276.857 552.765C283.545 571.116 304.586 583.292 324.132 582.294C331.918 581.897 339.854 580.185 347.36 578.605"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -103,7 +131,7 @@
 						d="M308.22 579.004C315.991 584.071 328.092 585.34 337.063 584.591C339.269 584.407 341.351 583.246 343.592 583.059C352.249 582.337 361.834 580.201 369.743 576.61C374.457 574.469 378.336 571.057 382.728 568.488C383.94 567.779 384.755 565.855 385.904 564.943C388.509 562.873 391.499 560.337 393.257 557.641"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -112,7 +140,7 @@
 						d="M405.969 530.592C406.149 530.449 406.527 530.061 406.828 530.202C407.164 530.358 405.779 531.327 405.716 531.377C403.498 533.139 401.439 534.855 398.961 536.304C394.016 539.197 387.494 537.813 382.894 541.466C368.915 552.57 349.179 567.252 330.226 561.817"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -121,7 +149,7 @@
 						d="M381.085 415.178C380.905 416.745 382.08 418.329 382.337 419.883C383.289 425.63 384.476 431.325 385.244 437.157C387.105 451.305 388.455 465.453 388.848 479.597C388.956 483.48 389.149 488.085 387.929 491.872C386.945 494.927 385.267 497.736 384.145 500.723C382.016 506.393 374.783 508.744 370.451 512.185"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -130,7 +158,7 @@
 						d="M320.394 465.721C321.184 467.889 322.838 470.283 324.035 472.329C325.453 474.753 325.591 477.868 326.526 480.433C329.779 489.36 335.565 499.856 342.448 506.368C345.292 509.057 348.797 513.937 353.25 514.448"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -139,7 +167,7 @@
 						d="M367.462 329.769C368.097 328.09 354.857 311.241 352.939 309.29C338.941 295.047 306.085 282.099 286.375 288.644C279.374 290.97 272.879 296.095 267.063 300.447C262.115 304.149 259.577 311.159 255.31 315.523C253.567 317.306 250.688 318.301 249.141 320.2C241.796 329.22 235.326 340.372 230.33 351.027C226.792 358.574 226.432 367.766 224.179 375.645C222.283 382.275 218.624 389.883 217.962 396.801C217.204 404.722 216.917 412.865 215.786 420.724C214.006 433.084 201.358 443.542 202.767 457.316"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -148,7 +176,7 @@
 						d="M242.069 330.173C244.254 328.786 245.557 325.156 246.831 323.038C249.707 318.256 254.305 313.537 257.842 309.194C265.781 299.446 278.356 293.843 289.668 289.753C299.563 286.175 313.162 288.605 322.574 292.166C325.523 293.282 334.906 298.418 337.064 298.198"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -157,7 +185,7 @@
 						d="M340.141 442.997C340.141 448.768 341.353 457.735 343.226 463.354C344.354 466.739 346.31 471.576 346.31 475.074"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -166,7 +194,7 @@
 						d="M354.638 439.295C354.638 449.22 357.7 459.277 360.807 468.597C361.846 471.715 364.699 473.797 365.742 476.925"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -175,7 +203,7 @@
 						d="M329.654 448.24C337.446 440.449 347.782 443.352 356.18 437.753C359.312 435.666 361.517 433.033 364.2 430.351C364.704 429.847 367.971 425.892 367.284 427.266"
 						fill="none"
 						opacity="1"
-						stroke="#ffcf33"
+						class="trait"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="8.19047"
@@ -199,48 +227,51 @@
 	.img-bg {
 		@apply h-60 w-60;
 	}
+	/* Halo et traits prennent l'ambiance du mois de l'Almanach. Pas de light-dark()
+	   ici : il serait relu dans les @keyframes, ce que Safari ne gère pas avant 17.5.
+	   Les teintes sont résolues hors keyframe, par la classe .dark de mode-watcher. */
+	figure {
+		--halo-1: var(--halo-1-light);
+		--halo-2: var(--halo-2-light);
+		--halo-3: var(--halo-3-light);
+		--ubu-stroke: var(--ubu-stroke-light);
+	}
+	:global(.dark) figure {
+		--halo-1: var(--halo-1-dark);
+		--halo-2: var(--halo-2-dark);
+		--halo-3: var(--halo-3-dark);
+		--ubu-stroke: var(--ubu-stroke-dark);
+	}
 	.img-bg {
 		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[50px] transition-all;
+		background-color: var(--halo-1);
 		animation:
 			pulse 5s cubic-bezier(0, 0, 0, 0.5) infinite,
 			glow 5s linear infinite;
 	}
-	:global(.dark) .img-bg {
-		animation:
-			pulse 5s cubic-bezier(0, 0, 0, 0.5) infinite,
-			glow-dark 5s linear infinite;
+	.trait {
+		stroke: var(--ubu-stroke);
 	}
 	@keyframes glow {
-		0% {
-			background-color: rgba(252, 143, 27, 0.4);
+		0%,
+		100% {
+			background-color: var(--halo-1);
 		}
 		33% {
-			background-color: rgba(61, 90, 54, 0.5);
+			background-color: var(--halo-2);
 		}
 		66% {
-			background-color: rgba(76, 110, 66, 0.5);
-		}
-		100% {
-			background-color: rgba(252, 143, 27, 0.4);
-		}
-	}
-	@keyframes glow-dark {
-		0% {
-			background-color: rgba(198, 97, 64, 0.5);
-		}
-		33% {
-			background-color: rgba(120, 120, 115, 0.5);
-		}
-		66% {
-			background-color: rgba(255, 160, 0, 0.5);
-		}
-		100% {
-			background-color: rgba(198, 97, 64, 0.5);
+			background-color: var(--halo-3);
 		}
 	}
 	@keyframes pulse {
 		50% {
 			transform: scale(1.5);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.img-bg {
+			animation: none;
 		}
 	}
 </style>

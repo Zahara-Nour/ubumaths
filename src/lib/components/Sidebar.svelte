@@ -8,7 +8,6 @@
 		Terminal,
 		Calculator,
 		Laugh,
-		ChartSpline,
 		FlaskConical,
 		Shapes
 	} from '@lucide/svelte';
@@ -37,11 +36,11 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : l'atelier, le grapheur et les démos de géométrie ne lisent
-			// aucune donnée serveur, ils sont donc ouverts, y compris hors connexion.
-			// L'atelier vient en tête : c'est lui qui réunit les trois registres.
+			// Sans `roles` : l'atelier et les démos de géométrie ne lisent aucune
+			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			// L'atelier est l'entrée unique du grapheur (`/grapheur` y mène encore,
+			// ouvert sur le Graphe) : décision G1 de David, 2026-10-04.
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
-			{ label: 'Grapheur', href: '/grapheur', icon: ChartSpline },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',
