@@ -1,0 +1,229 @@
+{
+	"title": "Espace : norme d'un vecteur, distance entre deux points",
+	"description": "Norme d'un vecteur et distance AB en repère orthonormé, valeur exacte (pièges : racine oubliée, z oublié, racine non simplifiée)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-071", "TSPE-072", "TSPE-081"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Norme et distance",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$.\n\nCalcule la norme de $\\vec{u}$ (valeur exacte, racine simplifiée).\n\n$\\|\\vec{u}\\|=?$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-6..6"
+				},
+				{
+					"name": "u2",
+					"expression": "-6..6"
+				},
+				{
+					"name": "u3",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["u1 != 0 || u2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(u1^2+u2^2+u3^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un repère orthonormé, $\\|\\vec{u}\\|=\\sqrt{x^2+y^2+z^2}$.",
+					"$\\|\\vec{u}\\|=\\sqrt{ {{u1;()}}^2+{{u2;()}}^2+{{u3;()}}^2 }=\\sqrt{{{eval:u1^2+u2^2+u3^2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(u1^2+u2^2+u3^2)}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nCalcule la distance $AB$ (valeur exacte, racine simplifiée).\n\n$AB=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "by",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bz",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["bz != az", "bx != ax || by != ay"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt((bx-ax)^2+(by-ay)^2+(bz-az)^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AB=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2+(z_B-z_A)^2}$ dans un repère orthonormé.",
+					"$AB=\\sqrt{{{eval:bx-ax;()}}^2+{{eval:by-ay;()}}^2+{{eval:bz-az;()}}^2}=\\sqrt{{{eval:(bx-ax)^2+(by-ay)^2+(bz-az)^2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt((bx-ax)^2+(by-ay)^2+(bz-az)^2)}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (2 ; -1 ; 2) → 3",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "2",
+				"u2": "-1",
+				"u3": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : carré de la norme (9)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "2",
+				"u2": "-1",
+				"u3": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : z oublié (√5)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "2",
+				"u2": "-1",
+				"u3": "2"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : √11",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "1",
+				"u2": "-3",
+				"u3": "1"
+			},
+			"answers": ["\\sqrt{11}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 2√3",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "2",
+				"u2": "2",
+				"u3": "2"
+			},
+			"answers": ["2\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : √12 non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "2",
+				"u2": "2",
+				"u3": "2"
+			},
+			"answers": ["\\sqrt{12}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : √14",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "0",
+				"bx": "3",
+				"by": "1",
+				"bz": "-1"
+			},
+			"answers": ["\\sqrt{14}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB² (14)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "0",
+				"bx": "3",
+				"by": "1",
+				"bz": "-1"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : z oublié (√13)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "0",
+				"bx": "3",
+				"by": "1",
+				"bz": "-1"
+			},
+			"answers": ["\\sqrt{13}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : coordonnées ajoutées au lieu de soustraites",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "0",
+				"bx": "3",
+				"by": "1",
+				"bz": "-1"
+			},
+			"answers": ["3\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

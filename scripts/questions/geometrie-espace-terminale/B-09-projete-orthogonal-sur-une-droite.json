@@ -1,0 +1,337 @@
+{
+	"title": "Espace : projeté orthogonal d'un point sur une droite",
+	"description": "Projeté orthogonal H de M sur une droite donnée par un point et un vecteur directeur (ou une représentation paramétrique) : paramètre t puis coordonnées (pièges : A ou M recopié, division par ‖u‖² oubliée)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-076", "TSPE-091", "TSPE-098"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Projeté orthogonal",
+	"level": 3,
+	"status": "draft",
+	"delay": 180,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ passant par $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, et le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				},
+				{
+					"name": "hx",
+					"expression": "{{eval:ax+s*u1}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{eval:ay+s*u2}}"
+				},
+				{
+					"name": "hz",
+					"expression": "{{eval:az+s*u3}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:hx+w1}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:hy+w2}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:hz+w3}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hx}}"
+				},
+				{
+					"expectedAnswer": "{{hy}}"
+				},
+				{
+					"expectedAnswer": "{{hz}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$H\\in d$ : $H({{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}\\,;\\,{{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}\\,;\\,{{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}})$ pour un réel $t$, et $\\overrightarrow{MH}\\cdot\\vec{u}=0$.",
+					"$\\overrightarrow{AM}\\cdot\\vec{u}={{eval:(mx-ax)*u1+(my-ay)*u2+(mz-az)*u3}}$ et $\\|\\vec{u}\\|^2={{eval:u1^2+u2^2+u3^2}}$ ; la condition s'écrit $\\overrightarrow{AM}\\cdot\\vec{u}-t\\|\\vec{u}\\|^2=0$, donc $t=\\dfrac{\\overrightarrow{AM}\\cdot\\vec{u}}{\\|\\vec{u}\\|^2}={{s}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ H({{hx}}\\,;\\,{{hy}}\\,;\\,{{hz}}) }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}\\\\y={{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}\\\\z={{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$ et le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nLe projeté orthogonal $H$ de $M$ sur $d$ est le point de $d$ de paramètre $t$. Détermine $t$.\n\n$t=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				},
+				{
+					"name": "hx",
+					"expression": "{{eval:ax+s*u1}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{eval:ay+s*u2}}"
+				},
+				{
+					"name": "hz",
+					"expression": "{{eval:az+s*u3}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:hx+w1}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:hy+w2}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:hz+w3}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$d$ passe par $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$. $H\\in d$ : $H({{if:ax!=0|{{ax}}}}{{if:u1==1|{{if:ax!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:ax!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:ax==0|0}}}}\\,;\\,{{if:ay!=0|{{ay}}}}{{if:u2==1|{{if:ay!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:ay!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:ay==0|0}}}}\\,;\\,{{if:az!=0|{{az}}}}{{if:u3==1|{{if:az!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:az!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:az==0|0}}}})$ pour un réel $t$, et $\\overrightarrow{MH}\\cdot\\vec{u}=0$.",
+					"$\\overrightarrow{AM}\\cdot\\vec{u}={{eval:(mx-ax)*u1+(my-ay)*u2+(mz-az)*u3}}$ et $\\|\\vec{u}\\|^2={{eval:u1^2+u2^2+u3^2}}$ ; la condition s'écrit $\\overrightarrow{AM}\\cdot\\vec{u}-t\\|\\vec{u}\\|^2=0$, donc $t=\\dfrac{\\overrightarrow{AM}\\cdot\\vec{u}}{\\|\\vec{u}\\|^2}=\\textcolor{{{color:primary.0}}}{ {{s}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : H(2 ; 2 ; -2)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["2", "2", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : A recopié",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["1", "0", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : M recopié",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["4", "1", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : t = 1",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : AM·u sans diviser (6)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : t = -2",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "-2",
+				"r": "1",
+				"sel": "1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
