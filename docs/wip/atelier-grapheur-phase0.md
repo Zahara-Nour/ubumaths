@@ -138,6 +138,17 @@ status: phase 0 VALIDÉE par David le 2026-10-04 (Q1, Q2 tranchées, reprise aba
 
 ---
 
+### Décisions de David pour les suites (2026-10-04)
+
+| #   | Décision                                                                                                                                                                                                         |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S1  | Premier terme d'une récurrence : un **nombre** ou le **nom d'une valeur** de l'atelier (`u₀ = a` : le curseur de `a` fait varier u₀)                                                                             |
+| S2  | `u(n)` et `u_n` sont acceptés tous les deux                                                                                                                                                                      |
+| S3  | Dans Calcul : `u(n+1) = 0,5u(n) + 3` crée une suite récurrente (u₀ = 0 à régler dans la carte) ; `u(5)` donne le terme de rang 5, y compris pour une récurrence (aujourd'hui : résultat faux sans avertissement) |
+| S4  | Suites déjà rangées, sans mode : une suite qui se cite elle-même devient une récurrence, les autres sont explicites                                                                                              |
+
+Le lot 5 est coupé en deux PR : 5a = modèle + Calcul (S1–S4), 5b = carte + graphique (U1–U3).
+
 ## §6 — La bascule de `/grapheur`
 
 | #   | Cas                       | Attendu                                                                                                                      |
