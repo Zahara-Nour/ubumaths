@@ -320,6 +320,9 @@ const UNIFORM_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+
 const UNIFORM_DENSITY_REGEX =
 	/^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*\[\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\]\s*\)$/;
 
+/** `X ~ U([…` : un crochet annonce la loi à densité, même mal fermée */
+const UNIFORM_BRACKET_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*\[/;
+
 /** `X ~ E(0,5)`, `X ~ Exp(0.5)` : la loi exponentielle, λ (manche 13, PR b) */
 const EXPONENTIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*(?:E|Exp)\s*\(\s*(.+?)\s*\)$/;
 
@@ -2369,6 +2372,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				const density = UNIFORM_DENSITY_REGEX.exec(content);
 				const exponential = density ? null : EXPONENTIAL_REGEX.exec(content);
 				const geometric = density || exponential ? null : GEOMETRIC_REGEX.exec(content);
+				// `U([0 ; 10[`, `U([0 ; 10)` : une loi à densité mal écrite, pas la loi discrète (revue)
+				if (!density && UNIFORM_BRACKET_REGEX.test(content)) {
+					throw new LineError('U([a ; b]) : écrire U([0 ; 10]) avec deux nombres');
+				}
 				const uniform = density || exponential || geometric ? null : UNIFORM_REGEX.exec(content);
 				if (density || exponential || geometric || uniform) {
 					if (

@@ -1924,6 +1924,11 @@ function exponentialLine(
 	if (query.given !== null) {
 		const a = positive(query.low);
 		const b = positive(query.given);
+		// Condition toujours vraie (b ⩽ 0) : c'est P(X > a), écrit comme tel
+		// (« e^(−0,5 × (3 − −1)) » donnait une égalité fausse, revue)
+		if (b.equals(Fraction.ZERO)) {
+			return exponentialLine({ ...query, given: null }, lambdaText, variable, places, locale);
+		}
 		const value = Math.exp(-lambda.toNumber() * a.sub(b).toNumber());
 		if (!a.greaterThan(b)) return `${display} = 1`;
 		const difference = `(${asWritten(query.low!, locale)} − ${asWritten(query.given, locale)})`;
@@ -1963,6 +1968,34 @@ function exponentialCdf(lambdaText: string, locale: ContentLocale): string {
 	if (lambda.equals(Fraction.ONE)) return '−x';
 	const shown = asWritten(lambdaText, locale);
 	return shown.includes('/') ? `−(${shown})x` : `−${shown}x`;
+}
+
+/**
+ * L'événement hachuré et sa valeur, pour le lecteur d'écran : une
+ * conditionnelle hachure {X > a} (« P(X > 5) ≈ 0,082 », revue)
+ */
+function areaEvent(density: NonNullable<LawData['density']>, locale: ContentLocale): string {
+	const area = density.area!;
+	const event: DensityQuery = { ...area, given: null };
+	const display = shownEvent(
+		area.given === null ? area.display : `${area.display.slice(0, area.display.indexOf(' |'))})`,
+		locale
+	);
+	if (area.point) return `${display} = 0`;
+	const read = (value: string | null) => (value === null ? null : Fraction.parse(value));
+	if (density.law.family === 'uniform') {
+		const a = Fraction.parse(density.law.a) ?? Fraction.ZERO;
+		const b = Fraction.parse(density.law.b) ?? Fraction.ONE;
+		const value = uniformDensityProbability(a, b, read(event.low), read(event.high));
+		return `${display} ${exactProbabilityText(value, density.places, locale)}`;
+	}
+	const lambda = Fraction.parse(density.law.lambda)?.toNumber() ?? 1;
+	const value = exponentialProbability(
+		lambda,
+		read(event.low)?.toNumber() ?? null,
+		read(event.high)?.toNumber() ?? null
+	);
+	return `${display} ${approxText(value, density.places, locale)}`;
 }
 
 /** La courbe de densité et l'aire hachurée, en unités de la loi */
@@ -2039,9 +2072,7 @@ function densityChart(
 
 	const text = STAT_TEXT[locale];
 	const shaded =
-		density.area === null
-			? ''
-			: ` ; ${text.law.shadedArea(shownEvent(density.area.display, locale))}`;
+		density.area === null ? '' : ` ; ${text.law.shadedArea(areaEvent(density, locale))}`;
 	return {
 		kind: 'densite',
 		title: null,
@@ -2083,7 +2114,8 @@ function buildDensityScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 				: `[${asWritten(aText, locale)} ; ${asWritten(bText, locale)}]`;
 		name = text.uniformDensity(interval);
 		moments = uniformDensityMoments(a, b);
-		decimal = false;
+		// Bornes écrites en décimal : E et V aussi, comme l'exponentielle et la binomiale (revue)
+		decimal = /[.,]/.test(aText + bText);
 		cdf = text.cdfUniform(uniformCdf(a, b, locale), interval);
 		const read = (value: string | null) => (value === null ? null : Fraction.parse(value));
 		lines = density.queries.map((query) => {

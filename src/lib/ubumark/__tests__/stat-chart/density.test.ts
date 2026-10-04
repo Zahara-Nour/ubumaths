@@ -214,6 +214,62 @@ describe('X ~ E(λ)', () => {
 	});
 });
 
+describe('lois à densité — conditionnelles (revue)', () => {
+	const after = (line: string) => line.slice(line.indexOf(' = '));
+
+	it('E(λ) : une condition toujours vraie (b < 0) donne la forme de P(X > a)', () => {
+		const [conditional, plain] = lawOf(
+			`${E}\nindicateurs: aucun\nprobabilités: P(X > 3 | X > -1) ; P(X > 3)`
+		).indicators;
+		expect(after(conditional)).toBe(after(plain));
+		expect(after(plain)).toBe(' = e^(−0,5 × 3) = e^(−1,5) ≈ 0,223');
+	});
+
+	it('U([a ; b]) : P(X > 5 | X > 2) = 5/8 ; b < a donne P(X > a)', () => {
+		expect(lawOf(`${U}\nindicateurs: aucun\nprobabilités: P(X > 5 | X > 2)`).indicators).toEqual([
+			'P(X > 5 | X > 2) = 5/8 = 0,625'
+		]);
+		const [conditional, plain] = lawOf(
+			`${U}\nindicateurs: aucun\nprobabilités: P(X > 5 | X > -1) ; P(X > 5)`
+		).indicators;
+		expect(after(conditional)).toBe(after(plain));
+	});
+
+	it('U([a ; b]) : refus quand la condition est impossible (b ⩾ borne sup)', () => {
+		expect(errorOf(`${U}\nprobabilités: P(X > 12 | X > 10)`)).toBe(
+			"Ligne 2 : probabilités : « P(X > 12 | X > 10) » : P(X > 10) = 0, la probabilité conditionnelle n'existe pas"
+		);
+	});
+});
+
+describe('lois à densité — description de l’aire (revue)', () => {
+	it('l’événement hachuré et sa valeur ; la conditionnelle : {X > a}', () => {
+		const chart = (source: string, locale: 'fr' | 'en' = 'fr') =>
+			lawOf(`${E}\ndiagramme: oui\nprobabilités: ${source}`, locale).densityChart!.description;
+		expect(chart('P(X > 5 | X > 2)')).toContain('aire hachurée : P(X > 5) ≈ 0,082');
+		expect(chart('P(X > 5 | X > 2)', 'en')).toContain('shaded area: P(X > 5) ≈ 0.082');
+		expect(chart('P(X ⩽ 2)')).toContain('aire hachurée : P(X ⩽ 2) ≈ 0,632');
+	});
+});
+
+describe('lois à densité — revue, suite', () => {
+	it('U([0 ; 10[) ou U([0 ; 10) : erreur de la loi à densité, pas la loi discrète', () => {
+		const message = 'Ligne 1 : U([a ; b]) : écrire U([0 ; 10]) avec deux nombres';
+		expect(errorOf('X ~ U([0 ; 10[)')).toBe(message);
+		expect(errorOf('X ~ U([0 ; 10)')).toBe(message);
+	});
+
+	it('bornes écrites en décimal : E et V en décimal exact', () => {
+		expect(lawOf('X ~ U([0 ; 1,5])\nindicateurs: espérance ; variance').indicators).toEqual([
+			'E(X) = 0,75',
+			'V(X) = 0,1875'
+		]);
+		expect(lawOf('X ~ U([0 ; 10])\nindicateurs: variance').indicators).toEqual([
+			'V(X) = 25/3 ≈ 8,33'
+		]);
+	});
+});
+
 // =============================================================================
 // PDF
 // =============================================================================
