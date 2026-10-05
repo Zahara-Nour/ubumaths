@@ -1,0 +1,392 @@
+{
+	"title": "Chiffrement affine modulo 26 et chiffrement de Hill",
+	"description": "Chiffrer une lettre par x ↦ ax + b modulo 26, trouver l'inverse de a modulo 26, déchiffrer, chiffrer un bloc de deux lettres par une matrice 2 × 2 (pièges : réduction modulo 26 oubliée, a et b échangés, division par a au lieu de l'inverse, produit ligne × matrice)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-080", "TEXP-077", "TEXP-076", "TEXP-082"],
+	"theme": "Arithmétique",
+	"domain": "Congruences",
+	"subdomain": "Chiffrement",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "On numérote les lettres de $0$ à $25$ ($A = 0$, $B = 1$, …, $Z = 25$). Une lettre de rang $x$ est chiffrée par la lettre de rang $y$, où $y$ est le reste de la division de ${{a}}x + {{b}}$ par $26$.\n\nLa lettre {{if:x==2|C|{{if:x==7|H|{{if:x==10|K|{{if:x==12|M|{{if:x==17|R|W}}}}}}}}}} a pour rang ${{x}}$. Donne le rang $y$ de la lettre qui la chiffre.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2|7|10|12|17|22"
+				},
+				{
+					"name": "a",
+					"expression": "3|5|7|9|11|15|17|19|21|23"
+				},
+				{
+					"name": "b",
+					"expression": "1..25"
+				}
+			],
+			"conditions": ["a*x+b >= 26"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(a*x+b,26)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}} \\times {{x}} + {{b}} = {{eval:a*x+b}} = 26 \\times {{eval:floor((a*x+b)/26)}} + {{eval:mod(a*x+b,26)}}$.",
+					"Le reste est $y = \\textcolor{{{color:primary.0}}}{{{eval:mod(a*x+b,26)}}}$ : on garde le reste, pas le nombre ${{eval:a*x+b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour déchiffrer le chiffrement affine $y \\equiv {{a}}x + {{b}} \\,[26]$, on a besoin d'un inverse de ${{a}}$ modulo $26$.\n\nDonne l'entier $a'$ de $\\{0, 1, \\ldots, 25\\}$ tel que ${{a}}a' \\equiv 1 \\,[26]$.\n\n$a'=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3|5|7|9|11|15|17|19|21|23"
+				},
+				{
+					"name": "b",
+					"expression": "1..25"
+				},
+				{
+					"name": "inv",
+					"expression": "eval:mod(mod(a^5,26)^2*a,26)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{inv}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathrm{PGCD}({{a}} \\,;\\, 26) = 1$ : ${{a}}$ a un inverse modulo $26$. On cherche un multiple de ${{a}}$ qui s'écrit $26k + 1$.",
+					"${{a}} \\times {{inv}} = {{eval:a*inv}} = 26 \\times {{eval:(a*inv-1)/26}} + 1$, donc $a' = \\textcolor{{{color:primary.0}}}{{{inv}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un message est chiffré par $y \\equiv {{a}}x + {{b}} \\,[26]$ (lettres numérotées de $0$ à $25$). On admet que ${{a}} \\times {{inv}} \\equiv 1 \\,[26]$.\n\nUne lettre chiffrée a pour rang $y = {{y}}$. Donne le rang $x$ de la lettre d'origine, dans $\\{0, 1, \\ldots, 25\\}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3|5|7|9|11|15|17|19|21|23"
+				},
+				{
+					"name": "b",
+					"expression": "1..25"
+				},
+				{
+					"name": "inv",
+					"expression": "eval:mod(mod(a^5,26)^2*a,26)"
+				},
+				{
+					"name": "y",
+					"expression": "0..25"
+				},
+				{
+					"name": "x",
+					"expression": "eval:mod(inv*(y-b+26),26)"
+				}
+			],
+			"conditions": ["y != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y \\equiv {{a}}x + {{b}} \\,[26]$ donne ${{a}}x \\equiv {{y}} - {{b}} \\,[26]$.",
+					"On multiplie par ${{inv}}$ : $x \\equiv {{inv}} \\times ({{y}} - {{b}}) = {{eval:inv*(y-b)}} \\,[26]$.",
+					"$x = \\textcolor{{{color:primary.0}}}{{{x}}}$ ; vérification : ${{a}} \\times {{x}} + {{b}} = {{eval:a*x+b}} \\equiv {{y}} \\,[26]$."
+				]
+			}
+		},
+		{
+			"statement": "Chiffrement de Hill : un bloc de deux lettres de rangs $x_1$ et $x_2$ est chiffré par le bloc de rangs $y_1$, $y_2$ (dans $\\{0, 1, \\ldots, 25\\}$) tels que\n\n$$\\begin{pmatrix}y_1\\\\y_2\\end{pmatrix} \\equiv \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}\\begin{pmatrix}x_1\\\\x_2\\end{pmatrix} \\,[26].$$\n\nChiffre le bloc $x_1 = {{x1}}$, $x_2 = {{x2}}$ : donne le vecteur $\\begin{pmatrix}y_1\\\\y_2\\end{pmatrix}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..9"
+				},
+				{
+					"name": "a2",
+					"expression": "1..9"
+				},
+				{
+					"name": "a3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a4",
+					"expression": "1..9"
+				},
+				{
+					"name": "x1",
+					"expression": "0..25"
+				},
+				{
+					"name": "x2",
+					"expression": "0..25"
+				}
+			],
+			"conditions": [
+				"gcd(abs(a1*a4-a2*a3),26) == 1",
+				"a1*x1+a2*x2 >= 26",
+				"a3*x1+a4*x2 >= 26",
+				"a2 != a3"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:mod(a1*x1+a2*x2,26)}};{{eval:mod(a3*x1+a4*x2,26)}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y_1 \\equiv {{a1}} \\times {{x1}} + {{a2}} \\times {{x2}} = {{eval:a1*x1+a2*x2}} \\equiv {{eval:mod(a1*x1+a2*x2,26)}} \\,[26]$.",
+					"$y_2 \\equiv {{a3}} \\times {{x1}} + {{a4}} \\times {{x2}} = {{eval:a3*x1+a4*x2}} \\equiv {{eval:mod(a3*x1+a4*x2,26)}} \\,[26]$.",
+					"Bloc chiffré : $\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:mod(a1*x1+a2*x2,26)}}\\\\{{eval:mod(a3*x1+a4*x2,26)}}\\end{pmatrix}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : H (7), y ≡ 5x + 3 → 38 ≡ 12",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : réduction modulo 26 oubliée (38)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a et b échangés (3 × 7 + 5 = 26 ≡ 0)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a(x + b) = 50 ≡ 24",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : inverse de 5 modulo 26 = 21",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 1/5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −5 (congru à 21, hors de {0…25})",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : inverse de 7 modulo 26 = 15",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"inv": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : y ≡ 5x + 3, y = 12 → x = 21 × 9 = 189 ≡ 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21",
+				"y": "12",
+				"x": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : divisé par a : (12 − 3)/5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21",
+				"y": "12",
+				"x": "7"
+			},
+			"answers": ["\\frac{9}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : rechiffré au lieu de déchiffré (5 × 12 + 3 = 63 ≡ 11)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21",
+				"y": "12",
+				"x": "7"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : a'y − b = 252 − 3 ≡ 15",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21",
+				"y": "12",
+				"x": "7"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : A = (3 2 ; 5 7), (4 ; 11) → (34 ; 97) ≡ (8 ; 19)",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "3",
+				"a2": "2",
+				"a3": "5",
+				"a4": "7",
+				"x1": "4",
+				"x2": "11"
+			},
+			"answers": ["(8;19)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : en colonne",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "3",
+				"a2": "2",
+				"a3": "5",
+				"a4": "7",
+				"x1": "4",
+				"x2": "11"
+			},
+			"answers": ["\\begin{pmatrix}8\\\\19\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : réduction modulo 26 oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "3",
+				"a2": "2",
+				"a3": "5",
+				"a4": "7",
+				"x1": "4",
+				"x2": "11"
+			},
+			"answers": ["(34;97)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : ligne × matrice (4×3 + 11×5 = 67 ≡ 15 ; 4×2 + 11×7 = 85 ≡ 7)",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "3",
+				"a2": "2",
+				"a3": "5",
+				"a4": "7",
+				"x1": "4",
+				"x2": "11"
+			},
+			"answers": ["(15;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
