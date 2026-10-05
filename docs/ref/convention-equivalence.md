@@ -139,6 +139,15 @@ jour ; 23 en prod dont 6 sur 4 modèles PUBLIÉS : « Réduire une racine carré
 racine carrée », « Trouver un nombre positif de carré donné », « Réduire une expression avec des
 racines carrées »), 18 synthétiques. Aucune attendue réelle ne change de verdict.
 
+## Fraction exacte pour un décimal attendu (décision de David du 2026-10-05)
+
+L'inverse d'`acceptDecimal`, sans option : attendue écrite en décimal (`0.4`, `-1.25`), réponse
+entier ou fraction d'entiers de valeur **exactement** égale (calcul en entiers, aucune tolérance :
+`\frac{1}{3}` n'égale pas `0.3333`) → juste ; seules restent les contraintes d'écriture
+(`\frac{4}{10}` perfectible si la réduction est exigée). Hors périmètre, inchangé : case à
+`precision` (`\frac{1}{3}` pour 0,33 au centième reste refusé), `requiredForm`, `rulesSuffice`,
+unité. Code : `src/lib/questions/exact-fraction-for-decimal.ts`.
+
 ## Notation combinatoire : `n!`, `\binom{n}{k}` (option `acceptCombinatorialNotation`)
 
 Depuis le 2026-10-05, les deux parseurs (LaTeX et maison) lisent la factorielle postfixe `n!` et

@@ -331,6 +331,11 @@ zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite apr�
 de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
 dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
 
+Corrigé dans le moteur le 2026-10-05 (branche `feat/moteur-regles-fraction-figure`), ne plus
+contourner par une variable intermédiaire : une borne ou un opérande `{{eval:…}}` (ou `{{a+1}}`)
+dans une règle de validation (`range` : `"max": "{{eval:floor(S/p1)}}"`, `divisor`, `multiple`,
+`custom`…) est calculé à la génération ; avant, la règle refusait toute réponse.
+
 Corrigés dans le moteur le 2026-10-03 (branche `fix/regle-negatif-inegalite`), ne plus
 contourner : dans une règle de validation (`custom`, `range`, `divisor`, `multiple`,
 `equation_root`, `equivalent`), une variable négative ou une expression est substituée entre
@@ -462,7 +467,10 @@ Règles d'écriture qui évitent un défaut :
 - Une spec `bad_form` / `unoptimal_form` liste ses `constraintViolations`, sinon elle est rouge.
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
-  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
+  TinyMath). L'inverse est automatique (2026-10-05) : décimal attendu (`0.4`), fraction
+  ou entier de valeur EXACTEMENT égale (`\frac{2}{5}`) jugé juste, contraintes d'écriture comprises
+  (`\frac{4}{10}` perfectible) ; sauf case à `precision` (un arrondi reste un arrondi), `requiredForm`
+  ou `rulesSuffice`. Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
   de décroissance, de convexité : ajouter `"openableBounds": true` (case ou `blankDefaults`) —
   l'élève peut OUVRIR une borne finie fermée (`]2;+\infty[` pour `[2;+\infty[`), jamais fermer
   une borne ouverte ; JAMAIS pour l'ensemble de solutions d'une inéquation. Specs conseillées :
