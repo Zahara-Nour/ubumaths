@@ -24,7 +24,7 @@
 <!-- Grille 1fr / auto / 1fr : Père Ubu occupe la rangée du milieu, donc le centre exact de la zone.
      py-10 (symétrique) réserve la place de la date en haut sans décentrer Ubu. -->
 <div
-	class="relative container mx-auto grid h-full grid-rows-[1fr_auto_1fr] justify-items-center px-4 py-10 text-center"
+	class="zone relative container mx-auto grid h-full grid-rows-[1fr_auto_1fr] justify-items-center px-4 py-10 text-center"
 >
 	<a
 		href={resolve('/almanach')}
@@ -33,7 +33,7 @@
 		{todayLabel}<span class="sr-only"> : ouvrir l’Almanach des Chiphres</span>
 	</a>
 
-	<h1 class="mb-10 self-end text-4xl font-bold">
+	<h1 class="titre mb-10 self-end text-4xl font-bold">
 		Les maths de la chandelle <span class="text-primary">verte</span>
 	</h1>
 
@@ -236,9 +236,16 @@
 	figure a {
 		@apply relative z-10 inline-block;
 	}
+	/* La zone est un conteneur de taille : Ubu rétrécit selon la hauteur disponible
+	   (240 px quand il y a la place), pour que tout tienne sans défiler sur petit écran. */
+	.zone {
+		container-type: size;
+	}
 	figure svg,
 	.img-bg {
-		@apply h-60 w-60;
+		--ubu: clamp(6rem, calc(100cqh - 17rem), 15rem);
+		width: var(--ubu);
+		height: var(--ubu);
 	}
 	/* Halo et traits prennent l'ambiance du mois de l'Almanach. Pas de light-dark()
 	   ici : il serait relu dans les @keyframes, ce que Safari ne gère pas avant 17.5.
@@ -299,6 +306,20 @@
 	}
 	.depeche-text {
 		@apply leading-snug font-medium;
+	}
+	/* Zone basse (petit téléphone) : marges resserrées autour du titre et de la dépêche.
+	   Après les règles de base, pour les remplacer à spécificité égale. */
+	@container (max-height: 560px) {
+		.titre {
+			@apply mb-4 text-3xl;
+		}
+		.depeche {
+			@apply mt-3;
+		}
+		figure svg,
+		.img-bg {
+			--ubu: clamp(6rem, calc(100cqh - 14.5rem), 15rem);
+		}
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.img-bg,
