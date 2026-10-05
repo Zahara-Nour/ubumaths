@@ -133,6 +133,9 @@ const DEFAULT_SLIDER = { min: -10, max: 10, step: 0.1 } as const;
 /** Plus grand rang de départ accepté : au-delà, rien ne s'afficherait. */
 const MAX_FIRST_INDEX = 1000;
 
+/** Le trait d'une dérivée selon son ordre : `f′`, `f″`, `f‴`. */
+const DERIVATIVE_LINE_STYLES = ['dashed', 'dotted', 'dashdot'] as const;
+
 /** Ce qu'un réglage de suite peut changer (S1, U1). */
 const sequencePatchSchema = z
 	.object({
@@ -872,7 +875,7 @@ export class Atelier {
 		// ensuite, retirée ou non (phase 0 `/grapheur` §1 L1).
 		const display =
 			plotted && isFunction(current) && current.display === undefined
-				? newDisplay(this.#displays())
+				? this.#firstDisplay(name)
 				: plotted && isSequence(current) && current.display === undefined
 					? newSequenceDisplay(this.#displays())
 					: undefined;
@@ -904,8 +907,15 @@ export class Atelier {
 		// Rien à changer, rien à sauvegarder
 		if (Object.keys(read.patch).length === 0) return { ok: true };
 
-		const base = current.display ?? newDisplay(this.#displays());
+		const base = current.display ?? this.#firstDisplay(name);
 		this.items[index] = { ...current, display: { ...base, ...read.patch } };
+		// Ses dérivées suivent sa couleur (décision de David, 2026-10-05). Seul un
+		// CHANGEMENT compte : une relecture qui pose la couleur d'une fonction sans
+		// réglages ne doit pas écraser celle, peut-être choisie, de sa dérivée
+		const color = read.patch.color;
+		if (color !== undefined && current.display !== undefined && current.display.color !== color) {
+			this.#recolorDerivatives(name, color);
+		}
 		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
 		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
 		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
@@ -945,6 +955,30 @@ export class Atelier {
 	}
 
 	/** Les couples couleur/style déjà pris (fonctions et suites) — pour ne pas les doubler. */
+	/**
+	 * Les réglages d'une fonction à son premier tracé. Une dérivée prend la
+	 * couleur de sa fonction, et un trait qui dit son ordre (comme la case
+	 * « f′ » de l'ancien grapheur) : `f′` en tirets, `f″` en pointillés.
+	 */
+	#firstDisplay(name: string): CurveDisplay {
+		const fresh = newDisplay(this.#displays());
+		const derivative = derivativeOf(name);
+		if (derivative === null) return fresh;
+		const lineStyle = DERIVATIVE_LINE_STYLES[derivative.order - 1] ?? 'dashed';
+		const base = this.get(derivative.base);
+		const color = base !== undefined && isFunction(base) ? base.display?.color : undefined;
+		return { ...fresh, lineStyle, ...(color !== undefined && { color }) };
+	}
+
+	/** Donner à toutes les dérivées déjà tracées de `name` sa nouvelle couleur. */
+	#recolorDerivatives(name: string, color: CurveDisplay['color']): void {
+		this.items = this.items.map((o) =>
+			isFunction(o) && o.display !== undefined && derivativeOf(o.name)?.base === name
+				? { ...o, display: { ...o.display, color } }
+				: o
+		);
+	}
+
 	#displays(): Pick<CurveDisplay, 'color' | 'lineStyle'>[] {
 		return this.items.flatMap((o) =>
 			(isFunction(o) || isSequence(o)) && o.display ? [o.display] : []
