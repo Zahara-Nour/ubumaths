@@ -111,6 +111,8 @@ Pour rejouer fidèlement, l'entrée doit garder sa **provenance** (`text` /
 
 ### Question ouverte
 
+✅ **Tranché par David le 2026-10-05 : on traduit aussi les actions des cartes** en leur commande quand elle existe ; celles qui n'en ont pas sont nommées à la fin du rejeu.
+
 **Q1 — Les lignes venues des cartes (« Dériver f », « Statistiques L1 »…).**
 Elles ne sont pas des saisies.
 **Reco : ne rejouer que les saisies**, et dire à la fin « 3 lignes venues des

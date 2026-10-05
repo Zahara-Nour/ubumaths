@@ -11,7 +11,7 @@
 	import { provideAtelier } from '$lib/atelier/context';
 	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
-	import { derivativeName } from '$lib/atelier/names';
+	import { derivativeName, displayName } from '$lib/atelier/names';
 	import type { AtelierState } from '$lib/atelier/persistence';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
@@ -25,6 +25,8 @@
 	import { syncPlots } from '$lib/atelier/plot-sync';
 	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { cascadeMessage, removedMessage } from '$lib/atelier/removal';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -63,6 +65,13 @@
 		startWith,
 		heading = 'Atelier'
 	}: Props = $props();
+
+	/** Durée pendant laquelle « Annuler » reste proposé après une suppression (E2). */
+	const UNDO_DURATION_MS = 10_000;
+
+	/** L'objet dont la suppression attend confirmation, avec ce qu'elle emporterait (N2). */
+	let pendingRemoval = $state<{ name: string; dependents: readonly string[] } | null>(null);
+	let confirmRemoval = $state(false);
 
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
@@ -199,10 +208,47 @@
 		}
 	}
 
+	/**
+	 * Supprimer l'objet et ses dépendants, puis proposer « Annuler » (lot B,
+	 * N1, N3, N4). Le message disparaît seul : la suppression devient définitive.
+	 */
+	function removeNow(name: string) {
+		const result = atelier.removeWithDependents(name);
+		if (!result.ok) {
+			toaster.error(result.message);
+			return;
+		}
+		if (selected !== null && result.removed.includes(selected)) selected = null;
+		toaster.message(removedMessage(result.removed), {
+			duration: UNDO_DURATION_MS,
+			action: {
+				label: 'Annuler',
+				onClick: () => {
+					// L4 : l'atelier a changé depuis — on le dit plutôt que de restaurer par-dessus
+					if (!atelier.undoRemoval(result)) {
+						toaster.warning(
+							'L’atelier a changé depuis : la suppression ne peut plus être annulée.'
+						);
+					}
+				}
+			}
+		});
+	}
+
+	function handleConfirmRemoval() {
+		if (pendingRemoval !== null) removeNow(pendingRemoval.name);
+		pendingRemoval = null;
+	}
+
 	function handleAction(action: ObjectAction, object: AtelierObject) {
 		if (action.id === 'remove') {
-			atelier.remove(object.name);
-			if (selected === object.name) selected = null;
+			const dependents = atelier.removalOf(object.name);
+			if (dependents.length === 0) {
+				removeNow(object.name);
+				return;
+			}
+			pendingRemoval = { name: object.name, dependents };
+			confirmRemoval = true;
 			return;
 		}
 		if (action.id === 'plot') {
@@ -319,6 +365,17 @@
 			confirmLabel="Vider l’atelier"
 			variant="destructive"
 			onConfirm={handleReset}
+		/>
+		<ConfirmDialog
+			bind:open={confirmRemoval}
+			title="Supprimer {pendingRemoval ? displayName(pendingRemoval.name) : ''} ?"
+			description={pendingRemoval
+				? cascadeMessage(pendingRemoval.name, pendingRemoval.dependents)
+				: ''}
+			confirmLabel="Tout supprimer"
+			variant="destructive"
+			onConfirm={handleConfirmRemoval}
+			onCancel={() => (pendingRemoval = null)}
 		/>
 		<nav class="onglets" aria-label="Vues de l'atelier">
 			{#each VIEWS as item (item.id)}
