@@ -10,6 +10,7 @@ import { parseMarkdown } from '$lib/ubumark';
 import type { BlockNode, DocumentNode } from '$lib/ubumark';
 import {
 	hasUnsafeMathCommand,
+	isRefusedRestrictedFormula,
 	isProjectStorageImage,
 	restrictDocument,
 	stripFenceLanguages,
@@ -53,6 +54,20 @@ describe('hasUnsafeMathCommand', () => {
 		'\\hrefx'
 	])('admet %s', (latex) => {
 		expect(hasUnsafeMathCommand(latex)).toBe(false);
+	});
+});
+
+describe('isRefusedRestrictedFormula', () => {
+	it('refuse une commande interdite ou une formule hors bornes de rendu', () => {
+		expect(isRefusedRestrictedFormula('\\htmlStyle{color:red}{x}')).toBe(true);
+		let deep = 'x';
+		for (let i = 0; i < 13; i++) deep = `\\left(\\dfrac{${deep}}{1}\\right)`;
+		expect(isRefusedRestrictedFormula(deep)).toBe(true);
+		expect(isRefusedRestrictedFormula('x+'.repeat(10_000))).toBe(true);
+	});
+
+	it('admet une formule ordinaire', () => {
+		expect(isRefusedRestrictedFormula('\\frac{1}{2}+\\sqrt{x}')).toBe(false);
 	});
 });
 
