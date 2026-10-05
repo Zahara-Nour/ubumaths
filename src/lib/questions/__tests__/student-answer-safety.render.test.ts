@@ -23,6 +23,12 @@ import { parseLatex, toLatex } from '$lib/mathAST';
 import { unitWritingToLatex } from '$lib/mathAST/units/display';
 import type { QuestionTemplate } from '../types';
 
+function nest(times: number, wrap: (inner: string) => string, seed = 'x'): string {
+	let latex = seed;
+	for (let i = 0; i < times; i++) latex = wrap(latex);
+	return latex;
+}
+
 const CHARGES = [
 	String.raw`\style{position:fixed;top:0;left:0;width:100vw;height:100vh;background:url(https://evil.example/x.png)}{x}`,
 	String.raw`\htmlStyle{position:fixed}{x}`,
@@ -43,25 +49,51 @@ const CHARGES = [
 	// Vecteur en colonne : option d'espacement derrière un blanc, lignes en masse (audit 2026-10-04)
 	'\\begin{pmatrix}1\\\\\t[999em]2\\end{pmatrix}',
 	'\\begin{pmatrix}1\\\\\u00a0[999em]2\\end{pmatrix}',
-	`\\begin{pmatrix}${'\\\\'.repeat(1000)}\\end{pmatrix}`
+	`\\begin{pmatrix}${'\\\\'.repeat(1000)}\\end{pmatrix}`,
+	// Rendu géant avec des commandes ADMISES (2026-10-05) : taille doublée à chaque `\left`
+	nest(13, (s) => String.raw`\left(\dfrac{${s}}{1}\right)`),
+	nest(20, (s) => String.raw`\left(\frac{${s}}{1}\right)`),
+	nest(13, (s) => String.raw`\left(\dfrac1${s}\right)`),
+	nest(50, (s) => String.raw`\binom{${s}}{1}`),
+	`${'\\sqrt'.repeat(300)}x`,
+	nest(8, (s) => String.raw`\begin{pmatrix}${s}\\1\\2\end{pmatrix}`),
+	nest(
+		3,
+		(s) => String.raw`\left(\dfrac{${s}}{1}\right)`,
+		nest(30, (s) => String.raw`\dfrac{${s}}{1}`)
+	),
+	nest(2000, (s) => `{${s}}`),
+	'{'.repeat(1990),
+	'1+'.repeat(10_000),
+	String.raw`\dfrac{1}{2}`.repeat(83)
 ];
 
+/** HTML et temps de rendu bornés : une réponse ne doit pas bloquer la page du professeur */
+const MAX_HTML_LENGTH = 200_000;
+const MAX_RENDER_MS = 1_000;
+
 describe('réponse élève neutralisée rendue par MathLive', () => {
-	it.each(CHARGES)('%s : ni lien, ni URL, ni positionnement, ni attribut', (charge) => {
-		const html = convertLatexToMarkup(neutralizeStudentLatex(charge), { defaultMode: 'math' });
-		expect(html).not.toMatch(/position\s*:/i);
-		expect(html).not.toMatch(/url\(/i);
-		expect(html).not.toMatch(/href/i);
-		expect(html).not.toMatch(/<a[\s>]/i);
-		expect(html).not.toMatch(/data-(?!ML)/);
-		expect(html).not.toMatch(/999em/);
-		// Dimension démesurée calculée par MathLive (`\\\\[999em]` rend `height:1001.41em`)
-		const largestEm = Math.max(
-			0,
-			...[...html.matchAll(/(-?\d+(?:\.\d+)?)em/g)].map((m) => Math.abs(Number(m[1])))
-		);
-		expect(largestEm).toBeLessThan(50);
-	});
+	it.each(CHARGES.map((charge) => [charge.slice(0, 80), charge]))(
+		'%s : ni lien, ni URL, ni positionnement, ni attribut, rendu borné',
+		(_, charge) => {
+			const start = performance.now();
+			const html = convertLatexToMarkup(neutralizeStudentLatex(charge), { defaultMode: 'math' });
+			expect(performance.now() - start).toBeLessThan(MAX_RENDER_MS);
+			expect(html.length).toBeLessThan(MAX_HTML_LENGTH);
+			expect(html).not.toMatch(/position\s*:/i);
+			expect(html).not.toMatch(/url\(/i);
+			expect(html).not.toMatch(/href/i);
+			expect(html).not.toMatch(/<a[\s>]/i);
+			expect(html).not.toMatch(/data-(?!ML)/);
+			expect(html).not.toMatch(/999em/);
+			// Dimension démesurée calculée par MathLive (`\\\\[999em]` rend `height:1001.41em`)
+			const largestEm = Math.max(
+				0,
+				...[...html.matchAll(/(-?\d+(?:\.\d+)?)em/g)].map((m) => Math.abs(Number(m[1])))
+			);
+			expect(largestEm).toBeLessThan(50);
+		}
+	);
 
 	it('une réponse ordinaire reste rendue', () => {
 		const html = convertLatexToMarkup(neutralizeStudentLatex(String.raw`\dfrac{3}{4}+0{,}5`), {
