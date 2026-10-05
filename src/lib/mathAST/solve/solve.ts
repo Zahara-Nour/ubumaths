@@ -97,7 +97,7 @@ import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
-import { promoteEulerInRelation } from './promote-euler';
+import { promoteEulerInRelation, promoteStandaloneEulerInRelation } from './promote-euler';
 import { tryRationalDecomposition, createRationalDepthState } from './rational';
 import type { Domain } from '../domain/types';
 import {
@@ -108,6 +108,9 @@ import {
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
 import { applyRules } from '../pattern/rule';
+import { P } from '../pattern/builder';
+import { tryMatch } from '../pattern/match';
+import { getBindingNode } from '../pattern/types';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
@@ -834,6 +837,84 @@ let expLogRecursiveDepth = 0;
 const MAX_EXP_LOG_RECURSIVE_DEPTH = 3;
 
 /**
+ * `e^A − e^B = 0`, les deux exposants dépendant de l'inconnue.
+ *
+ * Deux formes de l'exponentielle : base `euler()` (le `e` de `e^u` est promu
+ * en amont) et fonction `exp(u)`.
+ *
+ * ⚠️ Construits à l'APPEL, pas au chargement du module : par l'atelier, `P`
+ * est encore `undefined` quand `solve.ts` s'évalue (cycle d'import) —
+ * mesuré, « Cannot read properties of undefined (reading 'sum') ».
+ */
+function equalExponentialsPatterns() {
+	return [
+		P.sum(P.pow(P.lit(euler()), P._('a')), P.neg(P.pow(P.lit(euler()), P._('b')))),
+		P.sum(P.func('exp', [P._('a')]), P.neg(P.func('exp', [P._('b')])))
+	] as const;
+}
+
+/**
+ * `e^A = e^B` ⟺ `A = B` : l'exponentielle est injective sur ℝ.
+ *
+ * ⚠️ Sans cette règle, `e^x = e^{-x}` revenait « Type d'equation
+ * transcendante non supporte » : l'extracteur exige UN seul terme
+ * exponentiel dépendant de l'inconnue, le reste constant. On ne traite que
+ * les deux exposants variables ; `e^{x+1} = e^3` reste au solveur linéaire
+ * de `solveExponential`.
+ *
+ * La sous-équation `A = B` porte toute la réponse, y compris « aucune
+ * solution » (`e^x = e^{x+1}`) ou « tout réel » (`e^x = e^x`). Si elle
+ * échoue, on rend `null` : les autres chemins tentent leur chance.
+ */
+function tryEqualExponentials(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (expLogRecursiveDepth >= MAX_EXP_LOG_RECURSIVE_DEPTH) return null;
+
+	for (const pattern of equalExponentialsPatterns()) {
+		const bindings = tryMatch(pattern, expr);
+		if (!bindings) continue;
+		const a = getBindingNode(bindings, 'a');
+		const b = getBindingNode(bindings, 'b');
+		if (!a || !b) continue;
+		if (!getVariables(a).has(variable) || !getVariables(b).has(variable)) continue;
+
+		const subEquation = equals(a, b);
+		expLogRecursiveDepth++;
+		let subResult: SolveResult;
+		try {
+			subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+		} finally {
+			expLogRecursiveDepth--;
+		}
+		// Échec du sous-solveur (« non supporte », non concluant) : on rend la
+		// main aux autres chemins au lieu de propager l'échec. Une absence de
+		// solution DÉMONTRÉE (`e^x = e^{x+1}` → contradiction) reste rendue.
+		if (subResult.error !== undefined && subResult.conclusive !== true) return null;
+
+		const recorder = createStepRecorder();
+		recorder.recordStep(
+			'equal-exponentials',
+			getRuleDescription('equal-exponentials'),
+			expr,
+			subEquation,
+			'summarized'
+		);
+		return {
+			...subResult,
+			equationType: 'exponential',
+			steps: [...recorder.getStepsFiltered(opts.verbosity), ...subResult.steps]
+		};
+	}
+	return null;
+}
+
+/**
  * Try to solve an exp/log equation with a non-linear argument by recursive decomposition.
  *
  * For e^(f(x)) = c, compute u = ln(c), then solve f(x) = u recursively.
@@ -1425,7 +1506,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// voit un seul terme et chaque solveur se trompe à sa façon (linéaire :
 	// x = 0 ; exponentiel, logarithmique, trigonométrique, quartique : aucune
 	// solution). L'atelier envoie ces entrées : `f(x)` y devient `(expression)`.
-	const promotedEq = unwrapGroupingMembers(promoteEulerInRelation(equation));
+	//
+	// Le `e` SEUL (`e^x = e`) est lui aussi la constante dès qu'il ne peut pas
+	// être l'inconnue — sinon « contradictoire », réponse fausse et assurée.
+	const promotedEq = unwrapGroupingMembers(
+		promoteStandaloneEulerInRelation(promoteEulerInRelation(equation), opts.variable)
+	);
 
 	// Convert to standard form: f(x) = 0
 	const expr = toStandardForm(promotedEq);
@@ -1516,6 +1602,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	// Try exp/log recursive decomposition for non-linear exp/log arguments
+	// e^A = e^B → A = B, avant la décomposition (qui exige UN terme exponentiel)
+	if (!result) {
+		result = tryEqualExponentials(expr, variable, opts);
+	}
+
 	if (!result) {
 		result = tryExpLogRecursiveDecomposition(expr, variable, opts);
 	}
