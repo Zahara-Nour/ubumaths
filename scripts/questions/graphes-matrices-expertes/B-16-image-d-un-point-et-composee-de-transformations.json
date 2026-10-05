@@ -1,0 +1,228 @@
+{
+	"title": "Image d'un point par une transformation, composée = produit de matrices",
+	"description": "Calculer l'image d'un point par la matrice d'une transformation, par une rotation de centre O d'angle ±π/2 ou π, la matrice d'une composée (produit dans le bon ordre), un antécédent par la matrice inverse (pièges : produit ligne × matrice, ordre de la composée inversé, multiplier par A au lieu de A⁻¹)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-127", "TEXP-124", "TEXP-125"],
+	"theme": "Graphes et matrices",
+	"domain": "Matrices",
+	"subdomain": "Transformations du plan",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M({{x}} \\,;\\, {{y}})$, sous la forme d'un vecteur colonne.\n\n$?$",
+			"variables": [
+				{ "name": "a1", "expression": "-4..4" },
+				{ "name": "a2", "expression": "1..4;±" },
+				{ "name": "a3", "expression": "1..4;±" },
+				{ "name": "a4", "expression": "-4..4" },
+				{ "name": "x", "expression": "1..5;±" },
+				{ "name": "y", "expression": "1..5;±" }
+			],
+			"conditions": ["a2 != a3", "x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:a1*x+a2*y}};{{eval:a3*x+a4*y}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X = {{a1}} \\times {{x;()}} + {{a2;()}} \\times {{y;()}} = {{eval:a1*x+a2*y}}$ (première ligne de $A$).",
+					"$Y = {{a3}} \\times {{x;()}} + {{a4;()}} \\times {{y;()}} = {{eval:a3*x+a4*y}}$ (seconde ligne de $A$).",
+					"$M' = \\textcolor{{{color:primary.0}}}{({{eval:a1*x+a2*y}} \\,;\\, {{eval:a3*x+a4*y}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle ${{if:m==1|\\dfrac{\\pi}{2}|{{if:m==2|\\pi|-\\dfrac{\\pi}{2}}}}}$.\n\nDonne les coordonnées de l'image par $r$ du point $M({{x}} \\,;\\, {{y}})$, sous la forme d'un vecteur colonne.\n\n$?$",
+			"variables": [
+				{ "name": "m", "expression": "1..3" },
+				{ "name": "co", "expression": "{{if:m==2|-1|0}}" },
+				{ "name": "si", "expression": "{{if:m==1|1|{{if:m==2|0|-1}}}}" },
+				{ "name": "x", "expression": "1..6;±" },
+				{ "name": "y", "expression": "1..6;±" }
+			],
+			"conditions": ["abs(x) != abs(y)"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:co*x-si*y}};{{eval:si*x+co*y}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La matrice de $r$ est $\\begin{pmatrix}\\cos\\theta & -\\sin\\theta\\\\ \\sin\\theta & \\cos\\theta\\end{pmatrix} = \\begin{pmatrix}{{co}}&{{eval:-si}}\\\\{{si}}&{{co}}\\end{pmatrix}$.",
+					"$\\begin{pmatrix}{{co}}&{{eval:-si}}\\\\{{si}}&{{co}}\\end{pmatrix}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix} = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:co*x-si*y}}\\\\{{eval:si*x+co*y}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe {{if:t==1|$(Ox)$|{{if:t==2|$(Oy)$|la droite d'équation $y = x$}}}}, de matrice $S = \\begin{pmatrix}{{s1}}&{{s2}}\\\\{{s3}}&{{s4}}\\end{pmatrix}$.\n\nOn applique d'abord {{if:o==1|$s$, puis $r$|$r$, puis $s$}}. Donne la matrice de cette transformation composée.\n\n$?$",
+			"variables": [
+				{ "name": "t", "expression": "1..3" },
+				{ "name": "o", "expression": "1..2" },
+				{ "name": "s1", "expression": "{{if:t==1|1|{{if:t==2|-1|0}}}}" },
+				{ "name": "s2", "expression": "{{if:t==3|1|0}}" },
+				{ "name": "s3", "expression": "{{if:t==3|1|0}}" },
+				{ "name": "s4", "expression": "{{if:t==1|-1|{{if:t==2|1|0}}}}" }
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:(2-o)*(-s3)+(o-1)*s2}}&{{eval:(2-o)*(-s4)+(o-1)*(-s1)}}\\\\{{eval:(2-o)*s1+(o-1)*s4}}&{{eval:(2-o)*s2+(o-1)*(-s3)}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Appliquer d'abord {{if:o==1|$s$ puis $r$, c'est multiplier par $S$ puis par $R$ : $R(SX) = (RS)X$|$r$ puis $s$, c'est multiplier par $R$ puis par $S$ : $S(RX) = (SR)X$}}. La matrice appliquée en premier est à DROITE.",
+					"{{if:o==1|$RS$|$SR$}} $= \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(2-o)*(-s3)+(o-1)*s2}}&{{eval:(2-o)*(-s4)+(o-1)*(-s1)}}\\\\{{eval:(2-o)*s1+(o-1)*s4}}&{{eval:(2-o)*s2+(o-1)*(-s3)}}\\end{pmatrix}}$ ; le produit dans l'autre ordre donne une autre transformation."
+				]
+			}
+		},
+		{
+			"statement": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}{{a4}}&{{eval:-a2}}\\\\{{eval:-a3}}&{{a1}}\\end{pmatrix}$.\n\nLe point $N({{eval:a1*x+a2*y}} \\,;\\, {{eval:a3*x+a4*y}})$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$?$",
+			"variables": [
+				{ "name": "a1", "expression": "1..4" },
+				{ "name": "a2", "expression": "1..4;±" },
+				{ "name": "a3", "expression": "1..4;±" },
+				{ "name": "a4", "expression": "eval:(1+a2*a3)/a1" },
+				{ "name": "x", "expression": "1..4;±" },
+				{ "name": "y", "expression": "1..4;±" }
+			],
+			"conditions": ["mod(1+a2*a3,a1) == 0", "a4 != 0", "x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{x}};{{y}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$N$ est l'image de $M$ : $\\begin{pmatrix}x_N\\\\y_N\\end{pmatrix} = A\\begin{pmatrix}x_M\\\\y_M\\end{pmatrix}$, donc $\\begin{pmatrix}x_M\\\\y_M\\end{pmatrix} = A^{-1}\\begin{pmatrix}x_N\\\\y_N\\end{pmatrix}$.",
+					"$A^{-1}\\begin{pmatrix}{{eval:a1*x+a2*y}}\\\\{{eval:a3*x+a4*y}}\\end{pmatrix} = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}}$ ; vérification : $A\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$ redonne $N$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : A = (2 −1 ; 3 1), M(4 ; −2) → (10 ; 10)",
+			"variationIndex": 0,
+			"variables": { "a1": "2", "a2": "-1", "a3": "3", "a4": "1", "x": "4", "y": "-2" },
+			"answers": ["(10;10)"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : en colonne",
+			"variationIndex": 0,
+			"variables": { "a1": "2", "a2": "-1", "a3": "3", "a4": "1", "x": "4", "y": "-2" },
+			"answers": ["\\begin{pmatrix}10\\\\10\\end{pmatrix}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : ligne × matrice (4×2 − 2×3 ; 4×(−1) − 2×1) = (2 ; −6)",
+			"variationIndex": 0,
+			"variables": { "a1": "2", "a2": "-1", "a3": "3", "a4": "1", "x": "4", "y": "-2" },
+			"answers": ["(2;-6)"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v0 : produits terme à terme (8 ; 2)",
+			"variationIndex": 0,
+			"variables": { "a1": "2", "a2": "-1", "a3": "3", "a4": "1", "x": "4", "y": "-2" },
+			"answers": ["(8;2)"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v1 : π/2, M(3 ; 5) → (−5 ; 3)",
+			"variationIndex": 1,
+			"variables": { "m": "1", "co": "0", "si": "1", "x": "3", "y": "5" },
+			"answers": ["(-5;3)"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : π/2, sens inverse (5 ; −3)",
+			"variationIndex": 1,
+			"variables": { "m": "1", "co": "0", "si": "1", "x": "3", "y": "5" },
+			"answers": ["(5;-3)"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v1 : π, M(3 ; −5) → (−3 ; 5)",
+			"variationIndex": 1,
+			"variables": { "m": "2", "co": "-1", "si": "0", "x": "3", "y": "-5" },
+			"answers": ["(-3;5)"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : −π/2, M(3 ; 5) → (5 ; −3)",
+			"variationIndex": 1,
+			"variables": { "m": "3", "co": "0", "si": "-1", "x": "3", "y": "5" },
+			"answers": ["(5;-3)"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : s (Ox) puis r → RS = (0 1 ; 1 0)",
+			"variationIndex": 2,
+			"variables": { "t": "1", "o": "1", "s1": "1", "s2": "0", "s3": "0", "s4": "-1" },
+			"answers": ["\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : s (Ox) puis r, ordre inversé SR",
+			"variationIndex": 2,
+			"variables": { "t": "1", "o": "1", "s1": "1", "s2": "0", "s3": "0", "s4": "-1" },
+			"answers": ["\\begin{pmatrix}0&-1\\\\-1&0\\end{pmatrix}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v2 : r puis s (y = x) → SR = (1 0 ; 0 −1)",
+			"variationIndex": 2,
+			"variables": { "t": "3", "o": "2", "s1": "0", "s2": "1", "s3": "1", "s4": "0" },
+			"answers": ["\\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : r puis s (y = x), ordre inversé RS",
+			"variationIndex": 2,
+			"variables": { "t": "3", "o": "2", "s1": "0", "s2": "1", "s3": "1", "s4": "0" },
+			"answers": ["\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v2 : somme R + S au lieu du produit",
+			"variationIndex": 2,
+			"variables": { "t": "1", "o": "1", "s1": "1", "s2": "0", "s3": "0", "s4": "-1" },
+			"answers": ["\\begin{pmatrix}1&-1\\\\1&-1\\end{pmatrix}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v3 : A = (2 1 ; 3 2), M(1 ; −3), N(−1 ; −3)",
+			"variationIndex": 3,
+			"variables": { "a1": "2", "a2": "1", "a3": "3", "a4": "2", "x": "1", "y": "-3" },
+			"answers": ["(1;-3)"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v3 : A × N au lieu de A⁻¹ × N (−5 ; −9)",
+			"variationIndex": 3,
+			"variables": { "a1": "2", "a2": "1", "a3": "3", "a4": "2", "x": "1", "y": "-3" },
+			"answers": ["(-5;-9)"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v3 : coordonnées de N recopiées",
+			"variationIndex": 3,
+			"variables": { "a1": "2", "a2": "1", "a3": "3", "a4": "2", "x": "1", "y": "-3" },
+			"answers": ["(-1;-3)"],
+			"expected": { "status": "incorrect" }
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
