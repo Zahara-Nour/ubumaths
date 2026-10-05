@@ -11,7 +11,8 @@
  * Décision S1 de David (2026-10-03) — en mode restreint :
  * - texte, marques en ligne, listes, citations, code (en TEXTE) ;
  * - formules rendues SAUF si elles contiennent une commande MathLive capable de
- *   poser style, classe, identifiant, données ou lien (alors : texte) ;
+ *   poser style, classe, identifiant, données ou lien (alors : texte) — ou si
+ *   elles dépassent les bornes de rendu (longueur, imbrication ; 2026-10-05) ;
  * - images : seulement depuis le stockage Supabase du projet ;
  * - ni vidéo, ni bloc spécial (affiché comme bloc de code).
  *
@@ -26,6 +27,7 @@
 
 import { getContext, hasContext, setContext } from 'svelte';
 import type { ASTNode, BlockNode, DocumentNode } from '$lib/ubumark';
+import { exceedsMathNestingLimits } from '$lib/questions/student-answer-safety';
 
 const RESTRICTED_RENDERING_KEY = Symbol('markdown-restricted-rendering');
 
@@ -138,6 +140,17 @@ const UNSAFE_MATH_REGEX = new RegExp(
 /** La formule contient-elle une commande interdite en mode restreint ? */
 export function hasUnsafeMathCommand(latex: string): boolean {
 	return UNSAFE_MATH_REGEX.test(latex);
+}
+
+/**
+ * La formule est-elle refusée en mode restreint (rendue en TEXTE, jamais par
+ * MathLive) ? Commande interdite (S1), ou formule hors bornes de rendu — trop
+ * longue ou trop imbriquée : `\left(\dfrac{…}{1}\right)` ×13 fait produire
+ * 4 Mo de HTML et bloque la page du lecteur (PR #832, mêmes plafonds que la
+ * réponse d'élève lue par le prof : `exceedsMathNestingLimits`).
+ */
+export function isRefusedRestrictedFormula(latex: string): boolean {
+	return hasUnsafeMathCommand(latex) || exceedsMathNestingLimits(latex);
 }
 
 // ============================================================================
