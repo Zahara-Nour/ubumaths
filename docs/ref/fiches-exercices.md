@@ -407,7 +407,8 @@ Toujours vrai :
 - **Bloc ```trig** : les étiquettes sont écrites dans [0 ; 2π[ par défaut (−π/6 devient
   « 11π/6 ») ; pour un intervalle d'étude ]−π ; π], ajouter `mesures: principales` (preset,
   `angles:`, solutions et bornes étiquetées ; les points ne bougent pas). `equation:` lit une valeur
-  non remarquable écrite avec une fonction : `cos(x) = cos(pi/5)`, `sin(x) > sin(2*pi/7)`. Une borne
+  non remarquable écrite avec une fonction : `cos(x) = cos(pi/5)`, `sin(x) > sin(2*pi/7)`, précédée
+  au plus d'un moins : `sin(x) < -sin(4*pi/12)` (= `sin(-4*pi/12)`). Une borne
   d'arc n'est étiquetée que si elle figure dans le preset ou `angles:`.
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
 - **Virgule décimale en dur** dans une formule (`0,1\times`) : la virgule nue est une ponctuation

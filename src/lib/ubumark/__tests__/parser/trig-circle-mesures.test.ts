@@ -158,3 +158,49 @@ describe('trig — equation: valeur écrite avec une fonction', () => {
 		expect(errors[0].message).toMatch(/^Ligne 2 : équation illisible/);
 	});
 });
+
+describe('trig — equation: un moins devant la fonction de la valeur', () => {
+	it('sin(x) < -sin(4*pi/12) : arc de 4π/3 à 5π/3, comme sin(-4*pi/12)', () => {
+		const node = nodeOf('preset: custom\nequation: sin(x) < -sin(4*pi/12)\nmode: arc');
+		expect(node.errors).toEqual([]);
+		expect(node.config.equation?.numericValue).toBeCloseTo(-Math.sqrt(3) / 2, 10);
+		const arc = node.solution!.arcs[0];
+		const twin = nodeOf('preset: custom\nequation: sin(x) < sin(-4*pi/12)\nmode: arc').solution!
+			.arcs[0];
+		expect(arc.startAngle).toBeCloseTo(twin.startAngle, 10);
+		expect(arc.endAngle).toBeCloseTo(twin.endAngle, 10);
+		expect(arc.startAngle).toBeCloseTo((4 * PI) / 3, 10);
+		expect(arc.endAngle).toBeCloseTo((5 * PI) / 3, 10);
+		expect(node.config.equation?.value).toBe('-sin(4*pi/12)');
+	});
+
+	it('sin(x) = -sin(4*pi/12) : solutions 4π/3 et 5π/3', () => {
+		const node = nodeOf('preset: custom\nequation: sin(x) = -sin(4*pi/12)');
+		expect(node.errors).toEqual([]);
+		expect(latexOf(node.solution?.angles)).toEqual(['\\frac{4\\pi}{3}', '\\frac{5\\pi}{3}']);
+	});
+
+	it('cos(x) = -cos(pi/3) (espace après le moins toléré) : solutions 2π/3 et 4π/3', () => {
+		const node = nodeOf('preset: custom\nequation: cos(x) = - cos(pi/3)');
+		expect(node.errors).toEqual([]);
+		expect(latexOf(node.solution?.angles)).toEqual(['\\frac{2\\pi}{3}', '\\frac{4\\pi}{3}']);
+	});
+
+	it('cos(x) >= -cos(pi/5) : valeur −cos(π/5)', () => {
+		const node = nodeOf('preset: custom\nequation: cos(x) >= -cos(pi/5)\nmode: arc');
+		expect(node.errors).toEqual([]);
+		expect(node.config.equation?.numericValue).toBeCloseTo(-Math.cos(PI / 5), 10);
+	});
+
+	it('valeurs numériques négatives déjà acceptées : -1/2, -√3/2, -\\frac{\\sqrt{2}}{2}', () => {
+		for (const v of ['-1/2', '-√3/2', '-\\frac{\\sqrt{2}}{2}', '-0.3']) {
+			expect(nodeOf(`preset: custom\nequation: cos(x) = ${v}`).errors).toEqual([]);
+		}
+	});
+
+	it('un double moins reste illisible : erreur située', () => {
+		const { errors } = parseTrigCircleContent('preset: custom\nequation: cos(x) = --cos(pi/3)');
+		expect(errors).toHaveLength(1);
+		expect(errors[0].message).toMatch(/^Ligne 2 : équation illisible/);
+	});
+});
