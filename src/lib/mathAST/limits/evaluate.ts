@@ -35,8 +35,9 @@ import {
 	isFunction,
 	isDelimiter
 } from '../guards';
-import { divide, opposite, subtract, positiveInfinity, negativeInfinity } from '../factory';
+import { divide, number, opposite, subtract, positiveInfinity, negativeInfinity } from '../factory';
 import { findNodes } from '../transforms';
+import { flattenSumShallow } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { matchKnownLimit, getKnownLimitValue } from './known-limits';
@@ -555,16 +556,59 @@ type TermLimit =
 	| { readonly kind: 'infinite'; readonly sign: 1 | -1 }
 	| { readonly kind: 'finite'; readonly value: number };
 
-/** Garde-fou : la levée de ∞ − ∞ rappelle `evaluateLimit` sur un quotient. */
-const MAX_DOMINANCE_DEPTH = 3;
-let dominanceDepth = 0;
+/**
+ * Garde-fou : la levée de ∞ − ∞ rappelle `evaluateLimit` sur des quotients,
+ * qui peuvent eux-mêmes contenir des sommes. Pile des sommes EN COURS
+ * d'analyse (incrémentée à l'entrée, décrémentée à la sortie) : elle mesure
+ * l'imbrication, pas le nombre de termes — une somme est aplatie d'un coup.
+ */
+const MAX_NESTED_SUMS = 3;
+let nestedSums = 0;
 
-function toTermLimit(result: LimitResult): TermLimit | null {
+/**
+ * L'Hôpital peut conclure sur une évaluation NUMÉRIQUE (x/√x → « 200000 »,
+ * statut 'exact' quand même). Une valeur finie qui en sort n'est retenue que
+ * si f s'en approche vraiment : |f(x₂) − L| ≤ |f(x₁) − L| / 2 entre
+ * x₁ = ±10³ et x₂ = ±10⁹ (ou f déjà égale à L). Sinon on s'abstient.
+ */
+function confirmsFiniteLimit(
+	node: MathNode,
+	varName: string,
+	approach: MathNode,
+	limitValue: number
+): boolean {
+	if (!isInfinity(approach)) return false;
+	const at = (magnitude: string): number => {
+		const point = approach.sign === 'positive' ? number(magnitude) : opposite(number(magnitude));
+		try {
+			return evaluateNodeToApproximatedNumber(substituteValue(node, varName, point));
+		} catch {
+			return NaN;
+		}
+	};
+	const near = Math.abs(at('1000') - limitValue);
+	const far = Math.abs(at('1000000000') - limitValue);
+	if (!Number.isFinite(near) || !Number.isFinite(far)) return false;
+	if (far <= ZERO_TOLERANCE * (1 + Math.abs(limitValue))) return true;
+	return far <= near / 2;
+}
+
+/** Limite exploitable pour combiner des termes, ou null (voir `confirmsFiniteLimit`). */
+function toTermLimit(
+	result: LimitResult,
+	node: MathNode,
+	varName: string,
+	approach: MathNode
+): TermLimit | null {
 	const value = result.value;
 	if (value === null || value === undefined) return null;
 	if (isInfinity(value)) return { kind: 'infinite', sign: value.sign === 'positive' ? 1 : -1 };
 	const numeric = getNumericValue(value);
-	return numeric === null ? null : { kind: 'finite', value: numeric };
+	if (numeric === null) return null;
+	if (result.technique === 'lhopital' && !confirmsFiniteLimit(node, varName, approach, numeric)) {
+		return null;
+	}
+	return { kind: 'finite', value: numeric };
 }
 
 /** Exposant `u` de `e^u` ou `exp(u)`, sinon null. */
@@ -598,16 +642,24 @@ function ratioLimit(
 	dir: LimitDirection,
 	options: LimitOptions
 ): TermLimit | null {
+	const quotient = divide(num, den, 'fraction');
 	const direct = toTermLimit(
-		evaluateLimit(divide(num, den, 'fraction'), varName, approach, dir, options)
+		evaluateLimit(quotient, varName, approach, dir, options),
+		quotient,
+		varName,
+		approach
 	);
 	if (direct !== null) return direct;
 	const numExponent = exponentialArgument(num);
 	const denExponent = exponentialArgument(den);
 	if (numExponent === null || denExponent === null) return null;
 	// lim (v − u) puis exponentielle : −∞ → 0, +∞ → +∞, c → e^c
+	const exponentGap = subtract(numExponent, denExponent);
 	const gap = toTermLimit(
-		evaluateLimit(subtract(numExponent, denExponent), varName, approach, dir, options)
+		evaluateLimit(exponentGap, varName, approach, dir, options),
+		exponentGap,
+		varName,
+		approach
 	);
 	if (gap === null) return null;
 	if (gap.kind === 'infinite') {
@@ -616,12 +668,41 @@ function ratioLimit(
 	return { kind: 'finite', value: Math.exp(gap.value) };
 }
 
+/** Comparaison de deux termes infinis : n / leader. */
+type Comparison =
+	| { readonly kind: 'negligible' }
+	| { readonly kind: 'dominant' }
+	| { readonly kind: 'same-order'; readonly ratio: number };
+
+/** Compare `node` au terme `leader` par lim node/leader, ou à défaut leader/node. */
+function compareTerms(
+	node: MathNode,
+	leader: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): Comparison | null {
+	const ratio = ratioLimit(node, leader, varName, approach, dir, options);
+	if (ratio !== null) {
+		if (ratio.kind === 'infinite') return { kind: 'dominant' };
+		if (ratio.value === 0) return { kind: 'negligible' };
+		return { kind: 'same-order', ratio: ratio.value };
+	}
+	const inverse = ratioLimit(leader, node, varName, approach, dir, options);
+	if (inverse === null) return null;
+	if (inverse.kind === 'infinite') return { kind: 'negligible' };
+	if (inverse.value === 0) return { kind: 'dominant' };
+	return { kind: 'same-order', ratio: 1 / inverse.value };
+}
+
 /**
- * Limite d'une somme `a + b` (ou différence, `b` = −c) en ±∞, terme à terme.
+ * Limite d'une somme en ±∞, terme à terme (somme aplatie).
  *
- * Forme ∞ − ∞ : a + b = a·(1 + b/a). Si b/a → 0, a domine (e^x − x : x/e^x → 0,
- * croissance comparée) ; si b/a → ±∞, b domine ; si b/a → L ≠ −1, le signe
- * est celui de a·(1 + L). L = −1 : on ne conclut pas.
+ * Forme ∞ − ∞ : on cherche le terme dominant parmi les termes infinis
+ * (e^x − x : x/e^x → 0, croissance comparée). Les termes du même ordre que
+ * lui (rapport fini non nul) forment un groupe dont le coefficient cumulé
+ * donne le signe ; coefficient nul : on ne conclut pas.
  */
 function trySumByDominantTerm(
 	expr: MathNode,
@@ -631,60 +712,86 @@ function trySumByDominantTerm(
 	options: LimitOptions
 ): { value: MathNode; form: IndeterminateForm; description: string } | null {
 	if (!isAddition(expr) && !isSubtraction(expr)) return null;
-	if (dominanceDepth >= MAX_DOMINANCE_DEPTH) return null;
+	if (nestedSums >= MAX_NESTED_SUMS) return null;
 
-	dominanceDepth++;
+	nestedSums++;
 	try {
-		const a = expr.left;
-		const b = isSubtraction(expr) ? opposite(expr.right) : expr.right;
-		const la = toTermLimit(evaluateLimit(a, varName, approach, dir, options));
-		if (la === null) return null;
-		const lb = toTermLimit(evaluateLimit(b, varName, approach, dir, options));
-		if (lb === null) return null;
+		// Termes signés : signe de la chaîne × signes de tête du terme
+		const terms = flattenSumShallow(expr).map(({ sign, term }) => {
+			const peeled = peelSign(term);
+			return { sign: (sign === '+' ? peeled.sign : -peeled.sign) as 1 | -1, node: peeled.node };
+		});
+		if (terms.length < 2) return null;
 
-		const infinityNode = (sign: 1 | -1): MathNode =>
-			sign === 1 ? positiveInfinity() : negativeInfinity();
+		const limits: TermLimit[] = [];
+		for (const term of terms) {
+			const termLimit = toTermLimit(
+				evaluateLimit(term.node, varName, approach, dir, options),
+				term.node,
+				varName,
+				approach
+			);
+			if (termLimit === null) return null;
+			limits.push(termLimit);
+		}
 
-		// Pas de forme indéterminée : au moins un infini, sans conflit de signe.
-		if (la.kind === 'finite' && lb.kind === 'finite') return null;
-		if (la.kind === 'finite' || lb.kind === 'finite' || la.sign === lb.sign) {
-			const infinite = la.kind === 'infinite' ? la : lb;
-			if (infinite.kind !== 'infinite') return null;
-			const sign = infinite.sign;
+		const infiniteIndices: number[] = [];
+		const signedSigns = new Set<number>();
+		limits.forEach((termLimit, i) => {
+			if (termLimit.kind === 'infinite') {
+				infiniteIndices.push(i);
+				signedSigns.add(terms[i].sign * termLimit.sign);
+			}
+		});
+		if (infiniteIndices.length === 0) return null;
+
+		const infinityNode = (sign: number): MathNode =>
+			sign > 0 ? positiveInfinity() : negativeInfinity();
+
+		// Pas de forme indéterminée : tous les infinis ont le même signe.
+		if (signedSigns.size === 1) {
+			const sign = [...signedSigns][0];
 			return {
 				value: infinityNode(sign),
 				form: 'none',
-				description: `Somme des limites : ${sign === 1 ? '+∞' : '-∞'}`
+				description: `Somme des limites : ${sign > 0 ? '+∞' : '-∞'}`
 			};
 		}
 
-		// Forme ∞ − ∞ : comparer les deux termes, signes mis à part
-		// (a = sa·A, b = sb·B, donc b/a = sa·sb·B/A).
-		const pa = peelSign(a);
-		const pb = peelSign(b);
-		const signFactor = pa.sign * pb.sign;
-		const ratio = ratioLimit(pb.node, pa.node, varName, approach, dir, options);
-		let sign: 1 | -1 | null = null;
-		if (ratio !== null) {
-			if (ratio.kind === 'infinite') {
-				sign = lb.sign;
-			} else {
-				const onePlusL = 1 + signFactor * ratio.value;
-				if (Math.abs(onePlusL) > ZERO_TOLERANCE) sign = onePlusL > 0 ? la.sign : lb.sign;
+		// Forme ∞ − ∞ : terme dominant et groupe de même ordre.
+		let leader = infiniteIndices[0];
+		let group: Array<{ index: number; ratio: number }> = [{ index: leader, ratio: 1 }];
+		for (const j of infiniteIndices.slice(1)) {
+			const comparison = compareTerms(
+				terms[j].node,
+				terms[leader].node,
+				varName,
+				approach,
+				dir,
+				options
+			);
+			if (comparison === null) return null;
+			if (comparison.kind === 'dominant') {
+				leader = j;
+				group = [{ index: j, ratio: 1 }];
+			} else if (comparison.kind === 'same-order') {
+				group.push({ index: j, ratio: comparison.ratio });
 			}
-		} else {
-			const inverse = ratioLimit(pa.node, pb.node, varName, approach, dir, options);
-			if (inverse !== null && inverse.kind === 'finite' && inverse.value === 0) sign = lb.sign;
 		}
-		if (sign === null) return null;
+
+		const coefficient = group.reduce((acc, g) => acc + terms[g.index].sign * g.ratio, 0);
+		if (Math.abs(coefficient) <= ZERO_TOLERANCE) return null;
+		const leaderLimit = limits[leader];
+		if (leaderLimit.kind !== 'infinite') return null;
+		const sign = Math.sign(coefficient) * leaderLimit.sign;
 
 		return {
 			value: infinityNode(sign),
 			form: '∞-∞',
-			description: `Forme ∞ − ∞ levée par le terme dominant (croissances comparées) : ${sign === 1 ? '+∞' : '-∞'}`
+			description: `Forme ∞ − ∞ levée par le terme dominant (croissances comparées) : ${sign > 0 ? '+∞' : '-∞'}`
 		};
 	} finally {
-		dominanceDepth--;
+		nestedSums--;
 	}
 }
 

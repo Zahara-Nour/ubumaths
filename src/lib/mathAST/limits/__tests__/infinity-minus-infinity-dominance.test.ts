@@ -88,3 +88,24 @@ describe('Polynômes : les monômes de même degré se cumulent', () => {
 		expect(limitSign(latex, at)).toBe(expected);
 	});
 });
+
+describe('Revue #871 : abstention sur valeur approchée, dominance inverse, sommes longues', () => {
+	it('x/√x − √x en +∞ : 0 ou abstention, jamais −∞', () => {
+		const result = evaluateLimit(
+			parseLatex('\\frac{x}{\\sqrt{x}} - \\sqrt{x}'),
+			'x',
+			positiveInfinity()
+		);
+		expect(result.value?.type).not.toBe('infinity');
+		if (result.value !== null) expect(toLatex(result.value)).toBe('0');
+	});
+
+	it.each([
+		['x^2 - x - \\ln(x)'],
+		['x^3 - x^2 + x - \\ln(x)'],
+		['\\ln(x) - x + \\sqrt{x} - 1 + x^2'],
+		['e^x - x - 1 - x - 1 - x']
+	])('lim (%s) en +∞ = +∞', (latex) => {
+		expect(limitSign(latex, 'plus')).toBe('positive');
+	});
+});
