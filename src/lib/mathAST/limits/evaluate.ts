@@ -35,7 +35,7 @@ import {
 	isFunction,
 	isDelimiter
 } from '../guards';
-import { divide, number, opposite, subtract, positiveInfinity, negativeInfinity } from '../factory';
+import { divide, subtract, positiveInfinity, negativeInfinity } from '../factory';
 import { findNodes } from '../transforms';
 import { flattenSumShallow } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
@@ -50,6 +50,8 @@ import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
 import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
+import { limitByGeneralizedDegree, involvesFractionalPower } from './generalized-degree';
+import { rewriteIndeterminateSum } from './sum-reduction';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { numericNode } from '../common/numeric';
@@ -393,13 +395,74 @@ export function evaluateLimit(
 		}
 	}
 
+	// Stratégie 2.7 : racines et puissances non entières en ±∞ — terme dominant
+	// c·x^d (degrés généralisés), limite EXACTE : x/√x = √x → +∞. L'Hôpital
+	// n'y concluait que par une évaluation numérique (« 200000 »).
+	if (isInfinity(approachPoint) && involvesFractionalPower(expression)) {
+		const degreeLimit = limitByGeneralizedDegree(expression, varName, approachPoint);
+		if (degreeLimit !== null) {
+			recorder.recordStepByRule(
+				'infinity-analysis',
+				expression,
+				degreeLimit,
+				'summarized',
+				approachPoint,
+				'Terme dominant (degrés généralisés)'
+			);
+			return createResult(
+				degreeLimit,
+				varName,
+				approachPoint,
+				dir,
+				isInfinity(degreeLimit) ? 'infinite' : 'exact',
+				'none',
+				'infinity-analysis',
+				recorder,
+				opts
+			);
+		}
+	}
+
+	// Stratégie 2.8 : somme ∞ − ∞ que le terme dominant ne lève pas (termes
+	// dominants qui s'annulent) — conjugué, ou même dénominateur et développement.
+	if (isInfinity(approachPoint)) {
+		const rewritten = tryRewrittenSum(expression, varName, approachPoint, dir, options);
+		if (rewritten !== null) {
+			recorder.recordStepByRule(
+				rewritten.technique,
+				expression,
+				rewritten.rewritten,
+				'summarized',
+				approachPoint,
+				rewritten.description
+			);
+			return createResult(
+				rewritten.value,
+				varName,
+				approachPoint,
+				dir,
+				isInfinity(rewritten.value) ? 'infinite' : 'exact',
+				'∞-∞',
+				rewritten.technique,
+				recorder,
+				opts
+			);
+		}
+	}
+
 	// Detect indeterminate form for subsequent strategies
 	const indeterminateForm = detectIndeterminateForm(expression, varName, approachPoint, dir);
+
+	// Valeur approchée de L'Hôpital (repli numérique) : gardée pour le cas où
+	// aucune autre stratégie ne conclut, et alors rendue 'approximate'.
+	let approximateValue: MathNode | null = null;
 
 	// Strategy 3: Try L'Hôpital's rule for 0/0 or ∞/∞
 	if (isLhopitalApplicable(expression, varName, approachPoint, dir)) {
 		const lhopitalResult = applyLhopital(expression, varName, approachPoint, dir, recorder, opts);
-		if (lhopitalResult.applicable && lhopitalResult.value) {
+		if (lhopitalResult.applicable && lhopitalResult.value && lhopitalResult.approximate) {
+			approximateValue = lhopitalResult.value;
+		} else if (lhopitalResult.applicable && lhopitalResult.value) {
 			return createResult(
 				lhopitalResult.value,
 				varName,
@@ -505,7 +568,10 @@ export function evaluateLimit(
 			);
 		}
 
-		if (!oneSided.twoSidedExists) {
+		// Un côté seulement approché : rien ne prouve que les limites diffèrent
+		const approximateSide =
+			oneSided.left?.status === 'approximate' || oneSided.right?.status === 'approximate';
+		if (!oneSided.twoSidedExists && !approximateSide) {
 			return createResult(
 				null,
 				varName,
@@ -530,6 +596,22 @@ export function evaluateLimit(
 	// `exp(1)`). Pas de boucle : la relecture ne contient plus de `e^u`.
 	if (varName !== 'e' && containsEulerPower(expression)) {
 		return evaluateLimit(expandEulerPowers(expression), varName, approachPoint, dir, options);
+	}
+
+	// Seule une valeur approchée a été trouvée : rendue comme telle, jamais 'exact'
+	if (approximateValue !== null) {
+		return createResult(
+			approximateValue,
+			varName,
+			approachPoint,
+			dir,
+			'approximate',
+			indeterminateForm,
+			'lhopital',
+			recorder,
+			opts,
+			"Valeur approchée (repli numérique) : la limite n'est pas démontrée"
+		);
 	}
 
 	// No strategy worked
@@ -566,48 +648,17 @@ const MAX_NESTED_SUMS = 3;
 let nestedSums = 0;
 
 /**
- * L'Hôpital peut conclure sur une évaluation NUMÉRIQUE (x/√x → « 200000 »,
- * statut 'exact' quand même). Une valeur finie qui en sort n'est retenue que
- * si f s'en approche vraiment : |f(x₂) − L| ≤ |f(x₁) − L| / 2 entre
- * x₁ = ±10³ et x₂ = ±10⁹ (ou f déjà égale à L). Sinon on s'abstient.
+ * Limite exploitable pour combiner des termes, ou null. Une valeur approchée
+ * (repli numérique de L'Hôpital, statut 'approximate') n'en est pas une :
+ * x/√x valait « 200000 » et faisait conclure −∞ sur x/√x − √x.
  */
-function confirmsFiniteLimit(
-	node: MathNode,
-	varName: string,
-	approach: MathNode,
-	limitValue: number
-): boolean {
-	if (!isInfinity(approach)) return false;
-	const at = (magnitude: string): number => {
-		const point = approach.sign === 'positive' ? number(magnitude) : opposite(number(magnitude));
-		try {
-			return evaluateNodeToApproximatedNumber(substituteValue(node, varName, point));
-		} catch {
-			return NaN;
-		}
-	};
-	const near = Math.abs(at('1000') - limitValue);
-	const far = Math.abs(at('1000000000') - limitValue);
-	if (!Number.isFinite(near) || !Number.isFinite(far)) return false;
-	if (far <= ZERO_TOLERANCE * (1 + Math.abs(limitValue))) return true;
-	return far <= near / 2;
-}
-
-/** Limite exploitable pour combiner des termes, ou null (voir `confirmsFiniteLimit`). */
-function toTermLimit(
-	result: LimitResult,
-	node: MathNode,
-	varName: string,
-	approach: MathNode
-): TermLimit | null {
+function toTermLimit(result: LimitResult): TermLimit | null {
 	const value = result.value;
 	if (value === null || value === undefined) return null;
+	if (result.status === 'approximate') return null;
 	if (isInfinity(value)) return { kind: 'infinite', sign: value.sign === 'positive' ? 1 : -1 };
 	const numeric = getNumericValue(value);
 	if (numeric === null) return null;
-	if (result.technique === 'lhopital' && !confirmsFiniteLimit(node, varName, approach, numeric)) {
-		return null;
-	}
 	return { kind: 'finite', value: numeric };
 }
 
@@ -643,24 +694,14 @@ function ratioLimit(
 	options: LimitOptions
 ): TermLimit | null {
 	const quotient = divide(num, den, 'fraction');
-	const direct = toTermLimit(
-		evaluateLimit(quotient, varName, approach, dir, options),
-		quotient,
-		varName,
-		approach
-	);
+	const direct = toTermLimit(evaluateLimit(quotient, varName, approach, dir, options));
 	if (direct !== null) return direct;
 	const numExponent = exponentialArgument(num);
 	const denExponent = exponentialArgument(den);
 	if (numExponent === null || denExponent === null) return null;
 	// lim (v − u) puis exponentielle : −∞ → 0, +∞ → +∞, c → e^c
 	const exponentGap = subtract(numExponent, denExponent);
-	const gap = toTermLimit(
-		evaluateLimit(exponentGap, varName, approach, dir, options),
-		exponentGap,
-		varName,
-		approach
-	);
+	const gap = toTermLimit(evaluateLimit(exponentGap, varName, approach, dir, options));
 	if (gap === null) return null;
 	if (gap.kind === 'infinite') {
 		return gap.sign === 1 ? { kind: 'infinite', sign: 1 } : { kind: 'finite', value: 0 };
@@ -725,12 +766,7 @@ function trySumByDominantTerm(
 
 		const limits: TermLimit[] = [];
 		for (const term of terms) {
-			const termLimit = toTermLimit(
-				evaluateLimit(term.node, varName, approach, dir, options),
-				term.node,
-				varName,
-				approach
-			);
+			const termLimit = toTermLimit(evaluateLimit(term.node, varName, approach, dir, options));
 			if (termLimit === null) return null;
 			limits.push(termLimit);
 		}
@@ -792,6 +828,45 @@ function trySumByDominantTerm(
 		};
 	} finally {
 		nestedSums--;
+	}
+}
+
+/**
+ * Garde-fou : la limite d'une réécriture peut elle-même aboutir à une somme
+ * réécrite. Profondeur d'imbrication des réécritures EN COURS.
+ */
+const MAX_NESTED_REWRITES = 2;
+let nestedRewrites = 0;
+
+/**
+ * Somme ∞ − ∞ en ±∞ : limite d'une réécriture égale (conjugué, même
+ * dénominateur), ou null si aucune ne conclut — une valeur approchée ne
+ * conclut pas.
+ */
+function tryRewrittenSum(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; rewritten: MathNode; description: string; technique: LimitRule } | null {
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	nestedRewrites++;
+	try {
+		for (const candidate of rewriteIndeterminateSum(expr)) {
+			const result = evaluateLimit(candidate.rewritten, varName, approach, dir, options);
+			if ((result.status === 'exact' || result.status === 'infinite') && result.value !== null) {
+				return {
+					value: result.value,
+					rewritten: candidate.rewritten,
+					description: candidate.description,
+					technique: candidate.technique
+				};
+			}
+		}
+		return null;
+	} finally {
+		nestedRewrites--;
 	}
 }
 
@@ -941,10 +1016,15 @@ function evaluateLimitInternal(
 
 	const indeterminateForm = detectIndeterminateForm(expr, varName, approach, direction);
 
+	// Valeur approchée de L'Hôpital : rendue 'approximate' faute de mieux
+	let approximateValue: MathNode | null = null;
+
 	// Try L'Hôpital
 	if (isLhopitalApplicable(expr, varName, approach, direction)) {
 		const lhopitalResult = applyLhopital(expr, varName, approach, direction, recorder, opts);
-		if (lhopitalResult.applicable && lhopitalResult.value) {
+		if (lhopitalResult.applicable && lhopitalResult.value && lhopitalResult.approximate) {
+			approximateValue = lhopitalResult.value;
+		} else if (lhopitalResult.applicable && lhopitalResult.value) {
 			return createResult(
 				lhopitalResult.value,
 				varName,
@@ -988,6 +1068,20 @@ function evaluateLimitInternal(
 			'exact',
 			indeterminateForm,
 			'squeeze',
+			recorder,
+			opts
+		);
+	}
+
+	if (approximateValue !== null) {
+		return createResult(
+			approximateValue,
+			varName,
+			approach,
+			direction,
+			'approximate',
+			indeterminateForm,
+			'lhopital',
 			recorder,
 			opts
 		);

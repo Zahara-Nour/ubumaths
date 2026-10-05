@@ -173,8 +173,13 @@ export function getDomainBoundaries(domain: Domain): BoundaryPoint[] {
  * @returns The corresponding LimitValue
  */
 export function convertLimitResult(result: LimitResult): LimitValue {
-	// Handle cases where limit doesn't exist or is unsupported
-	if (result.status === 'does-not-exist' || result.status === 'unsupported') {
+	// Handle cases where limit doesn't exist or is unsupported. Une valeur
+	// approchée (repli numérique) n'est pas une limite : on ne l'affiche pas.
+	if (
+		result.status === 'does-not-exist' ||
+		result.status === 'unsupported' ||
+		result.status === 'approximate'
+	) {
 		return 'indeterminate';
 	}
 
