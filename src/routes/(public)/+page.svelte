@@ -21,22 +21,21 @@
 	/>
 </svelte:head>
 
+<!-- Grille 1fr / auto / 1fr : Père Ubu occupe la rangée du milieu, donc le centre exact de la zone.
+     py-10 (symétrique) réserve la place de la date en haut sans décentrer Ubu. -->
 <div
-	class="container mx-auto flex h-full flex-col items-center justify-center space-y-20 p-4 text-center"
+	class="relative container mx-auto grid h-full grid-rows-[1fr_auto_1fr] justify-items-center px-4 py-10 text-center"
 >
-	<div class="mb-8 flex flex-col items-center gap-3">
-		<h1 class="text-4xl font-bold">
-			Les maths de la chandelle <span class="text-primary">verte</span>
-		</h1>
-		<p class="text-lg">
-			<a
-				href={resolve('/almanach')}
-				class="rounded-sm text-muted-foreground italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-			>
-				{todayLabel}<span class="sr-only"> : ouvrir l’Almanach des Chiphres</span>
-			</a>
-		</p>
-	</div>
+	<a
+		href={resolve('/almanach')}
+		class="absolute top-4 right-4 rounded-sm text-xs text-muted-foreground italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+	>
+		{todayLabel}<span class="sr-only"> : ouvrir l’Almanach des Chiphres</span>
+	</a>
+
+	<h1 class="mb-10 self-end text-4xl font-bold">
+		Les maths de la chandelle <span class="text-primary">verte</span>
+	</h1>
 
 	<figure
 		style:--halo-1-light={ambiance.light.h1}
@@ -214,16 +213,17 @@
 	</figure>
 
 	{#if data.shtam}
-		<!-- Discret : une ligne en pied de page, tirée au hasard à chaque visite -->
-		<p class="-mt-12 max-w-md text-sm text-muted-foreground" data-testid="home-shtam">
-			<span class="font-semibold">Le Shtam</span> :
-			<a
-				href={resolve('/(public)/shtam/[slug]', { slug: data.shtam.slug })}
-				class="rounded-sm italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+		<!-- Dépêche : sous Ubu, en bas à droite ; la rangée s'agrandit plutôt que de le chevaucher -->
+		<a
+			href={resolve('/(public)/shtam/[slug]', { slug: data.shtam.slug })}
+			class="depeche"
+			data-testid="home-shtam"
+		>
+			<span class="depeche-label"
+				><span class="dot" aria-hidden="true"></span>Dernière minute · Le Shtam</span
 			>
-				{data.shtam.title}
-			</a>
-		</p>
+			<span class="depeche-text">{data.shtam.title}</span>
+		</a>
 	{/if}
 </div>
 
@@ -282,8 +282,27 @@
 			transform: scale(1.5);
 		}
 	}
+	.depeche {
+		@apply mt-6 flex max-w-xs flex-col gap-1 self-end justify-self-end rounded-lg border bg-background px-4 py-3 text-left text-sm shadow-md transition-colors hover:border-foreground/30 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+	}
+	.depeche-label {
+		@apply flex items-center gap-2 text-xs font-bold tracking-wider text-destructive uppercase;
+	}
+	.dot {
+		@apply inline-block h-2 w-2 rounded-full bg-destructive;
+		animation: clignote 1.2s ease-in-out infinite;
+	}
+	@keyframes clignote {
+		50% {
+			opacity: 0.2;
+		}
+	}
+	.depeche-text {
+		@apply leading-snug font-medium;
+	}
 	@media (prefers-reduced-motion: reduce) {
-		.img-bg {
+		.img-bg,
+		.dot {
 			animation: none;
 		}
 	}

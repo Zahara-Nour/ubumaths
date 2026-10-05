@@ -64,6 +64,8 @@
 
 	// Check if we're on the whiteboard page (needs full screen, no footer/padding)
 	let isWhiteboardRoute = $derived(page.url.pathname.startsWith('/whiteboard'));
+	// L'accueil centre Père Ubu dans toute la hauteur disponible : il lui faut une hauteur définie
+	let isHomeRoute = $derived(page.url.pathname === '/');
 
 	// Pied de page : page d'accueil seulement (`showsFooter`, décision du 2026-10-04)
 	let footerShown = $derived(showsFooter(page.url.pathname));
@@ -135,7 +137,7 @@
 			<!-- Always render children so page can load -->
 			<div
 				class:opacity-0={$navigating && !isDashboardRoute}
-				class:h-full={isWhiteboardRoute}
+				class:h-full={isWhiteboardRoute || isHomeRoute}
 				class="transition-opacity duration-200"
 			>
 				{@render children?.()}
