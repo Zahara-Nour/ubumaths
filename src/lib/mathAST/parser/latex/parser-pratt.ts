@@ -30,6 +30,12 @@ import { MathAST, compose, matrix, complex, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
+import {
+	BINOM_COMMANDS,
+	DOUBLE_FACTORIAL_ERROR,
+	binomOf,
+	factorialOf
+} from '../factorial-notation';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
 import type { ParserSecurityOptions } from '../security';
 
@@ -71,7 +77,8 @@ const enum BP {
 	MULTIPLY = 30, // *, implicit, \cdot, \times
 	UNARY = 40, // prefix -, +
 	POWER = 50, // ^ (right-associative)
-	SUBSCRIPT = 50 // _ (same as POWER for mixed sub/superscript handling)
+	SUBSCRIPT = 50, // _ (same as POWER for mixed sub/superscript handling)
+	FACTORIAL = 51 // ! postfixe : `-3!` = −(3!), `x^2!` = (x²)! (exposant TeX = un atome)
 }
 /* eslint-enable @typescript-eslint/no-duplicate-enum-values */
 
@@ -254,11 +261,15 @@ class PrattParser {
 	// Token Management
 	// =========================================================================
 
+	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
+	private previousToken: Token | undefined;
+
 	/**
 	 * Advance to the next token, skipping whitespace
 	 */
 	private advance(): Token {
 		const prev = this.currentToken;
+		this.previousToken = prev;
 		this.currentToken = this.skipWhitespace();
 		return prev;
 	}
@@ -469,6 +480,9 @@ class PrattParser {
 			case 'GREATER':
 				return this.parseRelation(left, '>');
 
+			case 'EXCLAMATION':
+				return this.parseFactorial(left);
+
 			case 'COMMAND':
 				if (token.value === 'unit') {
 					return this.parseUnit(left);
@@ -567,6 +581,9 @@ class PrattParser {
 			case 'GREATER':
 				return BP.RELATION;
 
+			case 'EXCLAMATION':
+				return BP.FACTORIAL;
+
 			case 'COMMAND':
 				if (token.value === 'unit') {
 					return BP.MULTIPLY + 1; // Slightly higher than multiply to bind units
@@ -603,6 +620,7 @@ class PrattParser {
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
 					token.value === 'dfrac' ||
+					BINOM_COMMANDS.has(token.value) ||
 					token.value === 'sqrt' ||
 					token.value === 'left' ||
 					token.value === 'lfloor' ||
@@ -955,6 +973,11 @@ class PrattParser {
 			case 'frac':
 			case 'dfrac':
 				return this.parseFraction();
+
+			case 'binom':
+			case 'dbinom':
+			case 'tbinom':
+				return this.parseBinom();
 
 			case 'sqrt':
 				return this.parseSqrt();
@@ -1408,7 +1431,9 @@ class PrattParser {
 		}
 
 		// NUMBER cannot start implicit multiplication (prevents x2, (a)2, \sqrt{2}3)
+		// Sauf juste après une factorielle : `3!27!` = 3! × 27! (écriture de `\frac{30!}{3!27!}`)
 		if (token.type === 'NUMBER') {
+			if (this.previousToken?.type === 'EXCLAMATION') return true;
 			return false;
 		}
 
@@ -1423,6 +1448,7 @@ class PrattParser {
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
 					token.value === 'dfrac' ||
+					BINOM_COMMANDS.has(token.value) ||
 					token.value === 'sqrt' ||
 					token.value === 'left' ||
 					token.value === 'lfloor' ||
@@ -2067,6 +2093,34 @@ class PrattParser {
 		);
 
 		return this.applyColor(MathAST.divide(numerator, denominator, 'fraction'));
+	}
+
+	/** `\binom{n}{k}` (`\dbinom`, `\tbinom`) → `binom(n, k)`, le nœud de `binom(n, k)` */
+	private parseBinom(): MathNode {
+		this.advance(); // consume \binom
+		const top = this.parseCommandArgument('Missing \\binom top', "Expected '}' after \\binom top");
+		const bottom = this.parseCommandArgument(
+			'Missing \\binom bottom',
+			"Expected '}' after \\binom bottom"
+		);
+		return this.applyColor(binomOf(top, bottom));
+	}
+
+	/**
+	 * Factorielle postfixe `n!` → `factorial(n)`. `3!!` est refusé (double
+	 * factorielle) ; `\!` est un espace, filtré par le tokenizer, jamais ce token.
+	 */
+	private parseFactorial(left: MathNode): MathNode {
+		this.advance(); // consume !
+		if (this.check('EXCLAMATION')) {
+			this.error(
+				DOUBLE_FACTORIAL_ERROR,
+				this.currentToken.position,
+				this.currentToken.length,
+				'UNEXPECTED_TOKEN'
+			);
+		}
+		return this.applyColor(factorialOf(left));
 	}
 
 	/**

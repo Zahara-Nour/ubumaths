@@ -63,7 +63,8 @@ const TWO_ARGUMENT_COMMANDS = new Set([
 	'\\tfrac',
 	'\\cfrac',
 	'\\binom',
-	'\\dbinom'
+	'\\dbinom',
+	'\\tbinom'
 ]);
 
 // Functions

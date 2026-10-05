@@ -33,6 +33,7 @@ import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
+import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import {
 	isGroupingBracket,
@@ -233,11 +234,15 @@ class CustomPrattParser {
 	// Token Management
 	// =========================================================================
 
+	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
+	private previousToken: CustomToken | undefined;
+
 	/**
 	 * Advance to the next token
 	 */
 	private advance(): CustomToken {
 		const prev = this.currentToken;
+		this.previousToken = prev;
 		this.currentToken = this.tokenizer.nextToken();
 		return prev;
 	}
@@ -549,6 +554,10 @@ class CustomPrattParser {
 			case 'DOUBLE_LBRACKET':
 				return BP.MULTIPLY;
 
+			// `3!27!` : un nombre juste après une factorielle (cf. shouldInsertImplicitMultiply)
+			case 'NUMBER':
+				return this.previousToken?.type === 'EXCLAMATION' ? BP.MULTIPLY : BP.NONE;
+
 			default:
 				break;
 		}
@@ -602,9 +611,23 @@ class CustomPrattParser {
 			this.check('CARET') ||
 			this.check('UNDERSCORE') ||
 			this.check('PERCENT') ||
+			this.check('EXCLAMATION') ||
 			this.checkUnitBracket()
 		) {
-			if (this.check('PERCENT')) {
+			if (this.check('EXCLAMATION')) {
+				// Factorielle postfixe : `n!`, `2^3!` = (2³)!, `n!^2` = (n!)² ; `!=` est
+				// un autre token (≠). `3!!` (double factorielle) : refusé.
+				this.advance();
+				if (this.check('EXCLAMATION')) {
+					this.error(
+						DOUBLE_FACTORIAL_ERROR,
+						this.currentToken.position,
+						this.currentToken.length,
+						'UNEXPECTED_TOKEN'
+					);
+				}
+				operand = this.applyColor(factorialOf(operand));
+			} else if (this.check('PERCENT')) {
 				// Pourcentage, postfixe : `20%`, `x^2%` = (x²) %, `(a+5)%`
 				// `20%%` : erreur de lecture, jamais un pourcentage de pourcentage silencieux
 				if (operand.type === 'percentage') {
@@ -1329,7 +1352,9 @@ class CustomPrattParser {
 		}
 
 		// NUMBER cannot start implicit multiplication (prevents x2, (a)2)
+		// Sauf juste après une factorielle : `3!27!` = 3! × 27! (écriture de `\frac{30!}{3!27!}`)
 		if (token.type === 'NUMBER') {
+			if (this.previousToken?.type === 'EXCLAMATION') return true;
 			return false;
 		}
 

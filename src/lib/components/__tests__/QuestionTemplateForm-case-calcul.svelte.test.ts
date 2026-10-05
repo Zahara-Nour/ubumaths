@@ -76,4 +76,10 @@ describe('QuestionTemplateForm — cases de calcul', () => {
 		const saved = await saveRoundTrip(blankDefaults);
 		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
 	});
+
+	it('notation combinatoire acceptée : réglage conservé', async () => {
+		const blankDefaults: BlankDefaults = { acceptCombinatorialNotation: true };
+		const saved = await saveRoundTrip(blankDefaults);
+		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
+	});
 });

@@ -512,6 +512,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					...((blank.acceptDecimal ?? resolvedVariation.blankDefaults?.acceptDecimal) && {
 						acceptDecimal: true
 					}),
+					...((blank.acceptCombinatorialNotation ??
+						resolvedVariation.blankDefaults?.acceptCombinatorialNotation) && {
+						acceptCombinatorialNotation: true
+					}),
 					...(answerKind && { answerKind }),
 					...(answerKind === 'vecteur' && vectorMode && { vectorMode }),
 					...(answerKind === 'intervalles' && openableBounds && { openableBounds: true }),

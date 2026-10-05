@@ -80,7 +80,7 @@ import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess, expandTrigDefinitions, expandCommensurableArcs } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { evaluateNodeToApproximatedNumber, exactBinomial, exactFactorial } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
@@ -1793,6 +1793,20 @@ function extractPositiveRational(form: NormalForm): { n: bigint; d: bigint } | n
 	if (coeff.rational.n <= 0n) return null;
 
 	return { n: coeff.rational.n, d: coeff.rational.d };
+}
+
+/**
+ * Plus grand n calculé pour `n!` / `binom(n, k)` dans la normalisation : 200! a
+ * 375 chiffres, calculé en BigInt sans délai ; au-delà (une saisie hostile comme
+ * `1000000000!`), le nœud reste opaque.
+ */
+const MAX_COMBINATORIAL_ARGUMENT = 200n;
+
+/** Entier d'une forme normale purement numérique (0 compris), sinon `null` */
+function integerOfForm(form: NormalForm): bigint | null {
+	if (form.numerator.length === 0 && isOnePolynomial(form.denominator)) return 0n;
+	const rational = extractPureRational(form);
+	return rational !== null && rational.d === 1n ? rational.n : null;
 }
 
 /**
@@ -4857,6 +4871,33 @@ function normalizeFunction(
 		}
 
 		// Contains variables or evaluation failed - treat as opaque
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 10 bis. Factorielle et coefficient binomial (`6!`, `\binom{10}{3}`, `\frac{30!}{3!27!}`) :
+	// calculés en entiers EXACTS (BigInt) quand les arguments sont des entiers, n naturel.
+	// Borne sur n, pas sur le résultat : la forme normale garde des rationnels BigInt
+	// (`30!` dépasse 2⁵³ mais `\frac{30!}{3!27!}` vaut 4060). Au-delà — ou `n!`, `(1/2)!` —
+	// le nœud reste opaque, jamais une erreur.
+	if (
+		(name === 'factorial' && canonicalArgs.length === 1) ||
+		(name === 'binom' && canonicalArgs.length === 2)
+	) {
+		const integers = canonicalArgs.map((arg) => integerOfForm(normalizeNode(arg, ctx)));
+		const [top, bottom] = integers;
+		if (top !== null && top >= 0n && top <= MAX_COMBINATORIAL_ARGUMENT) {
+			const value =
+				name === 'factorial'
+					? exactFactorial(top, false)
+					: bottom !== null
+						? exactBinomial(top, bottom, false)
+						: null;
+			if (value !== null) {
+				const result = normalFormFromRational(fromInteger(value));
+				recordNormalizationStep(ctx, 'combinatorial-function', node, result, 'summarized');
+				return result;
+			}
+		}
 		return normalizeOpaqueNode(canonicalNode);
 	}
 

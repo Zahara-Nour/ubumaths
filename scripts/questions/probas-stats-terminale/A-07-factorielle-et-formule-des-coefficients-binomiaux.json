@@ -64,7 +64,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{f}}"
+					"expectedAnswer": "{{f}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -84,7 +85,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:n*(n-1)*(n-2)}}"
+					"expectedAnswer": "{{eval:n*(n-1)*(n-2)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -204,6 +206,29 @@
 			"answers": ["512"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 5! (notation acceptée)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["5!"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : \\binom{10}{2} sans l’option (consigne « Calcule ») : calcul non effectué",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["\\binom{10}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
 			}
 		}
 	],

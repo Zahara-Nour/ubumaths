@@ -32,7 +32,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(f,a)*binom(g,b)}}"
+					"expectedAnswer": "{{eval:binom(f,a)*binom(g,b)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -52,7 +53,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(8,k)*binom(24,5-k)}}"
+					"expectedAnswer": "{{eval:binom(8,k)*binom(24,5-k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -76,7 +78,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(r,2)*w}}"
+					"expectedAnswer": "{{eval:binom(r,2)*w}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -197,6 +200,20 @@
 			"answers": ["50"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : \\binom{8}{2}\\times\\binom{10}{3} (notation acceptée)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "8",
+				"g": "10",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\binom{8}{2}\\times\\binom{10}{3}"],
+			"expected": {
+				"status": "correct"
 			}
 		}
 	],
