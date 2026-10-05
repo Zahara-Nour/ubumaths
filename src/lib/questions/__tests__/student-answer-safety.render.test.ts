@@ -64,6 +64,17 @@ const CHARGES = [
 	`\\begin{pmatrix}${Array.from({ length: 6 }, () => Array(6).fill('\\dfrac{\\sqrt{2}}{3}').join('&')).join('\\\\')}\\end{pmatrix}`,
 	`\\begin{pmatrix}${'1&'.repeat(450)}1\\end{pmatrix}`,
 	'1&2&3\\\\4',
+	// Audit du 2026-10-05 : un `\end{pmatrix}` DANS un groupe fermait la matrice pour le
+	// filtre, pas pour MathLive → plus aucun `&` compté (965 colonnes : 116em, 191 Ko)
+	`\\begin{pmatrix}{\\end{pmatrix}}${'&'.repeat(965)}`,
+	...[
+		'\\text{\\end{pmatrix}}',
+		'\\mathrm{\\end{pmatrix}}',
+		'\\operatorname{\\end{pmatrix}}',
+		'\\sqrt[\\end{pmatrix}]{2}',
+		'\\left(\\end{pmatrix}\\right)'
+	].map((closer) => `\\begin{pmatrix}${closer}${'1&'.repeat(470)}`),
+	`\\begin{pmatrix}{\\end{pmatrix}}${`${'1&'.repeat(74)}1\\\\`.repeat(6)}`,
 	nest(
 		3,
 		(s) => String.raw`\left(\dfrac{${s}}{1}\right)`,
@@ -101,6 +112,18 @@ describe('réponse élève neutralisée rendue par MathLive', () => {
 			expect(largestEm).toBeLessThan(50);
 		}
 	);
+
+	it('`%` collé à un passage à la ligne : la fin de la réponse reste visible', () => {
+		for (const raw of [
+			'\\begin{pmatrix}1\\\\% secret x=2\\end{pmatrix}',
+			`\\begin{pmatrix}${'1\\\\'.repeat(6)}% secret x=2\\end{pmatrix}`,
+			'2\\\\% secret'
+		]) {
+			const html = convertLatexToMarkup(neutralizeStudentLatex(raw), { defaultMode: 'math' });
+			// Texte rendu (MathLive découpe les lettres en plusieurs spans)
+			expect(html.replace(/<[^>]*>/g, '')).toMatch(/secret/);
+		}
+	});
 
 	it('une réponse ordinaire reste rendue', () => {
 		const html = convertLatexToMarkup(neutralizeStudentLatex(String.raw`\dfrac{3}{4}+0{,}5`), {

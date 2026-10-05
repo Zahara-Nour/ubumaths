@@ -165,6 +165,43 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 	});
 });
 
+describe('neutralizeStudentLatex — `%` après des backslashes', () => {
+	it('`\\\\%` (passage à la ligne puis %) : le % est échappé', () => {
+		expect(neutralizeStudentLatex('\\begin{pmatrix}1\\\\% x\\end{pmatrix}')).toBe(
+			'\\begin{pmatrix}1\\\\\\% x\\end{pmatrix}'
+		);
+	});
+
+	it('`\\%` déjà échappé : inchangé', () => {
+		expect(neutralizeStudentLatex('33\\%')).toBe('33\\%');
+	});
+});
+
+describe('neutralizeStudentLatex — fin de matrice dans un groupe', () => {
+	it('`\\end{pmatrix}` dans un groupe ne ferme pas la matrice : `&` toujours plafonnés', () => {
+		for (const closer of [
+			'{\\end{pmatrix}}',
+			'\\text{\\end{pmatrix}}',
+			'\\sqrt[\\end{pmatrix}]{2}',
+			'\\left(\\end{pmatrix}\\right)'
+		]) {
+			const safe = neutralizeStudentLatex(`\\begin{pmatrix}${closer}${'1&'.repeat(100)}1`);
+			expect((safe.match(/&/g) ?? []).length).toBeLessThanOrEqual(30);
+		}
+	});
+
+	it('`&` hors matrice : plafonnés pour toute la formule', () => {
+		const safe = neutralizeStudentLatex('1&'.repeat(300));
+		expect((safe.match(/&/g) ?? []).length).toBeLessThanOrEqual(30);
+	});
+
+	it('matrice 6 × 6 : ses 30 `&` gardés', () => {
+		const row = Array(6).fill('1').join('&');
+		const latex = `\\begin{pmatrix}${Array(6).fill(row).join('\\\\')}\\end{pmatrix}`;
+		expect(neutralizeStudentLatex(latex)).toBe(latex);
+	});
+});
+
 // Matrice saisie avec l'onglet « Matrice » du clavier (case « matrice », 2026-10-05) :
 // `&` est un caractère ordinaire ; jusqu'à 6 lignes (matrice d'adjacence)
 describe('neutralizeStudentLatex — matrice', () => {

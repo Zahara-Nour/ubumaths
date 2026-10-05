@@ -112,6 +112,13 @@ const MAX_ROW_BREAKS = 5;
 const MAX_ROW_SEPARATORS = 5;
 
 /**
+ * `&` admis dans TOUTE la formule, matrice ou non (audit du 2026-10-05) : une 6 × 6.
+ * Filet si le filtre se trompe sur la matrice ouverte (`\end{pmatrix}` caché dans
+ * un argument `[…]` que MathLive lit autrement).
+ */
+const MAX_TOTAL_SEPARATORS = MAX_ROW_SEPARATORS * (MAX_ROW_BREAKS + 1);
+
+/**
  * Bornes de rendu (mesurées le 2026-10-05, MathLive 0.110 `convertLatexToMarkup`).
  * Avec des commandes ADMISES, la taille du rendu explose :
  * - `\left(\dfrac{…}{1}\right)` imbriqué : la hauteur DOUBLE à chaque niveau
@@ -238,33 +245,48 @@ function strippedArguments(latex: string, from: number): { kept: string; end: nu
 function keepAllowedCommands(latex: string): string {
 	let out = '';
 	let i = 0;
-	// Matrices / colonnes ouvertes (`&` déjà gardés dans la ligne courante de
-	// chacune) : `\\` n'est admis qu'à l'intérieur
-	const openColumns: number[] = [];
+	// Matrices ouvertes : profondeur de groupe de leur `\begin` (accolades et
+	// `\left…\right`) et `&` déjà gardés dans leur ligne courante. `\\` n'est
+	// admis qu'à l'intérieur. Un `\end` à une AUTRE profondeur (`{\end{pmatrix}}`,
+	// `\text{\end{pmatrix}}`, `\left(\end{pmatrix}\right)`) ne ferme rien pour
+	// MathLive : il est retiré (audit du 2026-10-05 : 965 colonnes, 116em).
+	const openColumns: { depth: number; separators: number }[] = [];
+	let depth = 0;
 	let breaks = 0;
+	let separators = 0;
 	while (i < latex.length) {
 		const c = latex[i];
 		if (c !== '\\') {
-			// Séparateur de colonnes dans une matrice : plafonné par ligne
-			if (c === '&' && openColumns.length > 0) {
-				const top = openColumns.length - 1;
-				if (openColumns[top] < MAX_ROW_SEPARATORS) {
+			// Séparateur de colonnes : plafonné par ligne de matrice et pour la formule
+			if (c === '&') {
+				const top = openColumns.at(-1);
+				const rowFull = top !== undefined && top.separators >= MAX_ROW_SEPARATORS;
+				if (!rowFull && separators < MAX_TOTAL_SEPARATORS) {
 					out += c;
-					openColumns[top]++;
+					separators++;
+					if (top) top.separators++;
 				}
 				i++;
 				continue;
 			}
+			if (c === '{') depth++;
+			else if (c === '}') depth = Math.max(0, depth - 1);
 			out += c;
 			i++;
 			continue;
 		}
 		const environment = ALLOWED_ENVIRONMENT.exec(latex.slice(i + 1));
 		if (environment) {
-			out += `\\${environment[0]}`;
 			i += 1 + environment[0].length;
-			if (environment[1] === 'begin') openColumns.push(0);
-			else openColumns.pop();
+			if (environment[1] === 'begin') {
+				openColumns.push({ depth, separators: 0 });
+			} else {
+				const top = openColumns.at(-1);
+				// Fin dans un autre groupe que le début : MathLive reste dans la matrice
+				if (top && top.depth !== depth) continue;
+				openColumns.pop();
+			}
+			out += `\\${environment[0]}`;
 			continue;
 		}
 		// Passage à la ligne DANS une matrice : gardé (plafonné), son option d'espacement
@@ -274,7 +296,7 @@ function keepAllowedCommands(latex: string): string {
 				out += '\\\\';
 				breaks++;
 				// Nouvelle ligne : ses `&` sont recomptés
-				openColumns[openColumns.length - 1] = 0;
+				openColumns[openColumns.length - 1].separators = 0;
 			}
 			let j = i + 2;
 			while (/\s/.test(latex[j] ?? '')) j++;
@@ -285,6 +307,9 @@ function keepAllowedCommands(latex: string): string {
 		if (name) {
 			i += 1 + name.length;
 			if (ALLOWED_COMMANDS.has(name)) {
+				// `\left…\right` : un groupe pour MathLive, comme `{…}`
+				if (name === 'left') depth++;
+				else if (name === 'right') depth = Math.max(0, depth - 1);
 				out += `\\${name}`;
 				continue;
 			}
@@ -429,8 +454,10 @@ export function neutralizeStudentLatex(latex: string): string {
 	let safe = line
 		.replace(/\$/g, '')
 		// `%` nu ouvre un commentaire LaTeX : la suite de la formule disparaîtrait.
-		// Échappé en `\%`, il s'affiche pareil (« 33% » reste « 33 % »).
-		.replace(/(?<!\\)%/g, '\\%');
+		// Échappé en `\%`, il s'affiche pareil (« 33% » reste « 33 % »). Nu = précédé
+		// d'un nombre PAIR de `\` : `\\%` (passage à la ligne puis %) l'est aussi
+		// (audit du 2026-10-05), `\%` déjà échappé ne l'est pas.
+		.replace(/(?<!\\)((?:\\\\)*)%/g, '$1\\%');
 	// Jusqu'au point fixe : un retrait peut accoler `\text` et `color`
 	for (let previous = ''; previous !== safe; ) {
 		previous = safe;
