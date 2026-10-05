@@ -127,7 +127,7 @@
 <div class="container mx-auto space-y-8 py-8">
 	<!-- Header -->
 	<div class="space-y-2">
-		<h1 class="text-3xl font-bold">QuestionPreviewBaseCard Debug</h1>
+		<h2 class="text-3xl! font-bold">QuestionPreviewBaseCard Debug</h2>
 		<p class="text-muted-foreground">
 			Test page for QuestionPreviewBaseCard component with various configurations.
 		</p>

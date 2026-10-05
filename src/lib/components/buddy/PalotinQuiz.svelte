@@ -93,7 +93,7 @@
 	<div class="w-full max-w-2xl">
 		{#if step === 'intro'}
 			<div class="flex flex-col items-center gap-6 px-4" in:fade={{ duration: 200 }}>
-				<h1 class="text-center text-2xl font-bold md:text-3xl">Choisis ton Palotin !</h1>
+				<h2 class="text-center text-2xl! font-bold md:text-3xl!">Choisis ton Palotin !</h2>
 				<p class="max-w-md text-center text-muted-foreground">
 					Un Palotin est un compagnon qui t'accompagne dans tes maths. Reponds a 4 questions pour
 					decouvrir lequel te correspond le mieux.

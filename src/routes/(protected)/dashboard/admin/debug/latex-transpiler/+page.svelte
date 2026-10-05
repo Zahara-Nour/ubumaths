@@ -281,7 +281,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 <div class="container mx-auto p-6">
 	<div class="mb-4 flex items-center justify-between">
-		<h1 class="text-2xl font-bold">Debug LaTeX Transpiler</h1>
+		<h2 class="text-2xl! font-bold">Debug LaTeX Transpiler</h2>
 		<div class="flex items-center gap-4">
 			<div class="flex items-center gap-2">
 				<label for="function-names" class="text-sm whitespace-nowrap text-muted-foreground"

@@ -16,6 +16,7 @@
 </svelte:head>
 
 <div class="h-screen">
+	<h1 class="sr-only">Messages</h1>
 	{#if data.user && data.profile && data.supabase}
 		<ChatWindow
 			userId={data.user.id}

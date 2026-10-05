@@ -40,6 +40,7 @@
 </svelte:head>
 
 <div class="container mx-auto px-4 py-6">
+	<h1 class="sr-only">Tuteur</h1>
 	<Card class="mx-auto max-w-4xl">
 		<CardHeader class="space-y-2">
 			<CardTitle
