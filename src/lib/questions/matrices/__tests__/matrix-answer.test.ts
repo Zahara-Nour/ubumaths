@@ -110,6 +110,18 @@ describe('M4 — écritures refusées, jamais d’exception', () => {
 		}
 	});
 
+	it('facteur devant la matrice (inverse « 1/det × … ») : faux, message dédié', () => {
+		for (const answer of [
+			'\\frac{1}{2}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			'A^{-1}=\\frac{1}{2}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			'2\\begin{pmatrix}0.5&1\\\\1.5&2\\end{pmatrix}'
+		]) {
+			const verdict = judgeMatrixAnswer(answer, M);
+			expect(verdict.status).toBe('incorrect');
+			expect(verdict.feedback).toBe(MATRIX_FEEDBACK.factored);
+		}
+	});
+
 	it('coefficient vide (case du gabarit non remplie) : faux, message', () => {
 		const verdict = judgeMatrixAnswer('\\begin{pmatrix}1&2\\\\3&\\placeholder{}\\end{pmatrix}', M);
 		expect(verdict.status).toBe('incorrect');

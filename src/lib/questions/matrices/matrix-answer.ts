@@ -18,6 +18,8 @@
  *   mathAST, aucun flottant) : `1+1`, `\frac{4}{2}`, `2.0` valent 2 ;
  * - l'écriture de chaque coefficient est jugée ensuite comme une case ordinaire
  *   (dans le validateur, cf. `matrixEntriesForm`) ;
+ * - facteur devant la matrice (`\frac{1}{2}\begin{pmatrix}…`, inverse) : faux, avec
+ *   un message (écrire chaque coefficient) ;
  * - illisible, lettres, division par zéro : `incorrect`, jamais d'exception ;
  *   rien d'écrit : `empty`.
  *
@@ -43,7 +45,7 @@ export interface MatrixVerdict {
 }
 
 /** Raison d'un refus de lecture (le message montré en dépend) */
-type ReadFailure = 'complex' | 'notMatrix' | 'ragged' | 'incomplete' | 'unreadable';
+type ReadFailure = 'complex' | 'notMatrix' | 'factored' | 'ragged' | 'incomplete' | 'unreadable';
 
 type ReadMatrix =
 	| { ok: true; texts: string[][]; nodes: MathNode[][] }
@@ -55,6 +57,8 @@ type ReadMatrix =
 export const MATRIX_FEEDBACK = {
 	notMatrix:
 		'Écris une matrice : ses coefficients entre parenthèses, rangés en lignes et en colonnes.',
+	factored:
+		'Écris la matrice avec tous ses coefficients, sans facteur devant (multiplie chaque coefficient).',
 	ragged: 'Chaque ligne de la matrice doit avoir le même nombre de coefficients.',
 	incomplete: 'Complète tous les coefficients de la matrice.',
 	dimension: (rows: number, columns: number) =>
@@ -74,10 +78,21 @@ const WRAPPED_MATRIX_REGEX = /^[([]\s*\\begin\{matrix\}([\s\S]*)\\end\{matrix\}\
 const NAME_PREFIX_REGEX =
 	/^[A-Za-z](?:[A-Za-z0-9']|\^\{?-?[0-9A-Za-z]+\}?|_\{?[0-9A-Za-z]+\}?)*\s*=\s*/;
 
+/** Facteur devant une matrice (`\frac{1}{2}\begin{pmatrix}…`) : écriture non lue */
+const FACTORED_REGEX = /^[^=]*?\S\s*\\begin\{[pb]?matrix\}[\s\S]*\\end\{[pb]?matrix\}\s*\)?$/;
+
 /** Case de gabarit non remplie (touche du clavier : `#?` → `\placeholder{}`) */
 const PLACEHOLDER_REGEX = /\\placeholder(?![a-zA-Z])/;
 
 // Functions
+
+/** Texte sans espacements, crochets en clair, nom (`A=`) retiré */
+function matrixBody(text: string): string {
+	return cleaned(text)
+		.replace(/\\lbrack(?![a-zA-Z])/g, '[')
+		.replace(/\\rbrack(?![a-zA-Z])/g, ']')
+		.replace(NAME_PREFIX_REGEX, '');
+}
 
 /**
  * Coefficients écrits, ligne par ligne (texte de chaque coefficient), ou `null`
@@ -85,10 +100,7 @@ const PLACEHOLDER_REGEX = /\\placeholder(?![a-zA-Z])/;
  * (refus jugé par l'appelant).
  */
 export function matrixEntryTexts(text: string): string[][] | null {
-	const body = cleaned(text)
-		.replace(/\\lbrack(?![a-zA-Z])/g, '[')
-		.replace(/\\rbrack(?![a-zA-Z])/g, ']')
-		.replace(NAME_PREFIX_REGEX, '');
+	const body = matrixBody(text);
 	const content = MATRIX_REGEX.exec(body)?.[2] ?? WRAPPED_MATRIX_REGEX.exec(body)?.[1];
 	if (content === undefined) return null;
 	const rows = splitTopLevel(content, '\\\\');
@@ -110,7 +122,12 @@ function readMatrix(text: string): ReadMatrix {
 		return { ok: false, reason: 'complex', error: 'écriture trop complexe' };
 	}
 	const texts = matrixEntryTexts(text);
-	if (!texts) return { ok: false, reason: 'notMatrix', error: 'pas une matrice' };
+	if (!texts) {
+		// `\frac{1}{2}\begin{pmatrix}…\end{pmatrix}` : un facteur devant la matrice
+		return FACTORED_REGEX.test(matrixBody(text))
+			? { ok: false, reason: 'factored', error: 'facteur devant la matrice' }
+			: { ok: false, reason: 'notMatrix', error: 'pas une matrice' };
+	}
 	if (texts.some((row) => row.length !== texts[0].length)) {
 		return {
 			ok: false,
@@ -213,6 +230,8 @@ export function judgeMatrixAnswer(answer: string, expected: string): MatrixVerdi
 		switch (answerRead.reason) {
 			case 'notMatrix':
 				return { status: 'incorrect', feedback: MATRIX_FEEDBACK.notMatrix };
+			case 'factored':
+				return { status: 'incorrect', feedback: MATRIX_FEEDBACK.factored };
 			case 'ragged':
 				return { status: 'incorrect', feedback: MATRIX_FEEDBACK.ragged };
 			case 'incomplete':
