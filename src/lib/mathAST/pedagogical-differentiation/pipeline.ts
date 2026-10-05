@@ -67,6 +67,7 @@ import {
 	differenceRule,
 	expRule,
 	generalPowerRule,
+	isEulerBase,
 	greekLetterRule,
 	lnRule,
 	logRule,
@@ -723,7 +724,8 @@ function dispatchDelimiter(node: DelimiterNode, ctx: DispatchContext): DispatchR
  *    base is some compound function. Triggers chain rule via `dBase`.
  * 3. **`power-constant-base`** — base is constant, exponent depends on the
  *    variable: `(c^g)' = c^g · ln(c) · g'` (uses `generalPowerRule` with
- *    `dBase = 0`).
+ *    `dBase = 0`). Exception : la base d'Euler (constante `euler` ou variable
+ *    `e`) emprunte la règle `exp`, (e^u)' = e^u · u', sans facteur ln(e).
  * 4. **`general-power`** — both base and exponent depend on the variable.
  */
 function dispatchSuperscript(node: SuperscriptNode, ctx: DispatchContext): DispatchResult {
@@ -763,15 +765,17 @@ function dispatchSuperscript(node: SuperscriptNode, ctx: DispatchContext): Dispa
 	}
 
 	if (!baseHasVar && expHasVar) {
-		// Path 3: (c^g)' = c^g · ln(c) · g'.
+		// Path 3: (c^g)' = c^g · ln(c) · g' — ou, pour la base d'Euler,
+		// (e^u)' = e^u · u' : la règle de l'exponentielle, sans ln(e).
 		const expSub = differentiateNode(exp, ctx);
 		const derivative = generalPowerRule(base, exp, zero(), expSub.derivative, ctx.simplify);
+		const isExponential = isEulerBase(base);
 		const step = buildStep(ctx, {
-			rule: 'power-constant-base',
+			rule: isExponential ? 'exp' : 'power-constant-base',
 			before: node,
 			after: derivative,
 			variable: ctx.variable,
-			bindings: { base, exp },
+			bindings: isExponential ? { u: exp } : { base, exp },
 			subSteps: expSub.steps
 		});
 		return { derivative, steps: [step] };

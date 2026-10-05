@@ -23,7 +23,7 @@ import {
 	sin,
 	parentheses
 } from '../factory';
-import { isNumber, isZero } from '../guards';
+import { isDelimiter, isEulerConstant, isNumber, isVariable, isZero } from '../guards';
 import { getNumericValue, numericNode } from '../common/numeric';
 import {
 	zero,
@@ -192,6 +192,19 @@ export function powerRuleConstantExp(
 }
 
 /**
+ * La base d'Euler, sous ses deux formes : la constante `euler` (parseur
+ * custom, atelier) et la variable `e` (parseur LaTeX). La variable `e` est
+ * lue comme Euler, comme le font déjà `evaluate` et `compile`.
+ *
+ * ⚠️ Ne décide RIEN sur la dépendance à la variable de dérivation : l'appelant
+ * vérifie que la base est constante (`d/de(e^2)` dérive la variable `e`).
+ */
+export function isEulerBase(node: MathNode): boolean {
+	if (isDelimiter(node)) return isEulerBase(node.content);
+	return isEulerConstant(node) || (isVariable(node) && node.name === 'e');
+}
+
+/**
  * General power rule: d/dx(f^g) = f^g * (g' * ln(f) + g * f'/f)
  * This handles both cases: f(x)^n and f(x)^g(x)
  */
@@ -205,6 +218,14 @@ export function generalPowerRule(
 	// If exponent derivative is 0, use simpler constant exponent rule
 	if (isZero(dExp)) {
 		return powerRuleConstantExp(base, exp, dBase, simplify);
+	}
+
+	// Base d'Euler : d/dx(e^g) = e^g * g' — ln(e) = 1 ne s'écrit pas.
+	if (isZero(dBase) && isEulerBase(base)) {
+		if (simplify) {
+			return simplifiedMultiply(simplifiedPower(base, exp), dExp);
+		}
+		return multiply(power(base, exp), dExp, 'implicit');
 	}
 
 	// If base derivative is 0, use exponential rule: d/dx(a^g) = a^g * ln(a) * g'

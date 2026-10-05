@@ -108,13 +108,18 @@ function onlySafeCommands(text: string): boolean {
 function cleanText(output: string): string {
 	// Depouiller AVANT de filtrer : la ligne « LaTeX: » commence par une
 	// sequence de couleur en navigateur, et le filtre ne la reconnaissait plus.
-	return output
-		.replace(ANSI_SEQUENCE, '')
-		.split('\n')
-		.filter((line) => !LATEX_LINE.test(line))
-		.join('\n')
-		.replace(VARIABLES_NOTE, ' ')
-		.trim();
+	return (
+		output
+			.replace(ANSI_SEQUENCE, '')
+			.split('\n')
+			.filter((line) => !LATEX_LINE.test(line))
+			.join('\n')
+			.replace(VARIABLES_NOTE, ' ')
+			// Le nombre d'Euler en notation « custom » : l'élève lit e, pas `\euler`
+			// (`f(1)` pour f(x) = e^x répondait « \euler », 2026-10-05)
+			.replace(/\\euler(?![A-Za-z])/g, 'e')
+			.trim()
+	);
 }
 
 /**
