@@ -230,6 +230,7 @@ export class CalcDesk {
 
 	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
 	clear(): void {
+		this.#gesture = null;
 		this.entries = [];
 		this.notice = null;
 	}
@@ -263,8 +264,11 @@ export class CalcDesk {
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
 		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
 		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
+		const line = this.entries.indexOf(entry);
+		// Une ligne qui n'est plus dans l'historique (« Repartir de zéro ») ne se
+		// rejouerait pas : l'objet est gardé, mais sans geste à rejouer
 		if (kept.ok) {
-			this.#gesture = { kind: 'garder', line: this.entries.indexOf(entry) };
+			this.#gesture = line >= 0 ? { kind: 'garder', line } : null;
 			this.#push({ label: 'Garder', text: this.notice, failed: false });
 		}
 	}
@@ -509,6 +513,16 @@ export class CalcDesk {
 		// Posé avant tout : « Comparer » passe par `submit`, qui le remplace par
 		// la commande tapée — c'est elle qu'on rejouera
 		this.#gesture = { kind: 'action', action: actionId, name };
+		try {
+			return this.#runFromPanel(actionId, name, graph);
+		} finally {
+			// Une action sans ligne (diagramme, commande préparée) ne doit pas
+			// léguer son geste à la ligne d'un autre (revue du lot C1)
+			this.#gesture = null;
+		}
+	}
+
+	#runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {

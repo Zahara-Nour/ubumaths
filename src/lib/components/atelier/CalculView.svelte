@@ -117,21 +117,38 @@
 		const link = document.createElement('a');
 		link.href = url;
 		link.download = exportFileName(format, now);
+		// Dans la page, et l'adresse libérée plus tard : Firefox et Safari ont
+		// annulé des téléchargements dont l'adresse disparaissait aussitôt (revue)
+		document.body.append(link);
 		link.click();
-		URL.revokeObjectURL(url);
+		link.remove();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
 	}
 </script>
 
 <div class="calcul">
 	<div class="export" role="group" aria-label="Exporter l’historique">
 		<span>Exporter l’historique :</span>
-		<Button variant="outline" size="sm" disabled={empty} onclick={() => download('json')}>
+		<!-- La raison est reliée aux boutons : désactivés, ils ne prennent pas le focus (a11y) -->
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={empty}
+			aria-describedby={empty ? 'export-raison' : undefined}
+			onclick={() => download('json')}
+		>
 			JSON (pour rejouer)
 		</Button>
-		<Button variant="outline" size="sm" disabled={empty} onclick={() => download('ubumark')}>
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={empty}
+			aria-describedby={empty ? 'export-raison' : undefined}
+			onclick={() => download('ubumark')}
+		>
 			ubumark (pour lire)
 		</Button>
-		{#if empty}<span class="raison">Rien à exporter pour l’instant.</span>{/if}
+		{#if empty}<span id="export-raison" class="raison">Rien à exporter pour l’instant.</span>{/if}
 	</div>
 	<ol class="historique">
 		{#each desk.entries as entry (entry.id)}

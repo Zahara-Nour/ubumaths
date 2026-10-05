@@ -47,6 +47,9 @@ export const HISTORY_VERSION = 1;
 
 const EXTENSIONS: Readonly<Record<ExportFormat, string>> = { json: 'json', ubumark: 'md' };
 
+/** Ce qui, en tête de ligne, ferait une liste, un titre, une citation ou un tableau. */
+const BLOCK_START = /^\s*([-+>#|]|\d+[.)])/;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -73,25 +76,55 @@ export function historyToJson(entries: readonly Entry[], now: Date): string {
 	return JSON.stringify(history, null, '\t');
 }
 
-/** L'historique à lire : une saisie en code, une action en gras, la réponse dessous. */
+/**
+ * L'historique à lire : une saisie en code, une action en titre, la réponse
+ * dessous.
+ *
+ * ⚠️ Le parseur ubumark est maison, et mesuré le 2026-10-05 : `$` ET `~`
+ * ouvrent une formule (échappés `\$`, `\~`) ; `*` ouvre l'italique et `\*`
+ * garde son antislash à l'affichage ; `**f_1**` n'est pas lu comme du gras ;
+ * un backtick dans un code en ligne le coupe. Chaque règle ci-dessous en vient.
+ */
 export function historyToUbumark(entries: readonly Entry[], now: Date): string {
 	const date = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 	const blocks = [`# Historique de calcul — ${date}`];
 	for (const entry of entries) {
-		blocks.push(entry.replay?.kind === 'saisie' ? `\`${entry.label}\`` : `**${entry.label}**`);
+		blocks.push(headOf(entry));
 		blocks.push(answerOf(entry));
 		const steps = (entry.steps ?? []).map(
-			(step) => `- ${step.title}${step.expressionLatex ? ` : $${step.expressionLatex}$` : ''}`
+			(step) =>
+				`- ${plainLine(step.title)}${step.expressionLatex ? ` : $${step.expressionLatex}$` : ''}`
 		);
 		if (steps.length > 0) blocks.push(steps.join('\n'));
-		if (entry.table !== undefined) blocks.push('_(tableau de variations : à voir dans l’atelier)_');
-		if (entry.chart !== undefined) blocks.push('_(graphique : à voir dans l’atelier)_');
+		if (entry.table !== undefined) blocks.push('(tableau de variations : à voir dans l’atelier)');
+		if (entry.chart !== undefined) blocks.push('(graphique : à voir dans l’atelier)');
 	}
 	return `${blocks.join('\n\n')}\n`;
 }
 
+/** Une saisie en code ; une action en titre. */
+function headOf(entry: Entry): string {
+	// ⚠️ Les formules sont extraites AVANT le code : `~x+1~` en deviendrait une
+	// même entre backticks — `\~` et `\$` y sont relus tels quels (mesuré)
+	if (entry.replay?.kind === 'saisie' && !entry.label.includes('`')) {
+		return `\`${entry.label.replaceAll('$', '\\$').replaceAll('~', '\\~')}\``;
+	}
+	return `### ${plainLine(entry.label)}`;
+}
+
 /** La réponse : en formule quand l'écran en montrait une, sinon en toutes lettres. */
 function answerOf(entry: Entry): string {
-	if (entry.failed) return `Erreur : ${entry.text}`;
-	return entry.latex !== undefined && entry.latex !== '' ? `$${entry.latex}$` : entry.text;
+	if (!entry.failed && entry.latex !== undefined && entry.latex !== '') return `$${entry.latex}$`;
+	const text = entry.failed ? `Erreur : ${entry.text}` : entry.text;
+	// Plusieurs lignes, ou un début qui ferait une liste ou un titre : en bloc
+	// de code, où rien n'est interprété
+	if (text.includes('\n') || BLOCK_START.test(text)) {
+		return ['```', text.replaceAll('```', 'ʼʼʼ'), '```'].join('\n');
+	}
+	return plainLine(text);
+}
+
+/** Une ligne de texte qui ne doit rien ouvrir : ni formule, ni italique. */
+function plainLine(text: string): string {
+	return text.replaceAll('*', '×').replaceAll('$', '\\$').replaceAll('~', '\\~');
 }

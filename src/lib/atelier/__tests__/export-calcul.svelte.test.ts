@@ -9,7 +9,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { CalcDesk } from '../desk.svelte';
+import { CalcDesk, type Entry } from '../desk.svelte';
+import { parseMarkdown } from '$lib/ubumark/parser';
 import { historyToJson, historyToUbumark, exportFileName } from '../history-export';
 
 // =============================================================================
@@ -142,7 +143,7 @@ describe('export ubumark', () => {
 		expect(text).toContain('# Historique de calcul — 5 octobre 2026');
 		expect(text).toContain('`f(x)=x^2`');
 		expect(text).toContain('« f » est dans tes objets.');
-		expect(text).toContain('**Dériver f**');
+		expect(text).toContain('### Dériver f');
 		expect(text).toContain("$f'(x) = 2 x$");
 	});
 
@@ -173,5 +174,56 @@ describe('le nom du fichier', () => {
 	it('porte la date et l’extension du format', () => {
 		expect(exportFileName('json', NOW)).toBe('calcul-2026-10-05.json');
 		expect(exportFileName('ubumark', NOW)).toBe('calcul-2026-10-05.md');
+	});
+});
+
+// =============================================================================
+// ubumark relu par le VRAI parseur (revue du lot C1)
+// =============================================================================
+
+describe('l’export ubumark se relit tel qu’il a été écrit', () => {
+	/** Une ligne fabriquée : seuls comptent ses caractères piégeux. */
+	function line(label: string, text: string, saisie = true): Entry {
+		return {
+			id: 0,
+			label,
+			text,
+			failed: false,
+			...(saisie && { replay: { kind: 'saisie' as const, input: label } })
+		};
+	}
+
+	/** Tous les nœuds de l'arbre, à plat. */
+	function nodes(tree: unknown): Record<string, unknown>[] {
+		if (Array.isArray(tree)) return tree.flatMap(nodes);
+		if (tree === null || typeof tree !== 'object') return [];
+		const node = tree as Record<string, unknown>;
+		return [node, ...Object.values(node).flatMap(nodes)];
+	}
+
+	it('ni formule, ni italique ouverts par le texte d’une réponse', () => {
+		const text = historyToUbumark([line('L = 1;2;3', 'entre ~a~ et $b$, soit 2*3*4')], NOW);
+
+		const all = nodes(parseMarkdown(text));
+
+		expect(all.some((n) => n.type === 'math' || n.type === 'inline-math')).toBe(false);
+		expect(all.some((n) => n.italic === true || n.bold === true)).toBe(false);
+	});
+
+	it('une saisie avec ~ reste du code, intacte', () => {
+		const text = historyToUbumark([line('~x+1~', 'ok')], NOW);
+
+		const code = nodes(parseMarkdown(text)).find((n) => n.code === true);
+
+		expect(code?.content).toBe('~x+1~');
+	});
+
+	it('une réponse sur plusieurs lignes ne devient ni liste ni titre', () => {
+		const text = historyToUbumark([line('.stats L', '- moyenne : 2\n# effectif : 3')], NOW);
+
+		const types = nodes(parseMarkdown(text)).map((n) => n.type);
+
+		expect(types).not.toContain('list');
+		expect(types.filter((t) => t === 'heading')).toHaveLength(1);
 	});
 });
