@@ -341,6 +341,16 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   Mesure (même corpus, dont 438 variantes `θ − 2π` sur des cases réelles sans l'option) :
   37 973 verdicts, 15 changés, tous synthétiques AVEC l'option ; 0 sans.
 
+- **Ensemble fini de complexes** (case `answerKind: "intervalles"`) : une attendue `\{1+i;1-i\}`
+  était « illisible » (la lecture des intervalles ne connaît que des réels). Un ensemble FINI
+  dont un élément au moins contient `i` est lu élément par élément
+  (`questions/intervals/complex-finite-set.ts`) : ordre libre, éléments appariés par
+  équivalence de valeur (`\{1-i;1+i\}`, `\{1+\imaginaryI;1-\imaginaryI\}`,
+  `\{\sqrt{2}e^{i\frac{\pi}{4}};1-i\}` justes) ; manquant, en trop ou faux : faux ; fraction
+  simplifiable dans un élément : ½ (`intervalForm`). Jamais d'intervalle complexe. Ensembles
+  réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
+  (ensembles de complexes) ; 0 sur les cases intervalles réelles.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

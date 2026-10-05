@@ -235,3 +235,70 @@ describe('forme exponentielle : valeur par la formule d’Euler, forme distincte
 		});
 	});
 });
+
+describe('case « intervalles » : ensemble fini de complexes', () => {
+	const intervals = { answerKind: 'intervalles' };
+
+	it('attendue lisible ; ordre libre, éléments par valeur', () => {
+		expect(
+			verdicts(
+				'\\{1+i;1-i\\}',
+				[
+					'\\{1-i;1+i\\}',
+					'\\{1+i;1-i\\}',
+					'\\left\\{1+\\imaginaryI;1-\\imaginaryI\\right\\}',
+					'\\{i+1;-i+1\\}',
+					'\\{\\sqrt{2}e^{i\\frac{\\pi}{4}};1-i\\}',
+					'S=\\{1-i;1+i\\}'
+				],
+				intervals
+			)
+		).toEqual({
+			'\\{1-i;1+i\\}': 'correct',
+			'\\{1+i;1-i\\}': 'correct',
+			'\\left\\{1+\\imaginaryI;1-\\imaginaryI\\right\\}': 'correct',
+			'\\{i+1;-i+1\\}': 'correct',
+			'\\{\\sqrt{2}e^{i\\frac{\\pi}{4}};1-i\\}': 'correct',
+			'S=\\{1-i;1+i\\}': 'correct'
+		});
+	});
+
+	it('élément manquant, en trop ou faux : faux', () => {
+		expect(
+			verdicts(
+				'\\{1+i;1-i\\}',
+				['\\{1+i\\}', '\\{1+i;1-i;2\\}', '\\{1+i;1+2i\\}', ']1;2[', '1+i'],
+				intervals
+			)
+		).toEqual({
+			'\\{1+i\\}': 'incorrect',
+			'\\{1+i;1-i;2\\}': 'incorrect',
+			'\\{1+i;1+2i\\}': 'incorrect',
+			']1;2[': 'incorrect',
+			'1+i': 'incorrect'
+		});
+	});
+
+	it('trois racines, réel compris ; fraction simplifiable perfectible', () => {
+		expect(
+			verdicts(
+				'\\{-1;\\frac{1}{2}+i\\frac{\\sqrt{3}}{2};\\frac{1}{2}-i\\frac{\\sqrt{3}}{2}\\}',
+				[
+					'\\{\\frac{1-i\\sqrt{3}}{2};-1;\\frac{1+i\\sqrt{3}}{2}\\}',
+					'\\{\\frac{2-2i\\sqrt{3}}{4};-1;\\frac{1+i\\sqrt{3}}{2}\\}'
+				],
+				intervals
+			)
+		).toEqual({
+			'\\{\\frac{1-i\\sqrt{3}}{2};-1;\\frac{1+i\\sqrt{3}}{2}\\}': 'correct',
+			'\\{\\frac{2-2i\\sqrt{3}}{4};-1;\\frac{1+i\\sqrt{3}}{2}\\}': 'unoptimal_form'
+		});
+	});
+
+	it('ensemble réel : rien ne change', () => {
+		expect(verdicts('\\{-2;3\\}', ['\\{3;-2\\}', '\\{3\\}'], intervals)).toEqual({
+			'\\{3;-2\\}': 'correct',
+			'\\{3\\}': 'incorrect'
+		});
+	});
+});
