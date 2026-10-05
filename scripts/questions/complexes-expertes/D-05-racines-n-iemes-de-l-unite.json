@@ -1,0 +1,278 @@
+{
+	"title": "Racines n-ièmes de l'unité et polygones réguliers",
+	"description": "Racines 4es et cubiques de l'unité, somme des racines n-ièmes, argument de ωᵏ, côté d'un polygone régulier inscrit dans le cercle unité (pièges : racine oubliée, signe, argument non ramené, côté confondu avec le rayon)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-057", "TEXP-058", "TEXP-059", "TEXP-065", "TEXP-016", "TEXP-068"],
+	"theme": "Nombres complexes",
+	"domain": "Géométrie et nombres complexes",
+	"subdomain": "Racines de l'unité",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"statement": "Donne les quatre racines quatrièmes de l'unité, c'est-à-dire les solutions dans $\\mathbb{C}$ de $z^4=1$, sous forme algébrique et dans l'ordre que tu veux.\n\n$?$, $?$, $?$ et $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "i"
+				},
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "-i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{U}_4$ est formé des $e^{i\\frac{2k\\pi}{4}}$ pour $k$ entier de $0$ à $3$ : $1$, $e^{i\\frac{\\pi}{2}}$, $e^{i\\pi}$, $e^{i\\frac{3\\pi}{2}}$.",
+					"Soit $1$, $i$, $-1$ et $-i$ : les sommets d'un carré inscrit dans le cercle unité."
+				]
+			}
+		},
+		{
+			"statement": "Donne les trois racines cubiques de l'unité, c'est-à-dire les solutions dans $\\mathbb{C}$ de $z^3=1$, sous forme algébrique et dans l'ordre que tu veux.\n\n$?$, $?$ et $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "-\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i"
+				},
+				{
+					"expectedAnswer": "-\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{U}_3$ est formé de $1$, $e^{i\\frac{2\\pi}{3}}$ et $e^{-i\\frac{2\\pi}{3}}$.",
+					"$e^{\\pm i\\frac{2\\pi}{3}}=-\\frac{1}{2}\\pm\\frac{\\sqrt{3}}{2}i$ : les sommets d'un triangle équilatéral inscrit dans le cercle unité."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\omega=e^{i\\frac{2\\pi}{ {{n}} }}$. Calcule $S=1+\\omega+\\omega^2+\\cdots+\\omega^{ {{eval:n-1}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$S$ est la somme des termes d'une suite géométrique de raison $\\omega\\neq1$ : $S=\\dfrac{1-\\omega^{ {{n}} }}{1-\\omega}$.",
+					"Or $\\omega^{ {{n}} }=e^{2i\\pi}=1$, donc $S=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\omega=e^{i\\frac{2\\pi}{ {{n}} }}$. Donne l'argument principal (dans $]-\\pi\\,;\\pi]$) de $\\omega^{ {{k}} }$.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				},
+				{
+					"name": "k",
+					"expression": "6..15"
+				}
+			],
+			"conditions": ["k > n", "2*(k-n) <= n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(k-n)*pi/n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\omega^{ {{k}} }=e^{i\\frac{ {{eval:2*k}}\\pi}{ {{n}} }}$ et $\\omega^{ {{n}} }=1$, donc $\\omega^{ {{k}} }=\\omega^{ {{eval:k-n}} }$.",
+					"L'argument principal de $\\omega^{ {{k}} }$ est ${{eval:2*(k-n)*pi/n}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $A_0, A_1, \\ldots$ les points dont les affixes sont les racines $n$-ièmes de l'unité pour $n={{n}}$ ; ils forment un polygone régulier à ${{n}}$ côtés inscrit dans le cercle unité. Calcule la longueur d'un côté, $A_0A_1=|\\omega-1|$ avec $\\omega=e^{i\\frac{2\\pi}{ {{n}} }}$.\n\n$A_0A_1=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3|4|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:n==3|\\sqrt{3}|{{if:n==4|\\sqrt{2}|1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\omega-1=\\left(\\cos\\frac{2\\pi}{ {{n}} }-1\\right)+i\\sin\\frac{2\\pi}{ {{n}} }$.",
+					"$A_0A_1=|\\omega-1|=\\textcolor{{{color:primary.0}}}{{{if:n==3|\\sqrt{3}|{{if:n==4|\\sqrt{2}|1}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 1, i, −1, −i",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "i", "-1", "-i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 dans un autre ordre",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-i", "1", "i", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 seulement les racines réelles (1, −1 deux fois)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "-1", "1", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 1, −1/2 ± i√3/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": [
+				"1",
+				"-\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i",
+				"-\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 signe de la partie réelle → 1/2 ± i√3/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1", "\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i", "\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 forme exponentielle (non demandée ; le moteur ne la relie pas à la forme algébrique)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1", "e^{i\\frac{2\\pi}{3}}", "e^{-i\\frac{2\\pi}{3}}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 somme nulle",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 1 → incorrect",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 n = 6, k = 8 : 2π/3",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6",
+				"k": "8"
+			},
+			"answers": ["\\frac{2\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 argument non ramené 8π/3",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6",
+				"k": "8"
+			},
+			"answers": ["\\frac{8\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 n = 4 : √2",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 rayon 1 au lieu du côté (n = 4)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 n = 3 : √3",
+			"variationIndex": 4,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 n = 6 : 1",
+			"variationIndex": 4,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,0 +1,369 @@
+{
+	"title": "Ensembles de points et images de z̄, iz dans le plan complexe",
+	"description": "|z − z_A| = r (cercle), |z − z_A| = |z − z_B| (médiatrice), |z̄ − w| = r (centre conjugué), image de z̄ et de iz (pièges : signe du centre, rayon au carré, conjugué oublié, symétrie et rotation confondues)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-064", "TEXP-013", "TEXP-011", "TEXP-022"],
+	"theme": "Nombres complexes",
+	"domain": "Géométrie et nombres complexes",
+	"subdomain": "Ensembles de points",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "L'ensemble des points $M$ d'affixe $z$ tels que $|z-({{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}})|={{r}}$ est :",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..6"
+				}
+			],
+			"choices": [
+				{
+					"content": "le cercle de centre le point d'affixe ${{eval:-a}}+({{eval:-b}})i$ et de rayon ${{r}}$"
+				},
+				{
+					"content": "le cercle de centre le point d'affixe ${{a}}+({{b}})i$ et de rayon ${{r}}$"
+				},
+				{
+					"content": "le cercle de centre le point d'affixe ${{a}}+({{b}})i$ et de rayon ${{eval:r^2}}$"
+				},
+				{
+					"content": "la droite passant par le point d'affixe ${{a}}+({{b}})i$ et par l'origine"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$|z-z_A|=AM$ où $A$ a pour affixe $z_A={{a}}+({{b}})i$.",
+					"$AM={{r}}$ : c'est le cercle de centre $A$ et de rayon ${{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $B$ ont pour affixes ${{a}}+({{b}})i$ et ${{c}}+({{d}})i$. L'ensemble des points $M$ d'affixe $z$ tels que $|z-({{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}})|=|z-({{c}}{{if:d==1|+i|{{if:d==-1|-i|{{eval:d;+}}i}}}})|$ est :",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a != c or b != d"],
+			"choices": [
+				{
+					"content": "la droite $(AB)$"
+				},
+				{
+					"content": "le cercle de diamètre $[AB]$"
+				},
+				{
+					"content": "le milieu du segment $[AB]$"
+				},
+				{
+					"content": "la médiatrice du segment $[AB]$"
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"$|z-z_A|=|z-z_B|$ signifie $AM=BM$ : $M$ est à égale distance de $A$ et de $B$.",
+					"C'est la $\\textcolor{{{color:primary.0}}}{\\text{médiatrice de }[AB]}$."
+				]
+			}
+		},
+		{
+			"statement": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-({{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}})|={{r}}$ est :",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..6"
+				}
+			],
+			"choices": [
+				{
+					"content": "le cercle de centre le point d'affixe ${{a}}-({{b}})i$ et de rayon ${{r}}$"
+				},
+				{
+					"content": "le cercle de centre le point d'affixe ${{a}}+({{b}})i$ et de rayon ${{r}}$"
+				},
+				{
+					"content": "le cercle de centre le point d'affixe ${{eval:-a}}+({{b}})i$ et de rayon ${{r}}$"
+				},
+				{
+					"content": "le cercle de centre l'origine et de rayon ${{r}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Un nombre et son conjugué ont le même module : $|\\overline{z}-w|=|z-\\overline{w}|$.",
+					"Le centre a pour affixe $\\overline{w}$, soit ${{a}}-({{b}})i$ ; le rayon est ${{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $M$ a pour affixe $z$. Le point $M'$ d'affixe $\\overline{z}$ est l'image de $M$ par :",
+			"choices": [
+				{
+					"content": "la symétrie de centre $O$"
+				},
+				{
+					"content": "la symétrie d'axe l'axe des réels"
+				},
+				{
+					"content": "la symétrie d'axe l'axe des imaginaires purs"
+				},
+				{
+					"content": "la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Si $z=x+iy$, alors $\\overline{z}=x-iy$ : même abscisse, ordonnée opposée.",
+					"$M'$ est le symétrique de $M$ par rapport à $\\textcolor{{{color:primary.0}}}{\\text{l'axe des réels}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $M$ a pour affixe $z$. Le point $M'$ d'affixe $iz$ est l'image de $M$ par :",
+			"choices": [
+				{
+					"content": "la symétrie d'axe l'axe des imaginaires purs"
+				},
+				{
+					"content": "la symétrie de centre $O$"
+				},
+				{
+					"content": "la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$"
+				},
+				{
+					"content": "la symétrie d'axe l'axe des réels"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$i=e^{i\\frac{\\pi}{2}}$ : multiplier par $i$ garde le module et ajoute $\\frac{\\pi}{2}$ à l'argument.",
+					"$M'$ est l'image de $M$ par $\\textcolor{{{color:primary.0}}}{\\text{la rotation de centre }O\\text{ et d'angle }\\frac{\\pi}{2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 choix 0 → incorrect",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 choix 1 → correct",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 choix 2 → incorrect",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 choix 3 → incorrect",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 choix 0 → incorrect",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 choix 1 → incorrect",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 choix 2 → incorrect",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 choix 3 → correct",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 choix 0 → correct",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 choix 1 → incorrect",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 choix 2 → incorrect",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 choix 3 → incorrect",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 choix 0 → incorrect",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 choix 1 → correct",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 choix 2 → incorrect",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 choix 3 → incorrect",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 choix 0 → incorrect",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 choix 1 → incorrect",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 choix 2 → correct",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 choix 3 → incorrect",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
