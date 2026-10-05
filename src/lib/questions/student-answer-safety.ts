@@ -162,8 +162,23 @@ const STRUCTURE_ARITY: Readonly<Record<string, number>> = {
 	mathbb: 1, operatorname: 1, unit: 1, char: 1
 };
 
-/** Caractères qu'un `\` peut précéder (espaces, accolades, `%`, `|`) */
-const ALLOWED_ESCAPED: ReadonlySet<string> = new Set([',', ';', ':', '!', ' ', '{', '}', '%', '|']);
+/**
+ * Caractères qu'un `\` peut précéder (espaces, accolades, `%`, `|`, `&`). `\&` est une
+ * esperluette AFFICHÉE : sans son `\`, elle deviendrait un séparateur de colonne
+ * (compté dans `MAX_TOTAL_SEPARATORS`) — audit du 2026-10-05.
+ */
+const ALLOWED_ESCAPED: ReadonlySet<string> = new Set([
+	',',
+	';',
+	':',
+	'!',
+	' ',
+	'{',
+	'}',
+	'%',
+	'|',
+	'&'
+]);
 
 /** Caractère de syntaxe → sosie inerte */
 const TEXT_LOOKALIKES: Record<string, string> = {
@@ -434,10 +449,67 @@ function latexNesting(latex: string): { structure: number; left: number } {
 	return { structure, left };
 }
 
-/** Réponse hors bornes : son début en texte inerte (aucune structure à rendre) */
-function inertLatex(latex: string): string {
-	const preview = latex.slice(0, INERT_PREVIEW_LENGTH);
-	const ellipsis = latex.length > INERT_PREVIEW_LENGTH ? '…' : '';
+/**
+ * Structure bien formée : accolades, `\left…\right` et `\begin{pmatrix}…\end{pmatrix}`
+ * appariés ET correctement emboîtés. Mal formée (`{\begin{pmatrix}}}1&2…`, accolade
+ * fermée dans la matrice), MathLive ne rendait presque rien : le professeur voyait une
+ * réponse tronquée (audit du 2026-10-05). Le clavier de MathLive ne produit que des
+ * formules bien formées ; une formule mal formée est donc fabriquée à la main.
+ * Délimiteur de `\left` / `\right` en accolade nue (`\left{`) : mal formé aussi.
+ */
+function isWellFormed(latex: string): boolean {
+	const open: ('{' | 'left' | 'pmatrix')[] = [];
+	let i = 0;
+	// Délimiteur de `\left` / `\right` : un caractère, `\{`, `\langle`… ; jamais `{` ni `}`
+	const skipDelimiter = (): boolean => {
+		while (latex[i] === ' ') i++;
+		const c = latex[i];
+		if (c === undefined || c === '{' || c === '}') return false;
+		if (c !== '\\') i++;
+		else i += 1 + (/^[a-zA-Z]+/.exec(latex.slice(i + 1, i + 40))?.[0].length || 1);
+		return true;
+	};
+	while (i < latex.length) {
+		const c = latex[i];
+		if (c === '{') {
+			open.push('{');
+			i++;
+		} else if (c === '}') {
+			if (open.pop() !== '{') return false;
+			i++;
+		} else if (c !== '\\') {
+			i++;
+		} else {
+			const name = /^[a-zA-Z]+/.exec(latex.slice(i + 1, i + 40))?.[0];
+			if (!name) {
+				// `\{`, `\&`, `\\`… : un caractère, pas une structure
+				i += 2;
+				continue;
+			}
+			i += 1 + name.length;
+			if (name === 'left' || name === 'right') {
+				if (!skipDelimiter()) return false;
+				if (name === 'left') open.push('left');
+				else if (open.pop() !== 'left') return false;
+			} else if (name === 'begin' || name === 'end') {
+				// Seul environnement gardé par le filtre : `pmatrix`
+				if (!latex.startsWith('{pmatrix}', i)) return false;
+				i += '{pmatrix}'.length;
+				if (name === 'begin') open.push('pmatrix');
+				else if (open.pop() !== 'pmatrix') return false;
+			}
+		}
+	}
+	return open.length === 0;
+}
+
+/**
+ * Réponse hors bornes ou mal formée : en texte inerte (aucune structure à rendre).
+ * `previewLength` : début montré (une réponse mal formée l'est en entier).
+ */
+function inertLatex(latex: string, previewLength = INERT_PREVIEW_LENGTH): string {
+	const preview = latex.slice(0, previewLength);
+	const ellipsis = latex.length > previewLength ? '…' : '';
 	return String.raw`\text{${escapeStudentText(preview)}${ellipsis}}`;
 }
 
@@ -446,7 +518,8 @@ function inertLatex(latex: string): string {
  * commande retirée laisse ses arguments `{…}` en texte inerte et perd ses
  * options `[…]`. `$` retirés (ils fermeraient la formule) ; une seule ligne.
  * Trop longue ou trop imbriquée (rendu géant, cf. `MAX_LEFT_DEPTH`) : son début
- * en texte inerte.
+ * en texte inerte. Mal formée (accolades, `\left…\right`, matrice non appariés,
+ * cf. `isWellFormed`) : en texte inerte, en entier.
  */
 export function neutralizeStudentLatex(latex: string): string {
 	const line = String(latex).replace(/[\r\n]+/g, ' ');
@@ -463,7 +536,9 @@ export function neutralizeStudentLatex(latex: string): string {
 		previous = safe;
 		safe = keepAllowedCommands(safe);
 	}
-	return isTooDeep(safe) ? inertLatex(safe) : safe;
+	if (isTooDeep(safe)) return inertLatex(safe);
+	// Mal formée : texte inerte COMPLET (≤ `MAX_LATEX_LENGTH` + échappements des `%`)
+	return isWellFormed(safe) ? safe : inertLatex(safe, 2 * MAX_LATEX_LENGTH);
 }
 
 /** Imbrication au-delà des plafonds (`MAX_STRUCTURE_DEPTH`, `MAX_LEFT_DEPTH`) */
