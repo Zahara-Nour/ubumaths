@@ -1,0 +1,308 @@
+{
+	"title": "Résoudre cos(2x) = a ou sin(2x) = a sur un intervalle",
+	"description": "Changement X = 2x, solutions ±h + kπ (ou h + kπ et π/2 − h + kπ) puis sélection dans ]−π ; π] ou [0 ; 2π[ ; réponse : ensemble fini (pièges : deux solutions au lieu de quatre, 2x oublié, solution hors intervalle)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-185"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations et inéquations",
+	"level": 3,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)={{eval:cos(n*pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "\\frac{\\pi}{12}|\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{5\\pi}{12}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*h/\\pi"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12-n)/gcd(12-n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12-n,12)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}};-{{h}};{{h}};{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X=2x$ : $\\cos X={{eval:cos(n*pi/6)}}=\\cos\\left(2\\times{{h}}\\right)$, donc $2x=\\pm2\\times{{h}}+2k\\pi$, soit $x=\\pm{{h}}+k\\pi$, $k\\in\\mathbb{Z}$.",
+					"Dans $\\left]-\\pi\\,;\\pi\\right]$ : $x={{h}}$, $x=-{{h}}$, $x={{h}}-\\pi=-{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$ et $x=-{{h}}+\\pi={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$.",
+					"```trig\npreset: custom\nangles: {{n}}*pi/12, -{{n}}*pi/12, {{eval:12-n}}*pi/12, -{{eval:12-n}}*pi/12\nmode: points\nmesures: principales\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\,;-{{h}}\\,;{{h}}\\,;{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\right\\}}$ : quatre solutions, car $2x$ fait deux tours quand $x$ en fait un."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin(2x)={{eval:sin(n*pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "\\frac{\\pi}{12}|\\frac{\\pi}{6}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*h/\\pi"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(6-n)/gcd(6-n,12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(6-n,12)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(12+n)/gcd(12+n,12)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:12/gcd(12+n,12)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(18-n)/gcd(18-n,12)"
+				},
+				{
+					"name": "z",
+					"expression": "eval:12/gcd(18-n,12)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{{{h}};{{if:p==1|\\frac{\\pi}{ {{q}} }|\\frac{ {{p}}\\pi}{ {{q}} }}};{{if:r==1|\\frac{\\pi}{ {{s}} }|\\frac{ {{r}}\\pi}{ {{s}} }}};{{if:t==1|\\frac{\\pi}{ {{z}} }|\\frac{ {{t}}\\pi}{ {{z}} }}}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin(2x)=\\sin\\left(2\\times{{h}}\\right)$ : $2x=2\\times{{h}}+2k\\pi$ ou $2x=\\pi-2\\times{{h}}+2k\\pi$, soit $x={{h}}+k\\pi$ ou $x=\\frac{\\pi}{2}-{{h}}+k\\pi$.",
+					"Dans $\\left[0\\,;2\\pi\\right[$ ($k=0$ ou $k=1$) : ${{h}}$, ${{if:p==1|\\frac{\\pi}{ {{q}} }|\\frac{ {{p}}\\pi}{ {{q}} }}}$, ${{if:r==1|\\frac{\\pi}{ {{s}} }|\\frac{ {{r}}\\pi}{ {{s}} }}}$ et ${{if:t==1|\\frac{\\pi}{ {{z}} }|\\frac{ {{t}}\\pi}{ {{z}} }}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{{{h}}\\,;{{if:p==1|\\frac{\\pi}{ {{q}} }|\\frac{ {{p}}\\pi}{ {{q}} }}}\\,;{{if:r==1|\\frac{\\pi}{ {{s}} }|\\frac{ {{r}}\\pi}{ {{s}} }}}\\,;{{if:t==1|\\frac{\\pi}{ {{z}} }|\\frac{ {{t}}\\pi}{ {{z}} }}}\\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=-1$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos(2x)=-1\\iff2x=\\pi+2k\\pi\\iff x=\\frac{\\pi}{2}+k\\pi$, $k\\in\\mathbb{Z}$.",
+					"Dans $\\left]-\\pi\\,;\\pi\\right]$ : $S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{2}\\,;\\frac{\\pi}{2}\\right\\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 cos 2x = 1/2 : 4 solutions → juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{-\\frac{5\\pi}{6};-\\frac{\\pi}{6};\\frac{\\pi}{6};\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 ordre libre → juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{\\frac{\\pi}{6};\\frac{5\\pi}{6};-\\frac{\\pi}{6};-\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 accolades MathLive → juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": [
+				"\\left\\lbrace-\\frac{5\\pi}{6};-\\frac{\\pi}{6};\\frac{\\pi}{6};\\frac{5\\pi}{6}\\right\\rbrace"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 deux solutions seulement (± h) → faux",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{-\\frac{\\pi}{6};\\frac{\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 solutions de cos x = 1/2 (2x oublié) → faux",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 solution hors intervalle (7π/6) → faux",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{-\\frac{\\pi}{6};\\frac{\\pi}{6};\\frac{5\\pi}{6};\\frac{7\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 cos 2x = √3/2 : π/12 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{12}"
+			},
+			"answers": [
+				"\\{-\\frac{11\\pi}{12};-\\frac{\\pi}{12};\\frac{\\pi}{12};\\frac{11\\pi}{12}\\}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 cos 2x = 0 : ±π/4, ±3π/4 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\{-\\frac{3\\pi}{4};-\\frac{\\pi}{4};\\frac{\\pi}{4};\\frac{3\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 cos 2x = −√3/2 : 5π/12 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{5\\pi}{12}"
+			},
+			"answers": [
+				"\\{-\\frac{7\\pi}{12};-\\frac{5\\pi}{12};\\frac{5\\pi}{12};\\frac{7\\pi}{12}\\}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 intervalle au lieu d'un ensemble → faux",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["[-\\frac{\\pi}{6};\\frac{\\pi}{6}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 sin 2x = 1/2 : 4 solutions → juste",
+			"variationIndex": 1,
+			"variables": {
+				"h": "\\frac{\\pi}{12}"
+			},
+			"answers": ["\\{\\frac{\\pi}{12};\\frac{5\\pi}{12};\\frac{13\\pi}{12};\\frac{17\\pi}{12}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 sin 2x = √3/2 : 4 solutions → juste",
+			"variationIndex": 1,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{\\frac{\\pi}{6};\\frac{\\pi}{3};\\frac{7\\pi}{6};\\frac{4\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 un seul tour (k = 0) → faux",
+			"variationIndex": 1,
+			"variables": {
+				"h": "\\frac{\\pi}{12}"
+			},
+			"answers": ["\\{\\frac{\\pi}{12};\\frac{5\\pi}{12}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 π − h au lieu de π/2 − h → faux",
+			"variationIndex": 1,
+			"variables": {
+				"h": "\\frac{\\pi}{12}"
+			},
+			"answers": [
+				"\\{\\frac{\\pi}{12};\\frac{11\\pi}{12};\\frac{13\\pi}{12};\\frac{23\\pi}{12}\\}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 cos 2x = −1 : ±π/2 → juste",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 2x = π seul → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 π (cos x = −1) → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{\\pi\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

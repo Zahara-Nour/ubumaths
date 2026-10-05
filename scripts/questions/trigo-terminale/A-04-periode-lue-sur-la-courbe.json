@@ -1,0 +1,238 @@
+{
+	"title": "Lire la période sur la courbe d'une fonction trigonométrique",
+	"description": "Écart entre deux motifs identiques consécutifs sur la courbe de cos(ax), sin(3x), cos(x/2), sin(πx) (pièges : demi-période, 2π recopié, deux zéros consécutifs)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-184", "TSPE-181"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Parité et périodicité",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: -3 ; 3\ngrille: pi/4 ; 1\nf(x) = {{c}}*cos({{a}}*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −2π à 2π.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4"
+				},
+				{
+					"name": "c",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==2|\\pi|\\frac{\\pi}{2}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le motif se répète : la courbe passe par un maximum en $0$, puis par le maximum suivant en ${{if:a==2|\\pi|\\frac{\\pi}{2}}}$.",
+					"```courbe\nx: -2*pi ; 2*pi\ny: -3 ; 3\ngrille: pi/4 ; 1\nf(x) = {{c}}*cos({{a}}*x)   bleu   nom=C_f\npoints: A(0 ; f(0)), B({{eval:2/a}}*pi ; f({{eval:2/a}}*pi))\ntaille: moyenne\ndescription: Courbe de f avec deux maximums consécutifs marqués.\n```",
+					"La période est l'écart entre deux maximums consécutifs : $T=\\textcolor{{{color:primary.0}}}{{{if:a==2|\\pi|\\frac{\\pi}{2}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: -3 ; 3\ngrille: pi/3 ; 1\nf(x) = {{c}}*sin(3*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −2π à 2π.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{2\\pi}{3}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe s'annule en montant en $0$, puis de nouveau en montant en $\\frac{2\\pi}{3}$ (elle s'annule aussi en $\\frac{\\pi}{3}$, mais en descendant : ce n'est pas encore le même motif).",
+					"$T=\\textcolor{{{color:primary.0}}}{\\frac{2\\pi}{3}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4*pi ; 4*pi\ny: -3 ; 3\ngrille: pi ; 1\nf(x) = {{c}}*cos(x/2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −4π à 4π.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux maximums consécutifs : en $0$ et en $4\\pi$ (en $2\\pi$, la courbe est à son minimum).",
+					"$T=\\textcolor{{{color:primary.0}}}{4\\pi}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 4\ny: -3 ; 3\ngrille: 0.5 ; 1\nf(x) = {{c}}*sin(pi*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −4 à 4.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe s'annule en montant en $0$ puis de nouveau en montant en $2$.",
+					"$T=\\textcolor{{{color:primary.0}}}{2}$ (ici, pas de $\\pi$ : on lit la graduation)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 cos(2x) : π → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "2"
+			},
+			"answers": ["\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 cos(2x) : 2π → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "2"
+			},
+			"answers": ["2\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 cos(2x) : π/2 (demi-période) → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "2"
+			},
+			"answers": ["\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 cos(4x) : π/2 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "1"
+			},
+			"answers": ["\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 cos(4x) : π/4 (demi-période) → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "1"
+			},
+			"answers": ["\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 sin(3x) : 2π/3 → juste",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["\\frac{2\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 sin(3x) : π/3 (deux zéros consécutifs) → faux",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 cos(x/2) : 4π → juste",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["4\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 cos(x/2) : 2π (max → min) → faux",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 sin(πx) : 2 → juste",
+			"variationIndex": 3,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 sin(πx) : 2π → faux",
+			"variationIndex": 3,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["2\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 sin(πx) : 1 → faux",
+			"variationIndex": 3,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

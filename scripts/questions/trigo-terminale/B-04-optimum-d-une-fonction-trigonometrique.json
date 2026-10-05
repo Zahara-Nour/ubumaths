@@ -1,0 +1,203 @@
+{
+	"title": "Optimum d'une fonction avec cos ou sin",
+	"description": "Abscisse du minimum de cx − 2 sin x, du maximum de 2 sin x − cx sur [0 ; π], valeur minimale de x − 2 sin x (pièges : cos et sin confondus, π − α, abscisse au lieu de la valeur)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-187", "TSPE-182"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Dérivées et variations",
+	"level": 3,
+	"status": "draft",
+	"delay": 120,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*pi/12)}}}}x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **minimum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:2*cos(n*pi/12)}}-2\\cos x$ : $f'(x)\\leqslant0$ sur $\\left[0\\,;{{a}}\\right]$ et $f'(x)\\geqslant0$ sur $\\left[{{a}}\\,;\\pi\\right]$ ($\\cos{{a}}={{eval:cos(n*pi/12)}}$).",
+					"$f$ décroît puis croît : son minimum est atteint en $x=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*pi/12)}}}}x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **maximum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=2\\cos x-{{eval:2*cos(n*pi/12)}}$ : $f'(x)\\geqslant0\\iff\\cos x\\geqslant{{eval:cos(n*pi/12)}}\\iff x\\in\\left[0\\,;{{a}}\\right]$.",
+					"$f$ croît puis décroît : son maximum est atteint en $x=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=x-2\\sin x$.\n\nQuelle est la **valeur minimale** de $f$ sur $\\left[0\\,;\\pi\\right]$ ?\n\n$m=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\pi}{3}-\\sqrt{3}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=1-2\\cos x$ : $f$ décroît sur $\\left[0\\,;\\frac{\\pi}{3}\\right]$ et croît sur $\\left[\\frac{\\pi}{3}\\,;\\pi\\right]$.",
+					"$m=f\\left(\\frac{\\pi}{3}\\right)=\\frac{\\pi}{3}-2\\times\\frac{\\sqrt{3}}{2}=\\textcolor{{{color:primary.0}}}{\\frac{\\pi}{3}-\\sqrt{3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 x − 2sin x : π/3 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 confusion cos/sin : π/6 → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 borne : 0 → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 √3x − 2sin x : π/6 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 √2x − 2sin x : π/4 → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 2sin x − √2x : π/4 → juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 2sin x − √2x : 3π/4 (π − α) → faux",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 2sin x − x : π/2 (max de sin) → faux",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 π/3 − √3 → juste",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\pi}{3}-\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 abscisse au lieu de la valeur → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 sin(π/3) = 1/2 → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\pi}{3}-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 valeur approchée −0,685 → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-0.685"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

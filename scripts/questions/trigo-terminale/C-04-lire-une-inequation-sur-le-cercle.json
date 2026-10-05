@@ -1,0 +1,253 @@
+{
+	"title": "Reconnaître une équation ou une inéquation sur le cercle trigonométrique",
+	"description": "Arc ou points du cercle (mesures principales) : retrouver cos x ⩾ a, sin x ⩾ a ou sin x = a (pièges : cosinus = abscisse et sinus = ordonnée confondus, sens, signe)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-183", "TSPE-185", "TSPE-186"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations et inéquations",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"options": {
+		"shuffleChoices": true
+	},
+	"variations": [
+		{
+			"statement": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```\n\nDe quelle inéquation s'agit-il ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"choices": [
+				{
+					"content": "$\\cos x\\geqslant{{eval:cos(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\cos x\\leqslant{{eval:cos(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\sin x\\geqslant{{eval:cos(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\sin x\\leqslant{{eval:cos(n*pi/12)}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"L'arc est symétrique par rapport à l'axe des abscisses et va de $-{{a}}$ à ${{a}}$ : ce sont les points d'**abscisse** (cosinus) supérieure ou égale à $\\cos{{a}}={{eval:cos(n*pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\cos x\\geqslant{{eval:cos(n*pi/12)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) >= sin({{n}}*pi/12)\nmode: arc\nmesures: principales\n```\n\nDe quelle inéquation s'agit-il ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"choices": [
+				{
+					"content": "$\\sin x\\geqslant{{eval:sin(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\sin x\\leqslant{{eval:sin(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\cos x\\geqslant{{eval:sin(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\cos x\\leqslant{{eval:sin(n*pi/12)}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"L'arc est symétrique par rapport à l'axe des ordonnées, en haut du cercle : ce sont les points d'**ordonnée** (sinus) supérieure ou égale à $\\sin{{a}}={{eval:sin(n*pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x\\geqslant{{eval:sin(n*pi/12)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n```trig\npreset: custom\nangles: -{{n}}*pi/12, -{{eval:12-n}}*pi/12\nequation: sin(x) = sin(-{{n}}*pi/12)\nmode: points\nmesures: principales\n```\n\nDe quelle équation s'agit-il ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"choices": [
+				{
+					"content": "$\\sin x={{eval:-sin(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\sin x={{eval:sin(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\cos x={{eval:-sin(n*pi/12)}}$"
+				},
+				{
+					"content": "$\\cos x={{eval:sin(n*pi/12)}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les deux points ont la même **ordonnée**, négative (ils sont sous l'axe des abscisses) : $\\sin\\left(-{{a}}\\right)=-\\sin{{a}}={{eval:-sin(n*pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x={{eval:-sin(n*pi/12)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : cos ≥ → correct",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : cos ≤ (sens) → incorrect",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : sin ≥ (cos/sin) → incorrect",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : sin ≤ → incorrect",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : sin ≥ → correct",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : sin ≤ (sens) → incorrect",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : cos ≥ (cos/sin) → incorrect",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : cos ≤ → incorrect",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : sin = −k → correct",
+			"variationIndex": 2,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : sin = k (signe) → incorrect",
+			"variationIndex": 2,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : cos = −k (cos/sin) → incorrect",
+			"variationIndex": 2,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : cos = k → incorrect",
+			"variationIndex": 2,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
