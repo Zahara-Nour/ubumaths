@@ -6,7 +6,7 @@
  * mais trois boucles imbriquées font 10^9 tours ; `polygone_regulier(O, 1, 10^7)`
  * crée 10^7 objets en une seule instruction. Sans option, rien ne change.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { parseDsl, interpretDsl, DslRuntimeError, Figure, FigureElementLimitError } from '../..';
 
 const NESTED = [
@@ -17,15 +17,15 @@ const NESTED = [
 ].join('\n');
 
 describe('interpret — budget d’instructions (maxSteps)', () => {
-	it('trois boucles imbriquées s’arrêtent vite, erreur située', () => {
-		const start = performance.now();
+	// Pas de chronomètre (instable sur les machines de CI) : sans budget, 10^9 tours
+	// dépasseraient le délai du test, qui échouerait de lui-même.
+	it('trois boucles imbriquées s’arrêtent au budget, erreur située', () => {
 		let caught: unknown = null;
 		try {
 			interpretDsl(parseDsl(NESTED), undefined, undefined, { maxSteps: 5000 });
 		} catch (e) {
 			caught = e;
 		}
-		expect(performance.now() - start).toBeLessThan(500);
 		expect(caught).toBeInstanceOf(DslRuntimeError);
 		expect((caught as DslRuntimeError).message).toMatch(/budget/i);
 		expect((caught as DslRuntimeError).line).toBeGreaterThan(0);
@@ -51,15 +51,22 @@ describe('interpret — budget d’instructions (maxSteps)', () => {
 });
 
 describe('Figure — plafond d’objets (setElementLimit)', () => {
+	// Compter les ajouts plutôt que chronométrer : la construction s'arrête au plafond,
+	// elle ne crée pas 10^7 sommets avant de refuser.
 	it('polygone_regulier à 10^7 sommets refusé dès le plafond franchi', () => {
 		const figure = new Figure();
 		figure.setElementLimit(300);
-		const start = performance.now();
+		const addElement = vi.spyOn(
+			Figure.prototype as unknown as { addElement: (...args: unknown[]) => void },
+			'addElement'
+		);
 		expect(() =>
 			interpretDsl(parseDsl('O = point(0, 0)\np = polygone_regulier(O, 1, 10000000)'), figure)
 		).toThrow(FigureElementLimitError);
-		expect(performance.now() - start).toBeLessThan(500);
+		// 300 objets acceptés, puis la tentative qui franchit le plafond
+		expect(addElement.mock.calls.length).toBeLessThanOrEqual(301);
 		expect(figure.size).toBeLessThanOrEqual(300);
+		addElement.mockRestore();
 	});
 
 	it('sans plafond, aucune limite (comportement historique)', () => {
