@@ -1,0 +1,316 @@
+{
+	"title": "Diviseurs d'un entier : les compter, en donner un",
+	"description": "Lister les diviseurs positifs d'un entier (au plus 200) pour les compter, les compter dans ℤ, donner un diviseur strict (pièges : oublier 1 et n, oublier les diviseurs négatifs dans ℤ)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-071", "TEXP-075"],
+	"theme": "Arithmétique",
+	"domain": "Divisibilité",
+	"subdomain": "Divisibilité",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Combien l'entier ${{n}}$ a-t-il de **diviseurs positifs** ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2^a*3^b*5^c"
+				}
+			],
+			"conditions": ["n >= 12", "n <= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+1)*(b+1)*(c+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On liste les diviseurs par paires $d \\times \\dfrac{ {{n}} }{d}$, en partant de $1 \\times {{n}}$ : on s'arrête quand $d$ dépasse $\\sqrt{ {{n}} }$.",
+					"On n'oublie ni $1$ ni ${{n}}$ lui-même.",
+					"${{n}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:(a+1)*(b+1)*(c+1)}}}$ diviseurs positifs."
+				]
+			}
+		},
+		{
+			"statement": "Combien l'entier ${{n}}$ a-t-il de **diviseurs dans $\\mathbb{Z}$** ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2^a*3^b*5^c"
+				}
+			],
+			"conditions": ["n >= 12", "n <= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(a+1)*(b+1)*(c+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$ a ${{eval:(a+1)*(b+1)*(c+1)}}$ diviseurs positifs (on les liste par paires $d \\times \\dfrac{ {{n}} }{d}$).",
+					"Dans $\\mathbb{Z}$, chaque diviseur positif $d$ en donne un second, $-d$ : il y en a $2 \\times {{eval:(a+1)*(b+1)*(c+1)}} = \\textcolor{{{color:primary.0}}}{{{eval:2*(a+1)*(b+1)*(c+1)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne un diviseur positif de ${{n}}$ **autre que $1$ et ${{n}}$**.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2^a*3^b*5^c"
+				}
+			],
+			"conditions": ["n >= 12", "n <= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "2",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "divisor",
+							"dividend": "{{n}}"
+						},
+						{
+							"type": "range",
+							"min": "1",
+							"max": "{{n}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$ est pair : $\\textcolor{{{color:primary.0}}}{2}$ divise ${{n}}$ (${{n}} = 2 \\times {{eval:n/2}}$).",
+					"Toute autre réponse $d$ avec $1 < d < {{n}}$ et ${{n}}$ multiple de $d$ est juste."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 72 a 12 diviseurs",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 10 (1 et 72 oubliés)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 24 (diviseurs de ℤ)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 60 a 12 diviseurs",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"n": "60"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 60, 6 (moitié de la liste)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"n": "60"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 72 → 24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 12 (négatifs oubliés)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 9 divise 72",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 36 divise 72",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 1 exclu",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 72 exclu",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 5 ne divise pas 72",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 144 multiple, pas diviseur",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "0",
+				"n": "72"
+			},
+			"answers": ["144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

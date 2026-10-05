@@ -1,0 +1,343 @@
+{
+	"title": "Équation diophantienne ax + by = c : une solution particulière",
+	"description": "Trouver une solution particulière de ax + by = c (plusieurs bonnes réponses), compléter une solution, résoudre un problème de pièces (pièges : u et v de Bézout non multipliés par c, x et y inversés)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-090"],
+	"theme": "Arithmétique",
+	"domain": "PGCD, Bézout et Gauss",
+	"subdomain": "Équations diophantiennes",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère l'équation ${{a}}x + {{b}}y = {{c}}$, d'inconnues entières $x$ et $y$.\n\nDonne une valeur de $x$ pour laquelle il existe un entier $y$ solution.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "3..30"
+				},
+				{
+					"name": "c",
+					"expression": "2..40"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(c*mod(mod(a,b)^(b-2),b),b)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:(c-a*x0)/b"
+				}
+			],
+			"conditions": ["mod(a,b) != 0", "x0 != 0", "y0 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x0}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "({{c}}-{{a}}*answer) % {{b}} == 0",
+							"description": "Pour ce x, c − ax n'est pas un multiple de b : aucun entier y ne convient."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut ${{a}}x \\equiv {{c}} \\,[{{b}}]$.",
+					"$x = \\textcolor{{{color:primary.0}}}{{{x0}}}$ convient : ${{a}} \\times {{x0}} + {{b}} \\times ({{y0}}) = {{c}}$. Toute valeur $x = {{x0}} + {{b}}k$ ($k \\in \\mathbb{Z}$) convient aussi."
+				]
+			}
+		},
+		{
+			"statement": "Le couple $({{x0}} \\,;\\, y)$ est solution de ${{a}}x + {{b}}y = {{c}}$. Que vaut $y$ ?\n\n$y=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "3..30"
+				},
+				{
+					"name": "c",
+					"expression": "2..40"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(c*mod(mod(a,b)^(b-2),b),b)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:(c-a*x0)/b"
+				}
+			],
+			"conditions": ["mod(a,b) != 0", "x0 != 0", "y0 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{b}}y = {{c}} - {{a}} \\times {{x0}} = {{eval:c-a*x0}}$.",
+					"$y = \\dfrac{ {{eval:c-a*x0}} }{ {{b}} } = \\textcolor{{{color:primary.0}}}{{{y0}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut payer exactement ${{S}}$ € avec uniquement des pièces de ${{p1}}$ € et des billets de ${{p2}}$ €.\n\nDonne un nombre de pièces de ${{p1}}$ € qui le permet.\n\n$?$",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "2|3"
+				},
+				{
+					"name": "p2",
+					"expression": "5|7|10"
+				},
+				{
+					"name": "xs",
+					"expression": "1..6"
+				},
+				{
+					"name": "ys",
+					"expression": "1..6"
+				},
+				{
+					"name": "S",
+					"expression": "eval:p1*xs+p2*ys"
+				},
+				{
+					"name": "smax",
+					"expression": "eval:floor(S/p1)"
+				}
+			],
+			"conditions": ["gcd(p1,p2) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{xs}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "({{S}}-{{p1}}*answer) % {{p2}} == 0",
+							"description": "Avec ce nombre de pièces, le reste à payer n'est pas un multiple du billet."
+						},
+						{
+							"type": "range",
+							"min": "0",
+							"max": "{{smax}}",
+							"inclusive": true
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche des entiers naturels $x$ et $y$ tels que ${{p1}}x + {{p2}}y = {{S}}$.",
+					"$x = \\textcolor{{{color:primary.0}}}{{{xs}}}$ convient : ${{p1}} \\times {{xs}} + {{p2}} \\times {{ys}} = {{S}}$. Toute autre valeur $x \\geqslant 0$ avec ${{S}} - {{p1}}x$ multiple positif de ${{p2}}$ convient aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 7x + 5y = 4, x = 2",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : x = 7",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : x = −3",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : x = 3 (u de Bézout non multiplié par c)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : x = −2 (c'est y)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y = −2",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : y = 2 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 31 € en 3 et 5 : 2 pièces",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "3",
+				"p2": "5",
+				"xs": "2",
+				"ys": "5",
+				"S": "31",
+				"smax": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 7 pièces",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "3",
+				"p2": "5",
+				"xs": "2",
+				"ys": "5",
+				"S": "31",
+				"smax": "10"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 12 pièces (36 € > 31 €)",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "3",
+				"p2": "5",
+				"xs": "2",
+				"ys": "5",
+				"S": "31",
+				"smax": "10"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : −3 pièces",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "3",
+				"p2": "5",
+				"xs": "2",
+				"ys": "5",
+				"S": "31",
+				"smax": "10"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 5 (nombre de billets)",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "3",
+				"p2": "5",
+				"xs": "2",
+				"ys": "5",
+				"S": "31",
+				"smax": "10"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

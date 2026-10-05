@@ -1,0 +1,291 @@
+{
+	"title": "Équation diophantienne ax + by = c : ensemble des solutions",
+	"description": "Choisir l'ensemble des solutions de ax + by = c à partir d'une solution particulière, avec ou sans PGCD à diviser, ou reconnaître l'absence de solution (pièges : a et b inversés, signe, oubli de diviser par le PGCD)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-090", "TEXP-088"],
+	"theme": "Arithmétique",
+	"domain": "PGCD, Bézout et Gauss",
+	"subdomain": "Équations diophantiennes",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Le couple $({{x0}} \\,;\\, {{y0}})$ est une solution de ${{a}}x + {{b}}y = {{c}}$, et $\\mathrm{PGCD}({{a}} \\,;\\, {{b}}) = 1$.\n\nQuelles sont toutes les solutions entières ($k \\in \\mathbb{Z}$) ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "3..30"
+				},
+				{
+					"name": "c",
+					"expression": "2..40"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(c*mod(mod(a,b)^(b-2),b),b)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:(c-a*x0)/b"
+				}
+			],
+			"conditions": ["mod(a,b) != 0", "x0 != 0", "y0 != 0", "a != b"],
+			"choices": [
+				{
+					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} - {{a}}k$"
+				},
+				{
+					"content": "$x = {{x0}} + {{a}}k$ et $y = {{y0}} - {{b}}k$"
+				},
+				{
+					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} + {{a}}k$"
+				},
+				{
+					"content": "$x = {{x0}} + k$ et $y = {{y0}} - k$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Par différence avec la solution particulière : ${{a}}(x - {{x0;()}}) = -{{b}}(y - {{y0;()}})$.",
+					"${{b}}$ divise ${{a}}(x - {{x0;()}})$ et est premier avec ${{a}}$ : d'après Gauss, $x = {{x0}} + {{b}}k$ ; en reportant, $y = {{y0}} - {{a}}k$.",
+					"Solutions : $\\textcolor{{{color:primary.0}}}{x = {{x0}} + {{b}}k,\\ y = {{y0}} - {{a}}k}$, $k \\in \\mathbb{Z}$."
+				]
+			}
+		},
+		{
+			"statement": "Le couple $({{x0}} \\,;\\, {{y0}})$ est une solution de ${{eval:m*a}}x + {{eval:m*b}}y = {{eval:m*c}}$.\n\nQuelles sont toutes les solutions entières ($k \\in \\mathbb{Z}$) ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "3..30"
+				},
+				{
+					"name": "c",
+					"expression": "2..40"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(c*mod(mod(a,b)^(b-2),b),b)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:(c-a*x0)/b"
+				},
+				{
+					"name": "m",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["mod(a,b) != 0", "x0 != 0", "y0 != 0", "a != b"],
+			"choices": [
+				{
+					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} - {{a}}k$"
+				},
+				{
+					"content": "$x = {{x0}} + {{eval:m*b}}k$ et $y = {{y0}} - {{eval:m*a}}k$"
+				},
+				{
+					"content": "$x = {{x0}} + {{a}}k$ et $y = {{y0}} - {{b}}k$"
+				},
+				{
+					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} + {{a}}k$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$\\mathrm{PGCD}({{eval:m*a}} \\,;\\, {{eval:m*b}}) = {{m}}$ : on divise par ${{m}}$, l'équation devient ${{a}}x + {{b}}y = {{c}}$ avec ${{a}}$ et ${{b}}$ premiers entre eux.",
+					"Solutions : $\\textcolor{{{color:primary.0}}}{x = {{x0}} + {{b}}k,\\ y = {{y0}} - {{a}}k}$, $k \\in \\mathbb{Z}$.",
+					"Avec ${{eval:m*b}}k$ et ${{eval:m*a}}k$, on n'obtiendrait qu'une solution sur ${{m}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation ${{eval:m*a}}x + {{eval:m*b}}y = {{eval:m*c+r}}$, d'inconnues entières $x$ et $y$.\n\nQue peut-on dire ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["gcd(a,b) == 1", "a != b", "r < m"],
+			"choices": [
+				{
+					"content": "Elle n'a aucune solution."
+				},
+				{
+					"content": "Elle a une infinité de solutions."
+				},
+				{
+					"content": "Elle a une seule solution."
+				},
+				{
+					"content": "Elle a des solutions, car $\\mathrm{PGCD}({{eval:m*a}} \\,;\\, {{eval:m*b}}) \\neq 0$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"${{m}}$ divise ${{eval:m*a}}x + {{eval:m*b}}y$ pour tous entiers $x$, $y$, mais ${{m}}$ ne divise pas ${{eval:m*c+r}}$.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Aucune solution}}$ : $ax + by = c$ n'a de solution que si $\\mathrm{PGCD}(a \\,;\\, b)$ divise $c$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (x0 + bk, y0 − ak)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a et b inversés",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : signe",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : pas de 1",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : après division par le PGCD",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2",
+				"m": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : sans diviser (solutions manquantes)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "7",
+				"c": "4",
+				"x0": "2",
+				"y0": "-2",
+				"m": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : aucune solution",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2",
+				"r": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : infinité",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2",
+				"r": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}
