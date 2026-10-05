@@ -24,7 +24,18 @@ import type {
 	OneSidedLimitResult
 } from './types';
 import { LimitError } from './types';
-import { isLimit, isNumber, isInfinity, isSuperscript } from '../guards';
+import {
+	isLimit,
+	isNumber,
+	isInfinity,
+	isSuperscript,
+	isAddition,
+	isSubtraction,
+	isOpposite,
+	isFunction,
+	isDelimiter
+} from '../guards';
+import { divide, opposite, subtract, positiveInfinity, negativeInfinity } from '../factory';
 import { findNodes } from '../transforms';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
@@ -353,6 +364,34 @@ export function evaluateLimit(
 		);
 	}
 
+	// Strategy 2.6: somme ou différence en ±∞, limite terme à terme ; la forme
+	// ∞ − ∞ est levée en factorisant par le terme dominant (croissances
+	// comparées, via les limites de référence du quotient).
+	if (isInfinity(approachPoint)) {
+		const sumResult = trySumByDominantTerm(expression, varName, approachPoint, dir, options);
+		if (sumResult !== null) {
+			recorder.recordStepByRule(
+				'infinity-analysis',
+				expression,
+				sumResult.value,
+				'summarized',
+				approachPoint,
+				sumResult.description
+			);
+			return createResult(
+				sumResult.value,
+				varName,
+				approachPoint,
+				dir,
+				'infinite',
+				sumResult.form,
+				'infinity-analysis',
+				recorder,
+				opts
+			);
+		}
+	}
+
 	// Detect indeterminate form for subsequent strategies
 	const indeterminateForm = detectIndeterminateForm(expression, varName, approachPoint, dir);
 
@@ -505,6 +544,148 @@ export function evaluateLimit(
 		opts,
 		'Limite non supportée avec les techniques actuelles'
 	);
+}
+
+// =============================================================================
+// Somme en ±∞ : terme dominant
+// =============================================================================
+
+/** Limite réduite à ce qui sert à combiner deux termes. */
+type TermLimit =
+	| { readonly kind: 'infinite'; readonly sign: 1 | -1 }
+	| { readonly kind: 'finite'; readonly value: number };
+
+/** Garde-fou : la levée de ∞ − ∞ rappelle `evaluateLimit` sur un quotient. */
+const MAX_DOMINANCE_DEPTH = 3;
+let dominanceDepth = 0;
+
+function toTermLimit(result: LimitResult): TermLimit | null {
+	const value = result.value;
+	if (value === null || value === undefined) return null;
+	if (isInfinity(value)) return { kind: 'infinite', sign: value.sign === 'positive' ? 1 : -1 };
+	const numeric = getNumericValue(value);
+	return numeric === null ? null : { kind: 'finite', value: numeric };
+}
+
+/** Exposant `u` de `e^u` ou `exp(u)`, sinon null. */
+function exponentialArgument(node: MathNode): MathNode | null {
+	if (isSuperscript(node) && isEulerBase(node.base)) return node.superscript;
+	if (isFunction(node) && node.name.toLowerCase() === 'exp' && node.args.length === 1) {
+		return node.args[0];
+	}
+	return null;
+}
+
+/** Retire les signes `−` et parenthèses de tête : `−(−A)` → { sign: 1, node: A }. */
+function peelSign(node: MathNode): { sign: 1 | -1; node: MathNode } {
+	if (isDelimiter(node)) return peelSign(node.content);
+	if (isOpposite(node)) {
+		const inner = peelSign(node.operand);
+		return { sign: inner.sign === 1 ? -1 : 1, node: inner.node };
+	}
+	return { sign: 1, node };
+}
+
+/**
+ * Limite de `num / den`, ou null si le moteur ne conclut pas. Deux
+ * exponentielles se comparent par leurs exposants : e^v / e^u = e^{v − u}.
+ */
+function ratioLimit(
+	num: MathNode,
+	den: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): TermLimit | null {
+	const direct = toTermLimit(
+		evaluateLimit(divide(num, den, 'fraction'), varName, approach, dir, options)
+	);
+	if (direct !== null) return direct;
+	const numExponent = exponentialArgument(num);
+	const denExponent = exponentialArgument(den);
+	if (numExponent === null || denExponent === null) return null;
+	// lim (v − u) puis exponentielle : −∞ → 0, +∞ → +∞, c → e^c
+	const gap = toTermLimit(
+		evaluateLimit(subtract(numExponent, denExponent), varName, approach, dir, options)
+	);
+	if (gap === null) return null;
+	if (gap.kind === 'infinite') {
+		return gap.sign === 1 ? { kind: 'infinite', sign: 1 } : { kind: 'finite', value: 0 };
+	}
+	return { kind: 'finite', value: Math.exp(gap.value) };
+}
+
+/**
+ * Limite d'une somme `a + b` (ou différence, `b` = −c) en ±∞, terme à terme.
+ *
+ * Forme ∞ − ∞ : a + b = a·(1 + b/a). Si b/a → 0, a domine (e^x − x : x/e^x → 0,
+ * croissance comparée) ; si b/a → ±∞, b domine ; si b/a → L ≠ −1, le signe
+ * est celui de a·(1 + L). L = −1 : on ne conclut pas.
+ */
+function trySumByDominantTerm(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; form: IndeterminateForm; description: string } | null {
+	if (!isAddition(expr) && !isSubtraction(expr)) return null;
+	if (dominanceDepth >= MAX_DOMINANCE_DEPTH) return null;
+
+	dominanceDepth++;
+	try {
+		const a = expr.left;
+		const b = isSubtraction(expr) ? opposite(expr.right) : expr.right;
+		const la = toTermLimit(evaluateLimit(a, varName, approach, dir, options));
+		if (la === null) return null;
+		const lb = toTermLimit(evaluateLimit(b, varName, approach, dir, options));
+		if (lb === null) return null;
+
+		const infinityNode = (sign: 1 | -1): MathNode =>
+			sign === 1 ? positiveInfinity() : negativeInfinity();
+
+		// Pas de forme indéterminée : au moins un infini, sans conflit de signe.
+		if (la.kind === 'finite' && lb.kind === 'finite') return null;
+		if (la.kind === 'finite' || lb.kind === 'finite' || la.sign === lb.sign) {
+			const infinite = la.kind === 'infinite' ? la : lb;
+			if (infinite.kind !== 'infinite') return null;
+			const sign = infinite.sign;
+			return {
+				value: infinityNode(sign),
+				form: 'none',
+				description: `Somme des limites : ${sign === 1 ? '+∞' : '-∞'}`
+			};
+		}
+
+		// Forme ∞ − ∞ : comparer les deux termes, signes mis à part
+		// (a = sa·A, b = sb·B, donc b/a = sa·sb·B/A).
+		const pa = peelSign(a);
+		const pb = peelSign(b);
+		const signFactor = pa.sign * pb.sign;
+		const ratio = ratioLimit(pb.node, pa.node, varName, approach, dir, options);
+		let sign: 1 | -1 | null = null;
+		if (ratio !== null) {
+			if (ratio.kind === 'infinite') {
+				sign = lb.sign;
+			} else {
+				const onePlusL = 1 + signFactor * ratio.value;
+				if (Math.abs(onePlusL) > ZERO_TOLERANCE) sign = onePlusL > 0 ? la.sign : lb.sign;
+			}
+		} else {
+			const inverse = ratioLimit(pa.node, pb.node, varName, approach, dir, options);
+			if (inverse !== null && inverse.kind === 'finite' && inverse.value === 0) sign = lb.sign;
+		}
+		if (sign === null) return null;
+
+		return {
+			value: infinityNode(sign),
+			form: '∞-∞',
+			description: `Forme ∞ − ∞ levée par le terme dominant (croissances comparées) : ${sign === 1 ? '+∞' : '-∞'}`
+		};
+	} finally {
+		dominanceDepth--;
+	}
 }
 
 /** L'expression contient-elle une puissance de la base d'Euler (`e^u`) ? */

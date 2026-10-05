@@ -32,6 +32,7 @@ import { match } from '../pattern/match';
 import type { Pattern } from '../pattern/types';
 import { number, positiveInfinity } from '../factory';
 import { getNumericValue } from '../common/numeric';
+import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation';
 import { substitute } from '../eval/substitute';
 import { evaluate } from '../eval/evaluate';
@@ -288,17 +289,38 @@ function tryDominantTermAtInfinity(
 	const positive = approach.sign === 'positive';
 
 	// Extract terms from the expression
-	const terms = extractTerms(expr, varName);
+	const { terms, others } = extractTerms(expr, varName);
 	if (terms.length === 0) return { success: false };
 
-	// Find the term with the highest degree
+	// Un terme non polynomial (e^x, ln x, (x+1)², …) n'est négligeable devant
+	// le monôme dominant que s'il reste borné. Autrefois ignoré en silence :
+	// e^x − x rendait −∞ (« dominant » −x), (x+1)² − x² rendait −∞.
+	for (const other of others) {
+		if (!containsVariable(other, varName)) continue;
+		const otherLimit = classifyWithSign(other, varName, approach, 'both');
+		if (otherLimit.type === 'pos-infinity' || otherLimit.type === 'neg-infinity') {
+			return { success: false };
+		}
+		if (otherLimit.type === 'unknown') return { success: false };
+	}
+
+	// Coefficients cumulés par degré : x − 2x a pour terme dominant −x, pas x
+	// (seul le premier monôme du degré maximal était lu).
+	const coefficientByDegree = new Map<number, number>();
+	for (const term of terms) {
+		coefficientByDegree.set(
+			term.degree,
+			(coefficientByDegree.get(term.degree) ?? 0) + term.coefficient
+		);
+	}
+
+	// Degré le plus haut dont le coefficient ne s'annule pas
 	let maxDegree = -Infinity;
 	let dominantTerm: { coefficient: number; degree: number } | null = null;
-
-	for (const term of terms) {
-		if (term.degree > maxDegree) {
-			maxDegree = term.degree;
-			dominantTerm = term;
+	for (const [degree, coefficient] of coefficientByDegree) {
+		if (coefficient !== 0 && degree > maxDegree) {
+			maxDegree = degree;
+			dominantTerm = { coefficient, degree };
 		}
 	}
 
@@ -332,51 +354,55 @@ function tryDominantTermAtInfinity(
 
 /**
  * Extract polynomial terms from an expression.
+ *
+ * Les termes qui ne sont pas des monômes `a·x^n` sont rendus à part
+ * (`others`) : à l'appelant de vérifier qu'ils sont négligeables.
  */
 function extractTerms(
 	expr: MathNode,
 	varName: string
-): Array<{ coefficient: number; degree: number }> {
+): { terms: Array<{ coefficient: number; degree: number }>; others: MathNode[] } {
 	const terms: Array<{ coefficient: number; degree: number }> = [];
+	const others: MathNode[] = [];
+
+	/** Degré entier de `x` ou `x^n`, sinon null. */
+	function monomialDegree(node: MathNode): number | null {
+		if (isVariable(node) && node.name === varName) return 1;
+		if (isSuperscript(node) && isVariable(node.base) && node.base.name === varName) {
+			const exp = getNumericValue(node.superscript);
+			if (exp !== null && Number.isInteger(exp)) return exp;
+		}
+		return null;
+	}
 
 	function extractFromNode(node: MathNode, sign: number): void {
-		if (isVariable(node) && node.name === varName) {
-			terms.push({ coefficient: sign, degree: 1 });
-		} else if (isSuperscript(node) && isVariable(node.base) && node.base.name === varName) {
-			const exp = getNumericValue(node.superscript);
-			if (exp !== null && Number.isInteger(exp)) {
-				terms.push({ coefficient: sign, degree: exp });
-			}
+		const degree = monomialDegree(node);
+		if (degree !== null) {
+			terms.push({ coefficient: sign, degree });
 		} else if (isOpposite(node)) {
 			extractFromNode(node.operand, -sign);
-		} else if (isMultiplication(node)) {
-			// a * x^n
-			const coeff = getNumericValue(node.left);
-			if (coeff !== null) {
-				if (isVariable(node.right) && node.right.name === varName) {
-					terms.push({ coefficient: sign * coeff, degree: 1 });
-				} else if (
-					isSuperscript(node.right) &&
-					isVariable(node.right.base) &&
-					node.right.base.name === varName
-				) {
-					const exp = getNumericValue(node.right.superscript);
-					if (exp !== null && Number.isInteger(exp)) {
-						terms.push({ coefficient: sign * coeff, degree: exp });
-					}
-				}
-			}
 		} else if (isAddition(node)) {
 			extractFromNode(node.left, sign);
 			extractFromNode(node.right, sign);
 		} else if (isSubtraction(node)) {
 			extractFromNode(node.left, sign);
 			extractFromNode(node.right, -sign);
+		} else if (isMultiplication(node)) {
+			// a * x^n
+			const coeff = getNumericValue(node.left);
+			const rightDegree = monomialDegree(node.right);
+			if (coeff !== null && rightDegree !== null) {
+				terms.push({ coefficient: sign * coeff, degree: rightDegree });
+			} else {
+				others.push(node);
+			}
+		} else {
+			others.push(node);
 		}
 	}
 
 	extractFromNode(expr, 1);
-	return terms;
+	return { terms, others };
 }
 
 // =============================================================================
