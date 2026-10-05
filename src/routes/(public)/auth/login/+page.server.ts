@@ -103,7 +103,7 @@ export const actions = {
 		if (error) {
 			logger.error('Google OAuth initiation failed:', error);
 			return fail(400, {
-				error: 'Failed to initiate Google sign-in. Please try again.'
+				error: 'La connexion Google n’a pas pu démarrer. Merci de réessayer.'
 			});
 		}
 
@@ -114,7 +114,7 @@ export const actions = {
 
 		// Shouldn't reach here, but handle gracefully
 		return fail(400, {
-			error: 'Failed to initiate Google sign-in. Please try again.'
+			error: 'La connexion Google n’a pas pu démarrer. Merci de réessayer.'
 		});
 	},
 
