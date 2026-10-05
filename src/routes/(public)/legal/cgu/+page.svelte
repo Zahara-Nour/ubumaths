@@ -10,7 +10,7 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">
-		<h1>Conditions Generales d'Utilisation</h1>
+		<h1>Conditions générales d’utilisation</h1>
 
 		<p class="lead text-muted-foreground">Derniere mise a jour : 15 janvier 2026 | Version 1.0</p>
 

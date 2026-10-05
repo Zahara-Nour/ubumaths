@@ -32,7 +32,7 @@ export interface ShtamArticle {
 
 const authorSchema = z.enum(['cotice', 'giron', 'pile', 'merdranpo']);
 
-/** Signature affichée sous le titre (la Rédaction : proposition 🟡 du Compendium) */
+/** Signature affichée sous le titre (la Rédaction du Shtam, Compendium §IX) */
 export const AUTHOR_LABELS: Record<ShtamAuthor, string> = {
 	cotice: 'Cotice, rédacteur en chef',
 	giron: 'Giron, reporter',

@@ -10,7 +10,7 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">
-		<h1>Mentions Legales</h1>
+		<h1>Mentions légales</h1>
 
 		<p class="lead text-muted-foreground">Derniere mise a jour : 15 juin 2026</p>
 
