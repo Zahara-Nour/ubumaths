@@ -52,7 +52,7 @@
 				>
 					<Clock class="h-8 w-8 text-amber-600 dark:text-amber-400" />
 				</div>
-				<Dialog.Title class="text-2xl">En attente d'approbation</Dialog.Title>
+				<Dialog.Title class="text-2xl" level={1}>En attente d'approbation</Dialog.Title>
 			</Dialog.Header>
 
 			<div class="space-y-6 text-center">

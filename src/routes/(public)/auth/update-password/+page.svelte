@@ -31,7 +31,9 @@
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
 	<Card.Root class="w-full max-w-md">
 		<Card.Header>
-			<Card.Title class="text-center text-3xl">Set new password</Card.Title>
+			<Card.Title class="text-center text-3xl"
+				><h1 class="text-3xl! leading-none!">Set new password</h1></Card.Title
+			>
 			<Card.Description class="text-center">
 				Choose a strong password for your account.
 			</Card.Description>

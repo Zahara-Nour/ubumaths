@@ -25,5 +25,6 @@
 </svelte:head>
 
 <div class="h-screen w-full">
+	<h1 class="sr-only">Blockly Playground</h1>
 	<BlocklyPlayground />
 </div>
