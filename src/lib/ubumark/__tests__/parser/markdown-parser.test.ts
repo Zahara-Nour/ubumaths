@@ -2069,3 +2069,26 @@ Some text after`;
 		});
 	});
 });
+
+describe('parseMarkdown - ponctuation après un hashtag ou une mention', () => {
+	/** Noms et étiquettes extraits d'un paragraphe */
+	function extraits(markdown: string): string[] {
+		const ast = parseMarkdown(markdown);
+		const p = ast.children[0];
+		if (p.type !== 'paragraph') return [];
+		return p.children.flatMap((c) =>
+			c.type === 'mention' ? [`@${c.username}`] : c.type === 'hashtag' ? [`#${c.tag}`] : []
+		);
+	}
+
+	it.each([
+		['Merci @cotice.', ['@cotice']],
+		['Bravo @jean.dupont !', ['@jean.dupont']],
+		['Voir @alice-', ['@alice']],
+		['Rubrique #geometrie.', ['#geometrie']],
+		['Thème #geo-metrie, ensuite', ['#geo-metrie']],
+		['Fin #geo-', ['#geo']]
+	])('« %s » → %j', (markdown, attendus) => {
+		expect(extraits(markdown)).toEqual(attendus);
+	});
+});

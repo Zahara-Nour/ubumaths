@@ -265,7 +265,9 @@ const LINK_REGEX = /(?<!!)\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g;
  * #algebre_II
  * ```
  */
-const HASHTAG_REGEX = /(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ][a-zA-Zàâäéèêëïîôùûüçœæ0-9_-]*)/g;
+// Ne se termine jamais par un tiret : « #geo- » donne « geo »
+const HASHTAG_REGEX =
+	/(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ](?:[a-zA-Zàâäéèêëïîôùûüçœæ0-9_-]*[a-zA-Zàâäéèêëïîôùûüçœæ0-9_])?)/g;
 
 /**
  * Regex for mentions: @username (must start with letter)
@@ -283,7 +285,8 @@ const HASHTAG_REGEX = /(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ][a
  * @user_123
  * ```
  */
-const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z][a-zA-Z0-9_.-]*)/g;
+// Ne se termine jamais par un point ou un tiret : « Merci @cotice. » donne « cotice »
+const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?)/g;
 
 /**
  * Regex for hint references: {{hint:id}} where id starts with a letter
