@@ -22,6 +22,8 @@
 import type { MathNode, RelationNode } from '../types';
 import { euler } from '../factory';
 import { mapNode } from '../transforms';
+import { isVariable } from '../guards';
+import { getVariables } from '../eval/substitute';
 
 /**
  * Walk `node` and replace `superscript { base: var('e'), … }` with
@@ -56,4 +58,42 @@ export function promoteEulerInRelation(relation: RelationNode): RelationNode {
 		left: promoteEulerSuperscriptBase(relation.left),
 		right: promoteEulerSuperscriptBase(relation.right)
 	};
+}
+
+/**
+ * Promeut en `euler()` TOUTE variable `e` de la relation — y compris hors
+ * d'un exposant — dès que `e` ne peut pas être l'inconnue.
+ *
+ * Pourquoi : `promoteEulerInRelation` ne touche que la base de `e^u`. Le `e`
+ * seul de `e^x = e` restait une variable : `detectVariable` voyait `{e, x}`,
+ * l'équation partait dans le chemin des équations constantes et le moteur
+ * affirmait « contradictoire » (avec l'inconnue imposée, la réponse restait
+ * `ln(e)`, jamais réduite à 1). C'est la convention de `evaluate`, `compile`
+ * et `isEulerBase` (dérivation) : la lettre `e` est lue comme Euler.
+ *
+ * `e` reste une variable quand elle peut être l'inconnue :
+ * - l'inconnue imposée est `e` ;
+ * - aucune inconnue imposée et `e` est la SEULE lettre (`e + 1 = 3`).
+ * Si une autre inconnue est imposée, ou si une autre lettre est présente,
+ * `e` est la constante.
+ */
+export function promoteStandaloneEulerInRelation(
+	relation: RelationNode,
+	unknown?: string
+): RelationNode {
+	if (unknown === 'e') return relation;
+	if (unknown === undefined) {
+		const names = new Set([...getVariables(relation.left), ...getVariables(relation.right)]);
+		if (!names.has('e') || names.size < 2) return relation;
+	}
+	return {
+		...relation,
+		left: promoteEulerVariable(relation.left),
+		right: promoteEulerVariable(relation.right)
+	};
+}
+
+/** Remplace chaque variable `e` par la constante `euler()`. */
+function promoteEulerVariable(node: MathNode): MathNode {
+	return mapNode(node, (n) => (isVariable(n) && n.name === 'e' ? euler() : n));
 }
