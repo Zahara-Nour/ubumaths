@@ -18,7 +18,7 @@ import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { parse } from '../core/pipeline';
-import { solve, type SolvingVerbosity, SolveError } from '../../solve';
+import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from '../../solve';
 import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { preprocess } from '../../normal';
@@ -338,10 +338,12 @@ function extractLinearParts(expr: MathNode, variable: string): { a: MathNode; b:
 
 		if (vars.has(variable)) {
 			// This term contains the variable - extract coefficient
+			// Un terme en x non reconnu (`2(x-1)`, `(2x-3)`) n'est PAS ignoré :
+			// l'ignorer donnait a = 0, puis « On divise les deux membres par 0 ».
+			// Sans lecture fiable, on ne raconte pas d'étapes.
 			const coeff = extractCoefficientFromTerm(signedTerm, variable);
-			if (coeff) {
-				coefficients.push(coeff);
-			}
+			if (!coeff) return null;
+			coefficients.push(coeff);
 		} else {
 			// Constant term
 			constantTerms.push(signedTerm);
@@ -571,7 +573,12 @@ function extractQuadraticCoeffsForDisplay(
 		} else if (degree === 1) {
 			const coeff = extractQuadraticCoeff(signedTerm, variable, 1);
 			bStr = bStr === '0' ? coeff : `${bStr}+${coeff}`;
-		} else if (degree === 0) {
+		} else if (getVariables(signedTerm).has(variable)) {
+			// Terme en x de forme non reconnue (`(x^2-3x)`) : le compter dans c
+			// affichait a = 0, b = 0, c = (x^2-3x). Pas d'étapes plutôt que des
+			// coefficients faux.
+			return null;
+		} else {
 			const termStr = toCustom(signedTerm);
 			cStr = cStr === '0' ? termStr : `${cStr}+${termStr}`;
 		}
@@ -978,10 +985,13 @@ export class SolveCommand extends BaseCommand {
 		// Generate pedagogical steps based on equation type
 		let pedagogicalSteps: PedagogicalStep[] = [];
 		if (verbosity !== 'result' && result.solutions.length > 0 && isRelation(equation)) {
+			// Un membre parenthésé se raconte comme son contenu, comme le
+			// solveur le lit : `(2x-3) = 0` a les étapes de `2x-3 = 0`.
+			const unwrapped = unwrapGroupingMembers(equation);
 			if (result.equationType === 'linear' && result.status === 'unique') {
 				const solutionValue = result.solutions[0].value;
 				pedagogicalSteps = generateLinearPedagogicalSteps(
-					equation as RelationNode,
+					unwrapped,
 					result.variable,
 					solutionValue
 				);
@@ -990,7 +1000,7 @@ export class SolveCommand extends BaseCommand {
 				(result.status === 'unique' || result.status === 'multiple')
 			) {
 				pedagogicalSteps = generateQuadraticPedagogicalSteps(
-					equation as RelationNode,
+					unwrapped,
 					result.variable,
 					result.solutions
 				);
