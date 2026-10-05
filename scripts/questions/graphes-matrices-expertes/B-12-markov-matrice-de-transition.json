@@ -25,19 +25,19 @@
 			"conditions": ["p != q", "p != 10-q"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(10-p)/10;d}}",
+					"expectedAnswer": "{{eval:(10-p)/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:p/10;d}}",
+					"expectedAnswer": "{{eval:p/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:q/10;d}}",
+					"expectedAnswer": "{{eval:q/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:(10-q)/10;d}}",
+					"expectedAnswer": "{{eval:(10-q)/10}}",
 					"acceptDecimal": true
 				}
 			],
@@ -63,19 +63,19 @@
 			"conditions": ["p != q", "p != 10-q"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(10-p)/10;d}}",
+					"expectedAnswer": "{{eval:(10-p)/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:p/10;d}}",
+					"expectedAnswer": "{{eval:p/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:q/10;d}}",
+					"expectedAnswer": "{{eval:q/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:(10-q)/10;d}}",
+					"expectedAnswer": "{{eval:(10-q)/10}}",
 					"acceptDecimal": true
 				}
 			],
@@ -101,15 +101,15 @@
 			"conditions": ["a + b <= 9", "a != b"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(10-a-b)/10;d}}",
+					"expectedAnswer": "{{eval:(10-a-b)/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:a/10;d}}",
+					"expectedAnswer": "{{eval:a/10}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:b/10;d}}",
+					"expectedAnswer": "{{eval:b/10}}",
 					"acceptDecimal": true
 				}
 			],
@@ -134,8 +134,9 @@
 			"conditions": ["p != q", "p != 10-q"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}",
-					"answerKind": "matrice"
+					"expectedAnswer": "\\begin{pmatrix}{{eval:(10-p)/10}}&{{eval:p/10}}\\\\{{eval:q/10}}&{{eval:(10-q)/10}}\\end{pmatrix}",
+					"answerKind": "matrice",
+					"acceptDecimal": true
 				}
 			],
 			"correction": {
@@ -196,15 +197,28 @@
 			}
 		},
 		{
-			"description": "v0 : une fraction exacte pour une probabilité décimale est juste",
+			"description": "v0 : fractions exactes (attendue exacte + acceptDecimal)",
 			"variationIndex": 0,
 			"variables": {
 				"p": "3",
 				"q": "4"
 			},
-			"answers": ["0.7", "0.3", "\\frac{2}{5}", "0.6"],
+			"answers": ["\\frac{7}{10}", "\\frac{3}{10}", "\\frac{2}{5}", "\\frac{3}{5}"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : fraction simplifiable (4/10) : perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.7", "0.3", "\\frac{4}{10}", "0.6"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
 			}
 		},
 		{
@@ -256,6 +270,18 @@
 			}
 		},
 		{
+			"description": "v2 : fractions exactes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{1}{5}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
 			"description": "v3 : matrice de transition",
 			"variables": {
 				"p": "3",
@@ -278,6 +304,20 @@
 				"status": "correct"
 			},
 			"variationIndex": 3
+		},
+		{
+			"description": "v3 : fractions exactes (attendue exacte + acceptDecimal)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"q": "6"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{7}{10}&\\frac{3}{10}\\\\\\frac{3}{5}&\\frac{2}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v3 : transposée (départ en colonne)",
