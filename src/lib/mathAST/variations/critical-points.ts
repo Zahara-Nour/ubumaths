@@ -18,6 +18,8 @@ import { isRelation } from '../guards';
 import { computeDomain } from '../domain/compute';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
+import { tidy } from '../tidy';
+import { cheapest } from '../simplify/cost';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { containsNode } from '../domain/algebra';
 
@@ -194,11 +196,7 @@ export function evaluateAtCriticalPoint(
 
 		// Try exact evaluation first
 		const exactResult = evaluate(substituted, { mode: 'exact' });
-		if (exactResult.status !== 'value') {
-			// Evaluation did not produce a value (indeterminate/unevaluable)
-			return null;
-		}
-		const y = exactResult.node;
+		const exactNode = exactResult.status === 'value' ? exactResult.node : null;
 
 		// Get numeric approximation
 		let yApproximate: number | undefined;
@@ -215,10 +213,43 @@ export function evaluateAtCriticalPoint(
 			// Numeric evaluation failed, leave yApproximate undefined
 		}
 
-		return { y, yApproximate };
+		// Ni valeur exacte ni valeur approchée : f n'est pas définie en x.
+		// ⚠️ L'évaluation exacte peut échouer sur une valeur bien définie —
+		// mesuré : `-1/2·e^{2·(−1/2)}` pour x e^{2x} —, le décimal tranche alors.
+		if (exactNode === null && yApproximate === undefined) return null;
+
+		return { y: tidyExactValue(substituted, exactNode), yApproximate };
 	} catch {
 		// Evaluation failed (e.g., division by zero, domain error)
 		return null;
+	}
+}
+
+/**
+ * La valeur exacte f(x₀), mise au propre par `tidy` pour l'affichage.
+ *
+ * Deux écritures candidates de la même valeur : celle de l'évaluation exacte
+ * (`-exp(-1)` pour x eˣ en −1) et la substitution elle-même
+ * (`-1·e^{-1}`, que `tidy` rend −1/e). `cheapest` garde la plus simple ; la
+ * substitution mise au propre gagne les égalités. Mesuré avant : le minimum de
+ * x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`, celui de x² ln x
+ * `ln(e^{−1/2})(e^{−1/2})²`.
+ *
+ * @param substituted - f(x₀), x₀ substitué, non évalué
+ * @param evaluated - Ce que rend l'évaluation exacte, `null` si elle a échoué
+ */
+export function tidyExactValue(substituted: MathNode, evaluated: MathNode | null): MathNode {
+	const fromSubstitution = tidySafe(substituted);
+	if (evaluated === null) return fromSubstitution;
+	return cheapest(tidySafe(evaluated), fromSubstitution);
+}
+
+/** `tidy` peut relancer une exception imprévue : on garde alors la forme brute. */
+function tidySafe(node: MathNode): MathNode {
+	try {
+		return tidy(node);
+	} catch {
+		return node;
 	}
 }
 

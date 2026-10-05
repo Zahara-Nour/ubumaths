@@ -27,6 +27,7 @@ import type {
 } from './types';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
+import { tidyExactValue } from './critical-points';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { containsNode } from '../domain/algebra';
 
@@ -491,18 +492,15 @@ function evaluateToNumber(node: MathNode): number | null {
  * Compute f(x) at a given x value.
  */
 function computeYValue(expr: MathNode, variable: string, x: MathNode): MathNode {
+	const substituted = substitute(expr, { [variable]: x });
+	let evaluated: MathNode | null = null;
 	try {
-		const substituted = substitute(expr, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'exact' });
-		if (result.status !== 'value') {
-			// Evaluation did not produce a value: fall back to the substituted expression
-			return substituted;
-		}
-		return result.node;
+		if (result.status === 'value') evaluated = result.node;
 	} catch {
-		// Return the substituted expression if evaluation fails
-		return substitute(expr, { [variable]: x });
+		// L'évaluation a échoué : la substitution, mise au propre, reste
 	}
+	return tidyExactValue(substituted, evaluated);
 }
 
 /**
