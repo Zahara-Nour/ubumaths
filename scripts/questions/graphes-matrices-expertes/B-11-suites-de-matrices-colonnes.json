@@ -1,0 +1,308 @@
+{
+	"title": "Suites de matrices colonnes Uₙ₊₁ = AUₙ + C",
+	"description": "Calculer U₁ et U₂ pour une suite de matrices colonnes définie par Uₙ₊₁ = AUₙ ou Uₙ₊₁ = AUₙ + C, en situation de populations (pièges : UₙA au lieu de AUₙ, C oubliée, U₂ = 2U₁)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-129", "TEXP-131", "TEXP-136"],
+	"theme": "Graphes et matrices",
+	"domain": "Matrices",
+	"subdomain": "Suites et matrices",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Deux populations vérifient $\\begin{cases} a_{n+1} = {{a1}}a_n + {{a2}}b_n \\\\ b_{n+1} = {{a3}}a_n + {{a4}}b_n \\end{cases}$, avec $a_0 = {{x}}$ et $b_0 = {{y}}$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n+1} = AU_n$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$.\n\n$a_1=?$\n\n$b_1=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "2..5"
+				},
+				{
+					"name": "a2",
+					"expression": "2..5"
+				},
+				{
+					"name": "a3",
+					"expression": "2..5"
+				},
+				{
+					"name": "a4",
+					"expression": "2..5"
+				},
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "y",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a2 != a3", "x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1*x+a2*y}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*x+a4*y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$U_1 = AU_0 = \\begin{pmatrix}{{a1}} \\times {{x}} + {{a2}} \\times {{y}} \\\\ {{a3}} \\times {{x}} + {{a4}} \\times {{y}}\\end{pmatrix} = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*x+a2*y}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*x+a4*y}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$U_{n+1} = AU_n + C$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$, $C = \\begin{pmatrix}{{c1}}\\\\{{c2}}\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u=?$\n\n$v=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-2..3"
+				},
+				{
+					"name": "a2",
+					"expression": "-2..3"
+				},
+				{
+					"name": "a3",
+					"expression": "-2..3"
+				},
+				{
+					"name": "a4",
+					"expression": "-2..3"
+				},
+				{
+					"name": "x",
+					"expression": "-3..5"
+				},
+				{
+					"name": "y",
+					"expression": "-3..5"
+				},
+				{
+					"name": "c1",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c2",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["c1 != 0", "c2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1*x+a2*y+c1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*x+a4*y+c2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AU_0 = \\begin{pmatrix}{{eval:a1*x+a2*y}}\\\\{{eval:a3*x+a4*y}}\\end{pmatrix}$, puis on ajoute $C$.",
+					"$U_1 = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*x+a2*y+c1}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*x+a4*y+c2}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$U_{n+1} = AU_n$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u=?$\n\n$v=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-2..3"
+				},
+				{
+					"name": "a2",
+					"expression": "-2..3"
+				},
+				{
+					"name": "a3",
+					"expression": "-2..3"
+				},
+				{
+					"name": "a4",
+					"expression": "-2..3"
+				},
+				{
+					"name": "x",
+					"expression": "-3..4"
+				},
+				{
+					"name": "y",
+					"expression": "-3..4"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a1*x+a2*y"
+				},
+				{
+					"name": "q",
+					"expression": "eval:a3*x+a4*y"
+				}
+			],
+			"conditions": ["x != 0", "y != 0", "a2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1*p+a2*q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*p+a4*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$U_1 = AU_0 = \\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$.",
+					"$U_2 = AU_1 = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*p+a2*q}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*p+a4*q}}}\\end{pmatrix}$ (et en général $U_n = A^nU_0$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : U1",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "3",
+				"a3": "4",
+				"a4": "2",
+				"x": "5",
+				"y": "2"
+			},
+			"answers": ["16", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : UₙᵀA (colonnes)",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "3",
+				"a3": "4",
+				"a4": "2",
+				"x": "5",
+				"y": "2"
+			},
+			"answers": ["18", "19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : U1 avec C",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "-1",
+				"a4": "1",
+				"x": "3",
+				"y": "1",
+				"c1": "2",
+				"c2": "-4"
+			},
+			"answers": ["7", "-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : C oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "-1",
+				"a4": "1",
+				"x": "3",
+				"y": "1",
+				"c1": "2",
+				"c2": "-4"
+			},
+			"answers": ["5", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : U2",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "1",
+				"a3": "0",
+				"a4": "2",
+				"x": "1",
+				"y": "1",
+				"p": "2",
+				"q": "2"
+			},
+			"answers": ["4", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : U1 seulement",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "1",
+				"a3": "0",
+				"a4": "2",
+				"x": "1",
+				"y": "1",
+				"p": "2",
+				"q": "2"
+			},
+			"answers": ["2", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2U1",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "1",
+				"a4": "1",
+				"x": "1",
+				"y": "2",
+				"p": "5",
+				"q": "3"
+			},
+			"answers": ["10", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : U2 correct (11, 8)",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "1",
+				"a4": "1",
+				"x": "1",
+				"y": "2",
+				"p": "5",
+				"q": "3"
+			},
+			"answers": ["11", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

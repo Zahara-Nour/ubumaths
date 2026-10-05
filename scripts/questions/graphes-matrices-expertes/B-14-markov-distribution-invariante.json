@@ -1,0 +1,165 @@
+{
+	"title": "Chaîne de Markov à deux états : distribution invariante",
+	"description": "Déterminer la distribution invariante π = πP d'une chaîne de Markov à deux états (pièges : composantes échangées, π = (½ ½) d'office, oubli de la condition a + b = 1)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-145", "TEXP-148"],
+	"theme": "Graphes et matrices",
+	"domain": "Chaînes de Markov",
+	"subdomain": "Chaînes de Markov",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$.\n\nDétermine sa distribution invariante $\\pi = \\begin{pmatrix} a & b \\end{pmatrix}$ ($\\pi P = \\pi$ et $a + b = 1$), en valeurs exactes.\n\n$a=?$\n\n$b=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p + q != 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/(p+q)}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:p/(p+q)}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\pi P = \\pi$ donne $a \\times {{eval:(10-p)/10;d}} + b \\times {{eval:q/10;d}} = a$, soit ${{eval:q/10;d}}\\,b = {{eval:p/10;d}}\\,a$.",
+					"Avec $a + b = 1$ : $a = \\dfrac{ {{eval:q/10;d}} }{ {{eval:p/10;d}} + {{eval:q/10;d}} } = \\textcolor{{{color:primary.0}}}{{{eval:q/(p+q)}}}$ et $b = \\textcolor{{{color:primary.0}}}{{{eval:p/(p+q)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque jour, un élève mange à la cantine ($C$) ou dehors ($D$). S'il a mangé à la cantine, il y retourne le lendemain avec la probabilité ${{eval:(10-p)/10;d}}$ ; s'il a mangé dehors, il va à la cantine le lendemain avec la probabilité ${{eval:q/10;d}}$.\n\nSur le long terme, la distribution se stabilise vers la distribution invariante $\\pi = \\begin{pmatrix} c & d \\end{pmatrix}$ (état $C$ puis état $D$). Détermine-la en valeurs exactes.\n\n$c=?$\n\n$d=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p + q != 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/(p+q)}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:p/(p+q)}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$ ; $\\pi P = \\pi$ donne ${{eval:p/10;d}}\\,c = {{eval:q/10;d}}\\,d$.",
+					"Avec $c + d = 1$ : $c = \\textcolor{{{color:primary.0}}}{{{eval:q/(p+q)}}}$ et $d = \\textcolor{{{color:primary.0}}}{{{eval:p/(p+q)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : p = 0,3, q = 0,4 → (4/7, 3/7)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["\\frac{4}{7}", "\\frac{3}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : composantes échangées",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["\\frac{3}{7}", "\\frac{4}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : (½ ½)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : arrondi 0,57",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.57", "0.43"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : p = 0,2, q = 0,3 → (0,6 0,4) en décimal exact",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["0.6", "0.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : p = 0,1, q = 0,4 → (0,8 0,2)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "4"
+			},
+			"answers": ["\\frac{4}{5}", "\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : échangées",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "4"
+			},
+			"answers": ["\\frac{1}{5}", "\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,129 @@
+{
+	"title": "Nombre de chaînes de longueur n par la puissance de la matrice d'adjacence",
+	"description": "Lire dans Aⁿ le nombre de chaînes (ou de chemins orientés) de longueur n entre deux sommets, compter les chaînes de longueur 2 (pièges : coefficient de A au lieu de Aⁿ, coefficient (j, i) au lieu de (i, j) pour un graphe orienté)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-119", "TEXP-115", "TEXP-117"],
+	"theme": "Graphes et matrices",
+	"domain": "Graphes",
+	"subdomain": "Matrice d'adjacence",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère le graphe ci-dessous, de sommets rangés dans l'ordre $A$, $B$, $C$, $D$, $E$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nSa matrice d'adjacence $M$ vérifie\n\n$$M^3 = \\begin{pmatrix}2&5&2&2&3\\\\5&4&5&5&5\\\\2&5&2&3&2\\\\2&5&3&2&2\\\\3&5&2&2&2\\end{pmatrix}$$\n\nCombien y a-t-il de chaînes de longueur $3$ reliant $A$ à $C$ ?\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de chaînes de longueur $3$ de $A$ à $C$ est le coefficient ligne $1$ ($A$), colonne $3$ ($C$) de $M^3$ : $\\textcolor{{{color:primary.0}}}{2}$.",
+					"Par exemple $A - B - D - C$ et $A - E - B - C$."
+				]
+			}
+		},
+		{
+			"statement": "Un graphe **orienté** de sommets $A$, $B$, $C$, $D$ (dans cet ordre) a pour matrice d'adjacence $M$, avec\n\n$$M = \\begin{pmatrix}0&1&1&0\\\\0&0&1&1\\\\1&0&0&1\\\\1&0&0&0\\end{pmatrix}$$\n\net\n\n$$M^3 = \\begin{pmatrix}3&1&1&1\\\\1&2&2&0\\\\1&1&2&2\\\\1&0&1&2\\end{pmatrix}$$\n\nCombien y a-t-il de chemins de longueur $3$ **de** $B$ **vers** $C$ ?\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient ligne $X$, colonne $Y$ de $M^3$ compte les chemins de longueur $3$ **partant de** $X$ et **arrivant en** $Y$.",
+					"Ligne $B$, colonne $C$ : $\\textcolor{{{color:primary.0}}}{2}$ (le coefficient ligne $C$, colonne $B$, $1$, compte les chemins en sens inverse)."
+				]
+			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 7.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 6 sommets A à F ; arêtes AB, AC, BC, CD, DE, DF, EF, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(2, 0, etiquette=\"bas\")\nD = point(5, 2, etiquette=\"haut\")\nE = point(7, 4, etiquette=\"haut\")\nF = point(7, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(C, D)\nsegment(D, E)\nsegment(D, F)\nsegment(E, F)\nsegment(B, D)\n```\n\nCombien y a-t-il de chaînes de longueur $2$ partant de $D$ et revenant en $D$ ?\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une chaîne de longueur $2$ de $D$ à $D$ est un aller-retour $D - X - D$ vers un voisin $X$ de $D$.",
+					"Il y en a autant que de voisins : le degré de $D$, $\\textcolor{{{color:primary.0}}}{4}$ (c'est le coefficient diagonal de $M^2$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : coefficient (A, C) de M³",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : coefficient de M (0)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : coefficient de M² ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : bon sens",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : sens inverse (j, i)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : degré 4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 0 (pas de boucle)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

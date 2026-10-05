@@ -1,0 +1,318 @@
+{
+	"title": "Nombres premiers : en trouver un, étudier la primalité",
+	"description": "Donner un nombre premier dans un intervalle (vérifié par isPrime), plus petit diviseur premier d'un produit de deux premiers, montrer que a² − b² n'est pas premier (pièges : impair pris pour premier, 1 compté comme diviseur premier)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-099", "TEXP-103"],
+	"theme": "Arithmétique",
+	"domain": "Nombres premiers",
+	"subdomain": "Nombres premiers",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Donne un nombre premier compris entre ${{lo}}$ et ${{hi}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "31|37|41|43|47|53|59|61|67|71|73|79|83|89|97|101|103|107|109|113"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:p-k"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:p-k+15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "isPrime(answer)",
+							"description": "Ce nombre n'est pas premier."
+						},
+						{
+							"type": "range",
+							"min": "{{lo}}",
+							"max": "{{hi}}",
+							"inclusive": true
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tester un entier $m \\leqslant {{hi}}$, il suffit de chercher un diviseur premier $d$ avec $d^2 \\leqslant m$ : on écarte les multiples de $2$, $3$, $5$, $7$ (et de $11$ au-delà de $121$).",
+					"$\\textcolor{{{color:primary.0}}}{{{p}}}$ est premier : il n'est divisible ni par $2$, ni par $3$, ni par $5$, ni par $7$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le plus petit diviseur premier de ${{eval:p*q}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "7|11|13"
+				},
+				{
+					"name": "q",
+					"expression": "13|17|19|23"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:p*q}}$ n'est divisible ni par $2$, ni par $3$, ni par $5${{if:p>7|, ni par $7$}}.",
+					"${{eval:p*q}} = {{p}} \\times {{q}}$ : le plus petit diviseur premier est $\\textcolor{{{color:primary.0}}}{{{p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On pose $n = {{a}}^2 - {{b}}^2 = {{eval:a^2-b^2}}$. Donne un diviseur de $n$ autre que $1$ et $n$, qui prouve que $n$ n'est pas premier.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..20"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "nn",
+					"expression": "eval:a^2-b^2"
+				}
+			],
+			"conditions": ["a - b >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "divisor",
+							"dividend": "{{nn}}"
+						},
+						{
+							"type": "range",
+							"min": "1",
+							"max": "{{nn}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$n = {{a}}^2 - {{b}}^2 = ({{a}} - {{b}})({{a}} + {{b}}) = {{eval:a-b}} \\times {{eval:a+b}}$.",
+					"$\\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$ (ou ${{eval:a+b}}$) divise $n$ et vaut au moins $2$ : $n$ n'est pas premier."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : [86 ; 101], 89",
+			"variationIndex": 0,
+			"variables": {
+				"p": "89",
+				"k": "3",
+				"lo": "86",
+				"hi": "101"
+			},
+			"answers": ["89"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 97",
+			"variationIndex": 0,
+			"variables": {
+				"p": "89",
+				"k": "3",
+				"lo": "86",
+				"hi": "101"
+			},
+			"answers": ["97"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 101 (borne)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "89",
+				"k": "3",
+				"lo": "86",
+				"hi": "101"
+			},
+			"answers": ["101"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 91 = 7 × 13",
+			"variationIndex": 0,
+			"variables": {
+				"p": "89",
+				"k": "3",
+				"lo": "86",
+				"hi": "101"
+			},
+			"answers": ["91"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 87 = 3 × 29",
+			"variationIndex": 0,
+			"variables": {
+				"p": "89",
+				"k": "3",
+				"lo": "86",
+				"hi": "101"
+			},
+			"answers": ["87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 2, hors intervalle",
+			"variationIndex": 0,
+			"variables": {
+				"p": "89",
+				"k": "3",
+				"lo": "86",
+				"hi": "101"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 143 → 11",
+			"variationIndex": 1,
+			"variables": {
+				"p": "11",
+				"q": "13"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 1 n'est pas premier",
+			"variationIndex": 1,
+			"variables": {
+				"p": "11",
+				"q": "13"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 13 (le plus grand)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "11",
+				"q": "13"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 143 lui-même",
+			"variationIndex": 1,
+			"variables": {
+				"p": "11",
+				"q": "13"
+			},
+			"answers": ["143"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 119 = 7 × 17, 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "5",
+				"nn": "119"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 17",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "5",
+				"nn": "119"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "5",
+				"nn": "119"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 ne divise pas 119",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "5",
+				"nn": "119"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
