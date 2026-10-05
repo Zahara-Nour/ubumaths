@@ -232,8 +232,11 @@ export function evaluateAtCriticalPoint(
  * (`-exp(-1)` pour x eˣ en −1) et la substitution elle-même
  * (`-1·e^{-1}`, que `tidy` rend −1/e). `cheapest` garde la plus simple ; la
  * substitution mise au propre gagne les égalités. Mesuré avant : le minimum de
- * x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`, celui de x² ln x
- * `ln(e^{−1/2})(e^{−1/2})²`.
+ * x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`.
+ *
+ * ⚠️ Celui de x² ln x reste `ln(e^{−1/2})(e^{−1/2})²` : `tidy` n'applique
+ * aucune identité (ln(eᵃ) = a est exclu, docs/wip/tidy-phase0.md) — décision
+ * de David en attente, voir le `it.todo` de tidy-exp-ln.test.ts.
  *
  * @param substituted - f(x₀), x₀ substitué, non évalué
  * @param evaluated - Ce que rend l'évaluation exacte, `null` si elle a échoué
