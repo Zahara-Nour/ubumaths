@@ -53,6 +53,7 @@ import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
 import {
 	needsParenthesesAsPowerBase,
+	needsParenthesesAsRightTerm,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -496,22 +497,28 @@ export class CustomGenerator {
 				break;
 
 			case 'addition':
+			case 'subtraction': {
+				// Mêmes parenthèses que generateAddition / generateSubtraction
+				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
-				this.emit('+', node.operatorMetadata ?? node.metadata);
+				this.emit(node.type === 'addition' ? '+' : '-', node.operatorMetadata ?? node.metadata);
+				if (wrapRight) this.emit('(', node.metadata);
 				this.visitWithSpans(node.right);
+				if (wrapRight) this.emit(')', node.metadata);
 				break;
-
-			case 'subtraction':
-				this.visitWithSpans(node.left);
-				this.emit('-', node.operatorMetadata ?? node.metadata);
-				this.visitWithSpans(node.right);
-				break;
+			}
 
 			case 'multiplication': {
 				const wrapLeft = node.displayStyle === 'implicit' && shouldWrapForImplicitMul(node.left);
 				const meta = node.operatorMetadata ?? node.metadata;
+				// Sommes en facteur : mêmes parenthèses que groupIfSum dans
+				// generateMultiplication (`2(x+2)` s'écrivait `2x+2`).
+				const groupLeft = needsParenthesesUnderSign(node.left);
+				const groupRight = needsParenthesesUnderSign(node.right);
 				if (wrapLeft) this.emit('{', meta);
+				if (groupLeft) this.emit('(', meta);
 				this.visitWithSpans(node.left);
+				if (groupLeft) this.emit(')', meta);
 				if (wrapLeft) this.emit('}', meta);
 				// Implicit mul safety net (matches generateMultiplication). Two regimes:
 				//   A. RHS starts with a NUMBER token → emit explicit `*` (`x*1/x`)
@@ -521,7 +528,9 @@ export class CustomGenerator {
 				// colored RHS would be wrapped in `@color{...}` (e.g. `@red{2}`), defeating
 				// the leading-character check.
 				const rhsPlain =
-					node.displayStyle === 'implicit' ? new CustomGenerator().generate(node.right) : '';
+					node.displayStyle === 'implicit' && !groupRight
+						? new CustomGenerator().generate(node.right)
+						: '';
 				const safetyA = node.displayStyle === 'implicit' && startsWithNumberToken(rhsPlain);
 				const safetyB = node.displayStyle === 'implicit' && startsWithUnarySign(rhsPlain);
 				if (safetyA) {
@@ -533,7 +542,9 @@ export class CustomGenerator {
 					this.emit(')', meta);
 				} else {
 					this.visitMultiplicationOperatorSpan(node);
+					if (groupRight) this.emit('(', meta);
 					this.visitWithSpans(node.right);
+					if (groupRight) this.emit(')', meta);
 				}
 				break;
 			}
@@ -542,10 +553,15 @@ export class CustomGenerator {
 				this.visitDivisionSpans(node);
 				break;
 
-			case 'opposite':
+			case 'opposite': {
+				// Même parenthésage que generateOpposite : `-(x+2)`, pas `-x+2`.
+				const wrap = needsParenthesesUnderSign(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
+				if (wrap) this.emit('(', node.metadata);
 				this.visitWithSpans(node.operand);
+				if (wrap) this.emit(')', node.metadata);
 				break;
+			}
 
 			case 'positive':
 				this.emit('+', node.operatorMetadata ?? node.metadata);
@@ -1220,7 +1236,11 @@ export class CustomGenerator {
 
 	private generateAddition(node: AdditionNode): string {
 		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		// `a+-b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'addition')
+			? `(${renderedRight})`
+			: renderedRight;
 		return `${left}+${right}`;
 	}
 
@@ -1242,8 +1262,12 @@ export class CustomGenerator {
 	private generateSubtraction(node: SubtractionNode): string {
 		const left = this.generateNode(node.left);
 		// L'opérande DROIT seulement : `y-(x+1)` vaut `y−x−1`, alors que `y-x+1`
-		// se relit `y−x+1`. À gauche il n'y a pas d'ambiguïté.
-		const right = this.groupIfSum(node.right);
+		// se relit `y−x+1`. À gauche il n'y a pas d'ambiguïté. Un terme qui
+		// commence par un signe aussi : `a--b` (voir needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'subtraction')
+			? `(${renderedRight})`
+			: renderedRight;
 		return `${left}-${right}`;
 	}
 
