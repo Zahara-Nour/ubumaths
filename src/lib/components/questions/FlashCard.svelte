@@ -418,6 +418,7 @@
 											? '\\,'
 											: undefined}
 										{genericFunctions}
+										grades={instance.grades}
 									/>
 								{:else}
 									<MarkdownRenderer content={statementMarkdown} {genericFunctions} />

@@ -32,7 +32,7 @@
 <script lang="ts">
 	import { parseMarkdown } from '$lib/ubumark';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
-	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';
 	import type { MathfieldElement } from 'mathlive';
 	import {
 		hasPrompts,
@@ -45,7 +45,10 @@
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
-	import { buildCombinatoricsKeyboardLayout } from '$lib/questions/combinatorics/keyboard-combinatorics';
+	import {
+		buildCombinatoricsKeyboardLayout,
+		hasCombinatoricsKeyboard
+	} from '$lib/questions/combinatorics/keyboard-combinatorics';
 	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
 	import type { Snippet } from 'svelte';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
@@ -110,6 +113,8 @@
 		unitKeys?: string[];
 		/** Fonctions déclarées par le modèle (`P(x)`), pour les formules `~…~` ; absent : défauts */
 		genericFunctions?: GenericFunctionConfig;
+		/** Niveaux de la carte : Terminale → onglet « n! » (factorielle, coefficient binomial) */
+		grades?: readonly GradeLevel[];
 	}
 
 	let {
@@ -127,7 +132,8 @@
 		onSubmit,
 		mathModeSpace,
 		unitKeys: providedUnitKeys,
-		genericFunctions
+		genericFunctions,
+		grades = []
 	}: Props = $props();
 
 	// When showing correct answers, force disabled
@@ -252,6 +258,10 @@
 			!effectiveDisabled &&
 			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'vecteur')
 	);
+	// Carte de Terminale à remplir : onglet « n! » (d'après le niveau, jamais la réponse)
+	let hasCombinatoricsTab = $derived(
+		!flashMode && !effectiveDisabled && hasCombinatoricsKeyboard(grades)
+	);
 
 	let container: HTMLDivElement | undefined = $state();
 
@@ -262,7 +272,7 @@
 
 	/**
 	 * Onglets « Unités » / « Intervalles » / « Vecteur » du clavier virtuel MathLive,
-	 * et « n! » (factorielle, coefficient binomial) dans toutes les questions.
+	 * et « n! » (factorielle, coefficient binomial) pour une carte de Terminale.
 	 *
 	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
 	 * par tous les champs de la page : les onglets sont ajoutés quand le focus ENTRE
@@ -291,9 +301,9 @@
 			...(unitKeys.length > 0 ? [buildUnitsKeyboardLayout(unitKeys)] : []),
 			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : []),
 			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : []),
-			buildCombinatoricsKeyboardLayout()
+			...(hasCombinatoricsTab ? [buildCombinatoricsKeyboardLayout()] : [])
 		];
-		if (!element) return;
+		if (!element || layouts.length === 0) return;
 
 		const promptIds = intervalPromptIds;
 		let applied = false;
