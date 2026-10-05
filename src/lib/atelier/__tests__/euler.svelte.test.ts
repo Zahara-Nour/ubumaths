@@ -44,8 +44,14 @@ describe('le nombre e se trace', () => {
 		}
 	);
 
-	it('π aussi', () => {
-		expect(curveFor('pi*x').parseError).toBeUndefined();
+	// ⚠️ La revue l'a montré : `pi*x` reste « en attente » (lu p·i), sa courbe
+	// n'est jamais lue — un test sur la seule absence d'erreur passait sans rien
+	// prouver. On écrit π en LaTeX et on exige une courbe VISIBLE.
+	it('π aussi : \\pi x se trace', () => {
+		const curve = curveFor('\\pi x');
+
+		expect(curve.parseError).toBeUndefined();
+		expect(curve.visible).toBe(true);
 	});
 
 	it('la dérivée de e^x se trace aussi', () => {

@@ -113,7 +113,8 @@ describe('une dérivée se trace', () => {
 
 		syncPlots(atelier, graph);
 
-		expect(drawn(graph).join('')).toContain('x^2-3x+1');
+		// Le grapheur reçoit du LaTeX (`toLatex`, espacé) depuis fix/atelier-euler
+		expect(drawn(graph).join('').replace(/\s/g, '')).toContain('x^2-3x+1');
 	});
 });
 

@@ -61,12 +61,13 @@ describe("g = f' (dérivée calculée par l'atelier)", () => {
 	};
 
 	it.each([
-		// `\euler` : la constante d'Euler telle que l'écrit `toCustom`.
-		['e^x', '\\euler^x'],
-		['e^(3x)', '3\\euler^{3x}'],
-		['2e^(-x)', '-2\\euler^{-x}'],
-		['e^(x^2)', '2x\\euler^{x^2}'],
-		['x*e^x', '\\euler^x+x\\euler^x'],
+		// `e` : l'atelier écrit le nombre d'Euler `e`, que le grapheur et le
+		// moteur lisent (`\euler` leur était illisible, fix/atelier-euler)
+		['e^x', 'e^x'],
+		['e^(3x)', '3e^{3x}'],
+		['2e^(-x)', '-2e^{-x}'],
+		['e^(x^2)', '2xe^{x^2}'],
+		['x*e^x', 'e^x+xe^x'],
 		['2^x', 'ln(2)*2^x']
 	])('%s', (definition, expected) => {
 		expect(derivativeOf(definition)?.replace(/\s/g, '')).toBe(expected);
