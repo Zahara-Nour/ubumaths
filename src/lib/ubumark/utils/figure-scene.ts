@@ -103,6 +103,8 @@ export interface FigureScene {
 	positions: Map<string, { x: number; y: number }>;
 	/** `description:` de l'en-tête, sinon une description automatique */
 	ariaLabel: string;
+	/** Langue du document : nombres des textes (virgule en français, point en anglais) */
+	locale?: ContentLocale;
 }
 
 export interface FigureSceneResult {
@@ -887,7 +889,8 @@ export function buildFigureScene(
 			viewport: { ...window },
 			elements,
 			positions,
-			ariaLabel: node.header.description ?? autoAriaLabel(elements, node.header.axes)
+			ariaLabel: node.header.description ?? autoAriaLabel(elements, node.header.axes),
+			locale: options.locale
 		},
 		errors: [],
 		warnings

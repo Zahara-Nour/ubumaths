@@ -444,7 +444,9 @@ Toujours vrai :
   construit (`milieu`, `intersection`, `projection`…) ou après coup avec `style(A, etiquette=…)` ;
   plus de `masque(A)` + `texte` (corrigé le 2026-10-02 : le nom restait en haut à droite). Un
   `texte(x, y, "…")` est CENTRÉ sur `(x, y)` à l'écran comme au PDF ; `ancre="bas-gauche"` pose son
-  coin bas-gauche sur `(x, y)`. Pointillés `trait="pointilles"` / `"tirets"` (alias
+  coin bas-gauche sur `(x, y)`. Nombre dans un texte : l'écrire avec un POINT (`texte(3, 0.8, "0.3")`,
+  `"0.{{p}}"`) ; affiché « 0,3 » en français, « 0.3 » en anglais, écran et PDF (2026-10-05) — une
+  virgule en dur reste une virgule dans les deux langues. Pointillés `trait="pointilles"` / `"tirets"` (alias
   `style="pointille"`). `point(…, visible=faux)` = point masqué, utilisable dans les constructions.
 - **Case équation avec `requiredForm: "centre-rayon"`** : un multiple de l'équation est
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
@@ -698,18 +700,19 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
 échouer tout le PDF de la fiche, sans message à l'enseignant. Le Typst CLI local (0.14) n'est pas
 un témoin : il échoue sur cetz 0.3.0 et accepte ce que 0.6.1-rc5 refuse. D'où `compile-prod.mjs`.
 
-| Symptôme dans le PDF                                        | Cause                                              | PR   |
-| ----------------------------------------------------------- | -------------------------------------------------- | ---- |
-| fiche entière en échec après un vecteur `AB` suivi d'un nom | nom lu comme fonction                              | #437 |
-| fractions minuscules dans le texte                          | Typst réduit toute fraction en ligne               | #436 |
-| décimaux d'un arbre en `0″,″3` ; issue sur l'étiquette      | guillemets repassés en primes                      | #443 |
-| arbre de 3 épreuves débordant sur la colonne voisine        | largeur non ajustée                                | #444 |
-| `0,0 484` au lieu de `0,048 4` (écran aussi)                | décimales après `{,}` groupées comme un entier     | #445 |
-| issue `RR` affichée ℝ                                       | `RR`, `NN`, `ZZ`, `QQ`, `CC` = ensembles en Typst  | #446 |
-| « 0,8 » dans les fiches anglaises                           | formatage français quelle que soit la langue       | #448 |
-| `3p = 0,45` affiché « = 0,45 » dans un `align*`             | seule la 1re ligne gardait son membre de gauche    | #449 |
-| fiche entière en échec avec `Ω(1 ; 2)`                      | `Omega(` lu comme appel de fonction, `;` = tableau | #451 |
-| coordonnées de vecteur en colonne minuscules                | matrice en ligne composée en taille d'indice       | #451 |
+| Symptôme dans le PDF                                        | Cause                                              | PR                                 |
+| ----------------------------------------------------------- | -------------------------------------------------- | ---------------------------------- |
+| fiche entière en échec après un vecteur `AB` suivi d'un nom | nom lu comme fonction                              | #437                               |
+| fractions minuscules dans le texte                          | Typst réduit toute fraction en ligne               | #436                               |
+| décimaux d'un arbre en `0″,″3` ; issue sur l'étiquette      | guillemets repassés en primes                      | #443                               |
+| arbre de 3 épreuves débordant sur la colonne voisine        | largeur non ajustée                                | #444                               |
+| `0,0 484` au lieu de `0,048 4` (écran aussi)                | décimales après `{,}` groupées comme un entier     | #445                               |
+| issue `RR` affichée ℝ                                       | `RR`, `NN`, `ZZ`, `QQ`, `CC` = ensembles en Typst  | #446                               |
+| « 0,8 » dans les fiches anglaises                           | formatage français quelle que soit la langue       | #448                               |
+| « 0,3 » d'un `texte` de figure en anglais (écran, PDF)      | texte de figure jamais localisé                    | feat/moteur-regles-fraction-figure |
+| `3p = 0,45` affiché « = 0,45 » dans un `align*`             | seule la 1re ligne gardait son membre de gauche    | #449                               |
+| fiche entière en échec avec `Ω(1 ; 2)`                      | `Omega(` lu comme appel de fonction, `;` = tableau | #451                               |
+| coordonnées de vecteur en colonne minuscules                | matrice en ligne composée en taille d'indice       | #451                               |
 
 Autres leçons :
 

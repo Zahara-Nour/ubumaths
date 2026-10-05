@@ -55,6 +55,8 @@ export interface TypstExportOptions {
 	 * découpe : la boîte contient une seconde toile cetz.
 	 */
 	clipToViewport?: boolean;
+	/** Mise en forme du texte affiché d'un objet texte (nombres selon la langue) ; identité par défaut */
+	formatText?: (text: string) => string;
 }
 
 const MARK_RADIUS = 0.4;
@@ -728,7 +730,7 @@ export function exportToTypst(
 			// Centré par défaut ; `ancre=` (textes simples) pose un autre point de la boîte
 			const dir = textAnchorDirection(el.type === 'text' ? el.textAnchor : undefined);
 			lines.push(
-				`  content(${c(mx, my)}${anchorArg(dir)}, text(size: 9pt, fill: ${color}, ${typstText(text)}))`
+				`  content(${c(mx, my)}${anchorArg(dir)}, text(size: 9pt, fill: ${color}, ${typstText(options?.formatText?.(text) ?? text)}))`
 			);
 		}
 	}

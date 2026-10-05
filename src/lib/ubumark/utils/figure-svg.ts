@@ -17,6 +17,7 @@ import type { FigureSize } from '../types/figure';
 import { FIGURE_AXES_MARGIN_PX, FIGURE_LABEL_FONT_PX, FIGURE_PIXEL_WIDTH } from '../types/figure';
 import { colorForScreen } from '$lib/theme/named-colors';
 import { FIGURE_DEFAULT_COLOR, type FigureScene } from './figure-scene';
+import { localizeFigureText } from './figure-text-locale';
 import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 import {
 	angleToSVG,
@@ -476,6 +477,7 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 		if (!isText(el)) continue;
 		const svg = textToSVG(el.id, figure, transformer);
 		if (!svg) continue;
+		const text = localizeFigureText(svg.text, scene.locale);
 		const sty = resolveStyle(el, figure.defaults);
 		const placed = svgTextPlacement(
 			svg.x,
@@ -489,11 +491,11 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 			kind: 'label',
 			x: placed.x,
 			y: placed.y,
-			text: svg.text,
+			text,
 			anchor: placed.anchor,
 			baseline: 'alphabetic',
 			italic: false,
-			...runsOf(svg.text)
+			...runsOf(text)
 		});
 	}
 
