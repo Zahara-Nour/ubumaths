@@ -45,6 +45,7 @@
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
+	import { buildCombinatoricsKeyboardLayout } from '$lib/questions/combinatorics/keyboard-combinatorics';
 	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
 	import type { Snippet } from 'svelte';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
@@ -260,7 +261,8 @@
 	}
 
 	/**
-	 * Onglets « Unités » / « Intervalles » / « Vecteur » du clavier virtuel MathLive.
+	 * Onglets « Unités » / « Intervalles » / « Vecteur » du clavier virtuel MathLive,
+	 * et « n! » (factorielle, coefficient binomial) dans toutes les questions.
 	 *
 	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
 	 * par tous les champs de la page : les onglets sont ajoutés quand le focus ENTRE
@@ -288,9 +290,10 @@
 		const layouts = [
 			...(unitKeys.length > 0 ? [buildUnitsKeyboardLayout(unitKeys)] : []),
 			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : []),
-			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : [])
+			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : []),
+			buildCombinatoricsKeyboardLayout()
 		];
-		if (!element || layouts.length === 0) return;
+		if (!element) return;
 
 		const promptIds = intervalPromptIds;
 		let applied = false;
