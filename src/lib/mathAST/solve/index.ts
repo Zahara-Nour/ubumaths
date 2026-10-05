@@ -34,6 +34,8 @@ export {
 	classifyEquation,
 	toStandardForm,
 	detectVariable,
+	unwrapGrouping,
+	unwrapGroupingMembers,
 	getPolynomialDegree,
 	isPolynomialIn,
 	containsTranscendental,

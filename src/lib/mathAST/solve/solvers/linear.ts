@@ -95,6 +95,13 @@ function extractLinearCoefficients(
 	const coeffExpr = fraction(variableSum, varNode(variable));
 	const coeffSimplified = denormalize(normalize(coeffExpr));
 
+	// Un coefficient de ax + b ne dépend pas de x. Un terme non développé
+	// passe pourtant le tri ci-dessus : dans `2(x-1)` ou `(2x-3)+1`, la
+	// constante est cachée DANS le terme en x, et la division par x rendait
+	// `(2x-2)/x` — d'où `2(x-1)=4` résolue en x = 2x/(x-1). On refuse : le
+	// solveur relit alors la forme développée (même garde que le quadratique).
+	if (getVariables(coeffSimplified).has(variable)) return null;
+
 	return { a: coeffSimplified, b };
 }
 
@@ -148,8 +155,11 @@ export const linearSolver: EquationSolver = {
 			);
 		}
 
-		// Extract coefficients
-		const coeffs = extractLinearCoefficients(simplified, variable);
+		// Extract coefficients — sur la forme développée si l'expression ne se
+		// lit pas directement comme ax + b (terme non développé : `2(x-1)`).
+		const coeffs =
+			extractLinearCoefficients(simplified, variable) ??
+			extractLinearCoefficients(denormalize(normalize(simplified)), variable);
 
 		if (!coeffs) {
 			return {

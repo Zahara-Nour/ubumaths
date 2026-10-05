@@ -58,7 +58,13 @@ import type {
 } from './types';
 import { DEFAULT_SOLVE_OPTIONS, SolveError } from './types';
 import { isDelimiter, isMultiplication, isRelation } from '../guards';
-import { classifyEquation, toStandardForm, detectVariable } from './classify';
+import {
+	classifyEquation,
+	toStandardForm,
+	detectVariable,
+	unwrapGrouping,
+	unwrapGroupingMembers
+} from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
 import { quadraticSolver } from './solvers/quadratic';
@@ -266,15 +272,6 @@ function extractProductFactors(expr: MathNode): MathNode[] | null {
 }
 
 /**
- * Unwrap a delimiter node to get its content.
- * Solvers may not handle delimiter-wrapped expressions correctly,
- * so we unwrap them before passing to solve().
- */
-function unwrapDelimiter(node: MathNode): MathNode {
-	return node.type === 'delimiter' ? node.content : node;
-}
-
-/**
  * Try to compute an approximate numeric value for a solution missing one.
  * Handles the case where the linear solver doesn't set approximate for zero.
  */
@@ -363,7 +360,7 @@ function tryProductDecomposition(
 	productDecompositionDepth++;
 	try {
 		for (const factor of variableFactors) {
-			const unwrapped = unwrapDelimiter(factor);
+			const unwrapped = unwrapGrouping(factor);
 			const factorEq = equals(unwrapped, number('0'));
 			const factorResult = solve(factorEq, { variable, verbosity: opts.verbosity });
 
@@ -612,7 +609,7 @@ const MAX_POWER_DECOMPOSITION_DEPTH = 5;
  * how to answer for a non-zero `k`.
  */
 function extractZeroPowerBase(expr: MathNode, variable: string): MathNode | null {
-	const node = unwrapDelimiter(expr);
+	const node = unwrapGrouping(expr);
 	if (node.type !== 'superscript') return null;
 
 	const exponent = node.superscript;
@@ -621,7 +618,7 @@ function extractZeroPowerBase(expr: MathNode, variable: string): MathNode | null
 	const n = Number(exponent.value);
 	if (!Number.isInteger(n) || n < 2) return null;
 
-	const base = unwrapDelimiter(node.base);
+	const base = unwrapGrouping(node.base);
 	if (base.type === 'variable') return null;
 	if (!getVariables(base).has(variable)) return null;
 
@@ -1422,7 +1419,13 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Without this, `detectVariable(e^x - 1 = 0)` would see `{e, x}` and return
 	// null, falling into the constant-equation path even though x is the obvious
 	// unknown. See `solve/promote-euler.ts` for the rationale.
-	const promotedEq = promoteEulerInRelation(equation);
+	//
+	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`
+	// est `2x-3 = 0`. Sinon `flattenSumShallow`, qui s'arrête aux délimiteurs,
+	// voit un seul terme et chaque solveur se trompe à sa façon (linéaire :
+	// x = 0 ; exponentiel, logarithmique, trigonométrique, quartique : aucune
+	// solution). L'atelier envoie ces entrées : `f(x)` y devient `(expression)`.
+	const promotedEq = unwrapGroupingMembers(promoteEulerInRelation(equation));
 
 	// Convert to standard form: f(x) = 0
 	const expr = toStandardForm(promotedEq);
