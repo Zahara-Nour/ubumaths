@@ -1,7 +1,7 @@
 ---
 title: « J'ai enfin trouvé à quoi pouvait servir le théorème de Pythagore dans la vie courante ! »
 date: 2026-09-21
-author: merdanpot
+author: merdranpo
 lede: Après onze ans de recherches, un Polonais d'Empoche-les-Bains affirme avoir utilisé le théorème hors d'une salle de classe. Ses voisins restent prudents.
 ---
 

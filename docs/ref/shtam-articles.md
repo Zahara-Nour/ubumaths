@@ -21,7 +21,7 @@ Corps de l'article, en ubumark (voix de la Rédaction).
 Le fait mathématique réel (voix de l'Académie). Section obligatoire et unique.
 ```
 
-- `author` : `cotice` (rédacteur en chef), `giron`, `pile`, `merdanpot`.
+- `author` : `cotice` (rédacteur en chef), `giron`, `pile`, `merdranpo`.
 - `date` : jour de parution, heure de Paris. **Daté dans le futur = invisible jusqu'à ce jour-là** (parution programmée, sans redéploiement).
 - `draft: true` : jamais visible.
 - Le titre est du texte brut (pas de `~…~`) : écrire π, ², √ en Unicode.
