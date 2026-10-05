@@ -93,13 +93,23 @@ const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
 
 /**
  * Seul environnement admis : le vecteur en colonne de l'onglet « Vecteur » du
- * clavier (case « vecteur »). Écrit exactement `\begin{pmatrix}` / `\end{pmatrix}` ;
- * toute autre forme (`array`, `pmatrix*[r]`, espace avant l'accolade) est retirée.
+ * clavier (case « vecteur ») et la matrice de l'onglet « Matrice » (case
+ * « matrice »). Écrit exactement `\begin{pmatrix}` / `\end{pmatrix}` ; toute
+ * autre forme (`array`, `bmatrix`, `pmatrix*[r]`, espace avant l'accolade) est retirée.
  */
 const ALLOWED_ENVIRONMENT = /^(begin|end)\{pmatrix\}/;
 
-/** Passages à la ligne admis par colonne : 3 coordonnées au plus (lignes en masse = page démesurée) */
-const MAX_COLUMN_BREAKS = 2;
+/**
+ * Passages à la ligne admis dans TOUTE la formule (2026-10-05, case « matrice ») :
+ * 6 lignes au plus, matrice d'adjacence d'un graphe à 6 sommets. Un plafond par
+ * colonne (2, avant) laissait la hauteur se MULTIPLIER par imbrication ; un
+ * plafond global la borne : hauteur ≤ 6 lignes de contenu. Lignes en masse = page
+ * démesurée.
+ */
+const MAX_ROW_BREAKS = 5;
+
+/** `&` admis par ligne d'une matrice : 6 colonnes au plus (450 colonnes rendaient 55em de large) */
+const MAX_ROW_SEPARATORS = 5;
 
 /**
  * Bornes de rendu (mesurées le 2026-10-05, MathLive 0.110 `convertLatexToMarkup`).
@@ -228,12 +238,23 @@ function strippedArguments(latex: string, from: number): { kept: string; end: nu
 function keepAllowedCommands(latex: string): string {
 	let out = '';
 	let i = 0;
-	// Vecteurs en colonne ouverts (passages à la ligne déjà gardés dans chacun) :
-	// `\\` n'est admis qu'à l'intérieur
+	// Matrices / colonnes ouvertes (`&` déjà gardés dans la ligne courante de
+	// chacune) : `\\` n'est admis qu'à l'intérieur
 	const openColumns: number[] = [];
+	let breaks = 0;
 	while (i < latex.length) {
 		const c = latex[i];
 		if (c !== '\\') {
+			// Séparateur de colonnes dans une matrice : plafonné par ligne
+			if (c === '&' && openColumns.length > 0) {
+				const top = openColumns.length - 1;
+				if (openColumns[top] < MAX_ROW_SEPARATORS) {
+					out += c;
+					openColumns[top]++;
+				}
+				i++;
+				continue;
+			}
 			out += c;
 			i++;
 			continue;
@@ -246,13 +267,14 @@ function keepAllowedCommands(latex: string): string {
 			else openColumns.pop();
 			continue;
 		}
-		// Passage à la ligne DANS une colonne : gardé (plafonné), son option d'espacement
+		// Passage à la ligne DANS une matrice : gardé (plafonné), son option d'espacement
 		// `[…]` toujours retirée — MathLive la lit derrière tout blanc (tabulation, insécable…)
 		if (latex[i + 1] === '\\' && openColumns.length > 0) {
-			const top = openColumns.length - 1;
-			if (openColumns[top] < MAX_COLUMN_BREAKS) {
+			if (breaks < MAX_ROW_BREAKS) {
 				out += '\\\\';
-				openColumns[top]++;
+				breaks++;
+				// Nouvelle ligne : ses `&` sont recomptés
+				openColumns[openColumns.length - 1] = 0;
 			}
 			let j = i + 2;
 			while (/\s/.test(latex[j] ?? '')) j++;

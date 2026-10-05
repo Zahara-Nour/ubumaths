@@ -57,6 +57,13 @@ const CHARGES = [
 	nest(50, (s) => String.raw`\binom{${s}}{1}`),
 	`${'\\sqrt'.repeat(300)}x`,
 	nest(8, (s) => String.raw`\begin{pmatrix}${s}\\1\\2\end{pmatrix}`),
+	// Matrices (case « matrice », 2026-10-05) : six lignes au plus pour toute la formule
+	nest(6, (s) => String.raw`\begin{pmatrix}${s}\\1\\1\\1\\1\\1\end{pmatrix}`),
+	nest(3, (s) => String.raw`\begin{pmatrix}${s}&${s}\\${s}&${s}\\${s}&${s}\end{pmatrix}`),
+	// 6 × 6 de fractions : sous la borne de longueur, rendu complet
+	`\\begin{pmatrix}${Array.from({ length: 6 }, () => Array(6).fill('\\dfrac{\\sqrt{2}}{3}').join('&')).join('\\\\')}\\end{pmatrix}`,
+	`\\begin{pmatrix}${'1&'.repeat(450)}1\\end{pmatrix}`,
+	'1&2&3\\\\4',
 	nest(
 		3,
 		(s) => String.raw`\left(\dfrac{${s}}{1}\right)`,
