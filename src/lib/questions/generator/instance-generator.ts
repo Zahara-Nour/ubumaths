@@ -56,6 +56,7 @@ import { declaredGenericFunctions, templateGenericFunctions } from '../generic-f
 import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
+import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
 
@@ -471,7 +472,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					isMathBlank &&
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
 					answerKind !== 'intervalles' &&
-					answerKind !== 'vecteur';
+					answerKind !== 'vecteur' &&
+					answerKind !== 'matrice';
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions)
 					: resolvedExpected;
@@ -543,13 +545,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Generate expectedAnswerLatex for math blanks
 				if (resolved.type === 'math') {
 					// Ensemble en notation intervalle : ni expression ni calcul, rendu à part
-					// Vecteur : rendu en colonne
+					// Vecteur : rendu en colonne ; matrice : en pmatrix
 					resolved.expectedAnswerLatex =
 						resolved.answerKind === 'intervalles'
 							? expectedIntervalsLatex(resolved.expectedAnswer)
 							: resolved.answerKind === 'vecteur'
 								? expectedVectorLatex(resolved.expectedAnswer)
-								: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
+								: resolved.answerKind === 'matrice'
+									? expectedMatrixLatex(resolved.expectedAnswer)
+									: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
 				}
 				return resolved;
 			});

@@ -4,7 +4,7 @@
  * Une case en `rulesSuffice` est jugée par le validateur : toute bonne réponse
  * est verte, pas seulement celle tirée ; de même un décimal exact dans une case
  * `acceptDecimal`, une notation combinatoire (`\binom{32}{5}`) dans une case
- * `acceptCombinatorialNotation`, et toute case « intervalles », « équation », « vecteur », « primitive » ou « solution-ed ». Les autres cases gardent la
+ * `acceptCombinatorialNotation`, et toute case « intervalles », « équation », « vecteur », « matrice », « primitive » ou « solution-ed ». Les autres cases gardent la
  * comparaison textuelle historique.
  */
 
@@ -25,6 +25,8 @@ export function computeBlankVerdicts(values: string[], instance: QuestionInstanc
 		if (blank.answerKind === 'equation') return isBlankValueCorrect(value, blank, instance);
 		// Vecteur : jugé sur ses coordonnées (un colinéaire est vert en mode `colineaire`)
 		if (blank.answerKind === 'vecteur') return isBlankValueCorrect(value, blank, instance);
+		// Matrice : jugée par valeur (les espaces de MathLive ne la rendent pas rouge)
+		if (blank.answerKind === 'matrice') return isBlankValueCorrect(value, blank, instance);
 		// Primitive (à une constante près), solution d'équation différentielle : jugées par le calcul
 		if (blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed') {
 			return isBlankValueCorrect(value, blank, instance);

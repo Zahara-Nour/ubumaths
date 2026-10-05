@@ -77,6 +77,13 @@ describe('QuestionTemplateForm — cases de calcul', () => {
 		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
 	});
 
+	it('matrice : nature conservée (case « Réponse : matrice »)', async () => {
+		const blankDefaults: BlankDefaults = { answerKind: 'matrice' };
+		const saved = await saveRoundTrip(blankDefaults);
+		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
+		await expect.element(page.getByRole('checkbox', { name: 'Réponse : matrice' })).toBeChecked();
+	});
+
 	it('argument à 2π près : réglage conservé', async () => {
 		const blankDefaults: BlankDefaults = { angleModulo: '2pi' };
 		const saved = await saveRoundTrip(blankDefaults);

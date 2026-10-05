@@ -235,13 +235,20 @@ export type QuestionVariable = SharedVariable;
  * }
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
-export type AnswerKind = 'intervalles' | 'equation' | 'vecteur' | 'primitive' | 'solution-ed';
+export type AnswerKind =
+	| 'intervalles'
+	| 'equation'
+	| 'vecteur'
+	| 'matrice'
+	| 'primitive'
+	| 'solution-ed';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
 	'intervalles',
 	'equation',
 	'vecteur',
+	'matrice',
 	'primitive',
 	'solution-ed'
 ] as const satisfies readonly AnswerKind[];
@@ -370,6 +377,10 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * `'vecteur'` = un vecteur dans UNE case, coordonnées `(a;b)` ou colonne
 	 * `\begin{pmatrix}a\\b\end{pmatrix}` (dimension 2 ou 3), comparées exactement ;
 	 * voir `vectorMode`. Jugée par `questions/vectors/vector-answer.ts`.
+	 * `'matrice'` = une matrice dans UNE case (`\begin{pmatrix}a&b\\c&d\end{pmatrix}`,
+	 * aussi `bmatrix`), dimensions vérifiées, coefficients comparés par valeur puis
+	 * leur écriture jugée comme une case ordinaire. Jugée par
+	 * `questions/matrices/matrix-answer.ts`.
 	 * `'primitive'` = une primitive de `integrand` (à une constante près, lettre
 	 * libre ≠ variable comprise), vérifiée en dérivant la réponse ; `interval`
 	 * facultatif. `'solution-ed'` = une solution de `equation` (1er ordre),

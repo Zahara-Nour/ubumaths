@@ -409,6 +409,7 @@
 	let sharedBlankVectorCollinear = $state(
 		initialTemplate?.shared?.blankDefaults?.vectorMode === 'colineaire'
 	);
+	let sharedBlankMatrix = $state(initialTemplate?.shared?.blankDefaults?.answerKind === 'matrice');
 	// Primitive, solution d'équation différentielle : nature et champs de la case
 	let sharedBlankCalculus = $state(calculusEditorState(initialTemplate?.shared?.blankDefaults));
 	let sharedValidationRulesJson = $state(
@@ -811,7 +812,8 @@
 			blankDefaults.answerKind = 'vecteur';
 			// Colinéaire : tout vecteur colinéaire non nul est juste
 			if (sharedBlankVectorCollinear) blankDefaults.vectorMode = 'colineaire';
-		} else {
+		} else if (sharedBlankMatrix) blankDefaults.answerKind = 'matrice';
+		else {
 			// Primitive ou solution d'équation différentielle, avec leurs champs
 			const calculus = calculusBlankDefaults(sharedBlankCalculus);
 			if (calculus) Object.assign(blankDefaults, calculus);
@@ -980,6 +982,7 @@
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
 		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
 		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
+		sharedBlankMatrix = t.shared?.blankDefaults?.answerKind === 'matrice';
 		sharedBlankCalculus = calculusEditorState(t.shared?.blankDefaults);
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
@@ -1682,6 +1685,7 @@
 			bind:sharedBlankEquation
 			bind:sharedBlankVector
 			bind:sharedBlankVectorCollinear
+			bind:sharedBlankMatrix
 			bind:sharedBlankCalculus
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson

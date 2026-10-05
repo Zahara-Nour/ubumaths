@@ -66,6 +66,7 @@ import {
 } from '$lib/questions/intervals/interval-answer';
 import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
 import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
+import { judgeMatrixAnswer, matrixEntryTexts } from '$lib/questions/matrices/matrix-answer';
 import { judgePrimitiveAnswer } from '$lib/questions/calculus/primitive-answer';
 import { judgeDifferentialEquationAnswer } from '$lib/questions/calculus/differential-equation-answer';
 import type { CalculusVerdict } from '$lib/questions/calculus/calculus-reading';
@@ -905,6 +906,11 @@ function validateBlankValue(
 		);
 	}
 
+	// Matrice : dimensions, puis coefficients comparés par valeur
+	if (blank.answerKind === 'matrice') {
+		return judgeMatrixAnswer(userAnswer, blank.expectedAnswer).status === 'correct';
+	}
+
 	// Primitive, solution d'équation différentielle : jugées sur la dérivée / par substitution
 	if (isCalculusBlank(blank)) return calculusVerdict(userAnswer, blank).status === 'correct';
 
@@ -975,6 +981,7 @@ function roundingOnlyFeedback(
 		!blank.precision ||
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
+		blank.answerKind === 'matrice' ||
 		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
@@ -1167,6 +1174,49 @@ function vectorCoordinatesForm(
 	return verdict;
 }
 
+/**
+ * Case « matrice » : verdict de `judgeMatrixAnswer` dans la forme de
+ * `validateSingleBlank`. Une matrice juste voit ensuite l'écriture de ses
+ * coefficients jugée (cf. matrixEntriesForm).
+ */
+function matrixBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeMatrixAnswer(answer, blank.expectedAnswer);
+	if (status === 'correct') return matrixEntriesForm(answer, blank, instance);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+}
+
+/**
+ * Écriture des coefficients d'une matrice JUSTE, chacun jugé comme une case
+ * ordinaire contre le coefficient attendu (`\frac{4}{2}` pour 2 : même verdict
+ * que dans une case seule). Même règle que les coordonnées d'un vecteur exact
+ * (cf. vectorCoordinatesForm) : mauvaise forme, sinon forme non optimale, sinon juste.
+ */
+function matrixEntriesForm(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const correct = { isCorrect: true, status: 'correct' as const };
+	const answers = matrixEntryTexts(answer)?.flat();
+	const expected = matrixEntryTexts(blank.expectedAnswer)?.flat();
+	if (!answers || !expected || answers.length !== expected.length) return correct;
+
+	let verdict: ReturnType<typeof validateSingleBlank> = correct;
+	for (const [i, entry] of answers.entries()) {
+		const entryBlank: InstanceBlank = { expectedAnswer: expected[i], type: 'math' };
+		const result = validateSingleBlank(entry, entryBlank, entry, instance);
+		if (result.status === 'bad_form') return result;
+		if (result.status === 'unoptimal_form' && verdict.status === 'correct') verdict = result;
+		// Autre verdict (valeur lue autrement qu'en matrice) : celui de la matrice fait foi
+	}
+	return verdict;
+}
+
 /** Case « primitive » ou « solution-ed » (cf. questions/calculus/) */
 function isCalculusBlank(blank: InstanceBlank): boolean {
 	return blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed';
@@ -1248,6 +1298,11 @@ function validateSingleBlank(
 	// Vecteur dans une case : chaîne à part, cf. vectors/vector-answer.ts
 	if (blank.answerKind === 'vecteur') {
 		return vectorBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Matrice dans une case : chaîne à part, cf. matrices/matrix-answer.ts
+	if (blank.answerKind === 'matrice') {
+		return matrixBlankResult(userAnswerLatex || userAnswer, blank, instance);
 	}
 
 	// Primitive, solution d'équation différentielle : chaîne à part, cf. questions/calculus/
@@ -1880,6 +1935,11 @@ function matchedAnswerForm(
 	// Case « vecteur » appariée : même jugement que seule (écriture des coordonnées)
 	if (blank.answerKind === 'vecteur') {
 		const result = vectorBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « matrice » appariée : même jugement que seule (écriture des coefficients)
+	if (blank.answerKind === 'matrice') {
+		const result = matrixBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 	// Case « primitive » / « solution-ed » appariée : même jugement que seule
