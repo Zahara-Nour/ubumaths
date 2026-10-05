@@ -1,0 +1,192 @@
+{
+	"title": "Variations de cos et sin entre −π et π",
+	"description": "Intervalles de croissance et de décroissance de cos et sin sur [−π ; π], par le signe de la dérivée ; bornes fermées ouvrables (pièges : cos et sin confondus, sens inversé, un seul morceau)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-182", "TSPE-183"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Dérivées et variations",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles",
+			"openableBounds": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Sur l'intervalle $\\left[-\\pi\\,;\\pi\\right]$, détermine le plus grand intervalle sur lequel la fonction $\\cos$ est **croissante**.\n\n$I=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[-\\pi;0]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos'(x)=-\\sin x$, et $-\\sin x\\geqslant0\\iff\\sin x\\leqslant0\\iff x\\in\\left[-\\pi\\,;0\\right]$ (sur $\\left[-\\pi\\,;\\pi\\right]$).",
+					"```trig\npreset: quarters\nequation: sin(x) <= 0\nmode: arc\nmesures: principales\n```",
+					"$\\cos$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[-\\pi\\,;0\\right]}$ (de $-1$ à $1$)."
+				]
+			}
+		},
+		{
+			"statement": "Sur l'intervalle $\\left[-\\pi\\,;\\pi\\right]$, détermine le plus grand intervalle sur lequel la fonction $\\cos$ est **décroissante**.\n\n$I=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[0;\\pi]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos'(x)=-\\sin x\\leqslant0\\iff\\sin x\\geqslant0\\iff x\\in\\left[0\\,;\\pi\\right]$ (sur $\\left[-\\pi\\,;\\pi\\right]$).",
+					"$\\cos$ est décroissante sur $\\textcolor{{{color:primary.0}}}{\\left[0\\,;\\pi\\right]}$ (de $1$ à $-1$)."
+				]
+			}
+		},
+		{
+			"statement": "Sur l'intervalle $\\left[-\\pi\\,;\\pi\\right]$, détermine le plus grand intervalle sur lequel la fonction $\\sin$ est **croissante**.\n\n$I=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[-\\frac{\\pi}{2};\\frac{\\pi}{2}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin'(x)=\\cos x\\geqslant0\\iff x\\in\\left[-\\frac{\\pi}{2}\\,;\\frac{\\pi}{2}\\right]$ (sur $\\left[-\\pi\\,;\\pi\\right]$).",
+					"```trig\npreset: quarters\nequation: cos(x) >= 0\nmode: arc\nmesures: principales\n```",
+					"$\\sin$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[-\\frac{\\pi}{2}\\,;\\frac{\\pi}{2}\\right]}$ (de $-1$ à $1$)."
+				]
+			}
+		},
+		{
+			"statement": "Sur l'intervalle $\\left[-\\pi\\,;\\pi\\right]$, sur quel ensemble la fonction $\\sin$ est-elle **décroissante** ? Donne la réunion des plus grands intervalles.\n\n$I=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[-\\pi;-\\frac{\\pi}{2}]\\cup[\\frac{\\pi}{2};\\pi]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin'(x)=\\cos x\\leqslant0\\iff x\\in\\left[-\\pi\\,;-\\frac{\\pi}{2}\\right]\\cup\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$ (sur $\\left[-\\pi\\,;\\pi\\right]$).",
+					"$\\sin$ est décroissante sur $\\textcolor{{{color:primary.0}}}{\\left[-\\pi\\,;-\\frac{\\pi}{2}\\right]}$ et sur $\\textcolor{{{color:primary.0}}}{\\left[\\frac{\\pi}{2}\\,;\\pi\\right]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 cos croissante : [−π ; 0] → juste",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["[-\\pi;0]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 bornes ouvertes → juste (openableBounds)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["]-\\pi;0["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 confusion avec sin : [−π/2 ; π/2] → faux",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{2};\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 sens inversé : [0 ; π] → faux",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["[0;\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 cos décroissante : [0 ; π] → juste",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["[0;\\pi]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 sens inversé → faux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["[-\\pi;0]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 sin croissante : [−π/2 ; π/2] → juste",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{2};\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 confusion avec cos : [−π ; 0] → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["[-\\pi;0]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 moitié seulement [0 ; π/2] → faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["[0;\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 sin décroissante : réunion → juste",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["[-\\pi;-\\frac{\\pi}{2}]\\cup[\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 un seul morceau → faux",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["[\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 croissance à la place → faux",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{2};\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
