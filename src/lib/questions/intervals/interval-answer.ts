@@ -64,6 +64,7 @@ export interface IntervalJudgeOptions {
 /** Messages figés (français, tutoiement) */
 export const INTERVAL_FEEDBACK = {
 	separator: 'Sépare les bornes par un point-virgule : ]2 ; 3[.',
+	setSeparator: 'Sépare les solutions par un point-virgule : {a ; b}.',
 	closedInfinity: "L'infini est toujours exclu : écris ]-∞ ou +∞[.",
 	boundsOrder: "Écris les bornes dans l'ordre croissant : la plus petite à gauche.",
 	notASet: "Écris un ensemble (un intervalle ou une réunion d'intervalles), pas une inégalité.",
@@ -110,19 +111,27 @@ function withoutSetName(answer: string): string {
 }
 
 /**
- * Virgule employée comme séparateur de bornes (`]2,3[`) : un morceau entre
- * crochets sans point-virgule mais avec une virgule. La virgule décimale de
- * MathLive (`{,}`) n'en est pas une ; avec un point-virgule, la virgule est
- * décimale (`]0,5;1[`).
+ * Virgule employée comme séparateur : de bornes (`]2,3[`, message des intervalles)
+ * ou de solutions (`{a,b}`, message des ensembles). Un morceau sans point-virgule
+ * mais avec une virgule. La virgule décimale de MathLive (`{,}`) n'en est pas une ;
+ * avec un point-virgule, la virgule est décimale (`]0,5;1[`, `{1,5;2}`) ; entre
+ * accolades, une seule virgule entre deux chiffres est décimale (`{0,5}`).
  */
-function usesCommaSeparator(answer: string): boolean {
+function commaSeparatorFeedback(answer: string): string | undefined {
 	const text = answer.replace(/\{,\}/g, '');
-	return text.split(/\\cup|∪|U/).some((piece) => {
-		if (piece.includes(';') || !piece.includes(',')) return false;
-		// Entre crochets : toute virgule ; entre accolades : celle qui n'est pas décimale ({0,5})
-		if (/[[\]]|\\[lr]brack/.test(piece)) return true;
-		return /\{|\\lbrace/.test(piece) && /(?<!\d),|,(?!\d)/.test(piece);
-	});
+	for (const piece of text.split(/\\cup|∪|U/)) {
+		if (piece.includes(';') || !piece.includes(',')) continue;
+		// Entre crochets : toute virgule
+		if (/[[\]]|\\[lr]brack/.test(piece)) return INTERVAL_FEEDBACK.separator;
+		// Entre accolades : une virgule non décimale, ou plusieurs ({1,3,6})
+		if (
+			/\{|\\lbrace/.test(piece) &&
+			(/(?<!\d),|,(?!\d)/.test(piece) || (piece.match(/,/g) ?? []).length > 1)
+		) {
+			return INTERVAL_FEEDBACK.setSeparator;
+		}
+	}
+	return undefined;
 }
 
 /** Valeur d'un point pour un message (unicode, virgule décimale) : `0,5`, `√2` */
@@ -148,9 +157,9 @@ function isolatedPoints(domain: Domain): string[] | undefined {
  * Réponse hostile ou démesurée (radicaux imbriqués : coût ×9 par niveau) : un
  * morceau entre séparateurs dépasse les limites d'une borne. Vérifié AVANT toute
  * lecture, pour le correcteur serveur des évaluations comme pour le navigateur.
+ * (La longueur est vérifiée avant, dans `judgeIntervalAnswer`.)
  */
 function isAnswerTooComplex(answer: string): boolean {
-	if (answer.length > MAX_ANSWER_LENGTH) return true;
 	return answer
 		.split(/;|\[|\]|∪|\\cup|\\setminus|\\[lr]brack|\\left|\\right/)
 		.some((segment) => isBoundTooComplex(segment.trim()));
@@ -309,6 +318,11 @@ export function judgeIntervalAnswer(
 ): IntervalVerdict {
 	const written = withoutSetName(answer);
 	if (!written) return { status: 'empty' };
+	if (written.length > MAX_ANSWER_LENGTH) return incorrect(INTERVAL_FEEDBACK.tooComplex);
+	// Avant le garde de complexité : `{a,b,c,d}` sans point-virgule forme un seul long
+	// morceau, qui serait « trop compliqué » au lieu de « mal séparé » (regex sur ≤ 400 car.)
+	const separatorFeedback = commaSeparatorFeedback(written);
+	if (separatorFeedback) return incorrect(separatorFeedback);
 	if (isAnswerTooComplex(written)) return incorrect(INTERVAL_FEEDBACK.tooComplex);
 	try {
 		return judgeWritten(written, expected, mode, options);
@@ -327,8 +341,6 @@ function judgeWritten(
 	// Modèle fautif : jamais une exception devant l'élève
 	const target = readExpectedIntervals(expected);
 	if (!target.ok) return incorrect();
-
-	if (usesCommaSeparator(written)) return incorrect(INTERVAL_FEEDBACK.separator);
 
 	const parsed = parseStudentDomainPieces(written);
 	if (!parsed.success) return incorrect(INTERVAL_FEEDBACK.unreadable);
