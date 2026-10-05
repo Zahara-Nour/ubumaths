@@ -32,7 +32,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -64,7 +65,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(a+b,a)*binom(p+q-a-b,p-a)}}"
+					"expectedAnswer": "{{eval:binom(a+b,a)*binom(p+q-a-b,p-a)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -88,7 +90,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
