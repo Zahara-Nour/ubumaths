@@ -100,10 +100,12 @@
 					class="h-16 w-16"
 				/>
 				<div class="flex-1">
-					<Card.Title class="text-2xl">
-						{data.attempt.student.firstname || ''}
-						{data.attempt.student.lastname || ''}
-					</Card.Title>
+					<Card.Title class="text-2xl"
+						><h1 class="text-2xl! leading-none!">
+							{data.attempt.student.firstname || ''}
+							{data.attempt.student.lastname || ''}
+						</h1></Card.Title
+					>
 					<Card.Description>
 						Énigme #{data.attempt.riddle.riddle_number}: {data.attempt.riddle.title}
 					</Card.Description>

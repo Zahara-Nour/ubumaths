@@ -65,6 +65,7 @@
 </script>
 
 <div class="container mx-auto max-w-6xl py-8">
+	<h1 class="sr-only">Détails de l’erreur</h1>
 	<!-- Header -->
 	<div class="mb-6">
 		<Button variant="ghost" onclick={() => goto('/dashboard/admin/errors').then(() => {})}>

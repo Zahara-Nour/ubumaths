@@ -46,6 +46,7 @@
 </svelte:head>
 
 <div class="study-session-page">
+	<h1 class="sr-only">Session de révision</h1>
 	<!-- Back Button -->
 	<div class="mb-6">
 		<Button onclick={goBack} variant="ghost">
