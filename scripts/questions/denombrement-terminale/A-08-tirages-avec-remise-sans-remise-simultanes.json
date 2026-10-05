@@ -27,10 +27,12 @@
 					"expectedAnswer": "{{eval:n^k}}"
 				},
 				{
-					"expectedAnswer": "{{eval:factorial(n)/factorial(n-k)}}"
+					"expectedAnswer": "{{eval:factorial(n)/factorial(n-k)}}",
+					"acceptCombinatorialNotation": true
 				},
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -55,7 +57,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:factorial(n-1)/factorial(n-k)}}"
+					"expectedAnswer": "{{eval:factorial(n-1)/factorial(n-k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -79,7 +82,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n-1,k-1)}}"
+					"expectedAnswer": "{{eval:binom(n-1,k-1)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {

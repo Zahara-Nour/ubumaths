@@ -28,7 +28,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(g+f,k)-binom(g,k)}}"
+					"expectedAnswer": "{{eval:binom(g+f,k)-binom(g,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -48,7 +49,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:10^k-factorial(10)/factorial(10-k)}}"
+					"expectedAnswer": "{{eval:10^k-factorial(10)/factorial(10-k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -68,7 +70,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(32,k)-binom(28,k)}}"
+					"expectedAnswer": "{{eval:binom(32,k)-binom(28,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {

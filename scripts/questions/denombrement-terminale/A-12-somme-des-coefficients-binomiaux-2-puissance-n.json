@@ -60,7 +60,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:2^n-1-n}}"
+					"expectedAnswer": "{{eval:2^n-1-n}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {

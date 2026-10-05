@@ -8,6 +8,7 @@
  * @module utils/answer-validator
  */
 
+import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
 import type {
 	QuestionInstance,
 	InstanceBlank,
@@ -1391,6 +1392,13 @@ function validateSingleBlank(
 			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
 			constraintViolations: violations
 		};
+	}
+
+	// acceptCombinatorialNotation : `\binom{32}{5}`, `6!`, `\frac{10!}{7!}` (valeur déjà
+	// vérifiée à l'étape 2) sont justes ; sans l'option, jugés comme `10\times9\times8`
+	// par le contrôle « exact » ci-dessous (calcul non effectué).
+	if (blank.acceptCombinatorialNotation === true && isCombinatorialNotationLatex(effectiveLatex)) {
+		return { isCorrect: true, status: 'correct', constraintViolations: [] };
 	}
 
 	// acceptDecimal : un décimal exact (valeur déjà vérifiée à l'étape 2) n'a pas à

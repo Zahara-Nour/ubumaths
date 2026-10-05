@@ -129,6 +129,13 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 | `x+0`      | `x`                     | `x`      | `x`       | `x`          | `x`                     |
 | `-x-1`     | `-x - 1`                | `-x - 1` | `-x - 1`  | `-x - 1`     | `-\left( x + 1 \right)` |
 
+## Factorielle et coefficient binomial
+
+Hors panel (2026-10-05) : `normalize` calcule `factorial` / `binom` à arguments entiers
+(n ⩽ 200), donc `simplify` rend `6!` → `720`, `\frac{10!}{7!}` → `720`, `\binom{10}{3}` → `120`,
+`2\times 3!` → `12` ; `n!` et `\binom{n}{2}` restent tels quels. Notation et verdicts :
+`docs/ref/convention-equivalence.md` (§ Notation combinatoire).
+
 ## Où `simplify` et `auto` divergent
 
 Mesuré sur le panel ci-dessus : **13 lignes sur 51**.

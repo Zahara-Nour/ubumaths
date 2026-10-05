@@ -41,6 +41,7 @@ import { format } from './units/formatter';
 import { isMultiplication, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
+	needsParenthesesUnderFactorial,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -207,6 +208,30 @@ const KNOWN_FUNCTIONS = new Set([
 	'arg',
 	'mod'
 ]);
+
+/** `factorial(x)` sans puissance, base ni dérivée : s'écrit `x!` */
+function isPlainFactorial(node: FunctionNode): boolean {
+	return (
+		node.name === 'factorial' &&
+		node.args.length === 1 &&
+		!node.power &&
+		!node.base &&
+		!node.derivativeOrder &&
+		!node.isInverse
+	);
+}
+
+/** `binom(n, k)` sans puissance, base ni dérivée : s'écrit `\binom{n}{k}` */
+function isPlainBinom(node: FunctionNode): boolean {
+	return (
+		node.name === 'binom' &&
+		node.args.length === 2 &&
+		!node.power &&
+		!node.base &&
+		!node.derivativeOrder &&
+		!node.isInverse
+	);
+}
 
 // =============================================================================
 // Delimiter Metadata Helpers
@@ -604,6 +629,25 @@ export class LatexGenerator {
 			this.emit('\\lceil ', leftMeta);
 			this.visitWithSpans(node.args[0]);
 			this.emit(' \\rceil', rightMeta);
+			return;
+		}
+
+		// Factorielle `n!` et coefficient binomial `\binom{n}{k}` : la notation du
+		// tableau, relue par les deux parseurs LaTeX (cf. parser/factorial-notation)
+		if (isPlainFactorial(node)) {
+			const wrap = needsParenthesesUnderFactorial(node.args[0]);
+			if (wrap) this.emit('\\left( ', node.metadata);
+			this.visitWithSpans(node.args[0]);
+			if (wrap) this.emit(' \\right)', node.metadata);
+			this.emit('!', node.nameMetadata ?? node.metadata);
+			return;
+		}
+		if (isPlainBinom(node)) {
+			this.emit('\\binom{', node.nameMetadata ?? node.metadata);
+			this.visitWithSpans(node.args[0]);
+			this.emit('}{', node.metadata);
+			this.visitWithSpans(node.args[1]);
+			this.emit('}', node.metadata);
 			return;
 		}
 
@@ -1215,6 +1259,17 @@ export class LatexGenerator {
 		if (node.name === 'ceil' && node.args.length === 1 && !node.power && !node.base) {
 			const content = this.generateNode(node.args[0]);
 			return `\\lceil ${content} \\rceil`;
+		}
+
+		// Factorielle `n!` et coefficient binomial `\binom{n}{k}` (cf. visitFunctionSpans)
+		if (isPlainFactorial(node)) {
+			const operand = this.generateNode(node.args[0]);
+			return needsParenthesesUnderFactorial(node.args[0])
+				? `\\left( ${operand} \\right)!`
+				: `${operand}!`;
+		}
+		if (isPlainBinom(node)) {
+			return `\\binom{${this.generateNode(node.args[0])}}{${this.generateNode(node.args[1])}}`;
 		}
 
 		// Special case: sqrt, cbrt, root functions use \sqrt{} syntax instead of function call syntax.

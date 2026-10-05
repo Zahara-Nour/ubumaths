@@ -391,6 +391,12 @@ et `binom(n, k)`** dans `eval` et dans une condition (noms anglais, comme `gcd`,
 (sinon le tirage est relancé, puis échec explicite) ; `binom(n, k)` vaut 0 hors de 0 ⩽ k ⩽ n ;
 résultat limité aux entiers exacts (≤ 2⁵³ − 1 : `factorial(18)` au plus, `binom(50,25)` passe,
 `binom(60,30)` est refusé). Dans l'énoncé, `\binom{ {{n}} }{ {{k}} }` reste l'écriture LaTeX.
+Depuis le 2026-10-05, `n!` et `\binom{n}{k}` se lisent aussi dans une réponse d'élève ou une
+attendue, et `factorial(n)` / `binom(n, k)` s'affichent `n!` / `\binom{n}{k}` (plus
+`factorial\left( n \right)`). Carte de dénombrement : `"acceptCombinatorialNotation": true` sur
+la case pour que `\binom{32}{5}` ou `\frac{10!}{7!}` soit juste (sinon : calcul non effectué),
+jamais sur une consigne « Calcule $\binom{n}{2}$ ». En syntaxe maison, `x!=3` est `x ≠ 3`.
+Détail : `docs/ref/convention-equivalence.md` (§ Notation combinatoire).
 
 Toujours vrai :
 
