@@ -8,7 +8,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { neutralizeStudentLatex, escapeStudentText } from '../student-answer-safety';
+import {
+	neutralizeStudentLatex,
+	escapeStudentText,
+	exceedsMathNestingLimits
+} from '../student-answer-safety';
 import { parseMarkdown } from '$lib/ubumark';
 
 // Fixtures
@@ -200,5 +204,58 @@ describe('neutralizeStudentLatex — profondeur et longueur bornées', () => {
 		expect(safe.startsWith('\\text{＼left（＼dfrac｛')).toBe(true);
 		expect(safe.endsWith('…}')).toBe(true);
 		expect(neutralizeStudentLatex(`$${'{'.repeat(1500)}%`)).toMatch(INERT);
+	});
+});
+
+/**
+ * Même mesure, exportée pour le rendu RESTREINT (chat, messages, signalements,
+ * carnets d'élèves lus par autrui) : une formule hors bornes n'y part pas dans
+ * MathLive. Une seule source pour les plafonds.
+ */
+describe('exceedsMathNestingLimits', () => {
+	const nest = (times: number, wrap: (inner: string) => string, seed = 'x') => {
+		let latex = seed;
+		for (let i = 0; i < times; i++) latex = wrap(latex);
+		return latex;
+	};
+
+	it.each([
+		['\\left(\\dfrac{…}{1}\\right) ×13', nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`)],
+		['\\left(\\dfrac1…\\right) ×13 sans accolades', nest(13, (s) => `\\left(\\dfrac1${s}\\right)`)],
+		['\\left(…\\right) ×4', nest(4, (s) => `\\left(${s}\\right)`)],
+		['\\sqrt ×100 sans accolades', `${'\\sqrt'.repeat(100)}x`],
+		['accolades ×400 (801 caractères)', nest(400, (s) => `{${s}}`)],
+		['2 000 accolades', `${'{'.repeat(1000)}${'}'.repeat(1000)}`],
+		['20 000 caractères', 'x+'.repeat(10_000)],
+		['1 001 caractères', 'x'.repeat(1001)],
+		// Saut de ligne entre `\left` et son délimiteur : compté comme un blanc
+		['\\left\n( ×4', nest(4, (s) => `\\left\n(${s}\\right\n)`)],
+		// Commande inconnue (non retirée ici, contrairement à neutralizeStudentLatex)
+		['\\boxed{…} ×13 dans \\left', nest(13, (s) => `\\left(\\boxed{${s}}\\right)`)]
+	])('%s : hors bornes', (_, latex) => {
+		expect(exceedsMathNestingLimits(latex)).toBe(true);
+	});
+
+	it.each([
+		'x^2',
+		'\\frac{1}{2}',
+		'\\sqrt{x+1}',
+		'\\begin{pmatrix}1\\\\2\\end{pmatrix}',
+		'f\\left(g\\left(h\\left(x\\right)\\right)\\right)',
+		'\\dfrac{\\dfrac{\\dfrac{1}{2}}{3}}{4}',
+		'e^{-\\frac{x^{2}}{2}}',
+		'x'.repeat(1000),
+		''
+	])('%s : dans les bornes', (latex) => {
+		expect(exceedsMathNestingLimits(latex)).toBe(false);
+	});
+
+	it('ne change pas neutralizeStudentLatex (mêmes plafonds, même verdict)', () => {
+		const deep = nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`);
+		expect(exceedsMathNestingLimits(deep)).toBe(true);
+		expect(neutralizeStudentLatex(deep)).toMatch(/^\\text\{/);
+		const legit = '\\left(\\dfrac{\\left(x+1\\right)^{2}}{\\sqrt{x}}\\right)';
+		expect(exceedsMathNestingLimits(legit)).toBe(false);
+		expect(neutralizeStudentLatex(legit)).toBe(legit);
 	});
 });

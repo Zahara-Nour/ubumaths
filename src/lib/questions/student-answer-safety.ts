@@ -414,10 +414,27 @@ export function neutralizeStudentLatex(latex: string): string {
 		previous = safe;
 		safe = keepAllowedCommands(safe);
 	}
-	const nesting = latexNesting(safe);
-	return nesting.structure > MAX_STRUCTURE_DEPTH || nesting.left > MAX_LEFT_DEPTH
-		? inertLatex(safe)
-		: safe;
+	return isTooDeep(safe) ? inertLatex(safe) : safe;
+}
+
+/** Imbrication au-delà des plafonds (`MAX_STRUCTURE_DEPTH`, `MAX_LEFT_DEPTH`) */
+function isTooDeep(latex: string): boolean {
+	const nesting = latexNesting(latex);
+	return nesting.structure > MAX_STRUCTURE_DEPTH || nesting.left > MAX_LEFT_DEPTH;
+}
+
+/**
+ * Formule hors bornes de rendu (mêmes plafonds que `neutralizeStudentLatex`) :
+ * trop longue (`MAX_LATEX_LENGTH`) ou trop imbriquée. Mesurée sur la formule
+ * BRUTE, sans filtrage : sert au rendu restreint (chat, messages, signalements,
+ * carnets d'élèves lus par autrui), où une formule hors bornes n'est jamais
+ * donnée à MathLive (rendu de plusieurs Mo, page du lecteur bloquée).
+ */
+export function exceedsMathNestingLimits(latex: string): boolean {
+	// Blancs (saut de ligne, tabulation) lus comme des espaces : `\left` puis
+	// son délimiteur sur la ligne suivante reste un `\left`
+	const line = String(latex).replace(/\s/g, ' ');
+	return line.length > MAX_LATEX_LENGTH || isTooDeep(line);
 }
 
 /** Réponse en texte : aucun lien, image, formule, case ni mise en forme fabricable */
