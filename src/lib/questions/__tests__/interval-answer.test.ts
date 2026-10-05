@@ -344,11 +344,103 @@ describe('virgule décimale entre accolades', () => {
 		).toBe('correct');
 	});
 
-	it('virgule comme séparateur de points : message', () => {
+	it('virgule comme séparateur de points : message des ensembles', () => {
 		expect(judgeIntervalAnswer('\\{1,-2\\}', '\\{-2;1\\}')).toEqual({
 			status: 'incorrect',
-			feedback: INTERVAL_FEEDBACK.separator
+			feedback: INTERVAL_FEEDBACK.setSeparator
 		});
+	});
+});
+
+// Décision de David, 2026-10-05 : la virgule reste refusée (c'est le séparateur décimal),
+// avec un message propre aux ensembles finis.
+describe('ensemble fini : virgule au lieu du point-virgule', () => {
+	const expected = '\\{\\frac{\\pi}{3};\\frac{5\\pi}{3}\\}';
+
+	it('le message des ensembles est celui demandé', () => {
+		expect(INTERVAL_FEEDBACK.setSeparator).toBe(
+			'Sépare les solutions par un point-virgule : {a ; b}.'
+		);
+	});
+
+	it.each([
+		['\\{\\frac{\\pi}{3},\\frac{5\\pi}{3}\\}'],
+		['\\left\\lbrace\\frac{\\pi}{3},\\frac{5\\pi}{3}\\right\\rbrace'],
+		['\\{\\frac{\\pi}{3} , \\frac{5\\pi}{3}\\}']
+	])('%s : faux, avec le message', (answer) => {
+		expect(judgeIntervalAnswer(answer, expected)).toEqual({
+			status: 'incorrect',
+			feedback: INTERVAL_FEEDBACK.setSeparator
+		});
+	});
+
+	it('quatre solutions longues séparées par des virgules : le message, pas « illisible »', () => {
+		const four =
+			'\\{-\\dfrac{11\\pi}{12};-\\frac{\\pi}{12};\\frac{\\pi}{12};\\dfrac{11\\pi}{12}\\}';
+		expect(judgeIntervalAnswer(four.replace(/;/g, ','), four)).toEqual({
+			status: 'incorrect',
+			feedback: INTERVAL_FEEDBACK.setSeparator
+		});
+	});
+
+	it('entiers séparés par plusieurs virgules ({1,3,6}) : le message', () => {
+		expect(judgeIntervalAnswer('\\{1,3,6\\}', '\\{1;3;6\\}')).toEqual({
+			status: 'incorrect',
+			feedback: INTERVAL_FEEDBACK.setSeparator
+		});
+	});
+
+	it('décimaux à virgule avec un point-virgule : inchangés', () => {
+		expect(judgeIntervalAnswer('\\{1{,}5;2\\}', '\\{3/2;2\\}').status).toBe('correct');
+		expect(judgeIntervalAnswer('\\{1,5;2\\}', '\\{3/2;2\\}').status).toBe('correct');
+		expect(judgeIntervalAnswer('\\lbrace0,5\\rbrace', '\\{1/2\\}').status).toBe('correct');
+	});
+
+	it('intervalle ]2,3[ : le message des bornes, inchangé', () => {
+		expect(judgeIntervalAnswer(']2,3[', ']2;3[').feedback).toBe(INTERVAL_FEEDBACK.separator);
+	});
+});
+
+// Décision de David, 2026-10-05 : une fraction simplifiable dans un ensemble fini
+// est traitée comme une borne non simplifiée (contrainte `intervalForm`).
+describe('ensemble fini : fraction simplifiable', () => {
+	const expected = '\\{-\\frac{5\\pi}{6};\\frac{\\pi}{3}\\}';
+	const unreduced = '\\{-\\frac{10\\pi}{12};\\frac{\\pi}{3}\\}';
+
+	it('-\\frac{10\\pi}{12} vaut ½ (warn), avec le message', () => {
+		expect(judgeIntervalAnswer(unreduced, expected)).toEqual({
+			status: 'unoptimal_form',
+			feedback: INTERVAL_FEEDBACK.unsimplifiedSet
+		});
+		expect(INTERVAL_FEEDBACK.unsimplifiedSet).toBe('La fraction peut être simplifiée.');
+	});
+
+	it('suit le réglage intervalForm : strict → mauvaise forme, off → juste', () => {
+		expect(judgeIntervalAnswer(unreduced, expected, 'strict').status).toBe('bad_form');
+		expect(judgeIntervalAnswer(unreduced, expected, 'off').status).toBe('correct');
+	});
+
+	it('fraction numérique ({2;\\frac{6}{4}}) aussi', () => {
+		expect(judgeIntervalAnswer('\\lbrace 2;\\frac{6}{4}\\rbrace', '\\{3/2;2\\}').status).toBe(
+			'unoptimal_form'
+		);
+	});
+
+	it('fractions irréductibles, décimaux, MathLive : justes', () => {
+		expect(judgeIntervalAnswer(expected, expected).status).toBe('correct');
+		expect(
+			judgeIntervalAnswer(
+				'\\left\\lbrace\\frac{\\pi}{3};-\\frac{5\\pi}{6}\\right\\rbrace',
+				expected
+			).status
+		).toBe('correct');
+		expect(judgeIntervalAnswer('\\{1{,}5;2\\}', '\\{3/2;2\\}').status).toBe('correct');
+	});
+
+	it('singleton dans une réunion : {\\frac{4}{2}} ∪ ]3;4[ vaut ½', () => {
+		expect(judgeIntervalAnswer('\\{\\frac{4}{2}\\}\\cup]3;4[', '\\{2\\}\\cup]3;4[').status).toBe(
+			'unoptimal_form'
+		);
 	});
 });
 

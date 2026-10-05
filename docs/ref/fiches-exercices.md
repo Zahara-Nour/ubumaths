@@ -314,6 +314,13 @@ condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`
 `-\dfrac{\sqrt{2}}{2}` (la bonne réponse de l'élève n'est plus « mauvaise forme ») ; dans le PDF,
 `\lVert … \rVert`, `\lvert … \rvert`, `\perp`, `\parallel`, `\angle`, `\triangle`.
 
+Corrigé dans le moteur le 2026-10-05 (branche `fix/trig-moins-eval-pi-ensembles`), ne plus
+contourner : un multiple rationnel de π calculé par `eval` s'écrit comme au tableau —
+`{{eval:m*pi/12}}` donne `\dfrac{\pi}{6}` (m = 2), `\dfrac{5 \pi}{6}`, `-\dfrac{2 \pi}{3}`, `\pi`,
+`2 \pi`, `0` (plus `\dfrac{1}{6} \pi`). Les variables `gcd` et les `{{if:u==1|…}}` des cartes de
+trigonométrie ne sont plus nécessaires (elles restent justes). Une somme (`\dfrac{3}{2} \pi + 1`)
+ou `π²` gardent leur écriture.
+
 Corrigés dans le moteur le 2026-10-02 (branche `fix/pieges-generation-2`), ne plus contourner :
 dans une condition, `a % 10 != 0` (= `mod(a, 10)`, l'opérande gauche est le produit qui précède),
 `and` / `or` / `not` (= `&&` / `||` / `!(…)`, `not a = 1` nie toute la comparaison ; `!a = 1` est
@@ -407,7 +414,8 @@ Toujours vrai :
 - **Bloc ```trig** : les étiquettes sont écrites dans [0 ; 2π[ par défaut (−π/6 devient
   « 11π/6 ») ; pour un intervalle d'étude ]−π ; π], ajouter `mesures: principales` (preset,
   `angles:`, solutions et bornes étiquetées ; les points ne bougent pas). `equation:` lit une valeur
-  non remarquable écrite avec une fonction : `cos(x) = cos(pi/5)`, `sin(x) > sin(2*pi/7)`. Une borne
+  non remarquable écrite avec une fonction : `cos(x) = cos(pi/5)`, `sin(x) > sin(2*pi/7)`, précédée
+  au plus d'un moins : `sin(x) < -sin(4*pi/12)` (= `sin(-4*pi/12)`). Une borne
   d'arc n'est étiquetée que si elle figure dans le preset ou `angles:`.
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
 - **Virgule décimale en dur** dans une formule (`0,1\times`) : la virgule nue est une ponctuation

@@ -232,6 +232,29 @@
 			}
 		},
 		{
+			"description": "v0 virgule au lieu du point-virgule → faux (« Sépare les solutions par un point-virgule : {a ; b}. »)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{-\\frac{5\\pi}{6},-\\frac{\\pi}{6},\\frac{\\pi}{6},\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 fraction non simplifiée (10π/12) → ½ (« La fraction peut être simplifiée. »)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "\\frac{\\pi}{6}"
+			},
+			"answers": ["\\{-\\frac{10\\pi}{12};-\\frac{\\pi}{6};\\frac{\\pi}{6};\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
 			"description": "v1 sin 2x = 1/2 : 4 solutions → juste",
 			"variationIndex": 1,
 			"variables": {

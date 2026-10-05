@@ -350,18 +350,20 @@ const KNOWN_VALUES: Record<string, number> = {
 function parseValueExpression(expr: string): { value: string; numeric: number } | null {
 	const trimmed = expr.trim();
 
-	// Valeur non remarquable écrite avec une fonction : cos(pi/5), sin(2*pi/7)
-	const funcMatch = trimmed.match(/^(cos|sin|tan)\s*\((.+)\)$/i);
+	// Valeur non remarquable écrite avec une fonction : cos(pi/5), sin(2*pi/7),
+	// éventuellement précédée d'UN moins : -sin(4*pi/12) = sin(-4*pi/12)
+	const funcMatch = trimmed.match(/^(-\s*)?(cos|sin|tan)\s*\((.+)\)$/i);
 	if (funcMatch) {
-		const angle = parseAngleExpression(funcMatch[2]);
+		const angle = parseAngleExpression(funcMatch[3]);
 		if (!angle) return null;
-		const fn = funcMatch[1].toLowerCase();
-		const numeric =
+		const fn = funcMatch[2].toLowerCase();
+		const magnitude =
 			fn === 'cos'
 				? Math.cos(angle.radians)
 				: fn === 'sin'
 					? Math.sin(angle.radians)
 					: Math.tan(angle.radians);
+		const numeric = funcMatch[1] ? -magnitude : magnitude;
 		return { value: trimmed, numeric };
 	}
 

@@ -307,6 +307,26 @@ d'intervalles, mêmes valeurs de bornes, chaque borne de l'élève ouverte dès 
 ℝ et ∅ n'ont rien à ouvrir. Sans l'option, rien ne change (mesure du 2026-10-04 : 0 verdict
 changé sur 1 711 modèles, dont 418 réponses « bornes ouvertes » sur des cases intervalles réelles).
 
+### Ensemble fini : séparateur et fractions (décision de David, 2026-10-05)
+
+La virgule est le séparateur DÉCIMAL : `\{\frac{\pi}{3},\frac{5\pi}{3}\}` reste faux, avec le message
+« Sépare les solutions par un point-virgule : {a ; b}. » (les intervalles gardent « Sépare les bornes
+par un point-virgule : ]2 ; 3[. »). Entre accolades sans point-virgule, une virgule est séparatrice si
+elle n'est pas entre deux chiffres, ou s'il y en a plusieurs (`\{1,3,6\}`) ; une seule virgule entre
+deux chiffres reste décimale (`\{0,5\}` = {0,5}), et `\{1{,}5;2\}`, `\{1,5;2\}` sont inchangés. Ce
+contrôle passe avant le garde de complexité : quatre solutions séparées par des virgules donnaient
+« une borne est trop longue ». Mesure (dépôt + `REAL_TEMPLATES` + prod en lecture, 1 929 modèles,
+24 472 instances) : 202 verdicts changés, tous des réponses « virgule » déjà fausses dont seul le
+message change ; 0 changement sur les specs et les réponses attendues.
+
+Une fraction simplifiable dans un ensemble fini se traite comme une borne non simplifiée :
+`\{-\frac{10\pi}{12};\frac{\pi}{3}\}` pour `\{-\frac{5\pi}{6};\frac{\pi}{3}\}` vaut ½ (`unoptimal_form`,
+contrainte `intervalForm` : `strict` → mauvaise forme, `off` → juste), message « La fraction peut
+être simplifiée. » (la borne `]\frac{2\pi}{6};…[` garde « Simplifie les bornes (par exemple 2 plutôt
+que 4/2). »). Elle était jugée juste sans réserve. Mesure (même corpus) : 154 verdicts changés,
+tous des réponses « fraction doublée » dans un ensemble fini, de juste à ½ (sentinelle, 3 cartes
+trigo du dépôt, 3 modèles de prod) ; 0 changement sur les specs et les réponses attendues.
+
 ### Constante e dans une borne
 
 Une borne est un **nombre**, jamais une expression en x : la lettre `e` y est **toujours** la
