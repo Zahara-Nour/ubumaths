@@ -1,0 +1,325 @@
+{
+	"title": "Affixe d'un vecteur, distance, milieu, parallélogramme",
+	"description": "z_B − z_A, AB = |z_B − z_A|, milieu (z_A + z_B)/2, quatrième sommet d'un parallélogramme (pièges : z_A − z_B, |z_B| − |z_A|, mauvais sommet)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-012", "TEXP-062", "TEXP-013", "TEXP-023"],
+	"theme": "Nombres complexes",
+	"domain": "Géométrie et nombres complexes",
+	"subdomain": "Affixes et distances",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A={{a}}+({{b}})i$ et $z_B={{c}}+({{d}})i$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a != c", "b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c-a}}+({{eval:d-b}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'affixe de $\\overrightarrow{AB}$ est $z_B-z_A$ (extrémité moins origine).",
+					"$z_B-z_A={{eval:c-a}}+({{eval:d-b}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A={{a}}+({{b}})i$ et $z_B={{c}}+({{d}})i$. Calcule la distance $AB$.\n\n$AB=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a != c", "b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt((c-a)^2+(d-b)^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AB=|z_B-z_A|$ et $z_B-z_A={{eval:c-a}}+({{eval:d-b}})i$.",
+					"$AB=\\sqrt{ {{eval:(c-a)^2}}+{{eval:(d-b)^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:sqrt((c-a)^2+(d-b)^2)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A={{a}}+({{b}})i$ et $z_B={{c}}+({{d}})i$. Donne l'affixe du milieu $I$ du segment $[AB]$.\n\n$z_I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..7;±"
+				}
+			],
+			"conditions": [
+				"mod(a+c+20, 2) == 0",
+				"mod(b+d+20, 2) == 0",
+				"a+c != 0",
+				"b+d != 0",
+				"a != c"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+c)/2}}+({{eval:(b+d)/2}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$z_I=\\dfrac{z_A+z_B}{2}$.",
+					"$z_A+z_B={{eval:a+c}}+({{eval:b+d}})i$, donc $z_I={{eval:(a+c)/2}}+({{eval:(b+d)/2}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A={{a}}+({{b}})i$, $z_B={{c}}+({{d}})i$ et $z_C={{g}}+({{h2}})i$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "g",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "h2",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a+g-c != 0", "b+h2-d != 0", "c != a", "c != g"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+g-c}}+({{eval:b+h2-d}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABCD$ est un parallélogramme si et seulement si $\\overrightarrow{AD}=\\overrightarrow{BC}$, soit $z_D-z_A=z_C-z_B$.",
+					"$z_D=z_A+z_C-z_B$, soit $z_D={{eval:a+g-c}}+({{eval:b+h2-d}})i$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 A(1+2i), B(4−i) : 3 − 3i",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "4",
+				"d": "-1"
+			},
+			"answers": ["3-3i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 z_A − z_B → −3+3i",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "4",
+				"d": "-1"
+			},
+			"answers": ["-3+3i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 z_A + z_B → 5+i",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "4",
+				"d": "-1"
+			},
+			"answers": ["5+i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 AB = 3√2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "4",
+				"d": "-1"
+			},
+			"answers": ["3\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 AB² → 18",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "4",
+				"d": "-1"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 |z_B| − |z_A| → √17 − √5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "4",
+				"d": "-1"
+			},
+			"answers": ["\\sqrt{17}-\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 A(1+3i), B(5−i) : 3+i",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "5",
+				"d": "-1"
+			},
+			"answers": ["3+i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 division par 2 oubliée → 6+2i",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "5",
+				"d": "-1"
+			},
+			"answers": ["6+2i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 A(1+i), B(3+2i), C(4+5i) : D = 2+4i",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "3",
+				"d": "2",
+				"g": "4",
+				"h2": "5"
+			},
+			"answers": ["2+4i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 z_B + z_C − z_A → 6+6i",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "3",
+				"d": "2",
+				"g": "4",
+				"h2": "5"
+			},
+			"answers": ["6+6i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 z_A + z_B − z_C → −2i",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "3",
+				"d": "2",
+				"g": "4",
+				"h2": "5"
+			},
+			"answers": ["-2i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

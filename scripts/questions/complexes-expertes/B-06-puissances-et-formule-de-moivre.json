@@ -1,0 +1,339 @@
+{
+	"title": "Calculer une puissance avec la formule de Moivre",
+	"description": "(1+i)ⁿ, (√3+i)ⁿ sous forme algébrique, (1 − i√3)ⁿ sous forme exponentielle, suite z_{n+1} = i z_n (pièges : puissance du module oubliée, argument non multiplié par n ou non ramené)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-036", "TEXP-041", "TEXP-039", "TEXP-027"],
+	"theme": "Nombres complexes",
+	"domain": "Formes trigonométrique et exponentielle",
+	"subdomain": "Formule de Moivre",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Calcule $(1+i)^{ {{n}} }$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$(1+i)^{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..12"
+				},
+				{
+					"name": "x",
+					"expression": "eval:round(2^(n/2)*cos(n*pi/4))"
+				},
+				{
+					"name": "y",
+					"expression": "eval:round(2^(n/2)*sin(n*pi/4))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}+({{y}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1+i=\\sqrt{2}e^{i\\frac{\\pi}{4}}$, donc $(1+i)^{ {{n}} }=\\left(\\sqrt{2}\\right)^{ {{n}} }e^{i\\frac{ {{n}}\\pi}{4}}$ (formule de Moivre).",
+					"$\\left(\\sqrt{2}\\right)^{ {{n}} }={{eval:sqrt(2^n)}}$ ; on lit le cosinus et le sinus de $\\frac{ {{n}}\\pi}{4}$ : $(1+i)^{ {{n}} }={{x}}+({{y}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $(\\sqrt{3}+i)^{ {{n}} }$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$(\\sqrt{3}+i)^{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3|6|9|12"
+				},
+				{
+					"name": "x",
+					"expression": "eval:round(2^n*cos(n*pi/6))"
+				},
+				{
+					"name": "y",
+					"expression": "eval:round(2^n*sin(n*pi/6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}+({{y}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{3}+i=2e^{i\\frac{\\pi}{6}}$, donc $(\\sqrt{3}+i)^{ {{n}} }=2^{ {{n}} }e^{i\\frac{ {{n}}\\pi}{6}}$.",
+					"$2^{ {{n}} }={{eval:2^n}}$ et $\\frac{ {{n}}\\pi}{6}={{eval:n*pi/6}}$ : $(\\sqrt{3}+i)^{ {{n}} }={{x}}+({{y}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $(1-i\\sqrt{3})^{ {{n}} }$ sous forme exponentielle, avec l'argument principal.\n\n$(1-i\\sqrt{3})^{ {{n}} }=?e^{i?}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..8"
+				},
+				{
+					"name": "k",
+					"expression": "eval:mod(5*n+2,6)-2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*pi/3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1-i\\sqrt{3}=2e^{-i\\frac{\\pi}{3}}$, donc $(1-i\\sqrt{3})^{ {{n}} }=2^{ {{n}} }e^{-i\\frac{ {{n}}\\pi}{3}}$.",
+					"On ramène l'argument, à $2\\pi$ près, dans $]-\\pi\\,;\\pi]$ : $(1-i\\sqrt{3})^{ {{n}} }={{eval:2^n}}e^{ {{if:k>=0||-}}i{{eval:abs(k*pi/3)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(z_n)$ est définie par $z_0={{a}}+({{b}})i$ et, pour tout entier naturel $n$, $z_{n+1}=iz_n$. Calcule $z_{ {{N}} }$ sous forme algébrique.\n\n$z_{ {{N}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "N",
+					"expression": "5..30"
+				},
+				{
+					"name": "x",
+					"expression": "eval:round(a*cos(N*pi/2)-b*sin(N*pi/2))"
+				},
+				{
+					"name": "y",
+					"expression": "eval:round(a*sin(N*pi/2)+b*cos(N*pi/2))"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(N,4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}+({{y}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(z_n)$ est géométrique de raison $i$ : $z_{ {{N}} }=i^{ {{N}} }z_0$.",
+					"${{N}}=4\\times{{eval:(N-r)/4}}+{{r}}$, donc $i^{ {{N}} }=i^{ {{r}} }$ et $z_{ {{N}} }={{x}}+({{y}})i$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 (1+i)⁴ = −4",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"x": "-4",
+				"y": "0"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 (1+i)⁴ → 4 (argument oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"x": "-4",
+				"y": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 (1+i)⁶ = −8i",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"x": "0",
+				"y": "-8"
+			},
+			"answers": ["-8i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 (1+i)⁶ → 8i",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"x": "0",
+				"y": "-8"
+			},
+			"answers": ["8i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 (1+i)³ = −2+2i",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"x": "-2",
+				"y": "2"
+			},
+			"answers": ["-2+2i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 (1+i)³ → 1+i³ = 1−i",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"x": "-2",
+				"y": "2"
+			},
+			"answers": ["1-i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 (√3+i)⁶ = −64",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"x": "-64",
+				"y": "0"
+			},
+			"answers": ["-64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 module non élevé → −2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"x": "-64",
+				"y": "0"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 (√3+i)³ = 8i",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"x": "0",
+				"y": "8"
+			},
+			"answers": ["8i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 (1−i√3)² = 4e^{−2iπ/3}",
+			"variationIndex": 2,
+			"variables": {
+				"n": "2",
+				"k": "-2"
+			},
+			"answers": ["4", "-\\frac{2\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 signe de l'argument perdu → 2π/3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "2",
+				"k": "-2"
+			},
+			"answers": ["4", "\\frac{2\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 (1−i√3)⁴ = 16e^{2iπ/3}",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"k": "2"
+			},
+			"answers": ["16", "\\frac{2\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 argument non ramené −4π/3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"k": "2"
+			},
+			"answers": ["16", "-\\frac{4\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 z₀ = 2+3i, z₇ = i⁷z₀ = −i(2+3i) = 3−2i",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"N": "7",
+				"x": "3",
+				"y": "-2",
+				"r": "3"
+			},
+			"answers": ["3-2i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 i⁷ = i → −3+2i",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"N": "7",
+				"x": "3",
+				"y": "-2",
+				"r": "3"
+			},
+			"answers": ["-3+2i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,308 @@
+{
+	"title": "Résoudre une équation du premier degré dans ℂ, avec z ou son conjugué",
+	"description": "az = b avec a complexe, iz + b = c, αz + βz̄ = c en posant z = x + iy (pièges : diviser par a sans conjugué, traiter z̄ comme z, 1/i = i)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-007", "TEXP-008", "TEXP-006"],
+	"theme": "Nombres complexes",
+	"domain": "Forme algébrique",
+	"subdomain": "Équations",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{C}$ l'équation $({{c}}+({{d}})i)z={{u}}+({{v}})i$. Donne la solution sous forme algébrique.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u",
+					"expression": "eval:p*c-q*d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:p*d+q*c"
+				},
+				{
+					"name": "n",
+					"expression": "eval:c^2+d^2"
+				}
+			],
+			"conditions": ["u != 0", "v != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}+({{q}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$z=\\dfrac{ {{u}}{{if:v==1|+i|{{if:v==-1|-i|{{eval:v;+}}i}}}}}{ {{c}}{{if:d==1|+i|{{if:d==-1|-i|{{eval:d;+}}i}}}}}$ : on multiplie numérateur et dénominateur par ${{c}}-({{d}})i$.",
+					"Dénominateur : ${{eval:c^2}}+{{eval:d^2}}$, soit ${{n}}$ ; numérateur : $({{u}}+({{v}})i)({{c}}-({{d}})i)={{eval:n*p}}+({{eval:n*q}})i$.",
+					"Donc $z={{p}}+({{q}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{C}$ l'équation $iz{{a;+}}={{b}}+({{c}})i$. Donne la solution sous forme algébrique.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}+({{eval:a-b}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$iz={{eval:b-a}}+({{c}})i$, donc $z=\\dfrac{ {{eval:b-a}}{{if:c==1|+i|{{if:c==-1|-i|{{eval:c;+}}i}}}}}{i}$.",
+					"Diviser par $i$ revient à multiplier par $-i$ (car $\\dfrac{1}{i}=-i$) : $z=-i({{eval:b-a}}+({{c}})i)$, soit $z={{c}}+({{eval:a-b}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{C}$ l'équation ${{al}}z{{if:be==1|+|{{if:be==-1|-|{{be;+}}}}}}\\overline{z}={{u}}{{if:v==1|+i|{{if:v==-1|-i|{{eval:v;+}}i}}}}$, en posant $z=x+iy$ avec $x$ et $y$ réels.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "al",
+					"expression": "2..4"
+				},
+				{
+					"name": "be",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "x",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "y",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(al+be)*x"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(al-be)*y"
+				}
+			],
+			"conditions": ["al != be", "al+be != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}+({{y}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $z=x+iy$ et $\\overline{z}=x-iy$, le membre de gauche vaut ${{eval:al+be}}x+({{eval:al-be}})yi$.",
+					"On identifie parties réelles et parties imaginaires : ${{eval:al+be}}x={{u}}$ et ${{eval:al-be}}y={{v}}$, donc $x={{x}}$ et $y={{y}}$.",
+					"$z={{x}}+({{y}})i$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 (2−i)z = 3+i → z = 1+i",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["1+i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 multiplié au lieu de divisé → (3+i)(2−i) = 7−i",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["7-i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 division terme à terme → 3/2 − i",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["\\frac{3}{2}-i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 quotient non calculé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["\\frac{3+i}{2-i}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 iz + 2 = 5 + 3i → z = 3 − 3i",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["3-3i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 divisé par i comme par 1 → 3+3i",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["3+3i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 1/i = i → −3+3i",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["-3+3i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 2z + z̄ = 3 + i → z = 1 + i",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"be": "1",
+				"x": "1",
+				"y": "1",
+				"u": "3",
+				"v": "1"
+			},
+			"answers": ["1+i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 z̄ traité comme z : 3z = 3 + i → 1 + i/3",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"be": "1",
+				"x": "1",
+				"y": "1",
+				"u": "3",
+				"v": "1"
+			},
+			"answers": ["1+\\frac{1}{3}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 3z − 2z̄ = 5 − 10i → z = 5 − 2i",
+			"variationIndex": 2,
+			"variables": {
+				"al": "3",
+				"be": "-2",
+				"x": "5",
+				"y": "-2",
+				"u": "5",
+				"v": "-10"
+			},
+			"answers": ["5-2i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 signe de y → 5+2i",
+			"variationIndex": 2,
+			"variables": {
+				"al": "3",
+				"be": "-2",
+				"x": "5",
+				"y": "-2",
+				"u": "5",
+				"v": "-10"
+			},
+			"answers": ["5+2i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

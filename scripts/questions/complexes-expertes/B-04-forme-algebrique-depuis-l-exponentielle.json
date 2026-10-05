@@ -1,0 +1,295 @@
+{
+	"title": "Passer de la forme exponentielle ou trigonométrique à la forme algébrique",
+	"description": "re^{iπ/3}, k√2 e^{−iπ/4}, r(cos 2π/3 + i sin 2π/3), re^{−iπ/2}, re^{5iπ/6} → a + ib (pièges : cos et sin échangés, signe, valeurs remarquables)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-038", "TEXP-032", "TEXP-019"],
+	"theme": "Nombres complexes",
+	"domain": "Formes trigonométrique et exponentielle",
+	"subdomain": "Forme algébrique",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Écris sous forme algébrique $z={{r}}e^{i\\frac{\\pi}{3}}$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2|4|6|8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r/2}}+{{if:r/2==1||{{if:r/2==-1|-|{{eval:r/2}}}}}}\\sqrt{3}i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$z={{r}}\\left(\\cos\\frac{\\pi}{3}+i\\sin\\frac{\\pi}{3}\\right)$, avec $\\cos\\frac{\\pi}{3}=\\frac{1}{2}$ et $\\sin\\frac{\\pi}{3}=\\frac{\\sqrt{3}}{2}$.",
+					"$z=\\textcolor{{{color:primary.0}}}{{{eval:r/2}}+{{if:r/2==1||{{if:r/2==-1|-|{{eval:r/2}}}}}}\\sqrt{3}i}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous forme algébrique $z={{if:k==1||{{if:k==-1|-|{{eval:k}}}}}}\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}-({{k}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\left(-\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$ et $\\sin\\left(-\\frac{\\pi}{4}\\right)=-\\frac{\\sqrt{2}}{2}$.",
+					"${{if:k==1||{{if:k==-1|-|{{eval:k}}}}}}\\sqrt{2}\\times\\frac{\\sqrt{2}}{2}={{k}}$, donc $z=\\textcolor{{{color:primary.0}}}{{{k}}{{if:-k==1|+i|{{if:-k==-1|-i|{{eval:-k;+}}i}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous forme algébrique $z={{r}}\\left(\\cos\\frac{2\\pi}{3}+i\\sin\\frac{2\\pi}{3}\\right)$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2|4|6|8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-r/2}}+{{if:r/2==1||{{if:r/2==-1|-|{{eval:r/2}}}}}}\\sqrt{3}i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\frac{2\\pi}{3}=-\\frac{1}{2}$ et $\\sin\\frac{2\\pi}{3}=\\frac{\\sqrt{3}}{2}$.",
+					"$z=\\textcolor{{{color:primary.0}}}{{{eval:-r/2}}+{{if:r/2==1||{{if:r/2==-1|-|{{eval:r/2}}}}}}\\sqrt{3}i}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous forme algébrique $z={{r}}e^{-i\\frac{\\pi}{2}}$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-{{r}}i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\left(-\\frac{\\pi}{2}\\right)=0$ et $\\sin\\left(-\\frac{\\pi}{2}\\right)=-1$.",
+					"$z=\\textcolor{{{color:primary.0}}}{-{{r}}i}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous forme algébrique $z={{r}}e^{i\\frac{5\\pi}{6}}$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2|4|6|8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:-r/2==1||{{if:-r/2==-1|-|{{eval:-r/2}}}}}}\\sqrt{3}{{if:r/2==1|+i|{{if:r/2==-1|-i|{{eval:r/2;+}}i}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\frac{5\\pi}{6}=-\\frac{\\sqrt{3}}{2}$ et $\\sin\\frac{5\\pi}{6}=\\frac{1}{2}$.",
+					"$z=\\textcolor{{{color:primary.0}}}{{{if:-r/2==1||{{if:-r/2==-1|-|{{eval:-r/2}}}}}}\\sqrt{3}{{if:r/2==1|+i|{{if:r/2==-1|-i|{{eval:r/2;+}}i}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 2e^{iπ/3} = 1+√3 i",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["1+\\sqrt{3}i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 écriture 1+i√3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["1+i\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 cos et sin échangés → √3+i",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["\\sqrt{3}+i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 4e^{iπ/3} = 2+2√3 i",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["2+2\\sqrt{3}i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 module oublié → 1/2 + √3/2 i",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 √2 e^{−iπ/4} = 1−i",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1-i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 3√2 e^{−iπ/4} = 3−3i",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3-3i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 signe → 3+3i",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3+3i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 4(cos 2π/3 + i sin 2π/3) = −2+2√3 i",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["-2+2\\sqrt{3}i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 cos 2π/3 = 1/2 → 2+2√3 i",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4"
+			},
+			"answers": ["2+2\\sqrt{3}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 5e^{−iπ/2} = −5i",
+			"variationIndex": 3,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["-5i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 → 5i",
+			"variationIndex": 3,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["5i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 → −5",
+			"variationIndex": 3,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 2e^{5iπ/6} = −√3+i",
+			"variationIndex": 4,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["-\\sqrt{3}+i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 cos et sin échangés → −1+√3 i",
+			"variationIndex": 4,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["-1+\\sqrt{3}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 6e^{5iπ/6} = −3√3+3i",
+			"variationIndex": 4,
+			"variables": {
+				"r": "6"
+			},
+			"answers": ["-3\\sqrt{3}+3i"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

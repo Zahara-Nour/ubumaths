@@ -1,0 +1,330 @@
+{
+	"title": "Produit, quotient, puissance et inverse sous forme exponentielle",
+	"description": "z₁z₂, z₁/z₂, zⁿ, 1/z avec z = re^{iθ} : module et argument principal du résultat (pièges : modules additionnés, arguments multipliés, argument non ramené dans ]−π ; π])",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-033", "TEXP-039", "TEXP-015", "TEXP-017", "TEXP-034"],
+	"theme": "Nombres complexes",
+	"domain": "Formes trigonométrique et exponentielle",
+	"subdomain": "Calculs sous forme exponentielle",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $z_1={{r1}}e^{{{if:m1>=0||-}}i{{eval:abs(m1)*pi/12}}}$ et $z_2={{r2}}e^{{{if:m2>=0||-}}i{{eval:abs(m2)*pi/12}}}$. Écris $z_1z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1z_2=?e^{i?}$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "2..5"
+				},
+				{
+					"name": "r2",
+					"expression": "2..5"
+				},
+				{
+					"name": "m1",
+					"expression": "1..11;±"
+				},
+				{
+					"name": "m2",
+					"expression": "1..11;±"
+				}
+			],
+			"conditions": ["m1+m2 > -12", "m1+m2 <= 12", "m1+m2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r1*r2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(m1+m2)*pi/12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$e^{ia}\\times e^{ib}=e^{i(a+b)}$ : on multiplie les modules et on additionne les arguments.",
+					"$z_1z_2={{eval:r1*r2}}e^{ {{if:m1+m2>=0||-}}i{{eval:abs((m1+m2)*pi/12)}} }$, et cet argument est bien dans $]-\\pi\\,;\\pi]$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $z_1={{r1}}e^{{{if:m1>=0||-}}i{{eval:abs(m1)*pi/12}}}$ et $z_2={{r2}}e^{{{if:m2>=0||-}}i{{eval:abs(m2)*pi/12}}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=?e^{i?}$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "2..9"
+				},
+				{
+					"name": "r2",
+					"expression": "2..5"
+				},
+				{
+					"name": "m1",
+					"expression": "1..11;±"
+				},
+				{
+					"name": "m2",
+					"expression": "1..11;±"
+				}
+			],
+			"conditions": ["m1-m2 > -12", "m1-m2 <= 12", "m1 != m2", "r1 != r2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r1/r2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(m1-m2)*pi/12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{e^{ia}}{e^{ib}}=e^{i(a-b)}$ : on divise les modules et on soustrait les arguments.",
+					"$\\dfrac{z_1}{z_2}={{eval:r1/r2}}e^{ {{if:m1-m2>=0||-}}i{{eval:abs((m1-m2)*pi/12)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $z={{r}}e^{i{{eval:m*pi/6}}}$. Écris $z^{ {{n}} }$ sous forme exponentielle, avec l'argument principal.\n\n$z^{ {{n}} }=?e^{i?}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..3"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:mod(n*m+5,12)-5"
+				}
+			],
+			"conditions": ["k != n*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*pi/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\left(re^{i\\theta}\\right)^n=r^ne^{in\\theta}$ : ici $z^{ {{n}} }={{eval:r^n}}e^{i{{eval:n*m*pi/6}}}$.",
+					"On retire un multiple de $2\\pi$ pour revenir dans $]-\\pi\\,;\\pi]$ : $z^{ {{n}} }={{eval:r^n}}e^{ {{if:k>=0||-}}i{{eval:abs(k*pi/6)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $z={{r}}e^{{{if:m>=0||-}}i{{eval:abs(m)*pi/12}}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=?e^{i?}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..11;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{r}} }"
+				},
+				{
+					"expectedAnswer": "{{eval:-m*pi/12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{re^{i\\theta}}=\\dfrac{1}{r}e^{-i\\theta}$.",
+					"$\\dfrac{1}{z}=\\dfrac{1}{ {{r}} }e^{ {{if:m<=0||-}}i{{eval:abs(-m*pi/12)}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 2e^{iπ/6} × 3e^{iπ/4} = 6e^{5iπ/12}",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"r2": "3",
+				"m1": "2",
+				"m2": "3"
+			},
+			"answers": ["6", "\\frac{5\\pi}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 modules additionnés → 5",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"r2": "3",
+				"m1": "2",
+				"m2": "3"
+			},
+			"answers": ["5", "\\frac{5\\pi}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 arguments multipliés → π²/24",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"r2": "3",
+				"m1": "2",
+				"m2": "3"
+			},
+			"answers": ["6", "\\frac{\\pi^2}{24}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 arguments de signes contraires : 10π/12 − 3π/12 = 7π/12",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "4",
+				"r2": "5",
+				"m1": "10",
+				"m2": "-3"
+			},
+			"answers": ["20", "\\frac{7\\pi}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 6e^{iπ/2} / 4e^{iπ/3} = 3/2 e^{iπ/6}",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "6",
+				"r2": "4",
+				"m1": "6",
+				"m2": "4"
+			},
+			"answers": ["\\frac{3}{2}", "\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 arguments additionnés → 5π/6",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "6",
+				"r2": "4",
+				"m1": "6",
+				"m2": "4"
+			},
+			"answers": ["\\frac{3}{2}", "\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 quotient inversé des modules → 2/3",
+			"variationIndex": 1,
+			"variables": {
+				"r1": "6",
+				"r2": "4",
+				"m1": "6",
+				"m2": "4"
+			},
+			"answers": ["\\frac{2}{3}", "\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 (2e^{5iπ/6})³ = 8e^{iπ/2}",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"m": "5",
+				"k": "3"
+			},
+			"answers": ["8", "\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 argument non ramené 5π/2",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"m": "5",
+				"k": "3"
+			},
+			"answers": ["8", "\\frac{5\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 module multiplié par n → 6",
+			"variationIndex": 2,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"m": "5",
+				"k": "3"
+			},
+			"answers": ["6", "\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 1/(4e^{iπ/3}) = 1/4 e^{−iπ/3}",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"m": "4"
+			},
+			"answers": ["\\frac{1}{4}", "-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 argument gardé → π/3",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"m": "4"
+			},
+			"answers": ["\\frac{1}{4}", "\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 module gardé → 4",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"m": "4"
+			},
+			"answers": ["4", "-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

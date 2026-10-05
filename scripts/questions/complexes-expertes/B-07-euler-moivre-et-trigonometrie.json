@@ -1,0 +1,244 @@
+{
+	"title": "Formules d'Euler et de Moivre, formules d'addition et de duplication",
+	"description": "Linéariser cos³x et sin²x (Euler), exprimer cos 3x (Moivre), cos(π/12) par une formule d'addition, sin 2a par la duplication (pièges : coefficients, signe, sin et cos confondus)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-035", "TEXP-040", "TEXP-036", "TEXP-030", "TEXP-031"],
+	"theme": "Nombres complexes",
+	"domain": "Formes trigonométrique et exponentielle",
+	"subdomain": "Formules d'Euler et de Moivre",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "À l'aide des formules d'Euler, linéarise $\\cos^3x$ : trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\cos^3x=a\\cos(3x)+b\\cos x$.\n\n$a=?$\n\n$b=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{4}"
+				},
+				{
+					"expectedAnswer": "\\frac{3}{4}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos^3x=\\left(\\dfrac{e^{ix}+e^{-ix}}{2}\\right)^3=\\dfrac{e^{3ix}+3e^{ix}+3e^{-ix}+e^{-3ix}}{8}$ (formule du binôme).",
+					"On regroupe : $\\cos^3x=\\dfrac{2\\cos(3x)+6\\cos x}{8}=\\frac{1}{4}\\cos(3x)+\\frac{3}{4}\\cos x$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide des formules d'Euler, linéarise $\\sin^2x$ : trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\sin^2x=a+b\\cos(2x)$.\n\n$a=?$\n\n$b=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{2}"
+				},
+				{
+					"expectedAnswer": "-\\frac{1}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin^2x=\\left(\\dfrac{e^{ix}-e^{-ix}}{2i}\\right)^2=\\dfrac{e^{2ix}-2+e^{-2ix}}{-4}$.",
+					"$\\sin^2x=\\dfrac{2\\cos(2x)-2}{-4}=\\frac{1}{2}-\\frac{1}{2}\\cos(2x)$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide de la formule de Moivre, trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\cos(3x)=a\\cos^3x+b\\cos x$.\n\n$a=?$\n\n$b=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "-3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos(3x)$ est la partie réelle de $(\\cos x+i\\sin x)^3=\\cos^3x+3i\\cos^2x\\sin x-3\\cos x\\sin^2x-i\\sin^3x$.",
+					"$\\cos(3x)=\\cos^3x-3\\cos x\\sin^2x=\\cos^3x-3\\cos x\\left(1-\\cos^2x\\right)=4\\cos^3x-3\\cos x$."
+				]
+			}
+		},
+		{
+			"statement": "En remarquant que $\\frac{\\pi}{12}=\\frac{\\pi}{3}-\\frac{\\pi}{4}$, calcule la valeur exacte de $\\cos\\frac{\\pi}{12}$.\n\n$\\cos\\frac{\\pi}{12}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{6}+\\sqrt{2}}{4}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos(a-b)=\\cos a\\cos b+\\sin a\\sin b$.",
+					"$\\cos\\frac{\\pi}{12}=\\frac{1}{2}\\times\\frac{\\sqrt{2}}{2}+\\frac{\\sqrt{3}}{2}\\times\\frac{\\sqrt{2}}{2}=\\frac{\\sqrt{2}+\\sqrt{6}}{4}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ tel que $\\sin a={{eval:(m^2-q^2)/(m^2+q^2)}}$. Calcule $\\sin(2a)$.\n\n$\\sin(2a)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["m > q", "gcd(m, q) == 1", "mod(m-q, 2) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*m*q*(m^2-q^2)/(m^2+q^2)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ donc $\\cos a>0$ : $\\cos a=\\sqrt{1-\\sin^2a}={{eval:2*m*q/(m^2+q^2)}}$.",
+					"Duplication : $\\sin(2a)=2\\sin a\\cos a=\\textcolor{{{color:primary.0}}}{{{eval:4*m*q*(m^2-q^2)/(m^2+q^2)^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 1/4 et 3/4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{1}{4}", "\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 coefficients échangés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{3}{4}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 binôme sans le 1/8 → 1 et 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 1/2 et −1/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 (2i)² = 4 → 1/2 et 1/2 (signe)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 4 et −3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["4", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 sin² non remplacé → 1 et −3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 (√6+√2)/4",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{6}+\\sqrt{2}}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 ordre (√2+√6)/4",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{2}+\\sqrt{6}}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 signe de la formule → (√2−√6)/4",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{2}-\\sqrt{6}}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 sin(π/12) donné → (√6−√2)/4",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{6}-\\sqrt{2}}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 sin a = 3/5 → sin 2a = 24/25",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"q": "1"
+			},
+			"answers": ["\\frac{24}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 2 sin a → 6/5",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"q": "1"
+			},
+			"answers": ["\\frac{6}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 cos 2a donné → 7/25",
+			"variationIndex": 4,
+			"variables": {
+				"m": "2",
+				"q": "1"
+			},
+			"answers": ["\\frac{7}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
