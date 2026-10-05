@@ -22,6 +22,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { updatePasswordSchema } from '$lib/server/validation/auth';
 import { validateFormData } from '$lib/server/validation/common';
+import { authErrorToFrench } from '$lib/server/auth/auth-error-fr';
 
 const logger = createLogger('auth/update-password/+page.server.ts');
 
@@ -52,7 +53,7 @@ export const actions = {
 		if (!user) {
 			logger.error('No authenticated user');
 			return fail(401, {
-				error: 'You must be logged in to update your password'
+				error: authErrorToFrench({ code: 'session_not_found' })
 			});
 		}
 
@@ -70,7 +71,7 @@ export const actions = {
 
 		if (password !== confirmPassword) {
 			return fail(400, {
-				error: 'Passwords do not match'
+				error: 'Les deux mots de passe ne correspondent pas.'
 			});
 		}
 
@@ -83,8 +84,9 @@ export const actions = {
 
 		if (error) {
 			logger.error('Password update error:', error.message);
+			// Jamais le message anglais de Supabase : code connu traduit, sinon repli
 			return fail(400, {
-				error: error.message
+				error: authErrorToFrench(error, 'Impossible de changer ton mot de passe. Réessaie.')
 			});
 		}
 

@@ -35,8 +35,18 @@ const gameData = {
 const PAGES: [string, Component<never>, Record<string, unknown>, RegExp][] = [
 	['connexion', Login as Component<never>, { form: null }, /Connexion/],
 	['inscription', Register as Component<never>, { form: null }, /Créer ton compte/],
-	['mot de passe oublié', ResetPassword as Component<never>, { form: null }, /password/i],
-	['nouveau mot de passe', UpdatePassword as Component<never>, { form: null }, /password/i],
+	[
+		'mot de passe oublié',
+		ResetPassword as Component<never>,
+		{ form: null },
+		/^Mot de passe oublié$/
+	],
+	[
+		'nouveau mot de passe',
+		UpdatePassword as Component<never>,
+		{ form: null },
+		/^Nouveau mot de passe$/
+	],
 	['attente d’approbation', PendingApproval as Component<never>, {}, /approbation/],
 	['2048', Game2048 as Component<never>, { data: gameData }, /2048/],
 	['Mathémo', Mathemo as Component<never>, { data: gameData }, /Mathémo/]
@@ -48,5 +58,17 @@ describe('titre de niveau 1 des pages publiques', () => {
 		const h1 = page.getByRole('heading', { level: 1 });
 		await expect.element(h1).toHaveAccessibleName(name);
 		expect(h1.elements()).toHaveLength(1);
+	});
+
+	// Plus un mot d'anglais sur le parcours « mot de passe oublié »
+	it.each([
+		['mot de passe oublié', ResetPassword as Component<never>],
+		['nouveau mot de passe', UpdatePassword as Component<never>]
+	])('%s : entièrement en français', async (_nom, Page) => {
+		const screen = await render(Page, { props: { form: null } as never });
+		const text = screen.container.textContent ?? '';
+		expect(text).not.toMatch(
+			/\b(password|reset|email address|send|update|back to|new|confirm|characters|letters|numbers)\b/i
+		);
 	});
 });
