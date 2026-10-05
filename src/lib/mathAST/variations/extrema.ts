@@ -285,6 +285,15 @@ export function classifyGlobalExtrema(
 		}
 	}
 
+	// ⚠️ Une limite aux bornes peut DÉPASSER tout extremum : +∞ interdit un
+	// maximum global, −∞ un minimum global, et une limite indéterminée ou
+	// inconnue interdit les deux — on ne conclut pas sans savoir. Ces limites
+	// étaient écartées de la comparaison (`Number.isFinite`) : x³ − 3x annonçait
+	// « Maximum global : f(−1) = 2 » (revue de #857, 2026-10-05).
+	const unbounded = unboundedSides(domain, boundaryLimits);
+	if (unbounded.above) globalMaxValue = Infinity;
+	if (unbounded.below) globalMinValue = -Infinity;
+
 	// Build the result array with upgraded types
 	const result: ExtremumInfo[] = [];
 
@@ -502,6 +511,50 @@ function computeYValue(expr: MathNode, variable: string, x: MathNode): MathNode 
 function computeYApproximate(y: MathNode): number | undefined {
 	const result = evaluateToNumber(y);
 	return result ?? undefined;
+}
+
+/**
+ * f peut-elle dépasser, vers le haut ou vers le bas, toute valeur atteinte ?
+ *
+ * Vrai d'un côté dès qu'une limite aux bornes vaut l'infini de ce côté, et des
+ * deux côtés si une limite est indéterminée, non numérique, ou si le domaine a
+ * une borne ouverte ou infinie sans limite calculée.
+ */
+function unboundedSides(
+	domain: Domain,
+	boundaryLimits?: readonly BoundaryLimit[]
+): { above: boolean; below: boolean } {
+	if (boundaryLimits === undefined || boundaryLimits.length === 0) {
+		const open = hasOpenOrInfiniteEnd(domain);
+		return { above: open, below: open };
+	}
+	let above = false;
+	let below = false;
+	for (const bl of boundaryLimits) {
+		if (bl.limit === 'infinity') above = true;
+		else if (bl.limit === 'negative_infinity') below = true;
+		else if (
+			bl.limit === 'indeterminate' ||
+			bl.approximate === undefined ||
+			!Number.isFinite(bl.approximate)
+		) {
+			above = true;
+			below = true;
+		}
+	}
+	return { above, below };
+}
+
+/** Le domaine a-t-il une borne ouverte ou infinie (où f n'est pas évaluée) ? */
+function hasOpenOrInfiniteEnd(domain: Domain): boolean {
+	if (domain.kind !== 'interval_set') return true;
+	return (domain as IntervalSet).intervals.some(
+		(interval) =>
+			interval.lower.type !== 'closed' ||
+			interval.upper.type !== 'closed' ||
+			!Number.isFinite(endpointToNumber(interval.lower.value)) ||
+			!Number.isFinite(endpointToNumber(interval.upper.value))
+	);
 }
 
 /**

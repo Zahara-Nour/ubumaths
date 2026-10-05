@@ -217,8 +217,9 @@ describe('Ce qui ne doit pas bouger', () => {
 				'  ]1 ; +inf[  : +  (f croissante)',
 				'',
 				'Extrema :',
-				'  Maximum global : f(-1) = 2',
-				'  Minimum global : f(1) = -2',
+				// LOCAUX : f → ±∞ (ce test enregistrait « global », revue de #857)
+				'  Maximum local : f(-1) = 2',
+				'  Minimum local : f(1) = -2',
 				'',
 				'Limites aux bornes :',
 				'  lim_{x -> -∞^+} f(x) = -inf',
