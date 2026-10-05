@@ -64,3 +64,68 @@ describe('\\imaginaryI (MathLive) : même notation que i', () => {
 		expect(verdicts('i', ['\\imaginaryI'])).toEqual({ '\\imaginaryI': 'correct' });
 	});
 });
+
+describe('forme algébrique : \\frac{a+bi}{d} et \\frac{a}{d}+\\frac{b}{d}i sont une seule forme', () => {
+	it('\\frac{1-i}{2} attendu : les écritures séparées sont justes', () => {
+		expect(
+			verdicts('\\frac{1-i}{2}', [
+				'\\frac12-\\frac12i',
+				'\\frac{1}{2}-\\frac{i}{2}',
+				'\\frac{1}{2}-\\frac{1}{2}i',
+				'\\frac{1-i}{2}'
+			])
+		).toEqual({
+			'\\frac12-\\frac12i': 'correct',
+			'\\frac{1}{2}-\\frac{i}{2}': 'correct',
+			'\\frac{1}{2}-\\frac{1}{2}i': 'correct',
+			'\\frac{1-i}{2}': 'correct'
+		});
+	});
+
+	it('\\frac12-\\frac12i attendu : \\frac{1-i}{2} juste', () => {
+		expect(verdicts('\\frac12-\\frac12i', ['\\frac{1-i}{2}'])).toEqual({
+			'\\frac{1-i}{2}': 'correct'
+		});
+	});
+
+	it('racine au numérateur : \\frac{1+i\\sqrt{3}}{2} juste pour \\frac12+\\frac{\\sqrt{3}}{2}i', () => {
+		expect(
+			verdicts('\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i', [
+				'\\frac{1+i\\sqrt{3}}{2}',
+				'\\frac{1}{2}+\\frac{i\\sqrt{3}}{2}',
+				'\\frac{1}{2}+i\\frac{\\sqrt{3}}{2}'
+			])
+		).toEqual({
+			'\\frac{1+i\\sqrt{3}}{2}': 'correct',
+			'\\frac{1}{2}+\\frac{i\\sqrt{3}}{2}': 'correct',
+			'\\frac{1}{2}+i\\frac{\\sqrt{3}}{2}': 'correct'
+		});
+	});
+
+	it('fraction simplifiable perfectible, quotient non calculé de mauvaise forme, valeur fausse fausse', () => {
+		expect(
+			verdicts('\\frac{1-i}{2}', ['\\frac{2-2i}{4}', '\\frac{1}{1+i}', '\\frac{1+i}{2}'])
+		).toEqual({
+			'\\frac{2-2i}{4}': 'unoptimal_form',
+			'\\frac{1}{1+i}': 'bad_form',
+			'\\frac{1+i}{2}': 'incorrect'
+		});
+	});
+
+	it('hors complexes, rien ne change : \\frac{x}{2}+\\frac12 reste de mauvaise forme pour \\frac{x+1}{2}', () => {
+		expect(verdicts('\\frac{x+1}{2}', ['\\frac{x}{2}+\\frac12'])).toEqual({
+			'\\frac{x}{2}+\\frac12': 'bad_form'
+		});
+	});
+
+	it('décimal : comme 0,5 pour \\frac12 (mauvaise forme, juste avec acceptDecimal)', () => {
+		expect(verdicts('\\frac12', ['0.5'])).toEqual({ '0.5': 'bad_form' });
+		expect(verdicts('\\frac{1-i}{2}', ['0.5-0.5i'])).toEqual({ '0.5-0.5i': 'bad_form' });
+		expect(verdicts('\\frac12', ['0.5'], { acceptDecimal: true })).toEqual({ '0.5': 'correct' });
+		expect(
+			verdicts('\\frac{1-i}{2}', ['0.5-0.5i', '0{,}5-0{,}5i', '-0.5i+0.5'], {
+				acceptDecimal: true
+			})
+		).toEqual({ '0.5-0.5i': 'correct', '0{,}5-0{,}5i': 'correct', '-0.5i+0.5': 'correct' });
+	});
+});

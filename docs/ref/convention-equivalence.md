@@ -284,6 +284,30 @@ specs, attendue sur tirages, variantes `\frac{k}{e^a}` ↔ `ke^{-a}`), 30 change
 classe et vers `correct` : 10 synthétiques, 10 dans le dépôt (cartes C-03, B-06, A-02), 10 sur
 leurs copies en brouillon en prod ; aucun modèle publié touché.
 
+## Nombres complexes (décisions de David du 2026-10-05)
+
+La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Sondes sur les cartes de maths
+expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
+
+- **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i), lu
+  `complex(0, 1)` par le parseur, est la même notation que `i` (`unifyEulerNotationAST`,
+  comme `\exponentialE` → `e`) : `2-3\imaginaryI` pour `2-3i` est juste (avant : « pas sous la
+  forme demandée ») ; `\mathrm{i}` l'était déjà. Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
+  de prod en lecture + synthétiques) : 37 973 verdicts, 330 changés, tous des réponses contenant
+  `\imaginaryI` (dont l'attendue recopiée du corrigé, qui l'écrit ainsi), mauvaise forme → juste,
+  sur 11 brouillons ; aucun modèle publié.
+- **Forme algébrique** : sur un dénominateur nombre, `\frac{1-i}{2}`, `\frac12-\frac12i` et
+  `\frac{1}{2}-\frac{i}{2}` sont UNE forme (`unifyComplexAlgebraicNotationAST`, même famille que
+  `\frac{x^3}{3}` / `\frac13x^3`) ; `\frac{1+i\sqrt{3}}{2}` ≡ `\frac12+\frac{\sqrt{3}}{2}i` ;
+  `\frac{i\pi}{3}` ≡ `\frac{\pi}{3}i` ≡ `i\frac{\pi}{3}` (exposant d'une forme exponentielle
+  compris). `\frac{2-2i}{4}` reste perfectible (`reducedFractions`), `\frac{1}{1+i}` de mauvaise
+  forme (calcul non fait) ; `\frac{x+1}{2}` / `\frac{x}{2}+\frac12` inchangé (lettre autre que
+  `i`). Décimal : aligné sur le réel (`0.5` pour `\frac12` est de mauvaise forme) —
+  `0.5-0.5i` pour `\frac{1-i}{2}` est de mauvaise forme, juste avec l'option `acceptDecimal`
+  (`isDecimalComplexLatex`). Mesure (même corpus) : 37 changés, tous de la classe : 33
+  synthétiques, 2 specs de la carte A-02 (`\frac{1-i}{2}` : mauvaise forme → juste, mise à jour ;
+  `\frac{5+5i}{5}` → perfectible) et leurs copies en brouillon en prod.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

@@ -33,6 +33,7 @@ import {
 	type CheckFormOptions,
 	cosmeticViolations,
 	isSimpleNumberLatex,
+	isDecimalComplexLatex,
 	isNumberOrNumberFractionLatex,
 	isQuantityValueLatex,
 	forgotPercentSign,
@@ -820,6 +821,14 @@ function acceptsExactDecimal(blank: InstanceBlank, latex: string): boolean {
 }
 
 /**
+ * Case `acceptDecimal` dont la réponse est un complexe écrit en décimaux (`0.5-0.5i`
+ * pour `\frac{1-i}{2}`) : même règle que pour un réel (décision de David du 2026-10-05).
+ */
+function acceptsExactDecimalComplex(blank: InstanceBlank, latex: string): boolean {
+	return blank.acceptDecimal === true && isDecimalComplexLatex(latex);
+}
+
+/**
  * Verdict d'une seule case sur la VALEUR (sans contrôle de forme), avec le même
  * pipeline que la correction : règles, `rulesSuffice`, mode inféré.
  * Sert à colorer chaque case après soumission.
@@ -1409,6 +1418,20 @@ function validateSingleBlank(
 			effectiveLatex,
 			constraints,
 			genericFunctions
+		);
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// acceptDecimal, complexe en décimaux : seules restent les contraintes cosmétiques
+	if (acceptsExactDecimalComplex(blank, effectiveLatex)) {
+		const { status, violations } = mapCosmeticViolations(
+			cosmeticViolations(effectiveLatex, severities, formOptions),
+			false
 		);
 		return {
 			isCorrect: status !== 'bad_form',

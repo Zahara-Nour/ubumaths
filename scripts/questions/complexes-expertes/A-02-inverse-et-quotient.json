@@ -184,7 +184,7 @@
 			}
 		},
 		{
-			"description": "v0 une seule fraction (pas la forme a+ib)",
+			"description": "v0 une seule fraction (1-i)/2 : même forme que 1/2 - i/2",
 			"variationIndex": 0,
 			"variables": {
 				"a": "1",
@@ -193,8 +193,7 @@
 			},
 			"answers": ["\\frac{1-i}{2}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "correct"
 			}
 		},
 		{
@@ -285,8 +284,8 @@
 			},
 			"answers": ["\\frac{5+5i}{5}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
 			}
 		},
 		{
