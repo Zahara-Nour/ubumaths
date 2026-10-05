@@ -22,17 +22,17 @@
 	<Card.Root class="w-full max-w-md">
 		<Card.Header>
 			<Card.Title class="text-center text-3xl"
-				><h1 class="text-3xl! leading-none!">Reset your password</h1></Card.Title
+				><h1 class="text-3xl! leading-none!">Mot de passe oublié</h1></Card.Title
 			>
 			<Card.Description class="text-center">
-				Enter your email address and we'll send you a link to reset your password.
+				Indique ton adresse email : tu recevras un lien pour choisir un nouveau mot de passe.
 			</Card.Description>
 		</Card.Header>
 
 		<Card.Content>
 			<form method="POST" action="?/resetPassword" use:enhance class="space-y-4">
 				<div class="space-y-2">
-					<Label for="email">Email address</Label>
+					<Label for="email">Adresse email</Label>
 					<Input
 						id="email"
 						name="email"
@@ -59,7 +59,7 @@
 					</Alert.Root>
 				{/if}
 
-				<Button type="submit" class="w-full">Send reset link</Button>
+				<Button type="submit" class="w-full">Envoyer le lien</Button>
 
 				<div class="text-center text-sm">
 					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"

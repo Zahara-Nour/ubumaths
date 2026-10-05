@@ -110,23 +110,23 @@ export function calculatePasswordStrength(password: string): PasswordStrengthRes
 
 	if (!requirements.notCommon) {
 		strength = 'weak';
-		feedback = 'Mot de passe trop commun - choisissez-en un plus unique';
+		feedback = 'Mot de passe trop commun - choisis-en un plus original';
 		color = 'text-red-600 dark:text-red-400';
 	} else if (score === 0) {
 		strength = 'weak';
-		feedback = 'Trop court - utilisez au moins 8 caractères';
+		feedback = 'Trop court - utilise au moins 8 caractères';
 		color = 'text-red-600 dark:text-red-400';
 	} else if (score === 1) {
 		strength = 'weak';
-		feedback = 'Faible - ajoutez majuscules, chiffres ou caractères spéciaux';
+		feedback = 'Faible - ajoute des majuscules, chiffres ou caractères spéciaux';
 		color = 'text-red-600 dark:text-red-400';
 	} else if (score === 2) {
 		strength = 'fair';
-		feedback = 'Moyen - ajoutez plus de variété de caractères';
+		feedback = 'Moyen - ajoute plus de variété de caractères';
 		color = 'text-orange-600 dark:text-orange-400';
 	} else if (score === 3) {
 		strength = 'good';
-		feedback = 'Bon - ajoutez des caractères spéciaux pour plus de sécurité';
+		feedback = 'Bon - ajoute des caractères spéciaux pour plus de sécurité';
 		color = 'text-yellow-600 dark:text-yellow-400';
 	} else {
 		strength = 'strong';
