@@ -12,6 +12,8 @@
  * - en texte : chaque caractère de syntaxe markdown / ubumark remplacé par son
  *   sosie typographique (pleine chasse), qu'aucun analyseur ne lit — plus sûr
  *   qu'un `\` d'échappement, dont le support dépend de l'analyseur.
+ * - en formule trop longue ou trop imbriquée (rendu de plusieurs Mo, page du
+ *   professeur bloquée) : son début en texte inerte.
  *
  * Pur ; ne lève jamais.
  */
@@ -98,6 +100,50 @@ const ALLOWED_ENVIRONMENT = /^(begin|end)\{pmatrix\}/;
 
 /** Passages à la ligne admis par colonne : 3 coordonnées au plus (lignes en masse = page démesurée) */
 const MAX_COLUMN_BREAKS = 2;
+
+/**
+ * Bornes de rendu (mesurées le 2026-10-05, MathLive 0.110 `convertLatexToMarkup`).
+ * Avec des commandes ADMISES, la taille du rendu explose :
+ * - `\left(\dfrac{…}{1}\right)` imbriqué : la hauteur DOUBLE à chaque niveau
+ *   (délimiteur symétrique autour d'un contenu qui ne l'est pas) — 12 niveaux,
+ *   4 096em et 4 Mo de HTML. Sans accolades (`\left(\dfrac1\left(…`), même effet ;
+ * - `\sqrt\sqrt…x` (sans accolades) : HTML quadratique, 2,9 Mo pour 1 000 caractères.
+ * Le premier plafond borne l'exposant, le second la profondeur de toute structure
+ * (accolades, `\left…\right`, colonne, arguments de fraction / racine / accent,
+ * AVEC ou SANS accolades). Au-delà, la réponse est montrée en texte inerte.
+ *
+ * Corpus (test « corpus » de `student-answer-safety.render.test.ts`, > 20 000
+ * réponses) : profondeur 7 au plus (plafond 12), 1 `\left` imbriqué au plus
+ * (plafond 3), 428 caractères (plafond 1 000). Pire cas admis mesuré : 34em, 84 Ko.
+ */
+const MAX_LEFT_DEPTH = 3;
+const MAX_STRUCTURE_DEPTH = 12;
+/**
+ * Niveaux comptés pour un `\left…\right` ou une colonne `pmatrix` : leur hauteur
+ * croît plus vite que celle d'un argument (double, ou trois lignes) — avec un
+ * seul niveau, 3 `\left` autour de 6 colonnes rendaient 126em.
+ */
+const TALL_LEVEL = 2;
+/** Longueur de la réponse (l'envoi en admet 2 000 : `MAX_ANSWER_LENGTH`) */
+const MAX_LATEX_LENGTH = 1_000;
+/** Début montré d'une réponse hors bornes */
+const INERT_PREVIEW_LENGTH = 120;
+
+/**
+ * Arguments obligatoires des commandes admises qui imbriquent leur contenu
+ * (pris dans `{…}` ou, sans accolades, le jeton suivant). `binom` : pas admis
+ * aujourd'hui, compté d'avance.
+ */
+// prettier-ignore
+const STRUCTURE_ARITY: Readonly<Record<string, number>> = {
+	frac: 2, dfrac: 2, tfrac: 2, binom: 2, dbinom: 2, tbinom: 2, sqrt: 1,
+	overline: 1, underline: 1, overrightarrow: 1, overleftarrow: 1, overleftrightarrow: 1,
+	underrightarrow: 1, underleftarrow: 1, underleftrightarrow: 1, overlinesegment: 1,
+	underlinesegment: 1, overbrace: 1, underbrace: 1, overgroup: 1, undergroup: 1, vec: 1,
+	widehat: 1, hat: 1, bar: 1, tilde: 1, dot: 1, ddot: 1, acute: 1, grave: 1, breve: 1,
+	check: 1, mathring: 1, text: 1, textrm: 1, mathrm: 1, mathbf: 1, mathit: 1, mathfrak: 1,
+	mathbb: 1, operatorname: 1, unit: 1, char: 1
+};
 
 /** Caractères qu'un `\` peut précéder (espaces, accolades, `%`, `|`) */
 const ALLOWED_ESCAPED: ReadonlySet<string> = new Set([',', ';', ':', '!', ' ', '{', '}', '%', '|']);
@@ -238,13 +284,127 @@ function keepAllowedCommands(latex: string): string {
 }
 
 /**
+ * Profondeur d'imbrication d'une formule : niveaux de structure (accolades,
+ * argument d'une commande de `STRUCTURE_ARITY` — avec ou sans accolades —, et
+ * `TALL_LEVEL` niveaux par `\left…\right` ou colonne `pmatrix`) et nombre de
+ * `\left` imbriqués. La lecture s'arrête dès qu'un des deux dépasse son plafond :
+ * la pile d'appels reste bornée.
+ */
+function latexNesting(latex: string): { structure: number; left: number } {
+	let i = 0;
+	let structure = 0;
+	let left = 0;
+	const exceeded = () => structure > MAX_STRUCTURE_DEPTH || left > MAX_LEFT_DEPTH;
+	const commandName = () => /^[a-zA-Z]+/.exec(latex.slice(i + 1, i + 40))?.[0] ?? '';
+	const skipSpaces = () => {
+		while (latex[i] === ' ') i++;
+	};
+	// Délimiteur de `\left` / `\right` : `(`, `\{`, `\langle`…
+	const skipDelimiter = () => {
+		skipSpaces();
+		if (latex[i] !== '\\') i++;
+		else i += 1 + (commandName().length || 1);
+	};
+
+	type Until = '}' | ']' | 'right' | 'end' | null;
+	/** Un élément à la profondeur `depth` ; `true` = fin de la suite `until` */
+	function item(depth: number, lefts: number, until: Until): boolean {
+		const c = latex[i];
+		if (c === '}') {
+			i++;
+			return until === '}';
+		}
+		if (c === ']' && until === ']') {
+			i++;
+			return true;
+		}
+		if (c === '{') {
+			i++;
+			sequence(depth + 1, lefts, '}');
+			return false;
+		}
+		if (c !== '\\') {
+			i++;
+			return false;
+		}
+		const name = commandName();
+		if (!name) {
+			i += 2;
+			return false;
+		}
+		i += 1 + name.length;
+		if (name === 'left') {
+			skipDelimiter();
+			sequence(depth + TALL_LEVEL, lefts + 1, 'right');
+			return false;
+		}
+		if (name === 'right') {
+			skipDelimiter();
+			return until === 'right';
+		}
+		if (name === 'begin' || name === 'end') {
+			i += /^\{[^}]*\}/.exec(latex.slice(i, i + 40))?.[0].length ?? 0;
+			if (name === 'end') return until === 'end';
+			sequence(depth + TALL_LEVEL, lefts, 'end');
+			return false;
+		}
+		skipSpaces();
+		if (name === 'sqrt' && latex[i] === '[') {
+			i++;
+			sequence(depth + 1, lefts, ']');
+		}
+		for (let k = 0; k < (STRUCTURE_ARITY[name] ?? 0) && !exceeded(); k++) {
+			argument(depth + 1, lefts);
+		}
+		return false;
+	}
+
+	/** Argument d'une commande : `{…}` (un seul niveau) ou le jeton suivant */
+	function argument(depth: number, lefts: number): void {
+		skipSpaces();
+		const c = latex[i];
+		if (c === undefined || c === '}' || c === ']') return;
+		if (c === '{') {
+			i++;
+			sequence(depth, lefts, '}');
+			return;
+		}
+		const name = c === '\\' ? commandName() : '';
+		if (name === 'right' || name === 'end') return;
+		structure = Math.max(structure, depth);
+		item(depth, lefts, null);
+	}
+
+	function sequence(depth: number, lefts: number, until: Until): void {
+		structure = Math.max(structure, depth);
+		left = Math.max(left, lefts);
+		while (i < latex.length && !exceeded()) {
+			if (item(depth, lefts, until)) return;
+		}
+	}
+
+	sequence(0, 0, null);
+	return { structure, left };
+}
+
+/** Réponse hors bornes : son début en texte inerte (aucune structure à rendre) */
+function inertLatex(latex: string): string {
+	const preview = latex.slice(0, INERT_PREVIEW_LENGTH);
+	const ellipsis = latex.length > INERT_PREVIEW_LENGTH ? '…' : '';
+	return String.raw`\text{${escapeStudentText(preview)}${ellipsis}}`;
+}
+
+/**
  * Réponse en formule : seules les commandes de la liste blanche restent ; une
  * commande retirée laisse ses arguments `{…}` en texte inerte et perd ses
  * options `[…]`. `$` retirés (ils fermeraient la formule) ; une seule ligne.
+ * Trop longue ou trop imbriquée (rendu géant, cf. `MAX_LEFT_DEPTH`) : son début
+ * en texte inerte.
  */
 export function neutralizeStudentLatex(latex: string): string {
-	let safe = String(latex)
-		.replace(/[\r\n]+/g, ' ')
+	const line = String(latex).replace(/[\r\n]+/g, ' ');
+	if (line.length > MAX_LATEX_LENGTH) return inertLatex(line);
+	let safe = line
 		.replace(/\$/g, '')
 		// `%` nu ouvre un commentaire LaTeX : la suite de la formule disparaîtrait.
 		// Échappé en `\%`, il s'affiche pareil (« 33% » reste « 33 % »).
@@ -254,7 +414,10 @@ export function neutralizeStudentLatex(latex: string): string {
 		previous = safe;
 		safe = keepAllowedCommands(safe);
 	}
-	return safe;
+	const nesting = latexNesting(safe);
+	return nesting.structure > MAX_STRUCTURE_DEPTH || nesting.left > MAX_LEFT_DEPTH
+		? inertLatex(safe)
+		: safe;
 }
 
 /** Réponse en texte : aucun lien, image, formule, case ni mise en forme fabricable */

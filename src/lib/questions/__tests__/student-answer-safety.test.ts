@@ -127,7 +127,8 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 	});
 
 	it('trois coordonnées au plus : les passages à la ligne en masse sont retirés', () => {
-		const many = `\\begin{pmatrix}${'1\\\\'.repeat(500)}1\\end{pmatrix}`;
+		// 300 lignes : sous la borne de longueur (au-delà, la réponse entière devient inerte)
+		const many = `\\begin{pmatrix}${'1\\\\'.repeat(300)}1\\end{pmatrix}`;
 		expect(neutralizeStudentLatex(many).match(/\\\\/g)).toHaveLength(2);
 	});
 
@@ -149,5 +150,55 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 			expect(safe).not.toMatch(/\\begin|\\end(?![a-zA-Z])/);
 			expect(safe).not.toContain('[r]');
 		}
+	});
+});
+
+// Rendu géant avec des commandes ADMISES (mesuré le 2026-10-05, MathLive 0.110) :
+// `\left(\dfrac{…}{1}\right)` ×12 rend 4 096em et 4 Mo de HTML, `\sqrt` ×200 sans
+// accolades des Mo aussi. Au-delà des bornes, la réponse devient un texte inerte.
+describe('neutralizeStudentLatex — profondeur et longueur bornées', () => {
+	const nest = (times: number, wrap: (inner: string) => string, seed = 'x') => {
+		let latex = seed;
+		for (let i = 0; i < times; i++) latex = wrap(latex);
+		return latex;
+	};
+	const INERT = /^\\text\{[^\\{}$]*\}$/;
+
+	it.each([
+		['\\left(\\dfrac{…}{1}\\right) ×13', nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`)],
+		['\\left(\\frac{…}{1}\\right) ×20', nest(20, (s) => `\\left(\\frac{${s}}{1}\\right)`)],
+		['\\left(\\dfrac1…\\right) ×13 sans accolades', nest(13, (s) => `\\left(\\dfrac1${s}\\right)`)],
+		['\\left|…\\right| ×4', nest(4, (s) => `\\left|\\dfrac{${s}}{1}\\right|`)],
+		['\\sqrt ×100 sans accolades', `${'\\sqrt'.repeat(100)}x`],
+		['\\dfrac ×30', nest(30, (s) => `\\dfrac{${s}}{1}`)],
+		['accolades ×500', nest(500, (s) => `{${s}}`)],
+		['accolades ouvertes ×900', '{'.repeat(900)],
+		['colonnes imbriquées ×8', nest(8, (s) => `\\begin{pmatrix}${s}\\\\1\\end{pmatrix}`)],
+		['réponse de 5 000 caractères', '1+'.repeat(2500)]
+	])('%s : texte inerte et court', (_, raw) => {
+		const safe = neutralizeStudentLatex(raw);
+		expect(safe).toMatch(INERT);
+		expect(safe.length).toBeLessThan(400);
+	});
+
+	it('écritures légitimes imbriquées intactes (parenthèses du clavier, fractions, racines)', () => {
+		for (const latex of [
+			'f\\left(g\\left(h\\left(x\\right)\\right)\\right)',
+			'\\left(\\dfrac{\\left(x+1\\right)^{2}}{\\sqrt{x}}\\right)',
+			'\\left(\\dfrac{1}{\\left(\\dfrac{1}{\\left(x\\right)}\\right)}\\right)',
+			'\\dfrac{\\dfrac{\\dfrac{1}{2}}{3}}{4}',
+			'\\sqrt{\\sqrt{\\sqrt{2}}}',
+			'e^{-\\frac{x^{2}}{2}}',
+			'\\left\\lbrace\\begin{pmatrix}\\frac{1}{2}\\\\-\\sqrt{3}\\end{pmatrix}\\right.'
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
+		}
+	});
+
+	it('texte inerte : le début de la réponse, syntaxe neutralisée, sans `$`', () => {
+		const safe = neutralizeStudentLatex(nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`));
+		expect(safe.startsWith('\\text{＼left（＼dfrac｛')).toBe(true);
+		expect(safe.endsWith('…}')).toBe(true);
+		expect(neutralizeStudentLatex(`$${'{'.repeat(1500)}%`)).toMatch(INERT);
 	});
 });
