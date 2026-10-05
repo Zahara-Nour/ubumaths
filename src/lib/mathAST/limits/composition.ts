@@ -1294,6 +1294,14 @@ function getCompositionLimitPatterns(): readonly CompositionLimitPattern[] {
 				value: number('0'),
 				descriptionFr: 'Croissance comparée : u²·e^u → 0 quand u → -∞'
 			},
+			// u·e^{ku} → 0 quand u → −∞, k > 0 : c'est (1/k)·(ku)·e^{ku}. Sans
+			// elle, x e^{2x} en −∞ restait « non supportée » (mesuré).
+			{
+				pattern: P.mul(P._('u'), P.func('exp', [P.mul(P._('k', P.isPositive()), P._('u'))])),
+				uApproach: 'neg-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u·e^{ku} → 0 quand u → -∞ (k > 0)'
+			},
 			// u/e^u → 0 when u → +∞
 			{
 				pattern: P.div(P._('u'), P.func('exp', [P._('u')])),

@@ -131,3 +131,38 @@ describe('le repli', () => {
 		expect(tableOf('1/x')).toBeNull();
 	});
 });
+
+describe('Terminale : exponentielle', () => {
+	// Mesuré avant : `null` pour x eˣ — les limites en ±∞ sortaient
+	// « indetermine », le moteur de limites ne lisant pas `e^u`.
+	it('x eˣ : un tableau, de 0 à +∞ en passant par le minimum −1/e', () => {
+		const { variation } = rows('x e^x');
+
+		expect(variation.values.get('-\\infty')).toMatchObject({ expression: '0', position: 'top' });
+		expect(variation.values.get('-1')).toMatchObject({
+			expression: '-\\dfrac{1}{\\exponentialE}',
+			position: 'bottom'
+		});
+		expect(variation.values.get('+\\infty')).toMatchObject({
+			expression: '+\\infty',
+			position: 'top'
+		});
+	});
+
+	it('e^{−x²} : de 0 à 1 puis à 0', () => {
+		const { variation } = rows('e^(-x^2)');
+
+		expect(variation.values.get('-\\infty')?.expression).toBe('0');
+		expect(variation.values.get('0')).toMatchObject({ expression: '1', position: 'top' });
+		expect(variation.values.get('+\\infty')?.expression).toBe('0');
+	});
+
+	it('x e^{2x} : le minimum −1/(2e) en −1/2', () => {
+		const { variation } = rows('x e^(2x)');
+
+		expect(variation.values.get('-\\dfrac{1}{2}')).toMatchObject({
+			expression: '-\\dfrac{1}{2 \\exponentialE}',
+			position: 'bottom'
+		});
+	});
+});

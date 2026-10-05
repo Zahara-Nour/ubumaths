@@ -24,7 +24,10 @@ import type {
 	OneSidedLimitResult
 } from './types';
 import { LimitError } from './types';
-import { isLimit, isNumber, isInfinity } from '../guards';
+import { isLimit, isNumber, isInfinity, isSuperscript } from '../guards';
+import { findNodes } from '../transforms';
+import { isEulerBase } from '../differentiation/rules';
+import { expandEulerPowers } from '../normal/rules/euler-power';
 import { matchKnownLimit, getKnownLimitValue } from './known-limits';
 import { LimitStepRecorderImpl } from './step-recorder';
 import { containsVariable } from '../common/contains-variable';
@@ -478,6 +481,17 @@ export function evaluateLimit(
 		}
 	}
 
+	// Stratégie 7 : `e^u` relu comme `exp(u)`. Les règles du moteur — limites
+	// de référence, croissances comparées, composition — ne connaissent que la
+	// fonction `exp` ; la puissance de la base d'Euler (constante du parseur
+	// custom, lettre `e` du parseur LaTeX) passait à côté : `x e^x` en −∞
+	// sortait « non supportée ». On ne relit qu'EN DERNIER RECOURS, pour ne
+	// rien changer à ce qui aboutissait déjà (une valeur `e` ne devient pas
+	// `exp(1)`). Pas de boucle : la relecture ne contient plus de `e^u`.
+	if (varName !== 'e' && containsEulerPower(expression)) {
+		return evaluateLimit(expandEulerPowers(expression), varName, approachPoint, dir, options);
+	}
+
 	// No strategy worked
 	return createResult(
 		null,
@@ -491,6 +505,11 @@ export function evaluateLimit(
 		opts,
 		'Limite non supportée avec les techniques actuelles'
 	);
+}
+
+/** L'expression contient-elle une puissance de la base d'Euler (`e^u`) ? */
+function containsEulerPower(expr: MathNode): boolean {
+	return findNodes(expr, (n) => isSuperscript(n) && isEulerBase(n.base)).length > 0;
 }
 
 /**

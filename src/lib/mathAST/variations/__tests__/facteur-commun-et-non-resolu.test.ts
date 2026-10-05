@@ -69,11 +69,17 @@ describe('f(x) = x eˣ', () => {
 		expect(result.extrema.some((e) => e.type.includes('maximum'))).toBe(false);
 	});
 
-	// ⚠️ Hors de portée de ce correctif, mesuré : `evaluateLimit` ne connaît que
-	// `exp(…)`, pas `e^…` ; réécrire `e^u` en `exp(u)` rend bien 0 et +∞, mais
-	// `classifyGlobalExtrema` promeut alors la limite 0 en −∞ en « Maximum
-	// global : f(−∞) » — un extremum non atteint. Les deux vont ensemble.
-	it.todo('limites : 0 en −∞ (croissances comparées), +∞ en +∞');
+	// Mesuré avant le correctif : « indetermine » des deux côtés, `evaluateLimit`
+	// ne connaissant que `exp(…)`, pas `e^…`.
+	it('limites : 0 en −∞ (croissances comparées), +∞ en +∞', () => {
+		const text = commandOutput('x e^x');
+		expect(text).toContain('lim_{x -> -∞^+} f(x) = 0');
+		expect(text).toContain('lim_{x -> +∞^-} f(x) = +inf');
+		// Un extremum non atteint ne s'annonce pas : la limite 0 en −∞ n'est
+		// pas un « Maximum global : f(−∞) ».
+		expect(text).not.toMatch(/Maximum/);
+		expect(text).toContain('Minimum global : f(-1)');
+	});
 });
 
 describe('f(x) = x² eˣ (coefficients ≠ 1 dans la dérivée)', () => {
