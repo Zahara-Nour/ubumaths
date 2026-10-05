@@ -93,22 +93,22 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 ## Puissances
 
-| entrée        | `simplify`             | `auto`      | `reduire`   | `developper`           | `factoriser`           |
-| ------------- | ---------------------- | ----------- | ----------- | ---------------------- | ---------------------- |
-| `x^{2}x^{3}`  | `x^5`                  | `x^5`       | `x^5`       | `x^5`                  | `x^2 x^3`              |
-| `(x^{2})^{3}` | `x^6`                  | `x^6`       | `x^6`       | `x^6`                  | `x^6`                  |
-| `e^{x}e^{2x}` | `e^x e^{2 x}`          | `e^{3 x}`   | `e^{3 x}`   | `e^{2 x} e^x`          | `e^x e^{2 x}`          |
-| `(e^{x})^{3}` | `\left( e^x \right)^3` | `e^{3 x}`   | `e^{3 x}`   | `\left( e^x \right)^3` | `\left( e^x \right)^3` |
-| `x^{a}x^{b}`  | `x^a x^b`              | `x^{a + b}` | `x^{a + b}` | `x^a x^b`              | `x^a x^b`              |
+| entrée        | `simplify`             | `auto`      | `reduire`   | `developper` | `factoriser`           |
+| ------------- | ---------------------- | ----------- | ----------- | ------------ | ---------------------- |
+| `x^{2}x^{3}`  | `x^5`                  | `x^5`       | `x^5`       | `x^5`        | `x^2 x^3`              |
+| `(x^{2})^{3}` | `x^6`                  | `x^6`       | `x^6`       | `x^6`        | `x^6`                  |
+| `e^{x}e^{2x}` | `e^{3 x}`              | `e^{3 x}`   | `e^{3 x}`   | `e^{3 x}`    | `e^x e^{2 x}`          |
+| `(e^{x})^{3}` | `\left( e^x \right)^3` | `e^{3 x}`   | `e^{3 x}`   | `e^{3 x}`    | `\left( e^x \right)^3` |
+| `x^{a}x^{b}`  | `x^a x^b`              | `x^{a + b}` | `x^{a + b}` | `x^a x^b`    | `x^a x^b`              |
 
 ## Exponentielle et logarithme
 
-| entrée                 | `simplify`              | `auto`                  | `reduire`               | `developper`            | `factoriser`            |
-| ---------------------- | ----------------------- | ----------------------- | ----------------------- | ----------------------- | ----------------------- |
-| `e^{x}`                | `e^x`                   | `e^x`                   | `e^x`                   | `e^x`                   | `e^x`                   |
-| `\ln(e^{x})`           | `\ln\left( e^x \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` |
-| `\frac{e^{2x}}{e^{x}}` | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  |
-| `e^{0}`                | `1`                     | `1`                     | `1`                     | `1`                     | `1`                     |
+| entrée                 | `simplify`             | `auto`                  | `reduire`               | `developper`            | `factoriser`            |
+| ---------------------- | ---------------------- | ----------------------- | ----------------------- | ----------------------- | ----------------------- |
+| `e^{x}`                | `e^x`                  | `e^x`                   | `e^x`                   | `e^x`                   | `e^x`                   |
+| `\ln(e^{x})`           | `x`                    | `x \ln\left( e \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` |
+| `\frac{e^{2x}}{e^{x}}` | `\dfrac{e^{2 x}}{e^x}` | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  |
+| `e^{0}`                | `1`                    | `1`                     | `1`                     | `1`                     | `1`                     |
 
 ## Trigonométrie
 
@@ -138,23 +138,22 @@ Hors panel (2026-10-05) : `normalize` calcule `factorial` / `binom` à arguments
 
 ## Où `simplify` et `auto` divergent
 
-Mesuré sur le panel ci-dessus : **13 lignes sur 51**.
+Mesuré sur le panel ci-dessus : **12 lignes sur 51** (mis à jour par `fix/normalize-ln-exp`, 2026-10-05).
 
-| entrée                   | `simplify`                                    | `auto`                               | nature                                                                                                               |
-| ------------------------ | --------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------ |
-| `\frac{6}{8}x`           | `\dfrac{3 x}{4}`                              | `\dfrac{3}{4} x`                     | écriture — même valeur                                                                                               |
-| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}`                         | `\dfrac{1}{2} \sqrt{2}`              | écriture — même valeur                                                                                               |
-| `\sqrt{x^2}`             | `\sqrt{x^2}`                                  | `\left                               | x \right                                                                                                             | `   | ⚠️ **capacité** — `simplify` ne réduit pas |
-| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`                               | `\sqrt[3]{x^2}`                      | écriture — même valeur                                                                                               |
-| `(x+1)^2`                | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision** — barrière de coût de `simplify`                                                                        |
-| `(2x-3)(x+4)`            | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12`                   | **décision** — même barrière de coût                                                                                 |
-| `x^2+2x+1`               | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision opposée** — l'un factorise, l'autre développe                                                             |
-| `\frac{(x+y)^2}{x+2y}`   | `\dfrac{\left( x + y \right)^2}{x + 2 y}`     | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur                                                                        |
-| `e^{x}e^{2x}`            | `e^x e^{2 x}`                                 | `e^{3 x}`                            | ⚠️ **capacité** — `simplify` ne combine pas les exposants                                                            |
-| `(e^{x})^{3}`            | `\left( e^x \right)^3`                        | `e^{3 x}`                            | ⚠️ **capacité** — `simplify` ne combine pas les exposants ; l’écriture `e^x^3`, qui ne se relisait pas, est corrigée |
-| `x^{a}x^{b}`             | `x^a x^b`                                     | `x^{a + b}`                          | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non                                                      |
-| `\ln(e^{x})`             | `\ln\left( e^x \right)`                       | `x \ln\left( e \right)`              | ⚠️ **les deux incomplets** — `auto` s'arrête à `x ln(e)`                                                             |
-| `-(x+1)`                 | `-\left( x + 1 \right)`                       | `-x - 1`                             | écriture — `simplify` garde le signe devant                                                                          |
+| entrée                   | `simplify`                                    | `auto`                               | nature                                                                                                                  |
+| ------------------------ | --------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------ |
+| `\frac{6}{8}x`           | `\dfrac{3 x}{4}`                              | `\dfrac{3}{4} x`                     | écriture — même valeur                                                                                                  |
+| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}`                         | `\dfrac{1}{2} \sqrt{2}`              | écriture — même valeur                                                                                                  |
+| `\sqrt{x^2}`             | `\sqrt{x^2}`                                  | `\left                               | x \right                                                                                                                | `   | ⚠️ **capacité** — `simplify` ne réduit pas |
+| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`                               | `\sqrt[3]{x^2}`                      | écriture — même valeur                                                                                                  |
+| `(x+1)^2`                | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision** — barrière de coût de `simplify`                                                                           |
+| `(2x-3)(x+4)`            | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12`                   | **décision** — même barrière de coût                                                                                    |
+| `x^2+2x+1`               | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision opposée** — l'un factorise, l'autre développe                                                                |
+| `\frac{(x+y)^2}{x+2y}`   | `\dfrac{\left( x + y \right)^2}{x + 2 y}`     | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur                                                                           |
+| `(e^{x})^{3}`            | `\left( e^x \right)^3`                        | `e^{3 x}`                            | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
+| `x^{a}x^{b}`             | `x^a x^b`                                     | `x^{a + b}`                          | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non                                                         |
+| `\ln(e^{x})`             | `x`                                           | `x \ln\left( e \right)`              | ⚠️ **capacité** — `simplify` réduit depuis `fix/normalize-ln-exp` ; `auto` s'arrête à `x ln(e)` (lettre `e`)            |
+| `-(x+1)`                 | `-\left( x + 1 \right)`                       | `-x - 1`                             | écriture — `simplify` garde le signe devant                                                                             |
 
 **Écriture** : les deux sont justes, la forme diffère.
 **Décision** : `simplify` compare les coûts et garde la forme la moins chère, là
@@ -163,15 +162,23 @@ des intentions.
 **Capacité** : une colonne sait ce que l'autre ignore. C'est là qu'il y a du
 travail, et le panel le rend visible.
 
-⚠️ **Trois écarts relevés à la première lecture de ce panel, non traités :**
+⚠️ **Écarts relevés à la première lecture de ce panel, et leur suivi :**
 
 1. ~~`simplify((e^x)^3)` rend `e^x^3`, une écriture qui **ne se relit pas**.~~
    Corrigé dans les générateurs LaTeX et texte (une puissance en base est
    parenthésée) : `simplify` rend désormais `\left( e^x \right)^3`, juste mais
    non réduit.
-2. `simplify` ne combine pas `e^x · e^{2x}` ni `x^a · x^b`, que `auto` sait
-   faire depuis cette même PR.
-3. `ln(e^x)` s'arrête à `x ln(e)` dans `auto`, au lieu de `x`.
+2. ~~`simplify` ne combine pas `e^x · e^{2x}`~~ : comblé par
+   `fix/normalize-ln-exp` (2026-10-05) — `normalize` applique les identités de
+   `e^{…}` (ln(eᵃ) = a, e^{ln a} = a, eᵃ·eᵇ, (eᵃ)ⁿ) en gardant l'écriture
+   `e^{…}` ; `simplify` et `developper` rendent `e^{3 x}`, et `e^{\ln x}` se
+   réduit à `x`. Reste : `x^a · x^b`, que `auto` sait faire et `simplify` non.
+3. `ln(e^x)` : `simplify` rend `x` depuis `fix/normalize-ln-exp`. ⚠️ Reste :
+   `auto`, `reduire` et `developper` s'arrêtent à `x ln(e)` — `ln(e)` avec la
+   **lettre** `e` n'est pas réduit (seule la constante `\exponentialE` l'est).
+4. ⚠️ Restent aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
+   (barrière de coût), et le **quotient** `e^{2x}/e^x` n'est réduit par aucune
+   colonne.
 
 ## Non couvert
 

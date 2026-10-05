@@ -16,6 +16,7 @@ import type { Interval } from '$lib/math/intervals/types';
 import type { Sign, SignedInterval, SignAnalysisResult } from '../sign/types';
 import type { Monotonicity, MonotonicInterval } from './types';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { tidyCriticalAbscissa } from './critical-points';
 
 // =============================================================================
 // Sign to Monotonicity Conversion
@@ -78,6 +79,22 @@ export function monotonicityToSign(monotonicity: Monotonicity): Sign {
 // =============================================================================
 
 /**
+ * Les bornes écrites comme les abscisses critiques : `exp(-1)` (forme du
+ * solveur) devient `\dfrac{1}{\exponentialE}`, comme dans la ligne des points
+ * critiques. Une borne sans exponentielle reste la même référence.
+ */
+function withTidyEndpoints(interval: Interval): Interval {
+	const lower = tidyCriticalAbscissa(interval.lower.value);
+	const upper = tidyCriticalAbscissa(interval.upper.value);
+	if (lower === interval.lower.value && upper === interval.upper.value) return interval;
+	return {
+		...interval,
+		lower: { ...interval.lower, value: lower },
+		upper: { ...interval.upper, value: upper }
+	};
+}
+
+/**
  * Build monotonic intervals from a sign analysis result.
  *
  * Converts each signed interval from the derivative's sign analysis
@@ -105,7 +122,7 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
 		const derivativeSign = signToDerivativeSignLabel(signedInterval.sign);
 
 		monotonicIntervals.push({
-			interval: signedInterval.interval,
+			interval: withTidyEndpoints(signedInterval.interval),
 			monotonicity,
 			derivativeSign,
 			reason: buildMonotonicityReason(signedInterval, signResult.variable)

@@ -254,13 +254,17 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 		it.each([
 			['x^{2}x^{3}', 'x^5', 'x^5', 'x^5', 'x^5', 'x^2 x^3'],
 			['(x^{2})^{3}', 'x^6', 'x^6', 'x^6', 'x^6', 'x^6'],
-			['e^{x}e^{2x}', 'e^x e^{2 x}', 'e^{3 x}', 'e^{3 x}', 'e^{2 x} e^x', 'e^x e^{2 x}'],
+			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
+			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
+			['e^{x}e^{2x}', 'e^{3 x}', 'e^{3 x}', 'e^{3 x}', 'e^{3 x}', 'e^x e^{2 x}'],
+			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
+			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
 			[
 				'(e^{x})^{3}',
 				'\\left( e^x \\right)^3',
 				'e^{3 x}',
 				'e^{3 x}',
-				'\\left( e^x \\right)^3',
+				'e^{3 x}',
 				'\\left( e^x \\right)^3'
 			],
 			['x^{a}x^{b}', 'x^a x^b', 'x^{a + b}', 'x^{a + b}', 'x^a x^b', 'x^a x^b']
@@ -276,9 +280,12 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 	describe('Exponentielle et logarithme', () => {
 		it.each([
 			['e^{x}', 'e^x', 'e^x', 'e^x', 'e^x', 'e^x'],
+			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
+			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
+			// ⚠️ Reste : `ln(e)` (lettre e) non réduit en auto/reduire/developper.
 			[
 				'\\ln(e^{x})',
-				'\\ln\\left( e^x \\right)',
+				'x',
 				'x \\ln\\left( e \\right)',
 				'x \\ln\\left( e \\right)',
 				'x \\ln\\left( e \\right)',

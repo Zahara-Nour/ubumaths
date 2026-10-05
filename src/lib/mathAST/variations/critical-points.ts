@@ -13,8 +13,10 @@ import type { Domain } from '../domain/types';
 import type { CriticalPointInfo, CriticalPointNature } from './types';
 import type { Solution } from '../solve/types';
 import { solve } from '../solve/solve';
-import { equals, number } from '../factory';
-import { isRelation } from '../guards';
+import { equals, euler, number, superscript } from '../factory';
+import { isFunction, isRelation } from '../guards';
+import { findFirst, mapNode } from '../transforms';
+import { normalize, denormalize } from '../normal';
 import { computeDomain } from '../domain/compute';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
@@ -226,25 +228,72 @@ export function evaluateAtCriticalPoint(
 }
 
 /**
- * La valeur exacte f(x₀), mise au propre par `tidy` pour l'affichage.
+ * La valeur exacte f(x₀), mise au propre pour l'affichage : `normalize`
+ * applique les identités, `tidy` met au propre.
  *
- * Deux écritures candidates de la même valeur : celle de l'évaluation exacte
- * (`-exp(-1)` pour x eˣ en −1) et la substitution elle-même
- * (`-1·e^{-1}`, que `tidy` rend −1/e). `cheapest` garde la plus simple ; la
- * substitution mise au propre gagne les égalités. Mesuré avant : le minimum de
- * x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`.
+ * Trois écritures candidates de la même valeur : l'évaluation exacte
+ * (`-exp(-1)` pour x eˣ en −1), la forme normale de la substitution, et la
+ * substitution elle-même (`-1·e^{-1}`, que `tidy` rend −1/e). `cheapest` garde
+ * la plus simple ; la substitution mise au propre gagne les égalités.
  *
- * ⚠️ Celui de x² ln x reste `ln(e^{−1/2})(e^{−1/2})²` : `tidy` n'applique
- * aucune identité (ln(eᵃ) = a est exclu, docs/wip/tidy-phase0.md) — décision
- * de David en attente, voir le `it.todo` de tidy-exp-ln.test.ts.
+ * Mesuré avant : le minimum de x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`, celui
+ * de x² ln x `ln(e^{−1/2})(e^{−1/2})²`. `tidy` n'applique aucune identité
+ * (ln(eᵃ) = a est exclu, docs/wip/tidy-phase0.md §A) : c'est `normalize` qui
+ * réduit (décision de David, option A, 2026-10-05).
+ *
+ * `normalize` écrit `1/e` sous la forme `exp(-1)`, que `tidy` ne touche pas :
+ * chaque candidate repasse en écriture `e^{…}` avant `tidy` (−1/e, pas
+ * `-exp(-1)`).
  *
  * @param substituted - f(x₀), x₀ substitué, non évalué
  * @param evaluated - Ce que rend l'évaluation exacte, `null` si elle a échoué
  */
 export function tidyExactValue(substituted: MathNode, evaluated: MathNode | null): MathNode {
-	const fromSubstitution = tidySafe(substituted);
-	if (evaluated === null) return fromSubstitution;
-	return cheapest(tidySafe(evaluated), fromSubstitution);
+	const candidates: MathNode[] = [];
+	if (evaluated !== null) candidates.push(evaluated);
+	const normalized = normalizeSafe(substituted);
+	if (normalized !== null) candidates.push(normalized);
+	candidates.push(substituted);
+
+	let best: MathNode | null = null;
+	for (const candidate of candidates) {
+		const tidied = tidySafe(toEulerPowers(candidate));
+		best = best === null ? tidied : cheapest(best, tidied);
+	}
+	return best ?? tidySafe(substituted);
+}
+
+/**
+ * Une abscisse critique mise au propre comme une valeur, si elle contient une
+ * exponentielle : le solveur rend `exp(-1)` pour ln x = −1, affiché
+ * `\dfrac{1}{\exponentialE}`. Sans exponentielle, l'abscisse n'est pas touchée.
+ *
+ * Partagée avec les bornes des intervalles de monotonie (`monotonicity.ts`) :
+ * sans ça, le tableau écrivait `x = 1/e` au-dessus de `]0 ; exp(-1)[`.
+ */
+export function tidyCriticalAbscissa(value: MathNode): MathNode {
+	if (findFirst(value, isExpCall) === undefined) return value;
+	return tidyExactValue(value, null);
+}
+
+function isExpCall(node: MathNode): boolean {
+	return isFunction(node) && node.name === 'exp' && node.args.length === 1;
+}
+
+/** `exp(u)` → `e^{u}` : l'écriture que `tidy` sait mettre au propre (e^{−1} → 1/e). */
+function toEulerPowers(node: MathNode): MathNode {
+	return mapNode(node, (current) =>
+		isFunction(current) && isExpCall(current) ? superscript(euler(), current.args[0]) : current
+	);
+}
+
+/** La forme normale réécrite, `null` si `normalize` lève une exception. */
+function normalizeSafe(node: MathNode): MathNode | null {
+	try {
+		return denormalize(normalize(node));
+	} catch {
+		return null;
+	}
 }
 
 /** `tidy` peut relancer une exception imprévue : on garde alors la forme brute. */
@@ -403,7 +452,7 @@ function filterSolutionsInDomain(
 		}
 
 		result.push({
-			value: solution.value,
+			value: tidyCriticalAbscissa(solution.value),
 			approximate: solution.approximate,
 			exact: solution.exact
 		});

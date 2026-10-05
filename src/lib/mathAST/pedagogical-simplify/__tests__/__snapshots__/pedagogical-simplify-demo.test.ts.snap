@@ -197,8 +197,9 @@ exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > e^(ln x) 
 "# e^(ln x) — intent=reduire — e^{\\ln(x)}
 
 ## lycee (verbosity=detailed)
-(no steps — already simplified for this intent)
-=> e^{\\ln\\left( x \\right)}"
+- [euler-identities] Propriétés de l'exponentielle : ln(e^a) = a, e^(ln a) = a, e^a × e^b = e^(a+b), (e^a)^n = e^(an)
+  \\begin{aligned} \\textcolor{blue}{e^{\\ln\\left( x \\right)}} & \\\\ = x \\end{aligned}
+=> x"
 `;
 
 exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > ln(2·3) 1`] = `

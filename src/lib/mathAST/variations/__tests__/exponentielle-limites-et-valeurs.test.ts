@@ -117,9 +117,35 @@ describe("Valeur de l'extremum : exacte ET réduite", () => {
 		expect(extremum.yApproximate ?? NaN).toBeCloseTo(-1 / (2 * Math.E), 12);
 	});
 
-	// ⚠️ Bloqué par le contrat de `tidy` (docs/wip/tidy-phase0.md §A) : ln(eˣ)
-	// → x en est exclu. L'affichage reste `ln(e^{−1/2})(e^{−1/2})²`.
-	it.todo('x² ln x : minimum affiché −\\dfrac{1}{2e} (attend la décision sur ln(e^a) dans tidy)');
+	// Option A (David, 2026-10-05) : `tidy` n'applique aucune identité ;
+	// `normalize` réduit ln(e^{−1/2}) et (e^{−1/2})², puis `tidy` met au propre.
+	// Mesuré avant : `ln(e^{−1/2})(e^{−1/2})²`.
+	it('x² ln x : minimum affiché −1/(2e), sous la même forme que x e^{2x}', () => {
+		const extremum = study('x^2 ln(x)').extrema[0];
+		expect(sameValue(extremum.y, '-1/(2e)')).toBe(true);
+		expect(toLatex(extremum.y)).toBe('-\\dfrac{1}{2 \\exponentialE}');
+	});
+
+	// Mesuré avant : point critique et valeur affichés `exp(-1)`.
+	it('x ln x : minimum −1/e en 1/e, sans `exp(`', () => {
+		const result = study('x ln(x)');
+		expect(result.extrema).toHaveLength(1);
+		const extremum = result.extrema[0];
+		expect(extremum.type).toBe('global_minimum');
+		expect(toLatex(extremum.x)).toBe('\\dfrac{1}{\\exponentialE}');
+		expect(toLatex(extremum.y)).toBe('-\\dfrac{1}{\\exponentialE}');
+		expect(extremum.yApproximate ?? NaN).toBeCloseTo(-1 / Math.E, 12);
+	});
+
+	it('ln(x)/x : maximum 1/e en e, sans `exp(`', () => {
+		const result = study('ln(x)/x');
+		expect(result.extrema).toHaveLength(1);
+		const extremum = result.extrema[0];
+		expect(extremum.type).toBe('global_maximum');
+		expect(toLatex(extremum.x)).toBe('\\exponentialE');
+		expect(toLatex(extremum.y)).toBe('\\dfrac{1}{\\exponentialE}');
+		expect(formatVariationTable(result)).not.toContain('exp(');
+	});
 
 	it('x² ln x : pas d’extremum en 0 (limite 0 non atteinte)', () => {
 		const result = study('x^2 ln(x)');
@@ -204,6 +230,8 @@ describe('Témoins inchangés', () => {
 				'  lim_{x -> +∞^-} f(x) = +inf'
 			]
 		],
+		// Seul témoin qui bouge, voulu (option A, 2026-10-05) : `exp(-1)` partout
+		// avant, 1/e désormais — même valeur, écriture du lycée.
 		[
 			'x ln(x)',
 			[
@@ -213,15 +241,15 @@ describe('Témoins inchangés', () => {
 				'Domaine : ]0 ; +∞[',
 				'',
 				'Points critiques :',
-				"  x = exp(-1) (f'=0)",
+				"  x = 1/\\euler (f'=0)",
 				'',
 				"Signe de f'(x) :",
-				'  ]0 ; exp(-1)[    : -  (f decroissante)',
-				'  {exp(-1)}        : 0  (f constante)',
-				'  ]exp(-1) ; +inf[ : +  (f croissante)',
+				'  ]0 ; 1/\\euler[    : -  (f decroissante)',
+				'  {1/\\euler}        : 0  (f constante)',
+				'  ]1/\\euler ; +inf[ : +  (f croissante)',
 				'',
 				'Extrema :',
-				'  Minimum global : f(exp(-1)) = -exp(-1)',
+				'  Minimum global : f(1/\\euler) = -1/\\euler',
 				'',
 				'Limites aux bornes :',
 				'  lim_{x -> 0^+} f(x) = 0',
