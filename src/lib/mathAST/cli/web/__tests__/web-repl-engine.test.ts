@@ -687,8 +687,8 @@ describe('WebReplEngine - .diff : facteur de droite négatif parenthésé', () =
 		const result = new WebReplEngine().execute('.diff 2e^(-x)');
 		expect(result.success).toBe(true);
 		expect(result.output).toBe(
-			'd/dx(2e^{(-x)}) = 2*(-e^{(-x)}ln(e))\n' +
-				'LaTeX: 2 \\left( -e^{\\left( -x \\right)} \\ln\\left( e \\right) \\right)'
+			// Sans ln(e) depuis #837 : (e^u)' = u'·e^u
+			'd/dx(2e^{(-x)}) = 2*(-e^{(-x)})\n' + 'LaTeX: 2 \\left( -e^{\\left( -x \\right)} \\right)'
 		);
 	});
 });
