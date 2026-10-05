@@ -35,8 +35,11 @@ import {
 	piConstant,
 	relation,
 	parentheses,
-	greek
+	greek,
+	euler
 } from '../../factory';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
+import { substitute } from '../../eval/substitute';
 import type { FunctionBindings } from '../../eval/function-bindings';
 
 // Helper to parse and differentiate (prefixed with _ to mark as optional utility)
@@ -740,5 +743,68 @@ describe('containsVariable', () => {
 	it('returns false for constants', () => {
 		expect(containsVariable(number('5'), 'x')).toBe(false);
 		expect(containsVariable(piConstant(), 'x')).toBe(false);
+	});
+});
+
+/**
+ * (e^u)' = u'·e^u — SANS facteur ln(e).
+ *
+ * ⚠️ Vu par David dans l'atelier (2026-10-05) : `.diff e^x` rendait
+ * `e^x ln(e)`. La base `e` passait par la règle de l'exponentielle
+ * généralisée (a^u)' = a^u·ln(a)·u', juste mais jamais simplifiée.
+ *
+ * `parseLatex('e^x')` produit une VARIABLE `e` ; le parseur custom, la
+ * constante `euler`. Les deux sont la base d'Euler : `evaluate` et `compile`
+ * lisent déjà la variable `e` comme Euler (convention du module).
+ */
+describe('base e (Euler) : (e^u) = u·e^u sans ln(e)', () => {
+	const d = (latex: string) => toLatex(differentiate(parseLatex(latex)));
+
+	it("(e^x)' = e^x", () => {
+		expect(d('e^x')).toBe('e^x');
+	});
+
+	it("(e^{3x})' = e^{3x}·3", () => {
+		expect(d('e^{3x}')).toBe('e^{3 x} 3');
+	});
+
+	it("(e^{x^2})' = e^{x^2}·2x", () => {
+		expect(d('e^{x^2}')).toBe('e^{x^2} 2 x');
+	});
+
+	it("(x e^x)' = e^x + x e^x", () => {
+		expect(d('xe^x')).toBe('e^x + x e^x');
+	});
+
+	it("(2e^{-x})' ne contient pas ln(e) et vaut -2e^{-x}", () => {
+		const result = differentiate(parseLatex('2e^{-x}'));
+		expect(toLatex(result)).not.toContain('\\ln');
+		// La valeur, pas seulement l'absence de ln : en x = 1, -2/e.
+		expect(evaluateNodeToApproximatedNumber(substitute(result, { x: 1 }))).toBeCloseTo(
+			-2 / Math.E,
+			10
+		);
+	});
+
+	it('la constante euler (parseur custom) suit la même règle', () => {
+		const expr = power(euler(), multiply(number('3'), variable('x'), 'implicit'));
+		expect(toLatex(differentiate(expr))).toBe('\\exponentialE^{3 x} 3');
+	});
+
+	it('sans simplification non plus, pas de ln(e)', () => {
+		const result = differentiate(parseLatex('e^{3x}'), { simplify: false });
+		expect(toLatex(result)).not.toContain('\\ln');
+	});
+
+	it("(2^x)' garde ln(2)", () => {
+		expect(d('2^x')).toBe('2^x \\ln\\left( 2 \\right)');
+	});
+
+	it("(a^x)' garde ln(a) pour une variable ordinaire", () => {
+		expect(d('a^x')).toBe('a^x \\ln\\left( a \\right)');
+	});
+
+	it("d/de(e^2) = 2e : e variable de dérivation n'est pas Euler", () => {
+		expect(toLatex(differentiate(parseLatex('e^2'), { variable: 'e' }))).toBe('2 e');
 	});
 });
