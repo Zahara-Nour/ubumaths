@@ -106,4 +106,20 @@ describe('Tableau de variations : limite exacte aux bornes (asymptote horizontal
 			expect(toLatex(bl.limit as MathNode)).toBe('\\dfrac{2}{3}');
 		}
 	});
+
+	// Revue #877 : une borne exacte 2/3 doit garder sa valeur approchée, sinon
+	// la fonction passe pour non bornée et le minimum global redevient local
+	it.each(['\\frac{2x^2}{3x^2+1}', '\\frac{x^2}{2x^2+1}', '\\frac{x^2}{x^2+1}'])(
+		'%s : bornes finies lues (approximate) → minimum global en 0',
+		(latex) => {
+			const result = computeVariations(parseLatex(latex), {
+				variable: 'x',
+				includeBoundaryLimits: true
+			});
+			for (const bl of result.boundaryLimits ?? []) {
+				expect(Number.isFinite(bl.approximate)).toBe(true);
+			}
+			expect(result.extrema.map((e) => e.type)).toEqual(['global_minimum']);
+		}
+	);
 });
