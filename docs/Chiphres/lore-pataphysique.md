@@ -1444,7 +1444,7 @@ Les Chiphre parlent avec **cinq voix superposables**, jamais en concurrence. Cha
 
 - **Lieu** : page publique `/shtam` (la une) et `/shtam/<slug>` (un article). Lecture seule : **ni commentaires, ni réactions**.
 - **Voix — la Rédaction du Shtam** : sixième voix, réservée aux articles. Registre **journalistique imperturbable** : on rapporte l'absurde avec le sérieux d'une dépêche. Jamais de clin d'œil au lecteur, jamais de « lol », jamais de juron dans le corps de l'article. Père Ubu peut y paraître, mais **cité** (interview, déclaration, communiqué), jamais comme narrateur.
-- **Rédaction** (proposition 🟡) : **Cotice** (Palotin lettré et bavard) rédacteur en chef ; **Giron**, **Pile** et **Merdranpo** reporters. Chaque article est signé.
+- **Rédaction** 🟡 (validée par David, 2026-10-05) : **Cotice** (Palotin lettré et bavard) rédacteur en chef ; **Giron**, **Pile** et **Merdranpo** reporters. Chaque article est signé.
 - **Datation** : chaque article porte sa **date de l'Almanach** (« 14 Auroral »), calculée depuis sa date réelle de publication.
 - **Le vrai du faux** : chaque article se termine **obligatoirement** par un encadré séparé, **voix de l'Académie**, qui rétablit le fait mathématique réel (« π est transcendant tous les jours. Cela veut dire… »). Le lecteur a de 11 à 18 ans : un faux fait énoncé avec aplomb peut rester. L'encadré fait de chaque blague un mini-cours. Deux voix, deux blocs : la règle stricte des voix est respectée.
 - **Qui peut-on parodier** : les personnages du Royaume et les **mathématiciens morts** (Pythagore, Euler, Fermat…). **Jamais une personne vivante, jamais une institution réelle nommée** (diffamation, site pour mineurs).
