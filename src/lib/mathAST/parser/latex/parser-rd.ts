@@ -37,6 +37,12 @@ import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import {
+	BINOM_COMMANDS,
+	DOUBLE_FACTORIAL_ERROR,
+	binomOf,
+	factorialOf
+} from '../factorial-notation';
+import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
@@ -221,11 +227,15 @@ class RDParser {
 	// Token Management
 	// =========================================================================
 
+	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
+	private previousToken: Token | undefined;
+
 	/**
 	 * Advance to the next token, skipping whitespace
 	 */
 	private advance(): Token {
 		const prev = this.currentToken;
+		this.previousToken = prev;
 		this.currentToken = this.skipWhitespace();
 		return prev;
 	}
@@ -571,6 +581,18 @@ class RDParser {
 				this.advance();
 				const sub = this.parseSubscriptOperand();
 				left = this.applyColor(MathAST.subscript(left, sub));
+			} else if (this.check('EXCLAMATION')) {
+				// Factorielle postfixe : `2^3!` = (2³)!, `n!^2` = (n!)² ; `3!!` refusé
+				this.advance();
+				if (this.check('EXCLAMATION')) {
+					this.error(
+						DOUBLE_FACTORIAL_ERROR,
+						this.currentToken.position,
+						this.currentToken.length,
+						'UNEXPECTED_TOKEN'
+					);
+				}
+				left = this.applyColor(factorialOf(left));
 			} else {
 				break;
 			}
@@ -767,7 +789,9 @@ class RDParser {
 		}
 
 		// NUMBER cannot start implicit multiplication (prevents x2, (a)2, \sqrt{2}3)
+		// Sauf juste après une factorielle : `3!27!` = 3! × 27! (écriture de `\frac{30!}{3!27!}`)
 		if (token.type === 'NUMBER') {
+			if (this.previousToken?.type === 'EXCLAMATION') return true;
 			return false;
 		}
 
@@ -782,6 +806,7 @@ class RDParser {
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
 					token.value === 'dfrac' ||
+					BINOM_COMMANDS.has(token.value) ||
 					token.value === 'sqrt' ||
 					token.value === 'left'))
 		);
@@ -859,6 +884,22 @@ class RDParser {
 			case 'frac':
 			case 'dfrac':
 				return this.parseFraction();
+
+			case 'binom':
+			case 'dbinom':
+			case 'tbinom': {
+				// `\binom{n}{k}` → binom(n, k), le nœud de `binom(n, k)`
+				this.advance();
+				const top = this.parseCommandArgument(
+					'Missing \\binom top',
+					"Expected '}' after \\binom top"
+				);
+				const bottom = this.parseCommandArgument(
+					'Missing \\binom bottom',
+					"Expected '}' after \\binom bottom"
+				);
+				return this.applyColor(binomOf(top, bottom));
+			}
 
 			case 'sqrt':
 				return this.parseSqrt();

@@ -258,25 +258,28 @@ function exactIntegerResult(value: bigint, name: string): bigint {
 	return value;
 }
 
-/** n! en entiers exacts (18! est le dernier qui reste exact) */
-function exactFactorial(n: bigint): bigint {
+/**
+ * n! en entiers exacts (18! est le dernier qui reste exact). `bounded = false` :
+ * sans la borne 2⁵³ (BigInt), à réserver à un appelant qui borne lui-même n.
+ */
+export function exactFactorial(n: bigint, bounded = true): bigint {
 	let result = 1n;
 	for (let i = 2n; i <= n; i++) {
 		result *= i;
-		exactIntegerResult(result, 'factorial');
+		if (bounded) exactIntegerResult(result, 'factorial');
 	}
 	return result;
 }
 
 /** Coefficient binomial (n parmi k) ; 0 hors de 0 ⩽ k ⩽ n, comme au tableau */
-function exactBinomial(n: bigint, k: bigint): bigint {
+export function exactBinomial(n: bigint, k: bigint, bounded = true): bigint {
 	if (k < 0n || k > n) return 0n;
 	const smaller = k < n - k ? k : n - k;
 	let result = 1n;
 	// Produit des quotients successifs : chaque étape reste un coefficient binomial entier
 	for (let i = 1n; i <= smaller; i++) {
 		result = (result * (n - smaller + i)) / i;
-		exactIntegerResult(result, 'binom');
+		if (bounded) exactIntegerResult(result, 'binom');
 	}
 	return result;
 }
