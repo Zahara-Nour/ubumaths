@@ -90,6 +90,26 @@ export interface Removed {
 	readonly broken: readonly string[];
 }
 
+/**
+ * Le reçu d'une suppression en cascade : ce qui est parti, et de quoi
+ * l'annuler (`undoRemoval`). Opaque pour l'appelant, qui le rend tel quel.
+ */
+export interface RemovedWithDependents {
+	readonly ok: true;
+	/** L'objet puis ses dépendants, dans l'ordre des cartes. */
+	readonly removed: readonly string[];
+}
+
+/** De quoi remettre l'atelier tel qu'il était avant une suppression en cascade. */
+interface RemovalUndo {
+	readonly receipt: RemovedWithDependents;
+	/** `revision` juste après la suppression : si elle a bougé, on n'annule plus (L4). */
+	readonly revision: number;
+	readonly items: AtelierObject[];
+	readonly charts: [string, ListChartState][];
+	readonly partnerChoices: [string, string][];
+}
+
 export interface Updated {
 	readonly ok: true;
 	readonly object: AtelierObject;
@@ -340,6 +360,9 @@ export class Atelier {
 	 * statut que `charts` : affichage seulement, hors de `serialize()`.
 	 */
 	private partnerChoices = new SvelteMap<string, string>();
+
+	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
+	#lastRemoval: RemovalUndo | null = null;
 
 	get objects(): readonly AtelierObject[] {
 		return this.items;
@@ -724,6 +747,76 @@ export class Atelier {
 		this.recomputeAll();
 
 		return { ok: true, broken };
+	}
+
+	/**
+	 * Ce qu'emporterait la suppression de `name` : ses dépendants, directs ou en
+	 * chaîne, dans l'ordre des cartes (lot B, N2 et L1).
+	 */
+	removalOf(name: string): readonly string[] {
+		const dependents = new Set(this.allDependents(name));
+		// Un cycle (`f` cite `g` qui cite `f`) ramène `name` parmi ses propres
+		// dépendants : il serait annoncé et compté deux fois (revue du lot B)
+		dependents.delete(name);
+		return this.items.filter((o) => dependents.has(o.name)).map((o) => o.name);
+	}
+
+	/**
+	 * Supprimer `name` ET ses dépendants (décision de David, 2026-10-05 : ils ne
+	 * restent plus « en attente »). La confirmation est l'affaire de la vue.
+	 *
+	 * Le reçu rendu permet UNE annulation, tant que rien d'autre n'a changé.
+	 */
+	removeWithDependents(name: string): RemovedWithDependents | Refused {
+		if (this.get(name) === undefined) {
+			return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
+		}
+		const removed = [name, ...this.removalOf(name)];
+		const gone = new Set(removed);
+		// Copié AVANT : `items` est un `$state`, ses objets des proxies
+		const items = $state.snapshot(this.items) as AtelierObject[];
+		const charts = [...this.charts].filter(
+			([list, c]) => gone.has(list) || gone.has(c.partner ?? '')
+		);
+		const partnerChoices = [...this.partnerChoices].filter(
+			([list, partner]) => gone.has(list) || gone.has(partner)
+		);
+
+		this.items = this.items.filter((o) => !gone.has(o.name));
+		for (const [list] of charts) this.charts.delete(list);
+		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
+		this.recomputeAll();
+
+		const receipt: RemovedWithDependents = { ok: true, removed };
+		this.#lastRemoval = {
+			receipt,
+			revision: this.revision,
+			items,
+			charts: $state.snapshot(charts) as [string, ListChartState][],
+			partnerChoices
+		};
+		return receipt;
+	}
+
+	/**
+	 * Annuler la suppression de ce reçu. Refusé — et rien ne bouge — si une autre
+	 * suppression l'a suivie, si elle est déjà annulée, ou si l'atelier a changé
+	 * depuis : on ne restaure jamais par-dessus un nom repris (L4).
+	 */
+	undoRemoval(receipt: RemovedWithDependents): boolean {
+		const undo = this.#lastRemoval;
+		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
+		this.#lastRemoval = null;
+		this.items = undo.items;
+		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
+		for (const [list, chart] of undo.charts) {
+			if (!this.charts.has(list)) this.charts.set(list, chart);
+		}
+		for (const [list, partner] of undo.partnerChoices) {
+			if (!this.partnerChoices.has(list)) this.partnerChoices.set(list, partner);
+		}
+		this.recomputeAll();
+		return true;
 	}
 
 	// ---------------------------------------------------------------------------

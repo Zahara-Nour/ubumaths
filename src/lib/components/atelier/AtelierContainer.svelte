@@ -6,12 +6,14 @@
 	 * détiennent rien, elles montrent les mêmes objets autrement. C'est ce qui
 	 * permet le changement de registre sans transfert ni re-parse.
 	 */
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { provideAtelier } from '$lib/atelier/context';
 	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
-	import { derivativeName } from '$lib/atelier/names';
+	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
+	import { derivativeName, displayName } from '$lib/atelier/names';
 	import type { AtelierState } from '$lib/atelier/persistence';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
@@ -25,6 +27,8 @@
 	import { syncPlots } from '$lib/atelier/plot-sync';
 	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { cascadeMessage, removedMessage } from '$lib/atelier/removal';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -63,6 +67,21 @@
 		startWith,
 		heading = 'Atelier'
 	}: Props = $props();
+
+	/** Durée pendant laquelle « Annuler » reste proposé après une suppression (E2). */
+	const UNDO_DURATION_MS = 10_000;
+
+	/** L'objet dont la suppression attend confirmation, avec ce qu'elle emporterait (N2). */
+	let pendingRemoval = $state<{ name: string; dependents: readonly string[] } | null>(null);
+	let confirmRemoval = $state(false);
+	/** La suppression vient-elle d'être confirmée ? Sinon, renoncer rend le focus au bouton. */
+	let removalConfirmed = false;
+
+	/**
+	 * La dernière suppression annulable, pour Ctrl/Cmd+Z : le bouton « Annuler »
+	 * du toast est hors du parcours clavier (a11y, WCAG 2.1.1 et 2.2.1).
+	 */
+	let undoable: { result: RemovedWithDependents; toastId: string | number } | null = null;
 
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
@@ -199,10 +218,77 @@
 		}
 	}
 
+	/**
+	 * Supprimer l'objet et ses dépendants, puis proposer « Annuler » (lot B,
+	 * N1, N3, N4). Le message disparaît seul : la suppression devient définitive.
+	 */
+	function removeNow(name: string) {
+		const result = atelier.removeWithDependents(name);
+		if (!result.ok) {
+			toaster.error(result.message);
+			return;
+		}
+		if (selected !== null && result.removed.includes(selected)) selected = null;
+		const forget = () => {
+			if (undoable?.result === result) undoable = null;
+		};
+		const toastId = toaster.message(removedMessage(result.removed), {
+			description: 'Ctrl+Z (⌘Z) pour annuler',
+			duration: UNDO_DURATION_MS,
+			action: { label: 'Annuler', onClick: () => undo(result) },
+			onAutoClose: forget,
+			onDismiss: forget
+		});
+		undoable = { result, toastId };
+		// La carte a disparu : le focus ne doit pas retomber sur la page (a11y 2.4.3)
+		tick().then(() => document.getElementById('atelier-mes-objets')?.focus());
+	}
+
+	function undo(result: RemovedWithDependents) {
+		if (undoable?.result === result) undoable = null;
+		// L4 : l'atelier a changé depuis — on le dit plutôt que de restaurer par-dessus
+		if (!atelier.undoRemoval(result)) {
+			toaster.warning('L’atelier a changé depuis : la suppression ne peut plus être annulée.');
+		}
+	}
+
+	/** Ctrl/Cmd+Z annule la dernière suppression — jamais dans un champ, où il annule la frappe. */
+	function handleUndoKey(event: KeyboardEvent) {
+		if (undoable === null || event.shiftKey || event.altKey) return;
+		if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z') return;
+		const target = event.target as HTMLElement | null;
+		if (target?.closest('input, textarea, [contenteditable], math-field')) return;
+		event.preventDefault();
+		const { result, toastId } = undoable;
+		toast.dismiss(toastId);
+		undo(result);
+	}
+
+	function handleConfirmRemoval() {
+		if (pendingRemoval === null) return;
+		removalConfirmed = true;
+		removeNow(pendingRemoval.name);
+		// `pendingRemoval` n'est pas vidé : le titre se lirait « Supprimer  ? »
+		// pendant l'animation de fermeture (a11y)
+	}
+
+	/** Après « Tout supprimer », le bouton déclencheur a disparu avec sa carte. */
+	function handleRemovalCloseFocus(event: Event) {
+		if (!removalConfirmed) return;
+		removalConfirmed = false;
+		event.preventDefault();
+		document.getElementById('atelier-mes-objets')?.focus();
+	}
+
 	function handleAction(action: ObjectAction, object: AtelierObject) {
 		if (action.id === 'remove') {
-			atelier.remove(object.name);
-			if (selected === object.name) selected = null;
+			const dependents = atelier.removalOf(object.name);
+			if (dependents.length === 0) {
+				removeNow(object.name);
+				return;
+			}
+			pendingRemoval = { name: object.name, dependents };
+			confirmRemoval = true;
 			return;
 		}
 		if (action.id === 'plot') {
@@ -292,6 +378,8 @@
 	}
 </script>
 
+<svelte:window onkeydown={handleUndoKey} />
+
 <div class="atelier">
 	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
 
@@ -319,6 +407,17 @@
 			confirmLabel="Vider l’atelier"
 			variant="destructive"
 			onConfirm={handleReset}
+		/>
+		<ConfirmDialog
+			bind:open={confirmRemoval}
+			title="Supprimer {pendingRemoval ? displayName(pendingRemoval.name) : ''} ?"
+			description={pendingRemoval
+				? cascadeMessage(pendingRemoval.name, pendingRemoval.dependents)
+				: ''}
+			confirmLabel="Tout supprimer"
+			variant="destructive"
+			onConfirm={handleConfirmRemoval}
+			onCloseAutoFocus={handleRemovalCloseFocus}
 		/>
 		<nav class="onglets" aria-label="Vues de l'atelier">
 			{#each VIEWS as item (item.id)}

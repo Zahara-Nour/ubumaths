@@ -29,7 +29,6 @@ export const toaster = {
 	info: (message: string, data?: ExternalToast<Component>) => {
 		toast.info(message, data);
 	},
-	message: (message: string, data?: ExternalToast<Component>) => {
-		toast(message, data);
-	}
+	/** Rend l'identifiant du toast, pour le fermer quand l'action est faite autrement (Ctrl+Z). */
+	message: (message: string, data?: ExternalToast<Component>) => toast(message, data)
 };

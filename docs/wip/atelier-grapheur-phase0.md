@@ -84,23 +84,23 @@ status: phase 0 VALIDÉE par David le 2026-10-04 (Q1, Q2 tranchées, reprise aba
 
 ## §2 — Dériver crée `f′`
 
-| #   | Cas                                          | Attendu                                                                                                                                 |
-| --- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | « Dériver » sur la carte de `f`              | Nouvelle carte **`f′`**, affichée `f′(x) = 2x − 3` ; ligne dans Calcul (`f′(x) = 2x − 3`, étapes dépliables) ; **la vue ne change pas** |
-| D2  | `f` est tracée                               | `f′` est tracée d'office                                                                                                                |
-| D3  | `.dériver f` dans Calcul                     | Même résultat que D1                                                                                                                    |
-| D4  | Modifier `f`                                 | `f′` suit (dérivée vivante)                                                                                                             |
-| D5  | `f` dépend d'un curseur `a`                  | `f′` en dépend aussi et suit le curseur                                                                                                 |
-| D6  | « Dériver » sur `f′`                         | Carte **`f″`**                                                                                                                          |
-| D7  | `f′` est citée ailleurs (`h(x) = f′(x) + 1`) | Fonctionne, comme aujourd'hui                                                                                                           |
-| L1  | « Dériver » alors que `f′` existe déjà       | Pas de doublon : la carte `f′` est sélectionnée ; ligne « f′ existe déjà »                                                              |
-| L2  | Champ de la carte `f′`                       | **Non modifiable** : la carte dit « dérivée de f ». Réglages d'affichage modifiables                                                    |
-| L3  | Supprimer `f`                                | `f′` passe **en attente** (« f n'existe plus »), comme tout dépendant (D9) ; recréer `f` la ranime                                      |
-| L4  | `.dériver x^2 + 1` (une expression)          | Pas de carte ; seulement la ligne dans Calcul                                                                                           |
-| E1  | Taper `f′(x) = 3x` dans Calcul               | Refusé : « f′ est la dérivée de f : elle se calcule, elle ne se définit pas »                                                           |
-| E2  | « Dériver » sur `f` vide ou en erreur        | Bouton désactivé **avec sa raison** (§3 E1 de la v1)                                                                                    |
-| E3  | Dérivée qui n'aboutit pas                    | Pas de carte ; ligne d'échec en français dans Calcul                                                                                    |
-| —   | « Garder la dérivée »                        | **Disparaît**                                                                                                                           |
+| #   | Cas                                          | Attendu                                                                                                                                                                               |
+| --- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | « Dériver » sur la carte de `f`              | Nouvelle carte **`f′`**, affichée `f′(x) = 2x − 3` ; ligne dans Calcul (`f′(x) = 2x − 3`, étapes dépliables) ; **la vue ne change pas**                                               |
+| D2  | `f` est tracée                               | `f′` est tracée d'office                                                                                                                                                              |
+| D3  | `.dériver f` dans Calcul                     | Même résultat que D1                                                                                                                                                                  |
+| D4  | Modifier `f`                                 | `f′` suit (dérivée vivante)                                                                                                                                                           |
+| D5  | `f` dépend d'un curseur `a`                  | `f′` en dépend aussi et suit le curseur                                                                                                                                               |
+| D6  | « Dériver » sur `f′`                         | Carte **`f″`**                                                                                                                                                                        |
+| D7  | `f′` est citée ailleurs (`h(x) = f′(x) + 1`) | Fonctionne, comme aujourd'hui                                                                                                                                                         |
+| L1  | « Dériver » alors que `f′` existe déjà       | Pas de doublon : la carte `f′` est sélectionnée ; ligne « f′ existe déjà »                                                                                                            |
+| L2  | Champ de la carte `f′`                       | **Non modifiable** : la carte dit « dérivée de f ». Réglages d'affichage modifiables                                                                                                  |
+| L3  | Supprimer `f`                                | ~~`f′` passe en attente~~ **Remplacée le 2026-10-05** : `f′` et les dépendants partent avec `f`, après confirmation, avec « Annuler » (`atelier-suppression-export-phase0.md`, lot B) |
+| L4  | `.dériver x^2 + 1` (une expression)          | Pas de carte ; seulement la ligne dans Calcul                                                                                                                                         |
+| E1  | Taper `f′(x) = 3x` dans Calcul               | Refusé : « f′ est la dérivée de f : elle se calcule, elle ne se définit pas »                                                                                                         |
+| E2  | « Dériver » sur `f` vide ou en erreur        | Bouton désactivé **avec sa raison** (§3 E1 de la v1)                                                                                                                                  |
+| E3  | Dérivée qui n'aboutit pas                    | Pas de carte ; ligne d'échec en français dans Calcul                                                                                                                                  |
+| —   | « Garder la dérivée »                        | **Disparaît**                                                                                                                                                                         |
 
 ---
 
