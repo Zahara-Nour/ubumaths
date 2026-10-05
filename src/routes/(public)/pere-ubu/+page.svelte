@@ -47,6 +47,9 @@
 />
 
 <div class="container mx-auto max-w-5xl p-4">
+	<!-- Titre de la page pour les lecteurs d'écran (le chat n'a qu'un h2) -->
+	<h1 class="sr-only">Discuter avec le Père Ubu</h1>
+
 	<!-- Back Button -->
 	<div class="mb-4">
 		<Button variant="ghost" href="/" class="gap-2">
