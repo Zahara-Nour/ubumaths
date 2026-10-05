@@ -83,12 +83,39 @@ const CHARGES = [
 	nest(2000, (s) => `{${s}}`),
 	'{'.repeat(1990),
 	'1+'.repeat(10_000),
-	String.raw`\dfrac{1}{2}`.repeat(83)
+	String.raw`\dfrac{1}{2}`.repeat(83),
+	// `\overbrace` / `\underbrace` : SVG étirable de largeur fixe 400em (ignorée par la
+	// mesure) ; imbriqués ou en 6 × 6, le rendu reste borné (audit du 2026-10-05)
+	nest(11, (s) => String.raw`\overbrace{${s}}`),
+	nest(40, (s) => String.raw`\underbrace{\overbrace{${s}}}`),
+	`\\begin{pmatrix}${Array.from({ length: 6 }, () => Array(6).fill('\\overbrace{\\overbrace{x}}').join('&')).join('\\\\')}\\end{pmatrix}`,
+	// `\&` : esperluette affichée, pas un séparateur de colonne
+	'\\&'.repeat(500),
+	'\\&'.repeat(1000)
 ];
 
 /** HTML et temps de rendu bornés : une réponse ne doit pas bloquer la page du professeur */
 const MAX_HTML_LENGTH = 200_000;
 const MAX_RENDER_MS = 1_000;
+const MAX_EM = 50;
+
+/**
+ * Plus grande dimension (em) calculée par MathLive (`\\\\[999em]` rend `height:1001.41em`).
+ * Ignorée : la largeur FIXE `<svg width=400em` des accolades étirables de `\overbrace` /
+ * `\underbrace`, rognée par leur conteneur (`min-width`) — la même pour un seul `x`.
+ */
+function largestEm(html: string): number {
+	const measured = html.replace(/<svg width=400em /g, '<svg ');
+	return Math.max(
+		0,
+		...[...measured.matchAll(/(-?\d+(?:\.\d+)?)em/g)].map((m) => Math.abs(Number(m[1])))
+	);
+}
+
+/** Texte rendu par MathLive (il découpe les lettres en plusieurs spans) */
+function renderedText(html: string): string {
+	return html.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&');
+}
 
 describe('réponse élève neutralisée rendue par MathLive', () => {
 	it.each(CHARGES.map((charge) => [charge.slice(0, 80), charge]))(
@@ -104,14 +131,38 @@ describe('réponse élève neutralisée rendue par MathLive', () => {
 			expect(html).not.toMatch(/<a[\s>]/i);
 			expect(html).not.toMatch(/data-(?!ML)/);
 			expect(html).not.toMatch(/999em/);
-			// Dimension démesurée calculée par MathLive (`\\\\[999em]` rend `height:1001.41em`)
-			const largestEm = Math.max(
-				0,
-				...[...html.matchAll(/(-?\d+(?:\.\d+)?)em/g)].map((m) => Math.abs(Number(m[1])))
-			);
-			expect(largestEm).toBeLessThan(50);
+			expect(largestEm(html)).toBeLessThan(MAX_EM);
 		}
 	);
+
+	it('la mesure reste discriminante : une charge démesurée NON neutralisée dépasse 50em', () => {
+		for (const raw of [
+			nest(8, (s) => String.raw`\left(\overbrace{\dfrac{${s}}{1}}\right)`),
+			nest(8, (s) => String.raw`\left(\underbrace{\dfrac{${s}}{1}}\right)`),
+			'\\begin{pmatrix}1\\\\[999em]2\\end{pmatrix}\\overbrace{x}'
+		]) {
+			const html = convertLatexToMarkup(raw, { defaultMode: 'math' });
+			expect(largestEm(html)).toBeGreaterThan(MAX_EM);
+		}
+		// Le seul `400em` d'un `\overbrace` ordinaire est ignoré
+		const html = convertLatexToMarkup(String.raw`\overbrace{x+1}`, { defaultMode: 'math' });
+		expect(html).toContain('width=400em');
+		expect(largestEm(html)).toBeLessThan(MAX_EM);
+	});
+
+	it('formule mal formée : la réponse ENTIÈRE reste visible chez le professeur', () => {
+		for (const [raw, witnesses] of [
+			['{\\begin{pmatrix}}}1&2\\\\3%QQQ', ['1&2', 'QQQ']],
+			['\\frac{1}{2}}}+7QQQ', ['7QQQ']],
+			['\\frac{1}{2QQQ', ['2QQQ']],
+			['\\left(1+2QQQ', ['1+2QQQ']],
+			['\\begin{pmatrix}1&2QQQ', ['1&2QQQ']],
+			['{\\begin{pmatrix}}1&2\\end{pmatrix}+5QQQ', ['1&2', '5QQQ']]
+		] as const) {
+			const html = convertLatexToMarkup(neutralizeStudentLatex(raw), { defaultMode: 'math' });
+			for (const witness of witnesses) expect(renderedText(html), raw).toContain(witness);
+		}
+	});
 
 	it('`%` collé à un passage à la ligne : la fin de la réponse reste visible', () => {
 		for (const raw of [
@@ -120,8 +171,7 @@ describe('réponse élève neutralisée rendue par MathLive', () => {
 			'2\\\\% secret'
 		]) {
 			const html = convertLatexToMarkup(neutralizeStudentLatex(raw), { defaultMode: 'math' });
-			// Texte rendu (MathLive découpe les lettres en plusieurs spans)
-			expect(html.replace(/<[^>]*>/g, '')).toMatch(/secret/);
+			expect(renderedText(html)).toMatch(/secret/);
 		}
 	});
 
@@ -239,7 +289,12 @@ describe('liste blanche : aucune écriture légitime abîmée', () => {
 			...mathliveCommands(source, 'var INLINE_SHORTCUTS = {', '\n};')
 		];
 		expect(commands.length).toBeGreaterThan(150);
-		const refused = commands.filter((name) => neutralizeStudentLatex(`\\${name}`) !== `\\${name}`);
+		// `\left` / `\right` seuls : formule mal formée (texte inerte) — testés appariés
+		const sample = (name: string) =>
+			name === 'left' || name === 'right' ? '\\left(x\\right)' : `\\${name}`;
+		const refused = commands.filter(
+			(name) => neutralizeStudentLatex(sample(name)) !== sample(name)
+		);
 		expect(refused).toEqual([]);
 	});
 

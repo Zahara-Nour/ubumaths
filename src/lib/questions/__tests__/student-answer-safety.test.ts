@@ -326,3 +326,68 @@ describe('exceedsMathNestingLimits', () => {
 		expect(neutralizeStudentLatex(legit)).toBe(legit);
 	});
 });
+
+// Audit du 2026-10-05 : `{\begin{pmatrix}}}1&2\\3%QQQ` (accolade fermée DANS la matrice)
+// ne rendait presque rien chez MathLive. Une formule mal formée devient un texte inerte
+// COMPLET : le professeur voit toute la réponse.
+describe('neutralizeStudentLatex — structure mal formée', () => {
+	const INERT = /^\\text\{[^\\{}$]*\}$/;
+
+	it.each([
+		['accolade fermée dans la matrice', '{\\begin{pmatrix}}}1&2\\\\3%QQQ'],
+		['accolade en trop', '\\frac{1}{2}}}QQQ'],
+		['accolade en moins', '\\frac{1}{2QQQ'],
+		['`\\left(` seul', '\\left(1+2QQQ'],
+		['`\\right)` seul', '1+2\\right)QQQ'],
+		['`\\begin{pmatrix}` seul', '\\begin{pmatrix}1&2QQQ'],
+		['`\\end{pmatrix}` seul', '1\\end{pmatrix}QQQ'],
+		['`\\left` fermé par `\\end`', '\\begin{pmatrix}\\left(1\\end{pmatrix}QQQ\\right)'],
+		['accolade comme délimiteur de `\\left`', '\\left{1\\right}QQQ']
+	])('%s : texte inerte complet', (_, raw) => {
+		const safe = neutralizeStudentLatex(raw);
+		expect(safe).toMatch(INERT);
+		expect(safe).toContain('QQQ');
+		expect(safe.endsWith('…}')).toBe(false);
+	});
+
+	it('réponse mal formée longue : montrée en entier (sous la borne de longueur)', () => {
+		const raw = `{${'1+'.repeat(400)}QQQ`;
+		const safe = neutralizeStudentLatex(raw);
+		expect(safe).toMatch(INERT);
+		expect(safe).toContain(`${'1+'.repeat(400)}QQQ`);
+	});
+
+	it('formules bien formées intactes (délimiteurs échappés, `\\left.`, matrice dans des parenthèses)', () => {
+		for (const latex of [
+			'\\left\\{1;2\\right\\}',
+			'\\left\\lbrace x\\right.',
+			'\\left]0;1\\right[',
+			'\\left(\\begin{pmatrix}1\\\\2\\end{pmatrix}\\right)',
+			'\\sqrt[3]{\\frac{1}{2}}',
+			'\\{1;2\\}'
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
+		}
+	});
+});
+
+// `\&` : une esperluette AFFICHÉE, pas un séparateur de colonne (audit du 2026-10-05)
+describe('neutralizeStudentLatex — `\\&`', () => {
+	const separators = (latex: string) => (latex.match(/(?<!\\)&/g) ?? []).length;
+
+	it('`\\&` reste échappé', () => {
+		expect(neutralizeStudentLatex('a\\&b')).toBe('a\\&b');
+		expect(neutralizeStudentLatex('\\text{A\\&B}')).toBe('\\text{A\\&B}');
+	});
+
+	it('`\\&` hors du plafond de `&` : une ligne de 6 colonnes garde ses 5 séparateurs', () => {
+		const latex = '\\begin{pmatrix}1\\&2&3&4&5&6&7\\&8\\end{pmatrix}';
+		expect(neutralizeStudentLatex(latex)).toBe(latex);
+	});
+
+	it('`\\&` en masse : les vrais `&` restent plafonnés à 30', () => {
+		const safe = neutralizeStudentLatex(`${'\\&'.repeat(100)}${'1&'.repeat(100)}`);
+		expect(separators(safe)).toBeLessThanOrEqual(30);
+		expect((safe.match(/\\&/g) ?? []).length).toBe(100);
+	});
+});
