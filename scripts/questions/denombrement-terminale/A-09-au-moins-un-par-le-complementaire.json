@@ -1,0 +1,249 @@
+{
+	"title": "« Au moins un » : compter par le complémentaire",
+	"description": "Total moins les cas sans : comité avec au moins une fille, code avec un chiffre répété, main avec au moins un as, mot avec au moins une voyelle (pièges : oublier de retirer, compter plusieurs fois en fixant « une fille » puis le reste)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-044", "TSPE-030", "TSPE-032", "TSPE-034", "TSPE-037"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Dénombrer avec des contraintes",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Un club compte ${{g}}$ garçons et ${{f}}$ filles. On forme un comité de ${{k}}$ membres (sans rôle particulier).\n\nCombien de comités comportent **au moins une** fille ?\n\n$?$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "6..12"
+				},
+				{
+					"name": "f",
+					"expression": "5..10"
+				},
+				{
+					"name": "k",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(g+f,k)-binom(g,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le contraire de « au moins une fille » est « que des garçons ». Comités en tout : $\\binom{ {{eval:g+f}} }{ {{k}} }={{eval:binom(g+f,k)}}$ ; sans fille : $\\binom{ {{g}} }{ {{k}} }={{eval:binom(g,k)}}$.",
+					"${{eval:binom(g+f,k)}}-{{eval:binom(g,k)}}=\\textcolor{{{color:primary.0}}}{{{eval:binom(g+f,k)-binom(g,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un code est formé de ${{k}}$ chiffres de $0$ à $9$.\n\nCombien de codes comportent **au moins deux chiffres égaux** ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^k-factorial(10)/factorial(10-k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le contraire est « tous les chiffres sont différents ». Codes en tout : $10^{ {{k}} }$ ; à chiffres distincts : $\\dfrac{10!}{ {{eval:10-k}}! }={{eval:factorial(10)/factorial(10-k)}}$.",
+					"${{eval:10^k}}-{{eval:factorial(10)/factorial(10-k)}}=\\textcolor{{{color:primary.0}}}{{{eval:10^k-factorial(10)/factorial(10-k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On tire une main de ${{k}}$ cartes dans un jeu de $32$ cartes, qui contient $4$ as.\n\nCombien de mains contiennent **au moins un** as ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(32,k)-binom(28,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le contraire est « aucun as » : la main est prise parmi les $28$ autres cartes. Mains en tout : $\\binom{ 32 }{ {{k}} }={{eval:binom(32,k)}}$ ; sans as : $\\binom{ 28 }{ {{k}} }={{eval:binom(28,k)}}$.",
+					"${{eval:binom(32,k)}}-{{eval:binom(28,k)}}=\\textcolor{{{color:primary.0}}}{{{eval:binom(32,k)-binom(28,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "L'alphabet compte $26$ lettres, dont $6$ voyelles (a, e, i, o, u, y).\n\nCombien de « mots » de ${{k}}$ lettres (ayant un sens ou non, lettres répétées permises) contiennent **au moins une** voyelle ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:26^k-20^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le contraire est « aucune voyelle » : les ${{k}}$ lettres sont choisies parmi les $20$ consonnes.",
+					"$26^{ {{k}} }-20^{ {{k}} }={{eval:26^k}}-{{eval:20^k}}=\\textcolor{{{color:primary.0}}}{{{eval:26^k-20^k}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 8 g, 6 f, k = 3 → 308",
+			"variationIndex": 0,
+			"variables": {
+				"g": "8",
+				"f": "6",
+				"k": "3"
+			},
+			"answers": ["308"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : tous les comités 364",
+			"variationIndex": 0,
+			"variables": {
+				"g": "8",
+				"f": "6",
+				"k": "3"
+			},
+			"answers": ["364"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 6 × C(13, 2) = 468 (compté plusieurs fois)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "8",
+				"f": "6",
+				"k": "3"
+			},
+			"answers": ["468"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : exactement une fille 6 × C(8, 2) = 168",
+			"variationIndex": 0,
+			"variables": {
+				"g": "8",
+				"f": "6",
+				"k": "3"
+			},
+			"answers": ["168"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : k = 4 → 4960",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["4960"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : chiffres distincts 5040",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["5040"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : k = 5 → 103 096",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["103096"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : sans as 98 280",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["98280"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 4 × C(31, 4) = 125 860 (compté plusieurs fois)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["125860"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : k = 3 → 9576",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["9576"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 6 × 26² = 4056",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["4056"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : sans voyelle 8000",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["8000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
