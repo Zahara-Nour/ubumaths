@@ -320,3 +320,33 @@ describe('les lois dans l’historique (manche 13, PR c)', () => {
 		expect(container.querySelector('polygon.stat-aire')).not.toBeNull();
 	});
 });
+
+// =============================================================================
+// Exporter l'historique (lot C1, `atelier-suppression-export-phase0.md`)
+// =============================================================================
+
+describe('exporter l’historique', () => {
+	function exportButtons(container: HTMLElement): HTMLButtonElement[] {
+		return [...container.querySelectorAll('.export button')] as HTMLButtonElement[];
+	}
+
+	it('historique vide : boutons désactivés, avec leur raison (X1)', async () => {
+		const { container } = await open();
+
+		expect(exportButtons(container).map((b) => b.disabled)).toEqual([true, true]);
+		expect(container.querySelector('.export')?.textContent).toContain('Rien à exporter');
+	});
+
+	it('après une saisie, on peut exporter dans les deux formats', async () => {
+		const { container, submit } = await open();
+
+		await submit('f(x)=x^2');
+
+		const buttons = exportButtons(container);
+		expect(buttons.map((b) => b.disabled)).toEqual([false, false]);
+		expect(buttons.map((b) => b.textContent?.trim())).toEqual([
+			'JSON (pour rejouer)',
+			'ubumark (pour lire)'
+		]);
+	});
+});

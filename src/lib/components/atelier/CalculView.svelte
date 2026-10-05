@@ -16,6 +16,12 @@
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import {
+		exportFileName,
+		historyToJson,
+		historyToUbumark,
+		type ExportFormat
+	} from '$lib/atelier/history-export';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -97,9 +103,53 @@
 	function canKeep(entry: Entry): boolean {
 		return entry.result?.kind === 'calcul' && entry.result.ast !== undefined;
 	}
+
+	/** Rien à exporter : les boutons restent visibles, désactivés, avec leur raison (X1). */
+	const empty = $derived(desk.entries.length === 0);
+
+	/** Enregistrer l'historique dans un fichier, au format choisi (lot C). */
+	function download(format: ExportFormat) {
+		const now = new Date();
+		const content =
+			format === 'json' ? historyToJson(desk.entries, now) : historyToUbumark(desk.entries, now);
+		const type = format === 'json' ? 'application/json' : 'text/markdown';
+		const url = URL.createObjectURL(new Blob([content], { type: `${type};charset=utf-8` }));
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = exportFileName(format, now);
+		// Dans la page, et l'adresse libérée plus tard : Firefox et Safari ont
+		// annulé des téléchargements dont l'adresse disparaissait aussitôt (revue)
+		document.body.append(link);
+		link.click();
+		link.remove();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+	}
 </script>
 
 <div class="calcul">
+	<div class="export" role="group" aria-label="Exporter l’historique">
+		<span>Exporter l’historique :</span>
+		<!-- La raison est reliée aux boutons : désactivés, ils ne prennent pas le focus (a11y) -->
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={empty}
+			aria-describedby={empty ? 'export-raison' : undefined}
+			onclick={() => download('json')}
+		>
+			JSON (pour rejouer)
+		</Button>
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={empty}
+			aria-describedby={empty ? 'export-raison' : undefined}
+			onclick={() => download('ubumark')}
+		>
+			ubumark (pour lire)
+		</Button>
+		{#if empty}<span id="export-raison" class="raison">Rien à exporter pour l’instant.</span>{/if}
+	</div>
 	<ol class="historique">
 		{#each desk.entries as entry (entry.id)}
 			{@const markup = markupOf(entry)}
@@ -202,6 +252,18 @@
 		min-height: 0;
 		gap: 0.5rem;
 		padding: 0.75rem;
+	}
+
+	.export {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+	}
+
+	.raison {
+		color: var(--color-muted-foreground);
 	}
 
 	.historique {

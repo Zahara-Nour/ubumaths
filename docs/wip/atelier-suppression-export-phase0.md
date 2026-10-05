@@ -48,12 +48,13 @@ Un bouton **« Exporter »** en tête de la vue Calcul propose :
   		{
   			"kind": "saisie",
   			"input": "f(x)=x^2",
-  			"provenance": "text",
   			"text": "« f » est dans tes objets.",
   			"failed": false
   		},
   		{
   			"kind": "action",
+  			"action": "derive",
+  			"name": "f",
   			"label": "Dériver f",
   			"text": "f′(x) = 2x",
   			"latex": "f'(x)=2x",
@@ -90,15 +91,16 @@ Un bouton **« Exporter »** en tête de la vue Calcul propose :
 
 Un bouton **« Rejouer un historique… »** (même menu) choisit un fichier.
 
-| Id  | Situation                                      | Comportement attendu                                                                                     |
-| --- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| R1  | Atelier vide                                   | Chaque **saisie** est retapée, dans l'ordre, par le même chemin que le clavier (rien n'est injecté)      |
-| R2  | Atelier non vide                               | Confirmation : « Rejouer repart de zéro : tes N objets seront remplacés. » puis Repartir de zéro + rejeu |
-| R3  | Une saisie échoue au rejeu                     | Arrêt à cette ligne ; « Rejeu arrêté à la ligne 7 : … » ; ce qui précède reste                           |
-| R4  | Entrées `action` (venues des cartes)           | **Voir question Q1**                                                                                     |
-| E1  | Fichier qui n'est pas du JSON / mauvais format | Refusé : « Ce fichier n'est pas un historique de Calcul. » Rien ne change                                |
-| E2  | Version plus récente que la nôtre              | Refusé : « Cet historique vient d'une version plus récente de Chiphre. »                                 |
-| E3  | Trop gros                                      | Refusé au-delà de 1 Mo, 500 entrées, 2 000 caractères par saisie (Zod)                                   |
+| Id  | Situation                                      | Comportement attendu                                                                                                      |
+| --- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| R1  | Atelier vide                                   | Chaque **saisie** est retapée, dans l'ordre, par le même chemin que le clavier (rien n'est injecté)                       |
+| R2  | Atelier non vide                               | Confirmation : « Rejouer repart de zéro : tes N objets seront remplacés. » puis Repartir de zéro + rejeu                  |
+| R3  | Une saisie échoue au rejeu                     | Arrêt à cette ligne ; « Rejeu arrêté à la ligne 7 : … » ; ce qui précède reste                                            |
+| R4  | Entrées `action` (venues des cartes)           | Rejouées par le **même chemin que le clic** (`runFromPanel`, `image`) : toutes, pas seulement celles qui ont une commande |
+| R5  | Entrées `garder`                               | « Garder » rejoué sur la ligne d'indice `line`, par `keep`                                                                |
+| E1  | Fichier qui n'est pas du JSON / mauvais format | Refusé : « Ce fichier n'est pas un historique de Calcul. » Rien ne change                                                 |
+| E2  | Version plus récente que la nôtre              | Refusé : « Cet historique vient d'une version plus récente de Chiphre. »                                                  |
+| E3  | Trop gros                                      | Refusé au-delà de 1 Mo, 500 entrées, 2 000 caractères par saisie (Zod)                                                    |
 
 ⚠️ **Rejouer l'historique ≠ restaurer l'atelier.** Ce qu'on fait sur les
 cartes (taper une définition dans une carte, bouger un curseur, recolorer)
@@ -106,12 +108,23 @@ n'écrit pas de ligne dans Calcul : le rejeu ne le reproduit pas. Pour retrouver
 un atelier à l'identique, il y a déjà la sauvegarde du navigateur et le lien
 de partage.
 
-Pour rejouer fidèlement, l'entrée doit garder sa **provenance** (`text` /
-`mathfield`), que `Entry` ne stocke pas aujourd'hui : on l'ajoute.
+**Implémentation (lot C1, 2026-10-05).** Chaque ligne garde le GESTE qui l'a
+produite (`Entry.replay`) : `saisie` (le texte tapé), `action` (identifiant de
+l'action, objet, valeur pour l'image), `garder` (indice de la ligne gardée).
+Une ligne écrite en plus par le même geste n'en porte pas : un geste ne se
+rejoue qu'une fois. La provenance n'est pas rangée : `submit` lit toujours en
+`text`. « Comparer », qui tape `.comparer L M`, est rangé comme cette saisie.
+
+**« Garder » laisse désormais une ligne** (« Gardé sous le nom « h ». ») :
+sans elle, le rejeu perdrait l'objet gardé — et toute ligne qui le cite.
+C'est aussi la règle G7 : toute action laisse sa trace dans Calcul.
 
 ### Question ouverte
 
-✅ **Tranché par David le 2026-10-05 : on traduit aussi les actions des cartes** en leur commande quand elle existe ; celles qui n'en ont pas sont nommées à la fin du rejeu.
+✅ **Tranché par David le 2026-10-05 : les actions des cartes sont rejouées aussi.**
+Plutôt que de les traduire après coup en commande (toutes n'en ont pas), la
+ligne range le geste lui-même et le rejeu le refait par le même chemin que le
+clic : aucune action n'est laissée de côté (R4).
 
 **Q1 — Les lignes venues des cartes (« Dériver f », « Statistiques L1 »…).**
 Elles ne sont pas des saisies.
