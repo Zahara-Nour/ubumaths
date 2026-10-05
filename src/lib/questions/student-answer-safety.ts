@@ -33,12 +33,15 @@
  *   (test « corpus » de `student-answer-safety.render.test.ts`) ;
  * - les sorties de `toLatex` et de `unitWritingToLatex` (unités) ;
  * - ce que l'élève produit au clavier MathLive 0.110 : clavier virtuel par
- *   défaut (123, symboles, grec) et raccourcis de saisie.
+ *   défaut (123, symboles, grec) et raccourcis de saisie ;
+ * - `\binom` / `\dbinom` / `\tbinom` (2026-10-05) : réponse de dénombrement acceptée
+ *   (`acceptCombinatorialNotation`), deux arguments comme `\frac`.
  */
 // prettier-ignore
 const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
 	// Fractions, racines, opérations
-	'frac', 'dfrac', 'tfrac', 'sqrt', 'times', 'cdot', 'cdotp', 'div', 'pm', 'mp', 'ast', 'star',
+	'frac', 'dfrac', 'tfrac', 'binom', 'dbinom', 'tbinom', 'sqrt', 'times', 'cdot', 'cdotp',
+	'div', 'pm', 'mp', 'ast', 'star',
 	'circ', 'bullet', 'slash', 'backslash', 'setminus', 'smallsetminus', 'bmod', 'pmod',
 	'oplus', 'ominus', 'otimes', 'odot', 'oslash', 'ltimes', 'rtimes',
 	// Relations

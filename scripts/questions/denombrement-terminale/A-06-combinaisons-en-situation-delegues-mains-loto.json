@@ -24,7 +24,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -48,7 +49,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -72,7 +74,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -96,7 +99,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n,k)}}"
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -242,6 +246,28 @@
 				"n": "10"
 			},
 			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : \\binom{32}{5} (notation acceptée, bac)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["\\binom{32}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : \\binom{32}{4}, mauvaise valeur",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["\\binom{32}{4}"],
 			"expected": {
 				"status": "incorrect"
 			}

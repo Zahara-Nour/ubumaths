@@ -40,6 +40,7 @@ import {
 } from '$lib/ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
+import { stepOf, type ImportedHistory } from './history-import';
 import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
 import { wordsReason } from './actions';
@@ -105,6 +106,17 @@ export type ReplayStep =
 	  }
 	/** `line` : l'indice, dans l'historique, de la ligne gardée */
 	| { readonly kind: 'garder'; readonly line: number };
+
+/** Ce qu'un rejeu a donné : tout, ou l'arrêt à une ligne (R3). */
+export type ReplayReport =
+	| { readonly ok: true; readonly replayed: number }
+	| {
+			readonly ok: false;
+			readonly replayed: number;
+			/** Le numéro (à partir de 1) de la ligne du fichier où le rejeu s'est arrêté */
+			readonly line: number;
+			readonly message: string;
+	  };
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
@@ -252,6 +264,76 @@ export class CalcDesk {
 		});
 		this.draft = '';
 		this.notice = null;
+	}
+
+	/**
+	 * Rejouer un historique relu (lot C2) : chaque geste est refait par le MÊME
+	 * chemin que l'élève — saisie, clic sur une carte, « Garder ».
+	 *
+	 * S'arrête à la première ligne qui échoue alors qu'elle avait réussi (R3) ;
+	 * une ligne qui avait échoué peut échouer encore. Ce qui précède reste.
+	 * L'atelier n'est PAS vidé ici : c'est au conteneur de le faire, après
+	 * confirmation (R2).
+	 */
+	replay(history: ImportedHistory, graph?: GrapheurStore): ReplayReport {
+		// Le brouillon de l'élève survit au rejeu : `submit` le vide (revue)
+		const draft = this.draft;
+		// Indice dans le fichier → indice rejoué : « Garder » vise une ligne du
+		// fichier, et un geste peut écrire plus ou moins de lignes qu'à l'export
+		const rows: number[] = [];
+		let replayed = 0;
+		let stop: { line: number; message: string } | null = null;
+		for (const [index, entry] of history.entries.entries()) {
+			const step = stepOf(entry);
+			if (step === null) continue;
+			const before = this.entries.length;
+			this.notice = null;
+			const missed = this.#replayStep(step, rows, graph);
+			const first = this.entries[before];
+			if (first !== undefined) rows[index] = before;
+			// R3 : on ne s'arrête que si la ligne AVAIT réussi
+			const broken =
+				missed ??
+				(entry.failed
+					? null
+					: first === undefined
+						? (this.notice ?? 'cette ligne ne s’est pas rejouée.')
+						: first.failed
+							? first.text
+							: null);
+			if (broken !== null) {
+				stop = { line: index + 1, message: broken };
+				break;
+			}
+			replayed++;
+		}
+		this.draft = draft;
+		if (stop !== null) {
+			this.notice = `Rejeu arrêté à la ligne ${stop.line} : ${stop.message}`;
+			return { ok: false, replayed, ...stop };
+		}
+		this.notice = `Historique rejoué : ${replayed} ${replayed > 1 ? 'lignes' : 'ligne'}.`;
+		return { ok: true, replayed };
+	}
+
+	/** Refaire un geste ; rend la raison d'un échec que la ligne ne dirait pas, sinon null. */
+	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
+		switch (step.kind) {
+			case 'saisie':
+				this.submit(step.input);
+				return null;
+			case 'action':
+				if (step.action === 'image') this.image(step.name, step.value ?? '');
+				else this.runFromPanel(step.action, step.name, graph);
+				return null;
+			case 'garder': {
+				const row = rows[step.line];
+				const kept = row === undefined ? undefined : this.entries[row];
+				if (kept === undefined) return 'la ligne à garder n’a pas été rejouée.';
+				this.keep(kept);
+				return null;
+			}
+		}
 	}
 
 	/** Garder une ligne sous un nom — décision D5. */

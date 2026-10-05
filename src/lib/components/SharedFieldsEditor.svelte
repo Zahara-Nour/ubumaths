@@ -53,6 +53,8 @@
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
+		/** Case : `\binom{32}{5}`, `6!` justes (notation combinatoire non calculée) */
+		sharedBlankAcceptCombinatorial: boolean;
 		sharedBlankIntervals: boolean;
 		/** Case intervalles : une borne fermée attendue peut être ouverte */
 		sharedBlankOpenableBounds: boolean;
@@ -89,6 +91,7 @@
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
+		sharedBlankAcceptCombinatorial = $bindable(),
 		sharedBlankIntervals = $bindable(),
 		sharedBlankOpenableBounds = $bindable(),
 		sharedBlankEquation = $bindable(),
@@ -335,6 +338,11 @@
 							<MyCheckbox
 								bind:checked={sharedBlankAcceptDecimal}
 								label="Accepter le décimal exact"
+							/>
+							<!-- Dénombrement : \binom{32}{5}, 6!, 10!/7! justes sans calcul (bac) -->
+							<MyCheckbox
+								bind:checked={sharedBlankAcceptCombinatorial}
+								label="Accepter la notation combinatoire (n!, coefficient binomial)"
 							/>
 							<!-- Ensemble de solutions : ]-∞;-2[∪]3;+∞[ (clavier « Intervalles ») -->
 							<MyCheckbox

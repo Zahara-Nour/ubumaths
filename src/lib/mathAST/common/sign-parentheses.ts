@@ -78,3 +78,29 @@ export function needsParenthesesAsPowerBase(node: MathNode): boolean {
 			return false;
 	}
 }
+
+/**
+ * Cette expression doit-elle être parenthésée sous une factorielle `!` ?
+ *
+ * `!` est un postfixe : il se rattache à ce qui le précède immédiatement à la
+ * relecture. `(n+1)!`, `(2n)!`, `(-3)!`, `(2^3)!` gardent leurs parenthèses ; un
+ * atome, un appel de fonction, un indice (`u_{n}!`) ou une expression déjà
+ * parenthésée s'écrit tel quel. Une factorielle de factorielle aussi est
+ * parenthésée : `3!!` serait relu comme une double factorielle (refusée).
+ */
+export function needsParenthesesUnderFactorial(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'constant':
+		case 'hole':
+		case 'delimiter':
+		case 'subscript':
+			return false;
+		case 'function':
+			return node.name === 'factorial';
+		default:
+			return true;
+	}
+}

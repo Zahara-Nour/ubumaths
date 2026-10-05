@@ -139,6 +139,49 @@ jour ; 23 en prod dont 6 sur 4 modèles PUBLIÉS : « Réduire une racine carré
 racine carrée », « Trouver un nombre positif de carré donné », « Réduire une expression avec des
 racines carrées »), 18 synthétiques. Aucune attendue réelle ne change de verdict.
 
+## Notation combinatoire : `n!`, `\binom{n}{k}` (option `acceptCombinatorialNotation`)
+
+Depuis le 2026-10-05, les deux parseurs (LaTeX et maison) lisent la factorielle postfixe `n!` et
+`\binom{n}{k}` (`\dbinom`, `\tbinom`) ; ils produisent le MÊME nœud que `factorial(n)` /
+`binom(n, k)` d'`eval` (#821). Avant, `6!` donnait « Unexpected token: ! » et l'élève qui tapait
+`6!` pour 720 avait faux.
+
+- **Priorité** : `!` s'applique à ce qui le précède immédiatement sur la ligne, comme à l'écran.
+  `2^3!` = (2³)! (l'exposant TeX est un seul atome : MathLive écrit `2^3!` quand le `!` est HORS
+  de l'exposant ; même lecture en syntaxe maison), `2^{3!}` = 2^(3!), `n!^2` = (n!)²,
+  `-3!` = −(3!), `2n!` = 2·(n!), `(n+1)!` = factorial(n+1), `3!27!` = 3!·27! (un nombre juste
+  après `!` ouvre une multiplication implicite, pour `\frac{30!}{3!27!}`). `3!!` (double
+  factorielle) est **refusé** ; `(3!)!` est lu.
+- `\!` (espace négatif LaTeX) reste un espace, jamais une factorielle. En syntaxe maison, `!=`
+  reste la relation ≠ (`x!=3` = x ≠ 3 ; écrire `x! = 3` avec une espace pour une factorielle) et
+  `!x` le NON logique.
+- **Valeur** : `normalize` calcule en entiers exacts (BigInt) quand les arguments sont des
+  entiers, n ⩽ 200 : `6!` ≡ 720, `\binom{10}{3}` ≡ 120, `\frac{30!}{3!27!}` ≡ 4060 (borne sur n,
+  pas sur le résultat, contrairement à `eval` qui reste à ≤ 2⁵³ − 1). `n!`, `(1/2)!`,
+  `1000000000!` restent des nœuds opaques, jamais une erreur.
+- **Affichage** : `toLatex` écrit `n!`, `\left( n+1 \right)!`, `\left( 3! \right)!`,
+  `\binom{n}{k}` ; relu à l'identique.
+
+**Verdict dans une case ordinaire** (décision de David) : par défaut, une notation non calculée
+pour un attendu numérique est jugée comme `10\times9\times8` — même statut, quel qu'il soit
+(`bad_form` + contrainte `form` en général ; `unoptimal_form` sur une case à forme exigée
+acceptable ; `correct` sur une case de calcul). L'option de case (ou de `blankDefaults`)
+`acceptCombinatorialNotation: true` la rend `correct` : au bac, en dénombrement, `\binom{32}{5}` est
+une réponse acceptée. Admis : nombres, + − × ÷, fraction, puissance, parenthèses, et au moins une
+factorielle ou un coefficient binomial (`\binom{4}{2}\times\binom{28}{3}`,
+`\binom{32}{5}-\binom{28}{5}`) ; `10\times9\times8` garde son statut, une valeur fausse reste
+fausse. ⚠️ Ne pas poser l'option quand la consigne demande de calculer un coefficient
+(« Calcule $\binom{n}{2}$ ») : la recopie serait juste. Éditeur : « Accepter la notation
+combinatoire » (paramètres partagés). Clavier virtuel : `!` n'est qu'en Maj sur la touche `|` de la
+couche « symboles » de MathLive (clavier physique : `!`) ; **aucune touche `\binom`**.
+
+Mesure (dépôt + `REAL_TEMPLATES` + prod du 2026-10-05 en lecture, 1 271 modèles ; specs, rendu
+et attendue sur 8 tirages par variation, variantes `k!` / `\binom{n}{k}` de même valeur) :
+80 346 entrées, 2 546 changées, toutes des variantes de la classe visée (`incorrect` →
+`bad_form[form]` 2 536, → `unoptimal_form[form]` 6, → `correct` 4 sur des cases de calcul
+intégral / primitive, où `3\times5` est déjà `correct`). 0 spec, 0 attendue, 0 rendu changé —
+dont 1 480 rendus contenant `!` (ponctuation, images, `{{k}}!` des corrigés) dans 25 modèles.
+
 ## Exposants littéraux (#521)
 
 La forme normale ne porte que des exposants **rationnels** (`SymbolicFactor.exponent: Rational`).

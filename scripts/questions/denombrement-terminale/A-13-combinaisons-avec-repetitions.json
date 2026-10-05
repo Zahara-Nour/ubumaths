@@ -24,7 +24,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n+k-1,k)}}"
+					"expectedAnswer": "{{eval:binom(n+k-1,k)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -48,7 +49,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(n+k-1,n-1)}}"
+					"expectedAnswer": "{{eval:binom(n+k-1,n-1)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -68,7 +70,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:binom(k+2,2)}}"
+					"expectedAnswer": "{{eval:binom(k+2,2)}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {

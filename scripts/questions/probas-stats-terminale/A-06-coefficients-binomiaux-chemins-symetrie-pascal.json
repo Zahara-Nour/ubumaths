@@ -28,7 +28,8 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{c}}"
+					"expectedAnswer": "{{c}}",
+					"acceptCombinatorialNotation": true
 				}
 			],
 			"correction": {
@@ -350,6 +351,18 @@
 			"answers": ["20"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : \\binom{4}{2} (notation acceptée)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"k": "2"
+			},
+			"answers": ["\\binom{4}{2}"],
+			"expected": {
+				"status": "correct"
 			}
 		}
 	],

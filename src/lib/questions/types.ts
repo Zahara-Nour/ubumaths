@@ -299,6 +299,8 @@ export interface BlankDefaults extends CalculusBlankFields {
 	rulesSuffice?: boolean;
 	/** Voir `TemplateBlank.acceptDecimal` */
 	acceptDecimal?: boolean;
+	/** Voir `TemplateBlank.acceptCombinatorialNotation` */
+	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` */
 	answerKind?: AnswerKind;
 	/** Voir `TemplateBlank.vectorMode` */
@@ -343,6 +345,14 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * (0,33 pour 1/3) reste faux ; toute autre écriture est jugée comme avant.
 	 */
 	acceptDecimal?: boolean;
+	/**
+	 * Accepter la notation combinatoire non calculée : attendu `201376`, l'élève
+	 * peut répondre `\binom{32}{5}`, `6!` ou `\frac{10!}{7!}` (de MÊME valeur,
+	 * nombres seulement, au moins une factorielle ou un coefficient binomial) — au
+	 * bac, en dénombrement, c'est une réponse acceptée. Sans l'option, ces écritures
+	 * sont jugées comme `10\times9\times8` (calcul non effectué : `bad_form`).
+	 */
+	acceptCombinatorialNotation?: boolean;
 	/**
 	 * Nature de la réponse, quand ce n'est pas une expression :
 	 * `'intervalles'` = un ensemble de réels en notation intervalle (ensemble de
@@ -759,6 +769,8 @@ export interface InstanceBlank extends CalculusBlankFields {
 	rulesSuffice?: boolean;
 	/** Voir `TemplateBlank.acceptDecimal` (fusionné avec blankDefaults) */
 	acceptDecimal?: boolean;
+	/** Voir `TemplateBlank.acceptCombinatorialNotation` (fusionné avec blankDefaults) */
+	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` (fusionné avec blankDefaults) */
 	answerKind?: AnswerKind;
 	/** Voir `TemplateBlank.vectorMode` (fusionné avec blankDefaults) */
