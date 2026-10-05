@@ -41,7 +41,11 @@ describe('solve — membre entre parenthèses', () => {
 		['(\\ln(x)-1)=0', ['\\exponentialE']],
 		['(2x-3)+1=0', ['1']],
 		['x+(2x-3)=0', ['1']],
-		['3(2x-3)=0', ['\\dfrac{3}{2}']]
+		['3(2x-3)=0', ['\\dfrac{3}{2}']],
+		// Faux sur main (x = 0), relevés par la revue de #860
+		['-(x-3)=0', ['3']],
+		['3(x+2)=2x', ['-6']],
+		['(x-1)^2=4', ['-1', '3']]
 	])('%s a pour solutions %j', (latex, expected) => {
 		expect(solutionsOf(latex)).toEqual([...expected].sort());
 	});
