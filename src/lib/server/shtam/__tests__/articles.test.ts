@@ -64,7 +64,7 @@ describe('parseArticle', () => {
 	});
 
 	it('refuse une signature inconnue', () => {
-		expect(() => parseArticle('x', source({ author: 'ubu' }))).toThrow();
+		expect(() => parseArticle('x', source({ author: 'ubu' }))).toThrow(/author/);
 	});
 
 	it('refuse une date impossible', () => {
@@ -73,6 +73,33 @@ describe('parseArticle', () => {
 
 	it('refuse un slug qui n’est pas en kebab-case', () => {
 		expect(() => parseArticle('Triangle_Plainte', source())).toThrow(/slug/i);
+	});
+
+	it('refuse une formule dans le titre (il n’est pas rendu en ubumark)', () => {
+		expect(() => parseArticle('x', source({ title: 'Un ~\\sqrt{2}~ en fuite' }))).toThrow(/titre/);
+	});
+
+	it('refuse un « #» qui tronquerait le chapeau en silence', () => {
+		expect(() => parseArticle('x', source({ lede: 'Le nombre 7 #premier, dit-il' }))).toThrow(
+			/guillemets/
+		);
+	});
+
+	it('accepte un « #» dans une valeur entre guillemets', () => {
+		const a = parseArticle('x', source({ lede: "'Le nombre 7 #premier, dit-il'" }));
+		expect(a.lede).toBe('Le nombre 7 #premier, dit-il');
+	});
+
+	it('explique l’erreur d’un titre à deux-points', () => {
+		expect(() => parseArticle('x', source({ title: 'Exclusif : le Czar parle' }))).toThrow(
+			/guillemets/
+		);
+	});
+
+	it('lit un fichier aux fins de ligne Windows', () => {
+		const a = parseArticle('x', source().replace(/\n/g, '\r\n'));
+		expect(a.body).toBe('Le corps de l’article, avec ~a^2+b^2=c^2~.');
+		expect(a.truth).toBe('Un triangle rectangle ne porte jamais plainte.');
 	});
 
 	it('refuse un fichier sans en-tête', () => {

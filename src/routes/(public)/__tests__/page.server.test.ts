@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as pageServer from '../+page.server';
+import { allArticles } from '$lib/server/shtam/articles';
 
 // Articles du Shtam du test : deux parus, un futur
 vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
@@ -11,7 +12,7 @@ vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
 		'./articles/recent.md': raw('2026-10-01'),
 		'./articles/futur.md': raw('2026-12-01')
 	});
-	return { ...original, allArticles: () => articles };
+	return { ...original, allArticles: vi.fn(() => articles) };
 });
 
 type HomeData = { shtam: { slug: string; title: string } | null };
@@ -57,6 +58,18 @@ describe('/+page.server.ts', () => {
 			vi.setSystemTime(new Date('2026-10-05T10:00:00Z'));
 			const data = (await pageServer.load({} as never)) as HomeData;
 			expect(Object.keys(data.shtam ?? {}).sort()).toEqual(['slug', 'title']);
+		});
+
+		it('un article illisible masque le lien sans faire tomber l’accueil', async () => {
+			vi.mocked(allArticles).mockImplementationOnce(() => {
+				throw new Error('Shtam, ./articles/casse.md : en-tête invalide');
+			});
+			const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+			const data = (await pageServer.load({} as never)) as HomeData & { almanach: unknown };
+			expect(data.shtam).toBeNull();
+			expect(data.almanach).toBeDefined();
+			expect(log).toHaveBeenCalled();
+			log.mockRestore();
 		});
 
 		it('rend null quand aucun article n’est encore paru', async () => {

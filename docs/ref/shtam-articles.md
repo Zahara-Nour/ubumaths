@@ -25,6 +25,7 @@ Le fait mathématique réel (voix de l'Académie). Section obligatoire et unique
 - `date` : jour de parution, heure de Paris. **Daté dans le futur = invisible jusqu'à ce jour-là** (parution programmée, sans redéploiement).
 - `draft: true` : jamais visible.
 - Le titre est du texte brut (pas de `~…~`) : écrire π, ², √ en Unicode.
+- Un titre ou un chapeau qui contient « : » ou « # » se met **entre guillemets simples** (`title: 'Exclusif : le Czar parle'`, apostrophe doublée : `'l''hypoténuse'`). Sinon YAML lit une clé ou un commentaire ; le test le signale.
 
 ## Les formules
 

@@ -46,7 +46,13 @@ const TRUTH_HEADING = /^## Le vrai du faux[ \t]*$/m;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
 
 const frontMatterSchema = z.object({
-	title: z.string().trim().min(1).max(160),
+	// Texte brut : le titre sert aussi au <title> de la page, sans rendu ubumark
+	title: z
+		.string()
+		.trim()
+		.min(1)
+		.max(160)
+		.refine((t) => !t.includes('~'), 'pas de formule dans le titre (écrire π, ², √ en Unicode)'),
 	date: z
 		.string()
 		.regex(/^\d{4}-\d{2}-\d{2}$/, 'date attendue au format AAAA-MM-JJ')
@@ -77,7 +83,25 @@ export function parseArticle(slug: string, raw: string): ShtamArticle {
 	const match = FRONT_MATTER.exec(raw);
 	if (!match) throw new Error('en-tête YAML absent (le fichier doit commencer par ---)');
 
-	const front = frontMatterSchema.safeParse(parseYaml(match[1]));
+	// En YAML, « #» après une espace ouvre un commentaire : le texte serait tronqué en silence
+	const truncated = /^(title|lede):[ \t]*[^'"\s].*\s#/m.exec(match[1]);
+	if (truncated) {
+		throw new Error(
+			`${truncated[1]} : un « #» y serait lu comme un commentaire, mettre la valeur entre guillemets simples`
+		);
+	}
+
+	let yaml: unknown;
+	try {
+		yaml = parseYaml(match[1]);
+	} catch (cause) {
+		const message = cause instanceof Error ? cause.message : String(cause);
+		throw new Error(
+			`en-tête YAML illisible (un « : » dans un titre ? le mettre entre guillemets simples) : ${message}`,
+			{ cause }
+		);
+	}
+	const front = frontMatterSchema.safeParse(yaml);
 	if (!front.success) {
 		const issue = front.error.issues[0];
 		throw new Error(`en-tête invalide (${issue.path.join('.')}) : ${issue.message}`);

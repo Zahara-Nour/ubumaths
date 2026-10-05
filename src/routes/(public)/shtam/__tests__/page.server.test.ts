@@ -70,6 +70,13 @@ describe('/shtam/[slug]', () => {
 		}
 	);
 
+	it('même 404, même message pour un article futur et un inconnu : rien ne trahit son existence', async () => {
+		at('2026-10-05T10:00:00Z');
+		const futur = await loadArticle('futur').catch((e: { body: unknown }) => e.body);
+		const inconnu = await loadArticle('inconnu').catch((e: { body: unknown }) => e.body);
+		expect(futur).toEqual(inconnu);
+	});
+
 	it('n’est pas prérendue', () => {
 		expect(article.prerender).toBe(false);
 	});
