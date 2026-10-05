@@ -49,7 +49,7 @@
 			}
 		},
 		{
-			"statement": "Une chaîne de Markov à deux états $A$ et $B$ a pour graphe pondéré :\n\n```figure\nfenetre: -1.8 ; 7.8 ; -1.4 ; 1.6\ntaille: petite\ndescription: Graphe orienté pondéré à deux états A et B : boucle sur A de poids 0,{{eval:10-p}}, arc de A vers B de poids 0,{{p}}, arc de B vers A de poids 0,{{q}}, boucle sur B de poids 0,{{eval:10-q}}.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(6, 0, etiquette=\"bas\")\nP1 = point(0.9, 0.35, visible=faux)\nP2 = point(5.1, 0.35, visible=faux)\nQ1 = point(5.1, -0.35, visible=faux)\nQ2 = point(0.9, -0.35, visible=faux)\nvecteur(P1, P2)\nvecteur(Q1, Q2)\nO1 = point(-0.7, 0, visible=faux)\nO2 = point(6.7, 0, visible=faux)\ncercle(O1, rayon=0.7)\ncercle(O2, rayon=0.7)\ntexte(3, 0.8, \"0,{{p}}\")\ntexte(3, -0.8, \"0,{{q}}\")\ntexte(-0.7, 1.1, \"0,{{eval:10-p}}\")\ntexte(6.7, 1.1, \"0,{{eval:10-q}}\")\n```\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"statement": "Une chaîne de Markov à deux états $A$ et $B$ a pour graphe pondéré :\n\n```figure\nfenetre: -1.8 ; 7.8 ; -1.4 ; 1.6\ntaille: petite\ndescription: Graphe orienté pondéré à deux états A et B : boucle sur A de poids 0,{{eval:10-p}}, arc de A vers B de poids 0,{{p}}, arc de B vers A de poids 0,{{q}}, boucle sur B de poids 0,{{eval:10-q}}.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(6, 0, etiquette=\"bas\")\nP1 = point(0.9, 0.35, visible=faux)\nP2 = point(5.1, 0.35, visible=faux)\nQ1 = point(5.1, -0.35, visible=faux)\nQ2 = point(0.9, -0.35, visible=faux)\nvecteur(P1, P2)\nvecteur(Q1, Q2)\nO1 = point(-0.7, 0, visible=faux)\nO2 = point(6.7, 0, visible=faux)\ncercle(O1, rayon=0.7)\ncercle(O2, rayon=0.7)\ntexte(3, 0.8, \"0.{{p}}\")\ntexte(3, -0.8, \"0.{{q}}\")\ntexte(-0.7, 1.1, \"0.{{eval:10-p}}\")\ntexte(6.7, 1.1, \"0.{{eval:10-q}}\")\n```\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
 			"variables": [
 				{
 					"name": "p",
@@ -196,7 +196,7 @@
 			}
 		},
 		{
-			"description": "v0 : une fraction pour une probabilité décimale",
+			"description": "v0 : une fraction exacte pour une probabilité décimale est juste",
 			"variationIndex": 0,
 			"variables": {
 				"p": "3",
@@ -204,8 +204,7 @@
 			},
 			"answers": ["0.7", "0.3", "\\frac{2}{5}", "0.6"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "correct"
 			}
 		},
 		{
