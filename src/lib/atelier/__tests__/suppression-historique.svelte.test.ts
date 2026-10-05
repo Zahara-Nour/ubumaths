@@ -130,3 +130,33 @@ describe('suppression et annulation se rejouent', () => {
 		expect(d.entries.map((e) => e.label)).toEqual(original.entries.map((e) => e.label));
 	});
 });
+
+describe('suppression — ce que la revue a trouvé', () => {
+	it('une annulation après « Repartir de zéro » n’est pas un geste rejouable', () => {
+		const d = family();
+		const result = d.remove('f');
+		if (!result.ok) throw new Error('suppression refusée');
+		d.clear();
+
+		d.undoRemoval(result);
+
+		expect(last(d).replay).toBeUndefined();
+	});
+
+	it('une suppression refusée au rejeu dit pourquoi', () => {
+		const read = readHistory(
+			JSON.stringify({
+				format: 'chiphre-calcul',
+				version: 1,
+				exportedAt: new Date().toISOString(),
+				entries: [{ kind: 'supprimer', name: 'z', label: 'Supprimer z', text: '', failed: false }]
+			})
+		);
+		if (!read.ok) throw new Error(read.message);
+		const d = new CalcDesk(new Atelier());
+
+		d.replay(read.history);
+
+		expect(d.notice).toContain("« z » n'existe pas");
+	});
+});

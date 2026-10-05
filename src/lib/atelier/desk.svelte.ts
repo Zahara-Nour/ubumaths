@@ -335,9 +335,10 @@ export class CalcDesk {
 				if (step.action === 'image') this.image(step.name, step.value ?? '');
 				else this.runFromPanel(step.action, step.name, graph);
 				return null;
-			case 'supprimer':
-				this.remove(step.name);
-				return null;
+			case 'supprimer': {
+				const removed = this.remove(step.name);
+				return removed.ok ? null : removed.message;
+			}
 			case 'annuler':
 				return this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)
 					? null
@@ -376,8 +377,10 @@ export class CalcDesk {
 	 */
 	undoRemoval(result: RemovedWithDependents): boolean {
 		if (!this.atelier.undoRemoval(result)) return false;
+		// Rejouable seulement si la suppression est dans CET historique : après
+		// « Repartir de zéro », le fichier n'aurait qu'un `annuler` orphelin (revue)
+		this.#gesture = result === this.#lastRemoval ? { kind: 'annuler' } : null;
 		this.#lastRemoval = null;
-		this.#gesture = { kind: 'annuler' };
 		this.#push({
 			label: 'Annuler la suppression',
 			text: restoredLine(result.removed),
