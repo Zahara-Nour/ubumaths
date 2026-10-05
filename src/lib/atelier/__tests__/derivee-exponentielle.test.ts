@@ -25,8 +25,10 @@ describe('.diff (moteur)', () => {
 		expect(diff('x*e^x')).toBe('d/dx(x*e^x) = e^x+xe^x\nLaTeX: e^x + x e^x');
 	});
 
+	// Rangé par `tidyTerms` (comme `g = f'` dans l'atelier) : ln(a)·aˣ, la
+	// constante devant, forme des manuels
 	it('2^x garde ln(2)', () => {
-		expect(diff('2^x')).toBe('d/dx(2^x) = 2^xln(2)\nLaTeX: 2^x \\ln\\left( 2 \\right)');
+		expect(diff('2^x')).toBe('d/dx(2^x) = ln(2)*2^x\nLaTeX: \\ln\\left( 2 \\right) 2^x');
 	});
 });
 

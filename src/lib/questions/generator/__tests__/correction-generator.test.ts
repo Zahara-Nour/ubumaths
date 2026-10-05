@@ -526,6 +526,36 @@ describe("generateCorrection — kind: 'differentiate'", () => {
 	});
 });
 
+// La dernière ligne de la correction est la dérivée RANGÉE (2026-10-06) :
+// elle finissait sur la dérivée brute, `e^{3 x} 3` ou `\cos(x) + (−\sin(x))`.
+describe("generateCorrection — kind: 'differentiate' : la dérivée finale est rangée", () => {
+	function lastStep(expression: string) {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: { generatedSteps: { kind: 'differentiate', expression } }
+		});
+		return generateCorrection(instance).correction?._renderedSteps?.at(-1);
+	}
+
+	it('e^(3x) finit sur 3e^{3x}', () => {
+		const last = lastStep('e^(3x)');
+		expect(last?.title).toBe('On simplifie');
+		expect(last?.expressionLatex).toBe('\\exponentialE^{3 x} \\times 3 = 3 \\exponentialE^{3 x}');
+	});
+
+	it('sin(x) + cos(x) finit sur cos x − sin x', () => {
+		const last = lastStep('sin(x) + cos(x)');
+		expect(last?.title).toBe('On simplifie');
+		expect(last?.expressionLatex).toBe(
+			'\\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right) = \\cos\\left( x \\right) - \\sin\\left( x \\right)'
+		);
+	});
+
+	it('x^2 : déjà propre, pas d’étape en plus', () => {
+		expect(lastStep('x^2')?.title).not.toBe('On simplifie');
+	});
+});
+
 describe("generateCorrection — kind: 'integrate'", () => {
 	it('produces _renderedSteps for an indefinite polynomial primitive', () => {
 		const instance = makeInstance({

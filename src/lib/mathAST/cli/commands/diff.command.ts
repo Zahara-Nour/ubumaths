@@ -17,6 +17,7 @@ import { toCustom } from '../../custom-generator';
 import { toLatex } from '../../latex-generator';
 import { parse } from '../core/pipeline';
 import { differentiate, DifferentiationError } from '../../differentiation';
+import { tidyTerms } from '../../tidy/terms';
 
 // =============================================================================
 // Diff Command
@@ -90,12 +91,16 @@ export class DiffCommand extends BaseCommand {
 			// Get function bindings from state if available
 			const functions = ctx.evalState?.functions;
 
-			// Differentiate the expression
-			const derivative = differentiate(parseResult.ast, {
-				variable,
-				simplify: true,
-				functions
-			});
+			// Dérivée mise au propre comme dans l'atelier : la dérivée brute
+			// s'écrivait `e^{3x} 3`, `2(−e^{−x})`, `cos x + (−sin x)`. `tidyTerms`
+			// garde l'ordre de la règle (u′v + uv′).
+			const derivative = tidyTerms(
+				differentiate(parseResult.ast, {
+					variable,
+					simplify: true,
+					functions
+				})
+			);
 
 			// Format output
 			const exprCustom = toCustom(parseResult.ast);
