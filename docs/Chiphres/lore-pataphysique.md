@@ -565,11 +565,11 @@ Les Palotins sont les sbires d'Ubu dans la pièce. **Dans Chiphre, ce sont les a
 | **Giron**           | Costaud, simple, loyal | Le pote qui aide aux exercices basiques | 🟢 _Ubu Roi_ — liste des personnages : « Giron, Pile, Cotice… Palotins »                                                    |
 | **Pile**            | Fourbe, opportuniste   | Celui qui propose des trades douteux    | 🟢 _Ubu Roi_ — idem                                                                                                         |
 | **Cotice**          | Lettré, bavard         | Celui qui explique trop                 | 🟢 _Ubu Roi_ — idem                                                                                                         |
-| **Merdanpot**       | Stupide mais brave     | Celui qui rate tout avec panache        | 🟢 _Ubu Cocu_ — l'édition de 1944 (Wikisource) écrit **« Merdanpo »**, sans _t_                                             |
+| **Merdranpo**       | Stupide mais brave     | Celui qui rate tout avec panache        | 🟠 _Ubu Cocu_ « Merdanpo » (éd. 1944) + le R de _merdre_ — forme Chiphre décidée par David                                  |
 | **Mousched-Gogh**   | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — orthographe de l'édition de 1944                                                                            |
 | **Quatrezoneilles** | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — les Palotins disent « Hon, Monsieuye ! » ; « Monsieuye des Phynances » (Lexique) non trouvé dans l'éd. 1944 |
 
-Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_Ubu Roi_ (leurs noms sont des termes d'héraldique : le giron, la pile et la cotice sont des pièces d'un blason) ; Merdanpo(t), Mousched-Gogh et Quatrezoneilles sont « les trois Palotins » d'_Ubu Cocu_, qui chantent ensemble leur chanson (« Dans de grandes boît's en fer-blanc / Empilés la semaine entière… »). Personnalités et rôles sont des extensions Chiphre 🟠.
+Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_Ubu Roi_ (leurs noms sont des termes d'héraldique : le giron, la pile et la cotice sont des pièces d'un blason) ; Merdanpo (Merdranpo à Chiphre), Mousched-Gogh et Quatrezoneilles sont « les trois Palotins » d'_Ubu Cocu_, qui chantent ensemble leur chanson (« Dans de grandes boît's en fer-blanc / Empilés la semaine entière… »). Personnalités et rôles sont des extensions Chiphre 🟠.
 
 ### Personnages mineurs et figurants
 
@@ -817,6 +817,7 @@ Cette citation est le **manifeste linguistique** de Chiphre. Elle justifie patap
 | **Quatr'esme** | apostrophe + _-esme_                                            | Niveau 4ᵉ                                 |
 | **Troyz'esme** | apostrophe + *i*→*y* + *s*→*z* + _-esme_                        | Niveau 3ᵉ                                 |
 | **Secondre**   | R potache canon                                                 | Niveau Seconde                            |
+| **Merdranpo**  | R potache canon ajouté au Palotin _Merdanpo_ d'_Ubu Cocu_       | Palotin, reporter du Shtam                |
 | **Primalle**   | racine _Primal_ + _L_ doublé                                    | Niveau Première                           |
 | **Phinalle**   | *t*→*ph* + _L_ doublé                                           | Niveau Terminale (abréviation : **φᵃˡᵉ**) |
 
@@ -1443,7 +1444,7 @@ Les Chiphre parlent avec **cinq voix superposables**, jamais en concurrence. Cha
 
 - **Lieu** : page publique `/shtam` (la une) et `/shtam/<slug>` (un article). Lecture seule : **ni commentaires, ni réactions**.
 - **Voix — la Rédaction du Shtam** : sixième voix, réservée aux articles. Registre **journalistique imperturbable** : on rapporte l'absurde avec le sérieux d'une dépêche. Jamais de clin d'œil au lecteur, jamais de « lol », jamais de juron dans le corps de l'article. Père Ubu peut y paraître, mais **cité** (interview, déclaration, communiqué), jamais comme narrateur.
-- **Rédaction** (proposition 🟡) : **Cotice** (Palotin lettré et bavard) rédacteur en chef ; **Giron**, **Pile** et **Merdanpot** reporters. Chaque article est signé.
+- **Rédaction** (proposition 🟡) : **Cotice** (Palotin lettré et bavard) rédacteur en chef ; **Giron**, **Pile** et **Merdranpo** reporters. Chaque article est signé.
 - **Datation** : chaque article porte sa **date de l'Almanach** (« 14 Auroral »), calculée depuis sa date réelle de publication.
 - **Le vrai du faux** : chaque article se termine **obligatoirement** par un encadré séparé, **voix de l'Académie**, qui rétablit le fait mathématique réel (« π est transcendant tous les jours. Cela veut dire… »). Le lecteur a de 11 à 18 ans : un faux fait énoncé avec aplomb peut rester. L'encadré fait de chaque blague un mini-cours. Deux voix, deux blocs : la règle stricte des voix est respectée.
 - **Qui peut-on parodier** : les personnages du Royaume et les **mathématiciens morts** (Pythagore, Euler, Fermat…). **Jamais une personne vivante, jamais une institution réelle nommée** (diffamation, site pour mineurs).

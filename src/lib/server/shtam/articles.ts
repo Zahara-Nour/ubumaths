@@ -30,14 +30,14 @@ export interface ShtamArticle {
 
 // Constantes
 
-const authorSchema = z.enum(['cotice', 'giron', 'pile', 'merdanpot']);
+const authorSchema = z.enum(['cotice', 'giron', 'pile', 'merdranpo']);
 
 /** Signature affichée sous le titre (la Rédaction : proposition 🟡 du Compendium) */
 export const AUTHOR_LABELS: Record<ShtamAuthor, string> = {
 	cotice: 'Cotice, rédacteur en chef',
 	giron: 'Giron, reporter',
 	pile: 'Pile, reporter',
-	merdanpot: 'Merdanpot, reporter'
+	merdranpo: 'Merdranpo, reporter'
 };
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
