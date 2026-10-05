@@ -1,0 +1,250 @@
+{
+	"title": "Chaîne de Markov : distribution après n transitions",
+	"description": "Calculer π₁ = π₀P et π₂, lire une probabilité de transition en n étapes dans Pⁿ (pièges : Pπ₀ en colonne au lieu de π₀P en ligne, coefficient (j, i) de Pⁿ au lieu de (i, j), π₂ = 2π₁)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-141", "TEXP-144", "TEXP-147", "TEXP-143"],
+	"theme": "Graphes et matrices",
+	"domain": "Chaînes de Markov",
+	"subdomain": "Chaînes de Markov",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}{{eval:x/10;d}}&{{eval:(10-x)/10;d}}\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a=?$\n\n$b=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p + q != 10", "x != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(x*(10-p)+(10-x)*q)/100;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:(x*p+(10-x)*(10-q))/100;d}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\pi_1 = \\pi_0 P$ (matrice ligne à gauche) : $a = {{eval:x/10;d}} \\times {{eval:(10-p)/10;d}} + {{eval:(10-x)/10;d}} \\times {{eval:q/10;d}}$, $b = {{eval:x/10;d}} \\times {{eval:p/10;d}} + {{eval:(10-x)/10;d}} \\times {{eval:(10-q)/10;d}}$.",
+					"$\\pi_1 = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:(x*(10-p)+(10-x)*q)/100;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:(x*p+(10-x)*(10-q))/100;d}}}\\end{pmatrix}$ (somme $1$)."
+				]
+			}
+		},
+		{
+			"statement": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a=?$\n\n$b=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p + q != 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((10-p)*(10-p)+p*q)/100;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:((10-p)*p+p*(10-q))/100;d}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\pi_1 = \\pi_0 P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\end{pmatrix}$ (première ligne de $P$).",
+					"$\\pi_2 = \\pi_1 P = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:((10-p)*(10-p)+p*q)/100;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:((10-p)*p+p*(10-q))/100;d}}}\\end{pmatrix}$, première ligne de $P^2$."
+				]
+			}
+		},
+		{
+			"statement": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}{{eval:u/1000;d}}&{{eval:(1000-u)/1000;d}}\\\\{{eval:w/1000;d}}&{{eval:(1000-w)/1000;d}}\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(10-p)*(10-p)+p*q"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:q*(10-p)+(10-q)*q"
+				},
+				{
+					"name": "u",
+					"expression": "eval:t2*(10-p)+(100-t2)*q"
+				},
+				{
+					"name": "w",
+					"expression": "eval:s2*(10-p)+(100-s2)*q"
+				}
+			],
+			"conditions": ["p != q", "p + q != 10", "u + w != 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1000-u)/1000;d}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient ligne $X$, colonne $Y$ de $P^3$ est la probabilité de passer de l'état $X$ à l'état $Y$ en trois transitions.",
+					"Ligne $A$, colonne $B$ : $\\textcolor{{{color:primary.0}}}{{{eval:(1000-u)/1000;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : π0 = (0,2 0,8), p = 0,3, q = 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"x": "2"
+			},
+			"answers": ["0.46", "0.54"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : Pπ0 en colonne",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"x": "2"
+			},
+			"answers": ["0.38", "0.56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : π0 recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"x": "2"
+			},
+			"answers": ["0.2", "0.8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : π2, p = 0,3, q = 0,4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.61", "0.39"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : π1 seulement",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.7", "0.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : carrés des coefficients",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.49", "0.09"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (P³)AB = 0,417",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"t2": "61",
+				"s2": "52",
+				"u": "583",
+				"w": "556"
+			},
+			"answers": ["0.417"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : (P³)BA lu à l'envers",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"t2": "61",
+				"s2": "52",
+				"u": "583",
+				"w": "556"
+			},
+			"answers": ["0.556"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (P³)AA",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "4",
+				"t2": "61",
+				"s2": "52",
+				"u": "583",
+				"w": "556"
+			},
+			"answers": ["0.583"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

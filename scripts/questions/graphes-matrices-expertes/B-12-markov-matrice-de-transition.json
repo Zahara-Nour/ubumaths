@@ -1,0 +1,239 @@
+{
+	"title": "Chaîne de Markov : matrice de transition et graphe pondéré",
+	"description": "Écrire la matrice de transition d'une chaîne de Markov à deux ou trois états, donnée par un énoncé ou par son graphe orienté pondéré (pièges : matrice transposée — lignes et colonnes inversées —, probabilité de rester oubliée, ligne de somme différente de 1)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-140", "TEXP-142", "TEXP-139", "TEXP-146"],
+	"theme": "Graphes et matrices",
+	"domain": "Chaînes de Markov",
+	"subdomain": "Chaînes de Markov",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité ${{eval:p/10;d}}$ ; un client de $B$ passe chez $A$ avec la probabilité ${{eval:q/10;d}}$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p != 10-q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-p)/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:p/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:q/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:(10-q)/10;d}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ligne = état de départ, colonne = état d'arrivée ; chaque ligne a pour somme $1$.",
+					"$P = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:(10-p)/10;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:q/10;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:(10-q)/10;d}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "Une chaîne de Markov à deux états $A$ et $B$ a pour graphe pondéré :\n\n```figure\nfenetre: -1.8 ; 7.8 ; -1.4 ; 1.6\ntaille: petite\ndescription: Graphe orienté pondéré à deux états A et B : boucle sur A de poids 0,{{eval:10-p}}, arc de A vers B de poids 0,{{p}}, arc de B vers A de poids 0,{{q}}, boucle sur B de poids 0,{{eval:10-q}}.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(6, 0, etiquette=\"bas\")\nP1 = point(0.9, 0.35, visible=faux)\nP2 = point(5.1, 0.35, visible=faux)\nQ1 = point(5.1, -0.35, visible=faux)\nQ2 = point(0.9, -0.35, visible=faux)\nvecteur(P1, P2)\nvecteur(Q1, Q2)\nO1 = point(-0.7, 0, visible=faux)\nO2 = point(6.7, 0, visible=faux)\ncercle(O1, rayon=0.7)\ncercle(O2, rayon=0.7)\ntexte(3, 0.8, \"0,{{p}}\")\ntexte(3, -0.8, \"0,{{q}}\")\ntexte(-0.7, 1.1, \"0,{{eval:10-p}}\")\ntexte(6.7, 1.1, \"0,{{eval:10-q}}\")\n```\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p != 10-q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-p)/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:p/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:q/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:(10-q)/10;d}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle sur $A$ donne $c_{11}$, l'arc de $A$ vers $B$ donne $c_{12}$, l'arc de $B$ vers $A$ donne $c_{21}$, la boucle sur $B$ donne $c_{22}$.",
+					"$P = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:(10-p)/10;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:q/10;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:(10-q)/10;d}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité ${{eval:a/10;d}}$, en salle $3$ avec la probabilité ${{eval:b/10;d}}$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{13}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a + b <= 9", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-a-b)/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:a/10;d}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:b/10;d}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La ligne $1$ contient les probabilités de passer de la salle $1$ aux salles $1$, $2$, $3$ ; sa somme vaut $1$ : $c_{11} = 1 - {{eval:a/10;d}} - {{eval:b/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(10-a-b)/10;d}}}$, $c_{12} = \\textcolor{{{color:primary.0}}}{{{eval:a/10;d}}}$, $c_{13} = \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : p = 0,3 ; q = 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.7", "0.3", "0.4", "0.6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : avec virgules",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0,7", "0,3", "0,4", "0,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : transposée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.7", "0.4", "0.3", "0.6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : probabilité de rester oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0", "0.3", "0.4", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : une fraction pour une probabilité décimale",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["0.7", "0.3", "\\frac{2}{5}", "0.6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : p = 0,2 ; q = 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["0.8", "0.2", "0.5", "0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : transposée",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["0.8", "0.5", "0.2", "0.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : a = 0,2, b = 0,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["0.3", "0.2", "0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : c11 = 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["1", "0.2", "0.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

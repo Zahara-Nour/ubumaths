@@ -1,0 +1,300 @@
+{
+	"title": "Produit de matrices : AB, matrice × colonne, ligne × matrice",
+	"description": "Calculer un produit de matrices 2 × 2, un produit matrice × colonne et ligne × matrice (pièges : BA au lieu de AB, produit coefficient par coefficient, ligne et colonne inversées)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-124", "TEXP-123"],
+	"theme": "Graphes et matrices",
+	"domain": "Matrices",
+	"subdomain": "Calcul matriciel",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note $AB = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b4",
+					"expression": "-3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1*b1+a2*b3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a1*b2+a2*b4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*b1+a4*b3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*b2+a4*b4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$c_{11}$ = ligne $1$ de $A$ $\\times$ colonne $1$ de $B$ : $c_{11} = {{a1}} \\times {{b1;()}} + {{a2;()}} \\times {{b3;()}}$, etc.",
+					"$AB = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*b1+a2*b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a1*b2+a2*b4}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*b1+a4*b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a3*b2+a4*b4}}}\\end{pmatrix}$ (en général $AB \\neq BA$ : l'ordre compte)."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $X = \\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$. On note $AX = \\begin{pmatrix} c_1 \\\\ c_2 \\end{pmatrix}$.\n\n$c_1=?$\n\n$c_2=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..4"
+				},
+				{
+					"name": "x",
+					"expression": "-4..5"
+				},
+				{
+					"name": "y",
+					"expression": "-4..5"
+				}
+			],
+			"conditions": ["x != 0", "y != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1*x+a2*y}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*x+a4*y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AX = \\begin{pmatrix}{{a1}} \\times {{x;()}} + {{a2;()}} \\times {{y;()}} \\\\ {{a3}} \\times {{x;()}} + {{a4;()}} \\times {{y;()}}\\end{pmatrix} = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*x+a2*y}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*x+a4*y}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $L = \\begin{pmatrix}{{x}} & {{y}}\\end{pmatrix}$. On note $LA = \\begin{pmatrix} c_1 & c_2 \\end{pmatrix}$.\n\n$c_1=?$\n\n$c_2=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..4"
+				},
+				{
+					"name": "x",
+					"expression": "-4..5"
+				},
+				{
+					"name": "y",
+					"expression": "-4..5"
+				}
+			],
+			"conditions": ["x != 0", "y != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x*a1+y*a3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:x*a2+y*a4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$LA$ : la ligne $L$ multiplie chaque **colonne** de $A$ : $LA = \\begin{pmatrix}{{x}} \\times {{a1;()}} + {{y;()}} \\times {{a3;()}} & {{x}} \\times {{a2;()}} + {{y;()}} \\times {{a4;()}}\\end{pmatrix} = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:x*a1+y*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:x*a2+y*a4}}}\\end{pmatrix}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : AB",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["-2", "5", "-4", "11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : BA (non commutatif)",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["3", "4", "5", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : coefficient par coefficient",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["0", "2", "-3", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : ligne × ligne",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["2", "3", "4", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : AX",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : XᵀA (colonnes)",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["-1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : LA",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["-1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : AL (lignes)",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"x": "2",
+				"y": "-1"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

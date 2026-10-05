@@ -1,0 +1,235 @@
+{
+	"title": "Puissances d'une matrice carrée",
+	"description": "Calculer A² et Aⁿ pour une matrice triangulaire (1 k ; 0 1), diagonale ou quelconque d'ordre 2 (pièges : élever chaque coefficient au carré, kⁿ au lieu de nk, n·a au lieu de aⁿ)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-126", "TEXP-130", "TEXP-134"],
+	"theme": "Graphes et matrices",
+	"domain": "Matrices",
+	"subdomain": "Puissances de matrices",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$A = \\begin{pmatrix}1&{{k}}\\\\0&1\\end{pmatrix}$. On admet que, pour tout entier $n \\geqslant 1$, $A^n = \\begin{pmatrix}1&nk\\\\0&1\\end{pmatrix}$ avec $k = {{k}}$.\n\nOn note $A^{ {{n}} } = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "5..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n*k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A^2 = \\begin{pmatrix}1&{{eval:2*k}}\\\\0&1\\end{pmatrix}$ : à chaque produit par $A$, le coefficient en haut à droite augmente de ${{k}}$.",
+					"$A^{ {{n}} } = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:1}}}&\\textcolor{{{color:primary.0}}}{{{eval:n*k}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:0}}}&\\textcolor{{{color:primary.0}}}{{{eval:1}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$D = \\begin{pmatrix}{{a}}&0\\\\0&{{b}}\\end{pmatrix}$.\n\nOn note $D^{ {{n}} } = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "n",
+					"expression": "3..5"
+				}
+			],
+			"conditions": ["abs(a) >= 2", "b != 0", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une matrice diagonale, on élève chaque coefficient diagonal à la puissance ${{n}}$ : $D^{ {{n}} } = \\begin{pmatrix}{{a;()}}^{ {{n}} }&0\\\\0&{{b;()}}^{ {{n}} }\\end{pmatrix} = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a^n}}}&\\textcolor{{{color:primary.0}}}{{{eval:0}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:0}}}&\\textcolor{{{color:primary.0}}}{{{eval:b^n}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$.\n\nOn note $A^2 = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..4"
+				}
+			],
+			"conditions": ["a2 != 0", "a3 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1*a1+a2*a3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a1*a2+a2*a4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*a1+a4*a3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3*a2+a4*a4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A^2 = A \\times A$ (produit ligne par colonne, pas les carrés des coefficients) : $A^2 = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*a1+a2*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a1*a2+a2*a4}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*a1+a4*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a3*a2+a4*a4}}}\\end{pmatrix}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : k = 3, n = 10",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["1", "30", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 3¹⁰",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["1", "59049", "0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : diagonale à la puissance n mal recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["10", "30", "0", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a = 2, b = −1, n = 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["8", "0", "0", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : n·a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["6", "0", "0", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : (−1)³ = 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["8", "0", "0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : A = (1 2 ; 3 4), A² = (7 10 ; 15 22)",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["7", "10", "15", "22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : carrés des coefficients",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["1", "4", "9", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
