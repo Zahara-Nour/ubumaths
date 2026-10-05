@@ -77,6 +77,7 @@ export type SolvingRule =
 	| 'quartic-factor-quadratics'
 	// Product decomposition (zero-product property)
 	| 'zero-product-property'
+	| 'common-factor'
 	| 'solve-factor'
 	// Trig recursive decomposition
 	| 'trig-recursive-decomposition'
@@ -169,6 +170,7 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	// Product decomposition (zero-product property)
 	'zero-product-property': 'Par la propriete du produit nul: si A × B = 0 alors A = 0 ou B = 0',
 	'solve-factor': 'On resout chaque facteur separement',
+	'common-factor': 'On met en facteur le facteur commun à tous les termes',
 
 	// Trig recursive decomposition
 	'trig-recursive-decomposition':

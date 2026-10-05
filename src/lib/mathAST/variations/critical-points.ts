@@ -64,15 +64,33 @@ export function findCriticalPoints(
 	domain: Domain,
 	originalExpr?: MathNode
 ): CriticalPointInfo[] {
+	return findCriticalPointsWithStatus(derivative, variable, domain, originalExpr).points;
+}
+
+/**
+ * Les points critiques, ET le fait que f'(x) = 0 a bien été résolue.
+ *
+ * ⚠️ **« Aucun zéro » et « je n'ai pas su résoudre » ne sont pas la même
+ * réponse.** `findCriticalPoints` rend `[]` dans les deux cas ; c'est ce qui
+ * faisait annoncer « Points critiques : aucun » pour eˣ − x − 2 = 0, que le
+ * solveur ne sait pas résoudre, et en déduire un signe constant. Le
+ * drapeau `derivativeZerosResolved` les sépare.
+ */
+export function findCriticalPointsWithStatus(
+	derivative: MathNode,
+	variable: string,
+	domain: Domain,
+	originalExpr?: MathNode
+): { readonly points: CriticalPointInfo[]; readonly derivativeZerosResolved: boolean } {
 	// Handle empty domain
 	if (domain.kind === 'empty') {
-		return [];
+		return { points: [], derivativeZerosResolved: true };
 	}
 
 	const criticalPoints: CriticalPointInfo[] = [];
 
 	// 1. Find zeros of the derivative: f'(x) = 0
-	const zeros = findDerivativeZeros(derivative, variable, domain);
+	const { zeros, resolved } = findDerivativeZeros(derivative, variable, domain);
 	for (const zero of zeros) {
 		const evalResult = originalExpr
 			? evaluateAtCriticalPoint(originalExpr, variable, zero.value)
@@ -112,7 +130,10 @@ export function findCriticalPoints(
 	}
 
 	// 3. Sort by x-value and remove duplicates
-	return sortCriticalPoints(removeDuplicateCriticalPoints(criticalPoints));
+	return {
+		points: sortCriticalPoints(removeDuplicateCriticalPoints(criticalPoints)),
+		derivativeZerosResolved: resolved
+	};
 }
 
 /**
@@ -238,17 +259,29 @@ function findDerivativeZeros(
 	derivative: MathNode,
 	variable: string,
 	domain: Domain
-): Array<{ value: MathNode; approximate?: number; exact: boolean }> {
+): {
+	readonly zeros: Array<{ value: MathNode; approximate?: number; exact: boolean }>;
+	/** `false` quand le solveur n'a pas su résoudre f'(x) = 0 — ce n'est pas « aucun zéro ». */
+	readonly resolved: boolean;
+} {
 	try {
 		// Create equation f'(x) = 0
 		const equation: RelationNode = equals(derivative, number('0'));
 
 		if (!isRelation(equation)) {
-			return [];
+			return { zeros: [], resolved: false };
 		}
 
 		// Solve the equation
 		const result = solve(equation, { variable });
+
+		// Le solveur signale un échec par `error` (« Type d'equation … non
+		// supporte ») avec un statut `no-solution` : ce n'est PAS une absence
+		// de zéro — sauf quand l'erreur explique une absence DÉMONTRÉE
+		// (`conclusive`, ex. racines étrangères de 1/(2√x) = 0).
+		if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
+			return { zeros: [], resolved: false };
+		}
 
 		// Handle cases where solving failed or no solutions
 		if (
@@ -256,20 +289,20 @@ function findDerivativeZeros(
 			result.status === 'no-real-solution' ||
 			result.solutions.length === 0
 		) {
-			return [];
+			return { zeros: [], resolved: true };
 		}
 
 		// Handle infinite solutions
 		if (result.status === 'infinite') {
 			// Derivative is identically zero - constant function
-			return [];
+			return { zeros: [], resolved: true };
 		}
 
 		// Filter solutions within the domain
-		return filterSolutionsInDomain(result.solutions, domain);
+		return { zeros: filterSolutionsInDomain(result.solutions, domain), resolved: true };
 	} catch {
-		// Solving failed
-		return [];
+		// Le solveur a levé une exception : f'(x) = 0 n'est pas résolue.
+		return { zeros: [], resolved: false };
 	}
 }
 

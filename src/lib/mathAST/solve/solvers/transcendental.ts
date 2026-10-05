@@ -134,8 +134,17 @@ function tryTranscendentalPatterns(
 	// The variable-named-`e` form is the common path because `parseLatex('e^x')`
 	// keeps `e` as a regular variable. See `isEulerSuperscript` in
 	// `analysis/expression-classify.ts` for the matching classifier rule.
-	for (const basePattern of [P.lit(euler()), P.var('e')] as const) {
-		const expPattern = P.prod(P.pow(basePattern, P._('u')), P.___('coeff', freeOfVar));
+	//   - la FONCTION `exp(u)` (`.variations exp(x)`, dérivée `exp(x)`) : sans
+	//     elle, `exp(x) = 0` revenait « non supporte » alors que `e^x = 0` a
+	//     sa réponse — et `.variations` doit distinguer ce refus d'une vraie
+	//     absence de zéro.
+	const expPatterns = [
+		P.pow(P.lit(euler()), P._('u')),
+		P.pow(P.var('e'), P._('u')),
+		P.func('exp', [P._('u')])
+	] as const;
+	for (const target of expPatterns) {
+		const expPattern = P.prod(target, P.___('coeff', freeOfVar));
 		const bindings = tryMatch(expPattern, term);
 		if (bindings) {
 			const u = getBindingNode(bindings, 'u');

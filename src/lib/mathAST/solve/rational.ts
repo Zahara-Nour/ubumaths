@@ -169,7 +169,9 @@ export function tryRationalDecomposition(
 			equationType: 'rational',
 			strategy: 'algebraic',
 			steps: [...recorder.getStepsFiltered(opts.verbosity), ...numResult.steps],
-			error: 'Toutes les racines du numérateur annulent le dénominateur (racines étrangères).'
+			error: 'Toutes les racines du numérateur annulent le dénominateur (racines étrangères).',
+			// Une réponse démontrée, pas un échec : voir `SolveResult.conclusive`.
+			conclusive: true
 		};
 	}
 
