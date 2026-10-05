@@ -110,16 +110,58 @@ describe('M4 — écritures refusées, jamais d’exception', () => {
 		}
 	});
 
-	it('facteur devant la matrice (inverse « 1/det × … ») : faux, message dédié', () => {
+	it('facteur devant la matrice, valeur juste : perfectible, « Distribue le facteur » (décision du 2026-10-06)', () => {
 		for (const answer of [
 			'\\frac{1}{2}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
 			'A^{-1}=\\frac{1}{2}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
-			'2\\begin{pmatrix}0.5&1\\\\1.5&2\\end{pmatrix}'
+			'2\\begin{pmatrix}0.5&1\\\\1.5&2\\end{pmatrix}',
+			'\\frac{1}{2}\\times\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			'\\frac{1}{2}\\cdot\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			'\\frac{1}{2}\\left(\\begin{matrix}2&4\\\\6&8\\end{matrix}\\right)',
+			'-\\begin{pmatrix}-1&-2\\\\-3&-4\\end{pmatrix}',
+			// Écriture de MathLive (espaces)
+			'\\frac{1}{2} \\begin{pmatrix}2 & 4\\\\ 6 & 8\\end{pmatrix}'
 		]) {
 			const verdict = judgeMatrixAnswer(answer, M);
-			expect(verdict.status).toBe('incorrect');
+			expect(verdict.status, answer).toBe('unoptimal_form');
 			expect(verdict.feedback).toBe(MATRIX_FEEDBACK.factored);
+			expect(MATRIX_FEEDBACK.factored).toBe('Distribue le facteur dans la matrice.');
 		}
+	});
+
+	it('facteur devant la matrice, valeur fausse : faux, sans message de forme', () => {
+		for (const answer of [
+			// facteur oublié dans le calcul (1/3 au lieu de 1/2)
+			'\\frac{1}{3}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			// transposée
+			'\\frac{1}{2}\\begin{pmatrix}2&6\\\\4&8\\end{pmatrix}'
+		]) {
+			const verdict = judgeMatrixAnswer(answer, M);
+			expect(verdict.status, answer).toBe('incorrect');
+			expect(verdict.feedback).toBeUndefined();
+		}
+	});
+
+	it('facteur devant une matrice de mauvaise taille : faux, message de dimension', () => {
+		const verdict = judgeMatrixAnswer('\\frac{1}{2}\\begin{pmatrix}2&4\\end{pmatrix}', M);
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).toBe(MATRIX_FEEDBACK.dimension(2, 2));
+	});
+
+	it('facteur illisible ou littéral devant la matrice : faux, sans exception', () => {
+		for (const answer of [
+			'x\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			'\\frac{1}{0}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}',
+			'\\begin{pmatrix}1\\end{pmatrix}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}'
+		]) {
+			expect(judgeMatrixAnswer(answer, M).status, answer).toBe('incorrect');
+		}
+	});
+
+	it('attendue écrite avec un facteur : illisible pour les specs', () => {
+		expect(readExpectedMatrix('\\frac{1}{2}\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}').ok).toBe(
+			false
+		);
 	});
 
 	it('coefficient vide (case du gabarit non remplie) : faux, message', () => {

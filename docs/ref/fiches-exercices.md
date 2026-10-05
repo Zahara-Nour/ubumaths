@@ -331,6 +331,11 @@ zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite apr�
 de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
 dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
 
+Corrigé dans le moteur le 2026-10-05 (branche `feat/moteur-regles-fraction-figure`), ne plus
+contourner par une variable intermédiaire : une borne ou un opérande `{{eval:…}}` (ou `{{a+1}}`)
+dans une règle de validation (`range` : `"max": "{{eval:floor(S/p1)}}"`, `divisor`, `multiple`,
+`custom`…) est calculé à la génération ; avant, la règle refusait toute réponse.
+
 Corrigés dans le moteur le 2026-10-03 (branche `fix/regle-negatif-inegalite`), ne plus
 contourner : dans une règle de validation (`custom`, `range`, `divisor`, `multiple`,
 `equation_root`, `equivalent`), une variable négative ou une expression est substituée entre
@@ -439,7 +444,9 @@ Toujours vrai :
   construit (`milieu`, `intersection`, `projection`…) ou après coup avec `style(A, etiquette=…)` ;
   plus de `masque(A)` + `texte` (corrigé le 2026-10-02 : le nom restait en haut à droite). Un
   `texte(x, y, "…")` est CENTRÉ sur `(x, y)` à l'écran comme au PDF ; `ancre="bas-gauche"` pose son
-  coin bas-gauche sur `(x, y)`. Pointillés `trait="pointilles"` / `"tirets"` (alias
+  coin bas-gauche sur `(x, y)`. Nombre dans un texte : l'écrire avec un POINT (`texte(3, 0.8, "0.3")`,
+  `"0.{{p}}"`) ; affiché « 0,3 » en français, « 0.3 » en anglais, écran et PDF (2026-10-05) — une
+  virgule en dur reste une virgule dans les deux langues. Pointillés `trait="pointilles"` / `"tirets"` (alias
   `style="pointille"`). `point(…, visible=faux)` = point masqué, utilisable dans les constructions.
 - **Case équation avec `requiredForm: "centre-rayon"`** : un multiple de l'équation est
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
@@ -462,7 +469,10 @@ Règles d'écriture qui évitent un défaut :
 - Une spec `bad_form` / `unoptimal_form` liste ses `constraintViolations`, sinon elle est rouge.
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
-  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
+  TinyMath). Probabilité ou coefficient où la fraction est aussi légitime que le décimal :
+  attendue écrite EXACTE (`\frac{2}{5}`, jamais `0.4`) + `acceptDecimal` → fraction et décimal
+  exact justes, arrondi faux ; aucune règle ne rend une fraction juste pour un décimal attendu
+  (cartes `graphes-matrices-expertes/` B-12 à B-14). Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
   de décroissance, de convexité : ajouter `"openableBounds": true` (case ou `blankDefaults`) —
   l'élève peut OUVRIR une borne finie fermée (`]2;+\infty[` pour `[2;+\infty[`), jamais fermer
   une borne ouverte ; JAMAIS pour l'ensemble de solutions d'une inéquation. Specs conseillées :
@@ -566,12 +576,16 @@ exactement (fractions, racines) ; option `vectorMode` (case ou `blankDefaults` ;
   flèche droite pour passer au coefficient suivant ; `pmatrix`, `bmatrix` et `A=`, `A^{-1}=`
   devant sont lus ;
 - dimensions d'abord : une mauvaise taille est fausse avec « La matrice attendue a 2 lignes et
-  2 colonnes. » ; lignes de longueurs différentes, case du gabarit vide, facteur devant la
-  matrice (`\frac{1}{5}\begin{pmatrix}…`, inverse) : faux avec un message ;
+  2 colonnes. » ; lignes de longueurs différentes, case du gabarit vide : faux avec un message ;
+- facteur devant la matrice (`\frac{1}{5}\begin{pmatrix}…`, inverse ; décision du 2026-10-06) :
+  facteur × matrice comparé à l'attendue ; juste → `unoptimal_form` + `form`, « Distribue le
+  facteur dans la matrice. » ; faux sinon (spec conseillée, cf. B-08) ;
+- `acceptDecimal` de la case vaut pour chaque coefficient : attendue exacte (fractions) →
+  décimal exact juste (matrice de transition, B-12) ;
 - coefficients comparés PAR VALEUR (exactement : `1+1`, `\frac{4}{2}` valent 2), puis chaque
   coefficient jugé comme une case ordinaire contre le coefficient attendu (`\frac{4}{2}` pour 2 :
   `unoptimal_form` + `reducedFractions` ; `0.6` pour `\frac{3}{5}` ou `1+6` pour 7 : `bad_form` +
-  `form`) — specs : ajouter `constraintViolations` ;
+  `form`, sauf `acceptDecimal`) — specs : ajouter `constraintViolations` ;
 - un produit dans le mauvais ordre (BA) n'a pas de message propre : il est faux ;
 - attendue illisible, non rectangulaire, de dimension > 6 ou à coefficient non défini → specs
   rouges. Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « matrice »).
@@ -690,18 +704,19 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
 échouer tout le PDF de la fiche, sans message à l'enseignant. Le Typst CLI local (0.14) n'est pas
 un témoin : il échoue sur cetz 0.3.0 et accepte ce que 0.6.1-rc5 refuse. D'où `compile-prod.mjs`.
 
-| Symptôme dans le PDF                                        | Cause                                              | PR   |
-| ----------------------------------------------------------- | -------------------------------------------------- | ---- |
-| fiche entière en échec après un vecteur `AB` suivi d'un nom | nom lu comme fonction                              | #437 |
-| fractions minuscules dans le texte                          | Typst réduit toute fraction en ligne               | #436 |
-| décimaux d'un arbre en `0″,″3` ; issue sur l'étiquette      | guillemets repassés en primes                      | #443 |
-| arbre de 3 épreuves débordant sur la colonne voisine        | largeur non ajustée                                | #444 |
-| `0,0 484` au lieu de `0,048 4` (écran aussi)                | décimales après `{,}` groupées comme un entier     | #445 |
-| issue `RR` affichée ℝ                                       | `RR`, `NN`, `ZZ`, `QQ`, `CC` = ensembles en Typst  | #446 |
-| « 0,8 » dans les fiches anglaises                           | formatage français quelle que soit la langue       | #448 |
-| `3p = 0,45` affiché « = 0,45 » dans un `align*`             | seule la 1re ligne gardait son membre de gauche    | #449 |
-| fiche entière en échec avec `Ω(1 ; 2)`                      | `Omega(` lu comme appel de fonction, `;` = tableau | #451 |
-| coordonnées de vecteur en colonne minuscules                | matrice en ligne composée en taille d'indice       | #451 |
+| Symptôme dans le PDF                                        | Cause                                              | PR                                 |
+| ----------------------------------------------------------- | -------------------------------------------------- | ---------------------------------- |
+| fiche entière en échec après un vecteur `AB` suivi d'un nom | nom lu comme fonction                              | #437                               |
+| fractions minuscules dans le texte                          | Typst réduit toute fraction en ligne               | #436                               |
+| décimaux d'un arbre en `0″,″3` ; issue sur l'étiquette      | guillemets repassés en primes                      | #443                               |
+| arbre de 3 épreuves débordant sur la colonne voisine        | largeur non ajustée                                | #444                               |
+| `0,0 484` au lieu de `0,048 4` (écran aussi)                | décimales après `{,}` groupées comme un entier     | #445                               |
+| issue `RR` affichée ℝ                                       | `RR`, `NN`, `ZZ`, `QQ`, `CC` = ensembles en Typst  | #446                               |
+| « 0,8 » dans les fiches anglaises                           | formatage français quelle que soit la langue       | #448                               |
+| « 0,3 » d'un `texte` de figure en anglais (écran, PDF)      | texte de figure jamais localisé                    | feat/moteur-regles-fraction-figure |
+| `3p = 0,45` affiché « = 0,45 » dans un `align*`             | seule la 1re ligne gardait son membre de gauche    | #449                               |
+| fiche entière en échec avec `Ω(1 ; 2)`                      | `Omega(` lu comme appel de fonction, `;` = tableau | #451                               |
+| coordonnées de vecteur en colonne minuscules                | matrice en ligne composée en taille d'indice       | #451                               |
 
 Autres leçons :
 
