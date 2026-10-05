@@ -28,5 +28,6 @@
 </svelte:head>
 
 <div class="h-full">
+	<h1 class="sr-only">Tableau blanc</h1>
 	<Whiteboard />
 </div>

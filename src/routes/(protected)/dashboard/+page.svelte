@@ -90,11 +90,13 @@
 <!-- STUDENT DASHBOARD -->
 {#if data.profile.role === 'student'}
 	<!-- Student sees: assignments, progress, classes, mastery level -->
+	<h1 class="sr-only">Tableau de bord</h1>
 	<StudentDashboard {data} />
 
 	<!-- TEACHER DASHBOARD -->
 {:else if data.profile.role === 'teacher'}
 	<!-- Teacher sees: their classes, students, assignments, quick actions -->
+	<h1 class="sr-only">Tableau de bord</h1>
 	<TeacherDashboard {data} />
 
 	<!-- ADMIN DASHBOARD -->
@@ -107,6 +109,7 @@
 	<!-- This should never happen if database constraints are correct -->
 	<!-- If it does, it indicates a data integrity issue -->
 	<div class="bg-error-100-900 border-error-200-800 rounded-lg border p-6">
+		<h1 class="sr-only">Tableau de bord</h1>
 		<h2 class="text-error-900-50 text-lg font-semibold">Unknown Role</h2>
 		<p class="text-error-700-300 mt-2">
 			Your account has an unrecognized role:

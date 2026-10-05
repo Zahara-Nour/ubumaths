@@ -342,9 +342,10 @@
 
 				<!-- Zone title - hidden on very small screens -->
 				<div class="hidden sm:block">
-					<h1 class="text-2xl font-bold tracking-tight text-foreground">
+					<!-- Nom de l'espace, pas un titre : le seul h1 est celui de la page -->
+					<div class="text-2xl font-bold tracking-tight text-foreground">
 						{getZoneTitle(navRole)}
-					</h1>
+					</div>
 				</div>
 			</div>
 

@@ -193,7 +193,7 @@
 <div class="container mx-auto space-y-6 p-6">
 	<!-- Header -->
 	<div class="space-y-2">
-		<h1 class="text-3xl font-bold">QuestionDisplay Component Debug</h1>
+		<h2 class="text-3xl! font-bold">QuestionDisplay Component Debug</h2>
 		<p class="text-muted-foreground">
 			Test and debug the QuestionDisplay component with real-time state inspection.
 		</p>

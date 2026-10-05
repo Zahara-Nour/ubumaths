@@ -38,7 +38,7 @@
 	>
 		<!-- Left: Game Title -->
 		<div class="flex items-center gap-2">
-			<h1 class="text-xl font-bold text-foreground">Navadra</h1>
+			<div class="text-xl font-bold text-foreground">Navadra</div>
 		</div>
 
 		<!-- Center: Player Stats -->
