@@ -427,7 +427,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
 	// appliquée à la commande tapée à la main.
-	const argument = space === -1 ? '' : substituteNames(session, resolved.slice(space + 1));
+	// ⚠️ Les dérivées d'abord (`f'(x)` → son expression), puis les noms : sans
+	// ça, `f'(x)` perdait son `f` et devenait `(x^2-3x)'(x)`, illisible —
+	// `.resoudre f'(x)=0` répondait « Je n'ai pas su lire » (2026-10-05)
+	const argument =
+		space === -1
+			? ''
+			: substituteNames(session, expandInput(session.atelier, resolved.slice(space + 1)));
 	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
 	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
 	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que

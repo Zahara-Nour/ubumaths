@@ -283,7 +283,7 @@ export function expandInput(atelier: Atelier, text: string): string {
 	// s'évalue pas mais se dérive, et `k'` doit valoir `b`.
 	const { derivableFunctions } = bindingsOf(atelier, '');
 	const expanded = expandDerivatives(ast, derivableFunctions);
-	return toCustom(expanded);
+	return toCustom(withPlainEuler(expanded));
 }
 
 /**
