@@ -30,6 +30,7 @@ import {
 	sqrt
 } from './factory';
 import {
+	isComplex,
 	isDivision,
 	isEulerConstant,
 	isMultiplication,
@@ -951,15 +952,32 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
+/** `complex(0, 1)` : l'unité imaginaire telle que le parseur lit `\imaginaryI` */
+function isImaginaryUnitNode(node: MathNode): boolean {
+	return (
+		isComplex(node) &&
+		isNumber(node.real) &&
+		node.real.value === '0' &&
+		isNumber(node.imaginary) &&
+		node.imaginary.value === '1'
+	);
+}
+
 /**
  * Une seule écriture du nombre e pour comparer les formes : `\exponentialE`
  * (MathLive) devient la lettre `e`, `\exp(u)` (notation du programme) devient
  * `e^{u}`. Ce sont des notations, pas des formes : aucune pénalité (décision de
  * David du 2026-10-02).
+ *
+ * De même pour l'unité imaginaire : `\imaginaryI` (MathLive, « ii » ou la variante
+ * « i imaginaire » de la touche i), que le parseur lit `complex(0, 1)`, devient la
+ * lettre `i` (`\mathrm{i}` l'était déjà). Avant : `2-3\imaginaryI` pour `2-3i`
+ * était « pas sous la forme demandée » (décision de David du 2026-10-05).
  */
 function unifyEulerNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (isEulerConstant(node)) return variable('e');
+		if (isImaginaryUnitNode(node)) return variable('i');
 		if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
 			return superscript(variable('e'), node.args[0]);
 		}
