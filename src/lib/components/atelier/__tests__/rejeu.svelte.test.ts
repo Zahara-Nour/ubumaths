@@ -110,3 +110,33 @@ describe('rejouer un historique', () => {
 		expect(container.textContent).toContain('Ce fichier n’est pas un historique de Calcul.');
 	});
 });
+
+// =============================================================================
+// Audit de sécurité du lot C2 : un fichier venu d'un autre élève
+// =============================================================================
+
+describe('un historique piégé', () => {
+	it('ne glisse ni lien javascript: ni attribut on* dans la page', async () => {
+		localStorage.removeItem(KEY);
+		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
+
+		await choose(
+			container,
+			historyFile((d) => {
+				d.submit('\\href{javascript:alert(1)}{x}');
+				d.submit('<img src=x onerror=alert(1)>');
+				d.submit('f(x)=x^2');
+			})
+		);
+
+		// Le TEXTE affiché peut contenir « javascript: » (Svelte l'échappe) : le
+		// danger est dans les éléments et les attributs, c'est là qu'on regarde
+		const historique = container.querySelector('.historique') as HTMLElement;
+		const elements = [...historique.querySelectorAll('*')];
+		expect(historique.textContent).toContain('javascript:');
+		expect(historique.querySelectorAll('img, script, iframe').length).toBe(0);
+		const attributes = elements.flatMap((el) => [...el.attributes]);
+		expect(attributes.filter((a) => /^on/i.test(a.name)).map((a) => a.name)).toEqual([]);
+		expect(attributes.filter((a) => /javascript:/i.test(a.value)).map((a) => a.value)).toEqual([]);
+	});
+});

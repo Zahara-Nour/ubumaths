@@ -167,3 +167,73 @@ describe('rejouer un historique', () => {
 		expect(d.notice).toBe('Historique rejoué : 1 ligne.');
 	});
 });
+
+// =============================================================================
+// Revue du lot C2
+// =============================================================================
+
+describe('rejeu — ce que la revue a trouvé', () => {
+	/** Un fichier écrit à la main, pour placer les lignes exactement. */
+	function file(entries: unknown[]) {
+		return read(
+			JSON.stringify({
+				format: 'chiphre-calcul',
+				version: 1,
+				exportedAt: NOW.toISOString(),
+				entries
+			})
+		);
+	}
+	const shown = { label: '', text: '', failed: false };
+
+	it('« Garder » vise la ligne du fichier, même décalée par une ligne secondaire', () => {
+		const d = new CalcDesk(new Atelier());
+
+		const report = d.replay(
+			file([
+				{ kind: 'ligne', ...shown },
+				{ kind: 'saisie', input: '1/3 + 1/6', ...shown },
+				{ kind: 'garder', line: 1, ...shown }
+			])
+		);
+
+		expect(report.ok).toBe(true);
+		expect(d.atelier.names.length).toBe(1);
+	});
+
+	it('un geste qui avait échoué et n’écrit plus rien n’arrête pas le rejeu (R3)', () => {
+		const d = new CalcDesk(new Atelier());
+
+		const report = d.replay(
+			file([
+				{ kind: 'action', action: 'inconnue', name: 'f', ...shown, failed: true },
+				{ kind: 'saisie', input: '1+1', ...shown }
+			])
+		);
+
+		expect(report).toMatchObject({ ok: true, replayed: 2 });
+	});
+
+	it('un « Garder » refusé dit sa vraie raison', () => {
+		const d = new CalcDesk(new Atelier());
+
+		const report = d.replay(
+			file([
+				{ kind: 'saisie', input: '.variations x^2-3x+1', ...shown },
+				{ kind: 'garder', line: 0, ...shown }
+			])
+		);
+
+		expect(report.ok).toBe(false);
+		expect(d.notice).toContain('commande');
+	});
+
+	it('le brouillon de l’élève survit au rejeu', () => {
+		const d = new CalcDesk(new Atelier());
+		d.draft = 'g(x) = ';
+
+		d.replay(file([{ kind: 'saisie', input: '1+1', ...shown }]));
+
+		expect(d.draft).toBe('g(x) = ');
+	});
+});

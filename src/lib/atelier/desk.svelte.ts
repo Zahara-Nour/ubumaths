@@ -276,43 +276,62 @@ export class CalcDesk {
 	 * confirmation (R2).
 	 */
 	replay(history: ImportedHistory, graph?: GrapheurStore): ReplayReport {
+		// Le brouillon de l'élève survit au rejeu : `submit` le vide (revue)
+		const draft = this.draft;
+		// Indice dans le fichier → indice rejoué : « Garder » vise une ligne du
+		// fichier, et un geste peut écrire plus ou moins de lignes qu'à l'export
+		const rows: number[] = [];
 		let replayed = 0;
+		let stop: { line: number; message: string } | null = null;
 		for (const [index, entry] of history.entries.entries()) {
 			const step = stepOf(entry);
 			if (step === null) continue;
 			const before = this.entries.length;
-			this.#replayStep(step, graph);
+			this.notice = null;
+			const missed = this.#replayStep(step, rows, graph);
 			const first = this.entries[before];
+			if (first !== undefined) rows[index] = before;
+			// R3 : on ne s'arrête que si la ligne AVAIT réussi
 			const broken =
-				first === undefined
-					? 'cette ligne ne s’est pas rejouée.'
-					: first.failed && !entry.failed
-						? first.text
-						: null;
+				missed ??
+				(entry.failed
+					? null
+					: first === undefined
+						? (this.notice ?? 'cette ligne ne s’est pas rejouée.')
+						: first.failed
+							? first.text
+							: null);
 			if (broken !== null) {
-				this.notice = `Rejeu arrêté à la ligne ${index + 1} : ${broken}`;
-				return { ok: false, replayed, line: index + 1, message: broken };
+				stop = { line: index + 1, message: broken };
+				break;
 			}
 			replayed++;
+		}
+		this.draft = draft;
+		if (stop !== null) {
+			this.notice = `Rejeu arrêté à la ligne ${stop.line} : ${stop.message}`;
+			return { ok: false, replayed, ...stop };
 		}
 		this.notice = `Historique rejoué : ${replayed} ${replayed > 1 ? 'lignes' : 'ligne'}.`;
 		return { ok: true, replayed };
 	}
 
-	#replayStep(step: ReplayStep, graph?: GrapheurStore): void {
+	/** Refaire un geste ; rend la raison d'un échec que la ligne ne dirait pas, sinon null. */
+	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
 		switch (step.kind) {
 			case 'saisie':
 				this.submit(step.input);
-				return;
+				return null;
 			case 'action':
 				if (step.action === 'image') this.image(step.name, step.value ?? '');
 				else this.runFromPanel(step.action, step.name, graph);
-				return;
+				return null;
 			case 'garder': {
-				// Rejouée dans l'ordre, la ligne gardée est au même rang qu'à l'export
-				const kept = this.entries[step.line];
-				if (kept !== undefined) this.keep(kept);
-				return;
+				const row = rows[step.line];
+				const kept = row === undefined ? undefined : this.entries[row];
+				if (kept === undefined) return 'la ligne à garder n’a pas été rejouée.';
+				this.keep(kept);
+				return null;
 			}
 		}
 	}

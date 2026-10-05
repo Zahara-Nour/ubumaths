@@ -23,8 +23,12 @@ export const MAX_HISTORY_BYTES = 1_000_000;
 
 export const MAX_HISTORY_ENTRIES = 500;
 
-/** Une saisie, un nom, une valeur : rien de ce qu'un élève tape n'approche cette longueur. */
-const MAX_INPUT_LENGTH = 2000;
+/**
+ * Une saisie, un nom, une valeur : rien de ce qu'un élève tape n'approche cette
+ * longueur. Bornée serré : le rejeu est synchrone, et 500 calculs démesurés
+ * gèleraient l'onglet (audit du lot C2 ; risque résiduel accepté, sans perte).
+ */
+const MAX_INPUT_LENGTH = 500;
 
 /** Ce que l'écran montrait : relu seulement pour vérifier, mais borné aussi. */
 const MAX_TEXT_LENGTH = 20_000;

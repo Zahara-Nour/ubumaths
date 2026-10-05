@@ -91,7 +91,6 @@
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
 
-	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
 	function handleReplayRequest(history: ImportedHistory) {
 		pendingReplay = history;
@@ -109,7 +108,9 @@
 		desk.clear();
 		seen = 0;
 		selected = null;
-		desk.replay(pendingReplay, graph);
+		const history = pendingReplay;
+		pendingReplay = null;
+		desk.replay(history, graph);
 	}
 
 	/** Ce que le rejeu remplacera, en mots (R2). */
@@ -118,9 +119,10 @@
 		if (count === 0) return 'l’historique actuel sera effacé.';
 		const objects =
 			count === 1 ? 'ton objet sera remplacé' : `tes ${count} objets seront remplacés`;
-		return `${objects}, et l’historique effacé.`;
+		return `${objects}, et l’historique effacé. Un lien de partage déjà copié les garde.`;
 	}
 
+	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
 	function handleReset() {
 		atelier.restore({ version: ATELIER_STATE_VERSION, objects: [] });
 		// L'historique aussi : il parlait d'objets supprimés (revue du lot 6, C3)
@@ -456,10 +458,11 @@
 		<ConfirmDialog
 			bind:open={confirmReplay}
 			title="Rejouer cet historique ?"
-			description="Rejouer repart de zéro : {replayLoss()} Un lien de partage déjà copié les garde."
+			description="Rejouer repart de zéro : {replayLoss()}"
 			confirmLabel="Rejouer"
 			variant="destructive"
 			onConfirm={replayNow}
+			onCancel={() => (pendingReplay = null)}
 		/>
 		<nav class="onglets" aria-label="Vues de l'atelier">
 			{#each VIEWS as item (item.id)}
