@@ -30,6 +30,7 @@ import {
 	sqrt
 } from './factory';
 import {
+	isComplex,
 	isDivision,
 	isEulerConstant,
 	isMultiplication,
@@ -38,12 +39,14 @@ import {
 	isPercentage,
 	isPiConstant,
 	isPositive,
-	isSymbol
+	isSymbol,
+	isVariable
 } from './guards';
 import { areEquivalent } from './equivalence';
 import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
 import { extractRational } from './common/numeric';
 import {
+	findNodes,
 	mapNode,
 	mapNodeTopDown,
 	stripUnnecessaryBrackets,
@@ -951,15 +954,32 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
+/** `complex(0, 1)` : l'unité imaginaire telle que le parseur lit `\imaginaryI` */
+function isImaginaryUnitNode(node: MathNode): boolean {
+	return (
+		isComplex(node) &&
+		isNumber(node.real) &&
+		node.real.value === '0' &&
+		isNumber(node.imaginary) &&
+		node.imaginary.value === '1'
+	);
+}
+
 /**
  * Une seule écriture du nombre e pour comparer les formes : `\exponentialE`
  * (MathLive) devient la lettre `e`, `\exp(u)` (notation du programme) devient
  * `e^{u}`. Ce sont des notations, pas des formes : aucune pénalité (décision de
  * David du 2026-10-02).
+ *
+ * De même pour l'unité imaginaire : `\imaginaryI` (MathLive, « ii » ou la variante
+ * « i imaginaire » de la touche i), que le parseur lit `complex(0, 1)`, devient la
+ * lettre `i` (`\mathrm{i}` l'était déjà). Avant : `2-3\imaginaryI` pour `2-3i`
+ * était « pas sous la forme demandée » (décision de David du 2026-10-05).
  */
-function unifyEulerNotationAST(ast: MathNode): MathNode {
+export function unifyEulerNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (isEulerConstant(node)) return variable('e');
+		if (isImaginaryUnitNode(node)) return variable('i');
 		if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
 			return superscript(variable('e'), node.args[0]);
 		}
@@ -1042,6 +1062,73 @@ function unifyPiAngleNotationAST(ast: MathNode): MathNode {
 			}
 		}
 		return node;
+	});
+}
+
+/** La lettre `i` (unité imaginaire ; `\imaginaryI` y est déjà ramené par `unifyEulerNotationAST`) */
+function isImaginaryLetter(node: MathNode): boolean {
+	return isVariable(node) && node.name === 'i';
+}
+
+/** Constante réelle écrite : aucune lettre (ni `i`, ni variable) */
+function isLetterFree(node: MathNode): boolean {
+	return findNodes(node, isVariable).length === 0;
+}
+
+/**
+ * Produit dont UN facteur est `i` et les autres des constantes réelles (`i`, `3i`,
+ * `i\sqrt{3}`, `\pi i`) : les autres facteurs (`null` pour `i` seul), sinon `undefined`.
+ */
+export function imaginaryProductRest(node: MathNode): MathNode | null | undefined {
+	const factors = flattenProductShallow(node);
+	const imaginary = factors.filter((f) => isImaginaryLetter(f.factor));
+	if (imaginary.length !== 1) return undefined;
+	const rest = factors.filter((f) => !isImaginaryLetter(f.factor));
+	if (!rest.every((f) => isLetterFree(f.factor))) return undefined;
+	return unflattenProduct(rest.map((f, k) => (k === 0 ? { ...f, style: 'implicit' } : f)));
+}
+
+/** `\frac{R}{d}i` (`\frac{1}{d}i` pour `R` absent) */
+function imaginaryOverDenominator(rest: MathNode | null, denominator: MathNode): MathNode {
+	return multiply(divide(rest ?? number('1'), denominator, 'fraction'), variable('i'), 'implicit');
+}
+
+/**
+ * Une seule écriture d'un complexe sous forme algébrique pour comparer les formes
+ * (décision de David du 2026-10-05, même famille que `\frac{x^3}{3}` / `\frac13x^3`) :
+ * sur un dénominateur NOMBRE, `\frac{a+bi}{d}` devient `\frac{a}{d}+\frac{b}{d}i`, et
+ * `\frac{bi}{d}`, `\frac{ib}{d}` deviennent `\frac{b}{d}i` (`\frac{i\pi}{3}` dans un
+ * exposant compris). `a`, `b` : constantes réelles sans lettre. Ce sont des notations,
+ * pas des formes : aucune pénalité. Exclus, jugés comme avant : un dénominateur qui
+ * n'est pas un nombre (`\frac{1}{1+i}`, calcul non fait), plus de deux termes, une
+ * lettre autre que `i` (`\frac{x+1}{2}` garde son jugement) ; une fraction simplifiable
+ * (`\frac{2-2i}{4}`) reste signalée par `reducedFractions`.
+ */
+export function unifyComplexAlgebraicNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (!isDivision(node) || node.displayStyle !== 'fraction' || !isNumber(node.denominator)) {
+			return node;
+		}
+		const terms = flattenSumShallow(node.numerator);
+		if (terms.length === 1) {
+			const rest = imaginaryProductRest(terms[0].term);
+			if (rest === undefined) return node;
+			const imaginary = imaginaryOverDenominator(rest, node.denominator);
+			return terms[0].sign === '-' ? opposite(imaginary) : imaginary;
+		}
+		if (terms.length !== 2) return node;
+		const imaginaryIndex = terms.findIndex((t) => imaginaryProductRest(t.term) !== undefined);
+		if (imaginaryIndex === -1) return node;
+		const real = terms[1 - imaginaryIndex];
+		if (!isLetterFree(real.term)) return node;
+		const imaginaryTerm = terms[imaginaryIndex];
+		const imaginary = imaginaryOverDenominator(
+			imaginaryProductRest(imaginaryTerm.term) ?? null,
+			node.denominator
+		);
+		const realPart = divide(real.term, node.denominator, 'fraction');
+		const first = real.sign === '-' ? opposite(realPart) : realPart;
+		return imaginaryTerm.sign === '-' ? subtract(first, imaginary) : add(first, imaginary);
 	});
 }
 
@@ -1386,6 +1473,7 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyInfinityNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
+		{ transform: unifyComplexAlgebraicNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyMonomialFractionNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: absoluteUnderAssumptionsAST(options.assumptions), constraintId: null }, // hypothèse, pas forme
 		{ transform: reduceRadicalsAST, constraintId: 'reducedRadicals' },
@@ -1461,6 +1549,37 @@ export function isSimpleNumberLatex(latex: string): boolean {
 		node = node.operand;
 	}
 	return node.type === 'number';
+}
+
+/**
+ * Un seul terme, signe compris (`-\frac{7\pi}{4}`, `3\pi`) : ni somme ni différence
+ * (`\frac{\pi}{4}+2\pi`). Illisible : `false`.
+ */
+export function isSingleTermLatex(latex: string): boolean {
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
+	if (!parsed.ast || parsed.errors.length > 0) return false;
+	return flattenSumShallow(parsed.ast).length === 1;
+}
+
+/**
+ * Un complexe écrit en décimaux, `a+bi` (`0.5-0.5i`, `-0{,}5i+2`, `3i`, `1-i`) : au plus
+ * un nombre réel et un terme imaginaire `b i` / `i b` / `i`, `b` nombre. Sert à l'option
+ * de case `acceptDecimal`, comme `isSimpleNumberLatex` pour un réel.
+ */
+export function isDecimalComplexLatex(latex: string): boolean {
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
+	if (!parsed.ast || parsed.errors.length > 0) return false;
+	const terms = flattenSumShallow(unifyEulerNotationAST(parsed.ast));
+	if (terms.length === 0 || terms.length > 2) return false;
+	const isImaginary = (term: MathNode): boolean => {
+		const rest = imaginaryProductRest(term);
+		// `-0.5i` est lu `(-0.5)·i` (moins unaire du parseur)
+		const unsigned = rest && isOpposite(rest) ? rest.operand : rest;
+		return unsigned === null || (unsigned !== undefined && isNumber(unsigned));
+	};
+	const imaginary = terms.filter((t) => isImaginary(t.term));
+	const real = terms.filter((t) => isNumber(t.term));
+	return imaginary.length === 1 && imaginary.length + real.length === terms.length;
 }
 
 /**

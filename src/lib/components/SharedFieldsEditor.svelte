@@ -53,6 +53,8 @@
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
+		/** Argument : une réponse juste à un multiple de 2π près est juste */
+		sharedBlankAngleModulo: boolean;
 		/** Case : `\binom{32}{5}`, `6!` justes (notation combinatoire non calculée) */
 		sharedBlankAcceptCombinatorial: boolean;
 		sharedBlankIntervals: boolean;
@@ -91,6 +93,7 @@
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
+		sharedBlankAngleModulo = $bindable(),
 		sharedBlankAcceptCombinatorial = $bindable(),
 		sharedBlankIntervals = $bindable(),
 		sharedBlankOpenableBounds = $bindable(),
@@ -338,6 +341,11 @@
 							<MyCheckbox
 								bind:checked={sharedBlankAcceptDecimal}
 								label="Accepter le décimal exact"
+							/>
+							<!-- « Donne un argument de z » : -7π/4 juste pour π/4 (à 2π près) -->
+							<MyCheckbox
+								bind:checked={sharedBlankAngleModulo}
+								label="Angle juste à 2π près (un argument)"
 							/>
 							<!-- Dénombrement : \binom{32}{5}, 6!, 10!/7! justes sans calcul (bac) -->
 							<MyCheckbox

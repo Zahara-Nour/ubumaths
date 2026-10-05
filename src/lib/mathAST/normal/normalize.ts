@@ -87,6 +87,7 @@ import { format as formatUnit } from '../units/formatter';
 import { divide, euler, number, opposite, parentheses, piConstant, superscript } from '../factory';
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
+import { expandImaginaryExponentials } from './rules/euler-formula';
 import { expandPositiveBasePowers } from './rules/general-power';
 import { expandFractionalPowers } from './rules/fractional-power';
 import { expandNthRootPowers } from './rules/nth-root-power';
@@ -2134,7 +2135,12 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	// même domaine des deux côtés (a > 0, b > 0, b ≠ 1), et la décomposition
 	// des `ln` fait le reste (`\log_{4}(x) ≡ \frac{1}{2}\log_{2}(x)`). Détail
 	// dans `rules/log-base.ts`.
-	const withEuler = expandEulerPowers(expandLogBases(node));
+	// Formule d'Euler : `exp(a + iθ)` (θ constant) devient `exp(a)(cos θ + i sin θ)`,
+	// et `2e^{i\frac{\pi}{3}}` rencontre `1+i\sqrt{3}`. Détail dans
+	// `rules/euler-formula.ts`.
+	const withEuler = expandImaginaryExponentials(expandEulerPowers(expandLogBases(node)), {
+		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx))
+	});
 	// `2^{x}` devient `exp(x·ln 2)` : sans ça, un exposant symbolique sur une
 	// base numérique restait opaque (`2^{x+1} ≢ 2·2^{x}`). Bases rationnelles
 	// strictement positives seulement — détail dans `rules/general-power.ts`.

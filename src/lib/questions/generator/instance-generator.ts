@@ -483,6 +483,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const vectorMode = blank.vectorMode ?? resolvedVariation.blankDefaults?.vectorMode;
 				const openableBounds =
 					blank.openableBounds ?? resolvedVariation.blankDefaults?.openableBounds;
+				const angleModulo = blank.angleModulo ?? resolvedVariation.blankDefaults?.angleModulo;
 				const calculusFields = resolveCalculusFields(
 					answerKind,
 					blank,
@@ -519,6 +520,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					...(answerKind && { answerKind }),
 					...(answerKind === 'vecteur' && vectorMode && { vectorMode }),
 					...(answerKind === 'intervalles' && openableBounds && { openableBounds: true }),
+					// Argument « à 2π près » : case ordinaire seulement
+					...(answerKind === undefined && angleModulo && { angleModulo }),
 					...calculusFields,
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })

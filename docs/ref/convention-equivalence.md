@@ -284,6 +284,73 @@ specs, attendue sur tirages, variantes `\frac{k}{e^a}` ↔ `ke^{-a}`), 30 change
 classe et vers `correct` : 10 synthétiques, 10 dans le dépôt (cartes C-03, B-06, A-02), 10 sur
 leurs copies en brouillon en prod ; aucun modèle publié touché.
 
+## Nombres complexes (décisions de David du 2026-10-05)
+
+La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Sondes sur les cartes de maths
+expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
+
+- **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i), lu
+  `complex(0, 1)` par le parseur, est la même notation que `i` (`unifyEulerNotationAST`,
+  comme `\exponentialE` → `e`) : `2-3\imaginaryI` pour `2-3i` est juste (avant : « pas sous la
+  forme demandée ») ; `\mathrm{i}` l'était déjà. Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
+  de prod en lecture + synthétiques) : 37 973 verdicts, 330 changés, tous des réponses contenant
+  `\imaginaryI` (dont l'attendue recopiée du corrigé, qui l'écrit ainsi), mauvaise forme → juste,
+  sur 11 brouillons ; aucun modèle publié.
+- **Forme algébrique** : sur un dénominateur nombre, `\frac{1-i}{2}`, `\frac12-\frac12i` et
+  `\frac{1}{2}-\frac{i}{2}` sont UNE forme (`unifyComplexAlgebraicNotationAST`, même famille que
+  `\frac{x^3}{3}` / `\frac13x^3`) ; `\frac{1+i\sqrt{3}}{2}` ≡ `\frac12+\frac{\sqrt{3}}{2}i` ;
+  `\frac{i\pi}{3}` ≡ `\frac{\pi}{3}i` ≡ `i\frac{\pi}{3}` (exposant d'une forme exponentielle
+  compris). `\frac{2-2i}{4}` reste perfectible (`reducedFractions`), `\frac{1}{1+i}` de mauvaise
+  forme (calcul non fait) ; `\frac{x+1}{2}` / `\frac{x}{2}+\frac12` inchangé (lettre autre que
+  `i`). Décimal : aligné sur le réel (`0.5` pour `\frac12` est de mauvaise forme) —
+  `0.5-0.5i` pour `\frac{1-i}{2}` est de mauvaise forme, juste avec l'option `acceptDecimal`
+  (`isDecimalComplexLatex`). Mesure (même corpus) : 37 changés, tous de la classe : 33
+  synthétiques, 2 specs de la carte A-02 (`\frac{1-i}{2}` : mauvaise forme → juste, mise à jour ;
+  `\frac{5+5i}{5}` → perfectible) et leurs copies en brouillon en prod.
+
+- **Forme exponentielle — valeur** : sur le chemin de `equivalenceForm` seul,
+  `exp(a + iθ)` devient `exp(a)(cos θ + i sin θ)` quand la partie imaginaire θ est constante
+  (aucune lettre que `i` ; `normal/rules/euler-formula.ts`, après `expandEulerPowers`). C'est
+  une identité, vraie pour tout θ : aucun faux positif possible ; les valeurs remarquables de
+  `cos`/`sin` font le reste. `2e^{i\frac{\pi}{3}}` ≡ `1+i\sqrt{3}` ≡
+  `2(\cos\frac{\pi}{3}+i\sin\frac{\pi}{3})`, `e^{i\pi}` ≡ −1, `e^{1+i\pi}` ≡ −e,
+  `2e^{i\frac{7\pi}{3}}` ≡ `2e^{i\frac{\pi}{3}}` ≡ `-2e^{i\frac{4\pi}{3}}`. Argument non
+  remarquable : `e^{i}` ≡ `\cos 1+i\sin 1` (mêmes atomes), faux négatif sinon. `e^{ix}` (argument
+  variable) n'est pas touché. Avant : réponse exponentielle juste comptée FAUSSE.
+- **Forme exponentielle — forme** : exponentielle et algébrique sont deux formes. Sans
+  `requiredForm`, la forme se compare à l'attendue : `2e^{i\frac{\pi}{3}}` pour `1+i\sqrt{3}` est
+  « pas sous la forme demandée » (et l'inverse), comme la forme trigonométrique ; `\frac{i\pi}{3}`,
+  `i\frac{\pi}{3}`, `\frac{\pi}{3}i` dans l'exposant sont une seule forme. Nouvelles formes
+  exigeables (`requiredForm`, `questions/complex-forms.ts`, éditeur : « Complexe : forme
+  exponentielle / algébrique ») : `exponentielle` = `re^{iθ}`, r > 0 constant, θ réel constant,
+  argument LIBRE (`2e^{i\frac{7\pi}{3}}` juste pour `2e^{i\frac{\pi}{3}}`) ; refusées :
+  `-2e^{i\frac{4\pi}{3}}`, forme trigonométrique ou algébrique. `algebrique` = `a+ib`
+  (`\frac{1-i}{2}` compris) ; refusées : exponentielle, trigonométrique, `\frac{1}{1+i}`.
+  Mesure (même corpus) : 37 973 verdicts, 46 changés, tous des réponses exponentielles de valeur
+  juste : 42 synthétiques et 2 specs de la carte D-05 (copie de prod comprise ; faux → mauvaise
+  forme, spec mise à jour) ; 2 lignes de description renommée (A-02) ; aucun modèle publié.
+
+- **Argument modulo 2π** (option de case `angleModulo: "2pi"`, case ou `blankDefaults`,
+  éditeur : « Angle juste à 2π près ») : une réponse qui diffère de l'attendue d'un multiple
+  entier NON NUL de 2π est juste (`questions/angle-modulo.ts` : multiple estimé numériquement,
+  égalité `réponse = attendue + 2kπ` prouvée par l'équivalence exacte). `-\frac{7\pi}{4}`,
+  `\frac{9\pi}{4}` pour `\frac{\pi}{4}` : juste ; `\frac{5\pi}{4}` : faux ; écriture jugée seule
+  (`-\frac{14\pi}{8}` perfectible, `\frac{\pi}{4}+2\pi` de mauvaise forme). Câblé comme
+  `openableBounds` : Zod strict et souple, générateur (case ordinaire seulement), validateur,
+  barème serveur, `orderIndependent`, verdicts par case, specs. Sans l'option, rien ne change.
+  Mesure (même corpus, dont 438 variantes `θ − 2π` sur des cases réelles sans l'option) :
+  37 973 verdicts, 15 changés, tous synthétiques AVEC l'option ; 0 sans.
+
+- **Ensemble fini de complexes** (case `answerKind: "intervalles"`) : une attendue `\{1+i;1-i\}`
+  était « illisible » (la lecture des intervalles ne connaît que des réels). Un ensemble FINI
+  dont un élément au moins contient `i` est lu élément par élément
+  (`questions/intervals/complex-finite-set.ts`) : ordre libre, éléments appariés par
+  équivalence de valeur (`\{1-i;1+i\}`, `\{1+\imaginaryI;1-\imaginaryI\}`,
+  `\{\sqrt{2}e^{i\frac{\pi}{4}};1-i\}` justes) ; manquant, en trop ou faux : faux ; fraction
+  simplifiable dans un élément : ½ (`intervalForm`). Jamais d'intervalle complexe. Ensembles
+  réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
+  (ensembles de complexes) ; 0 sur les cases intervalles réelles.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

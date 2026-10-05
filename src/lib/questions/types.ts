@@ -307,6 +307,8 @@ export interface BlankDefaults extends CalculusBlankFields {
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` */
 	openableBounds?: boolean;
+	/** Voir `TemplateBlank.angleModulo` */
+	angleModulo?: AngleModulo;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -389,6 +391,13 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * de l'ensemble attendu. Jamais pour un ensemble de solutions d'inéquation.
 	 */
 	openableBounds?: boolean;
+	/**
+	 * Case ordinaire (sans `answerKind`) : `'2pi'` = une réponse qui diffère de l'attendue
+	 * d'un multiple entier de 2π est juste (« donne UN argument de z » :
+	 * `-\frac{7\pi}{4}` pour `\frac{\pi}{4}`). Son écriture est jugée seule (fraction à
+	 * simplifier perfectible, calcul non fait `\frac{\pi}{4}+2\pi` de mauvaise forme).
+	 */
+	angleModulo?: AngleModulo;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -777,6 +786,8 @@ export interface InstanceBlank extends CalculusBlankFields {
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` (fusionné avec blankDefaults, case intervalles seulement) */
 	openableBounds?: boolean;
+	/** Voir `TemplateBlank.angleModulo` (fusionné avec blankDefaults, case ordinaire seulement) */
+	angleModulo?: AngleModulo;
 
 	/** Unit config (merged) */
 	unit?: {
@@ -1139,11 +1150,18 @@ export type RequiredForm =
 	| 'fraction'
 	| 'power'
 	| EquationForm
+	| ComplexForm
 	| {
 			pattern: string;
 			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
 			acceptable?: string;
 	  };
+
+/** Réponse d'angle « à … près » (cf. `TemplateBlank.angleModulo`) */
+export type AngleModulo = '2pi';
+
+/** Valeurs de `AngleModulo` (schémas Zod) */
+export const ANGLE_MODULOS = ['2pi'] as const satisfies readonly AngleModulo[];
 
 /** Forme exigeable d'une équation (cf. `RequiredForm`) */
 export type EquationForm = 'reduite' | 'cartesienne' | 'centre-rayon';
@@ -1154,6 +1172,18 @@ export const EQUATION_FORMS = [
 	'cartesienne',
 	'centre-rayon'
 ] as const satisfies readonly EquationForm[];
+
+/**
+ * Forme exigeable d'un nombre complexe (cf. `RequiredForm`, `questions/complex-forms.ts`) :
+ * `exponentielle` = re^{iθ} avec r > 0 ; `algebrique` = a + ib.
+ */
+export type ComplexForm = 'exponentielle' | 'algebrique';
+
+/** Valeurs de `ComplexForm` (schémas Zod, éditeur) */
+export const COMPLEX_FORMS = [
+	'exponentielle',
+	'algebrique'
+] as const satisfies readonly ComplexForm[];
 
 // ============================================================================
 // TEST SPECS

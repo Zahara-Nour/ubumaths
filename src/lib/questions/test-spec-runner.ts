@@ -13,7 +13,7 @@ import type { ValidationResult } from '$lib/types/question-display';
 import { generateInstanceWithFixedVariables } from './generator/test-instance-builder';
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { getQuestionType, isCourseCard } from './types';
-import { readExpectedIntervals } from './intervals/interval-answer';
+import { readExpectedSet } from './intervals/interval-answer';
 import { readExpectedEquation } from './equations/equation-answer';
 import { readExpectedVector } from './vectors/vector-answer';
 import { readExpectedPrimitive } from './calculus/primitive-answer';
@@ -78,7 +78,7 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 		}
 		const expected =
 			blank.answerKind === 'intervalles'
-				? readExpectedIntervals(blank.expectedAnswer)
+				? readExpectedSet(blank.expectedAnswer)
 				: blank.answerKind === 'vecteur'
 					? readExpectedVector(blank.expectedAnswer, blank.vectorMode)
 					: readExpectedEquation(blank.expectedAnswer);

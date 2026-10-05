@@ -43,6 +43,7 @@ import { variable } from '$lib/mathAST/factory';
 import { isInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 import { checkReducedFractions } from '$lib/questions/constraint-validators';
+import { judgeComplexFiniteSet, readExpectedComplexSet } from './complex-finite-set';
 
 // Types
 export interface IntervalVerdict {
@@ -306,6 +307,16 @@ export function readExpectedIntervals(expected: string): ExpectedIntervals {
 	}
 }
 
+/**
+ * Attendue d'une case « intervalles » lisible : ensemble de réels, ou ensemble FINI de
+ * complexes (`\{1+i;1-i\}`, cf. `complex-finite-set.ts`). Sert aux specs du modèle.
+ */
+export function readExpectedSet(expected: string): { ok: true } | { ok: false; error: string } {
+	if (readExpectedComplexSet(withoutSetName(expected))) return { ok: true };
+	const read = readExpectedIntervals(expected);
+	return read.ok ? { ok: true } : read;
+}
+
 function readExpected(expected: string): ExpectedIntervals {
 	const parsed = parseStudentDomainPieces(withoutSetName(expected));
 	if (!parsed.success) return { ok: false, error: parsed.error };
@@ -353,6 +364,10 @@ function judgeWritten(
 	mode: ConstraintMode,
 	options: IntervalJudgeOptions
 ): IntervalVerdict {
+	// Ensemble fini de complexes (`\{1+i;1-i\}`) : lu et comparé élément par élément
+	const complexSet = readExpectedComplexSet(withoutSetName(expected));
+	if (complexSet) return judgeComplexFiniteSet(written, complexSet, mode);
+
 	// Modèle fautif : jamais une exception devant l'élève
 	const target = readExpectedIntervals(expected);
 	if (!target.ok) return incorrect();
@@ -448,6 +463,8 @@ function domainLatex(domain: Domain): string {
  * Illisible : rendue telle quelle (le test du modèle la signale).
  */
 export function expectedIntervalsLatex(expected: string): string {
+	const complexSet = readExpectedComplexSet(withoutSetName(expected));
+	if (complexSet) return `\\{${complexSet.join(';')}\\}`;
 	const target = readExpectedIntervals(expected);
 	return target.ok ? domainLatex(target.domain) : expected;
 }
