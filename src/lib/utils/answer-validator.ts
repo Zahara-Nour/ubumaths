@@ -908,7 +908,8 @@ function validateBlankValue(
 
 	// Matrice : dimensions, puis coefficients comparés par valeur
 	if (blank.answerKind === 'matrice') {
-		return judgeMatrixAnswer(userAnswer, blank.expectedAnswer).status === 'correct';
+		const { status } = judgeMatrixAnswer(userAnswer, blank.expectedAnswer);
+		return status === 'correct' || status === 'unoptimal_form';
 	}
 
 	// Primitive, solution d'équation différentielle : jugées sur la dérivée / par substitution
@@ -1187,6 +1188,15 @@ function matrixBlankResult(
 	const { status, feedback } = judgeMatrixAnswer(answer, blank.expectedAnswer);
 	if (status === 'correct') return matrixEntriesForm(answer, blank, instance);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	// Facteur devant une matrice juste : perfectible (distribuer le facteur)
+	if (status === 'unoptimal_form' && feedback) {
+		return {
+			isCorrect: true,
+			status,
+			feedback,
+			constraintViolations: [{ constraint: 'form', severity: 'warning', feedback }]
+		};
+	}
 	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
 }
 
@@ -1208,7 +1218,12 @@ function matrixEntriesForm(
 
 	let verdict: ReturnType<typeof validateSingleBlank> = correct;
 	for (const [i, entry] of answers.entries()) {
-		const entryBlank: InstanceBlank = { expectedAnswer: expected[i], type: 'math' };
+		// `acceptDecimal` de la case vaut pour chaque coefficient (attendue exacte, décimal exact juste)
+		const entryBlank: InstanceBlank = {
+			expectedAnswer: expected[i],
+			type: 'math',
+			...(blank.acceptDecimal && { acceptDecimal: true })
+		};
 		const result = validateSingleBlank(entry, entryBlank, entry, instance);
 		if (result.status === 'bad_form') return result;
 		if (result.status === 'unoptimal_form' && verdict.status === 'correct') verdict = result;

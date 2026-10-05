@@ -125,6 +125,47 @@ describe('écriture des coefficients, comme une case ordinaire', () => {
 	});
 });
 
+describe('facteur devant la matrice (décision du 2026-10-06)', () => {
+	it('valeur juste : perfectible, avertissement « Distribue le facteur »', () => {
+		const answer = '\\frac{1}{2}\\begin{pmatrix}4&-2\\\\0&6\\end{pmatrix}';
+		const { status, result } = judge(answer);
+		expect(status).toBe('unoptimal_form');
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBe('Distribue le facteur dans la matrice.');
+		expect(result.constraintViolations?.map((v) => [v.constraint, v.severity])).toEqual([
+			['form', 'warning']
+		]);
+		// Couleur de la case : la valeur est juste
+		expect(computeBlankVerdicts([answer], instanceWith([matrixBlank(M)]))).toEqual([true]);
+	});
+
+	it('valeur fausse : faux', () => {
+		const answer = '\\frac{1}{3}\\begin{pmatrix}4&-2\\\\0&6\\end{pmatrix}';
+		expect(judge(answer).status).toBe('incorrect');
+		expect(computeBlankVerdicts([answer], instanceWith([matrixBlank(M)]))).toEqual([false]);
+	});
+});
+
+describe('acceptDecimal : attendue exacte, décimal exact juste dans chaque coefficient', () => {
+	const expected =
+		'\\begin{pmatrix}\\frac{7}{10}&\\frac{3}{10}\\\\\\frac{3}{5}&\\frac{2}{5}\\end{pmatrix}';
+	function judgeDecimal(answer: string) {
+		const blank: InstanceBlank = { ...matrixBlank(expected), acceptDecimal: true };
+		const result = validateAnswer([answer], instanceWith([blank]), [answer]);
+		return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
+	}
+
+	it.each([
+		['\\begin{pmatrix}0.7&0.3\\\\0.6&0.4\\end{pmatrix}', 'correct'],
+		['\\begin{pmatrix}0{,}7 & 0{,}3\\\\ 0{,}6 & 0{,}4\\end{pmatrix}', 'correct'],
+		[expected, 'correct'],
+		['\\begin{pmatrix}0.7&\\frac{3}{10}\\\\0.6&\\frac{2}{5}\\end{pmatrix}', 'correct'],
+		['\\begin{pmatrix}0.7&0.3\\\\0.6&0.5\\end{pmatrix}', 'incorrect']
+	] as const)('%s → %s', (answer, status) => {
+		expect(judgeDecimal(answer)).toBe(status);
+	});
+});
+
 describe('sans answerKind : rien ne change', () => {
 	it('une matrice dans une case ordinaire garde son verdict', () => {
 		expect(ordinary(M, M)).toBe('correct');

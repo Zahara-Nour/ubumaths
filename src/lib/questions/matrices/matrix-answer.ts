@@ -18,8 +18,10 @@
  *   mathAST, aucun flottant) : `1+1`, `\frac{4}{2}`, `2.0` valent 2 ;
  * - l'écriture de chaque coefficient est jugée ensuite comme une case ordinaire
  *   (dans le validateur, cf. `matrixEntriesForm`) ;
- * - facteur devant la matrice (`\frac{1}{2}\begin{pmatrix}…`, inverse) : faux, avec
- *   un message (écrire chaque coefficient) ;
+ * - facteur devant la matrice (`\frac{1}{2}\begin{pmatrix}…`, inverse ; décision de
+ *   David du 2026-10-06) : facteur × matrice comparé à l'attendue ; valeur juste →
+ *   perfectible (`unoptimal_form`, « Distribue le facteur dans la matrice. »),
+ *   valeur fausse → faux ;
  * - illisible, lettres, division par zéro : `incorrect`, jamais d'exception ;
  *   rien d'écrit : `empty`.
  *
@@ -28,7 +30,7 @@
 
 import type { ValidationStatus } from '$lib/questions/types';
 import type { MathNode } from '$lib/mathAST/types';
-import { subtract } from '$lib/mathAST/factory';
+import { multiply, subtract } from '$lib/mathAST/factory';
 import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import {
 	cleaned,
@@ -57,8 +59,7 @@ type ReadMatrix =
 export const MATRIX_FEEDBACK = {
 	notMatrix:
 		'Écris une matrice : ses coefficients entre parenthèses, rangés en lignes et en colonnes.',
-	factored:
-		'Écris la matrice avec tous ses coefficients, sans facteur devant (multiplie chaque coefficient).',
+	factored: 'Distribue le facteur dans la matrice.',
 	ragged: 'Chaque ligne de la matrice doit avoir le même nombre de coefficients.',
 	incomplete: 'Complète tous les coefficients de la matrice.',
 	dimension: (rows: number, columns: number) =>
@@ -80,6 +81,12 @@ const NAME_PREFIX_REGEX =
 
 /** Facteur devant une matrice (`\frac{1}{2}\begin{pmatrix}…`) : écriture non lue */
 const FACTORED_REGEX = /^[^=]*?\S\s*\\begin\{[pb]?matrix\}[\s\S]*\\end\{[pb]?matrix\}\s*\)?$/;
+
+/** Début de la matrice après un facteur : `\begin{pmatrix}`, ou `(\begin{matrix}` */
+const MATRIX_START_REGEX = /[([]?\s*\\begin\{[pb]?matrix\}/;
+
+/** Signe de produit écrit entre le facteur et la matrice */
+const TRAILING_PRODUCT_REGEX = /(?:\\times|\\cdot|\*)$/;
 
 /** Case de gabarit non remplie (touche du clavier : `#?` → `\placeholder{}`) */
 const PLACEHOLDER_REGEX = /\\placeholder(?![a-zA-Z])/;
@@ -159,6 +166,22 @@ function readMatrix(text: string): ReadMatrix {
 	return { ok: true, texts, nodes };
 }
 
+/**
+ * Facteur et matrice d'une écriture `k\begin{pmatrix}…\end{pmatrix}` (`\times`,
+ * `\cdot` toléré entre les deux, `-` seul vaut −1), ou `null` si le facteur
+ * n'est pas une constante lisible.
+ */
+function readFactoredMatrix(text: string): { factor: MathNode; matrix: ReadMatrix } | null {
+	const body = matrixBody(text);
+	const start = body.search(MATRIX_START_REGEX);
+	if (start <= 0) return null;
+	let factorText = body.slice(0, start).trim().replace(TRAILING_PRODUCT_REGEX, '').trim();
+	if (factorText === '-') factorText = '-1';
+	const factor = parseCoordinate(factorText);
+	if (!factor) return null;
+	return { factor, matrix: readMatrix(body.slice(start)) };
+}
+
 /** Dimensions (lignes, colonnes) de coefficients rectangulaires */
 function dimensionsOf(texts: readonly (readonly string[])[]): [number, number] {
 	return [texts.length, texts[0]?.length ?? 0];
@@ -231,7 +254,7 @@ export function judgeMatrixAnswer(answer: string, expected: string): MatrixVerdi
 			case 'notMatrix':
 				return { status: 'incorrect', feedback: MATRIX_FEEDBACK.notMatrix };
 			case 'factored':
-				return { status: 'incorrect', feedback: MATRIX_FEEDBACK.factored };
+				return judgeFactoredMatrix(answer, expectedRead.nodes, rows, columns);
 			case 'ragged':
 				return { status: 'incorrect', feedback: MATRIX_FEEDBACK.ragged };
 			case 'incomplete':
@@ -263,6 +286,38 @@ export function judgeMatrixAnswer(answer: string, expected: string): MatrixVerdi
 			: { status: 'incorrect' };
 	} catch {
 		// Budget dépassé, coefficient non réel ou que la réduction ne sait pas lire
+		return { status: 'incorrect' };
+	}
+}
+
+/**
+ * Facteur devant la matrice : la valeur facteur × matrice est comparée à
+ * l'attendue ; juste → perfectible (distribuer le facteur), fausse → faux.
+ */
+function judgeFactoredMatrix(
+	answer: string,
+	expected: readonly (readonly MathNode[])[],
+	rows: number,
+	columns: number
+): MatrixVerdict {
+	const factored = readFactoredMatrix(answer);
+	if (!factored) return { status: 'incorrect' };
+	const { factor, matrix } = factored;
+	const texts = matrix.ok ? matrix.texts : (matrix.texts ?? []);
+	const [answerRows, answerColumns] = dimensionsOf(texts);
+	if (texts.length > 0 && (answerRows !== rows || answerColumns !== columns)) {
+		return { status: 'incorrect', feedback: MATRIX_FEEDBACK.dimension(rows, columns) };
+	}
+	if (!matrix.ok) return { status: 'incorrect' };
+	try {
+		assertDefinedEntries([[factor], ...matrix.nodes]);
+		const products = matrix.nodes.map((row) =>
+			row.map((entry) => multiply(factor, entry, 'implicit'))
+		);
+		return haveSameEntries(products, expected)
+			? { status: 'unoptimal_form', feedback: MATRIX_FEEDBACK.factored }
+			: { status: 'incorrect' };
+	} catch {
 		return { status: 'incorrect' };
 	}
 }
