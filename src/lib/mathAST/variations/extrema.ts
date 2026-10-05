@@ -47,6 +47,11 @@ export interface BoundaryValue {
 	readonly x: MathNode;
 	/** The y-value at the boundary */
 	readonly y: number;
+	/**
+	 * `false` pour une LIMITE en une borne ouverte ou infinie : la valeur n'est
+	 * pas atteinte, elle ne peut pas être un extremum. Absent = atteinte.
+	 */
+	readonly attained?: boolean;
 }
 
 // =============================================================================
@@ -312,7 +317,12 @@ export function classifyGlobalExtrema(
 	const hasGlobalMinInLocal = result.some((e) => e.type === 'global_minimum');
 	const hasGlobalMaxInLocal = result.some((e) => e.type === 'global_maximum');
 
-	for (const bv of boundaryValues) {
+	// ⚠️ Seules les bornes FERMÉES sont des valeurs atteintes. Une limite finie
+	// en une borne ouverte ou infinie compte pour la comparaison (un maximum
+	// local dépassé par une limite n'est pas global), mais n'est PAS un
+	// extremum : mesuré avant, `x ln(x)` annonçait « Maximum global :
+	// f(0) = 0 », 0 hors du domaine, et `ln(x)/x` « Minimum global : f(+∞) ».
+	for (const bv of boundaryValues.filter((value) => value.attained !== false)) {
 		if (!hasGlobalMinInLocal && Math.abs(bv.y - globalMinValue) < 1e-10) {
 			const yNode = computeYValue(expr, variable, bv.x);
 			result.push({
@@ -514,7 +524,7 @@ function getBoundaryValues(
 			if (Number.isFinite(lower) && interval.lower.type === 'closed') {
 				const yValue = evaluateAtPoint(expr, variable, interval.lower.value);
 				if (yValue !== null) {
-					values.push({ x: interval.lower.value, y: yValue });
+					values.push({ x: interval.lower.value, y: yValue, attained: true });
 				}
 			}
 
@@ -523,7 +533,7 @@ function getBoundaryValues(
 			if (Number.isFinite(upper) && interval.upper.type === 'closed') {
 				const yValue = evaluateAtPoint(expr, variable, interval.upper.value);
 				if (yValue !== null) {
-					values.push({ x: interval.upper.value, y: yValue });
+					values.push({ x: interval.upper.value, y: yValue, attained: true });
 				}
 			}
 		}
@@ -533,7 +543,7 @@ function getBoundaryValues(
 	if (boundaryLimits) {
 		for (const bl of boundaryLimits) {
 			if (bl.approximate !== undefined && Number.isFinite(bl.approximate)) {
-				values.push({ x: bl.point, y: bl.approximate });
+				values.push({ x: bl.point, y: bl.approximate, attained: false });
 			}
 		}
 	}

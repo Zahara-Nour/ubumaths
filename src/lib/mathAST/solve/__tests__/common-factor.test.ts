@@ -16,7 +16,8 @@ import { solve } from '../solve';
 import { parseCustom } from '../../parser/custom';
 import { normalize, normalFormsEquivalent } from '../../normal';
 import { toCustom } from '../../custom-generator';
-import type { RelationNode } from '../../types';
+import { divide, euler, number, opposite, superscript } from '../../factory';
+import type { MathNode, RelationNode } from '../../types';
 import type { SolveResult } from '../types';
 
 function parseEquation(custom: string): RelationNode {
@@ -26,13 +27,14 @@ function parseEquation(custom: string): RelationNode {
 }
 
 /** Les solutions sont-elles EXACTEMENT celles attendues (formes normales), dans l'ordre ? */
-function expectExactSolutions(result: SolveResult, expected: readonly string[]): void {
+function expectExactSolutions(result: SolveResult, expected: readonly (string | MathNode)[]): void {
 	expect(result.solutions.map((s) => toCustom(s.value))).toHaveLength(expected.length);
 	expected.forEach((custom, index) => {
 		const solution = result.solutions[index];
 		expect(solution.exact).toBe(true);
-		const same = normalFormsEquivalent(normalize(solution.value), normalize(parseCustom(custom)));
-		expect(same, `${toCustom(solution.value)} ≠ ${custom}`).toBe(true);
+		const node = typeof custom === 'string' ? parseCustom(custom) : custom;
+		const same = normalFormsEquivalent(normalize(solution.value), normalize(node));
+		expect(same, `${toCustom(solution.value)} ≠ ${toCustom(node)}`).toBe(true);
 	});
 }
 
@@ -79,6 +81,58 @@ describe('Mise en facteur commun puis produit nul', () => {
 		expect(step?.description).toContain('facteur');
 		expect(toCustom(step!.after)).toContain('(x+1)');
 		expect(result.steps.some((s) => s.rule === 'zero-product-property')).toBe(true);
+	});
+});
+
+/** e^{−1/2} : `parseCustom` ne lit pas la constante d'Euler en puissance. */
+const E_MINUS_HALF = superscript(euler(), opposite(divide(number('1'), number('2'), 'fraction')));
+
+describe('Facteur commun enfoui dans un produit, un opposé ou une puissance', () => {
+	// Mesuré avant le correctif : les quatre rendaient « Type d'equation
+	// transcendante non supporte ». `commonFactorRules` ne voit que des
+	// produits binaires dont le facteur commun est un opérande DIRECT.
+
+	it('e^(2x) + x e^(2x)*2 = 0 (dérivée de x e^{2x}) → x = −1/2', () => {
+		const result = solve(parseEquation('e^(2x) + x e^(2x)*2 = 0'));
+		expect(result.error).toBeUndefined();
+		expect(result.status).toBe('unique');
+		expectExactSolutions(result, ['-1/2']);
+	});
+
+	it('e^(-x) + x*(-e^(-x)) = 0 (dérivée de x e^{−x}) → x = 1', () => {
+		const result = solve(parseEquation('e^(-x) + x*(-e^(-x)) = 0'));
+		expect(result.error).toBeUndefined();
+		expectExactSolutions(result, ['1']);
+	});
+
+	it('2x ln(x) + x^2*1/x = 0 (dérivée de x² ln x) → x = e^{−1/2} seulement', () => {
+		const result = solve(parseEquation('2x ln(x) + x^2*1/x = 0'));
+		expect(result.status).toBe('unique');
+		expectExactSolutions(result, [E_MINUS_HALF]);
+	});
+
+	it('2x ln(x) + x = 0 → x = e^{−1/2}, et 0 sort du domaine', () => {
+		const result = solve(parseEquation('2x ln(x) + x = 0'));
+		expect(result.status).toBe('unique');
+		expectExactSolutions(result, [E_MINUS_HALF]);
+	});
+
+	it('3x^2 e^x − 6x e^x = 0 → x = 0 ou x = 2 (puissance x² vue comme x·x)', () => {
+		const result = solve(parseEquation('3x^2 e^x - 6x e^x = 0'));
+		expectExactSolutions(result, ['0', '2']);
+	});
+
+	it('dit la mise en facteur dans les étapes, avec la nouvelle formulation', () => {
+		const result = solve(parseEquation('2x ln(x) + x = 0'), { verbosity: 'detailed' });
+		const step = result.steps.find((s) => s.rule === 'common-factor');
+		expect(step?.description).toBe('On factorise par le facteur commun à tous les termes');
+	});
+
+	it('2x + ln(x) + 1 = 0 (dérivée de x² + x ln x) : rien de commun, reste non résolue', () => {
+		const result = solve(parseEquation('2x + ln(x) + 1 = 0'));
+		expect(result.solutions).toHaveLength(0);
+		expect(result.error).toBeDefined();
+		expect(result.conclusive).toBeFalsy();
 	});
 });
 

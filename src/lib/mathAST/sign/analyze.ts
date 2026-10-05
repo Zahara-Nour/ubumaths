@@ -64,7 +64,7 @@ import type {
 } from './types';
 import { DEFAULT_SIGN_OPTIONS, SignAnalysisError } from './types';
 import { computeDomain } from '../domain/compute';
-import { findZeros, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
+import { findZerosWithStatus, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
 import { determineSignOnInterval } from './helpers/interval-sign';
 import { sampleSignOnInterval } from './helpers/sampling';
 import {
@@ -169,7 +169,12 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 		opts.verbosity,
 		'summarized'
 	);
-	const rawZeros = findZeros(expr, variable, domain);
+	const { zeros: rawZeros, resolved: zerosResolved } = findZerosWithStatus(expr, variable, domain);
+	if (!zerosResolved) {
+		warnings.push(
+			"f(x) = 0 n'a pas pu être résolue : des zéros peuvent manquer, le signe n'est conclu que là où il se démontre."
+		);
+	}
 	const uniqueZeros = getUniqueZeros(rawZeros, opts.tolerance);
 	const sortedZeros = sortZerosByValue(uniqueZeros);
 
@@ -241,7 +246,11 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 		// Evaluates the expression at several points inside the interval.
 		// Between consecutive zeros, a continuous function has constant sign (IVT),
 		// so if all samples agree, the sign is determined.
-		if (sign === 'unknown' && opts.numericFallback) {
+		//
+		// ⚠️ Pas quand f(x) = 0 n'a pas été résolue : l'intervalle peut contenir
+		// un zéro manqué, et des échantillons d'accord « confirmeraient » un
+		// signe faux. Le signe reste alors inconnu.
+		if (sign === 'unknown' && opts.numericFallback && zerosResolved) {
 			sign = sampleSignOnInterval(expr, variable, int, {
 				tolerance: opts.tolerance
 			});
@@ -270,7 +279,8 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 		zeros: sortedZeros,
 		signedIntervals,
 		steps: opts.verbosity !== 'result' ? steps : undefined,
-		warnings: warnings.length > 0 ? warnings : undefined
+		warnings: warnings.length > 0 ? warnings : undefined,
+		...(zerosResolved ? {} : { zerosUnresolved: true })
 	};
 }
 
