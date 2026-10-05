@@ -41,6 +41,7 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/presques-evaluations', priority: 0.4, changefreq: 'monthly' },
 	{ path: '/pere-ubu', priority: 0.4, changefreq: 'yearly' },
 	{ path: '/almanach', priority: 0.4, changefreq: 'daily' },
+	{ path: '/shtam', priority: 0.7, changefreq: 'daily' },
 	{ path: '/legal/mentions-legales', priority: 0.3, changefreq: 'yearly' },
 	{ path: '/legal/confidentialite', priority: 0.3, changefreq: 'yearly' },
 	{ path: '/legal/cgu', priority: 0.3, changefreq: 'yearly' }

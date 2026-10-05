@@ -8,6 +8,7 @@ const summary = {
 	title: 'Un triangle porte plainte',
 	lede: 'Il réclame ~\\pi~ hypoténuses.',
 	byline: 'Cotice, rédacteur en chef',
+	date: '2026-10-05',
 	almanachDate: '33 Ambraire, An 131 E.R.',
 	gregorianDate: '5 octobre 2026'
 };
@@ -86,6 +87,25 @@ describe('/shtam/[slug] (un article)', () => {
 		expect(body).toBeDefined();
 		expect(body!.compareDocumentPosition(box) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 		expect(box.textContent).not.toContain('devant le juge');
+	});
+
+	it('décrit l’article aux moteurs : chapeau en texte brut et article satirique en JSON-LD', async () => {
+		await render(ArticlePage, { props: { data: { article } } as never });
+		const description = document.head
+			.querySelector('meta[name="description"]')
+			?.getAttribute('content');
+		expect(description).toBe('Il réclame π hypoténuses.');
+		const scripts = [...document.head.querySelectorAll('script[type="application/ld+json"]')];
+		const ld = scripts
+			.map((s) => JSON.parse(s.textContent ?? '{}'))
+			.find((d) => d['@type'] === 'SatiricalArticle');
+		expect(ld).toMatchObject({
+			'@type': 'SatiricalArticle',
+			headline: 'Un triangle porte plainte',
+			datePublished: '2026-10-05',
+			inLanguage: 'fr',
+			author: { name: 'Cotice, rédacteur en chef' }
+		});
 	});
 
 	it('ramène à la une', async () => {

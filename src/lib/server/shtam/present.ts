@@ -14,6 +14,8 @@ export interface ShtamSummary {
 	title: string;
 	lede: string;
 	byline: string;
+	/** Jour civil de parution, `YYYY-MM-DD` (données structurées) */
+	date: string;
 	/** Date de l'Almanach : « 14 Auroral, An 130 E.R. » */
 	almanachDate: string;
 	/** Date grégorienne : « 5 octobre 2026 » */
@@ -42,6 +44,7 @@ export function toSummary(article: ShtamArticle): ShtamSummary {
 		title: article.title,
 		lede: article.lede,
 		byline: AUTHOR_LABELS[article.author],
+		date: article.date,
 		almanachDate: formatMedium(civilToPataphysical(year, month, day)),
 		gregorianDate: formatGregorian({ year, month, day })
 	};

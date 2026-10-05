@@ -1,14 +1,12 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
-<svelte:head>
-	<title>Mentions Legales - Chiphre</title>
-	<meta
-		name="description"
-		content="Mentions legales d'Chiphre. Informations sur l'editeur, l'hebergement et les conditions d'utilisation."
-	/>
-</svelte:head>
+<SeoHead
+	title="Mentions légales - Chiphre"
+	description="Mentions légales de Chiphre : informations sur l’éditeur, l’hébergement et les conditions d’utilisation."
+/>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">

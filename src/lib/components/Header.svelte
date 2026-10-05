@@ -188,7 +188,7 @@
 		>
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
 			<div class="flex flex-col leading-none">
-				<h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
+				<span class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</span>
 			</div>
 		</a>
 

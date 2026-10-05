@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
@@ -150,13 +151,10 @@
 	let activeLetters = $derived(new Set(Object.keys(groupedTerms)));
 </script>
 
-<svelte:head>
-	<title>Glossaire Mathématique | Chiphre</title>
-	<meta
-		name="description"
-		content="Glossaire de vocabulaire mathématique - Définitions, exemples et histoire des termes de la 6ème à la Terminale"
-	/>
-</svelte:head>
+<SeoHead
+	title="Glossaire Mathématique | Chiphre"
+	description="Glossaire de vocabulaire mathématique - Définitions, exemples et histoire des termes de la 6ème à la Terminale"
+/>
 
 <div class="mx-auto max-w-4xl p-4 md:p-6">
 	<!-- Header -->

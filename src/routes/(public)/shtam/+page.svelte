@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import ShtamFooter from './ShtamFooter.svelte';
@@ -7,13 +8,10 @@
 	let { data }: PageProps = $props();
 </script>
 
-<svelte:head>
-	<title>Le Shtam — Chiphre</title>
-	<meta
-		name="description"
-		content="Le Shtam, gazette parodique du Royaume : les fausses nouvelles des Mathres, chacune suivie de son vrai du faux."
-	/>
-</svelte:head>
+<SeoHead
+	title="Le Shtam — Chiphre"
+	description="Le Shtam, gazette parodique du Royaume : les fausses nouvelles des Mathres, chacune suivie de son vrai du faux."
+/>
 
 <div class="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-10 sm:px-6">
 	<header class="flex flex-col items-center gap-2 border-y-4 border-double py-6 text-center">

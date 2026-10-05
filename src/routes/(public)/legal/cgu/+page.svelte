@@ -1,14 +1,12 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
-<svelte:head>
-	<title>Conditions Generales d'Utilisation - Chiphre</title>
-	<meta
-		name="description"
-		content="Conditions Generales d'Utilisation d'Chiphre. Regles d'utilisation de la plateforme educative de mathematiques."
-	/>
-</svelte:head>
+<SeoHead
+	title="Conditions générales d’utilisation - Chiphre"
+	description="Conditions générales d’utilisation de Chiphre : règles d’utilisation de la plateforme éducative de mathématiques."
+/>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">

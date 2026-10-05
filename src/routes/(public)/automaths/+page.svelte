@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
@@ -76,14 +76,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Automaths - Banque de questions | Chiphre</title>
-	<meta
-		name="description"
-		content="Sélectionnez des questions de mathématiques pour créer des {lore.learning
-			.exercise}s personnalisées."
-	/>
-</svelte:head>
+<SeoHead
+	title="Automaths - Banque de questions | Chiphre"
+	description="Banque de questions de mathématiques : composez une série d’exercices et lancez-la en classe, en entraînement, en flash-cards ou en course aux nombres."
+/>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->

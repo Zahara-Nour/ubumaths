@@ -31,6 +31,7 @@ describe('toSummary', () => {
 			title: 'Titre',
 			lede: 'Chapeau.',
 			byline: 'Cotice, rédacteur en chef',
+			date: '2026-10-05',
 			almanachDate: expect.stringMatching(/^\d+ Ambraire, An \d+ E\.R\.$/),
 			gregorianDate: '5 octobre 2026'
 		});

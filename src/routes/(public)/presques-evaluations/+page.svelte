@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -74,14 +74,10 @@
 	);
 </script>
 
-<svelte:head>
-	<title>Les presques évaluations · Chiphre</title>
-	<meta
-		name="description"
-		content="Collection de parodies d'évaluations de mathématiques, partagées par les {lore.entities
-			.teacher}s Chiphre."
-	/>
-</svelte:head>
+<SeoHead
+	title="Les presques évaluations · Chiphre"
+	description="Collection de parodies d’évaluations de mathématiques, partagées par les professeurs de Chiphre."
+/>
 
 <div class="container mx-auto max-w-6xl space-y-6 p-4 md:p-6">
 	<header class="space-y-2">
