@@ -679,3 +679,16 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 		});
 	});
 });
+
+// Le produit dont le facteur de droite est un opposé : `2 -e^{…}` se lisait
+// « 2 moins e^{…} » alors que la dérivée vaut 2 × (−e^{−x}).
+describe('WebReplEngine - .diff : facteur de droite négatif parenthésé', () => {
+	it('.diff 2e^(-x) écrit 2 (−e^{−x} …) avec parenthèses', () => {
+		const result = new WebReplEngine().execute('.diff 2e^(-x)');
+		expect(result.success).toBe(true);
+		expect(result.output).toBe(
+			'd/dx(2e^{(-x)}) = 2*(-e^{(-x)}ln(e))\n' +
+				'LaTeX: 2 \\left( -e^{\\left( -x \\right)} \\ln\\left( e \\right) \\right)'
+		);
+	});
+});

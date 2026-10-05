@@ -48,35 +48,35 @@ Expression: \\cos^3(x) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [power-constant-exp] Règle de la puissance (exposant constant)
-  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [cos] Dérivée de cosinus
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+Result: 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right)
 
 ========== LYCEE (detailed) ==========
 - [power-constant-exp] Règle de la puissance (exposant constant)
   · Avec f = \\cos\\left( x \\right) et l'exposant constant 3, on a (f^c)' = c \\times f^{c-1} \\times f'.
-  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [cos] Dérivée de cosinus
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+Result: 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [power-constant-exp] (f^c)' = cf^{c-1}f'
-  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [cos] (\\cos u)' = -\\sin(u)\\,u'
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+Result: 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [power-constant-exp] (f^c)' = cf^{c-1}f'
   · Avec f = \\cos\\left( x \\right) et l'exposant constant 3, on a (f^c)' = c \\times f^{c-1} \\times f'.
-  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [cos] (\\cos u)' = -\\sin(u)\\,u'
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+Result: 3 \\cos\\left( x \\right)^2 \\left( -\\sin\\left( x \\right) \\right)
 "
 `;
 
@@ -1238,45 +1238,45 @@ Expression: x^2 \\cdot \\cos(x) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [product] Règle du produit
-  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [power-natural] Règle de la puissance (2)
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
   - [cos] Dérivée de cosinus
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+Result: 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right)
 
 ========== LYCEE (detailed) ==========
 - [product] Règle du produit
   · Avec u = x^2 et v = \\cos\\left( x \\right), on applique (uv)' = u'v + uv'.
-  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [power-natural] Règle de la puissance (2)
     · (x^n)' = n x^{n-1} avec n = 2.
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
   - [cos] Dérivée de cosinus
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+Result: 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [product] (uv)' = u'v + uv'
-  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
   - [cos] (\\cos u)' = -\\sin(u)\\,u'
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+Result: 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [product] (uv)' = u'v + uv'
   · Avec u = x^2 et v = \\cos\\left( x \\right), on applique (uv)' = u'v + uv'.
-  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     · (x^n)' = n x^{n-1} avec n = 2.
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
   - [cos] (\\cos u)' = -\\sin(u)\\,u'
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+Result: 2 x \\cos\\left( x \\right) + x^2 \\left( -\\sin\\left( x \\right) \\right)
 "
 `;
 

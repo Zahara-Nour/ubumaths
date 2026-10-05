@@ -41,6 +41,7 @@ import { format } from './units/formatter';
 import { isMultiplication, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
+	needsParenthesesAsRightFactor,
 	needsParenthesesUnderFactorial,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
@@ -370,11 +371,19 @@ export class LatexGenerator {
 				this.visitWithSpans(node.right);
 				break;
 
-			case 'multiplication':
+			case 'multiplication': {
+				// Mêmes parenthèses que generateMultiplication
+				const wrapLeft = needsParenthesesUnderSign(node.left);
+				const wrapRight = needsParenthesesAsRightFactor(node.right);
+				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
+				if (wrapLeft) this.emit(' \\right)', node.metadata);
 				this.visitMultiplicationOperatorSpan(node);
+				if (wrapRight) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.right);
+				if (wrapRight) this.emit(' \\right)', node.metadata);
 				break;
+			}
 
 			case 'division':
 				this.visitDivisionSpans(node);
@@ -1162,9 +1171,13 @@ export class LatexGenerator {
 
 	private generateMultiplication(node: MultiplicationNode): string {
 		// Les deux opérandes : `(x+1)y` comme `y(x+1)` perdent leur sens sans
-		// parenthèses.
+		// parenthèses. À droite, un facteur qui commence par un signe aussi :
+		// `2 -e^{-x}` se lirait « 2 moins e^{-x} » (voir needsParenthesesAsRightFactor).
 		const left = this.groupIfSum(node.left);
-		const right = this.groupIfSum(node.right);
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightFactor(node.right)
+			? `\\left( ${renderedRight} \\right)`
+			: renderedRight;
 
 		switch (node.displayStyle) {
 			case 'implicit':

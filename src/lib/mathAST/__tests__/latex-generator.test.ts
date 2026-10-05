@@ -710,3 +710,75 @@ describe('LatexGenerator - durée composée (juxtaposition de grandeurs)', () =>
 		expect(toLatex(parseCustom('2x'))).toBe('2 x');
 	});
 });
+
+// Facteur de DROITE commençant par un signe : construit en interne (dérivée,
+// tidy), il n'a pas de délimiteur. Sans parenthèses, `2 -e^{-x}` se lit
+// « 2 moins e^{-x} » alors que c'est 2 × (−e^{-x}). Mesuré sur `.diff 2e^(-x)`.
+describe('LatexGenerator - facteur de droite négatif', () => {
+	const x = MathAST.variable('x');
+	const two = MathAST.number('2');
+	const three = MathAST.number('3');
+
+	it('2 · (−x) implicite garde ses parenthèses', () => {
+		expect(toLatex(MathAST.multiply(two, MathAST.opposite(x), 'implicit'))).toBe(
+			'2 \\left( -x \\right)'
+		);
+	});
+
+	it('2 × (−3) explicite garde ses parenthèses', () => {
+		expect(toLatex(MathAST.multiply(two, MathAST.opposite(three), 'cross'))).toBe(
+			'2 \\times \\left( -3 \\right)'
+		);
+		expect(toLatex(MathAST.multiply(two, MathAST.opposite(three), 'dot'))).toBe(
+			'2 \\cdot \\left( -3 \\right)'
+		);
+	});
+
+	it('x · (−e^x) garde ses parenthèses', () => {
+		const expr = MathAST.multiply(
+			x,
+			MathAST.opposite(MathAST.power(MathAST.variable('e'), x)),
+			'implicit'
+		);
+		expect(toLatex(expr)).toBe('x \\left( -e^x \\right)');
+	});
+
+	it('2 · ((−3) · x) : le premier facteur du produit de droite est négatif', () => {
+		const expr = MathAST.multiply(
+			two,
+			MathAST.multiply(MathAST.opposite(three), x, 'implicit'),
+			'implicit'
+		);
+		expect(toLatex(expr)).toBe('2 \\left( -3 x \\right)');
+	});
+
+	it('3 × (−(x + 1)) garde les deux niveaux de parenthèses', () => {
+		const expr = MathAST.multiply(
+			three,
+			MathAST.opposite(MathAST.add(x, MathAST.number('1'))),
+			'cross'
+		);
+		expect(toLatex(expr)).toBe('3 \\times \\left( -\\left( x + 1 \\right) \\right)');
+	});
+
+	it('(−2) · x à gauche reste −2 x : pas de parenthèses en tête', () => {
+		expect(toLatex(MathAST.multiply(MathAST.opposite(two), x, 'implicit'))).toBe('-2 x');
+		expect(toLatex(MathAST.multiply(MathAST.opposite(two), x, 'cross'))).toBe('-2 \\times x');
+	});
+
+	it('a − b reste une soustraction sans parenthèses', () => {
+		expect(toLatex(MathAST.subtract(MathAST.variable('a'), MathAST.variable('b')))).toBe('a - b');
+	});
+
+	it('un facteur positif n’est pas parenthésé', () => {
+		expect(toLatex(MathAST.multiply(two, x, 'implicit'))).toBe('2 x');
+		expect(toLatex(MathAST.multiply(two, three, 'cross'))).toBe('2 \\times 3');
+	});
+
+	it('mode métadonnées (spans) : même parenthésage', () => {
+		const expr = MathAST.multiply(two, MathAST.opposite(x, { color: 'red' }), 'implicit');
+		expect(new LatexGenerator({ renderMetadata: true }).generate(expr)).toBe(
+			'2 \\left( \\textcolor{red}{-}x \\right)'
+		);
+	});
+});
