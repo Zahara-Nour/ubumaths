@@ -31,7 +31,7 @@ import { DEFAULT_VARIATION_OPTIONS, VariationError } from './types';
 import { differentiate } from '../differentiation';
 import { computeDomain } from '../domain/compute';
 import { analyzeSign } from '../sign';
-import { findCriticalPoints, sortCriticalPoints } from './critical-points';
+import { findCriticalPointsWithStatus, sortCriticalPoints } from './critical-points';
 import { buildMonotonicIntervals, mergeMonotonicIntervals } from './monotonicity';
 import { findExtrema, classifyGlobalExtrema } from './extrema';
 import { computeBoundaryLimits } from './boundary-limits';
@@ -164,7 +164,17 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 3: Find critical points
-	const criticalPoints = findCriticalPoints(derivative, variable, domain, expr);
+	const { points: criticalPoints, derivativeZerosResolved } = findCriticalPointsWithStatus(
+		derivative,
+		variable,
+		domain,
+		expr
+	);
+	// ⚠️ Un échec de résolution n'est pas « aucun point critique ». En déduire
+	// un signe constant de f' faisait annoncer « f croissante » sur ℝ pour
+	// x·eˣ. Sans les zéros de f', on ne conclut ni sens ni extremum.
+	// Les affichages le disent à partir de `derivativeZerosUnresolved`.
+	const unresolved = !derivativeZerosResolved;
 	const sortedCriticalPoints = sortCriticalPoints(criticalPoints);
 	stepId = recordStep(
 		steps,
@@ -219,8 +229,11 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 5: Build monotonic intervals
-	const rawMonotonicIntervals = buildMonotonicIntervals(derivativeSign);
-	const monotonicIntervals = mergeMonotonicIntervals(rawMonotonicIntervals);
+	// f'(x) = 0 non résolue : aucun intervalle — un signe tiré d'un ensemble de
+	// zéros incomplet serait une conclusion fausse.
+	const monotonicIntervals = unresolved
+		? []
+		: mergeMonotonicIntervals(buildMonotonicIntervals(derivativeSign));
 	stepId = recordStep(
 		steps,
 		stepId,
@@ -232,13 +245,9 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	);
 
 	// Step 6: Find extrema
-	const localExtrema = findExtrema(
-		expr,
-		variable,
-		sortedCriticalPoints,
-		monotonicIntervals,
-		domain
-	);
+	const localExtrema = unresolved
+		? []
+		: findExtrema(expr, variable, sortedCriticalPoints, monotonicIntervals, domain);
 	stepId = recordStep(
 		steps,
 		stepId,
@@ -277,7 +286,9 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 8: Classify global extrema
-	const extrema = classifyGlobalExtrema(localExtrema, expr, variable, domain, boundaryLimits);
+	const extrema = unresolved
+		? []
+		: classifyGlobalExtrema(localExtrema, expr, variable, domain, boundaryLimits);
 	recordStep(
 		steps,
 		stepId,
@@ -299,7 +310,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 		extrema,
 		boundaryLimits,
 		steps: opts.verbosity !== 'result' ? steps : undefined,
-		warnings: warnings.length > 0 ? warnings : undefined
+		warnings: warnings.length > 0 ? warnings : undefined,
+		...(unresolved && { derivativeZerosUnresolved: true })
 	};
 }
 

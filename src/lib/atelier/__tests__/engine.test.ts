@@ -217,8 +217,11 @@ describe('ce que la substitution répare, sur le moteur réel', () => {
 		const result = expressionOf(atelier, 'f');
 		const substitue = engine.execute(`.variations ${result.ok ? result.expression : ''}`).output;
 
-		// Citer le nom : « Points critiques : aucun », sans erreur — mesuré
-		expect(cite).toContain('aucun');
+		// Citer le nom : le moteur ne sait pas dériver `f(x)`, donc ne résout pas
+		// f'(x) = 0. Il annonçait « Points critiques : aucun » — faux ; il dit
+		// désormais qu'il n'a pas pu conclure. Dans les deux cas, pas de 3/2.
+		expect(cite).toContain('non déterminés');
+		expect(cite).not.toContain('3/2');
 		// Substituer : le point critique apparaît
 		expect(substitue).toContain('3/2');
 	});
