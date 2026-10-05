@@ -863,7 +863,8 @@ function equalExponentialsPatterns() {
  * de `solveExponential`.
  *
  * La sous-équation `A = B` porte toute la réponse, y compris « aucune
- * solution » (`e^x = e^{x+1}`) ou « tout réel » (`e^x = e^x`).
+ * solution » (`e^x = e^{x+1}`) ou « tout réel » (`e^x = e^x`). Si elle
+ * échoue, on rend `null` : les autres chemins tentent leur chance.
  */
 function tryEqualExponentials(
 	expr: MathNode,
@@ -891,6 +892,10 @@ function tryEqualExponentials(
 		} finally {
 			expLogRecursiveDepth--;
 		}
+		// Échec du sous-solveur (« non supporte », non concluant) : on rend la
+		// main aux autres chemins au lieu de propager l'échec. Une absence de
+		// solution DÉMONTRÉE (`e^x = e^{x+1}` → contradiction) reste rendue.
+		if (subResult.error !== undefined && subResult.conclusive !== true) return null;
 
 		const recorder = createStepRecorder();
 		recorder.recordStep(

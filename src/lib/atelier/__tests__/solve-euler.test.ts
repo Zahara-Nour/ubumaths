@@ -60,3 +60,11 @@ describe('`.résoudre` de l’atelier — la constante e hors d’un exposant', 
 		expect(conclusion(result.output)).toBe('x = 1');
 	});
 });
+
+describe('`.solve` du moteur — e seul sans exponentielle : inchangé', () => {
+	it('ax+e=0 x garde la lettre e', () => {
+		const result = new WebReplEngine().execute('.solve ax+e=0 x');
+		expect(result.success).toBe(true);
+		expect(conclusion(result.output)).toBe('x = {-e}/a');
+	});
+});

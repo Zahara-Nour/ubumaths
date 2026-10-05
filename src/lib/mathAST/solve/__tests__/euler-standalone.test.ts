@@ -108,3 +108,19 @@ describe('solveInequality — même cause, e seul', () => {
 		expect(withLetter.solution).toEqual(withConstant.solution);
 	});
 });
+
+/**
+ * ⚠️ Témoins de NON-RÉGRESSION (revue de #863) : sans exponentielle ni
+ * logarithme de l'inconnue, le `e` seul garde le comportement de main —
+ * c'est le cas de tous les appelants internes (racines, zéros, points
+ * critiques) qui imposent l'inconnue. Sorties LaTeX mesurées sur main.
+ */
+describe('solve — sans exp ni ln de l’inconnue, e seul inchangé', () => {
+	it('x^2 = e (x) → ±\\sqrt{e}, pas \\exp(1/2)', () => {
+		expect(solutionsOf(asRelation(parseLatex('x^2=e')), 'x')).toEqual(['\\sqrt{e}', '-\\sqrt{e}']);
+	});
+
+	it('ex = 1 (x) → \\dfrac{1}{e}, pas \\exp(-1)', () => {
+		expect(solutionsOf(asRelation(parseLatex('ex=1')), 'x')).toEqual(['\\dfrac{1}{e}']);
+	});
+});
