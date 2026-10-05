@@ -560,12 +560,16 @@ Le **casting tutoral** des Chiphre est désormais **stratifié sur trois registr
 
 Les Palotins sont les sbires d'Ubu dans la pièce. **Dans Chiphre, ce sont les amis du Galopin**.
 
-| Palotin       | Personnalité           | Rôle                                    |
-| ------------- | ---------------------- | --------------------------------------- |
-| **Giron**     | Costaud, simple, loyal | Le pote qui aide aux exercices basiques |
-| **Pile**      | Fourbe, opportuniste   | Celui qui propose des trades douteux    |
-| **Cotice**    | Lettré, bavard         | Celui qui explique trop                 |
-| **Merdanpot** | Stupide mais brave     | Celui qui rate tout avec panache        |
+| Palotin             | Personnalité           | Rôle                                    | Source (vérifiée 2026-10-05)                                                                                                |
+| ------------------- | ---------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Giron**           | Costaud, simple, loyal | Le pote qui aide aux exercices basiques | 🟢 _Ubu Roi_ — liste des personnages : « Giron, Pile, Cotice… Palotins »                                                    |
+| **Pile**            | Fourbe, opportuniste   | Celui qui propose des trades douteux    | 🟢 _Ubu Roi_ — idem                                                                                                         |
+| **Cotice**          | Lettré, bavard         | Celui qui explique trop                 | 🟢 _Ubu Roi_ — idem                                                                                                         |
+| **Merdanpot**       | Stupide mais brave     | Celui qui rate tout avec panache        | 🟢 _Ubu Cocu_ — l'édition de 1944 (Wikisource) écrit **« Merdanpo »**, sans _t_                                             |
+| **Mousched-Gogh**   | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — orthographe de l'édition de 1944                                                                            |
+| **Quatrezoneilles** | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — les Palotins disent « Hon, Monsieuye ! » ; « Monsieuye des Phynances » (Lexique) non trouvé dans l'éd. 1944 |
+
+Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_Ubu Roi_ (leurs noms sont des termes d'héraldique : le giron, la pile et la cotice sont des pièces d'un blason) ; Merdanpo(t), Mousched-Gogh et Quatrezoneilles sont « les trois Palotins » d'_Ubu Cocu_, qui chantent ensemble leur chanson (« Dans de grandes boît's en fer-blanc / Empilés la semaine entière… »). Personnalités et rôles sont des extensions Chiphre 🟠.
 
 ### Personnages mineurs et figurants
 
