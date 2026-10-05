@@ -755,6 +755,9 @@ export class Atelier {
 	 */
 	removalOf(name: string): readonly string[] {
 		const dependents = new Set(this.allDependents(name));
+		// Un cycle (`f` cite `g` qui cite `f`) ramène `name` parmi ses propres
+		// dépendants : il serait annoncé et compté deux fois (revue du lot B)
+		dependents.delete(name);
 		return this.items.filter((o) => dependents.has(o.name)).map((o) => o.name);
 	}
 
@@ -805,8 +808,13 @@ export class Atelier {
 		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
 		this.#lastRemoval = null;
 		this.items = undo.items;
-		for (const [list, chart] of undo.charts) this.charts.set(list, chart);
-		for (const [list, partner] of undo.partnerChoices) this.partnerChoices.set(list, partner);
+		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
+		for (const [list, chart] of undo.charts) {
+			if (!this.charts.has(list)) this.charts.set(list, chart);
+		}
+		for (const [list, partner] of undo.partnerChoices) {
+			if (!this.partnerChoices.has(list)) this.partnerChoices.set(list, partner);
+		}
 		this.recomputeAll();
 		return true;
 	}

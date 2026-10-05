@@ -16,7 +16,8 @@
 		cancelLabel = lore.actions.cancel,
 		variant = 'destructive',
 		onConfirm,
-		onCancel
+		onCancel,
+		onCloseAutoFocus
 	}: {
 		open?: boolean;
 		title: string;
@@ -26,6 +27,8 @@
 		variant?: 'destructive' | 'default';
 		onConfirm: () => void;
 		onCancel?: () => void;
+		/** Où rendre le focus à la fermeture : `preventDefault()` garde la main (le déclencheur a pu disparaître). */
+		onCloseAutoFocus?: (event: Event) => void;
 	} = $props();
 
 	function handleConfirm() {
@@ -40,7 +43,7 @@
 </script>
 
 <Dialog.Root bind:open>
-	<DialogContent>
+	<DialogContent {onCloseAutoFocus}>
 		<DialogHeader>
 			<DialogTitle>{title}</DialogTitle>
 			<DialogDescription>{description}</DialogDescription>

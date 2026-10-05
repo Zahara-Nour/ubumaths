@@ -52,7 +52,8 @@
 
 <aside class="panneau">
 	<header class="tete">
-		<strong>Mes objets</strong>
+		<!-- Point d'arrivée du focus quand une carte disparaît (suppression, a11y 2.4.3) -->
+		<strong id="atelier-mes-objets" tabindex="-1">Mes objets</strong>
 		<span class="compte">
 			{atelier.objects.length}
 			{atelier.objects.length > 1 ? 'objets' : 'objet'}

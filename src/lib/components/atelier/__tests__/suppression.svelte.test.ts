@@ -92,3 +92,50 @@ describe('supprimer depuis une carte', () => {
 		expect(atelier.names).toEqual(['f', 'g']);
 	});
 });
+
+// =============================================================================
+// Clavier et focus (audit d'accessibilité)
+// =============================================================================
+
+function ctrlZ(target: EventTarget = document.body) {
+	target.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true }));
+}
+
+describe('supprimer au clavier', () => {
+	it('le focus va au panneau quand la carte disparaît (WCAG 2.4.3)', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+
+		await clickRemove(container, 'f');
+		await tick();
+
+		expect(document.activeElement?.id).toBe('atelier-mes-objets');
+	});
+
+	it('Ctrl+Z annule la dernière suppression', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await clickRemove(container, 'f');
+
+		ctrlZ();
+		await tick();
+
+		expect(atelier.names).toEqual(['f']);
+	});
+
+	it('Ctrl+Z dans un champ ne touche pas à la suppression', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await clickRemove(container, 'f');
+		const champ = document.createElement('input');
+		container.appendChild(champ);
+
+		ctrlZ(champ);
+		await tick();
+
+		expect(atelier.names).toEqual([]);
+	});
+});

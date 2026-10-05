@@ -64,6 +64,16 @@ describe('supprimer avec ses dépendants', () => {
 		expect(atelier.names).toEqual(['f', 'g', 'h', 'k']);
 	});
 
+	it('un cycle ne compte pas l’objet deux fois', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'g(x)+1' }, 'text');
+		atelier.create({ kind: 'function', name: 'g', definition: 'f(x)+1' }, 'text');
+
+		expect(atelier.removalOf('f')).toEqual(['g']);
+		const result = atelier.removeWithDependents('f');
+		expect(result.ok && result.removed).toEqual(['f', 'g']);
+	});
+
 	it('refuse un nom qui n’existe pas', () => {
 		expect(family().removeWithDependents('z').ok).toBe(false);
 	});
