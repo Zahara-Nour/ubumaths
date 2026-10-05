@@ -127,6 +127,12 @@ describe.each(Object.entries(latexParsers))('LaTeX (%s) — \\binom', (_name, pa
 		);
 	});
 
+	// Forme que rend le clavier virtuel MathLive pour deux arguments d'un caractère
+	// (mesuré au clic sur la touche « Coefficient binomial », 2026-10-05)
+	it('\\binom52 sans accolades → binom(5, 2)', () => {
+		expect(parse('\\binom52')).toEqual(binom(n('5'), n('2')));
+	});
+
 	it('2\\binom{4}{2} : multiplication implicite', () => {
 		expect(parse('2\\binom{4}{2}')).toEqual(
 			MathAST.multiply(n('2'), binom(n('4'), n('2')), 'implicit')
@@ -236,7 +242,8 @@ describe('Équivalence — valeur des notations', () => {
 		['\\binom{32}{5}', '201376'],
 		['0!', '1'],
 		['\\frac{30!}{3!27!}', '4060'],
-		['\\binom{4}{2}\\times\\binom{28}{3}', '19656']
+		['\\binom{4}{2}\\times\\binom{28}{3}', '19656'],
+		['\\binom52', '10']
 	])('%s ≡ %s', (a, b) => {
 		expect(eq(a, b)).toBe(true);
 	});

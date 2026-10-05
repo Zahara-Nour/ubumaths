@@ -155,3 +155,42 @@ describe('toDisplayInstance : ce que le composant de saisie reçoit', () => {
 		expect(display.correction).toBeUndefined();
 	});
 });
+
+describe('niveau de la carte (clavier « n! » des cartes de Terminale)', () => {
+	/** Une carte de Terminale à cases : seul son niveau change */
+	function terminaleInstance(): QuestionInstance {
+		return { ...generate(TEMPLATES[2], 3), grades: ['T_SPE', 'T_COMP'] };
+	}
+
+	it('grades exposé tel quel, les champs de réponse restent absents', () => {
+		const instance = terminaleInstance();
+		const pub = toPublicQuestion(instance, { position: 0, delaySeconds: 20 });
+		expect(pub.grades).toEqual(['T_SPE', 'T_COMP']);
+		const keys = allKeys(JSON.parse(JSON.stringify(pub)));
+		for (const forbidden of FORBIDDEN_KEYS) expect(keys.has(forbidden), forbidden).toBe(false);
+		for (const blank of instance.blanks ?? []) {
+			expect(allStrings(JSON.parse(JSON.stringify(pub)))).not.toContain(blank.expectedAnswer);
+		}
+	});
+
+	it('copie, pas référence : modifier la version publique ne touche pas l’instance', () => {
+		const instance = terminaleInstance();
+		const pub = toPublicQuestion(instance, { position: 0, delaySeconds: 20 });
+		pub.grades?.push('6');
+		expect(instance.grades).toEqual(['T_SPE', 'T_COMP']);
+	});
+
+	it('toDisplayInstance rend le niveau au composant de saisie', () => {
+		const display = toDisplayInstance(
+			toPublicQuestion(terminaleInstance(), { position: 0, delaySeconds: 20 })
+		);
+		expect(display.grades).toEqual(['T_SPE', 'T_COMP']);
+	});
+
+	it('sans niveau : ni champ grades, ni niveau inventé', () => {
+		const instance = { ...terminaleInstance(), grades: [] };
+		const pub = toPublicQuestion(instance, { position: 0, delaySeconds: 20 });
+		expect('grades' in pub).toBe(false);
+		expect(toDisplayInstance(pub).grades).toEqual([]);
+	});
+});

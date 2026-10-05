@@ -333,6 +333,7 @@
 									: undefined}
 								{unitKeys}
 								{genericFunctions}
+								grades={instance.grades}
 							/>
 						{:else if getQuestionType(instance) === 'multiple_choice'}
 							<MultipleChoiceInput
