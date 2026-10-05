@@ -681,14 +681,16 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 });
 
 // Le produit dont le facteur de droite est un opposé : `2 -e^{…}` se lisait
-// « 2 moins e^{…} » alors que la dérivée vaut 2 × (−e^{−x}).
-describe('WebReplEngine - .diff : facteur de droite négatif parenthésé', () => {
-	it('.diff 2e^(-x) écrit 2 (−e^{−x} …) avec parenthèses', () => {
+// « 2 moins e^{…} » alors que la dérivée vaut 2 × (−e^{−x}). Depuis que `.diff`
+// range sa dérivée (`tidyTerms`), ce produit n'est plus affiché : le signe passe
+// devant. Le rendu parenthésé reste gardé par latex-generator.test.ts.
+describe('WebReplEngine - .diff : facteur de droite négatif', () => {
+	it('.diff 2e^(-x) écrit −2e^{−x}, le signe devant', () => {
 		const result = new WebReplEngine().execute('.diff 2e^(-x)');
 		expect(result.success).toBe(true);
 		expect(result.output).toBe(
 			// Sans ln(e) depuis #837 : (e^u)' = u'·e^u
-			'd/dx(2e^{(-x)}) = 2*(-e^{(-x)})\n' + 'LaTeX: 2 \\left( -e^{\\left( -x \\right)} \\right)'
+			'd/dx(2e^{(-x)}) = -2e^{-x}\n' + 'LaTeX: -2 e^{-x}'
 		);
 	});
 });
