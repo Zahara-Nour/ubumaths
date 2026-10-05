@@ -42,6 +42,7 @@ import { isMultiplication, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesAsRightFactor,
+	needsParenthesesAsRightTerm,
 	needsParenthesesUnderFactorial,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
@@ -360,16 +361,16 @@ export class LatexGenerator {
 				break;
 
 			case 'addition':
+			case 'subtraction': {
+				// Mêmes parenthèses que generateAddition / generateSubtraction
+				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
-				this.emit(' + ', node.operatorMetadata ?? node.metadata);
+				this.emit(node.type === 'addition' ? ' + ' : ' - ', node.operatorMetadata ?? node.metadata);
+				if (wrapRight) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.right);
+				if (wrapRight) this.emit(' \\right)', node.metadata);
 				break;
-
-			case 'subtraction':
-				this.visitWithSpans(node.left);
-				this.emit(' - ', node.operatorMetadata ?? node.metadata);
-				this.visitWithSpans(node.right);
-				break;
+			}
 
 			case 'multiplication': {
 				// Mêmes parenthèses que generateMultiplication
@@ -389,10 +390,16 @@ export class LatexGenerator {
 				this.visitDivisionSpans(node);
 				break;
 
-			case 'opposite':
+			case 'opposite': {
+				// Même parenthésage que generateOpposite : sans lui, −(x + 2) s'écrivait
+				// `-x + 2` dans les étapes pédagogiques (mesuré, revues de #838).
+				const wrap = needsParenthesesUnderSign(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
+				if (wrap) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.operand);
+				if (wrap) this.emit(' \\right)', node.metadata);
 				break;
+			}
 
 			case 'positive':
 				this.emit('+', node.operatorMetadata ?? node.metadata);
@@ -1141,7 +1148,11 @@ export class LatexGenerator {
 
 	private generateAddition(node: AdditionNode): string {
 		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		// `a + -b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'addition')
+			? `\\left( ${renderedRight} \\right)`
+			: renderedRight;
 		return `${left} + ${right}`;
 	}
 
@@ -1150,7 +1161,12 @@ export class LatexGenerator {
 		// ⚠️ L'opérande DROIT seulement : `y − (x+1)` vaut `y − x − 1`, alors que
 		// `y - x + 1` se relit `y − x + 1`. À gauche, `(x+1) − y` se rend
 		// `x + 1 - y` sans ambiguïté, et parenthéser alourdirait pour rien.
-		const right = this.groupIfSum(node.right);
+		// Un terme qui commence par un signe aussi : `a - -b` (voir
+		// needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'subtraction')
+			? `\\left( ${renderedRight} \\right)`
+			: renderedRight;
 		return `${left} - ${right}`;
 	}
 

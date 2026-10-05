@@ -144,3 +144,22 @@ function startsWithSign(node: MathNode): boolean {
 export function needsParenthesesAsRightFactor(node: MathNode): boolean {
 	return needsParenthesesUnderSign(node) || startsWithSign(node);
 }
+
+/**
+ * Cette expression doit-elle être parenthésée comme terme de DROITE d'une somme
+ * (`operator = 'addition'`) ou d'une différence (`'subtraction'`) ?
+ *
+ * ⚠️ **Mesuré** : la primitive de `x sin x` s'écrivait
+ * `x \left( -\cos(x) \right) - -\sin(x)` — deux signes consécutifs. Même
+ * principe que pour un facteur de droite : deux signes ne se suivent pas à
+ * l'écrit, `a − (−b)` et `a + (−b)` gardent leurs parenthèses.
+ *
+ * Après un `-`, une somme ou une différence aussi (`a − (b + c)` ≠ `a − b + c`).
+ * Après un `+`, non : `a + (b + c)` se relit à l'identique.
+ */
+export function needsParenthesesAsRightTerm(
+	node: MathNode,
+	operator: 'addition' | 'subtraction'
+): boolean {
+	return operator === 'subtraction' ? needsParenthesesAsRightFactor(node) : startsWithSign(node);
+}

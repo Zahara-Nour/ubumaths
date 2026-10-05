@@ -1428,45 +1428,45 @@ Expression: \\sin(x) + \\cos(x) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [sum] On dérive chaque terme
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [sin] Dérivée de sinus
     \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
   - [cos] Dérivée de cosinus
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+Result: \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right)
 
 ========== LYCEE (detailed) ==========
 - [sum] On dérive chaque terme
   · Avec f = \\sin\\left( x \\right) et g = \\cos\\left( x \\right), on a (f+g)' = f' + g'.
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [sin] Dérivée de sinus
     · Avec u = x, on a (\\sin u)' = \\cos(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
   - [cos] Dérivée de cosinus
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+Result: \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [sum] (f+g)' = f' + g'
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [sin] (\\sin u)' = \\cos(u)\\,u'
     \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
   - [cos] (\\cos u)' = -\\sin(u)\\,u'
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+Result: \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [sum] (f+g)' = f' + g'
   · Avec f = \\sin\\left( x \\right) et g = \\cos\\left( x \\right), on a (f+g)' = f' + g'.
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [sin] (\\sin u)' = \\cos(u)\\,u'
     · Avec u = x, on a (\\sin u)' = \\cos(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
   - [cos] (\\cos u)' = -\\sin(u)\\,u'
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\times u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
-Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+Result: \\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right)
 "
 `;
 
