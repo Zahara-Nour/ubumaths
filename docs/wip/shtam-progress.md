@@ -15,5 +15,5 @@ Gazette parodique du Royaume (Compendium §IX « Le Shtam »). Branche `feat/sht
 - [x] `src/lib/server/shtam/` : lecture + validation Zod, publication (brouillon, date future), tirage, présentation.
 - [x] 5 articles ; `pnpm check:ubumark src/lib/server/shtam/articles` = 39 formules, 0 problème.
 - [x] `load` de `/shtam`, `/shtam/[slug]`, accueil (tirage serveur).
-- [ ] Pages Svelte (une, article) + lien de l'accueil + tests navigateur.
+- [x] Pages Svelte (une, article) + lien discret de l’accueil + tests navigateur ; captures vérifiées (bureau, 390 px).
 - [ ] Revue, check:incremental, PR.
