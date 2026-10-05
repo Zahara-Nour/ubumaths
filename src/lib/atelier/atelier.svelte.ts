@@ -885,6 +885,10 @@ export class Atelier {
 			...(withList !== undefined && { plottedWith: withList }),
 			...(display && { display })
 		} as AtelierObject;
+		// `f′` tracée avant `f` s'aligne sur la couleur que `f` reçoit ici
+		if (display !== undefined && isFunction(current)) {
+			this.#recolorDerivatives(name, display.color);
+		}
 		this.recomputeAll();
 	}
 
@@ -908,14 +912,12 @@ export class Atelier {
 		if (Object.keys(read.patch).length === 0) return { ok: true };
 
 		const base = current.display ?? this.#firstDisplay(name);
-		this.items[index] = { ...current, display: { ...base, ...read.patch } };
-		// Ses dérivées suivent sa couleur (décision de David, 2026-10-05). Seul un
-		// CHANGEMENT compte : une relecture qui pose la couleur d'une fonction sans
-		// réglages ne doit pas écraser celle, peut-être choisie, de sa dérivée
-		const color = read.patch.color;
-		if (color !== undefined && current.display !== undefined && current.display.color !== color) {
-			this.#recolorDerivatives(name, color);
-		}
+		const display = { ...base, ...read.patch };
+		this.items[index] = { ...current, display };
+		// Ses dérivées suivent sa couleur (décision de David, 2026-10-05) — y
+		// compris quand `f` reçoit ici ses premiers réglages. Les relectures
+		// (`restore`, `mergeInto`) posent par `adoptDisplay` et ne passent pas ici
+		if (current.display?.color !== display.color) this.#recolorDerivatives(name, display.color);
 		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
 		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
 		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
@@ -954,7 +956,6 @@ export class Atelier {
 		this.items[index] = { ...current, display: fullDisplay(stored) };
 	}
 
-	/** Les couples couleur/style déjà pris (fonctions et suites) — pour ne pas les doubler. */
 	/**
 	 * Les réglages d'une fonction à son premier tracé. Une dérivée prend la
 	 * couleur de sa fonction, et un trait qui dit son ordre (comme la case
@@ -979,6 +980,7 @@ export class Atelier {
 		);
 	}
 
+	/** Les couples couleur/style déjà pris (fonctions et suites) — pour ne pas les doubler. */
 	#displays(): Pick<CurveDisplay, 'color' | 'lineStyle'>[] {
 		return this.items.flatMap((o) =>
 			(isFunction(o) || isSequence(o)) && o.display ? [o.display] : []

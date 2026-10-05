@@ -95,6 +95,46 @@ describe('la couleur d’une dérivée', () => {
 		expect(displayOf(atelier, "f'")).toMatchObject({ color: 'curve-1', lineStyle: 'solid' });
 	});
 
+	it('f′ tracée avant f prend la couleur de f quand f est tracée', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		atelier.createDerivative('f');
+		atelier.setPlotted("f'", true);
+		// Sans ce détour, la couleur neuve de f tombe sur celle de f′ par hasard
+		// (le couple couleur/trait diffère) et le test ne prouverait rien
+		atelier.setDisplay("f'", { color: 'curve-4' });
+
+		atelier.setPlotted('f', true);
+
+		expect(displayOf(atelier, 'f')?.color).not.toBe('curve-4');
+
+		expect(displayOf(atelier, "f'")).toMatchObject({
+			color: displayOf(atelier, 'f')?.color,
+			lineStyle: 'dashed'
+		});
+	});
+
+	it('f′ tracée avant f prend la couleur choisie pour f à son premier réglage', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		atelier.createDerivative('f');
+		atelier.setPlotted("f'", true);
+
+		atelier.setDisplay('f', { color: 'curve-4' });
+
+		expect(displayOf(atelier, "f'")?.color).toBe('curve-4');
+	});
+
+	it('renommée, la fonction garde ses dérivées dans sa couleur', () => {
+		const atelier = withPlottedF();
+		atelier.createDerivative('f');
+		atelier.rename('f', 'h');
+
+		atelier.setDisplay('h', { color: 'curve-1' });
+
+		expect(displayOf(atelier, "h'")?.color).toBe('curve-1');
+	});
+
 	it('une autre fonction ne suit pas f', () => {
 		const atelier = withPlottedF();
 		const before = displayOf(atelier, 'g')?.color;
