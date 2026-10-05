@@ -551,6 +551,34 @@ exactement (fractions, racines) ; option `vectorMode` (case ou `blankDefaults` ;
 - attendue illisible, de dimension ≠ 2 ou 3, ou nulle en mode `colineaire` → specs rouges.
   Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « vecteur »).
 
+**Case « matrice » (2026-10-05).** La matrice entière dans UNE case, câblée comme la case
+« vecteur » (case ou `blankDefaults` ; éditeur : case « Réponse : matrice ») :
+
+```json
+{
+	"expectedAnswer": "\\begin{pmatrix}{{eval:a1*b1+a2*b3}}&{{eval:a1*b2+a2*b4}}\\\\{{eval:a3*b1+a4*b3}}&{{eval:a3*b2+a4*b4}}\\end{pmatrix}",
+	"answerKind": "matrice"
+}
+```
+
+- l'élève utilise l'onglet « Matrice » du clavier virtuel (montré pour cette case SEULEMENT) :
+  gabarits 2 × 2, 3 × 3, colonne, ligne, puis « + ligne » / « + colonne » (4 × 4 et plus) ;
+  flèche droite pour passer au coefficient suivant ; `pmatrix`, `bmatrix` et `A=`, `A^{-1}=`
+  devant sont lus ;
+- dimensions d'abord : une mauvaise taille est fausse avec « La matrice attendue a 2 lignes et
+  2 colonnes. » ; lignes de longueurs différentes, case du gabarit vide, facteur devant la
+  matrice (`\frac{1}{5}\begin{pmatrix}…`, inverse) : faux avec un message ;
+- coefficients comparés PAR VALEUR (exactement : `1+1`, `\frac{4}{2}` valent 2), puis chaque
+  coefficient jugé comme une case ordinaire contre le coefficient attendu (`\frac{4}{2}` pour 2 :
+  `unoptimal_form` + `reducedFractions` ; `0.6` pour `\frac{3}{5}` ou `1+6` pour 7 : `bad_form` +
+  `form`) — specs : ajouter `constraintViolations` ;
+- un produit dans le mauvais ordre (BA) n'a pas de message propre : il est faux ;
+- attendue illisible, non rectangulaire, de dimension > 6 ou à coefficient non défini → specs
+  rouges. Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « matrice »).
+- **Matrice à trous dans un énoncé** (`$A^2=\begin{pmatrix}?&?\\?&?\end{pmatrix}$`) : une case
+  par coefficient, affichées depuis le 2026-10-05 (avant, aucune case n'apparaissait dès que la
+  matrice avait plusieurs colonnes ou pas de `\vec` devant).
+
 **Cases « primitive » et « solution-ed » (2026-10-04).** Une primitive, ou une solution d'équation
 différentielle, dans UNE case, jugée par le calcul et jamais par comparaison au texte attendu ;
 champs dans la case ou dans `blankDefaults` (éditeur : cases « Réponse : primitive d'une
