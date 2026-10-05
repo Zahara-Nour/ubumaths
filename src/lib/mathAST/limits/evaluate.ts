@@ -24,8 +24,20 @@ import type {
 	OneSidedLimitResult
 } from './types';
 import { LimitError } from './types';
-import { isLimit, isNumber, isInfinity, isSuperscript } from '../guards';
+import {
+	isLimit,
+	isNumber,
+	isInfinity,
+	isSuperscript,
+	isAddition,
+	isSubtraction,
+	isOpposite,
+	isFunction,
+	isDelimiter
+} from '../guards';
+import { divide, number, opposite, subtract, positiveInfinity, negativeInfinity } from '../factory';
 import { findNodes } from '../transforms';
+import { flattenSumShallow } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { matchKnownLimit, getKnownLimitValue } from './known-limits';
@@ -353,6 +365,34 @@ export function evaluateLimit(
 		);
 	}
 
+	// Strategy 2.6: somme ou différence en ±∞, limite terme à terme ; la forme
+	// ∞ − ∞ est levée en factorisant par le terme dominant (croissances
+	// comparées, via les limites de référence du quotient).
+	if (isInfinity(approachPoint)) {
+		const sumResult = trySumByDominantTerm(expression, varName, approachPoint, dir, options);
+		if (sumResult !== null) {
+			recorder.recordStepByRule(
+				'infinity-analysis',
+				expression,
+				sumResult.value,
+				'summarized',
+				approachPoint,
+				sumResult.description
+			);
+			return createResult(
+				sumResult.value,
+				varName,
+				approachPoint,
+				dir,
+				'infinite',
+				sumResult.form,
+				'infinity-analysis',
+				recorder,
+				opts
+			);
+		}
+	}
+
 	// Detect indeterminate form for subsequent strategies
 	const indeterminateForm = detectIndeterminateForm(expression, varName, approachPoint, dir);
 
@@ -505,6 +545,254 @@ export function evaluateLimit(
 		opts,
 		'Limite non supportée avec les techniques actuelles'
 	);
+}
+
+// =============================================================================
+// Somme en ±∞ : terme dominant
+// =============================================================================
+
+/** Limite réduite à ce qui sert à combiner deux termes. */
+type TermLimit =
+	| { readonly kind: 'infinite'; readonly sign: 1 | -1 }
+	| { readonly kind: 'finite'; readonly value: number };
+
+/**
+ * Garde-fou : la levée de ∞ − ∞ rappelle `evaluateLimit` sur des quotients,
+ * qui peuvent eux-mêmes contenir des sommes. Pile des sommes EN COURS
+ * d'analyse (incrémentée à l'entrée, décrémentée à la sortie) : elle mesure
+ * l'imbrication, pas le nombre de termes — une somme est aplatie d'un coup.
+ */
+const MAX_NESTED_SUMS = 3;
+let nestedSums = 0;
+
+/**
+ * L'Hôpital peut conclure sur une évaluation NUMÉRIQUE (x/√x → « 200000 »,
+ * statut 'exact' quand même). Une valeur finie qui en sort n'est retenue que
+ * si f s'en approche vraiment : |f(x₂) − L| ≤ |f(x₁) − L| / 2 entre
+ * x₁ = ±10³ et x₂ = ±10⁹ (ou f déjà égale à L). Sinon on s'abstient.
+ */
+function confirmsFiniteLimit(
+	node: MathNode,
+	varName: string,
+	approach: MathNode,
+	limitValue: number
+): boolean {
+	if (!isInfinity(approach)) return false;
+	const at = (magnitude: string): number => {
+		const point = approach.sign === 'positive' ? number(magnitude) : opposite(number(magnitude));
+		try {
+			return evaluateNodeToApproximatedNumber(substituteValue(node, varName, point));
+		} catch {
+			return NaN;
+		}
+	};
+	const near = Math.abs(at('1000') - limitValue);
+	const far = Math.abs(at('1000000000') - limitValue);
+	if (!Number.isFinite(near) || !Number.isFinite(far)) return false;
+	if (far <= ZERO_TOLERANCE * (1 + Math.abs(limitValue))) return true;
+	return far <= near / 2;
+}
+
+/** Limite exploitable pour combiner des termes, ou null (voir `confirmsFiniteLimit`). */
+function toTermLimit(
+	result: LimitResult,
+	node: MathNode,
+	varName: string,
+	approach: MathNode
+): TermLimit | null {
+	const value = result.value;
+	if (value === null || value === undefined) return null;
+	if (isInfinity(value)) return { kind: 'infinite', sign: value.sign === 'positive' ? 1 : -1 };
+	const numeric = getNumericValue(value);
+	if (numeric === null) return null;
+	if (result.technique === 'lhopital' && !confirmsFiniteLimit(node, varName, approach, numeric)) {
+		return null;
+	}
+	return { kind: 'finite', value: numeric };
+}
+
+/** Exposant `u` de `e^u` ou `exp(u)`, sinon null. */
+function exponentialArgument(node: MathNode): MathNode | null {
+	if (isSuperscript(node) && isEulerBase(node.base)) return node.superscript;
+	if (isFunction(node) && node.name.toLowerCase() === 'exp' && node.args.length === 1) {
+		return node.args[0];
+	}
+	return null;
+}
+
+/** Retire les signes `−` et parenthèses de tête : `−(−A)` → { sign: 1, node: A }. */
+function peelSign(node: MathNode): { sign: 1 | -1; node: MathNode } {
+	if (isDelimiter(node)) return peelSign(node.content);
+	if (isOpposite(node)) {
+		const inner = peelSign(node.operand);
+		return { sign: inner.sign === 1 ? -1 : 1, node: inner.node };
+	}
+	return { sign: 1, node };
+}
+
+/**
+ * Limite de `num / den`, ou null si le moteur ne conclut pas. Deux
+ * exponentielles se comparent par leurs exposants : e^v / e^u = e^{v − u}.
+ */
+function ratioLimit(
+	num: MathNode,
+	den: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): TermLimit | null {
+	const quotient = divide(num, den, 'fraction');
+	const direct = toTermLimit(
+		evaluateLimit(quotient, varName, approach, dir, options),
+		quotient,
+		varName,
+		approach
+	);
+	if (direct !== null) return direct;
+	const numExponent = exponentialArgument(num);
+	const denExponent = exponentialArgument(den);
+	if (numExponent === null || denExponent === null) return null;
+	// lim (v − u) puis exponentielle : −∞ → 0, +∞ → +∞, c → e^c
+	const exponentGap = subtract(numExponent, denExponent);
+	const gap = toTermLimit(
+		evaluateLimit(exponentGap, varName, approach, dir, options),
+		exponentGap,
+		varName,
+		approach
+	);
+	if (gap === null) return null;
+	if (gap.kind === 'infinite') {
+		return gap.sign === 1 ? { kind: 'infinite', sign: 1 } : { kind: 'finite', value: 0 };
+	}
+	return { kind: 'finite', value: Math.exp(gap.value) };
+}
+
+/** Comparaison de deux termes infinis : n / leader. */
+type Comparison =
+	| { readonly kind: 'negligible' }
+	| { readonly kind: 'dominant' }
+	| { readonly kind: 'same-order'; readonly ratio: number };
+
+/** Compare `node` au terme `leader` par lim node/leader, ou à défaut leader/node. */
+function compareTerms(
+	node: MathNode,
+	leader: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): Comparison | null {
+	const ratio = ratioLimit(node, leader, varName, approach, dir, options);
+	if (ratio !== null) {
+		if (ratio.kind === 'infinite') return { kind: 'dominant' };
+		if (ratio.value === 0) return { kind: 'negligible' };
+		return { kind: 'same-order', ratio: ratio.value };
+	}
+	const inverse = ratioLimit(leader, node, varName, approach, dir, options);
+	if (inverse === null) return null;
+	if (inverse.kind === 'infinite') return { kind: 'negligible' };
+	if (inverse.value === 0) return { kind: 'dominant' };
+	return { kind: 'same-order', ratio: 1 / inverse.value };
+}
+
+/**
+ * Limite d'une somme en ±∞, terme à terme (somme aplatie).
+ *
+ * Forme ∞ − ∞ : on cherche le terme dominant parmi les termes infinis
+ * (e^x − x : x/e^x → 0, croissance comparée). Les termes du même ordre que
+ * lui (rapport fini non nul) forment un groupe dont le coefficient cumulé
+ * donne le signe ; coefficient nul : on ne conclut pas.
+ */
+function trySumByDominantTerm(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; form: IndeterminateForm; description: string } | null {
+	if (!isAddition(expr) && !isSubtraction(expr)) return null;
+	if (nestedSums >= MAX_NESTED_SUMS) return null;
+
+	nestedSums++;
+	try {
+		// Termes signés : signe de la chaîne × signes de tête du terme
+		const terms = flattenSumShallow(expr).map(({ sign, term }) => {
+			const peeled = peelSign(term);
+			return { sign: (sign === '+' ? peeled.sign : -peeled.sign) as 1 | -1, node: peeled.node };
+		});
+		if (terms.length < 2) return null;
+
+		const limits: TermLimit[] = [];
+		for (const term of terms) {
+			const termLimit = toTermLimit(
+				evaluateLimit(term.node, varName, approach, dir, options),
+				term.node,
+				varName,
+				approach
+			);
+			if (termLimit === null) return null;
+			limits.push(termLimit);
+		}
+
+		const infiniteIndices: number[] = [];
+		const signedSigns = new Set<number>();
+		limits.forEach((termLimit, i) => {
+			if (termLimit.kind === 'infinite') {
+				infiniteIndices.push(i);
+				signedSigns.add(terms[i].sign * termLimit.sign);
+			}
+		});
+		if (infiniteIndices.length === 0) return null;
+
+		const infinityNode = (sign: number): MathNode =>
+			sign > 0 ? positiveInfinity() : negativeInfinity();
+
+		// Pas de forme indéterminée : tous les infinis ont le même signe.
+		if (signedSigns.size === 1) {
+			const sign = [...signedSigns][0];
+			return {
+				value: infinityNode(sign),
+				form: 'none',
+				description: `Somme des limites : ${sign > 0 ? '+∞' : '-∞'}`
+			};
+		}
+
+		// Forme ∞ − ∞ : terme dominant et groupe de même ordre.
+		let leader = infiniteIndices[0];
+		let group: Array<{ index: number; ratio: number }> = [{ index: leader, ratio: 1 }];
+		for (const j of infiniteIndices.slice(1)) {
+			const comparison = compareTerms(
+				terms[j].node,
+				terms[leader].node,
+				varName,
+				approach,
+				dir,
+				options
+			);
+			if (comparison === null) return null;
+			if (comparison.kind === 'dominant') {
+				leader = j;
+				group = [{ index: j, ratio: 1 }];
+			} else if (comparison.kind === 'same-order') {
+				group.push({ index: j, ratio: comparison.ratio });
+			}
+		}
+
+		const coefficient = group.reduce((acc, g) => acc + terms[g.index].sign * g.ratio, 0);
+		if (Math.abs(coefficient) <= ZERO_TOLERANCE) return null;
+		const leaderLimit = limits[leader];
+		if (leaderLimit.kind !== 'infinite') return null;
+		const sign = Math.sign(coefficient) * leaderLimit.sign;
+
+		return {
+			value: infinityNode(sign),
+			form: '∞-∞',
+			description: `Forme ∞ − ∞ levée par le terme dominant (croissances comparées) : ${sign > 0 ? '+∞' : '-∞'}`
+		};
+	} finally {
+		nestedSums--;
+	}
 }
 
 /** L'expression contient-elle une puissance de la base d'Euler (`e^u`) ? */
