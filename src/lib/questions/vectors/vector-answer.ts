@@ -83,8 +83,8 @@ const COLUMN_REGEX = /^\\begin\{([pb]matrix)\}([\s\S]*)\\end\{\1\}$/;
 
 // Functions
 
-/** Texte sans espacements LaTeX ni `\left` / `\right` */
-function cleaned(text: string): string {
+/** Texte sans espacements LaTeX ni `\left` / `\right` (relu aussi par la case « matrice ») */
+export function cleaned(text: string): string {
 	return text
 		.replace(SPACING_REGEX, '')
 		.replace(LEFT_RIGHT_REGEX, '')
@@ -97,7 +97,7 @@ function cleaned(text: string): string {
  * Découpe au niveau 0 (hors accolades, parenthèses, crochets) sur `separator`.
  * `null` si les délimiteurs sont mal équilibrés.
  */
-function splitTopLevel(text: string, separator: ';' | '\\\\' | '&'): string[] | null {
+export function splitTopLevel(text: string, separator: ';' | '\\\\' | '&'): string[] | null {
 	const parts: string[] = [];
 	let depth = 0;
 	let start = 0;
@@ -169,8 +169,8 @@ function hasHugeExponent(node: MathNode): boolean {
 	return huge;
 }
 
-/** Une coordonnée : expression constante lisible, `null` sinon */
-function parseCoordinate(text: string): MathNode | null {
+/** Une coordonnée (ou un coefficient de matrice) : expression constante lisible, `null` sinon */
+export function parseCoordinate(text: string): MathNode | null {
 	if (!text) return null;
 	try {
 		const { ast, errors } = parseLatexSafe(stripLatexSpacing(text, 'decimal'));
@@ -205,7 +205,7 @@ function readVector(text: string): ReadVector {
  * L'expression vaut exactement 0. Lève une erreur si la réduction échoue ou
  * dépasse son budget (l'appelant juge alors la réponse fausse).
  */
-function isExactlyZero(node: MathNode): boolean {
+export function isExactlyZero(node: MathNode): boolean {
 	const form = normalize(node, {
 		abortChecker: makeAbortChecker(undefined, NORMALIZE_BUDGET_MS)
 	});

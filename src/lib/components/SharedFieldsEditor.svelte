@@ -63,6 +63,7 @@
 		sharedBlankEquation: boolean;
 		sharedBlankVector: boolean;
 		sharedBlankVectorCollinear: boolean;
+		sharedBlankMatrix: boolean;
 		/** Case « primitive » ou « solution-ed » et ses champs */
 		sharedBlankCalculus: CalculusEditorState;
 		sharedValidationRulesJson: string;
@@ -100,6 +101,7 @@
 		sharedBlankEquation = $bindable(),
 		sharedBlankVector = $bindable(),
 		sharedBlankVectorCollinear = $bindable(),
+		sharedBlankMatrix = $bindable(),
 		sharedBlankCalculus = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
@@ -381,6 +383,8 @@
 									label="Vecteur : tout vecteur colinéaire non nul est juste"
 								/>
 							{/if}
+							<!-- Matrice dans une case : coefficients comparés par valeur (clavier « Matrice ») -->
+							<MyCheckbox bind:checked={sharedBlankMatrix} label="Réponse : matrice" />
 							<!-- Primitive de f : x^3+C juste pour 3x^2 (dérivée de la réponse comparée à f) -->
 							<MyCheckbox
 								bind:checked={sharedBlankCalculus.primitive}

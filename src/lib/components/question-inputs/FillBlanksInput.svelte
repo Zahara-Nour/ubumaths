@@ -45,6 +45,7 @@
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
+	import { buildMatricesKeyboardLayout } from '$lib/questions/matrices/keyboard-matrices';
 	import {
 		buildCombinatoricsKeyboardLayout,
 		hasCombinatoricsKeyboard
@@ -258,6 +259,12 @@
 			!effectiveDisabled &&
 			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'vecteur')
 	);
+	// Case « matrice » à remplir : onglet « Matrice » (gabarits, ajout de ligne / colonne)
+	let hasMatrixBlank = $derived(
+		!flashMode &&
+			!effectiveDisabled &&
+			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'matrice')
+	);
 	// Carte de Terminale à remplir : onglet « n! » (d'après le niveau, jamais la réponse)
 	let hasCombinatoricsTab = $derived(
 		!flashMode && !effectiveDisabled && hasCombinatoricsKeyboard(grades)
@@ -271,7 +278,7 @@
 	}
 
 	/**
-	 * Onglets « Unités » / « Intervalles » / « Vecteur » du clavier virtuel MathLive,
+	 * Onglets « Unités » / « Intervalles » / « Vecteur » / « Matrice » du clavier virtuel MathLive,
 	 * et « n! » (factorielle, coefficient binomial) pour une carte de Terminale.
 	 *
 	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
@@ -301,6 +308,7 @@
 			...(unitKeys.length > 0 ? [buildUnitsKeyboardLayout(unitKeys)] : []),
 			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : []),
 			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : []),
+			...(hasMatrixBlank ? [buildMatricesKeyboardLayout()] : []),
 			...(hasCombinatoricsTab ? [buildCombinatoricsKeyboardLayout()] : [])
 		];
 		if (!element || layouts.length === 0) return;

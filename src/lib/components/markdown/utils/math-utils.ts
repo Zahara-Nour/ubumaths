@@ -130,6 +130,12 @@ function findHoleIndices(node: MathNode): number[] {
 		if ('args' in n && Array.isArray(n.args)) {
 			n.args.forEach((arg) => traverse(arg as MathNode));
 		}
+		// Matrice (`pmatrix`, `bmatrix`) : ses cases sont dans les lignes. Sans ce
+		// parcours, `\begin{pmatrix}?&?\\?&?\end{pmatrix}` était rendue statique et
+		// l'élève ne voyait aucune case (constat du 2026-10-05).
+		if (n.type === 'matrix') {
+			n.rows.forEach((row) => row.forEach((cell) => traverse(cell)));
+		}
 	}
 
 	traverse(node);

@@ -118,6 +118,32 @@
 					"La ligne $1$ contient les probabilités de passer de la salle $1$ aux salles $1$, $2$, $3$ ; sa somme vaut $1$ : $c_{11} = 1 - {{eval:a/10;d}} - {{eval:b/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(10-a-b)/10;d}}}$, $c_{12} = \\textcolor{{{color:primary.0}}}{{{eval:a/10;d}}}$, $c_{13} = \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}}$."
 				]
 			}
+		},
+		{
+			"statement": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité ${{eval:p/10;d}}$ ; un client de $B$ passe chez $A$ avec la probabilité ${{eval:q/10;d}}$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["p != q", "p != 10-q"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ligne = état de départ, colonne = état d'arrivée ; chaque ligne a pour somme $1$.",
+					"$P = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:(10-p)/10;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:q/10;d}}}&\\textcolor{{{color:primary.0}}}{{{eval:(10-q)/10;d}}}\\end{pmatrix}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -229,6 +255,66 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "v3 : matrice de transition",
+			"variables": {
+				"p": "3",
+				"q": "6"
+			},
+			"answers": ["\\begin{pmatrix}0.7&0.3\\\\0.6&0.4\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : virgule décimale, écriture de MathLive",
+			"variables": {
+				"p": "3",
+				"q": "6"
+			},
+			"answers": ["\\begin{pmatrix}0{,}7 & 0{,}3\\\\ 0{,}6 & 0{,}4\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : transposée (départ en colonne)",
+			"variables": {
+				"p": "3",
+				"q": "6"
+			},
+			"answers": ["\\begin{pmatrix}0.7&0.6\\\\0.3&0.4\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : probabilités de rester et de partir inversées",
+			"variables": {
+				"p": "3",
+				"q": "6"
+			},
+			"answers": ["\\begin{pmatrix}0.3&0.7\\\\0.4&0.6\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : dimension fausse (une ligne)",
+			"variables": {
+				"p": "3",
+				"q": "6"
+			},
+			"answers": ["\\begin{pmatrix}0.7&0.3\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
 		}
 	],
 	"options": {

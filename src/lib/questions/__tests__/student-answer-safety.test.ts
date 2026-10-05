@@ -130,10 +130,18 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 		}
 	});
 
-	it('trois coordonnées au plus : les passages à la ligne en masse sont retirés', () => {
+	it('six lignes au plus : les passages à la ligne en masse sont retirés', () => {
 		// 300 lignes : sous la borne de longueur (au-delà, la réponse entière devient inerte)
 		const many = `\\begin{pmatrix}${'1\\\\'.repeat(300)}1\\end{pmatrix}`;
-		expect(neutralizeStudentLatex(many).match(/\\\\/g)).toHaveLength(2);
+		expect(neutralizeStudentLatex(many).match(/\\\\/g)).toHaveLength(5);
+	});
+
+	it('six lignes pour TOUTE la formule : colonnes imbriquées ou juxtaposées comprises', () => {
+		const column = (inner: string) => `\\begin{pmatrix}${inner}\\\\1\\\\2\\end{pmatrix}`;
+		const nested = column(column(column('x')));
+		expect(neutralizeStudentLatex(nested).match(/\\\\/g)).toHaveLength(5);
+		const sideBySide = `${column('1')}${column('2')}${column('3')}`;
+		expect(neutralizeStudentLatex(sideBySide).match(/\\\\/g)).toHaveLength(5);
 	});
 
 	it('passage à la ligne hors d’une colonne : toujours retiré', () => {
@@ -153,6 +161,65 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 			const safe = neutralizeStudentLatex(raw);
 			expect(safe).not.toMatch(/\\begin|\\end(?![a-zA-Z])/);
 			expect(safe).not.toContain('[r]');
+		}
+	});
+});
+
+describe('neutralizeStudentLatex — `%` après des backslashes', () => {
+	it('`\\\\%` (passage à la ligne puis %) : le % est échappé', () => {
+		expect(neutralizeStudentLatex('\\begin{pmatrix}1\\\\% x\\end{pmatrix}')).toBe(
+			'\\begin{pmatrix}1\\\\\\% x\\end{pmatrix}'
+		);
+	});
+
+	it('`\\%` déjà échappé : inchangé', () => {
+		expect(neutralizeStudentLatex('33\\%')).toBe('33\\%');
+	});
+});
+
+describe('neutralizeStudentLatex — fin de matrice dans un groupe', () => {
+	it('`\\end{pmatrix}` dans un groupe ne ferme pas la matrice : `&` toujours plafonnés', () => {
+		for (const closer of [
+			'{\\end{pmatrix}}',
+			'\\text{\\end{pmatrix}}',
+			'\\sqrt[\\end{pmatrix}]{2}',
+			'\\left(\\end{pmatrix}\\right)'
+		]) {
+			const safe = neutralizeStudentLatex(`\\begin{pmatrix}${closer}${'1&'.repeat(100)}1`);
+			expect((safe.match(/&/g) ?? []).length).toBeLessThanOrEqual(30);
+		}
+	});
+
+	it('`&` hors matrice : plafonnés pour toute la formule', () => {
+		const safe = neutralizeStudentLatex('1&'.repeat(300));
+		expect((safe.match(/&/g) ?? []).length).toBeLessThanOrEqual(30);
+	});
+
+	it('matrice 6 × 6 : ses 30 `&` gardés', () => {
+		const row = Array(6).fill('1').join('&');
+		const latex = `\\begin{pmatrix}${Array(6).fill(row).join('\\\\')}\\end{pmatrix}`;
+		expect(neutralizeStudentLatex(latex)).toBe(latex);
+	});
+});
+
+// Matrice saisie avec l'onglet « Matrice » du clavier (case « matrice », 2026-10-05) :
+// `&` est un caractère ordinaire ; jusqu'à 6 lignes (matrice d'adjacence)
+describe('neutralizeStudentLatex — matrice', () => {
+	it('matrices intactes, écriture de MathLive comprise (2 × 2 à 6 × 6, ligne, fractions)', () => {
+		const square = (n: number) =>
+			`\\begin{pmatrix}${Array.from({ length: n }, (_, i) =>
+				Array.from({ length: n }, (_, j) => (i === j ? '1' : '0')).join(' & ')
+			).join('\\\\ ')}\\end{pmatrix}`;
+		for (const latex of [
+			'\\begin{pmatrix}2 & -1\\\\ 0 & 3\\end{pmatrix}',
+			'\\begin{pmatrix}0.4&0.6\\end{pmatrix}',
+			'\\begin{pmatrix}\\frac{1}{2} & -\\frac{3}{4}\\\\ 0 & 1\\end{pmatrix}',
+			'A^{-1}=\\begin{pmatrix}1&0\\\\0&1\\end{pmatrix}',
+			square(3),
+			square(4),
+			square(6)
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
 		}
 	});
 });

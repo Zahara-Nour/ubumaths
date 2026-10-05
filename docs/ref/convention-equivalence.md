@@ -483,6 +483,33 @@ Colinéarité : tous les déterminants 2×2 a_i·e_j − a_j·e_i nuls (calcul e
 Une attendue illisible, de dimension autre que 2 ou 3, ou nulle en mode `colineaire` fait échouer
 les specs du modèle. Sans `answerKind`, rien ne change.
 
+## Réponse « matrice » : dimensions, puis coefficients par valeur (case `answerKind: "matrice"`)
+
+Dans une case ordinaire, une matrice est comparée au TEXTE : la même matrice tapée avec les
+espaces de MathLive, `1+1` ou `\frac{4}{2}` en coefficient étaient jugés faux (sondes du
+2026-10-05). Une case marquée `answerKind: "matrice"` (décision de David du 2026-10-05) est jugée
+par `questions/matrices/matrix-answer.ts`, sur le modèle de la case « vecteur » :
+
+- écritures lues : `\begin{pmatrix}…\end{pmatrix}`, `bmatrix`, `\left(\begin{matrix}…\end{matrix}\right)` ;
+  `&` entre coefficients, `\\` entre lignes (espaces de MathLive, ligne vide finale ignorée) ;
+  préfixe `A=`, `AB=`, `M^{2}=`, `A^{-1}=` ignoré ;
+- dimensions comparées d'abord ; coefficients CONSTANTS réduits par `normalize` et comparés
+  EXACTEMENT (aucun flottant) ; puis chaque coefficient jugé comme une case ordinaire contre le
+  coefficient attendu (le pire verdict l'emporte).
+
+| Attendue                 | Réponse                                                   | Verdict                                     |
+| ------------------------ | --------------------------------------------------------- | ------------------------------------------- |
+| `(1 2 ; 3 4)` en pmatrix | même matrice, espaces de MathLive, `bmatrix`, `A=` devant | juste                                       |
+| `(2 -1 ; 0 3)`           | `\frac{4}{2}` pour 2                                      | juste, « fraction simplifiable »            |
+| `(2 -1 ; 0 3)`           | `1+1` pour 2                                              | mauvaise forme (comme une case)             |
+| `(1 2 ; 3 4)`            | transposée, un coefficient faux, BA au lieu d'AB          | faux                                        |
+| `(1 2 ; 3 4)`            | `(1 2 0 ; 3 4 0)`, une ligne seule                        | faux, « 2 lignes et 2 colonnes »            |
+| `(1 2 ; 3 4)`            | `\frac{1}{2}\begin{pmatrix}2&4\\6&8\end{pmatrix}`         | faux, « sans facteur devant »               |
+| `(1 2 ; 3 4)`            | `5`, `(1;2)`, ligne incomplète, case vide, `x`            | faux (message selon le cas), sans exception |
+
+Une attendue illisible, non rectangulaire, de dimension > 6 ou à coefficient non défini fait
+échouer les specs du modèle. Sans `answerKind`, rien ne change.
+
 ## Réponse « primitive » / « solution-ed » : par le calcul (cases `answerKind: "primitive"` / `"solution-ed"`)
 
 Comparer `x^3+C` à l'attendue `x^3` avec `areEquivalent` dirait « faux ». Ces deux cases

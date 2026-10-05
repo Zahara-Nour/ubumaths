@@ -134,6 +134,44 @@
 					"$ad - bc = {{a1}} \\times {{a4;()}} - {{a2;()}} \\times {{a3;()}} = \\textcolor{{{color:primary.0}}}{{{dt}}}${{if:dt==0| : $A$ n'est pas inversible.| : $A$ est inversible.}}"
 				]
 			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ est inversible.\n\nDonne la matrice $A^{-1}$ en écrivant chacun de ses coefficients (valeurs exactes, fractions irréductibles).\n\n$A^{-1}=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..5"
+				},
+				{
+					"name": "a2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-4..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..5"
+				},
+				{
+					"name": "dt",
+					"expression": "eval:a1*a4-a2*a3"
+				}
+			],
+			"conditions": ["abs(dt) >= 2", "abs(dt) <= 9", "a2 != 0", "a3 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:a4/dt}}&{{eval:-a2/dt}}\\\\{{eval:-a3/dt}}&{{eval:a1/dt}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ad - bc = {{a1}} \\times {{a4;()}} - {{a2;()}} \\times {{a3;()}} = {{dt}}$.",
+					"$A^{-1} = \\dfrac{1}{ {{dt}} }\\begin{pmatrix} {{a4}} & {{eval:-a2}} \\\\ {{eval:-a3}} & {{a1}} \\end{pmatrix} = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a4/dt}}}&\\textcolor{{{color:primary.0}}}{{{eval:-a2/dt}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:-a3/dt}}}&\\textcolor{{{color:primary.0}}}{{{eval:a1/dt}}}\\end{pmatrix}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -296,6 +334,138 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "v3 : inverse",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{3}{5}&-\\frac{1}{5}\\\\-\\frac{1}{5}&\\frac{2}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : inverse, écriture de MathLive",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{3}{5} & -\\frac{1}{5}\\\\ -\\frac{1}{5} & \\frac{2}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : facteur 1/det laissé devant",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": ["\\frac{1}{5}\\begin{pmatrix}3&-1\\\\-1&2\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : 1/det oublié",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": ["\\begin{pmatrix}3&-1\\\\-1&2\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : a et d non échangés",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{2}{5}&-\\frac{1}{5}\\\\-\\frac{1}{5}&\\frac{3}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : signes de b et c non changés",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{3}{5}&\\frac{1}{5}\\\\\\frac{1}{5}&\\frac{2}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : fraction simplifiable (6/10)",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{6}{10}&-\\frac{1}{5}\\\\-\\frac{1}{5}&\\frac{2}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : décimaux pour des fractions",
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "1",
+				"a4": "3",
+				"dt": "5"
+			},
+			"answers": ["\\begin{pmatrix}0.6&-0.2\\\\-0.2&0.4\\end{pmatrix}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variationIndex": 3
 		}
 	],
 	"options": {
