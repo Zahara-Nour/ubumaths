@@ -16,7 +16,7 @@ import {
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/auth/signin');
+		throw redirect(303, '/auth/login');
 	}
 
 	const id = validateUuidParam(params.id);

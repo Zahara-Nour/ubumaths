@@ -46,7 +46,7 @@ beforeEach(() => {
 });
 
 describe('load (auth/access)', () => {
-	it('redirects to /auth/signin when no user is authenticated', async () => {
+	it('redirects to /auth/login when no user is authenticated', async () => {
 		const { load } = await import('../+page.server');
 		const supabase = createMockSupabase();
 		const locals = createMockLocals(undefined, supabase);
@@ -56,7 +56,7 @@ describe('load (auth/access)', () => {
 				params: { id: EXERCISE_ID },
 				locals
 			} as any)
-		).rejects.toMatchObject({ status: 303, location: '/auth/signin' });
+		).rejects.toMatchObject({ status: 303, location: '/auth/login' });
 	});
 
 	it('redirects non-teachers to /dashboard', async () => {

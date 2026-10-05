@@ -22,14 +22,14 @@ beforeEach(() => {
 });
 
 describe('my-progress load (auth)', () => {
-	it('redirects unauthenticated to /auth/signin', async () => {
+	it('redirects unauthenticated to /auth/login', async () => {
 		const { load } = await import('../+page.server');
 		const supabase = createMockSupabase();
 		const locals = createMockLocals(undefined, supabase);
 
 		await expect(load({ locals } as any)).rejects.toMatchObject({
 			status: 303,
-			location: '/auth/signin'
+			location: '/auth/login'
 		});
 	});
 
