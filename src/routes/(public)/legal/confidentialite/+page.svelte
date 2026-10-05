@@ -1,14 +1,12 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
-<svelte:head>
-	<title>Politique de Confidentialite - Chiphre</title>
-	<meta
-		name="description"
-		content="Politique de confidentialite d'Chiphre. Decouvrez comment nous collectons, utilisons et protegeons vos donnees personnelles."
-	/>
-</svelte:head>
+<SeoHead
+	title="Politique de confidentialité - Chiphre"
+	description="Politique de confidentialité de Chiphre : comment nous collectons, utilisons et protégeons vos données personnelles."
+/>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">

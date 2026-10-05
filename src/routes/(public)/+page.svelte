@@ -1,9 +1,27 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
 	import { formatMedium } from '$lib/almanach/calendar';
 	import { MONTH_PALETTES, ambianceMonthIndex } from '$lib/almanach/palettes';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import JsonLd from '$lib/seo/JsonLd.svelte';
+	import { SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
 	import type { PageProps } from './$types';
+
+	// Constantes
+
+	/** Le site et son éditeur, décrits aux moteurs (schema.org) */
+	const HOME_JSON_LD = {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{ '@type': 'WebSite', name: SITE_NAME, url: SITE_URL, inLanguage: 'fr' },
+			{
+				'@type': 'Organization',
+				name: SITE_NAME,
+				url: SITE_URL,
+				logo: absoluteUrl('/apple-touch-icon.png')
+			}
+		]
+	};
 
 	let { data }: PageProps = $props();
 
@@ -12,14 +30,11 @@
 	const ambiance = $derived(MONTH_PALETTES[ambianceMonthIndex(data.almanach)]);
 </script>
 
-<svelte:head>
-	<title>Chiphre - Les maths de la chandelle verte</title>
-	<meta
-		name="description"
-		content="Chiphre est une application educative de mathematiques pour eleves francophones. {lore
-			.learning.exercise}s interactifs, jeux et outils pour apprendre les maths."
-	/>
-</svelte:head>
+<SeoHead
+	title="Chiphre - Les maths de la chandelle verte"
+	description="Chiphre, les maths de la chandelle verte : exercices interactifs, automatismes, jeux et outils de mathématiques pour les élèves, de la 6ᵉ à la Terminale."
+/>
+<JsonLd data={HOME_JSON_LD} />
 
 <!-- Grille 1fr / auto / 1fr : Père Ubu occupe la rangée du milieu, donc le centre exact de la zone.
      py-10 (symétrique) réserve la place de la date en haut sans décentrer Ubu. -->

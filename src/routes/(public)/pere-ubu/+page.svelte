@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import ChatBot from '$lib/components/ChatBot.svelte';
 	import { ArrowLeft } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -40,13 +41,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Père Ubu - Professeur Pataphysique | Chiphre</title>
-	<meta
-		name="description"
-		content="Discutez avec le Père Ubu, votre professeur de mathématiques le plus absurde ! Posez vos questions et recevez des explications... pataphysiques."
-	/>
-</svelte:head>
+<SeoHead
+	title="Père Ubu - Professeur Pataphysique | Chiphre"
+	description="Discutez avec le Père Ubu, votre professeur de mathématiques le plus absurde ! Posez vos questions et recevez des explications... pataphysiques."
+/>
 
 <div class="container mx-auto max-w-5xl p-4">
 	<!-- Back Button -->

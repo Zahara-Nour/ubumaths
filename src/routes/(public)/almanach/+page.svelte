@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import {
 		FEASTS,
 		MONTH_NAMES,
@@ -82,13 +83,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>L’Almanach des Chiphres — Chiphre</title>
-	<meta
-		name="description"
-		content="L’Almanach des Chiphres : sept mois de cinquante-deux jours, la Cloche du Grand Reset, Le Surnuméraire et les fêtes du Royaume. Convertissez n’importe quelle date grégorienne en date pataphysique."
-	/>
-</svelte:head>
+<SeoHead
+	title="L’Almanach des Chiphres — Chiphre"
+	description="L’Almanach des Chiphres : sept mois de cinquante-deux jours, la Cloche du Grand Reset, Le Surnuméraire et les fêtes du Royaume. Convertissez n’importe quelle date grégorienne en date pataphysique."
+/>
 
 <article class="almanach mx-auto flex w-full max-w-5xl flex-col gap-16 px-4 py-10 sm:px-6">
 	<!-- 1. La date du jour -->

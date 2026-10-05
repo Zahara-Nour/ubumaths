@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { Calculator, Maximize2, Minimize2, ExternalLink } from '@lucide/svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 
@@ -38,13 +39,10 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<svelte:head>
-	<title>Calculatrice graphique Upsilon | Chiphre</title>
-	<meta
-		name="description"
-		content="Simulateur de la calculatrice graphique Upsilon (fork d'Epsilon par NumWorks). Disponible directement dans le navigateur, accessible à tous."
-	/>
-</svelte:head>
+<SeoHead
+	title="Calculatrice graphique Upsilon | Chiphre"
+	description="Simulateur de la calculatrice graphique Upsilon (fork d'Epsilon par NumWorks). Disponible directement dans le navigateur, accessible à tous."
+/>
 
 <main class="container mx-auto p-4">
 	<div class="mb-6">

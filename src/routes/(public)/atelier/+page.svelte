@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	/**
 	 * L'atelier de recherche de l'élève.
 	 *
@@ -51,13 +52,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Atelier | Chiphre</title>
-	<meta
-		name="description"
-		content="Un atelier pour chercher : calculer, tracer et explorer des données au même endroit."
-	/>
-</svelte:head>
+<SeoHead
+	title="Atelier | Chiphre"
+	description="Un atelier pour chercher : calculer, tracer et explorer des données au même endroit."
+/>
 
 <div class="page">
 	{#if opened}

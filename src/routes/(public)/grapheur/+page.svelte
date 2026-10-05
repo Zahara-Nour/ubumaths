@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	/**
 	 * `/grapheur` — l'atelier, ouvert sur le graphique.
 	 *
@@ -54,13 +55,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Grapheur | Chiphre</title>
-	<meta
-		name="description"
-		content="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
-	/>
-</svelte:head>
+<SeoHead
+	title="Grapheur | Chiphre"
+	description="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
+/>
 
 <div class="page">
 	{#if opened}

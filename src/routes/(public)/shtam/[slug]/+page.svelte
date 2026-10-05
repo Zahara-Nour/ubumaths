@@ -3,17 +3,38 @@
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import ShtamFooter from '../ShtamFooter.svelte';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import JsonLd from '$lib/seo/JsonLd.svelte';
+	import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl, toPlainText } from '$lib/seo/site';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const article = $derived(data.article);
+	const description = $derived(toPlainText(article.lede));
+	// Article satirique (schema.org SatiricalArticle) : la parodie est dite aux moteurs
+	const jsonLd = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'SatiricalArticle',
+		headline: article.title.slice(0, 110),
+		description,
+		datePublished: article.date,
+		inLanguage: 'fr',
+		url: absoluteUrl(`/shtam/${article.slug}`),
+		image: absoluteUrl(DEFAULT_OG_IMAGE),
+		author: { '@type': 'Person', name: article.byline },
+		publisher: {
+			'@type': 'Organization',
+			name: SITE_NAME,
+			url: SITE_URL,
+			logo: { '@type': 'ImageObject', url: absoluteUrl('/apple-touch-icon.png') }
+		},
+		isPartOf: { '@type': 'Periodical', name: 'Le Shtam', url: absoluteUrl('/shtam') }
+	});
 </script>
 
-<svelte:head>
-	<title>{article.title} — Le Shtam</title>
-	<meta name="description" content={article.title} />
-</svelte:head>
+<SeoHead title="{article.title} — Le Shtam" {description} type="article" />
+<JsonLd data={jsonLd} />
 
 <article class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6">
 	<a
