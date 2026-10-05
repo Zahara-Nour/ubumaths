@@ -632,6 +632,7 @@ Chiphre revendique une **généalogie pataphysique** explicite : les patanautes 
 | `/games/2048`                    | La Roulette Ubuesque           | —                                         |
 | `/tuteur`                        | L'Antre du Décervelage         | Père Ubu                                  |
 | `/pere-ubu`                      | Le Trône Royal                 | Père Ubu (en majesté)                     |
+| `/shtam`                         | La Gazette du Royaume (Shtam)  | **Rédaction du Shtam**                    |
 | `/leaderboards`                  | Le Tableau des Honneurs Royaux | Bougrelas                                 |
 | `/dashboard/student/riddles`     | La Crypte des Énigmes          | Conscience                                |
 | `/dashboard/bug-reports`         | Le Bureau des Doléances        | Madame la Financière                      |
@@ -688,6 +689,7 @@ Chiphre revendique une **généalogie pataphysique** explicite : les patanautes 
 | Abonnement                   | Pacte Phynancier              | « Souscrire un Pacte Phynancier ».                                                                                                      |
 | Erreur, faute                | Pataphysique                  | « Vous avez fait de la pataphysique ! » au lieu de « Faux ».                                                                            |
 | Bonne réponse                | Coup de Maître                | Ou « bien empoché ».                                                                                                                    |
+| Actualités, news             | Le Shtam                      | Gazette parodique (_maths_ à l'envers). Exception assumée à la règle 3. Voir Section IX, « Le Shtam ».                                  |
 | Indice                       | Coup de pouce de Conscience   |                                                                                                                                         |
 | Aide / tutoriel              | Décervelage Pédagogique       |                                                                                                                                         |
 | Niveau / chapitre            | Province                      | « Vous explorez la Province de Nombrilie. »                                                                                             |
@@ -1429,6 +1431,27 @@ Les Chiphre parlent avec **cinq voix superposables**, jamais en concurrence. Cha
 | CGU, mentions légales, RGPD, paramètres | Monsieur Prudhomme     |
 | Récapitulatifs, méditation, doute       | Tristan Bernard        |
 | Examens, défis majeurs, tournois        | Père Ubu + Czar Alexis |
+| Articles du Shtam                       | Rédaction du Shtam     |
+
+### Le Shtam — la gazette du Royaume 🟡
+
+**Le Shtam** (masculin, comme un titre de journal) est la gazette parodique du Royaume : de fausses nouvelles mathresques, à la manière d'une presse satirique pince-sans-rire. Le nom est _maths_ à l'envers : c'est la seule **exception assumée à la règle 3** (« Mathres, jamais maths »), parce que le retournement est la blague. On n'écrit ni « Serhtam » ni « Shtamres ».
+
+- **Lieu** : page publique `/shtam` (la une) et `/shtam/<slug>` (un article). Lecture seule : **ni commentaires, ni réactions**.
+- **Voix — la Rédaction du Shtam** : sixième voix, réservée aux articles. Registre **journalistique imperturbable** : on rapporte l'absurde avec le sérieux d'une dépêche. Jamais de clin d'œil au lecteur, jamais de « lol », jamais de juron dans le corps de l'article. Père Ubu peut y paraître, mais **cité** (interview, déclaration, communiqué), jamais comme narrateur.
+- **Rédaction** (proposition 🟡) : **Cotice** (Palotin lettré et bavard) rédacteur en chef ; **Giron**, **Pile** et **Merdanpot** reporters. Chaque article est signé.
+- **Datation** : chaque article porte sa **date de l'Almanach** (« 14 Auroral »), calculée depuis sa date réelle de publication.
+- **Le vrai du faux** : chaque article se termine **obligatoirement** par un encadré séparé, **voix de l'Académie**, qui rétablit le fait mathématique réel (« π est transcendant tous les jours. Cela veut dire… »). Le lecteur a de 11 à 18 ans : un faux fait énoncé avec aplomb peut rester. L'encadré fait de chaque blague un mini-cours. Deux voix, deux blocs : la règle stricte des voix est respectée.
+- **Qui peut-on parodier** : les personnages du Royaume et les **mathématiciens morts** (Pythagore, Euler, Fermat…). **Jamais une personne vivante, jamais une institution réelle nommée** (diffamation, site pour mineurs).
+- **Rien du Collège de 'Pataphysique** : ni ses fêtes, ni son calendrier, ni ses publications.
+
+**Exemples de titres** (ton de référence) :
+
+- _« J'ai enfin trouvé à quoi pouvait servir le théorème de Pythagore dans la vie courante ! »_
+- _« Un mathématicien a prouvé que π n'était transcendant que le mardi »_
+- _« Nombrilie : un Galopin divise par zéro, la Province évacuée par précaution »_
+- _« Exclusif — Le Czar Alexis accusé d'avoir arrondi π à 3 pour faire des économies »_
+- _« Bedonstan : un triangle rectangle porte plainte, il dit ne pas avoir été consulté au sujet de l'hypoténuse »_
 
 ### Templates de phrases — voix de Père Ubu
 
