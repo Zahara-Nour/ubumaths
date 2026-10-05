@@ -81,7 +81,8 @@ export const INTERVAL_FEEDBACK = {
 			? `Le point ${values[0]} ne fait pas partie de l'ensemble.`
 			: `Les points ${values.slice(0, -1).join(', ')} et ${values.at(-1)} ne font pas partie de l'ensemble.`,
 	contiguous: 'Réunis en un seul intervalle ceux qui se touchent ou se chevauchent.',
-	unsimplified: 'Simplifie les bornes (par exemple 2 plutôt que 4/2).'
+	unsimplified: 'Simplifie les bornes (par exemple 2 plutôt que 4/2).',
+	unsimplifiedSet: 'La fraction peut être simplifiée.'
 };
 
 /** Mode par défaut de `intervalForm` : écriture à reprendre = ½ */
@@ -188,6 +189,16 @@ function pieceError(piece: StudentDomainPiece): string | undefined {
 	return undefined;
 }
 
+/** Valeurs d'un morceau « ensemble fini » tel qu'écrit (`{\frac{2\pi}{6};1}`), sinon [] */
+function finiteSetValues(piece: StudentDomainPiece): string[] {
+	const source = piece.source.trim();
+	if (piece.bounds || !source.startsWith('{') || !source.endsWith('}')) return [];
+	return source
+		.slice(1, -1)
+		.split(';')
+		.map((value) => value.trim());
+}
+
 /** Écriture à reprendre d'un ensemble JUSTE (½ par défaut), ou undefined */
 function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): string | undefined {
 	const singleton = pieces.find(
@@ -204,6 +215,10 @@ function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): st
 
 	const bounds = pieces.flatMap((piece) => piece.bounds ?? []);
 	if (checkReducedFractions(bounds).length > 0) return INTERVAL_FEEDBACK.unsimplified;
+
+	// Ensemble fini `{a;b}` : ses valeurs, comme des bornes (décision de David, 2026-10-05)
+	if (checkReducedFractions(pieces.flatMap(finiteSetValues)).length > 0)
+		return INTERVAL_FEEDBACK.unsimplifiedSet;
 
 	return undefined;
 }

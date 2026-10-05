@@ -319,6 +319,14 @@ contrôle passe avant le garde de complexité : quatre solutions séparées par 
 24 472 instances) : 202 verdicts changés, tous des réponses « virgule » déjà fausses dont seul le
 message change ; 0 changement sur les specs et les réponses attendues.
 
+Une fraction simplifiable dans un ensemble fini se traite comme une borne non simplifiée :
+`\{-\frac{10\pi}{12};\frac{\pi}{3}\}` pour `\{-\frac{5\pi}{6};\frac{\pi}{3}\}` vaut ½ (`unoptimal_form`,
+contrainte `intervalForm` : `strict` → mauvaise forme, `off` → juste), message « La fraction peut
+être simplifiée. » (la borne `]\frac{2\pi}{6};…[` garde « Simplifie les bornes (par exemple 2 plutôt
+que 4/2). »). Elle était jugée juste sans réserve. Mesure (même corpus) : 154 verdicts changés,
+tous des réponses « fraction doublée » dans un ensemble fini, de juste à ½ (sentinelle, 3 cartes
+trigo du dépôt, 3 modèles de prod) ; 0 changement sur les specs et les réponses attendues.
+
 ### Constante e dans une borne
 
 Une borne est un **nombre**, jamais une expression en x : la lettre `e` y est **toujours** la
