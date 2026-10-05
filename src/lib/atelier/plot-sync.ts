@@ -16,7 +16,7 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject, CurveDisplay, SequenceDisplay, SequenceMode } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/grapheur/types';
-import { expressionOf, firstTermValue, graphLatexOf } from './engine';
+import { firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
 
@@ -123,9 +123,12 @@ function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	// 🔜 Le jour où « Régler le curseur » sera câblé, les valeurs de l'atelier
 	// devront devenir de vrais paramètres du grapheur (décision D3) — c'est là
 	// que le curseur reprendra son sens, pas avant.
-	const substituted = expressionOf(atelier, object.name);
+	// ⚠️ En LaTeX, pas en notation « custom » : le grapheur parse du LaTeX, et
+	// les deux divergent sur les constantes — `\euler` et `\pix` lui étaient
+	// illisibles, `f(x) = e^x` ne se traçait pas (retour de David, 2026-10-05)
+	const latex = graphLatexOf(atelier, object.name);
 	return {
-		definition: substituted.ok ? substituted.expression : object.definition,
+		definition: latex ?? object.definition,
 		visible: object.status === 'ok',
 		...(isFunction(object) && object.display && { display: object.display })
 	};

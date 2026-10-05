@@ -70,7 +70,7 @@ export type PedagogicalDifferentiationRule =
 	// ---- Powers ----
 	| 'power-natural' // `x^n` with n a natural integer ≥ 2
 	| 'power-constant-exp' // `f(x)^c` with c constant (non-natural)
-	| 'power-constant-base' // `c^f(x)` (generalised exponential)
+	| 'power-constant-base' // `c^f(x)`, c ≠ e (generalised exponential)
 	| 'general-power' // `f(x)^g(x)`
 	// ---- Product / Quotient ----
 	| 'product'
@@ -85,7 +85,7 @@ export type PedagogicalDifferentiationRule =
 	| 'arccos'
 	| 'arctan'
 	// ---- Exponential / Logarithm ----
-	| 'exp'
+	| 'exp' // `exp(u)` et `e^u` (base d'Euler)
 	| 'ln'
 	| 'log' // base != e
 	// ---- Radical ----
