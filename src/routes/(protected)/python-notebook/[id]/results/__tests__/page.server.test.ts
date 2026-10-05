@@ -70,7 +70,7 @@ describe('GET /python-notebook/[id]/results — authz', () => {
 
 		await expect(load({ params: { id: NOTEBOOK_ID }, locals } as any)).rejects.toMatchObject({
 			status: 303,
-			location: '/auth/signin'
+			location: '/auth/login'
 		});
 	});
 

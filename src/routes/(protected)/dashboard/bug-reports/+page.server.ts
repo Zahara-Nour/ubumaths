@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Check authentication
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(302, '/auth');
+		throw redirect(302, '/auth/login');
 	}
 
 	// Parse filters from query params

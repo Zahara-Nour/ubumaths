@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 
 describe('drill-down load (auth)', () => {
-	it('redirects unauthenticated user to /auth/signin', async () => {
+	it('redirects unauthenticated user to /auth/login', async () => {
 		const { load } = await import('../+page.server');
 		const supabase = createMockSupabase();
 		const locals = createMockLocals(undefined, supabase);
@@ -41,7 +41,7 @@ describe('drill-down load (auth)', () => {
 				params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
 				locals
 			} as any)
-		).rejects.toMatchObject({ status: 303, location: '/auth/signin' });
+		).rejects.toMatchObject({ status: 303, location: '/auth/login' });
 	});
 
 	it('redirects non-teacher to /dashboard', async () => {

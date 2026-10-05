@@ -34,7 +34,7 @@ const SUBMISSIONS_LIMIT = 50;
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
-	if (!user) throw redirect(303, '/auth/signin');
+	if (!user) throw redirect(303, '/auth/login');
 
 	const exerciseId = validateUuidParam(params.id);
 	const studentId = validateUuidParam(params.student_id, 'student_id');

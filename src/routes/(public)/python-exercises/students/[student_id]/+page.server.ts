@@ -44,7 +44,7 @@ export interface StudentSummary {
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
-	if (!user) throw redirect(303, '/auth/signin');
+	if (!user) throw redirect(303, '/auth/login');
 
 	const studentId = validateUuidParam(params.student_id, 'student_id');
 	const supabase = locals.supabase;
