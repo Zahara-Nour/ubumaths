@@ -209,3 +209,10 @@ livre quand les lots 1 à 5 ont été **essayés par David** dans l'atelier.
 À vérifier en tête du lot 2 : ce que MathLive produit quand on tape `'`
 (`f'` ou `f^{\prime}`) — test sur le vrai MathLive, comme
 `mathlive-shortcuts.svelte.test.ts`.
+
+## Décisions du 2026-10-05
+
+**Couleur des dérivées.** `f′` se trace de la couleur de `f`, en tirets (comme
+la case « f′ » de l'ancien grapheur) ; `f″` en pointillés, `f‴` en tiret-point.
+Changer la couleur de `f` change celle de ses dérivées déjà tracées, pas leur
+trait. `f′` reste réglable à la main. Tests : `derivee-couleur.test.ts`.
