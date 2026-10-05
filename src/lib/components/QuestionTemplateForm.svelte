@@ -388,6 +388,9 @@
 	let sharedBlankAcceptDecimal = $state(
 		initialTemplate?.shared?.blankDefaults?.acceptDecimal ?? false
 	);
+	let sharedBlankAcceptCombinatorial = $state(
+		initialTemplate?.shared?.blankDefaults?.acceptCombinatorialNotation ?? false
+	);
 	let sharedBlankIntervals = $state(
 		initialTemplate?.shared?.blankDefaults?.answerKind === 'intervalles'
 	);
@@ -792,6 +795,7 @@
 		}
 		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (sharedBlankAcceptDecimal) blankDefaults.acceptDecimal = true;
+		if (sharedBlankAcceptCombinatorial) blankDefaults.acceptCombinatorialNotation = true;
 		// Une seule nature de réponse : « intervalles » l'emporte si les deux sont cochées
 		if (sharedBlankIntervals) {
 			blankDefaults.answerKind = 'intervalles';
@@ -963,6 +967,7 @@
 		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
+		sharedBlankAcceptCombinatorial = t.shared?.blankDefaults?.acceptCombinatorialNotation ?? false;
 		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
 		sharedBlankOpenableBounds = t.shared?.blankDefaults?.openableBounds === true;
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
@@ -1663,6 +1668,7 @@
 			bind:sharedBlankUnitExpected
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
+			bind:sharedBlankAcceptCombinatorial
 			bind:sharedBlankIntervals
 			bind:sharedBlankOpenableBounds
 			bind:sharedBlankEquation

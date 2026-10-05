@@ -3,7 +3,8 @@
  *
  * Une case en `rulesSuffice` est jugée par le validateur : toute bonne réponse
  * est verte, pas seulement celle tirée ; de même un décimal exact dans une case
- * `acceptDecimal`, et toute case « intervalles », « équation », « vecteur », « primitive » ou « solution-ed ». Les autres cases gardent la
+ * `acceptDecimal`, une notation combinatoire (`\binom{32}{5}`) dans une case
+ * `acceptCombinatorialNotation`, et toute case « intervalles », « équation », « vecteur », « primitive » ou « solution-ed ». Les autres cases gardent la
  * comparaison textuelle historique.
  */
 
@@ -11,6 +12,7 @@ import type { QuestionInstance } from '$lib/questions/types';
 import { isBlankValueCorrect } from '$lib/utils/answer-validator';
 import { rulesDecide } from '$lib/questions/rules-suffice';
 import { isSimpleNumberLatex } from '$lib/mathAST/cosmetic-transforms';
+import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
 
 export function computeBlankVerdicts(values: string[], instance: QuestionInstance): boolean[] {
 	const blanks = instance.blanks ?? [];
@@ -29,6 +31,10 @@ export function computeBlankVerdicts(values: string[], instance: QuestionInstanc
 		}
 		// Décimal exact accepté (`acceptDecimal`) : « 0,5 » pour ½ est vert, jugé par sa valeur
 		if (blank.acceptDecimal === true && isSimpleNumberLatex(value)) {
+			return isBlankValueCorrect(value, blank, instance);
+		}
+		// Notation combinatoire acceptée (`acceptCombinatorialNotation`) : `\binom{32}{5}` est vert
+		if (blank.acceptCombinatorialNotation === true && isCombinatorialNotationLatex(value)) {
 			return isBlankValueCorrect(value, blank, instance);
 		}
 		return value.trim().toLowerCase() === blank.expectedAnswer.trim().toLowerCase();
