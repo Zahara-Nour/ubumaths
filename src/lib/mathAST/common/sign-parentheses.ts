@@ -104,3 +104,43 @@ export function needsParenthesesUnderFactorial(node: MathNode): boolean {
 			return true;
 	}
 }
+
+/**
+ * L'écriture de cette expression commence-t-elle par un signe (`-` ou `+`) ?
+ *
+ * Un opposé, un nombre négatif, un produit dont le premier facteur commence par
+ * un signe, un quotient EN LIGNE dont le numérateur commence par un signe. Une
+ * fraction `\dfrac` ne commence pas par un signe à l'écrit ; une somme, une
+ * puissance ou un pourcentage dont l'opérande est signé sont déjà parenthésés
+ * par ailleurs.
+ */
+function startsWithSign(node: MathNode): boolean {
+	switch (node.type) {
+		case 'opposite':
+		case 'positive':
+			return true;
+		case 'number':
+			return node.value.startsWith('-');
+		case 'multiplication':
+			return startsWithSign(node.left);
+		case 'division':
+			return node.displayStyle !== 'fraction' && startsWithSign(node.numerator);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Cette expression doit-elle être parenthésée comme facteur de DROITE d'un produit ?
+ *
+ * ⚠️ **Mesuré** : la dérivée de `2e^{-x}` s'écrivait `2 -e^{-x}`, qui se lit
+ * « 2 moins e^{-x} » alors que c'est 2 × (−e^{-x}). Une construction interne
+ * (`differentiate`, `tidy`) ne pose pas de délimiteur. Deux signes ne se suivent
+ * pas non plus à l'écrit : `2 × -3` s'écrit `2 × (−3)`.
+ *
+ * Oui pour une somme ou une différence (comme sous un signe), et pour tout
+ * facteur dont l'écriture commence par un signe. À GAUCHE, `-2x` reste `-2x`.
+ */
+export function needsParenthesesAsRightFactor(node: MathNode): boolean {
+	return needsParenthesesUnderSign(node) || startsWithSign(node);
+}
