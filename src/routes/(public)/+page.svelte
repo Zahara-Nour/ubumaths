@@ -212,6 +212,19 @@
 			</svg>
 		</a>
 	</figure>
+
+	{#if data.shtam}
+		<!-- Discret : une ligne en pied de page, tirée au hasard à chaque visite -->
+		<p class="-mt-12 max-w-md text-sm text-muted-foreground" data-testid="home-shtam">
+			<span class="font-semibold">Le Shtam</span> :
+			<a
+				href={resolve('/(public)/shtam/[slug]', { slug: data.shtam.slug })}
+				class="rounded-sm italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+			>
+				{data.shtam.title}
+			</a>
+		</p>
+	{/if}
 </div>
 
 <style lang="postcss">

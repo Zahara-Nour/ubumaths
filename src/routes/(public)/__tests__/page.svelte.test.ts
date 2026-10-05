@@ -125,4 +125,34 @@ describe('/+page.svelte', () => {
 			);
 		expect(haloRule?.style.animationName).toBe('none');
 	});
+
+	describe('lien vers le Shtam', () => {
+		const almanach = civilToPataphysical(2026, 10, 5);
+
+		it('montre l’article tiré, en lien vers sa page', async () => {
+			const screen = await render(Page, {
+				props: { data: { almanach, shtam: { slug: 'un-article', title: 'Un titre' } } } as never
+			});
+			const link = screen.getByRole('link', { name: 'Un titre' });
+			await expect
+				.element(link)
+				.toHaveAttribute('href', expect.stringMatching(/\/shtam\/un-article$/));
+			await expect.element(screen.getByTestId('home-shtam')).toHaveTextContent('Le Shtam');
+		});
+
+		it('ne montre rien quand aucun article n’est paru', async () => {
+			const screen = await render(Page, { props: { data: { almanach, shtam: null } } as never });
+			expect(screen.container.querySelector('[data-testid="home-shtam"]')).toBeNull();
+		});
+
+		it('reste discret : plus petit que la date de l’Almanach', async () => {
+			const screen = await render(Page, {
+				props: { data: { almanach, shtam: { slug: 'a', title: 'Un titre' } } } as never
+			});
+			const size = (el: Element) => parseFloat(getComputedStyle(el).fontSize);
+			const shtam = screen.getByTestId('home-shtam').element();
+			const date = screen.getByRole('link', { name: /Almanach/ }).element();
+			expect(size(shtam)).toBeLessThan(size(date));
+		});
+	});
 });

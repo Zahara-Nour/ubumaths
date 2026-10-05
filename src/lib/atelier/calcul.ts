@@ -119,6 +119,10 @@ export type ActionOutcome =
  * Le membre gauche doit avoir la forme d'un nom d'objet : sinon c'est un test
  * d'égalité, que le moteur sait déjà traiter (§2 L1).
  */
+/** Ce qu'on répond quand le moteur n'a pas su lire une commande, et ne l'a pas dit. */
+const UNREADABLE_COMMAND =
+	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
+
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
 /**
@@ -500,6 +504,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			latex: solved.answer,
 			steps: solved.steps
 		};
+	}
+
+	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
+	// dit rien à l'élève — mesuré, `.deriver )(` et `.resoudre )` (2026-10-05)
+	if (!result.success && rendered.text.trim() === '') {
+		return { kind: 'refus', message: UNREADABLE_COMMAND };
 	}
 
 	return {

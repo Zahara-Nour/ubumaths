@@ -18,7 +18,7 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 | **Chiphre**  | La plateforme (marque, **singulier**, domaine chiph.re).             | « ubumaths » = nom historique (dépôt, 3 résidus volontaires) |
 | chiphres     | « chiffres » à l'ubuesque — lexique du lore, **pas** la marque.      | `src/lib/config/lore.ts`                                     |
 | Mathres      | Les mathématiques, en wording interne (lore pataphysique Jarry/Ubu). | `docs/Chiphres/`                                             |
-| Shtam        | La gazette parodique du Royaume : fausses nouvelles mathresques.     | `/shtam` (à créer), Compendium §IX ; jamais « rubrique »     |
+| Shtam        | La gazette parodique du Royaume : fausses nouvelles mathresques.     | `/shtam`, `src/lib/server/shtam/` ; jamais « rubrique »      |
 | Vrai du faux | Encadré obligatoire en fin d'article du Shtam : le fait réel.        |                                                              |
 
 ⛔ « Chiphres » (pluriel) comme nom de marque : faux.

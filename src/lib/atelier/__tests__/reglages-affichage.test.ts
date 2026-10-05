@@ -440,7 +440,7 @@ describe('réglages d’affichage — revue du lot 1', () => {
 		syncPlots(atelier, graph);
 
 		expect(graph.functions.map((f) => f.type)).toEqual(['explicit']);
-		expect(onlyCurve(graph).latex).toBe('x+1');
+		expect(onlyCurve(graph).latex).toBe('x + 1');
 	});
 });
 
