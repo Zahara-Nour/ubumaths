@@ -1139,6 +1139,7 @@ export type RequiredForm =
 	| 'fraction'
 	| 'power'
 	| EquationForm
+	| ComplexForm
 	| {
 			pattern: string;
 			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
@@ -1154,6 +1155,18 @@ export const EQUATION_FORMS = [
 	'cartesienne',
 	'centre-rayon'
 ] as const satisfies readonly EquationForm[];
+
+/**
+ * Forme exigeable d'un nombre complexe (cf. `RequiredForm`, `questions/complex-forms.ts`) :
+ * `exponentielle` = re^{iθ} avec r > 0 ; `algebrique` = a + ib.
+ */
+export type ComplexForm = 'exponentielle' | 'algebrique';
+
+/** Valeurs de `ComplexForm` (schémas Zod, éditeur) */
+export const COMPLEX_FORMS = [
+	'exponentielle',
+	'algebrique'
+] as const satisfies readonly ComplexForm[];
 
 // ============================================================================
 // TEST SPECS

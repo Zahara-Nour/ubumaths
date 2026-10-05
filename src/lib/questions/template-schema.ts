@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
-import { ANSWER_KINDS, EQUATION_FORMS, SOLUTION_MODES, VECTOR_MODES } from './types';
+import { ANSWER_KINDS, COMPLEX_FORMS, EQUATION_FORMS, SOLUTION_MODES, VECTOR_MODES } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 
 // ============================================================================
@@ -28,7 +28,15 @@ import { genericFunctionNamesSchema } from './generic-functions';
 export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
 export const requiredFormSchema = z.union([
-	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power', ...EQUATION_FORMS]),
+	z.enum([
+		'product',
+		'sum',
+		'additionOnly',
+		'fraction',
+		'power',
+		...EQUATION_FORMS,
+		...COMPLEX_FORMS
+	]),
 	z.object({ pattern: z.string(), acceptable: z.string().optional() })
 ]);
 
@@ -375,7 +383,15 @@ export const optionsSchema = z.object({
 // ============================================================================
 
 const requiredFormStrictZ = z.union([
-	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power', ...EQUATION_FORMS]),
+	z.enum([
+		'product',
+		'sum',
+		'additionOnly',
+		'fraction',
+		'power',
+		...EQUATION_FORMS,
+		...COMPLEX_FORMS
+	]),
 	z.object({ pattern: z.string(), acceptable: z.string().optional() }).strict()
 ]);
 

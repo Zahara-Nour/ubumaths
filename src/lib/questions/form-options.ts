@@ -11,6 +11,9 @@ export const REQUIRED_FORM_OPTIONS = [
 	{ value: 'reduite', label: 'Équation réduite (y = mx + p)' },
 	{ value: 'cartesienne', label: 'Équation cartésienne (ax + by + c = 0)' },
 	{ value: 'centre-rayon', label: 'Équation centre-rayon ((x − a)² + (y − b)² = r²)' },
+	// Formes d'un nombre complexe
+	{ value: 'exponentielle', label: 'Complexe : forme exponentielle (re^{iθ}, r > 0)' },
+	{ value: 'algebrique', label: 'Complexe : forme algébrique (a + ib)' },
 	{ value: 'custom', label: 'Pattern personnalisé' }
 ] as const;
 

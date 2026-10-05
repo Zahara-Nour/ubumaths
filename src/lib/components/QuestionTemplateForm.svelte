@@ -37,7 +37,7 @@
 		ConstraintMode,
 		TestSpec
 	} from '$lib/questions/types';
-	import { EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
+	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
 	import { questionTemplateSchema } from '$lib/questions/template-schema';
 	import {
@@ -433,7 +433,8 @@
 		'additionOnly',
 		'fraction',
 		'power',
-		...EQUATION_FORMS
+		...EQUATION_FORMS,
+		...COMPLEX_FORMS
 	] as const;
 
 	// Help dialog states

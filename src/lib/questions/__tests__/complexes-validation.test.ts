@@ -129,3 +129,109 @@ describe('forme algébrique : \\frac{a+bi}{d} et \\frac{a}{d}+\\frac{b}{d}i sont
 		).toEqual({ '0.5-0.5i': 'correct', '0{,}5-0{,}5i': 'correct', '-0.5i+0.5': 'correct' });
 	});
 });
+
+describe('forme exponentielle : valeur par la formule d’Euler, forme distincte de l’algébrique', () => {
+	it('case sans forme exigée : valeur juste, forme différente → mauvaise forme (jamais faux)', () => {
+		expect(
+			verdicts('1+i\\sqrt{3}', [
+				'2e^{i\\frac{\\pi}{3}}',
+				'2e^{\\frac{i\\pi}{3}}',
+				'2e^{i\\frac{\\pi}{6}}'
+			])
+		).toEqual({
+			'2e^{i\\frac{\\pi}{3}}': 'bad_form',
+			'2e^{\\frac{i\\pi}{3}}': 'bad_form',
+			'2e^{i\\frac{\\pi}{6}}': 'incorrect'
+		});
+		expect(verdicts('2e^{i\\frac{\\pi}{3}}', ['1+i\\sqrt{3}'])).toEqual({
+			'1+i\\sqrt{3}': 'bad_form'
+		});
+		expect(verdicts('-1', ['e^{i\\pi}'])).toEqual({ 'e^{i\\pi}': 'bad_form' });
+	});
+
+	it('placement de i dans l’exposant : même forme', () => {
+		expect(
+			verdicts('2e^{i\\frac{\\pi}{3}}', [
+				'2e^{\\frac{i\\pi}{3}}',
+				'2e^{\\frac{\\pi}{3}i}',
+				'2e^{\\frac{\\pi i}{3}}',
+				'2\\exponentialE^{\\imaginaryI\\frac{\\pi}{3}}'
+			])
+		).toEqual({
+			'2e^{\\frac{i\\pi}{3}}': 'correct',
+			'2e^{\\frac{\\pi}{3}i}': 'correct',
+			'2e^{\\frac{\\pi i}{3}}': 'correct',
+			'2\\exponentialE^{\\imaginaryI\\frac{\\pi}{3}}': 'correct'
+		});
+		expect(verdicts('2e^{-i\\frac{\\pi}{4}}', ['2e^{-\\frac{i\\pi}{4}}'])).toEqual({
+			'2e^{-\\frac{i\\pi}{4}}': 'correct'
+		});
+	});
+
+	it('requiredForm « exponentielle » : re^{iθ}, r > 0, argument libre', () => {
+		expect(
+			verdicts(
+				'2e^{i\\frac{\\pi}{3}}',
+				[
+					'2e^{\\frac{i\\pi}{3}}',
+					'2e^{i\\frac{7\\pi}{3}}',
+					'2e^{-i\\frac{5\\pi}{3}}',
+					'1+i\\sqrt{3}',
+					'-2e^{i\\frac{4\\pi}{3}}',
+					'2\\left(\\cos\\frac{\\pi}{3}+i\\sin\\frac{\\pi}{3}\\right)',
+					'2e^{i\\frac{\\pi}{6}}'
+				],
+				{ requiredForm: 'exponentielle' }
+			)
+		).toEqual({
+			'2e^{\\frac{i\\pi}{3}}': 'correct',
+			'2e^{i\\frac{7\\pi}{3}}': 'correct',
+			'2e^{-i\\frac{5\\pi}{3}}': 'correct',
+			'1+i\\sqrt{3}': 'bad_form',
+			'-2e^{i\\frac{4\\pi}{3}}': 'bad_form',
+			'2\\left(\\cos\\frac{\\pi}{3}+i\\sin\\frac{\\pi}{3}\\right)': 'bad_form',
+			'2e^{i\\frac{\\pi}{6}}': 'incorrect'
+		});
+		expect(
+			verdicts('e^{i\\frac{\\pi}{2}}', ['e^{i\\frac{\\pi}{2}}', 'i'], {
+				requiredForm: 'exponentielle'
+			})
+		).toEqual({ 'e^{i\\frac{\\pi}{2}}': 'correct', i: 'bad_form' });
+	});
+
+	it('requiredForm « algebrique » : a+bi', () => {
+		expect(
+			verdicts(
+				'1+i\\sqrt{3}',
+				[
+					'1+\\sqrt{3}i',
+					'\\sqrt{3}i+1',
+					'2e^{i\\frac{\\pi}{3}}',
+					'2\\left(\\cos\\frac{\\pi}{3}+i\\sin\\frac{\\pi}{3}\\right)'
+				],
+				{ requiredForm: 'algebrique' }
+			)
+		).toEqual({
+			'1+\\sqrt{3}i': 'correct',
+			'\\sqrt{3}i+1': 'correct',
+			'2e^{i\\frac{\\pi}{3}}': 'bad_form',
+			'2\\left(\\cos\\frac{\\pi}{3}+i\\sin\\frac{\\pi}{3}\\right)': 'bad_form'
+		});
+		expect(
+			verdicts('\\frac{1-i}{2}', ['\\frac{1-i}{2}', '\\frac12-\\frac12i', '\\frac{1}{1+i}'], {
+				requiredForm: 'algebrique'
+			})
+		).toEqual({
+			'\\frac{1-i}{2}': 'correct',
+			'\\frac12-\\frac12i': 'correct',
+			'\\frac{1}{1+i}': 'bad_form'
+		});
+	});
+
+	it('exponentielle réelle inchangée', () => {
+		expect(verdicts('e^{2}', ['e^{2}', '\\exp(2)'])).toEqual({
+			'e^{2}': 'correct',
+			'\\exp(2)': 'correct'
+		});
+	});
+});

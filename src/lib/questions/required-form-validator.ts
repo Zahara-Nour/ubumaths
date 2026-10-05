@@ -42,6 +42,7 @@ import { P } from '$lib/mathAST/pattern/builder';
 import { matches, tryMatch } from '$lib/mathAST/pattern/match';
 import { isMathNodeBinding } from '$lib/mathAST/pattern/types';
 import { EQUATION_FEEDBACK, matchesEquationForm } from './equations/equation-answer';
+import { COMPLEX_FORM_FEEDBACK, matchesComplexForm } from './complex-forms';
 
 // =============================================================================
 // CONSTANTS
@@ -58,6 +59,8 @@ export const REQUIRED_FORM_FEEDBACK = {
 	power: 'La réponse doit être écrite sous forme de puissance.',
 	// Formes d'une équation : mêmes messages que la case « équation »
 	...EQUATION_FEEDBACK.forms,
+	// Formes d'un nombre complexe
+	...COMPLEX_FORM_FEEDBACK,
 	pattern: 'La réponse ne respecte pas la forme demandée.',
 	acceptable: 'La réponse est juste, mais pas écrite sous la forme demandée.'
 } as const;
@@ -201,6 +204,9 @@ function matchesPredefinedForm(
 		case 'cartesienne':
 		case 'centre-rayon':
 			return matchesEquationForm(node, formType);
+		case 'exponentielle':
+		case 'algebrique':
+			return matchesComplexForm(node, formType);
 	}
 }
 

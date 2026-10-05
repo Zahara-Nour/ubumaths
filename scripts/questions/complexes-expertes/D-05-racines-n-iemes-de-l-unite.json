@@ -176,12 +176,13 @@
 			}
 		},
 		{
-			"description": "v1 forme exponentielle (non demandée ; le moteur ne la relie pas à la forme algébrique)",
+			"description": "v1 forme exponentielle (valeur juste, forme algébrique demandée)",
 			"variationIndex": 1,
 			"variables": {},
 			"answers": ["1", "e^{i\\frac{2\\pi}{3}}", "e^{-i\\frac{2\\pi}{3}}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
 			}
 		},
 		{

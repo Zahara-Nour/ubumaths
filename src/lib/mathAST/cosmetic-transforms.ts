@@ -976,7 +976,7 @@ function isImaginaryUnitNode(node: MathNode): boolean {
  * lettre `i` (`\mathrm{i}` l'était déjà). Avant : `2-3\imaginaryI` pour `2-3i`
  * était « pas sous la forme demandée » (décision de David du 2026-10-05).
  */
-function unifyEulerNotationAST(ast: MathNode): MathNode {
+export function unifyEulerNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (isEulerConstant(node)) return variable('e');
 		if (isImaginaryUnitNode(node)) return variable('i');
@@ -1079,7 +1079,7 @@ function isLetterFree(node: MathNode): boolean {
  * Produit dont UN facteur est `i` et les autres des constantes réelles (`i`, `3i`,
  * `i\sqrt{3}`, `\pi i`) : les autres facteurs (`null` pour `i` seul), sinon `undefined`.
  */
-function imaginaryProductRest(node: MathNode): MathNode | null | undefined {
+export function imaginaryProductRest(node: MathNode): MathNode | null | undefined {
 	const factors = flattenProductShallow(node);
 	const imaginary = factors.filter((f) => isImaginaryLetter(f.factor));
 	if (imaginary.length !== 1) return undefined;
@@ -1104,7 +1104,7 @@ function imaginaryOverDenominator(rest: MathNode | null, denominator: MathNode):
  * lettre autre que `i` (`\frac{x+1}{2}` garde son jugement) ; une fraction simplifiable
  * (`\frac{2-2i}{4}`) reste signalée par `reducedFractions`.
  */
-function unifyComplexAlgebraicNotationAST(ast: MathNode): MathNode {
+export function unifyComplexAlgebraicNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (!isDivision(node) || node.displayStyle !== 'fraction' || !isNumber(node.denominator)) {
 			return node;

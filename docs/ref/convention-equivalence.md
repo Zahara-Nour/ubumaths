@@ -308,6 +308,28 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   synthétiques, 2 specs de la carte A-02 (`\frac{1-i}{2}` : mauvaise forme → juste, mise à jour ;
   `\frac{5+5i}{5}` → perfectible) et leurs copies en brouillon en prod.
 
+- **Forme exponentielle — valeur** : sur le chemin de `equivalenceForm` seul,
+  `exp(a + iθ)` devient `exp(a)(cos θ + i sin θ)` quand la partie imaginaire θ est constante
+  (aucune lettre que `i` ; `normal/rules/euler-formula.ts`, après `expandEulerPowers`). C'est
+  une identité, vraie pour tout θ : aucun faux positif possible ; les valeurs remarquables de
+  `cos`/`sin` font le reste. `2e^{i\frac{\pi}{3}}` ≡ `1+i\sqrt{3}` ≡
+  `2(\cos\frac{\pi}{3}+i\sin\frac{\pi}{3})`, `e^{i\pi}` ≡ −1, `e^{1+i\pi}` ≡ −e,
+  `2e^{i\frac{7\pi}{3}}` ≡ `2e^{i\frac{\pi}{3}}` ≡ `-2e^{i\frac{4\pi}{3}}`. Argument non
+  remarquable : `e^{i}` ≡ `\cos 1+i\sin 1` (mêmes atomes), faux négatif sinon. `e^{ix}` (argument
+  variable) n'est pas touché. Avant : réponse exponentielle juste comptée FAUSSE.
+- **Forme exponentielle — forme** : exponentielle et algébrique sont deux formes. Sans
+  `requiredForm`, la forme se compare à l'attendue : `2e^{i\frac{\pi}{3}}` pour `1+i\sqrt{3}` est
+  « pas sous la forme demandée » (et l'inverse), comme la forme trigonométrique ; `\frac{i\pi}{3}`,
+  `i\frac{\pi}{3}`, `\frac{\pi}{3}i` dans l'exposant sont une seule forme. Nouvelles formes
+  exigeables (`requiredForm`, `questions/complex-forms.ts`, éditeur : « Complexe : forme
+  exponentielle / algébrique ») : `exponentielle` = `re^{iθ}`, r > 0 constant, θ réel constant,
+  argument LIBRE (`2e^{i\frac{7\pi}{3}}` juste pour `2e^{i\frac{\pi}{3}}`) ; refusées :
+  `-2e^{i\frac{4\pi}{3}}`, forme trigonométrique ou algébrique. `algebrique` = `a+ib`
+  (`\frac{1-i}{2}` compris) ; refusées : exponentielle, trigonométrique, `\frac{1}{1+i}`.
+  Mesure (même corpus) : 37 973 verdicts, 46 changés, tous des réponses exponentielles de valeur
+  juste : 42 synthétiques et 2 specs de la carte D-05 (copie de prod comprise ; faux → mauvaise
+  forme, spec mise à jour) ; 2 lignes de description renommée (A-02) ; aucun modèle publié.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :
