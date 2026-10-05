@@ -72,6 +72,21 @@
 					"Arcs arrivant en $B$ : somme de la **colonne** de $B$, $1 + 0 + 0 + 0 = \\textcolor{{{color:primary.0}}}{1}$."
 				]
 			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 4 sommets A, B, C, D ; arêtes AB, AC, BC, CD.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(0, 4, etiquette=\"haut\")\nC = point(3, 2, etiquette=\"haut\")\nD = point(6, 2, etiquette=\"droite\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(C, D)\n```\n\nÉcris sa matrice d'adjacence $M$ (onglet « Matrice » du clavier : gabarit 3 × 3, puis « + ligne » et « + colonne »).\n\n$M=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient ligne $X$, colonne $Y$ vaut $1$ si $X$ et $Y$ sont reliés par une arête, $0$ sinon ; la diagonale est nulle (pas de boucle) et la matrice est symétrique (graphe non orienté).",
+					"$M = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}\\\\\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}\\\\\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}\\\\\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}\\end{pmatrix}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -146,6 +161,53 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "v3 : matrice d'adjacence",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : écriture de MathLive",
+			"variables": {},
+			"answers": [
+				"\\begin{pmatrix}0 & 1 & 1 & 0\\\\ 1 & 0 & 1 & 0\\\\ 1 & 1 & 0 & 1\\\\ 0 & 0 & 1 & 0\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : 1 sur la diagonale (boucles)",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}1&1&1&0\\\\1&1&1&0\\\\1&1&1&1\\\\0&0&1&1\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : arête CD oubliée",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&0\\\\0&0&0&0\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : dimension fausse (3 × 3)",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}0&1&1\\\\1&0&1\\\\1&1&0\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
 		}
 	],
 	"options": {

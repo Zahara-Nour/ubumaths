@@ -120,6 +120,65 @@
 					"$A^2 = A \\times A$ (produit ligne par colonne, pas les carrés des coefficients) : $A^2 = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*a1+a2*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a1*a2+a2*a4}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*a1+a4*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a3*a2+a4*a4}}}\\end{pmatrix}$."
 				]
 			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$.\n\nCalcule la matrice $A^2$.\n\n$A^2=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..4"
+				}
+			],
+			"conditions": ["a2 != 0", "a3 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:a1*a1+a2*a3}}&{{eval:a1*a2+a2*a4}}\\\\{{eval:a3*a1+a4*a3}}&{{eval:a3*a2+a4*a4}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A^2 = A \\times A$ : produit ligne par colonne, pas le carré de chaque coefficient.",
+					"$A^2 = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*a1+a2*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a1*a2+a2*a4}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*a1+a4*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a3*a2+a4*a4}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}1&{{k}}\\\\0&1\\end{pmatrix}$. On admet que, pour tout entier $n \\geqslant 1$, $A^n = \\begin{pmatrix}1&nk\\\\0&1\\end{pmatrix}$ avec $k = {{k}}$.\n\nDonne la matrice $A^{ {{n}} }$.\n\n$A^{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "5..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}1&{{eval:n*k}}\\\\0&1\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $n = {{n}}$ et $k = {{k}}$ : $nk = {{eval:n*k}}$.",
+					"$A^{ {{n}} } = \\begin{pmatrix}1&\\textcolor{{{color:primary.0}}}{{{eval:n*k}}}\\\\0&1\\end{pmatrix}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -225,6 +284,127 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "v3 : A²",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["\\begin{pmatrix}7&10\\\\15&22\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : A², écriture de MathLive",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["\\begin{pmatrix}7 & 10\\\\ 15 & 22\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : carré de chaque coefficient",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["\\begin{pmatrix}1&4\\\\9&16\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : 2A au lieu de A²",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : dimension fausse (3 × 3)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["\\begin{pmatrix}7&10&0\\\\15&22&0\\\\0&0&0\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : calcul non effectué (1+6)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4"
+			},
+			"answers": ["\\begin{pmatrix}1+6&10\\\\15&22\\end{pmatrix}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v4 : A^10",
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["\\begin{pmatrix}1&30\\\\0&1\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 4
+		},
+		{
+			"description": "v4 : k^n au lieu de nk",
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["\\begin{pmatrix}1&59049\\\\0&1\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 4
+		},
+		{
+			"description": "v4 : puissance de chaque coefficient (0 en haut à droite oublié)",
+			"variables": {
+				"k": "3",
+				"n": "10"
+			},
+			"answers": ["\\begin{pmatrix}1&30\\\\1&1\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 4
 		}
 	],
 	"options": {

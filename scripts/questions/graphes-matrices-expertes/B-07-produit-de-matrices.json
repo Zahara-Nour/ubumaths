@@ -152,6 +152,55 @@
 					"$LA$ : la ligne $L$ multiplie chaque **colonne** de $A$ : $LA = \\begin{pmatrix}{{x}} \\times {{a1;()}} + {{y;()}} \\times {{a3;()}} & {{x}} \\times {{a2;()}} + {{y;()}} \\times {{a4;()}}\\end{pmatrix} = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:x*a1+y*a3}}}&\\textcolor{{{color:primary.0}}}{{{eval:x*a2+y*a4}}}\\end{pmatrix}$."
 				]
 			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nCalcule la matrice $AB$ (onglet « Matrice » du clavier).\n\n$AB=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "a4",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b1",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b2",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b3",
+					"expression": "-3..4"
+				},
+				{
+					"name": "b4",
+					"expression": "-3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:a1*b1+a2*b3}}&{{eval:a1*b2+a2*b4}}\\\\{{eval:a3*b1+a4*b3}}&{{eval:a3*b2+a4*b4}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Coefficient ligne $i$, colonne $j$ de $AB$ = ligne $i$ de $A$ $\\times$ colonne $j$ de $B$ : $c_{11} = {{a1}} \\times {{b1;()}} + {{a2;()}} \\times {{b3;()}}$, etc.",
+					"$AB = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1*b1+a2*b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a1*b2+a2*b4}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3*b1+a4*b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a3*b2+a4*b4}}}\\end{pmatrix}$ (en général $AB \\neq BA$ : l'ordre compte)."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -290,6 +339,170 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "v3 : AB",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}-2&5\\\\-4&11\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : AB, écriture de MathLive (espaces)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}-2 & 5\\\\ -4 & 11\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : AB= devant la matrice",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["AB=\\begin{pmatrix}-2&5\\\\-4&11\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : BA (non commutatif)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}3&4\\\\5&6\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : coefficient par coefficient",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}0&2\\\\-3&8\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : un coefficient faux",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}-2&5\\\\-4&10\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : dimension fausse (une ligne)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}-2&5\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : fraction égale à un entier (\\frac{-4}{2})",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}\\frac{-4}{2}&5\\\\-4&11\\end{pmatrix}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : calcul non effectué (-1-1)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2"
+			},
+			"answers": ["\\begin{pmatrix}-1-1&5\\\\-4&11\\end{pmatrix}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variationIndex": 3
 		}
 	],
 	"options": {
