@@ -302,3 +302,18 @@ describe('case « intervalles » : ensemble fini de complexes', () => {
 		});
 	});
 });
+
+describe('requiredForm « exponentielle » : module produit de constantes', () => {
+	it('2\\sqrt{2}e^{-i\\frac{3\\pi}{4}} est de la bonne forme', () => {
+		expect(
+			verdicts(
+				'2\\sqrt{2}e^{-i\\frac{3\\pi}{4}}',
+				['2\\sqrt{2}e^{-i\\frac{3\\pi}{4}}', '-2\\sqrt{2}e^{i\\frac{\\pi}{4}}'],
+				{ requiredForm: 'exponentielle' }
+			)
+		).toEqual({
+			'2\\sqrt{2}e^{-i\\frac{3\\pi}{4}}': 'correct',
+			'-2\\sqrt{2}e^{i\\frac{\\pi}{4}}': 'bad_form'
+		});
+	});
+});

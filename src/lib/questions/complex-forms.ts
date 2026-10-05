@@ -22,6 +22,7 @@ import {
 	findNodes,
 	flattenProductShallow,
 	flattenSumShallow,
+	unflattenProduct,
 	isDivision,
 	isFunction,
 	isMultiplication,
@@ -92,11 +93,15 @@ function isUnitExponential(node: MathNode): boolean {
 function isExponentialForm(node: MathNode): boolean {
 	if (isUnitExponential(node)) return true;
 	if (!isMultiplication(node)) return false;
-	const factors = flattenProductShallow(node).map((f) => f.factor);
-	const exponentials = factors.filter(isUnitExponential);
-	if (exponentials.length !== 1) return false;
-	const modulus = factors.filter((f) => !isUnitExponential(f));
-	return modulus.length === 1 && isPositiveConstant(modulus[0]);
+	const factors = flattenProductShallow(node);
+	if (factors.filter((f) => isUnitExponential(f.factor)).length !== 1) return false;
+	// Module : produit des autres facteurs (`2\sqrt{2}`), constant et strictement positif
+	const modulus = unflattenProduct(
+		factors
+			.filter((f) => !isUnitExponential(f.factor))
+			.map((f, k) => (k === 0 ? { ...f, style: 'implicit' as const } : f))
+	);
+	return modulus !== null && isPositiveConstant(modulus);
 }
 
 function isAlgebraicForm(node: MathNode): boolean {

@@ -139,6 +139,40 @@
 					"$z_1=\\dfrac{ {{eval:4*p}}+4i}{8}$ et $z_2=\\dfrac{ {{eval:4*p}}-4i}{8}$, soit $z_1=\\textcolor{{{color:primary.0}}}{{{eval:p/2}}+\\frac{1}{2}i}$ et $z_2=\\textcolor{{{color:primary.0}}}{{{eval:p/2}}-\\frac{1}{2}i}$."
 				]
 			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{C}$ l'équation $z^2+({{b}})z+{{c}}=0$. Donne l'ensemble $S$ de ses solutions.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*p"
+				},
+				{
+					"name": "c",
+					"expression": "eval:p^2+q^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}}+{{if:q==1||{{q}}}}i ; {{p}}-{{if:q==1||{{q}}}}i \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Delta={{b;()}}^2-4\\times{{c}}={{eval:b^2-4*c}}$.",
+					"$\\Delta<0$ : l'équation a deux solutions complexes conjuguées $z=\\dfrac{-b\\pm i\\sqrt{-\\Delta}}{2a}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{p}}+{{if:q==1||{{q}}}}i\\,;{{p}}-{{if:q==1||{{q}}}}i \\}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -282,6 +316,78 @@
 				"p": "1"
 			},
 			"answers": ["1+i", "1-i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 ensemble des deux solutions",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"q": "2"
+			},
+			"answers": ["\\{1+2i;1-2i\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 ordre libre",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"q": "2"
+			},
+			"answers": ["\\{1-2i;1+2i\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 i écrit en tête, S = en tête",
+			"variationIndex": 4,
+			"variables": {
+				"p": "-3",
+				"q": "1"
+			},
+			"answers": ["S=\\{-3-i;-3+i\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 une seule solution",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"q": "2"
+			},
+			"answers": ["\\{1+2i\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 signe de la partie réelle faux",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"q": "2"
+			},
+			"answers": ["\\{-1+2i;-1-2i\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 solutions en deux cases d'écriture (pas un ensemble)",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"q": "2"
+			},
+			"answers": ["1+2i"],
 			"expected": {
 				"status": "incorrect"
 			}

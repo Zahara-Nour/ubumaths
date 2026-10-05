@@ -123,6 +123,38 @@
 					"$A_0A_1=|\\omega-1|=\\textcolor{{{color:primary.0}}}{{{if:n==3|\\sqrt{3}|{{if:n==4|\\sqrt{2}|1}}}}}$."
 				]
 			}
+		},
+		{
+			"statement": "Donne l'ensemble $S$ des solutions dans $\\mathbb{C}$ de $z^3=1$ (les racines cubiques de l'unité).\n\n$S=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{1;-\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i;-\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i\\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les racines cubiques de l'unité sont $e^{\\frac{2ik\\pi}{3}}$ pour $k\\in\\{0;1;2\\}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{1\\,;-\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i\\,;-\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne l'ensemble $S$ des solutions dans $\\mathbb{C}$ de $z^4=1$ (les racines quatrièmes de l'unité).\n\n$S=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{1;i;-1;-i\\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les racines quatrièmes de l'unité sont $e^{\\frac{2ik\\pi}{4}}=i^k$ pour $k\\in\\{0;1;2;3\\}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{1\\,;i\\,;-1\\,;-i\\}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -273,6 +305,89 @@
 			"answers": ["1"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 les trois racines, forme algébrique",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": [
+				"\\{1;-\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i;-\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i\\}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 une seule fraction par racine, ordre libre",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{\\frac{-1-i\\sqrt{3}}{2};1;\\frac{-1+i\\sqrt{3}}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 forme exponentielle (valeur)",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{1;e^{i\\frac{2\\pi}{3}};e^{-i\\frac{2\\pi}{3}}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 1 oublié",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{-\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i;-\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 seulement la solution réelle",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 signes des parties réelles faux",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{1;\\frac{1}{2}+\\frac{\\sqrt{3}}{2}i;\\frac{1}{2}-\\frac{\\sqrt{3}}{2}i\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v6 les quatre racines",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{1;-1;i;-i\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v6 \\imaginaryI (MathLive)",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{1;-1;\\imaginaryI;-\\imaginaryI\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v6 seulement les racines réelles",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{1;-1\\}"],
+			"expected": {
+				"status": "incorrect"
 			}
 		}
 	]
