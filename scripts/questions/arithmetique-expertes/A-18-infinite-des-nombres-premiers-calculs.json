@@ -1,6 +1,6 @@
 {
 	"title": "Infinité des nombres premiers : calculs autour de p₁ × … × pₖ + 1",
-	"description": "Reste de la division de 2 × 3 × 5 × 7 × 11 + r par un petit premier, diviseur premier de p₁ × … × pₖ + 1 (hors de la liste), plus petit diviseur premier de 2 × 3 × … × pₖ + 1 (pièges : reste confondu avec r, N supposé toujours premier, 1 donné comme diviseur premier)",
+	"description": "Reste de la division de 2 × 3 × 5 × 7 × 11 + r par un petit premier, diviseur premier de 2 × 3 × … × 17 + 1 (hors de la liste), plus petit diviseur premier de 2 × 3 × … × pₖ + 1, premier ou non (pièges : reste confondu avec r, N supposé toujours premier, 1 donné comme diviseur premier)",
 	"grades": ["T_EXP"],
 	"points": ["TEXP-100", "TEXP-099", "TEXP-103"],
 	"theme": "Arithmétique",
@@ -13,11 +13,21 @@
 		{
 			"statement": "On pose $P = 2 \\times 3 \\times 5 \\times 7 \\times 11 = 2\\,310$.\n\nQuel est le reste de la division euclidienne de $P + {{r}}$ par ${{p}}$ ?\n\n$?$",
 			"variables": [
-				{ "name": "r", "expression": "1..10" },
-				{ "name": "p", "expression": "2|3|5|7|11" }
+				{
+					"name": "r",
+					"expression": "1..10"
+				},
+				{
+					"name": "p",
+					"expression": "2|3|5|7|11"
+				}
 			],
 			"conditions": ["r > p or r == 1"],
-			"blanks": [{ "expectedAnswer": "{{eval:mod(r,p)}}" }],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(r,p)}}"
+				}
+			],
 			"correction": {
 				"steps": [
 					"${{p}}$ divise $P$ : $P + {{r}} \\equiv 0 + {{r}} \\equiv {{eval:mod(r,p)}} \\,[{{p}}]$.",
@@ -26,15 +36,10 @@
 			}
 		},
 		{
-			"statement": "On pose $N = {{if:k==6|2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031|2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 \\times 17 + 1 = 510\\,511}}$.\n\nDonne un diviseur premier de $N$ (on pourra utiliser la calculatrice).\n\n$?$",
-			"variables": [
-				{ "name": "k", "expression": "6|7" },
-				{ "name": "nn", "expression": "{{if:k==6|30031|510511}}" },
-				{ "name": "d", "expression": "{{if:k==6|59|19}}" }
-			],
+			"statement": "On pose $N = 2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 \\times 17 + 1 = 510\\,511$.\n\nDonne un diviseur premier de $N$.\n\n$?$",
 			"blanks": [
 				{
-					"expectedAnswer": "{{d}}",
+					"expectedAnswer": "19",
 					"rulesSuffice": true,
 					"validationRules": [
 						{
@@ -44,30 +49,43 @@
 						},
 						{
 							"type": "divisor",
-							"dividend": "{{nn}}"
+							"dividend": "510511"
 						}
 					]
 				}
 			],
 			"correction": {
 				"steps": [
-					"Aucun des premiers $2$, $3$, …, ${{if:k==6|13|17}}$ ne divise $N$ : la division donne un reste $1$.",
-					"On teste les premiers suivants : $N = {{if:k==6|59 \\times 509|19 \\times 97 \\times 277}}$. Par exemple $\\textcolor{{{color:primary.0}}}{{{d}}}$ convient ; $N$ n'est pas premier, mais ses diviseurs premiers sont bien hors de la liste."
+					"Aucun des premiers $2$, $3$, …, $17$ ne divise $N$ : la division donne un reste $1$.",
+					"On teste le premier suivant : $510\\,511 = 19 \\times 26\\,869$ (et $26\\,869 = 97 \\times 277$). Par exemple $\\textcolor{{{color:primary.0}}}{19}$ convient ; $N$ n'est pas premier, mais ses diviseurs premiers sont bien hors de la liste."
 				]
 			}
 		},
 		{
-			"statement": "Quel est le plus petit diviseur premier de $N = {{if:k==3|2 \\times 3 \\times 5 + 1|{{if:k==4|2 \\times 3 \\times 5 \\times 7 + 1|{{if:k==5|2 \\times 3 \\times 5 \\times 7 \\times 11 + 1|2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1}}}}}}$ ? (on pourra utiliser la calculatrice)\n\n$?$",
+			"statement": "Quel est le plus petit diviseur premier de $N = {{if:k==3|2 \\times 3 \\times 5 + 1|{{if:k==4|2 \\times 3 \\times 5 \\times 7 + 1|2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 \\times 17 + 1}}}}$ ?\n\n$?$",
 			"variables": [
-				{ "name": "k", "expression": "3..6" },
-				{ "name": "nn", "expression": "{{if:k==3|31|{{if:k==4|211|{{if:k==5|2311|30031}}}}}}" },
-				{ "name": "d", "expression": "{{if:k==6|59|nn}}" }
+				{
+					"name": "k",
+					"expression": "3|4|7"
+				},
+				{
+					"name": "nn",
+					"expression": "{{if:k==3|31|{{if:k==4|211|510511}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==7|19|nn}}"
+				}
 			],
-			"blanks": [{ "expectedAnswer": "{{d}}" }],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
 			"correction": {
 				"steps": [
-					"$N = {{nn}}$ n'est divisible par aucun des premiers du produit (reste $1$).",
-					"{{if:k==6|On teste $17$, $19$, …, jusqu'à $59$ : $30\\,031 = 59 \\times 509$. Le plus petit diviseur premier est $\\textcolor{{{color:primary.0}}}{59}$.|Aucun premier $p$ avec $p^2 \\leqslant {{nn}}$ ne divise $N$ : $N$ est premier, son plus petit diviseur premier est $\\textcolor{{{color:primary.0}}}{{{nn}}}$.}}"
+					"$N = {{if:k==7|510\\,511|{{nn}}}}$ n'est divisible par aucun des premiers du produit (reste $1$).",
+					"{{if:k==7|On teste le premier suivant : $510\\,511 = 19 \\times 26\\,869$. Le plus petit diviseur premier est $\\textcolor{{{color:primary.0}}}{19}$ : $N$ n'est pas premier.|Aucun premier $p$ avec $p^2 \\leqslant {{nn}}$ ne divise $N$ : $N$ est premier, son plus petit diviseur premier est $\\textcolor{{{color:primary.0}}}{{{nn}}}$.}}"
 				]
 			}
 		}
@@ -76,107 +94,195 @@
 		{
 			"description": "v0 : P + 8 par 3 → 2",
 			"variationIndex": 0,
-			"variables": { "r": "8", "p": "3" },
+			"variables": {
+				"r": "8",
+				"p": "3"
+			},
 			"answers": ["2"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v0 : r recopié (8)",
 			"variationIndex": 0,
-			"variables": { "r": "8", "p": "3" },
+			"variables": {
+				"r": "8",
+				"p": "3"
+			},
 			"answers": ["8"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v0 : 0 (« p divise P »)",
 			"variationIndex": 0,
-			"variables": { "r": "8", "p": "3" },
+			"variables": {
+				"r": "8",
+				"p": "3"
+			},
 			"answers": ["0"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v0 : P + 1 par 7 → 1",
 			"variationIndex": 0,
-			"variables": { "r": "1", "p": "7" },
+			"variables": {
+				"r": "1",
+				"p": "7"
+			},
 			"answers": ["1"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
-			"description": "v1 : 30031, 59",
+			"description": "v1 : 510511, 19",
 			"variationIndex": 1,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["59"],
-			"expected": { "status": "correct" }
+			"variables": {},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
-			"description": "v1 : 30031, 509 aussi",
+			"description": "v1 : 510511, 97 aussi",
 			"variationIndex": 1,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["509"],
-			"expected": { "status": "correct" }
-		},
-		{
-			"description": "v1 : 30031 lui-même (pas premier)",
-			"variationIndex": 1,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["30031"],
-			"expected": { "status": "incorrect" }
-		},
-		{
-			"description": "v1 : 13 (dans la liste, ne divise pas)",
-			"variationIndex": 1,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["13"],
-			"expected": { "status": "incorrect" }
-		},
-		{
-			"description": "v1 : 1",
-			"variationIndex": 1,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["1"],
-			"expected": { "status": "incorrect" }
-		},
-		{
-			"description": "v1 : 510511, 97",
-			"variationIndex": 1,
-			"variables": { "k": "7", "nn": "510511", "d": "19" },
+			"variables": {},
 			"answers": ["97"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 510511, 277 aussi",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["277"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 510511, N lui-même (pas premier)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["510511"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 510511, 17 (dans la liste, ne divise pas)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 510511, 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 31 premier",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"nn": "31",
+				"d": "31"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v2 : 211 premier",
 			"variationIndex": 2,
-			"variables": { "k": "4", "nn": "211", "d": "211" },
+			"variables": {
+				"k": "4",
+				"nn": "211",
+				"d": "211"
+			},
 			"answers": ["211"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v2 : 1",
 			"variationIndex": 2,
-			"variables": { "k": "4", "nn": "211", "d": "211" },
+			"variables": {
+				"k": "4",
+				"nn": "211",
+				"d": "211"
+			},
 			"answers": ["1"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
-			"description": "v2 : 30031 → 59",
+			"description": "v2 : 510511 → 19",
 			"variationIndex": 2,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["59"],
-			"expected": { "status": "correct" }
+			"variables": {
+				"k": "7",
+				"nn": "510511",
+				"d": "19"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
-			"description": "v2 : 30031 supposé premier",
+			"description": "v2 : 510511 supposé premier",
 			"variationIndex": 2,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["30031"],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"k": "7",
+				"nn": "510511",
+				"d": "19"
+			},
+			"answers": ["510511"],
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
-			"description": "v2 : 509 (diviseur premier, pas le plus petit)",
+			"description": "v2 : 97 (diviseur premier, pas le plus petit)",
 			"variationIndex": 2,
-			"variables": { "k": "6", "nn": "30031", "d": "59" },
-			"answers": ["509"],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"k": "7",
+				"nn": "510511",
+				"d": "19"
+			},
+			"answers": ["97"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 17 (dans la liste)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "7",
+				"nn": "510511",
+				"d": "19"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
 		}
 	],
 	"options": {
