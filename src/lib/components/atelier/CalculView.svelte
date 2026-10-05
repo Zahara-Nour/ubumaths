@@ -22,13 +22,49 @@
 		historyToUbumark,
 		type ExportFormat
 	} from '$lib/atelier/history-export';
+	import {
+		MAX_HISTORY_BYTES,
+		readHistory,
+		type ImportedHistory
+	} from '$lib/atelier/history-import';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
 	 * cliquées dans « Mes objets », et elles doivent écrire dans le même
 	 * historique que la saisie au clavier.
 	 */
-	let { desk }: { desk: CalcDesk } = $props();
+	let {
+		desk,
+		onreplay
+	}: {
+		desk: CalcDesk;
+		/**
+		 * Un historique relu et valide : au conteneur de confirmer, de vider
+		 * l'atelier puis de rejouer (R2) — ce n'est pas l'affaire de cette vue.
+		 */
+		onreplay?: (history: ImportedHistory) => void;
+	} = $props();
+
+	let fileInput = $state<HTMLInputElement | null>(null);
+
+	/** Lire le fichier choisi ; un refus est dit dans la ligne de retour (E1 à E3). */
+	async function handleFile(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		// Vidé tout de suite : rechoisir le même fichier doit relancer la lecture
+		input.value = '';
+		if (file === undefined) return;
+		if (file.size > MAX_HISTORY_BYTES) {
+			desk.notice = 'Cet historique est trop long pour être rejoué.';
+			return;
+		}
+		const read = readHistory(await file.text());
+		if (!read.ok) {
+			desk.notice = read.message;
+			return;
+		}
+		onreplay?.(read.history);
+	}
 
 	let field = $state<HTMLInputElement | null>(null);
 
@@ -149,6 +185,20 @@
 			ubumark (pour lire)
 		</Button>
 		{#if empty}<span id="export-raison" class="raison">Rien à exporter pour l’instant.</span>{/if}
+		{#if onreplay}
+			<Button variant="outline" size="sm" onclick={() => fileInput?.click()}>
+				Rejouer un historique…
+			</Button>
+			<input
+				bind:this={fileInput}
+				class="sr-only"
+				type="file"
+				accept="application/json,.json"
+				tabindex="-1"
+				aria-hidden="true"
+				onchange={handleFile}
+			/>
+		{/if}
 	</div>
 	<ol class="historique">
 		{#each desk.entries as entry (entry.id)}
