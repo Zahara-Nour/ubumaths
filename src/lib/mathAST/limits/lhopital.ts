@@ -7,18 +7,22 @@
  */
 
 import type { MathNode, DivisionNode } from '../types';
+import type { ExtendedNormalizeResult } from '../normal/types';
 import type { LimitDirection, LimitOptions, IndeterminateForm } from './types';
 import { isDivision } from '../guards';
 import { differentiate } from '../differentiation';
 import { detectIndeterminateForm, classifyLimitValue } from './indeterminate';
 import type { LimitStepRecorder } from './step-recorder';
-import { getNumericValue, numericNode } from '../common/numeric';
+import { numericNode } from '../common/numeric';
 import {
 	tryEvaluateLimitExact,
 	isZeroResult,
 	isInfinityResult,
-	resultToFiniteNode
+	resultToNode,
+	resultToNumber
 } from './exact-evaluation';
+import { exactConstantNode } from './generalized-degree';
+import { divide } from '../factory';
 
 // =============================================================================
 // L'Hôpital's Rule
@@ -263,8 +267,9 @@ function tryDirectEvaluationExact(
 	if (isInfinityResult(numResult) && !isInfinityResult(denResult) && !isZeroResult(denResult)) {
 		// Get denominator sign to determine final sign
 		// Valeur négative = nœud `opposite` (jamais de littéral négatif)
-		const denNode = resultToFiniteNode(denResult);
-		const denValue = denNode === null ? null : getNumericValue(denNode);
+		// Lu sur la forme normale : une fraction exacte (−1/2) n'est pas un
+		// littéral que getNumericValue saurait lire
+		const denValue = resultToNumber(denResult);
 		const denNegative = denValue !== null && denValue < 0;
 
 		const numSign = numResult.sign;
@@ -289,15 +294,16 @@ function tryDirectEvaluationExact(
 
 	// Handle finite/finite case
 	if (!isInfinityResult(numResult) && !isInfinityResult(denResult)) {
-		const numNode = resultToFiniteNode(numResult);
-		const denNode = resultToFiniteNode(denResult);
-
-		// −2 est un nœud `opposite` : lu par getNumericValue, sinon x → −1 de
+		// Valeurs lues sur la forme normale (−2 comme 2/3) : sinon x → −1 de
 		// 2x/1 retombait sur le repli numérique
-		const numVal = numNode === null ? null : getNumericValue(numNode);
-		const denVal = denNode === null ? null : getNumericValue(denNode);
+		const numVal = resultToNumber(numResult);
+		const denVal = resultToNumber(denResult);
 
 		if (numVal !== null && denVal !== null && denVal !== 0) {
+			// Quotient EXACT lu sur les formes dénormalisées (jamais sur les
+			// chaînes déjà arrondies) : 3/2, pas 1.5
+			const exact = exactQuotient(numResult, denResult);
+			if (exact !== null) return exact;
 			const result = numVal / denVal;
 			if (Number.isFinite(result)) {
 				return numericNode(cleanNumberString(result));
@@ -306,6 +312,17 @@ function tryDirectEvaluationExact(
 	}
 
 	return null;
+}
+
+/** Quotient exact de deux limites finies à valeurs rationnelles, sinon null. */
+function exactQuotient(
+	numResult: ExtendedNormalizeResult,
+	denResult: ExtendedNormalizeResult
+): MathNode | null {
+	const numNode = resultToNode(numResult);
+	const denNode = resultToNode(denResult);
+	if (numNode === null || denNode === null) return null;
+	return exactConstantNode(divide(numNode, denNode, 'fraction'));
 }
 
 /**

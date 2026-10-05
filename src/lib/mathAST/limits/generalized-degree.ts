@@ -254,6 +254,26 @@ function rationalToNode(value: Rational): MathNode {
 	return negative ? opposite(magnitude) : magnitude;
 }
 
+/** Nom de variable impossible à écrire : une constante n'en contient jamais. */
+const NO_VARIABLE = '\u0000';
+
+/**
+ * Valeur EXACTE d'une expression constante faite de rationnels (sommes,
+ * produits, quotients, puissances, racines exactes) : entier ou fraction
+ * réduite, jamais un flottant. Null si elle est nulle, irrationnelle (√2, π,
+ * e, ln 2) ou contient une variable : l'appelant garde alors son calcul.
+ *
+ * @example
+ * exactConstantNode(2/3 écrit (2·1)/(3·1)) // \dfrac{2}{3}
+ * exactConstantNode(1/(√(0+1)+1))          // \dfrac{1}{2}
+ * exactConstantNode(√2)                    // null
+ */
+export function exactConstantNode(expr: MathNode): MathNode | null {
+	const leading = leadingTerm(expr, NO_VARIABLE, ONE);
+	if (leading === null || !isZero(leading.degree)) return null;
+	return rationalToNode(leading.coefficient);
+}
+
 /**
  * Limite exacte en ±∞ par le terme dominant c·x^d, ou null hors du cadre.
  *

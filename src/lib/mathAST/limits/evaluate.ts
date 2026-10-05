@@ -50,7 +50,11 @@ import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
 import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
-import { limitByGeneralizedDegree, involvesFractionalPower } from './generalized-degree';
+import {
+	limitByGeneralizedDegree,
+	involvesFractionalPower,
+	exactConstantNode
+} from './generalized-degree';
 import { rewriteIndeterminateSum } from './sum-reduction';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -255,7 +259,11 @@ export function evaluateLimit(
 	if (!containsVariable(expression, varName)) {
 		// Constant expression: evaluate numerically (e.g., ln(e) → 1)
 		let evaluatedExpr = expression;
-		if (!isNumber(expression) && !isInfinity(expression)) {
+		// Constante rationnelle (2/3) : valeur exacte, pas 0.666666666666667
+		const exactConstant = isNumber(expression) ? null : exactConstantNode(expression);
+		if (exactConstant !== null) {
+			evaluatedExpr = exactConstant;
+		} else if (!isNumber(expression) && !isInfinity(expression)) {
 			try {
 				const numValue = evaluateNodeToApproximatedNumber(expression);
 				if (Number.isFinite(numValue)) {
@@ -909,7 +917,11 @@ function evaluateLimitInternal(
 	if (!containsVariable(expr, varName)) {
 		// Constant expression: evaluate numerically (e.g., ln(e) → 1)
 		let evaluatedExpr = expr;
-		if (!isNumber(expr) && !isInfinity(expr)) {
+		// Constante rationnelle (2/3) : valeur exacte, pas 0.666666666666667
+		const exactConstant = isNumber(expr) ? null : exactConstantNode(expr);
+		if (exactConstant !== null) {
+			evaluatedExpr = exactConstant;
+		} else if (!isNumber(expr) && !isInfinity(expr)) {
 			try {
 				const numValue = evaluateNodeToApproximatedNumber(expr);
 				if (Number.isFinite(numValue)) {
