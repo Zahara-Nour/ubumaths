@@ -87,6 +87,7 @@ import { format as formatUnit } from '../units/formatter';
 import { divide, euler, number, opposite, parentheses, piConstant, superscript } from '../factory';
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
+import { applyEulerIdentities } from './rules/euler-identities';
 import { expandImaginaryExponentials } from './rules/euler-formula';
 import { expandPositiveBasePowers } from './rules/general-power';
 import { expandFractionalPowers } from './rules/fractional-power';
@@ -2075,25 +2076,48 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	// First, apply preprocessing rules (Phase 1)
-	const simplified = preprocess(node);
+	const preprocessed = preprocess(node);
 
 	// Record pre-simplification step if anything changed
 	if (ctx?.recorder && ctx.verbosity && ctx.verbosity !== 'result') {
 		const beforeHash = hashMathNode(node);
-		const afterHash = hashMathNode(simplified);
+		const afterHash = hashMathNode(preprocessed);
 		if (beforeHash !== afterHash) {
 			ctx.recorder.recordStep(
 				'preprocess',
 				getRuleDescription('preprocess'),
 				node,
-				simplified,
+				preprocessed,
 				'detailed'
 			);
 		}
 	}
 
+	// Puis les identités de la base d'Euler écrite `e^{…}` (ln(eᵃ) = a, eᵃ·eᵇ,
+	// (eᵃ)ⁿ, e^{ln a}), comme pour `exp(…)` — en gardant l'écriture `e^{…}`.
+	// Décision de David (option A, 2026-10-05), détail dans
+	// `rules/euler-identities.ts`. Sans base d'Euler, le nœud passe inchangé.
+	const simplified = applyEulerIdentities(preprocessed, {
+		canonicalExponent: (exponent) => denormalize(normalize(exponent))
+	});
+	recordTreeStep(ctx, 'euler-identities', preprocessed, simplified, 'summarized');
+
 	// Then normalize (Phase 2)
 	return normalizeNode(simplified, ctx);
+}
+
+/** Enregistre la réécriture d'arbre d'une règle, si l'arbre a changé. */
+function recordTreeStep(
+	ctx: NormalizeContext | undefined,
+	rule: string,
+	before: MathNode,
+	after: MathNode,
+	stepVerbosity: Verbosity
+): void {
+	if (!ctx?.recorder || !ctx.verbosity || ctx.verbosity === 'result') return;
+	if (!shouldIncludeStep(stepVerbosity, ctx.verbosity)) return;
+	if (hashMathNode(before) === hashMathNode(after)) return;
+	ctx.recorder.recordStep(rule, getRuleDescription(rule), before, after, stepVerbosity);
 }
 
 /**
