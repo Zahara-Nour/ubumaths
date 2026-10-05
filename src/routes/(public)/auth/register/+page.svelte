@@ -37,7 +37,9 @@
 			<Card.Header>
 				<div class="flex flex-col items-center gap-3 text-center">
 					<MailCheck class="h-12 w-12 text-primary" />
-					<Card.Title class="text-2xl">Vérifie ta boîte mail</Card.Title>
+					<Card.Title class="text-2xl"
+						><h1 class="text-2xl! leading-none!">Vérifie ta boîte mail</h1></Card.Title
+					>
 				</div>
 			</Card.Header>
 			<Card.Content class="space-y-4 text-center">
@@ -55,7 +57,9 @@
 			</Card.Footer>
 		{:else}
 			<Card.Header>
-				<Card.Title class="text-center text-3xl">Créer ton compte élève</Card.Title>
+				<Card.Title class="text-center text-3xl"
+					><h1 class="text-3xl! leading-none!">Créer ton compte élève</h1></Card.Title
+				>
 				<Card.Description class="text-center">
 					Utilise le code de classe donné par ton professeur.
 				</Card.Description>
