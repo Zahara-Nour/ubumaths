@@ -287,6 +287,32 @@ export function expandInput(atelier: Atelier, text: string): string {
 }
 
 /**
+ * L'argument d'une commande qui cite une dérivée, prêt pour le moteur : les
+ * dérivées développées PUIS les noms substitués, le tout dans l'ARBRE.
+ *
+ * ⚠️ Pas en texte : `expandInput` rendait `2ax` collé (toCustom), et la
+ * substitution textuelle des noms ne retrouvait plus `a` — avec a = 2 et
+ * f(x) = a x², `.resoudre f'(x)=4` répondait « pas de solution » (revue #859).
+ *
+ * @returns null si l'argument ne se lit pas : à l'appelant de garder son texte
+ */
+export function expandCommandArgument(atelier: Atelier, text: string): string | null {
+	const ast = astOf(text, 'url', atelier.functionNames);
+	if (ast === null) return null;
+	const { variables, functions, derivableFunctions } = bindingsOf(atelier, '');
+	let expanded: MathNode;
+	try {
+		expanded = expandDerivatives(ast, derivableFunctions);
+	} catch {
+		return null;
+	}
+	const substituted = substituteAll(expanded, variables, substituteFunction, {
+		functions: functions satisfies FunctionBindings
+	});
+	return toCustom(withPlainEuler(substituted));
+}
+
+/**
  * L'ARBRE d'un objet, tous les noms qu'il cite remplacés — voir `expressionOf`.
  *
  * ⚠️ Les suites s'en servent directement : repasser par le texte (`toCustom`

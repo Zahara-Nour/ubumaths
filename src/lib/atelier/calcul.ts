@@ -18,7 +18,7 @@ import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber } from './parse';
-import { syncEngine, expressionOf, expandInput, termsOf } from './engine';
+import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
@@ -272,6 +272,14 @@ function defineObject(
  * On ne remplace qu'un nom **isolé** ou **appelé** (`f` ou `f(x)`) : sans ça,
  * le `f` de `\frac` ou d'un mot quelconque serait réécrit.
  */
+/** Le nom d'une SUITE citée avec un prime (`u'(n)`), s'il y en a une. */
+function derivedSequence(session: CalcSession, argument: string): string | null {
+	for (const match of argument.matchAll(/(?<![A-Za-z_])([A-Za-z](?:_\d+)?)'+/g)) {
+		if (session.atelier.get(match[1])?.kind === 'sequence') return match[1];
+	}
+	return null;
+}
+
 function substituteNames(session: CalcSession, argument: string): string {
 	if (argument.trim() === '') return argument;
 
@@ -430,10 +438,18 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// ⚠️ Les dérivées d'abord (`f'(x)` → son expression), puis les noms : sans
 	// ça, `f'(x)` perdait son `f` et devenait `(x^2-3x)'(x)`, illisible —
 	// `.resoudre f'(x)=0` répondait « Je n'ai pas su lire » (2026-10-05)
-	const argument =
-		space === -1
-			? ''
-			: substituteNames(session, expandInput(session.atelier, resolved.slice(space + 1)));
+	const rawArgument = space === -1 ? '' : resolved.slice(space + 1).replace(/’/g, "'");
+	const derived = derivedSequence(session, rawArgument);
+	if (derived !== null) {
+		return {
+			kind: 'refus',
+			message: `« ${derived} » est une suite : elle ne se dérive pas.`
+		};
+	}
+	const argument = !rawArgument.includes("'")
+		? substituteNames(session, rawArgument)
+		: (expandCommandArgument(session.atelier, rawArgument) ??
+			substituteNames(session, expandInput(session.atelier, rawArgument)));
 	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
 	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
 	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que
