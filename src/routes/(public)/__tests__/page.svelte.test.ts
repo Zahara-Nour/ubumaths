@@ -126,33 +126,84 @@ describe('/+page.svelte', () => {
 		expect(haloRule?.style.animationName).toBe('none');
 	});
 
-	describe('lien vers le Shtam', () => {
+	describe('dépêche du Shtam et mise en page', () => {
 		const almanach = civilToPataphysical(2026, 10, 5);
+		const shtam = {
+			slug: 'un-article',
+			title: 'Un mathématicien a prouvé que π n’était transcendant que le mardi'
+		};
 
-		it('montre l’article tiré, en lien vers sa page', async () => {
+		/** Rendu dans une zone de taille fixe, comme dans le layout (h-full) */
+		async function renderInZone(width: number, height: number, withShtam = true) {
 			const screen = await render(Page, {
-				props: { data: { almanach, shtam: { slug: 'un-article', title: 'Un titre' } } } as never
+				props: { data: { almanach, shtam: withShtam ? shtam : null } } as never
 			});
-			const link = screen.getByRole('link', { name: 'Un titre' });
+			screen.container.style.width = `${width}px`;
+			screen.container.style.height = `${height}px`;
+			return screen;
+		}
+
+		const box = (el: Element) => el.getBoundingClientRect();
+		const overlap = (a: DOMRect, b: DOMRect) =>
+			!(a.bottom <= b.top || a.top >= b.bottom || a.right <= b.left || a.left >= b.right);
+
+		it('montre l’article tiré dans un encart « Dernière minute », en lien vers sa page', async () => {
+			const screen = await renderInZone(1200, 740);
+			const link = screen.getByRole('link', { name: /transcendant que le mardi/ });
 			await expect
 				.element(link)
 				.toHaveAttribute('href', expect.stringMatching(/\/shtam\/un-article$/));
-			await expect.element(screen.getByTestId('home-shtam')).toHaveTextContent('Le Shtam');
+			await expect.element(screen.getByTestId('home-shtam')).toHaveTextContent(/Dernière minute/i);
+			await expect.element(screen.getByTestId('home-shtam')).toHaveTextContent(/Le Shtam/i);
 		});
 
 		it('ne montre rien quand aucun article n’est paru', async () => {
-			const screen = await render(Page, { props: { data: { almanach, shtam: null } } as never });
+			const screen = await renderInZone(1200, 740, false);
 			expect(screen.container.querySelector('[data-testid="home-shtam"]')).toBeNull();
 		});
 
-		it('reste discret : plus petit que la date de l’Almanach', async () => {
-			const screen = await render(Page, {
-				props: { data: { almanach, shtam: { slug: 'a', title: 'Un titre' } } } as never
-			});
-			const size = (el: Element) => parseFloat(getComputedStyle(el).fontSize);
-			const shtam = screen.getByTestId('home-shtam').element();
+		it.each([
+			['ordinateur', 1200, 740],
+			['téléphone', 390, 700]
+		])('Père Ubu est au centre de la zone (%s)', async (_nom, width, height) => {
+			const screen = await renderInZone(width, height);
+			const zone = box(screen.container);
+			const ubu = box(screen.container.querySelector('figure svg')!);
+			expect(Math.abs(ubu.top + ubu.height / 2 - (zone.top + zone.height / 2))).toBeLessThan(2);
+			expect(Math.abs(ubu.left + ubu.width / 2 - (zone.left + zone.width / 2))).toBeLessThan(2);
+		});
+
+		it.each([
+			['ordinateur', 1200, 740],
+			['téléphone', 390, 700],
+			['petit téléphone', 360, 560]
+		])('l’encart ne touche ni le titre ni Ubu (%s)', async (_nom, width, height) => {
+			const screen = await renderInZone(width, height);
+			const depeche = box(screen.getByTestId('home-shtam').element());
+			expect(overlap(depeche, box(screen.container.querySelector('h1')!))).toBe(false);
+			expect(overlap(depeche, box(screen.container.querySelector('figure svg')!))).toBe(false);
+		});
+
+		it('la date de l’Almanach est en haut à droite, plus petite que le titre', async () => {
+			const screen = await renderInZone(1200, 740);
 			const date = screen.getByRole('link', { name: /Almanach/ }).element();
-			expect(size(shtam)).toBeLessThan(size(date));
+			const h1 = screen.container.querySelector('h1')!;
+			const zone = box(screen.container);
+			expect(box(date).top).toBeLessThan(box(h1).top);
+			expect(zone.right - box(date).right).toBeLessThan(40);
+			expect(box(date).left).toBeGreaterThan(zone.left + zone.width / 2);
+			const size = (el: Element) => parseFloat(getComputedStyle(el).fontSize);
+			expect(size(date)).toBeLessThanOrEqual(14);
+		});
+
+		// 360 × 640 moins l'en-tête et le pied de page du layout : une zone d'environ 480 px
+		it.each([
+			['téléphone', 390, 700],
+			['petit téléphone', 360, 480]
+		])('la date ne touche pas le titre (%s)', async (_nom, width, height) => {
+			const screen = await renderInZone(width, height);
+			const date = screen.getByRole('link', { name: /Almanach/ }).element();
+			expect(overlap(box(date), box(screen.container.querySelector('h1')!))).toBe(false);
 		});
 	});
 });
