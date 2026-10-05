@@ -1,0 +1,194 @@
+{
+	"title": "Combinaisons avec répétitions : glaces, bonbons, solutions entières",
+	"description": "Approfondissement : choix de k objets parmi n types, sans ordre et avec répétition, compté par C(n + k − 1, k) (étoiles et barres) — boules de glace, bonbons identiques, solutions de x + y + z = k (pièges : C(n, k) sans répétition, nᵏ avec ordre)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-047"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Combinaisons",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Un glacier propose ${{n}}$ parfums. Un cornet contient ${{k}}$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..8"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n+k-1,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ni ordre, mais répétition permise : on code un cornet par ${{k}}$ étoiles (les boules) et ${{eval:n-1}}$ barres (séparations entre parfums), soit ${{eval:n+k-1}}$ symboles.",
+					"Un cornet = la position des ${{k}}$ étoiles : $\\binom{ {{eval:n+k-1}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n+k-1,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On répartit ${{k}}$ bonbons identiques entre ${{n}}$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..4"
+				},
+				{
+					"name": "k",
+					"expression": "5..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n+k-1,n-1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une répartition s'écrit avec ${{k}}$ étoiles (les bonbons) et ${{eval:n-1}}$ barres qui séparent les ${{n}}$ enfants : ${{eval:n+k-1}}$ symboles.",
+					"On choisit la place des ${{eval:n-1}}$ barres : $\\binom{ {{eval:n+k-1}} }{ {{eval:n-1}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n+k-1,n-1)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x+y+z={{k}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(k+2,2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $x$ étoiles, une barre, $y$ étoiles, une barre, $z$ étoiles : ${{k}}$ étoiles et $2$ barres, soit ${{eval:k+2}}$ symboles.",
+					"Une solution = la place des $2$ barres : $\\binom{ {{eval:k+2}} }{ 2 }=\\textcolor{{{color:primary.0}}}{{{eval:binom(k+2,2)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 5 parfums, 3 boules → 35",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"k": "3"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : C(5, 3) = 10 (sans répétition)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"k": "3"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 5³ = 125 (ordre compté)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"k": "3"
+			},
+			"answers": ["125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3 enfants, 6 bonbons → 28",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"k": "6"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 3⁶ = 729 (bonbons distincts)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"k": "6"
+			},
+			"answers": ["729"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : C(5, 2) = 10 (chacun au moins un)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"k": "6"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : k = 5 → 21",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : C(5, 2) = 10",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 6³ = 216",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["216"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

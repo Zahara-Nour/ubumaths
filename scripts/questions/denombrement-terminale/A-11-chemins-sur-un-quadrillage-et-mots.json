@@ -1,0 +1,235 @@
+{
+	"title": "Chemins sur un quadrillage et mots à deux lettres",
+	"description": "Chemins monotones de (0 ; 0) à (p ; q) comptés par C(p + q, p), passage imposé par un point (produit), mots formés de k lettres A et n − k lettres B (pièges : 2^(p+q), (p + q)!, additionner les deux morceaux)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-037", "TSPE-042", "TSPE-044"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Combinaisons",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Sur un quadrillage, on va du point $O(0\\,;0)$ au point $B({{p}}\\,;{{q}})$ en se déplaçant d'une unité à chaque pas, **vers la droite** ou **vers le haut**.\n\nCombien de chemins différents mènent de $O$ à $B$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..6"
+				},
+				{
+					"name": "q",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:p+q}}"
+				},
+				{
+					"name": "k",
+					"expression": "{{p}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un chemin compte ${{eval:p+q}}$ pas, dont ${{p}}$ vers la droite : il est déterminé par la position de ces ${{p}}$ pas parmi les ${{eval:p+q}}$.",
+					"$\\binom{ {{eval:p+q}} }{ {{p}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur un quadrillage, on va du point $O(0\\,;0)$ au point $B({{p}}\\,;{{q}})$ en se déplaçant d'une unité à chaque pas, vers la droite ou vers le haut.\n\nCombien de ces chemins passent par le point $C({{a}}\\,;{{b}})$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "4..6"
+				},
+				{
+					"name": "q",
+					"expression": "3..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:p-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:q-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(a+b,a)*binom(p+q-a-b,p-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $O$ à $C$ : $\\binom{ {{eval:a+b}} }{ {{a}} }={{eval:binom(a+b,a)}}$ chemins ; de $C$ à $B$ : $\\binom{ {{eval:p+q-a-b}} }{ {{eval:p-a}} }={{eval:binom(p+q-a-b,p-a)}}$ chemins.",
+					"Un chemin par $C$ = un morceau **puis** l'autre : ${{eval:binom(a+b,a)}}\\times{{eval:binom(p+q-a-b,p-a)}}=\\textcolor{{{color:primary.0}}}{{{eval:binom(a+b,a)*binom(p+q-a-b,p-a)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de mots de ${{n}}$ lettres peut-on écrire avec exactement ${{k}}$ lettres $\\mathrm{A}$ et ${{eval:n-k}}$ lettres $\\mathrm{B}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:n-2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tel mot est déterminé par les positions des ${{k}}$ lettres $\\mathrm{A}$ parmi les ${{n}}$ places : une partie à ${{k}}$ éléments.",
+					"$\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : B(4 ; 3) → 35",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"q": "3"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 2⁷ = 128",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"q": "3"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 7! = 5040",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"q": "3"
+			},
+			"answers": ["5040"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 4 × 3 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"q": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : B(5 ; 4), C(2 ; 1) → 3 × 20 = 60",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "4",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : somme 3 + 20",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "4",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : tous les chemins 126",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"q": "4",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["126"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 8 lettres, 3 A → 56",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 2⁸ = 256",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["256"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 8!/(5!) = 336",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["336"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

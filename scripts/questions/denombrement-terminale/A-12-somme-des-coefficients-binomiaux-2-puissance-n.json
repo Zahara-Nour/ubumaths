@@ -1,0 +1,191 @@
+{
+	"title": "Somme des coefficients binomiaux : 2 puissance n",
+	"description": "Σ C(n, k) = 2ⁿ (toutes les parties comptées selon leur taille), somme privée des termes extrêmes, parties d'au moins 2 éléments (pièges : 2n, n!, oubli de la partie vide ou des singletons)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-045", "TSPE-033", "TSPE-039"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Parties d'un ensemble",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ {{n}} }\\binom{ {{n}} }{ k }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{ {{n}} }{ k }$ compte les parties à $k$ éléments d'un ensemble à ${{n}}$ éléments ; la somme pour $k$ de $0$ à ${{n}}$ compte **toutes** ses parties.",
+					"$\\displaystyle\\sum_{k=0}^{ {{n}} }\\binom{ {{n}} }{ k }=2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ {{eval:n-1}} }\\binom{ {{n}} }{ k }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n-2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme de $k=0$ à ${{n}}$ vaut $2^{ {{n}} }$ ; il manque ici les termes $\\binom{ {{n}} }{ 0 }=1$ et $\\binom{ {{n}} }{ {{n}} }=1$.",
+					"$2^{ {{n}} }-2=\\textcolor{{{color:primary.0}}}{{{eval:2^n-2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un ensemble $E$ contient ${{n}}$ éléments.\n\nCombien de parties de $E$ ont **au moins deux** éléments ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n-1-n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E$ a $2^{ {{n}} }$ parties. On retire celles qui ont moins de deux éléments : la partie vide ($\\binom{ {{n}} }{ 0 }=1$) et les ${{n}}$ singletons ($\\binom{ {{n}} }{ 1 }={{n}}$).",
+					"$2^{ {{n}} }-1-{{n}}=\\textcolor{{{color:primary.0}}}{{{eval:2^n-1-n}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : n = 6 → 64",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 2n = 12",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 6! = 720",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["720"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 2⁶ − 1 (k = 0 oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : n = 7 → 126",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["126"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 2⁷ = 128 (extrêmes non retirés)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2⁷ − 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["127"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : n = 5 → 26",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 2⁵ − 5 = 27 (vide oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2⁵ − 1 = 31 (singletons oubliés)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
