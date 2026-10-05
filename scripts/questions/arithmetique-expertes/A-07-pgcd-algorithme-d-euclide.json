@@ -1,0 +1,239 @@
+{
+	"title": "PGCD de deux entiers, algorithme d'Euclide",
+	"description": "PGCD de deux entiers par les diviseurs ou par l'algorithme d'Euclide, et en situation (bouquets identiques) (pièges : PPCM, produit, dernier quotient au lieu du dernier reste non nul)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-084", "TEXP-085", "TEXP-089"],
+	"theme": "Arithmétique",
+	"domain": "PGCD, Bézout et Gauss",
+	"subdomain": "PGCD",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Détermine $\\mathrm{PGCD}({{eval:dd*a1}} \\,;\\, {{eval:dd*b1}})$.\n\n$?$",
+			"variables": [
+				{
+					"name": "dd",
+					"expression": "2..15"
+				},
+				{
+					"name": "a1",
+					"expression": "2..12"
+				},
+				{
+					"name": "b1",
+					"expression": "2..12"
+				}
+			],
+			"conditions": ["gcd(a1,b1) == 1", "a1 > b1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dd}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:dd*a1}} = {{dd}} \\times {{a1}}$ et ${{eval:dd*b1}} = {{dd}} \\times {{b1}}$, avec ${{a1}}$ et ${{b1}}$ premiers entre eux.",
+					"$\\mathrm{PGCD}({{eval:dd*a1}} \\,;\\, {{eval:dd*b1}}) = \\textcolor{{{color:primary.0}}}{{{dd}}}$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide de l'algorithme d'Euclide, détermine $\\mathrm{PGCD}({{eval:dd*a1}} \\,;\\, {{eval:dd*b1}})$.\n\n$?$",
+			"variables": [
+				{
+					"name": "dd",
+					"expression": "3..29"
+				},
+				{
+					"name": "a1",
+					"expression": "11..40"
+				},
+				{
+					"name": "b1",
+					"expression": "5..30"
+				}
+			],
+			"conditions": ["gcd(a1,b1) == 1", "a1 > b1", "dd*a1 >= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dd}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Première division : ${{eval:dd*a1}} = {{eval:dd*b1}} \\times {{eval:floor(a1/b1)}} + {{eval:mod(dd*a1,dd*b1)}}$, donc $\\mathrm{PGCD}({{eval:dd*a1}} \\,;\\, {{eval:dd*b1}}) = \\mathrm{PGCD}({{eval:dd*b1}} \\,;\\, {{eval:mod(dd*a1,dd*b1)}})$.",
+					"On recommence avec le diviseur et le reste, jusqu'à un reste nul : le PGCD est le **dernier reste non nul**.",
+					"$\\mathrm{PGCD}({{eval:dd*a1}} \\,;\\, {{eval:dd*b1}}) = \\textcolor{{{color:primary.0}}}{{{dd}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un fleuriste dispose de ${{eval:dd*a1}}$ roses et de ${{eval:dd*b1}}$ tulipes. Il veut composer des bouquets **identiques** en utilisant toutes les fleurs.\n\nQuel est le plus grand nombre de bouquets qu'il peut composer ?\n\n$?$",
+			"variables": [
+				{
+					"name": "dd",
+					"expression": "4..24"
+				},
+				{
+					"name": "a1",
+					"expression": "2..9"
+				},
+				{
+					"name": "b1",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a1,b1) == 1", "a1 > b1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dd}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de bouquets divise ${{eval:dd*a1}}$ et ${{eval:dd*b1}}$ : c'est un diviseur commun.",
+					"Le plus grand est $\\mathrm{PGCD}({{eval:dd*a1}} \\,;\\, {{eval:dd*b1}}) = \\textcolor{{{color:primary.0}}}{{{dd}}}$ : chaque bouquet compte ${{a1}}$ roses et ${{b1}}$ tulipes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : PGCD(84 ; 36) = 12",
+			"variationIndex": 0,
+			"variables": {
+				"dd": "12",
+				"a1": "7",
+				"b1": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : PPCM 252",
+			"variationIndex": 0,
+			"variables": {
+				"dd": "12",
+				"a1": "7",
+				"b1": "3"
+			},
+			"answers": ["252"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : diviseur commun 6, pas le plus grand",
+			"variationIndex": 0,
+			"variables": {
+				"dd": "12",
+				"a1": "7",
+				"b1": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 4 (lu sur 84 = 4 × 21)",
+			"variationIndex": 0,
+			"variables": {
+				"dd": "12",
+				"a1": "7",
+				"b1": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : PGCD(391 ; 299) = 23",
+			"variationIndex": 1,
+			"variables": {
+				"dd": "23",
+				"a1": "17",
+				"b1": "13"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 1 (premier quotient)",
+			"variationIndex": 1,
+			"variables": {
+				"dd": "23",
+				"a1": "17",
+				"b1": "13"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : PPCM 5083",
+			"variationIndex": 1,
+			"variables": {
+				"dd": "23",
+				"a1": "17",
+				"b1": "13"
+			},
+			"answers": ["5083"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 60 roses, 36 tulipes → 12",
+			"variationIndex": 2,
+			"variables": {
+				"dd": "12",
+				"a1": "5",
+				"b1": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 180 (PPCM)",
+			"variationIndex": 2,
+			"variables": {
+				"dd": "12",
+				"a1": "5",
+				"b1": "3"
+			},
+			"answers": ["180"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 8 (fleurs par bouquet)",
+			"variationIndex": 2,
+			"variables": {
+				"dd": "12",
+				"a1": "5",
+				"b1": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

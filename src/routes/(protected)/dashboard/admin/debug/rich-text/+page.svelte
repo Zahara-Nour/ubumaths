@@ -1485,7 +1485,7 @@ Le plus petit titre.`
 <div class="space-y-8">
 	<!-- Header -->
 	<div>
-		<h1 class="mb-2 text-3xl font-bold">RichTextEditor Debug</h1>
+		<h2 class="mb-2 text-3xl! font-bold">RichTextEditor Debug</h2>
 		<p class="text-muted-foreground">
 			Page de test du composant unifié <code>RichTextEditor</code> avec support des modes
 			<Badge variant="outline">chat</Badge> et <Badge variant="outline">form</Badge>.

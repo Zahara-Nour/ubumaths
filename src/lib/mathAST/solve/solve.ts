@@ -57,7 +57,7 @@ import type {
 	EquationSolver
 } from './types';
 import { DEFAULT_SOLVE_OPTIONS, SolveError } from './types';
-import { isRelation } from '../guards';
+import { isDelimiter, isMultiplication, isRelation } from '../guards';
 import { classifyEquation, toStandardForm, detectVariable } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
@@ -72,7 +72,18 @@ import {
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
-import { number, equals, func, superscript, euler, divide } from '../factory';
+import {
+	number,
+	equals,
+	func,
+	superscript,
+	euler,
+	divide,
+	add,
+	multiply,
+	opposite,
+	parentheses
+} from '../factory';
 import { numericNode } from '../common/numeric';
 import { flattenSumShallow, flattenProductShallow, unflattenSum } from '../flatten';
 import { getVariables } from '../eval/substitute';
@@ -90,6 +101,11 @@ import {
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
+import { applyRules } from '../pattern/rule';
+// Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
+// dans `common-factor.ts`).
+import { commonFactorRules } from '../pattern/rule-sets/common-factor';
+import { nodesEqual } from '../normal/hash';
 
 // =============================================================================
 // Strategy Selection
@@ -387,6 +403,120 @@ function tryProductDecomposition(
 		// If there are periodic families, attach the first one
 		// (multiple periodic families would need a more complex merge)
 		...(periodicFamilies.length > 0 ? { periodicSolutions: periodicFamilies[0] } : {})
+	};
+}
+
+// =============================================================================
+// Common Factor Decomposition (mise en facteur, puis produit nul)
+// =============================================================================
+
+/** Garde de récursion : chaque facteur est résolu par un nouvel appel à `solve`. */
+let commonFactorDepth = 0;
+const MAX_COMMON_FACTOR_DEPTH = 3;
+
+/**
+ * L'opposé d'un terme, écrit comme un PRODUIT dont le premier facteur porte le
+ * signe : `6x·e^{2x}` devient `(−6x)·e^{2x}`, et un terme nu `eˣ` devient
+ * `(−1)·eˣ`.
+ *
+ * ⚠️ Les règles de `commonFactorRules` ne connaissent que l'addition
+ * (`a·c + b·c`, `c + b·c`) : sans cette réécriture, `3e^{2x} − 6x·e^{2x}` ne
+ * se factorisait pas. On ne réécrit pas les règles — on leur présente la
+ * somme sous la forme qu'elles savent lire.
+ */
+function negatedTermAsProduct(term: MathNode): MathNode {
+	if (isMultiplication(term)) {
+		return multiply(opposite(term.left), term.right, term.displayStyle);
+	}
+	return multiply(opposite(number('1')), term, 'star');
+}
+
+/**
+ * La somme `lhs − rhs` réécrite en additions seules, ou `null` si ce n'est pas
+ * une somme d'au moins deux termes non nuls.
+ */
+function sumOfSignedTerms(expr: MathNode): MathNode | null {
+	const terms = flattenSumShallow(expr).filter(({ term }) => !isZeroNode(term));
+	if (terms.length < 2) return null;
+	const addends = terms.map(({ sign, term }) => (sign === '+' ? term : negatedTermAsProduct(term)));
+	return addends.reduce((sum, term) => add(sum, term));
+}
+
+/**
+ * Remettre au propre les facteurs-sommes d'un produit factorisé : `(3 + −6x)`
+ * se lit `(3 − 6x)`. Seule l'écriture change — la forme normale est la même.
+ */
+function tidySumFactors(product: MathNode): MathNode {
+	if (!isMultiplication(product)) return product;
+	const tidy = (factor: MathNode): MathNode => {
+		if (isDelimiter(factor) && factor.content.type === 'addition') {
+			return parentheses(denormalize(normalize(factor.content)));
+		}
+		return tidySumFactors(factor);
+	};
+	return multiply(tidy(product.left), tidy(product.right), product.displayStyle);
+}
+
+/**
+ * Résoudre `somme = 0` en mettant en évidence un facteur commun NON constant,
+ * puis par la propriété du produit nul.
+ *
+ * `eˣ + x·eˣ = 0` devient `(x + 1)·eˣ = 0` : x = −1, et `eˣ = 0` n'a pas de
+ * solution. C'est la forme sous laquelle arrive la dérivée de `x·eˣ` — sans
+ * cette étape, `.variations` n'y trouvait aucun point critique.
+ *
+ * ⚠️ **La factorisation n'est pas réécrite ici** : ce sont les règles de
+ * `pattern/rule-sets/common-factor` (`commonFactorRules`, celles de
+ * l'intention « factoriser »), appliquées jusqu'au point fixe pour qu'une
+ * somme de trois termes se factorise aussi. Les règles du CONTENU
+ * (`commonContentFactorRules`, facteur numérique et monôme) ne sont pas
+ * utilisées : les polynômes ont leurs propres solveurs.
+ *
+ * Appelée seulement quand les autres chemins ont échoué : une équation que
+ * le solveur savait déjà résoudre garde sa résolution et ses étapes. Le
+ * domaine est filtré ensuite par `solve` (x ln x + x = 0 : x = 0 sort).
+ *
+ * @returns SolveResult si la mise en facteur aboutit à un produit nul, null sinon
+ */
+function tryCommonFactorDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (commonFactorDepth >= MAX_COMMON_FACTOR_DEPTH) return null;
+
+	const sum = sumOfSignedTerms(expr);
+	if (sum === null) return null;
+
+	const factored = applyRules(commonFactorRules, sum);
+	if (nodesEqual(factored, sum)) return null;
+
+	const product = tidySumFactors(factored);
+
+	let productResult: SolveResult | null;
+	commonFactorDepth++;
+	try {
+		productResult = tryProductDecomposition(product, variable, opts);
+	} finally {
+		commonFactorDepth--;
+	}
+	if (productResult === null) return null;
+
+	const recorder = createStepRecorder();
+	recorder.recordStep(
+		'common-factor',
+		getRuleDescription('common-factor'),
+		expr,
+		product,
+		'summarized'
+	);
+
+	return {
+		...productResult,
+		steps: [...recorder.getStepsFiltered(opts.verbosity), ...productResult.steps]
 	};
 }
 
@@ -1228,6 +1358,17 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		return handleConstantEquation(expr, opts);
 	}
 
+	// L'inconnue est imposée mais n'apparaît pas : `1 = 0` résolue en x. Sans
+	// ce cas, l'équation tombait dans la classification (`unknown`) et
+	// revenait en ERREUR « non supporte » — alors qu'elle n'a simplement pas
+	// de solution. C'est le numérateur de 1/x = 0 (dérivée de ln x) : un
+	// échec que `.variations` doit distinguer d'une vraie absence de zéro.
+	// ⚠️ Seulement sans AUCUNE lettre : `a + 1 = 0` résolue en x dépend de a,
+	// la déclarer contradictoire serait faux.
+	if (getVariables(expr).size === 0) {
+		return { ...handleConstantEquation(expr, opts), variable };
+	}
+
 	// Compute domain of definition, intersected with user-provided search domain
 	const { domain: computedDomain } = computeDomain(expr, variable);
 	const domain = options?.domain
@@ -1252,7 +1393,8 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			strategy: 'algebraic',
 			steps: recorder.getStepsFiltered(opts.verbosity),
 			domain,
-			error: "L'expression n'est définie nulle part"
+			error: "L'expression n'est définie nulle part",
+			conclusive: true
 		};
 	}
 
@@ -1365,6 +1507,14 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 				steps: recorder.getStepsFiltered(opts.verbosity)
 			};
 		}
+	}
+
+	// Une somme dont les termes partagent un facteur non constant : on le met
+	// en évidence, puis produit nul. En DERNIER recours seulement — voir
+	// `tryCommonFactorDecomposition`.
+	if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
+		const factored = tryCommonFactorDecomposition(expr, variable, opts);
+		if (factored) result = factored;
 	}
 
 	// --- Apply domain filtering (single exit point) ---

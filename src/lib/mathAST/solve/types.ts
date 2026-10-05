@@ -167,6 +167,16 @@ export interface SolveResult {
 	/** Error message if unsupported */
 	readonly error?: string;
 
+	/**
+	 * `true` quand `error` EXPLIQUE une absence de solution démontrée — toutes
+	 * les racines du numérateur sont étrangères, ou l'expression n'est définie
+	 * nulle part — au lieu de signaler un échec du solveur.
+	 *
+	 * ⚠️ Sans ce drapeau, `error` ne distingue pas « pas de solution » de « je
+	 * ne sais pas » : `.variations √x` (f' = 1/(2√x)) passait pour non résolue.
+	 */
+	readonly conclusive?: boolean;
+
 	/** Periodicity note for trigonometric solutions */
 	readonly periodicityNote?: string;
 

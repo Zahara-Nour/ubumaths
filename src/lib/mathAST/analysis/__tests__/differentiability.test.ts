@@ -689,14 +689,14 @@ describe('analyzeDifferentiability - edge cases: transcendental compositions', (
 		expect(hasNonDiffPointAt(result, 0)).toBe(true);
 	});
 
-	it('|exp(x) - 1| - transcendental zero not detected (limitation)', () => {
-		// KNOWN LIMITATION: exp(0) - 1 = 0, so should have angular point at x=0
-		// But our zero-finder doesn't solve transcendental equations like exp(x) = 1
+	it('|exp(x) - 1| has an angular point at x=0', () => {
+		// exp(0) - 1 = 0. Ce test enregistrait la limitation inverse (« 0 point ») :
+		// le solveur ne reconnaissait pas la FONCTION exp(u), seulement e^u.
+		// Depuis qu'il la reconnaît, exp(x) = 1 donne x = 0.
 		const result = analyzeDiff('|\\exp(x) - 1|');
 
-		// Current behavior: doesn't find the zero of exp(x) - 1
-		// This is expected since findZeros only handles polynomials up to degree 4
-		expect(result.nonDifferentiablePoints.length).toBe(0);
+		expect(result.nonDifferentiablePoints.length).toBe(1);
+		expect(hasNonDiffPointAt(result, 0, 'angular')).toBe(true);
 	});
 
 	it('exp(|x|) is differentiable everywhere except at 0', () => {

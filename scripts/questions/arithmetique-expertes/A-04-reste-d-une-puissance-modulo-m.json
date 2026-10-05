@@ -1,0 +1,258 @@
+{
+	"title": "Reste de aⁿ modulo m : cycle des restes",
+	"description": "Reste de la division de aⁿ par m pour un grand exposant, à l'aide d'une puissance congrue à 1 ou à −1 (pièges : reste négatif −1 au lieu de m − 1, exposant réduit modulo m au lieu de la période)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-074", "TEXP-073"],
+	"theme": "Arithmétique",
+	"domain": "Congruences",
+	"subdomain": "Congruences",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{ {{n}} }$ par $7$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..200"
+				}
+			],
+			"conditions": ["mod(n,3) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^(mod(n,3))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}} = 3 \\times {{eval:floor(n/3)}} + {{eval:mod(n,3)}}$.",
+					"$2^{ {{n}} } = \\left(2^3\\right)^{ {{eval:floor(n/3)}} } \\times 2^{ {{eval:mod(n,3)}} } \\equiv 1 \\times 2^{ {{eval:mod(n,3)}} } \\,[7]$.",
+					"Le reste est $\\textcolor{{{color:primary.0}}}{{{eval:2^(mod(n,3))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le reste de la division euclidienne de ${{a}}^{ {{n}} }$ par ${{eval:a+1}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..12"
+				},
+				{
+					"name": "n",
+					"expression": "15..99"
+				}
+			],
+			"conditions": ["mod(n,2) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}} \\equiv -1 \\,[{{eval:a+1}}]$, donc ${{a}}^{ {{n}} } \\equiv (-1)^{ {{n}} } = -1 \\,[{{eval:a+1}}]$ (${{n}}$ est impair).",
+					"$-1$ n'est pas un reste : $-1 \\equiv {{eval:a+1}} - 1 = \\textcolor{{{color:primary.0}}}{{{a}}} \\,[{{eval:a+1}}]$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le reste de la division euclidienne de ${{a}}^{ {{n}} }$ par ${{eval:a+1}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..12"
+				},
+				{
+					"name": "n",
+					"expression": "16..98"
+				}
+			],
+			"conditions": ["mod(n,2) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}} \\equiv -1 \\,[{{eval:a+1}}]$, donc ${{a}}^{ {{n}} } \\equiv (-1)^{ {{n}} } \\,[{{eval:a+1}}]$.",
+					"${{n}}$ est pair : $(-1)^{ {{n}} } = 1$. Le reste est $\\textcolor{{{color:primary.0}}}{1}$."
+				]
+			}
+		},
+		{
+			"statement": "Sachant que $3^4 \\equiv 1 \\,[{{m}}]$, quel est le reste de la division euclidienne de $3^{ {{n}} }$ par ${{m}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "5|10|16|20|40|80"
+				},
+				{
+					"name": "n",
+					"expression": "20..150"
+				}
+			],
+			"conditions": ["mod(n,4) >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(3^(mod(n,4)),m)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}} = 4 \\times {{eval:floor(n/4)}} + {{eval:mod(n,4)}}$, donc $3^{ {{n}} } = \\left(3^4\\right)^{ {{eval:floor(n/4)}} } \\times 3^{ {{eval:mod(n,4)}} } \\equiv 3^{ {{eval:mod(n,4)}} } = {{eval:3^(mod(n,4))}} \\,[{{m}}]$.",
+					"Le reste est $\\textcolor{{{color:primary.0}}}{{{eval:mod(3^(mod(n,4)),m)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2^100 ≡ 2 [7]",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 2^(100 mod 7) = 2^2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 1 (cycle mal placé)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 2^53 ≡ 4 [7]",
+			"variationIndex": 0,
+			"variables": {
+				"n": "53"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 6^37 ≡ 6 [7]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"n": "37"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −1 (reste négatif)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"n": "37"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1 (parité oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"n": "37"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 9^40 ≡ 1 [10]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"n": "40"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 9 (impair confondu)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"n": "40"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 3^102 ≡ 9 [10]",
+			"variationIndex": 3,
+			"variables": {
+				"m": "10",
+				"n": "102"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 3^102 ≡ 11 [16]",
+			"variationIndex": 3,
+			"variables": {
+				"m": "16",
+				"n": "103"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 27 non réduit [16]",
+			"variationIndex": 3,
+			"variables": {
+				"m": "16",
+				"n": "103"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -39,7 +39,7 @@
 				<ArrowLeft class="h-5 w-5" />
 			</Button>
 			<div>
-				<h2 class="text-xl font-semibold">Templates Python</h2>
+				<h1 class="text-xl! font-semibold">Templates Python</h1>
 				<p class="text-sm text-muted-foreground">
 					Clonez un template pour partir d'un notebook préparé. Vous pouvez aussi créer vos propres
 					templates depuis la toolbar d'un notebook.

@@ -1,0 +1,197 @@
+{
+	"title": "Chaîne, cycle, connexité",
+	"description": "Reconnaître une chaîne, sa longueur, un cycle, un graphe connexe, sur une figure (pièges : longueur comptée en sommets, arête inexistante, graphe dessiné en un seul bloc mais non connexe)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-115", "TEXP-116"],
+	"theme": "Graphes et matrices",
+	"domain": "Graphes",
+	"subdomain": "Chaînes et connexité",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "C'est une chaîne de longueur $3$."
+				},
+				{
+					"content": "C'est une chaîne de longueur $4$."
+				},
+				{
+					"content": "C'est un cycle."
+				},
+				{
+					"content": "Ce n'est pas une chaîne."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$AB$, $BC$ et $CD$ sont des arêtes : c'est une **chaîne**, de longueur $\\textcolor{{{color:primary.0}}}{3}$ (le nombre d'arêtes, pas de sommets). Elle ne revient pas à $A$ : ce n'est pas un cycle."
+				]
+			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "C'est un cycle de longueur $3$."
+				},
+				{
+					"content": "C'est un cycle de longueur $4$."
+				},
+				{
+					"content": "C'est une chaîne, mais pas un cycle."
+				},
+				{
+					"content": "Ce n'est pas une chaîne, car $A$ y figure deux fois."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$AB$, $BE$, $EA$ sont trois arêtes distinctes et la chaîne revient à son point de départ : c'est un **cycle** de longueur $\\textcolor{{{color:primary.0}}}{3}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."
+				},
+				{
+					"content": "C'est une chaîne de longueur $3$."
+				},
+				{
+					"content": "C'est une chaîne de longueur $4$."
+				},
+				{
+					"content": "C'est un cycle."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": ["Il n'y a pas d'arête $ED$ : **ce n'est pas une chaîne**."]
+			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 10.8 ; -0.8 ; 3.8\ntaille: petite\ndescription: Graphe à 6 sommets ; arêtes AB, BC, AC, DE, EF (aucune arête entre {A, B, C} et {D, E, F}).\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(2, 3, etiquette=\"haut\")\nC = point(4, 0, etiquette=\"bas\")\nD = point(6, 3, etiquette=\"haut\")\nE = point(8, 0, etiquette=\"bas\")\nF = point(10, 3, etiquette=\"haut\")\nsegment(A, B)\nsegment(B, C)\nsegment(A, C)\nsegment(D, E)\nsegment(E, F)\n```\n\nCe graphe est-il connexe ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "Non : aucune chaîne ne relie $A$ à $D$."
+				},
+				{
+					"content": "Oui : chaque sommet a au moins un voisin."
+				},
+				{
+					"content": "Oui : il a $6$ sommets et $5$ arêtes."
+				},
+				{
+					"content": "On ne peut pas savoir sans sa matrice d'adjacence."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Connexe = deux sommets quelconques sont reliés par une chaîne. Aucune arête ne relie $\\{A, B, C\\}$ à $\\{D, E, F\\}$ : **le graphe n'est pas connexe**, même si aucun sommet n'est isolé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : chaîne de longueur 3",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : longueur 4 (sommets comptés)",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : cycle",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : cycle de longueur 3",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : longueur 4",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : pas une chaîne",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : chaîne de longueur 3",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : non connexe",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : pas de sommet isolé → connexe",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}

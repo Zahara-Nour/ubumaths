@@ -86,7 +86,7 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h2 class="text-xl font-semibold">Mes notebooks Python</h2>
+			<h1 class="text-xl! font-semibold">Mes notebooks Python</h1>
 			<p class="text-sm text-muted-foreground">
 				Notebooks que vous avez créés. Partagez-les avec un {lore.entities.class} depuis la page d'un
 				notebook.

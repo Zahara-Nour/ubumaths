@@ -763,8 +763,10 @@ function variationTableOf(
  * Lancer une action du panneau sur un objet.
  *
  * ⚠️ **L'expression est substituée avant l'appel** (§6 bis) : passer `f(x)` au
- * moteur rend un résultat faux SANS erreur — `.variations f(x)` annonce
- * « Points critiques : aucun » pour une parabole qui en a un.
+ * moteur rendait un résultat faux SANS erreur — `.variations f(x)` annonçait
+ * « Points critiques : aucun » pour une parabole qui en a un. Depuis
+ * fix/solve-facteur-commun, le moteur dit « non déterminés » quand il ne sait
+ * pas résoudre f'(x) = 0 : la substitution reste nécessaire pour qu'il sache.
  *
  * @param actionId - L'identifiant de `actionsFor`, pas un libellé
  * @param name - L'objet sur lequel l'élève a cliqué

@@ -41,6 +41,7 @@
 </script>
 
 <div class="space-y-6">
+	<h1 class="sr-only">Palotins des élèves</h1>
 	{#if data.classesData.length === 0}
 		<Card.Root>
 			<Card.Content class="py-8 text-center text-muted-foreground">

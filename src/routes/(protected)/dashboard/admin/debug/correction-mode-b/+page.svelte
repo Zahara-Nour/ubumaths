@@ -218,7 +218,7 @@
 
 <div class="container mx-auto space-y-8 p-6">
 	<header class="space-y-2">
-		<h1 class="text-3xl font-bold">Mode B — Generated correction steps</h1>
+		<h2 class="text-3xl! font-bold">Mode B — Generated correction steps</h2>
 		<p class="text-muted-foreground">
 			Démo des fixtures Mode B : CM2 arithmétique, 4e équation linéaire, 4e inéquations linéaires
 			(avec et sans changement de sens), Terminale équation du second degré, 1ère polynôme

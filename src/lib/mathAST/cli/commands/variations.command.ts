@@ -23,7 +23,7 @@ import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { parse } from '../core/pipeline';
 import { computeVariations } from '../../variations/compute';
-import { getDerivativeSignSymbol } from '../../variations/format';
+import { getDerivativeSignSymbol, unresolvedDerivativeZerosMessage } from '../../variations/format';
 import { toCustom } from '../../custom-generator';
 import { formatInterval } from '../../domain/format';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
@@ -158,16 +158,21 @@ export class VariationsCommand extends BaseCommand {
 			lines.push(chalk.bold('Domaine :') + ' ' + chalk.green(domainStr));
 			lines.push('');
 
-			// Critical points
-			lines.push(this.formatCriticalPointsColored(result.criticalPoints, variable));
-			lines.push('');
+			if (result.derivativeZerosUnresolved) {
+				// ⚠️ f'(x) = 0 non résolue : ni « aucun », ni sens de variation.
+				lines.push(chalk.yellow(unresolvedDerivativeZerosMessage(variable)));
+			} else {
+				// Critical points
+				lines.push(this.formatCriticalPointsColored(result.criticalPoints, variable));
+				lines.push('');
 
-			// Sign of derivative and monotonicity
-			lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
-			lines.push('');
+				// Sign of derivative and monotonicity
+				lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
+				lines.push('');
 
-			// Extrema
-			lines.push(this.formatExtremaColored(result.extrema));
+				// Extrema
+				lines.push(this.formatExtremaColored(result.extrema));
+			}
 
 			// Boundary limits (if available)
 			if (result.boundaryLimits && result.boundaryLimits.length > 0) {

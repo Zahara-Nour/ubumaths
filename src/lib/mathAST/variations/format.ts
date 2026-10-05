@@ -82,16 +82,21 @@ export function formatVariationTable(result: VariationResult): string {
 	lines.push(`Domaine : ${formatDomain(result.domain)}`);
 	lines.push('');
 
-	// Critical points
-	lines.push(formatCriticalPoints(result.criticalPoints, v));
-	lines.push('');
+	if (result.derivativeZerosUnresolved) {
+		// ⚠️ Ni « aucun point critique », ni « Extrema : aucun » : on ne sait pas.
+		lines.push(unresolvedDerivativeZerosMessage(v));
+	} else {
+		// Critical points
+		lines.push(formatCriticalPoints(result.criticalPoints, v));
+		lines.push('');
 
-	// Sign of derivative and monotonicity
-	lines.push(formatMonotonicIntervals(result.monotonicIntervals, v));
-	lines.push('');
+		// Sign of derivative and monotonicity
+		lines.push(formatMonotonicIntervals(result.monotonicIntervals, v));
+		lines.push('');
 
-	// Extrema
-	lines.push(formatExtrema(result.extrema));
+		// Extrema
+		lines.push(formatExtrema(result.extrema));
+	}
 
 	// Boundary limits (if available)
 	if (result.boundaryLimits && result.boundaryLimits.length > 0) {
@@ -114,6 +119,21 @@ export function formatVariationTable(result: VariationResult): string {
 // =============================================================================
 // Section Formatting Functions
 // =============================================================================
+
+/**
+ * Ce qu'on affiche quand le solveur n'a pas su résoudre f'(x) = 0
+ * (`VariationResult.derivativeZerosUnresolved`) : on le DIT, au lieu de
+ * conclure « aucun point critique » et un sens de variation constant.
+ *
+ * Partagé avec la commande `.variations`, qui a sa propre mise en couleurs.
+ */
+export function unresolvedDerivativeZerosMessage(variable: string): string {
+	return [
+		`Points critiques : non déterminés — f'(${variable}) = 0 n'a pas pu être résolue`,
+		`Signe de f'(${variable}) et sens de variation : non déterminés`,
+		'Extrema : non déterminés'
+	].join('\n');
+}
 
 /**
  * Format critical points list.

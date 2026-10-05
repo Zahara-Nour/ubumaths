@@ -30,7 +30,8 @@
 <div class="space-y-6">
 	<!-- Header -->
 	<div>
-		<h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+		<!-- Libellé de rubrique, pas un titre : le seul h1 est celui de la page -->
+		<div class="text-2xl font-bold tracking-tight sm:text-3xl">{title}</div>
 		{#if description}
 			<p class="mt-1 text-muted-foreground">{description}</p>
 		{/if}
