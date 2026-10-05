@@ -106,6 +106,8 @@ import { applyRules } from '../pattern/rule';
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
 import { nodesEqual } from '../normal/hash';
+import { denormalizeMonomial, denormalizeTerm } from '../normal/denormalize';
+import { divMonomials, gcdMonomials } from '../normal/monomial';
 
 // =============================================================================
 // Strategy Selection
@@ -491,11 +493,36 @@ function tryCommonFactorDecomposition(
 	const sum = sumOfSignedTerms(expr);
 	if (sum === null) return null;
 
-	const factored = applyRules(commonFactorRules, sum);
-	if (nodesEqual(factored, sum)) return null;
+	// 1. La somme telle qu'elle est écrite (comportement de #852, inchangé).
+	const direct = applyRules(commonFactorRules, sum);
+	const fromWrittenSum = nodesEqual(direct, sum)
+		? null
+		: solveFactoredProduct(expr, tidySumFactors(direct), variable, opts);
+	if (fromWrittenSum !== null) return fromWrittenSum;
 
-	const product = tidySumFactors(factored);
+	// 2. Le facteur commun enfoui dans un produit, un opposé ou une puissance :
+	//    la somme est d'abord réécrite pour l'exposer, puis les MÊMES règles
+	//    factorisent.
+	const exposed = sumWithExposedCommonFactor(expr, variable);
+	if (exposed === null) return null;
+	const factored = applyRules(commonFactorRules, exposed.sum);
+	if (!isMultiplication(factored) || !nodesEqual(factored.right, exposed.factor)) return null;
+	return solveFactoredProduct(expr, tidySumFactors(factored), variable, opts);
+}
 
+/**
+ * Résoudre le produit issu de la mise en facteur (produit nul), en racontant
+ * la mise en facteur en tête des étapes.
+ */
+function solveFactoredProduct(
+	expr: MathNode,
+	product: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
 	let productResult: SolveResult | null;
 	commonFactorDepth++;
 	try {
@@ -518,6 +545,56 @@ function tryCommonFactorDecomposition(
 		...productResult,
 		steps: [...recorder.getStepsFiltered(opts.verbosity), ...productResult.steps]
 	};
+}
+
+/**
+ * La somme réécrite `r₁·c + r₂·c + …`, le facteur commun `c` en opérande
+ * DIRECT de chaque terme, pour que `commonFactorRules` le voie.
+ *
+ * ⚠️ **Ce que les règles ne lisent pas** (mesuré sur des dérivées de
+ * Terminale) : un facteur commun enfoui dans un produit imbriqué
+ * (`x·(e^{2x}·2)`), sous un opposé (`x·(−e^{−x})`), ou caché dans une
+ * puissance (`x²·1/x`, qui vaut `x`). On ne réécrit pas les règles : la forme
+ * normale (`normalize`) aplatit déjà chaque terme en coefficient × liste de
+ * facteurs `base^exposant` — signes et nombres sortis, `x²·1/x` simplifié,
+ * `x²` vu comme `x` à l'exposant 2. Le facteur commun est leur PGCD
+ * (`gcdMonomials`), le reste de chaque terme son quotient (`divMonomials`).
+ *
+ * Seuls comptent les facteurs qui dépendent de l'inconnue et d'exposant
+ * positif : sortir un nombre ne mène à aucun produit nul utile.
+ *
+ * @returns la somme réécrite et le facteur commun, ou `null` s'il n'y en a pas
+ */
+function sumWithExposedCommonFactor(
+	expr: MathNode,
+	variable: string
+): { readonly sum: MathNode; readonly factor: MathNode } | null {
+	const form = normalize(expr);
+	// Un dénominateur non constant demanderait de raisonner sur ses zéros :
+	// hors de portée, on ne s'y aventure pas.
+	if (form.denominator.length !== 1 || form.denominator[0].monomial.length !== 0) return null;
+
+	const terms = form.numerator;
+	if (terms.length < 2) return null;
+
+	const common = terms
+		.slice(1)
+		.reduce((gcd, term) => gcdMonomials(gcd, term.monomial), [...terms[0].monomial])
+		.filter((f) => f.exponent.n > 0n && getVariables(f.base).has(variable));
+	const factor = denormalizeMonomial(common);
+	if (factor === null) return null;
+
+	const addends: MathNode[] = terms.map((term) =>
+		multiply(
+			denormalizeTerm({
+				coefficient: term.coefficient,
+				monomial: divMonomials(term.monomial, common)
+			}),
+			factor,
+			'implicit'
+		)
+	);
+	return { sum: addends.reduce((acc: MathNode, term) => add(acc, term)), factor };
 }
 
 // =============================================================================

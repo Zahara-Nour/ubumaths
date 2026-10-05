@@ -193,6 +193,14 @@ export interface ContinuityResult {
 	 */
 	readonly isContinuousOnDomain: boolean;
 
+	/**
+	 * `true` quand les zéros de l'argument d'un `sign(u)` n'ont pas pu être
+	 * déterminés (le solveur ne sait pas résoudre u = 0) : des sauts peuvent
+	 * manquer à `discontinuities`, et `isContinuousOnDomain` vaut alors `false`
+	 * — la continuité n'est pas établie, ce n'est pas « aucun saut ».
+	 */
+	readonly candidatesUnresolved?: boolean;
+
 	/** The variable analyzed */
 	readonly variable: string;
 
