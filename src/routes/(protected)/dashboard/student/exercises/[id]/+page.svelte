@@ -138,7 +138,11 @@
 		<Card.Header>
 			<div class="flex items-start justify-between">
 				<div class="flex-1">
-					<Card.Title class="text-2xl">{data.exercise.title || lore.learning.exercise}</Card.Title>
+					<Card.Title class="text-2xl"
+						><h1 class="text-2xl! leading-none!">
+							{data.exercise.title || lore.learning.exercise}
+						</h1></Card.Title
+					>
 
 					{#if data.exercise.tags && data.exercise.tags.length > 0}
 						<div class="mt-2 flex flex-wrap gap-1">

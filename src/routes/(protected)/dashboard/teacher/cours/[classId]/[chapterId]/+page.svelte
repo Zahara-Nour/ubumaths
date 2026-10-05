@@ -289,7 +289,9 @@
 				<div class="flex items-center gap-3">
 					<BookMarked class="h-8 w-8 {colorClasses.text}" />
 					<div>
-						<Card.Title class="text-2xl">{data.chapter.title}</Card.Title>
+						<Card.Title class="text-2xl"
+							><h1 class="text-2xl! leading-none!">{data.chapter.title}</h1></Card.Title
+						>
 						{#if data.chapter.description}
 							<Card.Description class="mt-1">
 								{data.chapter.description}

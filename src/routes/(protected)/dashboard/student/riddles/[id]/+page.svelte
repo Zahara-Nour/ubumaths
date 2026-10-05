@@ -75,6 +75,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
+	<h1 class="sr-only">{data.riddle.title}</h1>
 	<!-- Back Button -->
 	<Button variant="ghost" href="/dashboard/student/riddles" class="mb-4">
 		<ArrowLeft class="mr-2 h-4 w-4" />
