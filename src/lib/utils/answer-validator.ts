@@ -34,6 +34,7 @@ import {
 	cosmeticViolations,
 	isSimpleNumberLatex,
 	isDecimalComplexLatex,
+	isSingleTermLatex,
 	isNumberOrNumberFractionLatex,
 	isQuantityValueLatex,
 	forgotPercentSign,
@@ -58,6 +59,7 @@ import {
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
 import { rulesDecide } from '$lib/questions/rules-suffice';
+import { matchesAngleModulo2Pi } from '$lib/questions/angle-modulo';
 import {
 	judgeIntervalAnswer,
 	DEFAULT_INTERVAL_FORM_MODE
@@ -802,6 +804,29 @@ function checkSimpleNumberForm(
 }
 
 /**
+ * Écriture d'un angle juste à 2kπ près (`angleModulo`) : une somme ou une différence
+ * (`\frac{\pi}{4}+2\pi`, calcul non fait) est de mauvaise forme ; sinon la réponse est
+ * comparée à elle-même, seules restent les contraintes d'écriture.
+ */
+function angleWritingForm(
+	latex: string,
+	constraints: ConstraintOptions,
+	genericFunctions?: GenericFunctionConfig
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const severities = buildConstraintSeverities(constraints);
+	const raw = cosmeticViolations(latex, severities, formOptionsOf(constraints, genericFunctions));
+	const { status, violations } = mapCosmeticViolations(raw, false);
+	if (!isSingleTermLatex(latex)) {
+		const feedback = CONSTRAINT_FEEDBACK['form'].single;
+		return {
+			status: 'bad_form',
+			violations: [{ constraint: 'form', severity: 'error', feedback }, ...violations]
+		};
+	}
+	return { status, violations };
+}
+
+/**
  * Case `rulesSuffice` sans précision : un nombre en fraction (`\\frac{1}{2}`) y
  * est une réponse au même titre qu'un nombre simple (décision de David du
  * 2026-10-03). Avec une précision, l'exigence d'un nombre simple (arrondi) reste.
@@ -912,7 +937,27 @@ function validateBlankValue(
 		return result.isCorrect;
 	}
 
-	return isAnswerMatch(userAnswer, blank.expectedAnswer, instance);
+	return (
+		isAnswerMatch(userAnswer, blank.expectedAnswer, instance) ||
+		isAngleModuloMatch(userAnswer, blank, instance)
+	);
+}
+
+/**
+ * Case `angleModulo: '2pi'` : la réponse vaut l'attendue plus 2kπ, k entier non nul
+ * (cf. questions/angle-modulo). Faux sans l'option.
+ */
+function isAngleModuloMatch(
+	userAnswer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): boolean {
+	return (
+		blank.angleModulo === '2pi' &&
+		matchesAngleModulo2Pi(userAnswer, blank.expectedAnswer, (answer, expected) =>
+			isAnswerMatch(answer, expected, instance)
+		)
+	);
 }
 
 /**
@@ -1230,6 +1275,9 @@ function validateSingleBlank(
 	let isCorrect: boolean;
 	// Durée composée juste mais mal écrite (« 2 h 75 min », « 2 h 15 mn ») : jugée à l'étape 4
 	let durationFormIssue: DurationFormIssue | undefined;
+	// Juste à un multiple non nul de 2π près (`angleModulo`) : la forme de l'attendue
+	// n'est pas un modèle, seule l'écriture de la réponse est jugée
+	let angleShifted = false;
 
 	if (rulesDecide(blank)) {
 		// Plusieurs bonnes réponses : les règles, déjà passées, suffisent.
@@ -1277,6 +1325,11 @@ function validateSingleBlank(
 		isCorrect = result.isCorrect;
 	} else {
 		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer, instance);
+		// Argument « à 2π près » : juste en valeur, écriture jugée seule (étape 4)
+		if (!isCorrect && isAngleModuloMatch(userAnswer, blank, instance)) {
+			isCorrect = true;
+			angleShifted = true;
+		}
 	}
 
 	if (!isCorrect) {
@@ -1433,6 +1486,19 @@ function validateSingleBlank(
 			cosmeticViolations(effectiveLatex, severities, formOptions),
 			false
 		);
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// angleModulo : réponse juste à 2kπ près (k ≠ 0). Un calcul laissé en somme
+	// (`\frac{\pi}{4}+2\pi`) est de mauvaise forme ; sinon seules les contraintes
+	// d'écriture comptent (`-\frac{14\pi}{8}` : fraction à simplifier).
+	if (angleShifted) {
+		const { status, violations } = angleWritingForm(effectiveLatex, constraints, genericFunctions);
 		return {
 			isCorrect: status !== 'bad_form',
 			status,
@@ -1827,6 +1893,20 @@ function matchedAnswerForm(
 	if (blank.unit?.expected) {
 		const result = validateSingleBlank(userAnswer, blank, blankLatex, instance);
 		return { status: singleBlankStatus(result), violations: result.constraintViolations ?? [] };
+	}
+
+	// Argument juste à 2kπ près (k ≠ 0, `angleModulo`) : même jugement que seule
+	if (
+		!blank.requiredForm &&
+		blankLatex &&
+		!isAnswerMatch(userAnswer, blank.expectedAnswer, instance) &&
+		isAngleModuloMatch(userAnswer, blank, instance)
+	) {
+		return angleWritingForm(
+			blankLatex,
+			instance.options?.constraints ?? {},
+			templateGenericFunctions(instance.genericFunctions)
+		);
 	}
 
 	let worstStatus: ValidationStatus = 'correct';

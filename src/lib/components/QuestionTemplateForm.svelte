@@ -388,6 +388,10 @@
 	let sharedBlankAcceptDecimal = $state(
 		initialTemplate?.shared?.blankDefaults?.acceptDecimal ?? false
 	);
+	// Argument d'un complexe : une réponse juste à 2kπ près est juste
+	let sharedBlankAngleModulo = $state(
+		initialTemplate?.shared?.blankDefaults?.angleModulo === '2pi'
+	);
 	let sharedBlankAcceptCombinatorial = $state(
 		initialTemplate?.shared?.blankDefaults?.acceptCombinatorialNotation ?? false
 	);
@@ -796,6 +800,7 @@
 		}
 		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (sharedBlankAcceptDecimal) blankDefaults.acceptDecimal = true;
+		if (sharedBlankAngleModulo) blankDefaults.angleModulo = '2pi';
 		if (sharedBlankAcceptCombinatorial) blankDefaults.acceptCombinatorialNotation = true;
 		// Une seule nature de réponse : « intervalles » l'emporte si les deux sont cochées
 		if (sharedBlankIntervals) {
@@ -968,6 +973,7 @@
 		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
+		sharedBlankAngleModulo = t.shared?.blankDefaults?.angleModulo === '2pi';
 		sharedBlankAcceptCombinatorial = t.shared?.blankDefaults?.acceptCombinatorialNotation ?? false;
 		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
 		sharedBlankOpenableBounds = t.shared?.blankDefaults?.openableBounds === true;
@@ -1669,6 +1675,7 @@
 			bind:sharedBlankUnitExpected
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
+			bind:sharedBlankAngleModulo
 			bind:sharedBlankAcceptCombinatorial
 			bind:sharedBlankIntervals
 			bind:sharedBlankOpenableBounds

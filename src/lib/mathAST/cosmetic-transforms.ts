@@ -1552,6 +1552,16 @@ export function isSimpleNumberLatex(latex: string): boolean {
 }
 
 /**
+ * Un seul terme, signe compris (`-\frac{7\pi}{4}`, `3\pi`) : ni somme ni différence
+ * (`\frac{\pi}{4}+2\pi`). Illisible : `false`.
+ */
+export function isSingleTermLatex(latex: string): boolean {
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
+	if (!parsed.ast || parsed.errors.length > 0) return false;
+	return flattenSumShallow(parsed.ast).length === 1;
+}
+
+/**
  * Un complexe écrit en décimaux, `a+bi` (`0.5-0.5i`, `-0{,}5i+2`, `3i`, `1-i`) : au plus
  * un nombre réel et un terme imaginaire `b i` / `i b` / `i`, `b` nombre. Sert à l'option
  * de case `acceptDecimal`, comme `isSimpleNumberLatex` pour un réel.

@@ -77,6 +77,18 @@ describe('QuestionTemplateForm — cases de calcul', () => {
 		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
 	});
 
+	it('argument à 2π près : réglage conservé', async () => {
+		const blankDefaults: BlankDefaults = { angleModulo: '2pi' };
+		const saved = await saveRoundTrip(blankDefaults);
+		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
+	});
+
+	it('forme exigée exponentielle : réglage conservé', async () => {
+		const blankDefaults: BlankDefaults = { requiredForm: 'exponentielle' };
+		const saved = await saveRoundTrip(blankDefaults);
+		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
+	});
+
 	it('notation combinatoire acceptée : réglage conservé', async () => {
 		const blankDefaults: BlankDefaults = { acceptCombinatorialNotation: true };
 		const saved = await saveRoundTrip(blankDefaults);

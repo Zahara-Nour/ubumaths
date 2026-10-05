@@ -37,6 +37,8 @@ export function computeBlankVerdicts(values: string[], instance: QuestionInstanc
 		if (blank.acceptCombinatorialNotation === true && isCombinatorialNotationLatex(value)) {
 			return isBlankValueCorrect(value, blank, instance);
 		}
+		// Argument « à 2π près » (`angleModulo`) : `-\frac{7\pi}{4}` pour `\frac{\pi}{4}` est vert
+		if (blank.angleModulo === '2pi') return isBlankValueCorrect(value, blank, instance);
 		return value.trim().toLowerCase() === blank.expectedAnswer.trim().toLowerCase();
 	});
 }

@@ -468,6 +468,14 @@ Règles d'écriture qui évitent un défaut :
   une borne ouverte ; JAMAIS pour l'ensemble de solutions d'une inéquation. Specs conseillées :
   « borne ouverte → correct » et « borne fermée à tort → incorrect »
   (`docs/ref/convention-equivalence.md`, § Réponse « intervalles »).
+- Nombres complexes (`docs/ref/convention-equivalence.md`, § Nombres complexes) : « donne UN
+  argument de z » → `"angleModulo": "2pi"` (case ou `blankDefaults` ; éditeur : « Angle juste à
+  2π près ») : `-\frac{7\pi}{4}` juste pour `\frac{\pi}{4}`, `\frac{\pi}{4}+2\pi` de mauvaise
+  forme ; sans l'option, l'argument principal est exigé. « Donne la forme exponentielle de z » :
+  UNE case, `"requiredForm": "exponentielle"` (re^{iθ}, r > 0, argument libre, valeur par la
+  formule d'Euler) ; forme algébrique exigée : `"requiredForm": "algebrique"`. Sans forme exigée,
+  exponentielle et algébrique sont deux formes (« pas sous la forme demandée »). Ensemble de
+  solutions dans ℂ : case `answerKind: "intervalles"` avec un ensemble fini (`\{1+i;1-i\}`).
 - Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
   `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`).
   `isPrime(expr)` y vaut 1 si expr est un entier premier, 0 sinon (non entier, < 2) : contre-exemple

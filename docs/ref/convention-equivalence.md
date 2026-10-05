@@ -330,6 +330,17 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   juste : 42 synthétiques et 2 specs de la carte D-05 (copie de prod comprise ; faux → mauvaise
   forme, spec mise à jour) ; 2 lignes de description renommée (A-02) ; aucun modèle publié.
 
+- **Argument modulo 2π** (option de case `angleModulo: "2pi"`, case ou `blankDefaults`,
+  éditeur : « Angle juste à 2π près ») : une réponse qui diffère de l'attendue d'un multiple
+  entier NON NUL de 2π est juste (`questions/angle-modulo.ts` : multiple estimé numériquement,
+  égalité `réponse = attendue + 2kπ` prouvée par l'équivalence exacte). `-\frac{7\pi}{4}`,
+  `\frac{9\pi}{4}` pour `\frac{\pi}{4}` : juste ; `\frac{5\pi}{4}` : faux ; écriture jugée seule
+  (`-\frac{14\pi}{8}` perfectible, `\frac{\pi}{4}+2\pi` de mauvaise forme). Câblé comme
+  `openableBounds` : Zod strict et souple, générateur (case ordinaire seulement), validateur,
+  barème serveur, `orderIndependent`, verdicts par case, specs. Sans l'option, rien ne change.
+  Mesure (même corpus, dont 438 variantes `θ − 2π` sur des cases réelles sans l'option) :
+  37 973 verdicts, 15 changés, tous synthétiques AVEC l'option ; 0 sans.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

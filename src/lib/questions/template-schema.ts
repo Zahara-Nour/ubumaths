@@ -16,7 +16,14 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
-import { ANSWER_KINDS, COMPLEX_FORMS, EQUATION_FORMS, SOLUTION_MODES, VECTOR_MODES } from './types';
+import {
+	ANGLE_MODULOS,
+	ANSWER_KINDS,
+	COMPLEX_FORMS,
+	EQUATION_FORMS,
+	SOLUTION_MODES,
+	VECTOR_MODES
+} from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 
 // ============================================================================
@@ -326,6 +333,7 @@ export const blankDefaultsSchema = z.object({
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
+	angleModulo: z.enum(ANGLE_MODULOS).optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -344,6 +352,7 @@ export const blankSchema = z.object({
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
+	angleModulo: z.enum(ANGLE_MODULOS).optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -584,6 +593,7 @@ const blankDefaultsStrictZ = z
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
+		angleModulo: z.enum(ANGLE_MODULOS).optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
@@ -604,6 +614,7 @@ const blankStrictZ = z
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
+		angleModulo: z.enum(ANGLE_MODULOS).optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
