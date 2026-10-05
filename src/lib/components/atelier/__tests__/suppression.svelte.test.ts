@@ -54,6 +54,16 @@ describe('supprimer depuis une carte', () => {
 		expect(dialog()).toBeNull();
 	});
 
+	it('la suppression se lit dans l’historique de Calcul (G7)', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+
+		await clickRemove(container, 'f');
+
+		expect(container.querySelector('.historique')?.textContent).toContain('Supprimé : f.');
+	});
+
 	it('avec dépendants, demande en les nommant (N2)', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });

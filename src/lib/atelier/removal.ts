@@ -38,3 +38,23 @@ export function removedMessage(removed: readonly string[]): string {
 		? `« ${displayName(removed[0])} » supprimé`
 		: `${removed.length} objets supprimés`;
 }
+
+/** « f, f′ et g » — tous les noms, pour l'historique (qui n'a pas à tenir d'un coup d'œil). */
+function listed(names: readonly string[]): string {
+	const shown = names.map(displayName);
+	return shown.length === 1
+		? shown[0]
+		: `${shown.slice(0, -1).join(', ')} et ${shown[shown.length - 1]}`;
+}
+
+/** La ligne de Calcul d'une suppression : « Supprimé : f, f′ et g. » */
+export function removedLine(removed: readonly string[]): string {
+	return `Supprimé : ${listed(removed)}.`;
+}
+
+/** La ligne de Calcul d'une annulation : « f, f′ et g sont revenus. » */
+export function restoredLine(removed: readonly string[]): string {
+	return removed.length === 1
+		? `« ${displayName(removed[0])} » est revenu.`
+		: `${listed(removed)} sont revenus.`;
+}

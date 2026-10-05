@@ -259,7 +259,8 @@
 	 * N1, N3, N4). Le message disparaît seul : la suppression devient définitive.
 	 */
 	function removeNow(name: string) {
-		const result = atelier.removeWithDependents(name);
+		// Par le pupitre : la suppression laisse sa ligne dans Calcul (G7)
+		const result = desk.remove(name);
 		if (!result.ok) {
 			toaster.error(result.message);
 			return;
@@ -283,7 +284,7 @@
 	function undo(result: RemovedWithDependents) {
 		if (undoable?.result === result) undoable = null;
 		// L4 : l'atelier a changé depuis — on le dit plutôt que de restaurer par-dessus
-		if (!atelier.undoRemoval(result)) {
+		if (!desk.undoRemoval(result)) {
 			toaster.warning('L’atelier a changé depuis : la suppression ne peut plus être annulée.');
 		}
 	}

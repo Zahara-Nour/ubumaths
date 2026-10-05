@@ -145,3 +145,8 @@ chaque action doit avoir son équivalent, et toutes n'en ont pas.
   l'atelier SANS `startIfEmpty` (sur `/grapheur`, la carte `f` vide recréée
   ferait refuser le `f` rejoué). Absent d'un atelier éphémère, comme « Repartir
   de zéro ». Les diagrammes (Q36) ne laissent pas de ligne : ils ne se rejouent pas.
+- **Suite (retour de David, 2026-10-05 : « quand je supprime une carte, on ne
+  voit rien dans l'historique »)** — supprimer écrit « Supprimer f » / « Supprimé :
+  f, f′ et g. », annuler écrit « Annuler la suppression » / « f, f′ et g sont
+  revenus. » (G7). Gestes `supprimer` et `annuler`, exportés et rejoués. Une
+  annulation refusée (L4) ne laisse pas de ligne : le toast le dit.

@@ -15,7 +15,7 @@
  * @module atelier/desk
  */
 
-import type { Atelier } from './atelier.svelte';
+import type { Atelier, Refused, RemovedWithDependents } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
@@ -40,6 +40,7 @@ import {
 } from '$lib/ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
+import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
 import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
@@ -104,6 +105,10 @@ export type ReplayStep =
 			readonly name: string;
 			readonly value?: string;
 	  }
+	/** Supprimer un objet et ses dépendants (lot B) */
+	| { readonly kind: 'supprimer'; readonly name: string }
+	/** Annuler la dernière suppression */
+	| { readonly kind: 'annuler' }
 	/** `line` : l'indice, dans l'historique, de la ligne gardée */
 	| { readonly kind: 'garder'; readonly line: number };
 
@@ -206,6 +211,9 @@ export class CalcDesk {
 	/** Le geste en cours : attaché à la PREMIÈRE ligne qu'il écrit, puis oublié. */
 	#gesture: ReplayStep | null = null;
 
+	/** La dernière suppression, pour rejouer une annulation. */
+	#lastRemoval: RemovedWithDependents | null = null;
+
 	constructor(atelier: Atelier, engine: WebReplEngine = new WebReplEngine()) {
 		this.atelier = atelier;
 		this.session = { atelier, engine };
@@ -243,6 +251,7 @@ export class CalcDesk {
 	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
 	clear(): void {
 		this.#gesture = null;
+		this.#lastRemoval = null;
 		this.entries = [];
 		this.notice = null;
 	}
@@ -326,6 +335,13 @@ export class CalcDesk {
 				if (step.action === 'image') this.image(step.name, step.value ?? '');
 				else this.runFromPanel(step.action, step.name, graph);
 				return null;
+			case 'supprimer':
+				this.remove(step.name);
+				return null;
+			case 'annuler':
+				return this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)
+					? null
+					: 'la suppression ne s’est pas annulée.';
 			case 'garder': {
 				const row = rows[step.line];
 				const kept = row === undefined ? undefined : this.entries[row];
@@ -334,6 +350,40 @@ export class CalcDesk {
 				return null;
 			}
 		}
+	}
+
+	/**
+	 * Supprimer un objet et ses dépendants, et le dire dans l'historique (G7 ;
+	 * retour de David : « quand je supprime une carte, on ne voit rien »).
+	 * La confirmation est l'affaire de la vue.
+	 */
+	remove(name: string): RemovedWithDependents | Refused {
+		const result = this.atelier.removeWithDependents(name);
+		if (!result.ok) return result;
+		this.#lastRemoval = result;
+		this.#gesture = { kind: 'supprimer', name };
+		this.#push({
+			label: `Supprimer ${displayName(name)}`,
+			text: removedLine(result.removed),
+			failed: false
+		});
+		return result;
+	}
+
+	/**
+	 * Annuler cette suppression, et le dire. Refusée — sans ligne, la vue le
+	 * dit — si l'atelier a changé depuis (L4).
+	 */
+	undoRemoval(result: RemovedWithDependents): boolean {
+		if (!this.atelier.undoRemoval(result)) return false;
+		this.#lastRemoval = null;
+		this.#gesture = { kind: 'annuler' };
+		this.#push({
+			label: 'Annuler la suppression',
+			text: restoredLine(result.removed),
+			failed: false
+		});
+		return true;
 	}
 
 	/** Garder une ligne sous un nom — décision D5. */

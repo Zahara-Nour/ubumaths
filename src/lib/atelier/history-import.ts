@@ -60,6 +60,8 @@ const entrySchema = z.discriminatedUnion('kind', [
 		value: input.optional(),
 		...shown
 	}),
+	z.object({ kind: z.literal('supprimer'), name: z.string().min(1).max(100), ...shown }),
+	z.object({ kind: z.literal('annuler'), ...shown }),
 	z.object({
 		kind: z.literal('garder'),
 		line: z.number().int().min(0).max(MAX_HISTORY_ENTRIES),
@@ -129,6 +131,10 @@ export function stepOf(entry: ImportedEntry): ReplayStep | null {
 				name: entry.name,
 				...(entry.value !== undefined && { value: entry.value })
 			};
+		case 'supprimer':
+			return { kind: 'supprimer', name: entry.name };
+		case 'annuler':
+			return { kind: 'annuler' };
 		case 'garder':
 			return { kind: 'garder', line: entry.line };
 		default:
