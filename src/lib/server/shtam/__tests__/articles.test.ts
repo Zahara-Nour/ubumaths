@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { extractMath } from '$lib/ubumark/parser/math-extractor';
+import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { findBareGreekNames } from '$lib/exercises/bare-greek-warnings';
 import {
 	ARTICLE_SOURCES,
 	findPublishedArticle,
@@ -153,6 +156,16 @@ describe('pickRandomArticle', () => {
 describe('les articles du dépôt', () => {
 	it('sont tous valides (un article mal formé casse la CI, pas la prod)', () => {
 		expect(() => parseArticles(ARTICLE_SOURCES)).not.toThrow();
+	});
+
+	// Mêmes contrôles que `pnpm check:ubumark` : une formule cassée s'affiche en rouge sans erreur
+	it.each(Object.entries(ARTICLE_SOURCES))('%s : formules rendues sans erreur', (_path, raw) => {
+		const broken = extractMath(raw)
+			.placeholders.map((p) => ({ p, latex: expressionToLatex(p.expression, p.syntax) }))
+			.filter(({ latex }) => latex.includes('textcolor{red}'))
+			.map(({ p }) => p.expression);
+		expect(broken).toEqual([]);
+		expect(findBareGreekNames(raw)).toEqual([]);
 	});
 
 	it('existent', () => {
