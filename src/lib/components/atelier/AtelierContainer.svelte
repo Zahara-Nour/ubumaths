@@ -12,6 +12,7 @@
 	import { provideAtelier } from '$lib/atelier/context';
 	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
+	import type { ImportedHistory } from '$lib/atelier/history-import';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
 	import { derivativeName, displayName } from '$lib/atelier/names';
 	import type { AtelierState } from '$lib/atelier/persistence';
@@ -83,10 +84,43 @@
 	 */
 	let undoable: { result: RemovedWithDependents; toastId: string | number } | null = null;
 
+	/** L'historique relu qui attend la confirmation du rejeu (lot C2, R2). */
+	let pendingReplay = $state<ImportedHistory | null>(null);
+	let confirmReplay = $state(false);
+
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
 
 	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
+	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
+	function handleReplayRequest(history: ImportedHistory) {
+		pendingReplay = history;
+		if (atelier.objects.length > 0 || desk.entries.length > 0) confirmReplay = true;
+		else replayNow();
+	}
+
+	/**
+	 * Vider puis rejouer. ⚠️ Pas `handleReset` : sur `/grapheur`, il recrée une
+	 * carte `f` vide, qui ferait refuser le `f` rejoué.
+	 */
+	function replayNow() {
+		if (pendingReplay === null) return;
+		atelier.restore({ version: ATELIER_STATE_VERSION, objects: [] });
+		desk.clear();
+		seen = 0;
+		selected = null;
+		desk.replay(pendingReplay, graph);
+	}
+
+	/** Ce que le rejeu remplacera, en mots (R2). */
+	function replayLoss(): string {
+		const count = atelier.objects.length;
+		if (count === 0) return 'l’historique actuel sera effacé.';
+		const objects =
+			count === 1 ? 'ton objet sera remplacé' : `tes ${count} objets seront remplacés`;
+		return `${objects}, et l’historique effacé.`;
+	}
+
 	function handleReset() {
 		atelier.restore({ version: ATELIER_STATE_VERSION, objects: [] });
 		// L'historique aussi : il parlait d'objets supprimés (revue du lot 6, C3)
@@ -419,6 +453,14 @@
 			onConfirm={handleConfirmRemoval}
 			onCloseAutoFocus={handleRemovalCloseFocus}
 		/>
+		<ConfirmDialog
+			bind:open={confirmReplay}
+			title="Rejouer cet historique ?"
+			description="Rejouer repart de zéro : {replayLoss()} Un lien de partage déjà copié les garde."
+			confirmLabel="Rejouer"
+			variant="destructive"
+			onConfirm={replayNow}
+		/>
 		<nav class="onglets" aria-label="Vues de l'atelier">
 			{#each VIEWS as item (item.id)}
 				<button
@@ -454,7 +496,7 @@
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'calcul'}
-				<CalculView {desk} />
+				<CalculView {desk} onreplay={ephemeral ? undefined : handleReplayRequest} />
 			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce

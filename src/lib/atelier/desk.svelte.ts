@@ -40,6 +40,7 @@ import {
 } from '$lib/ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
+import { stepOf, type ImportedHistory } from './history-import';
 import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
 import { wordsReason } from './actions';
@@ -105,6 +106,17 @@ export type ReplayStep =
 	  }
 	/** `line` : l'indice, dans l'historique, de la ligne gardée */
 	| { readonly kind: 'garder'; readonly line: number };
+
+/** Ce qu'un rejeu a donné : tout, ou l'arrêt à une ligne (R3). */
+export type ReplayReport =
+	| { readonly ok: true; readonly replayed: number }
+	| {
+			readonly ok: false;
+			readonly replayed: number;
+			/** Le numéro (à partir de 1) de la ligne du fichier où le rejeu s'est arrêté */
+			readonly line: number;
+			readonly message: string;
+	  };
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
@@ -252,6 +264,57 @@ export class CalcDesk {
 		});
 		this.draft = '';
 		this.notice = null;
+	}
+
+	/**
+	 * Rejouer un historique relu (lot C2) : chaque geste est refait par le MÊME
+	 * chemin que l'élève — saisie, clic sur une carte, « Garder ».
+	 *
+	 * S'arrête à la première ligne qui échoue alors qu'elle avait réussi (R3) ;
+	 * une ligne qui avait échoué peut échouer encore. Ce qui précède reste.
+	 * L'atelier n'est PAS vidé ici : c'est au conteneur de le faire, après
+	 * confirmation (R2).
+	 */
+	replay(history: ImportedHistory, graph?: GrapheurStore): ReplayReport {
+		let replayed = 0;
+		for (const [index, entry] of history.entries.entries()) {
+			const step = stepOf(entry);
+			if (step === null) continue;
+			const before = this.entries.length;
+			this.#replayStep(step, graph);
+			const first = this.entries[before];
+			const broken =
+				first === undefined
+					? 'cette ligne ne s’est pas rejouée.'
+					: first.failed && !entry.failed
+						? first.text
+						: null;
+			if (broken !== null) {
+				this.notice = `Rejeu arrêté à la ligne ${index + 1} : ${broken}`;
+				return { ok: false, replayed, line: index + 1, message: broken };
+			}
+			replayed++;
+		}
+		this.notice = `Historique rejoué : ${replayed} ${replayed > 1 ? 'lignes' : 'ligne'}.`;
+		return { ok: true, replayed };
+	}
+
+	#replayStep(step: ReplayStep, graph?: GrapheurStore): void {
+		switch (step.kind) {
+			case 'saisie':
+				this.submit(step.input);
+				return;
+			case 'action':
+				if (step.action === 'image') this.image(step.name, step.value ?? '');
+				else this.runFromPanel(step.action, step.name, graph);
+				return;
+			case 'garder': {
+				// Rejouée dans l'ordre, la ligne gardée est au même rang qu'à l'export
+				const kept = this.entries[step.line];
+				if (kept !== undefined) this.keep(kept);
+				return;
+			}
+		}
 	}
 
 	/** Garder une ligne sous un nom — décision D5. */

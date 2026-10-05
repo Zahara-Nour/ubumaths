@@ -132,3 +132,16 @@ Elles ne sont pas des saisies.
 cartes n'ont pas été rejouées ». Alternative : traduire chaque action en sa
 commande (`Dériver f` → `.dériver f`) quand elle en a une — plus fidèle, mais
 chaque action doit avoir son équivalent, et toutes n'en ont pas.
+
+---
+
+## Réalisation
+
+- **Lot B** — #828 (suppression en cascade, confirmation, « Annuler », Ctrl/Cmd+Z).
+- **Lot C1** — #829 (export JSON et ubumark ; geste rangé par ligne ; « Garder » laisse une ligne).
+- **Lot C2** — rejeu : `history-import.ts` (Zod, bornes E1–E3), `CalcDesk.replay`
+  (arrêt R3 seulement si une ligne qui avait réussi échoue), bouton « Rejouer un
+  historique… » dans Calcul, confirmation R2 dans le conteneur. Le rejeu vide
+  l'atelier SANS `startIfEmpty` (sur `/grapheur`, la carte `f` vide recréée
+  ferait refuser le `f` rejoué). Absent d'un atelier éphémère, comme « Repartir
+  de zéro ». Les diagrammes (Q36) ne laissent pas de ligne : ils ne se rejouent pas.
