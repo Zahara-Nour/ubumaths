@@ -29,6 +29,9 @@ export type LimitStatus =
 	| 'indeterminate' // Indeterminate form (0/0, ∞/∞, etc.)
 	| 'does-not-exist' // Limit does not exist (different left/right limits)
 	| 'infinite' // Limit is +∞ or -∞
+	// Valeur APPROCHÉE (repli numérique, évaluation en un point proche) : ce
+	// n'est pas une limite démontrée — ne jamais l'afficher comme limite exacte
+	| 'approximate'
 	| 'unsupported'; // Cannot evaluate
 
 /**

@@ -268,7 +268,7 @@ export function tryRationalization(
 /**
  * Find conjugate for rationalization.
  */
-function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
+export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
 	// Look for √a - b
 	if (isSubtraction(expr)) {
 		if (isSqrt(expr.left) && !isSqrt(expr.right)) {
@@ -387,8 +387,10 @@ export function tryDominantTerm(
 	let description: string;
 
 	if (numDegree > denDegree) {
-		// Numerator dominates → ±∞
-		const sign = numLeading * denLeading > 0 === positive ? 'positive' : 'negative';
+		// Numerator dominates → ±∞, comme (a/b)·x^{p−q} : en −∞, x^{p−q} n'est
+		// négatif que si p − q est impair (x³/x = x² → +∞ en −∞)
+		const powerNegative = !positive && (numDegree - denDegree) % 2 === 1;
+		const sign = numLeading * denLeading > 0 !== powerNegative ? 'positive' : 'negative';
 		limitValue = { type: 'infinity', sign };
 		description = `Degré numérateur (${numDegree}) > degré dénominateur (${denDegree})`;
 	} else if (numDegree < denDegree) {
@@ -398,7 +400,7 @@ export function tryDominantTerm(
 	} else {
 		// Same degree → ratio of leading coefficients
 		const ratio = numLeading / denLeading;
-		limitValue = number(String(ratio));
+		limitValue = numericNode(ratio);
 		description = `Même degré, rapport des coefficients dominants: ${numLeading}/${denLeading}`;
 	}
 

@@ -12,6 +12,7 @@ import { isDivision } from '../guards';
 import { differentiate } from '../differentiation';
 import { detectIndeterminateForm, classifyLimitValue } from './indeterminate';
 import type { LimitStepRecorder } from './step-recorder';
+import { getNumericValue, numericNode } from '../common/numeric';
 import {
 	tryEvaluateLimitExact,
 	isZeroResult,
@@ -44,6 +45,13 @@ export interface LhopitalResult {
 
 	/** Error message if not applicable */
 	readonly error?: string;
+
+	/**
+	 * Valeur tirée du repli NUMÉRIQUE (évaluation en un point proche, pas un
+	 * calcul exact) : x/√x en +∞ donnait « 200000 ». L'appelant ne doit pas la
+	 * présenter comme une limite exacte.
+	 */
+	readonly approximate?: boolean;
 }
 
 /**
@@ -139,22 +147,25 @@ export function applyLhopital(
 
 		if (newForm === 'none') {
 			// We can try direct evaluation
-			const result = tryDirectEvaluation(newExpr, varName, approach, direction);
-			if (result !== null) {
+			const evaluation = tryDirectEvaluation(newExpr, varName, approach, direction);
+			if (evaluation !== null) {
 				recorder.recordStep(
 					'lhopital',
-					"Limite trouvée après application de la règle de L'Hôpital",
+					evaluation.approximate
+						? "Valeur approchée après application de la règle de L'Hôpital"
+						: "Limite trouvée après application de la règle de L'Hôpital",
 					newExpr,
-					result,
+					evaluation.value,
 					'summarized'
 				);
 
 				return {
 					applicable: true,
-					value: result,
+					value: evaluation.value,
 					transformedExpr: newExpr,
 					iterations,
-					resolvedForm: form
+					resolvedForm: form,
+					...(evaluation.approximate && { approximate: true })
 				};
 			}
 		}
@@ -210,21 +221,25 @@ export function isLhopitalApplicable(
 /**
  * Try to evaluate a division directly at the limit point.
  * Uses exact evaluation first, with fallback to numeric heuristics.
+ *
+ * Le repli numérique est marqué `approximate` : il évalue en un point
+ * proche, et 1/(1/(2√x)) en +∞ y vaut « 200000 », pas +∞.
  */
 function tryDirectEvaluation(
 	expr: DivisionNode,
 	varName: string,
 	approach: MathNode,
 	direction: LimitDirection
-): MathNode | null {
+): { value: MathNode; approximate: boolean } | null {
 	// Try exact evaluation first
 	const exactResult = tryDirectEvaluationExact(expr, varName, approach, direction);
 	if (exactResult !== null) {
-		return exactResult;
+		return { value: exactResult, approximate: false };
 	}
 
 	// Fallback to numeric heuristics
-	return tryDirectEvaluationNumeric(expr, varName, approach, direction);
+	const numericResult = tryDirectEvaluationNumeric(expr, varName, approach, direction);
+	return numericResult === null ? null : { value: numericResult, approximate: true };
 }
 
 /**
@@ -247,8 +262,10 @@ function tryDirectEvaluationExact(
 	// Handle infinity/finite case → infinity
 	if (isInfinityResult(numResult) && !isInfinityResult(denResult) && !isZeroResult(denResult)) {
 		// Get denominator sign to determine final sign
+		// Valeur négative = nœud `opposite` (jamais de littéral négatif)
 		const denNode = resultToFiniteNode(denResult);
-		const denNegative = denNode && denNode.type === 'number' && parseFloat(denNode.value) < 0;
+		const denValue = denNode === null ? null : getNumericValue(denNode);
+		const denNegative = denValue !== null && denValue < 0;
 
 		const numSign = numResult.sign;
 		let finalSign: 'positive' | 'negative';
@@ -275,15 +292,15 @@ function tryDirectEvaluationExact(
 		const numNode = resultToFiniteNode(numResult);
 		const denNode = resultToFiniteNode(denResult);
 
-		if (numNode && denNode && numNode.type === 'number' && denNode.type === 'number') {
-			const numVal = parseFloat(numNode.value);
-			const denVal = parseFloat(denNode.value);
+		// −2 est un nœud `opposite` : lu par getNumericValue, sinon x → −1 de
+		// 2x/1 retombait sur le repli numérique
+		const numVal = numNode === null ? null : getNumericValue(numNode);
+		const denVal = denNode === null ? null : getNumericValue(denNode);
 
-			if (denVal !== 0 && Number.isFinite(numVal) && Number.isFinite(denVal)) {
-				const result = numVal / denVal;
-				if (Number.isFinite(result)) {
-					return { type: 'number', value: cleanNumberString(result) };
-				}
+		if (numVal !== null && denVal !== null && denVal !== 0) {
+			const result = numVal / denVal;
+			if (Number.isFinite(result)) {
+				return numericNode(cleanNumberString(result));
 			}
 		}
 	}
@@ -311,7 +328,7 @@ function tryDirectEvaluationNumeric(
 	) {
 		const result = numClass.numericValue / denClass.numericValue;
 		if (Number.isFinite(result)) {
-			return { type: 'number', value: cleanNumberString(result) };
+			return numericNode(cleanNumberString(result));
 		}
 	}
 
