@@ -184,6 +184,25 @@ describe('/+page.svelte', () => {
 			expect(overlap(depeche, box(screen.container.querySelector('figure svg')!))).toBe(false);
 		});
 
+		// 360 × 640 moins l'en-tête et le pied de page du layout : une zone d'environ 480 px
+		it.each([
+			['téléphone moyen', 390, 555],
+			['petit téléphone', 360, 480],
+			['très petit téléphone', 320, 440]
+		])('tout tient sans défiler et Ubu reste centré (%s)', async (_nom, width, height) => {
+			const screen = await renderInZone(width, height);
+			const root = screen.container.firstElementChild as HTMLElement;
+			expect(root.scrollHeight).toBeLessThanOrEqual(root.clientHeight + 1);
+			const zone = box(screen.container);
+			const ubu = box(screen.container.querySelector('figure svg')!);
+			expect(Math.abs(ubu.top + ubu.height / 2 - (zone.top + zone.height / 2))).toBeLessThan(2);
+		});
+
+		it('Ubu garde sa taille (240 px) quand il y a la place', async () => {
+			const screen = await renderInZone(1200, 740);
+			expect(Math.round(box(screen.container.querySelector('figure svg')!).height)).toBe(240);
+		});
+
 		it('la date de l’Almanach est en haut à droite, plus petite que le titre', async () => {
 			const screen = await renderInZone(1200, 740);
 			const date = screen.getByRole('link', { name: /Almanach/ }).element();
