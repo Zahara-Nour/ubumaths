@@ -469,10 +469,10 @@ Règles d'écriture qui évitent un défaut :
 - Une spec `bad_form` / `unoptimal_form` liste ses `constraintViolations`, sinon elle est rouge.
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
-  TinyMath). L'inverse est automatique (2026-10-05) : décimal attendu (`0.4`), fraction
-  ou entier de valeur EXACTEMENT égale (`\frac{2}{5}`) jugé juste, contraintes d'écriture comprises
-  (`\frac{4}{10}` perfectible) ; sauf case à `precision` (un arrondi reste un arrondi), `requiredForm`
-  ou `rulesSuffice`. Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
+  TinyMath). Probabilité ou coefficient où la fraction est aussi légitime que le décimal :
+  attendue écrite EXACTE (`\frac{2}{5}`, jamais `0.4`) + `acceptDecimal` → fraction et décimal
+  exact justes, arrondi faux ; aucune règle ne rend une fraction juste pour un décimal attendu
+  (cartes `graphes-matrices-expertes/` B-12 à B-14). Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
   de décroissance, de convexité : ajouter `"openableBounds": true` (case ou `blankDefaults`) —
   l'élève peut OUVRIR une borne finie fermée (`]2;+\infty[` pour `[2;+\infty[`), jamais fermer
   une borne ouverte ; JAMAIS pour l'ensemble de solutions d'une inéquation. Specs conseillées :
@@ -576,12 +576,16 @@ exactement (fractions, racines) ; option `vectorMode` (case ou `blankDefaults` ;
   flèche droite pour passer au coefficient suivant ; `pmatrix`, `bmatrix` et `A=`, `A^{-1}=`
   devant sont lus ;
 - dimensions d'abord : une mauvaise taille est fausse avec « La matrice attendue a 2 lignes et
-  2 colonnes. » ; lignes de longueurs différentes, case du gabarit vide, facteur devant la
-  matrice (`\frac{1}{5}\begin{pmatrix}…`, inverse) : faux avec un message ;
+  2 colonnes. » ; lignes de longueurs différentes, case du gabarit vide : faux avec un message ;
+- facteur devant la matrice (`\frac{1}{5}\begin{pmatrix}…`, inverse ; décision du 2026-10-06) :
+  facteur × matrice comparé à l'attendue ; juste → `unoptimal_form` + `form`, « Distribue le
+  facteur dans la matrice. » ; faux sinon (spec conseillée, cf. B-08) ;
+- `acceptDecimal` de la case vaut pour chaque coefficient : attendue exacte (fractions) →
+  décimal exact juste (matrice de transition, B-12) ;
 - coefficients comparés PAR VALEUR (exactement : `1+1`, `\frac{4}{2}` valent 2), puis chaque
   coefficient jugé comme une case ordinaire contre le coefficient attendu (`\frac{4}{2}` pour 2 :
   `unoptimal_form` + `reducedFractions` ; `0.6` pour `\frac{3}{5}` ou `1+6` pour 7 : `bad_form` +
-  `form`) — specs : ajouter `constraintViolations` ;
+  `form`, sauf `acceptDecimal`) — specs : ajouter `constraintViolations` ;
 - un produit dans le mauvais ordre (BA) n'a pas de message propre : il est faux ;
 - attendue illisible, non rectangulaire, de dimension > 6 ou à coefficient non défini → specs
   rouges. Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « matrice »).

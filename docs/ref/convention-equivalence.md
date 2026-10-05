@@ -139,14 +139,14 @@ jour ; 23 en prod dont 6 sur 4 modèles PUBLIÉS : « Réduire une racine carré
 racine carrée », « Trouver un nombre positif de carré donné », « Réduire une expression avec des
 racines carrées »), 18 synthétiques. Aucune attendue réelle ne change de verdict.
 
-## Fraction exacte pour un décimal attendu (décision de David du 2026-10-05)
+## Décimal attendu, fraction légitime : attendue EXACTE + `acceptDecimal`
 
-L'inverse d'`acceptDecimal`, sans option : attendue écrite en décimal (`0.4`, `-1.25`), réponse
-entier ou fraction d'entiers de valeur **exactement** égale (calcul en entiers, aucune tolérance :
-`\frac{1}{3}` n'égale pas `0.3333`) → juste ; seules restent les contraintes d'écriture
-(`\frac{4}{10}` perfectible si la réduction est exigée). Hors périmètre, inchangé : case à
-`precision` (`\frac{1}{3}` pour 0,33 au centième reste refusé), `requiredForm`, `rulesSuffice`,
-unité. Code : `src/lib/questions/exact-fraction-for-decimal.ts`.
+Pas de règle générale « fraction exacte juste pour un décimal attendu » (abandonnée le
+2026-10-06 : elle aurait changé 82 cartes publiées où écrire le décimal EST l'exercice). Quand une
+fraction est aussi légitime qu'un décimal (probabilité, coefficient d'une matrice de transition),
+l'auteur écrit l'attendue sous sa forme exacte (`\frac{2}{5}`) et active `acceptDecimal` : la
+fraction et le décimal exact (`0.4`) sont justes, un arrondi (`0.33` pour ⅓) reste faux. Exemples :
+`scripts/questions/graphes-matrices-expertes/` B-12 à B-14.
 
 ## Notation combinatoire : `n!`, `\binom{n}{k}` (option `acceptCombinatorialNotation`)
 
@@ -504,7 +504,11 @@ par `questions/matrices/matrix-answer.ts`, sur le modèle de la case « vecteur 
   préfixe `A=`, `AB=`, `M^{2}=`, `A^{-1}=` ignoré ;
 - dimensions comparées d'abord ; coefficients CONSTANTS réduits par `normalize` et comparés
   EXACTEMENT (aucun flottant) ; puis chaque coefficient jugé comme une case ordinaire contre le
-  coefficient attendu (le pire verdict l'emporte).
+  coefficient attendu (le pire verdict l'emporte), `acceptDecimal` de la case compris ;
+- facteur devant la matrice (`\frac{1}{2}\begin{pmatrix}…`, `\times`/`\cdot` toléré, `-` seul) :
+  décision de David du 2026-10-06, facteur × matrice comparé à l'attendue ; juste →
+  `unoptimal_form` (contrainte `form`, « Distribue le facteur dans la matrice. »), faux sinon.
+  Mesure : aucune case matrice publiée (6 modèles en brouillon, prod lue le 2026-10-06).
 
 | Attendue                 | Réponse                                                   | Verdict                                     |
 | ------------------------ | --------------------------------------------------------- | ------------------------------------------- |
@@ -513,7 +517,8 @@ par `questions/matrices/matrix-answer.ts`, sur le modèle de la case « vecteur 
 | `(2 -1 ; 0 3)`           | `1+1` pour 2                                              | mauvaise forme (comme une case)             |
 | `(1 2 ; 3 4)`            | transposée, un coefficient faux, BA au lieu d'AB          | faux                                        |
 | `(1 2 ; 3 4)`            | `(1 2 0 ; 3 4 0)`, une ligne seule                        | faux, « 2 lignes et 2 colonnes »            |
-| `(1 2 ; 3 4)`            | `\frac{1}{2}\begin{pmatrix}2&4\\6&8\end{pmatrix}`         | faux, « sans facteur devant »               |
+| `(1 2 ; 3 4)`            | `\frac{1}{2}\begin{pmatrix}2&4\\6&8\end{pmatrix}`         | perfectible, « Distribue le facteur… »      |
+| `(1 2 ; 3 4)`            | `\frac{1}{3}\begin{pmatrix}2&4\\6&8\end{pmatrix}`         | faux (facteur × matrice ≠ attendue)         |
 | `(1 2 ; 3 4)`            | `5`, `(1;2)`, ligne incomplète, case vide, `x`            | faux (message selon le cas), sans exception |
 
 Une attendue illisible, non rectangulaire, de dimension > 6 ou à coefficient non défini fait
