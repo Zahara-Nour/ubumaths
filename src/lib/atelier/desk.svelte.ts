@@ -83,7 +83,28 @@ export interface Entry {
 	readonly chart?: StatChartScene;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
+	/**
+	 * Le geste qui a produit la ligne, pour l'export et le rejeu (lot C).
+	 * Absent d'une ligne secondaire : un geste n'est rejoué qu'une fois.
+	 */
+	readonly replay?: ReplayStep;
 }
+
+/**
+ * Un geste rejouable : ce que l'élève a tapé, cliqué sur une carte, ou gardé.
+ * Le rejeu le refait par le MÊME chemin (`submit`, `runFromPanel`, `image`,
+ * `keep`) — rien n'est injecté dans l'atelier.
+ */
+export type ReplayStep =
+	| { readonly kind: 'saisie'; readonly input: string }
+	| {
+			readonly kind: 'action';
+			readonly action: string;
+			readonly name: string;
+			readonly value?: string;
+	  }
+	/** `line` : l'indice, dans l'historique, de la ligne gardée */
+	| { readonly kind: 'garder'; readonly line: number };
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
@@ -170,13 +191,21 @@ export class CalcDesk {
 
 	#nextId = 0;
 
+	/** Le geste en cours : attaché à la PREMIÈRE ligne qu'il écrit, puis oublié. */
+	#gesture: ReplayStep | null = null;
+
 	constructor(atelier: Atelier, engine: WebReplEngine = new WebReplEngine()) {
 		this.atelier = atelier;
 		this.session = { atelier, engine };
 	}
 
 	#push(entry: Omit<Entry, 'id'>): void {
-		this.entries = [...this.entries, { id: this.#nextId++, ...entry }];
+		const replay = this.#gesture;
+		this.#gesture = null;
+		this.entries = [
+			...this.entries,
+			{ id: this.#nextId++, ...entry, ...(replay !== null && { replay }) }
+		];
 	}
 
 	/**
@@ -187,6 +216,7 @@ export class CalcDesk {
 	 * l'historique comme toute action (G7) ; la carte affiche le résultat.
 	 */
 	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
+		this.#gesture = { kind: 'action', action: 'image', name, value: value.trim() };
 		const outcome = runAction(this.session, 'image', name, value.trim());
 		const text = outcome.ok ? outcome.output : outcome.message;
 		this.#push({
@@ -208,6 +238,7 @@ export class CalcDesk {
 	submit(text: string): void {
 		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
+		this.#gesture = { kind: 'saisie', input: text };
 
 		this.#push({
 			label: text,
@@ -230,6 +261,12 @@ export class CalcDesk {
 		}
 		const kept = promote(this.session, entry.result);
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
+		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
+		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
+		if (kept.ok) {
+			this.#gesture = { kind: 'garder', line: this.entries.indexOf(entry) };
+			this.#push({ label: 'Garder', text: this.notice, failed: false });
+		}
 	}
 
 	/** La liste nommée, si c'en est une et qu'elle est exploitable. */
@@ -469,6 +506,9 @@ export class CalcDesk {
 	 * (`image`, phase 0 `/grapheur` §3 A4).
 	 */
 	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
+		// Posé avant tout : « Comparer » passe par `submit`, qui le remplace par
+		// la commande tapée — c'est elle qu'on rejouera
+		this.#gesture = { kind: 'action', action: actionId, name };
 		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {
