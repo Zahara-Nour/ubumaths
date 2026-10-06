@@ -14,6 +14,8 @@ import Atbash from '../atbash/+page.svelte';
 import Affine from '../affine/+page.svelte';
 import Vigenere from '../vigenere/+page.svelte';
 import Hill from '../hill/+page.svelte';
+import Rsa from '../rsa/+page.svelte';
+import { modPow } from '$lib/ciphers/rsa';
 import { affineEncrypt } from '$lib/ciphers/affine';
 import { caesarEncrypt } from '$lib/ciphers/caesar';
 import { normalizeText } from '$lib/ciphers/alphabet';
@@ -39,7 +41,8 @@ describe('accueil du Cabinet Noir', () => {
 			'polybe',
 			'vigenere',
 			'affine',
-			'hill'
+			'hill',
+			'rsa'
 		]) {
 			expect(links).toContain(`/chiffrement/${slug}`);
 		}
@@ -339,5 +342,94 @@ describe('chiffre de Hill', () => {
 		await expect
 			.poll(() => text(screen.container, 'hill-row-failure'))
 			.toContain('au moins 40 lettres');
+	});
+});
+
+describe('RSA de poche', () => {
+	it('p = 31, q = 37, e = 7 : n, φ et d = 463 par Euclide étendu, tableau compris', async () => {
+		const screen = await render(Rsa);
+		await expect.poll(() => text(screen.container, 'rsa-key-steps')).toContain('d = 463');
+		const rows = screen.container.querySelectorAll('[data-testid="rsa-euclid"] tbody tr');
+		expect(
+			[...rows].map((row) =>
+				[...row.querySelectorAll('td')].map((cell) => cell.textContent?.trim())
+			)
+		).toEqual([
+			['1080', '', '1', '0'],
+			['7', '154', '0', '1'],
+			['2', '3', '1', '−154'],
+			['1', '2', '−3', '463']
+		]);
+	});
+
+	it('chiffre HE en un nombre, avec l’exponentiation rapide du premier bloc', async () => {
+		const screen = await render(Rsa);
+		await page.getByLabelText('Message clair').fill('He');
+		const c = modPow(186, 7, 1147).result;
+		await expect.poll(() => text(screen.container, 'cipher-encrypted')).toBe(String(c));
+		expect(text(screen.container, 'rsa-pow')).toContain('111 en binaire');
+	});
+
+	it('aller-retour : le déchiffrement rend HE', async () => {
+		const screen = await render(Rsa);
+		await page.getByLabelText('Message clair').fill('He');
+		await page.getByRole('button', { name: 'Le déchiffrer' }).click();
+		await expect.poll(() => text(screen.container, 'cipher-decrypted')).toBe('HE');
+	});
+
+	it('p = q : l’erreur est expliquée', async () => {
+		const screen = await render(Rsa);
+		await chooseOption(/^q : 37/, '31');
+		await expect
+			.poll(() => text(screen.container, 'rsa-key-error'))
+			.toContain('p et q doivent être différents.');
+	});
+
+	it('décrypter : n = 2021 factorisé, la dépêche du Czar déchiffrée', async () => {
+		const screen = await render(Rsa);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await expect.poll(() => text(screen.container, 'rsa-crack-steps')).toContain('2021 = 43 × 47');
+		expect(text(screen.container, 'rsa-crack-text')).toMatch(/^DEPECHEDUCZAR/);
+		// Lettre par lettre : une substitution, A et B immobiles
+		expect(text(screen.container, 'rsa-letter-table')).toContain('A → 0');
+	});
+
+	it('p change et e n’est plus premier avec φ : le plus petit e valide est pris', async () => {
+		await render(Rsa);
+		// p = 29 : φ = 28 × 36 = 1008, multiple de 7 ; le premier exposant valide est 5
+		await chooseOption(/^p : 31/, '29');
+		await expect.element(page.getByRole('button', { name: 'e : 5' })).toBeInTheDocument();
+	});
+
+	it('décrypter : n et e saisis survivent à un changement de message', async () => {
+		const screen = await render(Rsa);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('n (clé publique)').fill('3233');
+		await page.getByLabelText('Message intercepté').fill('12 34');
+		await expect
+			.poll(
+				() => (screen.container.querySelector('#rsa-crack-n') as HTMLInputElement | null)?.value
+			)
+			.toBe('3233');
+	});
+
+	it('décrypter avec e = 1 : message dédié, et pas de table lettre par lettre', async () => {
+		const screen = await render(Rsa);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('e (clé publique)').fill('1');
+		await expect
+			.poll(() => screen.container.textContent ?? '')
+			.toContain('e doit être un entier au moins égal à 2.');
+		expect(screen.container.querySelector('[data-testid="rsa-letter-table"]')).toBeNull();
+	});
+
+	it('décrypter avec une clé publique qui ne colle pas : message lisible', async () => {
+		const screen = await render(Rsa);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('n (clé publique)').fill('97');
+		await expect
+			.poll(() => screen.container.querySelector('[data-testid="rsa-crack-steps"]') === null)
+			.toBe(true);
+		expect(screen.container.textContent).toContain('97 est premier : ce n’est pas une clé RSA.');
 	});
 });

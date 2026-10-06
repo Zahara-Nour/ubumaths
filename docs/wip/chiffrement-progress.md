@@ -47,4 +47,12 @@ Wikipédia, « Fréquence d'apparition des lettres en français » — corpus Wi
 - [x] Page `/chiffrement/hill`, accueil, sitemap, CONTEXT.md ; 27 tests navigateur
 - [x] code-reviewer (findings corrigés : lignes retenues désignées par leur rang, deux motifs d’échec distincts, seuil de 20 paires, groupe ARIA de la matrice)
 - [ ] PR, merge
-- [ ] Lot 3b : RSA de poche (PR séparée)
+- [x] Livré #897
+
+## Lot 3b (RSA de poche) — branche `feat/chiffrement-rsa`
+
+- [x] Module `rsa.ts` : premiers 11 à 97, Euclide étendu en tableau (Bézout), exponentiation rapide (carrés successifs), blocs de 2 lettres (m = 26·x₁ + x₂ ≤ 675, n > 675), factorisation par divisions successives, table « lettre par lettre »
+- [x] Exponentiation vérifiée contre un calcul BigInt indépendant (500 cas) ; aller-retour sur toutes les clés de la liste
+- [x] Page `/chiffrement/rsa` (encadré Fermat, tableau d'Euclide, exponentiation du premier bloc, décryptage de la clé publique du Czar (2021, 5)), accueil, sitemap, CONTEXT.md ; 34 tests navigateur
+- [x] code-reviewer (findings corrigés : preuve de Fermat complétée (p | m), n et e conservés au décryptage, message pour e < 2, n = p², table lettre par lettre seulement pour une clé valide, e valide choisi quand p ou q change, nombre réel de multiplications, Diffie-Hellman 1976)
+- [ ] PR, merge

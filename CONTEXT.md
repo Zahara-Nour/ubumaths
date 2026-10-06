@@ -51,6 +51,9 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 | Indice de coïncidence        | Probabilité que deux lettres tirées du texte soient égales (≈ 0,078 en français). | `indexOfCoincidence`                       |
 | Kasiski (méthode de)         | Longueur d'une clé de Vigenère déduite des écarts entre séquences répétées.       | `kasiski`                                  |
 | Matrice inversible mod 26    | Matrice 2 × 2 dont le déterminant est premier avec 26 : clé de Hill déchiffrable. | `hillInverse`, `src/lib/ciphers/hill.ts`   |
+| Indicatrice d'Euler φ(n)     | Pour n = p × q (p, q premiers) : φ(n) = (p − 1)(q − 1).                           | `rsaKeys`, `src/lib/ciphers/rsa.ts`        |
+| Exponentiation rapide        | Calcul de mᵉ mod n par carrés successifs, selon l'écriture binaire de e.          | `modPow`                                   |
+| Clé publique / clé privée    | RSA : (n, e) sert à chiffrer et se publie ; d sert à déchiffrer et se garde.      |                                            |
 
 ⛔ « Crypter » : déconseillé par les spécialistes de la sécurité (chiffrer sans clé n’a pas de sens). Écrire chiffrer, ou décrypter.
 
