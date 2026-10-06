@@ -17,7 +17,7 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
-import { astOf, readNumber } from './parse';
+import { astOf, readNumber, withPiCommand } from './parse';
 import { INTERNAL_LETTER, internalDefinition, letterRejection } from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
@@ -794,7 +794,9 @@ export function runInput(
 
 	syncEngine(session.atelier, session.engine);
 
-	if (input.startsWith('.')) return runCommand(session, input);
+	// `π` → `\pi` pour le moteur ; les définitions, elles, gardent ce qui a été
+	// tapé et sont réécrites à la lecture (`withPiCommand` dans `parse.ts`)
+	if (input.startsWith('.')) return runCommand(session, withPiCommand(input));
 
 	// La forme du membre gauche est garantie par la regex — `3 = 3` n'y entre
 	// pas. Un nom RÉSERVÉ, lui, y entre et se fait refuser par `validateName` :
@@ -857,7 +859,9 @@ export function runInput(
 	if (!withTerms.ok) return { kind: 'refus', message: withTerms.message };
 
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
-	const result = session.engine.execute(expandInput(session.atelier, withTerms.text));
+	const result = session.engine.execute(
+		expandInput(session.atelier, withPiCommand(withTerms.text))
+	);
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',

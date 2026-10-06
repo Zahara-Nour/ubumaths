@@ -33,12 +33,6 @@ export const KNOWN_WRONG: Readonly<Record<string, string>> = {
 		'« \\dfrac{1}{2 \\sqrt{x}} » — x=0.3 : attendu 0.61673567, obtenu 0.91287093',
 	'rac-10 @ étapes':
 		'derivative-of-sqrt : (\\sqrt[4]{x})′ → \\dfrac{1}{2 \\sqrt{x}} — x=0.3 : attendu 0.61673567, obtenu 0.91287093',
-	'exp-15 @ bouton': '« i n s e^{i n s x} » — x=-2.3 : attendu -0.3160811, obtenu NaN',
-	'exp-15 @ carte':
-		'« c o s \\left( x \\right) e^{s i n \\left( x \\right)} » — x=-2.3 : attendu -0.3160811, obtenu NaN',
-	'exp-16 @ bouton': '« q r s t e^{q r s t x} » — x=0.3 : attendu 1.5786369, obtenu NaN',
-	'exp-16 @ carte':
-		'« e^{s q r t \\left( x \\right)} / 2 s q r t \\left( x \\right) » — x=0.3 : attendu 1.5786369, obtenu NaN',
 	'loga-05 @ latex-péda':
 		'affiché illisible : \\ln\\left( 2 \\right) 2^x (Unexpected token in expression: 2)',
 	'loga-05 @ commande':
@@ -51,8 +45,6 @@ export const KNOWN_WRONG: Readonly<Record<string, string>> = {
 		'affiché illisible : 2 \\ln\\left( 3 \\right) 3^{2 x} (Unexpected token in expression: 3)',
 	'loga-06 @ bouton':
 		'affiché illisible : 2 \\ln\\left( 3 \\right) 3^{2 x} (Unexpected token in expression: 3)',
-	'loga-06 @ carte':
-		'« 2 l n \\left( 3 \\right) * 3^{2 x} » — x=-2.3 : attendu 0.014031906, obtenu NaN',
 	'loga-08 @ latex-péda':
 		'affiché illisible : \\ln\\left( 10 \\right) 10^x (Unexpected token in expression: 10)',
 	'loga-08 @ commande':
@@ -71,35 +63,16 @@ export const KNOWN_WRONG: Readonly<Record<string, string>> = {
 		'affiché illisible : 2 x \\ln\\left( 2 \\right) 2^{x^2} (Unexpected token in expression: 2)',
 	'loga-10 @ bouton':
 		'affiché illisible : 2 x \\ln\\left( 2 \\right) 2^{x^2} (Unexpected token in expression: 2)',
-	'loga-10 @ carte':
-		'« 2 x l n \\left( 2 \\right) * 2^{x^2} » — x=-2.3 : attendu -124.74753, obtenu NaN',
-	'trig-16 @ commande': '« 3 c o s » — x=-2.3 : attendu -0.50335821, obtenu NaN',
-	'trig-23 @ commande': '« \\pi i n s » — x=-2.3 : attendu 1.8465818, obtenu NaN',
 	'trig-26 @ latex-péda':
 		'« \\dfrac{\\sin\\left( x \\right)}{\\cos\\left( x \\right)^2} » — x=-0.85 : attendu -1.898316, obtenu -1.7247906',
 	'trig-27 @ latex-péda':
 		'« -\\dfrac{\\cos\\left( x \\right)}{\\sin\\left( x \\right)^2} » — x=-0.85 : attendu 1.898316, obtenu -1.1693075',
 	'trig-28 @ latex-péda':
 		'« -\\dfrac{1}{\\cos\\left( x \\right)^2 \\tan\\left( x \\right)^2} » — x=-2.3 : attendu 0.15898251, obtenu -1.7983145',
-	'prod-07 @ bouton':
-		'« -2 c o s x e^{-x} + 2 c o s e^{-x} » — x=-2.3 : attendu -18.703881, obtenu NaN',
-	'prod-07 @ carte':
-		'« -c o s \\left( 2 x \\right) e^{-x} - 2 s i n \\left( 2 x \\right) e^{-x} » — x=-2.3 : attendu -18.703881, obtenu NaN',
-	'comp-02 @ bouton': '« 2 c o s e^{2 c o s x} » — x=-2.3 : attendu -1.7765365, obtenu NaN',
-	'comp-02 @ carte':
-		'« -2 s i n \\left( 2 x \\right) e^{c o s \\left( 2 x \\right)} » — x=-2.3 : attendu -1.7765365, obtenu NaN',
-	'comp-15 @ commande':
-		'« -\\dfrac{2 \\pi q r t x e^{-\\dfrac{x^2}{2}}}{s} » — x=-2.3 : attendu 0.065152187, obtenu NaN',
 	'lit-12 @ bouton':
 		'affiché illisible : \\ln\\left( 3 \\right) 3^x (Unexpected token in expression: 3)',
 	'lit-39 @ bouton':
-		'affiché illisible : 2 \\ln\\left( 3 \\right) 3^{2 x} (Unexpected token in expression: 3)',
-	'lit-39 @ carte':
-		'« 2 l n \\left( 3 \\right) * 3^{2 x} » — x=-2.3 [a=3] : attendu 0.014031906, obtenu NaN',
-	'lit-45 @ bouton':
-		'« -6 i n s x e^{3 x} - 2 i n s e^{3 x} » — x=-2.3 [a=3, b=-2] : attendu -0.0027782306, obtenu NaN',
-	'lit-45 @ carte':
-		'« 3 s i n \\left( -2 x \\right) e^{3 x} + \\left( -2 c o s \\left( -2 x \\right) e^{3 x} \\right) » — x=-2.3 [a=3, b=-2] : attendu -0.0027782306, obtenu NaN'
+		'affiché illisible : 2 \\ln\\left( 3 \\right) 3^{2 x} (Unexpected token in expression: 3)'
 };
 
 /**
@@ -261,12 +234,14 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'ln-17 @ bouton': '\\dfrac{1}{2 \\sqrt{x}^2}',
 	'ln-17 @ carte': '\\dfrac{1}{2 \\sqrt{x}^2}',
 	'loga-05 @ carte': '\\ln\\left( 2 \\right) \\times 2^x',
+	'loga-06 @ carte': '2 \\ln\\left( 3 \\right) \\times 3^{2 x}',
 	'loga-07 @ latex-péda': '\\ln\\left( \\dfrac{1}{2} \\right) \\left( \\dfrac{1}{2} \\right)^x',
 	'loga-07 @ commande': '\\ln\\left( \\dfrac{1}{2} \\right) \\left( \\dfrac{1}{2} \\right)^x',
 	'loga-07 @ bouton': '\\ln\\left( \\dfrac{1}{2} \\right) \\left( \\dfrac{1}{2} \\right)^x',
 	'loga-07 @ carte': '\\ln\\left( \\dfrac{1}{2} \\right) \\left( \\dfrac{1}{2} \\right)^x',
 	'loga-08 @ carte': '\\ln\\left( 10 \\right) \\times 10^x',
 	'loga-09 @ carte': '5 \\ln\\left( 2 \\right) \\times 2^x',
+	'loga-10 @ carte': '2 x \\ln\\left( 2 \\right) \\times 2^{x^2}',
 	'trig-03 @ latex-péda': '\\dfrac{1}{\\cos\\left( x \\right)^2}',
 	'trig-03 @ commande': '\\dfrac{1}{\\cos\\left( x \\right)^2}',
 	'trig-03 @ bouton': '\\dfrac{1}{\\cos\\left( x \\right)^2}',

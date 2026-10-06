@@ -369,6 +369,19 @@ function startsWithNumberToken(s: string): boolean {
 }
 
 /**
+ * Whether juxtaposing `left` and `right` would glue a command to a letter:
+ * `\pi` then `x` gives `\pix`, an unknown command on reparse. A space keeps
+ * them apart (`\pi x`), as in LaTeX.
+ *
+ * ⚠️ Dans l'atelier, `f(x) = 3\pi x^2` s'écrivait `3\pix^2` à la
+ * substitution : « Dériver » et « Variations » échouaient (oracle des
+ * dérivées, #910).
+ */
+function gluesCommandToLetter(left: string, right: string): boolean {
+	return /\\[a-zA-Z]+$/.test(left) && /^[a-zA-Z]/.test(right);
+}
+
+/**
  * Whether an emitted fragment begins with a unary sign (`+` or `-`) — i.e. the
  * output of an `opposite` or `positive` node. Juxtaposing such a RHS to a left
  * operand produces text like `x-sin(x)` which the parser silently reads as a
@@ -542,6 +555,16 @@ export class CustomGenerator {
 					this.emit(')', meta);
 				} else {
 					this.visitMultiplicationOperatorSpan(node);
+					// `\pi x`, pas `\pix` (même règle que generateMultiplication)
+					if (
+						node.displayStyle === 'implicit' &&
+						!groupRight &&
+						!groupLeft &&
+						!wrapLeft &&
+						gluesCommandToLetter(new CustomGenerator().generate(node.left), rhsPlain)
+					) {
+						this.emit(' ', meta);
+					}
 					if (groupRight) this.emit('(', meta);
 					this.visitWithSpans(node.right);
 					if (groupRight) this.emit(')', meta);
@@ -1292,6 +1315,7 @@ export class CustomGenerator {
 				if (startsWithUnarySign(right)) {
 					return `${wrappedLeft}*(${right})`;
 				}
+				if (gluesCommandToLetter(wrappedLeft, right)) return `${wrappedLeft} ${right}`;
 				return `${wrappedLeft}${right}`;
 			}
 			case 'dot':

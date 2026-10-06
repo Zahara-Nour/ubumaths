@@ -107,11 +107,26 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
 	return { names: [...names], allowDerivatives: true, allowInverse: true };
 }
 
+/**
+ * Le symbole `π` tapé tel quel, réécrit `\pi` — la constante, que les deux
+ * parseurs connaissent. Sans quoi ils lisent une VARIABLE nommée « π » :
+ * `f(x) = 2sin(π x)` ne s'évaluait pas, et sa dérivée l'affichait comme une
+ * lettre. L'atelier conseille pourtant « \pi ou le symbole π » (#896).
+ *
+ * ⚠️ Propre à l'atelier : ailleurs (le DSL de géométrie), `π` est un nom comme
+ * un autre, décision prise. L'espace qui suit évite de coller la commande à
+ * une lettre (`πx` → `\pi x`, pas `\pix`).
+ */
+export function withPiCommand(text: string): string {
+	return text.replace(/π/g, '\\pi ');
+}
+
 function parseByProvenance(
-	definition: string,
+	rawDefinition: string,
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
+	const definition = withPiCommand(rawDefinition);
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
