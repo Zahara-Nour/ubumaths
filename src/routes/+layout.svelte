@@ -11,7 +11,7 @@
 	 * - Minimal imports to reduce initial bundle size
 	 *
 	 * LAYOUT STRUCTURE:
-	 * - Non-dashboard routes: Header + Sidebar + Content (+ Footer on the home page only)
+	 * - Non-dashboard routes: Header + Sidebar + Content (+ « Infos et confidentialité » button on the home page only)
 	 * - Dashboard routes: Handled by dashboard/+layout.svelte (custom header/sidebar)
 	 */
 	import '../app.css';
@@ -43,13 +43,12 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import { page } from '$app/state';
-	import { showsFooter } from '$lib/utils/footer';
-	import { resolve } from '$app/paths';
+	import { showsInfoButton } from '$lib/utils/footer';
+	import InfoPanel from '$lib/components/InfoPanel.svelte';
 	import { navigating } from '$app/stores';
 	import type { LayoutData } from './$types';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
-	import { getVersion } from '$lib/utils/version';
 	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
 	import SkeletonDashboard from '$lib/components/skeleton/SkeletonDashboard.svelte';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
@@ -67,8 +66,9 @@
 	// L'accueil centre Père Ubu dans toute la hauteur disponible : il lui faut une hauteur définie
 	let isHomeRoute = $derived(page.url.pathname === '/');
 
-	// Pied de page : page d'accueil seulement (`showsFooter`, décision du 2026-10-04)
-	let footerShown = $derived(showsFooter(page.url.pathname));
+	// Bouton « Infos et confidentialité », qui remplace le pied de page : accueil seulement
+	// (`showsInfoButton`, décisions du 2026-10-04 et du 2026-10-06)
+	let infoButtonShown = $derived(showsInfoButton(page.url.pathname));
 
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
@@ -160,27 +160,10 @@
 		</main>
 	</div>
 
-	<!-- Footer : page d'accueil seulement -->
-	{#if footerShown}
-		<footer class="border-t border-border bg-background py-4">
-			<div
-				class="container mx-auto flex flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row"
-			>
-				<p>&copy; {new Date().getFullYear()} Chiphre. Tous droits reserves.</p>
-				<nav class="flex items-center gap-4">
-					<a href={resolve('/legal/confidentialite')} class="hover:text-foreground hover:underline">
-						Confidentialite
-					</a>
-					<a href={resolve('/legal/cgu')} class="hover:text-foreground hover:underline"> CGU </a>
-					<a
-						href={resolve('/legal/mentions-legales')}
-						class="hover:text-foreground hover:underline"
-					>
-						Mentions legales
-					</a>
-					<span class="text-xs">{getVersion()}</span>
-				</nav>
-			</div>
+	<!-- Pied de page réduit au bouton « Infos et confidentialité » : accueil seulement -->
+	{#if infoButtonShown}
+		<footer class="flex justify-center bg-background py-2">
+			<InfoPanel />
 		</footer>
 	{/if}
 </div>
