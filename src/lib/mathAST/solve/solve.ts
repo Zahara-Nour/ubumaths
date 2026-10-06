@@ -56,7 +56,9 @@ import type {
 	SolvingStrategy,
 	EquationSolver
 } from './types';
-import { DEFAULT_SOLVE_OPTIONS, SolveError } from './types';
+import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
+import { trySubstitution } from './substitution';
+import { mergePeriodicFamilies } from './periodic';
 import { isDelimiter, isMultiplication, isRelation } from '../guards';
 import {
 	classifyEquation,
@@ -322,13 +324,32 @@ const MAX_PRODUCT_DECOMPOSITION_DEPTH = 5;
  * If the standard-form expression is a product A·B·...= 0, solve each
  * variable-dependent factor independently and merge solutions.
  *
- * **Limitation**: When multiple factors produce periodic solution families
- * (e.g., sin(x)·cos(x) = 0), only the first periodic family is attached.
- * For complete zero enumeration in sign analysis, each factor may need
- * to be solved independently.
+ * Plusieurs familles périodiques (sin(x)·cos(x) = 0) sont réunies sur une
+ * période commune ; sans période commune, on rend `null` (pas de famille
+ * partielle). Les solutions isolées restent dans `solutions`, à côté de la
+ * famille.
  *
  * @returns SolveResult if decomposition applies, null otherwise
  */
+/**
+ * La famille périodique d'une décomposition qui a résolu des sous-équations
+ * (`e^{sin²x} = 1` → `sin²x = 0`), ou `'incomplete'`.
+ *
+ * ⚠️ Recopier les SEULES solutions de base sans leur famille rendait
+ * `e^{sin²x} = 1` → « x = 0 », complet en apparence, au lieu de x = kπ.
+ * Si une sous-équation a des solutions sans famille et une autre une famille,
+ * aucune famille ne décrit tout : `'incomplete'`, l'appelant rend la main.
+ */
+function familyOfSubResults(
+	subResults: readonly SolveResult[]
+): PeriodicSolutionFamily | null | 'incomplete' {
+	const withSolutions = subResults.filter((r) => r.solutions.length > 0);
+	const families = withSolutions.flatMap((r) => (r.periodicSolutions ? [r.periodicSolutions] : []));
+	if (families.length === 0) return null;
+	if (families.length !== withSolutions.length) return 'incomplete';
+	return mergePeriodicFamilies(families) ?? 'incomplete';
+}
+
 function tryProductDecomposition(
 	expr: MathNode,
 	variable: string,
@@ -367,6 +388,11 @@ function tryProductDecomposition(
 			const factorEq = equals(unwrapped, number('0'));
 			const factorResult = solve(factorEq, { variable, verbosity: opts.verbosity });
 
+			// Un facteur NON RÉSOLU n'est pas un facteur sans solution : le
+			// sauter rendait `x(sin²x − 1/4) = 0` → « x = 0 », complet en
+			// apparence. On rend la main ; l'échec reste un échec.
+			if (isSolverFailure(factorResult)) return null;
+
 			if (factorResult.status === 'no-solution' || factorResult.status === 'no-real-solution') {
 				continue;
 			}
@@ -392,19 +418,29 @@ function tryProductDecomposition(
 		};
 	}
 
+	// Plusieurs familles (sin x · cos x) : on les RÉUNIT — n'attacher que la
+	// première faisait perdre des zéros au module de signe. Sans période
+	// commune, on rend la main : jamais de famille partielle.
+	const family =
+		periodicFamilies.length === 0
+			? null
+			: periodicFamilies.length === 1
+				? periodicFamilies[0]
+				: mergePeriodicFamilies(periodicFamilies);
+	if (periodicFamilies.length > 0 && family === null) return null;
+
 	const deduplicated = deduplicateSolutions(allSolutions);
 	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		// Une famille périodique, c'est une infinité de solutions.
+		status: deduplicated.length === 1 && family === null ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: 'mixed',
 		strategy: 'algebraic',
 		steps: recorder.getStepsFiltered(opts.verbosity),
-		// If there are periodic families, attach the first one
-		// (multiple periodic families would need a more complex merge)
-		...(periodicFamilies.length > 0 ? { periodicSolutions: periodicFamilies[0] } : {})
+		...(family ? { periodicSolutions: family } : {})
 	};
 }
 
@@ -669,6 +705,9 @@ function tryPowerDecomposition(
 		powerDecompositionDepth--;
 	}
 
+	// La base non résolue : un échec, pas une absence de solution.
+	if (isSolverFailure(baseResult)) return null;
+
 	if (baseResult.solutions.length === 0) {
 		return {
 			variable,
@@ -778,6 +817,9 @@ function tryTrigRecursiveDecomposition(
 			// Solve: argument = uSol.symbolic
 			const subEquation = equals(argument, uSol.symbolic);
 			const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+			// Sous-équation non résolue : un échec, jamais « pas de solution ».
+			if (isSolverFailure(subResult)) return null;
 
 			if (subResult.status === 'no-solution' || subResult.status === 'no-real-solution') {
 				continue;
@@ -1006,6 +1048,7 @@ function tryExpLogRecursiveDecomposition(
 	);
 
 	const allSolutions: Solution[] = [];
+	const subResults: SolveResult[] = [];
 
 	expLogRecursiveDepth++;
 	try {
@@ -1013,6 +1056,10 @@ function tryExpLogRecursiveDecomposition(
 			// Solve: argument = uVal.symbolic
 			const subEquation = equals(argument, uVal.symbolic);
 			const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+			// Sous-équation non résolue : un échec, jamais « pas de solution ».
+			if (isSolverFailure(subResult)) return null;
+			subResults.push(subResult);
 
 			if (subResult.status === 'no-solution' || subResult.status === 'no-real-solution') {
 				continue;
@@ -1059,16 +1106,20 @@ function tryExpLogRecursiveDecomposition(
 		};
 	}
 
+	const family = familyOfSubResults(subResults);
+	if (family === 'incomplete') return null;
+
 	const deduplicated = deduplicateSolutions(allSolutions);
 	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		status: deduplicated.length === 1 && !family ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: kind === 'exp' ? 'exponential' : 'logarithmic',
 		strategy: 'algebraic',
-		steps: recorder.getStepsFiltered(opts.verbosity)
+		steps: recorder.getStepsFiltered(opts.verbosity),
+		...(family ? { periodicSolutions: family } : {})
 	};
 }
 
@@ -1357,11 +1408,17 @@ function tryRadicalDecomposition(
 
 	// Now solve: argument = uSymbolic
 	const allSolutions: Solution[] = [];
+	let family: PeriodicSolutionFamily | null | 'incomplete' = null;
 
 	radicalDecompositionDepth++;
 	try {
 		const subEquation = equals(argument, uSymbolic);
 		const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+		// Sous-équation non résolue : un échec, jamais « pas de solution ».
+		if (isSolverFailure(subResult)) return null;
+		family = familyOfSubResults([subResult]);
+		if (family === 'incomplete') return null;
 
 		if (subResult.status !== 'no-solution' && subResult.status !== 'no-real-solution') {
 			for (const sol of subResult.solutions) {
@@ -1397,11 +1454,12 @@ function tryRadicalDecomposition(
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		status: deduplicated.length === 1 && !family ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: 'unknown',
 		strategy: 'algebraic',
-		steps: recorder.getStepsFiltered(opts.verbosity)
+		steps: recorder.getStepsFiltered(opts.verbosity),
+		...(family ? { periodicSolutions: family } : {})
 	};
 }
 
@@ -1683,7 +1741,15 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Une somme dont les termes partagent un facteur non constant : on le met
 	// en évidence, puis produit nul. En DERNIER recours seulement — voir
 	// `tryCommonFactorDecomposition`.
-	if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
+	//
+	// Avant elle, le changement de variable (u = sin x, cos x, tan x, ln x,
+	// eˣ) : `sin²x = 1/4` revenait « non supporte ». Lui aussi en repli : une
+	// équation déjà résolue garde sa résolution.
+	if (isSolverFailure(result)) {
+		const substituted = trySubstitution(expr, variable, opts, solve);
+		if (substituted) result = substituted;
+	}
+	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);
 		if (factored) result = factored;
 	}
