@@ -26,6 +26,7 @@ contourner en silence.
 | 0015 | [Évaluation notée : correction côté serveur](0015-evaluation-notee-correction-serveur.md)                            | 2026-09-30 |
 | 0016 | [Auto-évaluation : le meilleur résultat du jour](0016-auto-evaluation-meilleur-resultat-du-jour.md)                  | 2026-09-30 |
 | 0017 | [Correction concise et détaillée : détails marqués dans le texte](0017-correction-concise-et-detaillee.md)           | 2026-10-02 |
+| 0018 | [Chapitres : une liste tenue par le prof, distincte de la source](0018-chapitres-liste-tenue-par-le-prof.md)         | 2026-10-06 |
 
 ## Écrire un ADR
 
