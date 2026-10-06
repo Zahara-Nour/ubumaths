@@ -285,10 +285,11 @@ export function hashNormalTerm(term: NormalTerm): string {
 	const coeffHash = hashAlgebraicCoefficient(term.coefficient);
 	const monomialHash = hashMonomial(term.monomial);
 
-	// Coefficient is 1 and we have monomial
+	// Coefficient is 1 and we have monomial (`i` n'est pas 1 : `a i` ≠ `a`)
 	if (
 		term.coefficient.terms.length === 1 &&
 		term.coefficient.terms[0].radicals.length === 0 &&
+		term.coefficient.terms[0].hasImaginaryUnit !== true &&
 		term.coefficient.terms[0].rational.n === 1n &&
 		term.coefficient.terms[0].rational.d === 1n &&
 		term.monomial.length > 0
