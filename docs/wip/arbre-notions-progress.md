@@ -66,6 +66,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   exercices seulement, texte libre + type de source en liste fermée ; tags = transversal seulement.
   Glossaire et ADR 0019 mis à jour sur la branche.
 
+- **Question d'accès tranchée (2026-10-07)** : lecture de l'arbre et des types de source par tout le
+  monde, anon compris (y compris les notions sans contenu) ; écriture par l'admin seul ; rangement d'un
+  contenu : droits inchangés (auteur d'un exercice, admin pour un modèle). Personne ne perd d'accès.
+
 ## Ouvert
 
 - **Arbre validé en entier le 2026-10-07** : 19 branches, 114 notions, 415 sous-notions →
