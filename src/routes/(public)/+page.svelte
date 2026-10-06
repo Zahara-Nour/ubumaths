@@ -234,9 +234,7 @@
 			class="depeche"
 			data-testid="home-shtam"
 		>
-			<span class="depeche-label"
-				><span class="dot" aria-hidden="true"></span>Dernière minute · Le Shtam</span
-			>
+			<span class="depeche-label"><span class="dot" aria-hidden="true"></span>Le Shtam</span>
 			<span class="depeche-text">{data.shtam.title}</span>
 		</a>
 	{/if}

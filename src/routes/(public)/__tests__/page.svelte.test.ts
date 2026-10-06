@@ -147,13 +147,12 @@ describe('/+page.svelte', () => {
 		const overlap = (a: DOMRect, b: DOMRect) =>
 			!(a.bottom <= b.top || a.top >= b.bottom || a.right <= b.left || a.left >= b.right);
 
-		it('montre l’article tiré dans un encart « Dernière minute », en lien vers sa page', async () => {
+		it('montre l’article tiré dans un encart « Le Shtam », en lien vers sa page', async () => {
 			const screen = await renderInZone(1200, 740);
 			const link = screen.getByRole('link', { name: /transcendant que le mardi/ });
 			await expect
 				.element(link)
 				.toHaveAttribute('href', expect.stringMatching(/\/shtam\/un-article$/));
-			await expect.element(screen.getByTestId('home-shtam')).toHaveTextContent(/Dernière minute/i);
 			await expect.element(screen.getByTestId('home-shtam')).toHaveTextContent(/Le Shtam/i);
 		});
 
