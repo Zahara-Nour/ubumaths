@@ -44,6 +44,17 @@ export function resolveGradedField(field: GradedField, readerGrade: GradeCode): 
 // MathTerm interface
 // ---------------------------------------------------------------------------
 
+/** Pages du site vers lesquelles un terme peut renvoyer (« Voir aussi ») */
+export type SeeAlsoPath =
+	| '/chiffrement'
+	| '/chiffrement/depeches'
+	| '/chiffrement/cesar'
+	| '/chiffrement/substitution'
+	| '/chiffrement/vigenere'
+	| '/chiffrement/affine'
+	| '/chiffrement/hill'
+	| '/chiffrement/rsa';
+
 export interface MathTerm {
 	term: string;
 	/** Semantic disambiguation for homonyms (e.g., 'géométrie' vs 'puissances' for 'base'). */
@@ -61,6 +72,8 @@ export interface MathTerm {
 	synonyms?: string[];
 	/** For derived terms (verbs, adjectives): points to the principal term (substantive). */
 	derivedFrom?: string;
+	/** Page du site où la notion se pratique (lien « Voir aussi » du glossaire) */
+	seeAlso?: { label: string; path: SeeAlsoPath };
 }
 
 // ---------------------------------------------------------------------------
@@ -4441,6 +4454,316 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: 'T_SPE'
+	},
+	// =========================================================================
+	// CRYPTOGRAPHIE (le Cabinet Noir de Turingrad, /chiffrement)
+	// =========================================================================
+	{
+		term: 'chiffre',
+		sense: 'cryptographie',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Méthode pour écrire un message en secret, que seul celui qui connaît la clé peut relire. Ex : le chiffre de César, le chiffre de Vigenère.'
+				}
+			]
+		},
+		grade: '6',
+		seeAlso: { label: 'Le Cabinet Noir de Turingrad', path: '/chiffrement' }
+	},
+	{
+		term: 'chiffrer',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Transformer un message à l’aide d’une clé pour le rendre illisible. On évite « crypter » : chiffrer sans clé n’aurait pas de sens.'
+				}
+			]
+		},
+		grade: '6',
+		seeAlso: { label: 'Le Cabinet Noir de Turingrad', path: '/chiffrement' }
+	},
+	{
+		term: 'déchiffrer',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Retrouver le message clair à partir du message chiffré, **en connaissant** la clé.'
+				}
+			]
+		},
+		grade: '6',
+		seeAlso: { label: 'Le Cabinet Noir de Turingrad', path: '/chiffrement' }
+	},
+	{
+		term: 'décrypter',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Retrouver le message clair **sans connaître** la clé, par exemple grâce à l’analyse de fréquences.'
+				}
+			]
+		},
+		grade: '6',
+		seeAlso: { label: 'Les Dépêches du Czar', path: '/chiffrement/depeches' }
+	},
+	{
+		term: 'clé',
+		sense: 'cryptographie',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Information secrète qui règle un chiffre : le décalage du chiffre de César, le mot-clé du chiffre de Vigenère…'
+				}
+			]
+		},
+		grade: '6',
+		seeAlso: { label: 'Le Cabinet Noir de Turingrad', path: '/chiffrement' }
+	},
+	{
+		term: 'chiffre de César',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Chiffre qui décale chaque lettre d’un même nombre de rangs dans l’alphabet, en repartant au début après Z.'
+				}
+			]
+		},
+		exemples: {
+			items: [{ grade: '6', content: 'Avec un décalage de $3$, A devient D et Y devient B.' }]
+		},
+		history:
+			'L’historien Suétone raconte que Jules César décalait les lettres de ses messages secrets de trois rangs.',
+		grade: '6',
+		seeAlso: { label: 'Le chiffre de César', path: '/chiffrement/cesar' }
+	},
+	{
+		term: 'analyse de fréquences',
+		tags: ['cryptographie', 'statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						'Méthode de décryptage qui compare la fréquence des lettres d’un message chiffré à celle de la langue. En français, la lettre la plus fréquente est presque toujours le E.'
+				}
+			]
+		},
+		history: 'Décrite par le savant arabe Al-Kindi au IXᵉ siècle.',
+		grade: '5',
+		seeAlso: { label: 'La substitution', path: '/chiffrement/substitution' }
+	},
+	{
+		term: 'chiffre de Vigenère',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Chiffre dont le décalage change à chaque lettre, selon les lettres d’un mot-clé répété tout au long du message.'
+				}
+			]
+		},
+		history:
+			'Publié par Giovan Battista Bellaso en 1553, popularisé par Blaise de Vigenère en 1586, il fut surnommé « le chiffre indéchiffrable » jusqu’à la méthode de Kasiski (1863).',
+		grade: '2',
+		seeAlso: { label: 'Le chiffre de Vigenère', path: '/chiffrement/vigenere' }
+	},
+	{
+		term: 'méthode de Kasiski',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Méthode pour trouver la longueur de la clé d’un chiffre de Vigenère : les écarts entre deux séquences répétées du message chiffré sont souvent des multiples de cette longueur.'
+				}
+			]
+		},
+		history: 'Publiée par l’officier prussien Friedrich Kasiski en 1863.',
+		grade: '2',
+		seeAlso: { label: 'Le chiffre de Vigenère', path: '/chiffrement/vigenere' }
+	},
+	{
+		term: 'indice de coïncidence',
+		tags: ['cryptographie', 'probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Probabilité que deux lettres prises au hasard dans un texte soient identiques : environ $0{,}078$ en français, $0{,}038$ pour des lettres tirées au hasard.'
+				}
+			]
+		},
+		history: 'Introduit par le cryptologue américain William Friedman dans les années 1920.',
+		grade: '2',
+		seeAlso: { label: 'Le chiffre de Vigenère', path: '/chiffrement/vigenere' }
+	},
+	{
+		term: 'congruence',
+		tags: ['entiers', 'arithmétique', 'cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'$a \\equiv b \\pmod{n}$ signifie que $n$ divise $a - b$ : $a$ et $b$ ont le même reste dans la division euclidienne par $n$.'
+				}
+			]
+		},
+		exemples: {
+			items: [{ grade: 'T_EXP', content: '$27 \\equiv 1 \\pmod{26}$, car $27 - 1 = 26$.' }]
+		},
+		grade: 'T_EXP',
+		synonyms: ['modulo'],
+		seeAlso: { label: 'Le chiffre affine', path: '/chiffrement/affine' }
+	},
+	{
+		term: 'inverse modulaire',
+		tags: ['entiers', 'arithmétique', 'cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Un entier $a'$ tel que $a \\times a' \\equiv 1 \\pmod{n}$. Il existe si et seulement si $a$ est premier avec $n$."
+				}
+			]
+		},
+		exemples: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'$5 \\times 21 = 105 = 4 \\times 26 + 1$, donc $21$ est l’inverse de $5$ modulo $26$.'
+				}
+			]
+		},
+		grade: 'T_EXP',
+		seeAlso: { label: 'Le chiffre affine', path: '/chiffrement/affine' }
+	},
+	{
+		term: 'chiffre affine',
+		tags: ['cryptographie', 'arithmétique'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Chiffre qui remplace la lettre de rang $x$ par celle de rang $ax + b$ modulo $26$. On ne peut déchiffrer que si $a$ est premier avec $26$.'
+				}
+			]
+		},
+		grade: 'T_EXP',
+		seeAlso: { label: 'Le chiffre affine', path: '/chiffrement/affine' }
+	},
+	{
+		term: 'chiffre de Hill',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Chiffre qui code les lettres par paires, en multipliant le vecteur de leurs rangs par une matrice $2 \\times 2$ inversible modulo $26$.'
+				}
+			]
+		},
+		history: 'Imaginé par le mathématicien américain Lester Hill en 1929.',
+		grade: 'T_EXP',
+		seeAlso: { label: 'Le chiffre de Hill', path: '/chiffrement/hill' }
+	},
+	{
+		term: 'identité de Bézout',
+		tags: ['entiers', 'arithmétique', 'cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Si $d$ est le PGCD de $a$ et $b$, il existe des entiers $u$ et $v$ tels que $au + bv = d$. L’algorithme d’Euclide étendu les calcule.'
+				}
+			]
+		},
+		exemples: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'$1 = -3 \\times 1080 + 463 \\times 7$ : $463$ est l’inverse de $7$ modulo $1080$.'
+				}
+			]
+		},
+		grade: 'T_EXP',
+		seeAlso: { label: 'RSA de poche', path: '/chiffrement/rsa' }
+	},
+	{
+		term: 'exponentiation rapide',
+		tags: ['puissances', 'cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Méthode pour calculer $a^e$ modulo $n$ : on élève au carré encore et encore, et l’on ne multiplie que les carrés qui correspondent aux chiffres $1$ de l’écriture binaire de $e$.'
+				}
+			]
+		},
+		grade: 'T_EXP',
+		seeAlso: { label: 'RSA de poche', path: '/chiffrement/rsa' }
+	},
+	{
+		term: 'clé publique',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Dans un chiffrement comme RSA, la clé qui sert à chiffrer : elle peut être connue de tous. Seule la clé privée, gardée secrète, permet de déchiffrer.'
+				}
+			]
+		},
+		history:
+			'L’idée vient de Whitfield Diffie et Martin Hellman (1976) ; RSA (Rivest, Shamir et Adleman, 1977) en est la première réalisation utilisable pour chiffrer.',
+		grade: 'T_EXP',
+		seeAlso: { label: 'RSA de poche', path: '/chiffrement/rsa' }
+	},
+	{
+		term: 'clé privée',
+		tags: ['cryptographie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Clé gardée secrète qui permet de déchiffrer les messages chiffrés avec la clé publique correspondante.'
+				}
+			]
+		},
+		grade: 'T_EXP',
+		seeAlso: { label: 'RSA de poche', path: '/chiffrement/rsa' }
 	}
 ];
 
