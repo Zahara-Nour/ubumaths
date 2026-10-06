@@ -360,6 +360,7 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 
 		it.each([
 			['prof', () => teacherClient],
+			['élève', () => studentClient],
 			['anon', () => anon]
 		])('%s ne peut pas créer de type de source (42501)', async (_who, getClient) => {
 			const { error } = await getClient()
@@ -367,6 +368,36 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 				.insert({ name: name(`E source ${_who}`) });
 			expect(error?.code).toBe('42501');
 		});
+
+		it.each([
+			['prof', () => teacherClient],
+			['élève', () => studentClient]
+		])(
+			'%s ne peut ni renommer ni supprimer un type de source (ligne intacte)',
+			async (_who, getClient) => {
+				const { data: st, error: stErr } = await service
+					.from('source_types')
+					.insert({ name: name(`E source cible ${_who}`) })
+					.select('id')
+					.single<{ id: string }>();
+				if (stErr || !st) throw new Error(`décor : type de source refusé : ${stErr?.message}`);
+
+				const upd = await getClient()
+					.from('source_types')
+					.update({ name: name(`E source piratée ${_who}`) })
+					.eq('id', st.id)
+					.select('id');
+				expect(upd.error).toBeNull();
+				expect(upd.data).toEqual([]);
+
+				const del = await getClient().from('source_types').delete().eq('id', st.id).select('id');
+				expect(del.error).toBeNull();
+				expect(del.data).toEqual([]);
+
+				const still = await service.from('source_types').select('name').eq('id', st.id);
+				expect(still.data).toEqual([{ name: name(`E source cible ${_who}`) }]);
+			}
+		);
 	});
 
 	// --------------------------------------------------------------------------
@@ -706,6 +737,129 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			expect(still.data).toEqual([{ node_id: notion.id }]);
 		});
 
+		// S'appuie sur le rangement (exercice de l'admin → notion, principal) posé
+		// par le test précédent.
+		it.each([
+			['prof', () => teacherClient],
+			['élève', () => studentClient]
+		])(
+			"%s ne modifie pas le rangement d'un exercice dont il n'est pas l'auteur (ligne intacte)",
+			async (_who, getClient) => {
+				const unprimary = await getClient()
+					.from('exercise_classifications')
+					.update({ is_primary: false })
+					.eq('exercise_id', adminExercise)
+					.select('node_id');
+				expect(unprimary.error).toBeNull();
+				expect(unprimary.data).toEqual([]);
+
+				const moved = await getClient()
+					.from('exercise_classifications')
+					.update({ node_id: subnotion.id })
+					.eq('exercise_id', adminExercise)
+					.select('node_id');
+				expect(moved.error).toBeNull();
+				expect(moved.data).toEqual([]);
+
+				const still = await service
+					.from('exercise_classifications')
+					.select('node_id, is_primary')
+					.eq('exercise_id', adminExercise);
+				expect(still.data).toEqual([{ node_id: notion.id, is_primary: true }]);
+			}
+		);
+
+		// Cas où la policy UPDATE est SEULE à protéger : la ligne est lisible
+		// (exercice public), donc la policy SELECT ne la masque pas.
+		it.each([
+			['élève', () => studentClient],
+			['admin', () => adminClient]
+		])(
+			"%s voit le rangement d'un exercice public mais ne le modifie pas (ligne intacte)",
+			async (_who, getClient) => {
+				const exerciseId = await seedExercise(teacherId, true);
+				await seedClassification(exerciseId, notion.id, true);
+
+				const seen = await getClient()
+					.from('exercise_classifications')
+					.select('node_id')
+					.eq('exercise_id', exerciseId);
+				expect(seen.data).toEqual([{ node_id: notion.id }]);
+
+				const upd = await getClient()
+					.from('exercise_classifications')
+					.update({ is_primary: false, node_id: subnotion.id })
+					.eq('exercise_id', exerciseId)
+					.select('node_id');
+				expect(upd.error).toBeNull();
+				expect(upd.data).toEqual([]);
+
+				const still = await service
+					.from('exercise_classifications')
+					.select('node_id, is_primary')
+					.eq('exercise_id', exerciseId);
+				expect(still.data).toEqual([{ node_id: notion.id, is_primary: true }]);
+			}
+		);
+
+		it("le prof ne déplace pas son rangement vers l'exercice d'un autre auteur (42501)", async () => {
+			const { data, error } = await teacherClient
+				.from('exercise_classifications')
+				.update({ exercise_id: adminExercise })
+				.eq('exercise_id', teacherExercise)
+				.eq('node_id', subnotion.id)
+				.select('exercise_id');
+			expect(data).toBeNull();
+			expect(error?.code).toBe('42501');
+
+			const still = await service
+				.from('exercise_classifications')
+				.select('exercise_id')
+				.eq('node_id', subnotion.id)
+				.in('exercise_id', [teacherExercise, adminExercise]);
+			expect(still.data).toEqual([{ exercise_id: teacherExercise }]);
+		});
+
+		it('anon ne peut ni ranger, ni modifier, ni retirer un rangement (42501)', async () => {
+			const ins = await anon
+				.from('exercise_classifications')
+				.insert({ exercise_id: publicExercise, node_id: notion.id });
+			expect(ins.error?.code).toBe('42501');
+
+			const upd = await anon
+				.from('exercise_classifications')
+				.update({ is_primary: false })
+				.eq('exercise_id', adminExercise);
+			expect(upd.error?.code).toBe('42501');
+
+			const del = await anon
+				.from('exercise_classifications')
+				.delete()
+				.eq('exercise_id', adminExercise);
+			expect(del.error?.code).toBe('42501');
+
+			const still = await service
+				.from('exercise_classifications')
+				.select('node_id, is_primary')
+				.eq('exercise_id', adminExercise);
+			expect(still.data).toEqual([{ node_id: notion.id, is_primary: true }]);
+		});
+
+		it("anon ne voit pas le rangement d'un exercice privé (l'auteur, si)", async () => {
+			const hidden = await anon
+				.from('exercise_classifications')
+				.select('node_id')
+				.eq('exercise_id', teacherExercise);
+			expect(hidden.error).toBeNull();
+			expect(hidden.data).toEqual([]);
+
+			const own = await teacherClient
+				.from('exercise_classifications')
+				.select('node_id')
+				.eq('exercise_id', teacherExercise);
+			expect((own.data ?? []).length).toBe(2);
+		});
+
 		it("l'élève ne voit pas le rangement d'un exercice qu'il ne voit pas, mais voit celui d'un exercice public", async () => {
 			await seedClassification(publicExercise, subnotion.id, true);
 
@@ -732,6 +886,76 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 				expect(visible.error).toBeNull();
 				expect(visible.data).toEqual([{ node_id: subnotion.id, is_primary: true }]);
 			}
+		});
+
+		it('ranger dans un nœud archivé : refusé (23514), à la création comme au déplacement', async () => {
+			const archived = await seedNode({
+				kind: 'subnotion',
+				name: name('C archivée'),
+				parent_id: notion.id,
+				archived_at: new Date().toISOString()
+			});
+			const exerciseId = await seedExercise(teacherId, false);
+
+			const ins = await teacherClient
+				.from('exercise_classifications')
+				.insert({ exercise_id: exerciseId, node_id: archived.id })
+				.select('node_id');
+			expect(ins.data).toBeNull();
+			expect(ins.error?.code).toBe('23514');
+			expect(ins.error?.message).toMatch(/archivé/);
+
+			await seedClassification(exerciseId, notion.id);
+			const move = await teacherClient
+				.from('exercise_classifications')
+				.update({ node_id: archived.id })
+				.eq('exercise_id', exerciseId)
+				.select('node_id');
+			expect(move.error?.code).toBe('23514');
+
+			const still = await service
+				.from('exercise_classifications')
+				.select('node_id')
+				.eq('exercise_id', exerciseId);
+			expect(still.data).toEqual([{ node_id: notion.id }]);
+		});
+
+		it('nœud archivé après rangement : le rangement reste et is_primary se modifie', async () => {
+			const leaf = await seedNode({
+				kind: 'subnotion',
+				name: name('C archivée après'),
+				parent_id: notion.id
+			});
+			const exerciseId = await seedExercise(teacherId, false);
+			const ins = await teacherClient
+				.from('exercise_classifications')
+				.insert({ exercise_id: exerciseId, node_id: leaf.id })
+				.select('node_id');
+			expect(ins.data).toEqual([{ node_id: leaf.id }]);
+
+			const arch = await service
+				.from('classification_nodes')
+				.update({ archived_at: new Date().toISOString() })
+				.eq('id', leaf.id)
+				.select('archived_at');
+			expect(arch.data?.[0]?.archived_at).not.toBeNull();
+
+			const upd = await teacherClient
+				.from('exercise_classifications')
+				.update({ is_primary: true })
+				.eq('exercise_id', exerciseId)
+				.select('node_id, is_primary');
+			expect(upd.error).toBeNull();
+			expect(upd.data).toEqual([{ node_id: leaf.id, is_primary: true }]);
+
+			// Même valeur réécrite (le trigger `UPDATE OF node_id` se déclenche) : passe aussi.
+			const same = await teacherClient
+				.from('exercise_classifications')
+				.update({ node_id: leaf.id, position: 3 })
+				.eq('exercise_id', exerciseId)
+				.select('node_id, position');
+			expect(same.error).toBeNull();
+			expect(same.data).toEqual([{ node_id: leaf.id, position: 3 }]);
 		});
 
 		it("supprimer l'exercice supprime ses rangements (cascade)", async () => {
@@ -798,6 +1022,63 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 				.select('classification_node_id');
 			expect(error).toBeNull();
 			expect(data).toEqual([{ classification_node_id: notion.id }]);
+		});
+
+		it('ranger un modèle dans un nœud archivé : refusé (23514)', async () => {
+			const archived = await seedNode({
+				kind: 'subnotion',
+				name: name('Q archivée'),
+				parent_id: notion.id,
+				archived_at: new Date().toISOString()
+			});
+			const { data, error } = await adminClient
+				.from('question_templates')
+				.update({ classification_node_id: archived.id })
+				.eq('id', templateId)
+				.select('classification_node_id');
+			expect(data).toBeNull();
+			expect(error?.code).toBe('23514');
+			expect(error?.message).toMatch(/archivé/);
+		});
+
+		it("modifier un autre champ d'un modèle rangé dans un nœud archivé passe", async () => {
+			const leaf = await seedNode({
+				kind: 'subnotion',
+				name: name('Q archivée après'),
+				parent_id: notion.id
+			});
+			const put = await adminClient
+				.from('question_templates')
+				.update({ classification_node_id: leaf.id })
+				.eq('id', templateId)
+				.select('classification_node_id');
+			expect(put.data).toEqual([{ classification_node_id: leaf.id }]);
+
+			const arch = await service
+				.from('classification_nodes')
+				.update({ archived_at: new Date().toISOString() })
+				.eq('id', leaf.id)
+				.select('archived_at');
+			expect(arch.data?.[0]?.archived_at).not.toBeNull();
+
+			const retitle = await adminClient
+				.from('question_templates')
+				.update({ title: name('Q modèle renommé') })
+				.eq('id', templateId)
+				.select('title, classification_node_id');
+			expect(retitle.error).toBeNull();
+			expect(retitle.data).toEqual([
+				{ title: name('Q modèle renommé'), classification_node_id: leaf.id }
+			]);
+
+			// Valeur inchangée réécrite (formulaire qui renvoie tout) : passe aussi.
+			const same = await adminClient
+				.from('question_templates')
+				.update({ classification_node_id: leaf.id, level: 2 })
+				.eq('id', templateId)
+				.select('level, classification_node_id');
+			expect(same.error).toBeNull();
+			expect(same.data).toEqual([{ level: 2, classification_node_id: leaf.id }]);
 		});
 
 		it('le prof auteur affecte un type de source à son exercice ; ce type ne se supprime plus', async () => {

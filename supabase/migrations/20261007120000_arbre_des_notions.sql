@@ -256,16 +256,34 @@ as $$
 declare
 	v_node_id uuid;
 	v_kind text;
+	v_archived_at timestamptz;
 begin
 	v_node_id := (to_jsonb(new) ->> tg_argv[0])::uuid;
 	if v_node_id is null then
 		return new;
 	end if;
 
-	select kind into v_kind from public.classification_nodes where id = v_node_id;
+	-- `UPDATE OF col` se déclenche dès que la colonne figure dans le SET, même
+	-- à valeur égale : seul un NOUVEAU rangement est vérifié. Un rangement
+	-- existant reste valide si son nœud a été archivé après coup.
+	if tg_op = 'UPDATE' and v_node_id is not distinct from (to_jsonb(old) ->> tg_argv[0])::uuid then
+		return new;
+	end if;
+
+	select kind, archived_at into v_kind, v_archived_at
+	from public.classification_nodes where id = v_node_id;
 	-- Nœud inexistant : la clé étrangère le refusera (23503).
-	if found and v_kind not in ('notion', 'subnotion') then
+	if not found then
+		return new;
+	end if;
+
+	if v_kind not in ('notion', 'subnotion') then
 		raise exception 'Un contenu se range dans une notion ou une sous-notion, pas dans une branche.'
+			using errcode = 'check_violation';
+	end if;
+
+	if v_archived_at is not null then
+		raise exception 'Un contenu ne se range pas dans un nœud archivé.'
 			using errcode = 'check_violation';
 	end if;
 
@@ -338,11 +356,13 @@ grant select, insert, update, delete
 	on public.classification_nodes, public.source_types, public.exercise_classifications
 	to authenticated;
 
--- Les fonctions de trigger ne s'appellent pas directement ; on ferme EXECUTE
--- pour ne rien laisser traîner sur PUBLIC (cf. audit sécurité 2026-08).
-revoke execute on function public.classification_nodes_validate() from public, anon;
-revoke execute on function public.classification_nodes_check_children() from public, anon;
-revoke execute on function public.classification_target_is_leafish() from public, anon;
+-- Les fonctions de trigger ne s'appellent pas directement : personne n'en a
+-- besoin, on ferme EXECUTE à PUBLIC, anon ET authenticated (cf. audit sécurité
+-- 2026-08). Un trigger ne vérifie pas EXECUTE chez celui qui déclenche
+-- l'écriture : les triggers restent actifs (prouvé par les tests d'intégration).
+revoke execute on function public.classification_nodes_validate() from public, anon, authenticated;
+revoke execute on function public.classification_nodes_check_children() from public, anon, authenticated;
+revoke execute on function public.classification_target_is_leafish() from public, anon, authenticated;
 
 -- ============================================================================
 -- 8. RLS
@@ -354,6 +374,10 @@ alter table public.exercise_classifications enable row level security;
 
 -- --- classification_nodes : lecture publique, écriture admin ---------------
 
+-- ⚠️ Ne pas restreindre cette lecture sans revoir les triggers : ils lisent
+-- l'arbre avec les droits de l'appelant, et un parent ou un nœud masqué
+-- tomberait dans leur branche `if not found then return new` — la vérification
+-- du genre (parent, cible d'un rangement) serait alors sautée en silence.
 create policy "Anyone can read classification nodes"
 	on public.classification_nodes for select
 	to anon, authenticated
