@@ -21,9 +21,15 @@ L'ADR 0018 nommait « chapitre » le niveau fin ; ce mot désigne déjà l'unit�
   **David l'édite** depuis une page d'administration.
 - **Branche** : regroupement propre à Chiphre, stable à tous les niveaux scolaires, distinct du
   **thème** du programme (`curriculum_themes`), qui reste le découpage officiel par niveau.
-- **Notion** : valable à un ou plusieurs niveaux ; un élément porte une seule notion, valable à tous
-  ses niveaux ; obligatoire pour tout nouvel élément. Rattachement facultatif aux thèmes du programme.
+- **Niveaux scolaires** portés par la notion **et** par la sous-notion : une sous-notion sans niveaux
+  hérite de ceux de sa notion ; avec des niveaux, ils sont pris parmi ceux de sa notion.
+- **Rangement** : un **modèle de questions** pointe vers **un seul** nœud (notion ou sous-notion) ; un
+  **exercice** vers **un ou plusieurs**, l'un pouvant être marqué principal (le premier par défaut).
+  Obligatoire pour tout nouvel élément. Nœud hors des niveaux du contenu : **avertissement**, pas de
+  refus (exercice d'approfondissement).
 - **Sous-notion** : facultative.
+- **Pas de lien entre l'arbre et le programme officiel** : le lien passe déjà par les points du
+  programme rattachés aux contenus ; il s'ajoutera si une page en a l'usage.
 - **Un champ par question posée, sans recouvrement** (complété le 2026-10-07) :
   - de quoi ça parle → l'arbre (exercices et questions) ;
   - quel genre de tâche → **catégorie** d'exercice (existante : automatisme, application, recherche,

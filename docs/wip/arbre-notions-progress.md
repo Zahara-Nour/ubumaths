@@ -70,8 +70,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   monde, anon compris (y compris les notions sans contenu) ; écriture par l'admin seul ; rangement d'un
   contenu : droits inchangés (auteur d'un exercice, admin pour un modèle). Personne ne perd d'accès.
 
+- **Phase 0, réponses aux questions de David (2026-10-07)** : niveaux sur notion et sous-notion
+  (héritage, inclusion) ; pas de lien arbre ↔ programme officiel (A7 retiré) ; exercice → un ou
+  plusieurs nœuds avec principal facultatif, modèle → un seul ; incohérence de niveaux = avertissement.
+
 ## Ouvert
 
 - **Arbre validé en entier le 2026-10-07** : 19 branches, 114 notions, 415 sous-notions →
   `docs/wip/arbre-notions/` (JSON + page). Branche de travail `feat/arbre-notions`, rien en base. Puis relecture d'ensemble.
+- Phase 0 : reste archivage d'un nœud à enfants actifs, table de correspondance.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
