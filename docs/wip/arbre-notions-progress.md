@@ -28,8 +28,16 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Proportionnalité** (5 notions) : Situations de proportionnalité (reprend Tableaux), Pourcentages,
   Évolutions, Échelle d'une carte, Vitesse (sortie de Grandeurs et mesures).
 
+- **Algèbre** (7 notions) : Calcul littéral (une seule notion, 7 sous-notions) ; Équations : premier
+  degré / produit et quotient / second degré ; Inéquations : premier degré / produit et quotient /
+  second degré. Équations classées par forme (ℕ, ℤ, ℚ → difficulté `level`).
+- **Second degré** : équations et inéquations dans Algèbre ; dans Fonctions > Second degré, les énoncés
+  « fonction » (racines, signe, formes, variations, parabole). Frontière : la consigne porte sur une
+  équation → Algèbre, sur une fonction → Fonctions.
+- **Matrices** et **Graphes** : deux branches à part (maths expertes) ; Chaînes de Markov dans Graphes.
+
 ## Ouvert
 
-- Branches restantes à revoir une par une : Algèbre, Fonctions, Suites, Géométrie,
+- Branches restantes à revoir une par une : Fonctions, Suites, Géométrie,
   Grandeurs et mesures, Probabilités et statistiques, Logique et algorithmique.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
