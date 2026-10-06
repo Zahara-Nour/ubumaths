@@ -87,3 +87,12 @@ describe('définition g(x) = f(2x)', () => {
 		expect(run(".taylor f'(x) 4")).toMatch(/1-\{1\/2\}x\^2$/);
 	});
 });
+
+describe('appel qui ne se compose pas (revue de #901)', () => {
+	// f_1(2x) se relisait comme le produit (x^2)(2x) : 6x² au lieu de 8x
+	it('.dériver f_1(2x) ne rend jamais 6x² sans rien dire', () => {
+		const output = run('.dériver f_1(2x)', { f_1: 'x^2' });
+		expect(output).not.toMatch(/6x\^2/);
+		expect(output).toMatch(/8x$|n’aipassulire/);
+	});
+});
