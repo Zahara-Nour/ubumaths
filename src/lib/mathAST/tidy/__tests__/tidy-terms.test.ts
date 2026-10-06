@@ -38,7 +38,8 @@ describe('tidyTerms : témoins inchangés', () => {
 		['x^2 e^x', '2 x e^x + x^2 e^x'],
 		['x^2', '2 x'],
 		['3x^2 - x + 1', '6 x - 1'],
-		['-3x^2 + 2x', '-6 x + 2'],
+		// Degré 1 : le négatif passe derrière (décision du 2026-10-06)
+		['-3x^2 + 2x', '2 - 6 x'],
 		['2e^{-x}', '-2 e^{-x}'],
 		['e^{3x}', '3 e^{3 x}'],
 		['\\frac{x}{x+1}', '\\dfrac{1}{\\left( x + 1 \\right)^2}']

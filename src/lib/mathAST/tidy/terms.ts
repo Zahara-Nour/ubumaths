@@ -9,7 +9,9 @@
  * La règle, en deux temps (revue des retours) :
  * - chaque TERME de la somme est mis au propre, l'ordre des termes reste ;
  * - sauf si la mise au propre COMPLÈTE regroupe des termes (`9x² + 6x²` →
- *   `15x²`, `(x−2) + (x+1)` → `2x − 1`) : regrouper l'emporte sur l'ordre.
+ *   `15x²`, `(x−2) + (x+1)` → `2x − 1`) : regrouper l'emporte sur l'ordre ;
+ * - ou si, à nombre de termes égal, elle évite un négatif en tête que l'ordre
+ *   de la règle gardait (`−6x + 2` → `2 − 6x`, décision du 2026-10-06).
  * Dans un quotient, on descend dans le numérateur (u′v − uv′ reste).
  *
  * Écrit d'abord pour l'atelier (`src/lib/atelier/tidy-terms.ts`, qui le
@@ -78,7 +80,19 @@ export function tidyTerms(node: MathNode): MathNode {
 	if (!isSum(node)) return tidySafe(node);
 	const ordered = termwise(node);
 	const full = tidySafe(node);
-	return countTerms(full) < countTerms(ordered) ? full : ordered;
+	if (countTerms(full) < countTerms(ordered)) return full;
+	// Même nombre de termes, mais l'ordre de `tidy` évite un négatif en tête
+	// (somme de degré 1 : `−6x + 2` → `2 − 6x`) : il l'emporte aussi.
+	if (countTerms(full) === countTerms(ordered) && leadsNegative(ordered) && !leadsNegative(full)) {
+		return full;
+	}
+	return ordered;
+}
+
+/** Le premier terme de la chaîne de somme est-il écrit avec un signe − ? */
+function leadsNegative(node: MathNode): boolean {
+	if (node.type === 'addition' || node.type === 'subtraction') return leadsNegative(node.left);
+	return isOpposite(node);
 }
 
 /** Le nombre de nœuds d'un arbre : « plus simple » veut dire « moins de nœuds ». */

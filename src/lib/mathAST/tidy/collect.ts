@@ -34,6 +34,7 @@ import {
 	floorRational,
 	fromInteger,
 	isInteger as isIntegerRational,
+	isNegative as isNegativeRational,
 	isOne as isOneRational,
 	isPositive as isPositiveRational,
 	isZero as isZeroRational,
@@ -62,7 +63,7 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { sortFactors, sortTerms } from './order';
+import { isFirstDegreeSum, sortFactors, sortTerms } from './order';
 
 // =============================================================================
 // Types internes
@@ -656,7 +657,7 @@ function absorbFactor(
 	}
 
 	if (alreadyTidied) {
-		addFactor(acc, node, exponent);
+		addSumFactor(acc, node, exponent);
 		return;
 	}
 
@@ -665,7 +666,7 @@ function absorbFactor(
 	// nombre rejoigne le coefficient au lieu de rester un facteur.
 	const cleaned = tidyAtom(node, acc.unitChoice);
 	if (hashMathNode(cleaned) === hashMathNode(node)) {
-		addFactor(acc, cleaned, exponent);
+		addSumFactor(acc, cleaned, exponent);
 		return;
 	}
 	// ⚠️ `tidyAtom` repart dans `tidyExpression` SANS options : le carnet n'y voit
@@ -673,6 +674,35 @@ function absorbFactor(
 	// « on regroupe les facteurs » tairait la moitié du geste. Sentinelle.
 	acc.watch?.add('other');
 	absorbFactor(cleaned, exponent, acc, true);
+}
+
+/**
+ * Un facteur déjà mis au propre. Une somme de degré 1 dont TOUS les termes sont
+ * négatifs y perd son signe − (décision de David, 2026-10-06), parité de
+ * l'exposant respectée : `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`,
+ * `(−x − 1)³` → `−(x + 1)³`. Hors d'un facteur, `−x − 1` reste tel quel : ce
+ * chemin n'est emprunté que par la base d'un facteur.
+ */
+function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): void {
+	const positive = isIntegerRational(exponent) ? positiveFirstDegreeSum(node, acc) : null;
+	if (positive === null) {
+		addFactor(acc, node, exponent);
+		return;
+	}
+	if (exponent.n % 2n !== 0n) acc.coefficient = negRational(acc.coefficient);
+	addFactor(acc, positive, exponent);
+}
+
+/** `−x − 1` → `x + 1` ; `null` si la somme n'est pas de degré 1 à termes tous négatifs. */
+function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | null {
+	if (!isSumNode(node)) return null;
+	const terms = toSumTerms(node, undefined, acc.unitChoice);
+	if (terms.length < 2) return null;
+	const plain = terms.every(
+		(term) => !term.verbatim && term.unit === null && isNegativeRational(term.coefficient)
+	);
+	if (!plain || !isFirstDegreeSum(terms)) return null;
+	return buildSum(sortTerms(terms.map(negateTerm)));
 }
 
 // =============================================================================

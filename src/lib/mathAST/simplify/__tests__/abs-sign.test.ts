@@ -144,10 +144,8 @@ describe('abs with bounds on variable', () => {
 // =============================================================================
 
 describe('abs of linear expressions with bounds', () => {
-	it('|x - 3| -> -x + 3 when x < 2', () => {
-		expect(simplifyLatex(abs(subtract(x, number('3'))), ctxBounds('x', ltBounds(2)))).toBe(
-			'-x + 3'
-		);
+	it('|x - 3| -> 3 - x when x < 2', () => {
+		expect(simplifyLatex(abs(subtract(x, number('3'))), ctxBounds('x', ltBounds(2)))).toBe('3 - x');
 	});
 
 	it('|x - 3| -> x - 3 when x > 5', () => {
