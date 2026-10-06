@@ -19,8 +19,8 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 - **Grosses notions découpées par opération, type de nombre en tête** : Entiers (numération ;
   addition et soustraction ; multiplication ; division ; priorités opératoires), Décimaux (numération ;
-  calculs), Fractions et Relatifs (sens et écritures ; calculs). Puissances et Racines carrées : une
-  notion chacune. Sous-notions courtes, sans préfixe.
+  calculs), Fractions, Relatifs, Puissances et Racines carrées (sens et écritures ; calculs), par
+  cohérence (choix de David). Sous-notions courtes, sans préfixe.
 - **Nombres complexes = branche à part** (5 notions : forme algébrique, module et argument, formes
   trigo. et exponentielle, équations polynomiales, interprétation géométrique).
 
