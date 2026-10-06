@@ -24,7 +24,7 @@ function run(command: string): { success: boolean; output: string; error?: strin
 
 const HINT_T = 'Calcul par rapport à x. Pour une autre variable, écris « ; t ».';
 const HINT_TAYLOR_T =
-	'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; le nombre de termes et le point se mettent à la fin : « ; t 5 0 ».';
+	'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; l’ordre et le point se mettent à la fin : « ; t 4 0 ».';
 
 describe('.variations : x par défaut, une autre variable après « ; »', () => {
 	it('`x^3-3x` : inchangé, points critiques ±1, sans indication', () => {
@@ -103,7 +103,7 @@ describe('.domain : x par défaut, une autre variable après « ; »', () => {
 });
 
 describe('.taylor : x par défaut, une autre variable après « ; »', () => {
-	it('`exp(x) 4` : inchangé (4 termes en 0)', () => {
+	it('`exp(x) 4` : inchangé (ordre 4 en 0)', () => {
 		const result = run('.taylor exp(x) 4');
 		expect(result.success).toBe(true);
 		expect(result.output.split('\n')[0]).toContain('x=0');
@@ -117,12 +117,12 @@ describe('.taylor : x par défaut, une autre variable après « ; »', () => {
 		expect(result.output.split('\n')[0]).toContain('x=1');
 	});
 
-	it('`exp(x)` sans nombre de termes : refus, comme avant', () => {
+	it('`exp(x)` sans ordre : refus, comme avant', () => {
 		expect(run('.taylor exp(x)').success).toBe(false);
 	});
 
 	it.each(['.taylor exp(t) 4 ; t', '.taylor exp(t) ; t 4'])(
-		'%s : en t, nombre de termes avant ou après « ; t »',
+		'%s : en t, ordre avant ou après « ; t »',
 		(input) => {
 			const result = run(input);
 			expect(result.success).toBe(true);

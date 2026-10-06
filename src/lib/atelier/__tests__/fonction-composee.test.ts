@@ -83,8 +83,8 @@ describe('définition g(x) = f(2x)', () => {
 		expect(run("f'(2x)")).toBe('cos(2x)');
 	});
 
-	it(".taylor f'(x) 4 se calcule (dérivée suivie d'un nombre de termes)", () => {
-		expect(run(".taylor f'(x) 4")).toMatch(/1-\{1\/2\}x\^2$/);
+	it(".taylor f'(x) 3 se calcule (dérivée suivie d'un ordre)", () => {
+		expect(run(".taylor f'(x) 3")).toMatch(/1-\{1\/2\}x\^2$/);
 	});
 });
 

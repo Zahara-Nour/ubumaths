@@ -28,11 +28,12 @@ export interface TaylorOptions {
 	readonly center?: number;
 
 	/**
-	 * Number of terms to compute (0 to terms-1).
-	 * Maximum allowed is 20 to prevent performance issues.
-	 * @default 5
+	 * Ordre du développement : le degré maximal (convention des
+	 * développements limités) — `order: 4` calcule les degrés 0 à 4.
+	 * Entier entre 0 et `MAX_TAYLOR_ORDER`.
+	 * @default 4
 	 */
-	readonly terms?: number;
+	readonly order?: number;
 }
 
 /**
@@ -41,14 +42,14 @@ export interface TaylorOptions {
 export const DEFAULT_TAYLOR_OPTIONS: Required<TaylorOptions> = {
 	variable: 'x',
 	center: 0,
-	terms: 5
+	order: 4
 } as const;
 
 /**
- * Maximum number of terms allowed in Taylor expansion.
- * This limit prevents performance issues with factorial computation.
+ * Ordre maximal d'un développement (20 termes, degrés 0 à 19).
+ * Cette limite évite les calculs de factorielles et de dérivées trop lourds.
  */
-export const MAX_TAYLOR_TERMS = 20;
+export const MAX_TAYLOR_ORDER = 19;
 
 // =============================================================================
 // Taylor Error

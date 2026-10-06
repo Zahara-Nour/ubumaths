@@ -479,7 +479,7 @@ export class WebReplEngine {
 				// erreur que pour les commandes qui ont BESOIN de l'arbre.
 				//
 				// Celles qui relisent `ctx.input` (`requiresAst === false`) attendent
-				// souvent autre chose derrière l'expression : `.taylor expr termes
+				// souvent autre chose derrière l'expression : `.taylor expr ordre
 				// [centre]`, `.integrate expr ; t a b`, `.solve --verbose …`. Les
 				// parser en bloc les tuait sur leur premier nombre, sans qu'elles
 				// soient jamais appelées.

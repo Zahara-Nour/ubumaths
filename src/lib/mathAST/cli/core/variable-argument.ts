@@ -66,9 +66,9 @@ const BARE_FUNCTION =
 const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;
 
 /**
- * Le nombre de termes (entier) et le point (facultatif) de `.taylor`, en fin
- * de texte : `… 5` ou `… 5 0`. Même lecture qu'avant le point-virgule : le
- * nombre de termes est un entier, le point peut être négatif ou décimal.
+ * L'ordre (entier) et le point (facultatif) de `.taylor`, en fin de texte :
+ * `… 5` ou `… 5 0`. Même lecture qu'avant le point-virgule : l'ordre est un
+ * entier, le point peut être négatif ou décimal.
  */
 const TRAILING_TAYLOR_NUMBERS = /^(.*?\S)\s+(\d+)(?:\s+([-+]?(?:\d+\.?\d*|\.\d+)))?$/s;
 
@@ -153,11 +153,11 @@ export function otherVariableHint(
 	const single = candidates.length === 1 ? candidates[0] : null;
 	const how = single !== null ? `« ; ${single} »` : '« ; » suivi de son nom';
 	// `.integrate` : les bornes suivent la variable (`; t 0 1`)
-	// `.taylor` : le nombre de termes et le point aussi (`; t 5 0`)
+	// `.taylor` : l'ordre et le point aussi (`; t 4 0`)
 	const where = options.bounds
 		? ` ; les bornes se mettent à la fin${single !== null ? ` : « ; ${single} 0 1 »` : ''}`
 		: options.taylor
-			? ` ; le nombre de termes et le point se mettent à la fin${single !== null ? ` : « ; ${single} 5 0 »` : ''}`
+			? ` ; l’ordre et le point se mettent à la fin${single !== null ? ` : « ; ${single} 4 0 »` : ''}`
 			: '';
 	return `${HINT_START} Pour une autre variable, écris ${how}${where}.`;
 }
@@ -187,14 +187,15 @@ export function splitIntegralArgument(input: string): {
 
 /**
  * Séparer l'argument de `.taylor` : expression, variable après `;` (ou
- * `null`), nombre de termes (`null` s'il manque) et point (0 par défaut).
+ * `null`), ordre du développement — le degré maximal — (`null` s'il manque)
+ * et point (0 par défaut).
  * Les nombres se placent avant ou après `; t`, comme les bornes de
  * `.integrate` : `e^t 5 0 ; t` comme `e^t ; t 5 0`.
  */
 export function splitTaylorArgument(input: string): {
 	expression: string;
 	variable: string | null;
-	terms: number | null;
+	order: number | null;
 	center: number;
 } {
 	const trimmed = input.trim();
@@ -206,7 +207,7 @@ export function splitTaylorArgument(input: string): {
 	return {
 		expression: inner === null ? expression : inner[1].trim(),
 		variable,
-		terms: found === null ? null : parseInt(found[2], 10),
+		order: found === null ? null : parseInt(found[2], 10),
 		center: found?.[3] === undefined ? 0 : parseFloat(found[3])
 	};
 }
@@ -225,7 +226,7 @@ export function variableHintOf(
 		readonly bound?: Iterable<string>;
 		/** `.integrate` : bornes à ôter, et l'indication dit où les mettre */
 		readonly integral?: boolean;
-		/** `.taylor` : nombre de termes et point à ôter, idem */
+		/** `.taylor` : ordre et point à ôter, idem */
 		readonly taylor?: boolean;
 	} = {}
 ): string | null {

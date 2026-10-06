@@ -48,7 +48,7 @@ describe('TaylorCommand', () => {
 	// =============================================================================
 
 	describe('basic Taylor expansion', () => {
-		it('expands sin(x) with 5 terms', () => {
+		it('expands sin(x) at order 5', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
 				input: 'sin(x) 5 0',
@@ -64,7 +64,7 @@ describe('TaylorCommand', () => {
 			expect(result.output).toContain('x');
 		});
 
-		it('expands exp(x) with 4 terms', () => {
+		it('expands exp(x) at order 4', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
 				input: 'exp(x) 4 0',
@@ -80,7 +80,7 @@ describe('TaylorCommand', () => {
 			expect(result.output).toContain('1');
 		});
 
-		it('expands cos(x) with 4 terms', () => {
+		it('expands cos(x) at order 4', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
 				input: 'cos(x) 4 0',
@@ -353,7 +353,7 @@ describe('TaylorCommand', () => {
 			expect(result.ast).toBeDefined();
 		});
 
-		it('shows number of terms in output', () => {
+		it('shows the order in output', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
 				input: 'sin(x) 7',
@@ -364,7 +364,7 @@ describe('TaylorCommand', () => {
 
 			const result = command.execute(ctx);
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('7 terms');
+			expect(result.output).toContain('order 7');
 		});
 	});
 
@@ -387,7 +387,7 @@ describe('TaylorCommand', () => {
 			expect(result.error?.code).toBe('PARSE_ERROR');
 		});
 
-		it('returns error for missing terms', () => {
+		it('returns error for missing order', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
 				input: 'sin(x)',
@@ -415,24 +415,36 @@ describe('TaylorCommand', () => {
 			expect(result.error?.code).toBe('PARSE_ERROR');
 		});
 
-		it('returns error for zero terms', () => {
+		it('order 0 gives the constant f(0)', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'sin(x) 0',
+				input: 'cos(x) 0',
 				format: 'custom',
 				options: {},
 				isRepl: true
 			};
 
 			const result = command.execute(ctx);
-			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('INVALID_OPTIONS');
+			expect(result.success).toBe(true);
+			expect(result.ast).toMatchObject({ type: 'number', value: '1' });
 		});
 
-		it('returns error for too many terms', () => {
+		it('accepts the maximum order, 19', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'sin(x) 100',
+				input: 'sin(x) 19',
+				format: 'custom',
+				options: {},
+				isRepl: true
+			};
+
+			expect(command.execute(ctx).success).toBe(true);
+		});
+
+		it('refuses an order above 19, in French', () => {
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'sin(x) 20',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -440,7 +452,10 @@ describe('TaylorCommand', () => {
 
 			const result = command.execute(ctx);
 			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('INVALID_OPTIONS');
+			expect(result.error).toEqual({
+				code: 'TAYLOR_ORDER',
+				message: 'L’ordre du développement ne peut pas dépasser 19.'
+			});
 		});
 
 		it('returns error for ln(x) at center=0', () => {

@@ -37,7 +37,9 @@ export type ErrorCode =
 	/** Ce qui suit le « ; » n'est pas une variable : message en français, destiné à l'élève */
 	| 'AMBIGUOUS_VARIABLE'
 	/** Fonction usuelle sans parenthèses (`sin x`) : message en français, destiné à l'élève */
-	| 'BARE_FUNCTION';
+	| 'BARE_FUNCTION'
+	/** `.taylor` : ordre au-delà de la limite — message en français, destiné à l'élève */
+	| 'TAYLOR_ORDER';
 
 /**
  * Structured error for command execution

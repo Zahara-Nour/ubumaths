@@ -2,19 +2,24 @@
  * Taylor Command
  *
  * Computes Taylor series expansion of mathematical expressions.
- * Supports specifying the number of terms and center point.
+ * Supports specifying the order and center point.
  *
- * Syntax: .taylor expr terms [center][ ; variable]
- * - .taylor sin(x) 5 0     -> Taylor series of sin(x), 5 terms, at x=0
- * - .taylor exp(x) 4 0     -> 1 + x + x^2/2 + x^3/6 (4 terms at 0)
- * - .taylor ln(x) 4 1      -> Taylor of ln(x) at x=1
- * - .taylor f 3 0          -> Taylor of f(x) at x=0, if f is defined
+ * Syntax: .taylor expr order [center][ ; variable]
+ *
+ * ⚠️ `order` est l'ORDRE du développement — le degré maximal —, convention des
+ * développements limités (décision de David du 2026-10-06). Ce n'était pas le
+ * cas avant : c'était un nombre de termes (degrés 0 à n−1).
+ *
+ * - .taylor sin(x) 5 0     -> x - x^3/6 + x^5/120 (ordre 5 en 0)
+ * - .taylor exp(x) 4 0     -> 1 + x + x^2/2 + x^3/6 + x^4/24 (ordre 4 en 0)
+ * - .taylor ln(x) 3 1      -> Taylor of ln(x) at x=1, order 3
+ * - .taylor f 2 0          -> Taylor of f(x) at x=0, if f is defined
  * - .taylor exp(t) 4 ; t   -> en t (= .taylor exp(t) ; t 4)
  *
  * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
  * (voir `core/variable-argument.ts`, décision de David du 2026-10-06). Plus de
- * variable devinée dans l'expression (`sin(t)` donnait t). Le nombre de termes
- * et le point se placent avant ou après `; t`, comme les bornes de `.integrate`.
+ * variable devinée dans l'expression (`sin(t)` donnait t). L'ordre et le point
+ * se placent avant ou après `; t`, comme les bornes de `.integrate`.
  */
 
 import chalk from 'chalk';
@@ -32,7 +37,7 @@ import {
 	splitTaylorArgument,
 	TAYLOR_SHORTCUT_FUNCTIONS
 } from '../core/variable-argument';
-import { taylorExpand, TaylorError, MAX_TAYLOR_TERMS } from '../../taylor';
+import { taylorExpand, TaylorError, MAX_TAYLOR_ORDER } from '../../taylor';
 import { getVariables } from '../../eval/substitute';
 
 // =============================================================================
@@ -42,8 +47,8 @@ import { getVariables } from '../../eval/substitute';
 /**
  * Taylor command - computes Taylor series expansions.
  *
- * The command parses the input to extract the expression, number of terms,
- * and optional center point. It then computes the Taylor polynomial.
+ * The command parses the input to extract the expression, the order (highest
+ * degree), and optional center point. It then computes the Taylor polynomial.
  *
  * If the expression is a single function name (like 'f' or 'sin') that matches
  * a defined function in the state, it treats it as f(x) with default variable.
@@ -51,25 +56,25 @@ import { getVariables } from '../../eval/substitute';
  * @example
  * ```
  * > .taylor sin(x) 5 0
- * Taylor series of sin(x) at x=0, 5 terms:
+ * Taylor series of sin(x) at x=0, order 5:
  * x - x^3/6 + x^5/120
  * LaTeX: x - \frac{x^{3}}{6} + \frac{x^{5}}{120}
  *
- * > .taylor exp(x) 4
- * Taylor series of exp(x) at x=0, 4 terms:
+ * > .taylor exp(x) 3
+ * Taylor series of exp(x) at x=0, order 3:
  * 1 + x + x^2/2 + x^3/6
  *
  * > .def f(x) = x^2
- * > .taylor f 3
- * Taylor series of f(x) at x=0, 3 terms:
+ * > .taylor f 2
+ * Taylor series of f(x) at x=0, order 2:
  * x^2
  * ```
  */
 export class TaylorCommand extends BaseCommand {
 	readonly name = 'taylor';
 	readonly aliases = ['tay', 'series'] as const;
-	readonly description = 'Compute Taylor series: .taylor expr terms [center][ ; variable]';
-	readonly usage = 'taylor <expression> <terms> [center][ ; <variable>]';
+	readonly description = 'Compute Taylor series: .taylor expr order [center][ ; variable]';
+	readonly usage = 'taylor <expression> <order> [center][ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -82,22 +87,22 @@ export class TaylorCommand extends BaseCommand {
 				error: {
 					code: 'PARSE_ERROR',
 					message:
-						'No expression provided. Usage: .taylor <expression> <terms> [center][ ; <variable>]'
+						'No expression provided. Usage: .taylor <expression> <order> [center][ ; <variable>]'
 				}
 			};
 		}
 
-		// Expression, variable après `;`, nombre de termes et point (avant ou après `; t`)
-		const { expression, variable: explicitVariable, terms, center } = splitTaylorArgument(input);
+		// Expression, variable après `;`, ordre et point (avant ou après `; t`)
+		const { expression, variable: explicitVariable, order, center } = splitTaylorArgument(input);
 
-		if (terms === null || expression === '') {
+		if (order === null || expression === '') {
 			return {
 				success: false,
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
 					message:
-						'Invalid syntax. Usage: .taylor <expression> <terms> [center][ ; <variable>]\n' +
+						'Invalid syntax. Usage: .taylor <expression> <order> [center][ ; <variable>]\n' +
 						'Example: .taylor sin(x) 5 0'
 				}
 			};
@@ -114,25 +119,15 @@ export class TaylorCommand extends BaseCommand {
 		}
 		const varName = chosen.variable;
 
-		// Validate terms
-		if (terms < 1) {
+		// L'ordre est un entier ≥ 0 (la lecture n'accepte que des chiffres) :
+		// seule la borne haute est à vérifier. Message pour l'élève, en français.
+		if (order > MAX_TAYLOR_ORDER) {
 			return {
 				success: false,
 				output: '',
 				error: {
-					code: 'INVALID_OPTIONS',
-					message: 'Number of terms must be at least 1'
-				}
-			};
-		}
-
-		if (terms > MAX_TAYLOR_TERMS) {
-			return {
-				success: false,
-				output: '',
-				error: {
-					code: 'INVALID_OPTIONS',
-					message: `Number of terms exceeds maximum of ${MAX_TAYLOR_TERMS}`
+					code: 'TAYLOR_ORDER',
+					message: `L’ordre du développement ne peut pas dépasser ${MAX_TAYLOR_ORDER}.`
 				}
 			};
 		}
@@ -202,7 +197,7 @@ export class TaylorCommand extends BaseCommand {
 						{
 							variable: varName,
 							center,
-							terms
+							order
 						},
 						functions
 					)
@@ -216,7 +211,7 @@ export class TaylorCommand extends BaseCommand {
 			const centerDesc = center === 0 ? `${varName}=0 (Maclaurin)` : `${varName}=${center}`;
 
 			const output = [
-				chalk.bold(`Taylor series of ${exprCustom} at ${centerDesc}, ${terms} terms:`),
+				chalk.bold(`Taylor series of ${exprCustom} at ${centerDesc}, order ${order}:`),
 				chalk.cyan(taylorCustom),
 				chalk.dim('LaTeX:') + ' ' + taylorLatex,
 				...(hint === null ? [] : [hint])

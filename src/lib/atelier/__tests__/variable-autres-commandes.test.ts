@@ -86,7 +86,7 @@ describe('.taylor', () => {
 	it('`exp(t) 4` : l’indication dit où mettre les nombres', () => {
 		const outcome = runInput(session(), '.taylor exp(t) 4');
 		expect(outcome).toMatchObject({
-			note: 'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; le nombre de termes et le point se mettent à la fin : « ; t 5 0 ».'
+			note: 'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; l’ordre et le point se mettent à la fin : « ; t 4 0 ».'
 		});
 	});
 
