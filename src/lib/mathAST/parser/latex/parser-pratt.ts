@@ -1969,8 +1969,8 @@ class PrattParser {
 					);
 				}
 
-				// Parse approach value - use BP.POWER to stop before ^ (direction indicator)
-				approach = this.parseExpression(BP.POWER);
+				// Parse approach value - stops before ^ (direction indicator)
+				approach = this.parseLimitApproach();
 
 				// Check for direction superscript within the subscript: a^+ or a^-
 				if (this.check('CARET')) {
@@ -2007,6 +2007,24 @@ class PrattParser {
 		const expression = this.parseExpression(BP.UNARY);
 
 		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
+	}
+
+	/**
+	 * Borne d'une limite : signes en tête puis une puissance arrêtée avant `^`
+	 * (le côté). Le `-` préfixe lisait son opérande au niveau unaire, donc
+	 * `-2^+` prenait `^` comme puissance et le `+` du côté comme une addition
+	 * inachevée (« Unexpected token: } »).
+	 */
+	private parseLimitApproach(): MathNode {
+		if (this.check('MINUS')) {
+			this.advance();
+			return this.applyColor(MathAST.opposite(this.parseLimitApproach()));
+		}
+		if (this.check('PLUS')) {
+			this.advance();
+			return this.applyColor(MathAST.positive(this.parseLimitApproach()));
+		}
+		return this.parseExpression(BP.POWER);
 	}
 
 	// =========================================================================

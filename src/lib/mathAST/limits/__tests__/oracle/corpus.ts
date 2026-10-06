@@ -12,8 +12,8 @@
  * - `'none'` : pas de limite (sauts, oscillations, pôle bilatéral de signe
  *   changeant).
  *
- * Bornes négatives à gauche/droite écrites `{-2}^+` : `x\to -2^+` ne passe
- * pas le parseur aujourd'hui (« Unexpected token: } », relevé le 2026-10-06).
+ * Bornes négatives à gauche/droite écrites comme un élève, `-2^+` (le
+ * parseur les refusait jusqu'au 2026-10-06 : « Unexpected token: } »).
  * `\cot` est écrit `\frac{1}{\tan x}` : `compile()` ne connaît pas `cot`,
  * donc l'oracle ne pourrait pas l'échantillonner.
  *
@@ -130,8 +130,8 @@ const rationalAtPoles = family('rationnelles aux pôles', 'pole-', [
 	['1', '\\frac{x^2-1}{x^2+x-2}', '\\frac{2}{3}'],
 	['3', '\\frac{x^2-9}{x^2-6x+9}', 'none'],
 	['3^+', '\\frac{x^2-9}{x^2-6x+9}', '+inf'],
-	['{-2}^+', '\\frac{x}{x+2}', '-inf'],
-	['{-2}^-', '\\frac{x}{x+2}', '+inf'],
+	['-2^+', '\\frac{x}{x+2}', '-inf'],
+	['-2^-', '\\frac{x}{x+2}', '+inf'],
 	['0', '\\frac{x^3+x}{x}', '1'],
 	['0', '\\frac{x^2+2x}{x^2-x}', '-2'],
 	['1', '\\frac{x^3-1}{x-1}', '3'],
@@ -318,7 +318,7 @@ const trigonometry = family('trigonométrie et pôles', 'trig-', [
 	['\\pi', '\\cos(2x)+\\sin x', '1'],
 	['0', '\\frac{1}{\\cos x}', '1'],
 	['\\pi', '\\frac{1+\\cos x}{(x-\\pi)^2}', '\\frac{1}{2}'],
-	['{-\\frac{\\pi}{2}}^+', '\\tan x', '-inf'],
+	['-\\frac{\\pi}{2}^+', '\\tan x', '-inf'],
 	['0^+', '\\frac{\\cos x}{x}', '+inf'],
 	['0', '\\frac{\\cos x}{x}', 'none'],
 	['\\frac{\\pi}{2}', '\\frac{\\cos x}{x-\\frac{\\pi}{2}}', '-1'],
@@ -345,7 +345,7 @@ const absoluteValue = family('valeur absolue', 'abs-', [
 	['1', '|x^2-4|', '3'],
 	[PINF, '|1-x|-x', '-1'],
 	['0', '\\frac{|x|}{x^2}', '+inf'],
-	['{-1}^+', '\\frac{|x+1|}{x+1}', '1'],
+	['-1^+', '\\frac{|x+1|}{x+1}', '1'],
 	['0', '\\frac{|x|}{x}+1', 'none']
 ]);
 
@@ -401,7 +401,7 @@ const domainEdges = family('bords de domaine', 'edge-', [
 	['0^+', '\\frac{x}{\\sqrt{x}}', '0'],
 	['3^-', '\\ln(3-x)', '-inf'],
 	['3^-', '\\frac{x}{\\sqrt{3-x}}', '+inf'],
-	['{-1}^+', '\\sqrt{x+1}+x', '-1'],
+	['-1^+', '\\sqrt{x+1}+x', '-1'],
 	['0^+', '\\ln(\\sin x)', '-inf']
 ]);
 

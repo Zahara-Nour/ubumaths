@@ -50,7 +50,7 @@ import {
 	func,
 	ln
 } from '../factory';
-import { findNodes } from '../transforms';
+import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
@@ -449,6 +449,13 @@ function evaluateLimitExactForm(
 		approachPoint = normalizeApproach(approach);
 		dir = direction;
 	}
+
+	// `\lim_{x\to a}\left(f\right)` : une somme DOIT être parenthésée après
+	// `\lim`, c'est la saisie la plus courante. Les parenthèses de groupement
+	// ne portent aucun sens (l'arbre porte déjà la priorité) ; sans ce retrait,
+	// aucune stratégie ne reconnaissait f, et `(1+\frac{1}{x})^x` échappait
+	// aux limites remarquables.
+	expression = removeGrouping(expression);
 
 	// `\cos^{-1}(x)` est la réciproque : la limite se calcule sur `arccos(x)`
 	// (la substitution directe rendait cos(0) = 1). `\sin^2(x)` → `\sin(x)^2`.
@@ -1318,6 +1325,17 @@ function tryProductOfLimits(
 	} finally {
 		nestedProducts--;
 	}
+}
+
+/**
+ * Retire toutes les parenthèses de GROUPEMENT, à toute profondeur (`((f))`
+ * → f). La priorité est déjà portée par l'arbre ; `|·|` est un autre nœud,
+ * et les délimiteurs d'intervalle, d'ensemble, de matrice restent.
+ */
+function removeGrouping(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		isDelimiter(n) && (n.semantic ?? 'grouping') === 'grouping' ? n.content : n
+	);
 }
 
 function stripDelimiters(node: MathNode): MathNode {

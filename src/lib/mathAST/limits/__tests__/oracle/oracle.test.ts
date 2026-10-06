@@ -19,7 +19,7 @@ import { checkExpectedNumerically, describeWrong, judgeEntry, type Verdict } fro
 import { KNOWN_WRONG } from './known-wrong';
 
 /** Plancher de couverture (entrées avec une réponse juste / total). */
-const COVERAGE_FLOOR = 0.55;
+const COVERAGE_FLOOR = 0.57;
 /** Budget de temps du jugement complet (ms). */
 const TIME_BUDGET_MS = 5000;
 
@@ -73,6 +73,14 @@ describe('oracle numérique des limites', () => {
 			return !verdict || !verdict.wrong;
 		});
 		expect(fixedOrUnknown).toEqual([]);
+	});
+
+	it('\\lim(…) parenthésée est résolue dès que f seule l’est', () => {
+		// Une somme DOIT être parenthésée après \lim : saisie élève la plus courante.
+		const gaps = runOracle()
+			.verdicts.filter((verdict) => verdict.parenthesesGap)
+			.map((verdict) => verdict.entry.id);
+		expect(gaps).toEqual([]);
 	});
 
 	it(`le jugement complet tient en moins de ${TIME_BUDGET_MS} ms`, () => {
