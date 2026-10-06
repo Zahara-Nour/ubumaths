@@ -293,3 +293,20 @@ describe('pôles de cot, sec, csc à un côté', () => {
 		expect(limitOf(input, at, 'both')).toBe('does-not-exist null');
 	});
 });
+
+describe('racine cubique d’un négatif : jamais « n’existe pas » (revue de #906)', () => {
+	// ∛ est définie sur ℝ ; l'évaluateur numérique refuse pourtant √ d'un
+	// négatif quel que soit l'indice — ça ne prouve rien sur le domaine
+	it.each([
+		['\\sqrt[3]{x}', '0', 'left'],
+		['\\sqrt[3]{x-1}', '1', 'left'],
+		['\\sqrt[3]{x}', '-1', 'both'],
+		['\\frac{1}{\\sqrt[3]{x}}', '0', 'left']
+	] as const)('%s en %s (%s) ne répond pas « n’existe pas »', (input, at, dir) => {
+		expect(limitOf(input, at, dir)).not.toMatch(/^does-not-exist/);
+	});
+
+	it('√x reste non définie à gauche de 0', () => {
+		expect(limitOf('\\sqrt{x}', '0', 'left')).toMatch(/^does-not-exist/);
+	});
+});
