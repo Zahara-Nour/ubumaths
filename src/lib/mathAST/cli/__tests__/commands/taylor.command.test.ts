@@ -288,11 +288,13 @@ describe('TaylorCommand', () => {
 	// Different Variables
 	// =============================================================================
 
+	// Décision de David (2026-10-06) : la variable n'est plus devinée dans
+	// l'expression (`sin(t)` donnait t) ; elle se donne après « ; »
 	describe('different variables', () => {
-		it('detects variable t from sin(t)', () => {
+		it('uses t when given after « ; »', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'sin(t) 5',
+				input: 'sin(t) 5 ; t',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -300,13 +302,13 @@ describe('TaylorCommand', () => {
 
 			const result = command.execute(ctx);
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('t');
+			expect(result.output).toContain('t^3');
 		});
 
-		it('detects variable y from exp(y)', () => {
+		it('uses y when given after « ; »', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'exp(y) 4',
+				input: 'exp(y) 4 ; y',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -314,7 +316,7 @@ describe('TaylorCommand', () => {
 
 			const result = command.execute(ctx);
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('y');
+			expect(result.output).toContain('y^3');
 		});
 	});
 

@@ -250,10 +250,12 @@ describe('VariationsCommand', () => {
 	// With Different Variable
 	// =============================================================================
 
+	// Décision de David (2026-10-06) : la variable se donne après « ; »
+	// (`t^2 t` est désormais le produit t³, étudié en x)
 	describe('with variable specification', () => {
 		it('should use t as variable when specified', () => {
 			const ctx: CommandContext = {
-				input: 't^2 t',
+				input: 't^2 ; t',
 				format: 'custom',
 				options: {},
 				isRepl: false
@@ -268,7 +270,7 @@ describe('VariationsCommand', () => {
 
 		it('should analyze t^2 + 2t with variable t', () => {
 			const ctx: CommandContext = {
-				input: 't^2 + 2t t',
+				input: 't^2 + 2t ; t',
 				format: 'custom',
 				options: {},
 				isRepl: false
@@ -280,6 +282,7 @@ describe('VariationsCommand', () => {
 			// t^2 + 2t has derivative 2t + 2
 			// Critical point at t = -1
 			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('t = -1');
 		});
 
 		it('should default to variable x when not specified', () => {

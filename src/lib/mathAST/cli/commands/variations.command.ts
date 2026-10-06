@@ -9,19 +9,32 @@
  * 4. Determining intervals of increase/decrease
  * 5. Finding local and global extrema
  *
- * Syntax: .variations expr [variable]
+ * Syntax: .variations expr[ ; variable]
  *
  * Examples:
  *   .variations x^2           -> Study of x^2 (variable x)
  *   .variations x^3 - 3x      -> Study of x^3 - 3x
  *   .variations exp(x)        -> Study of exp(x)
- *   .variations t^2 + 2t t    -> Study with variable t
+ *   .variations t^2 + 2t ; t  -> Study with variable t
+ *   .variations t^2           -> en x, avec l'indication « … écris « ; t » »
+ *
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE —
+ * jamais après un espace : `t^2 t` est le produit t³ (voir
+ * `core/variable-argument.ts`, décision de David du 2026-10-06).
  */
 
 import chalk from 'chalk';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { parse } from '../core/pipeline';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	indexVariables,
+	otherVariableHint,
+	splitVariableArgument
+} from '../core/variable-argument';
 import { computeVariations } from '../../variations/compute';
 import { getDerivativeSignSymbol, unresolvedDerivativeZerosMessage } from '../../variations/format';
 import { toCustom } from '../../custom-generator';
@@ -101,8 +114,8 @@ import type {
 export class VariationsCommand extends BaseCommand {
 	readonly name = 'variations';
 	readonly aliases = ['var', 'monotone', 'etude'] as const;
-	readonly description = "Etude des variations d'une expression : .variations expr [variable]";
-	readonly usage = 'variations <expression> [variable]';
+	readonly description = "Etude des variations d'une expression : .variations expr[ ; variable]";
+	readonly usage = 'variations <expression>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -114,13 +127,23 @@ export class VariationsCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'Aucune expression fournie. Usage : .variations <expression> [variable]'
+					message: 'Aucune expression fournie. Usage : .variations <expression>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract expression and optional variable
-		const { expression, variable } = this.parseInput(input);
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon x
+		const { expression, variable: explicitVariable } = splitVariableArgument(input);
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -134,6 +157,22 @@ export class VariationsCommand extends BaseCommand {
 				error: { code: 'PARSE_ERROR', message: errorMsg }
 			};
 		}
+
+		const chosen = chosenVariable(explicitVariable, parserOptions);
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
+		}
+		const variable = chosen.variable;
+		// x n'apparaît pas et aucune variable n'est donnée : on étudie en x, et
+		// on le dit (une indication, pas un refus)
+		const hint =
+			explicitVariable === null
+				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys())
+				: null;
 
 		try {
 			// Compute variations
@@ -189,6 +228,11 @@ export class VariationsCommand extends BaseCommand {
 				}
 			}
 
+			if (hint !== null) {
+				lines.push('');
+				lines.push(hint);
+			}
+
 			return {
 				success: true,
 				output: lines.join('\n'),
@@ -202,41 +246,6 @@ export class VariationsCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
-	}
-
-	/**
-	 * Parse the input to extract expression and optional variable.
-	 *
-	 * Strategy: If the last token is a single word that looks like a variable
-	 * (single letter or valid identifier) and there's more before it,
-	 * treat it as the domain variable.
-	 *
-	 * Examples:
-	 * - "x^2" -> { expression: "x^2", variable: "x" }
-	 * - "x^3 - 3x" -> { expression: "x^3 - 3x", variable: "x" }
-	 * - "t^2 + 2t t" -> { expression: "t^2 + 2t", variable: "t" }
-	 */
-	private parseInput(input: string): { expression: string; variable: string } {
-		const trimmed = input.trim();
-
-		// Try to find a trailing variable (single word at the end after whitespace)
-		const match = trimmed.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/);
-
-		if (match) {
-			const [, expr, varCandidate] = match;
-			if (expr.trim() && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
-				return {
-					expression: expr.trim(),
-					variable: varCandidate
-				};
-			}
-		}
-
-		// Default: entire input is the expression, variable defaults to 'x'
-		return {
-			expression: trimmed,
-			variable: 'x'
-		};
 	}
 
 	/**

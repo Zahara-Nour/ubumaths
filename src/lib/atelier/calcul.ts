@@ -140,7 +140,14 @@ const UNREADABLE_COMMAND =
 	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
 
 /** Les commandes qui calculent en x, sauf `; v` — et l'indiquent quand x manque. */
-const VARIABLE_COMMANDS: ReadonlySet<string> = new Set(['diff', 'solve', 'integrate']);
+const VARIABLE_COMMANDS: ReadonlySet<string> = new Set([
+	'diff',
+	'solve',
+	'integrate',
+	'variations',
+	'domain',
+	'taylor'
+]);
 
 /** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
 const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set(['AMBIGUOUS_VARIABLE', 'BARE_FUNCTION']);
@@ -507,11 +514,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// x absent, aucune variable donnée : le moteur calcule en x et ajoute une
 	// indication à sa sortie. Elle est montrée À PART (`note`) : une ligne dont
 	// la réponse se compose en mathématiques n'affiche pas son texte.
-	// Mêmes noms liés que le moteur (`.let a = 2`), mêmes bornes ôtées (`.intégrer`)
+	// Mêmes noms liés que le moteur (`.let a = 2`), mêmes bornes ôtées
+	// (`.intégrer`), mêmes nombre de termes et point ôtés (`.taylor`)
 	const hint = VARIABLE_COMMANDS.has(name)
 		? variableHintOf(commandArgument, {
 				bound: engine.getEvalState().bindings.keys(),
-				integral: name === 'integrate'
+				integral: name === 'integrate',
+				taylor: name === 'taylor'
 			})
 		: null;
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
