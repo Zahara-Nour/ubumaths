@@ -10,10 +10,18 @@
 import type { MathNode } from '../types';
 import { differentiate } from '../differentiation';
 import { containsVariable } from './rules';
-import { isNumber, isVariable, isDivision, isMultiplication } from '../guards';
+import {
+	isNumber,
+	isVariable,
+	isDivision,
+	isMultiplication,
+	isFunction,
+	isSuperscript,
+	isDelimiter
+} from '../guards';
 import { hashMathNode } from '../normal/hash';
-import { mapNode } from '../transforms';
-import { number } from '../factory';
+import { mapNode, findNodes } from '../transforms';
+import { number, variable as variableNode } from '../factory';
 import { normalize } from '../normal/normalize';
 import type {
 	NormalForm,
@@ -533,6 +541,41 @@ function isPureFunctionOf(integrand: MathNode, u: MathNode, variable: string): b
 	return !containsVariable(withoutU, variable);
 }
 
+/** Variable témoin qui remplace u pour inspecter la forme de f(u) */
+const U_PLACEHOLDER = '__u_placeholder__';
+
+function stripDelimiters(node: MathNode): MathNode {
+	return isDelimiter(node) ? stripDelimiters(node.content) : node;
+}
+
+/** `node` contient u autrement que comme u lui-même (après retrait des parenthèses) */
+function containsUOtherwiseThanBare(node: MathNode): boolean {
+	if (!containsVariable(node, U_PLACEHOLDER)) return false;
+	const bare = stripDelimiters(node);
+	return !(isVariable(bare) && bare.name === U_PLACEHOLDER);
+}
+
+/**
+ * f(u) est « plus simple » que l'intégrande d'origine : toute fonction et tout
+ * exposant qui dépendent de u s'appliquent à u LUI-MÊME (sin(u), eᵘ, √u, 1/u²,
+ * 1/cos²(u)). Une composée (ln(sin u), ln(ln u)) rendrait une intégrale en u
+ * aussi difficile que l'originale : la poser relançait parties et
+ * substitutions en cascade sans rien gagner.
+ */
+function isDirectFunctionOfU(integrand: MathNode, u: MathNode): boolean {
+	const uHash = hashMathNode(u);
+	const inU = mapNode(integrand, (node) =>
+		hashMathNode(node) === uHash ? variableNode(U_PLACEHOLDER) : node
+	);
+	const composed = findNodes(
+		inU,
+		(node) =>
+			(isFunction(node) && node.args.some(containsUOtherwiseThanBare)) ||
+			(isSuperscript(node) && containsUOtherwiseThanBare(node.superscript))
+	);
+	return composed.length === 0;
+}
+
 /** Un appariement dont le facteur est porté en rationnel exact (et en nombre, pour l'API) */
 function matchWithRatio(u: MathNode, du: MathNode, ratio: Rational): USubstitutionMatch {
 	return { u, du, constantFactor: rationalToNumber(ratio), constantRatio: ratio };
@@ -587,7 +630,11 @@ function tryUSubstitution(
 			!containsVariable(integrand.numerator, variable);
 		if (isConstantOverU) return { u, du };
 		// f(x + b) : l'intégrande ne dépend de x qu'à travers u (∛(x+1), 1/(x+m)²)
-		if (!isMultiplication(integrand) && isPureFunctionOf(integrand, u, variable)) {
+		if (
+			!isMultiplication(integrand) &&
+			isPureFunctionOf(integrand, u, variable) &&
+			isDirectFunctionOfU(integrand, u)
+		) {
 			return { u, du };
 		}
 		if (!isExactlyPowerOfU(integrand, u)) {
@@ -682,7 +729,7 @@ function tryUSubstitution(
 		!duContainsVar && !isMultiplication(integrand) && isPureFunctionOf(integrand, u, variable);
 	// u affine (du constant) et intégrande fonction de u SEULE, quelle que soit
 	// sa forme (k/(ax+b)², √(x/2+1)) : ∫ f(u) dx = (1/u′) ∫ f(u) du
-	if (fOfUAlone) {
+	if (fOfUAlone && isDirectFunctionOfU(integrand, u)) {
 		return { u, du };
 	}
 	if (

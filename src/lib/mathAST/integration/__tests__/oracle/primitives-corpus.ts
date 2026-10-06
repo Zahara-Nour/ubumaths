@@ -980,7 +980,36 @@ const REVIEW_913_CASES: PrimitiveCase[] = [
 		],
 		{ literal: true }
 	),
-	...latex('revue-913', [['\\cos(kt)']], { literal: true, variable: 't' })
+	...latex('revue-913', [['\\cos(kt)']], { literal: true, variable: 't' }),
+	// --- Revue de #914 (2026-10-06) : arctan(ax+b) rendait ln|P| avec P de degré 1024 ---
+	...latex('revue-913', [
+		['\\arctan(3x)'],
+		['\\arctan(2x+1)'],
+		['\\frac{1}{(x-1)^3(x+2)}'],
+		['\\frac{1}{x(x^2+1)}'],
+		['\\frac{x^3}{x^2-1}'],
+		['\\frac{1}{2x^2-2}'],
+		['\\frac{1}{x^2-x-6}'],
+		['e^{\\sqrt{3}x}'],
+		['|2x-1|']
+	]),
+	...latex('revue-913', [['\\frac{1}{\\cos^2(2x)}']], { points: [-0.6, -0.3, 0.2, 0.5, 0.7] }),
+	...latex(
+		'revue-913',
+		[['\\frac{a}{(x-b)^3}'], ['\\frac{1}{(kx+m)^3}'], ['\\frac{1}{(x-a)(x-b)}']],
+		{ literal: true }
+	)
+];
+
+/**
+ * Intégrandes qui faisaient BOUCLER `integrate` (revue de #914 : 100 % CPU,
+ * onglet gelé) : ln(g(ax+b)). Elles doivent être refusées, et VITE.
+ */
+export const FAST_REFUSAL_INPUTS: readonly string[] = [
+	'\\ln(\\sin(2x+1))',
+	'\\ln(\\sin(x+1))',
+	'\\ln(\\cos(2x))',
+	'\\ln(\\ln(2x+1))'
 ];
 
 /** Toutes les primitives du corpus */

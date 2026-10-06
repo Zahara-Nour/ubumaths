@@ -135,3 +135,32 @@ describe('f(ax+b) : coefficient en division, irrationnel ou littéral', () => {
 		}
 	});
 });
+
+describe('revue de #914 : substitution en u quand on intègre déjà en u', () => {
+	it('∫ cos(u)/sin(u) du = ln|sin u| (pas sin(sin(…(u))))', () => {
+		const result = integrate(parseLatex('\\frac{\\cos(u)}{\\sin(u)}'), { variable: 'u' });
+		expect(result.status).toBe('exact');
+		const F = compile(result.antiderivative!);
+		for (const u of [0.4, 1.1, 2.5]) {
+			expect(F({ u })).toBeCloseTo(Math.log(Math.abs(Math.sin(u))), 10);
+		}
+	});
+
+	it.each(['\\arctan(3x)', '\\arctan(2x+1)', '\\arctan(x)'])(
+		'%s : F′ = f, F finie (plus de polynôme de degré 1024)',
+		(latex) => {
+			expect(derivativeMismatch(latex)).toBeNull();
+			const result = integrate(parseLatex(latex), { variable: 'x' });
+			expect(Number.isFinite(compile(result.antiderivative!)({ x: 2.45 }))).toBe(true);
+		}
+	);
+
+	it.each(['\\ln(\\sin(2x+1))', '\\ln(\\sin(x+1))', '\\ln(\\cos(2x))', '\\ln(\\ln(2x+1))'])(
+		'%s : refus immédiat, sans épuiser le budget global',
+		(latex) => {
+			const result = integrate(parseLatex(latex), { variable: 'x' });
+			expect(result.status).toBe('unsupported');
+			expect(result.error ?? '').not.toContain('Budget');
+		}
+	);
+});

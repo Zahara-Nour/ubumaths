@@ -10,7 +10,9 @@ import { describe, it, expect, afterAll } from 'vitest';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { CalcSession } from '$lib/atelier/calcul';
-import { DEFINITE_CASES, PRIMITIVE_CASES } from './primitives-corpus';
+import { DEFINITE_CASES, FAST_REFUSAL_INPUTS, PRIMITIVE_CASES } from './primitives-corpus';
+import { parseLatex } from '$lib/mathAST/parser';
+import { integrate } from '$lib/mathAST/integration/integrate';
 import { judgeDefinite, judgePrimitive, stepChecks, type Verdict } from './primitives-oracle';
 import { KNOWN_FORM_DIFF, KNOWN_WRONG } from './primitives-known';
 
@@ -35,6 +37,19 @@ const judged: Judged[] = [
 		verdict: judgeDefinite(c, session)
 	}))
 ];
+
+/** Marge CI : refus mesuré en quelques ms en local */
+const FAST_REFUSAL_MAX_MS = 2000;
+
+describe('oracle : entrées qui bouclaient (refus rapide)', () => {
+	it.each(FAST_REFUSAL_INPUTS)('%s est refusée en moins de 2 s', (input) => {
+		const start = performance.now();
+		const result = integrate(parseLatex(input), { variable: 'x' });
+		const elapsed = performance.now() - start;
+		expect(result.status).toBe('unsupported');
+		expect(elapsed).toBeLessThan(FAST_REFUSAL_MAX_MS);
+	});
+});
 
 describe('oracle numérique des primitives', () => {
 	it('les clés du corpus sont uniques', () => {

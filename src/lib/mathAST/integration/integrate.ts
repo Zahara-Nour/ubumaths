@@ -22,16 +22,18 @@ import { containsVariable } from './rules';
 import { preprocess } from '../normal/rules';
 import { normalize, denormalize } from '../normal';
 import { number, subtract, power, euler } from '../factory';
-import { numericNode } from '../common/numeric';
+import { numericNode, extractExactRational } from '../common/numeric';
 import {
 	isAddition,
 	isSubtraction,
 	isMultiplication,
 	isNumber,
 	isDelimiter,
-	isVariable
+	isVariable,
+	isSuperscript
 } from '../guards';
-import { mapNode } from '../transforms';
+import { mapNode, findNodes, getChildren } from '../transforms';
+import { makeAbortChecker } from '../common/abort';
 import { simplifiedAdd, simplifiedMultiply, simplifiedOpposite } from '../common/simplify';
 import { isEulerBase } from '../differentiation/rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
@@ -40,6 +42,90 @@ import { substitute } from '../eval/substitute';
 import { numericIntegrate } from './numeric';
 import { expandFunctionPowers } from '../common/function-power';
 import { toCustom } from '../custom-generator';
+
+// =============================================================================
+// Budget global
+// =============================================================================
+
+/** Exposant entier au-delà duquel une somme élevée à la puissance n'est pas développée */
+const MAX_EXPANDED_SUM_POWER = 12;
+/** Budget de la normalisation finale de la primitive */
+const NORMALIZE_RESULT_TIMEOUT_MS = 300;
+
+/** Une somme élevée à une puissance entière > MAX_EXPANDED_SUM_POWER */
+function hasLargeSumPower(expr: MathNode): boolean {
+	return (
+		findNodes(expr, (node) => {
+			if (!isSuperscript(node)) return false;
+			const base = isDelimiter(node.base) ? node.base.content : node.base;
+			if (!isAddition(base) && !isSubtraction(base)) return false;
+			const exponent = extractExactRational(node.superscript);
+			return (
+				exponent !== null &&
+				exponent.d === 1n &&
+				(exponent.n > BigInt(MAX_EXPANDED_SUM_POWER) ||
+					exponent.n < -BigInt(MAX_EXPANDED_SUM_POWER))
+			);
+		}).length > 0
+	);
+}
+
+/**
+ * Garde GLOBALE d'un calcul de primitive, en plus de `maxDepth` : la
+ * profondeur borne une branche, pas l'arbre (parties et substitutions se
+ * ramifient) ni la taille des expressions. Aucune entrée ne doit geler
+ * l'onglet de l'élève : au-delà du budget, refus propre « non supporté ».
+ */
+const MAX_INTEGRATION_STEPS = 4000;
+const MAX_INTEGRATION_MS = 1500;
+/**
+ * Taille maximale (en nœuds) d'une intégrande ou d'une primitive : le budget
+ * n'est relu qu'entre deux appels, une expression qui enfle d'un facteur 10 à
+ * chaque niveau suffirait à geler un seul appel.
+ */
+const MAX_INTEGRATION_NODES = 3000;
+
+/** Appels `integrate` en cours (imbriqués via les intégrateurs) */
+let activeIntegrations = 0;
+let integrationSteps = 0;
+let integrationDeadline = 0;
+
+/** Plus de `max` nœuds (parcours interrompu dès le dépassement) */
+function exceedsNodeCount(root: MathNode, max: number): boolean {
+	let count = 0;
+	const stack: MathNode[] = [root];
+	while (stack.length > 0) {
+		const node = stack.pop()!;
+		count++;
+		if (count > max) return true;
+		stack.push(...getChildren(node));
+	}
+	return false;
+}
+
+function oversizedResult(variable: string, error: string): IntegrateResult {
+	return {
+		variable,
+		status: 'unsupported',
+		antiderivative: null,
+		integrandType: 'unknown',
+		technique: 'basic-rule',
+		steps: [],
+		error
+	};
+}
+
+function budgetExceeded(): string | null {
+	if (activeIntegrations === 0) return null;
+	integrationSteps++;
+	if (integrationSteps > MAX_INTEGRATION_STEPS) {
+		return `Budget de calcul dépassé (${MAX_INTEGRATION_STEPS} étapes)`;
+	}
+	if (performance.now() > integrationDeadline) {
+		return `Budget de calcul dépassé (${MAX_INTEGRATION_MS} ms)`;
+	}
+	return null;
+}
 
 // =============================================================================
 // Helper Functions
@@ -97,8 +183,15 @@ function extractConstantMultiplier(
  * @returns The normalized expression
  */
 function normalizeAntiderivative(expr: MathNode): MathNode {
+	// Développer (1+9x²)^512 produirait un polynôme de degré 1024 : au-delà
+	// de cette borne, la primitive est rendue telle quelle
+	if (hasLargeSumPower(expr)) {
+		return expr;
+	}
 	try {
-		const normalForm = normalize(expr);
+		const normalForm = normalize(expr, {
+			abortChecker: makeAbortChecker(undefined, NORMALIZE_RESULT_TIMEOUT_MS)
+		});
 		return denormalize(normalForm);
 	} catch {
 		// If normalization fails, return the original expression
@@ -145,6 +238,21 @@ function integrateInternal(
 	recorder: IntegrateStepRecorder,
 	depth: number
 ): IntegrateResult {
+	const budgetError = exceedsNodeCount(expr, MAX_INTEGRATION_NODES)
+		? `Intégrande trop grande (plus de ${MAX_INTEGRATION_NODES} nœuds)`
+		: budgetExceeded();
+	if (budgetError !== null) {
+		return {
+			variable,
+			status: 'unsupported',
+			antiderivative: null,
+			integrandType: 'unknown',
+			technique: 'basic-rule',
+			steps: recorder.getSteps(),
+			error: budgetError
+		};
+	}
+
 	// Check recursion depth
 	if (depth > options.maxDepth) {
 		return {
@@ -517,6 +625,30 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
+	// Premier appel (non imbriqué) : le budget repart de zéro
+	if (activeIntegrations === 0) {
+		integrationSteps = 0;
+		integrationDeadline = performance.now() + MAX_INTEGRATION_MS;
+	}
+	activeIntegrations++;
+	try {
+		const result = integrateWithinBudget(rawExpr, options);
+		if (
+			result.antiderivative !== null &&
+			exceedsNodeCount(result.antiderivative, MAX_INTEGRATION_NODES)
+		) {
+			return oversizedResult(
+				result.variable,
+				`Primitive trop grande (plus de ${MAX_INTEGRATION_NODES} nœuds)`
+			);
+		}
+		return result;
+	} finally {
+		activeIntegrations--;
+	}
+}
+
+function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
 	// `sin^2(x)` : exposant porté par `power` du nœud fonction. Les intégrateurs
 	// reconnaissent `sin(x)` par son nom et ignoraient l'exposant (∫sin²x
 	// rendait −cos x) : on se ramène à `sin(x)^2` avant toute classification.
