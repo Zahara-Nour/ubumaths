@@ -109,8 +109,6 @@
 		</div>
 	{/snippet}
 	{#snippet crack(text)}
-		{#key text}
-			<AffineAttack {text} />
-		{/key}
+		<AffineAttack {text} />
 	{/snippet}
 </CipherWorkbench>

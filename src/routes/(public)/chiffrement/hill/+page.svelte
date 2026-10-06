@@ -159,11 +159,9 @@
 		{/if}
 	{/snippet}
 	{#snippet crack(text)}
-		{#key text}
-			<p class="text-sm">
-				Indice du Cabinet Noir : les rapports interceptés commencent toujours par « RAPPORT ».
-			</p>
-			<HillAttack {text} knownStart="RAPP" />
-		{/key}
+		<p class="text-sm">
+			Indice du Cabinet Noir : les rapports interceptés commencent toujours par « RAPPORT ».
+		</p>
+		<HillAttack {text} knownStart="RAPP" />
 	{/snippet}
 </CipherWorkbench>

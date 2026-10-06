@@ -20,7 +20,7 @@
 	// Props
 	let { text, knownStart = '' }: { text: string; knownStart?: string } = $props();
 
-	// State — valeur initiale seulement : le visiteur la change ensuite
+	// State — valeur initiale seulement : la supposition de l'élève survit à un changement de message
 	// svelte-ignore state_referenced_locally
 	let known = $state(knownStart);
 

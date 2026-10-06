@@ -21,15 +21,20 @@
 	// Props
 	let { text }: { text: string } = $props();
 
-	// State — pré-rempli une fois : le parent remonte le composant quand le message change
-	// svelte-ignore state_referenced_locally
-	const ranked = letterFrequencies(text)
-		.letters.filter((l) => l.count > 0)
-		.sort((a, b) => b.count - a.count);
-	let cipher1 = $state(ranked[0]?.letter ?? 'A');
+	// State — une lettre chiffrée non choisie suit le message (les deux plus fréquentes) ;
+	// un choix de l'élève, lui, survit à un changement de message
+	let chosenCipher1 = $state<string | null>(null);
+	let chosenCipher2 = $state<string | null>(null);
 	let plain1 = $state('E');
-	let cipher2 = $state(ranked[1]?.letter ?? 'B');
 	let plain2 = $state('A');
+
+	const ranked = $derived(
+		letterFrequencies(text)
+			.letters.filter((l) => l.count > 0)
+			.sort((a, b) => b.count - a.count)
+	);
+	const cipher1 = $derived(chosenCipher1 ?? ranked[0]?.letter ?? 'A');
+	const cipher2 = $derived(chosenCipher2 ?? ranked[1]?.letter ?? 'B');
 
 	const attack = $derived(solve(cipher1, plain1, cipher2, plain2));
 	const candidates = $derived(affineBruteForce(text, SHOWN_CANDIDATES));
@@ -60,7 +65,7 @@
 			<span class="flex items-center gap-2">
 				<MySelect
 					type="single"
-					bind:value={cipher1}
+					bind:value={() => cipher1, (value) => (chosenCipher1 = value)}
 					items={LETTER_ITEMS}
 					triggerAriaLabel={`Première lettre chiffrée : ${cipher1}`}
 					fitContent
@@ -77,7 +82,7 @@
 			<span class="flex items-center gap-2">
 				<MySelect
 					type="single"
-					bind:value={cipher2}
+					bind:value={() => cipher2, (value) => (chosenCipher2 = value)}
 					items={LETTER_ITEMS}
 					triggerAriaLabel={`Seconde lettre chiffrée : ${cipher2}`}
 					fitContent

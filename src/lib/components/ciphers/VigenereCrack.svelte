@@ -5,6 +5,7 @@
 -->
 <script lang="ts">
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { Button } from '$lib/components/ui/button';
 	import {
 		FRENCH_IC,
 		MAX_KEY_LENGTH,
@@ -28,10 +29,11 @@
 	// Props
 	let { text }: { text: string } = $props();
 
-	// State — pré-rempli une fois : le parent remonte le composant quand le message change
-	// svelte-ignore state_referenced_locally
-	const suggested = suggestKeyLength(text);
-	let lengthValue = $state(String(suggested));
+	// State — sans choix de l'élève, la longueur suit le message ; son choix, lui, survit
+	let chosenLength = $state<string | null>(null);
+
+	const suggested = $derived(suggestKeyLength(text));
+	const lengthValue = $derived(chosenLength ?? String(suggested));
 
 	const letterCount = $derived(lettersOnly(text).length);
 	const repeats = $derived(kasiski(text));
@@ -158,11 +160,16 @@
 				<span class="text-sm font-medium">Longueur de clé</span>
 				<MySelect
 					type="single"
-					bind:value={lengthValue}
+					bind:value={() => lengthValue, (value) => (chosenLength = value)}
 					items={LENGTH_ITEMS}
 					triggerAriaLabel={`Longueur de clé : ${lengthValue}`}
 					fitContent
 				/>
+				{#if chosenLength !== null && chosenLength !== String(suggested)}
+					<Button variant="ghost" size="sm" onclick={() => (chosenLength = null)}>
+						Revenir à la longueur proposée ({suggested})
+					</Button>
+				{/if}
 			</div>
 			<p class="text-sm text-muted-foreground">
 				Chaque colonne est cassée comme un César, par les fréquences : son décalage donne une lettre

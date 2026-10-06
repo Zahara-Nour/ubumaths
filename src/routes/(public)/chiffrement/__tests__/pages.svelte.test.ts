@@ -17,6 +17,7 @@ import Hill from '../hill/+page.svelte';
 import Rsa from '../rsa/+page.svelte';
 import { modPow } from '$lib/ciphers/rsa';
 import { affineEncrypt } from '$lib/ciphers/affine';
+import { vigenereEncrypt } from '$lib/ciphers/vigenere';
 import { caesarEncrypt } from '$lib/ciphers/caesar';
 import { normalizeText } from '$lib/ciphers/alphabet';
 
@@ -431,5 +432,61 @@ describe('RSA de poche', () => {
 			.poll(() => screen.container.querySelector('[data-testid="rsa-crack-steps"]') === null)
 			.toBe(true);
 		expect(screen.container.textContent).toContain('97 est premier : ce n’est pas une clé RSA.');
+	});
+});
+
+// Décision de David (2026-10-06) : une hypothèse saisie survit à un changement de
+// message ; ce qui n'a pas été choisi suit le nouveau message.
+describe('hypothèses de décryptage conservées', () => {
+	const LONG_TEXT =
+		'Le Cabinet Noir de Turingrad ouvre chaque matin les lettres du Royaume. Les secrétaires de la Mère Ubu comptent les lettres une à une, notent celles qui reviennent le plus souvent et comparent leurs listes avec celles du français. Quand le message est long, la lettre E finit toujours par se montrer.';
+
+	it('affine : la lettre claire choisie reste, la lettre chiffrée non choisie suit le message', async () => {
+		await render(Affine);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await chooseOption(/^Seconde lettre claire/, 'T');
+		await page.getByLabelText('Message intercepté').fill(affineEncrypt(LONG_TEXT, 5, 8).text);
+		await expect
+			.element(page.getByRole('button', { name: 'Seconde lettre claire : T' }))
+			.toBeInTheDocument();
+		// E (4) → 5 × 4 + 8 = 28 ≡ 2 : C, la plus fréquente du nouveau message
+		await expect
+			.element(page.getByRole('button', { name: 'Première lettre chiffrée : C' }))
+			.toBeInTheDocument();
+	});
+
+	it('Vigenère : la longueur choisie reste, et un bouton ramène la proposition', async () => {
+		const screen = await render(Vigenere);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await chooseOption(/^Longueur de clé/, '3');
+		await page
+			.getByLabelText('Message intercepté')
+			.fill(vigenereEncrypt(LONG_TEXT, 'ROI').text + ' ');
+		await expect
+			.element(page.getByRole('button', { name: 'Longueur de clé : 3' }))
+			.toBeInTheDocument();
+		await page.getByLabelText('Message intercepté').fill(vigenereEncrypt(LONG_TEXT, 'UBUROI').text);
+		await expect
+			.element(page.getByRole('button', { name: 'Longueur de clé : 3' }))
+			.toBeInTheDocument();
+		await page.getByRole('button', { name: /Revenir à la longueur proposée/ }).click();
+		await expect.poll(() => text(screen.container, 'cracked-key')).toBe('UBUROI');
+	});
+
+	it('Vigenère : sans choix de l’élève, la longueur suit le nouveau message', async () => {
+		const screen = await render(Vigenere);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('Message intercepté').fill(vigenereEncrypt(LONG_TEXT, 'ROI').text);
+		await expect.poll(() => text(screen.container, 'cracked-key')).toBe('ROI');
+	});
+
+	it('Hill : le début supposé tapé reste quand le message change', async () => {
+		await render(Hill);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText(/Début supposé du texte en clair/).fill('LECA');
+		await page.getByLabelText('Message intercepté').fill('HIATHIATHIAT');
+		await expect
+			.element(page.getByLabelText(/Début supposé du texte en clair/))
+			.toHaveValue('LECA');
 	});
 });
