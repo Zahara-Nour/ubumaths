@@ -56,7 +56,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   **Statistiques** (4 notions : Représenter des données, Indicateurs, Échantillonnage, Statistique à
   deux variables) : deux branches. Statistiques à valider.
 
+- **Dénombrement** : branche à part (4 notions). Sommes et concentration reste dans Probabilités.
+- **Logique** (4 notions : connecteurs, implication, quantificateurs, raisonnements) et **Ensembles**
+  (3 notions : ensembles de nombres, opérations, cardinal et produit cartésien) : deux branches.
+
 ## Ouvert
 
-- Branche restante à valider : Statistiques (proposition dessinée). Puis relecture d'ensemble.
+- À valider : Statistiques, Dénombrement, Ensembles (propositions dessinées). Puis relecture d'ensemble.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
