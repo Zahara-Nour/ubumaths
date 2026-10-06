@@ -33,11 +33,20 @@ import {
 	isSubtraction,
 	isOpposite,
 	isFunction,
-	isDelimiter
+	isDelimiter,
+	isMultiplication
 } from '../guards';
-import { divide, subtract, positiveInfinity, negativeInfinity, number, opposite } from '../factory';
+import {
+	divide,
+	multiply,
+	subtract,
+	positiveInfinity,
+	negativeInfinity,
+	number,
+	opposite
+} from '../factory';
 import { findNodes } from '../transforms';
-import { flattenSumShallow } from '../flatten';
+import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { expandFunctionPowers } from '../common/function-power';
@@ -58,7 +67,7 @@ import {
 	exactConstantRational
 } from './generalized-degree';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
-import { isNegative } from '../normal/rational';
+import { isNegative, absRational, mulRational, negRational } from '../normal/rational';
 import { rewriteIndeterminateSum } from './sum-reduction';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -413,6 +422,34 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 2.55 : facteur constant, lim k·f = k·lim f. La règle du produit
+	// de la composition ne combine que des limites infinies ou nulles : un
+	// facteur constant devant une forme que seuls le terme dominant ou
+	// L'Hôpital lèvent n'était jamais réduit (2·(x²/(3x²+1)) « non supportée »
+	// dans l'atelier, alors que x²/(3x²+1) → 1/3).
+	const constantFactor = tryConstantFactor(expression, varName, approachPoint, dir, options);
+	if (constantFactor !== null) {
+		recorder.recordStepByRule(
+			'product',
+			expression,
+			constantFactor.value,
+			'summarized',
+			approachPoint,
+			'Limite d’un produit par une constante : lim k·f = k·lim f'
+		);
+		return createResult(
+			constantFactor.value,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(constantFactor.value) ? 'infinite' : 'exact',
+			'none',
+			'product',
+			recorder,
+			opts
+		);
+	}
+
 	// Strategy 2.6: somme ou différence en ±∞, limite terme à terme ; la forme
 	// ∞ − ∞ est levée en factorisant par le terme dominant (croissances
 	// comparées, via les limites de référence du quotient).
@@ -673,6 +710,152 @@ function evaluateLimitExactForm(
 		opts,
 		'Limite non supportée avec les techniques actuelles'
 	);
+}
+
+// =============================================================================
+// Produit par une constante
+// =============================================================================
+
+/**
+ * Sépare `±k·f` en facteur constant k (sans la variable) et facteur variable f.
+ * Le signe de tête et les parenthèses comptent dans k : −(f) = (−1)·f. Null
+ * s'il n'y a aucun facteur constant ou aucun facteur variable.
+ *
+ * ⚠️ `flattenProductShallow` s'arrête aux parenthèses : dans 2·(x·3), le 3
+ * reste dans f, et c'est la récursion sur f qui le sortira.
+ */
+function splitConstantFactor(
+	expression: MathNode,
+	varName: string
+): { constant: MathNode; rest: MathNode } | null {
+	const { sign, node } = peelSign(expression);
+	const factors = isMultiplication(node) ? flattenProductShallow(node) : [];
+	const constants = factors.filter((f) => !containsVariable(f.factor, varName));
+	const variables = factors.filter((f) => containsVariable(f.factor, varName));
+	let rest = variables.length > 0 ? unflattenProduct(variables) : node;
+	const base = constants.length > 0 ? unflattenProduct(constants) : null;
+	if (rest === null) return null;
+	if (base === null && sign === 1) return null;
+	// Les parenthèses autour de f ne se voient pas dans sa limite : le moteur,
+	// lui, ne les traverse pas (2·(x²/(3x²+1)) restait « non supportée »)
+	while (isDelimiter(rest)) rest = rest.content;
+	const signed = base === null ? number('1') : base;
+	return { constant: sign === -1 ? opposite(signed) : signed, rest };
+}
+
+/**
+ * Produit EXACT de deux valeurs finies : rationnel réduit si les deux le sont
+ * (2·1/3 → 2/3), sinon la partie irrationnelle garde sa forme (π·1/3 → π/3,
+ * −2π·1/3 → −2π/3). Null si la valeur n'est pas lisible.
+ */
+function exactProduct(k: MathNode, limit: MathNode): MathNode | null {
+	const kRational = exactConstantRational(k);
+	const limitRational = exactConstantRational(limit);
+	if (kRational !== null && limitRational !== null) {
+		return exactConstantNode(multiply(k, limit, 'implicit')) ?? number('0');
+	}
+	// Un seul rationnel : il devient le coefficient de l'autre facteur. Les
+	// facteurs rationnels de la partie irrationnelle s'y ajoutent (−2·π lu
+	// (−2)·π par le parseur) : −2π/3, pas (−2π)/3.
+	const rational = kRational ?? limitRational;
+	if (rational === null) return multiply(k, limit, 'implicit');
+	const { sign, node } = peelSign(kRational !== null ? limit : k);
+	let coefficient = sign === -1 ? negRational(rational) : rational;
+	const irrationalFactors = (isMultiplication(node) ? flattenProductShallow(node) : []).filter(
+		(f) => {
+			const value = exactConstantRational(f.factor);
+			if (value === null) return true;
+			coefficient = mulRational(coefficient, value);
+			return false;
+		}
+	);
+	const irrational = isMultiplication(node) ? unflattenProduct(irrationalFactors) : node;
+	if (irrational === null) return exactConstantNode(multiply(k, limit, 'implicit'));
+	const scale = absRational(coefficient);
+	const numerator =
+		scale.n === 1n ? irrational : multiply(number(scale.n.toString()), irrational, 'implicit');
+	const magnitude =
+		scale.d === 1n ? numerator : divide(numerator, number(scale.d.toString()), 'fraction');
+	return isNegative(coefficient) ? opposite(magnitude) : magnitude;
+}
+
+/** Plage où un facteur constant non rationnel, évalué en flottant, est sûr. */
+const SAFE_FACTOR_MIN = 1e-9;
+const SAFE_FACTOR_MAX = 1e9;
+
+/** k exactement rationnel, ou flottant dans la plage sûre (ni ≈ 0, ni ≈ ∞). */
+function isSafeFactor(k: MathNode, kValue: number): boolean {
+	if (exactConstantRational(k) !== null) return true;
+	const magnitude = Math.abs(kValue);
+	return magnitude > SAFE_FACTOR_MIN && magnitude < SAFE_FACTOR_MAX;
+}
+
+/**
+ * Zéro exact écrit comme tel : le nombre 0, ou un produit dont un facteur est
+ * 0 et dont les autres sont sûrs (0·tan(π/2) n'est pas défini). Un flottant
+ * nul (sin(π) ≈ 1,2e−16) n'en est jamais un.
+ */
+function isExactZero(k: MathNode): boolean {
+	const { node } = peelSign(k);
+	if (isNumber(node)) return Number(node.value) === 0;
+	if (!isMultiplication(node)) return false;
+	const factors = flattenProductShallow(node).map((f) => f.factor);
+	if (!factors.some((f) => isExactZero(f))) return false;
+	return factors.every((f) => {
+		if (isExactZero(f)) return true;
+		try {
+			return isSafeFactor(f, evaluateNodeToApproximatedNumber(f));
+		} catch {
+			return false;
+		}
+	});
+}
+
+/**
+ * lim k·f = k·lim f pour un facteur constant k non nul ; 0·f est la fonction
+ * nulle sur son domaine (déjà validé par l'appelant), sa limite est 0.
+ *
+ * La limite de f se calcule par le moteur complet (terme dominant, L'Hôpital…).
+ * Seules les limites démontrées sont reprises : une valeur approchée ou une
+ * limite inexistante laisse la main aux stratégies suivantes.
+ */
+function tryConstantFactor(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { value: MathNode } | null {
+	const split = splitConstantFactor(expression, varName);
+	if (split === null) return null;
+
+	let kValue: number;
+	try {
+		kValue = evaluateNodeToApproximatedNumber(split.constant);
+	} catch {
+		return null;
+	}
+	if (!Number.isFinite(kValue)) return null;
+	// k doit être sûr : un rationnel exact, ou un flottant loin de 0 et de
+	// l'infini. sin(π)·x vaut 0·x mais sin(π) s'évalue à 1,2e−16 (→ +∞ faux) ;
+	// tan(π/2) s'évalue à 1,6e16 alors qu'il n'est pas défini. Dans le doute,
+	// on ne conclut pas : « non supportée » vaut mieux qu'une limite fausse.
+	// Zéro exact (0, −0, 0·3…) : 0·f est la fonction nulle sur son domaine
+	if (isExactZero(split.constant)) return { value: number('0') };
+	if (!isSafeFactor(split.constant, kValue)) return null;
+
+	const inner = evaluateLimit(split.rest, varName, approach, dir, options);
+	if (inner.value === null || inner.value === undefined) return null;
+	if (inner.status !== 'exact' && inner.status !== 'infinite') return null;
+
+	if (isInfinity(inner.value)) {
+		const positive = (inner.value.sign === 'positive') === kValue > 0;
+		return { value: positive ? positiveInfinity() : negativeInfinity() };
+	}
+	// k·0 = 0 : sinon « 2 0 » (produit non réduit) ou « −0 »
+	if (getNumericValue(inner.value) === 0) return { value: number('0') };
+	const value = exactProduct(split.constant, inner.value);
+	return value === null ? null : { value };
 }
 
 // =============================================================================
