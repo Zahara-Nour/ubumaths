@@ -31,6 +31,7 @@ import {
 	type IndeterminateForm
 } from '../eval/extended-arithmetic';
 import { tryEvaluateLimitExact, resultToNumber } from './exact-evaluation';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // Types
@@ -71,6 +72,36 @@ export function classifyWithSign(
 	approach: MathNode,
 	direction: LimitDirection
 ): SignedLimitValue {
+	const value = classifyOneWay(expr, varName, approach, direction);
+	if (direction !== 'both' || isInfinity(approach)) return value;
+
+	// Zéro sans signe en bilatéral (cos²x en π/2, zéro exact) : les deux côtés
+	// du même signe le précisent, 1/cos²x → +∞.
+	if (value.type === 'zero') {
+		const left = classifyOneWay(expr, varName, approach, 'left');
+		const right = classifyOneWay(expr, varName, approach, 'right');
+		return left.type === right.type && (left.type === 'zero-plus' || left.type === 'zero-minus')
+			? left
+			: value;
+	}
+	if (!isSignedInfinity(value)) return value;
+
+	// Infini bilatéral en un point : 1/x « vaut » +∞ par substitution, alors
+	// que 0⁻ donne −∞. Les deux côtés connus et différents → pas de limite
+	// (1/x·(x+1) en 0 était rendu +∞). Un côté hors domaine (inconnu) ne
+	// contredit rien : ln x en 0 reste −∞.
+	const left = classifyOneWay(expr, varName, approach, 'left');
+	const right = classifyOneWay(expr, varName, approach, 'right');
+	if (left.type === 'unknown' || right.type === 'unknown') return value;
+	return left.type === right.type ? left : { type: 'unknown' };
+}
+
+function classifyOneWay(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): SignedLimitValue {
 	// Try exact evaluation first
 	const exactResult = classifyWithSignExact(expr, varName, approach, direction);
 	if (exactResult !== null) {
@@ -79,6 +110,28 @@ export function classifyWithSign(
 
 	// Fallback to numeric classification
 	return classifyWithSignNumeric(expr, varName, approach, direction);
+}
+
+/**
+ * Des valeurs de signes opposés parmi les échantillons, sans tendre vers 0
+ * (x·sin(1/x) en 0 change de signe mais tend vers 0 : ce n'est pas une
+ * oscillation qui empêche la limite).
+ */
+function changesSign(values: readonly number[]): boolean {
+	if (values.every((v) => Math.abs(v) < 1e-3)) return false;
+	return values.some((v) => v > 0) && values.some((v) => v < 0);
+}
+
+/**
+ * Trois valeurs successives d'un même côté se stabilisent-elles ? Une valeur
+ * « finie » qui ne se stabilise pas (sin x en +∞, sin(1/x) en 0) n'est pas une
+ * limite : x·sin x était rendu −∞ parce que sin(1e10) < 0.
+ */
+function isSettled(values: readonly number[]): boolean {
+	if (values.length < 2) return true;
+	const last = values[values.length - 1];
+	const previous = values[values.length - 2];
+	return Math.abs(last - previous) <= 1e-3 * Math.max(1, Math.abs(last));
 }
 
 /**
@@ -141,13 +194,23 @@ function classifyWithSignNumeric(
 		return classifyAtInfinity(expr, varName, approach.sign === 'positive');
 	}
 
-	// Handle finite approach
-	const approachValue = getNumericValue(approach);
+	// Handle finite approach (π/2 : pas un littéral, valeur approchée)
+	const approachValue = getNumericValue(approach) ?? approximateConstant(approach);
 	if (approachValue === null) {
 		return { type: 'unknown' };
 	}
 
 	return classifyAtFinitePoint(expr, varName, approachValue, direction);
+}
+
+/** Valeur approchée d'un point constant (π/2), ou `null`. */
+function approximateConstant(node: MathNode): number | null {
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -177,7 +240,7 @@ function classifyAtFinitePoint(
 	const epsilons = [1e-4, 1e-6, 1e-8];
 
 	// Determine test points based on direction
-	const testResults: { value: number; epsilon: number }[] = [];
+	const testResults: { value: number; epsilon: number; side: 'left' | 'right' }[] = [];
 
 	for (const eps of epsilons) {
 		if (direction === 'right' || direction === 'both') {
@@ -185,7 +248,8 @@ function classifyAtFinitePoint(
 			if (result !== null) {
 				if (result === Infinity) return { type: 'pos-infinity' };
 				if (result === -Infinity) return { type: 'neg-infinity' };
-				if (Number.isFinite(result)) testResults.push({ value: result, epsilon: eps });
+				if (Number.isFinite(result))
+					testResults.push({ value: result, epsilon: eps, side: 'right' });
 			}
 		}
 		if (direction === 'left' || direction === 'both') {
@@ -193,13 +257,21 @@ function classifyAtFinitePoint(
 			if (result !== null) {
 				if (result === Infinity) return { type: 'pos-infinity' };
 				if (result === -Infinity) return { type: 'neg-infinity' };
-				if (Number.isFinite(result)) testResults.push({ value: result, epsilon: eps });
+				if (Number.isFinite(result))
+					testResults.push({ value: result, epsilon: eps, side: 'left' });
 			}
 		}
 	}
 
 	if (testResults.length === 0) {
 		return { type: 'unknown' };
+	}
+
+	// sin(1/x)/x : |f| grandit mais le signe alterne d'un même côté
+	const sideValuesOf = (side: 'left' | 'right') =>
+		testResults.filter((r) => r.side === side).map((r) => r.value);
+	if (changesSign(sideValuesOf('left')) || changesSign(sideValuesOf('right'))) {
+		if (!isZeroAtApproach) return { type: 'unknown' };
 	}
 
 	// Check if values are growing toward infinity (values increase as epsilon decreases)
@@ -217,6 +289,13 @@ function classifyAtFinitePoint(
 	const lastValue = testResults[testResults.length - 1].value;
 	if (Math.abs(lastValue) > 1e10) {
 		return lastValue > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+
+	// Une oscillation n'est ni une limite finie ni une limite nulle : chaque
+	// côté doit se stabiliser.
+	const settled = isSettled(sideValuesOf('right')) && isSettled(sideValuesOf('left'));
+	if (!settled && !isZeroAtApproach) {
+		return { type: 'unknown' };
 	}
 
 	// Check if values are converging toward 0
@@ -273,6 +352,11 @@ function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean):
 
 	const lastResult = results[results.length - 1];
 
+	// x·sin x : |f| grandit mais le signe alterne — ni +∞ ni −∞
+	if (changesSign(results)) {
+		return { type: 'unknown' };
+	}
+
 	// Check if values are growing unboundedly (tending to infinity)
 	// If |last| >> |first| and |last| is very large, it's tending to infinity
 	if (results.length >= 2) {
@@ -289,6 +373,11 @@ function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean):
 	// Check if approaching zero
 	if (Math.abs(lastResult) < 1e-6) {
 		return lastResult >= 0 ? { type: 'zero-plus' } : { type: 'zero-minus' };
+	}
+
+	// sin x en +∞ : des valeurs bornées qui ne se stabilisent pas
+	if (!isSettled(results)) {
+		return { type: 'unknown' };
 	}
 
 	// Otherwise it's a finite limit

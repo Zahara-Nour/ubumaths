@@ -30,7 +30,9 @@ import {
 import { P } from '../pattern/builder';
 import { match } from '../pattern/match';
 import type { Pattern } from '../pattern/types';
-import { number, positiveInfinity } from '../factory';
+import { number, positiveInfinity, negativeInfinity } from '../factory';
+import { structuralBounds, hasStrictSign, type Bounds } from './bounded';
+import { rewriteReciprocalTrig } from './reciprocal-trig';
 import { getNumericValue } from '../common/numeric';
 import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation';
@@ -54,6 +56,9 @@ import {
 	isIndeterminate,
 	type SignedLimitValue
 } from './sign-tracking';
+
+/** Fonctions trigonométriques à pôles (tan, cot, sec, csc). */
+const TRIG_POLE_FUNCTIONS = new Set(['tan', 'cot', 'sec', 'csc']);
 
 // =============================================================================
 // Types
@@ -93,6 +98,13 @@ export function tryCompositionLimit(
 	// Strategy 2: Function composition (ln, exp, sqrt of expression)
 	if (isFunction(expr) && expr.args.length === 1) {
 		const result = tryFunctionComposition(expr, varName, approach, direction, recorder);
+		if (result.success) return result;
+	}
+
+	// Stratégie 2.5 : un opérande BORNÉ (sin x, 2 + sin x) sans limite propre,
+	// combiné à un opérande infini ou nul (x + sin x → +∞, sin x / √x → 0)
+	{
+		const result = tryBoundedOperand(expr, varName, approach, direction, recorder);
 		if (result.success) return result;
 	}
 
@@ -138,6 +150,106 @@ export function tryCompositionLimit(
 		if (result.success) return result;
 	}
 
+	return { success: false };
+}
+
+// =============================================================================
+// Opérande borné
+// =============================================================================
+
+/** Description d'un intervalle de bornes, pour l'étape : [−1 ; 1]. */
+function formatBounds(bounds: Bounds): string {
+	const show = (v: number) => String(Number(v.toPrecision(6))).replace('-', '−');
+	return `[${show(bounds.min)} ; ${show(bounds.max)}]`;
+}
+
+/** +∞ ou −∞ selon le signe de `sign` appliqué à un infini signé. */
+function signedInfinity(infinity: SignedLimitValue, sign: number): MathNode {
+	const positive = (infinity.type === 'pos-infinity') === sign > 0;
+	return positive ? positiveInfinity() : negativeInfinity();
+}
+
+/**
+ * Bornes structurelles d'un opérande, seulement s'il dépend de la variable
+ * (une constante est déjà traitée par l'algèbre des limites).
+ */
+function boundsOfOperand(operand: MathNode, varName: string): Bounds | null {
+	return containsVariable(operand, varName) ? structuralBounds(operand, varName) : null;
+}
+
+/**
+ * Règles du borné B (m ≤ B ≤ M) :
+ * ±∞ ± B → ±∞ ; B / (→ ±∞) → 0 ; B × (→ 0) → 0 ;
+ * ±∞ × B et ±∞ / B → ±∞ si B garde un signe strict (m > 0 ou M < 0).
+ * B × ±∞ sans signe strict (x·sin x) : aucune conclusion.
+ */
+function tryBoundedOperand(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): CompositionResult {
+	if (!isAddition(expr) && !isSubtraction(expr) && !isMultiplication(expr) && !isDivision(expr)) {
+		return { success: false };
+	}
+	const [first, second] = isDivision(expr)
+		? [expr.numerator, expr.denominator]
+		: [expr.left, expr.right];
+
+	const conclude = (value: MathNode, bounds: Bounds, rule: string): CompositionResult => {
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`Fonction bornée dans ${formatBounds(bounds)} : ${rule}`
+		);
+		return { success: true, value, technique: 'composition' };
+	};
+
+	for (const [bounded, other, boundedFirst] of [
+		[first, second, true],
+		[second, first, false]
+	] as const) {
+		const bounds = boundsOfOperand(bounded, varName);
+		if (bounds === null) continue;
+		const otherLimit = classifyWithSign(other, varName, approach, direction);
+		const otherInfinite = isSignedInfinity(otherLimit);
+
+		if (isAddition(expr) && otherInfinite) {
+			return conclude(signedInfinity(otherLimit, 1), bounds, '∞ + borné = ∞');
+		}
+		if (isSubtraction(expr) && otherInfinite) {
+			// ∞ − B → ∞ ; B − ∞ → −∞
+			const value = signedInfinity(otherLimit, boundedFirst ? -1 : 1);
+			return conclude(value, bounds, '∞ − borné = ∞');
+		}
+		if (isMultiplication(expr)) {
+			// En un point fini, x·sin(1/x) → 0 relève des gendarmes (squeeze), présentés ensuite
+			if (isSignedZero(otherLimit) && isInfinity(approach)) {
+				return conclude(number('0'), bounds, 'borné × 0 = 0');
+			}
+			if (otherInfinite && hasStrictSign(bounds)) {
+				return conclude(
+					signedInfinity(otherLimit, bounds.min > 0 ? 1 : -1),
+					bounds,
+					'∞ × borné de signe constant = ∞'
+				);
+			}
+		}
+		if (isDivision(expr) && otherInfinite) {
+			if (boundedFirst) return conclude(number('0'), bounds, 'borné / ∞ = 0');
+			if (hasStrictSign(bounds)) {
+				return conclude(
+					signedInfinity(otherLimit, bounds.min > 0 ? 1 : -1),
+					bounds,
+					'∞ / borné de signe constant = ∞'
+				);
+			}
+		}
+	}
 	return { success: false };
 }
 
@@ -477,6 +589,25 @@ function tryFunctionComposition(
 				'summarized',
 				approach,
 				`Limite de sqrt par composition`
+			);
+			return { success: true, value, technique: 'composition' };
+		}
+	}
+
+	// Pôle de tan, cot, sec, csc à gauche ou à droite d'un point (tan x en
+	// π/2⁻ → +∞, cot x en 0⁺ → +∞) : la substitution directe, hors domaine,
+	// ne conclut plus. cot, sec, csc sont suivies en quotients de sin et cos.
+	if (TRIG_POLE_FUNCTIONS.has(funcName) && direction !== 'both' && !isInfinity(approach)) {
+		const whole = classifyWithSign(rewriteReciprocalTrig(expr), varName, approach, direction);
+		const value = isSignedInfinity(whole) ? signedValueToInfinity(whole) : null;
+		if (value) {
+			recorder.recordStepByRule(
+				'composition',
+				expr,
+				value,
+				'summarized',
+				approach,
+				`Pôle de ${funcName} : limite ${formatSignedValue(whole)}`
 			);
 			return { success: true, value, technique: 'composition' };
 		}
