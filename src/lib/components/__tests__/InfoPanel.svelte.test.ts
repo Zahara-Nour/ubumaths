@@ -69,3 +69,26 @@ describe('InfoPanel', () => {
 		await expect.element(bouton).toHaveFocus();
 	});
 });
+
+describe('InfoPanel — lisibilité en mode sombre', () => {
+	afterEach(() => {
+		document.documentElement.classList.remove('dark');
+		document.documentElement.style.colorScheme = '';
+	});
+
+	// Retour de David (2026-10-06) : le libellé gris était peu lisible en sombre.
+	// Fond de page sombre : #262624 (app.css). Exigence : contraste ≥ 7:1 (AAA).
+	it('le libellé du bouton contraste à au moins 7:1 sur le fond sombre', async () => {
+		document.documentElement.classList.add('dark');
+		document.documentElement.style.colorScheme = 'dark';
+		await render(InfoPanel, { target: mainElement() });
+		const bouton = page.getByRole('button', { name: 'Infos et confidentialité' }).element();
+		const [r, g, b] = getComputedStyle(bouton)
+			.color.match(/\d+(\.\d+)?/g)!
+			.slice(0, 3)
+			.map(Number);
+		const hex = '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+		const { contrastRatio } = await import('$lib/theme/author-color');
+		expect(contrastRatio(hex, '#262624')).toBeGreaterThanOrEqual(7);
+	});
+});

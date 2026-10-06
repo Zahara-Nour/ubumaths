@@ -53,7 +53,7 @@
 
 <Dialog.Root bind:open>
 	<Dialog.Trigger
-		class="rounded-md px-3 py-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+		class="rounded-md px-3 py-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:text-foreground"
 	>
 		Infos et confidentialité
 	</Dialog.Trigger>
