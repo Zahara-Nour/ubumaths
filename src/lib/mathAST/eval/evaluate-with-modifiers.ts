@@ -26,7 +26,7 @@ import { divide, number, opposite, withUnit } from '../factory';
 import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
-import { decimalString } from '../tidy/decimal';
+import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units';
@@ -101,16 +101,6 @@ function withSignModifiers(latex: string, modifiers: EvalModifiers): string {
 	if (modifiers.addPositive && !negative) return `+${latex}`;
 	if (modifiers.bracketNegative && negative) return `(${latex})`;
 	return latex;
-}
-
-/** Un nombre non entier écrit dans le calcul (`0.5`) : TinyMath rendait alors un décimal */
-function hasDecimalLiteral(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (n.type === 'number' && !/^-?\d+$/.test(n.value)) found = true;
-		return n;
-	});
-	return found;
 }
 
 /**

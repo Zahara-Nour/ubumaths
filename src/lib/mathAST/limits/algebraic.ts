@@ -22,7 +22,18 @@ import {
 	isFunction,
 	isInfinity
 } from '../guards';
-import { number, divide, multiply, subtract, add, power, opposite } from '../factory';
+import {
+	number,
+	divide,
+	multiply,
+	subtract,
+	add,
+	power,
+	opposite,
+	positiveInfinity,
+	negativeInfinity
+} from '../factory';
+import { limitByGeneralizedDegree } from './generalized-degree';
 import { numericNode } from '../common/numeric';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -399,8 +410,15 @@ export function tryDominantTerm(
 		description = `Degré numérateur (${numDegree}) < degré dénominateur (${denDegree})`;
 	} else {
 		// Same degree → ratio of leading coefficients
-		const ratio = numLeading / denLeading;
-		limitValue = numericNode(ratio);
+		// Rapport EXACT des termes dominants (2/3, pas 0.666…) ; flottant
+		// seulement si un coefficient n'est pas rationnel
+		const exact = limitByGeneralizedDegree(
+			expr,
+			varName,
+			positive ? positiveInfinity() : negativeInfinity()
+		);
+		limitValue =
+			exact !== null && !isInfinity(exact) ? exact : numericNode(numLeading / denLeading);
 		description = `Même degré, rapport des coefficients dominants: ${numLeading}/${denLeading}`;
 	}
 

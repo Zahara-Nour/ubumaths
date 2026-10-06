@@ -35,7 +35,7 @@ import {
 	isFunction,
 	isDelimiter
 } from '../guards';
-import { divide, subtract, positiveInfinity, negativeInfinity } from '../factory';
+import { divide, subtract, positiveInfinity, negativeInfinity, number, opposite } from '../factory';
 import { findNodes } from '../transforms';
 import { flattenSumShallow } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
@@ -50,7 +50,14 @@ import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
 import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
-import { limitByGeneralizedDegree, involvesFractionalPower } from './generalized-degree';
+import {
+	limitByGeneralizedDegree,
+	involvesFractionalPower,
+	exactConstantNode,
+	exactConstantRational
+} from './generalized-degree';
+import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
+import { isNegative } from '../normal/rational';
 import { rewriteIndeterminateSum } from './sum-reduction';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -207,6 +214,36 @@ export function evaluateLimit(
 	direction: LimitDirection = 'both',
 	options: LimitOptions = {}
 ): LimitResult {
+	const result = evaluateLimitExactForm(expr, variable, approach, direction, options);
+	const expression = isLimit(expr) ? expr.expression : expr;
+	return writeLikeInput(result, expression);
+}
+
+/**
+ * Écriture de la limite selon l'énoncé (décision de David, 2026-10-06) :
+ * entrée écrite en décimaux → limite exacte en décimal (0.75), si son écriture
+ * décimale est finie ; sinon, et sans décimal dans l'entrée, fraction exacte.
+ */
+function writeLikeInput(result: LimitResult, expression: MathNode): LimitResult {
+	if (result.status !== 'exact' || result.value === null) return result;
+	if (isInfinity(result.value) || isNumber(result.value)) return result;
+	if (!hasDecimalLiteral(expression)) return result;
+	const value = exactConstantRational(result.value);
+	if (value === null) return result;
+	const text = decimalString(value);
+	if (text === null) return result;
+	const magnitude = number(text);
+	return { ...result, value: isNegative(value) ? opposite(magnitude) : magnitude };
+}
+
+/** Calcul de la limite ; valeur exacte en entier ou fraction réduite. */
+function evaluateLimitExactForm(
+	expr: MathNode | LimitNode,
+	variable?: string,
+	approach?: MathNode,
+	direction: LimitDirection = 'both',
+	options: LimitOptions = {}
+): LimitResult {
 	const opts: Required<LimitOptions> = { ...DEFAULT_OPTIONS, ...options };
 	const recorder = new LimitStepRecorderImpl();
 
@@ -255,7 +292,11 @@ export function evaluateLimit(
 	if (!containsVariable(expression, varName)) {
 		// Constant expression: evaluate numerically (e.g., ln(e) → 1)
 		let evaluatedExpr = expression;
-		if (!isNumber(expression) && !isInfinity(expression)) {
+		// Constante rationnelle (2/3) : valeur exacte, pas 0.666666666666667
+		const exactConstant = isNumber(expression) ? null : exactConstantNode(expression);
+		if (exactConstant !== null) {
+			evaluatedExpr = exactConstant;
+		} else if (!isNumber(expression) && !isInfinity(expression)) {
 			try {
 				const numValue = evaluateNodeToApproximatedNumber(expression);
 				if (Number.isFinite(numValue)) {
@@ -909,7 +950,11 @@ function evaluateLimitInternal(
 	if (!containsVariable(expr, varName)) {
 		// Constant expression: evaluate numerically (e.g., ln(e) → 1)
 		let evaluatedExpr = expr;
-		if (!isNumber(expr) && !isInfinity(expr)) {
+		// Constante rationnelle (2/3) : valeur exacte, pas 0.666666666666667
+		const exactConstant = isNumber(expr) ? null : exactConstantNode(expr);
+		if (exactConstant !== null) {
+			evaluatedExpr = exactConstant;
+		} else if (!isNumber(expr) && !isInfinity(expr)) {
 			try {
 				const numValue = evaluateNodeToApproximatedNumber(expr);
 				if (Number.isFinite(numValue)) {
