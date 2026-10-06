@@ -3,7 +3,12 @@
 	import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
-	import { resolveGradedField, type MathTerm } from '$lib/data/math-dictionary-fr';
+	import {
+		resolveGradedField,
+		type GradedField,
+		type MathTerm
+	} from '$lib/data/math-dictionary-fr';
+	import { resolve } from '$app/paths';
 	import { hasAccessToGrade } from '$lib/utils/grades';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -21,12 +26,26 @@
 	/** Grade levels relevant for filtering */
 	const LEVEL_OPTIONS = [
 		{ value: 'all', label: 'Tous les niveaux' },
-		...(['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6', '5', '4', '3', '2', '1_SPE', 'T_SPE'] as const).map(
-			(code) => ({
-				value: code,
-				label: GRADES[code].displayName
-			})
-		)
+		...(
+			[
+				'CP',
+				'CE1',
+				'CE2',
+				'CM1',
+				'CM2',
+				'6',
+				'5',
+				'4',
+				'3',
+				'2',
+				'1_SPE',
+				'T_SPE',
+				'T_EXP'
+			] as const
+		).map((code) => ({
+			value: code,
+			label: GRADES[code].displayName
+		}))
 	];
 
 	// ===== State =====
@@ -82,6 +101,16 @@
 		clearTimeout(debounceTimer);
 		selectedLevel = 'all';
 		selectedTags = [];
+	}
+
+	/**
+	 * « Tous les niveaux » montre tout : aucun niveau ne donne accès à la fois à la
+	 * Terminale spécialité et aux maths expertes (deux branches après la 1ʳᵉ).
+	 */
+	function resolveForLevel(field: GradedField, level: string): string[] {
+		if (level !== 'all') return resolveGradedField(field, level as GradeCode);
+		const all = field.items.map((item) => item.content);
+		return field.mode === 'discriminant' ? all.slice(-1) : all;
 	}
 
 	function openTerm(term: MathTerm) {
@@ -296,12 +325,11 @@
 <Dialog.Root bind:open={showTermDialog}>
 	<Dialog.Content class="sm:max-w-md">
 		{#if selectedTerm}
-			{@const readerGrade = (selectedLevel !== 'all' ? selectedLevel : 'T_SPE') as GradeCode}
 			{@const definitions = selectedTerm.definitions
-				? resolveGradedField(selectedTerm.definitions, readerGrade)
+				? resolveForLevel(selectedTerm.definitions, selectedLevel)
 				: []}
 			{@const exemples = selectedTerm.exemples
-				? resolveGradedField(selectedTerm.exemples, readerGrade)
+				? resolveForLevel(selectedTerm.exemples, selectedLevel)
 				: []}
 
 			{@const derivedFrom = selectedTerm.derivedFrom}
@@ -368,6 +396,15 @@
 						<div class="text-sm">
 							<InlineMarkdown content={selectedTerm.history} />
 						</div>
+					</div>
+				{/if}
+
+				{#if selectedTerm.seeAlso}
+					<div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Voir aussi</h3>
+						<a href={resolve(selectedTerm.seeAlso.path)} class="text-sm text-primary underline">
+							{selectedTerm.seeAlso.label}
+						</a>
 					</div>
 				{/if}
 
