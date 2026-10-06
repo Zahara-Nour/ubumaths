@@ -21,15 +21,25 @@ import { selectIntegrator } from './integrators';
 import { containsVariable } from './rules';
 import { preprocess } from '../normal/rules';
 import { normalize, denormalize } from '../normal';
-import { number, subtract } from '../factory';
+import { number, subtract, power, euler } from '../factory';
 import { numericNode } from '../common/numeric';
-import { isAddition, isSubtraction, isMultiplication, isNumber, isDelimiter } from '../guards';
-import { simplifiedAdd, simplifiedMultiply } from '../common/simplify';
+import {
+	isAddition,
+	isSubtraction,
+	isMultiplication,
+	isNumber,
+	isDelimiter,
+	isVariable
+} from '../guards';
+import { mapNode } from '../transforms';
+import { simplifiedAdd, simplifiedMultiply, simplifiedOpposite } from '../common/simplify';
+import { isEulerBase } from '../differentiation/rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
 import { numericIntegrate } from './numeric';
 import { expandFunctionPowers } from '../common/function-power';
+import { toCustom } from '../custom-generator';
 
 // =============================================================================
 // Helper Functions
@@ -96,6 +106,23 @@ function normalizeAntiderivative(expr: MathNode): MathNode {
 	}
 }
 
+/** La lettre `e` d'une borne → constante d'Euler (sauf si l'on intègre en `e`) */
+function promoteEulerLetter(bound: MathNode, variable: string): MathNode {
+	if (variable === 'e') return bound;
+	return mapNode(bound, (node) => (isVariable(node) && node.name === 'e' ? euler() : node));
+}
+
+/** `c / e^u` (c constant) → `c · e^(−u)` ; tout le reste inchangé */
+function invertExponentialDenominator(expr: MathNode, variable: string): MathNode {
+	if (expr.type !== 'division') return expr;
+	const { numerator, denominator } = expr;
+	if (containsVariable(numerator, variable)) return expr;
+	if (denominator.type !== 'superscript' || !isEulerBase(denominator.base)) return expr;
+	if (!containsVariable(denominator.superscript, variable)) return expr;
+	const inverted = power(denominator.base, simplifiedOpposite(denominator.superscript));
+	return simplifiedMultiply(numerator, inverted);
+}
+
 // =============================================================================
 // Internal Integration Function (Recursive)
 // =============================================================================
@@ -139,6 +166,10 @@ function integrateInternal(
 	while (isDelimiter(simplified) && simplified.semantic === 'grouping') {
 		simplified = simplified.content;
 	}
+
+	// Step 1c: c / e^u = c · e^(−u) — sinon 1/eˣ passait par ∫ du/u avec
+	// du = eˣ non constant (rendu ln|eˣ|)
+	simplified = invertExponentialDenominator(simplified, variable);
 
 	// Step 2: Check if constant (doesn't contain variable)
 	if (!containsVariable(simplified, variable)) {
@@ -489,13 +520,15 @@ export function integrate(rawExpr: MathNode, options?: IntegrateOptions): Integr
 	// `sin^2(x)` : exposant porté par `power` du nœud fonction. Les intégrateurs
 	// reconnaissent `sin(x)` par son nom et ignoraient l'exposant (∫sin²x
 	// rendait −cos x) : on se ramène à `sin(x)^2` avant toute classification.
-	const expr = expandFunctionPowers(rawExpr);
+	const expandedExpr = expandFunctionPowers(rawExpr);
 
 	// Merge options with defaults
 	const opts = {
 		...DEFAULT_INTEGRATE_OPTIONS,
 		...options
 	};
+
+	const expr = expandedExpr;
 
 	// Detect variable if not specified
 	const variable = opts.variable ?? detectVariable(expr);
@@ -664,6 +697,10 @@ export function integrateDefinite(
 	// Apply fundamental theorem: F(b) - F(a)
 	const recorder = createStepRecorder();
 	const variable = indefiniteResult.variable;
+	// Une borne `e` (parseLatex : variable) est la constante d'Euler, comme
+	// pour `evaluate` et `compile` — sinon ∫₁ᵉ dx/x restait `ln(e)`
+	const lowerBound = promoteEulerLetter(lower, variable);
+	const upperBound = promoteEulerLetter(upper, variable);
 
 	recorder.recordStep(
 		'fundamental-theorem',
@@ -678,18 +715,37 @@ export function integrateDefinite(
 	try {
 		// Evaluate F(upper)
 		const upperSubstituted = substitute(indefiniteResult.antiderivative, {
-			[variable]: upper
+			[variable]: upperBound
 		});
 		const upperEval = evaluate(upperSubstituted, { mode: 'exact' });
 
 		// Evaluate F(lower)
 		const lowerSubstituted = substitute(indefiniteResult.antiderivative, {
-			[variable]: lower
+			[variable]: lowerBound
 		});
 		const lowerEval = evaluate(lowerSubstituted, { mode: 'exact' });
 
 		if (upperEval.status !== 'value' || lowerEval.status !== 'value') {
-			throw new Error("Impossible d'évaluer l'antidérivée aux bornes");
+			// Bornes ou primitive littérales (`∫₀ᵃ x² dx`, `∫₀² ax dx`) : la valeur
+			// reste symbolique, F(b) − F(a) simplifiée — jamais « exact » sans valeur
+			const symbolic = normalizeAntiderivative(subtract(upperSubstituted, lowerSubstituted));
+			recorder.recordStep(
+				'fundamental-theorem',
+				`Valeur de l'intégrale définie`,
+				indefiniteResult.antiderivative,
+				symbolic,
+				'summarized',
+				undefined,
+				`F(${toCustom(upperBound)}) - F(${toCustom(lowerBound)})`
+			);
+			return {
+				...indefiniteResult,
+				lowerBound: lower,
+				upperBound: upper,
+				value: symbolic,
+				approximate: undefined,
+				steps: recorder.getStepsFiltered(options?.verbosity ?? DEFAULT_INTEGRATE_OPTIONS.verbosity)
+			};
 		}
 
 		// Compute F(upper) - F(lower)
