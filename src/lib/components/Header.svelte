@@ -48,6 +48,7 @@
 		Menu,
 		FlaskConical,
 		Shapes,
+		KeyRound,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -120,6 +121,8 @@
 			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
 			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
+			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
+			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',
