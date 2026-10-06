@@ -118,3 +118,17 @@ describe('regroupement des logarithmes : u, v > 0 au voisinage exigé', () => {
 		expect(describeLimit(evaluateLimit(parseLatex(latex), 'x', negativeInfinity()))).toBe(expected);
 	});
 });
+
+describe('sondes vers +∞ : un argument qui tend vers +∞ n’est jamais jugé négatif (revue de #907)', () => {
+	// Négatifs en 10⁶ (seuil des sondes), positifs plus loin : +∞ dans les quatre cas
+	it.each(['\\ln(x-10^7)', '\\sqrt{x-2000000}', '\\ln(\\ln x-20)', '\\sqrt{\\ln x-15}'])(
+		'%s en +∞ → +∞',
+		(input) => {
+			expect(limitAtPlusInfinity(input)).toMatch(/\+inf$/);
+		}
+	);
+
+	it('ln x − ln(sin x) en +∞ reste sans valeur', () => {
+		expect(limitAtPlusInfinity('\\ln(x)-\\ln(\\sin x)')).toMatch(/null$/);
+	});
+});

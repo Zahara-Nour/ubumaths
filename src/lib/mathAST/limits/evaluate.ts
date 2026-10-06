@@ -153,7 +153,7 @@ function validateApproachInDomain(
 	// En ±∞ : f doit être définie sur tout un intervalle ]a ; +∞[ (ou
 	// ]−∞ ; a[). ln(x+1) − ln(x+2) en −∞, ln x − ln(sin x) en +∞ : non.
 	if (isInfinity(approach)) {
-		const defined = !undefinedTowardInfinity(expr, varName, approach.sign === 'positive');
+		const defined = !undefinedTowardInfinity(expr, varName, approach, direction);
 		return defined
 			? { valid: true, leftDefined: true, rightDefined: true }
 			: {
@@ -221,8 +221,10 @@ function validateApproachInDomain(
 }
 
 /**
- * Sondes vers ±∞ : sept points consécutifs, assez pour qu'un argument
- * périodique de période 2π (sin x) passe par une valeur négative.
+ * Sondes vers ±∞ : sept points consécutifs, [10⁶ ; 10⁶ + 6], assez pour
+ * qu'un argument périodique de période 2π (sin x) passe par une valeur
+ * négative. Elles ne servent qu'aux arguments dont le signe n'est pas
+ * prouvé : ln(x − 10⁷) est négatif en 10⁶, mais tend vers +∞.
  */
 const INFINITY_PROBES = [0, 1, 2, 3, 4, 5, 6].map((step) => 1e6 + step);
 
@@ -233,7 +235,13 @@ const INFINITY_PROBES = [0, 1, 2, 3, 4, 5, 6].map((step) => 1e6 + step);
  * évaluation impossible ne dit rien. Les racines d'indice explicite (∛) sont
  * ignorées : définies sur ℝ pour un indice impair.
  */
-function undefinedTowardInfinity(expr: MathNode, varName: string, positive: boolean): boolean {
+function undefinedTowardInfinity(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): boolean {
+	const positive = isInfinity(approach) && approach.sign === 'positive';
 	const guardedArguments = findNodes(
 		expr,
 		(node) =>
@@ -242,7 +250,13 @@ function undefinedTowardInfinity(expr: MathNode, varName: string, positive: bool
 			(((node.name === 'ln' || node.name === 'log') && node.base === undefined) ||
 				(node.name === 'sqrt' && node.base === undefined))
 	).flatMap((node) => (isFunction(node) ? [node.args[0]] : []));
-	const relevant = guardedArguments.filter((argument) => containsVariable(argument, varName));
+	// Un argument qui tend vers +∞ ou vers un réel > 0 est positif au
+	// voisinage : la sonde ne le juge pas (revue de #907 : ln(ln x − 20)
+	// n'est positif qu'au-delà de 4,8·10⁸)
+	const relevant = guardedArguments.filter(
+		(argument) =>
+			containsVariable(argument, varName) && !isPositiveNear(argument, varName, approach, direction)
+	);
 	if (relevant.length === 0) return false;
 	return INFINITY_PROBES.some((magnitude) => {
 		const point = positive ? number(String(magnitude)) : opposite(number(String(magnitude)));
