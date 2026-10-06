@@ -151,7 +151,11 @@ const VARIABLE_COMMANDS: ReadonlySet<string> = new Set([
 ]);
 
 /** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
-const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set(['AMBIGUOUS_VARIABLE', 'BARE_FUNCTION']);
+const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
+	'AMBIGUOUS_VARIABLE',
+	'BARE_FUNCTION',
+	'TAYLOR_ORDER'
+]);
 
 /**
  * `pi` écrit en lettres, comme un mot : `2pi`, `sin(pi x)`, `cos(x)=pi`.
@@ -369,7 +373,7 @@ function derivedSequence(session: CalcSession, argument: string): string | null 
  *
  * ⚠️ Dans l'ARBRE, appel par appel : `f(2x)` doit devenir sin(2x), et non
  * l'expression de f collée devant son argument. Seul l'appel est relu — le
- * reste de l'argument d'une commande (`; x`, le nombre de termes de
+ * reste de l'argument d'une commande (`; x`, l'ordre de
  * `.taylor`) n'est pas une expression et ne passerait pas le parseur.
  *
  * `null` si un appel est repéré mais ne se compose pas : retomber sur le nom
@@ -605,7 +609,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// indication à sa sortie. Elle est montrée À PART (`note`) : une ligne dont
 	// la réponse se compose en mathématiques n'affiche pas son texte.
 	// Mêmes noms liés que le moteur (`.let a = 2`), mêmes bornes ôtées
-	// (`.intégrer`), mêmes nombre de termes et point ôtés (`.taylor`)
+	// (`.intégrer`), mêmes ordre et point ôtés (`.taylor`)
 	const hint = VARIABLE_COMMANDS.has(name)
 		? variableHintOf(commandArgument, {
 				bound: engine.getEvalState().bindings.keys(),

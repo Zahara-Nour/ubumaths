@@ -230,7 +230,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'taylor',
 		{
 			french: 'taylor',
-			description: 'Développement limité au voisinage d’un point',
+			description: 'Développement limité d’ordre n au voisinage d’un point',
 			example: '.taylor sin(x) 5 0'
 		}
 	],
