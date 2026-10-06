@@ -47,7 +47,8 @@ import {
 	negativeInfinity,
 	number,
 	opposite,
-	func
+	func,
+	ln
 } from '../factory';
 import { findNodes } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
@@ -74,6 +75,7 @@ import {
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { isNegative, absRational, mulRational, negRational } from '../normal/rational';
 import { rewriteIndeterminateSum } from './sum-reduction';
+import { classifyWithSign } from './sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { numericNode } from '../common/numeric';
@@ -148,9 +150,18 @@ function validateApproachInDomain(
 	approach: MathNode,
 	direction: LimitDirection
 ): DomainValidation {
-	// Skip validation for infinity approach (handled differently)
+	// En ±∞ : f doit être définie sur tout un intervalle ]a ; +∞[ (ou
+	// ]−∞ ; a[). ln(x+1) − ln(x+2) en −∞, ln x − ln(sin x) en +∞ : non.
 	if (isInfinity(approach)) {
-		return { valid: true, leftDefined: true, rightDefined: true };
+		const defined = !undefinedTowardInfinity(expr, varName, approach, direction);
+		return defined
+			? { valid: true, leftDefined: true, rightDefined: true }
+			: {
+					valid: false,
+					leftDefined: false,
+					rightDefined: false,
+					message: DOMAIN_MESSAGES['both-undefined']
+				};
 	}
 
 	const approachVal = getNumericValue(approach);
@@ -207,6 +218,57 @@ function validateApproachInDomain(
 		// If domain computation fails, assume valid (conservative)
 		return { valid: true, leftDefined: true, rightDefined: true };
 	}
+}
+
+/**
+ * Sondes vers ±∞ : sept points consécutifs, [10⁶ ; 10⁶ + 6], assez pour
+ * qu'un argument périodique de période 2π (sin x) passe par une valeur
+ * négative. Elles ne servent qu'aux arguments dont le signe n'est pas
+ * prouvé : ln(x − 10⁷) est négatif en 10⁶, mais tend vers +∞.
+ */
+const INFINITY_PROBES = [0, 1, 2, 3, 4, 5, 6].map((step) => 1e6 + step);
+
+/**
+ * Un ln ou une racine carrée de f a-t-il un argument STRICTEMENT négatif en
+ * l'une des sondes vers ±∞ ? Seul un négatif prouve la sortie du domaine :
+ * un argument nul vient d'un dépassement de capacité (e^{−x} en 10⁶), une
+ * évaluation impossible ne dit rien. Les racines d'indice explicite (∛) sont
+ * ignorées : définies sur ℝ pour un indice impair.
+ */
+function undefinedTowardInfinity(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): boolean {
+	const positive = isInfinity(approach) && approach.sign === 'positive';
+	const guardedArguments = findNodes(
+		expr,
+		(node) =>
+			isFunction(node) &&
+			node.args.length === 1 &&
+			(((node.name === 'ln' || node.name === 'log') && node.base === undefined) ||
+				(node.name === 'sqrt' && node.base === undefined))
+	).flatMap((node) => (isFunction(node) ? [node.args[0]] : []));
+	// Un argument qui tend vers +∞ ou vers un réel > 0 est positif au
+	// voisinage : la sonde ne le juge pas (revue de #907 : ln(ln x − 20)
+	// n'est positif qu'au-delà de 4,8·10⁸)
+	const relevant = guardedArguments.filter(
+		(argument) =>
+			containsVariable(argument, varName) && !isPositiveNear(argument, varName, approach, direction)
+	);
+	if (relevant.length === 0) return false;
+	return INFINITY_PROBES.some((magnitude) => {
+		const point = positive ? number(String(magnitude)) : opposite(number(String(magnitude)));
+		return relevant.some((argument) => {
+			try {
+				const value = evaluateNodeToApproximatedNumber(substituteValue(argument, varName, point));
+				return Number.isFinite(value) && value < 0;
+			} catch {
+				return false;
+			}
+		});
+	});
 }
 
 /** Écart au point pour sonder le domaine numériquement. */
@@ -567,6 +629,33 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 2.555 : ln u où u tend vers un rationnel L > 0 — par continuité
+	// de ln, lim ln u = ln L (ln 1 = 0) ; ou vers +∞ (ln(+∞) = +∞). La composition ne traitait que
+	// u → 0⁺ ou +∞ : ln((x²+1)/x²) en +∞, réécriture de ln(x²+1) − 2 ln x,
+	// restait « non supportée ».
+	const logOfLimit = tryLogarithmOfPositiveLimit(expression, varName, approachPoint, dir, options);
+	if (logOfLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			logOfLimit,
+			'summarized',
+			approachPoint,
+			'Continuité de ln : lim ln u = ln(lim u)'
+		);
+		return createResult(
+			logOfLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(logOfLimit) ? 'infinite' : 'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
 	// Stratégie 2.56 : produit de fonctions non constantes, par les seuls cas
 	// sûrs (fini × fini, fini non nul × ∞, ∞ × ∞). La forme 0 × ∞ n'est
 	// jamais tranchée ici : réécrite en un seul quotient si un facteur en est
@@ -652,7 +741,9 @@ function evaluateLimitExactForm(
 
 	// Stratégie 2.8 : somme ∞ − ∞ que le terme dominant ne lève pas (termes
 	// dominants qui s'annulent) — conjugué, ou même dénominateur et développement.
-	if (isInfinity(approachPoint)) {
+	// En un point fini, seul le regroupement des logarithmes : ln(x²−1) − ln(x−1)
+	// en 1⁺ est une forme (−∞) − (−∞), ln((x²−1)/(x−1)) → ln 2.
+	if (isAddition(expression) || isSubtraction(expression)) {
 		const rewritten = tryRewrittenSum(expression, varName, approachPoint, dir, options);
 		if (rewritten !== null) {
 			recorder.recordStepByRule(
@@ -1037,6 +1128,36 @@ function tryConstantFactor(
 	if (getNumericValue(inner.value) === 0) return { value: number('0') };
 	const value = exactProduct(split.constant, inner.value);
 	return value === null ? null : { value };
+}
+
+/**
+ * lim ln u = ln L quand u tend vers un rationnel EXACT L > 0, +∞ quand u → +∞ ;
+ * null sinon (limite approchée, irrationnelle, nulle ou −∞ : la composition
+ * s'en charge ou l'on s'abstient).
+ */
+function tryLogarithmOfPositiveLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	if (!isFunction(expression) || expression.name !== 'ln' || expression.args.length !== 1) {
+		return null;
+	}
+	const inner = evaluateLimit(expression.args[0], varName, approach, dir, options);
+	if (inner.value === null || inner.value === undefined) return null;
+	if (inner.status !== 'exact' && inner.status !== 'infinite') return null;
+	// ln(+∞) = +∞ : la limite intérieure peut être conclue par L'Hôpital, que
+	// la composition (classement de signe) ne voit pas — (x²+1)/x en +∞
+	if (isInfinity(inner.value)) {
+		return inner.value.sign === 'positive' ? positiveInfinity() : null;
+	}
+	const value = exactConstantRational(inner.value);
+	if (value === null || value.n <= 0n) return null;
+	if (value.n === value.d) return number('0');
+	const constant = exactConstantNode(inner.value);
+	return constant === null ? null : ln(constant);
 }
 
 // =============================================================================
@@ -1448,7 +1569,14 @@ function tryRewrittenSum(
 	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
 	nestedRewrites++;
 	try {
-		for (const candidate of rewriteIndeterminateSum(expr)) {
+		for (const candidate of rewriteIndeterminateSum(expr, varName)) {
+			if (!isInfinity(approach) && candidate.kind !== 'logarithms') continue;
+			// ln u − ln v = ln(u/v) n'est une égalité que si u, v > 0 au voisinage :
+			// ln(x+1) − ln(x+2) n'est pas défini en −∞ (revue de #907).
+			const allPositive = candidate.positiveNear.every((argument) =>
+				isPositiveNear(argument, varName, approach, dir)
+			);
+			if (!allPositive) continue;
 			const result = evaluateLimit(candidate.rewritten, varName, approach, dir, options);
 			if ((result.status === 'exact' || result.status === 'infinite') && result.value !== null) {
 				return {
@@ -1463,6 +1591,21 @@ function tryRewrittenSum(
 	} finally {
 		nestedRewrites--;
 	}
+}
+
+/**
+ * u est-il > 0 au voisinage du point, du côté demandé ? Limite +∞, réel > 0
+ * ou 0⁺ prouvés ; −∞, réel < 0, 0 sans signe ou signe inconnu : non.
+ */
+function isPositiveNear(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection
+): boolean {
+	const sign = classifyWithSign(expr, varName, approach, dir);
+	if (sign.type === 'pos-infinity' || sign.type === 'zero-plus') return true;
+	return sign.type === 'finite' && sign.value > 0;
 }
 
 /** L'expression contient-elle une puissance de la base d'Euler (`e^u`) ? */
@@ -1827,8 +1970,11 @@ function tryDirectSubstitution(
 		recorder
 	);
 	if (exactResult !== null) {
-		// ln(0) « fini » : un pôle logarithmique, pas une valeur
+		// ln(0) « fini » : un pôle logarithmique, pas une valeur — y compris
+		// absorbé par un infini : ln(x²−1) − ln(x−1) en 1⁺ rendait « ln 0 + ∞ »
+		// = +∞ (x²−1 → 0 sans signe), forme (−∞) − (−∞) en réalité.
 		if (containsLogOfZero(exactResult)) return null;
+		if (hasLogarithmicPole(substitutable, varName, approach, direction)) return null;
 		return isInfinity(exactResult) || finiteAllowed() ? exactResult : null;
 	}
 
@@ -1836,6 +1982,27 @@ function tryDirectSubstitution(
 	const numericResult = tryDirectSubstitutionNumeric(substitutable, varName, approach, recorder);
 	if (numericResult === null) return null;
 	return finiteAllowed() ? numericResult : null;
+}
+
+/** Un ln de l'expression vaut-il « ln 0 » par substitution exacte ? */
+function hasLogarithmicPole(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): boolean {
+	return findNodes(
+		expr,
+		(node) =>
+			isFunction(node) &&
+			(node.name === 'ln' || node.name === 'log') &&
+			containsVariable(node, varName)
+	).some((node) => {
+		const result = tryEvaluateLimitExact(node, varName, approach, direction);
+		if (result === null || isIndeterminateResult(result) || isInfinityResult(result)) return false;
+		const value = resultToNode(result);
+		return value !== null && containsLogOfZero(value);
+	});
 }
 
 /** Seuil sous lequel un dénominateur évalué au point est tenu pour nul. */

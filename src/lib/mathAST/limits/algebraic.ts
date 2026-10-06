@@ -31,7 +31,8 @@ import {
 	power,
 	opposite,
 	positiveInfinity,
-	negativeInfinity
+	negativeInfinity,
+	parentheses
 } from '../factory';
 import { limitByGeneralizedDegree } from './generalized-degree';
 import { numericNode } from '../common/numeric';
@@ -277,6 +278,15 @@ export function tryRationalization(
 }
 
 /**
+ * B², B parenthésé s'il est déjà une puissance. B = x² était autrefois pris
+ * tel quel (B² = x²) : x² − √(x⁴+x) devenait (x² − x⁴ − x)/(x² + √(x⁴+x))
+ * → −∞, au lieu de −x/(x² + √(x⁴+x)) → 0.
+ */
+function square(node: MathNode): MathNode {
+	return power(isSuperscript(node) ? parentheses(node) : node, number('2'));
+}
+
+/**
  * Find conjugate for rationalization.
  */
 export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
@@ -288,10 +298,7 @@ export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: 
 			const sqrtArg = getSqrtArg(expr.left);
 			if (sqrtArg) {
 				const conjugate = add(expr.left, expr.right);
-				const expanded = subtract(
-					sqrtArg,
-					isSuperscript(expr.right) ? expr.right : power(expr.right, number('2'))
-				);
+				const expanded = subtract(sqrtArg, square(expr.right));
 				return { conjugate, expanded };
 			}
 		}
@@ -301,10 +308,7 @@ export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: 
 			const sqrtArg = getSqrtArg(expr.right);
 			if (sqrtArg) {
 				const conjugate = add(expr.left, expr.right);
-				const expanded = subtract(
-					isSuperscript(expr.left) ? expr.left : power(expr.left, number('2')),
-					sqrtArg
-				);
+				const expanded = subtract(square(expr.left), sqrtArg);
 				return { conjugate, expanded };
 			}
 		}
@@ -316,10 +320,7 @@ export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: 
 			const sqrtArg = getSqrtArg(expr.left);
 			if (sqrtArg) {
 				const conjugate = subtract(expr.left, expr.right);
-				const expanded = subtract(
-					sqrtArg,
-					isSuperscript(expr.right) ? expr.right : power(expr.right, number('2'))
-				);
+				const expanded = subtract(sqrtArg, square(expr.right));
 				return { conjugate, expanded };
 			}
 		}

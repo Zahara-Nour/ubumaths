@@ -18,11 +18,14 @@ import {
 	tryEvaluateLimitExact,
 	isZeroResult,
 	isInfinityResult,
+	isIndeterminateResult,
 	resultToNode,
 	resultToNumber
 } from './exact-evaluation';
 import { exactConstantNode } from './generalized-degree';
 import { divide } from '../factory';
+import { normalize, denormalize } from '../normal';
+import { nodesEqual } from '../pattern/match';
 
 // =============================================================================
 // L'Hôpital's Rule
@@ -149,29 +152,78 @@ export function applyLhopital(
 		// Check if the new form is still indeterminate
 		const newForm = detectIndeterminateForm(newExpr, varName, approach, direction);
 
+		// Valeur approchée (repli numérique) : rendue en dernier recours, après
+		// la forme réduite de f'/g'.
+		let approximateEvaluation: MathNode | null = null;
 		if (newForm === 'none') {
 			// We can try direct evaluation
 			const evaluation = tryDirectEvaluation(newExpr, varName, approach, direction);
-			if (evaluation !== null) {
+			if (evaluation !== null && !evaluation.approximate) {
 				recorder.recordStep(
 					'lhopital',
-					evaluation.approximate
-						? "Valeur approchée après application de la règle de L'Hôpital"
-						: "Limite trouvée après application de la règle de L'Hôpital",
+					"Limite trouvée après application de la règle de L'Hôpital",
 					newExpr,
 					evaluation.value,
 					'summarized'
 				);
-
 				return {
 					applicable: true,
 					value: evaluation.value,
 					transformedExpr: newExpr,
 					iterations,
-					resolvedForm: form,
-					...(evaluation.approximate && { approximate: true })
+					resolvedForm: form
 				};
 			}
+			approximateEvaluation = evaluation?.value ?? null;
+		}
+
+		// f'/g' non conclu exactement : sa forme réduite (module normal/) peut
+		// l'être. (1/x)/(2x/(x²+1)) = (x²+1)/(2x²) en +∞, 12x²/(4x³/√(x⁴)) = 3x
+		// en 0 — sans elle, ln x / ln(x²+1) restait sans limite exacte.
+		const reduced = reduceQuotient(newExpr);
+		if (reduced !== null) {
+			const reducedLimit = exactLimitOfReduced(reduced, varName, approach, direction);
+			if (reducedLimit !== null) {
+				recorder.recordStep(
+					'lhopital',
+					"Limite trouvée après application de la règle de L'Hôpital",
+					reduced,
+					reducedLimit,
+					'summarized'
+				);
+				return {
+					applicable: true,
+					value: reducedLimit,
+					transformedExpr: reduced,
+					iterations,
+					resolvedForm: form
+				};
+			}
+			if (isDivision(reduced) && newForm !== 'none') {
+				const reducedForm = detectIndeterminateForm(reduced, varName, approach, direction);
+				if (reducedForm === '0/0' || reducedForm === '∞/∞') {
+					currentExpr = reduced;
+					continue;
+				}
+			}
+		}
+
+		if (approximateEvaluation !== null) {
+			recorder.recordStep(
+				'lhopital',
+				"Valeur approchée après application de la règle de L'Hôpital",
+				newExpr,
+				approximateEvaluation,
+				'summarized'
+			);
+			return {
+				applicable: true,
+				value: approximateEvaluation,
+				transformedExpr: newExpr,
+				iterations,
+				resolvedForm: form,
+				approximate: true
+			};
 		}
 
 		if (newForm === '0/0' || newForm === '∞/∞') {
@@ -199,6 +251,41 @@ export function applyLhopital(
 		resolvedForm: form,
 		error: `Max L'Hôpital iterations (${maxIterations}) reached`
 	};
+}
+
+/** Forme normale réduite d'un quotient, ou null si inchangée ou impossible. */
+function reduceQuotient(expr: DivisionNode): MathNode | null {
+	try {
+		const reduced = denormalize(normalize(expr));
+		return nodesEqual(reduced, expr) ? null : reduced;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Limite EXACTE de la forme réduite de f'/g' : évaluation exacte directe si
+ * elle n'est plus un quotient (3x en 0), sinon quotient déterminé évalué
+ * exactement. Null si rien ne conclut exactement.
+ */
+function exactLimitOfReduced(
+	reduced: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): MathNode | null {
+	if (isDivision(reduced)) {
+		if (detectIndeterminateForm(reduced, varName, approach, direction) !== 'none') return null;
+		return tryDirectEvaluationExact(reduced, varName, approach, direction);
+	}
+	const result = tryEvaluateLimitExact(reduced, varName, approach, direction);
+	if (result === null || isIndeterminateResult(result)) return null;
+	// 0⁺ / 0⁻ : la limite est 0 (le signe ne sert qu'aux quotients)
+	if (isZeroResult(result)) return { type: 'number', value: '0' };
+	const node = resultToNode(result);
+	if (node === null) return null;
+	// Constante rationnelle sous forme canonique : −2/3, pas (−2)/3
+	return isInfinityResult(result) ? node : (exactConstantNode(node) ?? node);
 }
 
 /**
@@ -258,8 +345,13 @@ function tryDirectEvaluationExact(
 	const numResult = tryEvaluateLimitExact(expr.numerator, varName, approach, direction);
 	const denResult = tryEvaluateLimitExact(expr.denominator, varName, approach, direction);
 
-	// Need both results
+	// Need both results. Un opérande « indéterminé » n'est pas un fini non nul :
+	// (1/x)/(2x/(x²+1)) en +∞ concluait 0 (« 0/fini »), au lieu de laisser le
+	// moteur lever la forme.
 	if (!numResult || !denResult) {
+		return null;
+	}
+	if (isIndeterminateResult(numResult) || isIndeterminateResult(denResult)) {
 		return null;
 	}
 
