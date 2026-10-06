@@ -28,7 +28,8 @@
 <header class="flex flex-col gap-3">
 	<h1 class="text-3xl font-bold">Le chiffre de Vigenère</h1>
 	<p>
-		Décrit par Blaise de Vigenère en 1586, ce chiffre fait un César dont le décalage
+		Publié par Giovan Battista Bellaso en 1553 et popularisé par Blaise de Vigenère en 1586, ce
+		chiffre fait un César dont le décalage
 		<strong>change à chaque lettre</strong> : il est donné par les lettres d’un mot-clé, répété tout
 		au long du message. Une même lettre claire n’est donc plus toujours chiffrée pareil, et l’analyse
 		de fréquences ne suffit plus. On l’a surnommé « le chiffre indéchiffrable ».

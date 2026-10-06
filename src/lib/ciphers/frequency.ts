@@ -88,14 +88,22 @@ export function letterFrequencies(text: string): { total: number; letters: Lette
 	};
 }
 
+/** χ² entre des comptes de lettres (rang 0 à 25) et le français : 0 = français parfait */
+export function chiSquared(counts: readonly number[], total: number): number {
+	if (total === 0) return 0;
+	return counts.reduce((sum, count, i) => {
+		const expected = (FRENCH_FREQUENCIES[ALPHABET[i]] / 100) * total;
+		return sum + (count - expected) ** 2 / expected;
+	}, 0);
+}
+
 /** χ² entre les lettres du texte et le français : 0 = français parfait */
 export function frenchScore(text: string): number {
 	const { total, letters } = letterFrequencies(text);
-	if (total === 0) return 0;
-	return letters.reduce((sum, { letter, count }) => {
-		const expected = (FRENCH_FREQUENCIES[letter] / 100) * total;
-		return sum + (count - expected) ** 2 / expected;
-	}, 0);
+	return chiSquared(
+		letters.map((l) => l.count),
+		total
+	);
 }
 
 /** Les 26 déchiffrements possibles, du plus au moins français */

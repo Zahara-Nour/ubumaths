@@ -131,6 +131,24 @@ describe('décryptage complet', () => {
 		]);
 	});
 
+	// Revue du 2026-10-06 : sur ~110 lettres, les clés A et AB donnaient 10
+	it('texte court (~110 lettres) : la clé A donne la longueur 1', () => {
+		const short = lettersOnly(LONG_FRENCH_TEXT).slice(0, 113);
+		expect(suggestKeyLength(vigenereEncrypt(short, 'A').text)).toBe(1);
+	});
+
+	it('texte court : la clé AB ne donne jamais une longueur parasite', () => {
+		// Deux décalages voisins : en longueur 1, le texte ressemble encore au
+		// français (indice 0,068). 1 ou 2 sont défendables, 10 ne l'est pas.
+		const short = lettersOnly(LONG_FRENCH_TEXT).slice(0, 113);
+		expect(suggestKeyLength(vigenereEncrypt(short, 'AB').text)).toBeLessThanOrEqual(2);
+	});
+
+	it('jamais de longueur dont les colonnes auraient moins de 12 lettres', () => {
+		const tiny = vigenereEncrypt('Attaque a l aube par le nord', 'UBU').text;
+		expect(suggestKeyLength(tiny)).toBe(1);
+	});
+
 	it('texte sans lettre : longueur 1, clé vide', () => {
 		expect(suggestKeyLength('2026 !')).toBe(1);
 		expect(crackVigenere('2026 !', 3).key).toBe('');

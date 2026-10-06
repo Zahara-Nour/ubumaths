@@ -32,7 +32,7 @@
 	let plain2 = $state('A');
 
 	const attack = $derived(solve(cipher1, plain1, cipher2, plain2));
-	const candidates = $derived(affineBruteForce(text).slice(0, SHOWN_CANDIDATES));
+	const candidates = $derived(affineBruteForce(text, SHOWN_CANDIDATES));
 
 	// Functions
 	function solve(c1: string, p1: string, c2: string, p2: string) {
@@ -102,6 +102,24 @@
 				<p class="text-sm" data-testid="affine-attack-hint">
 					Gardez la première hypothèse et changez la seconde lettre claire : après E, les lettres
 					les plus fréquentes du français sont A, S, I, N, T et R.
+				</p>
+			{:else if attack.solutions.length > 1}
+				<ul class="flex flex-col gap-1 text-sm" data-testid="affine-attack-previews">
+					{#each attack.solutions.slice(0, 4) as { a, b } (`${a}-${b}`)}
+						{@const preview = affineDecrypt(text, a, b).text}
+						<li class="grid grid-cols-[8rem_1fr] gap-2">
+							<span class="tabular-nums">a = {a}, b = {b}</span>
+							<span class="font-mono break-words"
+								>{preview.length > PREVIEW_LENGTH
+									? `${preview.slice(0, PREVIEW_LENGTH)}…`
+									: preview}</span
+							>
+						</li>
+					{/each}
+				</ul>
+				<p class="text-sm">
+					Pour trancher, gardez une hypothèse et changez l’autre : une seule clé doit donner du
+					français.
 				</p>
 			{:else if attack.solutions.length === 1}
 				{@const { a, b } = attack.solutions[0]}

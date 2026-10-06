@@ -9,6 +9,7 @@ import {
 	affineCollisions,
 	affineDecrypt,
 	affineEncrypt,
+	rankAffineKeys,
 	twoLetterAttack
 } from '../affine';
 import { FRENCH_SENTENCE, randomText, seededRandom } from './helpers';
@@ -107,36 +108,63 @@ describe('affineBruteForce', () => {
 
 describe('twoLetterAttack', () => {
 	// (5, 8) : E (4) → C (2) ; A (0) → I (8)
-	it('E → C et A → I : une seule clé, (5, 8), avec les étapes du système', () => {
+	it('E → C et A → I : 4 non inversible, on essaie les 26 valeurs de a', () => {
 		const attack = twoLetterAttack({ cipher: 'C', plain: 'E' }, { cipher: 'I', plain: 'A' });
 		expect(attack.solutions).toEqual([{ a: 5, b: 8 }]);
 		expect(attack.steps).toEqual([
 			'E (4) devient C (2) : 4a + b ≡ 2 (mod 26)',
-			'A (0) devient I (8) : 0a + b ≡ 8 (mod 26)',
+			'A (0) devient I (8) : b ≡ 8 (mod 26)',
 			'On soustrait : 4a ≡ −6 ≡ 20 (mod 26)',
-			'4 n’est pas premier avec 26 : on essaie les 26 valeurs de a.',
+			'4 n’est pas premier avec 26 : pas d’inverse, on essaie les 26 valeurs de a.',
+			'Solutions : a = 5 ou a = 18.',
+			'Rejeté, car pas premier avec 26 : a = 18.',
+			'Puis b ≡ 8 − 5 × 0 = 8 (mod 26)',
 			'Une seule clé valide : a = 5, b = 8.'
 		]);
 	});
 
-	it('différence inversible : on divise par l’inverse', () => {
+	it('différence inversible : on multiplie par l’inverse, réduction comprise', () => {
 		// (5, 8) : B (1) → N (13) ; A (0) → I (8)
 		const attack = twoLetterAttack({ cipher: 'N', plain: 'B' }, { cipher: 'I', plain: 'A' });
 		expect(attack.solutions).toEqual([{ a: 5, b: 8 }]);
-		expect(attack.steps).toContain('1 a pour inverse 1 modulo 26 : a ≡ 5 × 1 ≡ 5 (mod 26)');
+		expect(attack.steps[0]).toBe('B (1) devient N (13) : a + b ≡ 13 (mod 26)');
+		expect(attack.steps).toContain('1 a pour inverse 1 modulo 26 : a ≡ 5 × 1 = 5 (mod 26)');
 	});
 
-	it('hypothèse fausse : aucune clé valide, et on le dit', () => {
+	it('p₁ < p₂ : la soustraction des coefficients est écrite', () => {
+		// (5, 8) : E (4) → C (2) ; S (18) → S (5 × 18 + 8 = 98 ≡ 20 → U)
+		const attack = twoLetterAttack({ cipher: 'C', plain: 'E' }, { cipher: 'U', plain: 'S' });
+		expect(attack.steps[2]).toBe('On soustrait : (4 − 18)a = −14a ≡ 12a ≡ −18 ≡ 8 (mod 26)');
+		expect(attack.solutions).toEqual([{ a: 5, b: 8 }]);
+	});
+
+	it('la réduction du produit est écrite (24 × 25 = 600)', () => {
+		// d = 1 (inverse 1) ne réduit rien ; on prend d = 25 (inverse 25) : B (1) et C (2)
+		const attack = twoLetterAttack({ cipher: 'A', plain: 'B' }, { cipher: 'C', plain: 'C' });
+		expect(attack.steps.join('\n')).toContain('600 − 23 × 26 = 2');
+	});
+
+	it('a trouvé mais pas premier avec 26 : on explique pourquoi l’hypothèse tombe', () => {
+		const attack = twoLetterAttack({ cipher: 'A', plain: 'B' }, { cipher: 'C', plain: 'C' });
+		expect(attack.solutions).toEqual([]);
+		expect(attack.steps).toContain(
+			'a = 2 n’est pas premier avec 26 : ce n’est pas une clé affine.'
+		);
+		expect(attack.steps.at(-1)).toBe('Aucune clé valide : l’hypothèse est donc fausse.');
+	});
+
+	it('système sans solution : on le dit', () => {
 		// 2a ≡ 1 (mod 26) n'a pas de solution
 		const attack = twoLetterAttack({ cipher: 'B', plain: 'C' }, { cipher: 'A', plain: 'A' });
 		expect(attack.solutions).toEqual([]);
-		expect(attack.steps.at(-1)).toBe('Aucune clé valide : l’hypothèse est sans doute fausse.');
+		expect(attack.steps).toContain('2a ≡ 1 n’a aucune solution modulo 26.');
+		expect(attack.steps.at(-1)).toBe('Aucune clé valide : l’hypothèse est donc fausse.');
 	});
 
 	it('plusieurs clés possibles : on les liste', () => {
 		// 13a ≡ 13 : toutes les valeurs impaires de a conviennent
 		const attack = twoLetterAttack({ cipher: 'N', plain: 'N' }, { cipher: 'A', plain: 'A' });
-		expect(attack.solutions.length).toBeGreaterThan(1);
+		expect(attack.solutions).toHaveLength(12);
 		expect(attack.steps.at(-1)).toMatch(/^Plusieurs clés possibles/);
 	});
 
@@ -144,5 +172,22 @@ describe('twoLetterAttack', () => {
 		expect(() => twoLetterAttack({ cipher: 'C', plain: 'E' }, { cipher: 'I', plain: 'E' })).toThrow(
 			'Choisissez deux lettres claires différentes et deux lettres chiffrées différentes.'
 		);
+	});
+});
+
+describe('rankAffineKeys', () => {
+	it('classe les 312 clés à partir des seuls comptes, comme la force brute', () => {
+		const encrypted = affineEncrypt(FRENCH_SENTENCE, 7, 3).text;
+		const ranked = rankAffineKeys(encrypted);
+		expect(ranked).toHaveLength(312);
+		expect(ranked[0]).toMatchObject({ a: 7, b: 3 });
+		expect(ranked.map(({ a, b }) => `${a},${b}`)).toEqual(
+			affineBruteForce(encrypted).map(({ a, b }) => `${a},${b}`)
+		);
+	});
+
+	it('la force brute peut se limiter aux meilleures clés', () => {
+		const encrypted = affineEncrypt(FRENCH_SENTENCE, 7, 3).text;
+		expect(affineBruteForce(encrypted, 10)).toHaveLength(10);
 	});
 });

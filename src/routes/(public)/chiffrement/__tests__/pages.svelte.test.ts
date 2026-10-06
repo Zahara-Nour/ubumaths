@@ -251,6 +251,21 @@ describe('Vigenère', () => {
 		expect(text(screen.container, 'cracked-key')).toBe('MERDRE');
 	});
 
+	it('Kasiski numérote les positions à partir de 1', async () => {
+		const screen = await render(Vigenere);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('Message intercepté').fill('ABCXXXABC ABCXXXABC ABCXXXABC ABCXXXABC');
+		await expect
+			.poll(
+				() =>
+					screen.container.querySelector('[data-testid="kasiski-repeats"] tbody tr')?.textContent ??
+					''
+			)
+			.toMatch(/^ABC\s*1, 7/);
+		// 36 lettres : message court, signalé
+		expect(text(screen.container, 'vigenere-short')).toContain('36 lettres');
+	});
+
 	it('la longueur se corrige à la main', async () => {
 		const screen = await render(Vigenere);
 		await page.getByRole('tab', { name: 'Décrypter' }).click();

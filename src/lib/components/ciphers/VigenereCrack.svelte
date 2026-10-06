@@ -18,6 +18,8 @@
 
 	// Constantes
 	const SHOWN_REPEATS = 12;
+	/** En dessous, la longueur proposée devient incertaine (mesuré le 2026-10-06) */
+	const SHORT_MESSAGE = 200;
 	const LENGTH_ITEMS = Array.from({ length: MAX_KEY_LENGTH }, (_, i) => ({
 		value: String(i + 1),
 		label: String(i + 1)
@@ -51,6 +53,12 @@
 	<p class="text-muted-foreground">Aucune lettre à décrypter.</p>
 {:else}
 	<div class="flex flex-col gap-8">
+		{#if letterCount < SHORT_MESSAGE}
+			<p class="text-sm" data-testid="vigenere-short">
+				<strong>Message court ({letterCount} lettres) :</strong> les indices sont bruités, la longueur
+				proposée peut être fausse. Essayez-en d’autres à l’étape 3.
+			</p>
+		{/if}
 		<section class="flex flex-col gap-3" aria-labelledby="kasiski-title">
 			<h3 id="kasiski-title" class="font-semibold">1. Kasiski : ce qui se répète</h3>
 			<p class="text-sm text-muted-foreground">
@@ -75,7 +83,7 @@
 							{#each repeats.repeats.slice(0, SHOWN_REPEATS) as repeat (repeat.sequence)}
 								<tr>
 									<td class="pr-4 font-mono font-bold">{repeat.sequence}</td>
-									<td class="pr-4 tabular-nums">{repeat.positions.join(', ')}</td>
+									<td class="pr-4 tabular-nums">{repeat.positions.map((p) => p + 1).join(', ')}</td>
 									<td class="tabular-nums">{repeat.distances.join(', ')}</td>
 								</tr>
 							{/each}
@@ -112,7 +120,8 @@
 		<section class="flex flex-col gap-3" aria-labelledby="ic-title">
 			<h3 id="ic-title" class="font-semibold">2. L’indice de coïncidence</h3>
 			<p class="text-sm text-muted-foreground">
-				C’est la probabilité que deux lettres prises au hasard soient identiques : environ
+				Introduit par William Friedman dans les années 1920, c’est la probabilité que deux lettres
+				prises au hasard soient identiques : environ
 				{formatIc(FRENCH_IC)} en français, {formatIc(RANDOM_IC)} pour des lettres tirées au hasard. On
 				découpe le message en colonnes selon la longueur supposée : à la bonne longueur, chaque colonne
 				est un simple César et retrouve l’indice du français.

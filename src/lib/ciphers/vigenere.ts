@@ -52,8 +52,8 @@ export interface VigenereCrack {
 
 /**
  * Probabilité que deux lettres prises au hasard dans un texte français soient
- * égales : 0,0778 selon Friedman (Wikipédia, « Indice de coïncidence », qui
- * donne aussi 0,0746 selon le corpus). Pas recalculée depuis FRENCH_FREQUENCIES :
+ * égales : 0,0778 (Wikipédia, « Indice de coïncidence », qui donne aussi
+ * 0,0746 selon le corpus). Pas recalculée depuis FRENCH_FREQUENCIES :
  * cette table compte les lettres accentuées à part, ce qui sous-estime l'indice (0,070).
  */
 export const FRENCH_IC = 0.0778;
@@ -61,11 +61,14 @@ export const FRENCH_IC = 0.0778;
 export const RANDOM_IC = 1 / ALPHABET_SIZE;
 export const MAX_KEY_LENGTH = 12;
 /**
- * Une longueur est retenue si ses colonnes approchent la meilleure à 10 % près.
- * Un seuil absolu se faisait piéger par une longueur « à moitié juste » (2 pour
- * MERDRE : chaque colonne ne mélange que deux alphabets).
+ * Seuil d'indice au-dessus duquel une colonne « parle français ». Mesuré
+ * (2026-10-06, deux textes, clés aléatoires de 1 à 8 lettres, 100 à 486
+ * lettres) : 0,068 tient sur les textes courts, où un seuil relatif à la
+ * meilleure longueur se fait piéger par le bruit des petites colonnes.
  */
-const CLOSE_TO_BEST = 0.9;
+const IC_THRESHOLD = 0.068;
+/** En dessous, l'indice d'une colonne est trop bruité pour décider */
+export const MIN_COLUMN_LENGTH = 12;
 
 // Functions
 
@@ -126,14 +129,17 @@ export function averageIndexOfCoincidence(text: string, length: number): number 
 }
 
 /**
- * Plus petite longueur dont les colonnes valent presque la meilleure : un
- * multiple de la bonne longueur marche aussi bien, d'où la plus petite.
+ * Plus petite longueur dont les colonnes « parlent français » (un multiple de
+ * la bonne longueur marche aussi, d'où la plus petite). Seules comptent les
+ * longueurs aux colonnes d'au moins 12 lettres. À défaut, la meilleure.
  */
 export function suggestKeyLength(text: string, max = MAX_KEY_LENGTH): number {
-	if (lettersOnly(text).length < 2) return 1;
-	const scores = Array.from({ length: max }, (_, i) => averageIndexOfCoincidence(text, i + 1));
-	const best = Math.max(...scores);
-	return scores.findIndex((score) => score >= best * CLOSE_TO_BEST) + 1;
+	const count = lettersOnly(text).length;
+	const usable = Math.max(1, Math.min(max, Math.floor(count / MIN_COLUMN_LENGTH)));
+	if (count < 2) return 1;
+	const scores = Array.from({ length: usable }, (_, i) => averageIndexOfCoincidence(text, i + 1));
+	const first = scores.findIndex((score) => score >= IC_THRESHOLD);
+	return first === -1 ? scores.indexOf(Math.max(...scores)) + 1 : first + 1;
 }
 
 export function kasiski(text: string, sequenceLength = 3): KasiskiResult {
