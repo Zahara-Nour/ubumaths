@@ -78,5 +78,6 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 - **Arbre validé en entier le 2026-10-07** : 19 branches, 114 notions, 415 sous-notions →
   `docs/wip/arbre-notions/` (JSON + page). Branche de travail `feat/arbre-notions`, rien en base. Puis relecture d'ensemble.
-- Phase 0 : reste archivage d'un nœud à enfants actifs, table de correspondance.
+- **Phase 0 close (2026-10-07)** : archiver un nœud à enfants actifs = interdit ; table de
+  correspondance = fichier de proposition avec confiance par ligne, validé par David avant toute écriture.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
