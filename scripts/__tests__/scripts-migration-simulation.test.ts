@@ -12,18 +12,22 @@
  * s'arrêtent. On lit le mode qu'ils annoncent.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const ROOT = resolve(__dirname, '../..');
+// Le sous-processus a droit à 60 s ; le test doit l'attendre au moins autant
+// (5 s par défaut : un `npx tsx` à froid en CI les dépassait — #874).
+const SPAWN_TIMEOUT_MS = 60_000;
+vi.setConfig({ testTimeout: SPAWN_TIMEOUT_MS + 10_000 });
 
 function runWithoutDatabase(script: string, args: string[]): string {
 	const result = spawnSync('npx', ['tsx', `scripts/${script}`, ...args], {
 		cwd: ROOT,
 		encoding: 'utf-8',
-		timeout: 60_000,
+		timeout: SPAWN_TIMEOUT_MS,
 		// Aucune variable Supabase : impossible d'atteindre une base
 		env: { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '' }
 	});
