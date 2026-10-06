@@ -153,16 +153,15 @@ l'unité imaginaire.
 Seule la **famille B** (compétences mathématiques) est d'actualité ; la famille A est abandonnée
 → [ADR 0008](docs/adr/0008-referentiel-famille-a-abandonne.md).
 
-| Terme                       | Sens                                                                                                                                                  | Code                                                             |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Compétence mathématique** | L'une des six, stables tous niveaux : Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer.                                             | `math_competences`                                               |
-| **Composante**              | Unité évaluée d'une compétence mathématique, calibrée par niveau scolaire.                                                                            | `math_competence_subdimensions`                                  |
-| **Indicateur**              | Ce qui permet de dire qu'un niveau est validé.                                                                                                        | (pas de colonne en base)                                         |
-| **Thème**                   | Regroupement de contenus du programme officiel.                                                                                                       | `curriculum_themes`                                              |
-| **Chapitre**                | Découpage fin d'un thème, celui d'une progression (« Second degré », « Suites ») ; classe exercices et modèles de questions. Liste tenue par le prof. | à créer (remplace `exercises.topic`, `question_templates.theme`) |
-| **Source**                  | Provenance ou usage d'un exercice (« BAC », « Concours général », « Automatismes ») ; jamais un chapitre.                                             | à créer                                                          |
-| **Objectif**                | Attendu du programme dans un thème (mot visible de l'élève : « Mes objectifs »).                                                                      | `curriculum_objectives`                                          |
-| **Point du programme**      | Élément précis d'un objectif, suivi par le prof (« suivi programme »).                                                                                | `curriculum_points`                                              |
+| Terme                       | Sens                                                                                                      | Code                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| **Compétence mathématique** | L'une des six, stables tous niveaux : Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer. | `math_competences`              |
+| **Composante**              | Unité évaluée d'une compétence mathématique, calibrée par niveau scolaire.                                | `math_competence_subdimensions` |
+| **Indicateur**              | Ce qui permet de dire qu'un niveau est validé.                                                            | (pas de colonne en base)        |
+| **Thème**                   | Regroupement de contenus du programme officiel.                                                           | `curriculum_themes`             |
+| **Source**                  | Provenance ou usage d'un exercice (« BAC », « Concours général », « Automatismes ») ; jamais un contenu.  | à créer                         |
+| **Objectif**                | Attendu du programme dans un thème (mot visible de l'élève : « Mes objectifs »).                          | `curriculum_objectives`         |
+| **Point du programme**      | Élément précis d'un objectif, suivi par le prof (« suivi programme »).                                    | `curriculum_points`             |
 
 Échelle 1-4 jamais montrée comme une note (états ◯ / 🟠 / 🟢 / ✨).
 
@@ -174,7 +173,6 @@ Seule la **famille B** (compétences mathématiques) est d'actualité ; la famil
 | compétence atomique                         | **composante**                                    |
 | rubrique                                    | **indicateur**                                    |
 | domaine (au sens Sacoche)                   | **thème**                                         |
-| thème (d'un exercice, d'un modèle), topic   | **chapitre**                                      |
 | Mode Révision (forme de série)              | **En classe** (≠ révision SRS)                    |
 | Quiz (forme de série)                       | **Entraînement**                                  |
 | niveau de détail, palier (d'une correction) | **correction concise** / **correction détaillée** |
