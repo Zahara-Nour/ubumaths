@@ -36,8 +36,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   équation → Algèbre, sur une fonction → Fonctions.
 - **Matrices** et **Graphes** : deux branches à part (maths expertes) ; Chaînes de Markov dans Graphes.
 
+- **Fonctions** (15 notions) : une notion par fonction de référence (carré, inverse, racine carrée,
+  cube, valeur absolue) ; Optimisation = sous-notion de Dérivation ; Limites et Continuité séparées.
+- **Intégration** (4 notions) et **Équations différentielles** (5 notions : Généralités, y′ = f avec
+  les primitives en sous-notions, y′ = ay, y′ = ay + b, y′ = ay + f) : deux branches à part.
+
 ## Ouvert
 
-- Branches restantes à revoir une par une : Fonctions, Suites, Géométrie,
+- Branches restantes à revoir une par une : Suites (proposition dessinée), Géométrie,
   Grandeurs et mesures, Probabilités et statistiques, Logique et algorithmique.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
