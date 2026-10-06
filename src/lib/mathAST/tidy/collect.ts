@@ -96,6 +96,12 @@ type Accumulator = {
 	 * simplement porté devant, et ce n'est pas un geste.
 	 */
 	signCount: number;
+	/**
+	 * Le terme n'est qu'une somme opérande d'un `−` (`x − (−x − 1)`,
+	 * `−(−x − 1)`) : ce n'est pas un facteur, son signe ne sort pas. Sinon le
+	 * passage suivant aplatirait le `+(x + 1)` obtenu — `tidy` non idempotent.
+	 */
+	keepSumSign: boolean;
 };
 
 /**
@@ -684,7 +690,8 @@ function absorbFactor(
  * chemin n'est emprunté que par la base d'un facteur.
  */
 function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): void {
-	const positive = isIntegerRational(exponent) ? positiveFirstDegreeSum(node, acc) : null;
+	const positive =
+		!acc.keepSumSign && isIntegerRational(exponent) ? positiveFirstDegreeSum(node, acc) : null;
 	if (positive === null) {
 		addFactor(acc, node, exponent);
 		return;
@@ -713,7 +720,8 @@ function toTerm(
 	node: MathNode,
 	watch: FamilyWatch,
 	unitChoice: UnitChoice,
-	carriedSigns = 0
+	carriedSigns = 0,
+	keepSumSign = false
 ): TidyTerm {
 	const acc: Accumulator = {
 		coefficient: ONE,
@@ -724,7 +732,8 @@ function toTerm(
 		// ⚠️ Le `−` de tête est consommé par `flattenSumShallow`, donc il n'atteint
 		// jamais `absorbFactor`. Sans lui, `−(−x)` ne comptait qu'UN signe et
 		// passait sous le filet alors que deux signes s'y annulent.
-		signCount: carriedSigns
+		signCount: carriedSigns,
+		keepSumSign
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
@@ -781,6 +790,13 @@ function isSumNode(node: MathNode): boolean {
 	return node.type === 'addition' || node.type === 'subtraction';
 }
 
+/** Le nœud sous ses parenthèses : `((−x − 1))` → `−x − 1`. */
+function stripDelimiters(node: MathNode): MathNode {
+	let current = node;
+	while (isDelimiter(current)) current = current.content;
+	return current;
+}
+
 function negateTerm(term: TidyTerm): TidyTerm {
 	return { ...term, coefficient: negRational(term.coefficient) };
 }
@@ -819,7 +835,14 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			continue;
 		}
 
-		const collected = toTerm(term, watch, unitChoice, sign === '-' ? 1 : 0);
+		const negated = sign === '-';
+		const collected = toTerm(
+			term,
+			watch,
+			unitChoice,
+			negated ? 1 : 0,
+			negated && isSumNode(stripDelimiters(term))
+		);
 		// Précédé d'un `-`, une somme reste groupée : `-(x+2)` n'est pas distribué.
 		const inner = sign === '+' ? expandableSum(collected) : null;
 		if (inner !== null) {

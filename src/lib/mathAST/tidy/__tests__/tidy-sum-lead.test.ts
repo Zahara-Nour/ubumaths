@@ -74,6 +74,32 @@ describe('degré 1 dans un facteur', () => {
 	});
 });
 
+/**
+ * Une somme opérande d'un `−` (binaire ou unaire) n'est PAS un facteur : son
+ * signe ne sort pas. Sinon `x − (−x − 1)` devenait `(x + 1) + x`, que le
+ * passage suivant aplatissait en `2x + 1` — `tidy` n'était plus idempotent.
+ */
+describe("somme toute négative, opérande d'un − : le signe ne sort pas", () => {
+	const cases: [string, string][] = [
+		['x-(-x-1)', 'x-(-x-1)'],
+		['(x+1)-(-x-1)', 'x+1-(-x-1)'],
+		['-(-x-1)+1', '1-(-x-1)'],
+		['-(-x-1)', '-(-x-1)'],
+		['(-x-1)^2-(-x-1)', '(x+1)^2-(-x-1)'],
+		// le premier terme est un vrai facteur (retourné), le second non
+		['y(-x-1)-(-y-1)', '-y(x+1)-(-y-1)']
+	];
+
+	it.each(cases)('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+
+	it.each(cases.map(([input]) => input))('tidy(tidy(%s)) stable', (s) => {
+		const once = tidy(parseCustom(s));
+		expect(toCustom(tidy(once))).toBe(toCustom(once));
+	});
+});
+
 describe('degré ≥ 2 : ordre décroissant, toujours', () => {
 	it.each([
 		['1+x-x^2', '-x^2+x+1'],
