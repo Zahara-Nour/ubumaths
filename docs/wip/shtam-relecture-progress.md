@@ -6,6 +6,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | #   | Date       | Article                                                   | État                                                                                                                              |
 | --- | ---------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | 2026-09-21 | Pythagore dans la vie courante (`pythagore-vie-courante`) | ✅ validé — titre et texte réécrits par David, armoire couchée sur le dos, écran en pouces, corde à 13 nœuds, 2 illustrations SVG |
+| 2   | 2026-09-25 | π transcendant le mardi (`pi-transcendant-le-mardi`)      | ✅ validé — titre au conditionnel, réplique de Mère Ubu (tartes), décimales « jamais périodiques », aire du disque πr²            |
 
 ## Outillage ajouté pendant la relecture
 
@@ -14,4 +15,4 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 
 ## Note
 
-- En local (serveur de dev), la barre des racines `\sqrt{…}` apparaît décalée d'une ligne ; en production elle est correcte. À revérifier sur le site après déploiement.
+- La barre des racines `\sqrt{…}` en ligne apparaît décalée d'une ligne vers le haut, en local ET en production, avec ou sans images (constaté le 2026-10-06). Bug de rendu à traiter à part (PR dédiée), hors relecture.
