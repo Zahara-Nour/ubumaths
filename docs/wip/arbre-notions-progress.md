@@ -41,6 +41,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Intégration** (4 notions) et **Équations différentielles** (5 notions : Généralités, y′ = f avec
   les primitives en sous-notions, y′ = ay, y′ = ay + b, y′ = ay + f) : deux branches à part.
 
+- **Logique** (Ensembles, Logique et raisonnement) et **Algorithmique** (Variables et instructions,
+  Boucles, Fonctions Python, Listes) : deux branches. **Grandeurs et mesures** : Périmètres et Aires
+  séparés.
+
 ## Ouvert
 
 - Branches restantes à revoir une par une : Suites (proposition dessinée), Géométrie,
