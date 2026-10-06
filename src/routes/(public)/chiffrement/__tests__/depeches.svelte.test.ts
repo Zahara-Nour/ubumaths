@@ -111,7 +111,7 @@ describe('Les Dépêches du Czar', () => {
 		const first = await render(Depeches);
 		await page.getByRole('button', { name: 'Un indice' }).click();
 		await expect.poll(() => text(first.container, 'dispatch-hint')).toContain('substitution');
-		first.unmount();
+		await first.unmount();
 		const second = await render(Depeches);
 		await expect.poll(() => text(second.container, 'dispatch-hint')).toContain('substitution');
 		expect(second.container.querySelector('[data-testid="dispatch-tools"]')).not.toBeNull();
