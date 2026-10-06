@@ -127,6 +127,13 @@ export function hashMathNode(node: MathNode): string {
 			let hash = `F:${node.name}(${argsHash})`;
 			if (node.power) hash += `^${hashMathNode(node.power)}`;
 			if (node.base) hash += `_${hashMathNode(node.base)}`;
+			// La réciproque `f^{-1}` et les dérivées `f'`, `f''` sont d'autres
+			// fonctions que `f` : sans ces marques, `f^{-1}(x)` et `f(x)` avaient
+			// la même empreinte et étaient déclarés équivalents.
+			if (node.isInverse === true) hash += '^INV';
+			if (node.derivativeOrder !== undefined && node.derivativeOrder > 0) {
+				hash += `'${node.derivativeOrder}`;
+			}
 			return hash;
 		}
 
