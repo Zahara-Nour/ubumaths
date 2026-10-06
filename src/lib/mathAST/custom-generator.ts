@@ -530,7 +530,14 @@ export class CustomGenerator {
 				const groupRight = needsParenthesesUnderSign(node.right);
 				if (wrapLeft) this.emit('{', meta);
 				if (groupLeft) this.emit('(', meta);
+				// Le texte de gauche, relu dans ses spans (sans couleur) : regénérer
+				// le sous-arbre à chaque produit implicite était quadratique
+				const leftStart = this.spans.length;
 				this.visitWithSpans(node.left);
+				const leftPlain = this.spans
+					.slice(leftStart)
+					.map((span) => span.text)
+					.join('');
 				if (groupLeft) this.emit(')', meta);
 				if (wrapLeft) this.emit('}', meta);
 				// Implicit mul safety net (matches generateMultiplication). Two regimes:
@@ -561,7 +568,7 @@ export class CustomGenerator {
 						!groupRight &&
 						!groupLeft &&
 						!wrapLeft &&
-						gluesCommandToLetter(new CustomGenerator().generate(node.left), rhsPlain)
+						gluesCommandToLetter(leftPlain, rhsPlain)
 					) {
 						this.emit(' ', meta);
 					}

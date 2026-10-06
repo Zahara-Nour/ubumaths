@@ -16,6 +16,7 @@ import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, type CalcSession } from '../calcul';
 import { expressionOf } from '../engine';
+import { MIXED_NOTATION_MESSAGE } from '../parse';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };
@@ -75,6 +76,27 @@ describe('(A) \\pi et π dans Calcul', () => {
 		expect(runAction(s, 'variations', 'f')).toMatchObject({ ok: true });
 	});
 
+	// Seul l'argument d'une commande de CALCUL devient `\pi` : l'écho garde ce
+	// que l'élève a tapé (revue #911)
+	it('l’écho de .dériver garde le π tapé', () => {
+		expect(runInput(session(), '.dériver cos(3x+π/4)')).toMatchObject({
+			kind: 'commande',
+			input: '.dériver cos(3x+π/4)'
+		});
+	});
+
+	// `.filtrer` lit des MODALITÉS : π y est une valeur comme une autre, pas la
+	// constante. Réécrit en `\pi`, il répondait « \pi n'apparaît pas dans L »
+	it('.filtrer L = π trouve la modalité π (L = π ; e ; π ; a)', () => {
+		const s = session();
+		s.atelier.create({ kind: 'list', name: 'L', definition: 'π ; e ; π ; a' });
+
+		const result = runInput(s, '.filtrer L = π');
+
+		expect(result).toMatchObject({ kind: 'commande', input: '.filtrer L = π' });
+		expect(JSON.stringify(result)).not.toContain('apparaît pas');
+	});
+
 	it('pi en lettres reste refusé (#896)', () => {
 		expect(runInput(session(), '.dériver cos(3x+pi/4)')).toEqual({
 			kind: 'refus',
@@ -122,5 +144,61 @@ describe('(B) un nom de fonction dans un exposant', () => {
 		expect(result).toMatchObject({ kind: 'commande' });
 		expect('output' in result ? result.output : '').toBe('d/dx(3log_2(x)) = 3/{xln(2)}');
 		expect(latexOf(result)).toBe('\\dfrac{3}{x \\ln\\left( 2 \\right)}');
+	});
+});
+
+/**
+ * (C) Saisie MÊLÉE : un nom sans antislash (`sin(`) et une commande LaTeX que
+ * le parseur maison ne lit pas (`\frac`, `\sqrt`, `\cdot`…). Le format détecté
+ * est la syntaxe maison (le `sin(` l'emporte), qui refusait avec « Invalid
+ * backslash sequence at position 0 » — en anglais, montré tel quel dans une
+ * ligne de calcul (revue #911). Le message dit quoi faire, en français.
+ */
+describe('(C) saisie mêlée : un message français qui dit quoi écrire', () => {
+	const MIXED = [
+		'\\frac{1}{2}sin(x)',
+		'sin(x)+\\frac{1}{x}',
+		'\\sqrt{x}cos(x)',
+		'a\\cdot sin(x)',
+		'2\\times cos(x)',
+		'\\left(sin(x)\\right)'
+	];
+
+	it.each(MIXED)('la carte h(x)=%s le dit', (text) => {
+		const s = session();
+		runInput(s, `h(x)=${text}`);
+
+		const h = s.atelier.get('h');
+		expect(h?.status).toBe('error');
+		expect(h?.message).toBe(MIXED_NOTATION_MESSAGE);
+	});
+
+	it.each(MIXED)('la commande .dériver %s le dit', (text) => {
+		expect(runInput(session(), `.dériver ${text}`)).toEqual({
+			kind: 'refus',
+			message: MIXED_NOTATION_MESSAGE
+		});
+	});
+
+	it.each(MIXED.map((t) => t.replace(/\(x\)/g, '(2)').replace(/x/g, '3')))(
+		'le calcul %s le dit',
+		(text) => {
+			const s = session();
+			runInput(s, 'a=2');
+			expect(runInput(s, text)).toEqual({ kind: 'refus', message: MIXED_NOTATION_MESSAGE });
+		}
+	);
+
+	it('le message nomme les deux écritures, en français', () => {
+		expect(MIXED_NOTATION_MESSAGE).toContain('\\sin(x)');
+		expect(MIXED_NOTATION_MESSAGE).toContain('sin(x)');
+		expect(MIXED_NOTATION_MESSAGE).not.toMatch(/Invalid|backslash/);
+	});
+
+	// Les saisies mêlées que le parseur maison LIT restent acceptées
+	it.each(['cos(3x+\\pi/4)', '2sin(\\pi x)', 'e^{sin(x)}'])('%s reste lisible', (text) => {
+		const s = session();
+		runInput(s, `h(x)=${text}`);
+		expect(s.atelier.get('h')?.status).toBe('ok');
 	});
 });

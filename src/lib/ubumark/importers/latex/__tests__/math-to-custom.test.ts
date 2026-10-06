@@ -190,8 +190,11 @@ describe('convertMathToCustomSyntax', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('\\pi r^2', ctx);
 
+			// Espace entre la commande et la lettre : `\pi r^2` se relit π·r² par
+			// parseCustom ; l'ancien attendu `\pir^2` y était REJETÉ (« Invalid
+			// backslash sequence ») — il enregistrait le défaut (#911)
 			expect(result.converted).toBe(true);
-			expect(result.output).toBe('\\pir^2');
+			expect(result.output).toBe('\\pi r^2');
 		});
 	});
 
@@ -262,9 +265,11 @@ describe('unsupported features fallback', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('\\delta x + y', ctx);
 
-			// Implicit multiplication: \delta*x becomes \deltax (no space/operator)
+			// Multiplication implicite : `\delta x`, l'espace sépare la commande de
+			// la lettre. parseCustom relit δ·x + y ; l'ancien attendu `\deltax+y`
+			// y était REJETÉ (« Invalid backslash sequence ») — le défaut (#911)
 			expect(result.converted).toBe(true);
-			expect(result.output).toBe('\\deltax+y');
+			expect(result.output).toBe('\\delta x+y');
 		});
 	});
 

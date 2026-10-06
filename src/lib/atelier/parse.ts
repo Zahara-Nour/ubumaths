@@ -10,7 +10,7 @@
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { parseLatexSafe } from '$lib/mathAST/parser';
-import { detectInputFormat } from '$lib/mathAST/cli/core/input-detector';
+import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { transformAST } from '$lib/mathAST/visitor';
@@ -119,6 +119,29 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
  */
 export function withPiCommand(text: string): string {
 	return text.replace(/π/g, '\\pi ');
+}
+
+/**
+ * Le refus d'une saisie MÊLÉE : `sin(` sans antislash (texte) avec une commande
+ * LaTeX que le parseur maison ne connaît pas (`\frac`, `\sqrt`, `\cdot`…).
+ */
+export const MIXED_NOTATION_MESSAGE =
+	'Deux écritures mélangées : sin(x) est en texte, \\frac, \\sqrt ou \\cdot en LaTeX. Choisis-en une — en texte : 1/2*sin(x), sqrt(x)*cos(x), 2*cos(x) ; en LaTeX : \\frac{1}{2}\\sin(x).';
+
+/**
+ * Le message d'une saisie mêlée que le parseur maison ne lit pas, ou `null`.
+ *
+ * Le `sin(` l'emporte à la détection (syntaxe maison) ; le parseur maison
+ * refusait alors la commande LaTeX par « Invalid backslash sequence at
+ * position 0 », en anglais, montré tel quel dans une ligne de calcul (revue
+ * #911). Une saisie mêlée qu'il LIT (`cos(3x+\pi/4)`, `e^{sin(x)}`) passe.
+ */
+export function mixedNotationMessage(text: string): string | null {
+	if (!hasBareFunctionCall(text)) return null;
+	const read = parseCustomSafe(withPiCommand(text));
+	return read.ast === null && read.errors.some((e) => e.code === 'UNKNOWN_COMMAND')
+		? MIXED_NOTATION_MESSAGE
+		: null;
 }
 
 function parseByProvenance(
@@ -375,7 +398,11 @@ export function parseDefinition(
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {
-		return { error: `« ${definition.trim()} » n'est pas une expression valide.` };
+		return {
+			error:
+				mixedNotationMessage(definition) ??
+				`« ${definition.trim()} » n'est pas une expression valide.`
+		};
 	}
 
 	if (kind === 'value') {

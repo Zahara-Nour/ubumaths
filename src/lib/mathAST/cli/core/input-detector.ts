@@ -78,6 +78,15 @@ const BARE_FUNCTION_CALL =
 	/(?<!\\[a-zA-Z]*)(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs|mean|median|variance|stdev|min|max|sum)\s*[(^_]/;
 
 /**
+ * Un nom de fonction sans antislash suivi de son argument (`sin(`, `log_2(`) :
+ * la marque de la syntaxe maison. L'atelier s'en sert pour reconnaître une
+ * saisie mêlée de LaTeX que le parseur maison ne lit pas (`\frac{1}{2}sin(x)`).
+ */
+export function hasBareFunctionCall(input: string): boolean {
+	return BARE_FUNCTION_CALL.test(input);
+}
+
+/**
  * Detect the input format of a mathematical expression.
  *
  * Analyzes the input string for LaTeX-specific patterns to determine
