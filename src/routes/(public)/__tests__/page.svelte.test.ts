@@ -212,3 +212,24 @@ describe('/+page.svelte', () => {
 		});
 	});
 });
+
+describe('Accueil — lisibilité du Shtam en mode sombre', () => {
+	// Retour de David (2026-10-06) : le titre de la dépêche était peu lisible en sombre.
+	// Fond de page sombre : #262624 (app.css). Exigence : contraste ≥ 7:1 (AAA).
+	it('le titre de la dépêche contraste à au moins 7:1 sur le fond sombre', async () => {
+		setScheme('dark');
+		const screen = await render(Page, {
+			props: {
+				data: { ambianceMonth: 1, shtam: { slug: 'un-article', title: 'Un titre' } }
+			} as never
+		});
+		const titre = screen.getByText('Un titre').element();
+		const [r, g, b] = getComputedStyle(titre)
+			.color.match(/\d+(\.\d+)?/g)!
+			.slice(0, 3)
+			.map(Number);
+		const hex = '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+		const { contrastRatio } = await import('$lib/theme/author-color');
+		expect(contrastRatio(hex, '#262624')).toBeGreaterThanOrEqual(7);
+	});
+});

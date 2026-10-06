@@ -295,7 +295,7 @@
 		}
 	}
 	.depeche {
-		@apply flex max-w-xs items-baseline gap-2 self-end rounded-md px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+		@apply flex max-w-xs items-baseline gap-2 self-end rounded-md px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none dark:text-foreground;
 	}
 	.depeche-label {
 		@apply flex shrink-0 items-center gap-1.5 text-[0.65rem] font-bold tracking-wider text-destructive uppercase;
