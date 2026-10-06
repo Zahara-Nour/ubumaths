@@ -18,7 +18,7 @@ if ! "$PY" -c 'import fitz' 2>/dev/null; then
 fi
 ECHEC=0
 echo "== 1. Typst (générateur de l'application)"
-pnpm -s tsx scripts/fiches/rendu-fiche.ts "$DOSSIER" "$TITRE" || ECHEC=1
+pnpm exec tsx scripts/fiches/rendu-fiche.ts "$DOSSIER" "$TITRE" || ECHEC=1
 echo "== 2. Compilation prod"
 node scripts/fiches/compile-prod.mjs "$DOSSIER"/{fiche,corrige,fiche-en,corrige-en}.typ || ECHEC=1
 echo "== 3. Débords de colonne"
