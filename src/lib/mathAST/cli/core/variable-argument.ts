@@ -57,10 +57,12 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
  * `sin x`, `ln x`, `sin^2 x`. Le nom doit être DÉLIMITÉ — `cost`, `lnx`,
  * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas — et n'est pas
  * suivi (indice et exposant éventuels compris : `log_2(x)`, que `toCustom`
- * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante.
+ * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante. Un
+ * indice de racine entre crochets (`sqrt[3](x)`, que la définition
+ * `f(x) = …` accepte) peut précéder la parenthèse.
  */
 const BARE_FUNCTION =
-	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*\()/;
+	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?\()/;
 
 /** Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`. */
 const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;

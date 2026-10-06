@@ -23,7 +23,15 @@ import {
 	sin,
 	parentheses
 } from '../factory';
-import { isDelimiter, isEulerConstant, isNumber, isVariable, isZero } from '../guards';
+import {
+	isDelimiter,
+	isEulerConstant,
+	isFunction,
+	isNumber,
+	isSuperscript,
+	isVariable,
+	isZero
+} from '../guards';
 import { getNumericValue, numericNode } from '../common/numeric';
 import {
 	zero,
@@ -361,6 +369,108 @@ export function sqrtRule(u: MathNode, du: MathNode, simplify: boolean): MathNode
 	}
 	const denominator = multiply(number('2'), sqrtU, 'implicit');
 	return divide(du, denominator, 'fraction');
+}
+
+// =============================================================================
+// Racine n-ième (indice dans `base` du nœud `sqrt`)
+// =============================================================================
+
+/**
+ * L'indice d'une racine n-ième, ou `null` pour une racine carrée.
+ *
+ * ⚠️ `\sqrt[3]{x}` est un nœud `sqrt` à UN argument, l'indice dans `base` :
+ * l'ignorer dérive ∛x comme √x. Un indice `2` explicite est une racine carrée.
+ */
+export function rootIndexOf(node: MathNode): MathNode | null {
+	if (!isFunction(node) || node.name !== 'sqrt' || node.base === undefined) return null;
+	if (isNumber(node.base) && node.base.value === '2') return null;
+	return node.base;
+}
+
+/** L'indice s'il est un entier littéral ≥ 2. */
+function integerIndex(index: MathNode): number | null {
+	if (!isNumber(index)) return null;
+	const n = Number(index.value);
+	return Number.isInteger(n) && n >= 2 ? n : null;
+}
+
+/** `ⁿ√(radicand)`. */
+function nthRoot(radicand: MathNode, index: MathNode): MathNode {
+	return func('sqrt', [radicand], { base: index });
+}
+
+/** `v^e`, parenthésé si `v` n'est pas atomique ; `v^1` rendu `v`. */
+function powerOf(v: MathNode, exponent: MathNode): MathNode {
+	if (isNumber(exponent) && exponent.value === '1') return v;
+	const atomic = isVariable(v) || isNumber(v) || isDelimiter(v) || isFunction(v);
+	return power(atomic ? v : parentheses(v), exponent);
+}
+
+/**
+ * Racine n-ième : (ⁿ√u)′ = u′ / (n · ⁿ√(u^{n−1})).
+ *
+ * Écriture de classe : (∛x)′ = 1/(3∛(x²)), (∛(2x+1))′ = 2/(3∛((2x+1)²)).
+ * Valable partout où ⁿ√u est dérivable (u > 0 si n pair, u ≠ 0 si n impair :
+ * la racine impaire est multiplicative sur ℝ).
+ */
+export function nthRootRule(
+	u: MathNode,
+	index: MathNode,
+	du: MathNode,
+	simplify: boolean
+): MathNode {
+	const n = integerIndex(index);
+	const exponent = n !== null ? number(String(n - 1)) : simplifiedSubtract(index, number('1'));
+	const root = nthRoot(powerOf(u, exponent), index);
+	if (simplify) {
+		return simplifiedDivide(du, simplifiedMultiply(index, root));
+	}
+	return divide(du, multiply(index, root, 'implicit'), 'fraction');
+}
+
+/** Un radicande `v^p` reconnu par `nthRootPowerRadicand`. */
+export interface NthRootPowerRadicand {
+	readonly v: MathNode;
+	readonly p: number;
+	readonly n: number;
+}
+
+/**
+ * Radicande puissance `v^p` dont la forme de classe est plus courte :
+ * (ⁿ√(v^p))′ = p·v′ / (n · ⁿ√(v^{n−p})) — par ex. (⁵√(x²))′ = 2/(5·⁵√(x³)).
+ *
+ * Vient de v^{p−1} / ⁿ√(v^{p(n−1)}) = 1 / ⁿ√(v^{n−p}). Retenu seulement si
+ * 0 < p < n (sinon l'exposant serait nul ou négatif) et si n OU p est impair :
+ * pour n et p pairs (⁴√(x²) = √|x|), v peut être négatif et la simplification
+ * perdrait le signe.
+ */
+export function nthRootPowerRadicand(u: MathNode, index: MathNode): NthRootPowerRadicand | null {
+	const n = integerIndex(index);
+	if (n === null || !isSuperscript(u) || !isNumber(u.superscript)) return null;
+	const p = Number(u.superscript.value);
+	if (!Number.isInteger(p) || p <= 0 || p >= n) return null;
+	if (n % 2 === 0 && p % 2 === 0) return null;
+	return { v: u.base, p, n };
+}
+
+/** (ⁿ√(v^p))′ = p·v′ / (n · ⁿ√(v^{n−p})) — voir `nthRootPowerRadicand`. */
+export function nthRootOfPowerRule(
+	radicand: NthRootPowerRadicand,
+	dv: MathNode,
+	simplify: boolean
+): MathNode {
+	const { v, p, n } = radicand;
+	const index = number(String(n));
+	const root = nthRoot(powerOf(v, number(String(n - p))), index);
+	const coefficient = number(String(p));
+	if (simplify) {
+		return simplifiedDivide(simplifiedMultiply(coefficient, dv), simplifiedMultiply(index, root));
+	}
+	return divide(
+		multiply(coefficient, dv, 'implicit'),
+		multiply(index, root, 'implicit'),
+		'fraction'
+	);
 }
 
 // =============================================================================

@@ -187,7 +187,11 @@ describe('bareFunctionName', () => {
 		['log_2(x)', null],
 		['log_{10}(x)+x', null],
 		['log_2^3(x)', null],
-		['log_2 x', 'log']
+		['log_2 x', 'log'],
+		// Racine n-ième : indice entre crochets, que la définition `f(x) = …` accepte
+		['sqrt[3](x)', null],
+		['sqrt[4] (2x+1)', null],
+		['sqrt[3] x', 'sqrt']
 	])('%s', (input, expected) => {
 		expect(bareFunctionName(input)).toBe(expected);
 	});

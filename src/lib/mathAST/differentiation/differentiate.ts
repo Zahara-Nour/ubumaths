@@ -32,6 +32,10 @@ import {
 	logRule,
 	expRule,
 	sqrtRule,
+	rootIndexOf,
+	nthRootRule,
+	nthRootPowerRadicand,
+	nthRootOfPowerRule,
 	arcsinRule,
 	arccosRule,
 	arctanRule,
@@ -380,6 +384,22 @@ function differentiateFunctionNode(
 			const inner = u.args[0];
 			const innerDu = differentiateNode(inner, variable, simplify, functions);
 			return lnRule(inner, innerDu, simplify);
+		}
+
+		// Racine n-ième : l'indice est dans `base` (∛x n'est pas √x)
+		const rootIndex = funcName === 'sqrt' ? rootIndexOf(node) : null;
+		if (rootIndex !== null) {
+			const powerRadicand = nthRootPowerRadicand(u, rootIndex);
+			if (powerRadicand !== null) {
+				const dv = differentiateNode(powerRadicand.v, variable, simplify, functions);
+				return nthRootOfPowerRule(powerRadicand, dv, simplify);
+			}
+			return nthRootRule(
+				u,
+				rootIndex,
+				differentiateNode(u, variable, simplify, functions),
+				simplify
+			);
 		}
 
 		const du = differentiateNode(u, variable, simplify, functions);

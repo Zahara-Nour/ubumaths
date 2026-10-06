@@ -640,7 +640,8 @@ export const CORPUS: readonly DerivativeCase[] = [
 		family: 'racines',
 		latex: R`\sqrt[3]{2x+1}`,
 		f: (x) => cbrt(2 * x + 1),
-		points: POINTS_POS
+		points: POINTS_POS,
+		expected: R`\frac{2}{3\sqrt[3]{(2x+1)^2}}`
 	},
 	{
 		id: 'rac-10',
@@ -648,7 +649,8 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: R`\sqrt[4]{x}`,
 		custom: 'x^(1/4)',
 		f: (x) => x ** 0.25,
-		points: POINTS_POS
+		points: POINTS_POS,
+		expected: R`\frac{1}{4\sqrt[4]{x^3}}`
 	},
 	{
 		id: 'rac-11',

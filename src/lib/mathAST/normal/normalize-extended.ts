@@ -23,7 +23,8 @@ import {
 	isPositive,
 	isSuperscript,
 	isFunction,
-	isDelimiter
+	isDelimiter,
+	isNumber
 } from '../guards';
 import { getChildren } from '../transforms';
 import {
@@ -694,7 +695,8 @@ function powExtended(
  */
 function applyFunctionExtended(
 	name: string,
-	args: ExtendedNormalizeResult[]
+	args: ExtendedNormalizeResult[],
+	rootIndex?: MathNode
 ): ExtendedNormalizeResult {
 	if (args.length === 0) {
 		throw new Error(`Function ${name} requires at least one argument`);
@@ -706,6 +708,18 @@ function applyFunctionExtended(
 	if (arg.type === 'indeterminate') return arg;
 
 	const lowerName = name.toLowerCase();
+
+	// Racine n-ième (`\sqrt[3]{…}`, indice dans `base`) : la lire comme √
+	// donnait √8 = 2√2 pour ∛8, et √(0⁻) pour ∛(0⁻). D'indice impair, la
+	// racine est définie sur ℝ et GARDE le signe (∛(−∞) = −∞, ∛(0⁻) = 0⁻).
+	if (lowerName === 'sqrt' && rootIndex !== undefined && arg.type !== 'normal') {
+		const n = isNumber(rootIndex) ? Number(rootIndex.value) : Number.NaN;
+		if (Number.isInteger(n) && n % 2 === 1) return arg;
+		if (!Number.isInteger(n) || n < 2) {
+			throw new Error('nth root with a non-integer index at an extended value');
+		}
+		// indice pair : comportement de √ ci-dessous
+	}
 
 	switch (lowerName) {
 		case 'ln':
@@ -899,7 +913,10 @@ function applyFunctionExtended(
 	// computes special values like sin(kπ/n)).
 	if (arg.type === 'normal') {
 		const argNode = denormalize(arg.form);
-		const rebuilt = funcNode(name, [argNode]);
+		const rebuilt =
+			rootIndex === undefined
+				? funcNode(name, [argNode])
+				: funcNode(name, [argNode], { base: rootIndex });
 		return normalResult(normalize(rebuilt));
 	}
 
@@ -1020,7 +1037,13 @@ export function normalizeExtended(
 			return normalizeExtended(changedBase, ctx, options);
 		}
 		const args = node.args.map((arg) => normalizeExtended(arg, ctx, options));
-		return applyFunctionExtended(node.name, args);
+		const rootIndex =
+			node.name === 'sqrt' &&
+			node.base !== undefined &&
+			!(isNumber(node.base) && node.base.value === '2')
+				? node.base
+				: undefined;
+		return applyFunctionExtended(node.name, args, rootIndex);
 	}
 
 	// Handle Delimiter (parentheses)
