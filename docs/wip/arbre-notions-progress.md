@@ -48,6 +48,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Vecteurs** : « sans coordonnées » / « avec coordonnées ». Frontière avec Géométrie repérée : un
   énoncé sur un vecteur → Vecteurs ; sur des points, droites, cercles dans un repère → Géométrie repérée.
 
+- **Espace** et **Orthogonalité** (Tle) : chacune « sans coordonnées » / « avec coordonnées », comme
+  Vecteurs. Géométrie : 8 notions.
+
 ## Ouvert
 
 - Branches restantes à revoir une par une : Suites (proposition dessinée), Géométrie,
