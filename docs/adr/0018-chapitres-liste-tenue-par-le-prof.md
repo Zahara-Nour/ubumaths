@@ -1,6 +1,6 @@
 # 0018 — Chapitres : une liste tenue par le prof, distincte de la source
 
-- **Statut** : acceptée
+- **Statut** : remplacée par [0019](0019-classement-branche-notion-sous-notion.md)
 - **Date** : 2026-10-06 · **Décidée par** : David
 
 ## Contexte

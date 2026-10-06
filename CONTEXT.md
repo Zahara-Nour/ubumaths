@@ -153,26 +153,31 @@ l'unité imaginaire.
 Seule la **famille B** (compétences mathématiques) est d'actualité ; la famille A est abandonnée
 → [ADR 0008](docs/adr/0008-referentiel-famille-a-abandonne.md).
 
-| Terme                       | Sens                                                                                                      | Code                            |
-| --------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| **Compétence mathématique** | L'une des six, stables tous niveaux : Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer. | `math_competences`              |
-| **Composante**              | Unité évaluée d'une compétence mathématique, calibrée par niveau scolaire.                                | `math_competence_subdimensions` |
-| **Indicateur**              | Ce qui permet de dire qu'un niveau est validé.                                                            | (pas de colonne en base)        |
-| **Thème**                   | Regroupement de contenus du programme officiel.                                                           | `curriculum_themes`             |
-| **Source**                  | Provenance ou usage d'un exercice (« BAC », « Concours général », « Automatismes ») ; jamais un contenu.  | à créer                         |
-| **Objectif**                | Attendu du programme dans un thème (mot visible de l'élève : « Mes objectifs »).                          | `curriculum_objectives`         |
-| **Point du programme**      | Élément précis d'un objectif, suivi par le prof (« suivi programme »).                                    | `curriculum_points`             |
+| Terme                       | Sens                                                                                                                                  | Code                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Compétence mathématique** | L'une des six, stables tous niveaux : Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer.                             | `math_competences`                                                           |
+| **Composante**              | Unité évaluée d'une compétence mathématique, calibrée par niveau scolaire.                                                            | `math_competence_subdimensions`                                              |
+| **Indicateur**              | Ce qui permet de dire qu'un niveau est validé.                                                                                        | (pas de colonne en base)                                                     |
+| **Thème**                   | Regroupement de contenus du programme officiel.                                                                                       | `curriculum_themes`                                                          |
+| **Branche**                 | Premier niveau du classement des contenus, stable à tous les niveaux scolaires (« Fonctions », « Géométrie ») ; ≠ thème du programme. | à créer → [ADR 0019](docs/adr/0019-classement-branche-notion-sous-notion.md) |
+| **Notion**                  | Ce dont parle un exercice ou un modèle de questions (« Second degré », « Fractions ») ; regroupée dans une branche.                   | à créer (remplace `exercises.topic`, `question_templates.theme`/`domain`)    |
+| **Sous-notion**             | Subdivision facultative d'une notion (« Discriminant », « Factorisation »).                                                           | à créer (remplace `question_templates.subdomain`)                            |
+| **Type d'activité**         | Comment on travaille une notion (« Apprivoiser », « À trou ») ; hors de l'arbre de classement.                                        | à créer                                                                      |
+| **Source**                  | Provenance ou usage d'un exercice (« BAC », « Concours général », « Automatismes ») ; hors de l'arbre de classement.                  | à créer                                                                      |
+| **Objectif**                | Attendu du programme dans un thème (mot visible de l'élève : « Mes objectifs »).                                                      | `curriculum_objectives`                                                      |
+| **Point du programme**      | Élément précis d'un objectif, suivi par le prof (« suivi programme »).                                                                | `curriculum_points`                                                          |
 
 Échelle 1-4 jamais montrée comme une note (états ◯ / 🟠 / 🟢 / ✨).
 
 ### Termes bannis
 
-| ❌ Ne pas dire                              | ✅ Dire                                           |
-| ------------------------------------------- | ------------------------------------------------- |
-| compétence (seule)                          | **compétence mathématique**, ou **composante**    |
-| compétence atomique                         | **composante**                                    |
-| rubrique                                    | **indicateur**                                    |
-| domaine (au sens Sacoche)                   | **thème**                                         |
-| Mode Révision (forme de série)              | **En classe** (≠ révision SRS)                    |
-| Quiz (forme de série)                       | **Entraînement**                                  |
-| niveau de détail, palier (d'une correction) | **correction concise** / **correction détaillée** |
+| ❌ Ne pas dire                               | ✅ Dire                                           |
+| -------------------------------------------- | ------------------------------------------------- |
+| compétence (seule)                           | **compétence mathématique**, ou **composante**    |
+| compétence atomique                          | **composante**                                    |
+| rubrique                                     | **indicateur**                                    |
+| domaine (au sens Sacoche)                    | **thème**                                         |
+| thème / domaine d'un exercice ou d'un modèle | **branche**, **notion** (selon le niveau)         |
+| Mode Révision (forme de série)               | **En classe** (≠ révision SRS)                    |
+| Quiz (forme de série)                        | **Entraînement**                                  |
+| niveau de détail, palier (d'une correction)  | **correction concise** / **correction détaillée** |
