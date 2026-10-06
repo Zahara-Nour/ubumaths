@@ -109,20 +109,43 @@ function valueToNumber(value: EvalValue): number {
 	throw new Error('Unknown value type');
 }
 
+/** Au-delà, value·d ne se distingue plus d'un entier à 1e-9 près (ulp ≈ 1e-10). */
+const MAX_FRACTION_SCALED = 1e6;
+const FRACTION_TOLERANCE = 1e-9;
+
 /**
  * f⁽ⁿ⁾(a) sous forme de fraction p/q à petit dénominateur (q ≤ 100), ou
- * `null` si la valeur n'en a pas l'air (√2, π…). Tolérance relative : une
- * dérivée d'ordre élevé peut être grande (3¹⁹ pour e^(3x)).
+ * `null` si la valeur n'en a pas l'air (√2, π, e³…).
+ *
+ * ⚠️ Tolérance ABSOLUE, pas relative : une tolérance relative grandit avec
+ * la valeur, et au-delà de ~1e8 tout réel tombait sur un entier — e³·3¹¹
+ * sortait en fraction « exacte » fausse. Une grande dérivée n'est donc
+ * reconnue entière que si le flottant l'est exactement (3¹⁹ pour e^(3x) en 0).
  */
 function smallFraction(value: number): { numerator: number; denominator: number } | null {
+	if (Number.isInteger(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER) {
+		return { numerator: value, denominator: 1 };
+	}
 	for (let d = 1; d <= 100; d++) {
 		const scaled = value * d;
+		if (Math.abs(scaled) > MAX_FRACTION_SCALED) return null;
 		const rounded = Math.round(scaled);
-		if (Math.abs(scaled - rounded) < 1e-10 * Math.max(1, Math.abs(scaled))) {
+		if (Math.abs(scaled - rounded) < FRACTION_TOLERANCE) {
 			return { numerator: rounded, denominator: d };
 		}
 	}
 	return null;
+}
+
+/**
+ * Écriture décimale à 10 chiffres significatifs, zéros de queue retirés de la
+ * MANTISSE seulement : `3.025435270e-10` → `3.02543527e-10`, jamais
+ * `3.025435270e-1` (l'exposant perdait un chiffre).
+ */
+function toDecimalString(value: number): string {
+	const [mantissa, exponent] = value.toPrecision(10).split('e');
+	const trimmed = mantissa.includes('.') ? mantissa.replace(/\.?0+$/, '') : mantissa;
+	return exponent === undefined ? trimmed : `${trimmed}e${exponent}`;
 }
 
 /** n! exact, en BigInt : 19! dépasse déjà Number.MAX_SAFE_INTEGER. */
@@ -152,7 +175,7 @@ function coefficientToNode(derivative: number, degree: number): MathNode {
 	if (fraction === null) {
 		// Repli décimal, précision raisonnable
 		const value = derivative / factorial(degree);
-		return numericNode(value.toPrecision(10).replace(/\.?0+$/, ''));
+		return numericNode(toDecimalString(value));
 	}
 	const numerator = BigInt(fraction.numerator);
 	const denominator = BigInt(fraction.denominator) * bigFactorial(degree);
