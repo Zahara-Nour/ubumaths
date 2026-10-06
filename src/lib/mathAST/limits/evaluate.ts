@@ -35,7 +35,7 @@ import {
 	isFunction,
 	isDelimiter
 } from '../guards';
-import { divide, subtract, positiveInfinity, negativeInfinity } from '../factory';
+import { divide, subtract, positiveInfinity, negativeInfinity, number, opposite } from '../factory';
 import { findNodes } from '../transforms';
 import { flattenSumShallow } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
@@ -53,8 +53,11 @@ import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewis
 import {
 	limitByGeneralizedDegree,
 	involvesFractionalPower,
-	exactConstantNode
+	exactConstantNode,
+	exactConstantRational
 } from './generalized-degree';
+import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
+import { isNegative } from '../normal/rational';
 import { rewriteIndeterminateSum } from './sum-reduction';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -205,6 +208,36 @@ function validateApproachInDomain(
  * @returns The limit result with value and steps
  */
 export function evaluateLimit(
+	expr: MathNode | LimitNode,
+	variable?: string,
+	approach?: MathNode,
+	direction: LimitDirection = 'both',
+	options: LimitOptions = {}
+): LimitResult {
+	const result = evaluateLimitExactForm(expr, variable, approach, direction, options);
+	const expression = isLimit(expr) ? expr.expression : expr;
+	return writeLikeInput(result, expression);
+}
+
+/**
+ * Écriture de la limite selon l'énoncé (décision de David, 2026-10-06) :
+ * entrée écrite en décimaux → limite exacte en décimal (0.75), si son écriture
+ * décimale est finie ; sinon, et sans décimal dans l'entrée, fraction exacte.
+ */
+function writeLikeInput(result: LimitResult, expression: MathNode): LimitResult {
+	if (result.status !== 'exact' || result.value === null) return result;
+	if (isInfinity(result.value) || isNumber(result.value)) return result;
+	if (!hasDecimalLiteral(expression)) return result;
+	const value = exactConstantRational(result.value);
+	if (value === null) return result;
+	const text = decimalString(value);
+	if (text === null) return result;
+	const magnitude = number(text);
+	return { ...result, value: isNegative(value) ? opposite(magnitude) : magnitude };
+}
+
+/** Calcul de la limite ; valeur exacte en entier ou fraction réduite. */
+function evaluateLimitExactForm(
 	expr: MathNode | LimitNode,
 	variable?: string,
 	approach?: MathNode,

@@ -123,3 +123,20 @@ describe('Tableau de variations : limite exacte aux bornes (asymptote horizontal
 		}
 	);
 });
+
+// Décision de David (2026-10-06) : une entrée écrite en décimaux garde une
+// limite décimale (si son écriture décimale est finie) ; sinon fraction exacte
+describe('Entrée décimale : limite finie exacte écrite en décimal', () => {
+	it.each([
+		['0.5x+0.25', '1', '0.75'],
+		['\\frac{0.5x+1}{x}', '+inf', '0.5'],
+		['\\frac{-0.5x+1}{x}', '+inf', '-0.5'],
+		['0.5x+1.5', '1', '2'],
+		// 1/3 n'a pas d'écriture décimale finie : jamais 0.333…
+		['\\frac{0.1x}{0.3x+1}', '+inf', '\\dfrac{1}{3}']
+	] as const)('lim (%s) en %s = %s', (latex, at, expected) => {
+		const result = limitOf(latex, at);
+		expect(result.status).toBe('exact');
+		expect(describeLimit(result)).toBe(expected);
+	});
+});

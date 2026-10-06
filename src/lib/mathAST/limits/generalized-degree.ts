@@ -269,9 +269,15 @@ const NO_VARIABLE = '\u0000';
  * exactConstantNode(√2)                    // null
  */
 export function exactConstantNode(expr: MathNode): MathNode | null {
+	const value = exactConstantRational(expr);
+	return value === null ? null : rationalToNode(value);
+}
+
+/** Même lecture que `exactConstantNode`, rendue en rationnel. */
+export function exactConstantRational(expr: MathNode): Rational | null {
 	const leading = leadingTerm(expr, NO_VARIABLE, ONE);
 	if (leading === null || !isZero(leading.degree)) return null;
-	return rationalToNode(leading.coefficient);
+	return leading.coefficient;
 }
 
 /**
