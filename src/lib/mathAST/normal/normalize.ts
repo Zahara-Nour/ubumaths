@@ -14,6 +14,7 @@
 import type { MathNode } from '../types';
 import type { NormalForm, NormalTerm, Rational, NormalizationStep, SymbolicFactor } from './types';
 import { type Verbosity, shouldIncludeStep } from '../common/verbosity.js';
+import { inverseNotationAsFunction, isInverseNotation } from '../common/function-power.js';
 import {
 	type AbortChecker,
 	AbortError,
@@ -4444,17 +4445,6 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
  * Normalizes a function call.
  * Arguments are normalized first to ensure canonical representation.
  */
-/**
- * `-1` en exposant d'une fonction nommée : la réciproque, pas l'inverse.
- * La fabrique refuse les littéraux signés, donc `-1` se lit `opposite(1)`.
- */
-function isInverseNotation(power: MathNode): boolean {
-	if (power.type === 'opposite') {
-		return power.operand.type === 'number' && power.operand.value === '1';
-	}
-	return power.type === 'number' && power.value === '-1';
-}
-
 function normalizeFunction(
 	node: MathNode & { type: 'function' },
 	ctx?: NormalizeContext
@@ -4472,6 +4462,14 @@ function normalizeFunction(
 	if (node.power !== undefined && !isInverseNotation(node.power)) {
 		const { power, ...withoutPower } = node;
 		return normalizeNode({ type: 'superscript', base: withoutPower, superscript: power }, ctx);
+	}
+
+	// 1b. `\cos^{-1}(x)` a la forme normale de `arccos(x)` (même réciproque,
+	//     deux écritures). Les autres `f^{-1}` (`\ln^{-1}`…) restent opaques :
+	//     on n'invente pas de réciproque.
+	const reciprocal = inverseNotationAsFunction(node);
+	if (reciprocal !== null && reciprocal.name !== name) {
+		return normalizeNode(reciprocal, ctx);
 	}
 
 	// 2. Handle sqrt specially (before canonicalization to detect √(a×a))

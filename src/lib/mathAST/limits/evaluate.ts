@@ -40,6 +40,7 @@ import { findNodes } from '../transforms';
 import { flattenSumShallow } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
+import { expandFunctionPowers } from '../common/function-power';
 import { matchKnownLimit, getKnownLimitValue } from './known-limits';
 import { LimitStepRecorderImpl } from './step-recorder';
 import { containsVariable } from '../common/contains-variable';
@@ -270,6 +271,10 @@ function evaluateLimitExactForm(
 		approachPoint = approach;
 		dir = direction;
 	}
+
+	// `\cos^{-1}(x)` est la réciproque : la limite se calcule sur `arccos(x)`
+	// (la substitution directe rendait cos(0) = 1). `\sin^2(x)` → `\sin(x)^2`.
+	expression = expandFunctionPowers(expression);
 
 	// Validate domain accessibility
 	const domainValidation = validateApproachInDomain(expression, varName, approachPoint, dir);

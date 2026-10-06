@@ -37,6 +37,7 @@ import {
 	isPiecewise
 } from '../guards';
 import { flattenRelationChain } from '../flatten';
+import { inverseNotationAsFunction } from '../common/function-power';
 
 export type CompiledFn = (vars: Record<string, number>) => number;
 
@@ -258,6 +259,12 @@ const INVERSE_FUNCTIONS: Record<string, (...args: number[]) => number> = {
 };
 
 function compileFunction(node: FunctionNode): CompiledFn {
+	// `\cos^{-1}(x)` : réciproque (arccos), pas 1/cos — `wrapPower` l'aurait
+	// compilée en `Math.pow(cos(x), -1)`. `\ln^{-1}` devient un nœud `isInverse`,
+	// refusé plus bas faute de réciproque connue.
+	const reciprocal = inverseNotationAsFunction(node);
+	if (reciprocal) return compile(reciprocal);
+
 	const { name, args } = node;
 
 	// Nth root: sqrt with base property → x^(1/n)

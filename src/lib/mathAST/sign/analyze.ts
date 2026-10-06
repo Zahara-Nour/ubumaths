@@ -76,6 +76,7 @@ import {
 } from '$lib/math/intervals/factory';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { shouldIncludeStep } from '../common/verbosity';
+import { expandFunctionPowers } from '../common/function-power';
 
 /**
  * Tolerance for considering two partition points (zero / excluded) as the
@@ -108,7 +109,12 @@ const PARTITION_DEDUPE_TOLERANCE = DEFAULT_SIGN_OPTIONS.tolerance;
  * //   { interval: ]2, +infinity[, sign: 'positive' }
  * // ]
  */
-export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): SignAnalysisResult {
+export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): SignAnalysisResult {
+	// `\sin^2(x)` : exposant porté par `power` du nœud fonction, que le domaine,
+	// les zéros et le signe ignoraient (0 zéro, signe inconnu). On analyse
+	// `\sin(x)^2` ; `\cos^{-1}(x)` devient `arccos(x)`. L'expression rendue
+	// reste celle de l'appelant.
+	const expr = expandFunctionPowers(rawExpr);
 	const opts = mergeOptions(options);
 	const variable = opts.variable;
 	const steps: SignAnalysisStep[] = [];
@@ -146,7 +152,7 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 			opts.verbosity
 		);
 		return {
-			expression: expr,
+			expression: rawExpr,
 			variable,
 			domain,
 			zeros: [],
@@ -273,7 +279,7 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 	}
 
 	return {
-		expression: expr,
+		expression: rawExpr,
 		variable,
 		domain,
 		zeros: sortedZeros,
