@@ -25,6 +25,9 @@ const TOLERANCE = 1e-9;
 /** Nombre maximal de divisions de la période par 2 (2π → π → π/2 → …). */
 const MAX_HALVINGS = 4;
 
+/** Plus grand multiple essayé de la plus longue période pour la période commune. */
+const MAX_COMMON_MULTIPLE = 12;
+
 // =============================================================================
 // Aides
 // =============================================================================
@@ -98,13 +101,29 @@ function reduceByHalving(
 	return { bases: current, period: currentPeriod, periodNumeric: currentNumeric };
 }
 
+/** Le plus petit m tel que m·T divise par chaque période, sinon `null`. */
+function commonMultiple(
+	families: readonly PeriodicSolutionFamily[],
+	longestNumeric: number
+): number | null {
+	for (let m = 1; m <= MAX_COMMON_MULTIPLE; m++) {
+		const candidate = m * longestNumeric;
+		const divides = families.every((f) => {
+			const ratio = candidate / f.periodNumeric;
+			return Math.abs(ratio - Math.round(ratio)) < TOLERANCE;
+		});
+		if (divides) return m;
+	}
+	return null;
+}
+
 // =============================================================================
 // API
 // =============================================================================
 
 /**
- * La réunion de familles périodiques, ou `null` si leurs périodes ne sont
- * pas commensurables simplement (chaque période doit diviser la plus grande).
+ * La réunion de familles périodiques, ou `null` si leurs périodes n'ont pas
+ * de multiple commun simple (au plus 12 fois la plus longue).
  *
  * Les bases de chaque famille sont recopiées sur la période commune
  * (`x₀ + k·T` pour k = 0 … L/T − 1), dédoublonnées modulo cette période,
@@ -116,7 +135,17 @@ export function mergePeriodicFamilies(
 	if (families.length === 0) return null;
 
 	const longest = families.reduce((a, b) => (b.periodNumeric > a.periodNumeric ? b : a));
-	const commonNumeric = longest.periodNumeric;
+
+	// Période commune : le plus petit multiple de la plus longue que toutes
+	// divisent — π et 2π/3 (sin 2x · sin 3x) donnent 2π. Sans multiple commun
+	// raisonnable : `null`, jamais une famille partielle.
+	const multiple = commonMultiple(families, longest.periodNumeric);
+	if (multiple === null) return null;
+	const commonNumeric = multiple * longest.periodNumeric;
+	const commonPeriod =
+		multiple === 1
+			? longest.period
+			: simplified(multiply(number(String(multiple)), longest.period, 'implicit'));
 
 	const bases: NumericSolution[] = [];
 	for (const family of families) {
@@ -142,7 +171,7 @@ export function mergePeriodicFamilies(
 		}
 	}
 
-	const reduced = reduceByHalving(bases, longest.period, commonNumeric);
+	const reduced = reduceByHalving(bases, commonPeriod, commonNumeric);
 	const sorted = [...reduced.bases].sort((a, b) => a.numeric - b.numeric);
 
 	return {

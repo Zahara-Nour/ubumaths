@@ -310,7 +310,8 @@ export function trySubstitution(
 		const finalSolutions = merged ? [...merged.baseSolutions] : dedupe(solutions);
 		return {
 			variable,
-			status: finalSolutions.length === 1 ? 'unique' : 'multiple',
+			// Une famille périodique, c'est une infinité de solutions.
+			status: finalSolutions.length === 1 && !merged ? 'unique' : 'multiple',
 			solutions: finalSolutions,
 			equationType,
 			strategy: 'algebraic',

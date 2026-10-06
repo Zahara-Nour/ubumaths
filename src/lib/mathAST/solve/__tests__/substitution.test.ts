@@ -19,7 +19,7 @@ import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import type { SolveResult, Solution } from '../types';
 import { analyzeSign } from '../../sign';
 import { parseCustom } from '../../parser/custom';
-import { number, multiply, PI as PI_NODE } from '../../factory';
+import { number, multiply, opposite, PI as PI_NODE } from '../../factory';
 import { closedInterval, intervalSet } from '$lib/math/intervals/factory';
 
 // =============================================================================
@@ -264,5 +264,49 @@ describe('module de signe — zéros énumérés sur [0, 2π]', () => {
 		[PI / 6, (5 * PI) / 6, (7 * PI) / 6, (11 * PI) / 6].forEach((v, i) =>
 			expect(zeros[i]).toBeCloseTo(v, 6)
 		);
+	});
+
+	function zerosOn(custom: string, lower: number): number[] {
+		const lo = lower < 0 ? opposite(number(String(-lower))) : number(String(lower));
+		const d = intervalSet([closedInterval(lo, multiply(number('2'), PI_NODE, 'implicit'))]);
+		const result = analyzeSign(parseCustom(custom), { variable: 'x', domain: d });
+		return result.zeros.map((z) => z.approximate ?? Number.NaN).sort((a, b) => a - b);
+	}
+
+	function expectZeros(actual: number[], expected: number[]): void {
+		const sorted = [...expected].sort((a, b) => a - b);
+		expect(actual).toHaveLength(sorted.length);
+		sorted.forEach((v, i) => expect(actual[i]).toBeCloseTo(v, 6));
+	}
+
+	it('x(sin²x − 1/4) sur [−1 ; 2π] : la solution isolée x = 0 ET la famille', () => {
+		expectZeros(zerosOn('x*(sin(x)^2-1/4)', -1), [
+			-PI / 6,
+			0,
+			PI / 6,
+			(5 * PI) / 6,
+			(7 * PI) / 6,
+			(11 * PI) / 6
+		]);
+	});
+
+	it('(x − 1)·sin x sur [0 ; 2π] : 0, 1, π, 2π', () => {
+		expectZeros(zerosOn('(x-1)*sin(x)', 0), [0, 1, PI, 2 * PI]);
+	});
+
+	it('sin(2x)·sin(3x) sur [0 ; 2π] : toutes les racines (périodes π et 2π/3)', () => {
+		const expected = new Set<number>();
+		for (let k = 0; k <= 4; k++) expected.add(Math.round(((k * PI) / 2) * 1e9) / 1e9);
+		for (let k = 0; k <= 6; k++) expected.add(Math.round(((k * PI) / 3) * 1e9) / 1e9);
+		expectZeros(zerosOn('sin(2x)*sin(3x)', 0), [...expected]);
+	});
+});
+
+describe('statut d’une famille périodique', () => {
+	it('cos³x − cos x = 0 : une famille → statut multiple, pas unique', () => {
+		const r = solveLatex(String.raw`\cos^3(x)-\cos(x)=0`);
+		expect(isFailure(r)).toBe(false);
+		expect(r.periodicSolutions).toBeDefined();
+		expect(r.status).toBe('multiple');
 	});
 });

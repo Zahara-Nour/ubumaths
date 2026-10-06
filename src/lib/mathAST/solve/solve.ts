@@ -324,10 +324,10 @@ const MAX_PRODUCT_DECOMPOSITION_DEPTH = 5;
  * If the standard-form expression is a product A·B·...= 0, solve each
  * variable-dependent factor independently and merge solutions.
  *
- * **Limitation**: When multiple factors produce periodic solution families
- * (e.g., sin(x)·cos(x) = 0), only the first periodic family is attached.
- * For complete zero enumeration in sign analysis, each factor may need
- * to be solved independently.
+ * Plusieurs familles périodiques (sin(x)·cos(x) = 0) sont réunies sur une
+ * période commune ; sans période commune, on rend `null` (pas de famille
+ * partielle). Les solutions isolées restent dans `solutions`, à côté de la
+ * famille.
  *
  * @returns SolveResult if decomposition applies, null otherwise
  */
@@ -418,26 +418,29 @@ function tryProductDecomposition(
 		};
 	}
 
+	// Plusieurs familles (sin x · cos x) : on les RÉUNIT — n'attacher que la
+	// première faisait perdre des zéros au module de signe. Sans période
+	// commune, on rend la main : jamais de famille partielle.
+	const family =
+		periodicFamilies.length === 0
+			? null
+			: periodicFamilies.length === 1
+				? periodicFamilies[0]
+				: mergePeriodicFamilies(periodicFamilies);
+	if (periodicFamilies.length > 0 && family === null) return null;
+
 	const deduplicated = deduplicateSolutions(allSolutions);
 	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		// Une famille périodique, c'est une infinité de solutions.
+		status: deduplicated.length === 1 && family === null ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: 'mixed',
 		strategy: 'algebraic',
 		steps: recorder.getStepsFiltered(opts.verbosity),
-		// Plusieurs familles (sin x · cos x) : on les RÉUNIT — n'attacher que la
-		// première faisait perdre la moitié des zéros au module de signe. Si
-		// leurs périodes ne s'accordent pas, on garde l'ancien comportement.
-		...(periodicFamilies.length > 0
-			? {
-					periodicSolutions:
-						(periodicFamilies.length > 1 ? mergePeriodicFamilies(periodicFamilies) : null) ??
-						periodicFamilies[0]
-				}
-			: {})
+		...(family ? { periodicSolutions: family } : {})
 	};
 }
 
@@ -1111,7 +1114,7 @@ function tryExpLogRecursiveDecomposition(
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		status: deduplicated.length === 1 && !family ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: kind === 'exp' ? 'exponential' : 'logarithmic',
 		strategy: 'algebraic',
@@ -1451,7 +1454,7 @@ function tryRadicalDecomposition(
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		status: deduplicated.length === 1 && !family ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: 'unknown',
 		strategy: 'algebraic',
