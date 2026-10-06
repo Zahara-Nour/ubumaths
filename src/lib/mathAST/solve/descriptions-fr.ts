@@ -84,6 +84,9 @@ export type SolvingRule =
 	// Exp/log recursive decomposition
 	| 'exp-log-recursive-decomposition'
 	| 'equal-exponentials'
+	// Changement de variable (u = sin x, cos x, tan x, ln x, eˣ)
+	| 'change-of-variable'
+	| 'change-of-variable-back'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -181,6 +184,10 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'exp-log-recursive-decomposition':
 		'On decompose en resolvant f(x) = u pour chaque u-valeur exponentielle/logarithmique',
 	'equal-exponentials': "L'exponentielle est injective : e^A = e^B equivaut a A = B",
+
+	// Changement de variable
+	'change-of-variable': 'On pose u pour ramener a une equation polynomiale en u',
+	'change-of-variable-back': 'On revient a x en resolvant chaque equation obtenue pour u',
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",
