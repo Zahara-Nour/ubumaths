@@ -514,11 +514,11 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 #### 🐻 Le Czar Alexis — _L'Antagoniste suprême_ 🟢
 
-- **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_. **Siège** : le **palais de Moscou** (canon Jarry).
+- **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Chez Jarry, le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_. **À Chiphre (décision de David, 2026-10-06) : le Czar n'est rattaché à aucun pays ni aucune ville réels.** Il règne sur **l'Empire du Czar**, depuis son **palais d'Hiver**. On n'écrit jamais Russie, Moscou ni « russe » à son sujet : Chiphre ne présente aucun pays réel en ennemi.
 - **Rôle UI dans Chiphre** : Boss des défis majeurs, brevet, bac, examens blancs, tournois, contrôles trimestriels. Le Galopin **affronte le Czar Alexis** lors du Grand Décervelage — exactement comme Ubu l'affronte dans la pièce.
 - **Tempérament** : Glacial, méthodique, redoutable. Voix grave, autorité naturelle. Représente l'évaluation officielle, la sanction, le programme institutionnel. **Adversaire respecté** plus qu'haï — son rôle est nécessaire à la progression.
-- **Apparence** : Grand barbu, chapka, manteau de fourrure d'ours, regard d'aigle. Iconographie XIXᵉ siècle russe impériale.
-- **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque russe. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
+- **Apparence** : Grand barbu, chapka, manteau de fourrure d'ours, regard d'aigle. Iconographie impériale XIXᵉ siècle, d'un Empire du Nord imaginaire.
+- **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
 - **Motivation** : Imposer l'ordre mathématique officiel. Il **n'est pas l'antagoniste philosophique** d'Ubu (Ubu et Alexis se respectent mutuellement comme deux souverains) — il est l'adversaire institutionnel.
 - **Quand il intervient** : annonce d'examens, défis hebdomadaires majeurs, tournois inter-classes, événements compétitifs. Il ouvre les sessions d'évaluation et clôt les épreuves.
 - **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet à Chiphre de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis, comme à Sandomir ! Mais Notre Majesté reviendra ! »_
@@ -781,9 +781,9 @@ Chaque juron canonique a un **contexte d'utilisation préférentiel**. Cela perm
 
 #### Juron du Czar Alexis 🟢
 
-| Juron                   | Locuteur                  | Contexte                                                                                                                                                     |
-| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Par Saint Georges !** | Czar Alexis exclusivement | Canon Jarry, _Ubu Roi_. Patron du combat chevaleresque russe. À utiliser dans les cinématiques où le Czar Alexis intervient (annonce d'examen, défi majeur). |
+| Juron                   | Locuteur                  | Contexte                                                                                                                                               |
+| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Par Saint Georges !** | Czar Alexis exclusivement | Canon Jarry, _Ubu Roi_. Patron du combat chevaleresque. À utiliser dans les cinématiques où le Czar Alexis intervient (annonce d'examen, défi majeur). |
 
 ### Néologismes orthographiques canon Jarry 🟢
 
@@ -1611,7 +1611,7 @@ const bernardQuotes = [
 >
 > Da, Galopinski. Le moment approche. Dans **{n_jours} jours**, vous m'affronterez lors du **{type_decervelage}**. Préparez-vous, ou disparaissez.
 >
-> _— Le Czar Alexis, depuis Moscou_
+> _— Le Czar Alexis, depuis son palais d'Hiver_
 
 #### Cinématique de défi majeur
 
@@ -2032,7 +2032,7 @@ Tu es le PÈRE UBU. Tu es sur le Trône Royal de l'Académie Pataphysique des Ch
 
 DIFFÉRENCE AVEC LE MODE TUTEUR :
 - Tu peux être plus drôle, plus libre, plus digressif.
-- Tu peux raconter des histoires polonaises absurdes, te plaindre de Mère Ubu, dénigrer le Czar Alexis ("par Saint Georges, ce barbu de Moscou !"), te vanter de tes phynances.
+- Tu peux raconter des histoires polonaises absurdes, te plaindre de Mère Ubu, te moquer du Czar Alexis ("par Saint Georges, ce barbu du palais d'Hiver !"), te vanter de tes phynances.
 - Si on te pose une question de Mathres, tu rediriges vers le mode tuteur : "Cornegidouille ! Pour les Phynances Sérieuses, allez voir mon Antre du Décervelage. Ici, on jase."
 - Si on te demande qui tu es, tu réponds avec emphase royale.
 
@@ -2239,7 +2239,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 21. Personnage Bougrelas : pop-up de progression majeure.
 22. Personnage **Monsieur Prudhomme** : illustration calligraphe XIXᵉ + écrans administratifs.
 23. Personnage **Tristan Bernard** : illustration Belle Époque + citations rotatives sur splash screen.
-24. Personnage **Czar Alexis** (canon Jarry) : illustration russe impériale + cinématiques d'examens majeurs.
+24. Personnage **Czar Alexis** (canon Jarry) : illustration impériale (Empire du Czar, imaginaire) + cinématiques d'examens majeurs.
 
 ### 🟠 Sprint 5 — Easter eggs et secrets (1-2 semaines)
 
@@ -2425,15 +2425,15 @@ Pour le détail complet des jurons (registre, fréquence recommandée, locuteur)
 
 ### Lieux et événements canon Jarry / patanautes yllustres 🟢
 
-| Élément                      | Source                                                                                  | Note                                                                                                |
-| ---------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Pologne** comme royaume    | _Ubu Roi_ — lieu officiel de l'action                                                   | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
-| **Théâtre des Phynances**    | Origine 1888, marionnettes du grenier des frères Morin                                  | Ancêtre historique direct du projet Chiphre                                                         |
-| **Roi Venceslas**            | _Ubu Roi_ — assassiné par Ubu                                                           | Disponible pour usage narratif                                                                      |
-| **L'Aigle Rouge de Pologne** | _Ubu Roi_ — décoration officielle d'Ubu                                                 | Disponible pour badge ou récompense                                                                 |
-| **Moscou (palais du Czar)**  | _Ubu Roi_ — siège du Czar Alexis                                                        | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
-| **Sandomir**                 | _Ubu Roi_, acte IV — bataille perdue par Ubu                                            | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
-| **Calendrier pataphysique**  | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948 | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
+| Élément                      | Source                                                                                                | Note                                                                                                |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Pologne** comme royaume    | _Ubu Roi_ — lieu officiel de l'action                                                                 | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
+| **Théâtre des Phynances**    | Origine 1888, marionnettes du grenier des frères Morin                                                | Ancêtre historique direct du projet Chiphre                                                         |
+| **Roi Venceslas**            | _Ubu Roi_ — assassiné par Ubu                                                                         | Disponible pour usage narratif                                                                      |
+| **L'Aigle Rouge de Pologne** | _Ubu Roi_ — décoration officielle d'Ubu                                                               | Disponible pour badge ou récompense                                                                 |
+| **Palais d'Hiver du Czar**   | _Ubu Roi_ (Moscou chez Jarry) — siège du Czar Alexis ; à Chiphre, lieu imaginaire de l'Empire du Czar | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
+| **Sandomir**                 | _Ubu Roi_, acte IV — bataille perdue par Ubu                                                          | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
+| **Calendrier pataphysique**  | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948               | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
 
 ### Inventions Chiphre assumées (NON canon Jarry)
 
