@@ -86,6 +86,22 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 		'rendu « \\dfrac{a^4 x^4 + 4 a^3 b x^3 + 6 a^2 b^2 x^2 + 4 a b^3 x + b^4}{4 a} »',
 	'atelier:A cos(w t) ; t': 'rendu « \\dfrac{A \\sin\\left( t w \\right)}{w} »',
 	'latex:(ax+b)^n': 'rendu « \\dfrac{\\left( a x + b \\right)^{n + 1}}{a n + a} »',
+	// Refusées avant (lettre e tapée lue comme variable), justes depuis fix/euler-lettre-e :
+	// décimal rendu en fraction, primitive développée ou facteur sous la fraction
+	'latex:e^{0.5x}': 'rendu « 2 \\exponentialE^{\\dfrac{1}{2} x} »',
+	'latex:\\frac{e^{x}-e^{-x}}{2}':
+		'rendu « \\dfrac{1}{2} \\exponentialE^x + \\dfrac{1}{2} \\exponentialE^{-x} »',
+	'latex:x^2e^{x}': 'rendu « x^2 \\exponentialE^x - 2 x \\exponentialE^x + 2 \\exponentialE^x »',
+	'latex:e^{x}\\sin(x)':
+		'rendu « -\\dfrac{1}{2} \\cos\\left( x \\right) \\exponentialE^x + \\dfrac{1}{2} \\exponentialE^x \\sin\\left( x \\right) »',
+	'latex:(2x-1)e^{x}': 'rendu « 2 x \\exponentialE^x - 3 \\exponentialE^x »',
+	'latex:100e^{-0.05t}': 'rendu « -2000 \\exponentialE^{-\\dfrac{1}{20} t} »',
+	'latex:ae^{-kx}': 'rendu « \\dfrac{-a \\exponentialE^{-k x}}{k} »',
+	'latex:ae^{-kt}': 'rendu « \\dfrac{-a \\exponentialE^{-k t}}{k} »',
+	'latex:Ae^{\\lambda t}': 'rendu « \\dfrac{A \\exponentialE^{\\lambda t}}{\\lambda} »',
+	'atelier:5e^(-2x)': 'rendu « \\dfrac{-5}{2} e^{-2 x} »',
+	'atelier:a e^(-k t) ; t': 'rendu « \\dfrac{-a e^{-k t}}{k} »',
+	'atelier:e^(-2t) ; t': 'rendu « \\dfrac{-1}{2} e^{-2 t} »',
 	// Intégrales définies : valeur numérique seulement (primitive non trouvée), juste à 1e-4
 	'def:latex:\\frac{1}{x^2} [1 ; 2]': 'approximation 0.5000000056691063 au lieu de 1/2',
 	'def:latex:\\sqrt{x} [0 ; 4]': 'approximation 5.3333332873618104 au lieu de 16/3'

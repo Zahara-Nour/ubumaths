@@ -30,7 +30,8 @@ import {
 	isNumber,
 	isDelimiter,
 	isVariable,
-	isSuperscript
+	isSuperscript,
+	isFunction
 } from '../guards';
 import { mapNode, findNodes, getChildren } from '../transforms';
 import { makeAbortChecker } from '../common/abort';
@@ -199,10 +200,38 @@ function normalizeAntiderivative(expr: MathNode): MathNode {
 	}
 }
 
-/** La lettre `e` d'une borne → constante d'Euler (sauf si l'on intègre en `e`) */
-function promoteEulerLetter(bound: MathNode, variable: string): MathNode {
-	if (variable === 'e') return bound;
-	return mapNode(bound, (node) => (isVariable(node) && node.name === 'e' ? euler() : node));
+/**
+ * La lettre `e` → constante d'Euler, sauf si l'on intègre en `e`.
+ *
+ * Bornes ET intégrande : `parseLatex('e^{x}')` garde `e` en variable (usage
+ * physique), mais pour une primitive la convention est celle de `evaluate`,
+ * `compile` et `isEulerBase` — `e` est Euler. Sans cette promotion, `e^x`
+ * tapé avec la lettre était refusé (« non supporté »), dans le LaTeX comme
+ * dans l'atelier ; seuls `\exponentialE` et `\exp` passaient. Quand on
+ * intègre PAR RAPPORT à `e`, elle reste la variable (même règle que
+ * `promoteStandaloneEulerInRelation` pour une inconnue `e`).
+ */
+function promoteEulerLetter(node: MathNode, variable: string | undefined): MathNode {
+	if (variable === 'e') return node;
+	return mapNode(node, (n) => (isVariable(n) && n.name === 'e' ? euler() : n));
+}
+
+/** L'arbre contient-il un appel `exp(…)` ? */
+function containsExpFunction(node: MathNode): boolean {
+	return findNodes(node, (n) => isFunction(n) && n.name === 'exp').length > 0;
+}
+
+/**
+ * `exp(u)` → `e^u` (constante d'Euler) : la normalisation finale écrit toute
+ * exponentielle `\exp(…)`. L'élève qui a tapé `e^{…}` doit lire `e^{…}` ; celui
+ * qui a tapé `\exp(…)` garde `\exp` (voir l'appelant).
+ */
+function expAsEulerPower(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		isFunction(n) && n.name === 'exp' && n.args.length === 1 && n.power === undefined
+			? power(euler(), n.args[0])
+			: n
+	);
 }
 
 /** `c / e^u` (c constant) → `c · e^(−u)` ; tout le reste inchangé */
@@ -660,7 +689,8 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		...options
 	};
 
-	const expr = expandedExpr;
+	// La lettre `e` tapée est la constante d'Euler (sauf si l'on intègre en `e`)
+	const expr = promoteEulerLetter(expandedExpr, opts.variable);
 
 	// Detect variable if not specified
 	const variable = opts.variable ?? detectVariable(expr);
@@ -712,6 +742,10 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		startDepth === 0
 	) {
 		finalAntiderivative = normalizeAntiderivative(finalAntiderivative);
+		// `\exp(…)` seulement si l'élève l'a tapé : sinon `e^{…}`, comme sa saisie
+		if (!containsExpFunction(rawExpr)) {
+			finalAntiderivative = expAsEulerPower(finalAntiderivative);
+		}
 	}
 
 	// Filter steps by verbosity
@@ -860,7 +894,9 @@ export function integrateDefinite(
 		if (upperEval.status !== 'value' || lowerEval.status !== 'value') {
 			// Bornes ou primitive littérales (`∫₀ᵃ x² dx`, `∫₀² ax dx`) : la valeur
 			// reste symbolique, F(b) − F(a) simplifiée — jamais « exact » sans valeur
-			const symbolic = normalizeAntiderivative(subtract(upperSubstituted, lowerSubstituted));
+			const normalized = normalizeAntiderivative(subtract(upperSubstituted, lowerSubstituted));
+			// `e^{…}` tapé → valeur écrite `e^{…}`, comme la primitive
+			const symbolic = containsExpFunction(expr) ? normalized : expAsEulerPower(normalized);
 			recorder.recordStep(
 				'fundamental-theorem',
 				`Valeur de l'intégrale définie`,
@@ -902,7 +938,7 @@ export function integrateDefinite(
 			...indefiniteResult,
 			lowerBound: lower,
 			upperBound: upper,
-			value: valueEval.node,
+			value: containsExpFunction(expr) ? valueEval.node : expAsEulerPower(valueEval.node),
 			approximate: typeof valueEval.value === 'number' ? valueEval.value : undefined,
 			steps: recorder.getStepsFiltered(options?.verbosity ?? DEFAULT_INTEGRATE_OPTIONS.verbosity)
 		};
