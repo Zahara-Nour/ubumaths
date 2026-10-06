@@ -212,6 +212,10 @@
 					{:else}
 						<span class="texte">{entry.text}</span>
 					{/if}
+					{#if entry.note !== undefined}
+						<!-- Montrée même quand la réponse est composée en mathématiques -->
+						<span class="note">{entry.note}</span>
+					{/if}
 					{#if canKeep(entry)}
 						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
 							Garder…
@@ -357,6 +361,11 @@
 	}
 	.texte {
 		white-space: pre-wrap;
+	}
+	.note {
+		flex-basis: 100%;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
 	}
 
 	/* Un tableau déborde en largeur bien plus qu'une formule : il défile dans

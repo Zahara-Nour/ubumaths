@@ -480,7 +480,7 @@ export class WebReplEngine {
 				//
 				// Celles qui relisent `ctx.input` (`requiresAst === false`) attendent
 				// souvent autre chose derrière l'expression : `.taylor expr termes
-				// [centre]`, `.integrate expr var [a b]`, `.solve … --verbose`. Les
+				// [centre]`, `.integrate expr ; t a b`, `.solve --verbose …`. Les
 				// parser en bloc les tuait sur leur premier nombre, sans qu'elles
 				// soient jamais appelées.
 				if (command.requiresAst !== false) {

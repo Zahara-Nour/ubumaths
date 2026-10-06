@@ -83,6 +83,11 @@ export interface Entry {
 	readonly table?: VariationTableNode;
 	/** Le graphique d'une simulation (`.fréquence`, `.échantillons`, Q80) */
 	readonly chart?: StatChartScene;
+	/**
+	 * Une indication montrée avec la réponse, même composée en mathématiques
+	 * (`.dériver t^2` : « Calcul par rapport à x… »).
+	 */
+	readonly note?: string;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 	/**
@@ -268,6 +273,9 @@ export class CalcDesk {
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
+			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
+				? { note: result.note }
+				: {}),
 			failed: result.kind === 'refus',
 			result
 		});
@@ -753,7 +761,9 @@ export class CalcDesk {
 
 		this.#push({
 			label: `${label} ${displayName(name)}`,
-			text: (outcome.ok ? outcome.output : outcome.message) + note,
+			text: outcome.ok ? outcome.output : outcome.message,
+			// À part du texte : visible même quand la réponse est en mathématiques
+			...(note !== null && { note }),
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),

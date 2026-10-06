@@ -78,12 +78,14 @@ describe('la ligne corrige le moteur au lieu de le suivre', () => {
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
 		expect(result.latex).toBe('x = \\dfrac{5}{11}');
-		// Le moteur, lui, répond « x = 3 » — c'est LUI qui se trompe.
-		expect(result.output).toContain('3');
+		// Le moteur répondait « x = 3 » ; depuis le 2026-10-06 (variable après
+		// « ; »), il lit lui aussi `3x+5=14x`.
+		expect(result.output).toContain('x = 5/11');
 	});
 
+	// Passé à la nouvelle règle (2026-10-06) : l'inconnue est x sauf « ; v »
 	it('un « -v » reste une soustraction', () => {
-		const result = runInput(session(), '.résoudre 3-v=1');
+		const result = runInput(session(), '.résoudre 3-v=1 ; v');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;

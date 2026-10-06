@@ -106,6 +106,36 @@ describe('le parcours de la vue Calcul', () => {
 		expect(atelier.names).toEqual([]);
 		expect(container.querySelector('.refus')).toBeTruthy();
 	});
+
+	// Décision de David (2026-10-06) : en x sauf « ; v ». Quand x manque,
+	// l'indication s'affiche AVEC la réponse — qui, elle, se compose en
+	// mathématiques (le texte de la ligne n'est alors pas affiché).
+	it('`.dériver t^2` montre la réponse ET l’indication de variable', async () => {
+		const { submit, container } = await open();
+
+		await submit('.dériver t^2');
+
+		const reponse = container.querySelector('.historique li .reponse');
+		expect(reponse?.querySelector('.math')).toBeTruthy();
+		expect(reponse?.textContent).toContain(
+			'Calcul par rapport à x. Pour une autre variable, écris « ; t ».'
+		);
+	});
+
+	// ⚠️ « f′ existe déjà » était collé au TEXTE de la ligne, que la vue
+	// n'affiche pas quand la réponse se compose en mathématiques : invisible
+	it('`.dériver f` une seconde fois dit, à l’écran, que f′ existe déjà', async () => {
+		const { submit, container } = await open();
+
+		await submit('f(x) = x^3');
+		await submit('.dériver f');
+		await submit('.dériver f');
+
+		const lignes = [...container.querySelectorAll('.historique li .reponse')];
+		const ligne = lignes.find((l) => l.textContent?.includes('existe déjà'));
+		expect(ligne, 'une ligne qui dit « existe déjà »').toBeTruthy();
+		expect(ligne?.querySelector('.math')).toBeTruthy();
+	});
 });
 
 /**
@@ -142,6 +172,26 @@ describe('les actions du panneau répondent vraiment', () => {
 		const { container } = await clickAction('Dériver');
 
 		expect(container.querySelector('.historique')?.textContent).toContain('2x');
+	});
+
+	// Même défaut par le bouton : la note était collée au texte, invisible
+	it('« Dériver » une seconde fois dit, à l’écran, que f′ existe déjà', async () => {
+		const { container } = await clickAction('Dériver');
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
+		) as HTMLElement;
+		// La carte de f est restée sélectionnée : son bouton est toujours là
+		const bouton = [...carte.querySelectorAll('button')].find((b) =>
+			b.textContent?.trim().startsWith('Dériver')
+		) as HTMLButtonElement | undefined;
+		expect(bouton, 'bouton « Dériver »').toBeTruthy();
+		bouton!.click();
+		await settle();
+
+		const lignes = [...container.querySelectorAll('.historique li .reponse')];
+		const ligne = lignes.find((l) => l.textContent?.includes('existe déjà'));
+		expect(ligne, 'une ligne qui dit « existe déjà »').toBeTruthy();
+		expect(ligne?.querySelector('.math')).toBeTruthy();
 	});
 
 	it('et bascule sur la vue Calcul pour qu’on voie la réponse', async () => {

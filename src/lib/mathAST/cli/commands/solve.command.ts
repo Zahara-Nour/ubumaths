@@ -4,12 +4,17 @@
  * Solves equations symbolically with step-by-step solutions.
  * Supports linear, quadratic, and transcendental equations.
  *
- * Syntax: .solve equation [variable]
+ * Syntax: .solve equation[ ; variable]
  * - .solve 2x + 4 = 0        -> x = -2
  * - .solve x^2 - 4x + 3 = 0  -> x = 1, x = 3
  * - .solve ln(x) = 0         -> x = 1
+ * - .solve 3 = 2t ; t        -> t = 3/2
  *
- * Options:
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
+ * (voir `core/variable-argument.ts`). Plus de « dernier mot = variable » :
+ * `.solve 3 = 2 x` arrachait le `x` et répondait « Pas de solution ».
+ *
+ * Options (EN TÊTE seulement, avant l'équation : `.solve -q x^2 = 4`) :
  * - --verbose or -v: Show detailed steps
  * - --quiet or -q: Show only result
  */
@@ -27,6 +32,14 @@ import { number, opposite, add } from '../../factory';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
 import { evaluate } from '../../eval/evaluate';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	indexVariables,
+	otherVariableHint,
+	splitVariableArgument
+} from '../core/variable-argument';
 
 /**
  * Negate a math node, properly handling double negatives.
@@ -778,6 +791,9 @@ function generateQuadraticPedagogicalSteps(
 	return steps;
 }
 
+/** Les options de `.solve`, reconnues seulement comme mots entiers, en tête. */
+const SOLVE_FLAGS: ReadonlySet<string> = new Set(['--verbose', '-v', '--quiet', '-q']);
+
 // =============================================================================
 // Solve Command
 // =============================================================================
@@ -794,7 +810,7 @@ function generateQuadraticPedagogicalSteps(
  * Equation lineaire: 2x + 4 = 0
  * Solution: x = -2
  *
- * > .solve x^2 - 5x + 6 = 0 --verbose
+ * > .solve --verbose x^2 - 5x + 6 = 0
  * Equation quadratique: x^2 - 5x + 6 = 0
  * Coefficients: a = 1, b = -5, c = 6
  * Discriminant: Delta = 25 - 24 = 1 > 0
@@ -806,8 +822,8 @@ function generateQuadraticPedagogicalSteps(
 export class SolveCommand extends BaseCommand {
 	readonly name = 'solve';
 	readonly aliases = ['s', 'resoudre'] as const;
-	readonly description = 'Solve equation: .solve equation [variable] [--verbose|-v] [--quiet|-q]';
-	readonly usage = 'solve <equation> [variable] [options]';
+	readonly description = 'Solve equation: .solve [--verbose|-v] [--quiet|-q] equation[ ; variable]';
+	readonly usage = 'solve [options] <equation>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	override getOptionDefinitions(): readonly OptionDefinition[] {
@@ -828,13 +844,23 @@ export class SolveCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'No equation to solve. Usage: .solve <equation> [variable]'
+					message: 'No equation to solve. Usage: .solve <equation>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract equation and optional variable
-		const { expression, variable } = this.parseInput(input);
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon x
+		const { expression, variable: explicitVariable } = splitVariableArgument(input);
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -861,15 +887,33 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
+		const chosen = chosenVariable(explicitVariable, parserOptions);
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
+		}
+		// x n'apparaît pas et aucune variable n'est donnée : on résout en x, et
+		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
+		const hint =
+			explicitVariable === null
+				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys())
+				: null;
+
 		try {
 			// Solve the equation
 			const result = solve(parseResult.ast, {
-				variable: variable || undefined,
+				variable: chosen.variable,
 				verbosity
 			});
 
 			// Format output with toggle support
-			return this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx);
+			return this.withHint(
+				this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx),
+				hint
+			);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
@@ -890,62 +934,61 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	/**
-	 * Parse options from context.
+	 * Lire les options (`--verbose`/`-v`, `--quiet`/`-q`) et rendre le reste.
+	 *
+	 * ⚠️ **Une option ne mange jamais l'expression.** L'ancien découpage
+	 * cherchait `-v` n'importe où : `.solve 3-v=1 ; v` devenait « 3=1 ; v » et
+	 * répondait « contradictoire » au lieu de v = 2. Une option n'est reconnue
+	 * que comme MOT entier (séparé par des espaces), connu de la commande, et
+	 * seulement EN TÊTE, avant l'expression (`.solve -q x^2=1`) ; partout
+	 * ailleurs, c'est de l'expression — en fin, `.solve x = -v` perdait son
+	 * `-v` (revue #888).
 	 */
 	private parseOptions(ctx: CommandContext): { input: string; verbosity: SolvingVerbosity } {
-		let input = ctx.input.trim();
-		let verbosity: SolvingVerbosity = 'summarized';
+		const words = ctx.input
+			.trim()
+			.split(/\s+/)
+			.filter((word) => word !== '');
+		const flags: string[] = [];
+		while (words.length > 0 && SOLVE_FLAGS.has(words[0])) flags.push(words.shift() as string);
 
-		// Check for verbose flag
-		if (
-			ctx.options['verbose'] ||
-			ctx.options['v'] ||
-			input.includes('--verbose') ||
-			input.includes('-v')
-		) {
-			verbosity = 'detailed';
-			input = input.replace(/--verbose|-v/g, '').trim();
-		}
+		const verbose =
+			Boolean(ctx.options['verbose'] || ctx.options['v']) ||
+			flags.some((flag) => flag === '--verbose' || flag === '-v');
+		const quiet =
+			Boolean(ctx.options['quiet'] || ctx.options['q']) ||
+			flags.some((flag) => flag === '--quiet' || flag === '-q');
+		// Comme avant : « quiet » l'emporte sur « verbose »
+		const verbosity: SolvingVerbosity = quiet ? 'result' : verbose ? 'detailed' : 'summarized';
 
-		// Check for quiet flag
-		if (
-			ctx.options['quiet'] ||
-			ctx.options['q'] ||
-			input.includes('--quiet') ||
-			input.includes('-q')
-		) {
-			verbosity = 'result';
-			input = input.replace(/--quiet|-q/g, '').trim();
-		}
-
-		return { input, verbosity };
+		return { input: words.join(' '), verbosity };
 	}
 
 	/**
-	 * Parse the input to extract equation and optional variable.
+	 * Ajouter l'indication de variable (`otherVariableHint`) à la fin de chaque
+	 * sortie du résultat — texte, HTML, exacte et décimale : la bascule de la
+	 * console ne doit pas la faire disparaître.
 	 */
-	private parseInput(input: string): { expression: string; variable: string | null } {
-		const trimmed = input.trim();
-
-		// Try to find a trailing variable after the equation
-		// Match pattern: equation = ... [variable]
-		const match = trimmed.match(/^(.+=.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/);
-
-		if (match) {
-			const [, expr, varCandidate] = match;
-			// Only treat as variable if it's a simple identifier
-			if (expr.trim() && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
-				return {
-					expression: expr.trim(),
-					variable: varCandidate
-				};
-			}
-		}
-
-		// Default: entire input is the equation, variable auto-detected
+	private withHint(result: CommandResult, hint: string | null): CommandResult {
+		if (hint === null) return result;
+		const text = (output: string | undefined) =>
+			output === undefined ? undefined : output === '' ? hint : `${output}\n${hint}`;
+		const html = (output: string | undefined) =>
+			output === undefined
+				? undefined
+				: `${output}<br><span class="text-muted-foreground">${this.escapeHtml(hint)}</span>`;
 		return {
-			expression: trimmed,
-			variable: null
+			...result,
+			output: text(result.output) ?? hint,
+			...(result.outputHtml !== undefined && { outputHtml: html(result.outputHtml) }),
+			...(result.exactOutput !== undefined && { exactOutput: text(result.exactOutput) }),
+			...(result.exactOutputHtml !== undefined && {
+				exactOutputHtml: html(result.exactOutputHtml)
+			}),
+			...(result.decimalOutput !== undefined && { decimalOutput: text(result.decimalOutput) }),
+			...(result.decimalOutputHtml !== undefined && {
+				decimalOutputHtml: html(result.decimalOutputHtml)
+			})
 		};
 	}
 

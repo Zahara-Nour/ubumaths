@@ -10,7 +10,9 @@
  *
  * Règle (décision de David, 2026-10-06) : la variable explicite se donne après
  * un POINT-VIRGULE de premier niveau (`expr ; t`) — en français la virgule est
- * décimale. Sans lui : `x` si elle apparaît, sinon la seule variable libre.
+ * décimale. Sans lui : `x`, toujours (seconde décision du 2026-10-06, qui
+ * remplace « x s'il apparaît, sinon la seule variable libre » de #880) ; si x
+ * n'apparaît pas, la sortie l'indique.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -48,29 +50,34 @@ describe('.diff : variable explicite après un point-virgule', () => {
 	});
 });
 
-describe('.diff : variable par défaut', () => {
-	it('la seule variable libre, quand x n’apparaît pas', () => {
-		expect(diff('t^3')).toBe('d/dt(t^3) = 3t^2\nLaTeX: 3 t^2');
-	});
-
-	it('e n’est pas une variable candidate', () => {
-		expect(diff('e^{2t}')).toBe('d/dt(e^{2t}) = 2e^{2t}\nLaTeX: 2 e^{2 t}');
-	});
-
-	it('une constante se dérive toujours en x', () => {
-		expect(diff('5')).toBe('d/dx(5) = 0\nLaTeX: 0');
-	});
-
-	it('plusieurs variables sans x : on demande laquelle, on ne devine pas', () => {
-		const result = new WebReplEngine().execute('.diff a t^2 + b t');
-		expect(result.success).toBe(false);
-		expect(result.error?.message).toBe(
-			'Plusieurs variables possibles (a, b, t) : précise laquelle après un point-virgule, par exemple « a t^2 + b t ; t ».'
+describe('.diff : variable par défaut — x, sauf « ; v » (plus de devinette)', () => {
+	// ⚠️ Passés à la nouvelle règle : `t^3` et `e^{2t}` se dérivaient en t
+	// (« la seule variable libre »), `a t^2 + b t` était refusé
+	// (AMBIGUOUS_VARIABLE). Tous se dérivent désormais en x, avec l'indication.
+	it('x n’apparaît pas : dérivée en x (0) et indication', () => {
+		expect(diff('t^3')).toBe(
+			'd/dx(t^3) = 0\nLaTeX: 0\nCalcul par rapport à x. Pour une autre variable, écris « ; t ».'
 		);
 	});
 
-	it('l’espace n’est plus un séparateur : `t^2 + t t` est t² + t·t', () => {
-		expect(diff('t^2 + t t')).toBe('d/dt(t^2+tt) = 4t\nLaTeX: 4 t');
+	it('e n’est pas proposée comme autre variable', () => {
+		expect(diff('e^{2t}')).toBe(
+			'd/dx(e^{2t}) = 0\nLaTeX: 0\nCalcul par rapport à x. Pour une autre variable, écris « ; t ».'
+		);
+	});
+
+	it('une constante se dérive en x, sans indication', () => {
+		expect(diff('5')).toBe('d/dx(5) = 0\nLaTeX: 0');
+	});
+
+	it('plusieurs variables sans x : plus de refus, en x avec l’indication', () => {
+		expect(diff('a t^2 + b t')).toBe(
+			'd/dx(at^2+bt) = 0\nLaTeX: 0\nCalcul par rapport à x. Pour une autre variable, écris « ; » suivi de son nom.'
+		);
+	});
+
+	it('l’espace n’est pas un séparateur : `t^2 + t t ; t` est t² + t·t', () => {
+		expect(diff('t^2 + t t ; t')).toBe('d/dt(t^2+tt) = 4t\nLaTeX: 4 t');
 	});
 });
 
@@ -102,8 +109,11 @@ describe('.diff : variable indicée (revue #880)', () => {
 	it.each([
 		['x_1^2 ; x_1', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
 		['x_{12}^2 ; x_{12}', 'd/dx_12(x_12^2) = 2x_12\nLaTeX: 2 x_{12}'],
-		// Seule variable libre : x_1, pas x
-		['x_1^2', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
+		// Sans « ; » : en x (x_1 est une autre variable), avec l'indication
+		[
+			'x_1^2',
+			'd/dx(x_1^2) = 0\nLaTeX: 0\nCalcul par rapport à x. Pour une autre variable, écris « ; x_1 ».'
+		],
 		// x apparaît seule : x_1 est une autre variable, constante en x
 		['x^2 + x_1', 'd/dx(x^2+x_1) = 2x\nLaTeX: 2 x'],
 		['x^2 + x_1^2 ; x_1', 'd/dx_1(x^2+x_1^2) = 2x_1\nLaTeX: 2 x_1']
