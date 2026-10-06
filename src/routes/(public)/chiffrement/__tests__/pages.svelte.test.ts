@@ -394,6 +394,35 @@ describe('RSA de poche', () => {
 		expect(text(screen.container, 'rsa-letter-table')).toContain('A → 0');
 	});
 
+	it('p change et e n’est plus premier avec φ : le plus petit e valide est pris', async () => {
+		await render(Rsa);
+		// p = 29 : φ = 28 × 36 = 1008, multiple de 7 ; le premier exposant valide est 5
+		await chooseOption(/^p : 31/, '29');
+		await expect.element(page.getByRole('button', { name: 'e : 5' })).toBeInTheDocument();
+	});
+
+	it('décrypter : n et e saisis survivent à un changement de message', async () => {
+		const screen = await render(Rsa);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('n (clé publique)').fill('3233');
+		await page.getByLabelText('Message intercepté').fill('12 34');
+		await expect
+			.poll(
+				() => (screen.container.querySelector('#rsa-crack-n') as HTMLInputElement | null)?.value
+			)
+			.toBe('3233');
+	});
+
+	it('décrypter avec e = 1 : message dédié, et pas de table lettre par lettre', async () => {
+		const screen = await render(Rsa);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('e (clé publique)').fill('1');
+		await expect
+			.poll(() => screen.container.textContent ?? '')
+			.toContain('e doit être un entier au moins égal à 2.');
+		expect(screen.container.querySelector('[data-testid="rsa-letter-table"]')).toBeNull();
+	});
+
 	it('décrypter avec une clé publique qui ne colle pas : message lisible', async () => {
 		const screen = await render(Rsa);
 		await page.getByRole('tab', { name: 'Décrypter' }).click();

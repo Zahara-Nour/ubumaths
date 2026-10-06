@@ -83,6 +83,16 @@ describe('exponentiation rapide', () => {
 		expect(pow.result).toBe(bigPow(10, 463, 1147));
 	});
 
+	it('exposant négatif : refusé', () => {
+		expect(() => modPow(3, -3, 7)).toThrow(RangeError);
+	});
+
+	it('nombre de multiplications : (bits − 1) carrés + (bits à 1 − 1) produits', () => {
+		expect(modPow(186, 7, 1147).multiplications).toBe(4);
+		expect(modPow(186, 3, 1147).multiplications).toBe(2);
+		expect(modPow(10, 463, 1147).multiplications).toBe(14);
+	});
+
 	it('exactitude sur 500 cas tirés', () => {
 		const rand = seededRandom(3);
 		for (let i = 0; i < 500; i++) {
@@ -123,7 +133,10 @@ describe('clés RSA', () => {
 		[33, 37, 7, 'p = 33 n’est pas premier.'],
 		[31, 31, 7, 'p et q doivent être différents.'],
 		[11, 13, 7, 'n = p × q = 143 doit dépasser 675 pour coder deux lettres.'],
-		[31, 37, 9, 'e = 9 n’est pas premier avec φ(n) = 1080.']
+		[31, 37, 9, 'e = 9 n’est pas premier avec φ(n) = 1080.'],
+		// Revue du 2026-10-06 : e = 1 ou négatif recevait le message du PGCD, faux
+		[31, 37, 1, 'e doit être un entier au moins égal à 2.'],
+		[31, 37, -5, 'e doit être un entier au moins égal à 2.']
 	])('p = %i, q = %i, e = %i → erreur', (p, q, e, message) => {
 		expect(() => rsaKeys(p, q, e)).toThrow(CipherInputError);
 		expect(() => rsaKeys(p, q, e)).toThrow(message);
@@ -210,6 +223,16 @@ describe('décrypter RSA', () => {
 			'On essaie les nombres premiers jusqu’à √2021 ≈ 44,96 : 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43.'
 		);
 		expect(crack.steps[1]).toBe('2021 = 43 × 47');
+	});
+
+	it('n carré d’un premier : ce n’est pas une clé RSA', () => {
+		expect(() => rsaCrack('1', 961, 7)).toThrow(
+			'961 = 31² n’est pas une clé RSA : p et q doivent être différents.'
+		);
+	});
+
+	it('e inférieur à 2 → message dédié', () => {
+		expect(() => rsaCrack('1', 2021, 1)).toThrow('e doit être un entier au moins égal à 2.');
 	});
 
 	it('n premier ou e non premier avec φ → erreur', () => {

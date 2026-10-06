@@ -118,7 +118,10 @@ export function modPow(
 	base: number,
 	exponent: number,
 	modulus: number
-): { result: number; binary: string; squares: SquareStep[] } {
+): { result: number; binary: string; squares: SquareStep[]; multiplications: number } {
+	if (!Number.isInteger(exponent) || exponent < 0) {
+		throw new RangeError(`Exposant invalide : ${exponent}`);
+	}
 	const binary = exponent.toString(2);
 	const squares: SquareStep[] = [];
 	let square = base % modulus;
@@ -129,7 +132,10 @@ export function modPow(
 		if (used) result = (result * square) % modulus;
 		square = (square * square) % modulus;
 	}
-	return { result, binary, squares };
+	// (bits − 1) élévations au carré, puis (bits à 1 − 1) produits des carrés retenus
+	const ones = [...binary].filter((bit) => bit === '1').length;
+	const multiplications = binary.length - 1 + Math.max(0, ones - 1);
+	return { result, binary, squares, multiplications };
 }
 
 export function rsaKeys(p: number, q: number, e: number): RsaKeys {
@@ -147,7 +153,10 @@ export function rsaKeys(p: number, q: number, e: number): RsaKeys {
 		);
 	}
 	const phi = (p - 1) * (q - 1);
-	if (!Number.isInteger(e) || e < 2 || gcd(e, phi) !== 1) {
+	if (!Number.isInteger(e) || e < 2) {
+		throw new CipherInputError('e doit être un entier au moins égal à 2.');
+	}
+	if (gcd(e, phi) !== 1) {
 		throw new CipherInputError(`e = ${e} n’est pas premier avec φ(n) = ${phi}.`);
 	}
 	const euclid = extendedEuclid(phi, e);
@@ -248,13 +257,16 @@ export function rsaCrack(code: string, n: number, e: number): { text: string; st
 	const factors = factorize(n);
 	if (factors === null) throw new CipherInputError(`${n} est premier : ce n’est pas une clé RSA.`);
 	const { p, q, tried } = factors;
+	if (p === q) {
+		throw new CipherInputError(
+			`${n} = ${p}² n’est pas une clé RSA : p et q doivent être différents.`
+		);
+	}
 	if (!isPrime(q)) {
 		throw new CipherInputError(`${n} = ${p} × ${q} n’est pas le produit de deux nombres premiers.`);
 	}
 	const root = Math.sqrt(n).toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-	const phi = (p - 1) * (q - 1);
-	if (gcd(e, phi) !== 1)
-		throw new CipherInputError(`e = ${e} n’est pas premier avec φ(n) = ${phi}.`);
+	// rsaKeys vérifie e (entier ≥ 2, premier avec φ) et calcule d
 	const keys = rsaKeys(p, q, e);
 	return {
 		text: rsaDecrypt(code, keys).text,

@@ -23,10 +23,9 @@
 	let e = $state<number | null>(initialE);
 
 	const crack = $derived(solve(text, n, e));
+	// Seulement pour une clé valide : avec e = 0 ou e < 0, la table ne montrerait rien de RSA
 	const letterTable = $derived(
-		n !== null && e !== null && Number.isInteger(n) && Number.isInteger(e) && n > 1 && n <= MAX_N
-			? rsaLetterTable({ n, e })
-			: []
+		crack.ok && n !== null && e !== null ? rsaLetterTable({ n, e }) : []
 	);
 
 	// Functions

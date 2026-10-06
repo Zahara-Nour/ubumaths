@@ -2,7 +2,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
 	import RsaCrack from '$lib/components/ciphers/RsaCrack.svelte';
-	import { formatNumber, letterIndex, lettersOnly } from '$lib/ciphers/alphabet';
+	import { ALPHABET_SIZE, formatNumber, letterIndex, lettersOnly } from '$lib/ciphers/alphabet';
 	import { CipherInputError } from '$lib/ciphers/errors';
 	import { attempt, type CipherOutcome } from '$lib/ciphers/outcome';
 	import {
@@ -24,12 +24,13 @@
 	const INTERCEPTED =
 		'Dépêche du Czar : nos espions attendent le signal au pont de Varsovie à minuit.';
 	const CZAR_KEYS = rsaKeys(43, 47, 5);
+	const [DEFAULT_P, DEFAULT_Q, DEFAULT_E] = [31, 37, 7];
 	const PRIME_ITEMS = RSA_PRIMES.map((p) => ({ value: String(p), label: String(p) }));
 
 	// State
-	let pValue = $state('31');
-	let qValue = $state('37');
-	let eValue = $state('7');
+	let pValue = $state(String(DEFAULT_P));
+	let qValue = $state(String(DEFAULT_Q));
+	let eValue = $state(String(DEFAULT_E));
 
 	const p = $derived(Number(pValue));
 	const q = $derived(Number(qValue));
@@ -47,6 +48,14 @@
 		}
 	}
 
+	/** Change p ou q ; si e n'est plus premier avec φ(n), prend le plus petit exposant valide */
+	function changePrime(name: 'p' | 'q', value: string) {
+		if (name === 'p') pValue = value;
+		else qValue = value;
+		const valid = validExponents((Number(pValue) - 1) * (Number(qValue) - 1));
+		if (!valid.includes(Number(eValue)) && valid.length > 0) eValue = String(valid[0]);
+	}
+
 	function withKeys(run: (keys: RsaKeys) => CipherOutcome): CipherOutcome {
 		return keysResult.ok ? run(keysResult.keys) : { ok: false, message: keysResult.message };
 	}
@@ -56,7 +65,7 @@
 		const letters = lettersOnly(text);
 		if (letters.length === 0) return null;
 		const [x1, x2] = Array.from((letters + 'X').slice(0, 2), letterIndex);
-		return 26 * x1 + x2;
+		return ALPHABET_SIZE * x1 + x2;
 	}
 
 	function formatMultiplier(n: number): string {
@@ -73,10 +82,10 @@
 	<h1 class="text-3xl font-bold">RSA de poche</h1>
 	<p>
 		Publié en 1977 par Ronald Rivest, Adi Shamir et Leonard Adleman, RSA protège aujourd’hui encore
-		une bonne part des échanges sur Internet. Sa nouveauté : la clé qui chiffre est <strong
-			>publique</strong
-		>. N’importe qui peut chiffrer un message pour vous, mais seul celui qui connaît la clé privée
-		sait le déchiffrer.
+		une bonne part des échanges sur Internet. C’est le premier chiffrement à clé publique utilisable
+		(l’idée venait de Whitfield Diffie et Martin Hellman, en 1976) : la clé qui chiffre est
+		<strong>publique</strong>. N’importe qui peut chiffrer un message pour vous, mais seul celui qui
+		connaît la clé privée sait le déchiffrer.
 	</p>
 	<p>
 		On choisit deux nombres premiers p et q, puis n = p × q et φ(n) = (p − 1)(q − 1). La clé
@@ -85,9 +94,10 @@
 		lettres vont par paires : m = 26 × x₁ + x₂, entre 0 et 675.
 	</p>
 	<aside class="rounded-lg border bg-card p-4 text-sm text-card-foreground">
-		<strong>Pourquoi ça marche ?</strong> D’après le petit théorème de Fermat, mᵖ⁻¹ ≡ 1 (mod p) quand
-		p ne divise pas m. Or e × d = 1 + k × φ(n), donc (mᵉ)ᵈ = m × (mᵠ⁽ⁿ⁾)ᵏ ≡ m modulo p, et de même modulo
-		q, donc modulo n = p × q.
+		<strong>Pourquoi ça marche ?</strong> Comme e × d = 1 + k × φ(n), on a (mᵉ)ᵈ = m × (mᵠ⁽ⁿ⁾)ᵏ. Si p
+		ne divise pas m, le petit théorème de Fermat donne mᵖ⁻¹ ≡ 1 (mod p), donc mᵠ⁽ⁿ⁾ = (mᵖ⁻¹)^(q − 1)
+		≡ 1 et (mᵉ)ᵈ ≡ m (mod p). Si p divise m, les deux membres sont nuls modulo p. De même modulo q ;
+		p et q étant premiers entre eux, l’égalité vaut modulo n = p × q.
 	</aside>
 </header>
 
@@ -95,7 +105,7 @@
 	encrypt={(text) => withKeys((keys) => attempt(() => rsaEncrypt(text, keys)))}
 	decrypt={(text) => withKeys((keys) => attempt(() => rsaDecrypt(text, keys)))}
 	initialPlain={PLAIN}
-	initialCipher={rsaEncrypt(PLAIN, rsaKeys(31, 37, 7)).text}
+	initialCipher={rsaEncrypt(PLAIN, rsaKeys(DEFAULT_P, DEFAULT_Q, DEFAULT_E)).text}
 	initialCrack={rsaEncrypt(INTERCEPTED, CZAR_KEYS).text}
 	blocksOption={false}
 	cipherPlaceholder="Nombres séparés par des espaces"
@@ -107,7 +117,7 @@
 					<span class="text-sm font-medium">p</span>
 					<MySelect
 						type="single"
-						bind:value={pValue}
+						bind:value={() => pValue, (value) => changePrime('p', value)}
 						items={PRIME_ITEMS}
 						triggerAriaLabel={`p : ${pValue}`}
 						fitContent
@@ -117,7 +127,7 @@
 					<span class="text-sm font-medium">q</span>
 					<MySelect
 						type="single"
-						bind:value={qValue}
+						bind:value={() => qValue, (value) => changePrime('q', value)}
 						items={PRIME_ITEMS}
 						triggerAriaLabel={`q : ${qValue}`}
 						fitContent
@@ -173,9 +183,6 @@
 			{:else}
 				<p class="text-sm text-destructive" role="status" data-testid="rsa-key-error">
 					{keysResult.message}
-					{#if !exponents.includes(Number(eValue)) && exponents.length > 0}
-						Choisissez e parmi les valeurs proposées.
-					{/if}
 				</p>
 			{/if}
 		</div>
@@ -191,17 +198,26 @@
 			{@const keys = keysResult.keys}
 			{@const pow = modPow(block, keys.e, keys.n)}
 			<section class="flex flex-col gap-2" aria-labelledby="rsa-pow-title" data-testid="rsa-pow">
-				<h3 id="rsa-pow-title" class="text-sm font-semibold">
+				<h3
+					id="rsa-pow-title"
+					class="text-sm font-semibold"
+					aria-label={`Exponentiation rapide du premier bloc : ${block} puissance ${keys.e} modulo ${keys.n}`}
+				>
 					Exponentiation rapide du premier bloc : {block}<sup>{keys.e}</sup> mod {keys.n}
 				</h3>
 				<p class="text-sm text-muted-foreground">
 					e = {keys.e} s’écrit {pow.binary} en binaire. On élève au carré, encore et encore, et l’on
-					ne multiplie que les carrés des bits à 1 : {pow.squares.length} carrés au lieu de
-					{formatMultiplier(keys.e - 1)} multiplications.
+					ne multiplie que les carrés des bits à 1 : {pow.multiplications} multiplication{pow.multiplications >
+					1
+						? 's'
+						: ''} au lieu de {formatMultiplier(keys.e - 1)}.
 				</p>
 				<ol class="flex flex-col gap-1 font-mono text-sm">
 					{#each pow.squares as square (square.exponent)}
-						<li class={square.used ? 'font-bold text-primary' : 'text-muted-foreground'}>
+						<li
+							class={square.used ? 'font-bold text-primary' : 'text-muted-foreground'}
+							aria-label={`${block} puissance ${square.exponent} congru à ${square.value} modulo ${keys.n}${square.used ? ', retenu' : ''}`}
+						>
 							{block}<sup>{square.exponent}</sup> ≡ {square.value} (mod {keys.n}){square.used
 								? ' ✓'
 								: ''}
@@ -219,8 +235,7 @@
 			Le Czar a publié sa clé publique : (n, e) = ({CZAR_KEYS.n}, {CZAR_KEYS.e}). Le Cabinet Noir a
 			intercepté sa dépêche.
 		</p>
-		{#key text}
-			<RsaCrack {text} initialN={CZAR_KEYS.n} initialE={CZAR_KEYS.e} />
-		{/key}
+		<!-- Pas de {#key} : n et e saisis par le visiteur survivent à un changement de message -->
+		<RsaCrack {text} initialN={CZAR_KEYS.n} initialE={CZAR_KEYS.e} />
 	{/snippet}
 </CipherWorkbench>
