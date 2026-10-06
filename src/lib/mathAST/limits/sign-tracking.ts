@@ -73,7 +73,18 @@ export function classifyWithSign(
 	direction: LimitDirection
 ): SignedLimitValue {
 	const value = classifyOneWay(expr, varName, approach, direction);
-	if (direction !== 'both' || isInfinity(approach) || !isSignedInfinity(value)) return value;
+	if (direction !== 'both' || isInfinity(approach)) return value;
+
+	// Zéro sans signe en bilatéral (cos²x en π/2, zéro exact) : les deux côtés
+	// du même signe le précisent, 1/cos²x → +∞.
+	if (value.type === 'zero') {
+		const left = classifyOneWay(expr, varName, approach, 'left');
+		const right = classifyOneWay(expr, varName, approach, 'right');
+		return left.type === right.type && (left.type === 'zero-plus' || left.type === 'zero-minus')
+			? left
+			: value;
+	}
+	if (!isSignedInfinity(value)) return value;
 
 	// Infini bilatéral en un point : 1/x « vaut » +∞ par substitution, alors
 	// que 0⁻ donne −∞. Les deux côtés connus et différents → pas de limite

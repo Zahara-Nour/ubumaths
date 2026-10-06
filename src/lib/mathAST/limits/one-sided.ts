@@ -10,7 +10,7 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, LimitResult, OneSidedLimitResult, LimitOptions } from './types';
 import type { LimitStepRecorder } from './step-recorder';
-import { isNumber, isInfinity } from '../guards';
+import { isNumber, isInfinity, isFunction } from '../guards';
 import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
 import { substitute } from '../eval/substitute';
@@ -307,6 +307,11 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 		}
 	}
 
+	// Pôle de tan / cot au point (tan x en π/2) : +∞ d'un côté, −∞ de l'autre
+	if (isTrigPoleAt(expr, varName, approach)) {
+		return true;
+	}
+
 	// Absolute value or sign function - check if argument changes sign
 	// (domain is ℝ for these functions, but behavior changes at 0)
 	if (expr.type === 'function') {
@@ -392,6 +397,23 @@ function getSign(value: number | null): 'positive' | 'negative' | 'zero' | 'unkn
  * @param value - The numeric value to substitute
  * @returns The numeric result or null if evaluation fails
  */
+/** tan u (cos u = 0) ou cot u (sin u = 0) au point approché. */
+function isTrigPoleAt(expr: MathNode, varName: string, approach: MathNode): boolean {
+	if (!isFunction(expr) || expr.args.length !== 1) return false;
+	if (expr.name !== 'tan' && expr.name !== 'cot') return false;
+	let point: number;
+	try {
+		point = evaluateNodeToApproximatedNumber(approach);
+	} catch {
+		return false;
+	}
+	if (!Number.isFinite(point)) return false;
+	const arg = evaluateAtValue(expr.args[0], varName, point);
+	if (arg === null) return false;
+	const vanishing = expr.name === 'tan' ? Math.cos(arg) : Math.sin(arg);
+	return Math.abs(vanishing) < 1e-9;
+}
+
 function evaluateAtValue(expr: MathNode, varName: string, value: number): number | null {
 	try {
 		const valueNode: MathNode = { type: 'number', value: String(value) };

@@ -7,6 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { evaluateLimit } from '../evaluate';
+import { classifyWithSign } from '../sign-tracking';
 import { positiveInfinity } from '../../factory';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
@@ -127,5 +128,102 @@ describe('limites justes inchangées', () => {
 		['\\frac{1}{x^2}', '0', 'both', 'infinite +inf']
 	] as const)('%s en %s (%s) → %s', (input, at, dir, expected) => {
 		expect(limitOf(input, at, dir)).toBe(expected);
+	});
+});
+
+describe('infini + borné oscillant (revue PR #906) : bornes structurelles', () => {
+	// sin, cos ∈ [−1, 1] : ±∞ + borné → ±∞ ; borné / (→ ±∞) → 0 ;
+	// ±∞ × borné de signe strict (2 + sin x ∈ [1, 3]) → ±∞
+	it.each([
+		['x+\\sin x', '+inf', 'infinite +inf'],
+		['x-\\cos x', '-inf', 'infinite -inf'],
+		['x^2+\\cos x', '-inf', 'infinite +inf'],
+		['e^x+\\sin x', '+inf', 'infinite +inf'],
+		['\\ln x+\\sin x', '+inf', 'infinite +inf'],
+		['2x+3\\cos x', '+inf', 'infinite +inf'],
+		['x(2+\\sin x)', '+inf', 'infinite +inf'],
+		['\\frac{x}{2+\\sin x}', '+inf', 'infinite +inf'],
+		['\\frac{2+\\sin x}{x}', '+inf', 'exact 0'],
+		['\\frac{\\sin x}{\\sqrt{x}}', '+inf', 'exact 0'],
+		['\\frac{\\cos x}{\\ln x}', '+inf', 'exact 0']
+	] as const)('%s en %s → %s', (input, at, expected) => {
+		const approach = at === '-inf' ? '-\\infty' : '+\\infty';
+		expect(limitOf(input, approach)).toBe(expected);
+	});
+
+	it.each([['x\\sin x'], ['\\sin x']])('%s en +∞ → aucune valeur', (input) => {
+		const result = limitOf(input, '+\\infty');
+		expect(hasNoValue(result), result).toBe(true);
+	});
+});
+
+describe('bord du domaine en bilatéral : la limite du seul côté défini', () => {
+	// convention lycée : un seul côté dans le domaine → limite de ce côté
+	it.each([
+		['x\\ln x', '0', 'exact 0'],
+		['\\ln x', '0', 'infinite -inf'],
+		['\\ln(x-1)', '1', 'infinite -inf'],
+		['\\sqrt{x}', '0', 'exact 0']
+	] as const)('%s en %s (both) → %s', (input, at, expected) => {
+		expect(limitOf(input, at, 'both')).toBe(expected);
+	});
+});
+
+describe('pôles hors tan : jamais une valeur finie issue d’un dénominateur ≈ 0', () => {
+	// 1/cos x en π/2⁻ : cos > 0 → +∞ ; π/2⁺ → −∞ ; bilatéral : pas de limite
+	it('1/cos x en π/2⁻ → +∞', () => {
+		expect(limitOf('\\frac{1}{\\cos x}', '\\frac{\\pi}{2}', 'left')).toBe('infinite +inf');
+	});
+
+	it('1/cos x en π/2 (both) → aucune valeur', () => {
+		const result = limitOf('\\frac{1}{\\cos x}', '\\frac{\\pi}{2}', 'both');
+		expect(hasNoValue(result), result).toBe(true);
+	});
+
+	it('sin x / cos x en π/2⁻ → +∞', () => {
+		expect(limitOf('\\frac{\\sin x}{\\cos x}', '\\frac{\\pi}{2}', 'left')).toBe('infinite +inf');
+	});
+
+	it('1/cos² x en π/2 → +∞', () => {
+		expect(limitOf('\\frac{1}{\\cos^2 x}', '\\frac{\\pi}{2}', 'both')).toBe('infinite +inf');
+	});
+
+	it('cot x en π/2 → 0', () => {
+		expect(limitOf('\\cot x', '\\frac{\\pi}{2}', 'both')).toBe('exact 0');
+	});
+
+	it('tan x en π/2 (both) → pas de limite', () => {
+		expect(limitOf('\\tan x', '\\frac{\\pi}{2}', 'both')).toBe('does-not-exist null');
+	});
+});
+
+describe('classifyWithSign en bilatéral (commentaire de la fonction)', () => {
+	// « Un côté hors domaine (inconnu) ne contredit rien : ln x en 0 reste −∞ »
+	it('ln x en 0 (both) → −∞', () => {
+		expect(classifyWithSign(parseLatex('\\ln x'), 'x', parseLatex('0'), 'both').type).toBe(
+			'neg-infinity'
+		);
+	});
+
+	// 1/x en 0 : 0⁻ → −∞, 0⁺ → +∞ → aucun signe
+	it('1/x en 0 (both) → inconnu', () => {
+		expect(classifyWithSign(parseLatex('\\frac{1}{x}'), 'x', parseLatex('0'), 'both').type).toBe(
+			'unknown'
+		);
+	});
+
+	// cos(x)² en π/2 : zéro exact, positif des deux côtés → 0⁺
+	it('cos(x)² en π/2 (both) → 0⁺', () => {
+		const expr = parseLatex('\\cos(x)^2');
+		expect(classifyWithSign(expr, 'x', parseLatex('\\frac{\\pi}{2}'), 'both').type).toBe(
+			'zero-plus'
+		);
+	});
+});
+
+describe('borné × (→ 0) en +∞', () => {
+	// sin x · (1/x) ∈ [−1/x, 1/x] → 0
+	it('sin x · 1/x en +∞ → 0', () => {
+		expect(limitOf('\\sin x\\cdot\\frac{1}{x}', '+\\infty')).toBe('exact 0');
 	});
 });

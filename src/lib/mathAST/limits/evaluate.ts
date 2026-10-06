@@ -46,9 +46,10 @@ import {
 	positiveInfinity,
 	negativeInfinity,
 	number,
-	opposite
+	opposite,
+	func
 } from '../factory';
-import { findNodes } from '../transforms';
+import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
@@ -345,6 +346,16 @@ function evaluateLimitExactForm(
 			opts,
 			domainValidation.message
 		);
+	}
+
+	// Convention lycée : un seul côté dans le domaine (ln x en 0, √x en 0) →
+	// la limite bilatérale est celle de ce côté. Le résultat garde 'both'.
+	if (dir === 'both' && domainValidation.leftDefined !== domainValidation.rightDefined) {
+		const side: LimitDirection = domainValidation.rightDefined ? 'right' : 'left';
+		const oneSided = evaluateLimitExactForm(expression, varName, approachPoint, side, options);
+		const status =
+			oneSided.value !== null && isInfinity(oneSided.value) ? 'infinite' : oneSided.status;
+		return { ...oneSided, direction: 'both', status };
 	}
 
 	// Verify variable is used in expression
@@ -1726,16 +1737,71 @@ function tryDirectSubstitution(
 	direction: LimitDirection,
 	recorder: LimitStepRecorderImpl
 ): MathNode | null {
+	// cot, sec, csc → quotients de sin et cos : cot(π/2) se réduit à 0, et un
+	// pôle devient un dénominateur nul, visible par le garde ci-dessous.
+	const substitutable = rewriteReciprocalTrig(expr);
+	// Une valeur FINIE ne vient jamais d'un dénominateur nul au point : 1/cos x
+	// en π/2 rendait « 16331239353195370 » (cos(π/2) flottant ≈ 6e-17).
+	const finiteAllowed = () =>
+		pointInDomain(expr, varName, approach) &&
+		!hasVanishingDenominator(substitutable, varName, approach);
+
 	// Try exact evaluation first
-	const exactResult = tryDirectSubstitutionExact(expr, varName, approach, direction, recorder);
+	const exactResult = tryDirectSubstitutionExact(
+		substitutable,
+		varName,
+		approach,
+		direction,
+		recorder
+	);
 	if (exactResult !== null) {
-		return isInfinity(exactResult) || pointInDomain(expr, varName, approach) ? exactResult : null;
+		return isInfinity(exactResult) || finiteAllowed() ? exactResult : null;
 	}
 
 	// Fallback to numeric evaluation
-	const numericResult = tryDirectSubstitutionNumeric(expr, varName, approach, recorder);
+	const numericResult = tryDirectSubstitutionNumeric(substitutable, varName, approach, recorder);
 	if (numericResult === null) return null;
-	return pointInDomain(expr, varName, approach) ? numericResult : null;
+	return finiteAllowed() ? numericResult : null;
+}
+
+/** Seuil sous lequel un dénominateur évalué au point est tenu pour nul. */
+const VANISHING_DENOMINATOR = 1e-9;
+
+/** cot u → cos u / sin u, sec u → 1 / cos u, csc u → 1 / sin u. */
+function rewriteReciprocalTrig(expr: MathNode): MathNode {
+	return mapNode(expr, (node) => {
+		if (!isFunction(node) || node.args.length !== 1 || node.power || node.isInverse) return node;
+		const [arg] = node.args;
+		switch (node.name) {
+			case 'cot':
+				return divide(func('cos', [arg]), func('sin', [arg]), 'fraction');
+			case 'sec':
+				return divide(number('1'), func('cos', [arg]), 'fraction');
+			case 'csc':
+				return divide(number('1'), func('sin', [arg]), 'fraction');
+			default:
+				return node;
+		}
+	});
+}
+
+/**
+ * Un dénominateur (ou le cos sous un tan) s'annule-t-il numériquement au
+ * point ? Alors la substitution ne dit rien : c'est un pôle ou une forme 0/0.
+ */
+function hasVanishingDenominator(expr: MathNode, varName: string, approach: MathNode): boolean {
+	const denominators: MathNode[] = [];
+	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n))) {
+		if (isDivision(node)) denominators.push(node.denominator);
+		else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
+			denominators.push(func('cos', [node.args[0]]));
+		}
+	}
+	return denominators.some((den) => {
+		if (!containsVariable(den, varName)) return false;
+		const value = tryEvaluateNumeric(substituteValue(den, varName, approach));
+		return value !== null && Math.abs(value) < VANISHING_DENOMINATOR;
+	});
 }
 
 /**
