@@ -112,4 +112,31 @@ describe('lim k·f = k·lim f (facteur constant)', () => {
 			expect(toLatex(bl.limit as MathNode)).toBe('\\dfrac{2}{3}');
 		}
 	});
+	// Revue : un facteur nul ou non défini, calculé en flottant, ne doit
+	// jamais produire une limite fausse rendue « exacte ».
+	describe('facteur constant non sûr : la stratégie ne conclut pas à tort', () => {
+		it.each([
+			['\\sin(\\pi)\\cdot x', '+inf'],
+			['\\cos(\\frac{\\pi}{2})\\cdot x', '+inf'],
+			['(\\sqrt{2}^2-2)\\cdot x', '+inf'],
+			['(\\sqrt{2}^2-2)\\cdot\\frac{x^2}{3x^2+1}', '+inf'],
+			['\\tan(\\frac{\\pi}{2})\\cdot\\frac{x^2}{3x^2+1}', '+inf']
+		])('lim %s en %s : ni infini, ni valeur exacte inventée', (input, at) => {
+			const result = latexLimit(input, at);
+			expect(result).not.toMatch(/inf$/);
+			// Seule valeur exacte admissible : 0 (k vaut réellement 0 pour les quatre premiers)
+			if (result.startsWith('exact')) expect(result).toBe('exact 0');
+			expect(result).not.toMatch(/tan/);
+		});
+	});
+
+	describe('limite intérieure nulle : la valeur rendue est 0, pas « 2 0 »', () => {
+		it.each([
+			['2\\cdot x\\sin(\\frac{1}{x})', '0'],
+			['2\\cdot x\\cdot e^{-x}', '+inf'],
+			['-(x-\\sqrt{x^2+1})', '+inf']
+		])('lim %s en %s → exact 0', (input, at) => {
+			expect(latexLimit(input, at)).toBe('exact 0');
+		});
+	});
 });

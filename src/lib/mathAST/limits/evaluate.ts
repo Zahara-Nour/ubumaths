@@ -779,6 +779,38 @@ function exactProduct(k: MathNode, limit: MathNode): MathNode | null {
 	return isNegative(coefficient) ? opposite(magnitude) : magnitude;
 }
 
+/** Plage où un facteur constant non rationnel, évalué en flottant, est sûr. */
+const SAFE_FACTOR_MIN = 1e-9;
+const SAFE_FACTOR_MAX = 1e9;
+
+/** k exactement rationnel, ou flottant dans la plage sûre (ni ≈ 0, ni ≈ ∞). */
+function isSafeFactor(k: MathNode, kValue: number): boolean {
+	if (exactConstantRational(k) !== null) return true;
+	const magnitude = Math.abs(kValue);
+	return magnitude > SAFE_FACTOR_MIN && magnitude < SAFE_FACTOR_MAX;
+}
+
+/**
+ * Zéro exact écrit comme tel : le nombre 0, ou un produit dont un facteur est
+ * 0 et dont les autres sont sûrs (0·tan(π/2) n'est pas défini). Un flottant
+ * nul (sin(π) ≈ 1,2e−16) n'en est jamais un.
+ */
+function isExactZero(k: MathNode): boolean {
+	const { node } = peelSign(k);
+	if (isNumber(node)) return Number(node.value) === 0;
+	if (!isMultiplication(node)) return false;
+	const factors = flattenProductShallow(node).map((f) => f.factor);
+	if (!factors.some((f) => isExactZero(f))) return false;
+	return factors.every((f) => {
+		if (isExactZero(f)) return true;
+		try {
+			return isSafeFactor(f, evaluateNodeToApproximatedNumber(f));
+		} catch {
+			return false;
+		}
+	});
+}
+
 /**
  * lim k·f = k·lim f pour un facteur constant k non nul ; 0·f est la fonction
  * nulle sur son domaine (déjà validé par l'appelant), sa limite est 0.
@@ -804,8 +836,13 @@ function tryConstantFactor(
 		return null;
 	}
 	if (!Number.isFinite(kValue)) return null;
-	// Zéro exact seulement (0, 0·π…) : un flottant presque nul n'en est pas un
-	if (kValue === 0) return { value: number('0') };
+	// k doit être sûr : un rationnel exact, ou un flottant loin de 0 et de
+	// l'infini. sin(π)·x vaut 0·x mais sin(π) s'évalue à 1,2e−16 (→ +∞ faux) ;
+	// tan(π/2) s'évalue à 1,6e16 alors qu'il n'est pas défini. Dans le doute,
+	// on ne conclut pas : « non supportée » vaut mieux qu'une limite fausse.
+	// Zéro exact (0, −0, 0·3…) : 0·f est la fonction nulle sur son domaine
+	if (isExactZero(split.constant)) return { value: number('0') };
+	if (!isSafeFactor(split.constant, kValue)) return null;
 
 	const inner = evaluateLimit(split.rest, varName, approach, dir, options);
 	if (inner.value === null || inner.value === undefined) return null;
@@ -815,6 +852,8 @@ function tryConstantFactor(
 		const positive = (inner.value.sign === 'positive') === kValue > 0;
 		return { value: positive ? positiveInfinity() : negativeInfinity() };
 	}
+	// k·0 = 0 : sinon « 2 0 » (produit non réduit) ou « −0 »
+	if (getNumericValue(inner.value) === 0) return { value: number('0') };
 	const value = exactProduct(split.constant, inner.value);
 	return value === null ? null : { value };
 }
