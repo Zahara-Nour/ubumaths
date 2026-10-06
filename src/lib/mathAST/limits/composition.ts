@@ -482,6 +482,24 @@ function tryFunctionComposition(
 		}
 	}
 
+	// Pôle de tan / cot à gauche ou à droite d'un point (tan x en π/2⁻ → +∞) :
+	// la substitution directe, hors domaine, ne conclut plus.
+	if ((funcName === 'tan' || funcName === 'cot') && direction !== 'both' && !isInfinity(approach)) {
+		const whole = classifyWithSign(expr, varName, approach, direction);
+		const value = isSignedInfinity(whole) ? signedValueToInfinity(whole) : null;
+		if (value) {
+			recorder.recordStepByRule(
+				'composition',
+				expr,
+				value,
+				'summarized',
+				approach,
+				`Pôle de ${funcName} : limite ${formatSignedValue(whole)}`
+			);
+			return { success: true, value, technique: 'composition' };
+		}
+	}
+
 	return { success: false };
 }
 

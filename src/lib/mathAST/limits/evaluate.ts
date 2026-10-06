@@ -35,7 +35,9 @@ import {
 	isFunction,
 	isDelimiter,
 	isDivision,
-	isMultiplication
+	isMultiplication,
+	isSymbol,
+	isPositive
 } from '../guards';
 import {
 	divide,
@@ -225,9 +227,51 @@ export function evaluateLimit(
 	direction: LimitDirection = 'both',
 	options: LimitOptions = {}
 ): LimitResult {
-	const result = evaluateLimitExactForm(expr, variable, approach, direction, options);
+	const result = rejectUnreducedInfinity(
+		evaluateLimitExactForm(expr, variable, approach, direction, options)
+	);
 	const expression = isLimit(expr) ? expr.expression : expr;
 	return writeLikeInput(result, expression);
+}
+
+/**
+ * Borne écrite par le parseur : `\infty` est le symbole `infinity`, `+\infty`
+ * son `positive`, `-\infty` son `opposite`. Sans cette traduction en nœud
+ * `infinity`, aucune stratégie ne voyait une borne infinie : la substitution
+ * directe remplaçait x par le symbole et rendait « exact ∞/e^∞ » pour x/eˣ.
+ */
+function normalizeApproach(approach: MathNode): MathNode {
+	if (isDelimiter(approach)) return normalizeApproach(approach.content);
+	if (isSymbol(approach) && approach.symbol === 'infinity') return positiveInfinity();
+	if (isPositive(approach)) {
+		const inner = normalizeApproach(approach.operand);
+		return isInfinity(inner) ? inner : approach;
+	}
+	if (isOpposite(approach)) {
+		const inner = normalizeApproach(approach.operand);
+		if (isInfinity(inner)) {
+			return inner.sign === 'positive' ? negativeInfinity() : positiveInfinity();
+		}
+	}
+	return approach;
+}
+
+/** Le symbole `\infty` ou un nœud `infinity` quelque part dans `node`. */
+function containsInfinity(node: MathNode): boolean {
+	return (
+		findNodes(node, (n) => isInfinity(n) || (isSymbol(n) && n.symbol === 'infinity')).length > 0
+	);
+}
+
+/**
+ * Filet : une limite n'est une valeur que si elle est ±∞ SEUL ou une
+ * expression sans ∞. « ∞/e^∞ », « ln(∞)/∞ » sont des formes non réduites,
+ * donc une limite non calculée — jamais une valeur exacte.
+ */
+function rejectUnreducedInfinity(result: LimitResult): LimitResult {
+	if (result.value === null || isInfinity(result.value)) return result;
+	if (!containsInfinity(result.value)) return result;
+	return { ...result, status: 'unsupported', value: null };
 }
 
 /**
@@ -267,7 +311,7 @@ function evaluateLimitExactForm(
 	if (isLimit(expr)) {
 		expression = expr.expression;
 		varName = expr.variable;
-		approachPoint = expr.approach;
+		approachPoint = normalizeApproach(expr.approach);
 		dir = expr.direction;
 	} else {
 		if (!variable || !approach) {
@@ -278,7 +322,7 @@ function evaluateLimitExactForm(
 		}
 		expression = expr;
 		varName = variable;
-		approachPoint = approach;
+		approachPoint = normalizeApproach(approach);
 		dir = direction;
 	}
 
@@ -1685,11 +1729,31 @@ function tryDirectSubstitution(
 	// Try exact evaluation first
 	const exactResult = tryDirectSubstitutionExact(expr, varName, approach, direction, recorder);
 	if (exactResult !== null) {
-		return exactResult;
+		return isInfinity(exactResult) || pointInDomain(expr, varName, approach) ? exactResult : null;
 	}
 
 	// Fallback to numeric evaluation
-	return tryDirectSubstitutionNumeric(expr, varName, approach, recorder);
+	const numericResult = tryDirectSubstitutionNumeric(expr, varName, approach, recorder);
+	if (numericResult === null) return null;
+	return pointInDomain(expr, varName, approach) ? numericResult : null;
+}
+
+/**
+ * Une valeur FINIE par substitution directe n'est la limite que si f est
+ * définie au point : (x−π)·tan(x/2) en π donnait « 0 » (0 × tan(π/2), pôle
+ * avalé par la substitution), alors que la limite vaut −2. Hors du domaine,
+ * la substitution s'efface devant les autres stratégies. Domaine non calculé
+ * → on garde la substitution (comportement antérieur).
+ */
+function pointInDomain(expr: MathNode, varName: string, approach: MathNode): boolean {
+	// π, π/2 : pas un littéral numérique, mais une valeur approchée suffit ici
+	const value = getNumericValue(approach) ?? tryEvaluateNumeric(approach);
+	if (value === null) return true;
+	try {
+		return containsValue(computeDomain(expr, varName).domain, value);
+	} catch {
+		return true;
+	}
 }
 
 /**
