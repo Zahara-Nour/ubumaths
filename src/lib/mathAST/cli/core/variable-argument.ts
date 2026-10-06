@@ -1,6 +1,6 @@
 /**
- * La variable d'une commande (`.diff`) : explicite après une virgule, sinon
- * déduite de l'expression.
+ * La variable d'une commande (`.diff`) : explicite après un point-virgule,
+ * sinon déduite de l'expression.
  *
  * ⚠️ **Le dernier mot n'est PAS une variable.** L'ancienne règle de `.diff`
  * (« le dernier mot séparé par un espace est la variable ») donnait des
@@ -9,7 +9,11 @@
  * fonction (`\sin x + \cos x` devenait `\sin x + \cos`). Aucune règle sur le
  * dernier mot ne distingue `x^2 y` (« x²y ») de `x^2 y` (« x², en y ») : c'est
  * la même chaîne. Seul un séparateur qui n'existe pas dans une expression lève
- * l'ambiguïté — la virgule de premier niveau.
+ * l'ambiguïté — le POINT-VIRGULE de premier niveau (`.diff a x^2 + b x ; x`).
+ *
+ * Pourquoi pas la virgule (décision de David, 2026-10-06) : en français elle
+ * est décimale, et `;` est déjà le séparateur usuel ([a ; b], (3 ; 1)). Une
+ * virgule hors groupe reste une erreur de lecture.
  *
  * @module cli/core/variable-argument
  */
@@ -26,7 +30,7 @@ import { mapNode } from '../../transforms';
 // =============================================================================
 
 /**
- * La FORME d'un nom de variable après la virgule : `t`, `x_1`, `x_{12}`,
+ * La FORME d'un nom de variable après le point-virgule : `t`, `x_1`, `x_{12}`,
  * `\theta`. Ce n'est qu'un filtre : le nom réel est celui que le parseur de
  * l'expression donne à ce texte (`variableNameOf`).
  */
@@ -39,6 +43,15 @@ const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+
  */
 const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
+/**
+ * Une fonction usuelle écrite en lettres, sans antislash ni parenthèse :
+ * `sin x`, `ln x`, `sin^2 x`. Le nom doit être DÉLIMITÉ — `cost`, `lnx`,
+ * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas — et n'est pas
+ * suivi (exposant éventuel compris) d'une parenthèse ouvrante.
+ */
+const BARE_FUNCTION =
+	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*\()/;
+
 /** Variable par défaut quand l'expression n'en dit rien (constante). */
 const DEFAULT_VARIABLE = 'x';
 
@@ -47,14 +60,13 @@ const DEFAULT_VARIABLE = 'x';
 // =============================================================================
 
 /**
- * Séparer `expression, variable`.
+ * Séparer `expression ; variable`.
  *
- * Seule la DERNIÈRE virgule de premier niveau compte (hors parenthèses,
- * crochets, accolades — `f(x, y)` et la virgule décimale MathLive `3{,}5`
- * restent dans l'expression), et seulement si elle est suivie d'un nom de
- * variable et précédée d'une expression non vide. Sinon, toute la saisie est
- * l'expression : une virgule restante y sera une erreur de lecture, jamais
- * une réponse silencieusement fausse.
+ * Seul le DERNIER point-virgule de premier niveau compte (hors parenthèses,
+ * crochets, accolades — `f(x ; y)`, `[a ; b]` restent dans l'expression), et
+ * seulement s'il est suivi d'un nom de variable et précédé d'une expression
+ * non vide. Sinon, toute la saisie est l'expression : un point-virgule restant
+ * y sera une erreur de lecture, jamais une réponse silencieusement fausse.
  */
 export function splitVariableArgument(input: string): {
 	expression: string;
@@ -62,17 +74,17 @@ export function splitVariableArgument(input: string): {
 } {
 	const trimmed = input.trim();
 	let depth = 0;
-	let lastComma = -1;
+	let lastSeparator = -1;
 	for (let index = 0; index < trimmed.length; index++) {
 		const char = trimmed[index];
 		if (char === '(' || char === '[' || char === '{') depth++;
 		else if (char === ')' || char === ']' || char === '}') depth--;
-		else if (char === ',' && depth === 0) lastComma = index;
+		else if (char === ';' && depth === 0) lastSeparator = index;
 	}
-	if (lastComma === -1) return { expression: trimmed, variable: null };
+	if (lastSeparator === -1) return { expression: trimmed, variable: null };
 
-	const expression = trimmed.slice(0, lastComma).trim();
-	const name = trimmed.slice(lastComma + 1).trim();
+	const expression = trimmed.slice(0, lastSeparator).trim();
+	const name = trimmed.slice(lastSeparator + 1).trim();
 	if (expression === '' || !VARIABLE_NAME.test(name))
 		return { expression: trimmed, variable: null };
 	return { expression, variable: name };
@@ -140,4 +152,23 @@ export function variableNameOf(node: MathNode): string | null {
 	if (isVariable(flat)) return flat.name;
 	if (isGreek(flat)) return flat.letter;
 	return null;
+}
+
+/**
+ * Le nom de la première fonction usuelle écrite sans parenthèses (`sin x`),
+ * ou `null`.
+ *
+ * ⚠️ Décision de David (2026-10-06) : on REFUSE `sin x`, on ne l'interprète
+ * pas (« accepter cos x apporte plus de problèmes que ça n'en résout »). Le
+ * parseur LaTeX le lit s·i·n·x — `.diff sin x + cos x` répondait une dérivée
+ * fausse, sans erreur. `\sin x` (LaTeX) et `sin(x)` restent acceptés.
+ * Réutilisable par d'autres commandes (`.solve`, `.integrate`).
+ */
+export function bareFunctionName(input: string): string | null {
+	return BARE_FUNCTION.exec(input)?.[1] ?? null;
+}
+
+/** Le refus à montrer pour une fonction écrite sans parenthèses. */
+export function bareFunctionMessage(name: string): string {
+	return `Écris ${name}(x) avec des parenthèses.`;
 }

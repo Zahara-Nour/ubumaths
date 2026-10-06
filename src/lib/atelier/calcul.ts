@@ -124,6 +124,9 @@ export type ActionOutcome =
 const UNREADABLE_COMMAND =
 	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
 
+/** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
+const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set(['AMBIGUOUS_VARIABLE', 'BARE_FUNCTION']);
+
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
 /**
@@ -459,7 +462,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return runAtelierCommand(known.name, input, argument);
 	}
 
-	// `.dériver f` : la cible tapée, sans sa variable explicite (`, t`) ni son
+	// `.dériver f` : la cible tapée, sans sa variable explicite (`; t`) ni son
 	// `(x)`. Une fonction de l'atelier est en x, même quand son expression n'en
 	// contient pas : `f(x) = k` se dériverait sinon en k, et répondrait 1.
 	const typedTarget = splitVariableArgument(typedArgument).expression;
@@ -467,7 +470,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const derivesFunction = name === 'diff' && session.atelier.get(diffTarget)?.kind === 'function';
 	const commandArgument =
 		derivesFunction && splitVariableArgument(argument).variable === null
-			? `${argument}, x`
+			? `${argument} ; x`
 			: argument;
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
@@ -475,6 +478,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
+
+	// Un refus que le moteur adresse à l'élève, en français (`.dériver a t^2 + b t`
+	// : « Plusieurs variables possibles… », `.dériver sin x` : « Écris sin(x)… ») :
+	// montré tel quel, AVANT les étapes — qui, elles, liraient `sin x` autrement —
+	// et pas noyé dans « Je n’ai pas su lire » (revue #880)
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND };
+	}
 
 	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
 	// `solveSteps` rend `null` dès qu'il ne sait pas faire (degré ≥ 3, non
@@ -536,13 +547,6 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			latex: solved.answer,
 			steps: solved.steps
 		};
-	}
-
-	// Un refus que le moteur adresse à l'élève, en français (`.dériver a t^2 + b t` :
-	// « Plusieurs variables possibles… ») : montré tel quel, pas noyé dans
-	// « Je n’ai pas su lire » (revue #880)
-	if (!result.success && result.error?.code === 'AMBIGUOUS_VARIABLE') {
-		return { kind: 'refus', message: result.error.message };
 	}
 
 	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
@@ -757,7 +761,7 @@ function tracedOnCreation(kind: ObjectKind): boolean {
 /** Ce que chaque action demande au moteur, à partir de l'expression substituée. */
 const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> = {
 	// Une fonction de l'atelier est en x : la variable est dite, pas devinée
-	derive: (e) => `.diff ${e}, x`,
+	derive: (e) => `.diff ${e} ; x`,
 	solve: (e) => `.solve ${e}=0`,
 	variations: (e) => `.variations ${e}`
 };

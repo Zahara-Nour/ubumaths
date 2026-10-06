@@ -35,7 +35,9 @@ export type ErrorCode =
 	| 'DIMENSION_MISMATCH'
 	| 'MATH_ERROR'
 	/** Variable de dérivation à préciser : message en français, destiné à l'élève */
-	| 'AMBIGUOUS_VARIABLE';
+	| 'AMBIGUOUS_VARIABLE'
+	/** Fonction usuelle sans parenthèses (`sin x`) : message en français, destiné à l'élève */
+	| 'BARE_FUNCTION';
 
 /**
  * Structured error for command execution

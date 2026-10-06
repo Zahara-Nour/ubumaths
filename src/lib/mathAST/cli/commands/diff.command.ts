@@ -4,13 +4,13 @@
  * Differentiates mathematical expressions symbolically.
  * Supports specifying the differentiation variable (defaults to 'x').
  *
- * Syntax: .diff expr[, variable]
+ * Syntax: .diff expr[ ; variable]
  * - .diff x^3          -> 3x^2 (default var: x)
- * - .diff x*y^2, y     -> 2xy  (explicit var: y)
+ * - .diff x*y^2 ; y    -> 2xy  (explicit var: y)
  * - .diff t^3          -> 3t^2 (pas de x : la seule variable libre)
  * - .diff f(x)         -> f'(x) or expanded if f is defined
  *
- * ⚠️ La variable explicite se donne après une VIRGULE, jamais après un
+ * ⚠️ La variable explicite se donne après un POINT-VIRGULE, jamais après un
  * espace : `x^2 y` est le produit x²y (voir `core/variable-argument.ts`).
  */
 
@@ -24,6 +24,8 @@ import { differentiate, DifferentiationError } from '../../differentiation';
 import { tidyTerms } from '../../tidy/terms';
 import { variable as variableNode } from '../../factory';
 import {
+	bareFunctionMessage,
+	bareFunctionName,
 	defaultVariable,
 	indexVariables,
 	splitVariableArgument,
@@ -49,7 +51,7 @@ import {
  * d/dx(x^3) = 3*x^2
  * LaTeX: 3 x^{2}
  *
- * > .diff x*y^2, y
+ * > .diff x*y^2 ; y
  * d/dy(x*y^2) = 2*x*y
  * LaTeX: 2 x y
  *
@@ -62,8 +64,8 @@ import {
 export class DiffCommand extends BaseCommand {
 	readonly name = 'diff';
 	readonly aliases = ['d', 'derivative'] as const;
-	readonly description = 'Differentiate expression: .diff expr[, variable]';
-	readonly usage = 'diff <expression>[, <variable>]';
+	readonly description = 'Differentiate expression: .diff expr[ ; variable]';
+	readonly usage = 'diff <expression>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -75,12 +77,22 @@ export class DiffCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'No expression to differentiate. Usage: .diff <expression>[, <variable>]'
+					message: 'No expression to differentiate. Usage: .diff <expression>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Variable explicite après une virgule, sinon déduite de l'expression
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon déduite de l'expression
 		const { expression, variable: explicitVariable } = splitVariableArgument(input);
 
 		// Parse the expression with state-aware parser options
@@ -120,14 +132,14 @@ export class DiffCommand extends BaseCommand {
 		} else {
 			const found = defaultVariable(indexed.node, ctx.evalState?.bindings.keys());
 			if (!found.ok) {
-				const example = `${expression}, ${found.candidates[found.candidates.length - 1]}`;
+				const example = `${expression} ; ${found.candidates[found.candidates.length - 1]}`;
 				return {
 					success: false,
 					output: '',
 					error: {
 						// Message pour l'élève, en français : l'atelier le montre tel quel
 						code: 'AMBIGUOUS_VARIABLE',
-						message: `Plusieurs variables possibles (${found.candidates.join(', ')}) : précise laquelle après une virgule, par exemple « ${example} ».`
+						message: `Plusieurs variables possibles (${found.candidates.join(', ')}) : précise laquelle après un point-virgule, par exemple « ${example} ».`
 					}
 				};
 			}

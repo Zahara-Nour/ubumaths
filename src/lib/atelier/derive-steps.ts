@@ -61,7 +61,7 @@ export interface DerivedSteps {
  * @param name - Le nom de l'objet, quand il y en a un : la réponse s'écrit
  *   alors `f'(x) = …`. Sans lui — commande tapée à la main — la dérivée est
  *   rendue seule, puisqu'il n'y a rien à nommer.
- * @param variable - La variable donnée après la virgule (`.dériver t^2, t`).
+ * @param variable - La variable donnée après le point-virgule (`.dériver t^2 ; t`).
  *   Sans elle : `x` pour un objet nommé ; sinon la même règle que `.diff`
  *   (`x` si elle apparaît, sinon la seule variable libre) — et `null` (repli
  *   sur le moteur, qui demande laquelle) s'il y en a plusieurs. ⚠️ Avec un

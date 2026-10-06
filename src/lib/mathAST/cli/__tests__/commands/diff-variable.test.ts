@@ -8,13 +8,14 @@
  * `\sin x + \cos x` → « Unexpected token: EOF » (le `x` final arraché),
  * `x^2 y` → `d/dy(x^2) = 0`, `a x^2 + b x` → `2ax`.
  *
- * Règle : la variable explicite se donne après une VIRGULE de premier niveau
- * (`expr, t`). Sans elle : `x` si elle apparaît, sinon la seule variable libre.
+ * Règle (décision de David, 2026-10-06) : la variable explicite se donne après
+ * un POINT-VIRGULE de premier niveau (`expr ; t`) — en français la virgule est
+ * décimale. Sans lui : `x` si elle apparaît, sinon la seule variable libre.
  */
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../../web/web-repl-engine';
-import { splitVariableArgument } from '../../core/variable-argument';
+import { bareFunctionName, splitVariableArgument } from '../../core/variable-argument';
 
 function diff(input: string): string {
 	const result = new WebReplEngine().execute(`.diff ${input}`);
@@ -36,12 +37,12 @@ describe('.diff : le dernier mot fait partie de l’expression', () => {
 	});
 });
 
-describe('.diff : variable explicite après une virgule', () => {
+describe('.diff : variable explicite après un point-virgule', () => {
 	it.each([
-		['t^2 + t, t', 'd/dt(t^2+t) = 2t+1\nLaTeX: 2 t + 1'],
-		['a x^2 + b x, x', 'd/dx(ax^2+bx) = 2ax+b\nLaTeX: 2 a x + b'],
-		['x^2 + y^2, y', 'd/dy(x^2+y^2) = 2y\nLaTeX: 2 y'],
-		['x^2 y, y', 'd/dy(x^2y) = x^2\nLaTeX: x^2']
+		['t^2 + t ; t', 'd/dt(t^2+t) = 2t+1\nLaTeX: 2 t + 1'],
+		['a x^2 + b x ; x', 'd/dx(ax^2+bx) = 2ax+b\nLaTeX: 2 a x + b'],
+		['x^2 + y^2 ; y', 'd/dy(x^2+y^2) = 2y\nLaTeX: 2 y'],
+		['x^2 y ; y', 'd/dy(x^2y) = x^2\nLaTeX: x^2']
 	])('.diff %s', (input, expected) => {
 		expect(diff(input)).toBe(expected);
 	});
@@ -64,7 +65,7 @@ describe('.diff : variable par défaut', () => {
 		const result = new WebReplEngine().execute('.diff a t^2 + b t');
 		expect(result.success).toBe(false);
 		expect(result.error?.message).toBe(
-			'Plusieurs variables possibles (a, b, t) : précise laquelle après une virgule, par exemple « a t^2 + b t, t ».'
+			'Plusieurs variables possibles (a, b, t) : précise laquelle après un point-virgule, par exemple « a t^2 + b t ; t ».'
 		);
 	});
 
@@ -76,16 +77,20 @@ describe('.diff : variable par défaut', () => {
 describe('splitVariableArgument', () => {
 	it.each([
 		['x^2 y', { expression: 'x^2 y', variable: null }],
-		['t^2 + t, t', { expression: 't^2 + t', variable: 't' }],
-		['a x^2 + b x ,x', { expression: 'a x^2 + b x', variable: 'x' }],
-		['\\theta^2, \\theta', { expression: '\\theta^2', variable: '\\theta' }],
-		['x_1^2, x_1', { expression: 'x_1^2', variable: 'x_1' }],
+		['t^2 + t ; t', { expression: 't^2 + t', variable: 't' }],
+		['a x^2 + b x ;x', { expression: 'a x^2 + b x', variable: 'x' }],
+		['\\theta^2 ; \\theta', { expression: '\\theta^2', variable: '\\theta' }],
+		['x_1^2 ; x_1', { expression: 'x_1^2', variable: 'x_1' }],
 		// Virgule dans des parenthèses ou des accolades : pas un séparateur
-		['f(x, y)', { expression: 'f(x, y)', variable: null }],
-		['3{,}5x', { expression: '3{,}5x', variable: null }],
-		// Après la virgule, autre chose qu'un nom : pas un séparateur
+		// Point-virgule dans des parenthèses ou des crochets : pas un séparateur
+		['f(x ; y)', { expression: 'f(x ; y)', variable: null }],
+		['[a ; b]', { expression: '[a ; b]', variable: null }],
+		// Après le point-virgule, autre chose qu'un nom : pas un séparateur
+		['x^2 ; 2', { expression: 'x^2 ; 2', variable: null }],
+		// La virgule n'est PLUS un séparateur (décimale en français)
+		['t^2 + t, t', { expression: 't^2 + t, t', variable: null }],
 		['3,5x', { expression: '3,5x', variable: null }],
-		[', x', { expression: ', x', variable: null }]
+		['; x', { expression: '; x', variable: null }]
 	])('%s', (input, expected) => {
 		expect(splitVariableArgument(input)).toEqual(expected);
 	});
@@ -95,19 +100,80 @@ describe('.diff : variable indicée (revue #880)', () => {
 	// ⚠️ La variable tapée `x_1` ne correspondait pas au nœud `x_1` de
 	// l'expression (un indice, de base `x`) : la dérivée valait 0.
 	it.each([
-		['x_1^2, x_1', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
-		['x_{12}^2, x_{12}', 'd/dx_12(x_12^2) = 2x_12\nLaTeX: 2 x_{12}'],
+		['x_1^2 ; x_1', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
+		['x_{12}^2 ; x_{12}', 'd/dx_12(x_12^2) = 2x_12\nLaTeX: 2 x_{12}'],
 		// Seule variable libre : x_1, pas x
 		['x_1^2', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
 		// x apparaît seule : x_1 est une autre variable, constante en x
 		['x^2 + x_1', 'd/dx(x^2+x_1) = 2x\nLaTeX: 2 x'],
-		['x^2 + x_1^2, x_1', 'd/dx_1(x^2+x_1^2) = 2x_1\nLaTeX: 2 x_1']
+		['x^2 + x_1^2 ; x_1', 'd/dx_1(x^2+x_1^2) = 2x_1\nLaTeX: 2 x_1']
 	])('.diff %s', (input, expected) => {
 		expect(diff(input)).toBe(expected);
 	});
 
 	it('la variable doit être une variable', () => {
-		const result = new WebReplEngine().execute('.diff x^2, 2');
+		const result = new WebReplEngine().execute('.diff x^2 ; 2');
 		expect(result.success).toBe(false);
+	});
+});
+
+describe('.diff : une virgule hors groupe reste une erreur de lecture (comme sur main)', () => {
+	it('.diff t^2 + t, t', () => {
+		const result = new WebReplEngine().execute('.diff t^2 + t, t');
+		expect(result.success).toBe(false);
+		expect(result.error?.message).toBe('Unexpected token: ,');
+	});
+});
+
+describe('.diff : pas de fonction usuelle sans parenthèses (décision de David)', () => {
+	// ⚠️ `sin x + cos x` se lisait s·i·n·x + c·o·s·x : une dérivée fausse,
+	// rendue sans erreur. On refuse, on n'interprète pas.
+	it.each([
+		['sin x + cos x', 'Écris sin(x) avec des parenthèses.'],
+		['ln x', 'Écris ln(x) avec des parenthèses.'],
+		['x^2 + cos x', 'Écris cos(x) avec des parenthèses.'],
+		['2 sqrt x', 'Écris sqrt(x) avec des parenthèses.'],
+		['exp x ; x', 'Écris exp(x) avec des parenthèses.']
+	])('.diff %s', (input, message) => {
+		const result = new WebReplEngine().execute(`.diff ${input}`);
+		expect(result.success).toBe(false);
+		expect(result.error?.message).toBe(message);
+	});
+
+	it.each([
+		[
+			'\\sin x + \\cos x',
+			'd/dx(sin(x)+cos(x)) = cos(x)-sin(x)\nLaTeX: \\cos\\left( x \\right) - \\sin\\left( x \\right)'
+		],
+		[
+			'sin(x)+cos(x)',
+			'd/dx(sin(x)+cos(x)) = cos(x)-sin(x)\nLaTeX: \\cos\\left( x \\right) - \\sin\\left( x \\right)'
+		],
+		['sin (x)', 'd/dx(sin(x)) = cos(x)\nLaTeX: \\cos\\left( x \\right)'],
+		['\\ln x', 'd/dx(ln(x)) = 1/x\nLaTeX: \\dfrac{1}{x}'],
+		['\\sqrt{x}', 'd/dx(sqrt(x)) = 1/{2sqrt(x)}\nLaTeX: \\dfrac{1}{2 \\sqrt{x}}']
+	])('.diff %s est accepté', (input, expected) => {
+		expect(diff(input)).toBe(expected);
+	});
+});
+
+describe('bareFunctionName', () => {
+	it.each([
+		['sin x', 'sin'],
+		['x + cos', 'cos'],
+		['sin(x)', null],
+		['sin (x)', null],
+		['\\sin x', null],
+		['\\operatorname{sin} x', null],
+		['sin^2(x)', null],
+		['sin^{2} (x)', null],
+		['sin^2 x', 'sin'],
+		['2sin x', 'sin'],
+		// Noms qui CONTIENNENT les lettres : pas des fonctions usuelles
+		['cost + lnx', null],
+		['\\arcsin x + \\cosh x', null],
+		['x^2', null]
+	])('%s', (input, expected) => {
+		expect(bareFunctionName(input)).toBe(expected);
 	});
 });
