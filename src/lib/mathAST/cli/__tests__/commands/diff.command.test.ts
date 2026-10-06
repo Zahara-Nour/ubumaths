@@ -327,7 +327,7 @@ describe('DiffCommand', () => {
 		it('differentiates x*y^2 with respect to y', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'x*y^2 y',
+				input: 'x*y^2, y',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -343,7 +343,7 @@ describe('DiffCommand', () => {
 		it('differentiates x^2+y^2 with respect to y', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'x^2+y^2 y',
+				input: 'x^2+y^2, y',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -359,7 +359,7 @@ describe('DiffCommand', () => {
 		it('differentiates with respect to t', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 't^3 t',
+				input: 't^3, t',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -606,7 +606,7 @@ describe('DiffCommand', () => {
 		it('parses single letter variable correctly', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'y^2 y',
+				input: 'y^2, y',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -620,7 +620,7 @@ describe('DiffCommand', () => {
 		it('handles multi-letter variable names', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'theta^2 theta',
+				input: 'theta^2, theta',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -649,7 +649,7 @@ describe('DiffCommand', () => {
 		it('parses underscore variable names', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'x_1^2 x_1',
+				input: 'x_1^2, x_1',
 				format: 'custom',
 				options: {},
 				isRepl: true

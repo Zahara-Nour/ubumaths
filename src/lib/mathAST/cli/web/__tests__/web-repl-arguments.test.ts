@@ -51,7 +51,7 @@ describe('ce qui marchait doit continuer de marcher', () => {
 	});
 
 	it('dérive selon une variable nommée', () => {
-		expect(run('.diff x^2 x').success).toBe(true);
+		expect(run('.diff x^2, x').success).toBe(true);
 	});
 
 	it('intègre sans bornes', () => {
