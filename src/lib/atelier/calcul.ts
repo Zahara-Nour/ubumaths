@@ -152,6 +152,20 @@ const VARIABLE_COMMANDS: ReadonlySet<string> = new Set([
 /** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
 const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set(['AMBIGUOUS_VARIABLE', 'BARE_FUNCTION']);
 
+/**
+ * `pi` écrit en lettres, comme un mot : `2pi`, `sin(pi x)`, `cos(x)=pi`.
+ *
+ * ⚠️ Décision de David (2026-10-06) : on le REFUSE. La notation custom le lit
+ * p·i (i : l'imaginaire) — `f(x) = pi*x` restait « en attente de p »,
+ * `.resoudre cos(x)=pi` répondait faux. `\pi` et `π` restent acceptés, ainsi
+ * que `p*i` et les mots qui contiennent « pi » (`pile ; face`, `épi`) : avant
+ * et après, aucune lettre ni antislash.
+ */
+const PI_IN_LETTERS = /(?<![\p{L}\\])pi(?!\p{L})/u;
+
+/** Ce qu'on répond à `pi` écrit en lettres. */
+const PI_IN_LETTERS_MESSAGE = 'Écris π avec \\pi ou le symbole π.';
+
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
 /**
@@ -681,6 +695,9 @@ export function runInput(
 ): CalcResult {
 	const input = text.trim();
 	if (input === '') return { kind: 'vide' };
+
+	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
+	if (PI_IN_LETTERS.test(input)) return { kind: 'refus', message: PI_IN_LETTERS_MESSAGE };
 
 	syncEngine(session.atelier, session.engine);
 
