@@ -20,7 +20,9 @@ import type { EvalValue, ComplexValueResult } from '../eval/types';
 import { DEFAULT_TAYLOR_OPTIONS, MAX_TAYLOR_TERMS, TaylorError } from './types';
 import { differentiate } from '../differentiation';
 import { evaluate, evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { substitute } from '../eval/substitute';
+import { getVariables, substitute } from '../eval/substitute';
+import { simplify } from '../simplify';
+import { isAddition, isNumber, isOpposite, isSubtraction } from '../guards';
 import {
 	number,
 	variable,
@@ -181,20 +183,7 @@ function buildTerm(
 		return null;
 	}
 
-	// Build (x - a) term.
-	// Les parenthèses sont portées par l'AST : le rendu n'en ajoute aucune
-	// d'après la priorité des opérateurs, donc `power(add(x, -1), 2)`
-	// s'afficherait « x + -1^2 », qui se lit x + 1 — une autre expression.
-	let baseTerm: MathNode;
-	if (center === 0) {
-		baseTerm = varNode;
-	} else if (center > 0) {
-		// (x - a)
-		baseTerm = delimiter('parentheses', subtract(varNode, number(center.toString())));
-	} else {
-		// (x - (-a)) = (x + |a|)
-		baseTerm = delimiter('parentheses', add(varNode, number(Math.abs(center).toString())));
-	}
+	const baseTerm = centeredBase(varNode, center);
 
 	// Degree 0: just the coefficient
 	if (degree === 0) {
@@ -230,6 +219,84 @@ function buildTerm(
 
 	return isNegative ? opposite(term) : term;
 }
+
+/**
+ * Le facteur (x - a) d'un terme, x seul en 0.
+ *
+ * Les parenthèses sont portées par l'AST : le rendu n'en ajoute aucune
+ * d'après la priorité des opérateurs, donc `power(add(x, -1), 2)`
+ * s'afficherait « x + -1^2 », qui se lit x + 1 — une autre expression.
+ */
+function centeredBase(varNode: MathNode, center: number): MathNode {
+	if (center === 0) return varNode;
+	if (center > 0) {
+		// (x - a)
+		return delimiter('parentheses', subtract(varNode, number(center.toString())));
+	}
+	// (x - (-a)) = (x + |a|)
+	return delimiter('parentheses', add(varNode, number(Math.abs(center).toString())));
+}
+
+/**
+ * Un terme dont le coefficient est une EXPRESSION (`a`, `-a^3/6`) : c'est le
+ * cas d'une fonction à paramètre littéral, `a x^2` ou `sin(a x)`.
+ *
+ * Un coefficient négatif garde son `opposite` à l'extérieur, pour que la somme
+ * s'écrive « x - t » ; une somme se met entre parenthèses avant le facteur.
+ */
+function buildSymbolicTerm(
+	coefficient: MathNode,
+	varNode: MathNode,
+	center: number,
+	degree: number
+): MathNode {
+	if (degree === 0) return coefficient;
+	const isNegative = isOpposite(coefficient);
+	const magnitude = isOpposite(coefficient) ? coefficient.operand : coefficient;
+	const base = centeredBase(varNode, center);
+	const powered = degree === 1 ? base : power(base, number(degree.toString()));
+	const factor =
+		isAddition(magnitude) || isSubtraction(magnitude)
+			? delimiter('parentheses', magnitude)
+			: magnitude;
+	const term =
+		isNumber(factor) && factor.value === '1' ? powered : multiply(factor, powered, 'implicit');
+	return isNegative ? opposite(term) : term;
+}
+
+/**
+ * Coefficient f⁽ⁿ⁾(a)/n! calculé SYMBOLIQUEMENT, quand l'expression contient
+ * un paramètre littéral (`a` dans `a x^2`) que l'évaluation numérique ne sait
+ * pas chiffrer.
+ *
+ * ⚠️ La dérivée doit d'abord être définie au point : on la chiffre avec une
+ * valeur quelconque des paramètres. Sans ce garde, `ln(a x)` en 0 rendrait un
+ * « ln(0) » simplifié au lieu d'être refusé comme `ln(x)`.
+ */
+function symbolicCoefficient(
+	derivative: MathNode,
+	varName: string,
+	center: number,
+	degree: number,
+	parameters: readonly string[],
+	functions?: FunctionBindings
+): MathNode {
+	const probe = Object.fromEntries([
+		...parameters.map((name) => [name, PARAMETER_PROBE] as const),
+		[varName, center] as const
+	]);
+	const checked = evaluate(substitute(derivative, probe), { mode: 'decimal', functions });
+	if (checked.status !== 'value' || !Number.isFinite(valueToNumber(checked.value))) {
+		throw new Error('Derivative is not defined at the center');
+	}
+	const atCenter = substitute(derivative, { [varName]: center });
+	const scaled =
+		degree < 2 ? atCenter : divide(atCenter, numericNode(factorial(degree)), 'fraction');
+	return simplify(scaled).result;
+}
+
+/** Valeur d'essai d'un paramètre littéral : quelconque, non entière, positive. */
+const PARAMETER_PROBE = 0.7319;
 
 // =============================================================================
 // Main Taylor Expansion Function
@@ -298,24 +365,41 @@ export function taylorExpand(
 	// Collect non-zero terms
 	const terms: MathNode[] = [];
 	let currentExpr = expr;
+	// Les lettres autres que la variable : des paramètres (`a` dans `a x^2`).
+	// Un nom de fonction de l'élève n'en est pas un.
+	const parameters = [...getVariables(expr)].filter(
+		(name) => name !== varName && functions?.[name] === undefined
+	);
 
 	for (let n = 0; n < numTerms; n++) {
 		try {
 			// Evaluate the nth derivative at the center
 			const substituted = substitute(currentExpr, { [varName]: center });
 			const evalResult = evaluate(substituted, { mode: 'decimal', functions });
-			if (evalResult.status !== 'value') {
+			if (evalResult.status === 'value') {
+				// Compute coefficient: f^(n)(a) / n!
+				const coefficient = valueToNumber(evalResult.value) / factorial(n);
+
+				// Build the term if coefficient is non-zero
+				const term = buildTerm(coefficient, varNode, center, n);
+				if (term !== null) {
+					terms.push(term);
+				}
+			} else if (parameters.length > 0) {
+				// Un paramètre littéral ne se chiffre pas : coefficient symbolique
+				const coefficient = symbolicCoefficient(
+					currentExpr,
+					varName,
+					center,
+					n,
+					parameters,
+					functions
+				);
+				if (!(isNumber(coefficient) && Number(coefficient.value) === 0)) {
+					terms.push(buildSymbolicTerm(coefficient, varNode, center, n));
+				}
+			} else {
 				throw new Error('Unknown value type');
-			}
-			const derivativeValue = valueToNumber(evalResult.value);
-
-			// Compute coefficient: f^(n)(a) / n!
-			const coefficient = derivativeValue / factorial(n);
-
-			// Build the term if coefficient is non-zero
-			const term = buildTerm(coefficient, varNode, center, n);
-			if (term !== null) {
-				terms.push(term);
 			}
 
 			// Differentiate for next iteration (except on last iteration)
