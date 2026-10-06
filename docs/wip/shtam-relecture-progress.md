@@ -13,6 +13,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 6   | 2026-10-08 | Douze Pile d'affilée (`pifometrie-pile-ou-face`)                           | ✅ validé — « la maison gagne toujours », loi binomiale, planche de Galton (illustration SVG), pièce soupçonnée truquée                                        |
 | 7   | 2026-10-12 | Le Polonais moyen a moins de deux jambes (`pifometrie-moyenne-des-jambes`) | ✅ validé — exemple des jambes gardé (David), plan de Mère Ubu explicite (moyenne à 2,999), valeurs extrêmes                                                   |
 | 8   | 2026-10-15 | L'Hôtel de l'Infini (`yoyolande-hotel-de-l-infini`)                        | ✅ validé — réécrit autour d'un seul client de plus (n → n+1), hôtel fini de 100 chambres en contre-exemple, Dedekind                                          |
+| 9   | 2026-10-19 | 0,999… = 1 (`nombrilie-zero-virgule-neuf`)                                 | ✅ validé — « une infinité de 9 » (pas « beaucoup »), chute « il me manque tout », le petit bout plus petit que 0,1 ; 0,01… ; « aux dépens » gardé (David)     |
 
 ## Outillage ajouté pendant la relecture
 
