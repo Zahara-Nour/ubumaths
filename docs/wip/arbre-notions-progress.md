@@ -74,6 +74,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (héritage, inclusion) ; pas de lien arbre ↔ programme officiel (A7 retiré) ; exercice → un ou
   plusieurs nœuds avec principal facultatif, modèle → un seul ; incohérence de niveaux = avertissement.
 
+- **PR 1 base écrite (2026-10-07)** : migration `20261007120000_arbre_des_notions.sql` + 40 tests
+  d'intégration (rouges avant, verts après, neutralisation prouvée). Règles ajoutées validées par David :
+  genre d'un nœud immuable, pas de nœud actif sous un parent archivé, type de source unique sans casse,
+  messages en français. Rangement d'un exercice : prof auteur seulement, pas l'admin (validé).
+
 ## Ouvert
 
 - **Arbre validé en entier le 2026-10-07** : 19 branches, 114 notions, 415 sous-notions →
