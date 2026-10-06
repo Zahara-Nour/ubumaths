@@ -9,6 +9,7 @@
 import {
 	ALPHABET,
 	ALPHABET_SIZE,
+	formatNumber,
 	indexToLetter,
 	letterIndex,
 	mapLetters,
@@ -17,7 +18,6 @@ import {
 } from './alphabet';
 import { CipherInputError } from './errors';
 import { chiSquared, letterFrequencies } from './frequency';
-import { formatNumber } from './alphabet';
 import { gcd, modInverse, reduceDetail } from './modular';
 
 // Types
