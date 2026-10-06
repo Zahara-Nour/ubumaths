@@ -59,8 +59,6 @@
 		</div>
 	{/snippet}
 	{#snippet crack(text)}
-		{#key text}
-			<VigenereCrack {text} />
-		{/key}
+		<VigenereCrack {text} />
 	{/snippet}
 </CipherWorkbench>
