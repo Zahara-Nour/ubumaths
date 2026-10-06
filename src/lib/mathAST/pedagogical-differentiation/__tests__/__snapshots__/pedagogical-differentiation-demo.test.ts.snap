@@ -808,65 +808,65 @@ Expression: 2x^4 - 3x + 5 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [sum-with-constant] La constante a une dérivée nulle
-  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
   - [difference] On dérive chaque terme
-    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
     - [linear-coefficient] On sort la constante 2
-      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 \\times 4 x^3 \\end{aligned}
       - [power-natural] Règle de la puissance (4)
         \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
     - [linear-coefficient] On sort la constante 3
       \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
-Result: 2 4 x^3 - 3
+Result: 2 \\times 4 x^3 - 3
 
 ========== LYCEE (detailed) ==========
 - [sum-with-constant] La constante a une dérivée nulle
   · La constante 5 a une dérivée nulle, donc seule la dérivée de 2 x^4 - 3 x contribue.
-  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
   - [difference] On dérive chaque terme
     · Avec f = 2 x^4 et g = 3 x, on a (f-g)' = f' - g'.
-    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
     - [linear-coefficient] On sort la constante 2
       · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
-      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 \\times 4 x^3 \\end{aligned}
       - [power-natural] Règle de la puissance (4)
         · (x^n)' = n x^{n-1} avec n = 4.
         \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
     - [linear-coefficient] On sort la constante 3
       · La constante 3 sort de la dérivation : (3 \\times f)' = 3 \\times f'.
       \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
-Result: 2 4 x^3 - 3
+Result: 2 \\times 4 x^3 - 3
 
 ========== SUPERIEUR (summarized) ==========
 - [sum-with-constant] (f+c)' = f'
-  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
   - [difference] (f-g)' = f' - g'
-    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
     - [linear-coefficient] (cf)' = cf'
-      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 \\times 4 x^3 \\end{aligned}
       - [power-natural] (x^n)' = nx^{n-1}
         \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
     - [linear-coefficient] (cf)' = cf'
       \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
-Result: 2 4 x^3 - 3
+Result: 2 \\times 4 x^3 - 3
 
 ========== SUPERIEUR (detailed) ==========
 - [sum-with-constant] (f+c)' = f'
   · La constante 5 a une dérivée nulle, donc seule la dérivée de 2 x^4 - 3 x contribue.
-  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
   - [difference] (f-g)' = f' - g'
     · Avec f = 2 x^4 et g = 3 x, on a (f-g)' = f' - g'.
-    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 \\times 4 x^3 - 3 \\end{aligned}
     - [linear-coefficient] (cf)' = cf'
       · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
-      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 \\times 4 x^3 \\end{aligned}
       - [power-natural] (x^n)' = nx^{n-1}
         · (x^n)' = n x^{n-1} avec n = 4.
         \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
     - [linear-coefficient] (cf)' = cf'
       · La constante 3 sort de la dérivation : (3 \\times f)' = 3 \\times f'.
       \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
-Result: 2 4 x^3 - 3
+Result: 2 \\times 4 x^3 - 3
 "
 `;
 
@@ -908,55 +908,55 @@ Expression: x^3 + 2x^2 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [sum] On dérive chaque terme
-  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 \\times 2 x \\end{aligned}
   - [power-natural] Règle de la puissance (3)
     \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
   - [linear-coefficient] On sort la constante 2
-    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 \\times 2 x \\end{aligned}
     - [power-natural] Règle de la puissance (2)
       \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: 3 x^2 + 2 2 x
+Result: 3 x^2 + 2 \\times 2 x
 
 ========== LYCEE (detailed) ==========
 - [sum] On dérive chaque terme
   · Avec f = x^3 et g = 2 x^2, on a (f+g)' = f' + g'.
-  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 \\times 2 x \\end{aligned}
   - [power-natural] Règle de la puissance (3)
     · (x^n)' = n x^{n-1} avec n = 3.
     \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
   - [linear-coefficient] On sort la constante 2
     · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
-    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 \\times 2 x \\end{aligned}
     - [power-natural] Règle de la puissance (2)
       · (x^n)' = n x^{n-1} avec n = 2.
       \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: 3 x^2 + 2 2 x
+Result: 3 x^2 + 2 \\times 2 x
 
 ========== SUPERIEUR (summarized) ==========
 - [sum] (f+g)' = f' + g'
-  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 \\times 2 x \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
   - [linear-coefficient] (cf)' = cf'
-    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 \\times 2 x \\end{aligned}
     - [power-natural] (x^n)' = nx^{n-1}
       \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: 3 x^2 + 2 2 x
+Result: 3 x^2 + 2 \\times 2 x
 
 ========== SUPERIEUR (detailed) ==========
 - [sum] (f+g)' = f' + g'
   · Avec f = x^3 et g = 2 x^2, on a (f+g)' = f' + g'.
-  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 \\times 2 x \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     · (x^n)' = n x^{n-1} avec n = 3.
     \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
   - [linear-coefficient] (cf)' = cf'
     · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
-    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 \\times 2 x \\end{aligned}
     - [power-natural] (x^n)' = nx^{n-1}
       · (x^n)' = n x^{n-1} avec n = 2.
       \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: 3 x^2 + 2 2 x
+Result: 3 x^2 + 2 \\times 2 x
 "
 `;
 

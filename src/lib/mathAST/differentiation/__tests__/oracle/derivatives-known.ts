@@ -61,39 +61,10 @@ export const KNOWN_WRONG: Readonly<Record<string, string>> = {
  * RÉSIDUS interdits dans le LaTeX rendu — règle (b). Valeur juste.
  * « nombres juxtaposés » : `3 3 x^2` (le défaut `3·3x²` vu par David), dans
  * les étapes ; « - - » : un paramètre négatif substitué derrière un signe.
+ * Les 30 entrées constatées le 2026-10-06 sont corrigées au rendu
+ * (`latex-generator` : croix entre deux chiffres, `-(-a)` sous un signe).
  */
-export const KNOWN_RESIDUE: Readonly<Record<string, string>> = {
-	'poly-02 @ étapes': 'nombres juxtaposés',
-	'poly-03 @ étapes': 'nombres juxtaposés',
-	'poly-04 @ étapes': 'nombres juxtaposés',
-	'poly-05 @ étapes': 'nombres juxtaposés',
-	'poly-08 @ étapes': 'nombres juxtaposés',
-	'poly-11 @ étapes': 'nombres juxtaposés',
-	'poly-17 @ étapes': 'nombres juxtaposés',
-	'poly-18 @ étapes': 'nombres juxtaposés',
-	'poly-19 @ étapes': 'nombres juxtaposés',
-	'poly-20 @ étapes': 'nombres juxtaposés',
-	'poly-22 @ étapes': 'nombres juxtaposés',
-	'poly-27 @ étapes': 'nombres juxtaposés',
-	'poly-33 @ étapes': 'nombres juxtaposés',
-	'poly-34 @ étapes': 'nombres juxtaposés',
-	'poly-35 @ étapes': 'nombres juxtaposés',
-	'rat-07 @ étapes': 'nombres juxtaposés',
-	'rat-13 @ étapes': '- -',
-	'rat-16 @ étapes': 'nombres juxtaposés',
-	'exp-12 @ étapes': 'nombres juxtaposés',
-	'loga-09 @ étapes': 'nombres juxtaposés',
-	'trig-22 @ étapes': '- -',
-	'trig-24 @ étapes': '- -',
-	'trig-30 @ étapes': 'nombres juxtaposés',
-	'prod-09 @ étapes': 'nombres juxtaposés',
-	'quot-09 @ étapes': '- -',
-	't-02 @ étapes': 'nombres juxtaposés',
-	't-10 @ étapes': 'nombres juxtaposés',
-	'lit-30 @ carte': '- -',
-	'lit-37 @ carte': '- -',
-	'lit-53 @ carte': '- -'
-};
+export const KNOWN_RESIDUE: Readonly<Record<string, string>> = {};
 
 /**
  * FORME différente de celle qu'on écrit en classe — règle (f). Valeur JUSTE.

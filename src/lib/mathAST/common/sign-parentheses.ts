@@ -146,6 +146,21 @@ export function needsParenthesesAsRightFactor(node: MathNode): boolean {
 }
 
 /**
+ * Cette expression doit-elle être parenthésée sous un signe `-` unaire ?
+ *
+ * ⚠️ **Mesuré** (oracle des dérivées) : la règle du quotient sur `-2/(x-4)`
+ * écrivait `--2` dans les étapes, et la carte `f′` de l'atelier
+ * `e^{--0.75 x}` dès qu'un paramètre négatif (`k = -0.75`) était substitué
+ * dans `e^{-kx}`. Deux signes ne se suivent pas à l'écrit : `-(-2)`.
+ *
+ * Une somme ou une différence (le signe ne porterait que sur le premier terme),
+ * et tout ce dont l'écriture commence par un signe.
+ */
+export function needsParenthesesUnderOpposite(node: MathNode): boolean {
+	return needsParenthesesUnderSign(node) || startsWithSign(node);
+}
+
+/**
  * Cette expression doit-elle être parenthésée comme terme de DROITE d'une somme
  * (`operator = 'addition'`) ou d'une différence (`'subtraction'`) ?
  *

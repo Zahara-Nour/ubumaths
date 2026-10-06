@@ -38,12 +38,13 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { isMultiplication, isUnit } from './guards';
+import { isMultiplication, isNumber, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesAsRightFactor,
 	needsParenthesesAsRightTerm,
 	needsParenthesesUnderFactorial,
+	needsParenthesesUnderOpposite,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -393,7 +394,7 @@ export class LatexGenerator {
 			case 'opposite': {
 				// Même parenthésage que generateOpposite : sans lui, −(x + 2) s'écrivait
 				// `-x + 2` dans les étapes pédagogiques (mesuré, revues de #838).
-				const wrap = needsParenthesesUnderSign(node.operand);
+				const wrap = needsParenthesesUnderOpposite(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
 				if (wrap) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.operand);
@@ -535,7 +536,8 @@ export class LatexGenerator {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
 			case 'implicit':
-				this.emit(juxtaposesQuantities(node) ? '~' : ' ', opMeta);
+				if (juxtaposesDigits(node)) this.emit(' \\times ', opMeta);
+				else this.emit(juxtaposesQuantities(node) ? '~' : ' ', opMeta);
 				break;
 			case 'dot':
 				this.emit(' \\cdot ', opMeta);
@@ -1197,6 +1199,7 @@ export class LatexGenerator {
 
 		switch (node.displayStyle) {
 			case 'implicit':
+				if (juxtaposesDigits(node)) return `${left} \\times ${right}`;
 				return juxtaposesQuantities(node) ? `${left}~${right}` : `${left} ${right}`;
 			case 'dot':
 				return `${left} \\cdot ${right}`;
@@ -1244,7 +1247,9 @@ export class LatexGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderSign(node.operand) ? `-\\left( ${operand} \\right)` : `-${operand}`;
+		return needsParenthesesUnderOpposite(node.operand)
+			? `-\\left( ${operand} \\right)`
+			: `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {
@@ -1622,6 +1627,51 @@ function juxtaposesQuantities(node: MultiplicationNode): boolean {
 	let left: MathNode = node.left;
 	while (isMultiplication(left) && left.displayStyle === 'implicit') left = left.right;
 	return isUnit(left) && isUnit(node.right);
+}
+
+/**
+ * Un produit implicite qui collerait deux CHIFFRES : `3 3 x^2` se lit « 33x² ».
+ *
+ * ⚠️ **Vu par David** : la dérivée de `3x^3` montrait l'étape `3 3 x^2`. Une
+ * règle de dérivation construit `coefficient × (x³)′` en style implicite, sans
+ * délimiteur ; le rendu par une espace colle les deux nombres. `3 × 3x²` est
+ * une étape de classe, `3 3x²` ne l'est jamais : entre deux chiffres, la croix.
+ *
+ * Seul le cas visé change : le facteur de gauche s'écrit en finissant par un
+ * nombre, celui de droite en commençant par un nombre (ni l'un ni l'autre
+ * parenthésé). `2x × 3` (`2 x 3`) et `3x` restent tels quels.
+ */
+function juxtaposesDigits(node: MultiplicationNode): boolean {
+	return (
+		!needsParenthesesUnderSign(node.left) &&
+		!needsParenthesesAsRightFactor(node.right) &&
+		endsWithNumber(node.left) &&
+		startsWithNumber(node.right)
+	);
+}
+
+/** L'écriture de ce nœud finit-elle par un nombre (hors exposant, hors parenthèses) ? */
+function endsWithNumber(node: MathNode): boolean {
+	if (isNumber(node)) return true;
+	if (isMultiplication(node)) {
+		return !needsParenthesesAsRightFactor(node.right) && endsWithNumber(node.right);
+	}
+	if (node.type === 'opposite') {
+		return !needsParenthesesUnderOpposite(node.operand) && endsWithNumber(node.operand);
+	}
+	return false;
+}
+
+/** L'écriture de ce nœud commence-t-elle par un nombre (hors parenthèses) ? */
+function startsWithNumber(node: MathNode): boolean {
+	if (isNumber(node)) return true;
+	if (isMultiplication(node)) {
+		return !needsParenthesesUnderSign(node.left) && startsWithNumber(node.left);
+	}
+	if (node.type === 'superscript') {
+		return !needsParenthesesAsPowerBase(node.base) && startsWithNumber(node.base);
+	}
+	return false;
 }
 
 export function toLatex(node: MathNode, options?: LatexGeneratorOptions): string {

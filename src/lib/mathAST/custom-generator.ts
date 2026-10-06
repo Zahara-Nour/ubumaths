@@ -54,6 +54,7 @@ import { format } from './units/formatter';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesAsRightTerm,
+	needsParenthesesUnderOpposite,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -585,7 +586,7 @@ export class CustomGenerator {
 
 			case 'opposite': {
 				// Même parenthésage que generateOpposite : `-(x+2)`, pas `-x+2`.
-				const wrap = needsParenthesesUnderSign(node.operand);
+				const wrap = needsParenthesesUnderOpposite(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
 				if (wrap) this.emit('(', node.metadata);
 				this.visitWithSpans(node.operand);
@@ -1373,7 +1374,7 @@ export class CustomGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderSign(node.operand) ? `-(${operand})` : `-${operand}`;
+		return needsParenthesesUnderOpposite(node.operand) ? `-(${operand})` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {
