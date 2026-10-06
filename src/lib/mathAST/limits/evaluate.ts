@@ -34,6 +34,7 @@ import {
 	isOpposite,
 	isFunction,
 	isDelimiter,
+	isDivision,
 	isMultiplication
 } from '../guards';
 import {
@@ -50,12 +51,12 @@ import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../f
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { expandFunctionPowers } from '../common/function-power';
-import { matchKnownLimit, getKnownLimitValue } from './known-limits';
+import { matchKnownLimit, getKnownLimitValue, structurallyEqual } from './known-limits';
 import { LimitStepRecorderImpl } from './step-recorder';
 import { containsVariable } from '../common/contains-variable';
 import { detectIndeterminateForm } from './indeterminate';
 import { applyLhopital, isLhopitalApplicable } from './lhopital';
-import { tryAlgebraicSimplification } from './algebraic';
+import { tryAlgebraicSimplification, type AlgebraicResult } from './algebraic';
 import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
@@ -450,6 +451,33 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 2.56 : produit de fonctions non constantes, par les seuls cas
+	// sûrs (fini × fini, fini non nul × ∞, ∞ × ∞). La forme 0 × ∞ n'est
+	// jamais tranchée ici : réécrite en un seul quotient si un facteur en est
+	// un, sinon laissée aux stratégies suivantes (croissances comparées…).
+	const productResult = tryProductOfLimits(expression, varName, approachPoint, dir, options);
+	if (productResult !== null) {
+		recorder.recordStepByRule(
+			productResult.technique,
+			expression,
+			productResult.value,
+			'summarized',
+			approachPoint,
+			productResult.description
+		);
+		return createResult(
+			productResult.value,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(productResult.value) ? 'infinite' : 'exact',
+			productResult.form,
+			productResult.technique,
+			recorder,
+			opts
+		);
+	}
+
 	// Strategy 2.6: somme ou différence en ±∞, limite terme à terme ; la forme
 	// ∞ − ∞ est levée en factorisant par le terme dominant (croissances
 	// comparées, via les limites de référence du quotient).
@@ -558,6 +586,26 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+		const afterLhopital = limitOfLhopitalQuotient(
+			lhopitalResult,
+			varName,
+			approachPoint,
+			dir,
+			options
+		);
+		if (afterLhopital !== null) {
+			return createResult(
+				afterLhopital.value,
+				varName,
+				approachPoint,
+				dir,
+				afterLhopital.status,
+				lhopitalResult.resolvedForm ?? 'none',
+				'lhopital',
+				recorder,
+				opts
+			);
+		}
 	}
 
 	// Strategy 4: Try algebraic simplification
@@ -581,6 +629,23 @@ function evaluateLimitExactForm(
 				algebraicResult.technique === 'dominant-term'
 					? 'infinity-analysis'
 					: 'algebraic-simplification',
+				recorder,
+				opts
+			);
+		}
+
+		// Valeur absolue levée d'un côté : la limite de l'expression sans |·|
+		// est celle du moteur complet (|x|/x² en 0⁺ → x/x² → +∞)
+		const absFree = limitOfAbsFreeExpression(algebraicResult, varName, approachPoint, dir, options);
+		if (absFree !== null) {
+			return createResult(
+				absFree.value,
+				varName,
+				approachPoint,
+				dir,
+				absFree.status,
+				indeterminateForm,
+				'algebraic-simplification',
 				recorder,
 				opts
 			);
@@ -859,6 +924,191 @@ function tryConstantFactor(
 }
 
 // =============================================================================
+// Produit de fonctions non constantes
+// =============================================================================
+
+/** Limite d'un facteur, réduite à ce qui permet de conclure sans risque. */
+type FactorLimit =
+	| { readonly kind: 'infinite'; readonly sign: 1 | -1 }
+	| { readonly kind: 'zero' }
+	/** Fini, exactement non nul (rationnel ≠ 0, ou flottant loin de 0) */
+	| { readonly kind: 'nonzero'; readonly value: MathNode; readonly sign: 1 | -1 }
+	/** Fini, non nul NON prouvé (flottant ≈ 0 non rationnel) */
+	| { readonly kind: 'finite'; readonly value: MathNode };
+
+/**
+ * Garde-fou : la réécriture en quotient rappelle `evaluateLimit`, dont les
+ * stratégies peuvent reformer un produit. Pile des produits EN COURS.
+ */
+const MAX_NESTED_PRODUCTS = 3;
+let nestedProducts = 0;
+
+/**
+ * Limite d'un facteur pour la règle du produit, ou null : limite approchée,
+ * inexistante ou non trouvée — on ne conclut jamais sur elle.
+ */
+function toFactorLimit(result: LimitResult): FactorLimit | null {
+	const value = result.value;
+	if (value === null || value === undefined) return null;
+	if (result.status !== 'exact' && result.status !== 'infinite') return null;
+	if (isInfinity(value)) return { kind: 'infinite', sign: value.sign === 'positive' ? 1 : -1 };
+	if (isExactZero(value)) return { kind: 'zero' };
+	const rational = exactConstantRational(value);
+	if (rational !== null) {
+		if (rational.n === 0n) return { kind: 'zero' };
+		return { kind: 'nonzero', value, sign: isNegative(rational) ? -1 : 1 };
+	}
+	let numeric: number;
+	try {
+		numeric = evaluateNodeToApproximatedNumber(value);
+	} catch {
+		return null;
+	}
+	if (!Number.isFinite(numeric)) return null;
+	if (isSafeFactor(value, numeric)) {
+		return { kind: 'nonzero', value, sign: numeric > 0 ? 1 : -1 };
+	}
+	return { kind: 'finite', value };
+}
+
+/**
+ * Combine les limites des facteurs par les cas sûrs : fini × fini → L₁·L₂ ;
+ * fini NON NUL × ±∞ → ±∞ selon les signes ; ±∞ × ±∞ → ±∞. Null pour 0 × ∞
+ * (forme indéterminée) et pour un fini dont la non-nullité n'est pas prouvée
+ * devant un infini.
+ */
+function combineFactorLimits(limits: readonly FactorLimit[]): MathNode | null {
+	const infinite = limits.filter((l) => l.kind === 'infinite');
+	if (infinite.length > 0) {
+		let sign = 1;
+		for (const l of limits) {
+			if (l.kind === 'zero' || l.kind === 'finite') return null;
+			sign *= l.sign;
+		}
+		return sign > 0 ? positiveInfinity() : negativeInfinity();
+	}
+	if (limits.some((l) => l.kind === 'zero')) return number('0');
+	let product: MathNode | null = null;
+	for (const l of limits) {
+		if (l.kind === 'infinite' || l.kind === 'zero') return null;
+		product = product === null ? l.value : exactProduct(product, l.value);
+		if (product === null) return null;
+	}
+	return product;
+}
+
+/**
+ * lim f·g pour des facteurs tous non constants (un facteur constant relève de
+ * `tryConstantFactor`). Chaque facteur a sa limite calculée par le moteur
+ * complet, dans la même direction. Forme 0 × ∞ ou facteur sans limite
+ * bilatérale : si un facteur est un quotient, le produit est réécrit en un
+ * seul quotient (identité sur le domaine) et c'est sa limite qui conclut —
+ * (x²−1)·1/(x−1) = (x²−1)/(x−1) → 2. Sinon, aucune conclusion.
+ */
+function tryProductOfLimits(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): {
+	value: MathNode;
+	technique: LimitRule;
+	form: IndeterminateForm;
+	description: string;
+} | null {
+	if (!isMultiplication(expression)) return null;
+	const factors = flattenProductShallow(expression).map((f) => f.factor);
+	if (factors.some((f) => !containsVariable(f, varName))) return null;
+	if (nestedProducts >= MAX_NESTED_PRODUCTS) return null;
+
+	nestedProducts++;
+	try {
+		const results = factors.map((f) =>
+			evaluateLimit(stripDelimiters(f), varName, approach, dir, options)
+		);
+		const limits = results.map(toFactorLimit);
+		if (limits.every((l): l is FactorLimit => l !== null)) {
+			const value = combineFactorLimits(limits);
+			if (value !== null) {
+				return {
+					value,
+					technique: 'product',
+					form: 'none',
+					description: 'Limite d’un produit : lim f·g = lim f · lim g'
+				};
+			}
+		}
+		// Forme 0 × ∞, ou facteur sans limite bilatérale (1/x en 0) : seul le
+		// quotient réécrit peut conclure. Une limite simplement non trouvée
+		// (non supportée, approchée) ne déclenche rien.
+		// Un fini dont la non-nullité n'est pas prouvée, devant un infini, se
+		// traite comme 0 × ∞ : rien n'est conclu sans la réécriture.
+		const zeroTimesInfinity =
+			limits.some((l) => l?.kind === 'zero' || l?.kind === 'finite') &&
+			limits.some((l) => l?.kind === 'infinite');
+		const noTwoSidedLimit = results.some((r) => r.status === 'does-not-exist');
+		if (!zeroTimesInfinity && !noTwoSidedLimit) return null;
+		// Facteur sans limite bilatérale : le produit est calculé à gauche puis
+		// à droite, et on ne conclut que si les deux côtés concordent —
+		// (x/|x|)·(1/x) en 0 → +∞, (|x|/x)·(x+1)/(x+1) en 0 → rien.
+		if (noTwoSidedLimit && dir === 'both') {
+			const left = concludedLimit(evaluateLimit(expression, varName, approach, 'left', options));
+			const right = concludedLimit(evaluateLimit(expression, varName, approach, 'right', options));
+			if (left === null || right === null) return null;
+			if (!structurallyEqual(left.value, right.value)) return null;
+			return {
+				value: left.value,
+				technique: 'one-sided',
+				form: zeroTimesInfinity ? '0*∞' : 'none',
+				description: 'Limites à gauche et à droite égales'
+			};
+		}
+		const quotient = productAsQuotient(factors);
+		if (quotient === null) return null;
+		const rewritten = evaluateLimit(quotient, varName, approach, dir, options);
+		if (rewritten.value === null || rewritten.value === undefined) return null;
+		if (rewritten.status !== 'exact' && rewritten.status !== 'infinite') return null;
+		// Une conclusion du quotient par l'analyse côté par côté n'est pas
+		// reprise : les côtés du PRODUIT seuls font foi (branche ci-dessus)
+		if (rewritten.technique === 'one-sided') return null;
+		return {
+			value: rewritten.value,
+			technique: rewritten.technique,
+			form: zeroTimesInfinity ? '0*∞' : 'none',
+			description: 'Produit réécrit en un seul quotient'
+		};
+	} finally {
+		nestedProducts--;
+	}
+}
+
+function stripDelimiters(node: MathNode): MathNode {
+	let current = node;
+	while (isDelimiter(current)) current = current.content;
+	return current;
+}
+
+/**
+ * f₁·…·(a/b)·…·fₙ réécrit (f₁·…·a·…·fₙ)/b, sur le PREMIER facteur quotient.
+ * Null si aucun facteur n'est un quotient.
+ */
+function productAsQuotient(factors: readonly MathNode[]): MathNode | null {
+	const index = factors.findIndex((f) => isDivision(stripDelimiters(f)));
+	if (index === -1) return null;
+	const fraction = stripDelimiters(factors[index]);
+	if (!isDivision(fraction)) return null;
+	// a = 1 ne s'écrit pas : (x·1)/x mettait L'Hôpital en échec
+	const numeratorFactors = factors.flatMap((f, i) => {
+		if (i !== index) return [f];
+		const { numerator } = fraction;
+		return isNumber(numerator) && numerator.value === '1' ? [] : [numerator];
+	});
+	const numerator = numeratorFactors.reduce((acc, f) => multiply(acc, f, 'dot'));
+	return divide(numerator, fraction.denominator, 'fraction');
+}
+
+// =============================================================================
 // Somme en ±∞ : terme dominant
 // =============================================================================
 
@@ -1105,6 +1355,54 @@ function containsEulerPower(expr: MathNode): boolean {
 }
 
 /**
+ * L'Hôpital a mené à f'/g' qui n'est plus indéterminé mais que sa substitution
+ * directe ne conclut pas (x/x² → 1/(2x) en 0⁺) : la limite de f'/g', par le
+ * moteur complet, est celle de f/g. Seules une valeur exacte ou infinie
+ * concluent. Pas de boucle : f'/g' n'est pas une forme 0/0 ou ∞/∞, L'Hôpital
+ * ne s'y réapplique pas.
+ */
+function limitOfLhopitalQuotient(
+	lhopitalResult: ReturnType<typeof applyLhopital>,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; status: 'exact' | 'infinite' } | null {
+	const quotient = lhopitalResult.transformedExpr;
+	if (!lhopitalResult.applicable || lhopitalResult.value || !quotient) return null;
+	if (detectIndeterminateForm(quotient, varName, approach, direction) !== 'none') return null;
+	return concludedLimit(evaluateLimit(quotient, varName, approach, direction, options));
+}
+
+/** Valeur d'une limite conclue (exacte ou infinie), ou null. */
+function concludedLimit(
+	result: LimitResult
+): { value: MathNode; status: 'exact' | 'infinite' } | null {
+	if (result.value === null) return null;
+	if (result.status !== 'exact' && result.status !== 'infinite') return null;
+	return { value: result.value, status: isInfinity(result.value) ? 'infinite' : result.status };
+}
+
+/**
+ * Limite, par le moteur complet, de l'expression où |f| a été remplacé par ±f
+ * selon le côté d'approche. Null si la simplification n'est pas celle de la
+ * valeur absolue, ou si la limite n'est pas conclue (exacte ou infinie). Pas
+ * de boucle : l'expression simplifiée ne contient plus de valeur absolue.
+ */
+function limitOfAbsFreeExpression(
+	algebraicResult: AlgebraicResult,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; status: 'exact' | 'infinite' } | null {
+	const simplified = algebraicResult.simplified;
+	if (algebraicResult.technique !== 'abs-simplification' || !simplified) return null;
+	if (isNumber(simplified) || isInfinity(simplified)) return null;
+	return concludedLimit(evaluateLimit(simplified, varName, approach, direction, options));
+}
+
+/**
  * Internal limit evaluation (without one-sided recursion).
  */
 function evaluateLimitInternal(
@@ -1270,6 +1568,26 @@ function evaluateLimitInternal(
 				opts
 			);
 		}
+		const afterLhopital = limitOfLhopitalQuotient(
+			lhopitalResult,
+			varName,
+			approach,
+			direction,
+			options
+		);
+		if (afterLhopital !== null) {
+			return createResult(
+				afterLhopital.value,
+				varName,
+				approach,
+				direction,
+				afterLhopital.status,
+				lhopitalResult.resolvedForm ?? 'none',
+				'lhopital',
+				recorder,
+				opts
+			);
+		}
 	}
 
 	// Try algebraic
@@ -1282,6 +1600,26 @@ function evaluateLimitInternal(
 				approach,
 				direction,
 				isInfinity(algebraicResult.simplified) ? 'infinite' : 'exact',
+				indeterminateForm,
+				'algebraic-simplification',
+				recorder,
+				opts
+			);
+		}
+		const absFree = limitOfAbsFreeExpression(
+			algebraicResult,
+			varName,
+			approach,
+			direction,
+			options
+		);
+		if (absFree !== null) {
+			return createResult(
+				absFree.value,
+				varName,
+				approach,
+				direction,
+				absFree.status,
 				indeterminateForm,
 				'algebraic-simplification',
 				recorder,

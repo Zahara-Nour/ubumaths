@@ -841,8 +841,14 @@ function tryMultiplicationLimit(
 	if (!isMultiplication(expr)) return { success: false };
 
 	// First, check for algebraic cancellation pattern: x * (1/x) or x * (a/x)
+	// Le reste `a` n'est rendu comme limite que s'il est constant : (|x|/x)·x
+	// rendait « |x| », une expression en x, au lieu de 0.
 	const cancellation = tryAlgebraicCancellation(expr, varName);
-	if (cancellation.success && cancellation.simplified) {
+	if (
+		cancellation.success &&
+		cancellation.simplified &&
+		!containsVariable(cancellation.simplified, varName)
+	) {
 		recorder.recordStepByRule(
 			'algebraic-simplification',
 			expr,
