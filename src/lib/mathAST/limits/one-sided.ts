@@ -307,7 +307,7 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 		}
 	}
 
-	// Pôle de tan / cot au point (tan x en π/2) : +∞ d'un côté, −∞ de l'autre
+	// Pôle de tan, cot, sec, csc au point (tan x en π/2) : +∞ d'un côté, −∞ de l'autre
 	if (isTrigPoleAt(expr, varName, approach)) {
 		return true;
 	}
@@ -397,10 +397,19 @@ function getSign(value: number | null): 'positive' | 'negative' | 'zero' | 'unkn
  * @param value - The numeric value to substitute
  * @returns The numeric result or null if evaluation fails
  */
-/** tan u (cos u = 0) ou cot u (sin u = 0) au point approché. */
+/** Pôle d'une fonction trigonométrique : le facteur qui s'y annule. */
+const TRIG_POLE_VANISHING: Record<string, (u: number) => number> = {
+	tan: Math.cos,
+	sec: Math.cos,
+	cot: Math.sin,
+	csc: Math.sin
+};
+
+/** tan u, sec u (cos u = 0) ou cot u, csc u (sin u = 0) au point approché. */
 function isTrigPoleAt(expr: MathNode, varName: string, approach: MathNode): boolean {
 	if (!isFunction(expr) || expr.args.length !== 1) return false;
-	if (expr.name !== 'tan' && expr.name !== 'cot') return false;
+	const vanishingFactor = TRIG_POLE_VANISHING[expr.name];
+	if (vanishingFactor === undefined) return false;
 	let point: number;
 	try {
 		point = evaluateNodeToApproximatedNumber(approach);
@@ -410,8 +419,7 @@ function isTrigPoleAt(expr: MathNode, varName: string, approach: MathNode): bool
 	if (!Number.isFinite(point)) return false;
 	const arg = evaluateAtValue(expr.args[0], varName, point);
 	if (arg === null) return false;
-	const vanishing = expr.name === 'tan' ? Math.cos(arg) : Math.sin(arg);
-	return Math.abs(vanishing) < 1e-9;
+	return Math.abs(vanishingFactor(arg)) < 1e-9;
 }
 
 function evaluateAtValue(expr: MathNode, varName: string, value: number): number | null {

@@ -32,6 +32,7 @@ import { match } from '../pattern/match';
 import type { Pattern } from '../pattern/types';
 import { number, positiveInfinity, negativeInfinity } from '../factory';
 import { structuralBounds, hasStrictSign, type Bounds } from './bounded';
+import { rewriteReciprocalTrig } from './reciprocal-trig';
 import { getNumericValue } from '../common/numeric';
 import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation';
@@ -55,6 +56,9 @@ import {
 	isIndeterminate,
 	type SignedLimitValue
 } from './sign-tracking';
+
+/** Fonctions trigonométriques à pôles (tan, cot, sec, csc). */
+const TRIG_POLE_FUNCTIONS = new Set(['tan', 'cot', 'sec', 'csc']);
 
 // =============================================================================
 // Types
@@ -590,10 +594,11 @@ function tryFunctionComposition(
 		}
 	}
 
-	// Pôle de tan / cot à gauche ou à droite d'un point (tan x en π/2⁻ → +∞) :
-	// la substitution directe, hors domaine, ne conclut plus.
-	if ((funcName === 'tan' || funcName === 'cot') && direction !== 'both' && !isInfinity(approach)) {
-		const whole = classifyWithSign(expr, varName, approach, direction);
+	// Pôle de tan, cot, sec, csc à gauche ou à droite d'un point (tan x en
+	// π/2⁻ → +∞, cot x en 0⁺ → +∞) : la substitution directe, hors domaine,
+	// ne conclut plus. cot, sec, csc sont suivies en quotients de sin et cos.
+	if (TRIG_POLE_FUNCTIONS.has(funcName) && direction !== 'both' && !isInfinity(approach)) {
+		const whole = classifyWithSign(rewriteReciprocalTrig(expr), varName, approach, direction);
 		const value = isSignedInfinity(whole) ? signedValueToInfinity(whole) : null;
 		if (value) {
 			recorder.recordStepByRule(

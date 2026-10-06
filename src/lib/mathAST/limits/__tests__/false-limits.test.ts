@@ -227,3 +227,69 @@ describe('borné × (→ 0) en +∞', () => {
 		expect(limitOf('\\sin x\\cdot\\frac{1}{x}', '+\\infty')).toBe('exact 0');
 	});
 });
+
+describe('e^{±1/x} à un côté en 0 (régression de la revue 2) : la variable sous l’exposant', () => {
+	// 0⁻ : 1/x → −∞, e^{1/x} → 0 ; 0⁺ : −1/x → −∞, e^{−1/x} → 0
+	// (x = ∓1e-3 : e^{-1000} ≈ 0 → 1, 1, 0, −1, 1, 1)
+	it.each([
+		['1+e^{\\frac{1}{x}}', 'left', 'exact 1'],
+		['1+e^{-\\frac{1}{x}}', 'right', 'exact 1'],
+		['x+e^{-\\frac{1}{x}}', 'right', 'exact 0'],
+		['e^{\\frac{1}{x}}-1', 'left', 'exact -1'],
+		['\\frac{1}{1+e^{\\frac{1}{x}}}', 'left', 'exact 1'],
+		['\\frac{1}{1+e^{-\\frac{1}{x}}}', 'right', 'exact 1']
+	] as const)('%s en 0 (%s) → %s', (input, dir, expected) => {
+		expect(limitOf(input, '0', dir)).toBe(expected);
+	});
+
+	// 0⁻ → 1, 0⁺ → 0 : pas de limite bilatérale (main rendait « exact 0 »)
+	it('1/(1+e^{1/x}) en 0 (both) → aucune valeur', () => {
+		const result = limitOf('\\frac{1}{1+e^{\\frac{1}{x}}}', '0', 'both');
+		expect(hasNoValue(result), result).toBe(true);
+	});
+});
+
+describe('ln(0) non réduit : jamais une valeur exacte', () => {
+	// ln(ln x) en 1⁺ : ln x → 0⁺ → −∞ (x = 1+1e-6 : ln(1e-6) ≈ −13.8)
+	it('ln(ln x) en 1⁺ → −∞', () => {
+		expect(limitOf('\\ln(\\ln x)', '1', 'right')).toMatch(/ -inf$/);
+	});
+
+	// ln(sin x) en 0 : à gauche sin x < 0 hors domaine → limite à droite −∞
+	it('ln(sin x) en 0 (both) → −∞', () => {
+		expect(limitOf('\\ln(\\sin x)', '0', 'both')).toMatch(/ -inf$/);
+	});
+
+	it.each([
+		['\\ln(\\ln x)', '1', 'both'],
+		['\\ln(\\sin x)', '0', 'right'],
+		['\\log(\\sin x)', '0', 'right']
+	] as const)('%s en %s (%s) → jamais « ln(0) »', (input, at, dir) => {
+		const result = limitOf(input, at, dir);
+		expect(result).not.toMatch(/ln|log/);
+		expect(result.startsWith('exact') && !result.endsWith('inf'), result).toBe(false);
+	});
+});
+
+describe('pôles de cot, sec, csc à un côté', () => {
+	// cot(±1e-6) = ±1e6 ; csc(1e-6) = 1e6 ; cot(π − 1e-6) = −1e6 ; sec(π/2 − 1e-6) = 1e6
+	it.each([
+		['\\cot x', '0', 'right', '+inf'],
+		['\\cot x', '0', 'left', '-inf'],
+		['\\csc x', '0', 'right', '+inf'],
+		['\\csc x', '0', 'left', '-inf'],
+		['\\cot x', '\\pi', 'left', '-inf'],
+		['\\sec x', '\\frac{\\pi}{2}', 'left', '+inf'],
+		['\\sec x', '\\frac{\\pi}{2}', 'right', '-inf']
+	] as const)('%s en %s (%s) → %s', (input, at, dir, expected) => {
+		expect(limitOf(input, at, dir)).toMatch(new RegExp(` \\${expected}$`));
+	});
+
+	it.each([
+		['\\cot x', '0'],
+		['\\csc x', '0'],
+		['\\sec x', '\\frac{\\pi}{2}']
+	] as const)('%s en %s (both) → n’existe pas', (input, at) => {
+		expect(limitOf(input, at, 'both')).toBe('does-not-exist null');
+	});
+});

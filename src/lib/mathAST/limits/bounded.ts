@@ -23,6 +23,7 @@ import {
 	isSuperscript
 } from '../guards';
 import { containsVariable } from '../common/contains-variable';
+import { superscript } from '../factory';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 /** Intervalle fermé [min, max] contenant toutes les valeurs de l'expression. */
@@ -51,6 +52,12 @@ export function structuralBounds(expr: MathNode, varName: string): Bounds | null
 	if (isOpposite(expr)) {
 		const inner = structuralBounds(expr.operand, varName);
 		return inner === null ? null : { min: -inner.max, max: -inner.min };
+	}
+
+	// \sin^2 x : la puissance portée par le nœud fonction vaut (\sin x)^2
+	if (isFunction(expr) && expr.power && !expr.isInverse) {
+		const { power: exponent, ...plain } = expr;
+		return structuralBounds(superscript(plain, exponent), varName);
 	}
 
 	if (isFunction(expr) && expr.args.length === 1 && !expr.power && !expr.isInverse) {

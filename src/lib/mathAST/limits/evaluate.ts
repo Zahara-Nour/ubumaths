@@ -49,7 +49,7 @@ import {
 	opposite,
 	func
 } from '../factory';
-import { findNodes, mapNode } from '../transforms';
+import { findNodes } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
@@ -63,6 +63,7 @@ import { tryAlgebraicSimplification, type AlgebraicResult } from './algebraic';
 import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
+import { rewriteReciprocalTrig } from './reciprocal-trig';
 import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
 import {
 	limitByGeneralizedDegree,
@@ -161,10 +162,19 @@ function validateApproachInDomain(
 		const { domain } = computeDomain(expr, varName);
 		// Small offset to check domain membership near the approach point
 		// We check at approach ± epsilon to determine left/right accessibility
-		const epsilon = ZERO_TOLERANCE;
+		// (1e-10 tombait dans la tolérance des exclusions périodiques : cot x
+		// se disait non définie à droite de 0)
+		const epsilon = DOMAIN_PROBE_OFFSET;
 
-		const leftDefined = containsValue(domain, approachVal - epsilon);
-		const rightDefined = containsValue(domain, approachVal + epsilon);
+		// Le domaine calculé peut être trop large (ln(sin x) : « ℝ » ; ln(ln x) :
+		// « x > 0 ») : une évaluation hors domaine juste à côté du point le
+		// restreint.
+		const leftDefined =
+			containsValue(domain, approachVal - epsilon) &&
+			!outOfDomainNear(expr, varName, approachVal - epsilon);
+		const rightDefined =
+			containsValue(domain, approachVal + epsilon) &&
+			!outOfDomainNear(expr, varName, approachVal + epsilon);
 
 		// Check based on direction
 		if (direction === 'left' && !leftDefined) {
@@ -196,6 +206,25 @@ function validateApproachInDomain(
 	} catch {
 		// If domain computation fails, assume valid (conservative)
 		return { valid: true, leftDefined: true, rightDefined: true };
+	}
+}
+
+/** Écart au point pour sonder le domaine numériquement. */
+const DOMAIN_PROBE_OFFSET = 1e-7;
+
+/**
+ * f évaluée en `value` sort-elle de son domaine (ln d'un négatif, √ d'un
+ * négatif, arcsin hors [−1, 1]) ? Toute autre erreur d'évaluation ne dit
+ * rien sur le domaine : false.
+ */
+function outOfDomainNear(expr: MathNode, varName: string, value: number): boolean {
+	const magnitude = number(Math.abs(value).toFixed(12));
+	const point = value < 0 ? opposite(magnitude) : magnitude;
+	try {
+		evaluateNodeToApproximatedNumber(substituteValue(expr, varName, point));
+		return false;
+	} catch (error) {
+		return error instanceof Error && /argument must be/.test(error.message);
 	}
 }
 
@@ -264,6 +293,20 @@ function containsInfinity(node: MathNode): boolean {
 	);
 }
 
+/** ln(0), log(0) non réduits : la trace d'un pôle logarithmique substitué. */
+function containsLogOfZero(node: MathNode): boolean {
+	return (
+		findNodes(
+			node,
+			(n) =>
+				isFunction(n) &&
+				(n.name === 'ln' || n.name === 'log') &&
+				n.args.length === 1 &&
+				getNumericValue(stripDelimiters(n.args[0])) === 0
+		).length > 0
+	);
+}
+
 /**
  * Filet : une limite n'est une valeur que si elle est ±∞ SEUL ou une
  * expression sans ∞. « ∞/e^∞ », « ln(∞)/∞ » sont des formes non réduites,
@@ -271,7 +314,7 @@ function containsInfinity(node: MathNode): boolean {
  */
 function rejectUnreducedInfinity(result: LimitResult): LimitResult {
 	if (result.value === null || isInfinity(result.value)) return result;
-	if (!containsInfinity(result.value)) return result;
+	if (!containsInfinity(result.value) && !containsLogOfZero(result.value)) return result;
 	return { ...result, status: 'unsupported', value: null };
 }
 
@@ -1744,7 +1787,18 @@ function tryDirectSubstitution(
 	// en π/2 rendait « 16331239353195370 » (cos(π/2) flottant ≈ 6e-17).
 	const finiteAllowed = () =>
 		pointInDomain(expr, varName, approach) &&
-		!hasVanishingDenominator(substitutable, varName, approach);
+		!hasVanishingDenominator(substitutable, varName, approach, 'outside-exponent');
+
+	// Un dénominateur nul SOUS un exposant (e^{1/x} en 0) ne bloque pas par
+	// lui-même : la substitution exacte du côté demandé fait foi (e^{1/0⁻} = 0).
+	// En bilatéral, les deux côtés doivent donner la même valeur : 1/(1+e^{1/x})
+	// vaut 1 à gauche, 0 à droite — pas de limite.
+	if (
+		!hasVanishingDenominator(substitutable, varName, approach, 'outside-exponent') &&
+		hasVanishingDenominator(substitutable, varName, approach, 'inside-exponent')
+	) {
+		return substitutionUnderExponentPole(substitutable, varName, approach, direction, recorder);
+	}
 
 	// Try exact evaluation first
 	const exactResult = tryDirectSubstitutionExact(
@@ -1755,6 +1809,8 @@ function tryDirectSubstitution(
 		recorder
 	);
 	if (exactResult !== null) {
+		// ln(0) « fini » : un pôle logarithmique, pas une valeur
+		if (containsLogOfZero(exactResult)) return null;
 		return isInfinity(exactResult) || finiteAllowed() ? exactResult : null;
 	}
 
@@ -1767,31 +1823,55 @@ function tryDirectSubstitution(
 /** Seuil sous lequel un dénominateur évalué au point est tenu pour nul. */
 const VANISHING_DENOMINATOR = 1e-9;
 
-/** cot u → cos u / sin u, sec u → 1 / cos u, csc u → 1 / sin u. */
-function rewriteReciprocalTrig(expr: MathNode): MathNode {
-	return mapNode(expr, (node) => {
-		if (!isFunction(node) || node.args.length !== 1 || node.power || node.isInverse) return node;
-		const [arg] = node.args;
-		switch (node.name) {
-			case 'cot':
-				return divide(func('cos', [arg]), func('sin', [arg]), 'fraction');
-			case 'sec':
-				return divide(number('1'), func('cos', [arg]), 'fraction');
-			case 'csc':
-				return divide(number('1'), func('sin', [arg]), 'fraction');
-			default:
-				return node;
+/**
+ * Substitution exacte quand le seul pôle est sous un exposant : valeur
+ * directionnelle (signed zeros), et en bilatéral, gauche = droite exigé.
+ */
+function substitutionUnderExponentPole(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorderImpl
+): MathNode | null {
+	if (direction !== 'both') {
+		return tryDirectSubstitutionExact(expr, varName, approach, direction, recorder);
+	}
+	const left = tryDirectSubstitutionExact(expr, varName, approach, 'left', recorder);
+	const right = tryDirectSubstitutionExact(expr, varName, approach, 'right', recorder);
+	if (left === null || right === null || !structurallyEqual(left, right)) return null;
+	return left;
+}
+
+/** Nœuds situés dans un exposant (de e^u, a^u) ou sous exp(…). */
+function nodesInsideExponents(expr: MathNode): Set<MathNode> {
+	const inside = new Set<MathNode>();
+	for (const holder of findNodes(expr, (n) => isSuperscript(n) || isFunction(n))) {
+		let root: MathNode | null = null;
+		if (isSuperscript(holder)) root = holder.superscript;
+		else if (isFunction(holder) && holder.name === 'exp' && holder.args.length === 1) {
+			root = holder.args[0];
 		}
-	});
+		if (root !== null) for (const node of findNodes(root, () => true)) inside.add(node);
+	}
+	return inside;
 }
 
 /**
  * Un dénominateur (ou le cos sous un tan) s'annule-t-il numériquement au
  * point ? Alors la substitution ne dit rien : c'est un pôle ou une forme 0/0.
+ * `where` restreint aux dénominateurs hors exposant ou sous un exposant.
  */
-function hasVanishingDenominator(expr: MathNode, varName: string, approach: MathNode): boolean {
+function hasVanishingDenominator(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	where: 'outside-exponent' | 'inside-exponent'
+): boolean {
+	const inside = nodesInsideExponents(expr);
 	const denominators: MathNode[] = [];
 	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n))) {
+		if (inside.has(node) !== (where === 'inside-exponent')) continue;
 		if (isDivision(node)) denominators.push(node.denominator);
 		else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
 			denominators.push(func('cos', [node.args[0]]));
