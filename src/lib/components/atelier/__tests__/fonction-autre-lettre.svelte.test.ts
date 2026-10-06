@@ -97,4 +97,31 @@ describe('carte de f(t) = t²', () => {
 		);
 		expect(atelier.get('f')?.definition).toBe('');
 	});
+
+	// Revue de #905 : Calcul `f(s) = s^2` après `f(t) = t^2` ne change pas la
+	// définition rangée (x^2), seulement la lettre — le champ restait en t
+	it('la lettre change ailleurs, la définition non : le champ suit', async () => {
+		const atelier = atelierWithT();
+		const { container } = await render(WithAtelier, { atelier });
+		const card = await open(container, 'f');
+
+		atelier.update('f', 'x^2', 'text', 's');
+
+		await vi.waitFor(() => {
+			const now = cardFor(container, 'f');
+			expect(now.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('f(s)=');
+			expect(fieldOf(now).value).toContain('s^2');
+		});
+		expect(fieldOf(card).value).not.toContain('t');
+	});
+
+	it('x_1 n’est pas montré t_1 dans l’en-tête', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'x_1', definition: '4' }, 'text');
+		atelier.create({ kind: 'function', name: 'f', definition: 'x_1+x', letter: 't' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		const spoken = cardFor(container, 'f').querySelector('.definition .sr-only')?.textContent;
+		expect(spoken).toMatch(/'X' sub 1/i);
+	});
 });

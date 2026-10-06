@@ -981,13 +981,19 @@ export class Atelier {
 		const skipped: SkippedObject[] = [];
 
 		for (const stored of state.objects) {
-			const result = this.create({
+			const input: CreateInput = {
 				kind: stored.kind,
 				name: stored.name,
 				definition: stored.definition,
 				...(stored.kind === 'function' && stored.letter && { letter: stored.letter }),
 				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
-			});
+			};
+			let result = this.create(input);
+			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
+			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`)
+			if (!result.ok && input.letter !== undefined) {
+				result = this.create({ ...input, letter: undefined });
+			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
 				continue;

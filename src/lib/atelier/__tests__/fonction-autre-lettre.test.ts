@@ -20,7 +20,7 @@ import { CalcDesk } from '../desk.svelte';
 import { historyToJson } from '../history-export';
 import { readHistory } from '../history-import';
 import { fieldLatexOf } from '../mathfield';
-import { studentDefinitionOf, typedLetterOf } from '../letter';
+import { letterRejection, studentDefinitionOf, typedLetterOf } from '../letter';
 
 function session() {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };
@@ -202,5 +202,99 @@ describe('relire et rejouer', () => {
 		expect(replayed.replay(read.history).ok).toBe(true);
 		expect(read.history.entries[0]).toMatchObject({ kind: 'saisie', input: 'f(t)=t^2' });
 		expect(replayed.entries.map((e) => e.text)).toEqual(d.entries.map((e) => e.text));
+	});
+});
+
+// Revue de #905 : `f = …` sans lettre, renommage textuel, relecture abîmée
+describe('redéfinie sans (lettre) : f = …', () => {
+	it('f = t + 1 hérite de la lettre t et se range en x', () => {
+		const s = session();
+		runInput(s, 'f(t) = t^2');
+		const r = runInput(s, 'f = t + 1');
+
+		expect(r.kind).toBe('definition');
+		const f = s.atelier.get('f')!;
+		expect(f.definition.replace(/\s/g, '')).toBe('x+1');
+		expect(f.status).toBe('ok');
+		expect(f.missing ?? []).toEqual([]);
+		expect(typedLetterOf(s.atelier, f)).toBe('t');
+		expect(studentDefinitionOf(s.atelier, f).replace(/\s/g, '')).toBe('t+1');
+	});
+
+	it('f = x + 1 alors que la lettre est t : refusé comme f(t) = t + x', () => {
+		const s = session();
+		runInput(s, 'f(t) = t^2');
+		const r = runInput(s, 'f = x + 1');
+
+		expect(r.kind).toBe('refus');
+		expect(outputOf(r)).toContain('f(t)');
+		expect(s.atelier.get('f')!.definition).toBe('x^2');
+	});
+});
+
+describe('renommage sur l’arbre, pas sur le texte', () => {
+	it('a = 2 puis f(t) = at : accepté, f(3) vaut 6, montré at', () => {
+		const s = session();
+		runInput(s, 'a = 2');
+		const r = runInput(s, 'f(t) = at');
+
+		expect(r.kind).toBe('definition');
+		const f = s.atelier.get('f')!;
+		expect(f.status).toBe('ok');
+		expect(f.missing ?? []).toEqual([]);
+		expect(outputOf(runInput(s, 'f(3)')).replace(/\s/g, '')).toBe('6');
+		expect(studentDefinitionOf(s.atelier, f).replace(/\s/g, '')).toBe('at');
+	});
+
+	it('f(t) = 2tcos(t) : accepté, sans t libre', () => {
+		const s = session();
+		const r = runInput(s, 'f(t) = 2tcos(t)');
+
+		expect(r.kind).toBe('definition');
+		const f = s.atelier.get('f')!;
+		expect(f.status).toBe('ok');
+		expect(f.definition).not.toMatch(/t(?!_)/);
+		expect(outputOf(runInput(s, 'f(0)')).replace(/\s/g, '')).toBe('0');
+	});
+
+	it('f(t) = t_1 + t : t_1 reste un objet cité, t devient x', () => {
+		const s = session();
+		const r = runInput(s, 'f(t) = t_1 + t');
+
+		expect(r.kind).toBe('definition');
+		const f = s.atelier.get('f')!;
+		expect(f.definition.replace(/\s/g, '')).toBe('t_1+x');
+		// ⚠️ Pas d'assertion sur `missing` : `referencesOf` lit `a_1` comme `a`
+		// pour TOUT nom indicé (mesuré : `y = a_1 + 2` attend `a`), défaut antérieur
+		expect(studentDefinitionOf(s.atelier, f).replace(/\s/g, '')).toBe('t_1+t');
+	});
+
+	it('x_1 dans une fonction de t n’est pas renommé au retour', () => {
+		const s = session();
+		runInput(s, 'x_1 = 4');
+		runInput(s, 'f(t) = x_1 + t');
+		const f = s.atelier.get('f')!;
+
+		expect(f.status).toBe('ok');
+		expect(studentDefinitionOf(s.atelier, f).replace(/\s/g, '')).toBe('x_1+t');
+		expect(fieldLatexOf(f, s.atelier.functionNames, 't')).toContain('x_1');
+	});
+});
+
+describe('relecture d’une lettre refusée', () => {
+	it.each(['e', 'n', 'f'])('lettre %s : la fonction est gardée, en x', (letter) => {
+		const copy = new Atelier();
+		copy.restore({
+			version: 1,
+			objects: [{ kind: 'function', name: 'f', definition: 'x^2', letter }]
+		});
+
+		const f = copy.get('f');
+		expect(f?.definition).toBe('x^2');
+		expect(typedLetterOf(copy, f!)).toBe('x');
+	});
+
+	it.each(['', 'tt', '1', 't_1'])('letterRejection refuse la forme « %s »', (letter) => {
+		expect(letterRejection(letter, 'f', [])).not.toBeNull();
 	});
 });

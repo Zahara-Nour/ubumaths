@@ -294,7 +294,13 @@ function defineObject(
 	// `f(t) = t^2` : la carte garde t, l'atelier range en x (`letter.ts`). La
 	// lettre est jugée AVANT le renommage : `f(a)` avec un objet `a`, ou x dans
 	// une définition en t, changeraient le sens en silence.
-	const letter = parameter !== undefined && parameter !== 'n' ? parameter : undefined;
+	// Sans `(lettre)`, `f = …` redéfinit la fonction dans SA lettre : `f = t + 1`
+	// après `f(t)` se range x + 1, et `f = x + 1` est refusé comme `f(t) = t + x`
+	// (revue de #905 : x tapé était montré t, et t restait « en attente »).
+	const inherited =
+		parameter === undefined && existing?.kind === 'function' ? existing.letter : undefined;
+	const explicit = parameter !== undefined && parameter !== 'n' ? parameter : undefined;
+	const letter = explicit ?? inherited;
 	let stored = body.trim();
 	if (letter !== undefined && letter !== INTERNAL_LETTER) {
 		const refused = letterRejection(

@@ -10,13 +10,21 @@
  * ⚠️ Le renommage t → x n'est sûr que si la définition tapée ne contient PAS
  * déjà x : `f(t) = t + x` deviendrait `x + x` en silence. On la refuse.
  *
+ * ⚠️ Le renommage se fait sur l'ARBRE, dans les deux sens (revue de #905) : sur
+ * le texte, `at` ou `2tcos(t)` sont des mots que l'expression régulière ne
+ * découpe pas comme le parseur, et `t_1` (un autre objet) se confondait avec t.
+ *
  * @module atelier/letter
  */
 
 import type { AtelierObject } from './types';
-import { astOf, renameInDefinition, type Provenance } from './parse';
+import type { MathNode } from '$lib/mathAST/types';
+import { astOf, readingMode, renameInDefinition, withPlainEuler, type Provenance } from './parse';
 import { RESERVED_NAMES, derivativeOf } from './names';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+import { transformAST, visitAST } from '$lib/mathAST/visitor';
+import { nodesEqual } from '$lib/mathAST/normal/hash';
+import { toCustom } from '$lib/mathAST/custom-generator';
+import { toLatex } from '$lib/mathAST/latex-generator';
 
 // =============================================================================
 // Types
@@ -55,12 +63,75 @@ export function typedLetterOf(atelier: LetterSource, object: AtelierObject): str
 	return owner.letter ?? INTERNAL_LETTER;
 }
 
+/**
+ * L'arbre où la VARIABLE `from` devient `to`.
+ *
+ * ⚠️ Un nom indicé (`t_1`, `x_1`) est un autre objet : il n'est pas touché.
+ * `substitute` de mathAST, lui, remplace aussi la base d'un indice.
+ */
+export function renameVariableIn(ast: MathNode, from: string, to: string): MathNode {
+	return transformAST(ast, {
+		enterSubscript: () => 'skip',
+		enterVariable: (node) => (node.name === from ? { ...node, name: to } : undefined)
+	});
+}
+
+/** La variable `name` est-elle libre dans l'arbre (hors noms indicés) ? */
+function hasVariable(ast: MathNode, name: string): boolean {
+	let found = false;
+	visitAST(ast, {
+		enterSubscript: () => 'skip',
+		enterVariable: (node) => {
+			if (node.name === name) found = true;
+		}
+	});
+	return found;
+}
+
+/**
+ * Une définition où la variable `from` devient `to`, écrite dans la syntaxe de
+ * sa provenance. L'arbre décide ; le texte de l'élève est GARDÉ quand le
+ * remplacement mot à mot donne le même arbre (`3t + 1` → `3x + 1`), sinon le
+ * texte est régénéré (`2tcos(t)` → `2xcos(x)`).
+ *
+ * Une définition illisible est rendue telle quelle : elle porte déjà son
+ * erreur, et l'élève doit retrouver ce qu'il a tapé.
+ */
+export function renameVariable(
+	definition: string,
+	from: string,
+	to: string,
+	provenance: Provenance,
+	functionNames: readonly string[]
+): string {
+	if (from === to) return definition;
+	const ast = astOf(definition, provenance, functionNames);
+	if (ast === null) return definition;
+	const target = renameVariableIn(ast, from, to);
+	if (nodesEqual(ast, target)) return definition;
+
+	const wordForWord = renameInDefinition(definition, from, to);
+	const reread = astOf(wordForWord, provenance, functionNames);
+	if (reread !== null && nodesEqual(reread, target)) return wordForWord;
+
+	return readingMode(provenance) === 'latex' ? toLatex(target) : toCustom(withPlainEuler(target));
+}
+
 /** La définition telle que l'élève la lit : rangée en x, rendue dans sa lettre. */
-export function studentDefinitionOf(atelier: LetterSource, object: AtelierObject): string {
+export function studentDefinitionOf(
+	atelier: LetterSource & { readonly functionNames: readonly string[] },
+	object: AtelierObject
+): string {
 	const letter = typedLetterOf(atelier, object);
 	return letter === INTERNAL_LETTER || object.kind !== 'function'
 		? object.definition
-		: renameInDefinition(object.definition, INTERNAL_LETTER, letter);
+		: renameVariable(
+				object.definition,
+				INTERNAL_LETTER,
+				letter,
+				object.provenance ?? 'url',
+				atelier.functionNames
+			);
 }
 
 /**
@@ -74,6 +145,10 @@ export function letterRejection(
 	others: readonly string[]
 ): string | null {
 	if (letter === INTERNAL_LETTER) return null;
+	// Une lettre seule : `f(tt)`, `f(t_1)` ou une lettre vide relue d'un lien
+	if (!/^[A-Za-z]$/.test(letter)) {
+		return `La variable de ${functionName} doit être une seule lettre : écris par exemple ${functionName}(t) = …`;
+	}
 	if (RESERVED_NAMES.has(letter)) {
 		return `« ${letter} » est réservé (c'est une constante) : il ne peut pas être la variable de ${functionName}. Choisis une autre lettre, par exemple t.`;
 	}
@@ -89,11 +164,9 @@ export function letterRejection(
 /**
  * La définition à RANGER (en x) pour ce que l'élève a tapé dans sa lettre.
  *
- * Refusée quand le renommage changerait le sens :
- * - x figure déjà dans la définition (`f(t) = t + x`) : il deviendrait la
- *   variable elle-même ;
- * - la lettre est collée à un mot (`tcos(t)` → `tcos`) et le renommage ne
- *   l'atteint pas : elle resterait libre, « en attente ».
+ * Refusée quand x figure déjà dans la définition (`f(t) = t + x`) : il
+ * deviendrait la variable elle-même, en silence. Un nom indicé (`x_1`) est un
+ * autre objet, il ne gêne pas.
  */
 export function internalDefinition(
 	typed: string,
@@ -105,20 +178,14 @@ export function internalDefinition(
 	if (letter === INTERNAL_LETTER || typed.trim() === '') return { ok: true, definition: typed };
 
 	const read = astOf(typed, provenance, functionNames);
-	if (read !== null && getVariables(read).has(INTERNAL_LETTER)) {
+	if (read !== null && hasVariable(read, INTERNAL_LETTER)) {
 		return {
 			ok: false,
 			message: `${functionName}(${letter}) est une fonction de ${letter} : x n'y a pas de sens. Écris tout en ${letter}, ou définis ${functionName}(x) = …`
 		};
 	}
-
-	const definition = renameInDefinition(typed, letter, INTERNAL_LETTER);
-	const converted = astOf(definition, provenance, functionNames);
-	if (converted !== null && getVariables(converted).has(letter)) {
-		return {
-			ok: false,
-			message: `Je ne lis pas ${letter} partout dans cette définition : sépare-le par un signe de multiplication (${letter}*cos(${letter}) plutôt que ${letter}cos(${letter})).`
-		};
-	}
-	return { ok: true, definition };
+	return {
+		ok: true,
+		definition: renameVariable(typed, letter, INTERNAL_LETTER, provenance, functionNames)
+	};
 }

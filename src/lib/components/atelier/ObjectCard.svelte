@@ -17,8 +17,12 @@
 	import { forMathlive } from '$lib/atelier/mathfield';
 	import { derivativeOf, displayName } from '$lib/atelier/names';
 	import { expressionOf } from '$lib/atelier/engine';
-	import { INTERNAL_LETTER, studentDefinitionOf, typedLetterOf } from '$lib/atelier/letter';
-	import { substitute } from '$lib/mathAST/eval/substitute';
+	import {
+		INTERNAL_LETTER,
+		renameVariableIn,
+		studentDefinitionOf,
+		typedLetterOf
+	} from '$lib/atelier/letter';
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
@@ -125,7 +129,7 @@
 		const letter = typedLetterOf(atelier, object);
 		const shown =
 			object.kind === 'function' && letter !== INTERNAL_LETTER
-				? substitute(ast, { [INTERNAL_LETTER]: { type: 'variable', name: letter } })
+				? renameVariableIn(ast, INTERNAL_LETTER, letter)
 				: ast;
 		const latex = forMathlive(toLatex(shown));
 		return {

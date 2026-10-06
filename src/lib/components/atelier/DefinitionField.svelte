@@ -51,6 +51,14 @@
 	// svelte-ignore state_referenced_locally
 	let lastWritten = object.definition;
 
+	/**
+	 * La lettre que montre le champ. ⚠️ Elle peut changer SANS que la définition
+	 * rangée change : Calcul `f(s) = s^2` après `f(t) = t^2` range toujours x^2,
+	 * et le champ restait en t (revue de #905).
+	 */
+	// svelte-ignore state_referenced_locally
+	let lastLetter = letter;
+
 	let timer: ReturnType<typeof setTimeout> | null = null;
 
 	/**
@@ -103,14 +111,16 @@
 	// C8 : modifiée ailleurs, la définition est recopiée dans le champ
 	$effect(() => {
 		const definition = object.definition;
-		if (definition === lastWritten) return;
+		const shownLetter = letter;
+		if (definition === lastWritten && shownLetter === lastLetter) return;
 		lastWritten = definition;
+		lastLetter = shownLetter;
 		// La version venue d'ailleurs l'emporte sur une frappe encore en attente
 		if (timer !== null) clearTimeout(timer);
 		timer = null;
 		dirty = false;
 		refusal = null;
-		latex = fieldLatexOf(object, atelier.functionNames, letter);
+		latex = fieldLatexOf(object, atelier.functionNames, shownLetter);
 		// ⚠️ `MathField` ne recopie pas une valeur VIDE (`if (value)`) ; on ne
 		// touche pas à ce composant partagé avec les réponses aux questions
 		if (latex === '' && element) element.value = '';

@@ -30,7 +30,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
 import { derivativeOf } from './names';
-import { astOf, readNumber } from './parse';
+import { astOf, readNumber, withPlainEuler } from './parse';
 import { constantOf } from './constant';
 import { transformAST } from '$lib/mathAST/visitor';
 import {
@@ -393,22 +393,6 @@ export function expressionOf(
 ): Substituted {
 	const result = substitutedAstOf(atelier, name, options);
 	return result.ok ? { ok: true, expression: toCustom(withPlainEuler(result.ast)) } : result;
-}
-
-/**
- * Le nombre d'Euler écrit `e`, et non `\euler`.
- *
- * ⚠️ `toCustom` écrit `\euler`, que ni le parseur du grapheur ni le moteur de
- * Calcul ne lisent (« Unknown command: \euler ») : `f(x) = e^x` ne se traçait
- * pas, `.deriver f` rendait une ligne vide (retour de David, 2026-10-05). `e`
- * est un nom réservé de l'atelier : l'écrire `e` ne peut désigner rien d'autre,
- * et les deux le lisent comme Euler.
- */
-function withPlainEuler(ast: MathNode): MathNode {
-	return transformAST(ast, {
-		enterConstant: (node) =>
-			node.constant === 'euler' ? { type: 'variable', name: 'e' } : undefined
-	});
 }
 
 /** `v_n` → `v(n)` pour chaque autre suite explicite liée. */

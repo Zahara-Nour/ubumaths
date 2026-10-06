@@ -14,8 +14,8 @@
  */
 
 import type { AtelierObject, ObjectKind } from './types';
-import { astOf, parseDefinition, readingMode, readNumber, renameInDefinition } from './parse';
-import { INTERNAL_LETTER } from './letter';
+import { astOf, parseDefinition, readingMode, readNumber } from './parse';
+import { INTERNAL_LETTER, renameVariable } from './letter';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 
@@ -35,12 +35,12 @@ export function fieldLatexOf(
 	letter: string = INTERNAL_LETTER
 ): string {
 	// `f(t) = t^2` : rangée en x, montrée dans la lettre de l'élève (`letter.ts`)
-	const definition =
-		letter === INTERNAL_LETTER
-			? object.definition
-			: renameInDefinition(object.definition, INTERNAL_LETTER, letter);
-	if (definition.trim() === '') return '';
 	const provenance = object.provenance ?? 'url';
+	const definition =
+		letter === INTERNAL_LETTER || object.kind !== 'function'
+			? object.definition
+			: renameVariable(object.definition, INTERNAL_LETTER, letter, provenance, functionNames);
+	if (definition.trim() === '') return '';
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
 	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
 	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)
