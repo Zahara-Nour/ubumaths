@@ -1,5 +1,6 @@
 /**
- * La variable d'une commande (`.diff`, `.solve`, `.integrate`) : `x`, sauf si
+ * La variable d'une commande (`.diff`, `.solve`, `.integrate`, `.variations`,
+ * `.domain`, `.taylor`) : `x`, sauf si
  * une autre est donnée après un point-virgule (`.solve 3 = 2t ; t`).
  *
  * ⚠️ **Aucune devinette** (décision de David, 2026-10-06). Deux règles ont
@@ -64,6 +65,28 @@ const BARE_FUNCTION =
 /** Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`. */
 const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;
 
+/**
+ * Le nombre de termes (entier) et le point (facultatif) de `.taylor`, en fin
+ * de texte : `… 5` ou `… 5 0`. Même lecture qu'avant le point-virgule : le
+ * nombre de termes est un entier, le point peut être négatif ou décimal.
+ */
+const TRAILING_TAYLOR_NUMBERS = /^(.*?\S)\s+(\d+)(?:\s+([-+]?(?:\d+\.?\d*|\.\d+)))?$/s;
+
+/**
+ * Les fonctions que `.taylor` accepte par leur NOM seul (`.taylor sin 5` :
+ * sin(x)). Un nom seul n'est pas une fonction « sans parenthèses » : rien
+ * ne le suit, il n'y a pas d'argument à mal lire.
+ */
+export const TAYLOR_SHORTCUT_FUNCTIONS: ReadonlySet<string> = new Set([
+	'sin',
+	'cos',
+	'tan',
+	'exp',
+	'ln',
+	'sqrt',
+	'log'
+]);
+
 /** Le début de l'indication de variable — c'est ainsi qu'on la reconnaît. */
 const HINT_START = 'Calcul par rapport à x.';
 
@@ -120,7 +143,7 @@ export function splitVariableArgument(input: string): {
 export function otherVariableHint(
 	node: MathNode,
 	bound: Iterable<string> = [],
-	options: { readonly bounds?: boolean } = {}
+	options: { readonly bounds?: boolean; readonly taylor?: boolean } = {}
 ): string | null {
 	const variables = getVariables(node);
 	if (variables.has(DEFAULT_VARIABLE)) return null;
@@ -130,9 +153,12 @@ export function otherVariableHint(
 	const single = candidates.length === 1 ? candidates[0] : null;
 	const how = single !== null ? `« ; ${single} »` : '« ; » suivi de son nom';
 	// `.integrate` : les bornes suivent la variable (`; t 0 1`)
+	// `.taylor` : le nombre de termes et le point aussi (`; t 5 0`)
 	const where = options.bounds
 		? ` ; les bornes se mettent à la fin${single !== null ? ` : « ; ${single} 0 1 »` : ''}`
-		: '';
+		: options.taylor
+			? ` ; le nombre de termes et le point se mettent à la fin${single !== null ? ` : « ; ${single} 5 0 »` : ''}`
+			: '';
 	return `${HINT_START} Pour une autre variable, écris ${how}${where}.`;
 }
 
@@ -160,6 +186,32 @@ export function splitIntegralArgument(input: string): {
 }
 
 /**
+ * Séparer l'argument de `.taylor` : expression, variable après `;` (ou
+ * `null`), nombre de termes (`null` s'il manque) et point (0 par défaut).
+ * Les nombres se placent avant ou après `; t`, comme les bornes de
+ * `.integrate` : `e^t 5 0 ; t` comme `e^t ; t 5 0`.
+ */
+export function splitTaylorArgument(input: string): {
+	expression: string;
+	variable: string | null;
+	terms: number | null;
+	center: number;
+} {
+	const trimmed = input.trim();
+	// Nombres en fin (`… ; t 5 0` ou `… 5 0`), sinon juste avant `; t`
+	const trailing = TRAILING_TAYLOR_NUMBERS.exec(trimmed);
+	const { expression, variable } = splitVariableArgument(trailing === null ? trimmed : trailing[1]);
+	const inner = trailing === null ? TRAILING_TAYLOR_NUMBERS.exec(expression) : null;
+	const found = trailing ?? inner;
+	return {
+		expression: inner === null ? expression : inner[1].trim(),
+		variable,
+		terms: found === null ? null : parseInt(found[2], 10),
+		center: found?.[3] === undefined ? 0 : parseFloat(found[3])
+	};
+}
+
+/**
  * L'indication (`otherVariableHint`) qu'une commande `expression[ ; v]`
  * ajoute à sa réponse — ou `null` : variable donnée après `;`, x présent,
  * expression illisible. Pour qui n'a que la SAISIE (l'atelier, qui affiche
@@ -173,16 +225,25 @@ export function variableHintOf(
 		readonly bound?: Iterable<string>;
 		/** `.integrate` : bornes à ôter, et l'indication dit où les mettre */
 		readonly integral?: boolean;
+		/** `.taylor` : nombre de termes et point à ôter, idem */
+		readonly taylor?: boolean;
 	} = {}
 ): string | null {
 	const { expression, variable } = options.integral
 		? splitIntegralArgument(input)
-		: splitVariableArgument(input);
+		: options.taylor
+			? splitTaylorArgument(input)
+			: splitVariableArgument(input);
 	if (variable !== null) return null;
+	// `.taylor sin 5` : le nom seul se lit sin(x), x apparaît
+	if (options.taylor && TAYLOR_SHORTCUT_FUNCTIONS.has(expression)) return null;
 	const ast = parse(expression, options.parserOptions).ast;
 	return ast === undefined
 		? null
-		: otherVariableHint(indexVariables(ast).node, options.bound, { bounds: options.integral });
+		: otherVariableHint(indexVariables(ast).node, options.bound, {
+				bounds: options.integral,
+				taylor: options.taylor
+			});
 }
 
 /** Une ligne de sortie est-elle l'indication de variable ? */
@@ -257,7 +318,8 @@ export function chosenVariable(
  * pas (« accepter cos x apporte plus de problèmes que ça n'en résout »). Le
  * parseur LaTeX le lit s·i·n·x — `.diff sin x + cos x` répondait une dérivée
  * fausse, sans erreur. `\sin x` (LaTeX) et `sin(x)` restent acceptés.
- * Partagé par `.diff`, `.solve` et `.integrate`.
+ * Partagé par `.diff`, `.solve`, `.integrate`, `.variations`, `.domain` et
+ * `.taylor`.
  */
 export function bareFunctionName(input: string): string | null {
 	return BARE_FUNCTION.exec(input)?.[1] ?? null;
