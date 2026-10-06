@@ -1257,8 +1257,8 @@ class RDParser {
 					);
 				}
 
-				// Parse approach value - use parsePostfix to stop before ^ (direction indicator)
-				approach = this.parsePostfix();
+				// Parse approach value - stops before ^ (direction indicator)
+				approach = this.parseLimitApproach();
 
 				// Check for direction superscript within the subscript: a^+ or a^-
 				if (this.check('CARET')) {
@@ -1295,6 +1295,23 @@ class RDParser {
 		const expression = this.parseUnary();
 
 		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
+	}
+
+	/**
+	 * Borne d'une limite : signes en tête puis un primaire, qui s'arrête avant
+	 * `^` (le côté). Sans la prise des signes ici, `-2^+` passait par la
+	 * puissance et le `+` du côté était lu comme une addition inachevée.
+	 */
+	private parseLimitApproach(): MathNode {
+		if (this.check('MINUS')) {
+			this.advance();
+			return this.applyColor(MathAST.opposite(this.parseLimitApproach()));
+		}
+		if (this.check('PLUS')) {
+			this.advance();
+			return this.applyColor(MathAST.positive(this.parseLimitApproach()));
+		}
+		return this.parsePostfix();
 	}
 
 	// =========================================================================
