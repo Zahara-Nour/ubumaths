@@ -269,9 +269,14 @@ function buildSymbolicTerm(
  * un paramètre littéral (`a` dans `a x^2`) que l'évaluation numérique ne sait
  * pas chiffrer.
  *
- * ⚠️ La dérivée doit d'abord être définie au point : on la chiffre avec une
- * valeur quelconque des paramètres. Sans ce garde, `ln(a x)` en 0 rendrait un
- * « ln(0) » simplifié au lieu d'être refusé comme `ln(x)`.
+ * ⚠️ La dérivée doit d'abord être définie au point : on la chiffre avec un
+ * petit jeu de valeurs d'essai des paramètres, et on ne refuse que si elle est
+ * indéfinie pour TOUTES (`ln(a x)` en 0). Une seule valeur ne suffit pas :
+ * `√(a−1) x` est indéfini pour a = 0,73 mais pas pour a = 2,31.
+ *
+ * ⚠️ Le coefficient simplifié est ensuite RE-VÉRIFIÉ à une valeur d'essai où
+ * la dérivée est définie : si `simplify` a perdu un facteur (`a i` → `a`),
+ * l'écart est détecté et le développement refusé plutôt que rendu faux.
  */
 function symbolicCoefficient(
 	derivative: MathNode,
@@ -281,22 +286,59 @@ function symbolicCoefficient(
 	parameters: readonly string[],
 	functions?: FunctionBindings
 ): MathNode {
-	const probe = Object.fromEntries([
-		...parameters.map((name) => [name, PARAMETER_PROBE] as const),
-		[varName, center] as const
-	]);
-	const checked = evaluate(substitute(derivative, probe), { mode: 'decimal', functions });
-	if (checked.status !== 'value' || !Number.isFinite(valueToNumber(checked.value))) {
+	const probeAt = (value: number) =>
+		Object.fromEntries(parameters.map((name) => [name, value] as const));
+	const realValue = (node: MathNode): number | null => {
+		try {
+			const result = evaluate(node, { mode: 'decimal', functions });
+			if (result.status !== 'value') return null;
+			const value = valueToNumber(result.value);
+			return Number.isFinite(value) ? value : null;
+		} catch {
+			return null;
+		}
+	};
+
+	let probe: Record<string, number> | null = null;
+	let expected = 0;
+	for (const value of PARAMETER_PROBES) {
+		const checked = realValue(substitute(derivative, { ...probeAt(value), [varName]: center }));
+		if (checked !== null) {
+			probe = probeAt(value);
+			expected = checked;
+			break;
+		}
+	}
+	if (probe === null) {
 		throw new Error('Derivative is not defined at the center');
 	}
+
 	const atCenter = substitute(derivative, { [varName]: center });
 	const scaled =
 		degree < 2 ? atCenter : divide(atCenter, numericNode(factorial(degree)), 'fraction');
-	return simplify(scaled).result;
+	const coefficient = simplify(scaled).result;
+
+	const recomputed = realValue(substitute(coefficient, probe));
+	const actual = recomputed === null ? null : recomputed * factorial(degree);
+	if (actual === null || Math.abs(actual - expected) > 1e-9 * Math.max(1, Math.abs(expected))) {
+		throw new Error('Symbolic coefficient does not match the derivative');
+	}
+	return coefficient;
 }
 
-/** Valeur d'essai d'un paramètre littéral : quelconque, non entière, positive. */
-const PARAMETER_PROBE = 0.7319;
+/**
+ * Valeurs d'essai d'un paramètre littéral : quelconques, non entières, des
+ * deux signes et des deux côtés de 1, pour qu'une racine ou un logarithme du
+ * paramètre soit défini pour au moins l'une d'elles.
+ */
+const PARAMETER_PROBES = [0.7319, -0.7319, 2.31, -2.31] as const;
+
+/**
+ * Constantes que `getVariables` rend comme des lettres : jamais des
+ * paramètres. `i` surtout : le prendre pour un paramètre réel donnerait un
+ * développement faux d'une fonction à valeurs complexes.
+ */
+const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi', 'e', 'i']);
 
 // =============================================================================
 // Main Taylor Expansion Function
@@ -368,7 +410,7 @@ export function taylorExpand(
 	// Les lettres autres que la variable : des paramètres (`a` dans `a x^2`).
 	// Un nom de fonction de l'élève n'en est pas un.
 	const parameters = [...getVariables(expr)].filter(
-		(name) => name !== varName && functions?.[name] === undefined
+		(name) => name !== varName && !CONSTANT_NAMES.has(name) && functions?.[name] === undefined
 	);
 
 	for (let n = 0; n < numTerms; n++) {

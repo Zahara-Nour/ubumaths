@@ -45,4 +45,23 @@ describe('Taylor avec un paramètre littéral', () => {
 	it('un point où la fonction n’est pas définie reste refusé, paramètre ou non', () => {
 		expect(() => taylorExpand(ast('ln(a x)'), { variable: 'x', terms: 3 })).toThrow(TaylorError);
 	});
+
+	it('i n’est pas un paramètre : a i x^2 est refusé, jamais rendu a x^2', () => {
+		expect(() => taylorExpand(ast('a i x^2'), { variable: 'x', terms: 3 })).toThrow(TaylorError);
+	});
+
+	it('un paramètre qui rend la fonction indéfinie pour UNE valeur d’essai ne suffit pas à refuser', () => {
+		// √(a−1) est indéfini pour a = 0,7319 mais défini pour a = 2,31
+		expect(expand('sqrt(a-1) x', 3)).toBe('sqrt(a-1)x');
+	});
+
+	it('ln(-a x) en 1 : ln(-a) + (x−1) − (x−1)²/2', () => {
+		// f'(x) = 1/x → 1 en 1 ; f''(x) = −1/x² → −1, divisé par 2!
+		expect(expand('ln(-a x)', 3, 1)).toBe('ln(-a)+(x-1)-{1/2}(x-1)^2');
+	});
+
+	it('ln(a x) en −1 : ln(-a) − (x+1) − (x+1)²/2', () => {
+		// f'(−1) = 1/(−1) = −1 ; f''(−1) = −1/(−1)² = −1, divisé par 2!
+		expect(expand('ln(a x)', 3, -1)).toBe('ln(-a)-(x+1)-{1/2}(x+1)^2');
+	});
 });
