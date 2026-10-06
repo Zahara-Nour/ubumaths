@@ -58,6 +58,7 @@ import {
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
+import { INTERNAL_LETTER, letterRejection } from './letter';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { transformAST } from '$lib/mathAST/visitor';
 
@@ -139,6 +140,11 @@ export interface CreateInput {
 	readonly kind: ObjectKind;
 	readonly definition?: string;
 	readonly name?: string;
+	/**
+	 * Pour une fonction : la lettre de l'élève (`f(t) = …`), affichage seulement.
+	 * ⚠️ `definition` est déjà en x (voir `letter.ts`).
+	 */
+	readonly letter?: string;
 	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
 	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
 }
@@ -429,10 +435,18 @@ export class Atelier {
 		} else {
 			const rejection = validateName(input.name, this.names);
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
+			const asLetter = this.#letterUse(input.name);
+			if (asLetter !== null) return { ok: false, message: asLetter };
 			name = input.name;
 		}
 
-		const built = this.build(name, input.kind, definition, provenance);
+		const letter = input.kind === 'function' ? input.letter : undefined;
+		if (letter !== undefined) {
+			const refused = letterRejection(letter, name, this.names);
+			if (refused !== null) return { ok: false, message: refused };
+		}
+
+		const built = this.build(name, input.kind, definition, provenance, letter);
 		this.items.push(
 			isSequence(built) && input.sequence
 				? { ...built, ...sequenceSettings(input.sequence, built) }
@@ -573,6 +587,17 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/**
+	 * Le refus d'un nom qui est la LETTRE d'une fonction (`t` après `f(t)`), ou
+	 * `null`. Sinon la carte de `f` montrerait `t` pour deux choses à la fois.
+	 */
+	#letterUse(name: string): string | null {
+		const owner = this.items.find((o) => isFunction(o) && o.letter === name);
+		return owner === undefined
+			? null
+			: `« ${name} » est la variable de ${owner.name}(${name}) : choisis un autre nom.`;
+	}
+
+	/**
 	 * Les objets que cite une définition. ⚠️ Une LISTE n'en cite aucun : c'est
 	 * du texte brut. Lue comme une expression, `fille ; garçon` citait `fille`
 	 * et `garçon`, et la liste restait « en attente » d'objets inexistants (Q84).
@@ -621,6 +646,8 @@ export class Atelier {
 		const others = this.names.filter((n) => n !== from);
 		const rejection = validateName(to, others);
 		if (rejection) return { ok: false, message: nameRejectionMessage(rejection, to) };
+		const asLetter = this.#letterUse(to);
+		if (asLetter !== null) return { ok: false, message: asLetter };
 
 		// L'objet renommé voit sa PROPRE définition réécrite lui aussi : une suite
 		// récurrente se cite elle-même (`u(n+1) = 2·u(n)`), et l'oublier la
@@ -678,9 +705,26 @@ export class Atelier {
 	// Modification
 	// ---------------------------------------------------------------------------
 
-	update(name: string, definition: string, provenance: Provenance = 'url'): Updated | Refused {
+	/**
+	 * @param letter - Pour une fonction : la lettre de l'élève, ou `undefined`
+	 *   pour garder la sienne. ⚠️ `definition` est déjà en x (`letter.ts`).
+	 */
+	update(
+		name: string,
+		definition: string,
+		provenance: Provenance = 'url',
+		letter?: string
+	): Updated | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
+		if (letter !== undefined) {
+			const refused = letterRejection(
+				letter,
+				name,
+				this.names.filter((n) => n !== name)
+			);
+			if (refused !== null) return { ok: false, message: refused };
+		}
 
 		const dependents = this.allDependents(name);
 		// ⚠️ `build()` fabrique un objet NEUF : ce qui relève de l'affichage doit
@@ -688,7 +732,13 @@ export class Atelier {
 		// courbe. Même famille que le curseur écrasé (revue #334, point 7) : tout
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
-		const rebuilt = this.build(name, previous.kind, definition, provenance);
+		const rebuilt = this.build(
+			name,
+			previous.kind,
+			definition,
+			provenance,
+			letter ?? (isFunction(previous) ? previous.letter : undefined)
+		);
 		// K3 (dette n° 2) : le curseur réglé survit à la définition — `build()`
 		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
 		const keptSlider =
@@ -894,6 +944,8 @@ export class Atelier {
 			// Recopié champ par champ : `display` est un objet, donc un proxy
 			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
+			// La lettre de l'élève (`f(t)`) : absente pour x, qui ne pèse rien
+			...(isFunction(o) && o.letter ? { letter: o.letter } : {}),
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
@@ -929,12 +981,19 @@ export class Atelier {
 		const skipped: SkippedObject[] = [];
 
 		for (const stored of state.objects) {
-			const result = this.create({
+			const input: CreateInput = {
 				kind: stored.kind,
 				name: stored.name,
 				definition: stored.definition,
+				...(stored.kind === 'function' && stored.letter && { letter: stored.letter }),
 				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
-			});
+			};
+			let result = this.create(input);
+			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
+			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`)
+			if (!result.ok && input.letter !== undefined) {
+				result = this.create({ ...input, letter: undefined });
+			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
 				continue;
@@ -1217,7 +1276,8 @@ export class Atelier {
 		name: string,
 		kind: ObjectKind,
 		definition: string,
-		provenance: Provenance = 'url'
+		provenance: Provenance = 'url',
+		letter?: string
 	): AtelierObject {
 		const parsed = parseDefinition(kind, definition, provenance, this.functionNames);
 		const base = {
@@ -1256,7 +1316,12 @@ export class Atelier {
 				return value;
 			}
 			case 'function':
-				return { ...base, kind: 'function', variable: 'x' };
+				return {
+					...base,
+					kind: 'function',
+					variable: 'x',
+					...(letter !== undefined && letter !== INTERNAL_LETTER && { letter })
+				};
 			case 'sequence':
 				// S4 : une définition qui se cite elle-même est une récurrence
 				return {
