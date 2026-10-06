@@ -224,6 +224,23 @@ function performUSubstitution(
 	depth: number,
 	matchedRatio?: Rational
 ): IntegrateResult {
+	// Variable de substitution FRAÎCHE : si l'on intègre déjà en u (intégrale
+	// en u issue d'une substitution précédente), poser « u = sin(u) » puis
+	// substituer en retour emboîtait sin(sin(…(u))) — résultat faux et arbre
+	// qui enfle à chaque niveau (boucle apparente sur ln(sin(2x+1)))
+	const uVariable = pickSubstitutionVariable(integrand, variable);
+	if (uVariable === null) {
+		return {
+			variable,
+			status: 'unsupported',
+			antiderivative: null,
+			integrandType: classifyIntegrand(integrand, variable),
+			technique: 'u-substitution',
+			steps: recorder.getSteps(),
+			error: 'Aucune variable de substitution libre'
+		};
+	}
+
 	// Step 1: Identify the substitution
 	recorder.recordStepByRule(
 		'identify-substitution',
@@ -231,7 +248,7 @@ function performUSubstitution(
 		integrand,
 		'detailed',
 		u,
-		`On pose u = ${toCustom(u)}`
+		`On pose ${uVariable} = ${toCustom(u)}`
 	);
 
 	// Step 2: Compute du/dx
@@ -251,7 +268,7 @@ function performUSubstitution(
 	}
 
 	// Technical note about u and du
-	const technicalNote = `u = ${toCustom(u)}, du = ${toCustom(du)} d${variable}`;
+	const technicalNote = `${uVariable} = ${toCustom(u)}, d${uVariable} = ${toCustom(du)} d${variable}`;
 	recorder.recordStepByRule('identify-substitution', integrand, u, 'summarized', du, technicalNote);
 
 	// Step 3: Perform the substitution
@@ -275,15 +292,17 @@ function performUSubstitution(
 			constantFactor = null;
 		} else {
 			// More complex case: need to factor out du from integrand
-			const result = tryFactorDu(integrand, u, du, variable, matchedRatio);
+			const result = tryFactorDu(integrand, u, du, variable, uVariable, matchedRatio);
 			transformedIntegrand = result.transformedIntegrand;
-			if (result.constantFactor !== null && !isOneRational(result.constantFactor)) {
+			if (result.constantNode !== undefined) {
+				constantFactor = result.constantNode;
+			} else if (result.constantFactor !== null && !isOneRational(result.constantFactor)) {
 				constantFactor = rationalToNode(result.constantFactor);
 			}
 		}
 		// La substitution doit faire disparaître la variable : sinon l'intégrale
 		// « en u » mélangerait u et x, et sa primitive serait fausse
-		if (variable !== 'u' && containsVariable(transformedIntegrand, variable)) {
+		if (containsVariable(transformedIntegrand, variable)) {
 			throw new Error(`la variable ${variable} subsiste après la substitution`);
 		}
 	} catch (error) {
@@ -309,7 +328,19 @@ function performUSubstitution(
 
 	// Step 4: Integrate with respect to u
 	const uRecorder = createStepRecorder();
-	const uVariable = 'u';
+
+	// k/f(u) avec k constant (paramètre littéral) : k sort de l'intégrale en u
+	if (
+		isDivision(transformedIntegrand) &&
+		!containsVariable(transformedIntegrand.numerator, uVariable) &&
+		!(isNumberGuard(transformedIntegrand.numerator) && transformedIntegrand.numerator.value === '1')
+	) {
+		const numeratorFactor = transformedIntegrand.numerator;
+		constantFactor = constantFactor
+			? simplifiedMultiply(constantFactor, numeratorFactor)
+			: numeratorFactor;
+		transformedIntegrand = divide(number('1'), transformedIntegrand.denominator, 'fraction');
+	}
 
 	// Normalize for integration: sqrt(u) -> u^(1/2), 1/u^n -> u^(-n)
 	const normalizedIntegrand = normalizeForIntegration(transformedIntegrand);
@@ -366,7 +397,12 @@ function performUSubstitution(
 	// Step 5: Back-substitute u = g(x)
 	let finalAntiderivative: MathNode;
 	try {
-		finalAntiderivative = substitute(uResult.antiderivative, { u });
+		// Une seule passe : u = g(x) ne doit pas être re-substitué dans g
+		finalAntiderivative = substitute(
+			uResult.antiderivative,
+			{ [uVariable]: u },
+			{ maxIterations: 1 }
+		);
 	} catch (error) {
 		return {
 			variable,
@@ -390,7 +426,7 @@ function performUSubstitution(
 		finalAntiderivative,
 		'summarized',
 		u,
-		`On remplace u par ${toCustom(u)}`
+		`On remplace ${uVariable} par ${toCustom(u)}`
 	);
 
 	return {
@@ -408,6 +444,20 @@ function performUSubstitution(
 // Helper Functions
 // =============================================================================
 
+/** Candidats pour la variable de substitution, par ordre de préférence */
+const SUBSTITUTION_VARIABLES: readonly string[] = ['u', 'v', 'w', 't', 's', 'z'];
+
+/**
+ * Nom de la variable de substitution : `u` sauf si c'est la variable
+ * d'intégration ou un paramètre déjà présent dans l'intégrande.
+ */
+function pickSubstitutionVariable(integrand: MathNode, variable: string): string | null {
+	const free = SUBSTITUTION_VARIABLES.find(
+		(name) => name !== variable && !containsVariable(integrand, name)
+	);
+	return free ?? null;
+}
+
 /**
  * Result of tryFactorDu function.
  */
@@ -415,6 +465,8 @@ interface FactorDuResult {
 	transformedIntegrand: MathNode;
 	/** k tel que integrand dx = k · f(u) du (exact) ; null = 1 */
 	constantFactor: Rational | null;
+	/** k non rationnel (1/π, 1/√2, 1/a) : prime sur `constantFactor` */
+	constantNode?: MathNode;
 }
 
 /**
@@ -436,9 +488,10 @@ function tryFactorDu(
 	u: MathNode,
 	du: MathNode,
 	_variable: string,
+	uName: string,
 	matchedRatio?: Rational
 ): FactorDuResult {
-	const uVar = variableFactory('u');
+	const uVar = variableFactory(uName);
 	const uHash = hashMathNode(u);
 
 	// Special case: Division patterns like x/(1+x²) or x/sqrt(1-x²)
@@ -543,6 +596,14 @@ function tryFactorDu(
 		return { transformedIntegrand: result, constantFactor: matchedRatio };
 	}
 	const duConstant = extractExactRational(du);
+	if (duConstant === null && !containsVariable(du, _variable)) {
+		// du = π, √2, a… : dx = du / u′
+		return {
+			transformedIntegrand: result,
+			constantFactor: null,
+			constantNode: divide(number('1'), du, 'fraction')
+		};
+	}
 	return {
 		transformedIntegrand: result,
 		constantFactor: duConstant !== null && duConstant.n !== 0n ? reciprocal(duConstant) : null
