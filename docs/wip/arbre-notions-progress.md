@@ -51,8 +51,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Espace** et **Orthogonalité** (Tle) : chacune « sans coordonnées » / « avec coordonnées », comme
   Vecteurs. Géométrie : 8 notions.
 
+- **Suites** (8 notions) et **Grandeurs et mesures** validées telles que dessinées.
+- **Probabilités** (7 notions ; « Expériences aléatoires » remplace « Probabilités ») et
+  **Statistiques** (4 notions : Représenter des données, Indicateurs, Échantillonnage, Statistique à
+  deux variables) : deux branches. Statistiques à valider.
+
 ## Ouvert
 
-- Branches restantes à revoir une par une : Suites (proposition dessinée), Géométrie,
-  Grandeurs et mesures, Probabilités et statistiques, Logique et algorithmique.
+- Branche restante à valider : Statistiques (proposition dessinée). Puis relecture d'ensemble.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
