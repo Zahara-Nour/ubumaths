@@ -47,7 +47,8 @@ import {
 	negativeInfinity,
 	number,
 	opposite,
-	func
+	func,
+	ln
 } from '../factory';
 import { findNodes } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
@@ -567,6 +568,33 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 2.555 : ln u où u tend vers un rationnel L > 0 — par continuité
+	// de ln, lim ln u = ln L (ln 1 = 0) ; ou vers +∞ (ln(+∞) = +∞). La composition ne traitait que
+	// u → 0⁺ ou +∞ : ln((x²+1)/x²) en +∞, réécriture de ln(x²+1) − 2 ln x,
+	// restait « non supportée ».
+	const logOfLimit = tryLogarithmOfPositiveLimit(expression, varName, approachPoint, dir, options);
+	if (logOfLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			logOfLimit,
+			'summarized',
+			approachPoint,
+			'Continuité de ln : lim ln u = ln(lim u)'
+		);
+		return createResult(
+			logOfLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(logOfLimit) ? 'infinite' : 'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
 	// Stratégie 2.56 : produit de fonctions non constantes, par les seuls cas
 	// sûrs (fini × fini, fini non nul × ∞, ∞ × ∞). La forme 0 × ∞ n'est
 	// jamais tranchée ici : réécrite en un seul quotient si un facteur en est
@@ -1039,6 +1067,36 @@ function tryConstantFactor(
 	return value === null ? null : { value };
 }
 
+/**
+ * lim ln u = ln L quand u tend vers un rationnel EXACT L > 0, +∞ quand u → +∞ ;
+ * null sinon (limite approchée, irrationnelle, nulle ou −∞ : la composition
+ * s'en charge ou l'on s'abstient).
+ */
+function tryLogarithmOfPositiveLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	if (!isFunction(expression) || expression.name !== 'ln' || expression.args.length !== 1) {
+		return null;
+	}
+	const inner = evaluateLimit(expression.args[0], varName, approach, dir, options);
+	if (inner.value === null || inner.value === undefined) return null;
+	if (inner.status !== 'exact' && inner.status !== 'infinite') return null;
+	// ln(+∞) = +∞ : la limite intérieure peut être conclue par L'Hôpital, que
+	// la composition (classement de signe) ne voit pas — (x²+1)/x en +∞
+	if (isInfinity(inner.value)) {
+		return inner.value.sign === 'positive' ? positiveInfinity() : null;
+	}
+	const value = exactConstantRational(inner.value);
+	if (value === null || value.n <= 0n) return null;
+	if (value.n === value.d) return number('0');
+	const constant = exactConstantNode(inner.value);
+	return constant === null ? null : ln(constant);
+}
+
 // =============================================================================
 // Produit de fonctions non constantes
 // =============================================================================
@@ -1448,7 +1506,7 @@ function tryRewrittenSum(
 	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
 	nestedRewrites++;
 	try {
-		for (const candidate of rewriteIndeterminateSum(expr)) {
+		for (const candidate of rewriteIndeterminateSum(expr, varName)) {
 			const result = evaluateLimit(candidate.rewritten, varName, approach, dir, options);
 			if ((result.status === 'exact' || result.status === 'infinite') && result.value !== null) {
 				return {
