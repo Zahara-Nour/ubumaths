@@ -137,7 +137,8 @@ describe('CustomGenerator - Unary Operations', () => {
 
 	it('generates nested opposite', () => {
 		const expr = MathAST.opposite(MathAST.opposite(MathAST.variable('x')));
-		expect(toCustom(expr)).toBe('--x');
+		// Deux signes ne se suivent pas : -(-x), relisible par le parseur
+		expect(toCustom(expr)).toBe('-(-x)');
 	});
 });
 
@@ -715,12 +716,12 @@ describe('CustomGenerator - Round-Trip Tests', () => {
 		}
 	});
 
-	it('generates double minus but parser requires parentheses', () => {
-		// Generator produces --x but parser requires -(-x)
+	it('generates -(-x), the form the parser requires', () => {
+		// Le générateur écrivait `--x`, que parseCustom refuse : il écrit
+		// désormais `-(-x)` (oracle des dérivées, 2026-10-06)
 		const ast = MathAST.opposite(MathAST.opposite(MathAST.variable('x')));
 		const output = toCustom(ast);
-		expect(output).toBe('--x');
-		// Note: parseCustom('--x') throws, requires '-(-x)' instead
+		expect(output).toBe('-(-x)');
 	});
 });
 
