@@ -17,6 +17,8 @@
 	import { forMathlive } from '$lib/atelier/mathfield';
 	import { derivativeOf, displayName } from '$lib/atelier/names';
 	import { expressionOf } from '$lib/atelier/engine';
+	import { INTERNAL_LETTER, studentDefinitionOf, typedLetterOf } from '$lib/atelier/letter';
+	import { substitute } from '$lib/mathAST/eval/substitute';
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
@@ -119,7 +121,13 @@
 					: null
 				: astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
 		if (ast === null) return null;
-		const latex = forMathlive(toLatex(ast));
+		// `f(t) = t^2` est rangée en x : la carte la montre dans la lettre de l'élève
+		const letter = typedLetterOf(atelier, object);
+		const shown =
+			object.kind === 'function' && letter !== INTERNAL_LETTER
+				? substitute(ast, { [INTERNAL_LETTER]: { type: 'variable', name: letter } })
+				: ast;
+		const latex = forMathlive(toLatex(shown));
 		return {
 			markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
 			// Le rendu est fait de glyphes : un lecteur d'écran lit ceci à la place
@@ -178,7 +186,7 @@
 					</span>
 					<span class="sr-only">{rendered.spoken}</span>
 				{:else}
-					{object.definition || '…'}
+					{studentDefinitionOf(atelier, object) || '…'}
 				{/if}
 			</span>
 			<span class="type">{KIND_LABELS[object.kind]}</span>

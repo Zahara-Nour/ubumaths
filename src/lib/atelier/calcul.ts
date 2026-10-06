@@ -18,6 +18,7 @@ import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber } from './parse';
+import { INTERNAL_LETTER, internalDefinition, letterRejection } from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -290,13 +291,30 @@ function defineObject(
 	const { atelier } = session;
 	const existing = atelier.get(name);
 
+	// `f(t) = t^2` : la carte garde t, l'atelier range en x (`letter.ts`). La
+	// lettre est jugée AVANT le renommage : `f(a)` avec un objet `a`, ou x dans
+	// une définition en t, changeraient le sens en silence.
+	const letter = parameter !== undefined && parameter !== 'n' ? parameter : undefined;
+	let stored = body.trim();
+	if (letter !== undefined && letter !== INTERNAL_LETTER) {
+		const refused = letterRejection(
+			letter,
+			name,
+			atelier.names.filter((n) => n !== name)
+		);
+		if (refused !== null) return { kind: 'refus', message: refused };
+		const internal = internalDefinition(stored, letter, name, provenance, atelier.functionNames);
+		if (!internal.ok) return { kind: 'refus', message: internal.message };
+		stored = internal.definition;
+	}
+
 	if (existing === undefined) {
 		const rejection = validateName(name, atelier.names);
 		if (rejection !== null) {
 			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
 		}
 		const created = atelier.create(
-			{ kind: kindOf(parameter, body), name, definition: body.trim() },
+			{ kind: kindOf(parameter, body), name, definition: stored, ...(letter && { letter }) },
 			provenance
 		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
@@ -308,7 +326,13 @@ function defineObject(
 		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
 	}
 
-	const updated = atelier.update(name, body.trim(), provenance);
+	// Seule une fonction a une lettre : `u(n) = …` ne la touche pas
+	const updated = atelier.update(
+		name,
+		stored,
+		provenance,
+		existing.kind === 'function' ? letter : undefined
+	);
 	if (!updated.ok) return { kind: 'refus', message: updated.message };
 	return { kind: 'definition', name, object: updated.object };
 }

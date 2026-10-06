@@ -134,6 +134,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	/** Décision D2 : `x` seulement en v1 — `createEvaluator` la code en dur. */
 	readonly variable: 'x';
 	/**
+	 * La lettre que l'élève a choisie (`f(t) = t^2`), pour l'AFFICHAGE seulement.
+	 * Absente = x. ⚠️ La définition rangée est TOUJOURS en x (décision de David,
+	 * 2026-10-06) : tout l'atelier calcule en x, seule la carte montre `t`.
+	 * Voir `letter.ts`.
+	 */
+	readonly letter?: string;
+	/**
 	 * Réglages d'affichage. Absents tant que la fonction n'a jamais été tracée :
 	 * ils naissent au premier tracé, puis survivent au retrait (§1 L1).
 	 */
