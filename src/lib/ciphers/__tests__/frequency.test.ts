@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { caesarEncrypt } from '../caesar';
-import { FRENCH_FREQUENCIES, caesarBruteForce, letterFrequencies } from '../frequency';
+import {
+	FRENCH_FREQUENCIES,
+	caesarBruteForce,
+	formatPercent,
+	letterFrequencies
+} from '../frequency';
 import { FRENCH_SENTENCE } from './helpers';
 
 describe('table de référence', () => {
@@ -60,5 +65,12 @@ describe('caesarBruteForce', () => {
 
 	it('texte sans lettre → aucun candidat', () => {
 		expect(caesarBruteForce('2026 !')).toEqual([]);
+	});
+});
+
+describe('formatPercent', () => {
+	it('virgule décimale, une décimale au plus', () => {
+		expect(formatPercent(14.734)).toBe('14,7 %');
+		expect(formatPercent(0)).toBe('0 %');
 	});
 });

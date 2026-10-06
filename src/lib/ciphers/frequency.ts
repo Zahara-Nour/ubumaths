@@ -106,3 +106,8 @@ export function caesarBruteForce(text: string): CaesarCandidate[] {
 		return { shift, text: plain, score: frenchScore(plain) };
 	}).sort((a, b) => a.score - b.score);
 }
+
+/** Pourcentage à la française, une décimale : 14,7 % */
+export function formatPercent(value: number): string {
+	return `${value.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} %`;
+}
