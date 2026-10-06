@@ -1,5 +1,5 @@
 /**
- * Limite d'un produit de DEUX fonctions non constantes (décision de David,
+ * Limite d'un produit de n facteurs non constants (n ≥ 2 ; décision de David,
  * 2026-10-06) : cas sûrs seulement — fini × fini → L₁·L₂ ; fini NON NUL × ±∞
  * → ±∞ selon les signes ; ±∞ × ±∞ → ±∞. La forme 0 × ∞ n'est jamais
  * tranchée par cette règle (croissances comparées, L'Hôpital…).
@@ -91,5 +91,25 @@ describe('lim f·g : produit de deux fonctions non constantes', () => {
 		const result = latexResult('\\frac{x}{x+1}\\cdot\\sin x', '+inf');
 		expect(result.value === null || result.status === 'approximate').toBe(true);
 		expect(result.status).not.toBe('exact');
+	});
+});
+
+describe('lim f·g bilatérale avec un facteur sans limite bilatérale', () => {
+	// Chaque côté est calculé ; on ne conclut que s'ils concordent. Avant :
+	// le quotient réécrit rendait « exact 100000000 » (x = ±10⁻⁸ évalué).
+	it.each([
+		['\\frac{x}{|x|}\\cdot\\frac{1}{x}', '0', 'infinite +inf'],
+		['\\frac{|x|}{x}\\cdot\\frac{1}{x}', '0', 'infinite +inf'],
+		['\\frac{|x-1|}{x-1}\\cdot\\frac{1}{x-1}', '1', 'infinite +inf'],
+		['\\frac{|x|}{x}\\cdot x', '0', 'exact 0'],
+		['\\frac{|2x|}{x}\\cdot x', '0', 'exact 0']
+	])('%s en %s → %s', (input, at, expected) => {
+		expect(describeLimit(latexResult(input, at))).toBe(expected);
+	});
+
+	it('côtés discordants : |x|/x · (x+1)/(x+1) en 0 n’a pas de limite, jamais un nombre', () => {
+		const result = latexResult('\\frac{|x|}{x}\\cdot\\frac{x+1}{x+1}', '0');
+		expect(result.value).toBeNull();
+		expect(['does-not-exist', 'unsupported']).toContain(result.status);
 	});
 });

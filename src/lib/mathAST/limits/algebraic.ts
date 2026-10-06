@@ -801,22 +801,9 @@ export function tryAlgebraicSimplification(
 			if (postFact.success) {
 				return { ...postFact, technique: 'abs-simplification' };
 			}
-			// Factorization may fail (e.g., (-x)/x), evaluate near approach point
-			const approachVal = parseFloat(approach.value);
-			const epsilon = 1e-8;
-			const testPt = direction === 'right' ? approachVal + epsilon : approachVal - epsilon;
-			const evalResult = evaluateAtPoint(absResult.simplified, varName, testPt);
-			if (evalResult !== null && Number.isFinite(evalResult)) {
-				const rounded = Math.round(evalResult);
-				if (Math.abs(evalResult - rounded) < 1e-6) {
-					return {
-						success: true,
-						simplified: numericNode(rounded),
-						technique: 'abs-simplification',
-						description: absResult.description
-					};
-				}
-			}
+			// L'expression sans valeur absolue est rendue telle quelle : sa limite
+			// est calculée par le moteur (evaluate.ts). L'évaluer en a ± 10⁻⁸ et
+			// arrondir rendait |x|/x² en 0 « exact 100000000 » au lieu de +∞.
 			return absResult;
 		}
 	}

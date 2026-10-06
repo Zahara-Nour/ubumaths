@@ -51,12 +51,12 @@ import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../f
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { expandFunctionPowers } from '../common/function-power';
-import { matchKnownLimit, getKnownLimitValue } from './known-limits';
+import { matchKnownLimit, getKnownLimitValue, structurallyEqual } from './known-limits';
 import { LimitStepRecorderImpl } from './step-recorder';
 import { containsVariable } from '../common/contains-variable';
 import { detectIndeterminateForm } from './indeterminate';
 import { applyLhopital, isLhopitalApplicable } from './lhopital';
-import { tryAlgebraicSimplification } from './algebraic';
+import { tryAlgebraicSimplification, type AlgebraicResult } from './algebraic';
 import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
@@ -586,6 +586,26 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+		const afterLhopital = limitOfLhopitalQuotient(
+			lhopitalResult,
+			varName,
+			approachPoint,
+			dir,
+			options
+		);
+		if (afterLhopital !== null) {
+			return createResult(
+				afterLhopital.value,
+				varName,
+				approachPoint,
+				dir,
+				afterLhopital.status,
+				lhopitalResult.resolvedForm ?? 'none',
+				'lhopital',
+				recorder,
+				opts
+			);
+		}
 	}
 
 	// Strategy 4: Try algebraic simplification
@@ -609,6 +629,23 @@ function evaluateLimitExactForm(
 				algebraicResult.technique === 'dominant-term'
 					? 'infinity-analysis'
 					: 'algebraic-simplification',
+				recorder,
+				opts
+			);
+		}
+
+		// Valeur absolue levée d'un côté : la limite de l'expression sans |·|
+		// est celle du moteur complet (|x|/x² en 0⁺ → x/x² → +∞)
+		const absFree = limitOfAbsFreeExpression(algebraicResult, varName, approachPoint, dir, options);
+		if (absFree !== null) {
+			return createResult(
+				absFree.value,
+				varName,
+				approachPoint,
+				dir,
+				absFree.status,
+				indeterminateForm,
+				'algebraic-simplification',
 				recorder,
 				opts
 			);
@@ -1012,11 +1049,29 @@ function tryProductOfLimits(
 			limits.some((l) => l?.kind === 'infinite');
 		const noTwoSidedLimit = results.some((r) => r.status === 'does-not-exist');
 		if (!zeroTimesInfinity && !noTwoSidedLimit) return null;
+		// Facteur sans limite bilatérale : le produit est calculé à gauche puis
+		// à droite, et on ne conclut que si les deux côtés concordent —
+		// (x/|x|)·(1/x) en 0 → +∞, (|x|/x)·(x+1)/(x+1) en 0 → rien.
+		if (noTwoSidedLimit && dir === 'both') {
+			const left = concludedLimit(evaluateLimit(expression, varName, approach, 'left', options));
+			const right = concludedLimit(evaluateLimit(expression, varName, approach, 'right', options));
+			if (left === null || right === null) return null;
+			if (!structurallyEqual(left.value, right.value)) return null;
+			return {
+				value: left.value,
+				technique: 'one-sided',
+				form: zeroTimesInfinity ? '0*∞' : 'none',
+				description: 'Limites à gauche et à droite égales'
+			};
+		}
 		const quotient = productAsQuotient(factors);
 		if (quotient === null) return null;
 		const rewritten = evaluateLimit(quotient, varName, approach, dir, options);
 		if (rewritten.value === null || rewritten.value === undefined) return null;
 		if (rewritten.status !== 'exact' && rewritten.status !== 'infinite') return null;
+		// Une conclusion du quotient par l'analyse côté par côté n'est pas
+		// reprise : les côtés du PRODUIT seuls font foi (branche ci-dessus)
+		if (rewritten.technique === 'one-sided') return null;
 		return {
 			value: rewritten.value,
 			technique: rewritten.technique,
@@ -1300,6 +1355,54 @@ function containsEulerPower(expr: MathNode): boolean {
 }
 
 /**
+ * L'Hôpital a mené à f'/g' qui n'est plus indéterminé mais que sa substitution
+ * directe ne conclut pas (x/x² → 1/(2x) en 0⁺) : la limite de f'/g', par le
+ * moteur complet, est celle de f/g. Seules une valeur exacte ou infinie
+ * concluent. Pas de boucle : f'/g' n'est pas une forme 0/0 ou ∞/∞, L'Hôpital
+ * ne s'y réapplique pas.
+ */
+function limitOfLhopitalQuotient(
+	lhopitalResult: ReturnType<typeof applyLhopital>,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; status: 'exact' | 'infinite' } | null {
+	const quotient = lhopitalResult.transformedExpr;
+	if (!lhopitalResult.applicable || lhopitalResult.value || !quotient) return null;
+	if (detectIndeterminateForm(quotient, varName, approach, direction) !== 'none') return null;
+	return concludedLimit(evaluateLimit(quotient, varName, approach, direction, options));
+}
+
+/** Valeur d'une limite conclue (exacte ou infinie), ou null. */
+function concludedLimit(
+	result: LimitResult
+): { value: MathNode; status: 'exact' | 'infinite' } | null {
+	if (result.value === null) return null;
+	if (result.status !== 'exact' && result.status !== 'infinite') return null;
+	return { value: result.value, status: isInfinity(result.value) ? 'infinite' : result.status };
+}
+
+/**
+ * Limite, par le moteur complet, de l'expression où |f| a été remplacé par ±f
+ * selon le côté d'approche. Null si la simplification n'est pas celle de la
+ * valeur absolue, ou si la limite n'est pas conclue (exacte ou infinie). Pas
+ * de boucle : l'expression simplifiée ne contient plus de valeur absolue.
+ */
+function limitOfAbsFreeExpression(
+	algebraicResult: AlgebraicResult,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; status: 'exact' | 'infinite' } | null {
+	const simplified = algebraicResult.simplified;
+	if (algebraicResult.technique !== 'abs-simplification' || !simplified) return null;
+	if (isNumber(simplified) || isInfinity(simplified)) return null;
+	return concludedLimit(evaluateLimit(simplified, varName, approach, direction, options));
+}
+
+/**
  * Internal limit evaluation (without one-sided recursion).
  */
 function evaluateLimitInternal(
@@ -1465,6 +1568,26 @@ function evaluateLimitInternal(
 				opts
 			);
 		}
+		const afterLhopital = limitOfLhopitalQuotient(
+			lhopitalResult,
+			varName,
+			approach,
+			direction,
+			options
+		);
+		if (afterLhopital !== null) {
+			return createResult(
+				afterLhopital.value,
+				varName,
+				approach,
+				direction,
+				afterLhopital.status,
+				lhopitalResult.resolvedForm ?? 'none',
+				'lhopital',
+				recorder,
+				opts
+			);
+		}
 	}
 
 	// Try algebraic
@@ -1477,6 +1600,26 @@ function evaluateLimitInternal(
 				approach,
 				direction,
 				isInfinity(algebraicResult.simplified) ? 'infinite' : 'exact',
+				indeterminateForm,
+				'algebraic-simplification',
+				recorder,
+				opts
+			);
+		}
+		const absFree = limitOfAbsFreeExpression(
+			algebraicResult,
+			varName,
+			approach,
+			direction,
+			options
+		);
+		if (absFree !== null) {
+			return createResult(
+				absFree.value,
+				varName,
+				approach,
+				direction,
+				absFree.status,
 				indeterminateForm,
 				'algebraic-simplification',
 				recorder,
