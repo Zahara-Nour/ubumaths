@@ -4,6 +4,7 @@
 	import HillAttack from '$lib/components/ciphers/HillAttack.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { lettersOnly } from '$lib/ciphers/alphabet';
 	import { CipherInputError } from '$lib/ciphers/errors';
 	import {
 		hillCollision,
@@ -114,6 +115,8 @@
 					<div
 						class="grid grid-cols-2 gap-1 border-x-2 border-foreground px-1"
 						data-testid="hill-matrix"
+						role="group"
+						aria-label="Matrice M"
 					>
 						{#each CELLS as cell (cell)}
 							<MySelect
@@ -148,7 +151,7 @@
 		</div>
 	{/snippet}
 	{#snippet extra({ mode: tab, text })}
-		{#if tab === 'encrypt' && keyResult.ok && hillEncrypt(text, keyResult.key).padded}
+		{#if tab === 'encrypt' && lettersOnly(text).length % 2 === 1}
 			<p class="text-sm text-muted-foreground" data-testid="hill-padded">
 				Nombre impair de lettres : un X complète la dernière paire. Il réapparaîtra au
 				déchiffrement.

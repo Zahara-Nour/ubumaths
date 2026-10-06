@@ -180,19 +180,46 @@ describe('attaque ligne par ligne', () => {
 	it('sur un texte de plus de 400 lettres, retrouve la clé et le message', () => {
 		const encrypted = hillEncrypt(LONG_FRENCH_TEXT, M);
 		const attack = hillRowAttack(encrypted.text);
-		expect(attack?.key).toEqual(M);
-		expect(attack?.text).toBe(lettersOnly(LONG_FRENCH_TEXT) + (encrypted.padded ? 'X' : ''));
+		expect(attack.ok).toBe(true);
+		if (!attack.ok) return;
+		expect(attack.key).toEqual(M);
+		expect(attack.text).toBe(lettersOnly(LONG_FRENCH_TEXT) + (encrypted.padded ? 'X' : ''));
 	});
 
-	it('les deux meilleures lignes sont celles de M⁻¹, à l’ordre près', () => {
+	it('les lignes retenues sont celles de M⁻¹, à l’ordre près', () => {
 		const attack = hillRowAttack(hillEncrypt(LONG_FRENCH_TEXT, M).text);
-		const top = attack?.candidates.slice(0, 2).map(({ u, v }) => `${u},${v}`);
-		expect(top?.sort()).toEqual(['15,17', '20,9']);
-		// L'ordre ne se lit pas dans le χ² : les paires de lettres fréquentes le tranchent
-		expect(attack?.inverse).toEqual({ a: 15, b: 17, c: 20, d: 9 });
+		if (!attack.ok) throw new Error('attaque échouée');
+		expect(attack.inverse).toEqual({ a: 15, b: 17, c: 20, d: 9 });
 	});
 
-	it('moins de deux paires → rien', () => {
-		expect(hillRowAttack('AB')).toBeNull();
+	// Revue du 2026-10-06 : l'écran surlignait toujours les deux premières lignes
+	it('désigne les lignes réellement retenues, même quand ce ne sont pas les deux premières', () => {
+		const letters = lettersOnly(LONG_FRENCH_TEXT);
+		const keys: HillKey[] = [M, { a: 5, b: 17, c: 4, d: 15 }, { a: 7, b: 8, c: 11, d: 11 }];
+		for (const key of keys) {
+			for (const length of [40, 60, 80, 120, 200]) {
+				const attack = hillRowAttack(hillEncrypt(letters.slice(0, length), key).text);
+				if (!attack.ok) continue;
+				const [first, second] = attack.chosen.map((i) => attack.candidates[i]);
+				expect([first.u, first.v, second.u, second.v]).toEqual([
+					attack.inverse.a,
+					attack.inverse.b,
+					attack.inverse.c,
+					attack.inverse.d
+				]);
+			}
+		}
+	});
+
+	it('moins de 20 paires : trop court pour une attaque statistique', () => {
+		expect(hillRowAttack('AB')).toEqual({ ok: false, reason: 'too-short' });
+		expect(hillRowAttack(hillEncrypt('RAPPORTDU', M).text)).toEqual({
+			ok: false,
+			reason: 'too-short'
+		});
+	});
+
+	it('aucune combinaison inversible parmi les meilleures lignes : on le dit', () => {
+		expect(hillRowAttack('A'.repeat(60))).toEqual({ ok: false, reason: 'no-invertible' });
 	});
 });

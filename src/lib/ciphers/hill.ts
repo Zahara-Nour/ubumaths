@@ -20,7 +20,7 @@ import {
 } from './alphabet';
 import { CipherInputError } from './errors';
 import { chiSquared } from './frequency';
-import { inverseSearch } from './modular';
+import { gcd, inverseSearch } from './modular';
 
 // Types
 
@@ -47,13 +47,18 @@ export interface HillRowCandidate {
 	score: number;
 }
 
-export interface HillRowAttack {
-	key: HillKey;
-	inverse: HillKey;
-	text: string;
-	/** Les meilleures lignes candidates de M⁻¹, toutes positions confondues */
-	candidates: HillRowCandidate[];
-}
+export type HillRowAttack =
+	| {
+			ok: true;
+			key: HillKey;
+			inverse: HillKey;
+			text: string;
+			/** Les meilleures lignes candidates de M⁻¹, toutes positions confondues */
+			candidates: HillRowCandidate[];
+			/** Rangs, dans `candidates`, des deux lignes retenues (première, seconde) */
+			chosen: [number, number];
+	  }
+	| { ok: false; reason: 'too-short' | 'no-invertible' };
 
 // Constantes
 
@@ -81,6 +86,8 @@ const FRENCH_BIGRAMS = [
 	'IS'
 ];
 const SHOWN_CANDIDATES = 6;
+/** En dessous, trop d'égalités de score : le classement ne veut plus rien dire */
+export const MIN_ATTACK_PAIRS = 20;
 
 // Functions
 
@@ -280,10 +287,10 @@ function bigramScore(text: string): number {
  * χ², on assemble les deux meilleures en une matrice inversible, et l'ordre
  * des lignes se tranche par les paires de lettres fréquentes du français.
  */
-export function hillRowAttack(text: string): HillRowAttack | null {
+export function hillRowAttack(text: string): HillRowAttack {
 	const letters = lettersOnly(text);
 	const cipherPairs = pairs(letters).map((pair) => [...pair].map(letterIndex));
-	if (cipherPairs.length < 2) return null;
+	if (cipherPairs.length < MIN_ATTACK_PAIRS) return { ok: false, reason: 'too-short' };
 
 	const ranked: HillRowCandidate[] = [];
 	for (let u = 0; u < ALPHABET_SIZE; u++) {
@@ -296,13 +303,19 @@ export function hillRowAttack(text: string): HillRowAttack | null {
 	ranked.sort((x, y) => x.score - y.score);
 	const candidates = ranked.slice(0, SHOWN_CANDIDATES);
 
-	let best: { inverse: HillKey; total: number; bigrams: number; text: string } | null = null;
-	for (const first of candidates) {
-		for (const second of candidates) {
-			if (first === second) continue;
+	let best: {
+		inverse: HillKey;
+		chosen: [number, number];
+		total: number;
+		bigrams: number;
+		text: string;
+	} | null = null;
+	for (let i = 0; i < candidates.length; i++) {
+		for (let j = 0; j < candidates.length; j++) {
+			const [first, second] = [candidates[i], candidates[j]];
+			const det = first.u * second.v - first.v * second.u;
+			if (i === j || gcd(mod(det, ALPHABET_SIZE), ALPHABET_SIZE) !== 1) continue;
 			const inverse = { a: first.u, b: first.v, c: second.u, d: second.v };
-			const key = hillInverse(inverse);
-			if (!key.ok) continue;
 			const plain = applyMatrix(letters, inverse).text;
 			const total = first.score + second.score;
 			const bigrams = bigramScore(plain);
@@ -310,11 +323,12 @@ export function hillRowAttack(text: string): HillRowAttack | null {
 				best === null ||
 				total < best.total - 1e-9 ||
 				(Math.abs(total - best.total) < 1e-9 && bigrams > best.bigrams);
-			if (better) best = { inverse, total, bigrams, text: plain };
+			if (better) best = { inverse, chosen: [i, j], total, bigrams, text: plain };
 		}
 	}
-	if (best === null) return null;
-	const key = hillInverse(best.inverse);
-	if (!key.ok) return null;
-	return { key: key.inverse, inverse: best.inverse, text: best.text, candidates };
+	if (best === null) return { ok: false, reason: 'no-invertible' };
+	const { inverse, chosen, text: plain } = best;
+	const key = hillInverse(inverse);
+	if (!key.ok) return { ok: false, reason: 'no-invertible' };
+	return { ok: true, key: key.inverse, inverse, text: plain, candidates, chosen };
 }

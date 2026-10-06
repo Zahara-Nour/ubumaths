@@ -8,6 +8,7 @@
 	import { lettersOnly } from '$lib/ciphers/alphabet';
 	import { CipherInputError } from '$lib/ciphers/errors';
 	import {
+		MIN_ATTACK_PAIRS,
 		formatMatrix,
 		hillDecrypt,
 		hillRowAttack,
@@ -77,32 +78,43 @@
 		<h3 id="hill-rows-title" class="font-semibold">Attaque ligne par ligne</h3>
 		<p class="text-sm text-muted-foreground">
 			Chaque ligne (u, v) de M⁻¹ donne à elle seule une lettre claire sur deux : u × c₁ + v × c₂. On
-			essaie les 676 lignes possibles et on garde celles qui donnent les lettres les plus «
-			françaises ». Ce seul classement de 676 essais sert pour les deux lignes, au lieu de 26⁴ = 456
-			976 matrices : c’est le point faible de Hill.
+			essaie les 676 lignes possibles et on garde celles qui donnent les lettres les plus
+			«&nbsp;françaises&nbsp;». Ce seul classement de 676 essais sert pour les deux lignes, au lieu
+			de 26⁴ = 456&nbsp;976 matrices : c’est le point faible de Hill.
 		</p>
-		{#if rows === null}
-			<p class="text-muted-foreground">Il faut au moins deux paires de lettres.</p>
+		{#if !rows.ok}
+			<p class="text-muted-foreground" role="status" data-testid="hill-row-failure">
+				{#if rows.reason === 'too-short'}
+					Il faut au moins {MIN_ATTACK_PAIRS * 2} lettres : sur un message plus court, trop de lignes
+					obtiennent le même score pour que le classement veuille dire quelque chose.
+				{:else}
+					Aucune des meilleures lignes ne forme, avec une autre, une matrice inversible : le message
+					ne ressemble pas assez à du français chiffré par Hill.
+				{/if}
+			</p>
 		{:else}
 			<ol class="flex flex-col gap-1 text-sm" data-testid="hill-row-candidates">
 				{#each rows.candidates as candidate, i (`${candidate.u}-${candidate.v}`)}
+					{@const chosen = rows.chosen.includes(i)}
 					<li
 						class={[
 							'grid grid-cols-[8rem_1fr] gap-2 rounded-md px-2 py-1',
-							i < 2 ? 'bg-primary/10 font-semibold' : 'odd:bg-muted/40'
+							chosen ? 'bg-primary/10 font-semibold' : 'odd:bg-muted/40'
 						]}
+						data-chosen={chosen || undefined}
 					>
 						<span class="font-mono">({candidate.u}, {candidate.v})</span>
-						<span class="tabular-nums">écart au français : {Math.round(candidate.score)}</span>
+						<span class="tabular-nums">
+							écart au français : {Math.round(candidate.score)}
+							{#if chosen}<span class="sr-only"> (retenue)</span>{/if}
+						</span>
 					</li>
 				{/each}
 			</ol>
 			<p class="text-sm">
-				Les deux meilleures lignes forment M⁻¹ = <strong class="font-mono"
-					>{formatMatrix(rows.inverse)}</strong
-				>
-				; leur ordre se décide par les paires de lettres fréquentes du français (ES, LE, DE…). Donc M
-				=
+				Les deux meilleures lignes qui forment une matrice inversible donnent M⁻¹ =
+				<strong class="font-mono">{formatMatrix(rows.inverse)}</strong> ; leur ordre se décide par
+				les paires de lettres fréquentes du français (ES, LE, DE…). Donc M =
 				<strong class="font-mono" data-testid="hill-row-key">{formatMatrix(rows.key)}</strong>.
 			</p>
 			<p

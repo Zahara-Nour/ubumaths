@@ -327,5 +327,17 @@ describe('chiffre de Hill', () => {
 			.toContain('≡ (5 17 ; 4 15) (mod 26)');
 		expect(text(screen.container, 'hill-known-result')).toMatch(/^RAPPORTDUCABINETNOIR/);
 		expect(text(screen.container, 'hill-row-key')).toBe('(5 17 ; 4 15)');
+		expect(
+			screen.container.querySelectorAll('[data-testid="hill-row-candidates"] [data-chosen]')
+		).toHaveLength(2);
+	});
+
+	it('décrypter un message trop court : l’attaque ligne par ligne s’abstient et dit pourquoi', async () => {
+		const screen = await render(Hill);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('Message intercepté').fill('HQSZ HQSZ');
+		await expect
+			.poll(() => text(screen.container, 'hill-row-failure'))
+			.toContain('au moins 40 lettres');
 	});
 });
