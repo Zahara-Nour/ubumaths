@@ -54,6 +54,15 @@ describe('scytale', () => {
 		expect(() => scytaleDecrypt('UBU ROI', 2.5)).toThrow(CipherInputError);
 	});
 
+	it('un bâton immense ne fait pas planter le module', () => {
+		expect(scytaleEncrypt('abc', 1e10)).toEqual({
+			text: 'ABC',
+			rows: ['A', 'B', 'C'],
+			unchanged: true
+		});
+		expect(scytaleDecrypt('abc', 1e10).text).toBe('ABC');
+	});
+
 	it('texte vide → vide', () => {
 		expect(scytaleEncrypt('', 3).text).toBe('');
 		expect(scytaleDecrypt('', 3).text).toBe('');

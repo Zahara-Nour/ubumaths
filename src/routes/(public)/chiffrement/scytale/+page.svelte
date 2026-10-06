@@ -59,8 +59,8 @@
 		{@const result = mode === 'encrypt' ? scytaleEncrypt(text, turns) : scytaleDecrypt(text, turns)}
 		{#if result.unchanged}
 			<p class="text-sm text-destructive" role="alert">
-				Le bâton a autant de faces que le message a de lettres : rien ne bouge. Choisissez moins de
-				lettres par tour.
+				Le bâton a au moins autant de faces que le message a de lettres : rien ne bouge. Choisissez
+				moins de lettres par tour.
 			</p>
 		{:else if result.rows.length > 0}
 			<div class="flex flex-col gap-2">
@@ -98,7 +98,7 @@
 				{#each candidates as candidate (candidate.lettersPerTurn)}
 					<li class="grid grid-cols-[8rem_1fr] gap-2 rounded-md px-2 py-1 text-sm odd:bg-muted/40">
 						<span class="tabular-nums">{candidate.lettersPerTurn} par tour</span>
-						<span class="font-mono break-all">{candidate.text}</span>
+						<span class="font-mono break-words">{candidate.text}</span>
 					</li>
 				{/each}
 			</ol>

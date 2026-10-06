@@ -21,7 +21,7 @@
 			name: 'La substitution',
 			kind: 'Substitution',
 			summary:
-				'Un alphabet mélangé, fabriqué à partir d’un mot-clé. Des millions de milliards de clés.'
+				'Un alphabet mélangé, fabriqué à partir d’un mot-clé. Plus de 400 millions de milliards de milliards de clés.'
 		},
 		{
 			path: '/chiffrement/scytale',
@@ -72,8 +72,8 @@
 		</div>
 	</dl>
 	<p class="mt-3 text-sm text-muted-foreground">
-		Et « crypter » ? L’Académie française ne reconnaît pas ce mot : chiffrer sans clé n’aurait aucun
-		sens.
+		Et « crypter » ? Les spécialistes de la sécurité le déconseillent : chiffrer sans clé n’aurait
+		aucun sens.
 	</p>
 </section>
 

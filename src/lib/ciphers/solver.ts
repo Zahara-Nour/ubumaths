@@ -4,7 +4,7 @@
  *
  * @module lib/ciphers/solver
  */
-import { isLetter, normalizeText } from './alphabet';
+import { isLetter, lettersOnly, normalizeText } from './alphabet';
 
 // Types
 
@@ -26,11 +26,18 @@ export function applyGuesses(cipherText: string, guesses: Guesses): GuessedChar[
 	});
 }
 
-/** Lettres claires proposées pour plusieurs lettres chiffrées (impossible en substitution) */
-export function guessConflicts(guesses: Guesses): string[] {
+/**
+ * Lettres claires proposées pour plusieurs lettres chiffrées (impossible en
+ * substitution). Avec `cipherText`, seules comptent les lettres du message :
+ * une hypothèse laissée sur une lettre disparue n'a plus de champ pour être corrigée.
+ */
+export function guessConflicts(guesses: Guesses, cipherText?: string): string[] {
+	const present = cipherText === undefined ? null : new Set(lettersOnly(cipherText));
 	const counts = new Map<string, number>();
-	for (const plain of Object.values(guesses)) {
-		if (plain) counts.set(plain, (counts.get(plain) ?? 0) + 1);
+	for (const [cipher, plain] of Object.entries(guesses)) {
+		if (plain && (present === null || present.has(cipher))) {
+			counts.set(plain, (counts.get(plain) ?? 0) + 1);
+		}
 	}
 	return [...counts]
 		.filter(([, count]) => count > 1)

@@ -23,7 +23,9 @@
 	// Clin d'œil : Bosse-de-Nage ne dit que « ha ha »
 	const onlyHaHa = $derived(
 		frequencies.total >= 4 &&
-			frequencies.letters.every((l) => l.count === 0 || l.letter === 'H' || l.letter === 'A')
+			frequencies.letters.every((l) =>
+				l.letter === 'H' || l.letter === 'A' ? l.count > 0 : l.count === 0
+			)
 	);
 </script>
 

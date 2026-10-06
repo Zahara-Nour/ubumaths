@@ -5,6 +5,7 @@
 	import SubstitutionSolver from '$lib/components/ciphers/SubstitutionSolver.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { lettersOnly } from '$lib/ciphers/alphabet';
 	import { attempt } from '$lib/ciphers/outcome';
 	import {
 		keyFromKeyword,
@@ -78,6 +79,12 @@
 					<Input id="substitution-key" bind:value={rawKey} class="font-mono uppercase" />
 				</div>
 			</div>
+			{#if mode === 'keyword' && lettersOnly(rawKey) === ''}
+				<p class="text-sm text-destructive" role="status">
+					Ce mot-clé ne contient aucune lettre : l’alphabet n’est pas mélangé, le message ne sera
+					pas caché.
+				</p>
+			{/if}
 			{#if validation.ok}
 				<AlphabetStrip key={validation.key} />
 			{/if}

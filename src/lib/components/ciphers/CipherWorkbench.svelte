@@ -20,7 +20,7 @@
 		initialPlain: string;
 		initialCipher: string;
 		initialCrack: string;
-		/** Réglage de la clé, commun à Chiffrer et Déchiffrer */
+		/** Réglage de la clé, commun à Chiffrer et Déchiffrer (rendu une seule fois) */
 		keyControls?: Snippet;
 		/** Complément sous le résultat (la scytale y montre son bâton) */
 		extra?: Snippet<[{ mode: 'encrypt' | 'decrypt'; text: string }]>;
@@ -75,13 +75,17 @@
 		<Tabs.Trigger value="crack">Décrypter</Tabs.Trigger>
 	</Tabs.List>
 
+	<!-- Une seule clé pour Chiffrer et Déchiffrer ; Décrypter s'en passe -->
+	{#if tab !== 'crack'}
+		{@render keyControls?.()}
+	{/if}
+
 	<Tabs.Content value="encrypt" class="flex flex-col gap-4">
 		<p class="text-sm text-muted-foreground">Avec la clé, on cache le message.</p>
 		<div class="flex flex-col gap-2">
 			<Label for="cipher-plain">Message clair</Label>
 			<Textarea id="cipher-plain" bind:value={plain} placeholder="Votre message" />
 		</div>
-		{@render keyControls?.()}
 		<CipherOutput
 			outcome={encrypted}
 			label="Message chiffré"
@@ -106,7 +110,6 @@
 			<Label for="cipher-cipher">Message chiffré</Label>
 			<Textarea id="cipher-cipher" bind:value={cipher} placeholder={cipherPlaceholder} />
 		</div>
-		{@render keyControls?.()}
 		<CipherOutput
 			outcome={decrypted}
 			label="Message clair"

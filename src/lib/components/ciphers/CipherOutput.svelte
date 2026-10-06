@@ -52,6 +52,7 @@
 	{#if outcome.ok}
 		<output
 			class="min-h-12 rounded-lg border bg-muted/40 px-3 py-2 font-mono break-words whitespace-pre-wrap"
+			aria-live="off"
 			data-testid={testid}>{displayed}</output
 		>
 		<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -83,7 +84,7 @@
 			{/if}
 		{/if}
 	{:else}
-		<p class="rounded-lg border border-destructive/40 px-3 py-2 text-destructive" role="alert">
+		<p class="rounded-lg border border-destructive/40 px-3 py-2 text-destructive" role="status">
 			{outcome.message}
 		</p>
 	{/if}

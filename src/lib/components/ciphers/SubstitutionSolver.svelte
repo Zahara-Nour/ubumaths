@@ -22,7 +22,7 @@
 			.sort((a, b) => b.count - a.count)
 	);
 	const revealed = $derived(applyGuesses(text, guesses));
-	const conflicts = $derived(guessConflicts(guesses));
+	const conflicts = $derived(guessConflicts(guesses, text));
 
 	// Functions
 	function setGuess(cipherLetter: string, event: Event & { currentTarget: HTMLInputElement }) {

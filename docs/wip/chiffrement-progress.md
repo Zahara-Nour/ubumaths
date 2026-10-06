@@ -14,11 +14,18 @@ Branche `feat/chiffrement`, worktree `../ubumaths-wt-chiffrement`. Démarré le 
 
 ## Lot 1 (collège)
 
-- [ ] Module pur `src/lib/ciphers/` + tests (normalisation, César, Atbash, substitution, scytale, Polybe, fréquences, force brute, substitution manuelle)
-- [ ] Pages `/chiffrement` (accueil) + `/chiffrement/{cesar,atbash,substitution,scytale,polybe}`
-- [ ] Tests client (rendu)
-- [ ] Sitemap, CONTEXT.md (chiffrer / déchiffrer / décrypter)
-- [ ] svelte:autofix, check:incremental, code-reviewer, PR
+- [x] Module pur `src/lib/ciphers/` + tests (81 tests, aller-retours par propriétés sur graines fixes)
+- [x] Pages `/chiffrement` (accueil) + `/chiffrement/{cesar,atbash,substitution,scytale,polybe}`
+- [x] Tests client (13, rendu réel) + captures bureau / mobile (pas de défilement horizontal, aucune erreur JS)
+- [x] Sitemap, CONTEXT.md (chiffrer / déchiffrer / décrypter)
+- [x] svelte:autofix, check:incremental (0 erreur), code-reviewer (findings corrigés : clé rendue deux fois, Ł/Ø, NFD qui changeait ≠ en =, hypothèses fantômes, bâton immense)
+- [ ] PR, CI, merge
+
+## Reste à faire (hors lot 1)
+
+- Lien vers `/chiffrement` depuis l'accueil ou la navigation (non fait : l'accueil a des modifications locales de David sur `main`).
+- Lot lycée : affine, Vigenère (Kasiski, indice de coïncidence), Hill, RSA de poche.
+- Défis « Dépêches du Czar ».
 
 ## Référence des fréquences
 

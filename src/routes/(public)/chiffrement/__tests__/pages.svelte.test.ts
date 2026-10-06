@@ -106,12 +106,24 @@ describe('Atbash', () => {
 });
 
 describe('substitution', () => {
+	it('la clé n’est réglée qu’à un seul endroit, partagé par Chiffrer et Déchiffrer', async () => {
+		const screen = await render(Substitution);
+		expect(screen.container.querySelectorAll('#substitution-key')).toHaveLength(1);
+		await page.getByRole('tab', { name: 'Déchiffrer' }).click();
+		await page.getByRole('textbox', { name: 'Mot-clé' }).fill('CORNEGIDOUILLE');
+		await page.getByLabelText('Message chiffré').fill('C');
+		// C est la 1ʳᵉ lettre de la clé : il cache un A
+		await expect.poll(() => text(screen.container, 'cipher-decrypted')).toBe('A');
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await expect.poll(() => screen.container.querySelectorAll('#substitution-key').length).toBe(0);
+	});
+
 	it('une clé complète invalide affiche le problème, en clair', async () => {
 		const screen = await render(Substitution);
 		await chooseOption(/^Fabriquer la clé/, 'Clé complète (26 lettres)');
 		await page.getByLabelText('Clé (26 lettres)').fill('ABCDEFGHIJKLMNOPRSTUVWXYZ');
 		await expect
-			.poll(() => screen.container.querySelector('[role="alert"]')?.textContent ?? '')
+			.poll(() => screen.container.querySelector('[role="status"]')?.textContent ?? '')
 			.toContain('Il manque la lettre Q.');
 	});
 
@@ -148,7 +160,7 @@ describe('carré de Polybe', () => {
 		await page.getByRole('tab', { name: 'Déchiffrer' }).click();
 		await page.getByLabelText('Message chiffré').fill('11 17');
 		await expect
-			.poll(() => screen.container.querySelector('[role="alert"]')?.textContent ?? '')
+			.poll(() => screen.container.querySelector('[role="status"]')?.textContent ?? '')
 			.toContain('Le chiffre 7 (position 5)');
 	});
 });

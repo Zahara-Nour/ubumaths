@@ -48,7 +48,7 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 | Chiffre (un)                 | Une méthode d'écriture secrète : le chiffre de César, la scytale…  | `cipher`                                 |
 | Substitution / transposition | Remplacer les lettres / changer leur ordre (la scytale transpose). |                                          |
 
-⛔ « Crypter » : non reconnu par l’Académie française (chiffrer sans clé n’a pas de sens). Écrire chiffrer, ou décrypter.
+⛔ « Crypter » : déconseillé par les spécialistes de la sécurité (chiffrer sans clé n’a pas de sens). Écrire chiffrer, ou décrypter.
 
 ## Le cours
 

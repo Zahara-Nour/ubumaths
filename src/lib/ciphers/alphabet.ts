@@ -28,7 +28,15 @@ export interface CipherResult {
 export const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const ALPHABET_SIZE = ALPHABET.length;
 
-const LIGATURES: Record<string, string> = { Œ: 'OE', Æ: 'AE' };
+/** Lettres que la décomposition NFD ne ramène pas à A-Z */
+const SPECIAL_LETTERS: Record<string, string> = {
+	Œ: 'OE',
+	Æ: 'AE',
+	Ł: 'L',
+	Ø: 'O',
+	Đ: 'D',
+	Ħ: 'H'
+};
 
 // Functions
 
@@ -55,13 +63,20 @@ export function formatNumber(n: number): string {
 	return n < 0 ? `−${-n}` : String(n);
 }
 
-/** Majuscules, accents retirés, Œ → OE, Æ → AE ; le reste est conservé */
+/**
+ * Majuscules, accents retirés, Œ → OE, Ł → L… Seuls les caractères qui
+ * deviennent des lettres A-Z sont touchés : ≠, π ou un chiffre traversent tels quels.
+ */
 export function normalizeText(text: string): string {
-	return text
-		.toUpperCase()
-		.replace(/[ŒÆ]/g, (ligature) => LIGATURES[ligature])
-		.normalize('NFD')
-		.replace(/[̀-ͯ]/g, '');
+	let output = '';
+	for (const char of text) {
+		// Accent déjà décomposé : il disparaît avec celui de la lettre précédente
+		if (/\p{M}/u.test(char)) continue;
+		const upper = char.toUpperCase();
+		const letters = SPECIAL_LETTERS[upper] ?? upper.normalize('NFD').replace(/\p{M}/gu, '');
+		output += /^[A-Z]+$/.test(letters) ? letters : char;
+	}
+	return output;
 }
 
 /** Les seules lettres A-Z du texte normalisé */

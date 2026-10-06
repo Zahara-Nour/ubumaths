@@ -14,6 +14,22 @@ describe('normalizeText', () => {
 		expect(normalizeText("J'ai 3 ans !")).toBe("J'AI 3 ANS !");
 	});
 
+	it('lettres sans décomposition (polonais, danois…) ramenées à A-Z', () => {
+		expect(normalizeText('Łódź, Øre, Đ, Ħ')).toBe('LODZ, ORE, D, H');
+	});
+
+	it('ß devient SS', () => {
+		expect(normalizeText('Straße')).toBe('STRASSE');
+	});
+
+	it('un caractère qui ne devient pas une lettre traverse sans changer (≠ reste ≠, π reste π)', () => {
+		expect(normalizeText('x ≠ 3, π')).toBe('X ≠ 3, π');
+	});
+
+	it('un accent déjà décomposé (e + accent) donne la lettre seule', () => {
+		expect(normalizeText('e\u0301')).toBe('E');
+	});
+
 	it('texte vide → texte vide', () => {
 		expect(normalizeText('')).toBe('');
 	});

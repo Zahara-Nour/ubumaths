@@ -22,6 +22,11 @@ describe('guessConflicts', () => {
 		expect(guessConflicts({ X: 'E', Q: 'E', A: 'S' })).toEqual(['E']);
 	});
 
+	it('ignore les hypothèses sur des lettres absentes du message', () => {
+		expect(guessConflicts({ Q: 'E', X: 'E' }, 'XAX')).toEqual([]);
+		expect(guessConflicts({ Q: 'E', X: 'E' }, 'XQ')).toEqual(['E']);
+	});
+
 	it('aucun conflit → liste vide', () => {
 		expect(guessConflicts({ X: 'E', Q: 'S' })).toEqual([]);
 	});

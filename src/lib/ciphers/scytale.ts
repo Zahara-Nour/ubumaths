@@ -48,10 +48,15 @@ function splitRows(plain: string, faces: number): string[] {
 	return rows.filter((row) => row.length > 0);
 }
 
+/** Au-delà d'une face par lettre, des faces de plus ne changent rien */
+function effectiveFaces(lettersPerTurn: number, length: number): number {
+	return Math.min(lettersPerTurn, Math.max(length, 1));
+}
+
 export function scytaleEncrypt(text: string, lettersPerTurn: number): ScytaleResult {
 	checkTurns(lettersPerTurn);
 	const plain = lettersOnly(text);
-	const rows = splitRows(plain, lettersPerTurn);
+	const rows = splitRows(plain, effectiveFaces(lettersPerTurn, plain.length));
 	// Bande déroulée : tour après tour, une lettre de chaque ligne
 	let cipher = '';
 	for (let turn = 0; turn < (rows[0]?.length ?? 0); turn++) {
@@ -63,10 +68,10 @@ export function scytaleEncrypt(text: string, lettersPerTurn: number): ScytaleRes
 export function scytaleDecrypt(text: string, lettersPerTurn: number): ScytaleResult {
 	checkTurns(lettersPerTurn);
 	const cipher = lettersOnly(text);
-	const lengths = rowLengths(cipher.length, lettersPerTurn);
-	const rows: string[] = lengths.map(() => '');
+	const faces = effectiveFaces(lettersPerTurn, cipher.length);
+	const rows: string[] = Array.from({ length: faces }, () => '');
 	// On réenroule la bande : la lettre p va sur la face p mod n
-	for (let p = 0; p < cipher.length; p++) rows[p % lettersPerTurn] += cipher[p];
+	for (let p = 0; p < cipher.length; p++) rows[p % faces] += cipher[p];
 	const nonEmpty = rows.filter((row) => row.length > 0);
 	return {
 		text: nonEmpty.join(''),

@@ -42,7 +42,7 @@
 						Décalage {candidate.shift}
 						{#if i === 0}<span class="sr-only"> (le plus français)</span>{/if}
 					</span>
-					<span class="font-mono break-all">
+					<span class="font-mono break-words">
 						{candidate.text.length > PREVIEW_LENGTH
 							? `${candidate.text.slice(0, PREVIEW_LENGTH)}…`
 							: candidate.text}
