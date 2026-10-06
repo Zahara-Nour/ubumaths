@@ -9,10 +9,19 @@ import { z } from 'zod';
 // Constantes
 
 export const DECRYPT_PARAM = 'decrypter';
-/** Largement au-dessus de la plus longue dépêche ; au-delà, l'URL est ignorée */
-export const MAX_URL_MESSAGE = 5000;
+/** Plus de deux fois la plus longue dépêche (~380 caractères) ; au-delà, l'URL est ignorée */
+export const MAX_URL_MESSAGE = 1000;
 
-const messageSchema = z.string().min(1).max(MAX_URL_MESSAGE);
+/**
+ * Seulement ce que contient une dépêche chiffrée : lettres, chiffres, espaces et
+ * ponctuation de phrase. Un lien fabriqué ne peut donc pas afficher d'adresse
+ * web ou de courriel sur chiph.re.
+ */
+const messageSchema = z
+	.string()
+	.min(1)
+	.max(MAX_URL_MESSAGE)
+	.regex(/^[\p{L}\d\s.,;:!?'’«»()…-]+$/u);
 
 // Functions
 

@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Depeches from '../depeches/+page.svelte';
 import { lettersOnly } from '$lib/ciphers/alphabet';
-import { PROGRESS_KEY } from '$lib/ciphers/dispatch-progress';
+import { HINTS_KEY, PROGRESS_KEY } from '$lib/ciphers/dispatch-progress';
 import { DISPATCHES } from '$lib/ciphers/dispatches';
 
 function text(container: HTMLElement, testid: string): string {
@@ -16,6 +16,7 @@ function text(container: HTMLElement, testid: string): string {
 
 beforeEach(() => {
 	localStorage.removeItem(PROGRESS_KEY);
+	localStorage.removeItem(HINTS_KEY);
 });
 
 describe('Les Dépêches du Czar', () => {
@@ -102,5 +103,45 @@ describe('Les Dépêches du Czar', () => {
 		await page.getByRole('button', { name: 'Confirmer : tout effacer' }).click();
 		await expect.poll(() => text(screen.container, 'dispatch-progress')).toContain('0 / 9');
 		expect(localStorage.getItem(PROGRESS_KEY)).toBe('[]');
+	});
+
+	// Revue du 2026-10-07
+	it('les indices vus survivent à un aller-retour vers les outils', async () => {
+		localStorage.setItem(PROGRESS_KEY, JSON.stringify([1, 2, 3, 4]));
+		const first = await render(Depeches);
+		await page.getByRole('button', { name: 'Un indice' }).click();
+		await expect.poll(() => text(first.container, 'dispatch-hint')).toContain('substitution');
+		first.unmount();
+		const second = await render(Depeches);
+		await expect.poll(() => text(second.container, 'dispatch-hint')).toContain('substitution');
+		expect(second.container.querySelector('[data-testid="dispatch-tools"]')).not.toBeNull();
+	});
+
+	it('« Recommencer » se désarme dès qu’on reprend le jeu', async () => {
+		localStorage.setItem(PROGRESS_KEY, JSON.stringify([1, 2]));
+		await render(Depeches);
+		await page.getByRole('button', { name: 'Recommencer la campagne' }).click();
+		await page.getByRole('button', { name: 'Un indice' }).click();
+		await expect
+			.element(page.getByRole('button', { name: 'Recommencer la campagne' }))
+			.toBeInTheDocument();
+	});
+
+	it('deux erreurs de suite : le message change, pour être annoncé de nouveau', async () => {
+		const screen = await render(Depeches);
+		await page.getByLabelText(/Votre décryptage/).fill('le czar arrive');
+		await page.getByRole('button', { name: 'Vérifier' }).click();
+		await expect
+			.poll(() => text(screen.container, 'dispatch-feedback'))
+			.toContain('Ce n’est pas encore ça');
+		await page.getByRole('button', { name: 'Vérifier' }).click();
+		await expect.poll(() => text(screen.container, 'dispatch-feedback')).toContain('essai 2');
+	});
+
+	it('une bonne réponse porte le focus sur « Décryptée ! »', async () => {
+		await render(Depeches);
+		await page.getByLabelText(/Votre décryptage/).fill(DISPATCHES[0].plaintext);
+		await page.getByRole('button', { name: 'Vérifier' }).click();
+		await expect.poll(() => document.activeElement?.textContent).toBe('Décryptée !');
 	});
 });

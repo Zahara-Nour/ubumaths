@@ -4,13 +4,13 @@
 	navigateur (aucune donnée ne quitte l'appareil).
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { loadProgress, saveProgress } from '$lib/ciphers/dispatch-progress';
+	import { loadHints, loadProgress, saveHints, saveProgress } from '$lib/ciphers/dispatch-progress';
 	import {
 		CIPHER_PATHS,
 		DISPATCHES,
@@ -23,15 +23,18 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Types
-	type Feedback = { kind: 'wrong'; given: number; expected: number } | null;
+	type Feedback = { kind: 'wrong'; given: number; expected: number; attempt: number } | null;
 
 	// State
+	/** Faux jusqu'à la lecture du stockage : évite d'afficher la n° 1 puis de sauter ailleurs */
+	let loaded = $state(false);
 	let solved = $state<number[]>([]);
 	let current = $state(1);
 	let answers = $state<Record<number, string>>({});
 	let hintsShown = $state<Record<number, number>>({});
 	let feedback = $state<Feedback>(null);
 	let confirmingReset = $state(false);
+	let solvedHeading = $state<HTMLElement | null>(null);
 
 	const dispatch = $derived(DISPATCHES.find((d) => d.number === current) ?? DISPATCHES[0]);
 	const ciphertext = $derived(dispatchCiphertext(dispatch));
@@ -52,29 +55,37 @@
 
 	onMount(() => {
 		solved = loadProgress(storage());
+		hintsShown = loadHints(storage());
 		// On reprend à la première dépêche ouverte et pas encore décryptée
 		current =
 			DISPATCHES.find((d) => isUnlocked(d.number, solved) && !solved.includes(d.number))?.number ??
 			1;
+		loaded = true;
 	});
 
 	function select(number: number) {
 		if (!isUnlocked(number, solved)) return;
 		current = number;
 		feedback = null;
+		confirmingReset = false;
 	}
 
-	function submit(event: SubmitEvent, target: Dispatch) {
+	async function submit(event: SubmitEvent, target: Dispatch) {
 		event.preventDefault();
+		confirmingReset = false;
 		const answer = answers[target.number] ?? '';
 		if (checkAnswer(target, answer)) {
 			solved = [...new Set([...solved, target.number])].sort((a, b) => a - b);
 			saveProgress(storage(), solved);
 			feedback = null;
 			toaster.success(`Dépêche n° ${target.number} décryptée !`);
+			// Le formulaire disparaît avec le bouton qui avait le focus : on le porte sur le résultat
+			await tick();
+			solvedHeading?.focus();
 		} else {
 			feedback = {
 				kind: 'wrong',
+				attempt: (feedback?.attempt ?? 0) + 1,
 				given: lettersOnly(answer).length,
 				expected: lettersOnly(target.plaintext).length
 			};
@@ -83,6 +94,8 @@
 
 	function showHint(number: number) {
 		hintsShown = { ...hintsShown, [number]: Math.min(2, (hintsShown[number] ?? 0) + 1) };
+		saveHints(storage(), hintsShown);
+		confirmingReset = false;
 	}
 
 	async function copyCiphertext() {
@@ -103,13 +116,14 @@
 		saveProgress(storage(), []);
 		answers = {};
 		hintsShown = {};
+		saveHints(storage(), {});
 		feedback = null;
 		current = 1;
 		confirmingReset = false;
 	}
 </script>
 
-<div class="flex flex-col gap-8">
+<div class={['flex flex-col gap-8', !loaded && 'invisible']} aria-busy={!loaded}>
 	<section class="flex flex-col gap-3" aria-labelledby="dispatch-list-title">
 		<div class="flex flex-wrap items-baseline justify-between gap-2">
 			<h2 id="dispatch-list-title" class="text-xl font-semibold">Les dépêches interceptées</h2>
@@ -138,7 +152,9 @@
 							N° {item.number} ·
 							{done ? 'décryptée' : unlocked ? 'à décrypter' : 'verrouillée'}
 						</span>
-						<span class="hidden font-medium sm:block">{unlocked ? item.title : '???'}</span>
+						<span class="hidden font-medium sm:block"
+							>{#if unlocked}{item.title}{:else}<span aria-hidden="true">???</span>{/if}</span
+						>
 					</button>
 				</li>
 			{/each}
@@ -179,7 +195,9 @@
 
 		{#if isSolved}
 			<div class="flex flex-col gap-2" data-testid="dispatch-solved">
-				<p class="font-semibold text-primary">Décryptée !</p>
+				<p class="font-semibold text-primary" tabindex="-1" bind:this={solvedHeading}>
+					Décryptée !
+				</p>
 				<p class="rounded-lg border bg-muted/40 px-3 py-2">{dispatch.plaintext}</p>
 				<p class="italic">{dispatch.epilogue}</p>
 				{#if dispatch.number < DISPATCHES.length}
@@ -204,14 +222,15 @@
 					placeholder="Les accents, les espaces et la ponctuation ne comptent pas."
 				/>
 				<Button type="submit" class="self-start">Vérifier</Button>
-				{#if feedback}
-					<p class="text-sm text-destructive" role="status" data-testid="dispatch-feedback">
-						Ce n’est pas encore ça.
+				<!-- Région toujours présente : un lecteur d'écran annonce ce qui y change -->
+				<p class="text-sm text-destructive" role="status" data-testid="dispatch-feedback">
+					{#if feedback}
+						Ce n’est pas encore ça{feedback.attempt > 1 ? ` (essai ${feedback.attempt})` : ''}.
 						{#if feedback.given !== feedback.expected}
 							Le message clair compte {feedback.expected} lettres ; votre réponse en a {feedback.given}.
 						{/if}
-					</p>
-				{/if}
+					{/if}
+				</p>
 			</form>
 
 			<div class="flex flex-col gap-2">

@@ -47,7 +47,8 @@
 	}: Props = $props();
 
 	// State — valeurs initiales seulement : le visiteur les change ensuite.
-	// Un message passé dans l'URL (lien d'une dépêche) ouvre l'onglet Décrypter.
+	// Un message passé dans l'URL (lien d'une dépêche) ouvre l'onglet Décrypter. Lu une
+	// seule fois : les liens de la campagne viennent toujours d'une autre page.
 	const fromUrl = readDecryptParam(page.url.searchParams);
 	let tab = $state<Tab>(fromUrl === null ? 'encrypt' : 'crack');
 	// svelte-ignore state_referenced_locally

@@ -11,7 +11,9 @@ import { keyFromKeyword } from '../substitution';
 import { crackVigenere, suggestKeyLength } from '../vigenere';
 import {
 	CIPHER_PATHS,
+	CZAR_RSA_KEY,
 	DISPATCHES,
+	REPORT_PREFIX,
 	checkAnswer,
 	dispatchCiphertext,
 	isUnlocked,
@@ -28,6 +30,16 @@ describe('la campagne', () => {
 	it('neuf dépêches numérotées de 1 à 9, un chiffre chacune', () => {
 		expect(DISPATCHES.map((d) => d.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 		expect(new Set(DISPATCHES.map((d) => d.key.cipher)).size).toBe(9);
+	});
+
+	it('les clés partagées avec les pages d’outils sont celles des dépêches', () => {
+		expect(dispatch(9).key).toEqual({ cipher: 'rsa', ...CZAR_RSA_KEY });
+		expect(lettersOnly(dispatch(8).plaintext).startsWith(REPORT_PREFIX)).toBe(true);
+	});
+
+	it('le narrateur n’emprunte pas le juron du Czar', () => {
+		// « Par Saint Georges » est réservé au Czar Alexis (Compendium, section V)
+		for (const d of DISPATCHES) expect(d.epilogue).not.toMatch(/Saint Georges/);
 	});
 
 	it('chaque chiffre a sa page d’outils', () => {

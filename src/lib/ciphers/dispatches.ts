@@ -63,6 +63,11 @@ export const CIPHER_PATHS = {
 	rsa: '/chiffrement/rsa'
 } as const satisfies Record<DispatchCipher, string>;
 
+/** La clé RSA du Czar, affichée « sur les murs du palais d'Hiver » : partagée avec la page RSA */
+export const CZAR_RSA_KEY = { p: 43, q: 47, e: 5 } as const;
+/** « Tout rapport commence par RAPPORT » : l'amorce connue, partagée avec la page Hill */
+export const REPORT_PREFIX = 'RAPP';
+
 export const DISPATCHES: readonly Dispatch[] = [
 	{
 		number: 1,
@@ -196,14 +201,14 @@ export const DISPATCHES: readonly Dispatch[] = [
 			'Dernière dépêche, la plus importante. Le Czar l’a chiffrée avec sa clé publique, qu’il affiche fièrement sur les murs du palais d’Hiver : (n, e) = (2021, 5). Selon lui, personne ne trouvera jamais sa clé privée.',
 		plaintext:
 			'Ordre du Czar : la grande bataille aura lieu le jour du Décervelage Suprême. Que les Galopins tremblent.',
-		key: { cipher: 'rsa', p: 43, q: 47, e: 5 },
+		key: { cipher: 'rsa', ...CZAR_RSA_KEY },
 		namedInStory: false,
 		hints: [
 			'C’est RSA : la clé publique est (n, e) = (2021, 5).',
 			'2021 n’est pas si grand : factorisez-le, recalculez φ(n), puis la clé privée d.'
 		],
 		epilogue:
-			'Par Saint Georges ! Le Czar Alexis vous attend au Décervelage Suprême. Mais grâce au Cabinet Noir, le Royaume connaît tous ses plans. Bravo, agent : toutes les dépêches sont décryptées.'
+			'Cornegidouille ! Le Czar Alexis vous attend au Décervelage Suprême. Mais grâce au Cabinet Noir, le Royaume connaît tous ses plans. Bravo, agent : toutes les dépêches sont décryptées.'
 	}
 ];
 

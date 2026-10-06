@@ -64,4 +64,5 @@ Décisions de David (2026-10-07) : campagne publique 100 % client (voie A), déb
 - [x] `dispatches.ts` (9 dépêches, texte chiffré calculé depuis clair + clé), `dispatch-progress.ts` (localStorage, Zod, tolérant au refus), `tool-link.ts` (`?decrypter=`, lu par CipherWorkbench)
 - [x] Test de solvabilité : chaque dépêche tombe sous l'attaque de ses indices ; parcours réel des 9 liens vérifié dans un navigateur
 - [x] Page `/chiffrement/depeches`, carte sur l'accueil, sitemap ; 8 tests navigateur
-- [ ] code-reviewer, PR, merge
+- [x] code-reviewer (findings corrigés : test de la page d’outil ouverte par lien, région de statut permanente + focus, « Recommencer » désarmé, pas de saut au chargement, chaîne continue de progression, indices persistés, URL limitée à l’alphabet des dépêches et 1000 caractères, clés partagées avec les pages RSA et Hill, juron du Czar rendu au Czar)
+- [ ] PR, merge
