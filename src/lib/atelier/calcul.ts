@@ -17,7 +17,7 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
-import { astOf, readNumber } from './parse';
+import { astOf, readNumber, withPiCommand, mixedNotationMessage } from './parse';
 import { INTERNAL_LETTER, internalDefinition, letterRejection } from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
@@ -571,7 +571,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// ⚠️ Les dérivées d'abord (`f'(x)` → son expression), puis les noms : sans
 	// ça, `f'(x)` perdait son `f` et devenait `(x^2-3x)'(x)`, illisible —
 	// `.resoudre f'(x)=0` répondait « Je n'ai pas su lire » (2026-10-05)
-	const rawArgument = space === -1 ? '' : resolved.slice(space + 1).replace(/’/g, "'");
+	// `π` → `\pi` (la constante) pour une commande de CALCUL seulement : les
+	// commandes de données sont sorties plus haut (`SIMULATIONS`), où `π` est
+	// une modalité comme une autre — `.filtrer L = π` (revue #911)
+	const rawArgument =
+		space === -1 ? '' : withPiCommand(resolved.slice(space + 1).replace(/’/g, "'"));
+	const mixed = mixedNotationMessage(rawArgument);
+	if (mixed !== null) return { kind: 'refus', message: mixed };
 	const derived = derivedSequence(session, rawArgument);
 	if (derived !== null) {
 		return {
@@ -794,6 +800,9 @@ export function runInput(
 
 	syncEngine(session.atelier, session.engine);
 
+	// Entrée BRUTE : `runCommand` ne réécrit `π` qu'en argument d'une commande
+	// de calcul (`.filtrer L = π` lit une modalité), et l'écho reste ce qui a
+	// été tapé (revue #911)
 	if (input.startsWith('.')) return runCommand(session, input);
 
 	// La forme du membre gauche est garantie par la regex — `3 = 3` n'y entre
@@ -856,8 +865,14 @@ export function runInput(
 	const withTerms = recurrenceTermsIn(session.atelier, input);
 	if (!withTerms.ok) return { kind: 'refus', message: withTerms.message };
 
+	// Le moteur répondrait « Invalid backslash sequence », en anglais (revue #911)
+	const mixed = mixedNotationMessage(input);
+	if (mixed !== null) return { kind: 'refus', message: mixed };
+
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
-	const result = session.engine.execute(expandInput(session.atelier, withTerms.text));
+	const result = session.engine.execute(
+		expandInput(session.atelier, withPiCommand(withTerms.text))
+	);
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',
