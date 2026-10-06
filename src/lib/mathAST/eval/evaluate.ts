@@ -65,6 +65,7 @@ import { denormalizeExtended } from '../normal/denormalize';
 import { mapNode } from '../transforms';
 import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
+import { functionPowerAsSuperscript } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
 
 // =============================================================================
@@ -643,6 +644,10 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// FunctionNode (includes sqrt, cbrt, nthroot)
 	if (isFunction(node)) {
+		// `sin^2(x)` : exposant porté par `power` → on évalue `sin(x)^2`.
+		const asPower = functionPowerAsSuperscript(node);
+		if (asPower) return evaluateToRational(asPower, depth + 1);
+
 		const funcName = node.name;
 		const funcArgs = node.args; // Capture before narrowing
 		const funcBase = node.base; // For nth roots: sqrt[n]{x} has base=n
