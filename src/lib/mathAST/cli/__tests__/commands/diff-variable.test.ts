@@ -172,7 +172,12 @@ describe('bareFunctionName', () => {
 		// Noms qui CONTIENNENT les lettres : pas des fonctions usuelles
 		['cost + lnx', null],
 		['\\arcsin x + \\cosh x', null],
-		['x^2', null]
+		['x^2', null],
+		// Logarithme de base donnée : `toCustom` écrit `log_2(x)` (revue #880)
+		['log_2(x)', null],
+		['log_{10}(x)+x', null],
+		['log_2^3(x)', null],
+		['log_2 x', 'log']
 	])('%s', (input, expected) => {
 		expect(bareFunctionName(input)).toBe(expected);
 	});

@@ -47,10 +47,11 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
  * Une fonction usuelle écrite en lettres, sans antislash ni parenthèse :
  * `sin x`, `ln x`, `sin^2 x`. Le nom doit être DÉLIMITÉ — `cost`, `lnx`,
  * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas — et n'est pas
- * suivi (exposant éventuel compris) d'une parenthèse ouvrante.
+ * suivi (indice et exposant éventuels compris : `log_2(x)`, que `toCustom`
+ * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante.
  */
 const BARE_FUNCTION =
-	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*\()/;
+	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*\()/;
 
 /** Variable par défaut quand l'expression n'en dit rien (constante). */
 const DEFAULT_VARIABLE = 'x';
