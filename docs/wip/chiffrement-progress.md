@@ -30,3 +30,12 @@ Branche `feat/chiffrement`, worktree `../ubumaths-wt-chiffrement`. Démarré le 
 ## Référence des fréquences
 
 Wikipédia, « Fréquence d'apparition des lettres en français » — corpus Wikipédia francophone (2008, CLLE-ERSS, Toulouse). Les lettres accentuées y sont comptées à part : le module renormalise les 26 lettres de base à 100 %.
+
+## Lot 2 (lycée) — branche `feat/chiffrement-lycee`
+
+- [x] Module : `modular.ts` (PGCD, inverse, réductions écrites), `affine.ts` (collisions, force brute 312 clés, attaque par deux lettres), `vigenere.ts` (Kasiski, indice de coïncidence, César par colonne)
+- [x] Mesure : sur 480 lettres, longueur retrouvée 298/300 (clés aléatoires de 1 à 10 lettres), clé 300/300 quand la longueur est juste
+- [x] Pages `/chiffrement/affine` et `/chiffrement/vigenere`, accueil (section lycée), sitemap, CONTEXT.md
+- [x] Indice du français : 0,0778 (Friedman), pas recalculé depuis la table (accents comptés à part → 0,070)
+- [x] code-reviewer (findings corrigés : longueur suggérée sur textes courts → seuil 0,068 + colonnes ≥ 12 lettres ; étapes de l’attaque à deux lettres réécrites ; force brute affine sur les comptes ; positions Kasiski à partir de 1 ; Bellaso 1553)
+- [ ] PR, merge

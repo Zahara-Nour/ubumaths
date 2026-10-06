@@ -3,7 +3,7 @@
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 
 	// Constantes
-	const CIPHERS = [
+	const COLLEGE_CIPHERS = [
 		{
 			path: '/chiffrement/cesar',
 			name: 'Le chiffre de César',
@@ -36,11 +36,28 @@
 			summary: 'Chaque lettre devient deux chiffres : sa ligne et sa colonne dans une grille.'
 		}
 	] as const;
+
+	const LYCEE_CIPHERS = [
+		{
+			path: '/chiffrement/vigenere',
+			name: 'Le chiffre de Vigenère',
+			kind: 'Seconde · SNT',
+			summary:
+				'Un César dont le décalage change à chaque lettre. Réputé indéchiffrable pendant trois siècles.'
+		},
+		{
+			path: '/chiffrement/affine',
+			name: 'Le chiffre affine',
+			kind: 'Terminale · maths expertes',
+			summary:
+				'Chaque lettre passe par une fonction affine modulo 26 ; l’inverse modulaire la ramène.'
+		}
+	] as const;
 </script>
 
 <SeoHead
 	title="Le Cabinet Noir de Turingrad : chiffrer et déchiffrer — Chiphre"
-	description="Chiffrer, déchiffrer et décrypter des messages secrets : chiffre de César, Atbash, substitution, scytale et carré de Polybe, avec les calculs pas à pas et l’analyse de fréquences."
+	description="Chiffrer, déchiffrer et décrypter des messages secrets : chiffre de César, Atbash, substitution, scytale, carré de Polybe, Vigenère et chiffre affine, avec les calculs pas à pas et l’analyse de fréquences."
 />
 
 <header class="flex flex-col gap-3">
@@ -77,10 +94,9 @@
 	</p>
 </section>
 
-<section aria-labelledby="chiffres" class="flex flex-col gap-4">
-	<h2 id="chiffres" class="text-xl font-semibold">Les chiffres du collège</h2>
+{#snippet cards(list: typeof COLLEGE_CIPHERS | typeof LYCEE_CIPHERS)}
 	<ul class="grid gap-4 sm:grid-cols-2">
-		{#each CIPHERS as cipher (cipher.path)}
+		{#each list as cipher (cipher.path)}
 			<li>
 				<a
 					href={resolve(cipher.path)}
@@ -93,7 +109,15 @@
 			</li>
 		{/each}
 	</ul>
-	<p class="text-sm text-muted-foreground">
-		Bientôt, pour le lycée : le chiffre affine, Vigenère, Hill et un RSA de poche.
-	</p>
+{/snippet}
+
+<section aria-labelledby="chiffres-college" class="flex flex-col gap-4">
+	<h2 id="chiffres-college" class="text-xl font-semibold">Les chiffres du collège</h2>
+	{@render cards(COLLEGE_CIPHERS)}
+</section>
+
+<section aria-labelledby="chiffres-lycee" class="flex flex-col gap-4">
+	<h2 id="chiffres-lycee" class="text-xl font-semibold">Les chiffres du lycée</h2>
+	{@render cards(LYCEE_CIPHERS)}
+	<p class="text-sm text-muted-foreground">Bientôt : le chiffre de Hill et un RSA de poche.</p>
 </section>
