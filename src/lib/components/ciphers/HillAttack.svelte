@@ -78,8 +78,8 @@
 		<p class="text-sm text-muted-foreground">
 			Chaque ligne (u, v) de M⁻¹ donne à elle seule une lettre claire sur deux : u × c₁ + v × c₂. On
 			essaie les 676 lignes possibles et on garde celles qui donnent les lettres les plus «
-			françaises ». Au lieu de 26⁴ = 456 976 matrices, il suffit de 2 × 676 essais : c’est le point
-			faible de Hill.
+			françaises ». Ce seul classement de 676 essais sert pour les deux lignes, au lieu de 26⁴ = 456
+			976 matrices : c’est le point faible de Hill.
 		</p>
 		{#if rows === null}
 			<p class="text-muted-foreground">Il faut au moins deux paires de lettres.</p>
