@@ -29,6 +29,7 @@ import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
 import { numericIntegrate } from './numeric';
+import { expandFunctionPowers } from '../common/function-power';
 
 // =============================================================================
 // Helper Functions
@@ -484,7 +485,12 @@ function integrateInternal(
  * result.steps.forEach(step => console.log(step.description));
  * ```
  */
-export function integrate(expr: MathNode, options?: IntegrateOptions): IntegrateResult {
+export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
+	// `sin^2(x)` : exposant porté par `power` du nœud fonction. Les intégrateurs
+	// reconnaissent `sin(x)` par son nom et ignoraient l'exposant (∫sin²x
+	// rendait −cos x) : on se ramène à `sin(x)^2` avant toute classification.
+	const expr = expandFunctionPowers(rawExpr);
+
 	// Merge options with defaults
 	const opts = {
 		...DEFAULT_INTEGRATE_OPTIONS,

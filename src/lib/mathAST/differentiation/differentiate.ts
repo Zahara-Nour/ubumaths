@@ -53,6 +53,7 @@ import {
 	piecewisePiece
 } from '../factory';
 import { isDerivativeFunction, isInverseFunction, isZero } from '../guards';
+import { functionPowerAsSuperscript } from '../common/function-power';
 
 // =============================================================================
 // Main Differentiation Function
@@ -223,8 +224,14 @@ function differentiateNode(
 			return generalPowerRule(base, exp, dBase, dExp, simplify);
 		}
 
-		case 'function':
+		case 'function': {
+			// `sin^2(x)` : le parseur porte l'exposant dans `power`. On dérive la
+			// forme `sin(x)^2` (règle de la puissance + chaîne) — sans ce détour,
+			// l'exposant était ignoré et (sin²x)' rendait cos x.
+			const asPower = functionPowerAsSuperscript(node);
+			if (asPower) return differentiateNode(asPower, variable, simplify, functions);
 			return differentiateFunctionNode(node, variable, simplify, functions);
+		}
 
 		case 'delimiter':
 			// Parentheses don't change the derivative
