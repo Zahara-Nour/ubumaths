@@ -39,3 +39,12 @@ Wikipédia, « Fréquence d'apparition des lettres en français » — corpus Wi
 - [x] Indice du français : 0,0778 (Friedman), pas recalculé depuis la table (accents comptés à part → 0,070)
 - [x] code-reviewer (findings corrigés : longueur suggérée sur textes courts → seuil 0,068 + colonnes ≥ 12 lettres ; étapes de l’attaque à deux lettres réécrites ; force brute affine sur les comptes ; positions Kasiski à partir de 1 ; Bellaso 1553)
 - [ ] PR, merge
+
+## Lot 3a (Hill) — branche `feat/chiffrement-hill`
+
+- [x] Module `hill.ts` : chiffrement par paires (X de complément), inverse modulo 26 pas à pas, collision si non inversible, attaque à clair connu (M = C·P⁻¹), attaque ligne par ligne (676 lignes classées par χ², ordre des lignes par bigrammes fréquents)
+- [x] Mesure : attaque ligne par ligne 60/60 clés aléatoires, de 100 à 486 lettres
+- [x] Page `/chiffrement/hill`, accueil, sitemap, CONTEXT.md ; 27 tests navigateur
+- [x] code-reviewer (findings corrigés : lignes retenues désignées par leur rang, deux motifs d’échec distincts, seuil de 20 paires, groupe ARIA de la matrice)
+- [ ] PR, merge
+- [ ] Lot 3b : RSA de poche (PR séparée)

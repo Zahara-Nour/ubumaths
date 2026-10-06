@@ -13,6 +13,7 @@ import Polybius from '../polybe/+page.svelte';
 import Atbash from '../atbash/+page.svelte';
 import Affine from '../affine/+page.svelte';
 import Vigenere from '../vigenere/+page.svelte';
+import Hill from '../hill/+page.svelte';
 import { affineEncrypt } from '$lib/ciphers/affine';
 import { caesarEncrypt } from '$lib/ciphers/caesar';
 import { normalizeText } from '$lib/ciphers/alphabet';
@@ -37,7 +38,8 @@ describe('accueil du Cabinet Noir', () => {
 			'scytale',
 			'polybe',
 			'vigenere',
-			'affine'
+			'affine',
+			'hill'
 		]) {
 			expect(links).toContain(`/chiffrement/${slug}`);
 		}
@@ -271,5 +273,71 @@ describe('Vigenère', () => {
 		await page.getByRole('tab', { name: 'Décrypter' }).click();
 		await chooseOption(/^Longueur de clé/, '3');
 		await expect.poll(() => text(screen.container, 'cracked-key')).toHaveLength(3);
+	});
+});
+
+describe('chiffre de Hill', () => {
+	it('(3 3 ; 2 5) : HE → HI, et les étapes de l’inverse sont affichées', async () => {
+		const screen = await render(Hill);
+		await page.getByLabelText('Message clair').fill('He');
+		await expect.poll(() => text(screen.container, 'cipher-encrypted')).toBe('HI');
+		expect(text(screen.container, 'hill-inverse-steps')).toContain('(15 17 ; 20 9)');
+	});
+
+	it('longueur impaire : le X ajouté est signalé', async () => {
+		const screen = await render(Hill);
+		await page.getByLabelText('Message clair').fill('Hel');
+		await expect.poll(() => text(screen.container, 'hill-padded')).toContain('un X complète');
+	});
+
+	it('matrice non inversible : une collision est montrée, le déchiffrement refusé', async () => {
+		const screen = await render(Hill);
+		await chooseOption(/^Coefficient a : 3/, '2');
+		await chooseOption(/^Coefficient b : 3/, '0');
+		await chooseOption(/^Coefficient c : 2/, '0');
+		await chooseOption(/^Coefficient d : 5/, '1');
+		await expect.poll(() => text(screen.container, 'hill-collision')).toContain('AA et NA');
+		await page.getByRole('tab', { name: 'Déchiffrer' }).click();
+		await expect
+			.poll(
+				() =>
+					screen.container.querySelector(
+						'[role="tabpanel"][data-state="active"] [data-testid="cipher-decrypted"]'
+					) === null &&
+					(screen.container.querySelector('[role="tabpanel"][data-state="active"] p[role="status"]')
+						?.textContent ??
+						'')
+			)
+			.toContain('Le déterminant vaut 2');
+	});
+
+	it('mot-clé : HILL donne (7 8 ; 11 11)', async () => {
+		const screen = await render(Hill);
+		await chooseOption(/^Fabriquer la matrice/, 'Un mot-clé de 4 lettres');
+		await expect
+			.poll(() => text(screen.container, 'hill-inverse-steps'))
+			.toContain('det M = 7 × 11 − 8 × 11 = −11 ≡ 15');
+	});
+
+	it('décrypter : clair connu RAPP et attaque ligne par ligne retrouvent (5 17 ; 4 15)', async () => {
+		const screen = await render(Hill);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await expect
+			.poll(() => text(screen.container, 'hill-known-steps'))
+			.toContain('≡ (5 17 ; 4 15) (mod 26)');
+		expect(text(screen.container, 'hill-known-result')).toMatch(/^RAPPORTDUCABINETNOIR/);
+		expect(text(screen.container, 'hill-row-key')).toBe('(5 17 ; 4 15)');
+		expect(
+			screen.container.querySelectorAll('[data-testid="hill-row-candidates"] [data-chosen]')
+		).toHaveLength(2);
+	});
+
+	it('décrypter un message trop court : l’attaque ligne par ligne s’abstient et dit pourquoi', async () => {
+		const screen = await render(Hill);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('Message intercepté').fill('HQSZ HQSZ');
+		await expect
+			.poll(() => text(screen.container, 'hill-row-failure'))
+			.toContain('au moins 40 lettres');
 	});
 });
