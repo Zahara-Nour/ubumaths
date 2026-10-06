@@ -21,7 +21,6 @@ import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 import { createStepRecorder } from '../step-recorder';
 import { selectIntegrator } from './select';
 import { variable as variableFactory, number, divide, power, fraction } from '../../factory';
-import { numericNode } from '../../common/numeric';
 import { simplifiedMultiply } from '../../differentiation/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
@@ -32,7 +31,11 @@ import {
 	isFunction,
 	isSuperscript
 } from '../../guards';
-import { findProportionalityConstant } from '../patterns';
+import { findProportionalityRatio } from '../patterns';
+import type { Rational } from '../../normal/types';
+import { reciprocal, isOne as isOneRational } from '../../normal/rational';
+import { extractExactRational, rationalToNode } from '../../common/numeric';
+import { containsVariable } from '../rules';
 import { isEulerConstant } from '../../guards';
 import { mapNode } from '../../transforms';
 
@@ -73,9 +76,10 @@ function structuralSubstitute(expr: MathNode, target: MathNode, replacement: Mat
  */
 function normalizeForIntegration(expr: MathNode): MathNode {
 	return mapNode(expr, (node) => {
-		// sqrt(x) -> x^(1/2)
+		// sqrt(x) -> x^(1/2) ; racine n-ième (indice dans `base`) -> x^(1/n)
 		if (isFunction(node) && node.name === 'sqrt' && node.args.length === 1) {
-			return power(node.args[0], fraction(number('1'), number('2')));
+			const index = node.base ?? number('2');
+			return power(node.args[0], fraction(number('1'), index));
 		}
 
 		// 1/x^n -> x^(-n)
@@ -183,7 +187,7 @@ export const uSubstitutionIntegrator: Integrator = {
 			options,
 			recorder,
 			depth,
-			match.constantFactor
+			match.constantRatio
 		);
 	}
 };
@@ -208,7 +212,7 @@ export const uSubstitutionIntegrator: Integrator = {
  * @param options - Integration options
  * @param recorder - Step recorder
  * @param depth - Current recursion depth
- * @param matchedConstantFactor - Constant factor detected by pattern matching (optional)
+ * @param matchedRatio - Constant factor detected by pattern matching (optional, exact)
  * @returns Integration result
  */
 function performUSubstitution(
@@ -218,7 +222,7 @@ function performUSubstitution(
 	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number,
-	matchedConstantFactor?: number
+	matchedRatio?: Rational
 ): IntegrateResult {
 	// Step 1: Identify the substitution
 	recorder.recordStepByRule(
@@ -258,7 +262,6 @@ function performUSubstitution(
 	// 1. Replace all occurrences of u with a temporary variable 'u'
 	// 2. Try to simplify the integrand by factoring out du
 
-	const uVar = variableFactory('u');
 	let transformedIntegrand: MathNode;
 	let constantFactor: MathNode | null = null;
 
@@ -266,17 +269,22 @@ function performUSubstitution(
 		const duHash = hashMathNode(du);
 		const integrandHash = hashMathNode(integrand);
 
-		// Simple case: integrand is exactly du
+		// Simple case: integrand is exactly du → ∫ 1 du
 		if (duHash === integrandHash) {
-			transformedIntegrand = uVar;
+			transformedIntegrand = number('1');
 			constantFactor = null;
 		} else {
 			// More complex case: need to factor out du from integrand
-			const result = tryFactorDu(integrand, u, du, variable, matchedConstantFactor);
+			const result = tryFactorDu(integrand, u, du, variable, matchedRatio);
 			transformedIntegrand = result.transformedIntegrand;
-			if (result.constantFactor !== null) {
-				constantFactor = numericNode(result.constantFactor);
+			if (result.constantFactor !== null && !isOneRational(result.constantFactor)) {
+				constantFactor = rationalToNode(result.constantFactor);
 			}
+		}
+		// La substitution doit faire disparaître la variable : sinon l'intégrale
+		// « en u » mélangerait u et x, et sa primitive serait fausse
+		if (variable !== 'u' && containsVariable(transformedIntegrand, variable)) {
+			throw new Error(`la variable ${variable} subsiste après la substitution`);
 		}
 	} catch (error) {
 		return {
@@ -405,7 +413,8 @@ function performUSubstitution(
  */
 interface FactorDuResult {
 	transformedIntegrand: MathNode;
-	constantFactor: number | null;
+	/** k tel que integrand dx = k · f(u) du (exact) ; null = 1 */
+	constantFactor: Rational | null;
 }
 
 /**
@@ -419,7 +428,7 @@ interface FactorDuResult {
  * @param u - The u expression
  * @param du - The du/dx expression
  * @param _variable - Original variable
- * @param matchedConstantFactor - Pre-computed constant factor from pattern matching
+ * @param matchedRatio - Pre-computed constant factor from pattern matching (exact)
  * @returns Transformed integrand and constant factor
  */
 function tryFactorDu(
@@ -427,7 +436,7 @@ function tryFactorDu(
 	u: MathNode,
 	du: MathNode,
 	_variable: string,
-	matchedConstantFactor?: number
+	matchedRatio?: Rational
 ): FactorDuResult {
 	const uVar = variableFactory('u');
 	const uHash = hashMathNode(u);
@@ -439,8 +448,7 @@ function tryFactorDu(
 		if (denomHash === uHash) {
 			// Denominator is exactly u
 			// Check if numerator is proportional to du
-			const propConst =
-				matchedConstantFactor ?? findProportionalityConstant(integrand.numerator, du);
+			const propConst = matchedRatio ?? findProportionalityRatio(integrand.numerator, du);
 			if (propConst !== null) {
 				// Transform to 1/u with constant factor
 				return {
@@ -452,7 +460,7 @@ function tryFactorDu(
 
 		// Check if numerator is proportional to du and denominator contains u
 		// Example: x/sqrt(1-x²) with u = 1-x², du = -2x → -0.5 * 1/sqrt(u)
-		const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.numerator, du);
+		const propConst = matchedRatio ?? findProportionalityRatio(integrand.numerator, du);
 		if (propConst !== null) {
 			// Transform denominator by substituting u, result is 1/transformedDenom
 			const denomTransformed = structuralSubstitute(integrand.denominator, u, uVar);
@@ -474,7 +482,7 @@ function tryFactorDu(
 		) {
 			const denomHash = hashMathNode(integrand.right.denominator);
 			if (denomHash === uHash) {
-				const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.left, du);
+				const propConst = matchedRatio ?? findProportionalityRatio(integrand.left, du);
 				if (propConst !== null) {
 					return {
 						transformedIntegrand: divide(number('1'), uVar, 'fraction'),
@@ -492,7 +500,7 @@ function tryFactorDu(
 		) {
 			const denomHash = hashMathNode(integrand.left.denominator);
 			if (denomHash === uHash) {
-				const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.right, du);
+				const propConst = matchedRatio ?? findProportionalityRatio(integrand.right, du);
 				if (propConst !== null) {
 					return {
 						transformedIntegrand: divide(number('1'), uVar, 'fraction'),
@@ -506,7 +514,7 @@ function tryFactorDu(
 		// Example: x * e^(x²) with u = x², du = 2x
 		// Left = x is proportional to du with factor 1/2
 		// Right = e^(x²) transforms to e^u
-		const leftProp = findProportionalityConstant(integrand.left, du);
+		const leftProp = findProportionalityRatio(integrand.left, du);
 		if (leftProp !== null) {
 			// Transform the right factor by substituting u structurally
 			const rightTransformed = structuralSubstitute(integrand.right, u, uVar);
@@ -516,7 +524,7 @@ function tryFactorDu(
 			};
 		}
 
-		const rightProp = findProportionalityConstant(integrand.right, du);
+		const rightProp = findProportionalityRatio(integrand.right, du);
 		if (rightProp !== null) {
 			// Transform the left factor by substituting u structurally
 			const leftTransformed = structuralSubstitute(integrand.left, u, uVar);
@@ -527,11 +535,17 @@ function tryFactorDu(
 		}
 	}
 
-	// Default: structural substitution replacing u expression with u variable
+	// Default: structural substitution replacing u expression with u variable.
+	// L'intégrande est alors f(u) SEUL : si u' = c est constant, dx = du / c,
+	// donc ∫ f(ax+b) dx = F(ax+b) / a (le facteur 1/a était oublié)
 	const result = structuralSubstitute(integrand, u, uVar);
+	if (matchedRatio !== undefined) {
+		return { transformedIntegrand: result, constantFactor: matchedRatio };
+	}
+	const duConstant = extractExactRational(du);
 	return {
 		transformedIntegrand: result,
-		constantFactor: matchedConstantFactor ?? null
+		constantFactor: duConstant !== null && duConstant.n !== 0n ? reciprocal(duConstant) : null
 	};
 }
 

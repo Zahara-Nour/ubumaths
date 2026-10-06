@@ -1435,8 +1435,8 @@ export const partialFractionsIntegrator: Integrator = {
 						const part2 = divide(constTerm, denominator, 'fraction');
 
 						// Integrate both parts
-						const result1 = integrate(part1, { variable, ...options, _depth: depth + 1 });
-						const result2 = integrate(part2, { variable, ...options, _depth: depth + 1 });
+						const result1 = integrate(part1, { ...options, variable, _depth: depth + 1 });
+						const result2 = integrate(part2, { ...options, variable, _depth: depth + 1 });
 
 						if (result1.status === 'exact' && result2.status === 'exact') {
 							let antiderivative = add(result1.antiderivative!, result2.antiderivative!);
@@ -1444,8 +1444,9 @@ export const partialFractionsIntegrator: Integrator = {
 							// Add quotient integral if needed
 							if (quotient && !isZero(quotient)) {
 								const quotientResult = integrate(quotient, {
-									variable,
 									...options,
+									// la variable d'intégration COURANTE prime sur celle des options
+									variable,
 									_depth: depth + 1
 								});
 								if (quotientResult.status === 'exact' && quotientResult.antiderivative) {
@@ -1549,7 +1550,7 @@ export const partialFractionsIntegrator: Integrator = {
 		// Step 6: Add quotient integral if polynomial division was performed
 		if (quotient && !isZero(quotient)) {
 			// Integrate the quotient (polynomial) using recursive call
-			const quotientResult = integrate(quotient, { variable, ...options });
+			const quotientResult = integrate(quotient, { ...options, variable });
 			if (quotientResult.status === 'exact' && quotientResult.antiderivative) {
 				result = result
 					? add(result, quotientResult.antiderivative)

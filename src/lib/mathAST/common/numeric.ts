@@ -9,8 +9,14 @@
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import { isNumber } from '../guards';
-import { number, opposite } from '../factory';
-import { rational, fromInteger, negRational, floatToRational } from '../normal/rational';
+import { number, opposite, fraction } from '../factory';
+import {
+	rational,
+	fromInteger,
+	negRational,
+	floatToRational,
+	divRational
+} from '../normal/rational';
 
 /**
  * Get numeric value from a MathNode if it's a number or opposite(number).
@@ -161,6 +167,42 @@ export function extractRational(node: MathNode): Rational | null {
 		return extractRational(node.content);
 	}
 	return null;
+}
+
+/**
+ * Rationnel EXACT porté par un nœud numérique : littéral (voir
+ * `extractRational`) ou quotient de deux littéraux (`\frac{1}{2}`, `-\frac{3}{4}`).
+ * Rend null pour tout le reste (radicaux, variables, constantes).
+ */
+export function extractExactRational(node: MathNode): Rational | null {
+	const literal = extractRational(node);
+	if (literal !== null) return literal;
+	if (node.type === 'opposite') {
+		const inner = extractExactRational(node.operand);
+		return inner ? negRational(inner) : null;
+	}
+	if (node.type === 'delimiter') return extractExactRational(node.content);
+	if (node.type === 'division') {
+		const n = extractExactRational(node.numerator);
+		const d = extractExactRational(node.denominator);
+		if (n === null || d === null || d.n === 0n) return null;
+		return divRational(n, d);
+	}
+	return null;
+}
+
+/**
+ * Nœud d'un rationnel exact : entier, ou fraction `n/d` ; un négatif est
+ * porté par `opposite` (jamais de littéral négatif).
+ */
+export function rationalToNode(r: Rational): MathNode {
+	const negative = r.n < 0n;
+	const magnitude = negative ? -r.n : r.n;
+	const positiveNode =
+		r.d === 1n
+			? number(magnitude.toString())
+			: fraction(number(magnitude.toString()), number(r.d.toString()));
+	return negative ? opposite(positiveNode) : positiveNode;
 }
 
 /**
