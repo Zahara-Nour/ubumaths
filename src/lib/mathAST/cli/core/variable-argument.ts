@@ -16,16 +16,21 @@
 
 import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
+import { variable } from '../../factory';
+import { isGreek, isSubscript, isVariable } from '../../guards';
+import { toLatex } from '../../latex-generator';
+import { mapNode } from '../../transforms';
 
 // =============================================================================
 // Constantes
 // =============================================================================
 
 /**
- * Un nom de variable après la virgule : `t`, `x_1`, `x_{12}`, `theta`,
- * `\theta`. Le backslash d'une lettre grecque est retiré.
+ * La FORME d'un nom de variable après la virgule : `t`, `x_1`, `x_{12}`,
+ * `\theta`. Ce n'est qu'un filtre : le nom réel est celui que le parseur de
+ * l'expression donne à ce texte (`variableNameOf`).
  */
-const VARIABLE_NAME = /^\\?([A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?)$/;
+const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?$/;
 
 /**
  * Noms que l'expression contient mais qui ne sont pas des variables candidates
@@ -67,9 +72,10 @@ export function splitVariableArgument(input: string): {
 	if (lastComma === -1) return { expression: trimmed, variable: null };
 
 	const expression = trimmed.slice(0, lastComma).trim();
-	const name = VARIABLE_NAME.exec(trimmed.slice(lastComma + 1).trim());
-	if (expression === '' || name === null) return { expression: trimmed, variable: null };
-	return { expression, variable: name[1] };
+	const name = trimmed.slice(lastComma + 1).trim();
+	if (expression === '' || !VARIABLE_NAME.test(name))
+		return { expression: trimmed, variable: null };
+	return { expression, variable: name };
 }
 
 /**
@@ -93,4 +99,45 @@ export function defaultVariable(
 	if (candidates.length === 0) return { ok: true, variable: DEFAULT_VARIABLE };
 	if (candidates.length === 1) return { ok: true, variable: candidates[0] };
 	return { ok: false, candidates };
+}
+
+/**
+ * Les variables indicées (`x_1`, `x_{12}`) réécrites en variables simples,
+ * nommées par leur LaTeX, et de quoi revenir en arrière.
+ *
+ * ⚠️ Le parseur lit `x_1` comme un INDICE de base `x`, que la dérivation
+ * traite en constante : `.diff x_1^2, x_1` valait 0, et `getVariables` n'y
+ * voyait que `x`. Un nom qui contient `_` ne peut pas être celui d'une
+ * variable simple : pas de collision.
+ */
+export function indexVariables(node: MathNode): {
+	node: MathNode;
+	restore: (indexed: MathNode) => MathNode;
+} {
+	const originals = new Map<string, MathNode>();
+	const flat = mapNode(node, (n) => {
+		if (!isSubscript(n) || !(isVariable(n.base) || isGreek(n.base))) return n;
+		const name = toLatex(n);
+		originals.set(name, n);
+		return variable(name);
+	});
+	return {
+		node: flat,
+		restore: (indexed) =>
+			originals.size === 0
+				? indexed
+				: mapNode(indexed, (n) => (isVariable(n) ? (originals.get(n.name) ?? n) : n))
+	};
+}
+
+/**
+ * Le nom de variable d'une variable explicite déjà LUE par le parseur de
+ * l'expression — le même nom que celui que lui donne `indexVariables` —, ou
+ * `null` si ce n'est pas une variable (`2`, `x+1`).
+ */
+export function variableNameOf(node: MathNode): string | null {
+	const flat = indexVariables(node).node;
+	if (isVariable(flat)) return flat.name;
+	if (isGreek(flat)) return flat.letter;
+	return null;
 }

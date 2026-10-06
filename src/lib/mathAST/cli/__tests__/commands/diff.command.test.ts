@@ -620,7 +620,7 @@ describe('DiffCommand', () => {
 		it('handles multi-letter variable names', () => {
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'theta^2, theta',
+				input: '\\theta^2, \\theta',
 				format: 'custom',
 				options: {},
 				isRepl: true
@@ -629,6 +629,8 @@ describe('DiffCommand', () => {
 			const result = command.execute(ctx);
 			expect(result.success).toBe(true);
 			expect(result.output).toContain('d/dtheta');
+			// ⚠️ Sans backslash, `theta` se lit t·h·e·t·a : ce n'est pas une variable
+			expect(result.output).toContain('LaTeX: 2 \\theta');
 		});
 
 		it('does not treat function names as variables', () => {

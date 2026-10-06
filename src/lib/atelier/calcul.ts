@@ -538,6 +538,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// Un refus que le moteur adresse à l'élève, en français (`.dériver a t^2 + b t` :
+	// « Plusieurs variables possibles… ») : montré tel quel, pas noyé dans
+	// « Je n’ai pas su lire » (revue #880)
+	if (!result.success && result.error?.code === 'AMBIGUOUS_VARIABLE') {
+		return { kind: 'refus', message: result.error.message };
+	}
+
 	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
 	// dit rien à l'élève — mesuré, `.deriver )(` et `.resoudre )` (2026-10-05)
 	if (!result.success && rendered.text.trim() === '') {

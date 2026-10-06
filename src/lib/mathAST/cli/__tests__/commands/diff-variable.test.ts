@@ -78,7 +78,7 @@ describe('splitVariableArgument', () => {
 		['x^2 y', { expression: 'x^2 y', variable: null }],
 		['t^2 + t, t', { expression: 't^2 + t', variable: 't' }],
 		['a x^2 + b x ,x', { expression: 'a x^2 + b x', variable: 'x' }],
-		['theta^2, \\theta', { expression: 'theta^2', variable: 'theta' }],
+		['\\theta^2, \\theta', { expression: '\\theta^2', variable: '\\theta' }],
 		['x_1^2, x_1', { expression: 'x_1^2', variable: 'x_1' }],
 		// Virgule dans des parenthèses ou des accolades : pas un séparateur
 		['f(x, y)', { expression: 'f(x, y)', variable: null }],
@@ -88,5 +88,26 @@ describe('splitVariableArgument', () => {
 		[', x', { expression: ', x', variable: null }]
 	])('%s', (input, expected) => {
 		expect(splitVariableArgument(input)).toEqual(expected);
+	});
+});
+
+describe('.diff : variable indicée (revue #880)', () => {
+	// ⚠️ La variable tapée `x_1` ne correspondait pas au nœud `x_1` de
+	// l'expression (un indice, de base `x`) : la dérivée valait 0.
+	it.each([
+		['x_1^2, x_1', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
+		['x_{12}^2, x_{12}', 'd/dx_12(x_12^2) = 2x_12\nLaTeX: 2 x_{12}'],
+		// Seule variable libre : x_1, pas x
+		['x_1^2', 'd/dx_1(x_1^2) = 2x_1\nLaTeX: 2 x_1'],
+		// x apparaît seule : x_1 est une autre variable, constante en x
+		['x^2 + x_1', 'd/dx(x^2+x_1) = 2x\nLaTeX: 2 x'],
+		['x^2 + x_1^2, x_1', 'd/dx_1(x^2+x_1^2) = 2x_1\nLaTeX: 2 x_1']
+	])('.diff %s', (input, expected) => {
+		expect(diff(input)).toBe(expected);
+	});
+
+	it('la variable doit être une variable', () => {
+		const result = new WebReplEngine().execute('.diff x^2, 2');
+		expect(result.success).toBe(false);
 	});
 });

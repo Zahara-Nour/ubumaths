@@ -22,7 +22,13 @@ import { toLatex } from '../../latex-generator';
 import { parse } from '../core/pipeline';
 import { differentiate, DifferentiationError } from '../../differentiation';
 import { tidyTerms } from '../../tidy/terms';
-import { defaultVariable, splitVariableArgument } from '../core/variable-argument';
+import { variable as variableNode } from '../../factory';
+import {
+	defaultVariable,
+	indexVariables,
+	splitVariableArgument,
+	variableNameOf
+} from '../core/variable-argument';
 
 // =============================================================================
 // Diff Command
@@ -90,22 +96,44 @@ export class DiffCommand extends BaseCommand {
 			};
 		}
 
-		let variable = explicitVariable;
-		if (variable === null) {
-			const found = defaultVariable(parseResult.ast, ctx.evalState?.bindings.keys());
+		// Variables indicées (`x_1`) réécrites en variables simples le temps du
+		// calcul : la dérivation traite un indice en constante
+		const indexed = indexVariables(parseResult.ast);
+
+		let variable: string;
+		if (explicitVariable !== null) {
+			// La variable est lue par le MÊME parseur que l'expression : `x_1`
+			// tapé doit donner le même nom que le `x_1` de l'expression
+			const parsedVariable = parse(explicitVariable, parserOptions).ast;
+			const name = parsedVariable === undefined ? null : variableNameOf(parsedVariable);
+			if (name === null) {
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: 'AMBIGUOUS_VARIABLE',
+						message: `« ${explicitVariable} » n'est pas une variable.`
+					}
+				};
+			}
+			variable = name;
+		} else {
+			const found = defaultVariable(indexed.node, ctx.evalState?.bindings.keys());
 			if (!found.ok) {
 				const example = `${expression}, ${found.candidates[found.candidates.length - 1]}`;
 				return {
 					success: false,
 					output: '',
 					error: {
-						code: 'PARSE_ERROR',
+						// Message pour l'élève, en français : l'atelier le montre tel quel
+						code: 'AMBIGUOUS_VARIABLE',
 						message: `Plusieurs variables possibles (${found.candidates.join(', ')}) : précise laquelle après une virgule, par exemple « ${example} ».`
 					}
 				};
 			}
 			variable = found.variable;
 		}
+		const variableLabel = toCustom(indexed.restore(variableNode(variable)));
 
 		try {
 			// Get function bindings from state if available
@@ -115,11 +143,13 @@ export class DiffCommand extends BaseCommand {
 			// s'écrivait `e^{3x} 3`, `2(−e^{−x})`, `cos x + (−sin x)`. `tidyTerms`
 			// garde l'ordre de la règle (u′v + uv′).
 			const derivative = tidyTerms(
-				differentiate(parseResult.ast, {
-					variable,
-					simplify: true,
-					functions
-				})
+				indexed.restore(
+					differentiate(indexed.node, {
+						variable,
+						simplify: true,
+						functions
+					})
+				)
 			);
 
 			// Format output
@@ -128,7 +158,7 @@ export class DiffCommand extends BaseCommand {
 			const derivLatex = toLatex(derivative);
 
 			const output = [
-				chalk.bold(`d/d${variable}(${exprCustom})`) + ' = ' + chalk.cyan(derivCustom),
+				chalk.bold(`d/d${variableLabel}(${exprCustom})`) + ' = ' + chalk.cyan(derivCustom),
 				chalk.dim('LaTeX:') + ' ' + derivLatex
 			].join('\n');
 

@@ -52,3 +52,33 @@ describe('une fonction de l’atelier se dérive toujours en x', () => {
 		expect(outcome.output).toBe("d/dx(f) = 0 — En attente de « k », qui n'est pas encore défini.");
 	});
 });
+
+describe('revue #880', () => {
+	it('le refus du moteur (plusieurs variables) est montré tel quel', () => {
+		const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
+
+		expect(runInput(s, '.dériver a t^2 + b t')).toEqual({
+			kind: 'refus',
+			message:
+				'Plusieurs variables possibles (a, b, t) : précise laquelle après une virgule, par exemple « a t^2 + b t, t ».'
+		});
+	});
+
+	it.each([
+		['.dériver x_1^2, x_1', 'd/dx_1(x_1^2) = 2x_1', '2 x_1'],
+		['.dériver x_{12}^2, x_{12}', 'd/dx_12(x_12^2) = 2x_12', '2 x_{12}'],
+		['.dériver x_1^2', 'd/dx_1(x_1^2) = 2x_1', '2 x_1']
+	])('variable indicée : %s', (input, output, latex) => {
+		expect(derive(input)).toEqual({ output, latex });
+	});
+});
+
+it('les étapes d’une variable indicée l’écrivent comme elle a été tapée', () => {
+	const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
+	const outcome = runInput(s, '.dériver x_{12}^2, x_{12}');
+
+	expect(outcome.kind).toBe('commande');
+	if (outcome.kind !== 'commande') return;
+	expect(outcome.steps?.length).toBeGreaterThan(0);
+	expect(JSON.stringify(outcome.steps)).not.toContain('mathit');
+});
