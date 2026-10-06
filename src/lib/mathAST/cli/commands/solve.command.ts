@@ -14,7 +14,7 @@
  * (voir `core/variable-argument.ts`). Plus de « dernier mot = variable » :
  * `.solve 3 = 2 x` arrachait le `x` et répondait « Pas de solution ».
  *
- * Options:
+ * Options (EN TÊTE seulement, avant l'équation : `.solve -q x^2 = 4`) :
  * - --verbose or -v: Show detailed steps
  * - --quiet or -q: Show only result
  */
@@ -791,7 +791,7 @@ function generateQuadraticPedagogicalSteps(
 	return steps;
 }
 
-/** Les options de `.solve`, reconnues seulement comme mots entiers. */
+/** Les options de `.solve`, reconnues seulement comme mots entiers, en tête. */
 const SOLVE_FLAGS: ReadonlySet<string> = new Set(['--verbose', '-v', '--quiet', '-q']);
 
 // =============================================================================
@@ -810,7 +810,7 @@ const SOLVE_FLAGS: ReadonlySet<string> = new Set(['--verbose', '-v', '--quiet', 
  * Equation lineaire: 2x + 4 = 0
  * Solution: x = -2
  *
- * > .solve x^2 - 5x + 6 = 0 --verbose
+ * > .solve --verbose x^2 - 5x + 6 = 0
  * Equation quadratique: x^2 - 5x + 6 = 0
  * Coefficients: a = 1, b = -5, c = 6
  * Discriminant: Delta = 25 - 24 = 1 > 0
@@ -822,8 +822,8 @@ const SOLVE_FLAGS: ReadonlySet<string> = new Set(['--verbose', '-v', '--quiet', 
 export class SolveCommand extends BaseCommand {
 	readonly name = 'solve';
 	readonly aliases = ['s', 'resoudre'] as const;
-	readonly description = 'Solve equation: .solve equation[ ; variable] [--verbose|-v] [--quiet|-q]';
-	readonly usage = 'solve <equation>[ ; <variable>] [options]';
+	readonly description = 'Solve equation: .solve [--verbose|-v] [--quiet|-q] equation[ ; variable]';
+	readonly usage = 'solve [options] <equation>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	override getOptionDefinitions(): readonly OptionDefinition[] {
@@ -940,8 +940,9 @@ export class SolveCommand extends BaseCommand {
 	 * cherchait `-v` n'importe où : `.solve 3-v=1 ; v` devenait « 3=1 ; v » et
 	 * répondait « contradictoire » au lieu de v = 2. Une option n'est reconnue
 	 * que comme MOT entier (séparé par des espaces), connu de la commande, et
-	 * seulement en tête ou en fin de saisie ; partout ailleurs, c'est de
-	 * l'expression.
+	 * seulement EN TÊTE, avant l'expression (`.solve -q x^2=1`) ; partout
+	 * ailleurs, c'est de l'expression — en fin, `.solve x = -v` perdait son
+	 * `-v` (revue #888).
 	 */
 	private parseOptions(ctx: CommandContext): { input: string; verbosity: SolvingVerbosity } {
 		const words = ctx.input
@@ -950,8 +951,6 @@ export class SolveCommand extends BaseCommand {
 			.filter((word) => word !== '');
 		const flags: string[] = [];
 		while (words.length > 0 && SOLVE_FLAGS.has(words[0])) flags.push(words.shift() as string);
-		while (words.length > 0 && SOLVE_FLAGS.has(words[words.length - 1]))
-			flags.push(words.pop() as string);
 
 		const verbose =
 			Boolean(ctx.options['verbose'] || ctx.options['v']) ||

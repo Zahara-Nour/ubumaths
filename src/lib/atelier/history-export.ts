@@ -26,6 +26,8 @@ export type ExportedEntry = (ReplayStep | { readonly kind: 'ligne' }) & {
 	readonly label: string;
 	readonly text: string;
 	readonly latex?: string;
+	/** L'indication affichée avec la réponse (« Calcul par rapport à x… ») */
+	readonly note?: string;
 	readonly failed: boolean;
 };
 
@@ -70,6 +72,7 @@ export function historyToJson(entries: readonly Entry[], now: Date): string {
 			label: entry.label,
 			text: entry.text,
 			...(entry.latex !== undefined && { latex: entry.latex }),
+			...(entry.note !== undefined && { note: entry.note }),
 			failed: entry.failed
 		}))
 	};
@@ -91,6 +94,8 @@ export function historyToUbumark(entries: readonly Entry[], now: Date): string {
 	for (const entry of entries) {
 		blocks.push(headOf(entry));
 		blocks.push(answerOf(entry));
+		// L'indication en italique, après la réponse, comme à l'écran
+		if (entry.note !== undefined) blocks.push(`*${plainLine(entry.note)}*`);
 		const steps = (entry.steps ?? []).map(
 			(step) =>
 				`- ${plainLine(step.title)}${step.expressionLatex ? ` : $${step.expressionLatex}$` : ''}`

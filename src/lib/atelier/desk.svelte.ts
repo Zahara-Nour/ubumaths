@@ -273,7 +273,9 @@ export class CalcDesk {
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
-			...(result.kind === 'commande' && result.note !== undefined ? { note: result.note } : {}),
+			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
+				? { note: result.note }
+				: {}),
 			failed: result.kind === 'refus',
 			result
 		});

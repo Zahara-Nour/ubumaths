@@ -183,12 +183,12 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 	}
 };
 
-/** Best-effort detection of the unknown variable name in an EquationStep. */
 /** L'inconnue que porte l'étape d'identification, `x` par défaut. */
 function unknownOf(op: EquationOperation): string {
 	return op.kind === 'identify-equation' && op.variable !== undefined ? op.variable : 'x';
 }
 
+/** Best-effort detection of the unknown variable name in an EquationStep. */
 function variableOf(step: EquationStep): string {
 	const find = (n: { type: string } & object): string | null => {
 		const rec = n as Record<string, unknown>;

@@ -61,6 +61,12 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 const BARE_FUNCTION =
 	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*\()/;
 
+/** Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`. */
+const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;
+
+/** Le début de l'indication de variable — c'est ainsi qu'on la reconnaît. */
+const HINT_START = 'Calcul par rapport à x.';
+
 /** La variable quand aucune n'est donnée après le point-virgule. */
 export const DEFAULT_VARIABLE = 'x';
 
@@ -111,14 +117,46 @@ export function splitVariableArgument(input: string): {
  *   (`indexVariables`) : `x_1` est une autre variable que `x`.
  * @param bound - Noms liés ailleurs (`.let a = 2`), qui sont des constantes.
  */
-export function otherVariableHint(node: MathNode, bound: Iterable<string> = []): string | null {
+export function otherVariableHint(
+	node: MathNode,
+	bound: Iterable<string> = [],
+	options: { readonly bounds?: boolean } = {}
+): string | null {
 	const variables = getVariables(node);
 	if (variables.has(DEFAULT_VARIABLE)) return null;
 	const excluded = new Set([...CONSTANT_NAMES, ...bound]);
 	const candidates = [...variables].filter((name) => !excluded.has(name));
 	if (candidates.length === 0) return null;
-	const how = candidates.length === 1 ? `« ; ${candidates[0]} »` : '« ; » suivi de son nom';
-	return `Calcul par rapport à ${DEFAULT_VARIABLE}. Pour une autre variable, écris ${how}.`;
+	const single = candidates.length === 1 ? candidates[0] : null;
+	const how = single !== null ? `« ; ${single} »` : '« ; » suivi de son nom';
+	// `.integrate` : les bornes suivent la variable (`; t 0 1`)
+	const where = options.bounds
+		? ` ; les bornes se mettent à la fin${single !== null ? ` : « ; ${single} 0 1 »` : ''}`
+		: '';
+	return `${HINT_START} Pour une autre variable, écris ${how}${where}.`;
+}
+
+/**
+ * Séparer l'argument de `.integrate` : expression, variable après `;` (ou
+ * `null`) et bornes — les deux derniers NOMBRES, avant ou après `; t`
+ * (`t^2 0 1 ; t` comme `t^2 ; t 0 1`).
+ */
+export function splitIntegralArgument(input: string): {
+	expression: string;
+	variable: string | null;
+	bounds: { lower: number; upper: number } | null;
+} {
+	const trimmed = input.trim();
+	// Bornes en fin (`… ; t 0 1` ou `… 0 1`), sinon juste avant `; t`
+	const trailing = TRAILING_BOUNDS.exec(trimmed);
+	const { expression, variable } = splitVariableArgument(trailing === null ? trimmed : trailing[1]);
+	const inner = trailing === null ? TRAILING_BOUNDS.exec(expression) : null;
+	const found = trailing ?? inner;
+	return {
+		expression: inner === null ? expression : inner[1].trim(),
+		variable,
+		bounds: found === null ? null : { lower: parseFloat(found[2]), upper: parseFloat(found[3]) }
+	};
 }
 
 /**
@@ -127,11 +165,29 @@ export function otherVariableHint(node: MathNode, bound: Iterable<string> = []):
  * expression illisible. Pour qui n'a que la SAISIE (l'atelier, qui affiche
  * l'indication à part de la réponse).
  */
-export function variableHintOf(input: string, parserOptions?: PipelineOptions): string | null {
-	const { expression, variable } = splitVariableArgument(input);
+export function variableHintOf(
+	input: string,
+	options: {
+		readonly parserOptions?: PipelineOptions;
+		/** Noms liés (`.let a = 2`) : les mêmes que ceux que le moteur exclut */
+		readonly bound?: Iterable<string>;
+		/** `.integrate` : bornes à ôter, et l'indication dit où les mettre */
+		readonly integral?: boolean;
+	} = {}
+): string | null {
+	const { expression, variable } = options.integral
+		? splitIntegralArgument(input)
+		: splitVariableArgument(input);
 	if (variable !== null) return null;
-	const ast = parse(expression, parserOptions).ast;
-	return ast === undefined ? null : otherVariableHint(indexVariables(ast).node);
+	const ast = parse(expression, options.parserOptions).ast;
+	return ast === undefined
+		? null
+		: otherVariableHint(indexVariables(ast).node, options.bound, { bounds: options.integral });
+}
+
+/** Une ligne de sortie est-elle l'indication de variable ? */
+export function isVariableHint(line: string): boolean {
+	return line.trim().startsWith(HINT_START);
 }
 
 /**

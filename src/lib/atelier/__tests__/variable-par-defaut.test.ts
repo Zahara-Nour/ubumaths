@@ -83,10 +83,20 @@ describe('.résoudre', () => {
 		expect(latex).toContain('2');
 	});
 
-	it('`3 = 2t` sans « ; » : pas de t = 3/2 deviné, l’indication', () => {
-		const outcome = command('.résoudre 3 = 2t');
-		expect(outcome.latex ?? '').not.toContain('t =');
-		expect(outcome.note).toBe(hint('t'));
+	// Revue #888 : sans x, on le dit honnêtement — plus « Je n'ai pas su lire »
+	it.each([
+		['.résoudre 3 = 2t', '3 = 2t'],
+		['.résoudre 2t+1<5', '2t+1<5']
+	])('%s sans « ; » : pas de x, dit tel quel, avec l’indication', (input, typed) => {
+		expect(runInput(session(), input)).toEqual({
+			kind: 'refus',
+			message: `Il n’y a pas de x dans « ${typed} » : rien à résoudre en x.`,
+			note: hint('t')
+		});
+	});
+
+	it('`2t+1<5 ; t` → t < 2', () => {
+		expect(command('.résoudre 2t+1<5 ; t').latex).toBe('t < 2');
 	});
 
 	it('`sin x = 0` : refus, des parenthèses', () => {
@@ -106,10 +116,25 @@ describe('.intégrer', () => {
 		expect(command('.intégrer x^2 y ; y').output).toBe('∫ x^2y dy = {1/2}x^2y^2 + C');
 	});
 
-	it('`t` : en x, avec l’indication', () => {
+	it('`t` : en x, avec l’indication (bornes comprises)', () => {
 		const outcome = command('.intégrer t');
 		expect(outcome.output).toBe('∫ t dx = tx + C');
-		expect(outcome.note).toBe(hint('t'));
+		expect(outcome.note).toBe(
+			'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; les bornes se mettent à la fin : « ; t 0 1 ».'
+		);
+	});
+
+	it('`t^2 0 1` : bornes ôtées pour l’indication, même texte que le moteur', () => {
+		const outcome = command('.intégrer t^2 0 1');
+		expect(outcome.output).not.toContain('Calcul par rapport');
+		expect(outcome.note).toContain('« ; t 0 1 »');
+	});
+
+	it('un nom défini dans l’atelier n’est pas proposé (sa valeur le remplace)', () => {
+		const s = session();
+		runInput(s, 'a = 2');
+		const outcome = runInput(s, '.dériver a t^2');
+		expect(outcome).toMatchObject({ kind: 'commande', note: hint('t') });
 	});
 });
 

@@ -13,8 +13,8 @@
  *
  * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
  * (voir `core/variable-argument.ts`). Plus de « dernier mot = variable » :
- * `.integrate x^2 y` intégrait en y. Les bornes, elles, restent les deux
- * derniers NOMBRES de la saisie.
+ * `.integrate x^2 y` intégrait en y. Les bornes sont les deux derniers
+ * NOMBRES, avant ou après `; t` (`t^2 0 1 ; t` = `t^2 ; t 0 1`).
  */
 
 import chalk from 'chalk';
@@ -37,15 +37,8 @@ import {
 	chosenVariable,
 	indexVariables,
 	otherVariableHint,
-	splitVariableArgument
+	splitIntegralArgument
 } from '../core/variable-argument';
-
-// =============================================================================
-// Constantes
-// =============================================================================
-
-/** Les deux bornes d'une intégrale définie, en fin de saisie : `… 0 1`. */
-const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;
 
 /** Ajouter l'indication de variable (`otherVariableHint`) à la fin de la sortie. */
 function withHint(result: CommandResult, hint: string | null): CommandResult {
@@ -123,7 +116,7 @@ export class IntegrateCommand extends BaseCommand {
 		}
 
 		// Parse input to extract expression, variable, and optional bounds
-		const { expression, variable: explicitVariable, bounds } = this.parseInput(input);
+		const { expression, variable: explicitVariable, bounds } = splitIntegralArgument(input);
 
 		// Parse the expression
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -151,7 +144,9 @@ export class IntegrateCommand extends BaseCommand {
 		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
 		const hint =
 			explicitVariable === null
-				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys())
+				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys(), {
+						bounds: true
+					})
 				: null;
 
 		try {
@@ -207,26 +202,6 @@ export class IntegrateCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
-	}
-
-	/**
-	 * Séparer l'expression, la variable donnée après `;` (ou `null`) et les
-	 * bornes éventuelles (les deux derniers nombres).
-	 */
-	private parseInput(input: string): {
-		expression: string;
-		variable: string | null;
-		bounds: { lower: number; upper: number } | null;
-	} {
-		const trimmed = input.trim();
-		const withBounds = TRAILING_BOUNDS.exec(trimmed);
-		const rest = withBounds === null ? trimmed : withBounds[1];
-		const bounds =
-			withBounds === null
-				? null
-				: { lower: parseFloat(withBounds[2]), upper: parseFloat(withBounds[3]) };
-		const { expression, variable } = splitVariableArgument(rest);
-		return { expression, variable, bounds };
 	}
 
 	private formatIndefiniteResult(

@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../../web/web-repl-engine';
-import { otherVariableHint } from '../../core/variable-argument';
+import { otherVariableHint, variableHintOf } from '../../core/variable-argument';
 import { parseLatex } from '../../../parser';
 
 /** La sortie du moteur, sans les séquences de couleur d'un terminal. */
@@ -84,7 +84,9 @@ describe('.integrate : x par défaut, une autre variable après « ; »', () => 
 		expect(run('.integrate t ; t').output.split('\n')[0]).toBe('∫ t dt = {1/2}t^2 + C');
 		const inX = run('.integrate t');
 		expect(inX.output.split('\n')[0]).toBe('∫ t dx = tx + C');
-		expect(inX.output).toContain(HINT_T);
+		expect(inX.output).toContain(
+			'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; les bornes se mettent à la fin : « ; t 0 1 ».'
+		);
 	});
 
 	it('bornes : `x^2 0 1` et `x^2 ; x 0 1` valent 1/3', () => {
@@ -179,17 +181,63 @@ describe('les options ne mangent jamais l’expression', () => {
 		expect(run('.diff 3-v ; v').output.split('\n')[0]).toBe('d/dv(3-v) = -1');
 	});
 
-	it('les vraies options marchent toujours, en fin ou en tête', () => {
-		const quiet = run('.solve x^2-1=0 -q');
+	it('les vraies options marchent toujours, en tête', () => {
+		// Revue #888 : en tête seulement (en fin, `x = -v` perdait son -v)
+		const quiet = run('.solve -q x^2-1=0');
 		expect(quiet.success).toBe(true);
 		expect(quiet.output).not.toContain('Equation');
-		expect(run('.solve -q x^2-1=0').output).toBe(quiet.output);
-		expect(run('.solve x^2-1=0 --quiet').output).toBe(quiet.output);
+		expect(run('.solve --quiet x^2-1=0').output).toBe(quiet.output);
 
-		const verbose = run('.solve 2x+1=5 --verbose');
+		const verbose = run('.solve --verbose 2x+1=5');
 		expect(verbose.success).toBe(true);
 		expect(conclusion(verbose.output)).toBe('x = 2');
-		expect(run('.solve 2x+1=5 -v').output).toBe(verbose.output);
+		expect(run('.solve -v 2x+1=5').output).toBe(verbose.output);
 		expect(verbose.output).not.toBe(run('.solve 2x+1=5').output);
+	});
+});
+
+describe('revue #888 : les options seulement EN TÊTE', () => {
+	// ⚠️ Un `-v` en fin de saisie était encore pris pour l'option « verbeux »
+	it('`.solve x = -v` → x = -v', () => {
+		expect(conclusion(run('.solve x = -v').output)).toBe('x = -v');
+	});
+
+	it('`.solve x + v = 0` → x = -v', () => {
+		expect(conclusion(run('.solve x + v = 0').output)).toBe('x = -v');
+	});
+
+	it('`.solve x = -q` → x = -q', () => {
+		expect(conclusion(run('.solve x = -q').output)).toBe('x = -q');
+	});
+
+	it('une option en tête marche toujours', () => {
+		expect(run('.solve -q x^2-1=0').output).not.toContain('Equation');
+		expect(run('.solve --verbose 2x+1=5').output).toBe(run('.solve -v 2x+1=5').output);
+	});
+});
+
+describe('revue #888 : `.integrate`, bornes avant ou après « ; t »', () => {
+	it.each(['.integrate t^2 0 1 ; t', '.integrate t^2 ; t 0 1'])('%s → 1/3', (input) => {
+		const result = run(input);
+		expect(result.success).toBe(true);
+		expect(result.output.split('\n')[0]).toBe('∫[0→1] t^2 dt = 1/3');
+	});
+
+	it('l’indication dit où mettre les bornes', () => {
+		expect(run('.integrate t^2').output).toContain(
+			'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; les bornes se mettent à la fin : « ; t 0 1 ».'
+		);
+	});
+});
+
+describe('variableHintOf', () => {
+	it('reçoit les noms liés, comme le moteur', () => {
+		expect(variableHintOf('a t^2')).toBe(HINT_MANY);
+		expect(variableHintOf('a t^2', { bound: ['a'] })).toBe(HINT_T);
+	});
+
+	it('`.integrate` : bornes ôtées, avant ou après « ; »', () => {
+		expect(variableHintOf('t^2 0 1', { integral: true })).toContain('« ; t 0 1 »');
+		expect(variableHintOf('t^2 0 1 ; t', { integral: true })).toBeNull();
 	});
 });

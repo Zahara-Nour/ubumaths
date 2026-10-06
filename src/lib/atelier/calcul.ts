@@ -37,7 +37,11 @@ import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { splitVariableArgument, variableHintOf } from '$lib/mathAST/cli/core/variable-argument';
+import {
+	isVariableHint,
+	splitVariableArgument,
+	variableHintOf
+} from '$lib/mathAST/cli/core/variable-argument';
 import { tidyTerms } from './tidy-terms';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -93,7 +97,12 @@ export type CalcResult =
 			 */
 			readonly note?: string;
 	  }
-	| { readonly kind: 'refus'; readonly message: string };
+	| {
+			readonly kind: 'refus';
+			readonly message: string;
+			/** Une indication montrée avec le refus (`.résoudre 2t+1<5` : « écris « ; t » ») */
+			readonly note?: string;
+	  };
 
 /** Ce qu'une action attachée à un objet a produit. */
 export type ActionOutcome =
@@ -498,7 +507,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// x absent, aucune variable donnée : le moteur calcule en x et ajoute une
 	// indication à sa sortie. Elle est montrée À PART (`note`) : une ligne dont
 	// la réponse se compose en mathématiques n'affiche pas son texte.
-	const hint = VARIABLE_COMMANDS.has(name) ? variableHintOf(commandArgument) : null;
+	// Mêmes noms liés que le moteur (`.let a = 2`), mêmes bornes ôtées (`.intégrer`)
+	const hint = VARIABLE_COMMANDS.has(name)
+		? variableHintOf(commandArgument, {
+				bound: engine.getEvalState().bindings.keys(),
+				integral: name === 'integrate'
+			})
+		: null;
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const engineRendered = renderResult(result, { fromCommand: true });
@@ -509,7 +524,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 					...engineRendered,
 					text: engineRendered.text
 						.split('\n')
-						.filter((line) => line.trim() !== hint)
+						.filter((line) => !isVariableHint(line))
 						.join('\n')
 						.trim()
 				};
@@ -520,7 +535,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// montré tel quel, AVANT les étapes — qui, elles, liraient `sin x` autrement —
 	// et pas noyé dans « Je n’ai pas su lire » (revue #880)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
-		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND };
+		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND, ...noted };
 	}
 
 	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
@@ -577,6 +592,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	}
 
 	const solved = name === 'solve' ? solveSteps(argument) : null;
+	// Pas de x, aucune variable donnée : résoudre « en x » n'a pas de sens, et
+	// le moteur ne sait pas les inéquations (`.résoudre 2t+1<5` répondait « Je
+	// n'ai pas su lire »). On le dit, avec l'indication (revue #888).
+	if (name === 'solve' && solved === null && hint !== null) {
+		const typed = splitVariableArgument(typedArgument).expression.trim();
+		return {
+			kind: 'refus',
+			message: `Il n’y a pas de x dans « ${typed} » : rien à résoudre en x.`,
+			note: hint
+		};
+	}
 	if (solved !== null) {
 		return {
 			kind: 'commande',
@@ -591,7 +617,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
 	// dit rien à l'élève — mesuré, `.deriver )(` et `.resoudre )` (2026-10-05)
 	if (!result.success && rendered.text.trim() === '') {
-		return { kind: 'refus', message: UNREADABLE_COMMAND };
+		return { kind: 'refus', message: UNREADABLE_COMMAND, ...noted };
 	}
 
 	return {

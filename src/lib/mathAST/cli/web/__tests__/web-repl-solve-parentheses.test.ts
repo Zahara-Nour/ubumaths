@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../web-repl-engine';
 
 function solveOutput(input: string): string {
-	const result = new WebReplEngine().execute(`.solve ${input} --verbose`);
+	const result = new WebReplEngine().execute(`.solve --verbose ${input}`);
 	expect(result.success).toBe(true);
 	return result.output;
 }

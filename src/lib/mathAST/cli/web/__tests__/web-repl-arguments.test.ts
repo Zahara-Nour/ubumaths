@@ -43,7 +43,7 @@ describe('les commandes à arguments multiples aboutissent', () => {
 	});
 
 	it('accepte une option en tirets', () => {
-		expect(run('.solve x^2-1=0 --verbose').success).toBe(true);
+		expect(run('.solve --verbose x^2-1=0').success).toBe(true);
 	});
 });
 
