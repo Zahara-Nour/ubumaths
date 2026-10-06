@@ -37,6 +37,19 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 → [ADR 0002](docs/adr/0002-mono-professeur-ecole-frontiere-sociale.md)
 
+## Le Cabinet Noir (chiffrement)
+
+| Terme                        | Sens                                                               | Code / note                              |
+| ---------------------------- | ------------------------------------------------------------------ | ---------------------------------------- |
+| Cabinet Noir de Turingrad    | La section du chiffrement (nom affiché).                           | `/chiffrement`, `src/lib/ciphers/`       |
+| **Chiffrer**                 | Transformer un message **avec** une clé pour le rendre illisible.  | `*Encrypt`                               |
+| **Déchiffrer**               | Retrouver le message **avec** la clé.                              | `*Decrypt`                               |
+| **Décrypter**                | Retrouver le message **sans** la clé (fréquences, force brute…).   | onglet « Décrypter », `caesarBruteForce` |
+| Chiffre (un)                 | Une méthode d'écriture secrète : le chiffre de César, la scytale…  | `cipher`                                 |
+| Substitution / transposition | Remplacer les lettres / changer leur ordre (la scytale transpose). |                                          |
+
+⛔ « Crypter » : déconseillé par les spécialistes de la sécurité (chiffrer sans clé n’a pas de sens). Écrire chiffrer, ou décrypter.
+
 ## Le cours
 
 | Terme                        | Sens                                                                          | Code                              |
