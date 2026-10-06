@@ -201,6 +201,13 @@ Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines
 
 **Six provinces, six suffixes différents, six registres distincts** : -ie noble, -stan oriental, -lande nordique, -métrie scientifique, -istan post-soviétique, -ovie slave. La carte sonne comme une vraie Europe imaginaire à six royaumes.
 
+#### Sandomir, capitale du Royaume 🟢🟡
+
+- **Nom** 🟢 : canon Jarry. Dans _Ubu Roi_ (acte I), le roi Venceslas récompense Ubu : « je te fais aujourd'hui comte de Sandomir ». Chez Jarry, c'est un titre, pas un lieu de bataille : la défaite face au Czar a lieu ailleurs (acte IV).
+- **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces. Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
+- **Ce qu'on n'en reprend pas** : Sandomierz est aussi une vraie ville de Pologne ; on n'en garde que le nom. Le fondateur du Collège de 'Pataphysique a pris « Sandomir » pour pseudonyme (1948) : le nom vient de Jarry et reste libre, mais rien du Collège n'est repris.
+- **Usage** : « À Sandomir, au Trône Royal… » dans les articles du Shtam et les cinématiques d'Ubu. Pendant de l'Empire du Czar, gouverné depuis son palais d'Hiver.
+
 #### Logique sonore et anatomique du Royaume
 
 Cinq des six provinces s'appuient sur **un trait corporel** du Père Ubu (nombril, bedaine,pommadam, pif, phlatulence, TODO: trouver quelquechose pour la Patatovie, les fesses de Père Ubu=2 grosses patates ou alors les poches remplies d'argent qui font presque parties intégrantes de son corps ?). Le Royaume **est littéralement le corps d'Ubu déployé en géographie**. Les Galopins qui voyagent dans le programme scolaire parcourent en réalité l'anatomie de leur souverain.
@@ -521,7 +528,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 - **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
 - **Motivation** : Imposer l'ordre mathématique officiel. Il **n'est pas l'antagoniste philosophique** d'Ubu (Ubu et Alexis se respectent mutuellement comme deux souverains) — il est l'adversaire institutionnel.
 - **Quand il intervient** : annonce d'examens, défis hebdomadaires majeurs, tournois inter-classes, événements compétitifs. Il ouvre les sessions d'évaluation et clôt les épreuves.
-- **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet à Chiphre de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis, comme à Sandomir ! Mais Notre Majesté reviendra ! »_
+- **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet à Chiphre de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis ! Mais Notre Majesté reviendra ! »_
 
 #### 🎩 Monsieur Prudhomme — _La Voix des Édits Royaux_ 🟢 (via Henri Monnier)
 
@@ -1621,7 +1628,7 @@ const bernardQuotes = [
 
 #### Défaite du Galopin face au Czar (rare, dédramatisation)
 
-> _Da, Galopinski. Vous avez perdu, comme Ubu à Sandomir._ Mais le Père Ubu reviendra, et vous avec lui. Notre prochaine rencontre vous trouvera plus aguerri.
+> _Da, Galopinski. Vous avez perdu, comme Ubu face à l'armée du Czar._ Mais le Père Ubu reviendra, et vous avec lui. Notre prochaine rencontre vous trouvera plus aguerri.
 
 ### Ce qu'il NE faut JAMAIS écrire
 
@@ -2432,7 +2439,7 @@ Pour le détail complet des jurons (registre, fréquence recommandée, locuteur)
 | **Roi Venceslas**            | _Ubu Roi_ — assassiné par Ubu                                                                         | Disponible pour usage narratif                                                                      |
 | **L'Aigle Rouge de Pologne** | _Ubu Roi_ — décoration officielle d'Ubu                                                               | Disponible pour badge ou récompense                                                                 |
 | **Palais d'Hiver du Czar**   | _Ubu Roi_ (Moscou chez Jarry) — siège du Czar Alexis ; à Chiphre, lieu imaginaire de l'Empire du Czar | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
-| **Sandomir**                 | _Ubu Roi_, acte IV — bataille perdue par Ubu                                                          | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
+| **Sandomir**                 | _Ubu Roi_, acte I — le roi Venceslas fait Ubu « comte de Sandomir »                                   | Capitale du Royaume, siège du Trône Royal (voir Section II, « Sandomir, capitale du Royaume »)      |
 | **Calendrier pataphysique**  | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948               | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
 
 ### Inventions Chiphre assumées (NON canon Jarry)
