@@ -1,7 +1,8 @@
 /**
  * /a-propos — « Chiphre, c'est quoi ? » : le manifeste public destiné aux
  * parents (docs/Chiphres/lore-pataphysique.md, section I), repris tel quel,
- * sans l'exergue de Tristan Bernard (écartée par David, 2026-10-06).
+ * sans l'exergue de Tristan Bernard (écartée par David, 2026-10-06), remplacée
+ * par une citation d'Oscar Wilde.
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -60,5 +61,20 @@ describe('page « Chiphre, c’est quoi ? »', () => {
 		const screen = await render(APropos, { target: mainElement() });
 		expect(screen.container.textContent).not.toMatch(/Tristan Bernard/);
 		expect(screen.container.textContent).not.toMatch(/ne pas réfléchir/);
+	});
+
+	it('affiche l’exergue d’Oscar Wilde et son attribution', async () => {
+		await render(APropos, { target: mainElement() });
+		const figure = page.getByRole('figure');
+		await expect
+			.element(figure.getByText('« L’expérience est le nom que chacun donne à ses erreurs. »'))
+			.toBeVisible();
+		const legende = figure.getByText(/Oscar Wilde/);
+		await expect
+			.element(legende)
+			.toHaveTextContent('— Oscar Wilde, L’Éventail de Lady Windermere (1892)');
+		await expect
+			.element(figure.getByText('L’Éventail de Lady Windermere', { exact: true }))
+			.toHaveStyle({ fontStyle: 'italic' });
 	});
 });

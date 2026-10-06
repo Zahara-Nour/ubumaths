@@ -4,8 +4,8 @@
 	Le texte est le « Manifeste public — version destinée aux parents » de
 	docs/Chiphres/lore-pataphysique.md (section I), repris tel quel (apostrophes
 	typographiques mises à part). L'exergue de Tristan Bernard en a été retirée
-	(décision de David, 2026-10-06) : la `<figure>` ci-dessous attend la citation
-	qui la remplacera. N'ajouter ici aucun texte de lore absent du manifeste.
+	(décision de David, 2026-10-06), remplacée par une citation d'Oscar Wilde
+	choisie par David. N'ajouter ici aucun texte de lore absent du manifeste.
 
 	`main p` et `main li` imposent leur taille (src/app.css, `!important`) : les
 	textes plus petits ou plus grands que le corps passent par des `<div>`.
@@ -25,12 +25,16 @@
 		<div class="text-base text-muted-foreground italic">les Chiphres de la Chandelle Verte</div>
 	</header>
 
-	<!-- Emplacement de l'exergue : la citation viendra dans un second temps.
-	<figure class="mb-8 border-s-2 border-border ps-4">
-		<blockquote></blockquote>
-		<figcaption></figcaption>
+	<figure class="mb-10 flex flex-col gap-2 border-s-2 border-border ps-4">
+		<blockquote>
+			<div class="text-lg italic">
+				«&nbsp;L’expérience est le nom que chacun donne à ses erreurs.&nbsp;»
+			</div>
+		</blockquote>
+		<figcaption class="text-sm text-muted-foreground">
+			— Oscar Wilde, <cite class="italic">L’Éventail de Lady Windermere</cite> (1892)
+		</figcaption>
 	</figure>
-	-->
 
 	<p class="mb-10">
 		Apprendre les mathématiques peut faire peur. Le mot, la discipline, la note. Pourtant ce sont
