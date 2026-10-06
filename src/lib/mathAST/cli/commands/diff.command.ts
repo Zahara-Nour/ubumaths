@@ -4,10 +4,14 @@
  * Differentiates mathematical expressions symbolically.
  * Supports specifying the differentiation variable (defaults to 'x').
  *
- * Syntax: .diff expr [variable]
+ * Syntax: .diff expr[ ; variable]
  * - .diff x^3          -> 3x^2 (default var: x)
- * - .diff x*y^2 y      -> 2xy  (explicit var: y)
+ * - .diff x*y^2 ; y    -> 2xy  (explicit var: y)
+ * - .diff t^3          -> 3t^2 (pas de x : la seule variable libre)
  * - .diff f(x)         -> f'(x) or expanded if f is defined
+ *
+ * ⚠️ La variable explicite se donne après un POINT-VIRGULE, jamais après un
+ * espace : `x^2 y` est le produit x²y (voir `core/variable-argument.ts`).
  */
 
 import chalk from 'chalk';
@@ -18,6 +22,15 @@ import { toLatex } from '../../latex-generator';
 import { parse } from '../core/pipeline';
 import { differentiate, DifferentiationError } from '../../differentiation';
 import { tidyTerms } from '../../tidy/terms';
+import { variable as variableNode } from '../../factory';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	defaultVariable,
+	indexVariables,
+	splitVariableArgument,
+	variableNameOf
+} from '../core/variable-argument';
 
 // =============================================================================
 // Diff Command
@@ -38,7 +51,7 @@ import { tidyTerms } from '../../tidy/terms';
  * d/dx(x^3) = 3*x^2
  * LaTeX: 3 x^{2}
  *
- * > .diff x*y^2 y
+ * > .diff x*y^2 ; y
  * d/dy(x*y^2) = 2*x*y
  * LaTeX: 2 x y
  *
@@ -51,8 +64,8 @@ import { tidyTerms } from '../../tidy/terms';
 export class DiffCommand extends BaseCommand {
 	readonly name = 'diff';
 	readonly aliases = ['d', 'derivative'] as const;
-	readonly description = 'Differentiate expression: .diff expr [variable]';
-	readonly usage = 'diff <expression> [variable]';
+	readonly description = 'Differentiate expression: .diff expr[ ; variable]';
+	readonly usage = 'diff <expression>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -64,15 +77,23 @@ export class DiffCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'No expression to differentiate. Usage: .diff <expression> [variable]'
+					message: 'No expression to differentiate. Usage: .diff <expression>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract expression and optional variable
-		// The variable is the last word if it's a single letter or valid identifier
-		// This is a heuristic: we try to detect "expr var" vs "expr"
-		const { expression, variable } = this.parseInput(input);
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon déduite de l'expression
+		const { expression, variable: explicitVariable } = splitVariableArgument(input);
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -87,6 +108,45 @@ export class DiffCommand extends BaseCommand {
 			};
 		}
 
+		// Variables indicées (`x_1`) réécrites en variables simples le temps du
+		// calcul : la dérivation traite un indice en constante
+		const indexed = indexVariables(parseResult.ast);
+
+		let variable: string;
+		if (explicitVariable !== null) {
+			// La variable est lue par le MÊME parseur que l'expression : `x_1`
+			// tapé doit donner le même nom que le `x_1` de l'expression
+			const parsedVariable = parse(explicitVariable, parserOptions).ast;
+			const name = parsedVariable === undefined ? null : variableNameOf(parsedVariable);
+			if (name === null) {
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: 'AMBIGUOUS_VARIABLE',
+						message: `« ${explicitVariable} » n'est pas une variable.`
+					}
+				};
+			}
+			variable = name;
+		} else {
+			const found = defaultVariable(indexed.node, ctx.evalState?.bindings.keys());
+			if (!found.ok) {
+				const example = `${expression} ; ${found.candidates[found.candidates.length - 1]}`;
+				return {
+					success: false,
+					output: '',
+					error: {
+						// Message pour l'élève, en français : l'atelier le montre tel quel
+						code: 'AMBIGUOUS_VARIABLE',
+						message: `Plusieurs variables possibles (${found.candidates.join(', ')}) : précise laquelle après un point-virgule, par exemple « ${example} ».`
+					}
+				};
+			}
+			variable = found.variable;
+		}
+		const variableLabel = toCustom(indexed.restore(variableNode(variable)));
+
 		try {
 			// Get function bindings from state if available
 			const functions = ctx.evalState?.functions;
@@ -95,11 +155,13 @@ export class DiffCommand extends BaseCommand {
 			// s'écrivait `e^{3x} 3`, `2(−e^{−x})`, `cos x + (−sin x)`. `tidyTerms`
 			// garde l'ordre de la règle (u′v + uv′).
 			const derivative = tidyTerms(
-				differentiate(parseResult.ast, {
-					variable,
-					simplify: true,
-					functions
-				})
+				indexed.restore(
+					differentiate(indexed.node, {
+						variable,
+						simplify: true,
+						functions
+					})
+				)
 			);
 
 			// Format output
@@ -108,7 +170,7 @@ export class DiffCommand extends BaseCommand {
 			const derivLatex = toLatex(derivative);
 
 			const output = [
-				chalk.bold(`d/d${variable}(${exprCustom})`) + ' = ' + chalk.cyan(derivCustom),
+				chalk.bold(`d/d${variableLabel}(${exprCustom})`) + ' = ' + chalk.cyan(derivCustom),
 				chalk.dim('LaTeX:') + ' ' + derivLatex
 			].join('\n');
 
@@ -134,44 +196,5 @@ export class DiffCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
-	}
-
-	/**
-	 * Parse the input to extract expression and optional variable.
-	 *
-	 * Strategy: If the last token is a single word that looks like a variable
-	 * (single letter or valid identifier) and there's more before it,
-	 * treat it as the differentiation variable.
-	 *
-	 * Examples:
-	 * - "x^3" -> { expression: "x^3", variable: "x" }
-	 * - "x^3 y" -> { expression: "x^3", variable: "y" }
-	 * - "sin(x)" -> { expression: "sin(x)", variable: "x" }
-	 * - "x*y^2 y" -> { expression: "x*y^2", variable: "y" }
-	 */
-	private parseInput(input: string): { expression: string; variable: string } {
-		const trimmed = input.trim();
-
-		// Try to find a trailing variable (single word at the end after whitespace)
-		// Match pattern: everything before whitespace + single identifier at end
-		const match = trimmed.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/);
-
-		if (match) {
-			const [, expr, varCandidate] = match;
-			// Only treat as variable if it's a simple identifier (1-2 chars typically for variables)
-			// and the expression part is not empty
-			if (expr.trim() && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
-				return {
-					expression: expr.trim(),
-					variable: varCandidate
-				};
-			}
-		}
-
-		// Default: entire input is the expression, variable defaults to 'x'
-		return {
-			expression: trimmed,
-			variable: 'x'
-		};
 	}
 }

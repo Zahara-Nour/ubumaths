@@ -37,6 +37,7 @@ import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { splitVariableArgument } from '$lib/mathAST/cli/core/variable-argument';
 import { tidyTerms } from './tidy-terms';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -122,6 +123,9 @@ export type ActionOutcome =
 /** Ce qu'on répond quand le moteur n'a pas su lire une commande, et ne l'a pas dit. */
 const UNREADABLE_COMMAND =
 	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
+
+/** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
+const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set(['AMBIGUOUS_VARIABLE', 'BARE_FUNCTION']);
 
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
@@ -458,12 +462,30 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return runAtelierCommand(known.name, input, argument);
 	}
 
-	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${argument}`;
+	// `.dériver f` : la cible tapée, sans sa variable explicite (`; t`) ni son
+	// `(x)`. Une fonction de l'atelier est en x, même quand son expression n'en
+	// contient pas : `f(x) = k` se dériverait sinon en k, et répondrait 1.
+	const typedTarget = splitVariableArgument(typedArgument).expression;
+	const diffTarget = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typedTarget)?.[1] ?? typedTarget;
+	const derivesFunction = name === 'diff' && session.atelier.get(diffTarget)?.kind === 'function';
+	const commandArgument =
+		derivesFunction && splitVariableArgument(argument).variable === null
+			? `${argument} ; x`
+			: argument;
+	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
 	const result = engine.execute(executed);
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
+
+	// Un refus que le moteur adresse à l'élève, en français (`.dériver a t^2 + b t`
+	// : « Plusieurs variables possibles… », `.dériver sin x` : « Écris sin(x)… ») :
+	// montré tel quel, AVANT les étapes — qui, elles, liraient `sin x` autrement —
+	// et pas noyé dans « Je n’ai pas su lire » (revue #880)
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND };
+	}
 
 	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
 	// `solveSteps` rend `null` dès qu'il ne sait pas faire (degré ≥ 3, non
@@ -481,13 +503,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		// `.dériver f` sur une fonction de l'atelier crée la carte `f′`, comme le
 		// bouton, et le DIT comme lui (phase 0 `/grapheur` §2 D3 ; revue 3a, C2).
 		// Sur une expression, rien à créer (L4).
-		const typed = space === -1 ? '' : resolved.slice(space + 1).trim();
-		const target = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typed)?.[1] ?? typed;
-		const note =
-			session.atelier.get(target)?.kind === 'function'
-				? derivativeNote(session.atelier.createDerivative(target))
-				: '';
-		const derived = deriveSteps(argument);
+		const note = derivesFunction
+			? derivativeNote(session.atelier.createDerivative(diffTarget))
+			: '';
+		// Les étapes dérivent la même chose que le moteur, variable comprise
+		const { expression, variable } = splitVariableArgument(commandArgument);
+		const derived = deriveSteps(expression, undefined, variable ?? undefined);
 		if (derived !== null) {
 			return {
 				kind: 'commande',
@@ -739,7 +760,8 @@ function tracedOnCreation(kind: ObjectKind): boolean {
 
 /** Ce que chaque action demande au moteur, à partir de l'expression substituée. */
 const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> = {
-	derive: (e) => `.diff ${e}`,
+	// Une fonction de l'atelier est en x : la variable est dite, pas devinée
+	derive: (e) => `.diff ${e} ; x`,
 	solve: (e) => `.solve ${e}=0`,
 	variations: (e) => `.variations ${e}`
 };

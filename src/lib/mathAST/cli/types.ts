@@ -33,7 +33,11 @@ export type ErrorCode =
 	| 'UNSUPPORTED_FORMAT'
 	| 'UNKNOWN_UNIT'
 	| 'DIMENSION_MISMATCH'
-	| 'MATH_ERROR';
+	| 'MATH_ERROR'
+	/** Variable de dérivation à préciser : message en français, destiné à l'élève */
+	| 'AMBIGUOUS_VARIABLE'
+	/** Fonction usuelle sans parenthèses (`sin x`) : message en français, destiné à l'élève */
+	| 'BARE_FUNCTION';
 
 /**
  * Structured error for command execution
