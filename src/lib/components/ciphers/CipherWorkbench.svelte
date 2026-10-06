@@ -4,11 +4,13 @@
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { CipherOutcome } from '$lib/ciphers/outcome';
+	import { readDecryptParam } from '$lib/ciphers/tool-link';
 	import CipherOutput from './CipherOutput.svelte';
 
 	// Types
@@ -44,14 +46,16 @@
 		cipherPlaceholder = 'Message chiffré'
 	}: Props = $props();
 
-	// State — valeurs initiales seulement : le visiteur les change ensuite
-	let tab = $state<Tab>('encrypt');
+	// State — valeurs initiales seulement : le visiteur les change ensuite.
+	// Un message passé dans l'URL (lien d'une dépêche) ouvre l'onglet Décrypter.
+	const fromUrl = readDecryptParam(page.url.searchParams);
+	let tab = $state<Tab>(fromUrl === null ? 'encrypt' : 'crack');
 	// svelte-ignore state_referenced_locally
 	let plain = $state(initialPlain);
 	// svelte-ignore state_referenced_locally
 	let cipher = $state(initialCipher);
 	// svelte-ignore state_referenced_locally
-	let crackText = $state(initialCrack);
+	let crackText = $state(fromUrl ?? initialCrack);
 
 	const encrypted = $derived(encrypt(plain));
 	const decrypted = $derived(decrypt(cipher));

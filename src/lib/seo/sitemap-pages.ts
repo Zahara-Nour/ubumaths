@@ -42,6 +42,7 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/pere-ubu', priority: 0.4, changefreq: 'yearly' },
 	{ path: '/almanach', priority: 0.4, changefreq: 'daily' },
 	{ path: '/chiffrement', priority: 0.7, changefreq: 'monthly' },
+	{ path: '/chiffrement/depeches', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/chiffrement/cesar', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/chiffrement/atbash', priority: 0.5, changefreq: 'monthly' },
 	{ path: '/chiffrement/substitution', priority: 0.6, changefreq: 'monthly' },

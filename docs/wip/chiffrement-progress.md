@@ -56,3 +56,12 @@ Wikipédia, « Fréquence d'apparition des lettres en français » — corpus Wi
 - [x] Page `/chiffrement/rsa` (encadré Fermat, tableau d'Euclide, exponentiation du premier bloc, décryptage de la clé publique du Czar (2021, 5)), accueil, sitemap, CONTEXT.md ; 34 tests navigateur
 - [x] code-reviewer (findings corrigés : preuve de Fermat complétée (p | m), n et e conservés au décryptage, message pour e < 2, n = p², table lettre par lettre seulement pour une clé valide, e valide choisi quand p ou q change, nombre réel de multiplications, Diffie-Hellman 1976)
 - [ ] PR, merge
+
+## Défis « Dépêches du Czar » — branche `feat/chiffrement-depeches`
+
+Décisions de David (2026-10-07) : campagne publique 100 % client (voie A), déblocage progressif, bouton « Décrypter avec les outils du Cabinet » (visible d'emblée si le récit nomme le chiffre, sinon après le 1er indice), réponse = message entier comparé sur les lettres seules.
+
+- [x] `dispatches.ts` (9 dépêches, texte chiffré calculé depuis clair + clé), `dispatch-progress.ts` (localStorage, Zod, tolérant au refus), `tool-link.ts` (`?decrypter=`, lu par CipherWorkbench)
+- [x] Test de solvabilité : chaque dépêche tombe sous l'attaque de ses indices ; parcours réel des 9 liens vérifié dans un navigateur
+- [x] Page `/chiffrement/depeches`, carte sur l'accueil, sitemap ; 8 tests navigateur
+- [ ] code-reviewer, PR, merge
