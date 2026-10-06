@@ -277,7 +277,9 @@ function performUSubstitution(
 			// More complex case: need to factor out du from integrand
 			const result = tryFactorDu(integrand, u, du, variable, matchedRatio);
 			transformedIntegrand = result.transformedIntegrand;
-			if (result.constantFactor !== null && !isOneRational(result.constantFactor)) {
+			if (result.constantNode !== undefined) {
+				constantFactor = result.constantNode;
+			} else if (result.constantFactor !== null && !isOneRational(result.constantFactor)) {
 				constantFactor = rationalToNode(result.constantFactor);
 			}
 		}
@@ -310,6 +312,19 @@ function performUSubstitution(
 	// Step 4: Integrate with respect to u
 	const uRecorder = createStepRecorder();
 	const uVariable = 'u';
+
+	// k/f(u) avec k constant (paramètre littéral) : k sort de l'intégrale en u
+	if (
+		isDivision(transformedIntegrand) &&
+		!containsVariable(transformedIntegrand.numerator, 'u') &&
+		!(isNumberGuard(transformedIntegrand.numerator) && transformedIntegrand.numerator.value === '1')
+	) {
+		const numeratorFactor = transformedIntegrand.numerator;
+		constantFactor = constantFactor
+			? simplifiedMultiply(constantFactor, numeratorFactor)
+			: numeratorFactor;
+		transformedIntegrand = divide(number('1'), transformedIntegrand.denominator, 'fraction');
+	}
 
 	// Normalize for integration: sqrt(u) -> u^(1/2), 1/u^n -> u^(-n)
 	const normalizedIntegrand = normalizeForIntegration(transformedIntegrand);
@@ -415,6 +430,8 @@ interface FactorDuResult {
 	transformedIntegrand: MathNode;
 	/** k tel que integrand dx = k · f(u) du (exact) ; null = 1 */
 	constantFactor: Rational | null;
+	/** k non rationnel (1/π, 1/√2, 1/a) : prime sur `constantFactor` */
+	constantNode?: MathNode;
 }
 
 /**
@@ -543,6 +560,14 @@ function tryFactorDu(
 		return { transformedIntegrand: result, constantFactor: matchedRatio };
 	}
 	const duConstant = extractExactRational(du);
+	if (duConstant === null && !containsVariable(du, _variable)) {
+		// du = π, √2, a… : dx = du / u′
+		return {
+			transformedIntegrand: result,
+			constantFactor: null,
+			constantNode: divide(number('1'), du, 'fraction')
+		};
+	}
 	return {
 		transformedIntegrand: result,
 		constantFactor: duConstant !== null && duConstant.n !== 0n ? reciprocal(duConstant) : null

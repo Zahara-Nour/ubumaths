@@ -39,7 +39,9 @@ export type Family =
 	| 'litterale'
 	| 'variable-t'
 	| 'definie'
-	| 'definie-litterale';
+	| 'definie-litterale'
+	/** Intégrandes hors corpus sondées par la revue de #913 (2026-10-06) */
+	| 'revue-913';
 
 export type Path = 'latex' | 'atelier';
 
@@ -63,7 +65,7 @@ export interface PrimitiveCase {
 
 /** Une intégrale définie. */
 export interface DefiniteCase {
-	readonly family: 'definie' | 'definie-litterale';
+	readonly family: 'definie' | 'definie-litterale' | 'revue-913';
 	readonly path: Path;
 	/** Chemin latex : l'intégrande ; chemin atelier : tout l'argument, bornes comprises */
 	readonly input: string;
@@ -96,6 +98,9 @@ export const DEFAULT_POINTS: readonly number[] = [-2.7, -1.3, -0.45, 0.35, 0.85,
 
 /** Points strictement positifs (ln, puissances fractionnaires) */
 const POSITIVE: readonly number[] = [0.3, 0.8, 1.5, 2.4, 3.7, 5.2];
+
+/** ax + b > 0 pour chacun des jeux de `PARAMETER_SETS` (au moins 3 points chacun) */
+const AFFINE_POSITIVE: readonly number[] = [-2.7, -1.3, 0.35, 1.65, 3.3, 6.5, 8, 9.5];
 
 /** ]−π/2 ; π/2[ */
 const TAN_DOMAIN: readonly number[] = [-1.2, -0.6, 0.2, 0.7, 1.3];
@@ -575,7 +580,6 @@ const LITERAL_CASES: PrimitiveCase[] = [
 			['\\frac{a}{ax+b}', '\\ln|ax+b|'],
 			['\\frac{1}{(ax+b)^2}', '-\\frac{1}{a(ax+b)}'],
 			['(ax+b)^3', '\\frac{(ax+b)^4}{4a}'],
-			['(ax+b)^n', '\\frac{(ax+b)^{n+1}}{a(n+1)}'],
 			['kx^n', '\\frac{k}{n+1}x^{n+1}', '\\frac{kx^{n+1}}{n+1}'],
 			['ax^3', '\\frac{a}{4}x^4', '\\frac{ax^4}{4}'],
 			['mx^3+c', '\\frac{m}{4}x^4+cx', '\\frac{mx^4}{4}+cx'],
@@ -600,6 +604,11 @@ const LITERAL_CASES: PrimitiveCase[] = [
 		],
 		{ literal: true }
 	),
+	// ax + b > 0 exigé (√, exposant n = 0,5) : points pour chacun des trois jeux
+	...latex('litterale', [['(ax+b)^n', '\\frac{(ax+b)^{n+1}}{a(n+1)}']], {
+		literal: true,
+		points: AFFINE_POSITIVE
+	}),
 	// paramètres + racines / ln : x > 0
 	...latex(
 		'litterale',
@@ -776,11 +785,210 @@ const ATELIER_CASES: PrimitiveCase[] = [
 	)
 ];
 
+// =============================================================================
+// Revue de #913 : intégrandes hors corpus (doublons du corpus retirés)
+// =============================================================================
+
+const REVIEW_913_CASES: PrimitiveCase[] = [
+	// --- Revue #913 : 208 lignes sondées (2026-10-06) ; 18 déjà au corpus et 1 doublon non repris ---
+	// `compile` rend NaN pour la racine cubique d'un négatif : points où 2x − 5 > 0
+	...latex('revue-913', [['\\sqrt[3]{2x-5}']], { points: [2.7, 3.3, 4.1, 5.5, 7] }),
+	...latex('revue-913', [['\\sqrt{ax+b}']], { literal: true, points: AFFINE_POSITIVE }),
+	// `x2^x` : illisible par parseLatex (refus attendu) ; référence f écrite avec ·
+	{
+		family: 'revue-913',
+		path: 'latex',
+		input: 'x2^x',
+		f: 'x\\cdot2^x',
+		variable: 'x',
+		points: DEFAULT_POINTS,
+		literal: false,
+		expected: []
+	},
+	...latex('revue-913', [
+		['\\sin(-\\frac{x}{3}+1)'],
+		['\\cos(\\frac{2x}{5}-3)'],
+		['\\cos(-4x+2)'],
+		['3\\sin(0.5x)'],
+		['\\tan(2x+1)'],
+		['\\tan(-\\frac{x}{2})'],
+		['e^{-0.5x}'],
+		['e^{\\frac{x}{4}-2}'],
+		['3e^{-2x+1}'],
+		['\\ln(3x+2)'],
+		['\\ln(2-x)'],
+		['\\ln(\\frac{x}{2})'],
+		['\\ln(-x)'],
+		['\\frac{1}{(2x-1)^2}'],
+		['\\frac{3}{(1-x)^3}'],
+		['\\frac{-2}{(\\frac{x}{3}+1)^4}'],
+		['\\frac{1}{-3x+2}'],
+		['\\frac{5}{0.5x+1}'],
+		['(\\frac{2}{3}x-1)^5'],
+		['(-0.5x+2)^3'],
+		['(2-3x)^{-2}'],
+		['\\sqrt{2x+1}'],
+		['\\sqrt{1-3x}'],
+		['\\frac{1}{\\sqrt{4x+1}}'],
+		['\\frac{1}{\\sqrt[3]{3x+1}}'],
+		['(2x+1)^{\\frac{3}{2}}'],
+		['(1-x)^{\\frac{2}{3}}'],
+		['3^{2x+1}'],
+		['(\\frac{1}{2})^x'],
+		['0.5^{-x}'],
+		['5^{-x}'],
+		['10^{0.3x}'],
+		['\\frac{1}{\\cos^2(3x)}'],
+		['1+\\tan^2(2x)'],
+		['\\sin^2(3x)'],
+		['\\cos^2(-x)'],
+		['\\sin(2x)\\cos(2x)'],
+		['x\\cos(x^2)'],
+		['x\\sin(3x^2+1)'],
+		['\\frac{\\ln x}{x}'],
+		['\\frac{\\ln(x)^2}{x}'],
+		['\\frac{e^{\\sqrt x}}{\\sqrt x}'],
+		['\\sin x\\cos^3 x'],
+		['\\sin^3 x\\cos x'],
+		['\\tan x'],
+		['\\frac{1}{\\tan x}'],
+		['\\frac{2x}{x^2-4}'],
+		['\\frac{x}{(x^2+1)^2}'],
+		['\\frac{x}{\\sqrt{1-x^2}}'],
+		['\\frac{\\cos x}{\\sin x}'],
+		['\\frac{\\sin x}{\\cos^2 x}'],
+		['\\frac{e^x}{e^x+1}'],
+		['\\frac{e^{2x}}{1+e^{2x}}'],
+		['\\frac{1}{x\\ln x}'],
+		['\\cos(x)e^{\\sin x}'],
+		['\\frac{\\cos(\\ln x)}{x}'],
+		['3x^2(x^3+1)^4'],
+		['(2x+1)(x^2+x)^3'],
+		['\\frac{\\sin(\\sqrt x)}{\\sqrt x}'],
+		['\\frac{1}{x^2}e^{\\frac{1}{x}}'],
+		['\\frac{x}{\\sqrt{x^2+4}}'],
+		['x\\cos(\\frac{x^2}{2})'],
+		['-\\frac{x}{3}e^{-x^2}'],
+		['x\\sin(2x)'],
+		['x\\cos(3x)'],
+		['x^2e^{-x}'],
+		['(x+1)e^{-x}'],
+		['x\\ln(3x)'],
+		['\\ln(x)^2'],
+		['x^2\\ln x'],
+		['\\frac{\\ln x}{x^2}'],
+		['e^x\\sin x'],
+		['e^{-x}\\cos(2x)'],
+		['x^2\\cos x'],
+		['\\sqrt{x}\\ln x'],
+		['(2x-1)e^{\\frac{x}{2}}'],
+		['\\arctan(x)'],
+		['x\\sin(-\\frac{x}{2})'],
+		['\\frac{2x+3}{x^2+3x+2}'],
+		['\\frac{1}{x^2-4x+3}'],
+		['\\frac{x}{x^2-5x+6}'],
+		['\\frac{3}{(x-1)(x+2)}'],
+		['\\frac{x^2}{x^2-1}'],
+		['\\frac{x^3+1}{x-2}'],
+		['\\frac{1}{x(x+1)^2}'],
+		['\\frac{2x-1}{(x+1)^2}'],
+		['\\frac{1}{x^2+4}'],
+		['\\frac{1}{4x^2+1}'],
+		['\\frac{1}{2x^2-x-1}'],
+		['\\frac{x+1}{x^2+2x+5}'],
+		['\\frac{1}{x^2+x+1}'],
+		['\\frac{1}{9-x^2}'],
+		['\\frac{4}{x^2-2x}'],
+		['0.3x^2-1.25x'],
+		['2.5e^{0.4x}'],
+		['\\frac{1.5}{x}'],
+		['\\sin(0.25x)'],
+		['(0.2x+1)^{2}'],
+		['\\frac{1}{0.4x-1.2}'],
+		['\\exponentialE^{-0.5x}'],
+		['\\exponentialE^{\\frac{x}{4}-2}'],
+		['3\\exponentialE^{-2x+1}'],
+		['\\exponentialE^{1-x}'],
+		['x\\exponentialE^{x^2}'],
+		['x\\exponentialE^{-x^2}'],
+		['x^2\\exponentialE^{x^3}'],
+		['-\\frac{x}{3}\\exponentialE^{-x^2}'],
+		['\\frac{\\exponentialE^{\\sqrt x}}{\\sqrt x}'],
+		['\\cos(x)\\exponentialE^{\\sin x}'],
+		['\\frac{1}{x^2}\\exponentialE^{\\frac{1}{x}}'],
+		['x^2\\exponentialE^{-x}'],
+		['x\\exponentialE^{2x}'],
+		['(x+1)\\exponentialE^{-x}'],
+		['\\exponentialE^x\\sin x'],
+		['\\exponentialE^{-x}\\cos(2x)'],
+		['(2x-1)\\exponentialE^{\\frac{x}{2}}'],
+		['2.5\\exponentialE^{0.4x}'],
+		['\\exponentialE^{-3x}+\\exponentialE^{\\frac{x}{2}}'],
+		['\\exp(-\\frac{x}{2})'],
+		['\\exp(1-3x)'],
+		['x\\exp(-x)'],
+		['\\frac{1}{(x+1)^2(x-1)}'],
+		['\\frac{x}{(x-1)^2}'],
+		['\\frac{1}{x^2(x+1)}'],
+		['\\frac{2}{x(x-1)^2}'],
+		['\\frac{1}{(x-2)^2(x+3)}'],
+		['\\frac{x+5}{(x+1)^3}'],
+		['\\sin(3x-\\pi)'],
+		['\\sin(\\frac{\\pi}{2}x)'],
+		['\\cos(\\sqrt{2}x+1)'],
+		['(3x-2)^{-1}'],
+		['(5-2x)^{-3}'],
+		['(1.5x+0.5)^4'],
+		['\\frac{2}{(3-x)^2}'],
+		['\\frac{1}{(\\frac{1}{2}x+1)^2}'],
+		['\\sqrt{\\frac{x}{2}+1}'],
+		['\\frac{3}{\\sqrt{2-x}}'],
+		['\\sqrt[3]{x+1}'],
+		['\\sqrt[3]{(2x+1)^2}'],
+		['x^{\\frac{1}{3}}(x^{\\frac{4}{3}}+1)^2']
+	]),
+	...latex(
+		'revue-913',
+		[
+			['t\\cos(2t)'],
+			['e^{-\\frac{t}{3}}'],
+			['\\frac{1}{2t+1}'],
+			['\\sqrt{3t}'],
+			['\\sin(\\frac{t}{2})\\cos(\\frac{t}{2})'],
+			['\\exponentialE^{-\\frac{t}{3}}']
+		],
+		{ variable: 't' }
+	),
+	...latex(
+		'revue-913',
+		[
+			['\\frac{a}{x^2-a^2}'],
+			['\\frac{k}{(x+m)^2}'],
+			['\\sin(ax+b)'],
+			['xe^{ax}'],
+			['\\frac{1}{x^2+a^2}'],
+			['k\\ln(x)'],
+			['e^{\\frac{x}{a}}'],
+			['\\exponentialE^{kx}'],
+			['x\\exponentialE^{ax}'],
+			['\\exponentialE^{\\frac{x}{a}}'],
+			['\\frac{3}{(x+m)^2}'],
+			['\\frac{k}{(x+1)^2}'],
+			['\\frac{k}{x+m}'],
+			['k(x+m)^2'],
+			['\\frac{1}{(x-a)^3}']
+		],
+		{ literal: true }
+	),
+	...latex('revue-913', [['\\cos(kt)']], { literal: true, variable: 't' })
+];
+
 /** Toutes les primitives du corpus */
 export const PRIMITIVE_CASES: readonly PrimitiveCase[] = [
 	...LATEX_CASES,
 	...LITERAL_CASES,
-	...ATELIER_CASES
+	...ATELIER_CASES,
+	...REVIEW_913_CASES
 ];
 
 // =============================================================================
@@ -794,10 +1002,10 @@ function definite(
 	lower: string,
 	upper: string,
 	exact: string,
-	options: { variable?: string; literal?: boolean } = {}
+	options: { variable?: string; literal?: boolean; family?: 'revue-913' } = {}
 ): DefiniteCase {
 	return {
-		family: options.literal === true ? 'definie-litterale' : 'definie',
+		family: options.family ?? (options.literal === true ? 'definie-litterale' : 'definie'),
 		path,
 		input,
 		f,
@@ -860,5 +1068,126 @@ export const DEFINITE_CASES: readonly DefiniteCase[] = [
 	definite('latex', 'e^{x}', 'e^x', '0', 'c', 'e^c-1', { literal: true }),
 	definite('latex', '\\cos(x)', '\\cos(x)', '0', 'b', '\\sin(b)', { literal: true }),
 	definite('atelier', 'x^2 0 a', 'x^2', '0', 'a', '\\frac{a^3}{3}', { literal: true }),
-	definite('atelier', 'a x 0 2', 'ax', '0', '2', '2a', { literal: true })
+	definite('atelier', 'a x 0 2', 'ax', '0', '2', '2a', { literal: true }),
+	// Revue de #913
+	definite(
+		'latex',
+		'\\sin(-\\frac{x}{3}+1)',
+		'\\sin(-\\frac{x}{3}+1)',
+		'0',
+		'\\pi',
+		'3\\cos(1-\\frac{\\pi}{3})-3\\cos(1)',
+		{ family: 'revue-913' }
+	),
+	definite('latex', 'e^{-0.5x}', 'e^{-0.5x}', '0', '2', '2-\\frac{2}{e}', { family: 'revue-913' }),
+	definite(
+		'latex',
+		'x\\ln(3x)',
+		'x\\ln(3x)',
+		'1',
+		'2',
+		'2\\ln(6)-\\frac{1}{2}\\ln(3)-\\frac{3}{4}',
+		{ family: 'revue-913' }
+	),
+	definite(
+		'latex',
+		'\\frac{1}{x^2-1}',
+		'\\frac{1}{x^2-1}',
+		'2',
+		'3',
+		'\\frac{1}{2}\\ln(3)-\\frac{1}{2}\\ln(2)',
+		{ family: 'revue-913' }
+	),
+	definite('latex', '(\\frac{2}{3}x-1)^5', '(\\frac{2}{3}x-1)^5', '0', '3', '0', {
+		family: 'revue-913'
+	}),
+	definite('latex', 'x\\sin(2x)', 'x\\sin(2x)', '0', '\\pi', '-\\frac{\\pi}{2}', {
+		family: 'revue-913'
+	}),
+	definite('latex', '\\frac{1}{\\sqrt{4x+1}}', '\\frac{1}{\\sqrt{4x+1}}', '0', '2', '1', {
+		family: 'revue-913'
+	}),
+	definite('latex', '2^x', '2^x', '-1', '1', '\\frac{3}{2\\ln(2)}', { family: 'revue-913' }),
+	definite('latex', '\\frac{\\ln x}{x}', '\\frac{\\ln x}{x}', '1', 'e', '\\frac{1}{2}', {
+		family: 'revue-913'
+	}),
+	definite('latex', 'xe^{-x^2}', 'xe^{-x^2}', '-1', '2', '\\frac{1}{2}(e^{-1}-e^{-4})', {
+		family: 'revue-913'
+	}),
+	definite('latex', '\\tan x', '\\tan x', '0', '\\frac{\\pi}{4}', '\\frac{1}{2}\\ln(2)', {
+		family: 'revue-913'
+	}),
+	definite('latex', '\\frac{1}{(2x-1)^2}', '\\frac{1}{(2x-1)^2}', '1', '3', '\\frac{2}{5}', {
+		family: 'revue-913'
+	}),
+	definite('latex', '\\frac{2x+3}{x^2+3x+2}', '\\frac{2x+3}{x^2+3x+2}', '0', '1', '\\ln(3)', {
+		family: 'revue-913'
+	}),
+	definite(
+		'latex',
+		'\\cos(3x)',
+		'\\cos(3x)',
+		'-\\frac{\\pi}{6}',
+		'\\frac{\\pi}{6}',
+		'\\frac{2}{3}',
+		{ family: 'revue-913' }
+	),
+	definite('latex', '\\frac{1}{3-x}', '\\frac{1}{3-x}', '0', '2', '\\ln(3)', {
+		family: 'revue-913'
+	}),
+	definite('latex', 'x^2e^{-x}', 'x^2e^{-x}', '0', '1', '2-\\frac{5}{e}', { family: 'revue-913' }),
+	definite(
+		'latex',
+		't\\cos(2t)',
+		't\\cos(2t)',
+		'0',
+		'1',
+		'\\frac{1}{2}\\sin(2)+\\frac{1}{4}\\cos(2)-\\frac{1}{4}',
+		{ family: 'revue-913', variable: 't' }
+	),
+	definite(
+		'latex',
+		'\\exponentialE^{-0.5x}',
+		'\\exponentialE^{-0.5x}',
+		'0',
+		'2',
+		'2-\\frac{2}{e}',
+		{ family: 'revue-913' }
+	),
+	definite(
+		'latex',
+		'x^2\\exponentialE^{-x}',
+		'x^2\\exponentialE^{-x}',
+		'0',
+		'1',
+		'2-\\frac{5}{e}',
+		{ family: 'revue-913' }
+	),
+	definite(
+		'latex',
+		'x\\exponentialE^{-x^2}',
+		'x\\exponentialE^{-x^2}',
+		'-1',
+		'2',
+		'\\frac{1}{2}(e^{-1}-e^{-4})',
+		{ family: 'revue-913' }
+	),
+	definite(
+		'latex',
+		'\\frac{1}{(x+1)^2(x-1)}',
+		'\\frac{1}{(x+1)^2(x-1)}',
+		'2',
+		'3',
+		'\\frac{1}{4}\\ln(3)-\\frac{1}{4}\\ln(2)-\\frac{1}{24}',
+		{ family: 'revue-913' }
+	),
+	definite('latex', '(1.5x+0.5)^4', '(1.5x+0.5)^4', '-1', '1', '\\frac{22}{5}', {
+		family: 'revue-913'
+	}),
+	definite('latex', '\\frac{2}{(3-x)^2}', '\\frac{2}{(3-x)^2}', '0', '2', '\\frac{4}{3}', {
+		family: 'revue-913'
+	}),
+	definite('latex', '\\sin(3x-\\pi)', '\\sin(3x-\\pi)', '0', '1', '\\frac{\\cos(3)-1}{3}', {
+		family: 'revue-913'
+	})
 ];

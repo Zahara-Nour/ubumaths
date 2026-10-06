@@ -72,6 +72,20 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'latex:(1-2x)^4': 'rendu « \\dfrac{16}{5} x^5 - 8 x^4 + 8 x^3 - 4 x^2 + x - \\dfrac{1}{10} »',
 	'latex:2(x+5)^2': 'rendu « \\dfrac{2}{3} x^3 + 10 x^2 + 50 x + \\dfrac{250}{3} »',
 	'latex:\\sqrt{4-x}': 'rendu « \\dfrac{2}{3} x \\sqrt{-x + 4} - \\dfrac{8}{3} \\sqrt{-x + 4} »',
+	// Refusées avant (coefficient littéral ou u = x + b), justes depuis la revue de #913
+	'latex:\\sqrt{x+3}': 'rendu « \\dfrac{2}{3} x \\sqrt{x + 3} + 2 \\sqrt{x + 3} »',
+	'latex:\\frac{1}{(ax+b)^2}': 'rendu « \\dfrac{-1}{a^2 x + a b} »',
+	'latex:(ax+b)^3':
+		'rendu « \\dfrac{a^4 x^4 + 4 a^3 b x^3 + 6 a^2 b^2 x^2 + 4 a b^3 x + b^4}{4 a} »',
+	'latex:A\\cos(\\omega x)': 'rendu « \\dfrac{A \\sin\\left( \\omega x \\right)}{\\omega} »',
+	'latex:\\sin(\\omega t+\\phi)':
+		'rendu « \\dfrac{-\\cos\\left( \\omega t + \\phi \\right)}{\\omega} »',
+	'latex:A\\cos(\\omega t)': 'rendu « \\dfrac{A \\sin\\left( \\omega t \\right)}{\\omega} »',
+	'atelier:1/(a x + b)': 'rendu « \\dfrac{\\ln\\left( \\left| a x + b \\right| \\right)}{a} »',
+	'atelier:(a x + b)^3':
+		'rendu « \\dfrac{a^4 x^4 + 4 a^3 b x^3 + 6 a^2 b^2 x^2 + 4 a b^3 x + b^4}{4 a} »',
+	'atelier:A cos(w t) ; t': 'rendu « \\dfrac{A \\sin\\left( t w \\right)}{w} »',
+	'latex:(ax+b)^n': 'rendu « \\dfrac{\\left( a x + b \\right)^{n + 1}}{a n + a} »',
 	// Intégrales définies : valeur numérique seulement (primitive non trouvée), juste à 1e-4
 	'def:latex:\\frac{1}{x^2} [1 ; 2]': 'approximation 0.5000000056691063 au lieu de 1/2',
 	'def:latex:\\sqrt{x} [0 ; 4]': 'approximation 5.3333332873618104 au lieu de 16/3'

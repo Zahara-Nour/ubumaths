@@ -568,9 +568,10 @@ function tryUSubstitution(
 	// because we can't factor out du from the integrand to simplify
 	// Exception: if the integrand is exactly a function of u (handled below)
 	const duContainsVar = containsVariable(du, variable);
-	if (!duContainsVar && extractExactRational(du) === null) {
-		// du = constant, but not a simple number
-		// This case is tricky - reject for now
+	// du constant nul : pas une substitution. Constant non rationnel (π,
+	// √2, paramètre littéral a) : accepté, le facteur 1/du est porté en nœud
+	const duRational = duContainsVar ? null : extractExactRational(du);
+	if (duRational !== null && duRational.n === 0n) {
 		return null;
 	}
 
@@ -585,6 +586,10 @@ function tryUSubstitution(
 			hashMathNode(integrand.denominator) === hashMathNode(u) &&
 			!containsVariable(integrand.numerator, variable);
 		if (isConstantOverU) return { u, du };
+		// f(x + b) : l'intégrande ne dépend de x qu'à travers u (∛(x+1), 1/(x+m)²)
+		if (!isMultiplication(integrand) && isPureFunctionOf(integrand, u, variable)) {
+			return { u, du };
+		}
 		if (!isExactlyPowerOfU(integrand, u)) {
 			return null;
 		}
@@ -675,6 +680,11 @@ function tryUSubstitution(
 	// (e^{-2x} : du = −2 n'apparaît pas tel quel)
 	const fOfUAlone =
 		!duContainsVar && !isMultiplication(integrand) && isPureFunctionOf(integrand, u, variable);
+	// u affine (du constant) et intégrande fonction de u SEULE, quelle que soit
+	// sa forme (k/(ax+b)², √(x/2+1)) : ∫ f(u) dx = (1/u′) ∫ f(u) du
+	if (fOfUAlone) {
+		return { u, du };
+	}
 	if (
 		(containsSubexpression(integrand, du) || fOfUAlone) &&
 		(isMultiplication(integrand) || !duContainsVar)
