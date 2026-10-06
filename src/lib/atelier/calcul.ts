@@ -643,6 +643,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return { kind: 'refus', message: UNREADABLE_COMMAND, ...noted };
 	}
 
+	// `.taylor` : l'exception à `fromCommand` — son `result.ast` est le
+	// POLYNÔME rendu, pas l'entrée (voir `taylor.command.ts`). Sans lui, la
+	// ligne montrait le texte du terminal, « 1+x+{1/2}x^2 » (2026-10-06).
+	if (name === 'taylor' && result.success && result.ast !== undefined) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: toLatex(result.ast),
+			...noted
+		};
+	}
+
 	return {
 		kind: 'commande',
 		input,
