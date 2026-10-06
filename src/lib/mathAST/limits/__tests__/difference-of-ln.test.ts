@@ -12,12 +12,15 @@
 
 import { describe, it, expect } from 'vitest';
 import { evaluateLimit } from '../evaluate';
-import { positiveInfinity } from '../../factory';
+import { positiveInfinity, negativeInfinity, number } from '../../factory';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 
 function limitAtPlusInfinity(latex: string): string {
-	const result = evaluateLimit(parseLatex(latex), 'x', positiveInfinity());
+	return describeLimit(evaluateLimit(parseLatex(latex), 'x', positiveInfinity()));
+}
+
+function describeLimit(result: ReturnType<typeof evaluateLimit>): string {
 	if (result.value === null) return `${result.status} null`;
 	if (result.value.type === 'infinity') {
 		return `${result.status} ${result.value.sign === 'positive' ? '+inf' : '-inf'}`;
@@ -78,5 +81,40 @@ describe('non-régression : croissances comparées', () => {
 		['e^x - x', 'infinite +inf']
 	])('lim (%s) = %s', (latex, expected) => {
 		expect(limitAtPlusInfinity(latex)).toBe(expected);
+	});
+});
+
+// Revue de #907 : a·ln u − b·ln v = ln(uᵃ/vᵇ) n'est une égalité que là où
+// u, v > 0. Une somme dont un logarithme n'est pas défini au voisinage du
+// point n'a pas de limite : jamais une valeur.
+describe('regroupement des logarithmes : u, v > 0 au voisinage exigé', () => {
+	const noValue = /^(does-not-exist|unsupported) null$/;
+	it.each([
+		// ln(x+1) non défini pour x < −1
+		['\\ln(x+1)-\\ln(x+2)', '-inf'],
+		// ln x non défini pour x < 0 (ln(x²) − 2 ln x = 0 sur ]0 ; +∞[ seulement)
+		['\\ln(x^2)-2\\ln(x)', '-inf'],
+		// ln(sin x) non défini sur une infinité d'intervalles vers +∞
+		['\\ln(x)-\\ln(\\sin x)', '+inf']
+	])('lim (%s) en %s : pas de valeur', (latex, at) => {
+		const approach = at === '+inf' ? positiveInfinity() : negativeInfinity();
+		expect(describeLimit(evaluateLimit(parseLatex(latex), 'x', approach))).toMatch(noValue);
+	});
+
+	// (−∞) − (−∞) en 1⁺ : ln((x²−1)/(x−1)) = ln(x+1) → ln 2 (0.693147… en 1 + 10⁻⁶)
+	it('lim en 1⁺ de ln(x²−1) − ln(x−1) = ln 2', () => {
+		const result = evaluateLimit(parseLatex('\\ln(x^2-1)-\\ln(x-1)'), 'x', number('1'), 'right');
+		expect(describeLimit(result)).toBe('exact \\ln\\left( 2 \\right)');
+	});
+
+	it.each([
+		// (x+1)/(x+2) > 0 pour x < −2 : 0
+		['\\ln(\\frac{x+1}{x+2})', 'exact 0'],
+		// x², x²+x > 0 pour x < −1 : ln(x²/(x²+x)) → 0
+		['\\ln(x^2)-\\ln(x^2+x)', 'exact 0'],
+		// −x, x² > 0 pour x < 0 : ln(−x/x²) = −ln(−x) → −∞
+		['\\ln(-x)-\\ln(x^2)', 'infinite -inf']
+	])('non-régression en −∞ : lim (%s) = %s', (latex, expected) => {
+		expect(describeLimit(evaluateLimit(parseLatex(latex), 'x', negativeInfinity()))).toBe(expected);
 	});
 });

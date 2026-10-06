@@ -46,6 +46,14 @@ export interface SumRewrite {
 	readonly rewritten: MathNode;
 	readonly description: string;
 	readonly technique: Extract<LimitRule, 'rationalization' | 'algebraic-simplification'>;
+	/** Famille : seule la réécriture des logarithmes vaut aussi en un point fini. */
+	readonly kind: 'logarithms' | 'conjugate' | 'common-denominator';
+	/**
+	 * Expressions qui doivent être > 0 au voisinage du point pour que la
+	 * réécriture soit une égalité (arguments des logarithmes) : à vérifier
+	 * par l'appelant, qui connaît le point et le sens.
+	 */
+	readonly positiveNear: readonly MathNode[];
 }
 
 /** Forme normale développée, réduite au même dénominateur, ou null si inchangée. */
@@ -137,9 +145,15 @@ function raiseTo(argument: MathNode, coefficient: Rational): MathNode {
  * ln(u^a / v^b) ; null si un terme n'est pas un logarithme, ou si les termes
  * n'ont pas des signes opposés (pas de forme ∞ − ∞ à lever).
  *
- * Égalité valable là où u, v > 0 : c'est le domaine de la somme de départ.
+ * Égalité valable là où u, v > 0 SEULEMENT : ln(x+1) − ln(x+2) n'est pas
+ * défini en −∞, ln((x+1)/(x+2)) l'est. Les arguments sont rendus pour que
+ * l'appelant vérifie u, v > 0 au voisinage du point (revue de #907).
  */
-function combineLogarithms(expr: MathNode, varName: string): MathNode | null {
+function combineLogarithms(
+	expr: MathNode,
+	varName: string
+): { rewritten: MathNode; arguments: MathNode[] } | null {
+	const logArguments: MathNode[] = [];
 	const numerator: MathNode[] = [];
 	const denominator: MathNode[] = [];
 	for (const { sign, term } of flattenSumShallow(expr)) {
@@ -147,6 +161,7 @@ function combineLogarithms(expr: MathNode, varName: string): MathNode | null {
 		const termSign = (sign === '+' ? peeled.sign : -peeled.sign) as 1 | -1;
 		const log = logarithmTerm(peeled.node, termSign, varName);
 		if (log === null) return null;
+		logArguments.push(log.argument);
 		const factor = raiseTo(log.argument, log.coefficient);
 		if (log.coefficient.n > 0n) numerator.push(factor);
 		else denominator.push(factor);
@@ -154,7 +169,10 @@ function combineLogarithms(expr: MathNode, varName: string): MathNode | null {
 	if (numerator.length === 0 || denominator.length === 0) return null;
 	const product = (factors: MathNode[]): MathNode =>
 		factors.reduce((acc, f) => multiply(acc, f, 'dot'));
-	return ln(divide(product(numerator), product(denominator), 'fraction'));
+	return {
+		rewritten: ln(divide(product(numerator), product(denominator), 'fraction')),
+		arguments: logArguments
+	};
 }
 
 /**
@@ -168,9 +186,11 @@ export function rewriteIndeterminateSum(expr: MathNode, varName: string): SumRew
 	const logarithm = combineLogarithms(expr, varName);
 	if (logarithm !== null) {
 		rewrites.push({
-			rewritten: logarithm,
+			rewritten: logarithm.rewritten,
 			description: 'Forme ∞ − ∞ : a ln u − b ln v = ln(uᵃ / vᵇ)',
-			technique: 'algebraic-simplification'
+			technique: 'algebraic-simplification',
+			kind: 'logarithms',
+			positiveNear: logarithm.arguments
 		});
 	}
 	const conjugate = multiplyByConjugate(expr);
@@ -178,7 +198,9 @@ export function rewriteIndeterminateSum(expr: MathNode, varName: string): SumRew
 		rewrites.push({
 			rewritten: conjugate,
 			description: 'Forme ∞ − ∞ : multiplication par la quantité conjuguée',
-			technique: 'rationalization'
+			technique: 'rationalization',
+			kind: 'conjugate',
+			positiveNear: []
 		});
 	}
 	const reduced = reduceToSingleFraction(expr);
@@ -186,7 +208,9 @@ export function rewriteIndeterminateSum(expr: MathNode, varName: string): SumRew
 		rewrites.push({
 			rewritten: reduced,
 			description: 'Forme ∞ − ∞ : réduction au même dénominateur et développement',
-			technique: 'algebraic-simplification'
+			technique: 'algebraic-simplification',
+			kind: 'common-denominator',
+			positiveNear: []
 		});
 	}
 	return rewrites;
