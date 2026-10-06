@@ -17,10 +17,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   CP→Tle mêlés, notion perdue comme unité).
 - Fusion des thèmes d'exercices faite en prod : Fonction → Fonctions (1), Bac → BAC (2).
 
+- **Grosses notions découpées par opération, type de nombre en tête** : Entiers (numération ;
+  addition et soustraction ; multiplication ; division ; priorités opératoires), Décimaux (numération ;
+  calculs), Fractions et Relatifs (sens et écritures ; calculs). Puissances et Racines carrées : une
+  notion chacune. Sous-notions courtes, sans préfixe.
+- **Nombres complexes = branche à part** (5 notions : forme algébrique, module et argument, formes
+  trigo. et exponentielle, équations polynomiales, interprétation géométrique).
+
 ## Ouvert
 
-- « Numération » (entiers, décimaux) / « Sens » (fractions, relatifs, puissances, racines) : un seul mot ?
-- Nombres complexes : dans Nombres et calculs ou à part ?
 - Branches restantes à revoir une par une : Proportionnalité, Algèbre, Fonctions, Suites, Géométrie,
   Grandeurs et mesures, Probabilités et statistiques, Logique et algorithmique.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
