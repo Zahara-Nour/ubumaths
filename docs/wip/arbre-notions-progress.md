@@ -24,8 +24,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Nombres complexes = branche à part** (5 notions : forme algébrique, module et argument, formes
   trigo. et exponentielle, équations polynomiales, interprétation géométrique).
 
+- **Racines carrées** : égalités et réduire dans « sens et écritures » (choix de David).
+- **Proportionnalité** (5 notions) : Situations de proportionnalité (reprend Tableaux), Pourcentages,
+  Évolutions, Échelle d'une carte, Vitesse (sortie de Grandeurs et mesures).
+
 ## Ouvert
 
-- Branches restantes à revoir une par une : Proportionnalité, Algèbre, Fonctions, Suites, Géométrie,
+- Branches restantes à revoir une par une : Algèbre, Fonctions, Suites, Géométrie,
   Grandeurs et mesures, Probabilités et statistiques, Logique et algorithmique.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
