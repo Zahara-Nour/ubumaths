@@ -23,7 +23,7 @@ import {
 	clearBindings,
 	clearFunctions
 } from '$lib/mathAST/cli/core/eval-state';
-import { substituteAll } from '$lib/mathAST/eval/substitute';
+import { substitute, substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -184,8 +184,10 @@ function expandDerivatives(
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];
 			if (args.length === 0) return expandDerivatives(derived, functions);
+			// ⚠️ Une seule passe : `f'(2x)` remplace x par 2x, puis plus rien —
+			// itérer donnait cos(1024x) (2026-10-06)
 			return expandDerivatives(
-				substituteAll(derived, { [target.parameters[0] ?? 'x']: args[0] }, substituteFunction),
+				substitute(derived, { [target.parameters[0] ?? 'x']: args[0] }, { maxIterations: 1 }),
 				functions
 			);
 		}

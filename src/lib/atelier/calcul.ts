@@ -334,7 +334,48 @@ function derivedSequence(session: CalcSession, argument: string): string | null 
 	return null;
 }
 
-function substituteNames(session: CalcSession, argument: string): string {
+/**
+ * Remplacer chaque appel `name(…)` (ou `name'(…)`) par son expression COMPOSÉE.
+ *
+ * ⚠️ Dans l'ARBRE, appel par appel : `f(2x)` doit devenir sin(2x), et non
+ * l'expression de f collée devant son argument. Seul l'appel est relu — le
+ * reste de l'argument d'une commande (`; x`, le nombre de termes de
+ * `.taylor`) n'est pas une expression et ne passerait pas le parseur.
+ *
+ * `null` si un appel est repéré mais ne se compose pas : retomber sur le nom
+ * seul recollerait l'expression devant l'argument, et `f_1(2x)` se lirait de
+ * nouveau comme un PRODUIT, sans rien dire (revue de #901).
+ */
+function replaceCalls(session: CalcSession, text: string, name: string): string | null {
+	const start = new RegExp(`(?<![A-Za-z_])${name}'*\\s*\\(`, 'g');
+	let result = '';
+	let cursor = 0;
+	for (let match = start.exec(text); match !== null; match = start.exec(text)) {
+		// La parenthèse fermante qui répond à celle de l'appel
+		let depth = 0;
+		let end = -1;
+		for (let i = match.index + match[0].length - 1; i < text.length; i++) {
+			if (text[i] === '(') depth++;
+			else if (text[i] === ')' && --depth === 0) {
+				end = i;
+				break;
+			}
+		}
+		if (end === -1) break;
+		const call = text.slice(match.index, end + 1);
+		// Le parseur doit y lire un APPEL : `f_1(2x)` se lit f₁·(2x), et sa
+		// « composition » rendait encore le produit (x^2)(2x)
+		if (astOf(call, 'url', session.atelier.functionNames)?.type !== 'function') return null;
+		const composed = expandCommandArgument(session.atelier, call);
+		if (composed === null) return null;
+		result += `${text.slice(cursor, match.index)}(${composed})`;
+		cursor = end + 1;
+		start.lastIndex = cursor;
+	}
+	return result + text.slice(cursor);
+}
+
+function substituteNames(session: CalcSession, argument: string): string | null {
 	if (argument.trim() === '') return argument;
 
 	let result = argument;
@@ -343,11 +384,15 @@ function substituteNames(session: CalcSession, argument: string): string {
 		const expression = expressionOf(session.atelier, object.name);
 		if (!expression.ok) continue;
 
-		// `f(x)` d'abord : sinon le `f` seul de `f(x)` serait remplacé, et il
-		// resterait un `(x)` orphelin.
-		const called = new RegExp(`\\b${object.name}\\s*\\(\\s*[xn]\\s*\\)`, 'g');
+		// Les APPELS d'abord : sinon le `f` seul de `f(2x)` serait remplacé, et
+		// `(sin(x))(2x)` se lirait comme un PRODUIT — `.taylor f(2x) 4` rendait
+		// 2x² (2026-10-06).
+		if (object.kind === 'function' || object.kind === 'sequence') {
+			const replaced = replaceCalls(session, result, object.name);
+			if (replaced === null) return null;
+			result = replaced;
+		}
 		const alone = new RegExp(`(?<![A-Za-z_])${object.name}(?![A-Za-z_0-9])`, 'g');
-		result = result.replace(called, `(${expression.expression})`);
 		result = result.replace(alone, `(${expression.expression})`);
 	}
 	return result;
@@ -504,6 +549,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		? substituteNames(session, rawArgument)
 		: (expandCommandArgument(session.atelier, rawArgument) ??
 			substituteNames(session, expandInput(session.atelier, rawArgument)));
+	if (argument === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
 	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
 	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que
