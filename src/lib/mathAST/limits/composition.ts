@@ -30,10 +30,11 @@ import {
 import { P } from '../pattern/builder';
 import { match } from '../pattern/match';
 import type { Pattern } from '../pattern/types';
-import { number, positiveInfinity, negativeInfinity } from '../factory';
+import { number, positiveInfinity, negativeInfinity, func, opposite } from '../factory';
 import { structuralBounds, hasStrictSign, type Bounds } from './bounded';
 import { rewriteReciprocalTrig } from './reciprocal-trig';
-import { getNumericValue } from '../common/numeric';
+import { getNumericValue, numericNode } from '../common/numeric';
+import { rootIndexOf } from '../differentiation/rules';
 import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation';
 import { substitute } from '../eval/substitute';
@@ -524,6 +525,45 @@ function extractTerms(
 /**
  * Handle function composition f(g(x)) where g(x) → boundary.
  */
+/**
+ * Limite de ⁿ√g connaissant celle de g (indice entier littéral n ≥ 3) — ou
+ * `null` si on ne conclut pas (indice symbolique, g → réel < 0 avec n pair…).
+ *
+ * n impair : ⁿ√ est définie et croissante sur ℝ, elle GARDE le signe
+ * (∛(−∞) = −∞, ∛(0⁻) = 0⁻ → 1/∛x en 0⁻ = −∞). n pair : comme √.
+ * Une valeur finie donne ⁿ√v exact (∛8 = 2) ou laissé sous radical (∛9).
+ */
+function nthRootLimit(expr: MathNode, inner: SignedLimitValue): MathNode | null {
+	const index = rootIndexOf(expr);
+	if (index === null || !isNumber(index)) return null;
+	const n = Number(index.value);
+	if (!Number.isInteger(n) || n < 2) return null;
+	const odd = n % 2 === 1;
+	switch (inner.type) {
+		case 'pos-infinity':
+			return positiveInfinity();
+		case 'neg-infinity':
+			return odd ? negativeInfinity() : null;
+		case 'zero':
+		case 'zero-plus':
+			return number('0');
+		case 'zero-minus':
+			return odd ? number('0') : null;
+		case 'finite': {
+			if (inner.value < 0 && !odd) return null;
+			const magnitude = Math.abs(inner.value);
+			const root = Math.round(magnitude ** (1 / n));
+			const exact = root ** n === magnitude;
+			const positive = exact
+				? number(String(root))
+				: func('sqrt', [numericNode(magnitude)], { base: index });
+			return inner.value < 0 ? opposite(positive) : positive;
+		}
+		default:
+			return null;
+	}
+}
+
 function tryFunctionComposition(
 	expr: MathNode,
 	varName: string,
@@ -575,6 +615,21 @@ function tryFunctionComposition(
 			);
 			return { success: true, value, technique: 'composition' };
 		}
+	}
+
+	// Racine n-ième (indice dans `base`) : ∛ n'est pas √
+	if (funcName === 'sqrt' && rootIndexOf(expr) !== null) {
+		const value = nthRootLimit(expr, innerLimit);
+		if (value === null) return { success: false };
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`Limite de la racine n-ième par composition`
+		);
+		return { success: true, value, technique: 'composition' };
 	}
 
 	// Handle sqrt(g(x))

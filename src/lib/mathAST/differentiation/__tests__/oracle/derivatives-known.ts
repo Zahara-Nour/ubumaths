@@ -15,24 +15,6 @@
  * Détail : point, attendu numérique (différence finie de la référence), obtenu.
  */
 export const KNOWN_WRONG: Readonly<Record<string, string>> = {
-	'rac-08 @ latex-moteur':
-		'« \\dfrac{1}{2 \\sqrt{x}} » — x=0.3 : attendu 0.74381439, obtenu 0.91287093',
-	'rac-08 @ latex-péda':
-		'« \\dfrac{1}{2 \\sqrt{x}} » — x=0.3 : attendu 0.74381439, obtenu 0.91287093',
-	'rac-08 @ étapes':
-		'derivative-of-sqrt : (\\sqrt[3]{x})′ → \\dfrac{1}{2 \\sqrt{x}} — x=0.3 : attendu 0.74381439, obtenu 0.91287093',
-	'rac-09 @ latex-moteur':
-		'« \\dfrac{2}{2 \\sqrt{2 x + 1}} » — x=0.3 : attendu 0.48733629, obtenu 0.79056942',
-	'rac-09 @ latex-péda':
-		'« \\dfrac{1}{\\sqrt{2 x + 1}} » — x=0.3 : attendu 0.48733629, obtenu 0.79056942',
-	'rac-09 @ étapes':
-		'sqrt : (\\sqrt[3]{2 x + 1})′ → \\dfrac{2}{2 \\sqrt{2 x + 1}} — x=0.3 : attendu 0.48733629, obtenu 0.79056942',
-	'rac-10 @ latex-moteur':
-		'« \\dfrac{1}{2 \\sqrt{x}} » — x=0.3 : attendu 0.61673567, obtenu 0.91287093',
-	'rac-10 @ latex-péda':
-		'« \\dfrac{1}{2 \\sqrt{x}} » — x=0.3 : attendu 0.61673567, obtenu 0.91287093',
-	'rac-10 @ étapes':
-		'derivative-of-sqrt : (\\sqrt[4]{x})′ → \\dfrac{1}{2 \\sqrt{x}} — x=0.3 : attendu 0.61673567, obtenu 0.91287093',
 	'loga-05 @ latex-péda':
 		'affiché illisible : \\ln\\left( 2 \\right) 2^x (Unexpected token in expression: 2)',
 	'loga-05 @ commande':
@@ -182,6 +164,9 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'rac-08 @ commande': '\\dfrac{x^{-\\dfrac{2}{3}}}{3}',
 	'rac-08 @ bouton': '\\dfrac{x^{-\\dfrac{2}{3}}}{3}',
 	'rac-08 @ carte': 'x^{-2 / 3} / 3',
+	'rac-10 @ commande': '\\dfrac{x^{-\\dfrac{3}{4}}}{4}',
+	'rac-10 @ bouton': '\\dfrac{x^{-\\dfrac{3}{4}}}{4}',
+	'rac-10 @ carte': 'x^{-3 / 4} / 4',
 	'pow-01 @ latex-péda': '-\\dfrac{1}{x^2}',
 	'pow-01 @ commande': '-\\dfrac{1}{x^2}',
 	'pow-01 @ bouton': '-\\dfrac{1}{x^2}',
