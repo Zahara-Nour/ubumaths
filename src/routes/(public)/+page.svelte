@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { formatMedium } from '$lib/almanach/calendar';
-	import { MONTH_PALETTES, ambianceMonthIndex } from '$lib/almanach/palettes';
+	import { MONTH_PALETTES } from '$lib/almanach/palettes';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import JsonLd from '$lib/seo/JsonLd.svelte';
 	import { SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
@@ -25,9 +24,8 @@
 
 	let { data }: PageProps = $props();
 
-	const todayLabel = $derived(formatMedium(data.almanach));
-	// Un jour hors-mois prend l'ambiance du mois qui le précède (cf. palettes.ts)
-	const ambiance = $derived(MONTH_PALETTES[ambianceMonthIndex(data.almanach)]);
+	// Le serveur choisit le mois (un jour hors-mois prend celui qui le précède, cf. palettes.ts)
+	const ambiance = $derived(MONTH_PALETTES[data.ambianceMonth]);
 </script>
 
 <SeoHead
@@ -37,18 +35,11 @@
 <JsonLd data={HOME_JSON_LD} />
 
 <!-- Grille 1fr / auto / 1fr : Père Ubu occupe la rangée du milieu, donc le centre exact de la zone.
-     py-10 (symétrique) réserve la place de la date en haut sans décentrer Ubu. -->
+     Le titre se cale en haut de la première rangée, le Shtam en bas de la dernière. -->
 <div
-	class="zone relative container mx-auto grid h-full grid-rows-[1fr_auto_1fr] justify-items-center px-4 py-10 text-center"
+	class="zone relative container mx-auto grid h-full grid-rows-[1fr_auto_1fr] justify-items-center overflow-hidden px-4 py-3 text-center"
 >
-	<a
-		href={resolve('/almanach')}
-		class="absolute top-4 right-4 rounded-sm text-xs text-muted-foreground italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-	>
-		{todayLabel}<span class="sr-only"> : ouvrir l’Almanach des Chiphres</span>
-	</a>
-
-	<h1 class="titre mb-10 self-end text-4xl font-bold">
+	<h1 class="titre self-start text-3xl font-bold sm:text-4xl">
 		Les maths de la chandelle <span class="text-primary">verte</span>
 	</h1>
 
@@ -228,7 +219,7 @@
 	</figure>
 
 	{#if data.shtam}
-		<!-- Dépêche : sous Ubu, en bas à droite ; la rangée s'agrandit plutôt que de le chevaucher -->
+		<!-- Dépêche discrète : tout en bas, juste au-dessus du bouton « Infos et confidentialité » -->
 		<a
 			href={resolve('/(public)/shtam/[slug]', { slug: data.shtam.slug })}
 			class="depeche"
@@ -256,7 +247,8 @@
 	}
 	figure svg,
 	.img-bg {
-		--ubu: clamp(6rem, calc(100cqh - 17rem), 15rem);
+		/* Chaque rangée 1fr doit garder la place du titre (2 lignes) ou du Shtam */
+		--ubu: clamp(5rem, calc(100cqh - 13rem), 15rem);
 		width: var(--ubu);
 		height: var(--ubu);
 	}
@@ -303,13 +295,13 @@
 		}
 	}
 	.depeche {
-		@apply mt-6 flex max-w-xs flex-col gap-1 self-end justify-self-end rounded-lg border bg-background px-4 py-3 text-left text-sm shadow-md transition-colors hover:border-foreground/30 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+		@apply flex max-w-xs items-baseline gap-2 self-end rounded-md px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
 	}
 	.depeche-label {
-		@apply flex items-center gap-2 text-xs font-bold tracking-wider text-destructive uppercase;
+		@apply flex shrink-0 items-center gap-1.5 text-[0.65rem] font-bold tracking-wider text-destructive uppercase;
 	}
 	.dot {
-		@apply inline-block h-2 w-2 rounded-full bg-destructive;
+		@apply inline-block h-1.5 w-1.5 rounded-full bg-destructive;
 		animation: clignote 1.2s ease-in-out infinite;
 	}
 	@keyframes clignote {
@@ -318,20 +310,17 @@
 		}
 	}
 	.depeche-text {
-		@apply leading-snug font-medium;
+		@apply line-clamp-2 leading-snug;
 	}
-	/* Zone basse (petit téléphone) : marges resserrées autour du titre et de la dépêche.
-	   Après les règles de base, pour les remplacer à spécificité égale. */
+	/* Zone basse (petit téléphone) : titre resserré. Après les règles de base,
+	   pour les remplacer à spécificité égale. */
 	@container (max-height: 560px) {
 		.titre {
-			@apply mb-4 text-3xl;
-		}
-		.depeche {
-			@apply mt-3;
+			@apply text-2xl;
 		}
 		figure svg,
 		.img-bg {
-			--ubu: clamp(6rem, calc(100cqh - 14.5rem), 15rem);
+			--ubu: clamp(5rem, calc(100cqh - 11rem), 15rem);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
