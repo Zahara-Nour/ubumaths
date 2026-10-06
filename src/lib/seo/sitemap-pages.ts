@@ -49,6 +49,7 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/chiffrement/polybe', priority: 0.5, changefreq: 'monthly' },
 	{ path: '/chiffrement/vigenere', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/chiffrement/affine', priority: 0.6, changefreq: 'monthly' },
+	{ path: '/chiffrement/hill', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/shtam', priority: 0.7, changefreq: 'daily' },
 	{ path: '/a-propos', priority: 0.5, changefreq: 'yearly' },
 	{ path: '/legal/mentions-legales', priority: 0.3, changefreq: 'yearly' },

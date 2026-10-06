@@ -51,13 +51,19 @@
 			kind: 'Terminale · maths expertes',
 			summary:
 				'Chaque lettre passe par une fonction affine modulo 26 ; l’inverse modulaire la ramène.'
+		},
+		{
+			path: '/chiffrement/hill',
+			name: 'Le chiffre de Hill',
+			kind: 'Terminale · maths expertes',
+			summary: 'Les lettres vont par paires et passent par une matrice 2 × 2, modulo 26.'
 		}
 	] as const;
 </script>
 
 <SeoHead
 	title="Le Cabinet Noir de Turingrad : chiffrer et déchiffrer — Chiphre"
-	description="Chiffrer, déchiffrer et décrypter des messages secrets : chiffre de César, Atbash, substitution, scytale, carré de Polybe, Vigenère et chiffre affine, avec les calculs pas à pas et l’analyse de fréquences."
+	description="Chiffrer, déchiffrer et décrypter des messages secrets : chiffre de César, Atbash, substitution, scytale, carré de Polybe, Vigenère, chiffre affine et chiffre de Hill, avec les calculs pas à pas et l’analyse de fréquences."
 />
 
 <header class="flex flex-col gap-3">
@@ -119,5 +125,5 @@
 <section aria-labelledby="chiffres-lycee" class="flex flex-col gap-4">
 	<h2 id="chiffres-lycee" class="text-xl font-semibold">Les chiffres du lycée</h2>
 	{@render cards(LYCEE_CIPHERS)}
-	<p class="text-sm text-muted-foreground">Bientôt : le chiffre de Hill et un RSA de poche.</p>
+	<p class="text-sm text-muted-foreground">Bientôt : un RSA de poche.</p>
 </section>
