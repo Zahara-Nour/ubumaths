@@ -205,7 +205,11 @@ export function generateLinearInequalitySteps(
 				description: 'Inéquation du premier degré',
 				before: inequality,
 				after: inequality,
-				operation: { kind: 'identify-equation', equationType: 'linear' }
+				operation: {
+					kind: 'identify-equation',
+					equationType: 'linear',
+					...(variable !== null && { variable })
+				}
 			})
 		: null;
 

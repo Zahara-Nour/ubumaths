@@ -31,7 +31,8 @@ describe('.dériver : sortie et étapes disent la même dérivée', () => {
 		['.deriver x^2 y', 'd/dx(x^2y) = 2xy', '2 x y'],
 		['.dériver t^2 + t ; t', 'd/dt(t^2+t) = 2t+1', '2 t + 1'],
 		['.dériver a x^2 + b x ; x', 'd/dx(ax^2+bx) = 2ax+b', '2 a x + b'],
-		['.dériver t^3', 'd/dt(t^3) = 3t^2', '3 t^2']
+		// Passé à la nouvelle règle (2026-10-06) : `t^3` seul se dérive en x
+		['.dériver t^3 ; t', 'd/dt(t^3) = 3t^2', '3 t^2']
 	])('%s', (input, output, latex) => {
 		expect(derive(input)).toEqual({ output, latex });
 	});
@@ -47,27 +48,44 @@ describe('une fonction de l’atelier se dérive toujours en x', () => {
 
 		const outcome = runInput(s, '.dériver f');
 
-		expect(outcome).toMatchObject({ kind: 'commande', latex: '0' });
-		if (outcome.kind !== 'commande') return;
-		expect(outcome.output).toBe("d/dx(f) = 0 — En attente de « k », qui n'est pas encore défini.");
+		// La note passe par `note` : collée au texte, elle était invisible dès
+		// que la ligne avait du LaTeX
+		expect(outcome).toMatchObject({
+			kind: 'commande',
+			latex: '0',
+			output: 'd/dx(f) = 0',
+			note: "En attente de « k », qui n'est pas encore défini."
+		});
 	});
 });
 
 describe('revue #880', () => {
-	it('le refus du moteur (plusieurs variables) est montré tel quel', () => {
+	// Passé à la nouvelle règle (2026-10-06) : plus de refus « Plusieurs
+	// variables possibles » — on dérive en x, et la ligne l'indique
+	it('plusieurs variables sans x : en x, avec l’indication', () => {
 		const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
 
-		expect(runInput(s, '.dériver a t^2 + b t')).toEqual({
+		expect(runInput(s, '.dériver a t^2 + b t')).toMatchObject({
+			kind: 'commande',
+			latex: '0',
+			note: 'Calcul par rapport à x. Pour une autre variable, écris « ; » suivi de son nom.'
+		});
+	});
+
+	it('le refus du moteur (pas une variable) est montré tel quel', () => {
+		const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
+
+		expect(runInput(s, '.dériver x^2 ; ab')).toEqual({
 			kind: 'refus',
-			message:
-				'Plusieurs variables possibles (a, b, t) : précise laquelle après un point-virgule, par exemple « a t^2 + b t ; t ».'
+			message: "« ab » n'est pas une variable."
 		});
 	});
 
 	it.each([
 		['.dériver x_1^2 ; x_1', 'd/dx_1(x_1^2) = 2x_1', '2 x_1'],
 		['.dériver x_{12}^2 ; x_{12}', 'd/dx_12(x_12^2) = 2x_12', '2 x_{12}'],
-		['.dériver x_1^2', 'd/dx_1(x_1^2) = 2x_1', '2 x_1']
+		// Passé à la nouvelle règle (2026-10-06) : sans « ; », en x
+		['.dériver x_1^2', 'd/dx(x_1^2) = 0', '0']
 	])('variable indicée : %s', (input, output, latex) => {
 		expect(derive(input)).toEqual({ output, latex });
 	});

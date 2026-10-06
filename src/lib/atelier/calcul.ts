@@ -37,7 +37,7 @@ import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { splitVariableArgument } from '$lib/mathAST/cli/core/variable-argument';
+import { splitVariableArgument, variableHintOf } from '$lib/mathAST/cli/core/variable-argument';
 import { tidyTerms } from './tidy-terms';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -86,6 +86,12 @@ export type CalcResult =
 			readonly steps?: readonly RenderedStep[];
 			/** Le graphique d'une simulation, dessiné sous la ligne (Q80) */
 			readonly chart?: StatChartScene;
+			/**
+			 * Une indication affichée AVEC la réponse, qu'elle soit en
+			 * mathématiques ou en texte : `.dériver t^2` calcule en x et le dit
+			 * (« Calcul par rapport à x… », décision de David, 2026-10-06).
+			 */
+			readonly note?: string;
 	  }
 	| { readonly kind: 'refus'; readonly message: string };
 
@@ -124,20 +130,34 @@ export type ActionOutcome =
 const UNREADABLE_COMMAND =
 	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
 
+/** Les commandes qui calculent en x, sauf `; v` — et l'indiquent quand x manque. */
+const VARIABLE_COMMANDS: ReadonlySet<string> = new Set(['diff', 'solve', 'integrate']);
+
 /** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
 const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set(['AMBIGUOUS_VARIABLE', 'BARE_FUNCTION']);
 
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
 /**
- * Ce que la ligne de Calcul ajoute après « Dériver » : rien si la carte `f′`
- * vient d'être créée, « existe déjà » (§2 L1), ou pourquoi elle ne l'a pas été
- * (E3). Partagé par le bouton et `.dériver`, qui doivent dire la même chose.
+ * Ce que la ligne de Calcul ajoute après « Dériver » : rien (`null`) si la
+ * carte `f′` vient d'être créée, « existe déjà » (§2 L1), ou pourquoi elle ne
+ * l'a pas été (E3). Partagé par le bouton et `.dériver`, qui doivent dire la
+ * même chose.
+ *
+ * ⚠️ Elle va dans la `note` de la ligne, jamais au bout de son texte : la vue
+ * n'affiche pas le texte d'une ligne dont la réponse se compose en
+ * mathématiques — collée au texte, elle était invisible.
  */
-export function derivativeNote(result: Created | Refused | null): string {
-	if (result === null) return '';
-	if (!result.ok) return ` — ${result.message}`;
-	return result.existed ? ` — ${displayName(result.object.name)} existe déjà` : '';
+export function derivativeNote(result: Created | Refused | null): string | null {
+	if (result === null) return null;
+	if (!result.ok) return result.message;
+	return result.existed ? `${displayName(result.object.name)} existe déjà` : null;
+}
+
+/** Les notes d'une ligne réunies en une, ou `{}` s'il n'y en a aucune. */
+function notesOf(...notes: readonly (string | null)[]): { note?: string } {
+	const present = notes.filter((note): note is string => note !== null);
+	return present.length === 0 ? {} : { note: present.join(' ') };
 }
 
 /** `u(n+1) = …` : la définition d'une suite récurrente (décision S3). */
@@ -475,12 +495,28 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
 	const result = engine.execute(executed);
+	// x absent, aucune variable donnée : le moteur calcule en x et ajoute une
+	// indication à sa sortie. Elle est montrée À PART (`note`) : une ligne dont
+	// la réponse se compose en mathématiques n'affiche pas son texte.
+	const hint = VARIABLE_COMMANDS.has(name) ? variableHintOf(commandArgument) : null;
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
-	const rendered = renderResult(result, { fromCommand: true });
+	const engineRendered = renderResult(result, { fromCommand: true });
+	const rendered =
+		hint === null
+			? engineRendered
+			: {
+					...engineRendered,
+					text: engineRendered.text
+						.split('\n')
+						.filter((line) => line.trim() !== hint)
+						.join('\n')
+						.trim()
+				};
+	const noted = hint === null ? {} : { note: hint };
 
-	// Un refus que le moteur adresse à l'élève, en français (`.dériver a t^2 + b t`
-	// : « Plusieurs variables possibles… », `.dériver sin x` : « Écris sin(x)… ») :
+	// Un refus que le moteur adresse à l'élève, en français (`.dériver x^2 ; ab`
+	// : « « ab » n'est pas une variable. », `.dériver sin x` : « Écris sin(x)… ») :
 	// montré tel quel, AVANT les étapes — qui, elles, liraient `sin x` autrement —
 	// et pas noyé dans « Je n’ai pas su lire » (revue #880)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
@@ -505,7 +541,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		// Sur une expression, rien à créer (L4).
 		const note = derivesFunction
 			? derivativeNote(session.atelier.createDerivative(diffTarget))
-			: '';
+			: null;
+		const notes = notesOf(hint, note);
 		// Les étapes dérivent la même chose que le moteur, variable comprise
 		const { expression, variable } = splitVariableArgument(commandArgument);
 		const derived = deriveSteps(expression, undefined, variable ?? undefined);
@@ -513,12 +550,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			return {
 				kind: 'commande',
 				input,
-				output: rendered.text + note,
+				output: rendered.text,
 				latex: derived.answer,
-				steps: derived.steps
+				steps: derived.steps,
+				...notes
 			};
 		}
-		if (note !== '') return { kind: 'commande', input, output: rendered.text + note };
+		if (note !== null) return { kind: 'commande', input, output: rendered.text, ...notes };
 	}
 
 	// ⚠️ Même forme que `.dériver`, pour la même raison : le moteur ne SAIT pas
@@ -545,7 +583,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			input,
 			output: rendered.text,
 			latex: solved.answer,
-			steps: solved.steps
+			steps: solved.steps,
+			...noted
 		};
 	}
 
@@ -559,7 +598,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		kind: 'commande',
 		input,
 		output: rendered.text,
-		...(rendered.latex && { latex: rendered.latex })
+		...(rendered.latex && { latex: rendered.latex }),
+		...noted
 	};
 }
 

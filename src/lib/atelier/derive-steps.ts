@@ -21,7 +21,7 @@ import {
 	withTidyStep
 } from '$lib/mathAST/pedagogical-differentiation';
 import {
-	defaultVariable,
+	DEFAULT_VARIABLE,
 	indexVariables,
 	variableNameOf
 } from '$lib/mathAST/cli/core/variable-argument';
@@ -62,10 +62,9 @@ export interface DerivedSteps {
  *   alors `f'(x) = …`. Sans lui — commande tapée à la main — la dérivée est
  *   rendue seule, puisqu'il n'y a rien à nommer.
  * @param variable - La variable donnée après le point-virgule (`.dériver t^2 ; t`).
- *   Sans elle : `x` pour un objet nommé ; sinon la même règle que `.diff`
- *   (`x` si elle apparaît, sinon la seule variable libre) — et `null` (repli
- *   sur le moteur, qui demande laquelle) s'il y en a plusieurs. ⚠️ Avec un
- *   `x` codé en dur, `.dériver t^3` répondait `0`.
+ *   Sans elle : `x`, comme `.diff` — aucune devinette (décision de David,
+ *   2026-10-06) : `.dériver t^3` répond `0`, et la ligne indique comment
+ *   choisir t (`variableHintOf`, côté `calcul.ts`).
  */
 export function deriveSteps(
 	expression: string,
@@ -91,12 +90,9 @@ export function deriveSteps(
 					: variableNameOf(typedVariable);
 		if (explicit === null) return null;
 
-		// Un objet nommé est une fonction de l'atelier, donc en x (sa réponse
-		// s'écrit d'ailleurs `f'(x) = …`)
-		const given = explicit ?? (name === undefined ? undefined : 'x');
-		const found = given === undefined ? defaultVariable(node) : null;
-		if (found !== null && !found.ok) return null;
-		const derivationVariable = found !== null && found.ok ? found.variable : (given ?? 'x');
+		// Sans variable donnée : x (un objet nommé est d'ailleurs une fonction
+		// de l'atelier, en x — sa réponse s'écrit `f'(x) = …`)
+		const derivationVariable = explicit ?? DEFAULT_VARIABLE;
 
 		const result = generatePedagogicalDifferentiationSteps(node, {
 			variable: derivationVariable,

@@ -7,11 +7,12 @@
  * Syntax: .diff expr[ ; variable]
  * - .diff x^3          -> 3x^2 (default var: x)
  * - .diff x*y^2 ; y    -> 2xy  (explicit var: y)
- * - .diff t^3          -> 3t^2 (pas de x : la seule variable libre)
+ * - .diff t^3          -> 0, avec l'indication « … écris « ; t » »
  * - .diff f(x)         -> f'(x) or expanded if f is defined
  *
- * ⚠️ La variable explicite se donne après un POINT-VIRGULE, jamais après un
- * espace : `x^2 y` est le produit x²y (voir `core/variable-argument.ts`).
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE —
+ * jamais après un espace : `x^2 y` est le produit x²y, et rien n'est deviné
+ * (voir `core/variable-argument.ts`).
  */
 
 import chalk from 'chalk';
@@ -26,10 +27,10 @@ import { variable as variableNode } from '../../factory';
 import {
 	bareFunctionMessage,
 	bareFunctionName,
-	defaultVariable,
+	chosenVariable,
 	indexVariables,
-	splitVariableArgument,
-	variableNameOf
+	otherVariableHint,
+	splitVariableArgument
 } from '../core/variable-argument';
 
 // =============================================================================
@@ -92,7 +93,7 @@ export class DiffCommand extends BaseCommand {
 			};
 		}
 
-		// Variable explicite après un point-virgule, sinon déduite de l'expression
+		// Variable explicite après un point-virgule, sinon x
 		const { expression, variable: explicitVariable } = splitVariableArgument(input);
 
 		// Parse the expression with state-aware parser options
@@ -112,39 +113,21 @@ export class DiffCommand extends BaseCommand {
 		// calcul : la dérivation traite un indice en constante
 		const indexed = indexVariables(parseResult.ast);
 
-		let variable: string;
-		if (explicitVariable !== null) {
-			// La variable est lue par le MÊME parseur que l'expression : `x_1`
-			// tapé doit donner le même nom que le `x_1` de l'expression
-			const parsedVariable = parse(explicitVariable, parserOptions).ast;
-			const name = parsedVariable === undefined ? null : variableNameOf(parsedVariable);
-			if (name === null) {
-				return {
-					success: false,
-					output: '',
-					error: {
-						code: 'AMBIGUOUS_VARIABLE',
-						message: `« ${explicitVariable} » n'est pas une variable.`
-					}
-				};
-			}
-			variable = name;
-		} else {
-			const found = defaultVariable(indexed.node, ctx.evalState?.bindings.keys());
-			if (!found.ok) {
-				const example = `${expression} ; ${found.candidates[found.candidates.length - 1]}`;
-				return {
-					success: false,
-					output: '',
-					error: {
-						// Message pour l'élève, en français : l'atelier le montre tel quel
-						code: 'AMBIGUOUS_VARIABLE',
-						message: `Plusieurs variables possibles (${found.candidates.join(', ')}) : précise laquelle après un point-virgule, par exemple « ${example} ».`
-					}
-				};
-			}
-			variable = found.variable;
+		const chosen = chosenVariable(explicitVariable, parserOptions);
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
 		}
+		const variable = chosen.variable;
+		// x n'apparaît pas et aucune variable n'est donnée : on calcule en x, et
+		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
+		const hint =
+			explicitVariable === null
+				? otherVariableHint(indexed.node, ctx.evalState?.bindings.keys())
+				: null;
 		const variableLabel = toCustom(indexed.restore(variableNode(variable)));
 
 		try {
@@ -171,7 +154,8 @@ export class DiffCommand extends BaseCommand {
 
 			const output = [
 				chalk.bold(`d/d${variableLabel}(${exprCustom})`) + ' = ' + chalk.cyan(derivCustom),
-				chalk.dim('LaTeX:') + ' ' + derivLatex
+				chalk.dim('LaTeX:') + ' ' + derivLatex,
+				...(hint === null ? [] : [hint])
 			].join('\n');
 
 			return {

@@ -160,7 +160,7 @@ export function generateLinearEquationSteps(
 				description: 'Équation du premier degré',
 				before: equation,
 				after: equation,
-				operation: { kind: 'identify-equation', equationType: 'linear' }
+				operation: { kind: 'identify-equation', equationType: 'linear', variable }
 			})
 		: null;
 

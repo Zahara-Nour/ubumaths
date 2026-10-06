@@ -5,10 +5,16 @@
  * Supports specifying the integration variable (defaults to 'x').
  * Can compute definite integrals with bounds.
  *
- * Syntax: .integrate expr [variable] [lower upper]
+ * Syntax: .integrate expr[ ; variable] [lower upper]
  * - .integrate x^2          -> x^3/3 (indefinite, var: x)
- * - .integrate x*y^2 y      -> x*y^3/3 (explicit var: y)
- * - .integrate x^2 x 0 1    -> 1/3 (definite integral)
+ * - .integrate x*y^2 ; y    -> x*y^3/3 (explicit var: y)
+ * - .integrate x^2 0 1      -> 1/3 (definite integral)
+ * - .integrate t^2 ; t 0 1  -> 1/3 (definite integral, explicit var)
+ *
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
+ * (voir `core/variable-argument.ts`). Plus de « dernier mot = variable » :
+ * `.integrate x^2 y` intégrait en y. Les bornes, elles, restent les deux
+ * derniers NOMBRES de la saisie.
  */
 
 import chalk from 'chalk';
@@ -25,6 +31,27 @@ import type {
 } from '../../integration';
 import type { MathNode } from '../../types';
 import { numericNode } from '../../common/numeric';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	indexVariables,
+	otherVariableHint,
+	splitVariableArgument
+} from '../core/variable-argument';
+
+// =============================================================================
+// Constantes
+// =============================================================================
+
+/** Les deux bornes d'une intégrale définie, en fin de saisie : `… 0 1`. */
+const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;
+
+/** Ajouter l'indication de variable (`otherVariableHint`) à la fin de la sortie. */
+function withHint(result: CommandResult, hint: string | null): CommandResult {
+	if (hint === null) return result;
+	return { ...result, output: result.output === '' ? hint : `${result.output}\n${hint}` };
+}
 
 // =============================================================================
 // Integrate Command
@@ -45,7 +72,7 @@ import { numericNode } from '../../common/numeric';
  * > .integrate sin(x)
  * ∫ sin(x) dx = -cos(x) + C
  *
- * > .integrate x^2 x 0 1
+ * > .integrate x^2 0 1
  * ∫₀¹ x^2 dx = 1/3
  *
  * > .integrate -v x^2
@@ -55,8 +82,8 @@ import { numericNode } from '../../common/numeric';
 export class IntegrateCommand extends BaseCommand {
 	readonly name = 'integrate';
 	readonly aliases = ['int', 'integral'] as const;
-	readonly description = 'Integrate expression: .integrate expr [variable] [a b]';
-	readonly usage = 'integrate <expression> [variable] [lower upper]';
+	readonly description = 'Integrate expression: .integrate expr[ ; variable] [a b]';
+	readonly usage = 'integrate <expression>[ ; <variable>] [lower upper]';
 	readonly requiresAst = false;
 
 	readonly options: readonly OptionDefinition[] = [
@@ -80,13 +107,23 @@ export class IntegrateCommand extends BaseCommand {
 				error: {
 					code: 'PARSE_ERROR',
 					message:
-						'No expression to integrate. Usage: .integrate <expression> [variable] [lower upper]'
+						'No expression to integrate. Usage: .integrate <expression>[ ; <variable>] [lower upper]'
 				}
 			};
 		}
 
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
 		// Parse input to extract expression, variable, and optional bounds
-		const { expression, variable, bounds } = this.parseInput(input);
+		const { expression, variable: explicitVariable, bounds } = this.parseInput(input);
 
 		// Parse the expression
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -100,6 +137,22 @@ export class IntegrateCommand extends BaseCommand {
 				error: { code: 'PARSE_ERROR', message: errorMsg }
 			};
 		}
+
+		const chosen = chosenVariable(explicitVariable, parserOptions);
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
+		}
+		const variable = chosen.variable;
+		// x n'apparaît pas et aucune variable n'est donnée : on intègre en x, et
+		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
+		const hint =
+			explicitVariable === null
+				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys())
+				: null;
 
 		try {
 			// Determine verbosity from options
@@ -121,7 +174,10 @@ export class IntegrateCommand extends BaseCommand {
 					allowNumeric
 				});
 
-				return this.formatDefiniteResult(parseResult.ast, variable, bounds, result, verbosity);
+				return withHint(
+					this.formatDefiniteResult(parseResult.ast, variable, bounds, result, verbosity),
+					hint
+				);
 			} else {
 				// Indefinite integral
 				const result = integrate(parseResult.ast, {
@@ -129,7 +185,10 @@ export class IntegrateCommand extends BaseCommand {
 					verbosity
 				});
 
-				return this.formatIndefiniteResult(parseResult.ast, variable, result, verbosity);
+				return withHint(
+					this.formatIndefiniteResult(parseResult.ast, variable, result, verbosity),
+					hint
+				);
 			}
 		} catch (err) {
 			if (err instanceof IntegrationError) {
@@ -151,63 +210,23 @@ export class IntegrateCommand extends BaseCommand {
 	}
 
 	/**
-	 * Parse the input to extract expression, variable, and optional bounds.
+	 * Séparer l'expression, la variable donnée après `;` (ou `null`) et les
+	 * bornes éventuelles (les deux derniers nombres).
 	 */
 	private parseInput(input: string): {
 		expression: string;
-		variable: string;
+		variable: string | null;
 		bounds: { lower: number; upper: number } | null;
 	} {
 		const trimmed = input.trim();
-		const parts = trimmed.split(/\s+/);
-
-		// Check for definite integral: expr var lower upper
-		if (parts.length >= 4) {
-			const upper = parseFloat(parts[parts.length - 1]);
-			const lower = parseFloat(parts[parts.length - 2]);
-			const varCandidate = parts[parts.length - 3];
-
-			if (!isNaN(lower) && !isNaN(upper) && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
-				return {
-					expression: parts.slice(0, -3).join(' '),
-					variable: varCandidate,
-					bounds: { lower, upper }
-				};
-			}
-		}
-
-		// Check for definite integral with default variable: expr lower upper
-		if (parts.length >= 3) {
-			const upper = parseFloat(parts[parts.length - 1]);
-			const lower = parseFloat(parts[parts.length - 2]);
-
-			if (!isNaN(lower) && !isNaN(upper)) {
-				return {
-					expression: parts.slice(0, -2).join(' '),
-					variable: 'x',
-					bounds: { lower, upper }
-				};
-			}
-		}
-
-		// Check for indefinite with variable: expr var
-		if (parts.length >= 2) {
-			const varCandidate = parts[parts.length - 1];
-			if (/^[a-zA-Z_]$/.test(varCandidate)) {
-				return {
-					expression: parts.slice(0, -1).join(' '),
-					variable: varCandidate,
-					bounds: null
-				};
-			}
-		}
-
-		// Default: entire input is the expression
-		return {
-			expression: trimmed,
-			variable: 'x',
-			bounds: null
-		};
+		const withBounds = TRAILING_BOUNDS.exec(trimmed);
+		const rest = withBounds === null ? trimmed : withBounds[1];
+		const bounds =
+			withBounds === null
+				? null
+				: { lower: parseFloat(withBounds[2]), upper: parseFloat(withBounds[3]) };
+		const { expression, variable } = splitVariableArgument(rest);
+		return { expression, variable, bounds };
 	}
 
 	private formatIndefiniteResult(

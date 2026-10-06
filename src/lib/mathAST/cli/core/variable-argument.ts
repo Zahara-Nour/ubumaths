@@ -1,19 +1,26 @@
 /**
- * La variable d'une commande (`.diff`) : explicite après un point-virgule,
- * sinon déduite de l'expression.
+ * La variable d'une commande (`.diff`, `.solve`, `.integrate`) : `x`, sauf si
+ * une autre est donnée après un point-virgule (`.solve 3 = 2t ; t`).
  *
- * ⚠️ **Le dernier mot n'est PAS une variable.** L'ancienne règle de `.diff`
- * (« le dernier mot séparé par un espace est la variable ») donnait des
- * réponses fausses sans erreur : l'espace est aussi un produit implicite
- * (`x^2 y`, `a x^2 + b x`) et le dernier mot est souvent l'argument d'une
- * fonction (`\sin x + \cos x` devenait `\sin x + \cos`). Aucune règle sur le
- * dernier mot ne distingue `x^2 y` (« x²y ») de `x^2 y` (« x², en y ») : c'est
- * la même chaîne. Seul un séparateur qui n'existe pas dans une expression lève
- * l'ambiguïté — le POINT-VIRGULE de premier niveau (`.diff a x^2 + b x ; x`).
+ * ⚠️ **Aucune devinette** (décision de David, 2026-10-06). Deux règles ont
+ * été essayées puis abandonnées :
+ * - « le dernier mot séparé par un espace est la variable » : l'espace est
+ *   aussi un produit implicite (`x^2 y`, `3 = 2 x`) et le dernier mot est
+ *   souvent l'argument d'une fonction. Aucune règle sur le dernier mot ne
+ *   distingue `x^2 y` (« x²y ») de `x^2 y` (« x², en y ») : c'est la même
+ *   chaîne. `.solve 3 = 2 x` répondait « Pas de solution » ;
+ * - « x s'il apparaît, sinon la seule variable libre » (#880) : la même
+ *   saisie changeait de sens selon les lettres présentes.
  *
- * Pourquoi pas la virgule (décision de David, 2026-10-06) : en français elle
- * est décimale, et `;` est déjà le séparateur usuel ([a ; b], (3 ; 1)). Une
- * virgule hors groupe reste une erreur de lecture.
+ * Seul un séparateur qui n'existe pas dans une expression lève l'ambiguïté :
+ * le POINT-VIRGULE de premier niveau. Quand x n'apparaît pas et qu'aucune
+ * variable n'est donnée, le calcul se fait quand même en x (souvent 0, ou une
+ * constante) et la commande l'INDIQUE (`otherVariableHint`) — une indication,
+ * pas un refus.
+ *
+ * Pourquoi pas la virgule : en français elle est décimale, et `;` est déjà le
+ * séparateur usuel ([a ; b], (3 ; 1)). Une virgule hors groupe reste une
+ * erreur de lecture.
  *
  * @module cli/core/variable-argument
  */
@@ -24,6 +31,7 @@ import { variable } from '../../factory';
 import { isGreek, isSubscript, isVariable } from '../../guards';
 import { toLatex } from '../../latex-generator';
 import { mapNode } from '../../transforms';
+import { parse, type PipelineOptions } from './pipeline';
 
 // =============================================================================
 // Constantes
@@ -37,8 +45,8 @@ import { mapNode } from '../../transforms';
 const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?$/;
 
 /**
- * Noms que l'expression contient mais qui ne sont pas des variables candidates
- * par défaut : `e` (Euler), `i` (imaginaire), `pi`. On peut toujours dériver
+ * Noms que l'expression contient mais qu'on ne propose pas comme autre
+ * variable : `e` (Euler), `i` (imaginaire), `pi`. On peut toujours calculer
  * par rapport à eux en les nommant.
  */
 const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
@@ -53,8 +61,8 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 const BARE_FUNCTION =
 	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*\()/;
 
-/** Variable par défaut quand l'expression n'en dit rien (constante). */
-const DEFAULT_VARIABLE = 'x';
+/** La variable quand aucune n'est donnée après le point-virgule. */
+export const DEFAULT_VARIABLE = 'x';
 
 // =============================================================================
 // Fonctions
@@ -92,26 +100,38 @@ export function splitVariableArgument(input: string): {
 }
 
 /**
- * La variable par défaut d'une expression : `x` si elle apparaît, sinon la
- * seule variable libre, sinon (aucune) `x`.
+ * L'indication à ajouter quand le calcul se fait en `x` alors que `x`
+ * n'apparaît pas — ou `null` (x apparaît, ou aucune variable libre : `5`).
  *
- * Plusieurs variables sans `x` : on ne devine pas — `candidates` les liste
- * pour que l'appelant demande laquelle.
+ * Une seule autre variable libre : elle est nommée (« ; t »). Plusieurs : on
+ * n'en choisit aucune — `a t^2 + b t` ne doit pas suggérer `; a`.
+ * Appelée seulement quand aucune variable n'a été donnée après `;`.
  *
+ * @param node - L'expression, variables indicées déjà réécrites
+ *   (`indexVariables`) : `x_1` est une autre variable que `x`.
  * @param bound - Noms liés ailleurs (`.let a = 2`), qui sont des constantes.
  */
-export function defaultVariable(
-	node: MathNode,
-	bound: Iterable<string> = []
-): { ok: true; variable: string } | { ok: false; candidates: readonly string[] } {
-	const excluded = new Set([...CONSTANT_NAMES, ...bound]);
+export function otherVariableHint(node: MathNode, bound: Iterable<string> = []): string | null {
 	const variables = getVariables(node);
-	if (variables.has(DEFAULT_VARIABLE)) return { ok: true, variable: DEFAULT_VARIABLE };
+	if (variables.has(DEFAULT_VARIABLE)) return null;
+	const excluded = new Set([...CONSTANT_NAMES, ...bound]);
+	const candidates = [...variables].filter((name) => !excluded.has(name));
+	if (candidates.length === 0) return null;
+	const how = candidates.length === 1 ? `« ; ${candidates[0]} »` : '« ; » suivi de son nom';
+	return `Calcul par rapport à ${DEFAULT_VARIABLE}. Pour une autre variable, écris ${how}.`;
+}
 
-	const candidates = [...variables].filter((name) => !excluded.has(name)).sort();
-	if (candidates.length === 0) return { ok: true, variable: DEFAULT_VARIABLE };
-	if (candidates.length === 1) return { ok: true, variable: candidates[0] };
-	return { ok: false, candidates };
+/**
+ * L'indication (`otherVariableHint`) qu'une commande `expression[ ; v]`
+ * ajoute à sa réponse — ou `null` : variable donnée après `;`, x présent,
+ * expression illisible. Pour qui n'a que la SAISIE (l'atelier, qui affiche
+ * l'indication à part de la réponse).
+ */
+export function variableHintOf(input: string, parserOptions?: PipelineOptions): string | null {
+	const { expression, variable } = splitVariableArgument(input);
+	if (variable !== null) return null;
+	const ast = parse(expression, parserOptions).ast;
+	return ast === undefined ? null : otherVariableHint(indexVariables(ast).node);
 }
 
 /**
@@ -156,6 +176,24 @@ export function variableNameOf(node: MathNode): string | null {
 }
 
 /**
+ * La variable d'une commande : celle tapée après `;`, sinon `x`.
+ *
+ * La variable tapée est lue par le MÊME parseur que l'expression : `x_1`
+ * tapé doit donner le même nom que le `x_1` de l'expression (`indexVariables`).
+ * Autre chose qu'une variable (`; 2`) : refus, avec le message à montrer.
+ */
+export function chosenVariable(
+	typed: string | null,
+	parserOptions?: PipelineOptions
+): { ok: true; variable: string } | { ok: false; message: string } {
+	if (typed === null) return { ok: true, variable: DEFAULT_VARIABLE };
+	const parsed = parse(typed, parserOptions).ast;
+	const name = parsed === undefined ? null : variableNameOf(parsed);
+	if (name === null) return { ok: false, message: `« ${typed} » n'est pas une variable.` };
+	return { ok: true, variable: name };
+}
+
+/**
  * Le nom de la première fonction usuelle écrite sans parenthèses (`sin x`),
  * ou `null`.
  *
@@ -163,7 +201,7 @@ export function variableNameOf(node: MathNode): string | null {
  * pas (« accepter cos x apporte plus de problèmes que ça n'en résout »). Le
  * parseur LaTeX le lit s·i·n·x — `.diff sin x + cos x` répondait une dérivée
  * fausse, sans erreur. `\sin x` (LaTeX) et `sin(x)` restent acceptés.
- * Réutilisable par d'autres commandes (`.solve`, `.integrate`).
+ * Partagé par `.diff`, `.solve` et `.integrate`.
  */
 export function bareFunctionName(input: string): string | null {
 	return BARE_FUNCTION.exec(input)?.[1] ?? null;
