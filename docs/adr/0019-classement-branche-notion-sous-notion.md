@@ -24,8 +24,18 @@ L'ADR 0018 nommait « chapitre » le niveau fin ; ce mot désigne déjà l'unit�
 - **Notion** : valable à un ou plusieurs niveaux ; un élément porte une seule notion, valable à tous
   ses niveaux ; obligatoire pour tout nouvel élément. Rattachement facultatif aux thèmes du programme.
 - **Sous-notion** : facultative.
-- Hors de l'arbre, champs séparés : **type d'activité** (Apprivoiser, À trou…) et **source** (BAC,
-  Concours général, Automatismes…), listes fermées éditables, facultatives.
+- **Un champ par question posée, sans recouvrement** (complété le 2026-10-07) :
+  - de quoi ça parle → l'arbre (exercices et questions) ;
+  - quel genre de tâche → **catégorie** d'exercice (existante : automatisme, application, recherche,
+    synthèse…) ; une question n'en a pas : elle est **question de cours** (marqueur existant) ou, à
+    défaut, automatisme ;
+  - d'où ça vient → **source** (exercices seulement) : texte libre existant (« BAC Juin 2025 Asie J1 »)
+    plus un **type de source** en liste fermée (Bac, Brevet, Concours, Manuel…) pour filtrer ;
+  - dans quel ordre on progresse → **niveau de difficulté** des questions (`level`, existant) ;
+  - sous quelle forme on répond → **type** de question (existant) ;
+  - mot-clé transversal (lecture graphique, algorithme, démonstration, modélisation) → **tags** ; les
+    tags de contenu deviennent des notions ou sous-notions au reclassement, « bac » et « terminale »
+    sont retirés ; les exercices Python gardent leurs tags.
 - Les éléments désignent un nœud, pas un nom : renommer se répercute ; un nœud utilisé s'archive.
 - Le **chapitre** de cours reste ce qu'il est : il puise ses contenus où il veut, l'arbre ne le
   connaît pas.
@@ -38,10 +48,15 @@ L'ADR 0018 nommait « chapitre » le niveau fin ; ce mot désigne déjà l'unit�
 - **Proposer les valeurs déjà saisies sans liste** : les doublons et les incohérences restent.
 - **Mêler le comment (Apprivoiser) et le quoi dans l'arbre** : une même notion apparaît sous deux
   branches.
+- **Un « type d'activité »** (proposé le 2026-10-06) : chacune de ses valeurs avait déjà une place —
+  Apprivoiser = niveau de difficulté bas, À trou = forme d'énoncé (pas un classement), astucieux =
+  sous-notion « calcul astucieux ».
+- **Une catégorie pour les questions** : elle n'aurait que deux valeurs, que le marqueur « question de
+  cours » donne déjà.
 
 ## Conséquences
 
-- Tables neuves (nœuds de l'arbre, niveaux, rattachements, types d'activité, sources) ; colonnes
+- Tables neuves (nœuds de l'arbre, niveaux, rattachements, types de source) ; colonnes
   `topic`, `theme`, `domain`, `subdomain` remplacées par une référence (additif d'abord, retrait
   ensuite : destructif, inventaire des usages exigé).
 - À reprendre : menu d'Automaths, éditeur de modèles, formulaire d'exercice, `create-questions.ts`

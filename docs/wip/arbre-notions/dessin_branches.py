@@ -3,12 +3,12 @@ E=html.escape
 # notion, niveaux, [(préfixe, [sous-notions])], note (activités sorties)
 NC=[
 ("Entiers : numération","CP à 6e",[("",["comparer","décomposer","écrire","repérer"])],None),
-("Entiers : addition et soustraction","CP à CM2",[("",["somme","différence","complément","tables","double et moitié","triple et tiers"])],None),
-("Entiers : multiplication","CP à 5e",[("",["tables","produit","carrés","décomposition","distributivité","double et moitié","triple et tiers","quadruple et quart","puissances de 10","produits particuliers"])],None),
+("Entiers : addition et soustraction","CP à CM2",[("",["somme","différence","complément","tables","double et moitié","triple et tiers","calcul astucieux"])],None),
+("Entiers : multiplication","CP à 5e",[("",["tables","produit","carrés","décomposition","distributivité","double et moitié","triple et tiers","quadruple et quart","puissances de 10","produits particuliers","calcul astucieux"])],None),
 ("Entiers : division","CE2 à CM2",[("",["quotient","division euclidienne"])],None),
 ("Entiers : priorités opératoires","6e, 5e",[("",["avec parenthèses","sans parenthèses","traduire une phrase"])],None),
 ("Décimaux : numération","CM1 à 6e",[("",["comparer","décomposer","écrire","encadrer","forme fractionnaire"])],None),
-("Décimaux : calculs","CM1 à 6e",[("",["additionner","soustraire","multiplier","diviser","puissances de 10","distributivité","moitié"])],None),
+("Décimaux : calculs","CM1 à 6e",[("",["additionner","soustraire","multiplier","diviser","puissances de 10","distributivité","moitié","calcul astucieux"])],None),
 ("Fractions : sens et écritures","CM1 à 4e",[("",["définition","comparer","décomposer","égalité de fractions","simplifier","forme décimale"])],None),
 ("Fractions : calculs","CM1 à 4e",[("",["additionner et soustraire","multiplier","diviser","inverse","fraction d'une quantité"])],None),
 ("Relatifs : sens et écritures","5e, 4e",[("",["définition","comparer","droite graduée"])],None),

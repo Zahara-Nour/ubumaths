@@ -60,8 +60,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Logique** (4 notions : connecteurs, implication, quantificateurs, raisonnements) et **Ensembles**
   (3 notions : ensembles de nombres, opérations, cardinal et produit cartésien) : deux branches.
 
+- **Descripteurs hors de l'arbre (2026-10-07)** : « type d'activité » supprimé (Apprivoiser → niveau
+  de difficulté, À trou → rien, astucieux → sous-notion « calcul astucieux ») ; catégorie d'exercice
+  gardée, pas de catégorie pour les questions (question de cours sinon automatisme) ; source =
+  exercices seulement, texte libre + type de source en liste fermée ; tags = transversal seulement.
+  Glossaire et ADR 0019 mis à jour sur la branche.
+
 ## Ouvert
 
-- **Arbre validé en entier le 2026-10-07** : 19 branches, 114 notions, 412 sous-notions →
+- **Arbre validé en entier le 2026-10-07** : 19 branches, 114 notions, 415 sous-notions →
   `docs/wip/arbre-notions/` (JSON + page). Branche de travail `feat/arbre-notions`, rien en base. Puis relecture d'ensemble.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
