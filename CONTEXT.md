@@ -39,14 +39,17 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 ## Le Cabinet Noir (chiffrement)
 
-| Terme                        | Sens                                                               | Code / note                              |
-| ---------------------------- | ------------------------------------------------------------------ | ---------------------------------------- |
-| Cabinet Noir de Turingrad    | La section du chiffrement (nom affiché).                           | `/chiffrement`, `src/lib/ciphers/`       |
-| **Chiffrer**                 | Transformer un message **avec** une clé pour le rendre illisible.  | `*Encrypt`                               |
-| **Déchiffrer**               | Retrouver le message **avec** la clé.                              | `*Decrypt`                               |
-| **Décrypter**                | Retrouver le message **sans** la clé (fréquences, force brute…).   | onglet « Décrypter », `caesarBruteForce` |
-| Chiffre (un)                 | Une méthode d'écriture secrète : le chiffre de César, la scytale…  | `cipher`                                 |
-| Substitution / transposition | Remplacer les lettres / changer leur ordre (la scytale transpose). |                                          |
+| Terme                        | Sens                                                                              | Code / note                                |
+| ---------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------ |
+| Cabinet Noir de Turingrad    | La section du chiffrement (nom affiché).                                          | `/chiffrement`, `src/lib/ciphers/`         |
+| **Chiffrer**                 | Transformer un message **avec** une clé pour le rendre illisible.                 | `*Encrypt`                                 |
+| **Déchiffrer**               | Retrouver le message **avec** la clé.                                             | `*Decrypt`                                 |
+| **Décrypter**                | Retrouver le message **sans** la clé (fréquences, force brute…).                  | onglet « Décrypter », `caesarBruteForce`   |
+| Chiffre (un)                 | Une méthode d'écriture secrète : le chiffre de César, la scytale…                 | `cipher`                                   |
+| Substitution / transposition | Remplacer les lettres / changer leur ordre (la scytale transpose).                |                                            |
+| Inverse modulaire            | a′ tel que a × a′ ≡ 1 (mod 26) ; n'existe que si a est premier avec 26.           | `modInverse`, `src/lib/ciphers/modular.ts` |
+| Indice de coïncidence        | Probabilité que deux lettres tirées du texte soient égales (≈ 0,078 en français). | `indexOfCoincidence`                       |
+| Kasiski (méthode de)         | Longueur d'une clé de Vigenère déduite des écarts entre séquences répétées.       | `kasiski`                                  |
 
 ⛔ « Crypter » : déconseillé par les spécialistes de la sécurité (chiffrer sans clé n’a pas de sens). Écrire chiffrer, ou décrypter.
 

@@ -21,7 +21,7 @@ import {
 } from './alphabet';
 import { shiftStep, unshiftStep } from './caesar';
 import { CipherInputError } from './errors';
-import { FRENCH_FREQUENCIES, caesarBruteForce, letterFrequencies } from './frequency';
+import { caesarBruteForce, letterFrequencies } from './frequency';
 import { gcd } from './modular';
 
 // Types
@@ -50,11 +50,13 @@ export interface VigenereCrack {
 
 // Constantes
 
-/** Probabilité que deux lettres prises au hasard dans un texte français soient égales */
-export const FRENCH_IC = Object.values(FRENCH_FREQUENCIES).reduce(
-	(sum, p) => sum + (p / 100) ** 2,
-	0
-);
+/**
+ * Probabilité que deux lettres prises au hasard dans un texte français soient
+ * égales : 0,0778 selon Friedman (Wikipédia, « Indice de coïncidence », qui
+ * donne aussi 0,0746 selon le corpus). Pas recalculée depuis FRENCH_FREQUENCIES :
+ * cette table compte les lettres accentuées à part, ce qui sous-estime l'indice (0,070).
+ */
+export const FRENCH_IC = 0.0778;
 /** La même chose pour des lettres tirées au hasard : 1/26 */
 export const RANDOM_IC = 1 / ALPHABET_SIZE;
 export const MAX_KEY_LENGTH = 12;

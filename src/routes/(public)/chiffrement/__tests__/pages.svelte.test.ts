@@ -11,6 +11,9 @@ import Substitution from '../substitution/+page.svelte';
 import Scytale from '../scytale/+page.svelte';
 import Polybius from '../polybe/+page.svelte';
 import Atbash from '../atbash/+page.svelte';
+import Affine from '../affine/+page.svelte';
+import Vigenere from '../vigenere/+page.svelte';
+import { affineEncrypt } from '$lib/ciphers/affine';
 import { caesarEncrypt } from '$lib/ciphers/caesar';
 import { normalizeText } from '$lib/ciphers/alphabet';
 
@@ -24,10 +27,18 @@ async function chooseOption(buttonName: RegExp, option: string) {
 }
 
 describe('accueil du Cabinet Noir', () => {
-	it('mène aux cinq chiffres du collège', async () => {
+	it('mène aux chiffres du collège et du lycée', async () => {
 		const screen = await render(Home);
 		const links = [...screen.container.querySelectorAll('a')].map((a) => a.getAttribute('href'));
-		for (const slug of ['cesar', 'atbash', 'substitution', 'scytale', 'polybe']) {
+		for (const slug of [
+			'cesar',
+			'atbash',
+			'substitution',
+			'scytale',
+			'polybe',
+			'vigenere',
+			'affine'
+		]) {
 			expect(links).toContain(`/chiffrement/${slug}`);
 		}
 	});
@@ -162,5 +173,88 @@ describe('carré de Polybe', () => {
 		await expect
 			.poll(() => screen.container.querySelector('[role="status"]')?.textContent ?? '')
 			.toContain('Le chiffre 7 (position 5)');
+	});
+});
+
+describe('chiffre affine', () => {
+	it('(5, 8) : UBU → ENE, et l’inverse 21 est affiché avec sa vérification', async () => {
+		const screen = await render(Affine);
+		await page.getByLabelText('Message clair').fill('Ubu');
+		await expect.poll(() => text(screen.container, 'cipher-encrypted')).toBe('ENE');
+		expect(text(screen.container, 'affine-inverse')).toContain('21, car 5 × 21 = 105 = 4 × 26 + 1');
+	});
+
+	it('a = 2 : les collisions sont montrées, et le déchiffrement est refusé', async () => {
+		const screen = await render(Affine);
+		await chooseOption(/^a : 5/, '2');
+		await expect.poll(() => text(screen.container, 'affine-collisions')).toContain('A et N → I');
+		await page.getByRole('tab', { name: 'Déchiffrer' }).click();
+		await expect
+			.poll(
+				() =>
+					screen.container.querySelector('[role="tabpanel"][data-state="active"] [role="status"]')
+						?.textContent ?? ''
+			)
+			.toContain('a = 2 n’est pas premier avec 26');
+	});
+
+	it('décrypter : la force brute retrouve la clé (7, 3) du message intercepté', async () => {
+		const screen = await render(Affine);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await expect
+			.poll(
+				() =>
+					screen.container.querySelector('[data-testid="affine-brute-force"] li')?.textContent ?? ''
+			)
+			.toContain('a = 7, b = 3');
+	});
+
+	it('décrypter : une hypothèse sans clé valide propose d’essayer une autre lettre', async () => {
+		const screen = await render(Affine);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		// Message par défaut : la seconde lettre la plus fréquente cache T, pas A
+		await expect
+			.poll(() => text(screen.container, 'affine-attack-steps'))
+			.toContain('Aucune clé valide');
+		expect(text(screen.container, 'affine-attack-hint')).toContain('A, S, I, N, T et R');
+	});
+
+	it('décrypter : l’attaque par deux lettres résout le système et déchiffre', async () => {
+		const screen = await render(Affine);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await page.getByLabelText('Message intercepté').fill(affineEncrypt('ENE ABA', 5, 8).text);
+		// CVC INI : C et I, les plus fréquentes, sont pré-remplies face à E et A
+		await expect
+			.poll(
+				() => page.getByRole('button', { name: /^Première lettre chiffrée/ }).element().textContent
+			)
+			.toContain('C');
+		await expect
+			.poll(() => text(screen.container, 'affine-attack-steps'))
+			.toContain('Une seule clé valide : a = 5, b = 8.');
+		expect(text(screen.container, 'affine-attack-result')).toBe('ENE ABA');
+	});
+});
+
+describe('Vigenère', () => {
+	it('clé UBU : MER → GFL, avec les décalages affichés', async () => {
+		const screen = await render(Vigenere);
+		await page.getByLabelText('Message clair').fill('Mer');
+		await expect.poll(() => text(screen.container, 'cipher-encrypted')).toBe('GFL');
+		expect(screen.container.textContent).toContain('U = 20, B = 1, U = 20');
+	});
+
+	it('décrypter : longueur 6 proposée, puis la clé MERDRE retrouvée', async () => {
+		const screen = await render(Vigenere);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await expect.poll(() => text(screen.container, 'suggested-length')).toBe('6');
+		expect(text(screen.container, 'cracked-key')).toBe('MERDRE');
+	});
+
+	it('la longueur se corrige à la main', async () => {
+		const screen = await render(Vigenere);
+		await page.getByRole('tab', { name: 'Décrypter' }).click();
+		await chooseOption(/^Longueur de clé/, '3');
+		await expect.poll(() => text(screen.container, 'cracked-key')).toHaveLength(3);
 	});
 });

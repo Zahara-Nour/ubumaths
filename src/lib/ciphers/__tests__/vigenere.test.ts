@@ -69,9 +69,8 @@ describe('indice de coïncidence', () => {
 		expect(indexOfCoincidence('A')).toBe(0);
 	});
 
-	it('l’indice du français est proche de 0,078', () => {
-		expect(FRENCH_IC).toBeGreaterThan(0.07);
-		expect(FRENCH_IC).toBeLessThan(0.085);
+	it('l’indice du français est celui de Friedman, 0,0778', () => {
+		expect(FRENCH_IC).toBe(0.0778);
 	});
 
 	it('un texte français est proche du français, un Vigenère s’en éloigne', () => {
