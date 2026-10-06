@@ -10,6 +10,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 3   | 2026-09-29 | Division par zéro en Nombrilie (`nombrilie-division-par-zero`) | ✅ validé — « Erreur mathématique », Galopin qui veut recommencer, experts (limites ±∞) et forme indéterminée 0/0                                              |
 | 4   | 2026-10-02 | Le Czar et π arrondi à 3 (`czar-alexis-pi-arrondi`)            | ✅ validé — palais d'Hiver (plus de Moscou), Sandomir au Trône Royal, impôt sur les tonneaux, arrondi/valeur par excès, roues, loi de l'Indiana (1897)         |
 | 5   | 2026-10-05 | Le triangle porte plainte (`bedonstan-triangle-plainte`)       | ✅ validé — titre « abus de norme » (David), Achras « se courber pour négocier », triplets pythagoriciens, inégalité triangulaire, Pythagore faux hors du plan |
+| 6   | 2026-10-08 | Douze Pile d'affilée (`pifometrie-pile-ou-face`)               | ✅ validé — « la maison gagne toujours », loi binomiale, planche de Galton (illustration SVG), pièce soupçonnée truquée                                        |
 
 ## Outillage ajouté pendant la relecture
 
