@@ -12,6 +12,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 5   | 2026-10-05 | Le triangle porte plainte (`bedonstan-triangle-plainte`)                   | ✅ validé — titre « abus de norme » (David), Achras « se courber pour négocier », triplets pythagoriciens, inégalité triangulaire, Pythagore faux hors du plan |
 | 6   | 2026-10-08 | Douze Pile d'affilée (`pifometrie-pile-ou-face`)                           | ✅ validé — « la maison gagne toujours », loi binomiale, planche de Galton (illustration SVG), pièce soupçonnée truquée                                        |
 | 7   | 2026-10-12 | Le Polonais moyen a moins de deux jambes (`pifometrie-moyenne-des-jambes`) | ✅ validé — exemple des jambes gardé (David), plan de Mère Ubu explicite (moyenne à 2,999), valeurs extrêmes                                                   |
+| 8   | 2026-10-15 | L'Hôtel de l'Infini (`yoyolande-hotel-de-l-infini`)                        | ✅ validé — réécrit autour d'un seul client de plus (n → n+1), hôtel fini de 100 chambres en contre-exemple, Dedekind                                          |
 
 ## Outillage ajouté pendant la relecture
 
