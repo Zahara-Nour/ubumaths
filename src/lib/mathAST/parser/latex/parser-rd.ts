@@ -171,6 +171,11 @@ class RDParser {
 	private currentToken: Token;
 	/** Stack of color brace positions - each entry marks that we're in a \textcolor{} scope */
 	private readonly colorScopeStack: number[] = [];
+	/**
+	 * Vrai pendant la lecture de l'argument d'un `\lim` sans parenthèses (et
+	 * remis à faux dans tout groupe lu par `parseExpression`). Cf. `parseLimit`.
+	 */
+	private inLimitArgument = false;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -310,7 +315,15 @@ class RDParser {
 	 * expression := logicalOr
 	 */
 	private parseExpression(): MathNode {
-		return this.parseLogicalOr();
+		// Un groupe ouvre une portée neuve : la règle « \lim A + \lim B » ne
+		// vaut qu'au niveau de l'argument de la limite.
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = false;
+		try {
+			return this.parseLogicalOr();
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
 	}
 
 	/**
@@ -427,6 +440,8 @@ class RDParser {
 		let left = this.parseMultiplicative();
 
 		while (this.check('PLUS') || this.check('MINUS')) {
+			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
+			if (this.inLimitArgument && this.isOperatorBeforeLimit()) break;
 			// Capture color BEFORE consuming operator (color scope may close during parsing)
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
@@ -474,6 +489,9 @@ class RDParser {
 				// Continue the loop - it will be handled appropriately
 				continue;
 			}
+
+			// Argument de \lim : `\lim A \times \lim B` = lim(A) × lim(B)
+			if (this.inLimitArgument && this.isOperatorBeforeLimit()) break;
 
 			// Capture color BEFORE consuming operator (color scope may close during parsing)
 			const operatorColor = this.colorStack.current();
@@ -1291,10 +1309,43 @@ class RDParser {
 			}
 		}
 
-		// Parse the expression that the limit is applied to
-		const expression = this.parseUnary();
+		// Portée (décision du 2026-10-07) : sans parenthèses, la limite porte
+		// sur TOUTE l'expression qui suit, comme un élève la lit. Elle s'arrête
+		// à la fin du groupe, devant une relation (`=`, `<`, `\le`, `\approx`…),
+		// une virgule, un `;`, ou devant un opérateur binaire suivi d'un autre
+		// `\lim` (`\lim A + \lim B`, `\lim A \times \lim B`).
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = true;
+		let expression: MathNode;
+		try {
+			expression = this.parseAdditive();
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
 
 		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
+	}
+
+	/**
+	 * Opérateur binaire (`+ - * / : \cdot \times \div`) dont l'opérande droit
+	 * commence par `\lim` : il sépare deux limites, il ne prolonge pas
+	 * l'argument de la première.
+	 */
+	private isOperatorBeforeLimit(): boolean {
+		const token = this.currentToken;
+		const isBinaryOperator =
+			token.type === 'PLUS' ||
+			token.type === 'MINUS' ||
+			token.type === 'STAR' ||
+			token.type === 'SLASH' ||
+			token.type === 'COLON' ||
+			(token.type === 'COMMAND' &&
+				(token.value === 'cdot' || token.value === 'times' || token.value === 'div'));
+		if (!isBinaryOperator) return false;
+		let offset = 0;
+		let next = this.tokenizer.peekAt(offset);
+		while (isLatexSpacing(next)) next = this.tokenizer.peekAt(++offset);
+		return next.type === 'COMMAND' && next.value === 'lim';
 	}
 
 	/**

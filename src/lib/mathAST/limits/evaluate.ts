@@ -40,6 +40,7 @@ import {
 	isPositive
 } from '../guards';
 import {
+	add,
 	divide,
 	multiply,
 	subtract,
@@ -700,6 +701,33 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+	}
+
+	// Stratégie 2.65 : somme dont chaque terme a une limite exacte, par les
+	// seuls cas sûrs (finis → somme des limites ; infinis tous de même signe →
+	// cet infini). `\lim_{x\to0}\frac{\sin x}{x}+1` restait « non supportée » :
+	// la substitution échoue (0/0) et seul ±∞ était traité terme à terme.
+	const sumOfLimits = trySumOfLimits(expression, varName, approachPoint, dir, options);
+	if (sumOfLimits !== null) {
+		recorder.recordStepByRule(
+			'linearity',
+			expression,
+			sumOfLimits,
+			'summarized',
+			approachPoint,
+			'Limite d’une somme : lim (f + g) = lim f + lim g'
+		);
+		return createResult(
+			sumOfLimits,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(sumOfLimits) ? 'infinite' : 'exact',
+			'none',
+			'linearity',
+			recorder,
+			opts
+		);
 	}
 
 	// Stratégie 2.7 : racines et puissances non entières en ±∞ — terme dominant
@@ -1453,6 +1481,56 @@ function compareTerms(
 	if (inverse.kind === 'infinite') return { kind: 'negligible' };
 	if (inverse.value === 0) return { kind: 'dominant' };
 	return { kind: 'same-order', ratio: 1 / inverse.value };
+}
+
+/**
+ * Limite d'une somme terme à terme quand chaque terme a une limite EXACTE
+ * (ou infinie) : tous finis → somme des limites (réduite si rationnelle) ;
+ * infinis tous de même signe → cet infini. Forme ∞ − ∞, limite approchée,
+ * inexistante ou non trouvée : null (laissé aux stratégies suivantes).
+ */
+function trySumOfLimits(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	if (!isAddition(expr) && !isSubtraction(expr)) return null;
+	if (nestedSums >= MAX_NESTED_SUMS) return null;
+
+	nestedSums++;
+	try {
+		const terms = flattenSumShallow(expr);
+		if (terms.length < 2) return null;
+		const values: Array<{ sign: '+' | '-'; value: MathNode }> = [];
+		const infiniteSigns = new Set<number>();
+		for (const { sign, term } of terms) {
+			const limit = toFactorLimit(
+				evaluateLimit(stripDelimiters(term), varName, approach, dir, options)
+			);
+			if (limit === null) return null;
+			if (limit.kind === 'infinite') {
+				infiniteSigns.add(sign === '+' ? limit.sign : -limit.sign);
+				continue;
+			}
+			if (limit.kind === 'zero') continue;
+			values.push({ sign, value: limit.value });
+		}
+		if (infiniteSigns.size > 1) return null;
+		if (infiniteSigns.size === 1) {
+			return [...infiniteSigns][0] > 0 ? positiveInfinity() : negativeInfinity();
+		}
+		if (values.length === 0) return number('0');
+		const [first, ...rest] = values;
+		let sum: MathNode = first.sign === '+' ? first.value : opposite(first.value);
+		for (const { sign, value } of rest) {
+			sum = sign === '+' ? add(sum, value) : subtract(sum, value);
+		}
+		return exactConstantNode(sum) ?? sum;
+	} finally {
+		nestedSums--;
+	}
 }
 
 /**

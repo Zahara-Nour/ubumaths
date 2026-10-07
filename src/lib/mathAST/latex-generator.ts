@@ -38,7 +38,7 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { isMultiplication, isNumber, isUnit } from './guards';
+import { isLimit, isMultiplication, isNumber, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesAsRightFactor,
@@ -237,6 +237,34 @@ function isPlainBinom(node: FunctionNode): boolean {
 }
 
 // =============================================================================
+// Portée de \lim
+// =============================================================================
+
+/**
+ * `\lim` sans parenthèses porte sur toute l'expression qui suit (décision du
+ * 2026-10-07). Une limite opérande GAUCHE d'une somme ou d'un produit se
+ * parenthèse donc, sauf devant une autre limite : `\lim A + \lim B` se relit
+ * lim(A) + lim(B), mais `\lim A + 1` se relirait lim(A + 1).
+ */
+function needsParenthesesAsLeftLimit(left: MathNode, right: MathNode): boolean {
+	return isLimit(left) && !startsWithLimit(right);
+}
+
+/** Le rendu de `node` commence-t-il par `\lim` ? */
+function startsWithLimit(node: MathNode): boolean {
+	switch (node.type) {
+		case 'limit':
+			return true;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return startsWithLimit(node.left);
+		default:
+			return false;
+	}
+}
+
+// =============================================================================
 // Delimiter Metadata Helpers
 // =============================================================================
 
@@ -365,7 +393,10 @@ export class LatexGenerator {
 			case 'subtraction': {
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
+				const wrapLeft = needsParenthesesAsLeftLimit(node.left, node.right);
+				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
+				if (wrapLeft) this.emit(' \\right)', node.metadata);
 				this.emit(node.type === 'addition' ? ' + ' : ' - ', node.operatorMetadata ?? node.metadata);
 				if (wrapRight) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.right);
@@ -375,7 +406,9 @@ export class LatexGenerator {
 
 			case 'multiplication': {
 				// Mêmes parenthèses que generateMultiplication
-				const wrapLeft = needsParenthesesUnderSign(node.left);
+				const wrapLeft =
+					needsParenthesesUnderSign(node.left) ||
+					needsParenthesesAsLeftLimit(node.left, node.right);
 				const wrapRight = needsParenthesesAsRightFactor(node.right);
 				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
@@ -1149,7 +1182,7 @@ export class LatexGenerator {
 	}
 
 	private generateAddition(node: AdditionNode): string {
-		const left = this.generateNode(node.left);
+		const left = this.groupIfLeftLimit(node.left, node.right);
 		// `a + -b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
 		const renderedRight = this.generateNode(node.right);
 		const right = needsParenthesesAsRightTerm(node.right, 'addition')
@@ -1159,7 +1192,7 @@ export class LatexGenerator {
 	}
 
 	private generateSubtraction(node: SubtractionNode): string {
-		const left = this.generateNode(node.left);
+		const left = this.groupIfLeftLimit(node.left, node.right);
 		// ⚠️ L'opérande DROIT seulement : `y − (x+1)` vaut `y − x − 1`, alors que
 		// `y - x + 1` se relit `y − x + 1`. À gauche, `(x+1) − y` se rend
 		// `x + 1 - y` sans ambiguïté, et parenthéser alourdirait pour rien.
@@ -1187,11 +1220,19 @@ export class LatexGenerator {
 		return needsParenthesesUnderSign(node) ? `\\left( ${rendered} \\right)` : rendered;
 	}
 
+	/** Opérande gauche limite : voir needsParenthesesAsLeftLimit. */
+	private groupIfLeftLimit(left: MathNode, right: MathNode): string {
+		const rendered = this.generateNode(left);
+		return needsParenthesesAsLeftLimit(left, right) ? `\\left( ${rendered} \\right)` : rendered;
+	}
+
 	private generateMultiplication(node: MultiplicationNode): string {
 		// Les deux opérandes : `(x+1)y` comme `y(x+1)` perdent leur sens sans
 		// parenthèses. À droite, un facteur qui commence par un signe aussi :
 		// `2 -e^{-x}` se lirait « 2 moins e^{-x} » (voir needsParenthesesAsRightFactor).
-		const left = this.groupIfSum(node.left);
+		const left = needsParenthesesAsLeftLimit(node.left, node.right)
+			? this.groupIfLeftLimit(node.left, node.right)
+			: this.groupIfSum(node.left);
 		const renderedRight = this.generateNode(node.right);
 		const right = needsParenthesesAsRightFactor(node.right)
 			? `\\left( ${renderedRight} \\right)`

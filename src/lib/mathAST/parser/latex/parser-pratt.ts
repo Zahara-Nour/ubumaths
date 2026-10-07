@@ -205,6 +205,12 @@ class PrattParser {
 	private currentToken: Token;
 	/** Stack of color brace positions - each entry marks that we're in a \textcolor{} scope */
 	private readonly colorScopeStack: number[] = [];
+	/**
+	 * Vrai pendant la lecture de l'argument d'un `\lim` sans parenthèses (et
+	 * remis à faux dans tout groupe : accolades, parenthèses, \left…\right,
+	 * cellules de matrice). Cf. `parseLimit` pour la règle de portée.
+	 */
+	private inLimitArgument = false;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -363,6 +369,18 @@ class PrattParser {
 	 * Parse an expression with the given minimum binding power
 	 */
 	private parseExpression(minBp: number): MathNode {
+		// Un groupe (lu au niveau NONE) ouvre une portée neuve : la règle
+		// « \lim A + \lim B » ne vaut qu'au niveau de l'argument de la limite.
+		const savedInLimitArgument = this.inLimitArgument;
+		if (minBp === BP.NONE) this.inLimitArgument = false;
+		try {
+			return this.parseExpressionBody(minBp);
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
+	}
+
+	private parseExpressionBody(minBp: number): MathNode {
 		// Parse prefix/primary (NUD)
 		let left = this.nud();
 
@@ -380,6 +398,10 @@ class PrattParser {
 
 			const bp = this.getLeftBindingPower();
 			if (bp <= minBp) {
+				break;
+			}
+			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
+			if (this.inLimitArgument && this.isOperatorBeforeLimit()) {
 				break;
 			}
 
@@ -1817,6 +1839,17 @@ class PrattParser {
 	 * Parse expression stopping at matrix delimiters (& \\ \end)
 	 */
 	private parseExpressionUntilMatrixDelimiter(): MathNode {
+		// Une cellule de matrice est un groupe : portée de \lim neuve
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = false;
+		try {
+			return this.parseMatrixCellExpression();
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
+	}
+
+	private parseMatrixCellExpression(): MathNode {
 		// Check for empty element
 		if (this.isMatrixDelimiter()) {
 			return MathAST.number('0');
@@ -2003,10 +2036,41 @@ class PrattParser {
 			}
 		}
 
-		// Parse the expression that the limit is applied to
-		const expression = this.parseExpression(BP.UNARY);
+		// Portée (décision du 2026-10-07) : sans parenthèses, la limite porte
+		// sur TOUTE l'expression qui suit, comme un élève la lit. Elle s'arrête
+		// à la fin du groupe, devant une relation (`=`, `<`, `\le`, `\approx`…),
+		// une virgule, un `;`, ou devant un opérateur binaire suivi d'un autre
+		// `\lim` (`\lim A + \lim B`, `\lim A \times \lim B`).
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = true;
+		let expression: MathNode;
+		try {
+			expression = this.parseExpressionBody(BP.RELATION);
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
 
 		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
+	}
+
+	/**
+	 * Opérateur binaire (`+ - * / : \cdot \times \div`) dont l'opérande droit
+	 * commence par `\lim` : il sépare deux limites, il ne prolonge pas
+	 * l'argument de la première.
+	 */
+	private isOperatorBeforeLimit(): boolean {
+		const token = this.currentToken;
+		const isBinaryOperator =
+			token.type === 'PLUS' ||
+			token.type === 'MINUS' ||
+			token.type === 'STAR' ||
+			token.type === 'SLASH' ||
+			token.type === 'COLON' ||
+			(token.type === 'COMMAND' &&
+				(token.value === 'cdot' || token.value === 'times' || token.value === 'div'));
+		if (!isBinaryOperator) return false;
+		const next = this.peekNextNonWhitespace();
+		return next.type === 'COMMAND' && next.value === 'lim';
 	}
 
 	/**
