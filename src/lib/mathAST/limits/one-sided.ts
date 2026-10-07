@@ -448,8 +448,12 @@ export function recordOneSidedSteps(
 	recorder: LimitStepRecorder
 ): void {
 	const approachStr = isNumber(approach) ? approach.value : '∞';
+	// Une limite unilatérale ±∞ (statut `infinite`) est une limite trouvée,
+	// au même titre qu'une valeur finie : son étape est enregistrée.
+	const isResolved = (r: LimitResult | null): r is LimitResult =>
+		r !== null && (r.status === 'exact' || r.status === 'infinite') && r.value !== null;
 
-	if (oneSided.left && oneSided.left.status === 'exact') {
+	if (isResolved(oneSided.left)) {
 		recorder.recordStep(
 			'one-sided',
 			`Limite à gauche (${varName} → ${approachStr}⁻)`,
@@ -465,7 +469,7 @@ export function recordOneSidedSteps(
 		);
 	}
 
-	if (oneSided.right && oneSided.right.status === 'exact') {
+	if (isResolved(oneSided.right)) {
 		recorder.recordStep(
 			'one-sided',
 			`Limite à droite (${varName} → ${approachStr}⁺)`,

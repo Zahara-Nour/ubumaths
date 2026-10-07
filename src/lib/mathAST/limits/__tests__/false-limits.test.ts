@@ -119,7 +119,7 @@ describe('limites justes inchangées', () => {
 	it.each([
 		['\\frac{\\sin x}{x}', '0', 'both', 'exact 1'],
 		['x e^{-x}', '+inf', 'both', 'exact 0'],
-		['\\frac{1}{x}', '0', 'right', 'exact +inf'],
+		['\\frac{1}{x}', '0', 'right', 'infinite +inf'],
 		['\\frac{1}{x}', '0', 'both', 'does-not-exist null'],
 		['3', '0', 'both', 'exact 3'],
 		['x^2+2x-1', '1', 'both', 'exact 2'],
