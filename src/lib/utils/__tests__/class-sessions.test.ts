@@ -211,6 +211,7 @@ describe('isSessionDate', () => {
 		const debut = performance.now();
 		const verdict = isSessionDate('2026-09-17', { ...emploiDuTemps, until: '9999-06-30' });
 		expect(verdict).toBe(true);
-		expect(performance.now() - debut).toBeLessThan(50);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - debut).toBeLessThan(1000);
 	});
 });

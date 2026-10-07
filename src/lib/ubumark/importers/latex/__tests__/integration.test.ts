@@ -631,7 +631,8 @@ describe('Integration Tests: Edge Cases', () => {
 		});
 
 		// Should still be performant
-		expect(time).toBeLessThan(500);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(time).toBeLessThan(2500);
 
 		testSummary.passed++;
 	});

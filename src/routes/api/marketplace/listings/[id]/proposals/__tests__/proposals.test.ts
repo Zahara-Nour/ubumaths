@@ -56,6 +56,22 @@ vi.mock('$lib/server/marketplace/notifications', async (importActual) => {
 	};
 });
 
+// Client service : jamais de vrai client en test unitaire. Le handler s'en sert
+// pour le compteur de l'annonce (et la resoumission) ; le vrai client ouvrait une
+// connexion réseau vers Supabase, d'où des tests qui dépassaient 5 s en CI.
+// Chaîne : chaque méthode rend la chaîne, qui est une vraie promesse (`await`
+// rend une ligne) ; `.single()` rend « aucune ligne ».
+vi.mock('$lib/server/serviceRoleClient', () => {
+	const chain: Promise<{ data: unknown; error: null }> & Record<string, unknown> = Object.assign(
+		Promise.resolve({ data: [{ id: 'row-1' }], error: null }),
+		{ single: () => Promise.resolve({ data: null, error: null }) }
+	);
+	for (const method of ['from', 'update', 'delete', 'eq', 'in', 'select']) {
+		chain[method] = () => chain;
+	}
+	return { createServiceRoleClient: () => chain };
+});
+
 // Valid UUIDs (the handler validates params.id and listing_id as UUIDs).
 const LISTING_UUID = '11111111-1111-4111-8111-111111111111';
 const CARD_UUID_1 = '22222222-2222-4222-8222-222222222222';

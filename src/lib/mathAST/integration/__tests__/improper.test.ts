@@ -177,7 +177,8 @@ describe('improperIntegrate — performance', () => {
 			const t0 = performance.now();
 			improperIntegrate(c.expr, 'x', c.a, c.b);
 			const dt = performance.now() - t0;
-			expect(dt).toBeLessThan(150);
+			// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+			expect(dt).toBeLessThan(1000);
 		}
 	});
 });

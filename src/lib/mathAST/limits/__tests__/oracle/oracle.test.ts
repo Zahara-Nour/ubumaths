@@ -27,8 +27,8 @@ import { KNOWN_WRONG } from './known-wrong';
 
 /** Plancher de couverture (entrées avec une réponse juste / total). */
 const COVERAGE_FLOOR = 0.72;
-/** Budget de temps du jugement complet (ms). */
-const TIME_BUDGET_MS = 5000;
+/** Budget de temps du jugement complet (ms) : détecte une explosion (≈ 1,2 s en local), ne chronomètre pas. */
+const TIME_BUDGET_MS = 15000;
 
 const BASE_ENTRIES: readonly OracleEntry[] = ORACLE_CORPUS.flatMap((family) => family.entries);
 const ALL_ENTRIES: readonly OracleEntry[] = [...BASE_ENTRIES, ...GENERATED_VARIANTS];
