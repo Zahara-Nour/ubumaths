@@ -242,3 +242,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   racine n-ième et exposant 1/n = points dessous) ; Statistique à deux variables
   « 1re ens. sci., Tle comp. » → 19 branches, 136 notions, 519 sous-notions (JSON
   2026-10-07.8), diagramme republié. Restent : Tle comp., Expertes, voie techno 1re/Tle.
+
+- **1re techno analysée au gabarit v2 (2026-10-07, soir)** : programme NOUVEAU (enseignement
+  commun voie techno, grade `1_TECHNO`, sans section v1, sans seed prod) ; texte fourni par
+  David (Annexe, 10 p., vague 2026, sauvegardé `progs-lycee/premiere-techno.pdf`) →
+  `programmes-ecarts-1re-techno.md`. Tronc commun ENTIÈREMENT couvert par l'arbre (les lots
+  1re spé/ens. sci. avaient créé toutes les sous-notions nécessaires) : 0 création, points et
+  références partout. Propositions limitées à la variante STD2A (4 sous-notions : polygones
+  réguliers, frises et pavages, perspective cavalière, sections planes + pointage du nœud
+  hors programme Repérage dans l'espace) et à la rubrique Sélection de données (points sous
+  Tableaux croisés). Spécialité PCM (STI2D/STL) signalée, hors périmètre. Questions X1-X4 en
+  attente.
