@@ -80,6 +80,13 @@ describe.each(PARSERS)('portée de \\lim — parseur %s', (_name, parse) => {
 		expect(node.type).toBe('addition');
 	});
 
+	it.each([
+		['\\lim_{x\\to0}\\frac{x}{2}\\lim_{x\\to1}x', 'mul(lim(div(x, 2)), lim(x))'],
+		['\\lim_{x\\to0}x\\lim_{x\\to0}x', 'mul(lim(x), lim(x))']
+	])('juxtaposition %s : un autre \\lim arrête la portée, comme \\cdot', (latex, expected) => {
+		expect(shape(parse(latex))).toBe(expected);
+	});
+
 	it('une limite dans un groupe ne déborde pas du groupe', () => {
 		expect(shape(parse('\\frac{\\lim_{x\\to0}x+1}{2}'))).toBe('div(lim(add(x, 1)), 2)');
 	});
@@ -130,5 +137,79 @@ describe('LaTeX régénéré : la portée de \\lim survit à l’aller-retour', 
 		expect(regenerated.match(/\\left\(/g)?.length ?? 0).toBe(
 			latex.match(/\\left\(|\(/g)?.length ?? 0
 		);
+	});
+});
+
+/** Même squelette, délimiteurs effacés : le parenthésage ajouté au rendu est permis. */
+function bareShape(node: MathNode): string {
+	switch (node.type) {
+		case 'limit':
+			return `lim(${bareShape(node.expression)})`;
+		case 'addition':
+			return `add(${bareShape(node.left)}, ${bareShape(node.right)})`;
+		case 'subtraction':
+			return `sub(${bareShape(node.left)}, ${bareShape(node.right)})`;
+		case 'multiplication':
+			return `mul(${bareShape(node.left)}, ${bareShape(node.right)})`;
+		case 'division':
+			return `div(${bareShape(node.numerator)}, ${bareShape(node.denominator)})`;
+		case 'opposite':
+			return `opp(${bareShape(node.operand)})`;
+		case 'superscript':
+			return `pow(${bareShape(node.base)}, ${bareShape(node.superscript)})`;
+		case 'delimiter':
+			return bareShape(node.content);
+		default:
+			return toLatex(node).replace(/\s+/g, '');
+	}
+}
+
+describe('aller-retour toLatex → parseLatex : toute limite suivie d’autre chose est parenthésée', () => {
+	const x = MathAST.variable('x');
+	const one = MathAST.number('1');
+	const two = MathAST.number('2');
+	const three = MathAST.number('3');
+	const lim = (body: MathNode): MathNode => MathAST.limit(body, 'x', MathAST.number('0'), 'both');
+	const A = lim(x);
+	const B = lim(MathAST.power(x, two));
+	const { add, subtract: sub, multiply: mul, divide: div, opposite: opp } = MathAST;
+
+	const TREES: ReadonlyArray<readonly [string, MathNode]> = [
+		['(lim A + lim B) + 1', add(add(A, B), one)],
+		['(lim A − lim B) − 1', sub(sub(A, B), one)],
+		['lim A + lim B', add(A, B)],
+		['lim A − (lim B + 1)', sub(A, add(B, one))],
+		['lim A + (lim B)·2', add(A, mul(B, two, 'dot'))],
+		['lim x + (lim x)·2', add(A, mul(A, two, 'dot'))],
+		['lim·lim implicite', mul(A, A, 'implicit')],
+		['lim·lim point', mul(A, B, 'dot')],
+		['(lim·lim)·3', mul(mul(A, B, 'dot'), three, 'dot')],
+		['lim / 2 en ligne', div(A, two, 'inline')],
+		['lim : 2', div(A, two, 'ratio')],
+		['lim / lim en ligne', div(A, B, 'inline')],
+		['(lim / 2) + 1', add(div(A, two, 'inline'), one)],
+		['lim en \\frac', div(A, two, 'fraction')],
+		['\\frac{lim}{2} + 1', add(div(A, two, 'fraction'), one)],
+		['lim·3 implicite', mul(A, three, 'implicit')],
+		['lim × 3', mul(A, three, 'cross')],
+		['2·lim implicite', mul(two, A, 'implicit')],
+		['(2·lim) + 1', add(mul(two, A, 'implicit'), one)],
+		['(1 + lim) + 2', add(add(one, A), two)],
+		['(1 − lim)·2', mul(sub(one, A), two, 'dot')],
+		['−lim + 1', add(opp(A), one)],
+		['(lim)² + 1', add(MathAST.power(A, two), one)],
+		['lim(lim x + 1)', lim(add(A, one))],
+		['lim(x + lim x)', lim(add(x, A))],
+		['lim(lim x) + 1', add(lim(A), one)],
+		['1 + lim', add(one, A)],
+		['lim A · (lim B + 1)', mul(A, add(B, one), 'dot')]
+	];
+
+	it.each(TREES)('%s', (_label, tree) => {
+		for (const options of [{}, { renderMetadata: true }]) {
+			const latex = toLatex(tree, options);
+			expect(bareShape(parsePratt(latex)), latex).toBe(bareShape(tree));
+			expect(bareShape(parseRD(latex)), latex).toBe(bareShape(tree));
+		}
 	});
 });

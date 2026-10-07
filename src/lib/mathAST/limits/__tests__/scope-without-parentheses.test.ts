@@ -41,6 +41,32 @@ describe('\\lim sans parenthèses : la limite porte sur toute l’expression', (
 		expect(studentLimit(latex)).toBe(expected);
 	});
 
+	it.each([
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\sqrt{2}', 'exact 1 + \\sqrt{2}'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\ln 2', 'exact 1 + \\ln\\left( 2 \\right)'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+e', 'exact 1 + e'],
+		['\\lim_{x\\to0}\\pi+\\sqrt{2}+\\frac{\\sin x}{x}', 'exact \\pi + \\sqrt{2} + 1'],
+		['\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}+\\sqrt2', 'exact 1 + \\sqrt{2}']
+	])(
+		'constante irrationnelle gardée symbolique, jamais une fraction décimale : %s → %s',
+		(latex, expected) => {
+			expect(studentLimit(latex)).toBe(expected);
+		}
+	);
+
+	it.each([
+		['\\lim_{x\\to0}\\frac{\\tan x}{x}-1', 'exact 0'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}-\\cos x', 'exact 0'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}-x-1', 'exact 0'],
+		['\\lim_{x\\to0^-}\\frac{|x|}{x}+1', 'exact 0']
+	])('somme des limites réduite : %s → %s', (latex, expected) => {
+		expect(studentLimit(latex)).toBe(expected);
+	});
+
+	it('limite d’une constante irrationnelle : √2 symbolique, pas 1.41421356237309', () => {
+		expect(studentLimit('\\lim_{x\\to0}\\sqrt{2}')).toBe('exact \\sqrt{2}');
+	});
+
 	it('\\lim_{x\\to1}x^2=1 : relation dont le membre de gauche est lim x² = 1', () => {
 		const node = parseLatex('\\lim_{x\\to1}x^2=1');
 		if (!isRelation(node) || !isLimit(node.left)) throw new Error('relation attendue');

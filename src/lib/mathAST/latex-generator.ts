@@ -242,26 +242,155 @@ function isPlainBinom(node: FunctionNode): boolean {
 
 /**
  * `\lim` sans parenthèses porte sur toute l'expression qui suit (décision du
- * 2026-10-07). Une limite opérande GAUCHE d'une somme ou d'un produit se
- * parenthèse donc, sauf devant une autre limite : `\lim A + \lim B` se relit
- * lim(A) + lim(B), mais `\lim A + 1` se relirait lim(A + 1).
+ * 2026-10-07) : le parseur n'arrête son argument qu'à la fin du groupe, devant
+ * une relation, ou devant un opérateur (ou une juxtaposition) suivi d'un autre
+ * `\lim`. Règle d'écriture qui en découle : toute limite non FINALE — suivie,
+ * au même niveau, d'autre chose qu'un `\lim` — est parenthésée, et le corps
+ * d'une limite qui contient lui-même « opérateur + \lim » aussi.
+ *
+ * Les décisions d'un nœud ne dépendent que de son sous-arbre (nœuds
+ * immuables) : elles sont mémorisées, sinon les parcours de bords gauche et
+ * droit se répètent à chaque niveau.
  */
-function needsParenthesesAsLeftLimit(left: MathNode, right: MathNode): boolean {
-	return isLimit(left) && !startsWithLimit(right);
+interface OperandWraps {
+	readonly left: boolean;
+	readonly right: boolean;
 }
 
-/** Le rendu de `node` commence-t-il par `\lim` ? */
-function startsWithLimit(node: MathNode): boolean {
+const containsLimitCache = new WeakMap<MathNode, boolean>();
+const operandWrapsCache = new WeakMap<MathNode, OperandWraps | null>();
+
+/** Le sous-arbre contient-il une limite (ailleurs que dans un délimiteur) ? */
+function containsExposedLimit(node: MathNode): boolean {
+	const cached = containsLimitCache.get(node);
+	if (cached !== undefined) return cached;
+	let result: boolean;
 	switch (node.type) {
 		case 'limit':
-			return true;
+			result = true;
+			break;
 		case 'addition':
 		case 'subtraction':
 		case 'multiplication':
-			return startsWithLimit(node.left);
+			result = containsExposedLimit(node.left) || containsExposedLimit(node.right);
+			break;
+		case 'division':
+			result =
+				node.displayStyle !== 'fraction' &&
+				(containsExposedLimit(node.numerator) || containsExposedLimit(node.denominator));
+			break;
+		case 'opposite':
+		case 'positive':
+			result = containsExposedLimit(node.operand);
+			break;
 		default:
-			return false;
+			result = false;
 	}
+	containsLimitCache.set(node, result);
+	return result;
+}
+
+/**
+ * Parenthèses des deux opérandes d'un opérateur binaire écrit EN LIGNE (somme,
+ * différence, produit, quotient `/` ou `:`), limites comprises. Null pour tout
+ * autre nœud (`\dfrac` groupe déjà).
+ */
+function binaryOperandWraps(node: MathNode): OperandWraps | null {
+	const cached = operandWrapsCache.get(node);
+	if (cached !== undefined) return cached;
+	let left: MathNode;
+	let right: MathNode;
+	let wrapLeft: boolean;
+	let wrapRight: boolean;
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+			left = node.left;
+			right = node.right;
+			wrapLeft = false;
+			wrapRight = needsParenthesesAsRightTerm(right, node.type);
+			break;
+		case 'multiplication':
+			left = node.left;
+			right = node.right;
+			wrapLeft = needsParenthesesUnderSign(left);
+			wrapRight = needsParenthesesAsRightFactor(right);
+			break;
+		case 'division':
+			if (node.displayStyle === 'fraction') {
+				operandWrapsCache.set(node, null);
+				return null;
+			}
+			left = node.numerator;
+			right = node.denominator;
+			wrapLeft = needsParenthesesUnderSign(left);
+			wrapRight = needsParenthesesUnderSign(right);
+			break;
+		default:
+			operandWrapsCache.set(node, null);
+			return null;
+	}
+	if (!wrapLeft && endsWithLimit(left) && (wrapRight || !startsWithLimit(right))) {
+		wrapLeft = true;
+	}
+	const wraps = { left: wrapLeft, right: wrapRight };
+	operandWrapsCache.set(node, wraps);
+	return wraps;
+}
+
+/** Le rendu de `node` commence-t-il par un `\lim` non parenthésé ? */
+function startsWithLimit(node: MathNode): boolean {
+	if (isLimit(node)) return true;
+	if (!containsExposedLimit(node)) return false;
+	const wraps = binaryOperandWraps(node);
+	if (wraps === null || wraps.left) return false;
+	return startsWithLimit(node.type === 'division' ? node.numerator : binaryLeft(node));
+}
+
+/** Le rendu de `node` finit-il par une limite non parenthésée ? */
+function endsWithLimit(node: MathNode): boolean {
+	if (isLimit(node)) return true;
+	if (!containsExposedLimit(node)) return false;
+	if (node.type === 'opposite') {
+		return !needsParenthesesUnderOpposite(node.operand) && endsWithLimit(node.operand);
+	}
+	if (node.type === 'positive') return endsWithLimit(node.operand);
+	const wraps = binaryOperandWraps(node);
+	if (wraps === null || wraps.right) return false;
+	return endsWithLimit(node.type === 'division' ? node.denominator : binaryRight(node));
+}
+
+/**
+ * Le rendu de `node` contient-il, à son niveau, un opérateur (ou une
+ * juxtaposition) suivi d'un `\lim` ? Corps d'une limite : il faut alors le
+ * parenthéser, sinon la limite extérieure s'arrêterait devant.
+ */
+function hasLimitBreak(node: MathNode): boolean {
+	if (!containsExposedLimit(node)) return false;
+	if (node.type === 'opposite') {
+		return !needsParenthesesUnderOpposite(node.operand) && hasLimitBreak(node.operand);
+	}
+	if (node.type === 'positive') return hasLimitBreak(node.operand);
+	const wraps = binaryOperandWraps(node);
+	if (wraps === null) return false;
+	const left = node.type === 'division' ? node.numerator : binaryLeft(node);
+	const right = node.type === 'division' ? node.denominator : binaryRight(node);
+	return (
+		(!wraps.right && (startsWithLimit(right) || hasLimitBreak(right))) ||
+		(!wraps.left && hasLimitBreak(left))
+	);
+}
+
+function binaryLeft(node: MathNode): MathNode {
+	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'multiplication'
+		? node.left
+		: node;
+}
+
+function binaryRight(node: MathNode): MathNode {
+	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'multiplication'
+		? node.right
+		: node;
 }
 
 // =============================================================================
@@ -393,7 +522,7 @@ export class LatexGenerator {
 			case 'subtraction': {
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
-				const wrapLeft = needsParenthesesAsLeftLimit(node.left, node.right);
+				const wrapLeft = binaryOperandWraps(node)?.left ?? false;
 				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
 				if (wrapLeft) this.emit(' \\right)', node.metadata);
@@ -406,9 +535,7 @@ export class LatexGenerator {
 
 			case 'multiplication': {
 				// Mêmes parenthèses que generateMultiplication
-				const wrapLeft =
-					needsParenthesesUnderSign(node.left) ||
-					needsParenthesesAsLeftLimit(node.left, node.right);
+				const wrapLeft = binaryOperandWraps(node)?.left ?? false;
 				const wrapRight = needsParenthesesAsRightFactor(node.right);
 				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
@@ -602,15 +729,16 @@ export class LatexGenerator {
 				this.emit('}', opMeta);
 				break;
 			case 'inline':
+			case 'ratio': {
+				// Limite non finale : parenthésée (voir binaryOperandWraps)
+				const wrapLeft = endsWithLimit(node.numerator) && !startsWithLimit(node.denominator);
+				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.numerator);
-				this.emit(' / ', opMeta);
+				if (wrapLeft) this.emit(' \\right)', node.metadata);
+				this.emit(node.displayStyle === 'inline' ? ' / ' : ' : ', opMeta);
 				this.visitWithSpans(node.denominator);
 				break;
-			case 'ratio':
-				this.visitWithSpans(node.numerator);
-				this.emit(' : ', opMeta);
-				this.visitWithSpans(node.denominator);
-				break;
+			}
 			default: {
 				const exhaustive: never = node.displayStyle;
 				throw new Error(`Unknown division style: ${exhaustive}`);
@@ -991,7 +1119,10 @@ export class LatexGenerator {
 			this.emit('^{-}', node.metadata);
 		}
 		this.emit('} ', node.metadata);
+		const wrapBody = hasLimitBreak(node.expression);
+		if (wrapBody) this.emit('\\left( ', node.metadata);
 		this.visitWithSpans(node.expression);
+		if (wrapBody) this.emit(' \\right)', node.metadata);
 	}
 
 	/**
@@ -1182,7 +1313,7 @@ export class LatexGenerator {
 	}
 
 	private generateAddition(node: AdditionNode): string {
-		const left = this.groupIfLeftLimit(node.left, node.right);
+		const left = this.groupLeftOperand(node);
 		// `a + -b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
 		const renderedRight = this.generateNode(node.right);
 		const right = needsParenthesesAsRightTerm(node.right, 'addition')
@@ -1192,7 +1323,7 @@ export class LatexGenerator {
 	}
 
 	private generateSubtraction(node: SubtractionNode): string {
-		const left = this.groupIfLeftLimit(node.left, node.right);
+		const left = this.groupLeftOperand(node);
 		// ⚠️ L'opérande DROIT seulement : `y − (x+1)` vaut `y − x − 1`, alors que
 		// `y - x + 1` se relit `y − x + 1`. À gauche, `(x+1) − y` se rend
 		// `x + 1 - y` sans ambiguïté, et parenthéser alourdirait pour rien.
@@ -1220,19 +1351,17 @@ export class LatexGenerator {
 		return needsParenthesesUnderSign(node) ? `\\left( ${rendered} \\right)` : rendered;
 	}
 
-	/** Opérande gauche limite : voir needsParenthesesAsLeftLimit. */
-	private groupIfLeftLimit(left: MathNode, right: MathNode): string {
-		const rendered = this.generateNode(left);
-		return needsParenthesesAsLeftLimit(left, right) ? `\\left( ${rendered} \\right)` : rendered;
+	/** Opérande gauche d'un opérateur en ligne, limites comprises : voir binaryOperandWraps. */
+	private groupLeftOperand(node: AdditionNode | SubtractionNode | MultiplicationNode): string {
+		const rendered = this.generateNode(node.left);
+		return binaryOperandWraps(node)?.left ? `\\left( ${rendered} \\right)` : rendered;
 	}
 
 	private generateMultiplication(node: MultiplicationNode): string {
 		// Les deux opérandes : `(x+1)y` comme `y(x+1)` perdent leur sens sans
 		// parenthèses. À droite, un facteur qui commence par un signe aussi :
 		// `2 -e^{-x}` se lirait « 2 moins e^{-x} » (voir needsParenthesesAsRightFactor).
-		const left = needsParenthesesAsLeftLimit(node.left, node.right)
-			? this.groupIfLeftLimit(node.left, node.right)
-			: this.groupIfSum(node.left);
+		const left = this.groupLeftOperand(node);
 		const renderedRight = this.generateNode(node.right);
 		const right = needsParenthesesAsRightFactor(node.right)
 			? `\\left( ${renderedRight} \\right)`
@@ -1258,7 +1387,8 @@ export class LatexGenerator {
 	private generateDivision(node: DivisionNode): string {
 		// `\dfrac` groupe déjà ; les écritures EN LIGNE, non.
 		const grouped = node.displayStyle !== 'fraction';
-		const num = grouped ? this.groupIfSum(node.numerator) : this.generateNode(node.numerator);
+		const renderedNum = this.generateNode(node.numerator);
+		const num = binaryOperandWraps(node)?.left ? `\\left( ${renderedNum} \\right)` : renderedNum;
 		const denom = grouped ? this.groupIfSum(node.denominator) : this.generateNode(node.denominator);
 
 		switch (node.displayStyle) {
@@ -1548,7 +1678,9 @@ export class LatexGenerator {
 		}
 
 		const subscript = `${node.variable} \\to ${approach}${directionSuperscript}`;
-		const expression = this.generateNode(node.expression);
+		// Corps contenant « opérateur + \\lim » : parenthésé (voir hasLimitBreak)
+		const rendered = this.generateNode(node.expression);
+		const expression = hasLimitBreak(node.expression) ? `\\left( ${rendered} \\right)` : rendered;
 
 		return `\\lim_{${subscript}} ${expression}`;
 	}
@@ -1683,12 +1815,12 @@ function juxtaposesQuantities(node: MultiplicationNode): boolean {
  * parenthésé). `2x × 3` (`2 x 3`) et `3x` restent tels quels.
  */
 function juxtaposesDigits(node: MultiplicationNode): boolean {
-	return (
-		!needsParenthesesUnderSign(node.left) &&
-		!needsParenthesesAsRightFactor(node.right) &&
-		endsWithNumber(node.left) &&
-		startsWithNumber(node.right)
-	);
+	if (needsParenthesesUnderSign(node.left) || needsParenthesesAsRightFactor(node.right)) {
+		return false;
+	}
+	// Limite parenthésée devant un nombre : `\left(\lim x\right) 3` ne se relit pas
+	const limitWrapped = binaryOperandWraps(node)?.left ?? false;
+	return (endsWithNumber(node.left) || limitWrapped) && startsWithNumber(node.right);
 }
 
 /** L'écriture de ce nœud finit-elle par un nombre (hors exposant, hors parenthèses) ? */

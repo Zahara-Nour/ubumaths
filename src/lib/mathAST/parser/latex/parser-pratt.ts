@@ -2056,10 +2056,12 @@ class PrattParser {
 	/**
 	 * Opérateur binaire (`+ - * / : \cdot \times \div`) dont l'opérande droit
 	 * commence par `\lim` : il sépare deux limites, il ne prolonge pas
-	 * l'argument de la première.
+	 * l'argument de la première. Une juxtaposition aussi (`\lim A \lim B`,
+	 * produit implicite), alignée sur `\cdot`.
 	 */
 	private isOperatorBeforeLimit(): boolean {
 		const token = this.currentToken;
+		if (token.type === 'COMMAND' && token.value === 'lim') return true;
 		const isBinaryOperator =
 			token.type === 'PLUS' ||
 			token.type === 'MINUS' ||

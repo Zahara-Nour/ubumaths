@@ -73,6 +73,8 @@ export function needsParenthesesAsPowerBase(node: MathNode): boolean {
 		case 'multiplication':
 		case 'superscript':
 		case 'unit':
+		// `\lim_{x\to0} x^2` se relirait lim(x²) : portée de \lim
+		case 'limit':
 			return true;
 		default:
 			return false;
