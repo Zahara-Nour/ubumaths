@@ -1,6 +1,11 @@
 # Seed CM1-CM2 — points du programme (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION (questions S1-S6) — aucune migration avant.**
+> **Statut : EN ATTENTE DE VALIDATION (questions S3-S6) — aucune migration avant.**
+> ⚠️ Corrigé après retour de David : **les fractions décimales sont des fractions** — les
+> points qui les interprètent, placent, décomposent, comparent vont sous `Fractions : sens
+et écritures`, pas sous `Décimaux : numération` (on classe ce que le contenu EST). Seuls
+> restent côté Décimaux : les unités de numération décimale, le passage à l'écriture à
+> virgule, et tout ce qui porte sur l'écriture à virgule elle-même.
 > Source : « Programme de mathématiques pour le cycle 3 » (BOENJS du 17 avril 2025), blocs
 > « Objectifs d'apprentissage » du CM1 et du CM2, extraits **ligne à ligne** (28 p. lues).
 > Mapping : [programmes-ecarts-cycle3.md](programmes-ecarts-cycle3.md) (décisions R1-R6
@@ -29,16 +34,21 @@ titre de bloc) ; `(notion)` = point rattaché directement à la notion. Rien au 
 pour « Initiation à la pensée informatique » (prose sans objectifs propres : le contenu
 vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y en a pas au CM).
 
-## Conventions de rattachement (S1-S2) et scissions
+## Conventions appliquées (règle des puces multi-gestes du 2026-10-07)
 
-- **S1 — rattachement à la notion** : une puce qui couvre **plusieurs sous-notions d'une
-  même notion** (« Comparer, encadrer, intercaler… » quand `comparer` ET `encadrer`
-  existent) est rattachée à la **notion** elle-même — ni scission, ni choix arbitraire.
-  On ne scinde que si la puce traverse **deux notions différentes**.
-- **S2 — l'unique scission** : « Connaître des faits numériques usuels » (CM1-035/036,
-  CM2-035/036) traverse deux notions (tables d'addition / tables de multiplication) →
-  deux points, suffixés « répertoire additif » / « répertoire multiplicatif ».
-  **Aucune autre scission** : les puces du cours moyen sont déjà au bon grain.
+La règle est déjà tranchée (doc d'écarts : une puce = un point, scission si gestes
+réellement distincts, chaque scission documentée ici). Son application au cours moyen :
+
+- **Rattachement à la notion** : quand une puce décrit UN geste décliné sur plusieurs
+  sous-notions sœurs (« Comparer, encadrer, intercaler… » quand `comparer` ET `encadrer`
+  existent ; « lire un tableau, un diagramme, une courbe »), le point va à la **notion**
+  — c'est le seul nœud unique qui respecte « une puce = un point ». 13 points concernés,
+  marqués `(notion)`.
+- **L'unique scission** : « Connaître des faits numériques usuels » (CM1-035/036,
+  CM2-035/036) attelle deux gestes distincts sur deux notions différentes (tables
+  d'addition / tables de multiplication) → deux points, suffixés « répertoire additif » /
+  « répertoire multiplicatif ». **Aucune autre scission** : les puces du cours moyen sont
+  déjà au bon grain.
 
 ---
 
@@ -80,18 +90,18 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 | Code    | Énoncé (verbatim BO)                                                                                                                                                      | kind | rég. | nœud                                            |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ----------------------------------------------- |
-| CM1-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                          | s-f  | div. | Décimaux : numération > forme fractionnaire     |
+| CM1-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                          | s-f  | div. | Fractions : sens et écritures > définition      |
 | CM1-024 | Connaître et utiliser les relations entre unités simples, dixièmes et centièmes                                                                                           | s-f  | div. | Décimaux : numération > décomposer              |
-| CM1-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                          | s-f  | div. | Décimaux : numération > **droite graduée (S3)** |
-| CM1-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                   | s-f  | div. | Décimaux : numération > décomposer              |
-| CM1-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                                | s-f  | div. | Décimaux : numération > décomposer              |
-| CM1-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                                | s-f  | div. | Décimaux : numération (notion, S1)              |
-| CM1-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                    | s-f  | div. | Décimaux : numération > comparer                |
+| CM1-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                          | s-f  | div. | Fractions : sens et écritures > droite graduée  |
+| CM1-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                   | s-f  | div. | Fractions : sens et écritures > décomposer      |
+| CM1-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                                | s-f  | div. | Fractions : sens et écritures > décomposer      |
+| CM1-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                                | s-f  | div. | Fractions : sens et écritures > comparer        |
+| CM1-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                    | s-f  | div. | Fractions : sens et écritures > comparer        |
 | CM1-030 | Passer d'une écriture sous forme d'une fraction décimale ou d'une somme de fractions décimales à une écriture à virgule et réciproquement                                 | s-f  | div. | Décimaux : numération > forme fractionnaire     |
 | CM1-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                        | s-f  | div. | Décimaux : numération > écrire                  |
 | CM1-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal                            | s-f  | div. | Décimaux : numération > **droite graduée (S3)** |
 | CM1-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                               | s-f  | div. | Décimaux : numération > arrondir                |
-| CM1-034 | Comparer, encadrer, intercaler, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion, S1)              |
+| CM1-034 | Comparer, encadrer, intercaler, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                  |
 
 ### … > Le calcul mental — tout en `fluence` (S5)
 
@@ -101,7 +111,7 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 | CM1-036 | Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire multiplicatif ✂                                                                            | conn. | flu. | Entiers : multiplication > tables                     |
 | CM1-037 | Connaître quelques relations entre des fractions usuelles                                                                                                                   | conn. | flu. | Fractions : sens et écritures > égalité de fractions  |
 | CM1-038 | Connaître l'écriture décimale de fractions usuelles                                                                                                                         | conn. | flu. | Fractions : sens et écritures > forme décimale        |
-| CM1-039 | Ajouter ou soustraire un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue | s-f   | flu. | Décimaux : calculs (notion, S1)                       |
+| CM1-039 | Ajouter ou soustraire un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue | s-f   | flu. | Décimaux : calculs (notion)                           |
 | CM1-040 | Multiplier un nombre entier par 10, 100 ou 1 000                                                                                                                            | s-f   | flu. | Entiers : multiplication > puissances de 10           |
 | CM1-041 | Multiplier un nombre décimal par 10                                                                                                                                         | s-f   | flu. | Décimaux : calculs > puissances de 10                 |
 | CM1-042 | Diviser un nombre décimal par 10                                                                                                                                            | s-f   | flu. | Décimaux : calculs > puissances de 10                 |
@@ -126,7 +136,7 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 | Code    | Énoncé (verbatim BO)                                                                       | kind | rég. | nœud                                             |
 | ------- | ------------------------------------------------------------------------------------------ | ---- | ---- | ------------------------------------------------ |
-| CM1-054 | Résoudre des problèmes additifs en une étape des types « parties-tout » et « comparaison » | s-f  | div. | Problèmes arithmétiques (notion, S1)             |
+| CM1-054 | Résoudre des problèmes additifs en une étape des types « parties-tout » et « comparaison » | s-f  | div. | Problèmes arithmétiques (notion)                 |
 | CM1-055 | Résoudre des problèmes additifs en deux ou trois étapes                                    | s-f  | div. | Problèmes arithmétiques > en deux étapes ou plus |
 | CM1-056 | Résoudre des problèmes multiplicatifs de type « parties-tout » en une étape                | s-f  | div. | Problèmes arithmétiques > multiplicatifs         |
 | CM1-057 | Résoudre des problèmes de comparaison multiplicative                                       | s-f  | div. | Problèmes arithmétiques > comparaison            |
@@ -212,9 +222,9 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 | Code    | Énoncé (verbatim BO)                                                                                                                                        | kind  | rég. | nœud                                         | Rubrique BO                        |
 | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | -------------------------------------------- | ---------------------------------- |
-| CM1-120 | Recueillir des données et produire un tableau, un diagramme en barres ou un ensemble de points dans un repère pour les présenter                            | s-f   | div. | Représenter des données (notion, S1)         | Organisation et gestion de données |
-| CM1-121 | Lire et interpréter les données d'un tableau à simple ou double entrée, d'un diagramme en barres ou d'une courbe                                            | s-f   | div. | Représenter des données (notion, S1)         | idem                               |
-| CM1-122 | Résoudre des problèmes en une ou plusieurs étapes en utilisant les données d'un tableau à simple ou double entrée, d'un diagramme en barres ou d'une courbe | s-f   | div. | Représenter des données (notion, S1)         | idem                               |
+| CM1-120 | Recueillir des données et produire un tableau, un diagramme en barres ou un ensemble de points dans un repère pour les présenter                            | s-f   | div. | Représenter des données (notion)             | Organisation et gestion de données |
+| CM1-121 | Lire et interpréter les données d'un tableau à simple ou double entrée, d'un diagramme en barres ou d'une courbe                                            | s-f   | div. | Représenter des données (notion)             | idem                               |
+| CM1-122 | Résoudre des problèmes en une ou plusieurs étapes en utilisant les données d'un tableau à simple ou double entrée, d'un diagramme en barres ou d'une courbe | s-f   | div. | Représenter des données (notion)             | idem                               |
 | CM1-123 | Identifier des expériences aléatoires                                                                                                                       | s-f   | div. | Expériences aléatoires (notion)              | Les probabilités                   |
 | CM1-124 | Identifier toutes les issues possibles lors d'une expérience aléatoire simple                                                                               | s-f   | div. | Expériences aléatoires > événements          | idem                               |
 | CM1-125 | Comprendre et utiliser le vocabulaire approprié : « impossible », « possible », « certain », « probable », « peu probable », « une chance sur deux »        | s-f   | div. | Expériences aléatoires > probabilité simple  | idem                               |
@@ -264,18 +274,18 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 | Code    | Énoncé (verbatim BO)                                                                                                                                                    | kind | rég. | nœud                                            |
 | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ----------------------------------------------- |
-| CM2-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                        | s-f  | div. | Décimaux : numération > forme fractionnaire     |
+| CM2-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                        | s-f  | div. | Fractions : sens et écritures > définition      |
 | CM2-024 | Connaître et utiliser les relations entre unités simples, dixièmes, centièmes et millièmes                                                                              | s-f  | div. | Décimaux : numération > décomposer              |
-| CM2-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                        | s-f  | div. | Décimaux : numération > **droite graduée (S3)** |
-| CM2-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                 | s-f  | div. | Décimaux : numération > décomposer              |
-| CM2-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                              | s-f  | div. | Décimaux : numération > décomposer              |
-| CM2-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                              | s-f  | div. | Décimaux : numération (notion, S1)              |
-| CM2-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                  | s-f  | div. | Décimaux : numération > comparer                |
+| CM2-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                        | s-f  | div. | Fractions : sens et écritures > droite graduée  |
+| CM2-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                 | s-f  | div. | Fractions : sens et écritures > décomposer      |
+| CM2-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                              | s-f  | div. | Fractions : sens et écritures > décomposer      |
+| CM2-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                              | s-f  | div. | Fractions : sens et écritures > comparer        |
+| CM2-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                  | s-f  | div. | Fractions : sens et écritures > comparer        |
 | CM2-030 | Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement                               | s-f  | div. | Décimaux : numération > forme fractionnaire     |
 | CM2-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                      | s-f  | div. | Décimaux : numération > écrire                  |
 | CM2-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre en écriture à virgule            | s-f  | div. | Décimaux : numération > **droite graduée (S3)** |
 | CM2-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                             | s-f  | div. | Décimaux : numération > arrondir                |
-| CM2-034 | Comparer, encadrer, intercaler, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion, S1)              |
+| CM2-034 | Comparer, encadrer, intercaler, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                  |
 
 ### … > Le calcul mental — tout en `fluence` (S5)
 
@@ -286,7 +296,7 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 | CM2-037 | Connaître la moitié des nombres impairs jusqu'à 15                                                                                                                   | conn. | flu. | Décimaux : calculs > moitié (S4)                      |
 | CM2-038 | Connaître quelques relations entre des fractions usuelles                                                                                                            | conn. | flu. | Fractions : sens et écritures > égalité de fractions  |
 | CM2-039 | Connaître l'écriture décimale de fractions usuelles                                                                                                                  | conn. | flu. | Fractions : sens et écritures > forme décimale        |
-| CM2-040 | Ajouter ou soustraire un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue                                                                            | s-f   | flu. | Décimaux : calculs (notion, S1)                       |
+| CM2-040 | Ajouter ou soustraire un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue                                                                            | s-f   | flu. | Décimaux : calculs (notion)                           |
 | CM2-041 | Ajouter un nombre entier à un nombre décimal lorsqu'il y a une retenue                                                                                               | s-f   | flu. | Décimaux : calculs > additionner                      |
 | CM2-042 | Multiplier un nombre décimal par 10, 100 ou 1 000                                                                                                                    | s-f   | flu. | Décimaux : calculs > puissances de 10                 |
 | CM2-043 | Diviser un nombre décimal par 10, 100 ou 1 000                                                                                                                       | s-f   | flu. | Décimaux : calculs > puissances de 10                 |
@@ -314,7 +324,7 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 | Code    | Énoncé (verbatim BO)                                                        | kind | rég. | nœud                                                                     |
 | ------- | --------------------------------------------------------------------------- | ---- | ---- | ------------------------------------------------------------------------ |
-| CM2-058 | Résoudre des problèmes additifs en une ou plusieurs étapes                  | s-f  | div. | Problèmes arithmétiques (notion, S1)                                     |
+| CM2-058 | Résoudre des problèmes additifs en une ou plusieurs étapes                  | s-f  | div. | Problèmes arithmétiques (notion)                                         |
 | CM2-059 | Résoudre des problèmes multiplicatifs de type « parties-tout » en une étape | s-f  | div. | Problèmes arithmétiques > multiplicatifs                                 |
 | CM2-060 | Résoudre des problèmes mixtes en plusieurs étapes                           | s-f  | div. | Problèmes arithmétiques > en deux étapes ou plus                         |
 | CM2-061 | Résoudre des problèmes de comparaison multiplicative                        | s-f  | div. | Problèmes arithmétiques > comparaison                                    |
@@ -335,23 +345,23 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 ### Grandeurs et mesures
 
-| Code    | Énoncé (verbatim BO)                                                                                                                                | kind  | rég. | nœud                                   | Rubrique BO                             |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | -------------------------------------- | --------------------------------------- |
-| CM2-071 | Comparer les aires de différentes figures planes                                                                                                    | s-f   | div. | Aires (notion)                         | Les aires                               |
-| CM2-072 | Déterminer des aires                                                                                                                                | s-f   | div. | Aires (notion)                         | Les aires                               |
-| CM2-073 | Connaître et utiliser les unités centimètre carré, décimètre carré et mètre carré pour exprimer des aires                                           | s-f   | div. | Aires > unités et conversions          | Les aires                               |
-| CM2-074 | Convertir des aires entre différentes unités                                                                                                        | s-f   | div. | Aires > unités et conversions          | Les aires                               |
-| CM2-075 | Déterminer l'aire d'un carré ou d'un rectangle                                                                                                      | s-f   | div. | Aires (notion, S1 — carré + rectangle) | Les aires                               |
-| CM2-076 | Utiliser le lexique spécifique associé aux angles                                                                                                   | s-f   | div. | Angles (notion)                        | Les angles                              |
-| CM2-077 | Comprendre et utiliser les notations des angles                                                                                                     | s-f   | div. | Angles (notion)                        | Les angles                              |
-| CM2-078 | Comparer des angles                                                                                                                                 | s-f   | div. | Angles > comparer                      | Les angles                              |
-| CM2-079 | Construire un angle égal à la somme de deux angles donnés ou un angle multiple d'un angle donné                                                     | s-f   | div. | Angles > construire                    | Les angles                              |
-| CM2-080 | Construire par pliage la moitié d'un angle donné                                                                                                    | s-f   | div. | Angles > construire                    | Les angles                              |
-| CM2-081 | Savoir qu'un angle droit mesure 90°                                                                                                                 | conn. | div. | Angles > mesurer en degrés             | Les angles                              |
-| CM2-082 | Lire l'heure sur une horloge à aiguilles                                                                                                            | s-f   | div. | Durées > lire l'heure                  | Le repérage dans le temps et les durées |
-| CM2-083 | Positionner les aiguilles d'une horloge correspondant à une heure donnée en heure, minute et seconde                                                | s-f   | div. | Durées > lire l'heure                  | idem                                    |
-| CM2-084 | Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure, minute et seconde) | s-f   | div. | Durées > calculer                      | idem                                    |
-| CM2-085 | Résoudre des problèmes à une ou plusieurs étapes impliquant des durées                                                                              | s-f   | div. | Durées > calculer                      | idem                                    |
+| Code    | Énoncé (verbatim BO)                                                                                                                                | kind  | rég. | nœud                               | Rubrique BO                             |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ---------------------------------- | --------------------------------------- |
+| CM2-071 | Comparer les aires de différentes figures planes                                                                                                    | s-f   | div. | Aires (notion)                     | Les aires                               |
+| CM2-072 | Déterminer des aires                                                                                                                                | s-f   | div. | Aires (notion)                     | Les aires                               |
+| CM2-073 | Connaître et utiliser les unités centimètre carré, décimètre carré et mètre carré pour exprimer des aires                                           | s-f   | div. | Aires > unités et conversions      | Les aires                               |
+| CM2-074 | Convertir des aires entre différentes unités                                                                                                        | s-f   | div. | Aires > unités et conversions      | Les aires                               |
+| CM2-075 | Déterminer l'aire d'un carré ou d'un rectangle                                                                                                      | s-f   | div. | Aires (notion — carré + rectangle) | Les aires                               |
+| CM2-076 | Utiliser le lexique spécifique associé aux angles                                                                                                   | s-f   | div. | Angles (notion)                    | Les angles                              |
+| CM2-077 | Comprendre et utiliser les notations des angles                                                                                                     | s-f   | div. | Angles (notion)                    | Les angles                              |
+| CM2-078 | Comparer des angles                                                                                                                                 | s-f   | div. | Angles > comparer                  | Les angles                              |
+| CM2-079 | Construire un angle égal à la somme de deux angles donnés ou un angle multiple d'un angle donné                                                     | s-f   | div. | Angles > construire                | Les angles                              |
+| CM2-080 | Construire par pliage la moitié d'un angle donné                                                                                                    | s-f   | div. | Angles > construire                | Les angles                              |
+| CM2-081 | Savoir qu'un angle droit mesure 90°                                                                                                                 | conn. | div. | Angles > mesurer en degrés         | Les angles                              |
+| CM2-082 | Lire l'heure sur une horloge à aiguilles                                                                                                            | s-f   | div. | Durées > lire l'heure              | Le repérage dans le temps et les durées |
+| CM2-083 | Positionner les aiguilles d'une horloge correspondant à une heure donnée en heure, minute et seconde                                                | s-f   | div. | Durées > lire l'heure              | idem                                    |
+| CM2-084 | Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure, minute et seconde) | s-f   | div. | Durées > calculer                  | idem                                    |
+| CM2-085 | Résoudre des problèmes à une ou plusieurs étapes impliquant des durées                                                                              | s-f   | div. | Durées > calculer                  | idem                                    |
 
 ### Espace et géométrie
 
@@ -382,9 +392,9 @@ vit dans Algèbre et Repérage) ni pour les « Mises en perspective » (il n'y e
 
 | Code    | Énoncé (verbatim BO)                                                                                                                                                                       | kind  | rég. | nœud                                         | Rubrique BO                        |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | ---- | -------------------------------------------- | ---------------------------------- |
-| CM2-106 | Recueillir des données et produire un tableau, un diagramme en barres ou un ensemble de points dans un repère pour présenter des données recueillies                                       | s-f   | div. | Représenter des données (notion, S1)         | Organisation et gestion de données |
-| CM2-107 | Lire et interpréter les données d'un tableau, d'un diagramme en barres, d'un diagramme circulaire ou d'une courbe                                                                          | s-f   | div. | Représenter des données (notion, S1)         | idem                               |
-| CM2-108 | Résoudre des problèmes en une ou deux étapes en utilisant les données d'un tableau, d'un diagramme en barres, d'un diagramme circulaire ou d'une courbe                                    | s-f   | div. | Représenter des données (notion, S1)         | idem                               |
+| CM2-106 | Recueillir des données et produire un tableau, un diagramme en barres ou un ensemble de points dans un repère pour présenter des données recueillies                                       | s-f   | div. | Représenter des données (notion)             | Organisation et gestion de données |
+| CM2-107 | Lire et interpréter les données d'un tableau, d'un diagramme en barres, d'un diagramme circulaire ou d'une courbe                                                                          | s-f   | div. | Représenter des données (notion)             | idem                               |
+| CM2-108 | Résoudre des problèmes en une ou deux étapes en utilisant les données d'un tableau, d'un diagramme en barres, d'un diagramme circulaire ou d'une courbe                                    | s-f   | div. | Représenter des données (notion)             | idem                               |
 | CM2-109 | Identifier toutes les issues possibles lors d'une expérience aléatoire simple                                                                                                              | s-f   | div. | Expériences aléatoires > événements          | Les probabilités                   |
 | CM2-110 | Identifier toutes les issues réalisant un évènement dans une expérience aléatoire simple                                                                                                   | s-f   | div. | Expériences aléatoires > événements          | idem                               |
 | CM2-111 | Dans une situation d'équiprobabilité, lors d'une expérience aléatoire simple, exprimer la probabilité d'un évènement sous la forme « a chances sur b »                                     | s-f   | div. | Expériences aléatoires > probabilité simple  | idem                               |
@@ -417,25 +427,30 @@ algébriques > programmes de calcul` : le doc d'écarts laissait le choix avec
    sous-notions (carré, rectangle, disque) sont des formules, hors programme CM1 — le
    sens et le calcul « à la règle graduée » vivent au niveau de la notion. Les niveaux
    affichés du JSON (`[CE2, 6e]`) sont indicatifs et seront rafraîchis.
+6. **« Passer d'une écriture sous forme d'une fraction décimale … à une écriture à
+   virgule et réciproquement »** (CM1-030, CM2-030) → `Décimaux : numération > forme
+fractionnaire` : c'est le pont entre les deux mondes, et les deux sous-notions
+   miroirs existent (`Fractions > forme décimale` en face). Choix : l'objet étudié est
+   l'écriture à virgule comme codage d'une fraction décimale — côté Décimaux.
 
-## Questions à trancher (S1-S6)
+## Questions à trancher (S3-S6)
 
 > Détaillées dans le chat. Une réponse par question ; « je valide tout » = recos.
+> (S1 et S2 ne sont plus des questions : c'est la règle des puces multi-gestes du
+> 2026-10-07 appliquée et documentée ci-dessus.)
 
-- **S1 — convention de rattachement à la notion** (multi-sous-notions d'une même notion,
-  ni scission ni choix arbitraire). Reco : oui.
-- **S2 — scission unique « faits numériques »** (2 points : répertoires additif /
-  multiplicatif). Reco : oui.
-- **S3 — nouvelle sous-notion `Décimaux : numération > droite graduée`** (4 points
-  CM1/CM2 la visent ; symétrie avec Fractions ; famille de fiches « placer/repérer »).
-  Reco : oui — ajout à l'arbre (migration + JSON + diagramme). Sinon : rattachement à la
-  notion.
+- **S3 — nouvelle sous-notion `Décimaux : numération > droite graduée`** : après la
+  correction « fractions décimales = fractions », il ne reste que 2 points concernés
+  (CM1-032, CM2-032 : placer/repérer un nombre décimal **en écriture à virgule**).
+  Symétrie : `Fractions` et `Relatifs : sens et écritures` ont chacune leur « droite
+  graduée ». Reco : oui — ajout à l'arbre (migration + JSON + diagramme). Sinon :
+  rattachement à la notion.
 - **S4 — renommer `Décimaux : calculs > moitié` en « double et moitié »** (le CM2 calcule
   double ET moitié ; symétrie avec `Entiers : addition et soustraction > double et
 moitié`). Reco : oui (migration + JSON + diagramme + grep `correspondance/`).
 - **S5 — régime** : `fluence` pour toute la section « Le calcul mental » (13 points CM1,
   18 points CM2), `diversite` partout ailleurs. Reco : oui.
-- **S6 — validation d'ensemble** du document (dont les 5 rattachements discutables).
+- **S6 — validation d'ensemble** du document (dont les 6 rattachements discutables).
 
 ## Après validation (plan de livraison)
 
