@@ -368,3 +368,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   C23 aligné). Mesuré en prod : 0 acquisition d'élève, 22 tentatives (tenant aux modèles),
   1 026 tags modèles→points = le SEUL actif à transférer (342 1_SPE, 308 T_SPE, 173 T_EXP,
   140 T_COMP, 63 2de). Le backfill de grade des anciens points est abandonné (inutile).
+
+- **C5 durci par David (2026-10-07) : base propre tout de suite, pas de musée.** Inventaire
+  d'usages fait (règle pré-DROP) : ~25 fichiers de prod lisent le référentiel actuel
+  (programme/objectifs/analytics, édition questions, skill-attempts, SRS, anti-fraude,
+  export RGPD) → la suppression ne peut pas précéder la bascule du code, mais elle devient
+  l'ÉTAPE FINALE PLANIFIÉE de la séquence (seeds neufs → transfert des 1 026 tags → bascule
+  du code → suppression anciens points + themes/objectives + rang + vieux seed 6e), plus un
+  « volet de fin de chantier » indéfini. Spec mise à jour (en-tête, C5, C10, C11, C22, C23).

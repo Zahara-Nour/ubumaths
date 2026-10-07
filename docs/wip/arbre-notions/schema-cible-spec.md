@@ -5,8 +5,9 @@
 > questions ouvertes (reprises de `schema-cible-questions.md`) sont insérées là où elles
 > conditionnent un comportement, avec recos. Après validation : tests d'intégration qui
 > échouent → migration **additive** → `security-auditor` → `db:migrate` (les 4 conditions).
-> Le volet destructif (retrait `themes/objectives`, `rang`, vieux seed 6e) viendra bien
-> plus tard, avec arrêt obligatoire.
+> L'étape destructive (suppression des anciens points, de `themes/objectives`, de `rang`
+> et du vieux seed 6e) est la **fin planifiée de la séquence de bascule** (C5) — pas un
+> jour lointain — et reste livrée avec l'arrêt réglementaire des migrations destructives.
 
 ## Périmètre
 
@@ -53,16 +54,20 @@ colonnes nouvelles restent facultatives en base pour une seule raison : anciens 
 nouveaux points cohabitent dans la même table jusqu'à l'extinction des anciens — pas parce
 qu'un point de la cible pourrait en manquer.
 
-**C5 — anciens seeds : intouchés, puis transférés, puis éteints.** Les 1 007 points
-existants ne sont **jamais modifiés** (ni nœud, ni grade recopié, ni rubrique) : ils
-continuent de servir le site tels quels jusqu'à la bascule de leur grade. À la bascule
-d'un grade : les **tags modèles → points** (seul actif accroché aux anciens points —
-mesuré le 2026-10-07 : 1 026 liens, 342 en 1_SPE, 308 T_SPE, 173 T_EXP, 140 T_COMP, 63 en
-2de ; **0 acquisition d'élève**, et les tentatives tiennent aux modèles, pas aux points)
-sont **transférés** vers les points neufs par appariement de libellés — un lot présenté et
-validé comme les autres ; puis l'affichage bascule, et les anciens points du grade
-s'**archivent**. Leur destruction (avec `themes`, `objectives` et le vieux seed 6e)
-attend le volet destructif de fin de chantier.
+**C5 — anciens seeds : intouchés pendant la construction, puis SUPPRIMÉS en fin de
+séquence (décision David, 2026-10-07 : base propre, pas de musée).** Les 1 007 points
+existants ne sont **jamais modifiés** (ni nœud, ni grade recopié, ni rubrique) et
+continuent de servir le site pendant la construction du neuf — raison mesurée le
+2026-10-07 : **~25 fichiers de production les lisent** (pages programme/objectifs/
+analytics, édition des questions, skill-attempts, SRS, anti-fraude, export RGPD). La
+séquence, d'un seul tenant : **(1)** seeds neufs depuis les documents v2 ; **(2)**
+transfert des **tags modèles → points** (seul actif accroché aux anciens — 1 026 liens :
+342 en 1_SPE, 308 T_SPE, 173 T_EXP, 140 T_COMP, 63 en 2de ; **0 acquisition d'élève**,
+les tentatives tiennent aux modèles) par appariement de libellés, lot présenté et
+validé ; **(3)** bascule du code (les ~25 fichiers) ; **(4)** **suppression** des anciens
+points, de `themes`/`objectives`, de `rang` et du vieux seed 6e — migration destructive
+livrée selon la règle (arrêt, grep des usages collé, réconciliation, décision de David),
+mais **planifiée comme l'étape finale de cette séquence**, pas remise à plus tard.
 
 **C6 — nominal.** Plusieurs points d'un même grade sur un même nœud : permis (les sept
 points de la Trigonométrie de 1re spé se répartissent sur deux sous-notions).
@@ -84,13 +89,13 @@ existant ne change). **Reco : oui.**
 
 **C10 — Q1 (`rang`).** La cible **ignore** `rang` (0/1 007 rempli depuis août, code à
 échelle qui calcule à vide, accroché à l'objectif que l'ADR dissout, doublon du `level`
-intra-point). Aucun nouveau point n'en recevra ; le retrait de la colonne et du code
-relève du volet destructif. **Reco : abandon.**
+intra-point). Aucun nouveau point n'en recevra ; la colonne et le code à
+échelle partent à l'étape (4) de C5. **Reco : abandon.**
 
 **C11 — Q2 (rubrique BO).** Pour afficher un programme dans l'ordre du texte (« Analyse >
 Trigonométrie »), le point porte une **`rubrique` texte** (« Analyse > Trigonométrie » —
 sur les points NEUFS seulement, C4 : les anciens ne sont pas modifiés), et `themes/objectives` deviennent de
-simples données d'affichage appelées à disparaître au volet destructif. Alternative :
+simples données d'affichage qui partent à l'étape (4) de C5. Alternative :
 garder les deux tables comme sommaire vivant (statu quo structurel). **Reco : champ
 `rubrique`** — un BO est un texte plat à deux niveaux de titres, deux tables sont de trop ;
 et un point sans rubrique reste valide (transversaux).
@@ -148,13 +153,15 @@ aucun programme de mathématiques : hors parcours, aucune référence possible. 
 l'architecture cible (points 100 % rattachés, rubriques, références vers les points de
 CM1/CM2 qu'elle suppose — donc le seed 6e emporte le seed des points du cours moyen
 qu'elle référence, ou ses références attendent le seed cycle 3 complet : à régler au plan
-de seed). L'ancien seed 6e (2020, 95 points, 0 usage) reste en place sans servir jusqu'au
-volet destructif (décision R5 = B).
+de seed). L'ancien seed 6e (2020, 95 points, 0 usage) reste en place sans servir et part à
+l'étape (4) de C5 (décision R5 = B).
 
-**C23 — coexistence.** Les seeds existants (2de, 1re/Tle spé, Tle comp., Expertes)
-continuent de servir le site **tels quels, intouchés** ; chaque grade bascule ensuite vers
-son seed NEUF construit depuis son document v2 (mécanique C4-C5 : seed neuf → transfert
-des tags → bascule → archivage des anciens), grade par grade, chacun validé par ses tests.
+**C23 — ordonnancement de la séquence.** La bascule du code (étape 3 de C5) exige que
+les grades AFFICHÉS par le site aient leurs seeds neufs : les cinq du lycée déjà en base
+(2de, 1re/Tle spé, Tle comp., Expertes) + la 6e, dont les documents sont prêts. Les autres
+grades (cycles 2-4 complets, 1re ens. sci., voie techno) peuvent entrer APRÈS la
+suppression, sur base propre — chaque seed validé par ses tests. L'ordre exact se fixe au
+plan de seed, avec David.
 
 **C24 — livraison.** Deux PR : la **migration d'abord** (additive : colonnes nullables +
 nouvelles tables + gardes), `db:migrate`, `db:types`, puis le code. Tests d'intégration
