@@ -217,3 +217,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   logarithme ; niveau Fonction exponentielle « 1re, Tle » → 19 branches, 136 notions,
   517 sous-notions (JSON 2026-10-07.7), diagramme republié. Restent : Tle comp. et Expertes
   au gabarit v2.
+
+- **Maths de l'enseignement scientifique de 1re, analysées au gabarit v2 (2026-10-07,
+  soir)** : programme NOUVEAU dans le chantier (le « module spécifique » = ex-« maths
+  spécifiques », grade `1_GEN`, sans section v1, sans texte sauvegardé, sans seed prod) ;
+  texte fourni par David (Annexe, 7 p., vague 2026, sauvegardé
+  `progs-lycee/premiere-ens-sci.pdf`) → `programmes-ecarts-1re-ens-sci.md`. Structure en deux
+  colonnes (seule la droite est exigible) ; Automatismes identiques mot pour mot à la 1re
+  spé → mêmes références ; pas de géométrie ; discriminant explicitement exclu. Proposé :
+  0 notion, 2 sous-notions (taux d'évolution moyen, fonctions x ↦ aˣ) + question du libellé
+  de niveau (« 1re ens. sci. »). Questions W1-W4 en attente.
