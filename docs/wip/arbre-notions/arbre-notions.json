@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.2",
-	"statut": "validé par David (lycée 2026-10-06/07, cycle 2 2026-10-07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; rien en base",
+	"version": "2026-10-07.3",
+	"statut": "validé par David (lycée + cycle 2 + cycle 3, 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -54,20 +54,27 @@
 				},
 				{
 					"nom": "Entiers : division",
-					"niveaux": "CE2 à CM2",
-					"sous_notions": ["quotient", "division euclidienne"],
+					"niveaux": "CE2 à 6e",
+					"sous_notions": ["quotient", "division euclidienne", "calcul posé"],
 					"note": null
 				},
 				{
 					"nom": "Entiers : priorités opératoires",
-					"niveaux": "6e, 5e",
+					"niveaux": "CM1 à 5e",
 					"sous_notions": ["avec parenthèses", "sans parenthèses", "traduire une phrase"],
 					"note": null
 				},
 				{
 					"nom": "Décimaux : numération",
 					"niveaux": "CM1 à 6e",
-					"sous_notions": ["comparer", "décomposer", "écrire", "encadrer", "forme fractionnaire"],
+					"sous_notions": [
+						"comparer",
+						"décomposer",
+						"écrire",
+						"encadrer",
+						"forme fractionnaire",
+						"arrondir"
+					],
 					"note": null
 				},
 				{
@@ -81,7 +88,8 @@
 						"puissances de 10",
 						"distributivité",
 						"moitié",
-						"calcul astucieux"
+						"calcul astucieux",
+						"calcul posé"
 					],
 					"note": null
 				},
@@ -156,15 +164,16 @@
 				},
 				{
 					"nom": "Problèmes arithmétiques",
-					"niveaux": "CP à CE2",
+					"niveaux": "CP à 6e",
 					"sous_notions": [
 						"parties-tout",
 						"comparaison",
 						"en deux étapes ou plus",
 						"multiplicatifs",
-						"produits cartésiens"
+						"produits cartésiens",
+						"optimisation"
 					],
-					"note": "classés par structure ; cycles 3 et 4 à confirmer à réception des programmes"
+					"note": "classés par structure ; cycle 4 à confirmer"
 				}
 			]
 		},
@@ -253,7 +262,7 @@
 			"notions": [
 				{
 					"nom": "Situations de proportionnalité",
-					"niveaux": "6e à 3e",
+					"niveaux": "CM1 à 3e",
 					"sous_notions": ["reconnaître", "appliquer", "quatrième proportionnelle"],
 					"note": "reprend « Tableaux de proportionnalité »"
 				},
@@ -286,6 +295,17 @@
 		{
 			"nom": "Algèbre",
 			"notions": [
+				{
+					"nom": "Premiers pas algébriques",
+					"niveaux": "CM1 à 6e",
+					"sous_notions": [
+						"égalités à trous",
+						"nombre inconnu",
+						"programmes de calcul",
+						"suites de motifs"
+					],
+					"note": "pensée algébrique du cycle 3 ; les lettres formelles attendent le cycle 4"
+				},
 				{
 					"nom": "Calcul littéral",
 					"niveaux": "5e à 2de",
@@ -736,30 +756,33 @@
 			"notions": [
 				{
 					"nom": "Solides",
-					"niveaux": "CP à CE2",
+					"niveaux": "CP à 6e",
 					"sous_notions": ["reconnaître et décrire", "construire", "patrons"],
-					"note": "cycles 3-4 et collège (D2) à venir"
+					"note": "le collège (D2) viendra avec le cycle 4"
 				},
 				{
 					"nom": "Figures planes",
-					"niveaux": "CP à CE2",
+					"niveaux": "CP à 6e",
 					"sous_notions": [
 						"reconnaître et décrire",
 						"angles droits",
+						"perpendiculaires et parallèles",
 						"reproduire et construire",
-						"cercle"
+						"cercle",
+						"triangles",
+						"médiatrice et bissectrice"
 					],
-					"note": "cycles 3-4 et collège (D2) à venir"
+					"note": "le collège (D2) viendra avec le cycle 4"
 				},
 				{
 					"nom": "Symétrie axiale",
-					"niveaux": "CE2",
+					"niveaux": "CE2 à 6e",
 					"sous_notions": [],
-					"note": "cycles 3-4 à venir ; la symétrie centrale (5e) sera une autre notion"
+					"note": "la symétrie centrale (5e) sera une autre notion"
 				},
 				{
 					"nom": "Repérage et déplacements",
-					"niveaux": "CP, CE1",
+					"niveaux": "CP à 6e",
 					"sous_notions": ["positions et plans", "coder un déplacement"],
 					"note": null
 				},
@@ -860,21 +883,21 @@
 			"notions": [
 				{
 					"nom": "Longueurs",
-					"niveaux": "CP à CE2",
+					"niveaux": "CP à 6e",
 					"sous_notions": ["comparer et mesurer", "unités et conversions"],
-					"note": "cycle 3 à confirmer"
+					"note": null
 				},
 				{
 					"nom": "Masses",
-					"niveaux": "CP à CE2",
+					"niveaux": "CP à CM1",
 					"sous_notions": ["comparer et mesurer", "unités et conversions"],
-					"note": "cycle 3 à confirmer"
+					"note": "cycle 4 à confirmer"
 				},
 				{
 					"nom": "Contenances",
-					"niveaux": "CE2",
+					"niveaux": "CE2, CM1",
 					"sous_notions": ["comparer et mesurer", "unités et conversions"],
-					"note": "cycle 3 à confirmer"
+					"note": "bascule vers les volumes au collège"
 				},
 				{
 					"nom": "Monnaie",
@@ -883,22 +906,29 @@
 					"note": "porte l'écriture à virgule du cycle 2"
 				},
 				{
+					"nom": "Angles",
+					"niveaux": "CM1 à 6e",
+					"sous_notions": ["comparer", "mesurer en degrés", "construire"],
+					"note": "la grandeur ; les angles-objets (médiatrice, bissectrice…) → Figures planes"
+				},
+				{
 					"nom": "Périmètres",
 					"niveaux": "CE2, 6e",
-					"sous_notions": ["carré", "rectangle"],
-					"note": "au CE2 : par mesurage, sans formule"
+					"sous_notions": ["carré", "rectangle", "disque"],
+					"note": "au CE2 : par mesurage, sans formule ; formules carré/rectangle/disque en 6e"
 				},
 				{
 					"nom": "Aires",
-					"niveaux": "6e, 5e",
+					"niveaux": "CM1 à 5e",
 					"sous_notions": [
 						"carré",
 						"rectangle",
 						"triangle rectangle",
 						"triangle quelconque",
-						"parallélogramme"
+						"parallélogramme",
+						"unités et conversions"
 					],
-					"note": null
+					"note": "au CM : comparer et mesurer, formules carré/rectangle au CM2"
 				},
 				{
 					"nom": "Volumes",
@@ -925,7 +955,7 @@
 			"notions": [
 				{
 					"nom": "Expériences aléatoires",
-					"niveaux": "5e à 2de",
+					"niveaux": "CM1 à 2de",
 					"sous_notions": ["fréquences", "probabilité simple", "équiprobabilité", "événements"],
 					"note": "reprend le domaine Probabilités > Apprivoiser"
 				},
@@ -1035,6 +1065,7 @@
 						"tableau à double entrée",
 						"diagrammes en barres",
 						"diagrammes circulaires",
+						"courbes et repères",
 						"histogrammes",
 						"fréquences cumulées"
 					],

@@ -132,3 +132,8 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **R5 tranchée (2026-10-07) : option B** — le seed 6e (2020, inutilisé) reste en place sans
   servir ; la 6e nouvelle sera le premier niveau seedé directement dans l'architecture
   points → nœuds (ADR 0020). R1-R4 et R6 toujours en attente de validation.
+
+- **Cycle 3 appliqué (2026-10-07, « je valide tout »)** : notions Premiers pas algébriques
+  (Algèbre) et Angles (Grandeurs), 3 sous-notions de Figures planes, bloc R4, niveaux
+  rafraîchis → 19 branches, 126 notions, 466 sous-notions (JSON 2026-10-07.3), diagramme
+  republié.

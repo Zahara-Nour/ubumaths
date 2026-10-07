@@ -26,7 +26,7 @@ def svg(name,cls,notions):
         out.append(f'<text x="{NX+61}" y="{y+38}" class="rtext">reprend : {E(rep)}</text>')
     out.append('</svg>')
     return '\n'.join(out)
-total=sum(len(b[2]) for b in B)+124
+total=sum(len(b[2]) for b in B)+126
 sections=[open('./nc-section.html').read()]
 for name,cls,notions in B:
     sections.append(f'<section class="branch"><h2><span class="dot {cls}"></span>{E(name)} <small>{len(notions)} notions</small></h2><div class="scroll">{svg(name,cls,notions)}</div></section>')

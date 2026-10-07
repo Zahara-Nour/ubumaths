@@ -307,6 +307,11 @@ dans le cahier de texte sont des données d'usage à ne pas perdre.
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (R1-R4, R6 — appliquées à l'arbre,
+> version 2026-10-07.3 : 126 notions, 466 sous-notions) ; R5 = option B (voir question 5).
+> Nommage confirmé : « disque » (le BO dit « périmètre d'un disque », « cercle » étant l'abus
+> de langage toléré).
+
 1. **R1 — « Premiers pas algébriques »** : nouvelle notion dans la branche `Algèbre` (CM1 à 6e),
    sous-notions « égalités à trous », « nombre inconnu », « programmes de calcul », « suites de
    motifs » ? (reco : oui ; autre nom bienvenu si « Premiers pas algébriques » ne te plaît pas.)
