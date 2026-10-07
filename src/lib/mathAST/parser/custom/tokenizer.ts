@@ -164,6 +164,8 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'log',
 	'exp',
 	'sqrt',
+	// Racine cubique : cbrt(x) = sqrt[3](x)
+	'cbrt',
 	// Inverse trigonometric functions
 	'arcsin',
 	'arccos',
@@ -233,6 +235,7 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'sech', // 4 chars — avant 'sec'
 	'csch', // 4 chars — avant 'csc'
 	'sqrt', // 4 chars
+	'cbrt', // 4 chars — racine cubique, lue sqrt[3]
 	'mean', // 4 chars
 	'ceil', // 4 chars
 	'sin', // 3 chars

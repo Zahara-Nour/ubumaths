@@ -1706,6 +1706,12 @@ class CustomPrattParser {
 			return this.applyColor(MathAST.func('sqrt', args, { power, base: nthRoot }));
 		}
 
+		// cbrt(x) = ∛x : le même nœud que sqrt[3](x), sans quoi l'arbre aurait une
+		// fonction que ni la dérivation ni la normalisation ne connaissent
+		if (name === 'cbrt') {
+			return this.applyColor(MathAST.func('sqrt', args, { power, base: MathAST.number('3') }));
+		}
+
 		const funcNode = MathAST.func(name, args, { power, base });
 		return this.applyColor(funcNode);
 	}
