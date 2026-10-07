@@ -3,8 +3,8 @@
  * STRICTEMENT POSITIF sur ℝ, de façon prouvable sans hypothèse sur les
  * paramètres (décision de 2026-10-07, écriture de classe : ln(x² + 1)).
  *
- * Prouvé positif : nombre non nul, e^{…}, exp(…), carré + positif, produit ou
- * quotient de positifs, trinôme en x de coefficient dominant > 0 et de
+ * Prouvé positif : nombre non nul, e^{…}, b^{…} avec b > 0 prouvé, exp(…),
+ * carré + positif, produit ou quotient de positifs, trinôme en x de coefficient dominant > 0 et de
  * discriminant < 0 (coefficients rationnels). Un paramètre littéral (x² + c)
  * n'est jamais supposé positif : la valeur absolue reste.
  *
@@ -62,7 +62,8 @@ export function isPositive(node: MathNode, variable: string): boolean {
 		case 'delimiter':
 			return isPositive(node.content, variable);
 		case 'superscript':
-			if (isEulerConstant(node.base)) return true;
+			// base > 0 (e, 2, x² + 1) : bʸ > 0 pour tout réel y
+			if (isEulerConstant(node.base) || isPositive(node.base, variable)) return true;
 			return isEvenPower(node) ? isPositive(node.base, variable) : false;
 		case 'function':
 			if (node.name === 'exp') return true;

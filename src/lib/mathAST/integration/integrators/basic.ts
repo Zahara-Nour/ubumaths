@@ -31,6 +31,8 @@ import {
 	getNumericValue
 } from '../rules';
 import { classifyIntegrand } from '../classify';
+import { compile } from '../../eval/compile';
+import { getVariables } from '../../eval/substitute';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 
 // =============================================================================
@@ -137,9 +139,17 @@ function isExponential(expr: MathNode, variable: string): { arg: MathNode } | nu
 	return null;
 }
 
+/** Écart sous lequel une base est tenue pour égale à 0 ou à 1 */
+const BASE_TOLERANCE = 1e-12;
+
 /**
- * aˣ avec a constant, a > 0 et a ≠ 1 (a littéral : supposé admissible, comme
- * dans a/x). La base e est traitée par isExponential.
+ * aˣ avec a constant, a > 0 et a ≠ 1. La base e est traitée par isExponential.
+ *
+ * Convention (la même que 1/(x² + a²) → arctan(x/a)/a et a/x) : un paramètre
+ * littéral est supposé GÉNÉRIQUE — dans aˣ, a > 0 et a ≠ 1. Une base SANS
+ * paramètre ((1 − √2)ˣ, (ln 0,5)ˣ, (cos 0)ˣ) est évaluée numériquement et
+ * refusée si elle est ≤ 0 ou égale à 1 : aˣ / ln a y prendrait le ln d'un
+ * nombre ≤ 0, ou diviserait par ln 1 = 0.
  */
 function isConstantBaseExponential(expr: MathNode, variable: string): { base: MathNode } | null {
 	if (expr.type !== 'superscript') return null;
@@ -150,7 +160,24 @@ function isConstantBaseExponential(expr: MathNode, variable: string): { base: Ma
 	if (isEulerConstant(inner) || inner.type === 'opposite') return null;
 	const rational = extractExactRational(inner);
 	if (rational !== null && (rational.n <= 0n || rational.n === rational.d)) return null;
+	if (rational === null && !hasParameter(inner) && !isAdmissibleBaseValue(inner)) return null;
 	return { base };
+}
+
+/** Paramètre littéral (a, b, α…) ; `e` seule est la constante d'Euler */
+function hasParameter(node: MathNode): boolean {
+	return [...getVariables(node)].some((name) => name !== 'e');
+}
+
+/** Base sans paramètre : valeur finie, > 0 et ≠ 1 (à BASE_TOLERANCE près) */
+function isAdmissibleBaseValue(node: MathNode): boolean {
+	let value: number;
+	try {
+		value = compile(node)({});
+	} catch {
+		return false;
+	}
+	return Number.isFinite(value) && value > BASE_TOLERANCE && Math.abs(value - 1) > BASE_TOLERANCE;
 }
 
 /**

@@ -12,6 +12,13 @@
  * Exemples : ln x / x (u = ln x, f(U) = U), 1/(x ln x) (f(U) = 1/U),
  * cos x · e^{sin x} (f(U) = e^U), (2x+1)(x²+x)³ (f(U) = U³).
  *
+ * Convention sur les paramètres littéraux (la même que 1/(x² + a²) →
+ * arctan(x/a)/a et que aˣ → aˣ / ln a dans basic.ts) : ils sont supposés
+ * GÉNÉRIQUES — a ≠ 0 quand on divise par a, a ≠ b quand deux racines
+ * littérales sont distinctes, base a > 0 et a ≠ 1 dans a^{u}. Une valeur
+ * particulière (a = 0, a = 1) peut rendre la primitive fausse ou non
+ * définie : c'est le cas générique qui est traité, comme en classe.
+ *
  * @module mathAST/integration/integrators/chain-rule
  */
 

@@ -21,7 +21,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'latex:\\sqrt{2}x': 'rendu « \\dfrac{1}{2} \\sqrt{2} x^2 »',
 	'latex:x^{\\frac{3}{2}}': 'rendu « \\dfrac{2}{5} x^2 \\sqrt{x} »',
 	'latex:x^{\\frac{2}{3}}': 'rendu « \\dfrac{3}{5} x \\sqrt[3]{x^2} »',
-	'latex:\\frac{1}{2x}': 'rendu « \\dfrac{1}{2} \\ln\\left( \\left| 2 x \\right| \\right) »',
 	'latex:\\frac{3}{(2x-1)^2}': 'rendu « \\dfrac{-3}{4 x - 2} »',
 	'latex:2x(x^2+1)^3':
 		'rendu « \\dfrac{1}{4} x^8 + x^6 + \\dfrac{3}{2} x^4 + x^2 + \\dfrac{1}{4} »',
@@ -46,7 +45,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 		'rendu « \\dfrac{1}{4} x^8 + x^6 + \\dfrac{3}{2} x^4 + x^2 + \\dfrac{1}{4} »',
 	// Primitives corrigées (facteur 1/a, rationnels exacts) : forme développée par la normalisation finale
 	'latex:(3x-1)^3': 'rendu « \\dfrac{27}{4} x^4 - 9 x^3 + \\dfrac{9}{2} x^2 - x + \\dfrac{1}{12} »',
-	'latex:\\frac{5}{3x}': 'rendu « \\dfrac{5}{3} \\ln\\left( \\left| 3 x \\right| \\right) »',
 	'latex:\\frac{1}{(3x+2)^3}': 'rendu « \\dfrac{-1}{54 x^2 + 72 x + 24} »',
 	'latex:\\sqrt{2x+3}': 'rendu « \\dfrac{2}{3} x \\sqrt{2 x + 3} + \\sqrt{2 x + 3} »',
 	'latex:3\\sqrt{4x+12}': 'rendu « 2 x \\sqrt{4 x + 12} + 6 \\sqrt{4 x + 12} »',

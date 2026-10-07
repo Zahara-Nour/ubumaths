@@ -9,6 +9,12 @@
  * - Δ < 0 : refus, la primitive fait intervenir arctan (hors programme du
  *   lycée) ; racines irrationnelles : refus (non traité).
  *
+ * Convention sur les paramètres littéraux (la même que 1/(x² + a²) →
+ * arctan(x/a)/a et que aˣ → aˣ / ln a dans basic.ts) : ils sont supposés
+ * GÉNÉRIQUES — a ≠ 0 dans x² − a² (sinon racine double, 1/x²), a ≠ b pour
+ * deux racines littérales (sinon racine double), base a > 0 et a ≠ 1. Le
+ * cas particulier n'est pas détecté : c'est le cas générique qui est traité.
+ *
  * @module mathAST/integration/integrators/quadratic-denominator
  */
 

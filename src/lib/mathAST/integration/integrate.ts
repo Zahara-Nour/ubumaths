@@ -46,6 +46,7 @@ import { toCustom } from '../custom-generator';
 import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots';
 import { integrateByChainRule } from './integrators/chain-rule';
 import { dropAbsOfPositive } from './positive-abs';
+import { absorbLnConstantFactors } from './ln-constant';
 
 // =============================================================================
 // Budget global
@@ -754,6 +755,11 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 	// IMPORTANT: Only normalize at the top level (startDepth === 0) to avoid
 	// corrupting intermediate results during recursive integration
 	let finalAntiderivative = result.antiderivative;
+	// ln|u| → ln(u) AVANT la normalisation aussi : sinon ln|u|·ln(u) (parties
+	// sur u′/u · ln u) ne se regroupe pas en (ln u)²
+	if (result.status === 'exact' && finalAntiderivative && startDepth === 0) {
+		finalAntiderivative = dropAbsOfPositive(finalAntiderivative, variable);
+	}
 	if (
 		opts.normalizeResult &&
 		result.status === 'exact' &&
@@ -766,8 +772,10 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
 		}
 	}
-	// ln|u| → ln(u) quand u > 0 sur ℝ (ln(x² + 1), ln(eˣ + 1)) : écriture de classe
+	// ln|c·u| → ln|u| (ln|c| absorbé dans la constante, cf. ln-constant.ts),
+	// puis ln|u| → ln(u) quand u > 0 sur ℝ (ln(x² + 1), ln(eˣ + 1)) : écriture de classe
 	if (result.status === 'exact' && finalAntiderivative && startDepth === 0) {
+		finalAntiderivative = absorbLnConstantFactors(finalAntiderivative, variable);
 		finalAntiderivative = dropAbsOfPositive(finalAntiderivative, variable);
 	}
 	// u^{p/n} (n impair) n'est définie que pour u > 0 : réécrite en racines,
