@@ -7,6 +7,25 @@
 
 ---
 
+## 0. Repartir sur la branche
+
+```bash
+cd /Users/david/Coding/js/ubumaths-wt-arbre      # le worktree existe déjà
+git branch --show-current                        # → feat/arbre-notions
+git log --oneline -15                            # dernier commit : document de reprise
+```
+
+Si le worktree a disparu (la branche, elle, est locale au dépôt principal) :
+
+```bash
+cd /Users/david/Coding/js/ubumaths
+git worktree add ../ubumaths-wt-arbre feat/arbre-notions
+cd ../ubumaths-wt-arbre && cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
+```
+
+⚠️ La branche n'existe **que sur cette machine** (jamais poussée sur GitHub) : ne pas la chercher sur
+`origin`, et ne pas la pousser sans l'accord de David.
+
 ## 1. Où en est le chantier (état exact)
 
 - **Branche LOCALE `feat/arbre-notions`**, worktree `../ubumaths-wt-arbre`. **Jamais poussée.**
@@ -21,9 +40,8 @@
   - fusion des thèmes d'exercices `Fonction` → `Fonctions` (1 ligne), `Bac` → `BAC` (2 lignes) ;
   - fiche « Fonctions : généralités » (seconde), brouillon `41737393`, 14 exercices neufs + « Calcul
     d'images » (`5b233301`) — PR #912, mergée.
-- Fichier non suivi dans le worktree : `docs/wip/arbre-notions/nc-section.html` (intermédiaire produit
-  par `dessin_branches.py`). Ne pas le supprimer sans demander (règle 0 du CLAUDE.md) ; il peut être
-  ignoré.
+- `docs/wip/arbre-notions/nc-section.html` est un intermédiaire produit par `dessin_branches.py`
+  (commité par mégarde avec le reste ; sans importance).
 
 Commits de la branche (du plus ancien au plus récent) : `37f9f784b` arbre validé → `e0c28d6cc`
 descripteurs → `f81530622` accès → `46dbefa30` / `bcb2cec22` phase 0 → `478b989ed` migration + tests →
