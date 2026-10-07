@@ -18,14 +18,14 @@ export const GRADE_CODES = [
 	'3',
 	// High school (ages 15-18)
 	'2', // Seconde (common)
-	'1_GEN', // 1ère générale
-	'T_GEN', // Terminale générale
+	'1_GEN', // 1ère générale (maths spécifiques de l'enseignement scientifique)
+	'T_GEN', // Terminale générale (pas de maths dans le tronc commun)
 	'1_SPE', // 1ère spécialité maths
 	'T_SPE', // Terminale spécialité maths
 	'T_EXP', // Terminale maths expertes
 	'T_COMP', // Terminale maths complémentaires
-	'1_STMG', // 1ère STMG
-	'T_STMG' // Terminale STMG
+	'1_TECHNO', // 1ère technologique (maths du tronc commun, toutes séries)
+	'T_TECHNO' // Terminale technologique (maths du tronc commun, toutes séries)
 ] as const;
 
 export type GradeCode = (typeof GRADE_CODES)[number];
@@ -34,7 +34,7 @@ export type GradeCode = (typeof GRADE_CODES)[number];
 export type SchoolLevel = 'primary' | 'middle' | 'high';
 
 // High school tracks (after 2nde)
-export type HighSchoolTrack = 'general' | 'spe_maths' | 'stmg';
+export type HighSchoolTrack = 'general' | 'spe_maths' | 'techno';
 
 // Math intensity levels
 export type MathsIntensity = 'basic' | 'standard' | 'advanced' | 'expert';
@@ -152,7 +152,7 @@ export const GRADES: Record<GradeCode, GradeInfo> = {
 	// General track
 	'1_GEN': {
 		code: '1_GEN',
-		displayName: '1ère générale',
+		displayName: '1ère générale (maths spécifiques)',
 		shortName: '1ère G',
 		level: 'high',
 		schoolYear: 11,
@@ -217,26 +217,27 @@ export const GRADES: Record<GradeCode, GradeInfo> = {
 		prerequisites: ['1_GEN'] // Students who didn't take spé maths in 1ère
 	},
 
-	// STMG track
-	'1_STMG': {
-		code: '1_STMG',
-		displayName: '1ère STMG',
-		shortName: '1ère STMG',
+	// Voie technologique — le programme de maths du tronc commun est COMMUN aux
+	// séries (ST2S, STL, STD2A, STI2D, STMG, STHR), d'où un seul grade par année.
+	'1_TECHNO': {
+		code: '1_TECHNO',
+		displayName: '1ère technologique',
+		shortName: '1ère techno',
 		level: 'high',
 		schoolYear: 11,
-		track: 'stmg',
+		track: 'techno',
 		mathsIntensity: 'basic',
 		prerequisites: ['2']
 	},
-	T_STMG: {
-		code: 'T_STMG',
-		displayName: 'Terminale STMG',
-		shortName: 'Term STMG',
+	T_TECHNO: {
+		code: 'T_TECHNO',
+		displayName: 'Terminale technologique',
+		shortName: 'Term techno',
 		level: 'high',
 		schoolYear: 12,
-		track: 'stmg',
+		track: 'techno',
 		mathsIntensity: 'basic',
-		prerequisites: ['1_STMG']
+		prerequisites: ['1_TECHNO']
 	}
 };
 
@@ -262,10 +263,10 @@ export function hasHighSchoolTrack(
  *
  * La comparaison porte sur l'année et non sur la voie, ce qui inclut d'office
  * les filières parallèles : un contenu de 1ʳᵉ spé donne accès aux programmes de
- * 1ʳᵉ générale et de 1ʳᵉ STMG, toutes en année 11.
+ * 1ʳᵉ générale et de 1ʳᵉ technologique, toutes en année 11.
  *
  * `grades` liste justement des voies parallèles — une question valable en 1ʳᵉ
- * spé et en 1ʳᵉ STMG — donc ses codes partagent en pratique la même année et le
+ * spé et en 1ʳᵉ techno — donc ses codes partagent en pratique la même année et le
  * choix ci-dessous ne se voit pas. On retient malgré tout la plus basse : si un
  * jour des années différentes y cohabitent, c'est le premier moment de la
  * scolarité où l'auteur a déclaré la question pertinente.
@@ -293,8 +294,8 @@ export const HIGH_GRADES: GradeCode[] = [
 	'T_SPE',
 	'T_EXP',
 	'T_COMP',
-	'1_STMG',
-	'T_STMG'
+	'1_TECHNO',
+	'T_TECHNO'
 ];
 
 // Grade options for UI selectors
@@ -359,7 +360,7 @@ export const CYCLES: Record<CycleCode, CycleInfo> = {
 		code: 'cycle_terminal',
 		name: 'Cycle terminal',
 		shortName: 'Cycle terminal',
-		grades: ['1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_STMG', 'T_STMG'],
+		grades: ['1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_TECHNO', 'T_TECHNO'],
 		ageRange: [16, 18]
 	}
 };

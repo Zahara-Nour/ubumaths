@@ -208,8 +208,8 @@ describe('common validation schemas', () => {
 				'T_SPE',
 				'T_EXP',
 				'T_COMP',
-				'1_STMG',
-				'T_STMG'
+				'1_TECHNO',
+				'T_TECHNO'
 			];
 			validGrades.forEach((grade) => {
 				const result = gradeSchema.safeParse(grade);
@@ -295,7 +295,7 @@ describe('common validation schemas', () => {
 				'4': '4ème',
 				'3': '3ème',
 				'2': '2nde',
-				'1_GEN': '1ère générale',
+				'1_GEN': '1ère générale (maths spécifiques)',
 				T_GEN: 'Terminale générale',
 				'1_SPE': '1ère spécialité maths',
 				T_SPE: 'Terminale spécialité maths'
