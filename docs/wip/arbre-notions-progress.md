@@ -227,3 +227,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   spé → mêmes références ; pas de géométrie ; discriminant explicitement exclu. Proposé :
   0 notion, 2 sous-notions (taux d'évolution moyen, fonctions x ↦ aˣ) + question du libellé
   de niveau (« 1re ens. sci. »). Questions W1-W4 en attente.
+
+- **Règle des Automatismes précisée par David (2026-10-07, module 1re ens. sci.)** : une
+  référence `curriculum_point_automatismes` vise un point des années PRÉCÉDENTES du parcours
+  de l'élève (cycle 4, 2de) ou un point du MÊME programme (contenu neuf de l'année) — jamais
+  un point d'un programme parallèle d'une autre voie (le module `1_GEN` ne référence pas un
+  point `1_SPE`, même quand les listes d'automatismes sont identiques). Contrainte à inscrire
+  dans la spec du schéma cible. Doc corrigé (`programmes-ecarts-1re-ens-sci.md`).

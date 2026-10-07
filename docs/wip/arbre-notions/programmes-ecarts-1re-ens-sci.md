@@ -29,10 +29,17 @@ gauche (mouvement parabolique, Monty Hall, Malthus, carbone 14…) = contextes, 
 ## Ce que l'ADR 0020 change pour ce module
 
 1. **Les Automatismes sont identiques, mot pour mot, à ceux de la 1re spé** (cinq rubriques,
-   mêmes puces, même phrase sur la liste de 2de à entretenir) → mêmes **références**
-   `curriculum_point_automatismes`, portées par le grade `1_GEN`, vers les mêmes cibles —
-   y compris la référence interne « signe d'une expression factorisée du second degré » vers
-   le point du module lui-même (Modélisation quadratique). Aucun point nouveau.
+   mêmes puces, même phrase sur la liste de 2de à entretenir) → des **références**
+   `curriculum_point_automatismes` portées par le grade `1_GEN`. ⚠️ **Précision de David
+   (2026-10-07)** : une référence vise un point des années **précédentes du parcours de
+   l'élève** (cycle 4, 2de) ou un point du **même programme** (contenu neuf de l'année) —
+   **jamais un point de `1_SPE`**, programme parallèle que ces élèves ne suivent pas. Si les
+   cibles coïncident avec celles du doc 1re spé, c'est uniquement parce que ce sont des
+   points de cycle 4 et de 2de, communs aux deux parcours ; la seule puce dont la cible
+   diffère est « signe d'une expression factorisée du second degré », référence **interne**
+   au point du module (Modélisation quadratique) — comme en spé elle vise le point de la
+   spé, chacun chez soi. Aucun point nouveau. Cette contrainte (le point référencé appartient
+   au parcours du grade) est à inscrire dans la spécification du schéma cible.
 2. **Un programme parallèle, pas antérieur** : il introduit, pour sa population, des contenus
    que la 1re spé introduit par ailleurs (suites arithmétiques et géométriques, parabole,
    conditionnelles). Affaire de **pointage** : les deux programmes pointent les mêmes nœuds,
@@ -56,9 +63,10 @@ taillé pour la culture mathématique du citoyen.
 
 ---
 
-## Automatismes (tous : RÉFÉRENCES du module — règle ci-dessus)
+## Automatismes (tous : RÉFÉRENCES du module vers cycle 4 / 2de / lui-même — règle ci-dessus)
 
-Liste identique à la 1re spé, mêmes cibles : **Évolutions et variations** → `Évolutions >
+Les cibles ci-dessous sont toutes des points de **cycle 4 ou de 2de** (années du parcours de
+ces élèves), sauf la référence interne signalée : **Évolutions et variations** → `Évolutions >
 variations en pourcentage, évolutions successives et réciproque` ; **Calcul numérique et
 algébrique** → `Équations : produit et quotient > produit nul`, `Fonctions affines >
 variations et signe`, `Inégalités > signe d'une expression`, `Calcul littéral`, et le signe
