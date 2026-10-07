@@ -245,6 +245,7 @@ const LATEX_CASES: PrimitiveCase[] = [
 		['\\frac{2}{x^2}+3x', '-\\frac{2}{x}+\\frac{3}{2}x^2', '-\\frac{2}{x}+\\frac{3x^2}{2}'],
 		['\\frac{1}{3x^2}', '-\\frac{1}{3x}'],
 		['\\frac{x^2+1}{x^2}', 'x-\\frac{1}{x}'],
+		['\\frac{x^3-2x+1}{x^2}', '\\frac{1}{2}x^2-2\\ln|x|-\\frac{1}{x}'],
 		['x^{-1}', '\\ln|x|']
 	]),
 	// --- x^n : n fractionnaire (x > 0) ---
@@ -259,7 +260,8 @@ const LATEX_CASES: PrimitiveCase[] = [
 			['5\\sqrt{x}', '\\frac{10}{3}x^{\\frac{3}{2}}', '\\frac{10}{3}x\\sqrt{x}'],
 			['x\\sqrt{x}', '\\frac{2}{5}x^{\\frac{5}{2}}', '\\frac{2}{5}x^2\\sqrt{x}'],
 			['x^{\\frac{2}{3}}', '\\frac{3}{5}x^{\\frac{5}{3}}'],
-			['x^{0.5}', '\\frac{2}{3}x^{1.5}', '\\frac{2}{3}x^{\\frac{3}{2}}']
+			['x^{0.5}', '\\frac{2}{3}x^{1.5}', '\\frac{2}{3}x^{\\frac{3}{2}}'],
+			['\\frac{1}{x\\sqrt{x}}', '-\\frac{2}{\\sqrt{x}}']
 		],
 		{ points: POSITIVE }
 	),
@@ -268,7 +270,8 @@ const LATEX_CASES: PrimitiveCase[] = [
 	...latex('puissance', [
 		['\\sqrt[3]{x}', '\\frac{3}{4}x\\sqrt[3]{x}'],
 		['x\\sqrt[3]{x}', '\\frac{3}{7}x^2\\sqrt[3]{x}'],
-		['\\frac{1}{\\sqrt[3]{x^2}}', '3\\sqrt[3]{x}']
+		['\\frac{1}{\\sqrt[3]{x^2}}', '3\\sqrt[3]{x}'],
+		['\\sqrt[3]{x^2}', '\\frac{3}{5}x\\sqrt[3]{x^2}']
 	]),
 
 	// --- 1/x ---
@@ -281,6 +284,7 @@ const LATEX_CASES: PrimitiveCase[] = [
 		['\\frac{1}{x}+x', '\\ln|x|+\\frac{1}{2}x^2', '\\ln|x|+\\frac{x^2}{2}'],
 		['2-\\frac{4}{x}', '2x-4\\ln|x|'],
 		['\\frac{x+1}{x}', 'x+\\ln|x|'],
+		['\\frac{x^2+1}{x}', '\\frac{1}{2}x^2+\\ln|x|', '\\frac{x^2}{2}+\\ln|x|'],
 		['\\frac{x^2-3}{x}', '\\frac{1}{2}x^2-3\\ln|x|', '\\frac{x^2}{2}-3\\ln|x|'],
 		['\\frac{1}{x}-\\frac{1}{x^2}', '\\ln|x|+\\frac{1}{x}'],
 		['\\frac{2x+1}{x}', '2x+\\ln|x|']
@@ -541,8 +545,16 @@ const LATEX_CASES: PrimitiveCase[] = [
 	...latex(
 		'racine-affine',
 		[
-			['\\frac{1}{\\sqrt{x}}+\\sqrt{x}', '2\\sqrt{x}+\\frac{2}{3}x^{\\frac{3}{2}}'],
-			['\\sqrt{x}(x+1)', '\\frac{2}{5}x^{\\frac{5}{2}}+\\frac{2}{3}x^{\\frac{3}{2}}']
+			[
+				'\\frac{1}{\\sqrt{x}}+\\sqrt{x}',
+				'2\\sqrt{x}+\\frac{2}{3}x^{\\frac{3}{2}}',
+				'2\\sqrt{x}+\\frac{2}{3}x\\sqrt{x}'
+			],
+			[
+				'\\sqrt{x}(x+1)',
+				'\\frac{2}{5}x^{\\frac{5}{2}}+\\frac{2}{3}x^{\\frac{3}{2}}',
+				'\\frac{2}{5}x^2\\sqrt{x}+\\frac{2}{3}x\\sqrt{x}'
+			]
 		],
 		{ points: POSITIVE }
 	),

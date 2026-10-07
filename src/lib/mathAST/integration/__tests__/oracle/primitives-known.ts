@@ -96,8 +96,5 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'latex:\\sin^2(x)': 'rendu « \\dfrac{1}{2} x - \\dfrac{1}{4} \\sin\\left( 2 x \\right) »',
 	'latex:\\cos^2(x)': 'rendu « \\dfrac{1}{2} x + \\dfrac{1}{4} \\sin\\left( 2 x \\right) »',
 	'latex:\\frac{2}{1-x^2}':
-		'rendu « \\ln\\left( \\left| x + 1 \\right| \\right) - \\ln\\left( \\left| x - 1 \\right| \\right) »',
-	// Intégrales définies : valeur numérique seulement (primitive non trouvée), juste à 1e-4
-	'def:latex:\\frac{1}{x^2} [1 ; 2]': 'approximation 0.5000000056691063 au lieu de 1/2',
-	'def:latex:\\sqrt{x} [0 ; 4]': 'approximation 5.3333332873618104 au lieu de 16/3'
+		'rendu « \\ln\\left( \\left| x + 1 \\right| \\right) - \\ln\\left( \\left| x - 1 \\right| \\right) »'
 };
