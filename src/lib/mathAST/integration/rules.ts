@@ -8,7 +8,7 @@
  */
 
 import type { MathNode } from '../types';
-import { add, opposite, func, ln, cos, sin, variable } from '../factory';
+import { add, opposite, func, ln, cos, sin, variable, divide, power } from '../factory';
 import { isNumber, isVariable, isZero, isOne } from '../guards';
 import {
 	getNumericValue,
@@ -152,6 +152,17 @@ export function expRule(exponent: MathNode): MathNode {
 
 	// General case: assume coefficient is 1
 	return func('exp', [exponent]);
+}
+
+/**
+ * Exponentielle de base a : ∫ aˣ dx = aˣ / ln a (a > 0, a ≠ 1).
+ *
+ * @param base - La base a, telle qu'écrite (parenthèses gardées dans aˣ)
+ * @param varNode - La variable x
+ */
+export function exponentialBaseRule(base: MathNode, varNode: MathNode): MathNode {
+	const lnArgument = base.type === 'delimiter' ? base.content : base;
+	return divide(power(base, varNode), ln(lnArgument), 'fraction');
 }
 
 /**
