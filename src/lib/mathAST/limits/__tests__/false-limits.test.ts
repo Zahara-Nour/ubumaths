@@ -310,3 +310,36 @@ describe('racine cubique d’un négatif : jamais « n’existe pas » (revue de
 		expect(limitOf('\\sqrt{x}', '0', 'left')).toMatch(/^does-not-exist/);
 	});
 });
+
+describe('oscillation sans borne en +∞ : aucune valeur (oracle osc-08)', () => {
+	// eˣ·sin x, x²·cos x : |f| grandit, le signe alterne à chaque demi-période.
+	// En x = 50 : e⁵⁰·sin 50 ≈ −1,4e21 ; en x = 51,5 : ≈ +5,9e21 → ni +∞ ni −∞.
+	// Ni un facteur constant (3·), ni une constante ajoutée (2 −) n'y changent rien.
+	it.each([
+		'e^x\\sin x',
+		'3e^x\\sin x',
+		'3(e^x\\sin x)',
+		'2-3e^x\\sin x',
+		'x^2\\cos x',
+		'-e^x\\cos(2x)'
+	])('%s en +∞ → aucune valeur', (input) => {
+		const result = limitOf(input, '+inf');
+		expect(hasNoValue(result), `${input} : ${result}`).toBe(true);
+	});
+
+	it('le débordement de eˣ ne donne pas de signe : (eˣ sin x) n’est classé ni +∞ ni −∞', () => {
+		const sign = classifyWithSign(parseLatex('(e^x\\sin x)'), 'x', positiveInfinity(), 'both');
+		expect(sign.type).toBe('unknown');
+	});
+
+	// Non-régressions : borné de signe strict, borné × 0, ∞ + borné
+	it.each([
+		['e^x(2+\\sin x)', 'infinite +inf'],
+		['e^{-x}\\sin x', 'exact 0'],
+		['x+\\sin x', 'infinite +inf'],
+		['e^x', 'infinite +inf'],
+		['-e^{2x}', 'infinite -inf']
+	])('%s en +∞ → %s', (input, expected) => {
+		expect(limitOf(input, '+inf')).toBe(expected);
+	});
+});

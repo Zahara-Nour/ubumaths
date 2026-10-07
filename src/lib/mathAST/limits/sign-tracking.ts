@@ -330,20 +330,59 @@ function classifyAtFinitePoint(
 	return { type: 'finite', value: lastValue };
 }
 
+/** Pas et nombre de points de la fenêtre : 16 × 0,5 = 8 > 2π. */
+const OSCILLATION_STEP = 0.5;
+const OSCILLATION_POINTS = 16;
+
+/**
+ * Le signe de f change-t-il sur une fenêtre de longueur 8 (> 2π) après chaque
+ * point d'échantillonnage ? Trois points isolés peuvent tomber, par hasard,
+ * du même côté d'une oscillation (−eˣ·cos 2x) : une période complète, non.
+ * Les débordements (±Infinity) comptent avec leur signe.
+ */
+function oscillatesNear(expr: MathNode, varName: string, testValues: readonly number[]): boolean {
+	for (const start of testValues) {
+		const direction = Math.sign(start);
+		let positiveSeen = false;
+		let negativeSeen = false;
+		for (let i = 0; i < OSCILLATION_POINTS; i++) {
+			const value = evaluateNumeric(expr, varName, start + direction * i * OSCILLATION_STEP);
+			if (value === null || Number.isNaN(value)) continue;
+			if (value > 0) positiveSeen = true;
+			if (value < 0) negativeSeen = true;
+			if (positiveSeen && negativeSeen) return true;
+		}
+	}
+	return false;
+}
+
 /**
  * Classify at infinity.
  */
 function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean): SignedLimitValue {
 	const testValues = positive ? [1e6, 1e8, 1e10] : [-1e6, -1e8, -1e10];
 	const results: number[] = [];
+	const overflows: number[] = [];
 
 	for (const testVal of testValues) {
 		const result = evaluateNumeric(expr, varName, testVal);
-		if (result === Infinity) return { type: 'pos-infinity' };
-		if (result === -Infinity) return { type: 'neg-infinity' };
-		if (result !== null && Number.isFinite(result)) {
+		if (result === Infinity || result === -Infinity) {
+			overflows.push(result);
+		} else if (result !== null && Number.isFinite(result)) {
 			results.push(result);
 		}
+	}
+
+	// Un débordement (e^(1e6) = Infinity) ne prouve qu'une chose : |f| est
+	// immense. Son signe peut venir d'un facteur qui oscille — eˣ·sin x était
+	// rendu −∞ parce que sin(1e6) < 0. On ne conclut ±∞ que si tous les
+	// échantillons ET une fenêtre plus longue qu'une période gardent le signe.
+	if (overflows.length > 0) {
+		const samples = [...results, ...overflows];
+		const sign = Math.sign(overflows[0]);
+		if (samples.some((v) => Math.sign(v) !== sign)) return { type: 'unknown' };
+		if (oscillatesNear(expr, varName, testValues)) return { type: 'unknown' };
+		return sign > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
 	}
 
 	if (results.length === 0) {
@@ -366,6 +405,7 @@ function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean):
 		// If values are growing proportionally with test values, it's tending to infinity
 		// e.g., for f(x) = x, results would be [1e6, 1e8, 1e10] - growing by 100x each time
 		if (lastAbs > 1e8 && lastAbs > firstAbs * 10) {
+			if (oscillatesNear(expr, varName, testValues)) return { type: 'unknown' };
 			return lastResult > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
 		}
 	}

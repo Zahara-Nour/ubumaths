@@ -23,8 +23,5 @@ export const KNOWN_WRONG: Readonly<Record<string, string>> = {
 	'ln-02': 'exact −∞ pour ln x en 0⁺',
 	'ln-04': 'exact +∞ pour x/ln x en +∞',
 	'ln-29': 'exact +∞ pour x²/ln x en +∞',
-	'edge-09': 'exact +∞ pour √(x−1)/(x−1) en 1⁺',
-	// Valeur là où il n'y a pas de limite (eˣ·sin x oscille sans borne)
-	'osc-08~2-3f':
-		'infinite +∞ pour 2 − 3·eˣ sin x en +∞ (les deux modes depuis le retrait des parenthèses)'
+	'edge-09': 'exact +∞ pour √(x−1)/(x−1) en 1⁺'
 };
