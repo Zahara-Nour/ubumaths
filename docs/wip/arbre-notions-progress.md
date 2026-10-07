@@ -493,3 +493,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   codes explicites, fluence = calcul mental). Preuve rouge faite (3 tests), puis VERT :
   comparaison intégrale fixture ↔ base en lecture anonyme (79/79 avec les voisins).
   Correspondance : 3 chemins « moitié » répercutés dans modeles.csv.
+
+- **Document de seed cycle 2 rédigé (2026-10-08, « cycle 2 » de David)** :
+  `docs/wip/arbre-notions/seed-cycle2.md` — 227 points (CP 69, CE1 82, CE2 76), Annexe 4
+  du BOENJS n° 41 du 31-10-2024 extraite ligne à ligne (38 p., colonne « Objectifs
+  d'apprentissage » seule). Conventions du seed CM reconduites ; AUCUNE scission, aucun
+  changement d'arbre (le .13 absorbe tout) ; fluence = 30 points de calcul mental ;
+  8 rattachements discutables listés (dont assemblages → Solides, montants en euro →
+  Monnaie). EN ATTENTE DE VALIDATION (V1) — aucune migration avant.
