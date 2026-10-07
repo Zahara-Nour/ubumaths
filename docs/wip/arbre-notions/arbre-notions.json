@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.11",
-	"statut": "validé par David (cycles 2-4 + 2de + 1re/Tle spé + Tle comp. + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lot Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.12",
+	"statut": "validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -206,7 +206,12 @@
 				{
 					"nom": "Congruences",
 					"niveaux": "Expertes",
-					"sous_notions": ["congruences", "chiffrement"],
+					"sous_notions": [
+						"congruences",
+						"équations ax ≡ b [n]",
+						"petit théorème de Fermat",
+						"chiffrement"
+					],
 					"note": null
 				}
 			]
@@ -217,7 +222,13 @@
 				{
 					"nom": "Forme algébrique",
 					"niveaux": "Expertes",
-					"sous_notions": ["calculs", "conjugaison", "inverse et quotient", "équations"],
+					"sous_notions": [
+						"calculs",
+						"conjugaison",
+						"inverse et quotient",
+						"formule du binôme",
+						"équations"
+					],
 					"note": null
 				},
 				{
@@ -231,6 +242,7 @@
 					"niveaux": "Expertes",
 					"sous_notions": [
 						"forme trigonométrique",
+						"formules d'addition et de duplication",
 						"forme exponentielle",
 						"formule de Moivre",
 						"formules d'Euler"
@@ -782,7 +794,12 @@
 				{
 					"nom": "Chaînes de Markov",
 					"niveaux": "Expertes",
-					"sous_notions": ["graphe probabiliste", "matrice de transition", "état stable"],
+					"sous_notions": [
+						"graphe probabiliste",
+						"matrice de transition",
+						"distribution après n transitions",
+						"état stable"
+					],
 					"note": "vient de l'ancien domaine Chaînes de Markov (3 modèles)"
 				}
 			]

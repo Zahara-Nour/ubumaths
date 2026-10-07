@@ -314,3 +314,17 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (formule du binôme, formules d'addition et de duplication, petit théorème de Fermat,
   équations ax ≡ b [n], distribution après n transitions) + 2 requalifications en points.
   Questions AA1-AA3 en attente.
+
+- **Expertes appliquées (2026-10-07, « je valide tout », AA1-AA3) — TOUR DES PROGRAMMES
+  COMPLET** : 5 sous-notions — formule du binôme (Forme algébrique), formules d'addition et
+  de duplication (Formes trigo. et exponentielle — seul programme introducteur depuis la
+  réforme 2026), équations ax ≡ b [n] et petit théorème de Fermat (Congruences),
+  distribution après n transitions (Chaînes de Markov) ; premiers entre eux et infinité des
+  nombres premiers = points → 19 branches, **136 notions, 537 sous-notions** (JSON
+  2026-10-07.12), diagramme republié. TOUS les programmes CP→Tle, toutes voies, sont au
+  gabarit v2 (11 documents : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens.
+  sci., 1re/Tle techno) ; `programmes-ecarts.md` (v1) est entièrement remplacé, conservé en
+  archive. Prochaine étape du chantier : spécification du schéma cible ADR 0020
+  (points→nœuds, références d'automatismes par parcours, régime automatisme, 6e d'avril
+  2025 en premier seed — phase 0 TDD à faire valider), puis relance de la table de
+  correspondance sur l'arbre élargi.

@@ -215,12 +215,12 @@ GR=[
 ("Vocabulaire des graphes","Expertes",[("",["sommets, arêtes, degré","graphe orienté","modélisation par un graphe"])],None),
 ("Chaînes et connexité","Expertes",[("",["chaînes et cycles","connexité"])],None),
 ("Matrice d'adjacence","Expertes",[("",["matrice d'adjacence","nombre de chaînes de longueur n"])],None),
-("Chaînes de Markov","Expertes",[("",["graphe probabiliste","matrice de transition","état stable"])],"vient de l'ancien domaine Chaînes de Markov (3 modèles)"),
+("Chaînes de Markov","Expertes",[("",["graphe probabiliste","matrice de transition","distribution après n transitions","état stable"])],"vient de l'ancien domaine Chaînes de Markov (3 modèles)"),
 ]
 CX=[
-("Forme algébrique","Expertes",[("",["calculs","conjugaison","inverse et quotient","équations"])],None),
+("Forme algébrique","Expertes",[("",["calculs","conjugaison","inverse et quotient","formule du binôme","équations"])],None),
 ("Module et argument","Expertes",[("",["module","argument"])],None),
-("Formes trigo. et exponentielle","Expertes",[("",["forme trigonométrique","forme exponentielle","formule de Moivre","formules d'Euler"])],None),
+("Formes trigo. et exponentielle","Expertes",[("",["forme trigonométrique","formules d'addition et de duplication","forme exponentielle","formule de Moivre","formules d'Euler"])],None),
 ("Équations polynomiales","Expertes",[("",["second degré","racines d'un polynôme","degré 3 et factorisation"])],None),
 ("Interprétation géométrique","Expertes",[("",["affixes et distances","alignement et orthogonalité","angles et quotient","ensembles de points","racines de l'unité"])],None),
 ]
@@ -228,7 +228,7 @@ AR=[
 ("Divisibilité","CE1 à Expertes",[("",["pair ou impair","multiples et diviseurs","critères de divisibilité","division euclidienne"])],"reprend aussi l'ancien « Entiers : diviser, divisibilité » (CE2 à CM2) ; parité dès le CE1"),
 ("Nombres premiers","3e, Expertes",[("",["reconnaître un nombre premier","décomposition en facteurs premiers"])],None),
 ("PGCD, Bézout et Gauss","Expertes",[("",["PGCD","théorèmes de Bézout et de Gauss","équations diophantiennes"])],None),
-("Congruences","Expertes",[("",["congruences","chiffrement"])],None),
+("Congruences","Expertes",[("",["congruences","équations ax ≡ b [n]","petit théorème de Fermat","chiffrement"])],None),
 ]
 nc=build(NC,"Nombres","et calculs","Branche Nombres et calculs, rangée par type de nombre : 16 notions et leurs sous-notions","c1")
 pr=build(PR,"Proportion-","nalité","Branche Proportionnalité : 5 notions et leurs sous-notions","c2")
@@ -313,7 +313,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.11","statut":"validé par David (cycles 2-4 + 2de + 1re/Tle spé + Tle comp. + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lot Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.12","statut":"validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))

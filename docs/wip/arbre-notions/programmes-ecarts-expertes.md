@@ -161,6 +161,11 @@ Markov` > **« distribution après n transitions »** (filtre : LA famille calcu
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (AA1-AA3 — 5 sous-notions,
+> premiers entre eux et infinité des nombres premiers = points). Appliqué à l'arbre :
+> version 2026-10-07.12 — 136 notions, 537 sous-notions. **Le tour CP → Terminale, toutes
+> voies, est COMPLET au gabarit v2.**
+
 1. **AA1 — Nombres complexes** : « formule du binôme » (Forme algébrique) ; « formules
    d'addition et de duplication » (Formes trigo. et exponentielle). (reco : oui, oui.)
 2. **AA2 — Arithmétique** : « petit théorème de Fermat » et « équations ax ≡ b [n] »
