@@ -15,11 +15,17 @@
 
 import { describe, it, expect } from 'vitest';
 import { GENERATED_VARIANTS, ORACLE_CORPUS, WAITING_LIST, type OracleEntry } from './corpus';
-import { checkExpectedNumerically, describeWrong, judgeEntry, type Verdict } from './harness';
+import {
+	buildLimit,
+	checkExpectedNumerically,
+	describeWrong,
+	judgeEntry,
+	type Verdict
+} from './harness';
 import { KNOWN_WRONG } from './known-wrong';
 
 /** Plancher de couverture (entrées avec une réponse juste / total). */
-const COVERAGE_FLOOR = 0.57;
+const COVERAGE_FLOOR = 0.72;
 /** Budget de temps du jugement complet (ms). */
 const TIME_BUDGET_MS = 5000;
 
@@ -50,6 +56,15 @@ describe('oracle numérique des limites', () => {
 	it('les identifiants du corpus sont uniques', () => {
 		const ids = [...ALL_ENTRIES, ...WAITING_LIST].map((entry) => entry.id);
 		expect(new Set(ids).size).toBe(ids.length);
+	});
+
+	it('portée de \\lim : chaque entrée se lit SANS parenthèses après \\lim', () => {
+		// Décision du 2026-10-07 : `\\lim_{x\\to a} f` porte sur tout f. Le
+		// harnais ne retombe plus jamais sur `\\lim_{x\\to a}\\left(f\\right)`.
+		const wrapped = ALL_ENTRIES.filter(
+			(entry) => buildLimit(entry).latex !== `\\lim_{x\\to ${entry.at}}${entry.f}`
+		).map((entry) => entry.id);
+		expect(wrapped).toEqual([]);
 	});
 
 	it('le corpus est juste : chaque attendu est confirmé numériquement', () => {

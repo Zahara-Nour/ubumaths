@@ -457,6 +457,27 @@ const classics = family('classiques du supérieur', 'sup-', [
 	[PINF, '\\frac{x^{100}}{e^{x}}', '0']
 ]);
 
+// Saisies SANS parenthèses après `\lim`, relevées dans le contenu en
+// production (2026-10-07) : depuis la décision du même jour, `\lim` porte sur
+// toute l'expression qui suit. Le harnais construit `\lim_{x\to a} f` tel quel ;
+// le test « portée de \lim » vérifie qu'aucune n'a besoin de parenthèses.
+const unparenthesized = family('sans parenthèses', 'bare-', [
+	[PINF, 'x^2+3x+1', '+inf'],
+	[PINF, '3\\sqrt{x}', '+inf'],
+	[PINF, '\\sqrt{x^2+1}-x', '0'],
+	['0', '\\frac{\\sin x}{x}+1', '2'],
+	['0', '1-\\frac{\\sin x}{x}', '0'],
+	// 2 − 3/ln x (contenu réel) converge trop lentement pour l'échantillonnage :
+	// testé à part (scope-without-parentheses.test.ts), remplacé ici par 3/√x
+	[PINF, '2-\\dfrac{3}{x}', '2'],
+	[PINF, '2-\\dfrac{3}{\\sqrt{x}}+\\frac{1}{x}', '2'],
+	[PINF, '\\frac{1}{x+1}+\\frac{1}{x}', '0'],
+	[PINF, '-2x^{3}+x', '-inf'],
+	['0^+', '\\frac{1}{x}+\\frac{\\sin x}{x}', '+inf'],
+	['0', '\\frac{e^x-1}{x}+\\cos x', '2'],
+	['1', '\\frac{x^2-1}{x-1}-x', '1']
+]);
+
 export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	polynomials,
 	rationalAtInfinity,
@@ -471,7 +492,8 @@ export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	oscillating,
 	domainEdges,
 	indeterminateForms,
-	classics
+	classics,
+	unparenthesized
 ];
 
 /**
