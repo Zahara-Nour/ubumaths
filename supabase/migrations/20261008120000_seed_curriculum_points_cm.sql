@@ -8,44 +8,67 @@
 -- grade, rubrique du BO. Codes explicites (le trigger d'auto-code exige un
 -- objectif). Premier programme écrit dans l'architecture points → nœuds.
 --
--- MIGRATION ADDITIVE. Rollback :
---   delete from public.curriculum_points where grade in ('CM1', 'CM2');
+-- MIGRATION ADDITIVE. Rollback (⚠️ chaque cible est SCOPÉE par son parent :
+-- « double et moitié » et « droite graduée » existent AILLEURS dans l'arbre,
+-- un filtre par nom seul toucherait des nœuds antérieurs à cette migration) :
+--   delete from public.curriculum_points
+--     where code like 'CM1-%' or code like 'CM2-%';
 --   update public.classification_nodes set name = 'arrondir'
---     where name = 'arrondis et ordres de grandeur' and kind = 'subnotion';
+--     where kind = 'subnotion' and name = 'arrondis et ordres de grandeur'
+--       and parent_id = (select id from public.classification_nodes
+--                         where kind = 'notion' and name = 'Décimaux : numération');
 --   update public.classification_nodes set name = 'moitié'
---     where name = 'double et moitié' and kind = 'subnotion';
+--     where kind = 'subnotion' and name = 'double et moitié'
+--       and parent_id = (select id from public.classification_nodes
+--                         where kind = 'notion' and name = 'Décimaux : calculs');
 --   delete from public.classification_nodes where kind = 'subnotion'
---     and name in ('calcul réfléchi', 'droite graduée');
+--     and name = 'calcul réfléchi'
+--     and parent_id = (select id from public.classification_nodes
+--                       where kind = 'notion' and name = 'Entiers : division');
+--   delete from public.classification_nodes where kind = 'subnotion'
+--     and name = 'droite graduée'
+--     and parent_id = (select id from public.classification_nodes
+--                       where kind = 'notion' and name = 'Décimaux : numération');
 --   delete from public.classification_nodes where kind = 'notion'
---     and name = 'Préalgorithmique';
+--     and name = 'Préalgorithmique'
+--     and parent_id = (select id from public.classification_nodes
+--                       where kind = 'branch' and name = 'Algorithmique');
 --   update public.classification_nodes set position = position - 1
 --     where kind = 'notion' and position > 0 and parent_id =
 --       (select id from public.classification_nodes where kind = 'branch' and name = 'Algorithmique');
 -- ============================================================================
 
 -- ---- 1. L'arbre : 2 renommages, 2 sous-notions, 1 notion -------------------
+-- Les notions sont scopées par leur BRANCHE : un nom de notion n'est unique
+-- que dans sa fratrie, et un insert…select sur un homonyme serait silencieux.
 
 update public.classification_nodes
    set name = 'arrondis et ordres de grandeur'
  where kind = 'subnotion' and name = 'arrondir'
-   and parent_id = (select id from public.classification_nodes where kind = 'notion' and name = 'Décimaux : numération');
+   and parent_id = (select id from public.classification_nodes
+                     where kind = 'notion' and name = 'Décimaux : numération'
+                       and parent_id = (select id from public.classification_nodes where kind = 'branch' and name = 'Nombres et calculs'));
 
 update public.classification_nodes
    set name = 'double et moitié'
  where kind = 'subnotion' and name = 'moitié'
-   and parent_id = (select id from public.classification_nodes where kind = 'notion' and name = 'Décimaux : calculs');
+   and parent_id = (select id from public.classification_nodes
+                     where kind = 'notion' and name = 'Décimaux : calculs'
+                       and parent_id = (select id from public.classification_nodes where kind = 'branch' and name = 'Nombres et calculs'));
 
 insert into public.classification_nodes (kind, parent_id, name, position)
 select 'subnotion', n.id, 'calcul réfléchi',
        (select coalesce(max(c.position), -1) + 1 from public.classification_nodes c where c.parent_id = n.id)
   from public.classification_nodes n
- where n.kind = 'notion' and n.name = 'Entiers : division';
+ where n.kind = 'notion' and n.name = 'Entiers : division'
+   and n.parent_id = (select id from public.classification_nodes where kind = 'branch' and name = 'Nombres et calculs');
 
 insert into public.classification_nodes (kind, parent_id, name, position)
 select 'subnotion', n.id, 'droite graduée',
        (select coalesce(max(c.position), -1) + 1 from public.classification_nodes c where c.parent_id = n.id)
   from public.classification_nodes n
- where n.kind = 'notion' and n.name = 'Décimaux : numération';
+ where n.kind = 'notion' and n.name = 'Décimaux : numération'
+   and n.parent_id = (select id from public.classification_nodes where kind = 'branch' and name = 'Nombres et calculs');
 
 -- Préalgorithmique s'insère EN TÊTE de la branche Algorithmique (le niveau le
 -- plus précoce ; les notions existantes commencent en 5e).
@@ -572,26 +595,30 @@ begin
 	if v_cm1 <> 130 or v_cm2 <> 116 or v_sans_noeud <> 0 then
 		raise exception 'seed CM incohérent : CM1=%, CM2=%, sans nœud=%', v_cm1, v_cm2, v_sans_noeud;
 	end if;
-	-- Vérification PAR PARENT (« double et moitié » et « droite graduée »
-	-- existent déjà ailleurs dans l'arbre : un nom n'est unique que par fratrie).
+	-- Vérification PAR PARENT ET BRANCHE (« double et moitié » et « droite
+	-- graduée » existent déjà ailleurs : un nom n'est unique que par fratrie).
 	if not exists (select 1 from public.classification_nodes c
 	                 join public.classification_nodes p on p.id = c.parent_id
-	                where c.name = 'arrondis et ordres de grandeur' and p.name = 'Décimaux : numération')
+	                 join public.classification_nodes b on b.id = p.parent_id
+	                where c.name = 'arrondis et ordres de grandeur' and p.name = 'Décimaux : numération' and b.name = 'Nombres et calculs')
 	or exists (select 1 from public.classification_nodes c
 	             join public.classification_nodes p on p.id = c.parent_id
 	            where c.name = 'arrondir' and p.name = 'Décimaux : numération')
 	or not exists (select 1 from public.classification_nodes c
 	                 join public.classification_nodes p on p.id = c.parent_id
-	                where c.name = 'double et moitié' and p.name = 'Décimaux : calculs')
+	                 join public.classification_nodes b on b.id = p.parent_id
+	                where c.name = 'double et moitié' and p.name = 'Décimaux : calculs' and b.name = 'Nombres et calculs')
 	or not exists (select 1 from public.classification_nodes c
 	                 join public.classification_nodes p on p.id = c.parent_id
-	                where c.name = 'calcul réfléchi' and p.name = 'Entiers : division')
+	                 join public.classification_nodes b on b.id = p.parent_id
+	                where c.name = 'calcul réfléchi' and p.name = 'Entiers : division' and b.name = 'Nombres et calculs')
 	or not exists (select 1 from public.classification_nodes c
 	                 join public.classification_nodes p on p.id = c.parent_id
-	                where c.name = 'droite graduée' and p.name = 'Décimaux : numération')
+	                 join public.classification_nodes b on b.id = p.parent_id
+	                where c.name = 'droite graduée' and p.name = 'Décimaux : numération' and b.name = 'Nombres et calculs')
 	or not exists (select 1 from public.classification_nodes c
 	                 join public.classification_nodes p on p.id = c.parent_id
-	                where c.name = 'Préalgorithmique' and p.name = 'Algorithmique' and c.position = 0)
+	                where c.name = 'Préalgorithmique' and p.name = 'Algorithmique' and p.parent_id is null and c.position = 0)
 	then
 		raise exception 'ajustements de l''arbre incomplets';
 	end if;
