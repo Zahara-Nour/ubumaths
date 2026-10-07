@@ -271,7 +271,16 @@ function compileFunction(node: FunctionNode): CompiledFn {
 	if (name === 'sqrt' && node.base) {
 		const arg = compile(args[0]);
 		const base = compile(node.base);
-		return wrapPower(node, (v) => Math.pow(arg(v), 1 / base(v)));
+		// Indice entier impair : racine définie sur ℝ, ⁿ√a = −ⁿ√|a| pour a < 0
+		// (décision du 2026-10-07). Indice pair ou non entier : NaN pour a < 0.
+		return wrapPower(node, (v) => {
+			const radicand = arg(v);
+			const index = base(v);
+			if (radicand < 0 && Number.isInteger(index) && index % 2 !== 0) {
+				return -Math.pow(-radicand, 1 / index);
+			}
+			return Math.pow(radicand, 1 / index);
+		});
 	}
 
 	// log with base property → log_n(x) = ln(x) / ln(n)
