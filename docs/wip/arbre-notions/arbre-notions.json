@@ -409,7 +409,7 @@
 				},
 				{
 					"nom": "Dérivation",
-					"niveaux": "1re, Tle",
+					"niveaux": "1re, Tle, Tle comp.",
 					"sous_notions": [
 						"nombre dérivé",
 						"tangente",
@@ -449,7 +449,7 @@
 				},
 				{
 					"nom": "Limites de fonctions",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": [
 						"limite en un point",
 						"opérations",
@@ -461,13 +461,13 @@
 				},
 				{
 					"nom": "Continuité",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["lecture graphique", "valeurs intermédiaires"],
 					"note": null
 				},
 				{
 					"nom": "Convexité",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": [
 						"caractérisations",
 						"dérivée seconde",
@@ -479,7 +479,7 @@
 				},
 				{
 					"nom": "Logarithme népérien",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": [
 						"réciproque de l'exponentielle",
 						"propriétés algébriques",
@@ -496,7 +496,7 @@
 			"notions": [
 				{
 					"nom": "Calcul d'intégrales",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": [
 						"par une primitive",
 						"relation de Chasles",
@@ -508,19 +508,19 @@
 				},
 				{
 					"nom": "Intégrale et aire",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["aire algébrique", "aire entre deux courbes", "lecture graphique"],
 					"note": null
 				},
 				{
 					"nom": "Valeur moyenne",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["calcul", "encadrement", "interprétation"],
 					"note": null
 				},
 				{
 					"nom": "Fonction intégrale",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["dérivée d'une fonction intégrale"],
 					"note": null
 				}
@@ -531,13 +531,13 @@
 			"notions": [
 				{
 					"nom": "Généralités",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["notion de solution", "allure des courbes"],
 					"note": null
 				},
 				{
 					"nom": "y′ = f",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": [
 						"primitives : notion",
 						"primitives des fonctions de référence",
@@ -549,13 +549,13 @@
 				},
 				{
 					"nom": "y′ = ay",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["solution générale", "condition initiale"],
 					"note": null
 				},
 				{
 					"nom": "y′ = ay + b",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["solution générale", "condition initiale"],
 					"note": null
 				},
@@ -608,13 +608,13 @@
 				},
 				{
 					"nom": "Suites et modélisation",
-					"niveaux": "1re, Tle",
+					"niveaux": "1re, Tle, Tle comp.",
 					"sous_notions": ["placements", "pourcentages", "seuil", "algorithmes"],
 					"note": null
 				},
 				{
 					"nom": "Limites de suites",
-					"niveaux": "1re, Tle",
+					"niveaux": "1re, Tle, Tle comp.",
 					"sous_notions": [
 						"définition",
 						"opérations",
@@ -634,13 +634,13 @@
 				},
 				{
 					"nom": "Suites récurrentes",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["escalier", "point fixe"],
 					"note": null
 				},
 				{
 					"nom": "Suites arithmético-géométriques",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": ["solution constante", "suite auxiliaire", "limite"],
 					"note": null
 				}
@@ -878,7 +878,7 @@
 				},
 				{
 					"nom": "Loi binomiale",
-					"niveaux": "Tle",
+					"niveaux": "Tle, Tle comp.",
 					"sous_notions": [
 						"schéma de Bernoulli",
 						"reconnaître une loi",
