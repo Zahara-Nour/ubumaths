@@ -49,6 +49,7 @@ import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
+import { dropConstantTerms, groupLnTerms, powerOfSumForm } from './class-form';
 
 // =============================================================================
 // Budget global
@@ -795,7 +796,14 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		finalAntiderivative &&
 		startDepth === 0
 	) {
-		finalAntiderivative = normalizeAntiderivative(finalAntiderivative, variable);
+		// c·uⁿ⁺¹ gardée en puissance de u (⅓(x + 1)³) : écriture de classe, non développée
+		const powerForm = powerOfSumForm(finalAntiderivative, variable);
+		finalAntiderivative =
+			powerForm ??
+			dropConstantTerms(
+				groupLnTerms(normalizeAntiderivative(finalAntiderivative, variable), variable),
+				variable
+			);
 		// `\exp(…)` seulement si l'élève l'a tapé : sinon `e^{…}`, comme sa saisie
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
@@ -813,11 +821,19 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		finalAntiderivative = oddPowersAsRoots(finalAntiderivative);
 	}
 
-	// Filter steps by verbosity
+	// ln|x² + 1| → ln(x² + 1) dans les étapes aussi (substitute-back, linéarité)
+	const steps = recorder.getStepsFiltered(opts.verbosity);
 	return {
 		...result,
 		antiderivative: finalAntiderivative,
-		steps: recorder.getStepsFiltered(opts.verbosity)
+		steps:
+			result.status === 'exact' && startDepth === 0
+				? steps.map((step) => ({
+						...step,
+						before: dropAbsOfPositive(step.before, variable),
+						after: dropAbsOfPositive(step.after, variable)
+					}))
+				: steps
 	};
 }
 

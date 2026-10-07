@@ -97,8 +97,9 @@ describe('racine impaire : primitive écrite en racines', () => {
 	});
 
 	it('indice pair inchangé : ∫√(2x+1) garde sa forme', () => {
+		// Écriture de classe (2026-10-07) : ⅓(2x + 1)^{3/2}, pas de racine cubique
 		expect(toLatex(antiderivativeOf('\\sqrt{2x+1}'))).toBe(
-			'\\dfrac{2}{3} x \\sqrt{2 x + 1} + \\dfrac{1}{3} \\sqrt{2 x + 1}'
+			'\\dfrac{1}{3} \\left( 2 x + 1 \\right)^{\\dfrac{3}{2}}'
 		);
 	});
 
