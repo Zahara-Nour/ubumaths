@@ -39,7 +39,9 @@ export type ErrorCode =
 	/** Fonction usuelle sans parenthèses (`sin x`) : message en français, destiné à l'élève */
 	| 'BARE_FUNCTION'
 	/** `.taylor` : ordre au-delà de la limite — message en français, destiné à l'élève */
-	| 'TAYLOR_ORDER';
+	| 'TAYLOR_ORDER'
+	/** Dérivée refusée (`floor`, `abs`…) : message en français, destiné à l'élève */
+	| 'NOT_DIFFERENTIABLE';
 
 /**
  * Structured error for command execution

@@ -401,6 +401,7 @@ describe('revue du lot 3a', () => {
 		const result = runInput({ atelier, engine: new WebReplEngine() }, '.dériver f');
 
 		expect(atelier.names).toEqual(['f']);
-		expect(JSON.stringify(result)).toContain('ne se calcule pas');
+		// Le moteur dit POURQUOI : plus « ne se calcule pas » générique
+		expect(JSON.stringify(result)).toContain("la valeur absolue n'est pas dérivable");
 	});
 });

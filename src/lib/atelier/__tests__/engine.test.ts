@@ -165,15 +165,15 @@ describe('substitution avant d’appeler une commande', () => {
 		expect(result.ok === false && result.message).toMatch(/g/);
 	});
 
-	// ⚠️ `zzz(x)` NE nomme PAS une fonction `zzz` : en syntaxe custom il se lit
-	// `z·z·z(x)`, donc l'atelier attend `z`. Mesuré le 2026-09-16 — l'exemple
-	// `zzz` du §2.5 N1 de la Phase 0 générale ne tient pas dans cette syntaxe.
-	// Le comportement, lui, est le bon : l'objet est en attente, pas en erreur.
-	it('met en attente une suite de lettres, sans la traiter comme un seul nom', () => {
+	// ⚠️ `zzz(x)` NE nomme PAS une fonction `zzz`. Jusqu’au correctif des noms de fonction, il se lisait
+	// `z·z·z(x)` en silence (l'atelier attendait `z`) ; trois lettres collées à
+	// `(` sont désormais refusées : « Fonction inconnue : zzz » (`a*b*c*(…)`
+	// pour un produit voulu).
+	it('refuse une suite de lettres collée à « ( », sans la traiter comme un seul nom', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'zzz(x) + 1' });
 
-		expect(atelier.get('f')?.status).toBe('pending');
+		expect(atelier.get('f')?.status).toBe('error');
 		expect(expressionOf(atelier, 'f').ok).toBe(false);
 	});
 

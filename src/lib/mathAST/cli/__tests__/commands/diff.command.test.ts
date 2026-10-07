@@ -580,7 +580,9 @@ describe('DiffCommand', () => {
 
 			const result = command.execute(ctx);
 			expect(result.success).toBe(false);
-			expect(result.error?.message).toContain('absolute');
+			// Refus adressé à l'élève, en français
+			expect(result.error?.code).toBe('NOT_DIFFERENTIABLE');
+			expect(result.error?.message).toContain('valeur absolue');
 		});
 	});
 

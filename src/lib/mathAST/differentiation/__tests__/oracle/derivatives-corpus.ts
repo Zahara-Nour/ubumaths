@@ -1596,6 +1596,36 @@ export const CORPUS: readonly DerivativeCase[] = [
 		f: (x) => acos(x * x),
 		points: POINTS_UNIT
 	},
+	// Alias de l'atelier : `acos` est arccos, pas a·cos (lu a·cos, sans erreur, avant)
+	{
+		id: 'inv-alias-01',
+		family: 'réciproques',
+		custom: 'acos(3x)',
+		f: (x) => acos(3 * x),
+		points: [-0.3, -0.15, 0.1, 0.2, 0.3]
+	},
+	{
+		id: 'inv-alias-02',
+		family: 'réciproques',
+		custom: 'asin(2x)',
+		f: (x) => asin(2 * x),
+		points: [-0.45, -0.2, 0.1, 0.25, 0.4]
+	},
+	{
+		id: 'inv-alias-03',
+		family: 'réciproques',
+		custom: 'atan(x^2)',
+		f: (x) => atan(x * x)
+	},
+	// `sec` : connue du moteur, dérivée par sa définition 1/cos (`3sec'(3x)` avant)
+	{
+		id: 'inv-sec-01',
+		family: 'trigonométrie',
+		latex: R`\sec(x)`,
+		custom: 'sec(x)',
+		f: (x) => 1 / cos(x),
+		points: [-1.4, -0.65, 0.35, 0.9, 1.3]
+	},
 
 	// ---------------------------------------------------------------------------
 	// Produits
@@ -2097,6 +2127,13 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: R`\sqrt{|x|}`,
 		custom: 'sqrt(abs(x))',
 		f: (x) => sqrt(abs(x))
+	},
+	// `abs(3x)` (hors 0) : refusée avec un message, jamais lue autrement
+	{
+		id: 'abs-07',
+		family: 'valeur absolue',
+		custom: 'abs(3x)',
+		f: (x) => abs(3 * x)
 	},
 
 	// ---------------------------------------------------------------------------
