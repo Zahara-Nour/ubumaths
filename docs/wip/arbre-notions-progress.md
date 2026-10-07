@@ -160,7 +160,7 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Règle des Automatismes (David, 2026-10-07)** : un contenu = UN point, dans le programme
   qui l'introduit ; une ligne d'Automatismes renvoyant à un contenu antérieur = RÉFÉRENCE
   (point_id, grade) — c'est le rôle de `curriculum_point_automatismes`, déjà en prod et vide ;
-  seule une ligne introduisant du neuf devient un point (régime automatisme). JAMAIS de
+  seule une ligne introduisant du neuf devient un point, auto-référencé dans sa liste d'automatismes. JAMAIS de
   duplication de points entre programmes. À inscrire dans la spec du schéma cible ADR 0020.
 
 - **Règle des Automatismes appliquée rétroactivement aux docs cycles 3 et 4 (2026-10-07)** :
@@ -269,7 +269,7 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   vague 2026, sauvegardé `progs-lycee/terminale-techno.pdf`) →
   `programmes-ecarts-tle-techno.md`. La Tle techno A une rubrique Automatismes (italiques =
   automatismes propres, références internes au parcours) avec UN contenu orphelin : l'indice
-  de base 100 → point de Tle techno en régime automatisme (le cas prévu par la règle 2de).
+  de base 100 → point de Tle techno auto-référencé dans sa liste d'automatismes (le cas prévu par la règle 2de).
   Les créations ens. sci. (x ↦ aˣ, taux moyen) reçoivent leurs pointeurs techno comme
   anticipé. Proposé : 4 sous-notions (logarithme décimal + renommage Logarithme népérien →
   Logarithmes, indices, coniques et perspective centrale pour STD2A). Questions Y1-Y5 en
@@ -279,7 +279,7 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   4 sous-notions — indices (Évolutions), logarithme décimal (avec RENOMMAGE de la notion
   `Logarithme népérien` → `Logarithmes`, répercuté dans les 4 fichiers de
   `correspondance/` : 9 occurrences), coniques (Figures planes) et perspective centrale
-  (Solides) pour STD2A ; indice de base 100 = premier point « régime automatisme » prévu
+  (Solides) pour STD2A ; indice de base 100 = premier point né d'une rubrique Automatismes, prévu
   par la règle 2de ; niveaux : Évolutions, Fonction exponentielle, Logarithmes, Statistique
   à deux variables (4 libellés), Loi binomiale, Figures planes et Solides « 1re et Tle
   techno » → 19 branches, 136 notions, 527 sous-notions (JSON 2026-10-07.10), diagramme
@@ -325,6 +325,20 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   gabarit v2 (11 documents : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens.
   sci., 1re/Tle techno) ; `programmes-ecarts.md` (v1) est entièrement remplacé, conservé en
   archive. Prochaine étape du chantier : spécification du schéma cible ADR 0020
-  (points→nœuds, références d'automatismes par parcours, régime automatisme, 6e d'avril
+  (points→nœuds, références d'automatismes par parcours, régimes fluence/diversité, 6e d'avril
   2025 en premier seed — phase 0 TDD à faire valider), puis relance de la table de
   correspondance sur l'arbre élargi.
+
+- **Clarification terminologique + questions de phase 0 (2026-10-07, soir)** : David a fait
+  retrouver l'origine de `regime_acquisition` — migrations du 2026-08-29 (création
+  `knowledge_type`) et du 2026-08-30 (renommage : `automatisme` → `fluence` [≥ 5 réussites
+  ET ≥ 3/5 dernières], `capacite_attendue` → `diversite` [≥ 2 modèles distincts ET 0 échec
+  /3 dernières], appliqués par `update_student_point_state` ; la MÊME migration créait
+  `curriculum_point_automatismes` avec déjà le raisonnement des références). Mon « régime
+  automatisme » du tour des programmes était un ABUS DE LANGAGE recréant la confusion
+  qu'août avait éliminée → 11 occurrences corrigées (progress, cycle 3, 2de, Tle techno) en
+  « point auto-référencé dans sa liste d'automatismes ». Mesuré aussi : `rang` (échelle
+  descriptive 1-4 par objectif) = 0/1007 rempli, code vivant mais à vide → reco ABANDON.
+  → `schema-cible-questions.md` créé : acquis tranchés + 7 questions pour la phase 0
+  (rang, rubrique BO, kind algorithme, héritage des listes, parcours, accès, régime au
+  reseed).

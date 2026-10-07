@@ -38,7 +38,8 @@ ln.
    **internes au parcours**. Et **un contenu orphelin** : l'« indice de base 100 »
    (interpréter, calculer, taux entre deux valeurs), qu'aucun programme antérieur
    n'introduit → il devient, conformément à la règle posée au doc 2de, **un point de Tle
-   techno en régime automatisme** (question Y2 : avec ou sans sous-notion).
+   techno, auto-référencé dans sa liste d'automatismes** (question Y2 : avec ou sans
+   sous-notion).
 2. **Les lots ens. sci. et 1re techno paient à nouveau** : « fonctions x ↦ aˣ » et « taux
    d'évolution moyen » (créés pour le module de 1re) reçoivent ici leurs pointeurs techno,
    comme anticipé ; « changement de variable » (Statistique à deux variables) existait
@@ -102,7 +103,7 @@ reconduit).
   italique : « situation se modélisant par une suite géométrique » → référence interne
   (1re techno, suites géométriques). **« Interpréter un indice de base 100, calculer un
   indice, calculer le taux d'évolution entre deux valeurs »** : contenu neuf → **point de
-  Tle techno en régime automatisme** rattaché à `Évolutions` (question Y2 : sous-notion
+  Tle techno auto-référencé dans sa liste d'automatismes**, rattaché à `Évolutions` (question Y2 : sous-notion
   **« indices »** ou simples points).
 - **Calcul numérique et algébrique** (fractions, puissances, écritures, ordre de grandeur,
   conversions, premier degré, x² = a, signes, isoler une variable, application numérique
@@ -204,13 +205,15 @@ et inéquations` : LA fonction exp (base e) n'existe pas en techno — tout vit 
 ## Questions pour David
 
 > **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (Y1-Y5 — libellé « Tle techno »,
-> indice de base 100 = point en régime automatisme + sous-notion « indices », renommage
+> indice de base 100 = point auto-référencé dans sa liste d'automatismes + sous-notion
+> « indices », renommage
 > `Logarithme népérien` → `Logarithmes` appliqué, CSV de correspondance retouchés, STD2A
 > couverte). Appliqué à l'arbre : version 2026-10-07.10 — 136 notions, 527 sous-notions.
 
 1. **Y1 — Libellé « Tle techno »** et traitement des Automatismes : références vers le
    parcours (cycle 4, 2de, 1re techno) + références internes pour les italiques, et
-   l'indice de base 100 = point de Tle techno en régime automatisme (seul contenu neuf de
+   l'indice de base 100 = point de Tle techno auto-référencé dans sa liste d'automatismes
+   (seul contenu neuf de
    la rubrique — le cas prévu par la règle de la 2de). (reco : oui.)
 2. **Y2 — « indices »** : sous-notion d'`Évolutions` (filtre : les fiches « indice base
    100 », classique tertiaire STMG, distinctes des taux) — ou simples points en régime

@@ -38,7 +38,8 @@ précision que les probabilités totales ne sont PAS un attendu de 2de [T].
    « travaillé en automatisme en 2de » vers ce point (la table `curriculum_point_automatismes
 (point_id, grade)`, déjà en place et vide, porte exactement cela) ; seule une ligne
    d'Automatismes qui introduit du contenu **neuf** (la 2de le permet explicitement) devient un
-   point de 2de, en régime automatisme. Une fiche d'automatismes de 2de trouve ses nœuds par
+   point de 2de, auto-référencé dans la liste d'automatismes de 2de. Une fiche
+   d'automatismes de 2de trouve ses nœuds par
    les points de 2de ∪ les références de 2de. Même sort pour **D3** (Divisibilité et la 2de) :
    une référence.
 2. **Règle des niveaux indicatifs du JSON** : ils tracent les programmes qui **introduisent**

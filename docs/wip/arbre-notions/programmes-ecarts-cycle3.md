@@ -58,8 +58,7 @@ Les Automatismes de 6e portent « uniquement sur des connaissances, des procédu
 stratégies déjà étudiées au cours moyen » (texte du programme). Au pointage, ces lignes ne
 deviennent donc **pas des points de 6e** mais des **références** « travaillé en automatisme en
 6e » vers les points de CM1/CM2 correspondants (`curriculum_point_automatismes`). Seule une
-ligne d'automatisme qui introduit du contenu neuf devient un point. Les mentions « points en
-régime automatisme » de ce document se lisent avec cette règle ; le calcul mental du cours
+ligne d'automatisme qui introduit du contenu neuf devient un point. Les mentions d'automatismes de ce document se lisent avec cette règle ; le calcul mental du cours
 moyen, lui, reste fait de points annuels (ce sont les objectifs d'apprentissage de l'année).
 
 ## Vue d'ensemble
@@ -122,7 +121,7 @@ calculer` (niveau 6e déjà porté ; les livrets confirment : plus de pourcentag
 Trois types (faits · numération · procédures), avec un grain fin par année (± 8, 9, 18, 19…
 98/99 ; × 4, × 8, × 5, × 50 ; double/moitié de décimaux ; ÷ 4, ÷ 8 ; moitié des impairs ≤ 15 ;
 relations entre fractions usuelles ; écriture décimale des fractions usuelles ; automatismes 6e
-sur 1/10, 1/100, 1/1000…) — **[C]** : des points (souvent en régime automatisme) sous les
+sur 1/10, 1/100, 1/1000…) — **[C]** : des points (souvent travaillés en automatismes) sous les
 sous-notions existantes des notions d'opérations et de fractions, comme au cycle 2. Fluences
 chiffrées — **[T]** métadonnées.
 
