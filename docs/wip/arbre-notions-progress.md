@@ -304,3 +304,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   Bernoulli, moindres carrés/interpolation = points) → 19 branches, 136 notions,
   532 sous-notions (JSON 2026-10-07.11), diagramme republié. Reste : la section Expertes de
   l'ancienne analyse (dernier lot lycée).
+
+- **Expertes reprises au gabarit v2 (2026-10-07, soir — DERNIER LOT)** : texte fourni par
+  David (annexe BO classique, 11 p. — pas de mouture « vague 2026 », texte reconduit)
+  vérifié identique au texte sauvegardé (`progs-lycee/expertes.txt`) →
+  `programmes-ecarts-expertes.md` (remplace la section Expertes de l'ancien doc, désormais
+  entièrement remplacé). Seed prod T_EXP (153 points) déjà conforme. Les 4 branches
+  concernées étant nées de ce programme, presque tout est [C]. Proposé : 5 sous-notions
+  (formule du binôme, formules d'addition et de duplication, petit théorème de Fermat,
+  équations ax ≡ b [n], distribution après n transitions) + 2 requalifications en points.
+  Questions AA1-AA3 en attente.
