@@ -465,3 +465,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   `seed-classification-nodes.test.ts` : preuve rouge (692 chemins absents) puis VERT —
   comparaison INTÉGRALE des 692 chemins JSON ↔ base (lecture anonyme, pagination
   PostgREST), positions, rien d'archivé ; non-régression arbre + schéma cible : 81/81.
+
+- **L'ARBRE EST EN PRODUCTION (2026-10-08)** : PR #943 mergée (CI 13/13, audit sécurité
+  sans finding), `db:migrate` appliqué, vérifié en prod : **19 branches, 136 notions,
+  537 sous-notions** dans `classification_nodes`, lisibles par tous. Worktree et branches
+  supprimés. Prochaines étapes : seed 6e (premier programme points→nœuds), remplissage des
+  rangements (correspondance validée), séquence C5.
