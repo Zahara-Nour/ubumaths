@@ -176,3 +176,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   renommages, Puissances : calculs « 5e à 2de », Fractions : sens « CE1 à 2de » → 19 branches,
   136 notions, 495 sous-notions (JSON 2026-10-07.5), diagramme republié. Restent : 1re spé,
   Tle spé, Tle comp., Expertes à reprendre au gabarit v2.
+
+- **1re spé reprise au gabarit v2 (2026-10-07, soir)** : nouveau texte fourni par David
+  (Annexe, 11 p., vague 2026) vérifié identique au texte déjà sauvegardé
+  (`progs-lycee/premiere-spe.txt`) → `programmes-ecarts-1re-spe.md` (remplace la section
+  1re spé de `programmes-ecarts.md`). Vérifié en prod (lecture seule) : le seed 1re spé
+  (173 points) suit DÉJÀ ce texte (trigo réduite au cercle, objectif Expérimentations, pas de
+  thème Automatismes) — pas de péremption type seed 6e. Proposé : 0 notion, ~12 sous-notions
+  (7 en Dérivation/Analyse), 3 requalifications en points, automatismes = références.
+  Questions U1-U5 en attente.
