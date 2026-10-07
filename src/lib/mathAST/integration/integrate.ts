@@ -47,6 +47,8 @@ import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots
 import { integrateByChainRule } from './integrators/chain-rule';
 import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
+import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
+import { laurentForm } from './laurent-form';
 
 // =============================================================================
 // Budget global
@@ -187,7 +189,7 @@ function extractConstantMultiplier(
  * @param expr - The antiderivative to normalize
  * @returns The normalized expression
  */
-function normalizeAntiderivative(expr: MathNode): MathNode {
+function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
 	// Développer (1+9x²)^512 produirait un polynôme de degré 1024 : au-delà
 	// de cette borne, la primitive est rendue telle quelle
 	if (hasLargeSumPower(expr)) {
@@ -197,7 +199,9 @@ function normalizeAntiderivative(expr: MathNode): MathNode {
 		const normalForm = normalize(expr, {
 			abortChecker: makeAbortChecker(undefined, NORMALIZE_RESULT_TIMEOUT_MS)
 		});
-		return denormalize(normalForm);
+		// x − 1/x, −2/√x : terme à terme, pas réduit au même dénominateur
+		const termwise = variable === undefined ? null : laurentForm(normalForm, variable);
+		return termwise ?? denormalize(normalForm);
 	} catch {
 		// If normalization fails, return the original expression
 		return expr;
@@ -611,6 +615,31 @@ function integrateInternal(
 		};
 	}
 
+	// Step 4b: somme de c·xᵖ (c/xⁿ, √x, x√x, (x² + 1)/x, a/x…) → règle de la
+	// puissance terme à terme ; x⁻¹ donne ln|x|
+	const powerTerms = asPowerSum(simplified, variable);
+	if (powerTerms !== null) {
+		const rewritten = powerSumAsNode(powerTerms, variable);
+		const antiderivative = integratePowerSum(powerTerms, variable);
+		recorder.recordStep(
+			'identify-integrand',
+			`Écriture en somme de puissances de ${variable}`,
+			simplified,
+			rewritten,
+			'detailed'
+		);
+		recorder.recordStepByRule('power-rule', rewritten, antiderivative, 'summarized');
+		return {
+			variable,
+			status: 'exact',
+			antiderivative,
+			integrandType: classifyIntegrand(simplified, variable),
+			technique: 'basic-rule',
+			steps: recorder.getSteps(),
+			constantNote: CONSTANT_OF_INTEGRATION_NOTE
+		};
+	}
+
 	// Step 5: Try integrators in priority order
 	const integrator = selectIntegrator(simplified, variable);
 	const selected = integrator
@@ -766,7 +795,7 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		finalAntiderivative &&
 		startDepth === 0
 	) {
-		finalAntiderivative = normalizeAntiderivative(finalAntiderivative);
+		finalAntiderivative = normalizeAntiderivative(finalAntiderivative, variable);
 		// `\exp(…)` seulement si l'élève l'a tapé : sinon `e^{…}`, comme sa saisie
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
