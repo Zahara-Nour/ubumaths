@@ -279,6 +279,10 @@ proportion` : pointage libre, nœuds conservés.
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (U1-U5, quantifications implicites,
+> linéarité de l'espérance et König-Huygens = simples points). Appliqué à l'arbre : version
+> 2026-10-07.6 — 136 notions, 507 sous-notions.
+
 1. **U1 — Logique et vocabulaire** : « condition nécessaire, condition suffisante »
    (Implication et équivalence) ; « statut des lettres et des égalités » (Quantificateurs et
    négation) ; les quantifications implicites restent de simples points. (reco : oui, oui,

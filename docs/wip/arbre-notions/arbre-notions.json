@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.5",
-	"statut": "validé par David (cycles 2-4 + 2de v2, 2026-10-06/07 ; lots 1re/Tle à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.6",
+	"statut": "validé par David (cycles 2-4 + 2de + 1re spé v2, 2026-10-06/07 ; lots Tle et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -274,7 +274,7 @@
 				},
 				{
 					"nom": "Évolutions",
-					"niveaux": "4e à 1re",
+					"niveaux": "4e à 2de",
 					"sous_notions": ["variations en pourcentage", "évolutions successives et réciproque"],
 					"note": "coefficient multiplicateur dès la 4e"
 				},
@@ -376,7 +376,7 @@
 			"notions": [
 				{
 					"nom": "Généralités sur les fonctions",
-					"niveaux": "5e à 2de",
+					"niveaux": "5e à 1re",
 					"sous_notions": [
 						"images et antécédents",
 						"ensemble de définition",
@@ -384,7 +384,8 @@
 						"résolution graphique",
 						"variations",
 						"extremums",
-						"signe"
+						"signe",
+						"parité"
 					],
 					"note": "reprend ta nouvelle fiche et « Calcul d'images »"
 				},
@@ -467,11 +468,16 @@
 					"nom": "Dérivation",
 					"niveaux": "1re, Tle, Tle comp.",
 					"sous_notions": [
+						"taux de variation",
 						"nombre dérivé",
 						"tangente",
+						"approximation affine",
 						"fonctions dérivées",
+						"opérations sur les dérivées",
+						"dérivabilité en un point",
 						"variations",
 						"étude de fonction",
+						"position relative de deux courbes",
 						"optimisation",
 						"fonctions composées"
 					],
@@ -496,6 +502,7 @@
 					"sous_notions": [
 						"cercle et radians",
 						"cosinus et sinus d'un réel",
+						"angles associés",
 						"équations",
 						"inéquations",
 						"parité et périodicité",
@@ -1048,7 +1055,9 @@
 						"arbres pondérés",
 						"tableaux croisés",
 						"indépendance",
+						"probabilités totales",
 						"inversion du conditionnement",
+						"épreuves indépendantes successives",
 						"problèmes en contexte"
 					],
 					"note": null
@@ -1169,7 +1178,7 @@
 				},
 				{
 					"nom": "Échantillonnage",
-					"niveaux": "2de",
+					"niveaux": "2de, 1re",
 					"sous_notions": ["fluctuation", "simulation", "estimation d'une proportion"],
 					"note": "aucun modèle aujourd'hui"
 				},
@@ -1207,13 +1216,23 @@
 				{
 					"nom": "Implication et équivalence",
 					"niveaux": "2de, 1re",
-					"sous_notions": ["implication", "réciproque", "contraposée", "équivalence"],
+					"sous_notions": [
+						"implication",
+						"réciproque",
+						"contraposée",
+						"équivalence",
+						"condition nécessaire, condition suffisante"
+					],
 					"note": null
 				},
 				{
 					"nom": "Quantificateurs et négation",
 					"niveaux": "2de, 1re",
-					"sous_notions": ["pour tout, il existe", "négation d'une proposition"],
+					"sous_notions": [
+						"pour tout, il existe",
+						"statut des lettres et des égalités",
+						"négation d'une proposition"
+					],
 					"note": null
 				},
 				{
@@ -1276,7 +1295,12 @@
 				{
 					"nom": "Listes",
 					"niveaux": "1re",
-					"sous_notions": ["créer une liste", "parcourir une liste", "liste en compréhension"],
+					"sous_notions": [
+						"créer une liste",
+						"éléments et indices",
+						"parcourir une liste",
+						"liste en compréhension"
+					],
 					"note": null
 				}
 			]

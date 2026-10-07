@@ -185,3 +185,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   thème Automatismes) — pas de péremption type seed 6e. Proposé : 0 notion, ~12 sous-notions
   (7 en Dérivation/Analyse), 3 requalifications en points, automatismes = références.
   Questions U1-U5 en attente.
+
+- **1re spé appliquée (2026-10-07, « je valide tout », U1-U5)** : 12 sous-notions — condition
+  nécessaire/suffisante, statut des lettres et des égalités (Logique), éléments et indices
+  (Listes), parité (Généralités sur les fonctions, « 5e à 1re »), taux de variation,
+  approximation affine, opérations sur les dérivées, dérivabilité en un point, position
+  relative de deux courbes (Dérivation : 7 → 12), angles associés (Fonctions trigo),
+  probabilités totales, épreuves indépendantes successives (Probabilités conditionnelles) ;
+  requalifiés en points : quantifications implicites, linéarité de l'espérance,
+  König-Huygens ; niveaux : Échantillonnage « 2de, 1re », Évolutions « 4e à 2de » → 19
+  branches, 136 notions, 507 sous-notions (JSON 2026-10-07.6), diagramme republié. Restent :
+  Tle spé, Tle comp., Expertes au gabarit v2.
