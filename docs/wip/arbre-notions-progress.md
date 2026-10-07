@@ -383,3 +383,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (la question d'accès), régime au choix par seed. Suite engagée : tests d'intégration
   (rouges d'abord) → migration additive → security-auditor. db:migrate prod attendra la
   décision de pousser la branche (la PR 1 des nœuds n'est pas en prod).
+
+- **Migration du schéma cible écrite et VERTE en local (2026-10-07, soir)** :
+  `20261007230000_schema_cible_points.sql` (additive, rollback en commentaire) — node_id/
+  grade/rubrique sur curriculum_points (objective_id devenu facultatif), kind `algorithme`,
+  table `grade_predecessors` + `grade_ancestors()` + anti-cycle + seed des 16 paires,
+  contrainte de parcours sur curriculum_point_automatismes (voie parallèle/postérieur/point
+  sans grade = 23514), lecture anon (GRANT nécessaire : l'audit 2026-08 avait tout révoqué
+  à anon — découvert au premier run). Tests `schema-cible-points.test.ts` : preuve ROUGE
+  d'abord (19 échecs sans la migration), puis **88/88 verts** (25 nouveaux + 52 PR 1 + 11
+  renommage). ⚠️ `main` MERGÉ dans la branche (le renommage #922 n'y était pas — contrainte
+  locale refusait 1_TECHNO). check:incremental 0 erreur, lint:fast OK. Reste :
+  security-auditor (condition 3) ; db:migrate prod attendra la décision de pousser.
