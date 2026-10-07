@@ -431,3 +431,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   45 bascules (+ les 3 corrections de la règle de rangement), 260 confirmations en bloc.
   Reste le lot 4 (7 cas ligne à ligne), en cours de présentation avec les énoncés réels lus
   en prod.
+
+- **Lot 4 tranché sur pièces (2026-10-07)** : les 7 énoncés lus en prod (lecture seule) —
+  phare/bateau → équations de droites + normal + distance ; Concours général → récurrence
+  centrale ; presque isocèles → réciproque de Pythagore + boucle (titre proposé) ;
+  vrai/faux → substitution + opposé (titre proposé) ; encadrement de e → position relative
+  (PAS les suites : l'énoncé passe par les variations) ; marche aléatoire → épreuves
+  indépendantes successives confirmées ; fréquence des lettres → Listes + effectifs (pas de
+  VA dans l'énoncé). CSV final : 1 005 modèles + 328 exercices en haute, 1 exclu. Validation
+  du lot 4 par David en attente.
