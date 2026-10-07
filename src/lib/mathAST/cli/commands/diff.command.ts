@@ -164,6 +164,13 @@ export class DiffCommand extends BaseCommand {
 				ast: derivative
 			};
 		} catch (err) {
+			if (err instanceof DifferentiationError && err.studentMessage !== undefined) {
+				return {
+					success: false,
+					output: '',
+					error: { code: 'NOT_DIFFERENTIABLE', message: err.studentMessage }
+				};
+			}
 			if (err instanceof DifferentiationError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
 				return {

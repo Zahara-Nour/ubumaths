@@ -257,6 +257,112 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 ];
 
 // =============================================================================
+// Noms de fonction : alias et noms inconnus
+// =============================================================================
+
+/**
+ * Les alias usuels d'une fonction, lus sous le nom du MOTEUR.
+ *
+ * ⚠️ Sans eux, `acos(3x)` se lisait a·cos(3x) et `tg(3x)` t·g(3x), sans
+ * aucune erreur. Un alias n'est reconnu que s'il forme TOUTE la suite de
+ * lettres et qu'il est collé à `(` : `chx` ou `th` seuls restent des produits.
+ */
+export const FUNCTION_ALIASES: Readonly<Record<string, string>> = {
+	acos: 'arccos',
+	asin: 'arcsin',
+	atan: 'arctan',
+	Arccos: 'arccos',
+	Arcsin: 'arcsin',
+	Arctan: 'arctan',
+	sh: 'sinh',
+	ch: 'cosh',
+	th: 'tanh',
+	tg: 'tan'
+};
+
+/** Ce qu'est une suite de lettres collée à `(` : un alias ou un nom inconnu. */
+export type FunctionCallReading =
+	| { readonly kind: 'alias'; readonly name: string; readonly canonical: string }
+	| { readonly kind: 'unknown'; readonly name: string };
+
+function isAsciiLetter(char: string | undefined): boolean {
+	return char !== undefined && /^[A-Za-z]$/.test(char);
+}
+
+/**
+ * Lire la suite de lettres qui COMMENCE en `start`, si elle est collée à `(`.
+ *
+ * Règle (aucun nom de fonction lu en silence comme autre chose) :
+ * - toute la suite est un alias (`acos`, `sh`, `tg`…) → `alias` ;
+ * - elle commence par une fonction connue (`sin(`, `sqrt(`) → `null`, lecture habituelle ;
+ * - deux lettres (`ab(x+1)`, `ax(x-2)`) → `null` : un produit, l'écriture courante ;
+ * - UNE lettre puis une fonction connue (`xsin(x)`, `3bcos(x)`) → `null` : un produit ;
+ * - sinon (`racine(`, `acoss(`, `arcos(`, `abc(`) → `unknown` : refusé, le
+ *   message propose `a*b*c*(…)` pour un produit voulu.
+ *
+ * `null` aussi au milieu d'une suite (lettre avant) ou derrière `\` (commande).
+ */
+export function readFunctionCall(input: string, start: number): FunctionCallReading | null {
+	if (!isAsciiLetter(input[start])) return null;
+	const before = input[start - 1];
+	if (isAsciiLetter(before) || before === '\\') return null;
+	let end = start;
+	while (isAsciiLetter(input[end])) end++;
+	if (input[end] !== '(') return null;
+	const name = input.slice(start, end);
+
+	const canonical = FUNCTION_ALIASES[name];
+	if (canonical !== undefined) return { kind: 'alias', name, canonical };
+	if (FUNCTION_NAMES_BY_LENGTH.some((f) => name.startsWith(f))) return null;
+	if (name.length <= 2) return null;
+	if (FUNCTION_NAMES_BY_LENGTH.includes(name.slice(1))) return null;
+	return { kind: 'unknown', name };
+}
+
+/** La première suite de lettres collée à `(` qui n'est ni une fonction ni un produit lisible. */
+export function findUnknownFunctionCall(input: string): string | null {
+	for (let i = 0; i < input.length; i++) {
+		const reading = readFunctionCall(input, i);
+		if (reading?.kind === 'unknown') return reading.name;
+	}
+	return null;
+}
+
+/** Les noms de fonction de la notation maison, alias compris. */
+export const KNOWN_FUNCTION_NAMES: readonly string[] = [
+	...FUNCTION_NAMES_BY_LENGTH,
+	...Object.keys(FUNCTION_ALIASES)
+];
+
+/** Les fonctions citées par le message d'un nom inconnu. */
+const SHOWN_FUNCTIONS = [
+	'sqrt',
+	'cbrt',
+	'exp',
+	'ln',
+	'log',
+	'sin',
+	'cos',
+	'tan',
+	'arcsin',
+	'arccos',
+	'arctan',
+	'sinh',
+	'cosh',
+	'tanh',
+	'abs',
+	'floor',
+	'ceil',
+	'round',
+	'sign'
+];
+
+/** Le message d'un nom de fonction inconnu, en français. */
+export function unknownFunctionMessage(name: string): string {
+	return `Fonction inconnue : ${name}. Fonctions disponibles : ${SHOWN_FUNCTIONS.join(', ')}. Pour un produit, écris ${name.split('').join('*')}*(…).`;
+}
+
+// =============================================================================
 // Tokenizer Class
 // =============================================================================
 
@@ -665,6 +771,19 @@ export class CustomTokenizer {
 					length: keyword.length
 				};
 			}
+		}
+
+		// Alias (`acos(` → arccos) ou nom inconnu (`racine(`) : un FUNC, que le
+		// parseur refuse s'il n'est pas connu — jamais une suite de lettres muette
+		const call = readFunctionCall(this.input, startPos);
+		if (call !== null) {
+			this.position = startPos + call.name.length;
+			return {
+				type: 'FUNC',
+				value: call.kind === 'alias' ? call.canonical : call.name,
+				position: startPos,
+				length: call.name.length
+			};
 		}
 
 		// Check if any function name is a prefix of (or equals) this identifier

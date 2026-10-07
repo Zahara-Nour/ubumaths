@@ -6,6 +6,11 @@
  */
 
 import type { DetectionResult } from '../types';
+import {
+	FUNCTION_ALIASES,
+	KNOWN_FUNCTION_NAMES,
+	readFunctionCall
+} from '../../parser/custom/tokenizer';
 
 /**
  * LaTeX-specific patterns that indicate LaTeX input
@@ -74,8 +79,25 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
  * parseur maison lit `\pi` et les accolades. Envoyés au parseur LaTeX, ils
  * devenaient `c·o·s` et `e^{s·i·n·x}` (révélé par l'oracle des dérivées, #910).
  */
-const BARE_FUNCTION_CALL =
-	/(?<!\\[a-zA-Z]*)(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs|mean|median|variance|stdev|min|max|sum)\s*[(^_]/;
+const BARE_FUNCTION_CALL = new RegExp(
+	`(?<!\\\\[a-zA-Z]*)(${[...KNOWN_FUNCTION_NAMES]
+		.filter((name) => !(name in FUNCTION_ALIASES))
+		.sort((a, b) => b.length - a.length)
+		.join('|')})\\s*[(^_]`
+);
+
+/**
+ * Une suite de lettres collée à `(` que la notation maison lit AUTREMENT que
+ * le LaTeX : un alias (`acos(`, `tg(`) ou un nom inconnu (`racine(`), qu'elle
+ * refuse. Envoyés au parseur LaTeX, ils devenaient des produits de lettres,
+ * sans erreur.
+ */
+function hasFunctionCallReading(input: string): boolean {
+	for (let i = 0; i < input.length; i++) {
+		if (readFunctionCall(input, i) !== null) return true;
+	}
+	return false;
+}
 
 /**
  * Un nom de fonction sans antislash suivi de son argument (`sin(`, `log_2(`) :
@@ -83,7 +105,7 @@ const BARE_FUNCTION_CALL =
  * saisie mêlée de LaTeX que le parseur maison ne lit pas (`\frac{1}{2}sin(x)`).
  */
 export function hasBareFunctionCall(input: string): boolean {
-	return BARE_FUNCTION_CALL.test(input);
+	return BARE_FUNCTION_CALL.test(input) || hasFunctionCallReading(input);
 }
 
 /**
@@ -112,7 +134,7 @@ export function detectInputFormat(input: string): DetectionResult {
 	}
 
 	// Un nom de fonction sans antislash : la syntaxe maison, même mêlée de LaTeX
-	if (BARE_FUNCTION_CALL.test(trimmed)) {
+	if (hasBareFunctionCall(trimmed)) {
 		return { format: 'custom', confidence: 0.9 };
 	}
 

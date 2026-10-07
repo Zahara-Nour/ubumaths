@@ -312,6 +312,27 @@ function evaluateFunctionToRational(
 			if (numArgs.length !== 1) throw new Error('tan requires exactly 1 argument');
 			result = Math.tan(numArgs[0]);
 			break;
+		// Réciproques : leur définition (sec = 1/cos…). Le parseur maison les lit
+		// depuis toujours, mais l'évaluation répondait « Unknown function: sec »
+		case 'sec':
+		case 'csc':
+		case 'cot':
+		case 'sech':
+		case 'csch':
+		case 'coth': {
+			if (numArgs.length !== 1) throw new Error(`${name} requires exactly 1 argument`);
+			const t = numArgs[0];
+			const reciprocal: Record<string, number> = {
+				sec: 1 / Math.cos(t),
+				csc: 1 / Math.sin(t),
+				cot: Math.cos(t) / Math.sin(t),
+				sech: 1 / Math.cosh(t),
+				csch: 1 / Math.sinh(t),
+				coth: Math.cosh(t) / Math.sinh(t)
+			};
+			result = reciprocal[name.toLowerCase()];
+			break;
+		}
 		case 'arcsin':
 			if (numArgs.length !== 1) throw new Error('arcsin requires exactly 1 argument');
 			if (numArgs[0] < -1 || numArgs[0] > 1) throw new Error('arcsin argument must be in [-1, 1]');
@@ -739,6 +760,12 @@ const KNOWN_FUNCTIONS = new Set([
 	'sin',
 	'cos',
 	'tan',
+	'sec',
+	'csc',
+	'cot',
+	'sech',
+	'csch',
+	'coth',
 	'arcsin',
 	'arccos',
 	'arctan',
