@@ -36,6 +36,7 @@
  */
 
 import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
+import { GREEK_LETTERS } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
@@ -63,30 +64,9 @@ import {
  * Map custom syntax symbol names to MathAST GreekLetter type
  * Note: 'pi' is NOT here - it's a MathConstant, not a GreekLetter
  */
-const GREEK_SYMBOL_MAP: Record<string, GreekLetter> = {
-	alpha: 'alpha',
-	beta: 'beta',
-	gamma: 'gamma',
-	delta: 'delta',
-	epsilon: 'epsilon',
-	zeta: 'zeta',
-	eta: 'eta',
-	theta: 'theta',
-	iota: 'iota',
-	kappa: 'kappa',
-	lambda: 'lambda',
-	mu: 'mu',
-	nu: 'nu',
-	xi: 'xi',
-	rho: 'rho',
-	sigma: 'sigma',
-	tau: 'tau',
-	upsilon: 'upsilon',
-	phi: 'phi',
-	chi: 'chi',
-	psi: 'psi',
-	omega: 'omega'
-};
+const GREEK_SYMBOL_MAP: Readonly<Record<string, GreekLetter>> = Object.fromEntries(
+	GREEK_LETTERS.map((letter) => [letter, letter])
+);
 
 /**
  * Map custom syntax symbol names to MathAST MathSymbol type

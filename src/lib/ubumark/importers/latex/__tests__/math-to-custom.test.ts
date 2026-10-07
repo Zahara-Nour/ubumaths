@@ -410,9 +410,11 @@ describe('preprocessing', () => {
 // =============================================================================
 
 describe('SUPPORTED_GREEK', () => {
-	it('contains all 23 standard lowercase Greek letters', () => {
-		// Expanded from 5 to 23 letters to support geometry-core and all mathAST consumers
-		expect(SUPPORTED_GREEK.size).toBe(23);
+	it('contains the 23 lowercase letters, 6 variants and 11 uppercase letters', () => {
+		// 23 minuscules (dont pi), variantes `\var…` et majuscules usuelles (2026-10-07)
+		expect(SUPPORTED_GREEK.size).toBe(40);
+		expect(SUPPORTED_GREEK.has('varphi')).toBe(true);
+		expect(SUPPORTED_GREEK.has('Delta')).toBe(true);
 	});
 
 	it('contains pi, alpha, beta, gamma, theta', () => {
