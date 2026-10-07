@@ -508,3 +508,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   fluence = 30 points de calcul mental, scopage branche+parent d'emblée (leçon du seed
   CM). Preuve rouge (3 tests) puis comparaison intégrale fixture ↔ base en lecture
   anonyme : 83/83 verts avec les voisins (seed CM, nœuds, schéma cible, curriculum-seed).
+
+- **Document de seed 6e rédigé (2026-10-08, « go » de David)** :
+  `docs/wip/arbre-notions/seed-6e.md` — 97 points (95 Connaissances + 2 lignes
+  d'Automatismes au contenu neuf : périmètre carré/rectangle, jours/année/siècle), codes
+  6-101…6-197 (l'ancien seed 2020 garde 6-001…6-095 jusqu'à C5), ET les 35 lignes
+  d'Automatismes dispatchées en RÉFÉRENCES vers 28 points CM1/CM2/CE1/CE2 (règle : cible
+  = le point le plus récent du parcours qui couvre). Premier grade à références — C22
+  dissoute. Questions A1-A4 (Préalgorithmique vs coder un déplacement ; kind algorithme ;
+  codes ; ensemble). EN ATTENTE DE VALIDATION — aucune migration avant.
