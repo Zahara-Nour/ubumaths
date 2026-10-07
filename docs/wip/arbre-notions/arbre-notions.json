@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07",
-	"statut": "validé par David, rien en base",
+	"version": "2026-10-07.2",
+	"statut": "validé par David (lycée 2026-10-06/07, cycle 2 2026-10-07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -8,7 +8,14 @@
 				{
 					"nom": "Entiers : numération",
 					"niveaux": "CP à 6e",
-					"sous_notions": ["comparer", "décomposer", "écrire", "repérer"],
+					"sous_notions": [
+						"comparer",
+						"décomposer",
+						"écrire",
+						"repérer",
+						"dénombrer",
+						"ordinaux et rangs"
+					],
 					"note": null
 				},
 				{
@@ -21,7 +28,8 @@
 						"tables",
 						"double et moitié",
 						"triple et tiers",
-						"calcul astucieux"
+						"calcul astucieux",
+						"calcul posé"
 					],
 					"note": null
 				},
@@ -39,7 +47,8 @@
 						"quadruple et quart",
 						"puissances de 10",
 						"produits particuliers",
-						"calcul astucieux"
+						"calcul astucieux",
+						"calcul posé"
 					],
 					"note": null
 				},
@@ -78,20 +87,21 @@
 				},
 				{
 					"nom": "Fractions : sens et écritures",
-					"niveaux": "CM1 à 4e",
+					"niveaux": "CE1 à 4e",
 					"sous_notions": [
 						"définition",
 						"comparer",
 						"décomposer",
 						"égalité de fractions",
 						"simplifier",
-						"forme décimale"
+						"forme décimale",
+						"droite graduée"
 					],
 					"note": null
 				},
 				{
 					"nom": "Fractions : calculs",
-					"niveaux": "CM1 à 4e",
+					"niveaux": "CE1 à 4e",
 					"sous_notions": [
 						"additionner et soustraire",
 						"multiplier",
@@ -143,6 +153,18 @@
 					"niveaux": "4e, 2de",
 					"sous_notions": ["calculer", "propriétés"],
 					"note": null
+				},
+				{
+					"nom": "Problèmes arithmétiques",
+					"niveaux": "CP à CE2",
+					"sous_notions": [
+						"parties-tout",
+						"comparaison",
+						"en deux étapes ou plus",
+						"multiplicatifs",
+						"produits cartésiens"
+					],
+					"note": "classés par structure ; cycles 3 et 4 à confirmer à réception des programmes"
 				}
 			]
 		},
@@ -151,13 +173,14 @@
 			"notions": [
 				{
 					"nom": "Divisibilité",
-					"niveaux": "cycle 3 à Expertes",
+					"niveaux": "CE1 à Expertes",
 					"sous_notions": [
+						"pair ou impair",
 						"multiples et diviseurs",
 						"critères de divisibilité",
 						"division euclidienne"
 					],
-					"note": "reprend aussi l'ancien « Entiers : diviser, divisibilité » (CE2 à CM2)"
+					"note": "reprend aussi l'ancien « Entiers : diviser, divisibilité » (CE2 à CM2) ; parité dès le CE1"
 				},
 				{
 					"nom": "Nombres premiers",
@@ -712,6 +735,35 @@
 			"nom": "Géométrie",
 			"notions": [
 				{
+					"nom": "Solides",
+					"niveaux": "CP à CE2",
+					"sous_notions": ["reconnaître et décrire", "construire", "patrons"],
+					"note": "cycles 3-4 et collège (D2) à venir"
+				},
+				{
+					"nom": "Figures planes",
+					"niveaux": "CP à CE2",
+					"sous_notions": [
+						"reconnaître et décrire",
+						"angles droits",
+						"reproduire et construire",
+						"cercle"
+					],
+					"note": "cycles 3-4 et collège (D2) à venir"
+				},
+				{
+					"nom": "Symétrie axiale",
+					"niveaux": "CE2",
+					"sous_notions": [],
+					"note": "cycles 3-4 à venir ; la symétrie centrale (5e) sera une autre notion"
+				},
+				{
+					"nom": "Repérage et déplacements",
+					"niveaux": "CP, CE1",
+					"sous_notions": ["positions et plans", "coder un déplacement"],
+					"note": null
+				},
+				{
 					"nom": "Vecteurs : sans coordonnées",
 					"niveaux": "2de",
 					"sous_notions": [
@@ -807,10 +859,34 @@
 			"nom": "Grandeurs et mesures",
 			"notions": [
 				{
+					"nom": "Longueurs",
+					"niveaux": "CP à CE2",
+					"sous_notions": ["comparer et mesurer", "unités et conversions"],
+					"note": "cycle 3 à confirmer"
+				},
+				{
+					"nom": "Masses",
+					"niveaux": "CP à CE2",
+					"sous_notions": ["comparer et mesurer", "unités et conversions"],
+					"note": "cycle 3 à confirmer"
+				},
+				{
+					"nom": "Contenances",
+					"niveaux": "CE2",
+					"sous_notions": ["comparer et mesurer", "unités et conversions"],
+					"note": "cycle 3 à confirmer"
+				},
+				{
+					"nom": "Monnaie",
+					"niveaux": "CP à CE2",
+					"sous_notions": ["pièces et billets", "euros et centimes", "rendre la monnaie"],
+					"note": "porte l'écriture à virgule du cycle 2"
+				},
+				{
 					"nom": "Périmètres",
-					"niveaux": "6e",
+					"niveaux": "CE2, 6e",
 					"sous_notions": ["carré", "rectangle"],
-					"note": null
+					"note": "au CE2 : par mesurage, sans formule"
 				},
 				{
 					"nom": "Aires",
@@ -832,8 +908,8 @@
 				},
 				{
 					"nom": "Durées",
-					"niveaux": "6e",
-					"sous_notions": ["calculer", "convertir"],
+					"niveaux": "CP à 6e",
+					"sous_notions": ["lire l'heure", "calculer", "convertir"],
 					"note": null
 				},
 				{
@@ -952,10 +1028,11 @@
 			"notions": [
 				{
 					"nom": "Représenter des données",
-					"niveaux": "5e à 2de",
+					"niveaux": "CP à 2de",
 					"sous_notions": [
 						"effectifs et fréquences",
 						"tableaux",
+						"tableau à double entrée",
 						"diagrammes en barres",
 						"diagrammes circulaires",
 						"histogrammes",
