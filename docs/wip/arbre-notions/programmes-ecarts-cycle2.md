@@ -348,7 +348,29 @@ contenus (questions, exercices, fiches, cours), pas seulement l'évaluable.
 
 Reçus : 2de, 1re spé, Tle spé, Tle comp., Tle expertes (session précédente) · cycle 2 (programme
 2025 + 3 livrets, cette session). Manquants pour couvrir tous les grades de Chiphre : **cycle 3**
-(CM1, CM2, 6e), **cycle 4** (5e, 4e, 3e), **1re générale hors spécialité** (maths spécifiques de
-l'enseignement scientifique), **1re et Tle technologiques** (au moins STMG, présentes dans les
-grades de Chiphre). À vérifier à réception : millésimes (nouveaux programmes 2025-2026 du primaire,
-programmes réviés du lycée).
+(CM1, CM2, 6e), **cycle 4** (5e, 4e, 3e), **mathématiques spécifiques** (enseignement scientifique
+de 1re générale, 1 h 30, pour les élèves sans la spécialité), **enseignement commun de
+mathématiques de la voie technologique** (1re et Tle — programme COMMUN aux séries ST2S, STL,
+STD2A, STI2D, STMG et STHR, BO spécial n° 1 du 22-01-2019, avec modules différenciés mineurs :
+algorithmique sauf STD2A, activités géométriques en STD2A). Si David a un jour des élèves de
+STI2D/STL en spécialité « physique-chimie et mathématiques », c'est un programme de maths distinct
+à fournir en plus. À vérifier à réception : millésimes (nouveaux programmes 2025-2026 du primaire,
+programmes révisés du lycée).
+
+### Année ≠ niveau — et renommage des grades techno (2026-10-07)
+
+Vocabulaire précisé par David : **l'année** d'enseignement (première, terminale — `schoolYear`
+dans `grades.ts`) n'est pas **le niveau** au sens de Chiphre (= l'enseignement de mathématiques
+suivi). En première coexistent trois enseignements de maths : la spécialité (`1_SPE`), les
+mathématiques spécifiques de l'enseignement scientifique (`1_GEN` — displayName à clarifier), et
+l'enseignement commun de la voie technologique. En terminale : `T_SPE`, `T_COMP`, `T_EXP`,
+l'enseignement commun techno — et `T_GEN` ne correspond à **aucun programme de maths** (Tle
+générale sans maths ; le grade reste utile pour identifier élèves/classes).
+
+→ **Question P8 — renommer `1_STMG`/`T_STMG`** : le programme de maths est commun à toute la voie
+technologique, pas propre à STMG → proposer `1_TECHNO`/`T_TECHNO` (displayName « 1re techno —
+maths tronc commun », etc.). Coût mesuré (prod, 2026-10-07) : **0 ligne de données** (aucun
+exercice, modèle, profil ni classe n'utilise ces codes), ~15 fichiers de code (surtout `grades.ts`
+et ses tests) et une migration pour les contraintes CHECK (baseline, curriculum, séries,
+consentement). À trancher aussi : le displayName de `1_GEN` (« 1re générale — maths spécifiques ») ;
+`1_GEN` a 1 classe en prod, son code ne bouge pas.
