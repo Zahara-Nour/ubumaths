@@ -340,9 +340,14 @@ contenus (questions, exercices, fiches, cours), pas seulement l'évaluable.
    (reco) ou dans la branche Algorithmique ?
 7. **Confirmation** : appliquer les [N] sans ambiguïté (Fractions CE1-CE2, Durées CP+, Périmètres
    CE2, Statistiques CP+) en même temps que le lot lycée de `programmes-ecarts.md` ?
-8. **P7 — Lien arbre ↔ référentiel** : option 1 (table de correspondance), option 2 (+ dérivation)
-   ou statu quo ? (§ Lien arbre ↔ référentiel ci-dessus ; la question A7 avait été retirée sans
-   être posée, David a signalé le 2026-10-07 qu'un lien lui semble évident.)
+8. **P7 — Lien arbre ↔ référentiel** : option 1 (table de correspondance), option 2 (+ dérivation),
+   statu quo, ou option 4 (fusion des étages dupliqués) ? (§ Lien arbre ↔ référentiel ci-dessus ;
+   la question A7 avait été retirée sans être posée, David a signalé le 2026-10-07 qu'un lien lui
+   semble évident et qu'il voit un vrai doublon thème/objectif ↔ branche/notion.)
+9. ~~**P8 — renommer les grades techno**~~ — **TRANCHÉE le 2026-10-07** (« on fait déjà ces
+   modifications pour partir sur quelque chose de plus sain ») : `1_TECHNO`/`T_TECHNO`,
+   track `techno`, libellé de `1_GEN` précisé. **PR #922** (code + migration
+   `20261007210000_renommage_grades_voie_technologique`).
 
 ## Programmes reçus / manquants (état au 2026-10-07)
 
