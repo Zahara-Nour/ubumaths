@@ -98,3 +98,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   n'était PAS une décision de David — la question avait été retirée sans lui être posée. David :
   « il y a un lien évident ». Options et bénéfices dans `programmes-ecarts-cycle2.md` § Lien
   arbre ↔ référentiel ; question P7 à trancher.
+
+- **Décisions de David (2026-10-07, fin de journée)** : (1) **l'arbre des notions est CENTRAL** —
+  les maths sont immuables, les programmes changent ; un programme = des pointeurs vers l'arbre,
+  l'arbre peut déborder des programmes (notions hors programme pour les élèves avancés) ;
+  (2) **l'arbre ne porte AUCUNE information de niveau** — le niveau vit dans la couche programme
+  (les pointeurs/points par grade), pas sur les nœuds. Conséquences : la colonne `grades` de
+  `classification_nodes` et ses règles (non-vide sur notion, héritage/inclusion sur sous-notion)
+  sortent de la PR 1 ; les « niveaux » du JSON deviennent un intrant pour le futur pointage des
+  programmes, plus une propriété des nœuds ; les [N] des documents d'écarts se relisent
+  « le programme de ce niveau doit pointer ce nœud ». Restent ouvertes avant l'ADR : variante A
+  (pointeurs nus) ou B (points BO rattachés aux nœuds — reco) ; un point pointe notion OU
+  sous-notion, jamais une branche (reco oui).
