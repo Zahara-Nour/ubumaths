@@ -1,6 +1,7 @@
 # Seed 6e — points du programme ET références d'automatismes (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION (questions A1-A4). Aucune migration avant.**
+> **Statut : VALIDÉ INTÉGRALEMENT le 2026-10-08 (« je valide tout » : A1-A4 = recos).**
+> Livraison en cours : migration + tests (branche `feat/seed-points-6e`).
 > Source : « Programme de mathématiques pour le cycle 3 » (BOENJS du 17 avril 2025),
 > partie Sixième, extraite **ligne à ligne** : blocs « Connaissances et capacités
 > attendues » (→ points) et rubriques « Automatismes » (→ références, règle de David du
