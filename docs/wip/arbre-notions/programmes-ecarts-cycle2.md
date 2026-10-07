@@ -1,10 +1,9 @@
-# Arbre des notions et programme du cycle 2 : écarts (v2, modèle ADR 0020)
+# Arbre des notions et programme du cycle 2 : écarts
 
 > Comparaison entre `arbre-notions.json` (2026-10-07) et le programme de mathématiques du
-> cycle 2. **v2 du 2026-10-07**, réécrite après l'ADR 0020 : l'arbre est central et SANS niveaux,
-> chaque ligne de programme devient un **point rattaché à un nœud** (notion ou sous-notion),
-> le grain de l'arbre est celui du **filtre**. La v1 (modèle « niveaux sur les nœuds ») est dans
-> l'historique git de ce fichier.
+> cycle 2, sous le modèle de l'ADR 0020 : l'arbre est central et SANS niveaux, chaque ligne de
+> programme devient un **point rattaché à un nœud** (notion ou sous-notion), le grain de
+> l'arbre est celui du **filtre**.
 > **Rien n'est modifié** : ce document propose, David tranche.
 
 ## Textes comparés
@@ -28,7 +27,7 @@ Chaque ligne part d'un extrait du programme ; le code dit quel nœud de l'arbre 
 **point** correspondant :
 
 - **[C] couvert** : un nœud existant convient — la ligne deviendra un point sous ce nœud, pour
-  le niveau indiqué. (Absorbe les [N] de la v1 : plus de niveaux à poser sur les nœuds.)
+  le niveau indiqué — il n'y a jamais rien à changer sur le nœud lui-même.
 - **[P] sous-notion à créer** : la notion existe, et la ligne justifie une sous-notion parce
   qu'elle **passe le critère du filtre** (« voudra-t-on filtrer la banque là-dessus ? ») —
   justification donnée à chaque fois.
@@ -47,9 +46,8 @@ aucune notion : la **résolution de problèmes arithmétiques**, les **grandeurs
 (longueurs, masses, contenances, monnaie), la **géométrie du primaire** (solides, figures planes,
 symétrie, repérage) — ce dernier point recoupe la question **D2** (géométrie du collège).
 
-Bilan v2 : **9 notions** à créer, **~20 sous-notions** (dont celles des notions neuves),
-le reste des lignes = **points** sous des nœuds existants. Trois propositions de la v1 sont
-**redescendues en points** après passage au critère du filtre (voir § Reclassements).
+Bilan : **9 notions** à créer, **~20 sous-notions** (dont celles des notions neuves),
+le reste des lignes = **points** sous des nœuds existants.
 
 ---
 
@@ -117,8 +115,7 @@ Trois types d'apprentissages (faits numériques · numération · procédures) e
 cela devient des **points** (beaucoup en régime « automatisme ») sous les sous-notions
 existantes `tables`, `complément`, `double et moitié`, `décomposition`, `distributivité`,
 `puissances de 10`, `produits particuliers`, `calcul astucieux`. C'est le cas d'école de
-l'ADR 0020 : le grain vit dans les points, pas dans l'arbre. (La v1 posait ici une question P3 —
-dissoute.)
+l'ADR 0020 : le grain vit dans les points, pas dans l'arbre.
 
 Objectifs de fluence (CP : 9 calculs en 3 min ; CE1 : 12 ; CE2 : 15 ; fluences sur les tables en
 1 min) — **[T]** : métadonnées d'automatisme (régime d'acquisition), pas des points de contenu.
@@ -173,9 +170,9 @@ La branche existe mais aucune notion ne couvre les grandeurs elles-mêmes.
   famille à part entière ; `calculer` et `convertir` couvrent le reste).
 - Périmètre : CE2 « notion de périmètre, comparer au compas par report, mesurer côté à côté,
   **aucune formule** (carré et rectangle compris) » — **[C]** `Périmètres` : un point CE2
-  « périmètre d'un polygone par mesurage » suffit (reclassé depuis [P] en v1 : « polygone
-  quelconque » n'est pas un filtre, c'est une exigence annuelle ; les sous-notions `carré` et
-  `rectangle` — les formules — restent des affaires de 6e).
+  « périmètre d'un polygone par mesurage » suffit — « polygone quelconque » n'est pas un
+  filtre, c'est une exigence annuelle ; les sous-notions `carré` et `rectangle` (les formules)
+  restent des affaires de 6e.
 
 ---
 
@@ -218,8 +215,7 @@ collège) :
   problèmes à partir de tableaux et diagrammes » — **[C]** `Statistiques > Représenter des
 données` (points CP-CE2) + **[P]** **« tableau à double entrée »** (filtre : oui, famille
   d'exercices très identifiée du primaire). « Enquête et collecte » : point, pas de sous-notion
-  (reclassé depuis [P] en v1 — on ne filtrera pas la banque là-dessus, c'est une modalité
-  d'activité en classe).
+  — on ne filtrera pas la banque là-dessus, c'est une modalité d'activité en classe.
 
 ## Transversal — [T]
 
@@ -232,16 +228,6 @@ principes et modalités, ni nœuds ni points de contenu.
 Rien de ce que l'arbre contient pour le primaire n'est étranger au programme 2025. Et depuis
 l'ADR 0020, un nœud que le cycle 2 ne pointe pas n'est **pas un problème** : il est simplement
 hors programme à ce niveau (c'est même un usage voulu — enrichissement).
-
-## Reclassements v1 → v2 (effet du critère du filtre)
-
-| Proposition v1                                                                 | v2                                                |
-| ------------------------------------------------------------------------------ | ------------------------------------------------- |
-| sous-notion « polygone quelconque » (Périmètres)                               | point CE2 sous `Périmètres`                       |
-| sous-notion « enquête et collecte » (Statistiques)                             | point sous `Représenter des données`              |
-| sous-notion « estimer » (par grandeur)                                         | points sous chaque grandeur                       |
-| question P3 (procédures de calcul mental)                                      | dissoute : ce sont des points (ADR 0020)          |
-| tous les [N] (Fractions CE1-CE2, Durées CP+, Périmètres CE2, Statistiques CP+) | des pointeurs à créer, rien à changer sur l'arbre |
 
 ## Pointage à venir (quand le schéma ADR 0020 existera)
 
@@ -267,11 +253,10 @@ Tle spé ×1, Tle exp. ×1) — à David de dire la priorité du pointage cycle 
    branche Algorithmique ?
 6. **Q6 — Problèmes arithmétiques** : valider la notion et ses 5 sous-notions (parties-tout,
    comparaison, en deux étapes ou plus, multiplicatifs, produits cartésiens).
-7. **Q7 — Validation d'ensemble** : les 9 notions, les sous-notions marquées [P] et les
-   reclassements v1 → v2 ci-dessus.
+7. **Q7 — Validation d'ensemble** : les 9 notions et les sous-notions marquées [P].
 
-Tranchées aujourd'hui, pour mémoire : lien arbre ↔ programme (ADR 0020, ex-P7) · renommage des
-grades techno (PR #922, ex-P8).
+Tranchées le 2026-10-07, pour mémoire : lien arbre ↔ programme (ADR 0020) · renommage des
+grades techno (PR #922).
 
 ## Programmes reçus / manquants (état au 2026-10-07)
 
@@ -285,5 +270,5 @@ jour des élèves de STI2D/STL en spécialité « physique-chimie et mathématiq
 programme de maths distinct à fournir en plus. À vérifier à réception : millésimes (programmes
 2025-2026 du primaire, programmes révisés du lycée).
 
-> Note : le document lycée `programmes-ecarts.md` reste en v1 (modèle à niveaux) ; il passera au
-> même gabarit v2 une fois ce format validé par David sur le cycle 2.
+> Note : le document lycée `programmes-ecarts.md` est encore dans l'ancien modèle (niveaux sur
+> les nœuds) ; il sera réécrit au présent gabarit une fois celui-ci validé par David.
