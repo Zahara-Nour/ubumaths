@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.6",
-	"statut": "validé par David (cycles 2-4 + 2de + 1re spé v2, 2026-10-06/07 ; lots Tle et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.7",
+	"statut": "validé par David (cycles 2-4 + 2de + 1re et Tle spé v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -485,7 +485,7 @@
 				},
 				{
 					"nom": "Fonction exponentielle",
-					"niveaux": "1re",
+					"niveaux": "1re, Tle",
 					"sous_notions": [
 						"propriétés algébriques",
 						"dérivée",
@@ -517,6 +517,7 @@
 						"limite en un point",
 						"opérations",
 						"formes indéterminées",
+						"comparaison et encadrement",
 						"croissances comparées",
 						"asymptotes"
 					],
@@ -525,7 +526,12 @@
 				{
 					"nom": "Continuité",
 					"niveaux": "Tle, Tle comp.",
-					"sous_notions": ["lecture graphique", "valeurs intermédiaires"],
+					"sous_notions": [
+						"continuité en un point",
+						"lecture graphique",
+						"valeurs intermédiaires",
+						"encadrement d'une solution"
+					],
 					"note": null
 				},
 				{
@@ -564,7 +570,9 @@
 						"par une primitive",
 						"relation de Chasles",
 						"linéarité",
+						"positivité et inégalités",
 						"intégration par parties",
+						"suites d'intégrales",
 						"méthode des rectangles"
 					],
 					"note": null
@@ -595,7 +603,7 @@
 				{
 					"nom": "Généralités",
 					"niveaux": "Tle, Tle comp.",
-					"sous_notions": ["notion de solution", "allure des courbes"],
+					"sous_notions": ["notion de solution", "allure des courbes", "méthode d'Euler"],
 					"note": null
 				},
 				{
@@ -954,6 +962,7 @@
 						"norme et distance",
 						"vecteur normal à un plan",
 						"équation cartésienne d'un plan",
+						"coordonnées du projeté orthogonal",
 						"sphère"
 					],
 					"note": "dans l'espace"
@@ -1081,6 +1090,7 @@
 						"schéma de Bernoulli",
 						"reconnaître une loi",
 						"calcul de probabilités",
+						"intervalle de fluctuation",
 						"coefficients binomiaux",
 						"espérance et variance"
 					],
@@ -1106,7 +1116,8 @@
 						"espérance et variance d'une somme",
 						"échantillons",
 						"Bienaymé-Tchebychev",
-						"inégalité de concentration"
+						"inégalité de concentration",
+						"loi des grands nombres"
 					],
 					"note": "sommes de variables aléatoires"
 				}
@@ -1237,8 +1248,13 @@
 				},
 				{
 					"nom": "Raisonnements",
-					"niveaux": "2de, 1re",
-					"sous_notions": ["par l'absurde", "par contraposée", "disjonction de cas"],
+					"niveaux": "2de à Tle",
+					"sous_notions": [
+						"par l'absurde",
+						"par contraposée",
+						"disjonction de cas",
+						"par équivalence"
+					],
 					"note": null
 				}
 			]

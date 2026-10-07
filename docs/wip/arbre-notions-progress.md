@@ -206,3 +206,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   comblés par le lot 1re (CN/CS, probabilités totales, épreuves indépendantes successives).
   Proposé : 0 notion, ~10 sous-notions (6 en Analyse), 2 requalifications en points.
   Questions V1-V5 en attente.
+
+- **Tle spé appliquée (2026-10-07, « je valide tout », V1-V5)** : 10 sous-notions — par
+  équivalence (Raisonnements, « 2de à Tle »), coordonnées du projeté orthogonal
+  (Orthogonalité : avec coordonnées), comparaison et encadrement (Limites de fonctions),
+  continuité en un point et encadrement d'une solution (Continuité), méthode d'Euler
+  (Équations différentielles > Généralités), positivité et inégalités et suites d'intégrales
+  (Calcul d'intégrales), intervalle de fluctuation (Loi binomiale), loi des grands nombres
+  (Sommes et concentration) ; requalifiés en points : loi de Bernoulli, limites du
+  logarithme ; niveau Fonction exponentielle « 1re, Tle » → 19 branches, 136 notions,
+  517 sous-notions (JSON 2026-10-07.7), diagramme republié. Restent : Tle comp. et Expertes
+  au gabarit v2.

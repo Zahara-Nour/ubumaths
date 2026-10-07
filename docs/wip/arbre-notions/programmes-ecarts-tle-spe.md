@@ -292,6 +292,10 @@ Statistique à deux variables` : contenus de **Tle comp.** — pointage à sa re
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (V1-V5, limites du logarithme et
+> loi de Bernoulli = simples points). Appliqué à l'arbre : version 2026-10-07.7 —
+> 136 notions, 517 sous-notions.
+
 1. **V1 — Logique** : « par équivalence » (Raisonnements, niveau → « 2de à Tle »).
    (reco : oui.)
 2. **V2 — Espace** : « coordonnées du projeté orthogonal » (Orthogonalité : avec coordonnées).

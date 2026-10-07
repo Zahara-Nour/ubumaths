@@ -102,21 +102,21 @@ FO=[
 ("Fonction valeur absolue","2de",[("",["définition et distance","courbe","variations","équations et inéquations"])],"reprend le domaine Valeur absolue"),
 ("Second degré","1re",[("",["racines","signe","formes","variations","parabole","somme et produit des racines"])],"équations et inéquations → Algèbre"),
 ("Dérivation","1re, Tle, Tle comp.",[("",["taux de variation","nombre dérivé","tangente","approximation affine","fonctions dérivées","opérations sur les dérivées","dérivabilité en un point","variations","étude de fonction","position relative de deux courbes","optimisation","fonctions composées"])],"optimisation : sous-notion, plus une notion"),
-("Fonction exponentielle","1re",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation"])],None),
+("Fonction exponentielle","1re, Tle",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation"])],None),
 ("Fonctions trigonométriques","1re, Tle",[("",["cercle et radians","cosinus et sinus d'un réel","angles associés","équations","inéquations","parité et périodicité","dérivées et variations"])],None),
-("Limites de fonctions","Tle, Tle comp.",[("",["limite en un point","opérations","formes indéterminées","croissances comparées","asymptotes"])],None),
-("Continuité","Tle, Tle comp.",[("",["lecture graphique","valeurs intermédiaires"])],None),
+("Limites de fonctions","Tle, Tle comp.",[("",["limite en un point","opérations","formes indéterminées","comparaison et encadrement","croissances comparées","asymptotes"])],None),
+("Continuité","Tle, Tle comp.",[("",["continuité en un point","lecture graphique","valeurs intermédiaires","encadrement d'une solution"])],None),
 ("Convexité","Tle, Tle comp.",[("",["caractérisations","dérivée seconde","point d'inflexion","inégalités de convexité","lecture graphique"])],None),
 ("Logarithme népérien","Tle, Tle comp.",[("",["réciproque de l'exponentielle","propriétés algébriques","équations et inéquations","dérivée","courbe"])],None),
 ]
 IN=[
-("Calcul d'intégrales","Tle, Tle comp.",[("",["par une primitive","relation de Chasles","linéarité","intégration par parties","méthode des rectangles"])],None),
+("Calcul d'intégrales","Tle, Tle comp.",[("",["par une primitive","relation de Chasles","linéarité","positivité et inégalités","intégration par parties","suites d'intégrales","méthode des rectangles"])],None),
 ("Intégrale et aire","Tle, Tle comp.",[("",["aire algébrique","aire entre deux courbes","lecture graphique"])],None),
 ("Valeur moyenne","Tle, Tle comp.",[("",["calcul","encadrement","interprétation"])],None),
 ("Fonction intégrale","Tle, Tle comp.",[("",["dérivée d'une fonction intégrale"])],None),
 ]
 ED=[
-("Généralités","Tle, Tle comp.",[("",["notion de solution","allure des courbes"])],None),
+("Généralités","Tle, Tle comp.",[("",["notion de solution","allure des courbes","méthode d'Euler"])],None),
 ("y′ = f","Tle, Tle comp.",[("",["primitives : notion","primitives des fonctions de référence","formes u′eᵘ, 2uu′, u′/u","forme (v′∘u)×u′","sinus et cosinus"])],"les primitives sont les solutions de y′ = f"),
 ("y′ = ay","Tle, Tle comp.",[("",["solution générale","condition initiale"])],None),
 ("y′ = ay + b","Tle, Tle comp.",[("",["solution générale","condition initiale"])],None),
@@ -153,7 +153,7 @@ GE=[
 ("Espace : sans coordonnées","Tle",[("",["vecteurs de l'espace","colinéarité et alignement","coplanarité et décomposition","positions relatives de droites et plans"])],None),
 ("Espace : avec coordonnées","Tle",[("",["coordonnées dans l'espace","représentation paramétrique d'une droite","intersections","positions relatives par le calcul"])],None),
 ("Orthogonalité : sans coordonnées","Tle",[("",["produit scalaire dans l'espace","orthogonalité de droites et plans","projeté orthogonal","angles"])],"dans l'espace"),
-("Orthogonalité : avec coordonnées","Tle",[("",["norme et distance","vecteur normal à un plan","équation cartésienne d'un plan","sphère"])],"dans l'espace"),
+("Orthogonalité : avec coordonnées","Tle",[("",["norme et distance","vecteur normal à un plan","équation cartésienne d'un plan","coordonnées du projeté orthogonal","sphère"])],"dans l'espace"),
 ]
 GR_M=[
 ("Longueurs","CP à 6e",[("",["comparer et mesurer","unités et conversions"])],None),
@@ -171,9 +171,9 @@ PS=[
 ("Expériences aléatoires","CM1 à 2de",[("",["fréquences","probabilité simple","équiprobabilité","événements"])],"reprend le domaine Probabilités > Apprivoiser"),
 ("Probabilités conditionnelles","2de, 1re",[("",["arbres pondérés","tableaux croisés","indépendance","probabilités totales","inversion du conditionnement","épreuves indépendantes successives","problèmes en contexte"])],None),
 ("Variables aléatoires","1re",[("",["loi d'une variable aléatoire","compléter une loi","espérance","variance et écart-type","jeux et gains"])],None),
-("Loi binomiale","Tle, Tle comp.",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","coefficients binomiaux","espérance et variance"])],None),
+("Loi binomiale","Tle, Tle comp.",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","intervalle de fluctuation","coefficients binomiaux","espérance et variance"])],None),
 ("Autres lois","Tle comp.",[("",["loi géométrique","loi uniforme discrète","loi uniforme continue","loi exponentielle","densité et aire","espérance"])],None),
-("Sommes et concentration","Tle",[("",["espérance et variance d'une somme","échantillons","Bienaymé-Tchebychev","inégalité de concentration"])],"sommes de variables aléatoires"),
+("Sommes et concentration","Tle",[("",["espérance et variance d'une somme","échantillons","Bienaymé-Tchebychev","inégalité de concentration","loi des grands nombres"])],"sommes de variables aléatoires"),
 ]
 DE=[
 ("Principes de dénombrement","Tle",[("",["principes additif et multiplicatif","k-uplets","parties d'un ensemble"])],None),
@@ -192,7 +192,7 @@ LO=[
 ("Connecteurs et contre-exemples","2de, 1re",[("",["et, ou, non","contre-exemple"])],None),
 ("Implication et équivalence","2de, 1re",[("",["implication","réciproque","contraposée","équivalence","condition nécessaire, condition suffisante"])],None),
 ("Quantificateurs et négation","2de, 1re",[("",["pour tout, il existe","statut des lettres et des égalités","négation d'une proposition"])],None),
-("Raisonnements","2de, 1re",[("",["par l'absurde","par contraposée","disjonction de cas"])],None),
+("Raisonnements","2de à Tle",[("",["par l'absurde","par contraposée","disjonction de cas","par équivalence"])],None),
 ]
 EN=[
 ("Ensembles de nombres","2de",[("",["ℕ, ℤ, 𝔻, ℚ, ℝ","nombres irrationnels","appartenance et inclusion","intervalles"])],None),
@@ -313,7 +313,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.6","statut":"validé par David (cycles 2-4 + 2de + 1re spé v2, 2026-10-06/07 ; lots Tle et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.7","statut":"validé par David (cycles 2-4 + 2de + 1re et Tle spé v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))
