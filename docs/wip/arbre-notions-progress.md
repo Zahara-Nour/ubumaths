@@ -426,3 +426,8 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   couplées RESTAURÉES aux côtés de récurrence/limites) et les 2 modèles « escalier » de 1re
   (→ Suites récurrentes > escalier). Grep de contrôle : aucune autre censure dans la
   correspondance.
+
+- **Relance de la correspondance : lots 1-3 VALIDÉS par David (2026-10-07)** — familles NC,
+  45 bascules (+ les 3 corrections de la règle de rangement), 260 confirmations en bloc.
+  Reste le lot 4 (7 cas ligne à ligne), en cours de présentation avec les énoncés réels lus
+  en prod.
