@@ -263,3 +263,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   1re techno, Tle comp. », Échantillonnage « 2de, 1re, 1re techno » → 19 branches,
   136 notions, 523 sous-notions (JSON 2026-10-07.9), diagramme republié. Restent : Tle
   comp., Expertes, Tle techno (texte à venir), spé PCM STI2D/STL (si fournie).
+
+- **Tle techno analysée au gabarit v2 (2026-10-07, soir)** : programme NOUVEAU (grade
+  `T_TECHNO`, sans section v1, sans seed prod) ; texte fourni par David (Annexe, 11 p.,
+  vague 2026, sauvegardé `progs-lycee/terminale-techno.pdf`) →
+  `programmes-ecarts-tle-techno.md`. La Tle techno A une rubrique Automatismes (italiques =
+  automatismes propres, références internes au parcours) avec UN contenu orphelin : l'indice
+  de base 100 → point de Tle techno en régime automatisme (le cas prévu par la règle 2de).
+  Les créations ens. sci. (x ↦ aˣ, taux moyen) reçoivent leurs pointeurs techno comme
+  anticipé. Proposé : 4 sous-notions (logarithme décimal + renommage Logarithme népérien →
+  Logarithmes, indices, coniques et perspective centrale pour STD2A). Questions Y1-Y5 en
+  attente.
