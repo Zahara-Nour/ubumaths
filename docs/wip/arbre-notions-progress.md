@@ -418,3 +418,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   avec David, et DÉCOUVERTE : **26 exercices sans titre** en prod (pas 2). CSV mis à jour
   en place, 0 cible morte, synthese.md marqué périmé → `correspondance/relance-2026-10-07.md`
   (lots 1-4 à valider par David).
+
+- **Règle de rangement énoncée par David (2026-10-07)** : on classe ce que le contenu EST,
+  jamais ce qui est au programme — un nœud hors du programme du grade est un rangement
+  légitime (l'arbre déborde ; nœud sans point pour le grade = étiquette « hors programme »
+  automatique dans le schéma cible). Corrigé en conséquence : BAC Mars 2021 (suites
+  couplées RESTAURÉES aux côtés de récurrence/limites) et les 2 modèles « escalier » de 1re
+  (→ Suites récurrentes > escalier). Grep de contrôle : aucune autre censure dans la
+  correspondance.
