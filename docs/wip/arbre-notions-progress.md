@@ -284,3 +284,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   à deux variables (4 libellés), Loi binomiale, Figures planes et Solides « 1re et Tle
   techno » → 19 branches, 136 notions, 527 sous-notions (JSON 2026-10-07.10), diagramme
   republié. Restent : Tle comp. et Expertes (reprise v1 → v2), spé PCM STI2D/STL si fournie.
+
+- **Tle comp. reprise au gabarit v2 (2026-10-07, soir)** : texte refourni par David
+  (Annexe, 12 p., vague 2026) vérifié identique au texte sauvegardé
+  (`progs-lycee/complementaires.txt`) → `programmes-ecarts-tle-comp.md` (remplace la
+  section Tle comp. de l'ancien doc). Seed prod T_COMP (139 points) déjà sur ce texte
+  (vérifié en prod). Moisson maximale des lots précédents : encadrement d'une solution,
+  méthode d'Euler, intervalle de fluctuation, formes de primitives 2uu′/eᵘu′/u′/u → tous
+  les ex-[P] « avec Tle comp. » passent en [C]. Proposé : 5 sous-notions (fonction
+  réciproque, absence de mémoire, fonction de répartition, coefficient de corrélation,
+  déciles et rapport interdécile) + renommage `Autres lois > espérance` → « espérance et
+  variance ». Questions Z1-Z4 en attente. Ne restera ensuite que la section Expertes.
