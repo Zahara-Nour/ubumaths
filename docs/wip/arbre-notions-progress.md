@@ -122,3 +122,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **PR 1 amendée (2026-10-07, ADR 0020)** : `classification_nodes.grades` retirée (colonne,
   contraintes de forme/validité, bloc inclusion du trigger de validation, bloc niveaux du trigger
   enfants). Tests : 52 verts (les 2 tests de niveaux supprimés avec la règle).
+
+- **Programme du cycle 3 comparé (2026-10-07, soir)** : programme BOENJS du 17 avril 2025 (en
+  vigueur en 6e depuis la rentrée 2026) + livrets CM1/CM2/6e 2026 (séquences modèles) →
+  `docs/wip/arbre-notions/programmes-ecarts-cycle3.md`. Proposé : 2 notions (Premiers pas
+  algébriques, Angles), ~8 sous-notions, niveaux rafraîchis ; ⚠️ seed 6e en prod (95 points) =
+  programme 2020, périmé. Questions R1-R6.
