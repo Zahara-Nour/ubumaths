@@ -88,8 +88,8 @@ intra-point). Aucun nouveau point n'en recevra ; le retrait de la colonne et du 
 relève du volet destructif. **Reco : abandon.**
 
 **C11 — Q2 (rubrique BO).** Pour afficher un programme dans l'ordre du texte (« Analyse >
-Trigonométrie »), le point porte une **`rubrique` texte** (« Analyse > Trigonométrie »,
-backfillée depuis thème + objectif pour l'existant), et `themes/objectives` deviennent de
+Trigonométrie »), le point porte une **`rubrique` texte** (« Analyse > Trigonométrie » —
+sur les points NEUFS seulement, C4 : les anciens ne sont pas modifiés), et `themes/objectives` deviennent de
 simples données d'affichage appelées à disparaître au volet destructif. Alternative :
 garder les deux tables comme sommaire vivant (statu quo structurel). **Reco : champ
 `rubrique`** — un BO est un texte plat à deux niveaux de titres, deux tables sont de trop ;
