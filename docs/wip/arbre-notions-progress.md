@@ -501,3 +501,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   changement d'arbre (le .13 absorbe tout) ; fluence = 30 points de calcul mental ;
   8 rattachements discutables listés (dont assemblages → Solides, montants en euro →
   Monnaie). EN ATTENTE DE VALIDATION (V1) — aucune migration avant.
+
+- **Seed cycle 2 VALIDÉ et construit (2026-10-08, « ok » de David = V1)** : migration
+  `20261008150000_seed_curriculum_points_cycle2.sql` GÉNÉRÉE depuis seed-cycle2.md —
+  227 points (69 CP + 82 CE1 + 76 CE2), AUCUN changement d'arbre (le .13 absorbe tout),
+  fluence = 30 points de calcul mental, scopage branche+parent d'emblée (leçon du seed
+  CM). Preuve rouge (3 tests) puis comparaison intégrale fixture ↔ base en lecture
+  anonyme : 83/83 verts avec les voisins (seed CM, nœuds, schéma cible, curriculum-seed).
