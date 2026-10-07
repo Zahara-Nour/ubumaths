@@ -1,0 +1,3152 @@
+<title>Arbre des notions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+/>
+<style>
+	/* Layout : une colonne de lecture ; chaque branche = un schéma SVG branche → notions, défilable seul sur téléphone */
+	:root {
+		--bg: #f6f7f4;
+		--surface: #ffffff;
+		--fg: #1d2321;
+		--muted: #5d6763;
+		--line: #c9cfcb;
+		--accent: #2f6f5e;
+		--c1: #2f6fb0;
+		--c2: #b5651d;
+		--c3: #7a4fb3;
+		--c4: #1f8a6b;
+		--c5: #c0477a;
+		--c6: #4a7d2a;
+		--c7: #8a6d1f;
+		--c8: #a63d3d;
+		--c9: #4d5f73;
+		--c10: #1f7f8c;
+		--c11: #9b4f96;
+		--c12: #5a6b2e;
+		--c13: #b04a2f;
+		--c14: #3d5a99;
+		--c15: #7d6a2a;
+		--c16: #2e7d4f;
+		--c17: #6b4e9b;
+		--c18: #8a5a2b;
+		--c19: #2f7a7a;
+		--display: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+		--body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #141917;
+			--surface: #1d2421;
+			--fg: #e7ece9;
+			--muted: #9aa6a1;
+			--line: #3a4440;
+			--accent: #6cc2a6;
+			--c1: #6ea8e6;
+			--c2: #e39a5a;
+			--c3: #b393e6;
+			--c4: #5cc7a3;
+			--c5: #ec87b1;
+			--c6: #8cc46a;
+			--c7: #d7b65a;
+			--c8: #e88282;
+			--c9: #9fb1c6;
+			--c10: #5fc3cf;
+			--c11: #d993d4;
+			--c12: #b5c97a;
+			--c13: #ee9378;
+			--c14: #93aee8;
+			--c15: #d4c07a;
+			--c16: #7fd1a0;
+			--c17: #b9a0e6;
+			--c18: #e0b07f;
+			--c19: #7fd0d0;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #141917;
+		--surface: #1d2421;
+		--fg: #e7ece9;
+		--muted: #9aa6a1;
+		--line: #3a4440;
+		--accent: #6cc2a6;
+		--c1: #6ea8e6;
+		--c2: #e39a5a;
+		--c3: #b393e6;
+		--c4: #5cc7a3;
+		--c5: #ec87b1;
+		--c6: #8cc46a;
+		--c7: #d7b65a;
+		--c8: #e88282;
+		--c9: #9fb1c6;
+		--c10: #5fc3cf;
+		--c11: #d993d4;
+		--c12: #b5c97a;
+		--c13: #ee9378;
+		--c14: #93aee8;
+		--c15: #d4c07a;
+		--c16: #7fd1a0;
+		--c17: #b9a0e6;
+		--c18: #e0b07f;
+		--c19: #7fd0d0;
+		color-scheme: dark;
+	}
+	body {
+		background: var(--bg);
+		color: var(--fg);
+		font-family: var(--body);
+		font-size: 16px;
+		line-height: 1.55;
+	}
+	.wrap {
+		max-width: 960px;
+		margin: 0 auto;
+		padding-inline: 16px;
+		padding-block: 32px 64px;
+		display: grid;
+		gap: 28px;
+	}
+	h1,
+	h2,
+	h3 {
+		font-family: var(--display);
+		text-wrap: balance;
+		margin: 0;
+	}
+	h1 {
+		font-size: clamp(28px, 5vw, 40px);
+		letter-spacing: -0.01em;
+	}
+	.lede {
+		color: var(--muted);
+		max-width: 65ch;
+		margin: 6px 0 0;
+	}
+	.levels {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+	}
+	.lv {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 8px 12px;
+		min-width: 0;
+	}
+	.lv b {
+		display: block;
+		font-family: var(--display);
+	}
+	.lv span {
+		color: var(--muted);
+		font-size: 14px;
+	}
+	.arrow {
+		color: var(--muted);
+		font-size: 20px;
+	}
+	.read {
+		font-size: 14px;
+		color: var(--muted);
+		max-width: 70ch;
+		margin: 0;
+	}
+	.read code {
+		font-family: var(--body);
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		padding: 0 5px;
+		color: var(--fg);
+	}
+	.branch {
+		display: grid;
+		gap: 8px;
+	}
+	.branch h2 {
+		font-size: 22px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+	.branch h2 small {
+		font-family: var(--body);
+		font-weight: 400;
+		font-size: 14px;
+		color: var(--muted);
+	}
+	.dot {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		display: inline-block;
+	}
+	.scroll {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	svg {
+		display: block;
+	}
+	svg .bnode {
+		fill: var(--k);
+	}
+	svg .btext {
+		fill: var(--bg);
+		font: 700 17px var(--display);
+	}
+	svg .link {
+		fill: none;
+		stroke: var(--k);
+		stroke-width: 1.6;
+		opacity: 0.55;
+	}
+	svg .nnode {
+		fill: var(--surface);
+		stroke: var(--line);
+	}
+	svg .nbar {
+		fill: var(--k);
+	}
+	svg .ntext {
+		fill: var(--fg);
+		font: 700 15px var(--body);
+	}
+	svg .niv {
+		fill: var(--k);
+		font: 700 13px var(--body);
+	}
+	svg .rtext {
+		fill: var(--muted);
+		font: italic 12.5px var(--body);
+	}
+	svg .gbox {
+		fill: var(--surface);
+		stroke: var(--line);
+	}
+	svg .gitem {
+		fill: var(--fg);
+		font: 14px var(--body);
+	}
+	svg .gpre {
+		font-weight: 700;
+		fill: var(--k);
+	}
+	svg .npre {
+		fill: var(--muted);
+		font: 700 13px var(--body);
+	}
+	svg .chip {
+		fill: var(--bg);
+		stroke: var(--k);
+		stroke-opacity: 0.45;
+	}
+	svg .chiptext {
+		fill: var(--fg);
+		font: 13px var(--body);
+	}
+	svg .gnote {
+		fill: var(--muted);
+		font: italic 12.5px var(--body);
+	}
+	svg .niv {
+		font: 700 13px var(--body);
+		fill: var(--k);
+	}
+	.c1 {
+		--k: var(--c1);
+	}
+	.c2 {
+		--k: var(--c2);
+	}
+	.c3 {
+		--k: var(--c3);
+	}
+	.c4 {
+		--k: var(--c4);
+	}
+	.c5 {
+		--k: var(--c5);
+	}
+	.c6 {
+		--k: var(--c6);
+	}
+	.c7 {
+		--k: var(--c7);
+	}
+	.c8 {
+		--k: var(--c8);
+	}
+	.c9 {
+		--k: var(--c9);
+	}
+	.c10 {
+		--k: var(--c10);
+	}
+	.c11 {
+		--k: var(--c11);
+	}
+	.c12 {
+		--k: var(--c12);
+	}
+	.c13 {
+		--k: var(--c13);
+	}
+	.c14 {
+		--k: var(--c14);
+	}
+	.c15 {
+		--k: var(--c15);
+	}
+	.c16 {
+		--k: var(--c16);
+	}
+	.c17 {
+		--k: var(--c17);
+	}
+	.c18 {
+		--k: var(--c18);
+	}
+	.c19 {
+		--k: var(--c19);
+	}
+	.dot {
+		background: var(--k);
+	}
+	.side {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 14px;
+	}
+	.box {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		padding: 14px 16px;
+		min-width: 0;
+	}
+	.box h3 {
+		font-size: 17px;
+		margin-bottom: 6px;
+	}
+	.box p {
+		margin: 0 0 8px;
+		color: var(--muted);
+		font-size: 14px;
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.chips li {
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		padding: 2px 10px;
+		font-size: 14px;
+	}
+	.box ul.plain {
+		margin: 0;
+		padding-left: 18px;
+		font-size: 14px;
+	}
+	.choices {
+		display: grid;
+		gap: 10px;
+		counter-reset: q;
+	}
+	.choices li {
+		font-size: 15px;
+	}
+</style>
+
+<div class="wrap">
+	<header>
+		<h1>Arbre des notions</h1>
+		<p class="lede">
+			Classement commun aux exercices et aux modèles de questions, validé le 7 octobre 2026 : 19
+			branches, 136 notions. Rien n'est encore en base.
+		</p>
+	</header>
+
+	<div class="levels" aria-label="Les trois niveaux">
+		<div class="lv"><b>Branche</b><span>ex. Fonctions</span></div>
+		<span class="arrow" aria-hidden="true">→</span>
+		<div class="lv"><b>Notion</b><span>ex. Second degré</span></div>
+		<span class="arrow" aria-hidden="true">→</span>
+		<div class="lv"><b>Sous-notion</b><span>ex. Discriminant (facultative)</span></div>
+	</div>
+	<p class="read">
+		Dans chaque carte, la ligne en italique <code>reprend : …</code> dit d'où viendront les contenus
+		: les modèles de questions qui sont aujourd'hui rangés sous ce thème et ce domaine, et les
+		exercices dont le thème porte ce nom. Les sous-notions ne sont pas dessinées : ce sont, en
+		général, les sous-domaines actuels.
+	</p>
+
+	<section class="branch" id="nombres">
+		<h2>
+			<span class="dot c1"></span>Nombres et calculs <small>par type de nombre, 16 notions</small>
+		</h2>
+		<p class="read">
+			Le type de nombre vient en premier ; les gros (Entiers, Décimaux) sont découpés par opération.
+			Les problèmes arithmétiques du primaire ont leur notion, classés par structure. À droite,
+			chaque pastille est une sous-notion distincte.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 1635"
+				width="1000"
+				height="1635"
+				role="img"
+				aria-label="Branche Nombres et calculs, rangée par type de nombre : 16 notions et leurs sous-notions"
+				class="c1"
+			>
+				<rect x="4" y="784" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="814" class="btext" text-anchor="middle">Nombres</text>
+				<text x="89.0" y="836" class="btext" text-anchor="middle">et calculs</text>
+				<path d="M174 818 C 209 818, 180 48, 215 48" class="link" />
+				<rect x="215" y="15" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="15" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="36" class="npre">Entiers :</text>
+				<text x="231" y="54" class="ntext">numération</text>
+				<text x="231" y="72" class="niv">CP à 6e</text>
+				<path d="M500 48 L 525 48" class="link" />
+				<rect x="525" y="8" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="20" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="35.5" class="chiptext" text-anchor="middle">comparer</text>
+				<rect x="623" y="20" width="92" height="22" rx="11" class="chip" />
+				<text x="669" y="35.5" class="chiptext" text-anchor="middle">décomposer</text>
+				<rect x="723" y="20" width="64" height="22" rx="11" class="chip" />
+				<text x="755" y="35.5" class="chiptext" text-anchor="middle">écrire</text>
+				<rect x="795" y="20" width="71" height="22" rx="11" class="chip" />
+				<text x="830" y="35.5" class="chiptext" text-anchor="middle">repérer</text>
+				<rect x="874" y="20" width="85" height="22" rx="11" class="chip" />
+				<text x="916" y="35.5" class="chiptext" text-anchor="middle">dénombrer</text>
+				<rect x="537" y="50" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="65.5" class="chiptext" text-anchor="middle">ordinaux et rangs</text>
+				<path d="M174 818 C 209 818, 180 155, 215 155" class="link" />
+				<rect x="215" y="122" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="122" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="143" class="npre">Entiers :</text>
+				<text x="231" y="161" class="ntext">addition et soustraction</text>
+				<text x="231" y="179" class="niv">CP à CM2</text>
+				<path d="M500 155 L 525 155" class="link" />
+				<rect x="525" y="100" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="112" width="57" height="22" rx="11" class="chip" />
+				<text x="566" y="127.5" class="chiptext" text-anchor="middle">somme</text>
+				<rect x="602" y="112" width="92" height="22" rx="11" class="chip" />
+				<text x="648" y="127.5" class="chiptext" text-anchor="middle">différence</text>
+				<rect x="702" y="112" width="92" height="22" rx="11" class="chip" />
+				<text x="748" y="127.5" class="chiptext" text-anchor="middle">complément</text>
+				<rect x="802" y="112" width="64" height="22" rx="11" class="chip" />
+				<text x="834" y="127.5" class="chiptext" text-anchor="middle">tables</text>
+				<rect x="537" y="142" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="157.5" class="chiptext" text-anchor="middle">double et moitié</text>
+				<rect x="679" y="142" width="127" height="22" rx="11" class="chip" />
+				<text x="742" y="157.5" class="chiptext" text-anchor="middle">triple et tiers</text>
+				<rect x="814" y="142" width="134" height="22" rx="11" class="chip" />
+				<text x="881" y="157.5" class="chiptext" text-anchor="middle">calcul astucieux</text>
+				<rect x="537" y="172" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="187.5" class="chiptext" text-anchor="middle">calcul posé</text>
+				<path d="M174 818 C 209 818, 180 292, 215 292" class="link" />
+				<rect x="215" y="259" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="259" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="280" class="npre">Entiers :</text>
+				<text x="231" y="298" class="ntext">multiplication</text>
+				<text x="231" y="316" class="niv">CP à 5e</text>
+				<path d="M500 292 L 525 292" class="link" />
+				<rect x="525" y="222" width="469" height="140" rx="8" class="gbox" />
+				<rect x="537" y="234" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="249.5" class="chiptext" text-anchor="middle">tables</text>
+				<rect x="609" y="234" width="71" height="22" rx="11" class="chip" />
+				<text x="644" y="249.5" class="chiptext" text-anchor="middle">produit</text>
+				<rect x="688" y="234" width="64" height="22" rx="11" class="chip" />
+				<text x="720" y="249.5" class="chiptext" text-anchor="middle">carrés</text>
+				<rect x="760" y="234" width="113" height="22" rx="11" class="chip" />
+				<text x="816" y="249.5" class="chiptext" text-anchor="middle">décomposition</text>
+				<rect x="537" y="264" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="279.5" class="chiptext" text-anchor="middle">distributivité</text>
+				<rect x="665" y="264" width="134" height="22" rx="11" class="chip" />
+				<text x="732" y="279.5" class="chiptext" text-anchor="middle">double et moitié</text>
+				<rect x="807" y="264" width="127" height="22" rx="11" class="chip" />
+				<text x="870" y="279.5" class="chiptext" text-anchor="middle">triple et tiers</text>
+				<rect x="537" y="294" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="309.5" class="chiptext" text-anchor="middle">quadruple et quart</text>
+				<rect x="693" y="294" width="134" height="22" rx="11" class="chip" />
+				<text x="760" y="309.5" class="chiptext" text-anchor="middle">puissances de 10</text>
+				<rect x="537" y="324" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="339.5" class="chiptext" text-anchor="middle">produits particuliers</text>
+				<rect x="714" y="324" width="134" height="22" rx="11" class="chip" />
+				<text x="781" y="339.5" class="chiptext" text-anchor="middle">calcul astucieux</text>
+				<rect x="856" y="324" width="99" height="22" rx="11" class="chip" />
+				<text x="906" y="339.5" class="chiptext" text-anchor="middle">calcul posé</text>
+				<path d="M174 818 C 209 818, 180 413, 215 413" class="link" />
+				<rect x="215" y="380" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="380" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="401" class="npre">Entiers :</text>
+				<text x="231" y="419" class="ntext">division</text>
+				<text x="231" y="437" class="niv">CE2 à 6e</text>
+				<path d="M500 413 L 525 413" class="link" />
+				<rect x="525" y="374" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="386" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="401.5" class="chiptext" text-anchor="middle">quotient</text>
+				<rect x="623" y="386" width="162" height="22" rx="11" class="chip" />
+				<text x="704" y="401.5" class="chiptext" text-anchor="middle">division euclidienne</text>
+				<rect x="793" y="386" width="99" height="22" rx="11" class="chip" />
+				<text x="842" y="401.5" class="chiptext" text-anchor="middle">calcul posé</text>
+				<path d="M174 818 C 209 818, 180 503, 215 503" class="link" />
+				<rect x="215" y="470" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="470" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="491" class="npre">Entiers :</text>
+				<text x="231" y="509" class="ntext">priorités opératoires</text>
+				<text x="231" y="527" class="niv">CM1 à 5e</text>
+				<path d="M500 503 L 525 503" class="link" />
+				<rect x="525" y="464" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="476" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="491.5" class="chiptext" text-anchor="middle">avec parenthèses</text>
+				<rect x="679" y="476" width="134" height="22" rx="11" class="chip" />
+				<text x="746" y="491.5" class="chiptext" text-anchor="middle">sans parenthèses</text>
+				<rect x="821" y="476" width="155" height="22" rx="11" class="chip" />
+				<text x="898" y="491.5" class="chiptext" text-anchor="middle">traduire une phrase</text>
+				<path d="M174 818 C 209 818, 180 594, 215 594" class="link" />
+				<rect x="215" y="561" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="561" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="582" class="npre">Décimaux :</text>
+				<text x="231" y="600" class="ntext">numération</text>
+				<text x="231" y="618" class="niv">CM1 à 6e</text>
+				<path d="M500 594 L 525 594" class="link" />
+				<rect x="525" y="554" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="566" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="581.5" class="chiptext" text-anchor="middle">comparer</text>
+				<rect x="623" y="566" width="92" height="22" rx="11" class="chip" />
+				<text x="669" y="581.5" class="chiptext" text-anchor="middle">décomposer</text>
+				<rect x="723" y="566" width="64" height="22" rx="11" class="chip" />
+				<text x="755" y="581.5" class="chiptext" text-anchor="middle">écrire</text>
+				<rect x="795" y="566" width="78" height="22" rx="11" class="chip" />
+				<text x="834" y="581.5" class="chiptext" text-anchor="middle">encadrer</text>
+				<rect x="537" y="596" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="611.5" class="chiptext" text-anchor="middle">forme fractionnaire</text>
+				<rect x="700" y="596" width="78" height="22" rx="11" class="chip" />
+				<text x="739" y="611.5" class="chiptext" text-anchor="middle">arrondir</text>
+				<path d="M174 818 C 209 818, 180 701, 215 701" class="link" />
+				<rect x="215" y="668" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="668" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="689" class="npre">Décimaux :</text>
+				<text x="231" y="707" class="ntext">calculs</text>
+				<text x="231" y="725" class="niv">CM1 à 6e</text>
+				<path d="M500 701 L 525 701" class="link" />
+				<rect x="525" y="646" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="658" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="673.5" class="chiptext" text-anchor="middle">additionner</text>
+				<rect x="644" y="658" width="92" height="22" rx="11" class="chip" />
+				<text x="690" y="673.5" class="chiptext" text-anchor="middle">soustraire</text>
+				<rect x="744" y="658" width="92" height="22" rx="11" class="chip" />
+				<text x="790" y="673.5" class="chiptext" text-anchor="middle">multiplier</text>
+				<rect x="844" y="658" width="71" height="22" rx="11" class="chip" />
+				<text x="880" y="673.5" class="chiptext" text-anchor="middle">diviser</text>
+				<rect x="537" y="688" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="703.5" class="chiptext" text-anchor="middle">puissances de 10</text>
+				<rect x="679" y="688" width="120" height="22" rx="11" class="chip" />
+				<text x="739" y="703.5" class="chiptext" text-anchor="middle">distributivité</text>
+				<rect x="807" y="688" width="64" height="22" rx="11" class="chip" />
+				<text x="839" y="703.5" class="chiptext" text-anchor="middle">moitié</text>
+				<rect x="537" y="718" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="733.5" class="chiptext" text-anchor="middle">calcul astucieux</text>
+				<rect x="679" y="718" width="99" height="22" rx="11" class="chip" />
+				<text x="728" y="733.5" class="chiptext" text-anchor="middle">calcul posé</text>
+				<path d="M174 818 C 209 818, 180 823, 215 823" class="link" />
+				<rect x="215" y="790" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="790" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="811" class="npre">Fractions :</text>
+				<text x="231" y="829" class="ntext">sens et écritures</text>
+				<text x="231" y="847" class="niv">CE1 à 2de</text>
+				<path d="M500 823 L 525 823" class="link" />
+				<rect x="525" y="768" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="780" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="795.5" class="chiptext" text-anchor="middle">définition</text>
+				<rect x="637" y="780" width="78" height="22" rx="11" class="chip" />
+				<text x="676" y="795.5" class="chiptext" text-anchor="middle">comparer</text>
+				<rect x="723" y="780" width="92" height="22" rx="11" class="chip" />
+				<text x="769" y="795.5" class="chiptext" text-anchor="middle">décomposer</text>
+				<rect x="537" y="810" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="825.5" class="chiptext" text-anchor="middle">égalité de fractions</text>
+				<rect x="707" y="810" width="92" height="22" rx="11" class="chip" />
+				<text x="753" y="825.5" class="chiptext" text-anchor="middle">simplifier</text>
+				<rect x="807" y="810" width="120" height="22" rx="11" class="chip" />
+				<text x="867" y="825.5" class="chiptext" text-anchor="middle">forme décimale</text>
+				<rect x="537" y="840" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="855.5" class="chiptext" text-anchor="middle">droite graduée</text>
+				<path d="M174 818 C 209 818, 180 930, 215 930" class="link" />
+				<rect x="215" y="897" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="897" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="918" class="npre">Fractions :</text>
+				<text x="231" y="936" class="ntext">calculs</text>
+				<text x="231" y="954" class="niv">CE1 à 3e</text>
+				<path d="M500 930 L 525 930" class="link" />
+				<rect x="525" y="890" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="902" width="197" height="22" rx="11" class="chip" />
+				<text x="636" y="917.5" class="chiptext" text-anchor="middle">
+					additionner et soustraire
+				</text>
+				<rect x="742" y="902" width="92" height="22" rx="11" class="chip" />
+				<text x="788" y="917.5" class="chiptext" text-anchor="middle">multiplier</text>
+				<rect x="842" y="902" width="71" height="22" rx="11" class="chip" />
+				<text x="878" y="917.5" class="chiptext" text-anchor="middle">diviser</text>
+				<rect x="537" y="932" width="71" height="22" rx="11" class="chip" />
+				<text x="572" y="947.5" class="chiptext" text-anchor="middle">inverse</text>
+				<rect x="616" y="932" width="183" height="22" rx="11" class="chip" />
+				<text x="708" y="947.5" class="chiptext" text-anchor="middle">
+					fraction d&#x27;une quantité
+				</text>
+				<path d="M174 818 C 209 818, 180 1021, 215 1021" class="link" />
+				<rect x="215" y="988" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="988" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1009" class="npre">Relatifs :</text>
+				<text x="231" y="1027" class="ntext">sens et écritures</text>
+				<text x="231" y="1045" class="niv">5e, 4e</text>
+				<path d="M500 1021 L 525 1021" class="link" />
+				<rect x="525" y="982" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="994" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1009.5" class="chiptext" text-anchor="middle">définition</text>
+				<rect x="637" y="994" width="78" height="22" rx="11" class="chip" />
+				<text x="676" y="1009.5" class="chiptext" text-anchor="middle">comparer</text>
+				<rect x="723" y="994" width="120" height="22" rx="11" class="chip" />
+				<text x="783" y="1009.5" class="chiptext" text-anchor="middle">droite graduée</text>
+				<path d="M174 818 C 209 818, 180 1112, 215 1112" class="link" />
+				<rect x="215" y="1079" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1079" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1100" class="npre">Relatifs :</text>
+				<text x="231" y="1118" class="ntext">calculs</text>
+				<text x="231" y="1136" class="niv">5e, 4e</text>
+				<path d="M500 1112 L 525 1112" class="link" />
+				<rect x="525" y="1072" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="1084" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="1099.5" class="chiptext" text-anchor="middle">sommes</text>
+				<rect x="609" y="1084" width="99" height="22" rx="11" class="chip" />
+				<text x="658" y="1099.5" class="chiptext" text-anchor="middle">différences</text>
+				<rect x="716" y="1084" width="148" height="22" rx="11" class="chip" />
+				<text x="790" y="1099.5" class="chiptext" text-anchor="middle">sommes algébriques</text>
+				<rect x="872" y="1084" width="71" height="22" rx="11" class="chip" />
+				<text x="908" y="1099.5" class="chiptext" text-anchor="middle">produit</text>
+				<rect x="537" y="1114" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="1129.5" class="chiptext" text-anchor="middle">quotient</text>
+				<rect x="623" y="1114" width="57" height="22" rx="11" class="chip" />
+				<text x="652" y="1129.5" class="chiptext" text-anchor="middle">carré</text>
+				<path d="M174 818 C 209 818, 180 1203, 215 1203" class="link" />
+				<rect x="215" y="1170" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1170" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1191" class="npre">Puissances :</text>
+				<text x="231" y="1209" class="ntext">sens et écritures</text>
+				<text x="231" y="1227" class="niv">5e à 3e</text>
+				<path d="M500 1203 L 525 1203" class="link" />
+				<rect x="525" y="1164" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="1176" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1191.5" class="chiptext" text-anchor="middle">définition</text>
+				<rect x="637" y="1176" width="134" height="22" rx="11" class="chip" />
+				<text x="704" y="1191.5" class="chiptext" text-anchor="middle">puissances de 10</text>
+				<rect x="779" y="1176" width="169" height="22" rx="11" class="chip" />
+				<text x="864" y="1191.5" class="chiptext" text-anchor="middle">notation scientifique</text>
+				<path d="M174 818 C 209 818, 180 1293, 215 1293" class="link" />
+				<rect x="215" y="1260" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1260" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1281" class="npre">Puissances :</text>
+				<text x="231" y="1299" class="ntext">calculs</text>
+				<text x="231" y="1317" class="niv">5e à 2de</text>
+				<path d="M500 1293 L 525 1293" class="link" />
+				<rect x="525" y="1254" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="1266" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1281.5" class="chiptext" text-anchor="middle">multiplier</text>
+				<rect x="637" y="1266" width="71" height="22" rx="11" class="chip" />
+				<text x="672" y="1281.5" class="chiptext" text-anchor="middle">diviser</text>
+				<rect x="716" y="1266" width="176" height="22" rx="11" class="chip" />
+				<text x="804" y="1281.5" class="chiptext" text-anchor="middle">puissance de puissance</text>
+				<rect x="900" y="1266" width="71" height="22" rx="11" class="chip" />
+				<text x="936" y="1281.5" class="chiptext" text-anchor="middle">mélange</text>
+				<path d="M174 818 C 209 818, 180 1383, 215 1383" class="link" />
+				<rect x="215" y="1350" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1350" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1371" class="npre">Racines carrées :</text>
+				<text x="231" y="1389" class="ntext">sens et écritures</text>
+				<text x="231" y="1407" class="niv">5e à 2de</text>
+				<path d="M500 1383 L 525 1383" class="link" />
+				<rect x="525" y="1344" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="1356" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1371.5" class="chiptext" text-anchor="middle">définition</text>
+				<rect x="637" y="1356" width="78" height="22" rx="11" class="chip" />
+				<text x="676" y="1371.5" class="chiptext" text-anchor="middle">égalités</text>
+				<rect x="723" y="1356" width="71" height="22" rx="11" class="chip" />
+				<text x="758" y="1371.5" class="chiptext" text-anchor="middle">réduire</text>
+				<path d="M174 818 C 209 818, 180 1473, 215 1473" class="link" />
+				<rect x="215" y="1440" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1440" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1461" class="npre">Racines carrées :</text>
+				<text x="231" y="1479" class="ntext">calculs</text>
+				<text x="231" y="1497" class="niv">4e, 2de</text>
+				<path d="M500 1473 L 525 1473" class="link" />
+				<rect x="525" y="1434" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="1446" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="1461.5" class="chiptext" text-anchor="middle">calculer</text>
+				<rect x="623" y="1446" width="92" height="22" rx="11" class="chip" />
+				<text x="669" y="1461.5" class="chiptext" text-anchor="middle">propriétés</text>
+				<path d="M174 818 C 209 818, 180 1574, 215 1574" class="link" />
+				<rect x="215" y="1540" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1540" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1570" class="ntext">Problèmes arithmétiques</text>
+				<text x="231" y="1590" class="niv">CP à 6e</text>
+				<path d="M500 1574 L 525 1574" class="link" />
+				<rect x="525" y="1524" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="1536" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="1551.5" class="chiptext" text-anchor="middle">parties-tout</text>
+				<rect x="651" y="1536" width="99" height="22" rx="11" class="chip" />
+				<text x="700" y="1551.5" class="chiptext" text-anchor="middle">comparaison</text>
+				<rect x="758" y="1536" width="176" height="22" rx="11" class="chip" />
+				<text x="846" y="1551.5" class="chiptext" text-anchor="middle">en deux étapes ou plus</text>
+				<rect x="537" y="1566" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="1581.5" class="chiptext" text-anchor="middle">multiplicatifs</text>
+				<rect x="665" y="1566" width="155" height="22" rx="11" class="chip" />
+				<text x="742" y="1581.5" class="chiptext" text-anchor="middle">produits cartésiens</text>
+				<rect x="828" y="1566" width="106" height="22" rx="11" class="chip" />
+				<text x="881" y="1581.5" class="chiptext" text-anchor="middle">optimisation</text>
+				<text x="539" y="1610" class="gnote">classés par structure ; cycle 4 à confirmer</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="arithmetique">
+		<h2><span class="dot c10"></span>Arithmétique <small>branche à part, 4 notions</small></h2>
+		<p class="read">
+			Sortie de Nombres et calculs. Elle reprend les quatre domaines actuels (maths expertes) et
+			peut accueillir l'arithmétique du collège (multiples, diviseurs, nombres premiers en 3e).
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 395"
+				width="1000"
+				height="395"
+				role="img"
+				aria-label="Branche Arithmétique : 4 notions et leurs sous-notions"
+				class="c10"
+			>
+				<rect x="4" y="164" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="194" class="btext" text-anchor="middle">Arithmétique</text>
+				<text x="89.0" y="216" class="btext" text-anchor="middle"></text>
+				<path d="M174 198 C 209 198, 180 58, 215 58" class="link" />
+				<rect x="215" y="24" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="24" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="54" class="ntext">Divisibilité</text>
+				<text x="231" y="74" class="niv">CE1 à Expertes</text>
+				<path d="M500 58 L 525 58" class="link" />
+				<rect x="525" y="8" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="20" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="35.5" class="chiptext" text-anchor="middle">pair ou impair</text>
+				<rect x="665" y="20" width="176" height="22" rx="11" class="chip" />
+				<text x="753" y="35.5" class="chiptext" text-anchor="middle">multiples et diviseurs</text>
+				<rect x="537" y="50" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="65.5" class="chiptext" text-anchor="middle">critères de divisibilité</text>
+				<rect x="735" y="50" width="162" height="22" rx="11" class="chip" />
+				<text x="816" y="65.5" class="chiptext" text-anchor="middle">division euclidienne</text>
+				<text x="539" y="94" class="gnote">
+					reprend aussi l&#x27;ancien « Entiers : diviser, divisibilité » (CE2 à CM2) ; parité dès
+					le CE1
+				</text>
+				<path d="M174 198 C 209 198, 180 159, 215 159" class="link" />
+				<rect x="215" y="126" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="126" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="156" class="ntext">Nombres premiers</text>
+				<text x="231" y="176" class="niv">3e, Expertes</text>
+				<path d="M500 159 L 525 159" class="link" />
+				<rect x="525" y="119" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="131" width="225" height="22" rx="11" class="chip" />
+				<text x="650" y="146.5" class="chiptext" text-anchor="middle">
+					reconnaître un nombre premier
+				</text>
+				<rect x="537" y="161" width="260" height="22" rx="11" class="chip" />
+				<text x="667" y="176.5" class="chiptext" text-anchor="middle">
+					décomposition en facteurs premiers
+				</text>
+				<path d="M174 198 C 209 198, 180 251, 215 251" class="link" />
+				<rect x="215" y="218" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="218" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="248" class="ntext">PGCD, Bézout et Gauss</text>
+				<text x="231" y="268" class="niv">Expertes</text>
+				<path d="M500 251 L 525 251" class="link" />
+				<rect x="525" y="211" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="223" width="50" height="22" rx="11" class="chip" />
+				<text x="562" y="238.5" class="chiptext" text-anchor="middle">PGCD</text>
+				<rect x="595" y="223" width="239" height="22" rx="11" class="chip" />
+				<text x="714" y="238.5" class="chiptext" text-anchor="middle">
+					théorèmes de Bézout et de Gauss
+				</text>
+				<rect x="537" y="253" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="268.5" class="chiptext" text-anchor="middle">
+					équations diophantiennes
+				</text>
+				<path d="M174 198 C 209 198, 180 343, 215 343" class="link" />
+				<rect x="215" y="310" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="310" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="340" class="ntext">Congruences</text>
+				<text x="231" y="360" class="niv">Expertes</text>
+				<path d="M500 343 L 525 343" class="link" />
+				<rect x="525" y="303" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="315" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="330.5" class="chiptext" text-anchor="middle">congruences</text>
+				<rect x="644" y="315" width="162" height="22" rx="11" class="chip" />
+				<text x="725" y="330.5" class="chiptext" text-anchor="middle">équations ax ≡ b [n]</text>
+				<rect x="537" y="345" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="360.5" class="chiptext" text-anchor="middle">
+					petit théorème de Fermat
+				</text>
+				<rect x="735" y="345" width="99" height="22" rx="11" class="chip" />
+				<text x="784" y="360.5" class="chiptext" text-anchor="middle">chiffrement</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="proportionnalite">
+		<h2><span class="dot c2"></span>Proportionnalité <small>mise à jour, 5 notions</small></h2>
+		<p class="read">Découpage demandé par David. Vitesse vient de Grandeurs et mesures.</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 509"
+				width="1000"
+				height="509"
+				role="img"
+				aria-label="Branche Proportionnalité : 5 notions et leurs sous-notions"
+				class="c2"
+			>
+				<rect x="4" y="220" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="250" class="btext" text-anchor="middle">Proportion-</text>
+				<text x="89.0" y="272" class="btext" text-anchor="middle">nalité</text>
+				<path d="M174 254 C 209 254, 180 47, 215 47" class="link" />
+				<rect x="215" y="14" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="14" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="44" class="ntext">Situations de proportionnalité</text>
+				<text x="231" y="64" class="niv">CM1 à 3e</text>
+				<path d="M500 47 L 525 47" class="link" />
+				<rect x="525" y="8" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="20" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="35.5" class="chiptext" text-anchor="middle">reconnaître</text>
+				<rect x="644" y="20" width="85" height="22" rx="11" class="chip" />
+				<text x="686" y="35.5" class="chiptext" text-anchor="middle">appliquer</text>
+				<rect x="737" y="20" width="197" height="22" rx="11" class="chip" />
+				<text x="836" y="35.5" class="chiptext" text-anchor="middle">
+					quatrième proportionnelle
+				</text>
+				<text x="539" y="64" class="gnote">reprend « Tableaux de proportionnalité »</text>
+				<path d="M174 254 C 209 254, 180 137, 215 137" class="link" />
+				<rect x="215" y="104" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="104" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="134" class="ntext">Pourcentages</text>
+				<text x="231" y="154" class="niv">6e à 2de</text>
+				<path d="M500 137 L 525 137" class="link" />
+				<rect x="525" y="98" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="110" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="125.5" class="chiptext" text-anchor="middle">définition</text>
+				<rect x="637" y="110" width="78" height="22" rx="11" class="chip" />
+				<text x="676" y="125.5" class="chiptext" text-anchor="middle">calculer</text>
+				<path d="M174 254 C 209 254, 180 252, 215 252" class="link" />
+				<rect x="215" y="220" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="220" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="250" class="ntext">Évolutions</text>
+				<text x="231" y="270" class="niv">4e à 2de, 1re ens. sci., Tle techno</text>
+				<path d="M500 252 L 525 252" class="link" />
+				<rect x="525" y="188" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="200" width="197" height="22" rx="11" class="chip" />
+				<text x="636" y="215.5" class="chiptext" text-anchor="middle">
+					variations en pourcentage
+				</text>
+				<rect x="537" y="230" width="274" height="22" rx="11" class="chip" />
+				<text x="674" y="245.5" class="chiptext" text-anchor="middle">
+					évolutions successives et réciproque
+				</text>
+				<rect x="537" y="260" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="275.5" class="chiptext" text-anchor="middle">
+					taux d&#x27;évolution moyen
+				</text>
+				<rect x="721" y="260" width="71" height="22" rx="11" class="chip" />
+				<text x="756" y="275.5" class="chiptext" text-anchor="middle">indices</text>
+				<text x="539" y="244" class="gnote">coefficient multiplicateur dès la 4e</text>
+				<path d="M174 254 C 209 254, 180 368, 215 368" class="link" />
+				<rect x="215" y="335" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="335" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="365" class="ntext">Échelle d&#x27;une carte</text>
+				<text x="231" y="385" class="niv">6e, 3e</text>
+				<path d="M500 368 L 525 368" class="link" />
+				<rect x="525" y="329" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="341" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="356.5" class="chiptext" text-anchor="middle">trouver l&#x27;échelle</text>
+				<rect x="686" y="341" width="148" height="22" rx="11" class="chip" />
+				<text x="760" y="356.5" class="chiptext" text-anchor="middle">utiliser l&#x27;échelle</text>
+				<path d="M174 254 C 209 254, 180 458, 215 458" class="link" />
+				<rect x="215" y="425" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="425" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="455" class="ntext">Vitesse</text>
+				<text x="231" y="475" class="niv">4e</text>
+				<path d="M500 458 L 525 458" class="link" />
+				<rect x="525" y="419" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="431" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="446.5" class="chiptext" text-anchor="middle">calculer</text>
+				<rect x="623" y="431" width="85" height="22" rx="11" class="chip" />
+				<text x="666" y="446.5" class="chiptext" text-anchor="middle">convertir</text>
+				<text x="539" y="475" class="gnote">vient de Grandeurs et mesures</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="algebre">
+		<h2><span class="dot c3"></span>Algèbre <small>9 notions</small></h2>
+		<p class="read">
+			Les premiers pas algébriques du cycle 3 ouvrent la branche ; calcul littéral en une seule
+			notion ; équations et inéquations classées par forme. Équations et inéquations du second degré
+			ici ; racines, signe, formes et variations d'un trinôme dans Fonctions. Matrices et Graphes
+			deviennent deux branches à part.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 947"
+				width="1000"
+				height="947"
+				role="img"
+				aria-label="Branche Algèbre : 9 notions et leurs sous-notions"
+				class="c3"
+			>
+				<rect x="4" y="440" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="470" class="btext" text-anchor="middle">Algèbre</text>
+				<text x="89.0" y="492" class="btext" text-anchor="middle"></text>
+				<path d="M174 474 C 209 474, 180 58, 215 58" class="link" />
+				<rect x="215" y="24" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="24" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="54" class="ntext">Premiers pas algébriques</text>
+				<text x="231" y="74" class="niv">CM1 à 6e</text>
+				<path d="M500 58 L 525 58" class="link" />
+				<rect x="525" y="8" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="20" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="35.5" class="chiptext" text-anchor="middle">égalités à trous</text>
+				<rect x="679" y="20" width="120" height="22" rx="11" class="chip" />
+				<text x="739" y="35.5" class="chiptext" text-anchor="middle">nombre inconnu</text>
+				<rect x="807" y="20" width="162" height="22" rx="11" class="chip" />
+				<text x="888" y="35.5" class="chiptext" text-anchor="middle">programmes de calcul</text>
+				<rect x="537" y="50" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="65.5" class="chiptext" text-anchor="middle">suites de motifs</text>
+				<text x="539" y="94" class="gnote">
+					pensée algébrique du cycle 3 ; les lettres formelles attendent le cycle 4
+				</text>
+				<path d="M174 474 C 209 474, 180 189, 215 189" class="link" />
+				<rect x="215" y="156" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="156" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="186" class="ntext">Calcul littéral</text>
+				<text x="231" y="206" class="niv">5e à 2de</text>
+				<path d="M500 189 L 525 189" class="link" />
+				<rect x="525" y="119" width="469" height="140" rx="8" class="gbox" />
+				<rect x="537" y="131" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="146.5" class="chiptext" text-anchor="middle">substitution</text>
+				<rect x="651" y="131" width="71" height="22" rx="11" class="chip" />
+				<text x="686" y="146.5" class="chiptext" text-anchor="middle">réduire</text>
+				<rect x="730" y="131" width="169" height="22" rx="11" class="chip" />
+				<text x="814" y="146.5" class="chiptext" text-anchor="middle">
+					simplifier l&#x27;écriture
+				</text>
+				<rect x="537" y="161" width="183" height="22" rx="11" class="chip" />
+				<text x="628" y="176.5" class="chiptext" text-anchor="middle">
+					opposé d&#x27;une expression
+				</text>
+				<rect x="728" y="161" width="92" height="22" rx="11" class="chip" />
+				<text x="774" y="176.5" class="chiptext" text-anchor="middle">développer</text>
+				<rect x="828" y="161" width="92" height="22" rx="11" class="chip" />
+				<text x="874" y="176.5" class="chiptext" text-anchor="middle">factoriser</text>
+				<rect x="537" y="191" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="206.5" class="chiptext" text-anchor="middle">identités remarquables</text>
+				<rect x="721" y="191" width="155" height="22" rx="11" class="chip" />
+				<text x="798" y="206.5" class="chiptext" text-anchor="middle">isoler une variable</text>
+				<rect x="537" y="221" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="236.5" class="chiptext" text-anchor="middle">
+					expressions fractionnaires
+				</text>
+				<path d="M174 474 C 209 474, 180 320, 215 320" class="link" />
+				<rect x="215" y="288" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="288" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="308" class="npre">Équations :</text>
+				<text x="231" y="326" class="ntext">premier degré</text>
+				<text x="231" y="344" class="niv">5e à 2de</text>
+				<path d="M500 320 L 525 320" class="link" />
+				<rect x="525" y="271" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="283" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="298.5" class="chiptext" text-anchor="middle">ax = b</text>
+				<rect x="609" y="283" width="92" height="22" rx="11" class="chip" />
+				<text x="655" y="298.5" class="chiptext" text-anchor="middle">ax + b = c</text>
+				<rect x="709" y="283" width="127" height="22" rx="11" class="chip" />
+				<text x="772" y="298.5" class="chiptext" text-anchor="middle">ax + b = cx + d</text>
+				<rect x="537" y="313" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="328.5" class="chiptext" text-anchor="middle">mettre en équation</text>
+				<text x="539" y="357" class="gnote">
+					reprend « Dans ℕ, ℤ, ℚ » : l&#x27;ensemble devient une difficulté (level)
+				</text>
+				<path d="M174 474 C 209 474, 180 421, 215 421" class="link" />
+				<rect x="215" y="388" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="388" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="409" class="npre">Équations :</text>
+				<text x="231" y="427" class="ntext">produit et quotient</text>
+				<text x="231" y="445" class="niv">3e, 2de</text>
+				<path d="M500 421 L 525 421" class="link" />
+				<rect x="525" y="382" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="394" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="409.5" class="chiptext" text-anchor="middle">produit nul</text>
+				<rect x="644" y="394" width="64" height="22" rx="11" class="chip" />
+				<text x="676" y="409.5" class="chiptext" text-anchor="middle">x² = a</text>
+				<rect x="716" y="394" width="141" height="22" rx="11" class="chip" />
+				<text x="786" y="409.5" class="chiptext" text-anchor="middle">équation quotient</text>
+				<path d="M174 474 C 209 474, 180 511, 215 511" class="link" />
+				<rect x="215" y="478" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="478" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="499" class="npre">Inéquations :</text>
+				<text x="231" y="517" class="ntext">premier degré</text>
+				<text x="231" y="535" class="niv">3e à 2de</text>
+				<path d="M500 511 L 525 511" class="link" />
+				<rect x="525" y="472" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="484" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="499.5" class="chiptext" text-anchor="middle">ax + b &lt; c</text>
+				<rect x="637" y="484" width="127" height="22" rx="11" class="chip" />
+				<text x="700" y="499.5" class="chiptext" text-anchor="middle">ax + b &lt; cx + d</text>
+				<rect x="772" y="484" width="162" height="22" rx="11" class="chip" />
+				<text x="853" y="499.5" class="chiptext" text-anchor="middle">mettre en inéquation</text>
+				<text x="539" y="558" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 474 C 209 474, 180 612, 215 612" class="link" />
+				<rect x="215" y="578" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="578" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="600" class="npre">Inéquations :</text>
+				<text x="231" y="618" class="ntext">produit et quotient</text>
+				<text x="231" y="636" class="niv">2de</text>
+				<path d="M500 612 L 525 612" class="link" />
+				<rect x="525" y="562" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="574" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="589.5" class="chiptext" text-anchor="middle">tableau de signes</text>
+				<rect x="686" y="574" width="148" height="22" rx="11" class="chip" />
+				<text x="760" y="589.5" class="chiptext" text-anchor="middle">inéquation produit</text>
+				<rect x="537" y="604" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="619.5" class="chiptext" text-anchor="middle">inéquation quotient</text>
+				<text x="539" y="648" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 474 C 209 474, 180 713, 215 713" class="link" />
+				<rect x="215" y="680" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="680" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="701" class="npre">Équations :</text>
+				<text x="231" y="719" class="ntext">second degré</text>
+				<text x="231" y="737" class="niv">1re</text>
+				<path d="M500 713 L 525 713" class="link" />
+				<rect x="525" y="673" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="685" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="700.5" class="chiptext" text-anchor="middle">discriminant</text>
+				<rect x="651" y="685" width="169" height="22" rx="11" class="chip" />
+				<text x="736" y="700.5" class="chiptext" text-anchor="middle">équations incomplètes</text>
+				<rect x="537" y="715" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="730.5" class="chiptext" text-anchor="middle">
+					se ramener au second degré
+				</text>
+				<rect x="749" y="715" width="148" height="22" rx="11" class="chip" />
+				<text x="823" y="730.5" class="chiptext" text-anchor="middle">mettre en équation</text>
+				<path d="M174 474 C 209 474, 180 804, 215 804" class="link" />
+				<rect x="215" y="771" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="771" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="792" class="npre">Inéquations :</text>
+				<text x="231" y="810" class="ntext">second degré</text>
+				<text x="231" y="828" class="niv">1re</text>
+				<path d="M500 804 L 525 804" class="link" />
+				<rect x="525" y="765" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="777" width="211" height="22" rx="11" class="chip" />
+				<text x="642" y="792.5" class="chiptext" text-anchor="middle">
+					inéquations du second degré
+				</text>
+				<rect x="756" y="777" width="162" height="22" rx="11" class="chip" />
+				<text x="837" y="792.5" class="chiptext" text-anchor="middle">mettre en inéquation</text>
+				<path d="M174 474 C 209 474, 180 895, 215 895" class="link" />
+				<rect x="215" y="862" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="862" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="892" class="ntext">Inégalités</text>
+				<text x="231" y="912" class="niv">2de à Tle</text>
+				<path d="M500 895 L 525 895" class="link" />
+				<rect x="525" y="855" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="867" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="882.5" class="chiptext" text-anchor="middle">règles de calcul</text>
+				<rect x="679" y="867" width="176" height="22" rx="11" class="chip" />
+				<text x="767" y="882.5" class="chiptext" text-anchor="middle">
+					signe d&#x27;une expression
+				</text>
+				<rect x="537" y="897" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="912.5" class="chiptext" text-anchor="middle">comparer et encadrer</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="fonctions">
+		<h2><span class="dot c4"></span>Fonctions <small>15 notions</small></h2>
+		<p class="read">
+			Une notion par fonction de référence. Optimisation devient une sous-notion de Dérivation.
+			Intégration et Équations différentielles deviennent deux branches à part.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 1849"
+				width="1000"
+				height="1849"
+				role="img"
+				aria-label="Branche Fonctions : 15 notions et leurs sous-notions"
+				class="c4"
+			>
+				<rect x="4" y="890" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="920" class="btext" text-anchor="middle">Fonctions</text>
+				<text x="89.0" y="942" class="btext" text-anchor="middle"></text>
+				<path d="M174 924 C 209 924, 180 72, 215 72" class="link" />
+				<rect x="215" y="40" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="40" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="70" class="ntext">Généralités sur les fonctions</text>
+				<text x="231" y="90" class="niv">5e à 1re</text>
+				<path d="M500 72 L 525 72" class="link" />
+				<rect x="525" y="8" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="20" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="35.5" class="chiptext" text-anchor="middle">images et antécédents</text>
+				<rect x="714" y="20" width="176" height="22" rx="11" class="chip" />
+				<text x="802" y="35.5" class="chiptext" text-anchor="middle">ensemble de définition</text>
+				<rect x="537" y="50" width="197" height="22" rx="11" class="chip" />
+				<text x="636" y="65.5" class="chiptext" text-anchor="middle">
+					appartenance à une courbe
+				</text>
+				<rect x="742" y="50" width="162" height="22" rx="11" class="chip" />
+				<text x="823" y="65.5" class="chiptext" text-anchor="middle">résolution graphique</text>
+				<rect x="537" y="80" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="95.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="637" y="80" width="85" height="22" rx="11" class="chip" />
+				<text x="680" y="95.5" class="chiptext" text-anchor="middle">extremums</text>
+				<rect x="730" y="80" width="57" height="22" rx="11" class="chip" />
+				<text x="758" y="95.5" class="chiptext" text-anchor="middle">signe</text>
+				<rect x="795" y="80" width="64" height="22" rx="11" class="chip" />
+				<text x="827" y="95.5" class="chiptext" text-anchor="middle">parité</text>
+				<text x="539" y="124" class="gnote">
+					reprend ta nouvelle fiche et « Calcul d&#x27;images »
+				</text>
+				<path d="M174 924 C 209 924, 180 204, 215 204" class="link" />
+				<rect x="215" y="171" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="171" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="201" class="ntext">Fonctions affines</text>
+				<text x="231" y="221" class="niv">3e, 2de</text>
+				<path d="M500 204 L 525 204" class="link" />
+				<rect x="525" y="149" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="161" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="176.5" class="chiptext" text-anchor="middle">fonction linéaire</text>
+				<rect x="686" y="161" width="162" height="22" rx="11" class="chip" />
+				<text x="767" y="176.5" class="chiptext" text-anchor="middle">expression et droite</text>
+				<rect x="537" y="191" width="337" height="22" rx="11" class="chip" />
+				<text x="706" y="206.5" class="chiptext" text-anchor="middle">
+					coefficient directeur et ordonnée à l&#x27;origine
+				</text>
+				<rect x="537" y="221" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="236.5" class="chiptext" text-anchor="middle">variations et signe</text>
+				<rect x="700" y="221" width="85" height="22" rx="11" class="chip" />
+				<text x="742" y="236.5" class="chiptext" text-anchor="middle">équations</text>
+				<path d="M174 924 C 209 924, 180 320, 215 320" class="link" />
+				<rect x="215" y="288" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="288" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="318" class="ntext">Fonction carré</text>
+				<text x="231" y="338" class="niv">3e, 2de</text>
+				<path d="M500 320 L 525 320" class="link" />
+				<rect x="525" y="271" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="283" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="298.5" class="chiptext" text-anchor="middle">définition et courbe</text>
+				<rect x="707" y="283" width="92" height="22" rx="11" class="chip" />
+				<text x="753" y="298.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="807" y="283" width="155" height="22" rx="11" class="chip" />
+				<text x="884" y="298.5" class="chiptext" text-anchor="middle">comparer des images</text>
+				<rect x="537" y="313" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="328.5" class="chiptext" text-anchor="middle">x² = k, x² &lt; k</text>
+				<text x="539" y="387" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 924 C 209 924, 180 432, 215 432" class="link" />
+				<rect x="215" y="398" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="398" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="428" class="ntext">Fonction inverse</text>
+				<text x="231" y="448" class="niv">2de</text>
+				<path d="M500 432 L 525 432" class="link" />
+				<rect x="525" y="382" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="394" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="409.5" class="chiptext" text-anchor="middle">définition et courbe</text>
+				<rect x="707" y="394" width="92" height="22" rx="11" class="chip" />
+				<text x="753" y="409.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="807" y="394" width="155" height="22" rx="11" class="chip" />
+				<text x="884" y="409.5" class="chiptext" text-anchor="middle">comparer des images</text>
+				<rect x="537" y="424" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="439.5" class="chiptext" text-anchor="middle">1/x = k, 1/x &lt; k</text>
+				<text x="539" y="498" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 924 C 209 924, 180 542, 215 542" class="link" />
+				<rect x="215" y="510" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="510" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="540" class="ntext">Fonction racine carrée</text>
+				<text x="231" y="560" class="niv">2de</text>
+				<path d="M500 542 L 525 542" class="link" />
+				<rect x="525" y="493" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="505" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="520.5" class="chiptext" text-anchor="middle">définition et courbe</text>
+				<rect x="707" y="505" width="92" height="22" rx="11" class="chip" />
+				<text x="753" y="520.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="807" y="505" width="155" height="22" rx="11" class="chip" />
+				<text x="884" y="520.5" class="chiptext" text-anchor="middle">comparer des images</text>
+				<rect x="537" y="535" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="550.5" class="chiptext" text-anchor="middle">√x = k, √x &lt; k</text>
+				<text x="539" y="609" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 924 C 209 924, 180 643, 215 643" class="link" />
+				<rect x="215" y="610" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="610" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="640" class="ntext">Fonction cube</text>
+				<text x="231" y="660" class="niv">2de</text>
+				<path d="M500 643 L 525 643" class="link" />
+				<rect x="525" y="604" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="616" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="631.5" class="chiptext" text-anchor="middle">définition et courbe</text>
+				<rect x="707" y="616" width="92" height="22" rx="11" class="chip" />
+				<text x="753" y="631.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="807" y="616" width="120" height="22" rx="11" class="chip" />
+				<text x="867" y="631.5" class="chiptext" text-anchor="middle">x³ = k, x³ &lt; k</text>
+				<text x="539" y="720" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 924 C 209 924, 180 744, 215 744" class="link" />
+				<rect x="215" y="710" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="710" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="740" class="ntext">Fonction valeur absolue</text>
+				<text x="231" y="760" class="niv">2de</text>
+				<path d="M500 744 L 525 744" class="link" />
+				<rect x="525" y="694" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="706" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="721.5" class="chiptext" text-anchor="middle">définition et distance</text>
+				<rect x="721" y="706" width="64" height="22" rx="11" class="chip" />
+				<text x="753" y="721.5" class="chiptext" text-anchor="middle">courbe</text>
+				<rect x="793" y="706" width="92" height="22" rx="11" class="chip" />
+				<text x="839" y="721.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="537" y="736" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="751.5" class="chiptext" text-anchor="middle">
+					équations et inéquations
+				</text>
+				<text x="539" y="810" class="gnote">reprend le domaine Valeur absolue</text>
+				<path d="M174 924 C 209 924, 180 854, 215 854" class="link" />
+				<rect x="215" y="822" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="822" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="852" class="ntext">Second degré</text>
+				<text x="231" y="872" class="niv">1re</text>
+				<path d="M500 854 L 525 854" class="link" />
+				<rect x="525" y="805" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="817" width="71" height="22" rx="11" class="chip" />
+				<text x="572" y="832.5" class="chiptext" text-anchor="middle">racines</text>
+				<rect x="616" y="817" width="57" height="22" rx="11" class="chip" />
+				<text x="644" y="832.5" class="chiptext" text-anchor="middle">signe</text>
+				<rect x="681" y="817" width="64" height="22" rx="11" class="chip" />
+				<text x="713" y="832.5" class="chiptext" text-anchor="middle">formes</text>
+				<rect x="753" y="817" width="92" height="22" rx="11" class="chip" />
+				<text x="799" y="832.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="853" y="817" width="78" height="22" rx="11" class="chip" />
+				<text x="892" y="832.5" class="chiptext" text-anchor="middle">parabole</text>
+				<rect x="537" y="847" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="862.5" class="chiptext" text-anchor="middle">
+					somme et produit des racines
+				</text>
+				<text x="539" y="921" class="gnote">équations et inéquations → Algèbre</text>
+				<path d="M174 924 C 209 924, 180 1026, 215 1026" class="link" />
+				<rect x="215" y="992" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="992" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1022" class="ntext">Dérivation</text>
+				<text x="231" y="1042" class="niv">1re, Tle, Tle comp.</text>
+				<path d="M500 1026 L 525 1026" class="link" />
+				<rect x="525" y="916" width="469" height="219" rx="8" class="gbox" />
+				<rect x="537" y="928" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="943.5" class="chiptext" text-anchor="middle">taux de variation</text>
+				<rect x="686" y="928" width="113" height="22" rx="11" class="chip" />
+				<text x="742" y="943.5" class="chiptext" text-anchor="middle">nombre dérivé</text>
+				<rect x="807" y="928" width="78" height="22" rx="11" class="chip" />
+				<text x="846" y="943.5" class="chiptext" text-anchor="middle">tangente</text>
+				<rect x="537" y="958" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="973.5" class="chiptext" text-anchor="middle">approximation affine</text>
+				<rect x="707" y="958" width="148" height="22" rx="11" class="chip" />
+				<text x="781" y="973.5" class="chiptext" text-anchor="middle">fonctions dérivées</text>
+				<rect x="537" y="988" width="211" height="22" rx="11" class="chip" />
+				<text x="642" y="1003.5" class="chiptext" text-anchor="middle">
+					opérations sur les dérivées
+				</text>
+				<rect x="756" y="988" width="190" height="22" rx="11" class="chip" />
+				<text x="851" y="1003.5" class="chiptext" text-anchor="middle">
+					dérivabilité en un point
+				</text>
+				<rect x="537" y="1018" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1033.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="637" y="1018" width="141" height="22" rx="11" class="chip" />
+				<text x="708" y="1033.5" class="chiptext" text-anchor="middle">étude de fonction</text>
+				<rect x="537" y="1048" width="253" height="22" rx="11" class="chip" />
+				<text x="664" y="1063.5" class="chiptext" text-anchor="middle">
+					position relative de deux courbes
+				</text>
+				<rect x="798" y="1048" width="106" height="22" rx="11" class="chip" />
+				<text x="851" y="1063.5" class="chiptext" text-anchor="middle">optimisation</text>
+				<rect x="537" y="1078" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="1093.5" class="chiptext" text-anchor="middle">fonctions composées</text>
+				<text x="539" y="1032" class="gnote">optimisation : sous-notion, plus une notion</text>
+				<path d="M174 924 C 209 924, 180 1202, 215 1202" class="link" />
+				<rect x="215" y="1169" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1169" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1199" class="ntext">Fonction exponentielle</text>
+				<text x="231" y="1219" class="niv">1re, 1re ens. sci., Tle, Tle techno</text>
+				<path d="M500 1202 L 525 1202" class="link" />
+				<rect x="525" y="1147" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1159" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="1174.5" class="chiptext" text-anchor="middle">propriétés algébriques</text>
+				<rect x="721" y="1159" width="71" height="22" rx="11" class="chip" />
+				<text x="756" y="1174.5" class="chiptext" text-anchor="middle">dérivée</text>
+				<rect x="800" y="1159" width="92" height="22" rx="11" class="chip" />
+				<text x="846" y="1174.5" class="chiptext" text-anchor="middle">variations</text>
+				<rect x="900" y="1159" width="64" height="22" rx="11" class="chip" />
+				<text x="932" y="1174.5" class="chiptext" text-anchor="middle">courbe</text>
+				<rect x="537" y="1189" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="1204.5" class="chiptext" text-anchor="middle">
+					équations et inéquations
+				</text>
+				<rect x="735" y="1189" width="176" height="22" rx="11" class="chip" />
+				<text x="823" y="1204.5" class="chiptext" text-anchor="middle">suites et modélisation</text>
+				<rect x="537" y="1219" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="1234.5" class="chiptext" text-anchor="middle">fonctions x ↦ aˣ</text>
+				<path d="M174 924 C 209 924, 180 1324, 215 1324" class="link" />
+				<rect x="215" y="1291" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1291" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1321" class="ntext">Fonctions trigonométriques</text>
+				<text x="231" y="1341" class="niv">1re, Tle</text>
+				<path d="M500 1324 L 525 1324" class="link" />
+				<rect x="525" y="1269" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1281" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="1296.5" class="chiptext" text-anchor="middle">cercle et radians</text>
+				<rect x="686" y="1281" width="204" height="22" rx="11" class="chip" />
+				<text x="788" y="1296.5" class="chiptext" text-anchor="middle">
+					cosinus et sinus d&#x27;un réel
+				</text>
+				<rect x="537" y="1311" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="1326.5" class="chiptext" text-anchor="middle">angles associés</text>
+				<rect x="672" y="1311" width="85" height="22" rx="11" class="chip" />
+				<text x="714" y="1326.5" class="chiptext" text-anchor="middle">équations</text>
+				<rect x="765" y="1311" width="99" height="22" rx="11" class="chip" />
+				<text x="814" y="1326.5" class="chiptext" text-anchor="middle">inéquations</text>
+				<rect x="537" y="1341" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="1356.5" class="chiptext" text-anchor="middle">parité et périodicité</text>
+				<rect x="714" y="1341" width="176" height="22" rx="11" class="chip" />
+				<text x="802" y="1356.5" class="chiptext" text-anchor="middle">dérivées et variations</text>
+				<path d="M174 924 C 209 924, 180 1446, 215 1446" class="link" />
+				<rect x="215" y="1413" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1413" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1443" class="ntext">Limites de fonctions</text>
+				<text x="231" y="1463" class="niv">Tle, Tle comp.</text>
+				<path d="M500 1446 L 525 1446" class="link" />
+				<rect x="525" y="1391" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1403" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="1418.5" class="chiptext" text-anchor="middle">limite en un point</text>
+				<rect x="693" y="1403" width="92" height="22" rx="11" class="chip" />
+				<text x="739" y="1418.5" class="chiptext" text-anchor="middle">opérations</text>
+				<rect x="793" y="1403" width="162" height="22" rx="11" class="chip" />
+				<text x="874" y="1418.5" class="chiptext" text-anchor="middle">formes indéterminées</text>
+				<rect x="537" y="1433" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="1448.5" class="chiptext" text-anchor="middle">
+					comparaison et encadrement
+				</text>
+				<rect x="749" y="1433" width="169" height="22" rx="11" class="chip" />
+				<text x="834" y="1448.5" class="chiptext" text-anchor="middle">croissances comparées</text>
+				<rect x="537" y="1463" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1478.5" class="chiptext" text-anchor="middle">asymptotes</text>
+				<path d="M174 924 C 209 924, 180 1568, 215 1568" class="link" />
+				<rect x="215" y="1535" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1535" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1565" class="ntext">Continuité</text>
+				<text x="231" y="1585" class="niv">Tle, Tle comp.</text>
+				<path d="M500 1568 L 525 1568" class="link" />
+				<rect x="525" y="1513" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1525" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="1540.5" class="chiptext" text-anchor="middle">continuité en un point</text>
+				<rect x="721" y="1525" width="141" height="22" rx="11" class="chip" />
+				<text x="792" y="1540.5" class="chiptext" text-anchor="middle">lecture graphique</text>
+				<rect x="537" y="1555" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="1570.5" class="chiptext" text-anchor="middle">valeurs intermédiaires</text>
+				<rect x="721" y="1555" width="155" height="22" rx="11" class="chip" />
+				<text x="798" y="1570.5" class="chiptext" text-anchor="middle">fonction réciproque</text>
+				<rect x="537" y="1585" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="1600.5" class="chiptext" text-anchor="middle">
+					encadrement d&#x27;une solution
+				</text>
+				<path d="M174 924 C 209 924, 180 1675, 215 1675" class="link" />
+				<rect x="215" y="1642" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1642" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1672" class="ntext">Convexité</text>
+				<text x="231" y="1692" class="niv">Tle, Tle comp.</text>
+				<path d="M500 1675 L 525 1675" class="link" />
+				<rect x="525" y="1635" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="1647" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="1662.5" class="chiptext" text-anchor="middle">caractérisations</text>
+				<rect x="679" y="1647" width="127" height="22" rx="11" class="chip" />
+				<text x="742" y="1662.5" class="chiptext" text-anchor="middle">dérivée seconde</text>
+				<rect x="814" y="1647" width="141" height="22" rx="11" class="chip" />
+				<text x="884" y="1662.5" class="chiptext" text-anchor="middle">point d&#x27;inflexion</text>
+				<rect x="537" y="1677" width="183" height="22" rx="11" class="chip" />
+				<text x="628" y="1692.5" class="chiptext" text-anchor="middle">
+					inégalités de convexité
+				</text>
+				<rect x="728" y="1677" width="141" height="22" rx="11" class="chip" />
+				<text x="798" y="1692.5" class="chiptext" text-anchor="middle">lecture graphique</text>
+				<path d="M174 924 C 209 924, 180 1782, 215 1782" class="link" />
+				<rect x="215" y="1749" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1749" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1779" class="ntext">Logarithmes</text>
+				<text x="231" y="1799" class="niv">Tle, Tle comp., Tle techno</text>
+				<path d="M500 1782 L 525 1782" class="link" />
+				<rect x="525" y="1727" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1739" width="225" height="22" rx="11" class="chip" />
+				<text x="650" y="1754.5" class="chiptext" text-anchor="middle">
+					réciproque de l&#x27;exponentielle
+				</text>
+				<rect x="770" y="1739" width="176" height="22" rx="11" class="chip" />
+				<text x="858" y="1754.5" class="chiptext" text-anchor="middle">propriétés algébriques</text>
+				<rect x="537" y="1769" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="1784.5" class="chiptext" text-anchor="middle">
+					équations et inéquations
+				</text>
+				<rect x="735" y="1769" width="71" height="22" rx="11" class="chip" />
+				<text x="770" y="1784.5" class="chiptext" text-anchor="middle">dérivée</text>
+				<rect x="814" y="1769" width="64" height="22" rx="11" class="chip" />
+				<text x="846" y="1784.5" class="chiptext" text-anchor="middle">courbe</text>
+				<rect x="537" y="1799" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="1814.5" class="chiptext" text-anchor="middle">logarithme décimal</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="integration">
+		<h2><span class="dot c14"></span>Intégration <small>4 notions</small></h2>
+		<p class="read">
+			Branche à part (terminale). Reprend le thème Intégration et ses cinq domaines.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 402"
+				width="1000"
+				height="402"
+				role="img"
+				aria-label="Branche Intégration : 4 notions et leurs sous-notions"
+				class="c14"
+			>
+				<rect x="4" y="167" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="197" class="btext" text-anchor="middle">Intégration</text>
+				<text x="89.0" y="219" class="btext" text-anchor="middle"></text>
+				<path d="M174 201 C 209 201, 180 63, 215 63" class="link" />
+				<rect x="215" y="30" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="30" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="60" class="ntext">Calcul d&#x27;intégrales</text>
+				<text x="231" y="80" class="niv">Tle, Tle comp.</text>
+				<path d="M500 63 L 525 63" class="link" />
+				<rect x="525" y="8" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="20" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="35.5" class="chiptext" text-anchor="middle">par une primitive</text>
+				<rect x="686" y="20" width="155" height="22" rx="11" class="chip" />
+				<text x="764" y="35.5" class="chiptext" text-anchor="middle">relation de Chasles</text>
+				<rect x="849" y="20" width="85" height="22" rx="11" class="chip" />
+				<text x="892" y="35.5" class="chiptext" text-anchor="middle">linéarité</text>
+				<rect x="537" y="50" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="65.5" class="chiptext" text-anchor="middle">positivité et inégalités</text>
+				<rect x="735" y="50" width="183" height="22" rx="11" class="chip" />
+				<text x="826" y="65.5" class="chiptext" text-anchor="middle">intégration par parties</text>
+				<rect x="537" y="80" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="95.5" class="chiptext" text-anchor="middle">suites d&#x27;intégrales</text>
+				<rect x="700" y="80" width="176" height="22" rx="11" class="chip" />
+				<text x="788" y="95.5" class="chiptext" text-anchor="middle">méthode des rectangles</text>
+				<path d="M174 201 C 209 201, 180 170, 215 170" class="link" />
+				<rect x="215" y="137" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="137" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="167" class="ntext">Intégrale et aire</text>
+				<text x="231" y="187" class="niv">Tle, Tle comp.</text>
+				<path d="M500 170 L 525 170" class="link" />
+				<rect x="525" y="130" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="142" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="157.5" class="chiptext" text-anchor="middle">aire algébrique</text>
+				<rect x="672" y="142" width="183" height="22" rx="11" class="chip" />
+				<text x="764" y="157.5" class="chiptext" text-anchor="middle">aire entre deux courbes</text>
+				<rect x="537" y="172" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="187.5" class="chiptext" text-anchor="middle">lecture graphique</text>
+				<path d="M174 201 C 209 201, 180 261, 215 261" class="link" />
+				<rect x="215" y="228" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="228" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="258" class="ntext">Valeur moyenne</text>
+				<text x="231" y="278" class="niv">Tle, Tle comp.</text>
+				<path d="M500 261 L 525 261" class="link" />
+				<rect x="525" y="222" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="234" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="249.5" class="chiptext" text-anchor="middle">calcul</text>
+				<rect x="609" y="234" width="99" height="22" rx="11" class="chip" />
+				<text x="658" y="249.5" class="chiptext" text-anchor="middle">encadrement</text>
+				<rect x="716" y="234" width="120" height="22" rx="11" class="chip" />
+				<text x="776" y="249.5" class="chiptext" text-anchor="middle">interprétation</text>
+				<path d="M174 201 C 209 201, 180 351, 215 351" class="link" />
+				<rect x="215" y="318" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="318" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="348" class="ntext">Fonction intégrale</text>
+				<text x="231" y="368" class="niv">Tle, Tle comp.</text>
+				<path d="M500 351 L 525 351" class="link" />
+				<rect x="525" y="312" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="324" width="246" height="22" rx="11" class="chip" />
+				<text x="660" y="339.5" class="chiptext" text-anchor="middle">
+					dérivée d&#x27;une fonction intégrale
+				</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="equadiff">
+		<h2><span class="dot c15"></span>Équations différentielles <small>5 notions</small></h2>
+		<p class="read">
+			Branche à part (terminale). Une notion par forme d'équation ; les primitives sont des
+			sous-notions de y′ = f.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 509"
+				width="1000"
+				height="509"
+				role="img"
+				aria-label="Branche Équations différentielles : 5 notions et leurs sous-notions"
+				class="c15"
+			>
+				<rect x="4" y="220" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="250" class="btext" text-anchor="middle">Équations</text>
+				<text x="89.0" y="272" class="btext" text-anchor="middle">différentielles</text>
+				<path d="M174 254 C 209 254, 180 47, 215 47" class="link" />
+				<rect x="215" y="14" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="14" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="44" class="ntext">Généralités</text>
+				<text x="231" y="64" class="niv">Tle, Tle comp.</text>
+				<path d="M500 47 L 525 47" class="link" />
+				<rect x="525" y="8" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="20" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="35.5" class="chiptext" text-anchor="middle">notion de solution</text>
+				<rect x="693" y="20" width="148" height="22" rx="11" class="chip" />
+				<text x="767" y="35.5" class="chiptext" text-anchor="middle">allure des courbes</text>
+				<rect x="849" y="20" width="127" height="22" rx="11" class="chip" />
+				<text x="912" y="35.5" class="chiptext" text-anchor="middle">méthode d&#x27;Euler</text>
+				<path d="M174 254 C 209 254, 180 162, 215 162" class="link" />
+				<rect x="215" y="130" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="130" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="160" class="ntext">y′ = f</text>
+				<text x="231" y="180" class="niv">Tle, Tle comp.</text>
+				<path d="M500 162 L 525 162" class="link" />
+				<rect x="525" y="98" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="110" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="125.5" class="chiptext" text-anchor="middle">primitives : notion</text>
+				<rect x="700" y="110" width="281" height="22" rx="11" class="chip" />
+				<text x="840" y="125.5" class="chiptext" text-anchor="middle">
+					primitives des fonctions de référence
+				</text>
+				<rect x="537" y="140" width="183" height="22" rx="11" class="chip" />
+				<text x="628" y="155.5" class="chiptext" text-anchor="middle">formes u′eᵘ, 2uu′, u′/u</text>
+				<rect x="728" y="140" width="127" height="22" rx="11" class="chip" />
+				<text x="792" y="155.5" class="chiptext" text-anchor="middle">forme (v′∘u)×u′</text>
+				<rect x="537" y="170" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="185.5" class="chiptext" text-anchor="middle">sinus et cosinus</text>
+				<text x="539" y="154" class="gnote">les primitives sont les solutions de y′ = f</text>
+				<path d="M174 254 C 209 254, 180 278, 215 278" class="link" />
+				<rect x="215" y="245" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="245" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="275" class="ntext">y′ = ay</text>
+				<text x="231" y="295" class="niv">Tle, Tle comp.</text>
+				<path d="M500 278 L 525 278" class="link" />
+				<rect x="525" y="239" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="251" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="266.5" class="chiptext" text-anchor="middle">solution générale</text>
+				<rect x="686" y="251" width="148" height="22" rx="11" class="chip" />
+				<text x="760" y="266.5" class="chiptext" text-anchor="middle">condition initiale</text>
+				<path d="M174 254 C 209 254, 180 368, 215 368" class="link" />
+				<rect x="215" y="335" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="335" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="365" class="ntext">y′ = ay + b</text>
+				<text x="231" y="385" class="niv">Tle, Tle comp.</text>
+				<path d="M500 368 L 525 368" class="link" />
+				<rect x="525" y="329" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="341" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="356.5" class="chiptext" text-anchor="middle">solution générale</text>
+				<rect x="686" y="341" width="148" height="22" rx="11" class="chip" />
+				<text x="760" y="356.5" class="chiptext" text-anchor="middle">condition initiale</text>
+				<path d="M174 254 C 209 254, 180 458, 215 458" class="link" />
+				<rect x="215" y="425" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="425" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="455" class="ntext">y′ = ay + f</text>
+				<text x="231" y="475" class="niv">Tle</text>
+				<path d="M500 458 L 525 458" class="link" />
+				<rect x="525" y="419" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="431" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="446.5" class="chiptext" text-anchor="middle">
+					solution particulière donnée
+				</text>
+				<rect x="763" y="431" width="141" height="22" rx="11" class="chip" />
+				<text x="834" y="446.5" class="chiptext" text-anchor="middle">solution générale</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="suites">
+		<h2><span class="dot c5"></span>Suites <small>8 notions</small></h2>
+		<p class="read">
+			Reprend les 15 domaines actuels du thème Suites. « Reconnaître une suite », « Sommes » et «
+			Seuils » deviennent des sous-notions.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 796"
+				width="1000"
+				height="796"
+				role="img"
+				aria-label="Branche Suites : 8 notions et leurs sous-notions"
+				class="c5"
+			>
+				<rect x="4" y="364" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="394" class="btext" text-anchor="middle">Suites</text>
+				<text x="89.0" y="416" class="btext" text-anchor="middle"></text>
+				<path d="M174 398 C 209 398, 180 63, 215 63" class="link" />
+				<rect x="215" y="30" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="30" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="60" class="ntext">Généralités sur les suites</text>
+				<text x="231" y="80" class="niv">1re</text>
+				<path d="M500 63 L 525 63" class="link" />
+				<rect x="525" y="8" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="20" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="35.5" class="chiptext" text-anchor="middle">calculer un terme</text>
+				<rect x="686" y="20" width="211" height="22" rx="11" class="chip" />
+				<text x="792" y="35.5" class="chiptext" text-anchor="middle">
+					explicite ou par récurrence
+				</text>
+				<rect x="537" y="50" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="65.5" class="chiptext" text-anchor="middle">deviner le terme général</text>
+				<rect x="735" y="50" width="190" height="22" rx="11" class="chip" />
+				<text x="830" y="65.5" class="chiptext" text-anchor="middle">représentation graphique</text>
+				<rect x="537" y="80" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="95.5" class="chiptext" text-anchor="middle">sens de variation</text>
+				<path d="M174 398 C 209 398, 180 170, 215 170" class="link" />
+				<rect x="215" y="137" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="137" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="167" class="ntext">Suites arithmétiques</text>
+				<text x="231" y="187" class="niv">1re</text>
+				<path d="M500 170 L 525 170" class="link" />
+				<rect x="525" y="130" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="142" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="157.5" class="chiptext" text-anchor="middle">reconnaître</text>
+				<rect x="644" y="142" width="64" height="22" rx="11" class="chip" />
+				<text x="676" y="157.5" class="chiptext" text-anchor="middle">raison</text>
+				<rect x="716" y="142" width="113" height="22" rx="11" class="chip" />
+				<text x="772" y="157.5" class="chiptext" text-anchor="middle">terme général</text>
+				<rect x="837" y="142" width="141" height="22" rx="11" class="chip" />
+				<text x="908" y="157.5" class="chiptext" text-anchor="middle">calculer un terme</text>
+				<rect x="537" y="172" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="187.5" class="chiptext" text-anchor="middle">somme des termes</text>
+				<path d="M174 398 C 209 398, 180 262, 215 262" class="link" />
+				<rect x="215" y="229" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="229" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="259" class="ntext">Suites géométriques</text>
+				<text x="231" y="279" class="niv">1re</text>
+				<path d="M500 262 L 525 262" class="link" />
+				<rect x="525" y="222" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="234" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="249.5" class="chiptext" text-anchor="middle">reconnaître</text>
+				<rect x="644" y="234" width="64" height="22" rx="11" class="chip" />
+				<text x="676" y="249.5" class="chiptext" text-anchor="middle">raison</text>
+				<rect x="716" y="234" width="113" height="22" rx="11" class="chip" />
+				<text x="772" y="249.5" class="chiptext" text-anchor="middle">terme général</text>
+				<rect x="837" y="234" width="141" height="22" rx="11" class="chip" />
+				<text x="908" y="249.5" class="chiptext" text-anchor="middle">calculer un terme</text>
+				<rect x="537" y="264" width="134" height="22" rx="11" class="chip" />
+				<text x="604" y="279.5" class="chiptext" text-anchor="middle">somme des termes</text>
+				<path d="M174 398 C 209 398, 180 353, 215 353" class="link" />
+				<rect x="215" y="320" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="320" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="350" class="ntext">Suites et modélisation</text>
+				<text x="231" y="370" class="niv">1re, Tle, Tle comp.</text>
+				<path d="M500 353 L 525 353" class="link" />
+				<rect x="525" y="314" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="326" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="341.5" class="chiptext" text-anchor="middle">placements</text>
+				<rect x="637" y="326" width="106" height="22" rx="11" class="chip" />
+				<text x="690" y="341.5" class="chiptext" text-anchor="middle">pourcentages</text>
+				<rect x="751" y="326" width="57" height="22" rx="11" class="chip" />
+				<text x="780" y="341.5" class="chiptext" text-anchor="middle">seuil</text>
+				<rect x="816" y="326" width="99" height="22" rx="11" class="chip" />
+				<text x="866" y="341.5" class="chiptext" text-anchor="middle">algorithmes</text>
+				<path d="M174 398 C 209 398, 180 459, 215 459" class="link" />
+				<rect x="215" y="426" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="426" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="456" class="ntext">Limites de suites</text>
+				<text x="231" y="476" class="niv">1re, Tle, Tle comp.</text>
+				<path d="M500 459 L 525 459" class="link" />
+				<rect x="525" y="404" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="416" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="431.5" class="chiptext" text-anchor="middle">définition</text>
+				<rect x="637" y="416" width="92" height="22" rx="11" class="chip" />
+				<text x="683" y="431.5" class="chiptext" text-anchor="middle">opérations</text>
+				<rect x="737" y="416" width="162" height="22" rx="11" class="chip" />
+				<text x="818" y="431.5" class="chiptext" text-anchor="middle">formes indéterminées</text>
+				<rect x="537" y="446" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="461.5" class="chiptext" text-anchor="middle">
+					comparaison et encadrement
+				</text>
+				<rect x="749" y="446" width="155" height="22" rx="11" class="chip" />
+				<text x="826" y="461.5" class="chiptext" text-anchor="middle">suites géométriques</text>
+				<rect x="537" y="476" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="491.5" class="chiptext" text-anchor="middle">convergence monotone</text>
+				<rect x="707" y="476" width="197" height="22" rx="11" class="chip" />
+				<text x="806" y="491.5" class="chiptext" text-anchor="middle">
+					suites majorées, minorées
+				</text>
+				<path d="M174 398 C 209 398, 180 565, 215 565" class="link" />
+				<rect x="215" y="532" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="532" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="562" class="ntext">Raisonnement par récurrence</text>
+				<text x="231" y="582" class="niv">Tle</text>
+				<path d="M500 565 L 525 565" class="link" />
+				<rect x="525" y="526" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="538" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="553.5" class="chiptext" text-anchor="middle">
+					structure d&#x27;une récurrence
+				</text>
+				<path d="M174 398 C 209 398, 180 655, 215 655" class="link" />
+				<rect x="215" y="622" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="622" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="652" class="ntext">Suites récurrentes</text>
+				<text x="231" y="672" class="niv">Tle, Tle comp.</text>
+				<path d="M500 655 L 525 655" class="link" />
+				<rect x="525" y="616" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="628" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="643.5" class="chiptext" text-anchor="middle">escalier</text>
+				<rect x="623" y="628" width="92" height="22" rx="11" class="chip" />
+				<text x="669" y="643.5" class="chiptext" text-anchor="middle">point fixe</text>
+				<path d="M174 398 C 209 398, 180 745, 215 745" class="link" />
+				<rect x="215" y="712" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="712" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="742" class="ntext">Suites arithmético-géométriques</text>
+				<text x="231" y="762" class="niv">Tle, Tle comp.</text>
+				<path d="M500 745 L 525 745" class="link" />
+				<rect x="525" y="706" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="718" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="733.5" class="chiptext" text-anchor="middle">solution constante</text>
+				<rect x="693" y="718" width="134" height="22" rx="11" class="chip" />
+				<text x="760" y="733.5" class="chiptext" text-anchor="middle">suite auxiliaire</text>
+				<rect x="835" y="718" width="64" height="22" rx="11" class="chip" />
+				<text x="867" y="733.5" class="chiptext" text-anchor="middle">limite</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="complexes">
+		<h2><span class="dot c11"></span>Nombres complexes <small>branche à part, 5 notions</small></h2>
+		<p class="read">
+			Sortie de Nombres et calculs, comme Arithmétique : ses cinq domaines actuels (maths expertes)
+			deviennent des notions.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 526"
+				width="1000"
+				height="526"
+				role="img"
+				aria-label="Branche Nombres complexes : 5 notions et leurs sous-notions"
+				class="c11"
+			>
+				<rect x="4" y="229" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="259" class="btext" text-anchor="middle">Nombres</text>
+				<text x="89.0" y="281" class="btext" text-anchor="middle">complexes</text>
+				<path d="M174 263 C 209 263, 180 48, 215 48" class="link" />
+				<rect x="215" y="15" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="15" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="45" class="ntext">Forme algébrique</text>
+				<text x="231" y="65" class="niv">Expertes</text>
+				<path d="M500 48 L 525 48" class="link" />
+				<rect x="525" y="8" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="20" width="71" height="22" rx="11" class="chip" />
+				<text x="572" y="35.5" class="chiptext" text-anchor="middle">calculs</text>
+				<rect x="616" y="20" width="99" height="22" rx="11" class="chip" />
+				<text x="666" y="35.5" class="chiptext" text-anchor="middle">conjugaison</text>
+				<rect x="723" y="20" width="155" height="22" rx="11" class="chip" />
+				<text x="800" y="35.5" class="chiptext" text-anchor="middle">inverse et quotient</text>
+				<rect x="537" y="50" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="65.5" class="chiptext" text-anchor="middle">formule du binôme</text>
+				<rect x="686" y="50" width="85" height="22" rx="11" class="chip" />
+				<text x="728" y="65.5" class="chiptext" text-anchor="middle">équations</text>
+				<path d="M174 263 C 209 263, 180 139, 215 139" class="link" />
+				<rect x="215" y="106" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="106" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="136" class="ntext">Module et argument</text>
+				<text x="231" y="156" class="niv">Expertes</text>
+				<path d="M500 139 L 525 139" class="link" />
+				<rect x="525" y="100" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="112" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="127.5" class="chiptext" text-anchor="middle">module</text>
+				<rect x="609" y="112" width="78" height="22" rx="11" class="chip" />
+				<text x="648" y="127.5" class="chiptext" text-anchor="middle">argument</text>
+				<path d="M174 263 C 209 263, 180 245, 215 245" class="link" />
+				<rect x="215" y="212" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="212" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="242" class="ntext">Formes trigo. et exponentielle</text>
+				<text x="231" y="262" class="niv">Expertes</text>
+				<path d="M500 245 L 525 245" class="link" />
+				<rect x="525" y="190" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="202" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="217.5" class="chiptext" text-anchor="middle">forme trigonométrique</text>
+				<rect x="537" y="232" width="281" height="22" rx="11" class="chip" />
+				<text x="678" y="247.5" class="chiptext" text-anchor="middle">
+					formules d&#x27;addition et de duplication
+				</text>
+				<rect x="826" y="232" width="155" height="22" rx="11" class="chip" />
+				<text x="904" y="247.5" class="chiptext" text-anchor="middle">forme exponentielle</text>
+				<rect x="537" y="262" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="277.5" class="chiptext" text-anchor="middle">formule de Moivre</text>
+				<rect x="686" y="262" width="134" height="22" rx="11" class="chip" />
+				<text x="753" y="277.5" class="chiptext" text-anchor="middle">formules d&#x27;Euler</text>
+				<path d="M174 263 C 209 263, 180 352, 215 352" class="link" />
+				<rect x="215" y="319" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="319" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="349" class="ntext">Équations polynomiales</text>
+				<text x="231" y="369" class="niv">Expertes</text>
+				<path d="M500 352 L 525 352" class="link" />
+				<rect x="525" y="312" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="324" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="339.5" class="chiptext" text-anchor="middle">second degré</text>
+				<rect x="651" y="324" width="169" height="22" rx="11" class="chip" />
+				<text x="736" y="339.5" class="chiptext" text-anchor="middle">
+					racines d&#x27;un polynôme
+				</text>
+				<rect x="537" y="354" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="369.5" class="chiptext" text-anchor="middle">
+					degré 3 et factorisation
+				</text>
+				<path d="M174 263 C 209 263, 180 459, 215 459" class="link" />
+				<rect x="215" y="426" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="426" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="456" class="ntext">Interprétation géométrique</text>
+				<text x="231" y="476" class="niv">Expertes</text>
+				<path d="M500 459 L 525 459" class="link" />
+				<rect x="525" y="404" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="416" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="431.5" class="chiptext" text-anchor="middle">affixes et distances</text>
+				<rect x="707" y="416" width="211" height="22" rx="11" class="chip" />
+				<text x="812" y="431.5" class="chiptext" text-anchor="middle">
+					alignement et orthogonalité
+				</text>
+				<rect x="537" y="446" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="461.5" class="chiptext" text-anchor="middle">angles et quotient</text>
+				<rect x="693" y="446" width="155" height="22" rx="11" class="chip" />
+				<text x="770" y="461.5" class="chiptext" text-anchor="middle">ensembles de points</text>
+				<rect x="537" y="476" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="491.5" class="chiptext" text-anchor="middle">racines de l&#x27;unité</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="matrices">
+		<h2><span class="dot c12"></span>Matrices <small>branche à part, 4 notions</small></h2>
+		<p class="read">
+			Maths expertes. Reprend l'ancien domaine Matrices (9 modèles) ; les sous-notions sans modèle
+			aujourd'hui suivent le programme.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 368"
+				width="1000"
+				height="368"
+				role="img"
+				aria-label="Branche Matrices : 4 notions et leurs sous-notions"
+				class="c12"
+			>
+				<rect x="4" y="150" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="180" class="btext" text-anchor="middle">Matrices</text>
+				<text x="89.0" y="202" class="btext" text-anchor="middle"></text>
+				<path d="M174 184 C 209 184, 180 47, 215 47" class="link" />
+				<rect x="215" y="14" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="14" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="44" class="ntext">Calcul matriciel</text>
+				<text x="231" y="64" class="niv">Expertes</text>
+				<path d="M500 47 L 525 47" class="link" />
+				<rect x="525" y="8" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="20" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="35.5" class="chiptext" text-anchor="middle">opérations</text>
+				<rect x="637" y="20" width="71" height="22" rx="11" class="chip" />
+				<text x="672" y="35.5" class="chiptext" text-anchor="middle">produit</text>
+				<rect x="716" y="20" width="71" height="22" rx="11" class="chip" />
+				<text x="752" y="35.5" class="chiptext" text-anchor="middle">inverse</text>
+				<rect x="795" y="20" width="176" height="22" rx="11" class="chip" />
+				<text x="883" y="35.5" class="chiptext" text-anchor="middle">puissances de matrices</text>
+				<path d="M174 184 C 209 184, 180 137, 215 137" class="link" />
+				<rect x="215" y="104" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="104" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="134" class="ntext">Systèmes linéaires</text>
+				<text x="231" y="154" class="niv">Expertes</text>
+				<path d="M500 137 L 525 137" class="link" />
+				<rect x="525" y="98" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="110" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="125.5" class="chiptext" text-anchor="middle">écriture matricielle</text>
+				<rect x="707" y="110" width="92" height="22" rx="11" class="chip" />
+				<text x="753" y="125.5" class="chiptext" text-anchor="middle">résolution</text>
+				<path d="M174 184 C 209 184, 180 227, 215 227" class="link" />
+				<rect x="215" y="194" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="194" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="224" class="ntext">Suites et matrices</text>
+				<text x="231" y="244" class="niv">Expertes</text>
+				<path d="M500 227 L 525 227" class="link" />
+				<rect x="525" y="188" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="200" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="215.5" class="chiptext" text-anchor="middle">suites couplées</text>
+				<rect x="672" y="200" width="106" height="22" rx="11" class="chip" />
+				<text x="725" y="215.5" class="chiptext" text-anchor="middle">modélisation</text>
+				<path d="M174 184 C 209 184, 180 317, 215 317" class="link" />
+				<rect x="215" y="284" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="284" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="314" class="ntext">Transformations du plan</text>
+				<text x="231" y="334" class="niv">Expertes</text>
+				<path d="M500 317 L 525 317" class="link" />
+				<rect x="525" y="278" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="290" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="305.5" class="chiptext" text-anchor="middle">
+					matrice d&#x27;une transformation
+				</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="graphes">
+		<h2><span class="dot c13"></span>Graphes <small>branche à part, 4 notions</small></h2>
+		<p class="read">
+			Maths expertes. Reprend les domaines Graphes (7 modèles) et Chaînes de Markov (3 modèles).
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 391"
+				width="1000"
+				height="391"
+				role="img"
+				aria-label="Branche Graphes : 4 notions et leurs sous-notions"
+				class="c13"
+			>
+				<rect x="4" y="162" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="192" class="btext" text-anchor="middle">Graphes</text>
+				<text x="89.0" y="214" class="btext" text-anchor="middle"></text>
+				<path d="M174 196 C 209 196, 180 48, 215 48" class="link" />
+				<rect x="215" y="15" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="15" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="45" class="ntext">Vocabulaire des graphes</text>
+				<text x="231" y="65" class="niv">Expertes</text>
+				<path d="M500 48 L 525 48" class="link" />
+				<rect x="525" y="8" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="20" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="35.5" class="chiptext" text-anchor="middle">sommets, arêtes, degré</text>
+				<rect x="721" y="20" width="120" height="22" rx="11" class="chip" />
+				<text x="781" y="35.5" class="chiptext" text-anchor="middle">graphe orienté</text>
+				<rect x="537" y="50" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="65.5" class="chiptext" text-anchor="middle">
+					modélisation par un graphe
+				</text>
+				<path d="M174 196 C 209 196, 180 139, 215 139" class="link" />
+				<rect x="215" y="106" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="106" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="136" class="ntext">Chaînes et connexité</text>
+				<text x="231" y="156" class="niv">Expertes</text>
+				<path d="M500 139 L 525 139" class="link" />
+				<rect x="525" y="100" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="112" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="127.5" class="chiptext" text-anchor="middle">chaînes et cycles</text>
+				<rect x="686" y="112" width="85" height="22" rx="11" class="chip" />
+				<text x="728" y="127.5" class="chiptext" text-anchor="middle">connexité</text>
+				<path d="M174 196 C 209 196, 180 229, 215 229" class="link" />
+				<rect x="215" y="196" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="196" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="226" class="ntext">Matrice d&#x27;adjacence</text>
+				<text x="231" y="246" class="niv">Expertes</text>
+				<path d="M500 229 L 525 229" class="link" />
+				<rect x="525" y="190" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="202" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="217.5" class="chiptext" text-anchor="middle">
+					matrice d&#x27;adjacence
+				</text>
+				<rect x="700" y="202" width="239" height="22" rx="11" class="chip" />
+				<text x="820" y="217.5" class="chiptext" text-anchor="middle">
+					nombre de chaînes de longueur n
+				</text>
+				<path d="M174 196 C 209 196, 180 330, 215 330" class="link" />
+				<rect x="215" y="296" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="296" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="326" class="ntext">Chaînes de Markov</text>
+				<text x="231" y="346" class="niv">Expertes</text>
+				<path d="M500 330 L 525 330" class="link" />
+				<rect x="525" y="280" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="292" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="307.5" class="chiptext" text-anchor="middle">graphe probabiliste</text>
+				<rect x="700" y="292" width="169" height="22" rx="11" class="chip" />
+				<text x="784" y="307.5" class="chiptext" text-anchor="middle">matrice de transition</text>
+				<rect x="537" y="322" width="246" height="22" rx="11" class="chip" />
+				<text x="660" y="337.5" class="chiptext" text-anchor="middle">
+					distribution après n transitions
+				</text>
+				<rect x="791" y="322" width="99" height="22" rx="11" class="chip" />
+				<text x="840" y="337.5" class="chiptext" text-anchor="middle">état stable</text>
+				<text x="539" y="366" class="gnote">
+					vient de l&#x27;ancien domaine Chaînes de Markov (3 modèles)
+				</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="geometrie">
+		<h2><span class="dot c6"></span>Géométrie <small>21 notions</small></h2>
+		<p class="read">
+			Du primaire (solides, figures planes, symétries, repérage) au lycée (vecteurs, espace), en
+			passant par le collège (translations, Pythagore, Thalès, trigonométrie) — plus quatre notions
+			hors programme héritées de l'ancien cycle 4 (rotations, homothéties, triangles semblables,
+			repérage dans l'espace).
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 2345"
+				width="1000"
+				height="2345"
+				role="img"
+				aria-label="Branche Géométrie : 21 notions et leurs sous-notions"
+				class="c6"
+			>
+				<rect x="4" y="1138" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="1168" class="btext" text-anchor="middle">Géométrie</text>
+				<text x="89.0" y="1190" class="btext" text-anchor="middle"></text>
+				<path d="M174 1172 C 209 1172, 180 72, 215 72" class="link" />
+				<rect x="215" y="40" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="40" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="70" class="ntext">Solides</text>
+				<text x="231" y="90" class="niv">CP à 3e, 1re et Tle techno</text>
+				<path d="M500 72 L 525 72" class="link" />
+				<rect x="525" y="8" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="20" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="35.5" class="chiptext" text-anchor="middle">reconnaître et décrire</text>
+				<rect x="721" y="20" width="92" height="22" rx="11" class="chip" />
+				<text x="767" y="35.5" class="chiptext" text-anchor="middle">construire</text>
+				<rect x="821" y="20" width="71" height="22" rx="11" class="chip" />
+				<text x="856" y="35.5" class="chiptext" text-anchor="middle">patrons</text>
+				<rect x="537" y="50" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="65.5" class="chiptext" text-anchor="middle">perspective cavalière</text>
+				<rect x="714" y="50" width="162" height="22" rx="11" class="chip" />
+				<text x="795" y="65.5" class="chiptext" text-anchor="middle">perspective centrale</text>
+				<rect x="537" y="80" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="95.5" class="chiptext" text-anchor="middle">sections planes</text>
+				<text x="539" y="124" class="gnote">le collège (D2) viendra avec le cycle 4</text>
+				<path d="M174 1172 C 209 1172, 180 234, 215 234" class="link" />
+				<rect x="215" y="201" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="201" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="231" class="ntext">Figures planes</text>
+				<text x="231" y="251" class="niv">CP à 4e, 1re et Tle techno</text>
+				<path d="M500 234 L 525 234" class="link" />
+				<rect x="525" y="149" width="469" height="170" rx="8" class="gbox" />
+				<rect x="537" y="161" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="176.5" class="chiptext" text-anchor="middle">reconnaître et décrire</text>
+				<rect x="721" y="161" width="113" height="22" rx="11" class="chip" />
+				<text x="778" y="176.5" class="chiptext" text-anchor="middle">angles droits</text>
+				<rect x="537" y="191" width="232" height="22" rx="11" class="chip" />
+				<text x="653" y="206.5" class="chiptext" text-anchor="middle">
+					perpendiculaires et parallèles
+				</text>
+				<rect x="777" y="191" width="190" height="22" rx="11" class="chip" />
+				<text x="872" y="206.5" class="chiptext" text-anchor="middle">
+					reproduire et construire
+				</text>
+				<rect x="537" y="221" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="236.5" class="chiptext" text-anchor="middle">cercle</text>
+				<rect x="609" y="221" width="85" height="22" rx="11" class="chip" />
+				<text x="652" y="236.5" class="chiptext" text-anchor="middle">triangles</text>
+				<rect x="702" y="221" width="134" height="22" rx="11" class="chip" />
+				<text x="769" y="236.5" class="chiptext" text-anchor="middle">parallélogrammes</text>
+				<rect x="537" y="251" width="197" height="22" rx="11" class="chip" />
+				<text x="636" y="266.5" class="chiptext" text-anchor="middle">
+					médiatrice et bissectrice
+				</text>
+				<rect x="742" y="251" width="155" height="22" rx="11" class="chip" />
+				<text x="820" y="266.5" class="chiptext" text-anchor="middle">polygones réguliers</text>
+				<rect x="537" y="281" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="296.5" class="chiptext" text-anchor="middle">coniques</text>
+				<path d="M174 1172 C 209 1172, 180 370, 215 370" class="link" />
+				<rect x="215" y="337" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="337" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="367" class="ntext">Symétrie axiale</text>
+				<text x="231" y="387" class="niv">CE2 à 3e</text>
+				<path d="M500 370 L 525 370" class="link" />
+				<rect x="525" y="331" width="469" height="78" rx="8" class="gbox" />
+				<path d="M174 1172 C 209 1172, 180 461, 215 461" class="link" />
+				<rect x="215" y="428" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="428" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="458" class="ntext">Repérage et déplacements</text>
+				<text x="231" y="478" class="niv">CP à 3e</text>
+				<path d="M500 461 L 525 461" class="link" />
+				<rect x="525" y="421" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="433" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="448.5" class="chiptext" text-anchor="middle">positions et plans</text>
+				<rect x="693" y="433" width="162" height="22" rx="11" class="chip" />
+				<text x="774" y="448.5" class="chiptext" text-anchor="middle">coder un déplacement</text>
+				<rect x="537" y="463" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="478.5" class="chiptext" text-anchor="middle">
+					coordonnées dans le plan
+				</text>
+				<path d="M174 1172 C 209 1172, 180 552, 215 552" class="link" />
+				<rect x="215" y="519" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="519" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="549" class="ntext">Symétrie centrale</text>
+				<text x="231" y="569" class="niv">5e, 4e</text>
+				<path d="M500 552 L 525 552" class="link" />
+				<rect x="525" y="513" width="469" height="78" rx="8" class="gbox" />
+				<path d="M174 1172 C 209 1172, 180 642, 215 642" class="link" />
+				<rect x="215" y="609" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="609" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="639" class="ntext">Translations</text>
+				<text x="231" y="659" class="niv">4e, 3e, 1re techno</text>
+				<path d="M500 642 L 525 642" class="link" />
+				<rect x="525" y="603" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="615" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="630.5" class="chiptext" text-anchor="middle">frises et pavages</text>
+				<path d="M174 1172 C 209 1172, 180 732, 215 732" class="link" />
+				<rect x="215" y="699" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="699" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="729" class="ntext">Théorème de Pythagore</text>
+				<text x="231" y="749" class="niv">4e, 3e</text>
+				<path d="M500 732 L 525 732" class="link" />
+				<rect x="525" y="693" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="705" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="720.5" class="chiptext" text-anchor="middle">calculer une longueur</text>
+				<rect x="714" y="705" width="92" height="22" rx="11" class="chip" />
+				<text x="760" y="720.5" class="chiptext" text-anchor="middle">réciproque</text>
+				<path d="M174 1172 C 209 1172, 180 822, 215 822" class="link" />
+				<rect x="215" y="789" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="789" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="819" class="ntext">Théorème de Thalès</text>
+				<text x="231" y="839" class="niv">4e, 3e</text>
+				<path d="M500 822 L 525 822" class="link" />
+				<rect x="525" y="783" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="795" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="810.5" class="chiptext" text-anchor="middle">droite des milieux</text>
+				<rect x="693" y="795" width="169" height="22" rx="11" class="chip" />
+				<text x="778" y="810.5" class="chiptext" text-anchor="middle">calculer une longueur</text>
+				<rect x="870" y="795" width="92" height="22" rx="11" class="chip" />
+				<text x="916" y="810.5" class="chiptext" text-anchor="middle">réciproque</text>
+				<text x="539" y="899" class="gnote">droite des milieux en 4e (décision S2)</text>
+				<path d="M174 1172 C 209 1172, 180 912, 215 912" class="link" />
+				<rect x="215" y="879" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="879" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="909" class="ntext">Trigonométrie du triangle rectangle</text>
+				<text x="231" y="929" class="niv">3e</text>
+				<path d="M500 912 L 525 912" class="link" />
+				<rect x="525" y="873" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="885" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="900.5" class="chiptext" text-anchor="middle">calculer une longueur</text>
+				<rect x="714" y="885" width="141" height="22" rx="11" class="chip" />
+				<text x="784" y="900.5" class="chiptext" text-anchor="middle">calculer un angle</text>
+				<path d="M174 1172 C 209 1172, 180 1002, 215 1002" class="link" />
+				<rect x="215" y="969" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="969" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="999" class="ntext">Rotations</text>
+				<text x="231" y="1019" class="niv">hors programme</text>
+				<path d="M500 1002 L 525 1002" class="link" />
+				<rect x="525" y="963" width="469" height="78" rx="8" class="gbox" />
+				<text x="539" y="1079" class="gnote">
+					ancienne 3e — demandé par David : enrichissement, évolutions futures
+				</text>
+				<path d="M174 1172 C 209 1172, 180 1092, 215 1092" class="link" />
+				<rect x="215" y="1059" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1059" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1089" class="ntext">Homothéties</text>
+				<text x="231" y="1109" class="niv">hors programme</text>
+				<path d="M500 1092 L 525 1092" class="link" />
+				<rect x="525" y="1053" width="469" height="78" rx="8" class="gbox" />
+				<text x="539" y="1169" class="gnote">ancienne 3e — demandé par David</text>
+				<path d="M174 1172 C 209 1172, 180 1182, 215 1182" class="link" />
+				<rect x="215" y="1149" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1149" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1179" class="ntext">Triangles semblables</text>
+				<text x="231" y="1199" class="niv">hors programme</text>
+				<path d="M500 1182 L 525 1182" class="link" />
+				<rect x="525" y="1143" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="1155" width="211" height="22" rx="11" class="chip" />
+				<text x="642" y="1170.5" class="chiptext" text-anchor="middle">
+					cas d&#x27;égalité des triangles
+				</text>
+				<text x="539" y="1259" class="gnote">ancienne 3e (cas d&#x27;égalité : ancienne 4e)</text>
+				<path d="M174 1172 C 209 1172, 180 1272, 215 1272" class="link" />
+				<rect x="215" y="1239" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1239" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1269" class="ntext">Repérage dans l&#x27;espace</text>
+				<text x="231" y="1289" class="niv">1re techno (STD2A)</text>
+				<path d="M500 1272 L 525 1272" class="link" />
+				<rect x="525" y="1233" width="469" height="78" rx="8" class="gbox" />
+				<text x="539" y="1349" class="gnote">
+					ancien programme : pavé (4e), sphère latitude-longitude (3e)
+				</text>
+				<path d="M174 1172 C 209 1172, 180 1388, 215 1388" class="link" />
+				<rect x="215" y="1354" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1354" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1376" class="npre">Vecteurs :</text>
+				<text x="231" y="1394" class="ntext">sans coordonnées</text>
+				<text x="231" y="1412" class="niv">3e, 2de</text>
+				<path d="M500 1388 L 525 1388" class="link" />
+				<rect x="525" y="1323" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="1335" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="1350.5" class="chiptext" text-anchor="middle">translation et vecteur</text>
+				<rect x="721" y="1335" width="155" height="22" rx="11" class="chip" />
+				<text x="798" y="1350.5" class="chiptext" text-anchor="middle">égalité de vecteurs</text>
+				<rect x="537" y="1365" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="1380.5" class="chiptext" text-anchor="middle">
+					somme et relation de Chasles
+				</text>
+				<rect x="763" y="1365" width="155" height="22" rx="11" class="chip" />
+				<text x="840" y="1380.5" class="chiptext" text-anchor="middle">produit par un réel</text>
+				<rect x="537" y="1395" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="1410.5" class="chiptext" text-anchor="middle">colinéarité</text>
+				<rect x="644" y="1395" width="162" height="22" rx="11" class="chip" />
+				<text x="725" y="1410.5" class="chiptext" text-anchor="middle">combinaison linéaire</text>
+				<text x="539" y="1439" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 1172 C 209 1172, 180 1514, 215 1514" class="link" />
+				<rect x="215" y="1480" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1480" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1502" class="npre">Vecteurs :</text>
+				<text x="231" y="1520" class="ntext">avec coordonnées</text>
+				<text x="231" y="1538" class="niv">2de</text>
+				<path d="M500 1514 L 525 1514" class="link" />
+				<rect x="525" y="1464" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="1476" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="1491.5" class="chiptext" text-anchor="middle">
+					coordonnées d&#x27;un vecteur
+				</text>
+				<rect x="735" y="1476" width="218" height="22" rx="11" class="chip" />
+				<text x="844" y="1491.5" class="chiptext" text-anchor="middle">
+					somme et produit par un réel
+				</text>
+				<rect x="537" y="1506" width="57" height="22" rx="11" class="chip" />
+				<text x="566" y="1521.5" class="chiptext" text-anchor="middle">norme</text>
+				<rect x="602" y="1506" width="204" height="22" rx="11" class="chip" />
+				<text x="704" y="1521.5" class="chiptext" text-anchor="middle">
+					colinéarité et déterminant
+				</text>
+				<text x="539" y="1580" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 1172 C 209 1172, 180 1645, 215 1645" class="link" />
+				<rect x="215" y="1612" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1612" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1642" class="ntext">Géométrie repérée</text>
+				<text x="231" y="1662" class="niv">2de, 1re</text>
+				<path d="M500 1645 L 525 1645" class="link" />
+				<rect x="525" y="1575" width="469" height="140" rx="8" class="gbox" />
+				<rect x="537" y="1587" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="1602.5" class="chiptext" text-anchor="middle">milieu et distance</text>
+				<rect x="693" y="1587" width="162" height="22" rx="11" class="chip" />
+				<text x="774" y="1602.5" class="chiptext" text-anchor="middle">équations de droites</text>
+				<rect x="537" y="1617" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="1632.5" class="chiptext" text-anchor="middle">vecteur directeur</text>
+				<rect x="686" y="1617" width="218" height="22" rx="11" class="chip" />
+				<text x="795" y="1632.5" class="chiptext" text-anchor="middle">
+					intersection de deux droites
+				</text>
+				<rect x="537" y="1647" width="274" height="22" rx="11" class="chip" />
+				<text x="674" y="1662.5" class="chiptext" text-anchor="middle">
+					vecteur normal et équation de droite
+				</text>
+				<rect x="819" y="1647" width="148" height="22" rx="11" class="chip" />
+				<text x="893" y="1662.5" class="chiptext" text-anchor="middle">équation de cercle</text>
+				<rect x="537" y="1677" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="1692.5" class="chiptext" text-anchor="middle">projeté orthogonal</text>
+				<path d="M174 1172 C 209 1172, 180 1767, 215 1767" class="link" />
+				<rect x="215" y="1734" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1734" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1764" class="ntext">Produit scalaire</text>
+				<text x="231" y="1784" class="niv">1re</text>
+				<path d="M500 1767 L 525 1767" class="link" />
+				<rect x="525" y="1727" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="1739" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="1754.5" class="chiptext" text-anchor="middle">
+					calculer un produit scalaire
+				</text>
+				<rect x="763" y="1739" width="155" height="22" rx="11" class="chip" />
+				<text x="840" y="1754.5" class="chiptext" text-anchor="middle">angles et longueurs</text>
+				<rect x="537" y="1769" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="1784.5" class="chiptext" text-anchor="middle">propriétés</text>
+				<rect x="637" y="1769" width="127" height="22" rx="11" class="chip" />
+				<text x="700" y="1784.5" class="chiptext" text-anchor="middle">lieux de points</text>
+				<path d="M174 1172 C 209 1172, 180 1874, 215 1874" class="link" />
+				<rect x="215" y="1841" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1841" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1862" class="npre">Espace :</text>
+				<text x="231" y="1880" class="ntext">sans coordonnées</text>
+				<text x="231" y="1898" class="niv">Tle</text>
+				<path d="M500 1874 L 525 1874" class="link" />
+				<rect x="525" y="1819" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1831" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="1846.5" class="chiptext" text-anchor="middle">
+					vecteurs de l&#x27;espace
+				</text>
+				<rect x="707" y="1831" width="197" height="22" rx="11" class="chip" />
+				<text x="806" y="1846.5" class="chiptext" text-anchor="middle">
+					colinéarité et alignement
+				</text>
+				<rect x="537" y="1861" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="1876.5" class="chiptext" text-anchor="middle">
+					coplanarité et décomposition
+				</text>
+				<rect x="537" y="1891" width="295" height="22" rx="11" class="chip" />
+				<text x="684" y="1906.5" class="chiptext" text-anchor="middle">
+					positions relatives de droites et plans
+				</text>
+				<path d="M174 1172 C 209 1172, 180 1996, 215 1996" class="link" />
+				<rect x="215" y="1963" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="1963" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="1984" class="npre">Espace :</text>
+				<text x="231" y="2002" class="ntext">avec coordonnées</text>
+				<text x="231" y="2020" class="niv">Tle</text>
+				<path d="M500 1996 L 525 1996" class="link" />
+				<rect x="525" y="1941" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="1953" width="197" height="22" rx="11" class="chip" />
+				<text x="636" y="1968.5" class="chiptext" text-anchor="middle">
+					coordonnées dans l&#x27;espace
+				</text>
+				<rect x="537" y="1983" width="302" height="22" rx="11" class="chip" />
+				<text x="688" y="1998.5" class="chiptext" text-anchor="middle">
+					représentation paramétrique d&#x27;une droite
+				</text>
+				<rect x="847" y="1983" width="113" height="22" rx="11" class="chip" />
+				<text x="904" y="1998.5" class="chiptext" text-anchor="middle">intersections</text>
+				<rect x="537" y="2013" width="253" height="22" rx="11" class="chip" />
+				<text x="664" y="2028.5" class="chiptext" text-anchor="middle">
+					positions relatives par le calcul
+				</text>
+				<path d="M174 1172 C 209 1172, 180 2128, 215 2128" class="link" />
+				<rect x="215" y="2094" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="2094" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="2116" class="npre">Orthogonalité :</text>
+				<text x="231" y="2134" class="ntext">sans coordonnées</text>
+				<text x="231" y="2152" class="niv">Tle</text>
+				<path d="M500 2128 L 525 2128" class="link" />
+				<rect x="525" y="2063" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="2075" width="232" height="22" rx="11" class="chip" />
+				<text x="653" y="2090.5" class="chiptext" text-anchor="middle">
+					produit scalaire dans l&#x27;espace
+				</text>
+				<rect x="537" y="2105" width="253" height="22" rx="11" class="chip" />
+				<text x="664" y="2120.5" class="chiptext" text-anchor="middle">
+					orthogonalité de droites et plans
+				</text>
+				<rect x="798" y="2105" width="148" height="22" rx="11" class="chip" />
+				<text x="872" y="2120.5" class="chiptext" text-anchor="middle">projeté orthogonal</text>
+				<rect x="537" y="2135" width="64" height="22" rx="11" class="chip" />
+				<text x="569" y="2150.5" class="chiptext" text-anchor="middle">angles</text>
+				<text x="539" y="2179" class="gnote">dans l&#x27;espace</text>
+				<path d="M174 1172 C 209 1172, 180 2268, 215 2268" class="link" />
+				<rect x="215" y="2236" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="2236" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="2256" class="npre">Orthogonalité :</text>
+				<text x="231" y="2274" class="ntext">avec coordonnées</text>
+				<text x="231" y="2292" class="niv">Tle</text>
+				<path d="M500 2268 L 525 2268" class="link" />
+				<rect x="525" y="2204" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="2216" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="2231.5" class="chiptext" text-anchor="middle">norme et distance</text>
+				<rect x="686" y="2216" width="190" height="22" rx="11" class="chip" />
+				<text x="781" y="2231.5" class="chiptext" text-anchor="middle">
+					vecteur normal à un plan
+				</text>
+				<rect x="537" y="2246" width="232" height="22" rx="11" class="chip" />
+				<text x="653" y="2261.5" class="chiptext" text-anchor="middle">
+					équation cartésienne d&#x27;un plan
+				</text>
+				<rect x="537" y="2276" width="253" height="22" rx="11" class="chip" />
+				<text x="664" y="2291.5" class="chiptext" text-anchor="middle">
+					coordonnées du projeté orthogonal
+				</text>
+				<rect x="798" y="2276" width="64" height="22" rx="11" class="chip" />
+				<text x="830" y="2291.5" class="chiptext" text-anchor="middle">sphère</text>
+				<text x="539" y="2320" class="gnote">dans l&#x27;espace</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="grandeurs">
+		<h2><span class="dot c7"></span>Grandeurs et mesures <small>10 notions</small></h2>
+		<p class="read">
+			Les grandeurs du primaire (longueurs, masses, contenances, monnaie) ont leurs notions ;
+			Vitesse est partie dans Proportionnalité.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 961"
+				width="1000"
+				height="961"
+				role="img"
+				aria-label="Branche Grandeurs et mesures : 10 notions et leurs sous-notions"
+				class="c7"
+			>
+				<rect x="4" y="446" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="476" class="btext" text-anchor="middle">Grandeurs</text>
+				<text x="89.0" y="498" class="btext" text-anchor="middle">et mesures</text>
+				<path d="M174 480 C 209 480, 180 47, 215 47" class="link" />
+				<rect x="215" y="14" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="14" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="44" class="ntext">Longueurs</text>
+				<text x="231" y="64" class="niv">CP à 6e</text>
+				<path d="M500 47 L 525 47" class="link" />
+				<rect x="525" y="8" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="20" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="35.5" class="chiptext" text-anchor="middle">comparer et mesurer</text>
+				<rect x="700" y="20" width="169" height="22" rx="11" class="chip" />
+				<text x="784" y="35.5" class="chiptext" text-anchor="middle">unités et conversions</text>
+				<path d="M174 480 C 209 480, 180 137, 215 137" class="link" />
+				<rect x="215" y="104" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="104" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="134" class="ntext">Masses</text>
+				<text x="231" y="154" class="niv">CP à CM1</text>
+				<path d="M500 137 L 525 137" class="link" />
+				<rect x="525" y="98" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="110" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="125.5" class="chiptext" text-anchor="middle">comparer et mesurer</text>
+				<rect x="700" y="110" width="169" height="22" rx="11" class="chip" />
+				<text x="784" y="125.5" class="chiptext" text-anchor="middle">unités et conversions</text>
+				<text x="539" y="154" class="gnote">cycle 4 à confirmer</text>
+				<path d="M174 480 C 209 480, 180 227, 215 227" class="link" />
+				<rect x="215" y="194" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="194" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="224" class="ntext">Contenances</text>
+				<text x="231" y="244" class="niv">CE2, CM1</text>
+				<path d="M500 227 L 525 227" class="link" />
+				<rect x="525" y="188" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="200" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="215.5" class="chiptext" text-anchor="middle">comparer et mesurer</text>
+				<rect x="700" y="200" width="169" height="22" rx="11" class="chip" />
+				<text x="784" y="215.5" class="chiptext" text-anchor="middle">unités et conversions</text>
+				<text x="539" y="244" class="gnote">bascule vers les volumes au collège</text>
+				<path d="M174 480 C 209 480, 180 317, 215 317" class="link" />
+				<rect x="215" y="284" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="284" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="314" class="ntext">Monnaie</text>
+				<text x="231" y="334" class="niv">CP à CE2</text>
+				<path d="M500 317 L 525 317" class="link" />
+				<rect x="525" y="278" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="290" width="141" height="22" rx="11" class="chip" />
+				<text x="608" y="305.5" class="chiptext" text-anchor="middle">pièces et billets</text>
+				<rect x="686" y="290" width="141" height="22" rx="11" class="chip" />
+				<text x="756" y="305.5" class="chiptext" text-anchor="middle">euros et centimes</text>
+				<rect x="835" y="290" width="141" height="22" rx="11" class="chip" />
+				<text x="906" y="305.5" class="chiptext" text-anchor="middle">rendre la monnaie</text>
+				<text x="539" y="334" class="gnote">porte l&#x27;écriture à virgule du cycle 2</text>
+				<path d="M174 480 C 209 480, 180 407, 215 407" class="link" />
+				<rect x="215" y="374" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="374" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="404" class="ntext">Angles</text>
+				<text x="231" y="424" class="niv">CM1 à 6e</text>
+				<path d="M500 407 L 525 407" class="link" />
+				<rect x="525" y="368" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="380" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="395.5" class="chiptext" text-anchor="middle">comparer</text>
+				<rect x="623" y="380" width="141" height="22" rx="11" class="chip" />
+				<text x="694" y="395.5" class="chiptext" text-anchor="middle">mesurer en degrés</text>
+				<rect x="772" y="380" width="92" height="22" rx="11" class="chip" />
+				<text x="818" y="395.5" class="chiptext" text-anchor="middle">construire</text>
+				<text x="539" y="424" class="gnote">
+					la grandeur ; les angles-objets (médiatrice, bissectrice…) → Figures planes
+				</text>
+				<path d="M174 480 C 209 480, 180 497, 215 497" class="link" />
+				<rect x="215" y="464" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="464" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="494" class="ntext">Périmètres</text>
+				<text x="231" y="514" class="niv">CE2, 6e</text>
+				<path d="M500 497 L 525 497" class="link" />
+				<rect x="525" y="458" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="470" width="57" height="22" rx="11" class="chip" />
+				<text x="566" y="485.5" class="chiptext" text-anchor="middle">carré</text>
+				<rect x="602" y="470" width="85" height="22" rx="11" class="chip" />
+				<text x="644" y="485.5" class="chiptext" text-anchor="middle">rectangle</text>
+				<rect x="695" y="470" width="64" height="22" rx="11" class="chip" />
+				<text x="727" y="485.5" class="chiptext" text-anchor="middle">disque</text>
+				<text x="539" y="514" class="gnote">
+					au CE2 : par mesurage, sans formule ; formules carré/rectangle/disque en 6e
+				</text>
+				<path d="M174 480 C 209 480, 180 612, 215 612" class="link" />
+				<rect x="215" y="580" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="580" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="610" class="ntext">Aires</text>
+				<text x="231" y="630" class="niv">CM1 à 5e</text>
+				<path d="M500 612 L 525 612" class="link" />
+				<rect x="525" y="548" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="560" width="57" height="22" rx="11" class="chip" />
+				<text x="566" y="575.5" class="chiptext" text-anchor="middle">carré</text>
+				<rect x="602" y="560" width="85" height="22" rx="11" class="chip" />
+				<text x="644" y="575.5" class="chiptext" text-anchor="middle">rectangle</text>
+				<rect x="695" y="560" width="148" height="22" rx="11" class="chip" />
+				<text x="769" y="575.5" class="chiptext" text-anchor="middle">triangle rectangle</text>
+				<rect x="537" y="590" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="605.5" class="chiptext" text-anchor="middle">triangle quelconque</text>
+				<rect x="700" y="590" width="127" height="22" rx="11" class="chip" />
+				<text x="764" y="605.5" class="chiptext" text-anchor="middle">parallélogramme</text>
+				<rect x="835" y="590" width="64" height="22" rx="11" class="chip" />
+				<text x="867" y="605.5" class="chiptext" text-anchor="middle">disque</text>
+				<rect x="537" y="620" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="635.5" class="chiptext" text-anchor="middle">unités et conversions</text>
+				<text x="539" y="604" class="gnote">
+					au CM : comparer et mesurer, formules carré/rectangle au CM2
+				</text>
+				<path d="M174 480 C 209 480, 180 729, 215 729" class="link" />
+				<rect x="215" y="696" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="696" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="726" class="ntext">Volumes</text>
+				<text x="231" y="746" class="niv">6e à 3e</text>
+				<path d="M500 729 L 525 729" class="link" />
+				<rect x="525" y="689" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="701" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="716.5" class="chiptext" text-anchor="middle">cube et pavé</text>
+				<rect x="651" y="701" width="148" height="22" rx="11" class="chip" />
+				<text x="725" y="716.5" class="chiptext" text-anchor="middle">prisme et cylindre</text>
+				<rect x="807" y="701" width="134" height="22" rx="11" class="chip" />
+				<text x="874" y="716.5" class="chiptext" text-anchor="middle">pyramide et cône</text>
+				<rect x="537" y="731" width="57" height="22" rx="11" class="chip" />
+				<text x="566" y="746.5" class="chiptext" text-anchor="middle">boule</text>
+				<rect x="602" y="731" width="99" height="22" rx="11" class="chip" />
+				<text x="652" y="746.5" class="chiptext" text-anchor="middle">conversions</text>
+				<path d="M174 480 C 209 480, 180 820, 215 820" class="link" />
+				<rect x="215" y="787" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="787" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="817" class="ntext">Durées</text>
+				<text x="231" y="837" class="niv">CP à 6e</text>
+				<path d="M500 820 L 525 820" class="link" />
+				<rect x="525" y="781" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="793" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="808.5" class="chiptext" text-anchor="middle">lire l&#x27;heure</text>
+				<rect x="651" y="793" width="78" height="22" rx="11" class="chip" />
+				<text x="690" y="808.5" class="chiptext" text-anchor="middle">calculer</text>
+				<rect x="737" y="793" width="85" height="22" rx="11" class="chip" />
+				<text x="780" y="808.5" class="chiptext" text-anchor="middle">convertir</text>
+				<path d="M174 480 C 209 480, 180 910, 215 910" class="link" />
+				<rect x="215" y="877" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="877" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="907" class="ntext">Unités et conversions</text>
+				<text x="231" y="927" class="niv">6e</text>
+				<path d="M500 910 L 525 910" class="link" />
+				<rect x="525" y="871" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="883" width="120" height="22" rx="11" class="chip" />
+				<text x="597" y="898.5" class="chiptext" text-anchor="middle">unités simples</text>
+				<rect x="665" y="883" width="134" height="22" rx="11" class="chip" />
+				<text x="732" y="898.5" class="chiptext" text-anchor="middle">unités composées</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="probas">
+		<h2><span class="dot c8"></span>Probabilités <small>6 notions</small></h2>
+		<p class="read">
+			Reprend le thème Probabilités. « Expériences aléatoires » remplace « Probabilités » pour ne
+			pas répéter le nom de la branche.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 748"
+				width="1000"
+				height="748"
+				role="img"
+				aria-label="Branche Probabilités : 6 notions et leurs sous-notions"
+				class="c8"
+			>
+				<rect x="4" y="340" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="370" class="btext" text-anchor="middle">Probabilités</text>
+				<text x="89.0" y="392" class="btext" text-anchor="middle"></text>
+				<path d="M174 374 C 209 374, 180 58, 215 58" class="link" />
+				<rect x="215" y="24" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="24" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="54" class="ntext">Expériences aléatoires</text>
+				<text x="231" y="74" class="niv">CM1 à 2de</text>
+				<path d="M500 58 L 525 58" class="link" />
+				<rect x="525" y="8" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="20" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="35.5" class="chiptext" text-anchor="middle">fréquences</text>
+				<rect x="637" y="20" width="148" height="22" rx="11" class="chip" />
+				<text x="711" y="35.5" class="chiptext" text-anchor="middle">probabilité simple</text>
+				<rect x="793" y="20" width="127" height="22" rx="11" class="chip" />
+				<text x="856" y="35.5" class="chiptext" text-anchor="middle">équiprobabilité</text>
+				<rect x="537" y="50" width="92" height="22" rx="11" class="chip" />
+				<text x="583" y="65.5" class="chiptext" text-anchor="middle">événements</text>
+				<text x="539" y="124" class="gnote">reprend le domaine Probabilités &gt; Apprivoiser</text>
+				<path d="M174 374 C 209 374, 180 174, 215 174" class="link" />
+				<rect x="215" y="141" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="141" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="171" class="ntext">Probabilités conditionnelles</text>
+				<text x="231" y="191" class="niv">2de, 1re</text>
+				<path d="M500 174 L 525 174" class="link" />
+				<rect x="525" y="119" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="131" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="146.5" class="chiptext" text-anchor="middle">arbres pondérés</text>
+				<rect x="672" y="131" width="134" height="22" rx="11" class="chip" />
+				<text x="739" y="146.5" class="chiptext" text-anchor="middle">tableaux croisés</text>
+				<rect x="814" y="131" width="106" height="22" rx="11" class="chip" />
+				<text x="867" y="146.5" class="chiptext" text-anchor="middle">indépendance</text>
+				<rect x="537" y="161" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="176.5" class="chiptext" text-anchor="middle">probabilités totales</text>
+				<rect x="707" y="161" width="218" height="22" rx="11" class="chip" />
+				<text x="816" y="176.5" class="chiptext" text-anchor="middle">
+					inversion du conditionnement
+				</text>
+				<rect x="537" y="191" width="260" height="22" rx="11" class="chip" />
+				<text x="667" y="206.5" class="chiptext" text-anchor="middle">
+					épreuves indépendantes successives
+				</text>
+				<rect x="805" y="191" width="169" height="22" rx="11" class="chip" />
+				<text x="890" y="206.5" class="chiptext" text-anchor="middle">problèmes en contexte</text>
+				<path d="M174 374 C 209 374, 180 281, 215 281" class="link" />
+				<rect x="215" y="248" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="248" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="278" class="ntext">Variables aléatoires</text>
+				<text x="231" y="298" class="niv">1re</text>
+				<path d="M500 281 L 525 281" class="link" />
+				<rect x="525" y="241" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="253" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="268.5" class="chiptext" text-anchor="middle">
+					loi d&#x27;une variable aléatoire
+				</text>
+				<rect x="763" y="253" width="141" height="22" rx="11" class="chip" />
+				<text x="834" y="268.5" class="chiptext" text-anchor="middle">compléter une loi</text>
+				<rect x="537" y="283" width="85" height="22" rx="11" class="chip" />
+				<text x="580" y="298.5" class="chiptext" text-anchor="middle">espérance</text>
+				<rect x="630" y="283" width="176" height="22" rx="11" class="chip" />
+				<text x="718" y="298.5" class="chiptext" text-anchor="middle">variance et écart-type</text>
+				<rect x="814" y="283" width="113" height="22" rx="11" class="chip" />
+				<text x="870" y="298.5" class="chiptext" text-anchor="middle">jeux et gains</text>
+				<path d="M174 374 C 209 374, 180 388, 215 388" class="link" />
+				<rect x="215" y="355" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="355" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="385" class="ntext">Loi binomiale</text>
+				<text x="231" y="405" class="niv">Tle, Tle comp., Tle techno</text>
+				<path d="M500 388 L 525 388" class="link" />
+				<rect x="525" y="333" width="469" height="110" rx="8" class="gbox" />
+				<rect x="537" y="345" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="360.5" class="chiptext" text-anchor="middle">schéma de Bernoulli</text>
+				<rect x="700" y="345" width="155" height="22" rx="11" class="chip" />
+				<text x="778" y="360.5" class="chiptext" text-anchor="middle">reconnaître une loi</text>
+				<rect x="537" y="375" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="390.5" class="chiptext" text-anchor="middle">calcul de probabilités</text>
+				<rect x="721" y="375" width="197" height="22" rx="11" class="chip" />
+				<text x="820" y="390.5" class="chiptext" text-anchor="middle">
+					intervalle de fluctuation
+				</text>
+				<rect x="537" y="405" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="420.5" class="chiptext" text-anchor="middle">coefficients binomiaux</text>
+				<rect x="721" y="405" width="169" height="22" rx="11" class="chip" />
+				<text x="806" y="420.5" class="chiptext" text-anchor="middle">espérance et variance</text>
+				<path d="M174 374 C 209 374, 180 525, 215 525" class="link" />
+				<rect x="215" y="492" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="492" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="522" class="ntext">Autres lois</text>
+				<text x="231" y="542" class="niv">Tle comp.</text>
+				<path d="M500 525 L 525 525" class="link" />
+				<rect x="525" y="455" width="469" height="140" rx="8" class="gbox" />
+				<rect x="537" y="467" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="482.5" class="chiptext" text-anchor="middle">loi géométrique</text>
+				<rect x="672" y="467" width="169" height="22" rx="11" class="chip" />
+				<text x="756" y="482.5" class="chiptext" text-anchor="middle">loi uniforme discrète</text>
+				<rect x="537" y="497" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="512.5" class="chiptext" text-anchor="middle">loi uniforme continue</text>
+				<rect x="714" y="497" width="141" height="22" rx="11" class="chip" />
+				<text x="784" y="512.5" class="chiptext" text-anchor="middle">loi exponentielle</text>
+				<rect x="537" y="527" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="542.5" class="chiptext" text-anchor="middle">absence de mémoire</text>
+				<rect x="693" y="527" width="127" height="22" rx="11" class="chip" />
+				<text x="756" y="542.5" class="chiptext" text-anchor="middle">densité et aire</text>
+				<rect x="537" y="557" width="183" height="22" rx="11" class="chip" />
+				<text x="628" y="572.5" class="chiptext" text-anchor="middle">fonction de répartition</text>
+				<rect x="728" y="557" width="169" height="22" rx="11" class="chip" />
+				<text x="812" y="572.5" class="chiptext" text-anchor="middle">espérance et variance</text>
+				<path d="M174 374 C 209 374, 180 672, 215 672" class="link" />
+				<rect x="215" y="638" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="638" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="668" class="ntext">Sommes et concentration</text>
+				<text x="231" y="688" class="niv">Tle</text>
+				<path d="M500 672 L 525 672" class="link" />
+				<rect x="525" y="607" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="619" width="253" height="22" rx="11" class="chip" />
+				<text x="664" y="634.5" class="chiptext" text-anchor="middle">
+					espérance et variance d&#x27;une somme
+				</text>
+				<rect x="798" y="619" width="106" height="22" rx="11" class="chip" />
+				<text x="851" y="634.5" class="chiptext" text-anchor="middle">échantillons</text>
+				<rect x="537" y="649" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="664.5" class="chiptext" text-anchor="middle">Bienaymé-Tchebychev</text>
+				<rect x="700" y="649" width="204" height="22" rx="11" class="chip" />
+				<text x="802" y="664.5" class="chiptext" text-anchor="middle">
+					inégalité de concentration
+				</text>
+				<rect x="537" y="679" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="694.5" class="chiptext" text-anchor="middle">loi des grands nombres</text>
+				<text x="539" y="723" class="gnote">sommes de variables aléatoires</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="denombrement">
+		<h2><span class="dot c18"></span>Dénombrement <small>branche à part, 4 notions</small></h2>
+		<p class="read">
+			Sorti de Probabilités (terminale). Reprend les 9 sous-domaines de l'ancien domaine
+			Dénombrement (15 modèles).
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 374"
+				width="1000"
+				height="374"
+				role="img"
+				aria-label="Branche Dénombrement : 4 notions et leurs sous-notions"
+				class="c18"
+			>
+				<rect x="4" y="153" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="183" class="btext" text-anchor="middle">Dénombrement</text>
+				<text x="89.0" y="205" class="btext" text-anchor="middle"></text>
+				<path d="M174 187 C 209 187, 180 48, 215 48" class="link" />
+				<rect x="215" y="15" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="15" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="45" class="ntext">Principes de dénombrement</text>
+				<text x="231" y="65" class="niv">Tle</text>
+				<path d="M500 48 L 525 48" class="link" />
+				<rect x="525" y="8" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="20" width="260" height="22" rx="11" class="chip" />
+				<text x="667" y="35.5" class="chiptext" text-anchor="middle">
+					principes additif et multiplicatif
+				</text>
+				<rect x="805" y="20" width="78" height="22" rx="11" class="chip" />
+				<text x="844" y="35.5" class="chiptext" text-anchor="middle">k-uplets</text>
+				<rect x="537" y="50" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="65.5" class="chiptext" text-anchor="middle">
+					parties d&#x27;un ensemble
+				</text>
+				<path d="M174 187 C 209 187, 180 139, 215 139" class="link" />
+				<rect x="215" y="106" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="106" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="136" class="ntext">Arrangements et permutations</text>
+				<text x="231" y="156" class="niv">Tle</text>
+				<path d="M500 139 L 525 139" class="link" />
+				<rect x="525" y="100" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="112" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="127.5" class="chiptext" text-anchor="middle">arrangements</text>
+				<rect x="651" y="112" width="106" height="22" rx="11" class="chip" />
+				<text x="704" y="127.5" class="chiptext" text-anchor="middle">permutations</text>
+				<rect x="765" y="112" width="99" height="22" rx="11" class="chip" />
+				<text x="814" y="127.5" class="chiptext" text-anchor="middle">factorielle</text>
+				<path d="M174 187 C 209 187, 180 230, 215 230" class="link" />
+				<rect x="215" y="197" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="197" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="227" class="ntext">Combinaisons</text>
+				<text x="231" y="247" class="niv">Tle</text>
+				<path d="M500 230 L 525 230" class="link" />
+				<rect x="525" y="190" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="202" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="217.5" class="chiptext" text-anchor="middle">combinaisons</text>
+				<rect x="651" y="202" width="176" height="22" rx="11" class="chip" />
+				<text x="739" y="217.5" class="chiptext" text-anchor="middle">coefficients binomiaux</text>
+				<rect x="537" y="232" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="247.5" class="chiptext" text-anchor="middle">triangle de Pascal</text>
+				<path d="M174 187 C 209 187, 180 322, 215 322" class="link" />
+				<rect x="215" y="289" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="289" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="319" class="ntext">Problèmes de dénombrement</text>
+				<text x="231" y="339" class="niv">Tle</text>
+				<path d="M500 322 L 525 322" class="link" />
+				<rect x="525" y="282" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="294" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="309.5" class="chiptext" text-anchor="middle">
+					dénombrer avec contraintes
+				</text>
+				<rect x="749" y="294" width="169" height="22" rx="11" class="chip" />
+				<text x="834" y="309.5" class="chiptext" text-anchor="middle">reconnaître le modèle</text>
+				<rect x="537" y="324" width="113" height="22" rx="11" class="chip" />
+				<text x="594" y="339.5" class="chiptext" text-anchor="middle">algorithmique</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="stats">
+		<h2><span class="dot c17"></span>Statistiques <small>5 notions</small></h2>
+		<p class="read">
+			Séparée des probabilités. Seule la statistique à deux variables a des modèles aujourd'hui ;
+			les autres notions suivent le programme.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 632"
+				width="1000"
+				height="632"
+				role="img"
+				aria-label="Branche Statistiques : 5 notions et leurs sous-notions"
+				class="c17"
+			>
+				<rect x="4" y="282" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="312" class="btext" text-anchor="middle">Statistiques</text>
+				<text x="89.0" y="334" class="btext" text-anchor="middle"></text>
+				<path d="M174 316 C 209 316, 180 88, 215 88" class="link" />
+				<rect x="215" y="54" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="54" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="84" class="ntext">Représenter des données</text>
+				<text x="231" y="104" class="niv">CP à 2de</text>
+				<path d="M500 88 L 525 88" class="link" />
+				<rect x="525" y="8" width="469" height="159" rx="8" class="gbox" />
+				<rect x="537" y="20" width="183" height="22" rx="11" class="chip" />
+				<text x="628" y="35.5" class="chiptext" text-anchor="middle">effectifs et fréquences</text>
+				<rect x="728" y="20" width="78" height="22" rx="11" class="chip" />
+				<text x="767" y="35.5" class="chiptext" text-anchor="middle">tableaux</text>
+				<rect x="537" y="50" width="183" height="22" rx="11" class="chip" />
+				<text x="628" y="65.5" class="chiptext" text-anchor="middle">tableau à double entrée</text>
+				<rect x="728" y="50" width="162" height="22" rx="11" class="chip" />
+				<text x="809" y="65.5" class="chiptext" text-anchor="middle">diagrammes en barres</text>
+				<rect x="537" y="80" width="176" height="22" rx="11" class="chip" />
+				<text x="625" y="95.5" class="chiptext" text-anchor="middle">diagrammes circulaires</text>
+				<rect x="721" y="80" width="148" height="22" rx="11" class="chip" />
+				<text x="795" y="95.5" class="chiptext" text-anchor="middle">courbes et repères</text>
+				<rect x="537" y="110" width="106" height="22" rx="11" class="chip" />
+				<text x="590" y="125.5" class="chiptext" text-anchor="middle">histogrammes</text>
+				<rect x="651" y="110" width="155" height="22" rx="11" class="chip" />
+				<text x="728" y="125.5" class="chiptext" text-anchor="middle">fréquences cumulées</text>
+				<text x="539" y="94" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 316 C 209 316, 180 244, 215 244" class="link" />
+				<rect x="215" y="210" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="210" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="240" class="ntext">Indicateurs</text>
+				<text x="231" y="260" class="niv">5e à 2de, Tle comp.</text>
+				<path d="M500 244 L 525 244" class="link" />
+				<rect x="525" y="179" width="469" height="129" rx="8" class="gbox" />
+				<rect x="537" y="191" width="71" height="22" rx="11" class="chip" />
+				<text x="572" y="206.5" class="chiptext" text-anchor="middle">moyenne</text>
+				<rect x="616" y="191" width="71" height="22" rx="11" class="chip" />
+				<text x="652" y="206.5" class="chiptext" text-anchor="middle">médiane</text>
+				<rect x="695" y="191" width="85" height="22" rx="11" class="chip" />
+				<text x="738" y="206.5" class="chiptext" text-anchor="middle">quartiles</text>
+				<rect x="537" y="221" width="232" height="22" rx="11" class="chip" />
+				<text x="653" y="236.5" class="chiptext" text-anchor="middle">
+					déciles et rapport interdécile
+				</text>
+				<rect x="777" y="221" width="71" height="22" rx="11" class="chip" />
+				<text x="812" y="236.5" class="chiptext" text-anchor="middle">étendue</text>
+				<rect x="856" y="221" width="92" height="22" rx="11" class="chip" />
+				<text x="902" y="236.5" class="chiptext" text-anchor="middle">écart-type</text>
+				<rect x="537" y="251" width="148" height="22" rx="11" class="chip" />
+				<text x="611" y="266.5" class="chiptext" text-anchor="middle">boîte à moustaches</text>
+				<text x="539" y="265" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 316 C 209 316, 180 359, 215 359" class="link" />
+				<rect x="215" y="326" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="326" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="356" class="ntext">Échantillonnage</text>
+				<text x="231" y="376" class="niv">2de, 1re, 1re techno</text>
+				<path d="M500 359 L 525 359" class="link" />
+				<rect x="525" y="320" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="332" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="347.5" class="chiptext" text-anchor="middle">fluctuation</text>
+				<rect x="644" y="332" width="92" height="22" rx="11" class="chip" />
+				<text x="690" y="347.5" class="chiptext" text-anchor="middle">simulation</text>
+				<rect x="744" y="332" width="211" height="22" rx="11" class="chip" />
+				<text x="850" y="347.5" class="chiptext" text-anchor="middle">
+					estimation d&#x27;une proportion
+				</text>
+				<text x="539" y="406" class="gnote">aucun modèle aujourd&#x27;hui</text>
+				<path d="M174 316 C 209 316, 180 460, 215 460" class="link" />
+				<rect x="215" y="426" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="426" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="456" class="ntext">Tableaux croisés</text>
+				<text x="231" y="476" class="niv">2de</text>
+				<path d="M500 460 L 525 460" class="link" />
+				<rect x="525" y="410" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="422" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="437.5" class="chiptext" text-anchor="middle">
+					tableau croisé d&#x27;effectifs
+				</text>
+				<rect x="537" y="452" width="302" height="22" rx="11" class="chip" />
+				<text x="688" y="467.5" class="chiptext" text-anchor="middle">
+					fréquences marginales et conditionnelles
+				</text>
+				<text x="539" y="496" class="gnote">
+					croisement de deux variables qualitatives ; le versant probabiliste reste sous
+					Probabilités conditionnelles
+				</text>
+				<path d="M174 316 C 209 316, 180 570, 215 570" class="link" />
+				<rect x="215" y="538" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="538" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="568" class="ntext">Statistique à deux variables</text>
+				<text x="231" y="588" class="niv">1re ens. sci., 1re techno, Tle comp., Tle techno</text>
+				<path d="M500 570 L 525 570" class="link" />
+				<rect x="525" y="521" width="469" height="99" rx="8" class="gbox" />
+				<rect x="537" y="533" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="548.5" class="chiptext" text-anchor="middle">nuage de points</text>
+				<rect x="672" y="533" width="99" height="22" rx="11" class="chip" />
+				<text x="722" y="548.5" class="chiptext" text-anchor="middle">point moyen</text>
+				<rect x="779" y="533" width="141" height="22" rx="11" class="chip" />
+				<text x="850" y="548.5" class="chiptext" text-anchor="middle">ajustement affine</text>
+				<rect x="537" y="563" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="578.5" class="chiptext" text-anchor="middle">
+					coefficient de corrélation
+				</text>
+				<rect x="749" y="563" width="176" height="22" rx="11" class="chip" />
+				<text x="837" y="578.5" class="chiptext" text-anchor="middle">changement de variable</text>
+				<text x="539" y="607" class="gnote">reprend le thème Statistiques</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="logique">
+		<h2><span class="dot c9"></span>Logique <small>4 notions</small></h2>
+		<p class="read">
+			Reprend le domaine Logique et raisonnement ; ses quatre sous-domaines deviennent des notions.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 374"
+				width="1000"
+				height="374"
+				role="img"
+				aria-label="Branche Logique : 4 notions et leurs sous-notions"
+				class="c9"
+			>
+				<rect x="4" y="153" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="183" class="btext" text-anchor="middle">Logique</text>
+				<text x="89.0" y="205" class="btext" text-anchor="middle"></text>
+				<path d="M174 187 C 209 187, 180 47, 215 47" class="link" />
+				<rect x="215" y="14" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="14" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="44" class="ntext">Connecteurs et contre-exemples</text>
+				<text x="231" y="64" class="niv">2de, 1re</text>
+				<path d="M500 47 L 525 47" class="link" />
+				<rect x="525" y="8" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="20" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="35.5" class="chiptext" text-anchor="middle">et, ou, non</text>
+				<rect x="644" y="20" width="120" height="22" rx="11" class="chip" />
+				<text x="704" y="35.5" class="chiptext" text-anchor="middle">contre-exemple</text>
+				<path d="M174 187 C 209 187, 180 138, 215 138" class="link" />
+				<rect x="215" y="105" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="105" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="135" class="ntext">Implication et équivalence</text>
+				<text x="231" y="155" class="niv">2de, 1re</text>
+				<path d="M500 138 L 525 138" class="link" />
+				<rect x="525" y="98" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="110" width="99" height="22" rx="11" class="chip" />
+				<text x="586" y="125.5" class="chiptext" text-anchor="middle">implication</text>
+				<rect x="644" y="110" width="92" height="22" rx="11" class="chip" />
+				<text x="690" y="125.5" class="chiptext" text-anchor="middle">réciproque</text>
+				<rect x="744" y="110" width="99" height="22" rx="11" class="chip" />
+				<text x="794" y="125.5" class="chiptext" text-anchor="middle">contraposée</text>
+				<rect x="851" y="110" width="99" height="22" rx="11" class="chip" />
+				<text x="900" y="125.5" class="chiptext" text-anchor="middle">équivalence</text>
+				<rect x="537" y="140" width="316" height="22" rx="11" class="chip" />
+				<text x="695" y="155.5" class="chiptext" text-anchor="middle">
+					condition nécessaire, condition suffisante
+				</text>
+				<path d="M174 187 C 209 187, 180 230, 215 230" class="link" />
+				<rect x="215" y="197" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="197" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="227" class="ntext">Quantificateurs et négation</text>
+				<text x="231" y="247" class="niv">2de, 1re</text>
+				<path d="M500 230 L 525 230" class="link" />
+				<rect x="525" y="190" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="202" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="217.5" class="chiptext" text-anchor="middle">pour tout, il existe</text>
+				<rect x="707" y="202" width="260" height="22" rx="11" class="chip" />
+				<text x="837" y="217.5" class="chiptext" text-anchor="middle">
+					statut des lettres et des égalités
+				</text>
+				<rect x="537" y="232" width="204" height="22" rx="11" class="chip" />
+				<text x="639" y="247.5" class="chiptext" text-anchor="middle">
+					négation d&#x27;une proposition
+				</text>
+				<path d="M174 187 C 209 187, 180 322, 215 322" class="link" />
+				<rect x="215" y="289" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="289" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="319" class="ntext">Raisonnements</text>
+				<text x="231" y="339" class="niv">2de à Tle</text>
+				<path d="M500 322 L 525 322" class="link" />
+				<rect x="525" y="282" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="294" width="113" height="22" rx="11" class="chip" />
+				<text x="594" y="309.5" class="chiptext" text-anchor="middle">par l&#x27;absurde</text>
+				<rect x="658" y="294" width="127" height="22" rx="11" class="chip" />
+				<text x="722" y="309.5" class="chiptext" text-anchor="middle">par contraposée</text>
+				<rect x="793" y="294" width="148" height="22" rx="11" class="chip" />
+				<text x="867" y="309.5" class="chiptext" text-anchor="middle">disjonction de cas</text>
+				<rect x="537" y="324" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="339.5" class="chiptext" text-anchor="middle">par équivalence</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="ensembles">
+		<h2><span class="dot c19"></span>Ensembles <small>branche à part, 3 notions</small></h2>
+		<p class="read">
+			Reprend le domaine Ensembles (1re) ; les ensembles de nombres et les intervalles de 2de y
+			trouvent leur place.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 280"
+				width="1000"
+				height="280"
+				role="img"
+				aria-label="Branche Ensembles : 3 notions et leurs sous-notions"
+				class="c19"
+			>
+				<rect x="4" y="106" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="136" class="btext" text-anchor="middle">Ensembles</text>
+				<text x="89.0" y="158" class="btext" text-anchor="middle"></text>
+				<path d="M174 140 C 209 140, 180 48, 215 48" class="link" />
+				<rect x="215" y="15" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="15" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="45" class="ntext">Ensembles de nombres</text>
+				<text x="231" y="65" class="niv">2de</text>
+				<path d="M500 48 L 525 48" class="link" />
+				<rect x="525" y="8" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="20" width="113" height="22" rx="11" class="chip" />
+				<text x="594" y="35.5" class="chiptext" text-anchor="middle">ℕ, ℤ, 𝔻, ℚ, ℝ</text>
+				<rect x="658" y="20" width="162" height="22" rx="11" class="chip" />
+				<text x="739" y="35.5" class="chiptext" text-anchor="middle">nombres irrationnels</text>
+				<rect x="537" y="50" width="197" height="22" rx="11" class="chip" />
+				<text x="636" y="65.5" class="chiptext" text-anchor="middle">
+					appartenance et inclusion
+				</text>
+				<rect x="742" y="50" width="99" height="22" rx="11" class="chip" />
+				<text x="792" y="65.5" class="chiptext" text-anchor="middle">intervalles</text>
+				<path d="M174 140 C 209 140, 180 139, 215 139" class="link" />
+				<rect x="215" y="106" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="106" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="136" class="ntext">Opérations sur les ensembles</text>
+				<text x="231" y="156" class="niv">2de, 1re</text>
+				<path d="M500 139 L 525 139" class="link" />
+				<rect x="525" y="100" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="112" width="169" height="22" rx="11" class="chip" />
+				<text x="622" y="127.5" class="chiptext" text-anchor="middle">union et intersection</text>
+				<rect x="714" y="112" width="120" height="22" rx="11" class="chip" />
+				<text x="774" y="127.5" class="chiptext" text-anchor="middle">complémentaire</text>
+				<rect x="842" y="112" width="92" height="22" rx="11" class="chip" />
+				<text x="888" y="127.5" class="chiptext" text-anchor="middle">différence</text>
+				<path d="M174 140 C 209 140, 180 229, 215 229" class="link" />
+				<rect x="215" y="196" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="196" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="226" class="ntext">Cardinal et produit cartésien</text>
+				<text x="231" y="246" class="niv">1re, Tle</text>
+				<path d="M500 229 L 525 229" class="link" />
+				<rect x="525" y="190" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="202" width="78" height="22" rx="11" class="chip" />
+				<text x="576" y="217.5" class="chiptext" text-anchor="middle">cardinal</text>
+				<rect x="623" y="202" width="141" height="22" rx="11" class="chip" />
+				<text x="694" y="217.5" class="chiptext" text-anchor="middle">produit cartésien</text>
+			</svg>
+		</div>
+	</section>
+	<section class="branch" id="algorithmique">
+		<h2><span class="dot c16"></span>Algorithmique <small>4 notions</small></h2>
+		<p class="read">
+			Aucun modèle aujourd'hui : notions tirées du programme (2de, 1re). « Fonctions Python » pour
+			ne pas confondre avec la branche Fonctions.
+		</p>
+		<div class="scroll">
+			<svg
+				viewBox="0 0 1000 372"
+				width="1000"
+				height="372"
+				role="img"
+				aria-label="Branche Algorithmique : 4 notions et leurs sous-notions"
+				class="c16"
+			>
+				<rect x="4" y="152" width="170" height="68" rx="10" class="bnode" />
+				<text x="89.0" y="182" class="btext" text-anchor="middle">Algorithmique</text>
+				<text x="89.0" y="204" class="btext" text-anchor="middle"></text>
+				<path d="M174 186 C 209 186, 180 48, 215 48" class="link" />
+				<rect x="215" y="15" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="15" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="45" class="ntext">Variables et instructions</text>
+				<text x="231" y="65" class="niv">5e à 2de</text>
+				<path d="M500 48 L 525 48" class="link" />
+				<rect x="525" y="8" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="20" width="190" height="22" rx="11" class="chip" />
+				<text x="632" y="35.5" class="chiptext" text-anchor="middle">variables et affectation</text>
+				<rect x="735" y="20" width="57" height="22" rx="11" class="chip" />
+				<text x="764" y="35.5" class="chiptext" text-anchor="middle">types</text>
+				<rect x="537" y="50" width="218" height="22" rx="11" class="chip" />
+				<text x="646" y="65.5" class="chiptext" text-anchor="middle">
+					instructions conditionnelles
+				</text>
+				<path d="M174 186 C 209 186, 180 139, 215 139" class="link" />
+				<rect x="215" y="106" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="106" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="136" class="ntext">Boucles</text>
+				<text x="231" y="156" class="niv">5e à 2de</text>
+				<path d="M500 139 L 525 139" class="link" />
+				<rect x="525" y="100" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="112" width="113" height="22" rx="11" class="chip" />
+				<text x="594" y="127.5" class="chiptext" text-anchor="middle">boucle bornée</text>
+				<rect x="658" y="112" width="141" height="22" rx="11" class="chip" />
+				<text x="728" y="127.5" class="chiptext" text-anchor="middle">boucle non bornée</text>
+				<path d="M174 186 C 209 186, 180 229, 215 229" class="link" />
+				<rect x="215" y="196" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="196" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="226" class="ntext">Fonctions Python</text>
+				<text x="231" y="246" class="niv">2de</text>
+				<path d="M500 229 L 525 229" class="link" />
+				<rect x="525" y="190" width="469" height="78" rx="8" class="gbox" />
+				<rect x="537" y="202" width="162" height="22" rx="11" class="chip" />
+				<text x="618" y="217.5" class="chiptext" text-anchor="middle">définir une fonction</text>
+				<rect x="707" y="202" width="162" height="22" rx="11" class="chip" />
+				<text x="788" y="217.5" class="chiptext" text-anchor="middle">appeler une fonction</text>
+				<path d="M174 186 C 209 186, 180 320, 215 320" class="link" />
+				<rect x="215" y="287" width="285" height="66" rx="8" class="nnode" />
+				<rect x="215" y="287" width="5" height="66" rx="2" class="nbar" />
+				<text x="231" y="317" class="ntext">Listes</text>
+				<text x="231" y="337" class="niv">1re</text>
+				<path d="M500 320 L 525 320" class="link" />
+				<rect x="525" y="280" width="469" height="80" rx="8" class="gbox" />
+				<rect x="537" y="292" width="127" height="22" rx="11" class="chip" />
+				<text x="600" y="307.5" class="chiptext" text-anchor="middle">créer une liste</text>
+				<rect x="672" y="292" width="155" height="22" rx="11" class="chip" />
+				<text x="750" y="307.5" class="chiptext" text-anchor="middle">éléments et indices</text>
+				<rect x="537" y="322" width="155" height="22" rx="11" class="chip" />
+				<text x="614" y="337.5" class="chiptext" text-anchor="middle">parcourir une liste</text>
+				<rect x="700" y="322" width="176" height="22" rx="11" class="chip" />
+				<text x="788" y="337.5" class="chiptext" text-anchor="middle">liste en compréhension</text>
+			</svg>
+		</div>
+	</section>
+
+	<div class="side">
+		<div class="box">
+			<h3>Hors de l'arbre</h3>
+			<p>Un champ par question posée.</p>
+			<ul class="plain">
+				<li><b>Catégorie</b> (exercices) : automatisme, application, recherche, synthèse…</li>
+				<li><b>Question de cours</b> (questions) : connaissance plutôt que procédure</li>
+				<li><b>Niveau de difficulté</b> (questions) : 1 à 20, « Apprivoiser » = bas</li>
+				<li><b>Type</b> (questions) : saisie, QCM, carte de cours</li>
+			</ul>
+		</div>
+		<div class="box">
+			<h3>Source et tags</h3>
+			<p>Exercices seulement.</p>
+			<ul class="plain">
+				<li>
+					<b>Source</b> : texte libre (« BAC Juin 2025 Asie J1 ») + type de source (Bac, Brevet,
+					Concours, Manuel…)
+				</li>
+				<li>
+					<b>Tags</b> : transversal seulement (lecture graphique, algorithme, démonstration,
+					modélisation)
+				</li>
+				<li>Les tags de contenu deviennent des notions ; « bac » et « terminale » sont retirés</li>
+			</ul>
+		</div>
+		<div class="box">
+			<h3>À classer à la main</h3>
+			<p>Premier classement d'après les titres, à valider.</p>
+			<ul class="plain">
+				<li>44 exercices « Calcul » de 1re</li>
+				<li>28 exercices « Géométrie » de 1re</li>
+				<li>25 exercices « Algèbre » de 2de</li>
+				<li>37 exercices « Fonctions » (2de, 1re, Tle)</li>
+				<li>7 exercices « BAC » : une notion à leur donner</li>
+			</ul>
+		</div>
+	</div>
+
+	<section class="box">
+		<h3>Choix faits</h3>
+		<ol class="choices">
+			<li>
+				<b>Suites a sa propre branche</b> au lieu d'être une notion de Fonctions : c'est aujourd'hui
+				un onglet entier d'Automaths, avec 15 domaines.
+			</li>
+			<li>
+				<b>Proportionnalité a sa propre branche</b> au lieu d'être dans Nombres et calculs : grand
+				bloc du collège, mais seulement 2 notions.
+			</li>
+			<li>
+				<b>Nombres et calculs est rangé par type de nombre</b> (Entiers, Décimaux, Fractions…),
+				l'opération venant en sous-notion : décidé le 2026-10-06. Les sous-notions s'écrivent «
+				opération : précision » ; les grosses notions sont découpées par opération (« Entiers :
+				multiplication »), pour garder trois niveaux et des sous-notions courtes.
+			</li>
+		</ol>
+	</section>
+</div>

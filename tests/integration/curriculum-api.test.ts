@@ -570,6 +570,14 @@ describe('DELETE /points/[pointId] — garde de suppression', () => {
 		const locals = buildLocals(await teacherUser());
 		const point = await svcPoint((await svcItem((await svcTheme()).id)).id);
 
+		// Le garde de parcours (schéma cible, 2026-10-07) exige un point AVEC grade ;
+		// l'auto-référence (point de 5e dans la liste de 5e) est permise (C13).
+		const { error: gradeErr } = await service
+			.from('curriculum_points')
+			.update({ grade: TEST_GRADE } as never)
+			.eq('id', point.id);
+		if (gradeErr) throw new Error(`décor : grade du point refusé : ${gradeErr.message}`);
+
 		// La référence la moins coûteuse à fabriquer ; la garde ne distingue pas.
 		const { error: linkErr } = await service
 			.from('curriculum_point_automatismes' as never)
