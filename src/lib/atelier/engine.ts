@@ -386,6 +386,29 @@ export function substitutedAstOf(
 	return { ok: true, ast: substituted };
 }
 
+/**
+ * L'ARBRE qu'affiche la carte `f′` : la dérivée calculée, noms et paramètres
+ * substitués, mise au propre — sans jamais repasser par le texte.
+ *
+ * ⚠️ La carte relisait `expressionOf` (écriture maison) avec `astOf` : chaque
+ * aller-retour texte rouvrait un défaut (`sin` relu `s i n`, `\\pi x` collé,
+ * `x^{-2/3}/3` en barre oblique). Ici, l'arbre va droit à `toLatex`.
+ *
+ * `tidyTerms` APRÈS la substitution : la dérivée est rangée avant, mais les
+ * paramètres (a = 3) et les fonctions citées (`g(2x)`) n'arrivent qu'ensuite —
+ * sans cette passe, `2 × 2 × 2x` restait tel quel. Même mise au propre que
+ * `.dériver` dans Calcul.
+ */
+export function derivativeAstOf(
+	atelier: Atelier,
+	name: string
+):
+	| { readonly ok: true; readonly ast: MathNode }
+	| { readonly ok: false; readonly message: string } {
+	const result = substitutedAstOf(atelier, name);
+	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
+}
+
 export function expressionOf(
 	atelier: Atelier,
 	name: string,

@@ -1813,6 +1813,10 @@ function juxtaposesQuantities(node: MultiplicationNode): boolean {
  * Seul le cas visé change : le facteur de gauche s'écrit en finissant par un
  * nombre, celui de droite en commençant par un nombre (ni l'un ni l'autre
  * parenthésé). `2x × 3` (`2 x 3`) et `3x` restent tels quels.
+ *
+ * Même règle après un APPEL de fonction : `\ln\left( 2 \right) 2^x` (dérivée
+ * de `2^x` sur la carte f′ et le bouton « Dériver ») ne se relit pas — l'oracle
+ * des dérivées l'a relevé. `\ln(2) × 2^x` se lit sans ambiguïté.
  */
 function juxtaposesDigits(node: MultiplicationNode): boolean {
 	if (needsParenthesesUnderSign(node.left) || needsParenthesesAsRightFactor(node.right)) {
@@ -1820,7 +1824,19 @@ function juxtaposesDigits(node: MultiplicationNode): boolean {
 	}
 	// Limite parenthésée devant un nombre : `\left(\lim x\right) 3` ne se relit pas
 	const limitWrapped = binaryOperandWraps(node)?.left ?? false;
-	return (endsWithNumber(node.left) || limitWrapped) && startsWithNumber(node.right);
+	return (
+		(endsWithNumber(node.left) || endsWithFunctionCall(node.left) || limitWrapped) &&
+		startsWithNumber(node.right)
+	);
+}
+
+/** L'écriture de ce nœud finit-elle par un appel de fonction (`\ln\left( 2 \right)`) ? */
+function endsWithFunctionCall(node: MathNode): boolean {
+	if (node.type === 'function') return true;
+	if (isMultiplication(node)) {
+		return !needsParenthesesAsRightFactor(node.right) && endsWithFunctionCall(node.right);
+	}
+	return false;
 }
 
 /** L'écriture de ce nœud finit-elle par un nombre (hors exposant, hors parenthèses) ? */

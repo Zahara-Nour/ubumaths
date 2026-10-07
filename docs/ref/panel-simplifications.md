@@ -41,14 +41,14 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 ## Radicaux
 
-| entrée                   | `simplify`            | `auto`                  | `reduire`               | `developper`            | `factoriser`              |
-| ------------------------ | --------------------- | ----------------------- | ----------------------- | ----------------------- | ------------------------- |
-| `\sqrt{8}`               | `2 \sqrt{2}`          | `2 \sqrt{2}`            | `2 \sqrt{2}`            | `2 \sqrt{2}`            | `2 \sqrt{2}`              |
-| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{\sqrt{2}}{2}`     |
-| `\sqrt{x}\sqrt{x}`       | `x`                   | `x`                     | `x`                     | `x`                     | `\sqrt{x} \sqrt{x}`       |
-| `\sqrt{x^2}`             | `\sqrt{x^2}`          | `\left\| x \right\|`    | `\left\| x \right\|`    | `\left\| x \right\|`    | `\sqrt{x^2}`              |
-| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`       | `\sqrt[3]{x^2}`         | `\sqrt[3]{x^2}`         | `\sqrt[3]{x^2}`         | `\sqrt[3]{x} \sqrt[3]{x}` |
-| `\sqrt{2}\sqrt{8}`       | `4`                   | `4`                     | `4`                     | `4`                     | `\sqrt{2} 2 \sqrt{2}`     |
+| entrée                   | `simplify`            | `auto`                  | `reduire`               | `developper`            | `factoriser`                 |
+| ------------------------ | --------------------- | ----------------------- | ----------------------- | ----------------------- | ---------------------------- |
+| `\sqrt{8}`               | `2 \sqrt{2}`          | `2 \sqrt{2}`            | `2 \sqrt{2}`            | `2 \sqrt{2}`            | `2 \sqrt{2}`                 |
+| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{\sqrt{2}}{2}`        |
+| `\sqrt{x}\sqrt{x}`       | `x`                   | `x`                     | `x`                     | `x`                     | `\sqrt{x} \sqrt{x}`          |
+| `\sqrt{x^2}`             | `\sqrt{x^2}`          | `\left\| x \right\|`    | `\left\| x \right\|`    | `\left\| x \right\|`    | `\sqrt{x^2}`                 |
+| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`       | `\sqrt[3]{x^2}`         | `\sqrt[3]{x^2}`         | `\sqrt[3]{x^2}`         | `\sqrt[3]{x} \sqrt[3]{x}`    |
+| `\sqrt{2}\sqrt{8}`       | `4`                   | `4`                     | `4`                     | `4`                     | `\sqrt{2} \times 2 \sqrt{2}` |
 
 ## Termes semblables
 
