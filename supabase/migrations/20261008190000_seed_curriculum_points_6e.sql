@@ -19,7 +19,9 @@
 -- points : des tables de suivi élève référencent curriculum_points en ON
 -- DELETE CASCADE. Dès qu'un élève ou un modèle y est rattaché, ce delete
 -- devient DESTRUCTIF (données d'élèves mineurs) : arrêt obligatoire et accord
--- explicite de David (règle CLAUDE.md).
+-- explicite de David (règle CLAUDE.md). Il emporterait AUSSI, en cascade et
+-- sans message, les références d'automatismes d'AUTRES grades (5e…) qui
+-- viseraient ces points 6-1xx.
 -- ============================================================================
 
 -- ---- 1. Les 97 points -------------------------------------------------------
