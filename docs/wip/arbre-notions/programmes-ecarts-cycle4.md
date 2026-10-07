@@ -229,6 +229,12 @@ programmes n'a d'inéquations avant la 3e → **« 3e à 2de »**.
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout sauf S6 : on fait le même traitement
+> hors programme ». S1-S5 et S7 validées telles quelles (S2 = option A, S5 = option A) ;
+> **S6 inversée par David** : Triangles semblables (avec « cas d'égalité des triangles » en
+> sous-notion), et Repérage dans l'espace entrent aussi en hors programme, comme Rotations et
+> Homothéties. Appliqué à l'arbre : version 2026-10-07.4 — 135 notions, 483 sous-notions.
+
 1. **S1 — Les 5 notions de géométrie** (c'est la question D2 qui se referme) : **Symétrie
    centrale** (5e, 4e) · **Translations** (4e, 3e) · **Théorème de Pythagore** (4e, 3e ;
    sous-notions « calculer une longueur », « réciproque ») · **Théorème de Thalès** (3e ;

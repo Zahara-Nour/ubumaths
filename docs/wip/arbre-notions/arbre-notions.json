@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.3",
-	"statut": "validé par David (lycée + cycle 2 + cycle 3, 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; rien en base",
+	"version": "2026-10-07.4",
+	"statut": "validé par David (lycée + cycles 2, 3 et 4, 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -95,7 +95,7 @@
 				},
 				{
 					"nom": "Fractions : sens et écritures",
-					"niveaux": "CE1 à 4e",
+					"niveaux": "CE1 à 3e",
 					"sous_notions": [
 						"définition",
 						"comparer",
@@ -109,7 +109,7 @@
 				},
 				{
 					"nom": "Fractions : calculs",
-					"niveaux": "CE1 à 4e",
+					"niveaux": "CE1 à 3e",
 					"sous_notions": [
 						"additionner et soustraire",
 						"multiplier",
@@ -140,13 +140,13 @@
 				},
 				{
 					"nom": "Puissances : sens et écritures",
-					"niveaux": "4e, 3e",
+					"niveaux": "5e à 3e",
 					"sous_notions": ["définition", "puissances de 10", "notation scientifique"],
 					"note": null
 				},
 				{
 					"nom": "Puissances : calculs",
-					"niveaux": "4e, 3e",
+					"niveaux": "5e à 3e",
 					"sous_notions": ["multiplier", "diviser", "puissance de puissance", "mélange"],
 					"note": null
 				},
@@ -274,13 +274,13 @@
 				},
 				{
 					"nom": "Évolutions",
-					"niveaux": "2de, 1re",
+					"niveaux": "4e à 1re",
 					"sous_notions": ["variations en pourcentage"],
-					"note": "à étoffer : coefficient multiplicateur, évolutions successives…"
+					"note": "coefficient multiplicateur dès la 4e ; sous-notions lycée à venir avec le lot lycée"
 				},
 				{
 					"nom": "Échelle d'une carte",
-					"niveaux": "6e",
+					"niveaux": "6e, 3e",
 					"sous_notions": ["trouver l'échelle", "utiliser l'échelle"],
 					"note": null
 				},
@@ -334,7 +334,7 @@
 				},
 				{
 					"nom": "Inéquations : premier degré",
-					"niveaux": "4e à 2de",
+					"niveaux": "3e à 2de",
 					"sous_notions": ["ax + b < c", "ax + b < cx + d", "mettre en inéquation"],
 					"note": "aucun modèle aujourd'hui"
 				},
@@ -374,7 +374,7 @@
 			"notions": [
 				{
 					"nom": "Généralités sur les fonctions",
-					"niveaux": "3e, 2de",
+					"niveaux": "5e à 2de",
 					"sous_notions": [
 						"images et antécédents",
 						"ensemble de définition",
@@ -390,6 +390,7 @@
 					"nom": "Fonctions affines",
 					"niveaux": "3e, 2de",
 					"sous_notions": [
+						"fonction linéaire",
 						"expression et droite",
 						"coefficient directeur et ordonnée à l'origine",
 						"variations et signe",
@@ -399,7 +400,7 @@
 				},
 				{
 					"nom": "Fonction carré",
-					"niveaux": "2de",
+					"niveaux": "3e, 2de",
 					"sous_notions": [
 						"définition et courbe",
 						"variations",
@@ -756,13 +757,13 @@
 			"notions": [
 				{
 					"nom": "Solides",
-					"niveaux": "CP à 6e",
+					"niveaux": "CP à 3e",
 					"sous_notions": ["reconnaître et décrire", "construire", "patrons"],
 					"note": "le collège (D2) viendra avec le cycle 4"
 				},
 				{
 					"nom": "Figures planes",
-					"niveaux": "CP à 6e",
+					"niveaux": "CP à 4e",
 					"sous_notions": [
 						"reconnaître et décrire",
 						"angles droits",
@@ -770,25 +771,84 @@
 						"reproduire et construire",
 						"cercle",
 						"triangles",
+						"parallélogrammes",
 						"médiatrice et bissectrice"
 					],
-					"note": "le collège (D2) viendra avec le cycle 4"
-				},
-				{
-					"nom": "Symétrie axiale",
-					"niveaux": "CE2 à 6e",
-					"sous_notions": [],
-					"note": "la symétrie centrale (5e) sera une autre notion"
-				},
-				{
-					"nom": "Repérage et déplacements",
-					"niveaux": "CP à 6e",
-					"sous_notions": ["positions et plans", "coder un déplacement"],
 					"note": null
 				},
 				{
+					"nom": "Symétrie axiale",
+					"niveaux": "CE2 à 3e",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Repérage et déplacements",
+					"niveaux": "CP à 3e",
+					"sous_notions": [
+						"positions et plans",
+						"coder un déplacement",
+						"coordonnées dans le plan"
+					],
+					"note": null
+				},
+				{
+					"nom": "Symétrie centrale",
+					"niveaux": "5e, 4e",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Translations",
+					"niveaux": "4e, 3e",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Théorème de Pythagore",
+					"niveaux": "4e, 3e",
+					"sous_notions": ["calculer une longueur", "réciproque"],
+					"note": null
+				},
+				{
+					"nom": "Théorème de Thalès",
+					"niveaux": "4e, 3e",
+					"sous_notions": ["droite des milieux", "calculer une longueur", "réciproque"],
+					"note": "droite des milieux en 4e (décision S2)"
+				},
+				{
+					"nom": "Trigonométrie du triangle rectangle",
+					"niveaux": "3e",
+					"sous_notions": ["calculer une longueur", "calculer un angle"],
+					"note": null
+				},
+				{
+					"nom": "Rotations",
+					"niveaux": "hors programme",
+					"sous_notions": [],
+					"note": "ancienne 3e — demandé par David : enrichissement, évolutions futures"
+				},
+				{
+					"nom": "Homothéties",
+					"niveaux": "hors programme",
+					"sous_notions": [],
+					"note": "ancienne 3e — demandé par David"
+				},
+				{
+					"nom": "Triangles semblables",
+					"niveaux": "hors programme",
+					"sous_notions": ["cas d'égalité des triangles"],
+					"note": "ancienne 3e (cas d'égalité : ancienne 4e)"
+				},
+				{
+					"nom": "Repérage dans l'espace",
+					"niveaux": "hors programme",
+					"sous_notions": [],
+					"note": "ancien programme : pavé (4e), sphère latitude-longitude (3e)"
+				},
+				{
 					"nom": "Vecteurs : sans coordonnées",
-					"niveaux": "2de",
+					"niveaux": "3e, 2de",
 					"sous_notions": [
 						"translation et vecteur",
 						"égalité de vecteurs",
@@ -926,14 +986,21 @@
 						"triangle rectangle",
 						"triangle quelconque",
 						"parallélogramme",
+						"disque",
 						"unités et conversions"
 					],
 					"note": "au CM : comparer et mesurer, formules carré/rectangle au CM2"
 				},
 				{
 					"nom": "Volumes",
-					"niveaux": "6e",
-					"sous_notions": ["conversions"],
+					"niveaux": "6e à 3e",
+					"sous_notions": [
+						"cube et pavé",
+						"prisme et cylindre",
+						"pyramide et cône",
+						"boule",
+						"conversions"
+					],
 					"note": null
 				},
 				{
@@ -1074,7 +1141,14 @@
 				{
 					"nom": "Indicateurs",
 					"niveaux": "5e à 2de",
-					"sous_notions": ["moyenne", "médiane", "quartiles", "étendue", "écart-type"],
+					"sous_notions": [
+						"moyenne",
+						"médiane",
+						"quartiles",
+						"étendue",
+						"écart-type",
+						"boîte à moustaches"
+					],
 					"note": "aucun modèle aujourd'hui"
 				},
 				{
@@ -1153,13 +1227,13 @@
 			"notions": [
 				{
 					"nom": "Variables et instructions",
-					"niveaux": "2de",
+					"niveaux": "5e à 2de",
 					"sous_notions": ["variables et affectation", "types", "instructions conditionnelles"],
 					"note": null
 				},
 				{
 					"nom": "Boucles",
-					"niveaux": "2de",
+					"niveaux": "5e à 2de",
 					"sous_notions": ["boucle bornée", "boucle non bornée"],
 					"note": null
 				},

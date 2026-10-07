@@ -143,3 +143,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   `programmes-ecarts-cycle4.md`. D2 se referme : 7 notions de géométrie proposées (dont
   Rotations et Homothéties HORS PROGRAMME, demandées par David), ~10 sous-notions, niveaux
   rafraîchis. Questions S1-S7 en attente.
+
+- **Cycle 4 appliqué (2026-10-07, « je valide tout sauf S6 : même traitement hors
+  programme »)** : 9 notions de géométrie (Symétrie centrale, Translations, Pythagore, Thalès
+  avec droite des milieux, Trigonométrie du triangle rectangle + HORS PROGRAMME Rotations,
+  Homothéties, Triangles semblables, Repérage dans l'espace), 17 sous-notions, Algorithmique
+  étendue 5e à 2de, niveaux rafraîchis → 19 branches, 135 notions, 483 sous-notions
+  (JSON 2026-10-07.4), diagramme republié. D2 CLOSE.
