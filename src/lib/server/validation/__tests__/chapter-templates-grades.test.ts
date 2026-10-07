@@ -27,7 +27,7 @@ describe('createChapterTemplateSchema — niveaux', () => {
 
 	it('accepte plusieurs niveaux, filières comprises', () => {
 		const result = createChapterTemplateSchema.safeParse(
-			template(['CM2', '6', '2', '1_SPE', 'T_STMG'])
+			template(['CM2', '6', '2', '1_SPE', 'T_TECHNO'])
 		);
 
 		expect(result.success).toBe(true);
