@@ -1,7 +1,7 @@
 # Seed cycle 2 (CP, CE1, CE2) — points du programme (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION (une seule question : V1, validation d'ensemble).
-> Aucune migration avant.**
+> **Statut : VALIDÉ le 2026-10-08 (« ok » de David, V1 = ensemble du document).**
+> Livraison en cours : migration + tests (branche `feat/seed-points-cycle2`).
 > Source : « Annexe 4 — Programme de mathématiques du cycle 2 » (arrêté du 22-10-2024,
 > BOENJS n° 41 du 31 octobre 2024), colonne « Objectifs d'apprentissage », extraite
 > **ligne à ligne** (38 p. lues ; la colonne « Exemples de réussite » n'est pas exigible
