@@ -534,3 +534,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   Vérifié prod : 97 points / 0 sans nœud / 28 références (4 grades cibles) / 4 algorithme
   / 2 fluence / 95 anciens 6-0xx intacts. Suivent : remplissage des rangements
   (correspondance validée) puis séquence C5 (transfert des tags → bascule → suppression).
+
+- **Document de seed cycle 4 rédigé (2026-10-08, redirection David : « dans l'ordre des
+  années à cause des références »)** : `docs/wip/arbre-notions/seed-cycle4.md` — 226
+  points (106 en 5e, 69 en 4e, 51 en 3e), Annexe 2 du BO n° 10 du 05-03-2026 ligne à
+  ligne (20 p.), dont 3 lignes d'Automatismes au contenu neuf (angles de l'équerre 5e ;
+  décomposition en facteurs premiers et opposé d'une expression 3e), 17 points kind
+  algorithme (pensée informatique → Variables et instructions/Boucles, S5), 4 points
+  demonstration, 1 seule scission (aire du disque / volume du cylindre), et ~100 lignes
+  d'Automatismes dispatchées en références (cibles cycle 2/CM/6e ET intra-cycle 4 par
+  codes prévisionnels 5-xxx/4-xxx). La 2de déjà extraite (13 p.) attend son tour.
+  EN ATTENTE DE VALIDATION (C1-C3) — aucune migration avant.
