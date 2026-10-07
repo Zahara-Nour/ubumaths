@@ -92,6 +92,7 @@ import {
 	zero
 } from '../differentiation/rules';
 import { number, power } from '../factory';
+import { inverseNotationAsFunction } from '../common/function-power';
 import { getDefaultDescription } from './descriptions-fr';
 import type {
 	DifferentiationBindings,
@@ -819,9 +820,17 @@ function dispatchSuperscript(node: SuperscriptNode, ctx: DispatchContext): Dispa
  * `PedagogicalDifferentiationNotImplemented`.
  */
 function dispatchFunction(node: FunctionNode, ctx: DispatchContext): DispatchResult {
+	// `\cos^{-1}(x)` (exposant −1 ou drapeau `isInverse`) est la RÉCIPROQUE,
+	// pas `1/cos x` : on dérive `arccos(x)`, comme le moteur (#884). Une
+	// réciproque sans définition connue (`\ln^{-1}`) garde `isInverse` et est
+	// refusée juste en dessous.
+	const reciprocal = inverseNotationAsFunction(node);
+	if (reciprocal !== null && reciprocal.isInverse !== true) {
+		return dispatchFunction(reciprocal, ctx);
+	}
 	// `f^{-1}(x)` (functional inverse) is out of V1 scope — refuse explicitly so
 	// the caller can fall back to Mode A rather than receive a wrong derivative.
-	if (node.isInverse) {
+	if (node.isInverse || reciprocal !== null) {
 		throw new PedagogicalDifferentiationNotImplemented(`inverse function "${node.name}^{-1}"`);
 	}
 	// `\sin^2(x)`, `\cos^3(x)`, … parse as a function with `power` set, NOT as

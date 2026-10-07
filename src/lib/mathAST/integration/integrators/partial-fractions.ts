@@ -34,6 +34,12 @@ import {
 // This circular dependency is resolved at runtime since both modules are fully loaded
 // before any actual integration occurs
 import { integrate } from '../integrate';
+import { hashMathNode } from '../../normal/hash';
+import {
+	factorQuadratic,
+	factoredDenominator,
+	residueAntiderivative
+} from './quadratic-denominator';
 
 // =============================================================================
 // Type Definitions
@@ -1166,6 +1172,76 @@ function integratePartialFraction(
  *
  * Priority: 30 (after parts, before trig substitution)
  */
+/**
+ * Dénominateur trinôme non factorisé : racines rationnelles → réécrit
+ * a(x − r₁)(x − r₂) et ré-intégré ; racines ±t littérales → résidus ;
+ * Δ < 0 → refus explicite (arctan, hors programme du lycée). null : autre cas.
+ */
+function integrateQuadraticDenominator(
+	expr: MathNode & { type: 'division' },
+	remainder: MathNode,
+	quotient: MathNode | null,
+	variable: string,
+	options: ResolvedIntegrateOptions,
+	recorder: IntegrateStepRecorder,
+	depth: number
+): IntegrateResult | null {
+	const denominator = expr.denominator;
+	const factorization = factorQuadratic(denominator, variable);
+	if (factorization === null) return null;
+	if (factorization.kind === 'negative-discriminant') {
+		return {
+			variable,
+			status: 'unsupported',
+			antiderivative: null,
+			integrandType: 'rational',
+			technique: 'partial-fractions',
+			steps: recorder.getSteps(),
+			error:
+				'Dénominateur de discriminant négatif : la primitive fait intervenir arctan, hors programme du lycée'
+		};
+	}
+
+	let fractionPart: MathNode | null;
+	if (factorization.kind === 'rational-roots') {
+		const factored = factoredDenominator(variable, factorization.leading, factorization.roots);
+		recorder.recordCustomStep(
+			'factor-denominator',
+			expr,
+			divide(remainder, factored, 'fraction'),
+			'detailed',
+			undefined,
+			'Factorisation du dénominateur par ses racines'
+		);
+		const inner = integrate(divide(remainder, factored, 'fraction'), {
+			...options,
+			variable,
+			_depth: depth + 1
+		});
+		if (inner.status !== 'exact' || inner.antiderivative === null) return null;
+		fractionPart = inner.antiderivative;
+	} else {
+		fractionPart = residueAntiderivative(remainder, denominator, factorization.roots, variable);
+		if (fractionPart === null) return null;
+	}
+
+	let antiderivative = fractionPart;
+	if (quotient && !isZero(quotient)) {
+		const quotientResult = integrate(quotient, { ...options, variable, _depth: depth + 1 });
+		if (quotientResult.status !== 'exact' || quotientResult.antiderivative === null) return null;
+		antiderivative = add(antiderivative, quotientResult.antiderivative);
+	}
+	return {
+		variable,
+		status: 'exact',
+		antiderivative,
+		integrandType: 'rational',
+		technique: 'partial-fractions',
+		steps: recorder.getSteps(),
+		constantNote: CONSTANT_OF_INTEGRATION_NOTE
+	};
+}
+
 export const partialFractionsIntegrator: Integrator = {
 	name: 'partial-fractions',
 	priority: 30,
@@ -1371,6 +1447,16 @@ export const partialFractionsIntegrator: Integrator = {
 
 		const factors = factorDenominator(denominator, variable);
 		if (!factors) {
+			const trinomial = integrateQuadraticDenominator(
+				expr,
+				remainder,
+				quotient,
+				variable,
+				options,
+				recorder,
+				depth
+			);
+			if (trinomial !== null) return trinomial;
 			return {
 				variable,
 				status: 'unsupported',
@@ -1422,6 +1508,30 @@ export const partialFractionsIntegrator: Integrator = {
 			solvedTerms === null ||
 			!decompositionMatches(remainder, denominator, solvedTerms, variable)
 		) {
+			// Racines simples littérales (1/((x − a)(x − b))) : formule des résidus
+			const roots = factors.flatMap((f) =>
+				f.type === 'linear' && f.multiplicity === 1 && f.root ? [f.root] : []
+			);
+			const simpleRoots =
+				roots.length >= 2 &&
+				roots.length === factors.length &&
+				new Set(roots.map(hashMathNode)).size === roots.length &&
+				getPolynomialDegree(denominator, variable) === roots.length &&
+				getPolynomialDegree(remainder, variable) < roots.length;
+			const residues = simpleRoots
+				? residueAntiderivative(remainder, denominator, roots, variable)
+				: null;
+			if (residues !== null && (quotient === null || isZero(quotient))) {
+				return {
+					variable,
+					status: 'exact',
+					antiderivative: residues,
+					integrandType: 'rational',
+					technique: 'partial-fractions',
+					steps: recorder.getSteps(),
+					constantNote: CONSTANT_OF_INTEGRATION_NOTE
+				};
+			}
 			return {
 				variable,
 				status: 'unsupported',

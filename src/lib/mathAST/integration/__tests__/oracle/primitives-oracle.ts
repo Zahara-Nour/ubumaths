@@ -200,8 +200,12 @@ function round(value: number): string {
 }
 
 /** Les jeux de paramètres ; x vaut 1.3 quand il est un paramètre (`x t^2 ; t`) */
-function parameterSets(literal: boolean): readonly Vars[] {
-	return (literal ? PARAMETER_SETS : [PARAMETER_SETS[0]]).map((set) => ({ x: 1.3, ...set }));
+function parameterSets(literal: boolean, positive: readonly string[] = []): readonly Vars[] {
+	return (literal ? PARAMETER_SETS : [PARAMETER_SETS[0]]).map((set) => {
+		const vars: Record<string, number> = { x: 1.3, ...set };
+		for (const name of positive) vars[name] = Math.abs(vars[name]);
+		return vars;
+	});
 }
 
 /**
@@ -238,7 +242,7 @@ function wrongExpectedForm(c: PrimitiveCase, f: CompiledFn): string | null {
 	for (const form of c.expected) {
 		const G = compileLatex(form);
 		if (G === null) return `forme attendue non compilable : ${form}`;
-		for (const vars of parameterSets(c.literal)) {
+		for (const vars of parameterSets(c.literal, c.positiveParameters)) {
 			const points = usablePoints(f, vars, c.variable, c.points);
 			const mismatch = derivativeMismatch(G, f, vars, c.variable, points);
 			if (mismatch !== null) return `forme attendue fausse « ${form} » : ${mismatch}`;
@@ -364,7 +368,7 @@ export function judgePrimitive(c: PrimitiveCase, session: CalcSession): Verdict 
 	const G = displayCheck === null ? null : compileSafe(displayCheck);
 	if (c.path === 'latex' && G === null) return fail('LaTeX rendu illisible par parseLatex');
 
-	for (const [index, vars] of parameterSets(c.literal).entries()) {
+	for (const [index, vars] of parameterSets(c.literal, c.positiveParameters).entries()) {
 		const points = usablePoints(f, vars, c.variable, c.points);
 		if (points.length < 3) return { status: 'corpus', reason: `moins de 3 points (jeu ${index})` };
 		const label = c.literal ? ` (jeu ${index + 1})` : '';
