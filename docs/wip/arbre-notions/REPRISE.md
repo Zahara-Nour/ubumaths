@@ -199,6 +199,15 @@ notion marquée 1re (à régler par les niveaux des sous-notions).
 
 ## 8. Questions ouvertes (à poser à David, dans cet ordre)
 
+> **État au 2026-10-07 (tour des programmes complet)** : 1-4 et 7 **réglées ou dissoutes**
+> (D1/D3 dissoutes par l'ADR 0020 et la règle des références d'automatismes ; D2 réglée au
+> cycle 4 ; application faite lot par lot via les 11 docs v2 ; tous les programmes fournis).
+> **5 (Q3) et 6 : périmées telles quelles** — la correspondance a été calculée sur l'arbre
+> d'avant (115 notions / 418 sous-notions) ; survivent, fusionnés dans l'étape « relance de
+> la correspondance sur l'arbre élargi » (537 sous-notions) : l'exclusion de l'exercice
+> « debug » (sa suppression en prod = décision destructive à part), les deux exercices à
+> titrer, et la modalité de validation (en bloc ou échantillon par branche).
+
 1. **D1 — Automatismes** de 2de / 1re : ajouter ces niveaux aux notions du collège concernées ?
    (reco : oui, sinon une fiche d'automatismes de 2de ne trouve pas ses notions)
 2. **D2 — Géométrie du collège** absente (Pythagore, Thalès, trigonométrie du triangle rectangle,
