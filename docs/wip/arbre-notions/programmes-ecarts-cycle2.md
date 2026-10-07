@@ -287,12 +287,34 @@ tout à fait matérialisable. Ce qu'un lien apporterait :
 Options (David tranche) :
 
 - **Option 1 — table de correspondance** `nœud ↔ point` (N-N, additive, réversible) ; les deux
-  taxonomies gardent leur vie propre, le lien est une donnée. **Reco.**
+  taxonomies gardent leur vie propre, le lien est une donnée.
 - **Option 2 — option 1 + dérivation** : le rangement dans l'arbre devient la saisie de référence,
   les points de programme d'un contenu sont dérivés via la correspondance (ajustables à la main) ;
   `question_template_points` devient une vue/suggestion.
 - **Option 3 — statu quo** : deux taggings indépendants (c'est ce que « A7 retiré » impliquait) ;
   coût : double saisie et divergence.
+- **Option 4 — fusion des étages dupliqués** (position exprimée par David le 2026-10-07 : « il y a
+  vraiment doublon ») : le doublon est précisément aux **deux étages supérieurs** du référentiel —
+  thème (par année) ≈ branche, objectif ≈ notion — pas au niveau des **points** (grain BO par
+  année : 1 007 points en prod, qu'aucune sous-notion ne veut absorber) ni des usages (couverture
+  par classe, acquisition élève). Fusionner = supprimer à terme `curriculum_themes` et
+  `curriculum_objectives`, et rattacher chaque point à un **nœud de l'arbre + un grade**
+  (`curriculum_points.node_id`, `grade`) ; les pages programme/avancement s'affichent alors par
+  branche > notion filtrées par niveau. Bénéfice : une seule hiérarchie, un seul vocabulaire, plus
+  de double tagging. Coût : migration du suivi du programme (UI programme + avancement, cahier de
+  texte, seeds, RLS) — sans perte de données d'usage, la couverture pointant les points, qui
+  survivent. Chemin possible : option 1 d'abord (la correspondance nœud ↔ point est exactement la
+  donnée qu'il faut pour migrer vers l'option 4 ensuite).
+
+Précisions mesurées (prod, 2026-10-07) utiles à ce choix : `curriculum_points.kind` distingue déjà
+**554 savoir-faire, 382 connaissances, 71 démonstrations** ; `exigence` : 844 attendus /
+163 approfondissements ; le régime d'acquisition « automatisme » et la table
+`curriculum_point_automatismes` existent mais sont **inutilisés** (tout est en « diversite »).
+Par ailleurs, remarque de David (2026-10-07) : **les questions ne peuvent pas couvrir tout le
+programme** (constructions, manipulations, raisonnements longs…) — la couverture du programme doit
+donc continuer de s'alimenter par le cahier de texte (coche manuelle + activités) et l'acquisition
+automatique ne vaudra que pour le sous-ensemble « questionnable » ; l'arbre, lui, classe tous les
+contenus (questions, exercices, fiches, cours), pas seulement l'évaluable.
 
 ---
 
