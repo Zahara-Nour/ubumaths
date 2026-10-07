@@ -26,6 +26,8 @@
 -- Rollback :
 --   drop trigger if exists curriculum_point_automatismes_parcours on public.curriculum_point_automatismes;
 --   drop function if exists public.curriculum_point_automatismes_check_parcours();
+--   drop trigger if exists curriculum_points_references_parcours on public.curriculum_points;
+--   drop function if exists public.curriculum_points_check_references_parcours();
 --   drop trigger if exists curriculum_points_node_kind on public.curriculum_points;
 --   drop trigger if exists grade_predecessors_no_cycle on public.grade_predecessors;
 --   drop function if exists public.grade_predecessors_check_no_cycle();
@@ -141,9 +143,10 @@ as $$
 $$;
 
 comment on function public.grade_ancestors(text) is
-	'Tous les grades du parcours ANTÉRIEUR de p_grade (clôture transitive de grade_predecessors). Lecture publique : les parcours sont des données de structure.';
+	'Tous les grades du parcours ANTÉRIEUR de p_grade (clôture transitive de grade_predecessors). Exécutable par authenticated (privilèges par défaut) ; anon lit grade_predecessors directement.';
 
--- C19 : un cycle rendrait la clôture transitive infinie.
+-- C19 : un cycle fausserait la cohérence métier des parcours. (La récursion,
+-- elle, terminerait quand même : le CTE utilise UNION, qui dédoublonne.)
 create or replace function public.grade_predecessors_check_no_cycle()
 returns trigger
 language plpgsql
@@ -235,16 +238,59 @@ create trigger curriculum_point_automatismes_parcours
 	before insert or update on public.curriculum_point_automatismes
 	for each row execute function public.curriculum_point_automatismes_check_parcours();
 
+-- Le versant symétrique (audit 2026-10-07, remarque 3) : C14 vaut pour l'ÉTAT,
+-- pas seulement pour l'écriture de la référence — changer le grade d'un point
+-- déjà référencé ne doit pas rendre ses références invalides en silence.
+create or replace function public.curriculum_points_check_references_parcours()
+returns trigger
+language plpgsql
+set search_path = public, pg_temp
+as $$
+declare
+	v_bad text;
+begin
+	if new.grade is distinct from old.grade then
+		if new.grade is null then
+			if exists (
+				select 1 from public.curriculum_point_automatismes r where r.point_id = new.id
+			) then
+				raise exception 'Impossible de retirer le grade d''un point référencé par une liste d''automatismes.'
+					using errcode = 'check_violation';
+			end if;
+		else
+			select r.grade into v_bad
+			from public.curriculum_point_automatismes r
+			where r.point_id = new.id
+				and r.grade <> new.grade
+				and not exists (
+					select 1 from public.grade_ancestors(r.grade) as t(g) where t.g = new.grade
+				)
+			limit 1;
+			if v_bad is not null then
+				raise exception 'Changement de grade refusé : la liste d''automatismes de « % » référencerait un point hors parcours.', v_bad
+					using errcode = 'check_violation';
+			end if;
+		end if;
+	end if;
+	return new;
+end;
+$$;
+
+create trigger curriculum_points_references_parcours
+	before update of grade on public.curriculum_points
+	for each row execute function public.curriculum_points_check_references_parcours();
+
 -- ----------------------------------------------------------------------------
 -- 4. Droits et RLS
 -- ----------------------------------------------------------------------------
 
 -- Fonctions de trigger : EXECUTE fermé (audit sécurité 2026-08 ; un trigger ne
 -- vérifie pas EXECUTE chez celui qui déclenche l'écriture). `grade_ancestors`
--- reste exécutable : lecture de données publiques, utilisée par le code et les
--- tests.
+-- reste exécutable par authenticated (privilèges par défaut — PUBLIC et anon
+-- n'ont déjà PAS EXECUTE) ; un anonyme lit `grade_predecessors` directement.
 revoke execute on function public.grade_predecessors_check_no_cycle() from public, anon, authenticated;
 revoke execute on function public.curriculum_point_automatismes_check_parcours() from public, anon, authenticated;
+revoke execute on function public.curriculum_points_check_references_parcours() from public, anon, authenticated;
 
 -- grade_predecessors : on repart de zéro (pattern PR 1) — anon lit seulement
 -- (une écriture rend 42501 avant même la RLS), authenticated écrit sous RLS.

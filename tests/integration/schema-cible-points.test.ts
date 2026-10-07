@@ -443,6 +443,32 @@ describe('Schéma cible (points → nœuds, références, parcours)', () => {
 			expect(error?.code).toBe('23514');
 		});
 
+		it("C14 (symétrie) — changer le grade d'un point référencé ne peut pas invalider ses références (23514)", async () => {
+			// p2 (grade « 2 ») est référencé par 1_SPE, 1_GEN et 1_TECHNO (C12).
+			const ko = await service
+				.from('curriculum_points')
+				.update({ grade: 'T_SPE' })
+				.eq('id', points.p2.id);
+			expect(ko.error?.code).toBe('23514');
+
+			const koNull = await service
+				.from('curriculum_points')
+				.update({ grade: null })
+				.eq('id', points.p2.id);
+			expect(koNull.error?.code).toBe('23514');
+
+			// « 3 » reste dans le parcours des trois 1res : permis — puis on remet « 2 ».
+			const ok = await service
+				.from('curriculum_points')
+				.update({ grade: '3' })
+				.eq('id', points.p2.id)
+				.select('grade')
+				.single<{ grade: string }>();
+			expect(ok.error).toBeNull();
+			expect(ok.data?.grade).toBe('3');
+			await service.from('curriculum_points').update({ grade: '2' }).eq('id', points.p2.id);
+		});
+
 		it('C4/C5 — un point sans grade (ancienne génération) ne peut pas être référencé (23514)', async () => {
 			const { error } = await insertReference(points.ancien.id, '1_SPE');
 			expect(error?.code).toBe('23514');

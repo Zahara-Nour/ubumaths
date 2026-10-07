@@ -395,3 +395,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   renommage). ⚠️ `main` MERGÉ dans la branche (le renommage #922 n'y était pas — contrainte
   locale refusait 1_TECHNO). check:incremental 0 erreur, lint:fast OK. Reste :
   security-auditor (condition 3) ; db:migrate prod attendra la décision de pousser.
+
+- **Audit sécurité passé et corrections appliquées (2026-10-07, soir)** : AUCUN finding
+  bloquant. Corrigé sur ses findings : (1) le garde-fou `anon-option-b.test.ts` (inventaire
+  de l'audit d'octobre, 141→139 relations fermées, curriculum_points/automatismes +
+  grade_predecessors ajoutés aux tables LUES par anon — l'ouverture B6 est enregistrée) ;
+  (2) commentaires inexacts de la migration (grade_ancestors N'est PAS exécutable par anon
+  — privilèges par défaut ; UNION borne la récursion même en cas de cycle) ; (3) remarque 3
+  transformée en verrou : trigger symétrique `curriculum_points_references_parcours`
+  (changer le grade d'un point référencé ne peut pas invalider ses références — C14 vaut
+  pour l'ÉTAT) + test. Résultat : **683/683 verts** (schéma cible 26, arbre 52, renommage
+  11, anon-option-b 594), check:incremental 0 erreur. Les 4 conditions db:migrate seront
+  réunies au moment du passage en prod (décision de pousser = David).
