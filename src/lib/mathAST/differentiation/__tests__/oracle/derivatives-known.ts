@@ -14,14 +14,7 @@
  * VALEUR fausse — règles (a) calculé, (c) affiché relu, (d) étapes.
  * Détail : point, attendu numérique (différence finie de la référence), obtenu.
  */
-export const KNOWN_WRONG: Readonly<Record<string, string>> = {
-	'trig-26 @ latex-péda':
-		'« \\dfrac{\\sin\\left( x \\right)}{\\cos\\left( x \\right)^2} » — x=-0.85 : attendu -1.898316, obtenu -1.7247906',
-	'trig-27 @ latex-péda':
-		'« -\\dfrac{\\cos\\left( x \\right)}{\\sin\\left( x \\right)^2} » — x=-0.85 : attendu 1.898316, obtenu -1.1693075',
-	'trig-28 @ latex-péda':
-		'« -\\dfrac{1}{\\cos\\left( x \\right)^2 \\tan\\left( x \\right)^2} » — x=-2.3 : attendu 0.15898251, obtenu -1.7983145'
-};
+export const KNOWN_WRONG: Readonly<Record<string, string>> = {};
 
 /**
  * RÉSIDUS interdits dans le LaTeX rendu — règle (b). Valeur juste.

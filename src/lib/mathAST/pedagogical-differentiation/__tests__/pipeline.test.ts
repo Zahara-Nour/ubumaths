@@ -158,9 +158,14 @@ describe('Regression — FunctionNode.power must not be silently dropped', () =>
 		expect(result.steps[0].subSteps?.[0].rule).toBe('cos');
 	});
 
-	it("(\\sin^{-1}(x))' refuses (inverse function out of V1 scope)", () => {
-		// Constructed manually to avoid parser ambiguity around `^{-1}`.
+	it("(\\sin^{-1}(x))' (drapeau isInverse) est la réciproque : règle arcsin (#884)", () => {
 		const node = func('sin', [variable('x')], { isInverse: true });
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+		expect(result.steps[0].rule).toBe('arcsin');
+	});
+
+	it("(\\ln^{-1}(x))' refuses (réciproque sans définition, out of V1 scope)", () => {
+		const node = func('ln', [variable('x')], { isInverse: true });
 		expect(() => generatePedagogicalDifferentiationSteps(node, lyceeOpts)).toThrow(
 			PedagogicalDifferentiationNotImplemented
 		);
