@@ -41,7 +41,9 @@ export type Family =
 	| 'definie'
 	| 'definie-litterale'
 	/** Intégrandes hors corpus sondées par la revue de #913 (2026-10-06) */
-	| 'revue-913';
+	| 'revue-913'
+	/** Base ET exposant variables (xˣ…) : pas de primitive élémentaire, refus attendu */
+	| 'exposant-variable';
 
 export type Path = 'latex' | 'atelier';
 
@@ -1029,6 +1031,30 @@ const REVIEW_913_CASES: PrimitiveCase[] = [
 	)
 ];
 
+// =============================================================================
+// Base ET exposant variables : aucune primitive élémentaire (refus attendu)
+// =============================================================================
+
+/**
+ * ∫ xˣ dx rendait x^{x+1}/(x+1) (revue du 2026-10-07) : la règle de la
+ * puissance appliquée à un exposant non constant. `expected` vide : un refus
+ * est la seule réponse juste ; une primitive rendue serait jugée FAUSSE.
+ */
+const VARIABLE_EXPONENT_CASES: PrimitiveCase[] = latex(
+	'exposant-variable',
+	[
+		['x^x'],
+		['x^{x^2}'],
+		['(x+1)^x'],
+		['x^{\\sin x}'],
+		['2^{x}x^{x}'],
+		['x^{1/x}'],
+		['(\\ln x)^x'],
+		['3x^{2x}']
+	],
+	{ points: POSITIVE }
+);
+
 /**
  * Intégrandes qui faisaient BOUCLER `integrate` (revue de #914 : 100 % CPU,
  * onglet gelé) : ln(g(ax+b)). Elles doivent être refusées, et VITE.
@@ -1045,7 +1071,8 @@ export const PRIMITIVE_CASES: readonly PrimitiveCase[] = [
 	...LATEX_CASES,
 	...LITERAL_CASES,
 	...ATELIER_CASES,
-	...REVIEW_913_CASES
+	...REVIEW_913_CASES,
+	...VARIABLE_EXPONENT_CASES
 ];
 
 // =============================================================================

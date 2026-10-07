@@ -51,7 +51,13 @@ function isConstant(expr: MathNode, variable: string): boolean {
  */
 function isPowerOfVariable(expr: MathNode, variable: string): { n: MathNode } | null {
 	if (expr.type === 'superscript') {
-		if (isVariable(expr.base) && expr.base.name === variable) {
+		// L'exposant doit être CONSTANT : xˣ, x^{sin x}… n'ont pas de primitive
+		// élémentaire (xⁿ⁺¹/(n+1) y serait faux) → refus
+		if (
+			isVariable(expr.base) &&
+			expr.base.name === variable &&
+			!containsVariable(expr.superscript, variable)
+		) {
 			return { n: expr.superscript };
 		}
 	}
