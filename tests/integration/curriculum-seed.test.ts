@@ -311,8 +311,8 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 		expect(data ?? []).toHaveLength(262);
 	});
 
-	it('un visiteur anonyme ne lit aucun point', async () => {
-		// Les 262 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+	it('un visiteur anonyme lit les points (ouverture B6, 2026-10-07)', async () => {
+		// Les 262 points existent bien (décor vérifié côté service).
 		const { points } = await pointsOfGrade('T_SPE');
 		expect(points).toHaveLength(262);
 
@@ -327,11 +327,11 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 			.from('curriculum_points')
 			.select('code')
 			.like('code', 'TSPE-%');
-		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
-		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
-		// refus d'une autre erreur (table absente, colonne renommée)
-		expect(error?.code).toBe('42501');
-		expect(data ?? []).toHaveLength(0);
+		// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+		// copie des BO, documents publics — l'anonyme LIT les points (GRANT + policy ;
+		// cf. anon-option-b.test.ts, TABLES_LUES_PAR_ANON).
+		expect(error).toBeNull();
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 });
 
@@ -421,8 +421,8 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 		expect(data ?? []).toHaveLength(139);
 	});
 
-	it('un visiteur anonyme ne lit aucun point', async () => {
-		// Les 139 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+	it('un visiteur anonyme lit les points (ouverture B6, 2026-10-07)', async () => {
+		// Les 139 points existent bien (décor vérifié côté service).
 		const { points } = await pointsOfGrade('T_COMP');
 		expect(points).toHaveLength(139);
 
@@ -437,11 +437,11 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 			.from('curriculum_points')
 			.select('code')
 			.like('code', 'TCOMP-%');
-		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
-		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
-		// refus d'une autre erreur (table absente, colonne renommée)
-		expect(error?.code).toBe('42501');
-		expect(data ?? []).toHaveLength(0);
+		// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+		// copie des BO, documents publics — l'anonyme LIT les points (GRANT + policy ;
+		// cf. anon-option-b.test.ts, TABLES_LUES_PAR_ANON).
+		expect(error).toBeNull();
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 });
 
@@ -555,8 +555,8 @@ describe('Seed du programme — terminale maths expertes, accès', () => {
 		expect(data ?? []).toHaveLength(153);
 	});
 
-	it('un visiteur anonyme ne lit aucun point', async () => {
-		// Les 153 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+	it('un visiteur anonyme lit les points (ouverture B6, 2026-10-07)', async () => {
+		// Les 153 points existent bien (décor vérifié côté service).
 		const { points } = await pointsOfGrade('T_EXP');
 		expect(points).toHaveLength(153);
 
@@ -571,11 +571,11 @@ describe('Seed du programme — terminale maths expertes, accès', () => {
 			.from('curriculum_points')
 			.select('code')
 			.like('code', 'TEXP-%');
-		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
-		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
-		// refus d'une autre erreur (table absente, colonne renommée)
-		expect(error?.code).toBe('42501');
-		expect(data ?? []).toHaveLength(0);
+		// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+		// copie des BO, documents publics — l'anonyme LIT les points (GRANT + policy ;
+		// cf. anon-option-b.test.ts, TABLES_LUES_PAR_ANON).
+		expect(error).toBeNull();
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 });
 
