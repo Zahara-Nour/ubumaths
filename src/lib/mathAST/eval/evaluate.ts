@@ -368,28 +368,33 @@ function evaluateFunctionToRational(
 		}
 		case 'sqrt': {
 			if (numArgs.length !== 1) throw new Error('sqrt requires exactly 1 argument');
-			if (numArgs[0] < 0) throw new Error('sqrt argument must be non-negative');
 
 			// Handle nth root: sqrt with base property means n-th root
 			// e.g., \sqrt[3]{8} has base=3, args=[8]
 			const index = base ? evaluateToRational(base, depth + 1) : fromInteger(2);
 			const radicand = rationalArgs[0];
+			// Indice impair (entier) : racine définie sur ℝ, ⁿ√a = −ⁿ√|a| pour a < 0
+			// (décision du 2026-10-07). Indice pair ou non entier : a ≥ 0 exigé.
+			const oddIndex = isIntegerRational(index) && index.n % 2n !== 0n;
+			if (numArgs[0] < 0 && !oddIndex) throw new Error('sqrt argument must be non-negative');
+			const negative = radicand.n < 0n;
 
 			// Only try exact computation for integer radicand and index
-			if (isIntegerRational(index) && isIntegerRational(radicand) && radicand.n >= 0n) {
+			if (isIntegerRational(index) && isIntegerRational(radicand)) {
 				const indexBigInt = index.n;
-				const radicandBigInt = radicand.n;
+				const radicandBigInt = negative ? -radicand.n : radicand.n;
 
 				// Try exact integer nth root
 				const exactRoot = integerNthRoot(radicandBigInt, indexBigInt);
 				if (exactRoot !== null) {
-					return fromInteger(exactRoot);
+					return fromInteger(negative ? -exactRoot : exactRoot);
 				}
 			}
 
 			// Fall back to floating point
 			const indexNum = base ? rationalToNumber(index) : 2;
-			result = Math.pow(numArgs[0], 1 / indexNum);
+			const magnitude = Math.pow(Math.abs(numArgs[0]), 1 / indexNum);
+			result = negative ? -magnitude : magnitude;
 			break;
 		}
 		case 'cbrt':

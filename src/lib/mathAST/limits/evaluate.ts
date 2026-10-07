@@ -286,26 +286,10 @@ function outOfDomainNear(expr: MathNode, varName: string, value: number): boolea
 		evaluateNodeToApproximatedNumber(substituteValue(expr, varName, point));
 		return false;
 	} catch (error) {
-		if (!(error instanceof Error) || !/argument must be/.test(error.message)) return false;
-		// L'évaluateur refuse toute racine d'un négatif, même ∛ : la racine
-		// cubique est définie sur ℝ, ∛x en 0⁻ n'est pas « hors domaine »
-		// (revue de #906). Une racine d'indice autre que 2 ne prouve donc rien.
-		return !(error.message.startsWith('sqrt') && hasRootWithIndex(expr));
+		// L'évaluateur rend ∛ d'un négatif (indice impair, défini sur ℝ) : seule
+		// une racine d'indice pair d'un négatif lève ici.
+		return error instanceof Error && /argument must be/.test(error.message);
 	}
-}
-
-/** Une racine d'indice explicite (`\sqrt[3]{…}`) figure-t-elle dans l'expression ? */
-function hasRootWithIndex(expr: MathNode): boolean {
-	return (
-		findNodes(
-			expr,
-			(node) =>
-				node.type === 'function' &&
-				node.name === 'sqrt' &&
-				node.base !== undefined &&
-				!(node.base.type === 'number' && node.base.value === '2')
-		).length > 0
-	);
 }
 
 // =============================================================================
