@@ -10,14 +10,7 @@
  * intégrale définie).
  */
 
-export const KNOWN_WRONG: Readonly<Record<string, string>> = {
-	// ∛ définie sur ℝ (décision du 2026-10-07) mais primitive rendue en puissance
-	// fractionnaire, non définie (convention inchangée) là où u = ax + b < 0
-	'latex:\\sqrt[3]{2x+1}': 'rendu « (2x+1)^{4/3} » : F non définie pour x < −1/2',
-	'latex:\\sqrt[3]{2x-5}': 'rendu « (2x−5)^{4/3} » : F non définie pour x < 5/2',
-	'latex:\\sqrt[3]{x+1}': 'rendu « (x+1)^{4/3} » : F non définie pour x < −1',
-	'latex:\\frac{1}{\\sqrt[3]{3x+1}}': 'rendu « (3x+1)^{2/3} » : F non définie pour x < −1/3'
-};
+export const KNOWN_WRONG: Readonly<Record<string, string>> = {};
 
 /**
  * Valeur juste, écriture différente de celle de classe (règle (f)).

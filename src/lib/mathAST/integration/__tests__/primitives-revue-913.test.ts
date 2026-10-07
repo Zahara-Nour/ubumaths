@@ -113,10 +113,9 @@ describe('f(ax+b) : coefficient en division, irrationnel ou littéral', () => {
 		expect(derivativeMismatch(latex)).toBeNull();
 	});
 
-	// Écart CONNU (KNOWN_WRONG de l'oracle) : ∛ définie sur ℝ depuis le
-	// 2026-10-07, mais F rendue en (x+1)^{4/3}, non définie pour x < −1.
-	// Ce test passera au rouge quand le moteur écrira une primitive définie sur ℝ.
-	it.fails('\\sqrt[3]{x+1} : F′ = f sur ℝ (F en puissance fractionnaire)', () => {
+	// ∛ définie sur ℝ (2026-10-07) : F = ¾(x+1)∛(x+1), plus (x+1)^{4/3}
+	// (non définie pour x < −1, où POINTS a −2,7 et −1,3)
+	it('\\sqrt[3]{x+1} : F′ = f sur ℝ (F écrite en racine)', () => {
 		expect(derivativeMismatch('\\sqrt[3]{x+1}')).toBeNull();
 	});
 

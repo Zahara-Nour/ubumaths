@@ -254,12 +254,18 @@ const LATEX_CASES: PrimitiveCase[] = [
 			['x^{-\\frac{1}{2}}', '2\\sqrt{x}', '2x^{\\frac{1}{2}}'],
 			['5\\sqrt{x}', '\\frac{10}{3}x^{\\frac{3}{2}}', '\\frac{10}{3}x\\sqrt{x}'],
 			['x\\sqrt{x}', '\\frac{2}{5}x^{\\frac{5}{2}}', '\\frac{2}{5}x^2\\sqrt{x}'],
-			['\\sqrt[3]{x}', '\\frac{3}{4}x^{\\frac{4}{3}}'],
 			['x^{\\frac{2}{3}}', '\\frac{3}{5}x^{\\frac{5}{3}}'],
 			['x^{0.5}', '\\frac{2}{3}x^{1.5}', '\\frac{2}{3}x^{\\frac{3}{2}}']
 		],
 		{ points: POSITIVE }
 	),
+
+	// --- ⁿ√x, n impair : définie sur ℝ (2026-10-07), primitive écrite en racines ---
+	...latex('puissance', [
+		['\\sqrt[3]{x}', '\\frac{3}{4}x\\sqrt[3]{x}'],
+		['x\\sqrt[3]{x}', '\\frac{3}{7}x^2\\sqrt[3]{x}'],
+		['\\frac{1}{\\sqrt[3]{x^2}}', '3\\sqrt[3]{x}']
+	]),
 
 	// --- 1/x ---
 	...latex('inverse', [
@@ -525,7 +531,8 @@ const LATEX_CASES: PrimitiveCase[] = [
 		['(2x+6)^{\\frac{1}{2}}', '\\frac{1}{3}(2x+6)^{\\frac{3}{2}}'],
 		['(3x+9)^{\\frac{3}{2}}', '\\frac{2}{15}(3x+9)^{\\frac{5}{2}}'],
 		// ∛ définie sur ℝ (2026-10-07) : (2x+1)^{4/3} ne l'est que pour 2x + 1 ≥ 0
-		['\\sqrt[3]{2x+1}', '\\frac{3}{8}(2x+1)\\sqrt[3]{2x+1}']
+		['\\sqrt[3]{2x+1}', '\\frac{3}{8}(2x+1)\\sqrt[3]{2x+1}'],
+		['\\sqrt[5]{2x-1}', '\\frac{5}{12}(2x-1)\\sqrt[5]{2x-1}']
 	]),
 	...latex(
 		'racine-affine',
