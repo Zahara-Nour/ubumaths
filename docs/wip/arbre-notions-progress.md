@@ -274,3 +274,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   anticipé. Proposé : 4 sous-notions (logarithme décimal + renommage Logarithme népérien →
   Logarithmes, indices, coniques et perspective centrale pour STD2A). Questions Y1-Y5 en
   attente.
+
+- **Tle techno appliquée (2026-10-07, « je valide tout », Y1-Y5)** : libellé « Tle techno » ;
+  4 sous-notions — indices (Évolutions), logarithme décimal (avec RENOMMAGE de la notion
+  `Logarithme népérien` → `Logarithmes`, répercuté dans les 4 fichiers de
+  `correspondance/` : 9 occurrences), coniques (Figures planes) et perspective centrale
+  (Solides) pour STD2A ; indice de base 100 = premier point « régime automatisme » prévu
+  par la règle 2de ; niveaux : Évolutions, Fonction exponentielle, Logarithmes, Statistique
+  à deux variables (4 libellés), Loi binomiale, Figures planes et Solides « 1re et Tle
+  techno » → 19 branches, 136 notions, 527 sous-notions (JSON 2026-10-07.10), diagramme
+  republié. Restent : Tle comp. et Expertes (reprise v1 → v2), spé PCM STI2D/STL si fournie.

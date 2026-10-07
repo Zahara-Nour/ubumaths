@@ -203,6 +203,11 @@ et inéquations` : LA fonction exp (base e) n'existe pas en techno — tout vit 
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (Y1-Y5 — libellé « Tle techno »,
+> indice de base 100 = point en régime automatisme + sous-notion « indices », renommage
+> `Logarithme népérien` → `Logarithmes` appliqué, CSV de correspondance retouchés, STD2A
+> couverte). Appliqué à l'arbre : version 2026-10-07.10 — 136 notions, 527 sous-notions.
+
 1. **Y1 — Libellé « Tle techno »** et traitement des Automatismes : références vers le
    parcours (cycle 4, 2de, 1re techno) + références internes pour les italiques, et
    l'indice de base 100 = point de Tle techno en régime automatisme (seul contenu neuf de

@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.9",
-	"statut": "validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re techno v2, 2026-10-06/07 ; lots Tle comp., Expertes, Tle techno à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.10",
+	"statut": "validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -274,11 +274,12 @@
 				},
 				{
 					"nom": "Évolutions",
-					"niveaux": "4e à 2de, 1re ens. sci.",
+					"niveaux": "4e à 2de, 1re ens. sci., Tle techno",
 					"sous_notions": [
 						"variations en pourcentage",
 						"évolutions successives et réciproque",
-						"taux d'évolution moyen"
+						"taux d'évolution moyen",
+						"indices"
 					],
 					"note": "coefficient multiplicateur dès la 4e"
 				},
@@ -489,7 +490,7 @@
 				},
 				{
 					"nom": "Fonction exponentielle",
-					"niveaux": "1re, 1re ens. sci., Tle",
+					"niveaux": "1re, 1re ens. sci., Tle, Tle techno",
 					"sous_notions": [
 						"propriétés algébriques",
 						"dérivée",
@@ -552,14 +553,15 @@
 					"note": null
 				},
 				{
-					"nom": "Logarithme népérien",
-					"niveaux": "Tle, Tle comp.",
+					"nom": "Logarithmes",
+					"niveaux": "Tle, Tle comp., Tle techno",
 					"sous_notions": [
 						"réciproque de l'exponentielle",
 						"propriétés algébriques",
 						"équations et inéquations",
 						"dérivée",
-						"courbe"
+						"courbe",
+						"logarithme décimal"
 					],
 					"note": null
 				}
@@ -789,19 +791,20 @@
 			"notions": [
 				{
 					"nom": "Solides",
-					"niveaux": "CP à 3e, 1re techno",
+					"niveaux": "CP à 3e, 1re et Tle techno",
 					"sous_notions": [
 						"reconnaître et décrire",
 						"construire",
 						"patrons",
 						"perspective cavalière",
+						"perspective centrale",
 						"sections planes"
 					],
 					"note": "le collège (D2) viendra avec le cycle 4"
 				},
 				{
 					"nom": "Figures planes",
-					"niveaux": "CP à 4e, 1re techno",
+					"niveaux": "CP à 4e, 1re et Tle techno",
 					"sous_notions": [
 						"reconnaître et décrire",
 						"angles droits",
@@ -811,7 +814,8 @@
 						"triangles",
 						"parallélogrammes",
 						"médiatrice et bissectrice",
-						"polygones réguliers"
+						"polygones réguliers",
+						"coniques"
 					],
 					"note": null
 				},
@@ -1097,7 +1101,7 @@
 				},
 				{
 					"nom": "Loi binomiale",
-					"niveaux": "Tle, Tle comp.",
+					"niveaux": "Tle, Tle comp., Tle techno",
 					"sous_notions": [
 						"schéma de Bernoulli",
 						"reconnaître une loi",
@@ -1216,7 +1220,7 @@
 				},
 				{
 					"nom": "Statistique à deux variables",
-					"niveaux": "1re ens. sci., 1re techno, Tle comp.",
+					"niveaux": "1re ens. sci., 1re techno, Tle comp., Tle techno",
 					"sous_notions": [
 						"nuage de points",
 						"point moyen",

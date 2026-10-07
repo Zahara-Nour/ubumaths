@@ -77,7 +77,7 @@ def build(NC,b1,b2,label,cls):
 PR=[
 ("Situations de proportionnalité","CM1 à 3e",[("",["reconnaître","appliquer","quatrième proportionnelle"])],"reprend « Tableaux de proportionnalité »"),
 ("Pourcentages","6e à 2de",[("",["définition","calculer"])],None),
-("Évolutions","4e à 2de, 1re ens. sci.",[("",["variations en pourcentage","évolutions successives et réciproque","taux d'évolution moyen"])],"coefficient multiplicateur dès la 4e"),
+("Évolutions","4e à 2de, 1re ens. sci., Tle techno",[("",["variations en pourcentage","évolutions successives et réciproque","taux d'évolution moyen","indices"])],"coefficient multiplicateur dès la 4e"),
 ("Échelle d'une carte","6e, 3e",[("",["trouver l'échelle","utiliser l'échelle"])],None),
 ("Vitesse","4e",[("",["calculer","convertir"])],"vient de Grandeurs et mesures"),
 ]
@@ -102,12 +102,12 @@ FO=[
 ("Fonction valeur absolue","2de",[("",["définition et distance","courbe","variations","équations et inéquations"])],"reprend le domaine Valeur absolue"),
 ("Second degré","1re",[("",["racines","signe","formes","variations","parabole","somme et produit des racines"])],"équations et inéquations → Algèbre"),
 ("Dérivation","1re, Tle, Tle comp.",[("",["taux de variation","nombre dérivé","tangente","approximation affine","fonctions dérivées","opérations sur les dérivées","dérivabilité en un point","variations","étude de fonction","position relative de deux courbes","optimisation","fonctions composées"])],"optimisation : sous-notion, plus une notion"),
-("Fonction exponentielle","1re, 1re ens. sci., Tle",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation","fonctions x ↦ aˣ"])],None),
+("Fonction exponentielle","1re, 1re ens. sci., Tle, Tle techno",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation","fonctions x ↦ aˣ"])],None),
 ("Fonctions trigonométriques","1re, Tle",[("",["cercle et radians","cosinus et sinus d'un réel","angles associés","équations","inéquations","parité et périodicité","dérivées et variations"])],None),
 ("Limites de fonctions","Tle, Tle comp.",[("",["limite en un point","opérations","formes indéterminées","comparaison et encadrement","croissances comparées","asymptotes"])],None),
 ("Continuité","Tle, Tle comp.",[("",["continuité en un point","lecture graphique","valeurs intermédiaires","encadrement d'une solution"])],None),
 ("Convexité","Tle, Tle comp.",[("",["caractérisations","dérivée seconde","point d'inflexion","inégalités de convexité","lecture graphique"])],None),
-("Logarithme népérien","Tle, Tle comp.",[("",["réciproque de l'exponentielle","propriétés algébriques","équations et inéquations","dérivée","courbe"])],None),
+("Logarithmes","Tle, Tle comp., Tle techno",[("",["réciproque de l'exponentielle","propriétés algébriques","équations et inéquations","dérivée","courbe","logarithme décimal"])],None),
 ]
 IN=[
 ("Calcul d'intégrales","Tle, Tle comp.",[("",["par une primitive","relation de Chasles","linéarité","positivité et inégalités","intégration par parties","suites d'intégrales","méthode des rectangles"])],None),
@@ -133,8 +133,8 @@ SU=[
 ("Suites arithmético-géométriques","Tle, Tle comp.",[("",["solution constante","suite auxiliaire","limite"])],None),
 ]
 GE=[
-("Solides","CP à 3e, 1re techno",[("",["reconnaître et décrire","construire","patrons","perspective cavalière","sections planes"])],"le collège (D2) viendra avec le cycle 4"),
-("Figures planes","CP à 4e, 1re techno",[("",["reconnaître et décrire","angles droits","perpendiculaires et parallèles","reproduire et construire","cercle","triangles","parallélogrammes","médiatrice et bissectrice","polygones réguliers"])],None),
+("Solides","CP à 3e, 1re et Tle techno",[("",["reconnaître et décrire","construire","patrons","perspective cavalière","perspective centrale","sections planes"])],"le collège (D2) viendra avec le cycle 4"),
+("Figures planes","CP à 4e, 1re et Tle techno",[("",["reconnaître et décrire","angles droits","perpendiculaires et parallèles","reproduire et construire","cercle","triangles","parallélogrammes","médiatrice et bissectrice","polygones réguliers","coniques"])],None),
 ("Symétrie axiale","CE2 à 3e",[("",[])],None),
 ("Repérage et déplacements","CP à 3e",[("",["positions et plans","coder un déplacement","coordonnées dans le plan"])],None),
 ("Symétrie centrale","5e, 4e",[("",[])],None),
@@ -171,7 +171,7 @@ PS=[
 ("Expériences aléatoires","CM1 à 2de",[("",["fréquences","probabilité simple","équiprobabilité","événements"])],"reprend le domaine Probabilités > Apprivoiser"),
 ("Probabilités conditionnelles","2de, 1re",[("",["arbres pondérés","tableaux croisés","indépendance","probabilités totales","inversion du conditionnement","épreuves indépendantes successives","problèmes en contexte"])],None),
 ("Variables aléatoires","1re",[("",["loi d'une variable aléatoire","compléter une loi","espérance","variance et écart-type","jeux et gains"])],None),
-("Loi binomiale","Tle, Tle comp.",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","intervalle de fluctuation","coefficients binomiaux","espérance et variance"])],None),
+("Loi binomiale","Tle, Tle comp., Tle techno",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","intervalle de fluctuation","coefficients binomiaux","espérance et variance"])],None),
 ("Autres lois","Tle comp.",[("",["loi géométrique","loi uniforme discrète","loi uniforme continue","loi exponentielle","densité et aire","espérance"])],None),
 ("Sommes et concentration","Tle",[("",["espérance et variance d'une somme","échantillons","Bienaymé-Tchebychev","inégalité de concentration","loi des grands nombres"])],"sommes de variables aléatoires"),
 ]
@@ -186,7 +186,7 @@ ST=[
 ("Indicateurs","5e à 2de",[("",["moyenne","médiane","quartiles","étendue","écart-type","boîte à moustaches"])],"aucun modèle aujourd'hui"),
 ("Échantillonnage","2de, 1re, 1re techno",[("",["fluctuation","simulation","estimation d'une proportion"])],"aucun modèle aujourd'hui"),
 ("Tableaux croisés","2de",[("",["tableau croisé d'effectifs","fréquences marginales et conditionnelles"])],"croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"),
-("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp.",[("",["nuage de points","point moyen","ajustement affine","changement de variable"])],"reprend le thème Statistiques"),
+("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp., Tle techno",[("",["nuage de points","point moyen","ajustement affine","changement de variable"])],"reprend le thème Statistiques"),
 ]
 LO=[
 ("Connecteurs et contre-exemples","2de, 1re",[("",["et, ou, non","contre-exemple"])],None),
@@ -313,7 +313,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.9","statut":"validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re techno v2, 2026-10-06/07 ; lots Tle comp., Expertes, Tle techno à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.10","statut":"validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))
