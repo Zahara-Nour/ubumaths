@@ -18,6 +18,7 @@
 import type { MathNode } from '../../types';
 import { isFunction } from '../../guards';
 import { mapNode } from '../../transforms';
+import { isInverseNotation } from '../../common/function-power';
 
 // =============================================================================
 // Constantes
@@ -45,16 +46,6 @@ const ONE_NODE: MathNode = { type: 'number', value: '1' };
 // =============================================================================
 // Fonctions
 // =============================================================================
-
-/**
- * Reconnaît la notation de réciproque `f^{-1}`, qui n'est pas une puissance.
- */
-function isInverseNotation(power: MathNode): boolean {
-	if (power.type === 'opposite') {
-		return power.operand.type === 'number' && power.operand.value === '1';
-	}
-	return power.type === 'number' && power.value === '-1';
-}
 
 /**
  * Construit l'appel `name(arg)`.
