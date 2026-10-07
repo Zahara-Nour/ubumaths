@@ -162,3 +162,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (point_id, grade) — c'est le rôle de `curriculum_point_automatismes`, déjà en prod et vide ;
   seule une ligne introduisant du neuf devient un point (régime automatisme). JAMAIS de
   duplication de points entre programmes. À inscrire dans la spec du schéma cible ADR 0020.
+
+- **Règle des Automatismes appliquée rétroactivement aux docs cycles 3 et 4 (2026-10-07)** :
+  notes ajoutées — les rubriques Automatismes de 6e/5e/4e/3e = références vers des points
+  antérieurs, pas des points de l'année. Cycle 2 : non concerné (pas de rubrique Automatismes,
+  calcul mental = contenu annuel). Rien en base pour ces niveaux : erreur purement
+  documentaire, corrigée avant tout pointage.
