@@ -1258,10 +1258,8 @@ class RDParser {
 			if (this.check('LBRACE')) {
 				this.advance(); // consume {
 
-				// Parse variable name (should be a letter)
-				if (this.check('LETTER')) {
-					variableName = this.advance().value;
-				}
+				// Variable : une lettre latine ou grecque (\alpha, \theta…)
+				variableName = this.parseLimitVariable() ?? variableName;
 
 				// Expect \to
 				if (this.checkCommand('to') || this.checkCommand('rightarrow')) {
@@ -1302,10 +1300,8 @@ class RDParser {
 
 				this.expect('RBRACE', "Expected '}' after limit subscript");
 			} else {
-				// Simple subscript without braces (e.g., _x)
-				if (this.check('LETTER')) {
-					variableName = this.advance().value;
-				}
+				// Simple subscript without braces (e.g., _x, _\theta)
+				variableName = this.parseLimitVariable() ?? variableName;
 			}
 		}
 
@@ -1355,6 +1351,32 @@ class RDParser {
 	 * `^` (le côté). Sans la prise des signes ici, `-2^+` passait par la
 	 * puissance et le `+` du côté était lu comme une addition inachevée.
 	 */
+	/**
+	 * Variable d'une limite : une lettre latine (`x`, `t`, `n`) ou une lettre
+	 * grecque connue du parseur (`\alpha`, `\theta`…). Pour une lettre
+	 * grecque, la variable est le NOM de la lettre (`'alpha'`), celui que porte
+	 * le nœud `greek` du corps : le moteur des limites la retrouve ainsi.
+	 * π est une constante, pas une variable : refusé avec un message clair.
+	 * Rend `undefined` si le jeton courant n'est pas une variable.
+	 */
+	private parseLimitVariable(): string | undefined {
+		if (this.check('LETTER')) {
+			return this.advance().value;
+		}
+		if (this.checkCommand('pi')) {
+			this.error(
+				"π est une constante : elle ne peut pas être la variable d'une limite (\\pi)",
+				this.currentToken.position,
+				this.currentToken.length,
+				'UNEXPECTED_TOKEN'
+			);
+		}
+		if (this.currentToken.type === 'COMMAND' && GREEK_COMMANDS.has(this.currentToken.value)) {
+			return this.advance().value;
+		}
+		return undefined;
+	}
+
 	private parseLimitApproach(): MathNode {
 		if (this.check('MINUS')) {
 			this.advance();

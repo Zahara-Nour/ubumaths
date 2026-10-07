@@ -20,6 +20,7 @@ import {
 	checkExpectedNumerically,
 	describeWrong,
 	judgeEntry,
+	limitVariableLatex,
 	type Verdict
 } from './harness';
 import { KNOWN_WRONG } from './known-wrong';
@@ -62,7 +63,8 @@ describe('oracle numérique des limites', () => {
 		// Décision du 2026-10-07 : `\\lim_{x\\to a} f` porte sur tout f. Le
 		// harnais ne retombe plus jamais sur `\\lim_{x\\to a}\\left(f\\right)`.
 		const wrapped = ALL_ENTRIES.filter(
-			(entry) => buildLimit(entry).latex !== `\\lim_{x\\to ${entry.at}}${entry.f}`
+			(entry) =>
+				buildLimit(entry).latex !== `\\lim_{${limitVariableLatex(entry)}\\to ${entry.at}}${entry.f}`
 		).map((entry) => entry.id);
 		expect(wrapped).toEqual([]);
 	});
