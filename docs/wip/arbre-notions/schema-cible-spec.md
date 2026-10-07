@@ -192,7 +192,7 @@ d'autrui (inchangé, re-testé).
 
 ## Récapitulatif des décisions demandées (B1-B7)
 
-1. **B1 (= Q1)** — `rang` : la cible l'ignore, retrait au volet destructif. (reco : oui.)
+1. **B1 (= Q1)** — `rang` : la cible l'ignore, retrait à l'étape (4) de C5. (reco : oui.)
 2. **B2 (= Q2)** — rubrique : champ `rubrique` sur le point, `themes/objectives` en sursis.
    (reco : champ.)
 3. **B3 (= Q3)** — `kind` : ajouter `algorithme`. (reco : oui.)
