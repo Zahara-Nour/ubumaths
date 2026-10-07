@@ -471,3 +471,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   537 sous-notions** dans `classification_nodes`, lisibles par tous. Worktree et branches
   supprimés. Prochaines étapes : seed 6e (premier programme points→nœuds), remplissage des
   rangements (correspondance validée), séquence C5.
+
+- **Ordre de seed REDÉFINI par David (2026-10-07) : CM1-CM2 → cycle 2 (CP-CE1-CE2) → 6e**
+  (remplace « la 6e d'abord » de R5/C23) : les programmes du primaire n'ont aucune rubrique
+  Automatismes → seeds autonomes, et la 6e arrivera complète d'un coup, références
+  d'automatismes comprises (la question C22 des références différées disparaît). Document
+  de seed CM1-CM2 rédigé : `docs/wip/arbre-notions/seed-cm.md` — 246 points (130 CM1 +
+  116 CM2), énoncés verbatim du BO (28 p. relues), nœuds résolus, rubriques C11, 1 seule
+  scission (faits numériques), questions S1-S6 posées à David. EN ATTENTE DE VALIDATION —
+  aucune migration avant.
