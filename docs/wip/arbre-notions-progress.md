@@ -517,3 +517,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   = le point le plus récent du parcours qui couvre). Premier grade à références — C22
   dissoute. Questions A1-A4 (Préalgorithmique vs coder un déplacement ; kind algorithme ;
   codes ; ensemble). EN ATTENTE DE VALIDATION — aucune migration avant.
+
+- **Seed 6e VALIDÉ et construit (2026-10-08, « je valide tout » : A1-A4 = recos)** :
+  migration `20261008190000_seed_curriculum_points_6e.sql` GÉNÉRÉE depuis seed-6e.md —
+  97 points (codes 6-101…6-197, display_order = code − 100), kind `algorithme` pour les
+  4 points de pensée informatique → notion Préalgorithmique (A1), fluence = les 2 points
+  issus d'Automatismes, ET les 28 PREMIÈRES références de curriculum_point_automatismes
+  (grade '6' → points CM1/CM2/CE1/CE2, trigger de parcours à l'œuvre). Bloc DO : 97/0/28/
+  2/4 + les 95 anciens 6-0xx INTACTS. Preuve rouge (3 tests) puis 88/88 verts avec les
+  5 voisins. La question C22 (références différées) est définitivement dissoute.
