@@ -100,7 +100,8 @@ describe('famille 3 — (ax+b)^p et racines : coefficient et exposant calculés'
 		['\\sqrt[3]{2x+1}']
 	])('∫ %s', (latex) => {
 		const F = primitiveOf(latex);
-		expect(toLatex(F)).not.toContain('+ 1}');
+		// Exposant non calculé (`^{\dfrac{1}{3} + 1}`) ; `\sqrt[3]{2 x + 1}` est légitime
+		expect(toLatex(F)).not.toContain('} + 1}');
 		expectDerivativeMatches(F, latex, [-0.45, 0.4, 1.7]);
 	});
 
