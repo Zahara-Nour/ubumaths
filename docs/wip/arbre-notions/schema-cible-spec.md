@@ -192,6 +192,10 @@ d'autrui (inchangé, re-testé).
 
 ## Récapitulatif des décisions demandées (B1-B7)
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (B1-B7 selon les recos, C1-C27
+> réputés validés). La spec est FIGÉE ; suite : tests d'intégration rouges → migration
+> additive → security-auditor → db:migrate quand la branche ira en prod.
+
 1. **B1 (= Q1)** — `rang` : la cible l'ignore, retrait à l'étape (4) de C5. (reco : oui.)
 2. **B2 (= Q2)** — rubrique : champ `rubrique` sur le point, `themes/objectives` en sursis.
    (reco : champ.)

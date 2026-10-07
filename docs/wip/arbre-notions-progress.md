@@ -376,3 +376,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   l'ÉTAPE FINALE PLANIFIÉE de la séquence (seeds neufs → transfert des 1 026 tags → bascule
   du code → suppression anciens points + themes/objectives + rang + vieux seed 6e), plus un
   « volet de fin de chantier » indéfini. Spec mise à jour (en-tête, C5, C10, C11, C22, C23).
+
+- **Phase 0 VALIDÉE (2026-10-07, « je valide tout », B1-B7 + C1-C27)** : rang abandonné,
+  rubrique en champ texte, kind `algorithme`, duplication des listes au seed, table
+  `grade_predecessors` (T_EXP ← 1_SPE, T_GEN hors parcours), LECTURE ANONYME du référentiel
+  (la question d'accès), régime au choix par seed. Suite engagée : tests d'intégration
+  (rouges d'abord) → migration additive → security-auditor. db:migrate prod attendra la
+  décision de pousser la branche (la PR 1 des nœuds n'est pas en prod).

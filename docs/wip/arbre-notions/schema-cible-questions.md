@@ -40,6 +40,8 @@
 
 ## Questions à trancher (phase 0)
 
+> **TOUTES TRANCHÉES le 2026-10-07** via `schema-cible-spec.md` (B1-B7, « je valide tout »).
+
 1. **Sort de `rang`** — l'échelle descriptive 1-4 par objectif, « geste central » de la
    refonte d'août (`20260829100000`), avec du code vivant (`has_scale`, `rang_max` dans la
    progression élève) mais **jamais remplie : 0 point sur 1 007**. **Reco : ABANDON** —
