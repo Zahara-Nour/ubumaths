@@ -52,6 +52,16 @@ documentée dans le markdown source du seed, comme les « 3 puces coupées en de
 Dans CE document, une ligne regroupe parfois plusieurs puces qui partagent la même destination :
 c'est une compression de lecture — au pointage, chaque puce redevient un point.
 
+### ⚠️ Rubriques « Automatismes » de la 6e (règle de David du 2026-10-07, rétroactive)
+
+Les Automatismes de 6e portent « uniquement sur des connaissances, des procédures et des
+stratégies déjà étudiées au cours moyen » (texte du programme). Au pointage, ces lignes ne
+deviennent donc **pas des points de 6e** mais des **références** « travaillé en automatisme en
+6e » vers les points de CM1/CM2 correspondants (`curriculum_point_automatismes`). Seule une
+ligne d'automatisme qui introduit du contenu neuf devient un point. Les mentions « points en
+régime automatisme » de ce document se lisent avec cette règle ; le calcul mental du cours
+moyen, lui, reste fait de points annuels (ce sont les objectifs d'apprentissage de l'année).
+
 ## Vue d'ensemble
 
 Le cycle 2 avait créé les maisons du primaire (Problèmes, grandeurs, géométrie plane/solides,

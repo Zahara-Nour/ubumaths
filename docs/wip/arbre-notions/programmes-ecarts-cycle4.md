@@ -47,6 +47,16 @@ Identique aux documents précédents : **[C]** nœud existant (la ligne devient 
 **[P]** sous-notion à créer (critère du filtre justifié) · **[A]** notion à créer · **[T]** ni
 nœud ni point.
 
+### ⚠️ Rubriques « Automatismes » (règle de David du 2026-10-07, rétroactive)
+
+À chaque niveau du cycle 4, les automatismes « s'appuient sur des contenus qui ont été étudiés
+sans être automatisés au niveau précédent » (texte du programme). Au pointage, ces lignes ne
+deviennent donc **pas des points de l'année** mais des **références** « travaillé en
+automatisme en 5e/4e/3e » vers les points des programmes antérieurs
+(`curriculum_point_automatismes`). Seule une ligne qui introduit du contenu neuf devient un
+point. Les correspondances ligne → nœud de ce document restent valables : elles disent où
+pointe la référence.
+
 ## Vue d'ensemble
 
 C'est le lot qui **réalise la question D2** (géométrie du collège, ouverte depuis le début du
