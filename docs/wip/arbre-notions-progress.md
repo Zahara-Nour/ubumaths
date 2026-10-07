@@ -526,3 +526,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (grade '6' → points CM1/CM2/CE1/CE2, trigger de parcours à l'œuvre). Bloc DO : 97/0/28/
   2/4 + les 95 anciens 6-0xx INTACTS. Preuve rouge (3 tests) puis 88/88 verts avec les
   5 voisins. La question C22 (références différées) est définitivement dissoute.
+
+- **LE SEED 6e EST EN PROD (2026-10-08, PR #946) — l'ordre CP→6e est COMPLET : 570
+  points dans l'architecture points → nœuds.** Audit non bloquant (remarque I-1 intégrée
+  au rollback) ; CI verte au re-run (flaky `evaluation-notee-serveur` test D : anti-fuite
+  `not.toContain('"6"')`, faux positif de graine — 30/30 ×6 en local ; à durcir un jour).
+  Vérifié prod : 97 points / 0 sans nœud / 28 références (4 grades cibles) / 4 algorithme
+  / 2 fluence / 95 anciens 6-0xx intacts. Suivent : remplissage des rangements
+  (correspondance validée) puis séquence C5 (transfert des tags → bascule → suppression).
