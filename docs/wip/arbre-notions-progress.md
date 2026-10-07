@@ -150,3 +150,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   Homothéties, Triangles semblables, Repérage dans l'espace), 17 sous-notions, Algorithmique
   étendue 5e à 2de, niveaux rafraîchis → 19 branches, 135 notions, 483 sous-notions
   (JSON 2026-10-07.4), diagramme republié. D2 CLOSE.
+
+- **2de reprise au gabarit v2 (2026-10-07, soir)** : nouveau texte fourni par David (Annexe,
+  vague 2026, calée sur le nouveau cycle 4) vérifié quasi identique à la version révisée de la
+  session précédente → `programmes-ecarts-2de.md` (remplace la section 2de de
+  `programmes-ecarts.md`). D1 et D3 DISSOUTES par l'ADR 0020, D2 réglée. Proposé : notion
+  Tableaux croisés, ~12 sous-notions. Questions T1-T6 en attente.
