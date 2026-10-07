@@ -1,83 +1,454 @@
 <title>Arbre des notions</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+/>
 <style>
-/* Layout : une colonne de lecture ; chaque branche = un schéma SVG branche → notions, défilable seul sur téléphone */
-:root{
-  --bg:#f6f7f4; --surface:#ffffff; --fg:#1d2321; --muted:#5d6763; --line:#c9cfcb; --accent:#2f6f5e;
-  --c1:#2f6fb0; --c2:#b5651d; --c3:#7a4fb3; --c4:#1f8a6b; --c5:#c0477a; --c6:#4a7d2a; --c7:#8a6d1f; --c8:#a63d3d; --c9:#4d5f73; --c10:#1f7f8c; --c11:#9b4f96; --c12:#5a6b2e; --c13:#b04a2f; --c14:#3d5a99; --c15:#7d6a2a; --c16:#2e7d4f; --c17:#6b4e9b; --c18:#8a5a2b; --c19:#2f7a7a;
-  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
-  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141917; --surface:#1d2421; --fg:#e7ece9; --muted:#9aa6a1; --line:#3a4440; --accent:#6cc2a6;
-  --c1:#6ea8e6; --c2:#e39a5a; --c3:#b393e6; --c4:#5cc7a3; --c5:#ec87b1; --c6:#8cc46a; --c7:#d7b65a; --c8:#e88282; --c9:#9fb1c6; --c10:#5fc3cf; --c11:#d993d4; --c12:#b5c97a; --c13:#ee9378; --c14:#93aee8; --c15:#d4c07a; --c16:#7fd1a0; --c17:#b9a0e6; --c18:#e0b07f; --c19:#7fd0d0; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#141917; --surface:#1d2421; --fg:#e7ece9; --muted:#9aa6a1; --line:#3a4440; --accent:#6cc2a6;
-  --c1:#6ea8e6; --c2:#e39a5a; --c3:#b393e6; --c4:#5cc7a3; --c5:#ec87b1; --c6:#8cc46a; --c7:#d7b65a; --c8:#e88282; --c9:#9fb1c6; --c10:#5fc3cf; --c11:#d993d4; --c12:#b5c97a; --c13:#ee9378; --c14:#93aee8; --c15:#d4c07a; --c16:#7fd1a0; --c17:#b9a0e6; --c18:#e0b07f; --c19:#7fd0d0; color-scheme:dark}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
-.wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:32px 64px;display:grid;gap:28px}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
-h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.01em}
-.lede{color:var(--muted);max-width:65ch;margin:6px 0 0}
-.levels{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.lv{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:0}
-.lv b{display:block;font-family:var(--display)}
-.lv span{color:var(--muted);font-size:14px}
-.arrow{color:var(--muted);font-size:20px}
-.read{font-size:14px;color:var(--muted);max-width:70ch;margin:0}
-.read code{font-family:var(--body);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--fg)}
-.branch{display:grid;gap:8px}
-.branch h2{font-size:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.branch h2 small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
-.dot{width:14px;height:14px;border-radius:50%;display:inline-block}
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-svg{display:block}
-svg .bnode{fill:var(--k)} svg .btext{fill:var(--bg);font:700 17px var(--display)}
-svg .link{fill:none;stroke:var(--k);stroke-width:1.6;opacity:.55}
-svg .nnode{fill:var(--surface);stroke:var(--line)} svg .nbar{fill:var(--k)}
-svg .ntext{fill:var(--fg);font:700 15px var(--body)} svg .niv{fill:var(--k);font:700 13px var(--body)}
-svg .rtext{fill:var(--muted);font:italic 12.5px var(--body)}
-svg .gbox{fill:var(--surface);stroke:var(--line)} svg .gitem{fill:var(--fg);font:14px var(--body)} svg .gpre{font-weight:700;fill:var(--k)} svg .npre{fill:var(--muted);font:700 13px var(--body)} svg .chip{fill:var(--bg);stroke:var(--k);stroke-opacity:.45} svg .chiptext{fill:var(--fg);font:13px var(--body)} svg .gnote{fill:var(--muted);font:italic 12.5px var(--body)}
-svg .niv{font:700 13px var(--body);fill:var(--k)}
-.c1{--k:var(--c1)}.c2{--k:var(--c2)}.c3{--k:var(--c3)}.c4{--k:var(--c4)}.c5{--k:var(--c5)}.c6{--k:var(--c6)}.c7{--k:var(--c7)}.c8{--k:var(--c8)}.c9{--k:var(--c9)}.c10{--k:var(--c10)}.c11{--k:var(--c11)}.c12{--k:var(--c12)}.c13{--k:var(--c13)}.c14{--k:var(--c14)}.c15{--k:var(--c15)}.c16{--k:var(--c16)}.c17{--k:var(--c17)}.c18{--k:var(--c18)}.c19{--k:var(--c19)}
-.dot{background:var(--k)}
-.side{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
-.box h3{font-size:17px;margin-bottom:6px}
-.box p{margin:0 0 8px;color:var(--muted);font-size:14px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
-.chips li{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:14px}
-.box ul.plain{margin:0;padding-left:18px;font-size:14px}
-.choices{display:grid;gap:10px;counter-reset:q}
-.choices li{font-size:15px}
+	/* Layout : une colonne de lecture ; chaque branche = un schéma SVG branche → notions, défilable seul sur téléphone */
+	:root {
+		--bg: #f6f7f4;
+		--surface: #ffffff;
+		--fg: #1d2321;
+		--muted: #5d6763;
+		--line: #c9cfcb;
+		--accent: #2f6f5e;
+		--c1: #2f6fb0;
+		--c2: #b5651d;
+		--c3: #7a4fb3;
+		--c4: #1f8a6b;
+		--c5: #c0477a;
+		--c6: #4a7d2a;
+		--c7: #8a6d1f;
+		--c8: #a63d3d;
+		--c9: #4d5f73;
+		--c10: #1f7f8c;
+		--c11: #9b4f96;
+		--c12: #5a6b2e;
+		--c13: #b04a2f;
+		--c14: #3d5a99;
+		--c15: #7d6a2a;
+		--c16: #2e7d4f;
+		--c17: #6b4e9b;
+		--c18: #8a5a2b;
+		--c19: #2f7a7a;
+		--display: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+		--body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #141917;
+			--surface: #1d2421;
+			--fg: #e7ece9;
+			--muted: #9aa6a1;
+			--line: #3a4440;
+			--accent: #6cc2a6;
+			--c1: #6ea8e6;
+			--c2: #e39a5a;
+			--c3: #b393e6;
+			--c4: #5cc7a3;
+			--c5: #ec87b1;
+			--c6: #8cc46a;
+			--c7: #d7b65a;
+			--c8: #e88282;
+			--c9: #9fb1c6;
+			--c10: #5fc3cf;
+			--c11: #d993d4;
+			--c12: #b5c97a;
+			--c13: #ee9378;
+			--c14: #93aee8;
+			--c15: #d4c07a;
+			--c16: #7fd1a0;
+			--c17: #b9a0e6;
+			--c18: #e0b07f;
+			--c19: #7fd0d0;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #141917;
+		--surface: #1d2421;
+		--fg: #e7ece9;
+		--muted: #9aa6a1;
+		--line: #3a4440;
+		--accent: #6cc2a6;
+		--c1: #6ea8e6;
+		--c2: #e39a5a;
+		--c3: #b393e6;
+		--c4: #5cc7a3;
+		--c5: #ec87b1;
+		--c6: #8cc46a;
+		--c7: #d7b65a;
+		--c8: #e88282;
+		--c9: #9fb1c6;
+		--c10: #5fc3cf;
+		--c11: #d993d4;
+		--c12: #b5c97a;
+		--c13: #ee9378;
+		--c14: #93aee8;
+		--c15: #d4c07a;
+		--c16: #7fd1a0;
+		--c17: #b9a0e6;
+		--c18: #e0b07f;
+		--c19: #7fd0d0;
+		color-scheme: dark;
+	}
+	body {
+		background: var(--bg);
+		color: var(--fg);
+		font-family: var(--body);
+		font-size: 16px;
+		line-height: 1.55;
+	}
+	.wrap {
+		max-width: 960px;
+		margin: 0 auto;
+		padding-inline: 16px;
+		padding-block: 32px 64px;
+		display: grid;
+		gap: 28px;
+	}
+	h1,
+	h2,
+	h3 {
+		font-family: var(--display);
+		text-wrap: balance;
+		margin: 0;
+	}
+	h1 {
+		font-size: clamp(28px, 5vw, 40px);
+		letter-spacing: -0.01em;
+	}
+	.lede {
+		color: var(--muted);
+		max-width: 65ch;
+		margin: 6px 0 0;
+	}
+	.levels {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+	}
+	.lv {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 8px 12px;
+		min-width: 0;
+	}
+	.lv b {
+		display: block;
+		font-family: var(--display);
+	}
+	.lv span {
+		color: var(--muted);
+		font-size: 14px;
+	}
+	.arrow {
+		color: var(--muted);
+		font-size: 20px;
+	}
+	.read {
+		font-size: 14px;
+		color: var(--muted);
+		max-width: 70ch;
+		margin: 0;
+	}
+	.read code {
+		font-family: var(--body);
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		padding: 0 5px;
+		color: var(--fg);
+	}
+	.branch {
+		display: grid;
+		gap: 8px;
+	}
+	.branch h2 {
+		font-size: 22px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+	.branch h2 small {
+		font-family: var(--body);
+		font-weight: 400;
+		font-size: 14px;
+		color: var(--muted);
+	}
+	.dot {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		display: inline-block;
+	}
+	.scroll {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	svg {
+		display: block;
+	}
+	svg .bnode {
+		fill: var(--k);
+	}
+	svg .btext {
+		fill: var(--bg);
+		font: 700 17px var(--display);
+	}
+	svg .link {
+		fill: none;
+		stroke: var(--k);
+		stroke-width: 1.6;
+		opacity: 0.55;
+	}
+	svg .nnode {
+		fill: var(--surface);
+		stroke: var(--line);
+	}
+	svg .nbar {
+		fill: var(--k);
+	}
+	svg .ntext {
+		fill: var(--fg);
+		font: 700 15px var(--body);
+	}
+	svg .niv {
+		fill: var(--k);
+		font: 700 13px var(--body);
+	}
+	svg .rtext {
+		fill: var(--muted);
+		font: italic 12.5px var(--body);
+	}
+	svg .gbox {
+		fill: var(--surface);
+		stroke: var(--line);
+	}
+	svg .gitem {
+		fill: var(--fg);
+		font: 14px var(--body);
+	}
+	svg .gpre {
+		font-weight: 700;
+		fill: var(--k);
+	}
+	svg .npre {
+		fill: var(--muted);
+		font: 700 13px var(--body);
+	}
+	svg .chip {
+		fill: var(--bg);
+		stroke: var(--k);
+		stroke-opacity: 0.45;
+	}
+	svg .chiptext {
+		fill: var(--fg);
+		font: 13px var(--body);
+	}
+	svg .gnote {
+		fill: var(--muted);
+		font: italic 12.5px var(--body);
+	}
+	svg .niv {
+		font: 700 13px var(--body);
+		fill: var(--k);
+	}
+	.c1 {
+		--k: var(--c1);
+	}
+	.c2 {
+		--k: var(--c2);
+	}
+	.c3 {
+		--k: var(--c3);
+	}
+	.c4 {
+		--k: var(--c4);
+	}
+	.c5 {
+		--k: var(--c5);
+	}
+	.c6 {
+		--k: var(--c6);
+	}
+	.c7 {
+		--k: var(--c7);
+	}
+	.c8 {
+		--k: var(--c8);
+	}
+	.c9 {
+		--k: var(--c9);
+	}
+	.c10 {
+		--k: var(--c10);
+	}
+	.c11 {
+		--k: var(--c11);
+	}
+	.c12 {
+		--k: var(--c12);
+	}
+	.c13 {
+		--k: var(--c13);
+	}
+	.c14 {
+		--k: var(--c14);
+	}
+	.c15 {
+		--k: var(--c15);
+	}
+	.c16 {
+		--k: var(--c16);
+	}
+	.c17 {
+		--k: var(--c17);
+	}
+	.c18 {
+		--k: var(--c18);
+	}
+	.c19 {
+		--k: var(--c19);
+	}
+	.dot {
+		background: var(--k);
+	}
+	.side {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 14px;
+	}
+	.box {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		padding: 14px 16px;
+		min-width: 0;
+	}
+	.box h3 {
+		font-size: 17px;
+		margin-bottom: 6px;
+	}
+	.box p {
+		margin: 0 0 8px;
+		color: var(--muted);
+		font-size: 14px;
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.chips li {
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		padding: 2px 10px;
+		font-size: 14px;
+	}
+	.box ul.plain {
+		margin: 0;
+		padding-left: 18px;
+		font-size: 14px;
+	}
+	.choices {
+		display: grid;
+		gap: 10px;
+		counter-reset: q;
+	}
+	.choices li {
+		font-size: 15px;
+	}
 </style>
 
 <div class="wrap">
-<header>
-<h1>Arbre des notions</h1>
-<p class="lede">Classement commun aux exercices et aux modèles de questions, validé le 7 octobre 2026 : %%NB%% branches, %%NN%% notions. Rien n'est encore en base.</p>
-</header>
+	<header>
+		<h1>Arbre des notions</h1>
+		<p class="lede">
+			Classement commun aux exercices et aux modèles de questions, validé le 7 octobre 2026 : %%NB%%
+			branches, %%NN%% notions. Rien n'est encore en base.
+		</p>
+	</header>
 
-<div class="levels" aria-label="Les trois niveaux">
-  <div class="lv"><b>Branche</b><span>ex. Fonctions</span></div><span class="arrow" aria-hidden="true">→</span>
-  <div class="lv"><b>Notion</b><span>ex. Second degré</span></div><span class="arrow" aria-hidden="true">→</span>
-  <div class="lv"><b>Sous-notion</b><span>ex. Discriminant (facultative)</span></div>
-</div>
-<p class="read">Dans chaque carte, la ligne en italique <code>reprend : …</code> dit d'où viendront les contenus : les modèles de questions qui sont aujourd'hui rangés sous ce thème et ce domaine, et les exercices dont le thème porte ce nom. Les sous-notions ne sont pas dessinées : ce sont, en général, les sous-domaines actuels.</p>
+	<div class="levels" aria-label="Les trois niveaux">
+		<div class="lv"><b>Branche</b><span>ex. Fonctions</span></div>
+		<span class="arrow" aria-hidden="true">→</span>
+		<div class="lv"><b>Notion</b><span>ex. Second degré</span></div>
+		<span class="arrow" aria-hidden="true">→</span>
+		<div class="lv"><b>Sous-notion</b><span>ex. Discriminant (facultative)</span></div>
+	</div>
+	<p class="read">
+		Dans chaque carte, la ligne en italique <code>reprend : …</code> dit d'où viendront les contenus
+		: les modèles de questions qui sont aujourd'hui rangés sous ce thème et ce domaine, et les
+		exercices dont le thème porte ce nom. Les sous-notions ne sont pas dessinées : ce sont, en
+		général, les sous-domaines actuels.
+	</p>
 
-%%SECTIONS%%
+	%%SECTIONS%%
 
-<div class="side">
-  <div class="box"><h3>Hors de l'arbre</h3><p>Un champ par question posée.</p><ul class="plain"><li><b>Catégorie</b> (exercices) : automatisme, application, recherche, synthèse…</li><li><b>Question de cours</b> (questions) : connaissance plutôt que procédure</li><li><b>Niveau de difficulté</b> (questions) : 1 à 20, « Apprivoiser » = bas</li><li><b>Type</b> (questions) : saisie, QCM, carte de cours</li></ul></div>
-  <div class="box"><h3>Source et tags</h3><p>Exercices seulement.</p><ul class="plain"><li><b>Source</b> : texte libre (« BAC Juin 2025 Asie J1 ») + type de source (Bac, Brevet, Concours, Manuel…)</li><li><b>Tags</b> : transversal seulement (lecture graphique, algorithme, démonstration, modélisation)</li><li>Les tags de contenu deviennent des notions ; « bac » et « terminale » sont retirés</li></ul></div>
-  <div class="box"><h3>À classer à la main</h3><p>Premier classement d'après les titres, à valider.</p><ul class="plain"><li>44 exercices « Calcul » de 1re</li><li>28 exercices « Géométrie » de 1re</li><li>25 exercices « Algèbre » de 2de</li><li>37 exercices « Fonctions » (2de, 1re, Tle)</li><li>7 exercices « BAC » : une notion à leur donner</li></ul></div>
-</div>
+	<div class="side">
+		<div class="box">
+			<h3>Hors de l'arbre</h3>
+			<p>Un champ par question posée.</p>
+			<ul class="plain">
+				<li><b>Catégorie</b> (exercices) : automatisme, application, recherche, synthèse…</li>
+				<li><b>Question de cours</b> (questions) : connaissance plutôt que procédure</li>
+				<li><b>Niveau de difficulté</b> (questions) : 1 à 20, « Apprivoiser » = bas</li>
+				<li><b>Type</b> (questions) : saisie, QCM, carte de cours</li>
+			</ul>
+		</div>
+		<div class="box">
+			<h3>Source et tags</h3>
+			<p>Exercices seulement.</p>
+			<ul class="plain">
+				<li>
+					<b>Source</b> : texte libre (« BAC Juin 2025 Asie J1 ») + type de source (Bac, Brevet,
+					Concours, Manuel…)
+				</li>
+				<li>
+					<b>Tags</b> : transversal seulement (lecture graphique, algorithme, démonstration,
+					modélisation)
+				</li>
+				<li>Les tags de contenu deviennent des notions ; « bac » et « terminale » sont retirés</li>
+			</ul>
+		</div>
+		<div class="box">
+			<h3>À classer à la main</h3>
+			<p>Premier classement d'après les titres, à valider.</p>
+			<ul class="plain">
+				<li>44 exercices « Calcul » de 1re</li>
+				<li>28 exercices « Géométrie » de 1re</li>
+				<li>25 exercices « Algèbre » de 2de</li>
+				<li>37 exercices « Fonctions » (2de, 1re, Tle)</li>
+				<li>7 exercices « BAC » : une notion à leur donner</li>
+			</ul>
+		</div>
+	</div>
 
-<section class="box"><h3>Choix faits</h3>
-<ol class="choices">
-<li><b>Suites a sa propre branche</b> au lieu d'être une notion de Fonctions : c'est aujourd'hui un onglet entier d'Automaths, avec 15 domaines.</li>
-<li><b>Proportionnalité a sa propre branche</b> au lieu d'être dans Nombres et calculs : grand bloc du collège, mais seulement 2 notions.</li>
-<li><b>Nombres et calculs est rangé par type de nombre</b> (Entiers, Décimaux, Fractions…), l'opération venant en sous-notion : décidé le 2026-10-06. Les sous-notions s'écrivent « opération : précision » ; les grosses notions sont découpées par opération (« Entiers : multiplication »), pour garder trois niveaux et des sous-notions courtes.</li>
-</ol></section>
+	<section class="box">
+		<h3>Choix faits</h3>
+		<ol class="choices">
+			<li>
+				<b>Suites a sa propre branche</b> au lieu d'être une notion de Fonctions : c'est aujourd'hui
+				un onglet entier d'Automaths, avec 15 domaines.
+			</li>
+			<li>
+				<b>Proportionnalité a sa propre branche</b> au lieu d'être dans Nombres et calculs : grand
+				bloc du collège, mais seulement 2 notions.
+			</li>
+			<li>
+				<b>Nombres et calculs est rangé par type de nombre</b> (Entiers, Décimaux, Fractions…),
+				l'opération venant en sous-notion : décidé le 2026-10-06. Les sous-notions s'écrivent «
+				opération : précision » ; les grosses notions sont découpées par opération (« Entiers :
+				multiplication »), pour garder trois niveaux et des sous-notions courtes.
+			</li>
+		</ol>
+	</section>
 </div>
