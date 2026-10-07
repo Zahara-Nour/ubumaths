@@ -221,6 +221,10 @@ opérations sur les dérivées, position relative` : rappels de 1re, pointage d'
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide » (Z1-Z4 selon les recos — 5 sous-notions,
+> renommage « espérance et variance », requalifications reconduites). Appliqué à l'arbre :
+> version 2026-10-07.11 — 136 notions, 532 sous-notions.
+
 1. **Z1 — Analyse** : « fonction réciproque » (Continuité) ; la limite de la somme des
    termes d'une suite géométrique = simples points sous `Limites de suites > suites
 géométriques`. (reco : oui, points.)

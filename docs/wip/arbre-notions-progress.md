@@ -295,3 +295,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   réciproque, absence de mémoire, fonction de répartition, coefficient de corrélation,
   déciles et rapport interdécile) + renommage `Autres lois > espérance` → « espérance et
   variance ». Questions Z1-Z4 en attente. Ne restera ensuite que la section Expertes.
+
+- **Tle comp. appliquée (2026-10-07, « je valide », Z1-Z4)** : 5 sous-notions — fonction
+  réciproque (Continuité), absence de mémoire et fonction de répartition (Autres lois),
+  coefficient de corrélation (Statistique à deux variables), déciles et rapport interdécile
+  (Indicateurs, « 5e à 2de, Tle comp. ») — + renommage `Autres lois > espérance` →
+  « espérance et variance » ; requalifications reconduites (somme géométrique, loi de
+  Bernoulli, moindres carrés/interpolation = points) → 19 branches, 136 notions,
+  532 sous-notions (JSON 2026-10-07.11), diagramme republié. Reste : la section Expertes de
+  l'ancienne analyse (dernier lot lycée).

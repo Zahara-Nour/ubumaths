@@ -105,7 +105,7 @@ FO=[
 ("Fonction exponentielle","1re, 1re ens. sci., Tle, Tle techno",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation","fonctions x ↦ aˣ"])],None),
 ("Fonctions trigonométriques","1re, Tle",[("",["cercle et radians","cosinus et sinus d'un réel","angles associés","équations","inéquations","parité et périodicité","dérivées et variations"])],None),
 ("Limites de fonctions","Tle, Tle comp.",[("",["limite en un point","opérations","formes indéterminées","comparaison et encadrement","croissances comparées","asymptotes"])],None),
-("Continuité","Tle, Tle comp.",[("",["continuité en un point","lecture graphique","valeurs intermédiaires","encadrement d'une solution"])],None),
+("Continuité","Tle, Tle comp.",[("",["continuité en un point","lecture graphique","valeurs intermédiaires","fonction réciproque","encadrement d'une solution"])],None),
 ("Convexité","Tle, Tle comp.",[("",["caractérisations","dérivée seconde","point d'inflexion","inégalités de convexité","lecture graphique"])],None),
 ("Logarithmes","Tle, Tle comp., Tle techno",[("",["réciproque de l'exponentielle","propriétés algébriques","équations et inéquations","dérivée","courbe","logarithme décimal"])],None),
 ]
@@ -172,7 +172,7 @@ PS=[
 ("Probabilités conditionnelles","2de, 1re",[("",["arbres pondérés","tableaux croisés","indépendance","probabilités totales","inversion du conditionnement","épreuves indépendantes successives","problèmes en contexte"])],None),
 ("Variables aléatoires","1re",[("",["loi d'une variable aléatoire","compléter une loi","espérance","variance et écart-type","jeux et gains"])],None),
 ("Loi binomiale","Tle, Tle comp., Tle techno",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","intervalle de fluctuation","coefficients binomiaux","espérance et variance"])],None),
-("Autres lois","Tle comp.",[("",["loi géométrique","loi uniforme discrète","loi uniforme continue","loi exponentielle","densité et aire","espérance"])],None),
+("Autres lois","Tle comp.",[("",["loi géométrique","loi uniforme discrète","loi uniforme continue","loi exponentielle","absence de mémoire","densité et aire","fonction de répartition","espérance et variance"])],None),
 ("Sommes et concentration","Tle",[("",["espérance et variance d'une somme","échantillons","Bienaymé-Tchebychev","inégalité de concentration","loi des grands nombres"])],"sommes de variables aléatoires"),
 ]
 DE=[
@@ -183,10 +183,10 @@ DE=[
 ]
 ST=[
 ("Représenter des données","CP à 2de",[("",["effectifs et fréquences","tableaux","tableau à double entrée","diagrammes en barres","diagrammes circulaires","courbes et repères","histogrammes","fréquences cumulées"])],"aucun modèle aujourd'hui"),
-("Indicateurs","5e à 2de",[("",["moyenne","médiane","quartiles","étendue","écart-type","boîte à moustaches"])],"aucun modèle aujourd'hui"),
+("Indicateurs","5e à 2de, Tle comp.",[("",["moyenne","médiane","quartiles","déciles et rapport interdécile","étendue","écart-type","boîte à moustaches"])],"aucun modèle aujourd'hui"),
 ("Échantillonnage","2de, 1re, 1re techno",[("",["fluctuation","simulation","estimation d'une proportion"])],"aucun modèle aujourd'hui"),
 ("Tableaux croisés","2de",[("",["tableau croisé d'effectifs","fréquences marginales et conditionnelles"])],"croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"),
-("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp., Tle techno",[("",["nuage de points","point moyen","ajustement affine","changement de variable"])],"reprend le thème Statistiques"),
+("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp., Tle techno",[("",["nuage de points","point moyen","ajustement affine","coefficient de corrélation","changement de variable"])],"reprend le thème Statistiques"),
 ]
 LO=[
 ("Connecteurs et contre-exemples","2de, 1re",[("",["et, ou, non","contre-exemple"])],None),
@@ -313,7 +313,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.10","statut":"validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.11","statut":"validé par David (cycles 2-4 + 2de + 1re/Tle spé + Tle comp. + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lot Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))

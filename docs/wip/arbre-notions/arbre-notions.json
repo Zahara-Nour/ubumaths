@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.10",
-	"statut": "validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.11",
+	"statut": "validé par David (cycles 2-4 + 2de + 1re/Tle spé + Tle comp. + 1re ens. sci. + 1re/Tle techno v2, 2026-10-06/07 ; lot Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -536,6 +536,7 @@
 						"continuité en un point",
 						"lecture graphique",
 						"valeurs intermédiaires",
+						"fonction réciproque",
 						"encadrement d'une solution"
 					],
 					"note": null
@@ -1120,8 +1121,10 @@
 						"loi uniforme discrète",
 						"loi uniforme continue",
 						"loi exponentielle",
+						"absence de mémoire",
 						"densité et aire",
-						"espérance"
+						"fonction de répartition",
+						"espérance et variance"
 					],
 					"note": null
 				},
@@ -1192,11 +1195,12 @@
 				},
 				{
 					"nom": "Indicateurs",
-					"niveaux": "5e à 2de",
+					"niveaux": "5e à 2de, Tle comp.",
 					"sous_notions": [
 						"moyenne",
 						"médiane",
 						"quartiles",
+						"déciles et rapport interdécile",
 						"étendue",
 						"écart-type",
 						"boîte à moustaches"
@@ -1225,6 +1229,7 @@
 						"nuage de points",
 						"point moyen",
 						"ajustement affine",
+						"coefficient de corrélation",
 						"changement de variable"
 					],
 					"note": "reprend le thème Statistiques"
