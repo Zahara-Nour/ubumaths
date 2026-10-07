@@ -373,7 +373,11 @@ const bounded = family('fonctions bornées', 'bnd-', [
 	[PINF, '\\frac{\\sin(x^2)}{x}', '0'],
 	[MINF, 'e^{x}\\cos x', '0'],
 	[PINF, '\\sin\\left(\\frac{1}{x}\\right)', '0'],
-	[PINF, 'x\\sin\\left(\\frac{1}{x}\\right)', '1']
+	[PINF, 'x\\sin\\left(\\frac{1}{x}\\right)', '1'],
+	// Borné de signe STRICT (2 + sin x ≥ 1) : la conclusion tient
+	[PINF, 'e^x(2+\\sin x)', '+inf'],
+	[PINF, 'x^2', '+inf'],
+	[PINF, '\\frac{1+\\sin x}{x}', '0']
 ]);
 
 // Oscillantes : pas de limite
@@ -389,7 +393,15 @@ const oscillating = family('oscillantes sans limite', 'osc-', [
 	[PINF, '\\tan x', 'none'],
 	['0^+', '\\frac{1}{x}\\sin\\left(\\frac{1}{x}\\right)', 'none'],
 	[PINF, 'x^2\\sin x', 'none'],
-	[PINF, '\\sin x+\\cos x', 'none']
+	[PINF, '\\sin x+\\cos x', 'none'],
+	// Borné qui RETOMBE à 0 (1 + sin x ∈ [0, 2]) × ∞ : signe constant, mais la
+	// fonction s'annule en −π/2 + 2kπ — pas de limite
+	[PINF, 'x(1+\\sin x)', 'none'],
+	[PINF, 'x^2(1+\\cos x)', 'none'],
+	[PINF, 'e^x(1-\\sin x)', 'none'],
+	[PINF, 'x+x\\sin x', 'none'],
+	[PINF, '\\ln(x(1+\\sin x))', 'none'],
+	[PINF, 'e^{x(1+\\sin x)}', 'none']
 ]);
 
 // Bords de domaine (limites à droite / à gauche seulement)
