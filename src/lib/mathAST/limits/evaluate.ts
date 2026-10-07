@@ -13,7 +13,7 @@
  * @module mathAST/limits/evaluate
  */
 
-import type { MathNode, LimitNode } from '../types';
+import type { MathNode, LimitNode, GreekLetterNode } from '../types';
 import type {
 	LimitResult,
 	LimitOptions,
@@ -37,7 +37,9 @@ import {
 	isDivision,
 	isMultiplication,
 	isSymbol,
-	isPositive
+	isPositive,
+	isGreek,
+	isVariable
 } from '../guards';
 import {
 	add,
@@ -49,7 +51,9 @@ import {
 	number,
 	opposite,
 	func,
-	ln
+	ln,
+	variable as variableNode,
+	greek
 } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
@@ -332,11 +336,62 @@ export function evaluateLimit(
 	direction: LimitDirection = 'both',
 	options: LimitOptions = {}
 ): LimitResult {
+	const greekResult = evaluateGreekVariableLimit(expr, variable, approach, direction, options);
+	if (greekResult !== null) return greekResult;
 	const result = rejectUnreducedInfinity(
 		evaluateLimitExactForm(expr, variable, approach, direction, options)
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
 	return writeLikeInput(result, expression);
+}
+
+/**
+ * Variable grecque (`\lim_{\alpha\to+\infty}`) : dans le corps, α est un
+ * nœud `greek`, alors que toutes les stratégies du moteur (substitution,
+ * degré, formes connues…) cherchent un nœud `variable`. On traduit donc α en
+ * variable nommée `alpha` à l'entrée, on calcule, puis on rend α dans la
+ * valeur et les étapes. Rend `null` si la variable n'est pas une lettre
+ * grecque présente dans l'expression (cas ordinaire).
+ */
+function evaluateGreekVariableLimit(
+	expr: MathNode | LimitNode,
+	variable: string | undefined,
+	approach: MathNode | undefined,
+	direction: LimitDirection,
+	options: LimitOptions
+): LimitResult | null {
+	const varName = variable ?? (isLimit(expr) ? expr.variable : undefined);
+	if (varName === undefined) return null;
+	const isTheGreek = (n: MathNode): n is GreekLetterNode => isGreek(n) && n.letter === varName;
+	const [letter] = [
+		...findNodes(expr, isTheGreek),
+		...(approach ? findNodes(approach, isTheGreek) : [])
+	];
+	if (letter === undefined) return null;
+
+	const toVariable = (n: MathNode): MathNode =>
+		mapNode(n, (m) => (isTheGreek(m) ? variableNode(varName, m.metadata) : m));
+	const toGreek = (n: MathNode): MathNode =>
+		mapNode(n, (m) => (isVariable(m) && m.name === varName ? greek(letter.letter, m.metadata) : m));
+
+	const result = evaluateLimit(
+		toVariable(expr),
+		variable,
+		approach && toVariable(approach),
+		direction,
+		options
+	);
+	return {
+		...result,
+		approach: toGreek(result.approach),
+		value: result.value && toGreek(result.value),
+		steps: result.steps.map((step) => ({
+			...step,
+			before: toGreek(step.before),
+			after: toGreek(step.after),
+			...(step.operand && { operand: toGreek(step.operand) })
+		}))
+	};
 }
 
 /**

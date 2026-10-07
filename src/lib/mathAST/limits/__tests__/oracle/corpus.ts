@@ -34,6 +34,12 @@ export interface OracleEntry {
 	readonly f: string;
 	/** Attendu noté à la main. */
 	readonly expected: ExpectedLimit;
+	/**
+	 * Variable de la limite, `x` par défaut. Une lettre grecque s'écrit par
+	 * son nom de commande (`alpha` pour `\alpha`), nom que portent aussi la
+	 * variable du nœud `limit` et la clé de `compile()`.
+	 */
+	readonly variable?: string;
 }
 
 export interface OracleFamily {
@@ -478,6 +484,36 @@ const unparenthesized = family('sans parenthèses', 'bare-', [
 	['1', '\\frac{x^2-1}{x-1}-x', '1']
 ]);
 
+// Variable grecque (contenu en production, 2026-10-07 :
+// `\lim_{\alpha\to+\infty}\frac{\alpha+1}{\alpha+2}`). Le parseur refusait
+// toute variable non latine (« Expected \to in limit subscript »).
+const greekVariable: OracleFamily = {
+	name: 'variable grecque',
+	entries: [
+		{
+			id: 'greek-01',
+			at: PINF,
+			f: '\\frac{\\alpha+1}{\\alpha+2}',
+			expected: '1',
+			variable: 'alpha'
+		},
+		{
+			id: 'greek-02',
+			at: PINF,
+			f: '\\ln\\frac{\\alpha+1}{\\alpha+2}',
+			expected: '0',
+			variable: 'alpha'
+		},
+		{
+			id: 'greek-03',
+			at: '0',
+			f: '\\frac{\\sin\\theta}{\\theta}',
+			expected: '1',
+			variable: 'theta'
+		}
+	]
+};
+
 export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	polynomials,
 	rationalAtInfinity,
@@ -493,7 +529,8 @@ export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	domainEdges,
 	indeterminateForms,
 	classics,
-	unparenthesized
+	unparenthesized,
+	greekVariable
 ];
 
 /**
@@ -534,6 +571,7 @@ export function scaledVariant(entry: OracleEntry): OracleEntry {
 					? '+inf'
 					: `2-3\\left(${entry.expected}\\right)`;
 	return {
+		...entry,
 		id: `${entry.id}~2-3f`,
 		at: entry.at,
 		f: `2-3\\left(${entry.f}\\right)`,
