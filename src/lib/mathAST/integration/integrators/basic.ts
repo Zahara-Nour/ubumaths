@@ -15,7 +15,7 @@ import type {
 } from '../types';
 import { isNumber, isVariable, isEulerConstant } from '../../guards';
 import { number } from '../../factory';
-import { numericNode } from '../../common/numeric';
+import { numericNode, extractExactRational } from '../../common/numeric';
 import {
 	powerRule,
 	constantRule,
@@ -26,6 +26,7 @@ import {
 	tanRule,
 	arctanRule,
 	arcsinRule,
+	exponentialBaseRule,
 	containsVariable,
 	getNumericValue
 } from '../rules';
@@ -134,6 +135,22 @@ function isExponential(expr: MathNode, variable: string): { arg: MathNode } | nu
 	}
 
 	return null;
+}
+
+/**
+ * aˣ avec a constant, a > 0 et a ≠ 1 (a littéral : supposé admissible, comme
+ * dans a/x). La base e est traitée par isExponential.
+ */
+function isConstantBaseExponential(expr: MathNode, variable: string): { base: MathNode } | null {
+	if (expr.type !== 'superscript') return null;
+	if (!isVariable(expr.superscript) || expr.superscript.name !== variable) return null;
+	const base = expr.base;
+	if (isEulerConstant(base) || containsVariable(base, variable)) return null;
+	const inner = base.type === 'delimiter' ? base.content : base;
+	if (isEulerConstant(inner) || inner.type === 'opposite') return null;
+	const rational = extractExactRational(inner);
+	if (rational !== null && (rational.n <= 0n || rational.n === rational.d)) return null;
+	return { base };
 }
 
 /**
@@ -403,6 +420,11 @@ export const basicIntegrator: Integrator = {
 			return true;
 		}
 
+		// aˣ
+		if (isConstantBaseExponential(expr, variable)) {
+			return true;
+		}
+
 		// Trig functions
 		if (isSine(expr, variable) || isCosine(expr, variable) || isTangent(expr, variable)) {
 			return true;
@@ -510,6 +532,25 @@ export const basicIntegrator: Integrator = {
 			recorder.recordStepByRule('exp-rule', expr, expr, 'detailed');
 			antiderivative = expRule(arg);
 			recorder.recordStepByRule('exp-rule', expr, antiderivative, 'summarized');
+
+			return {
+				variable,
+				status: 'exact',
+				antiderivative,
+				integrandType: 'exponential',
+				technique: 'basic-rule',
+				steps: recorder.getSteps(),
+				constantNote: CONSTANT_OF_INTEGRATION_NOTE
+			};
+		}
+
+		// Case 5b: aˣ = eˣˡⁿᵃ → aˣ / ln a
+		const baseMatch = isConstantBaseExponential(expr, variable);
+		if (baseMatch && expr.type === 'superscript') {
+			const description = 'aˣ = eˣ ˡⁿ ᵃ : une primitive de aˣ est aˣ / ln a';
+			recorder.recordStep('exp-base-rule', description, expr, expr, 'detailed');
+			antiderivative = exponentialBaseRule(baseMatch.base, expr.superscript);
+			recorder.recordStep('exp-base-rule', description, expr, antiderivative, 'summarized');
 
 			return {
 				variable,

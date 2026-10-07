@@ -61,6 +61,8 @@ export interface PrimitiveCase {
 	readonly literal: boolean;
 	/** Écritures de classe acceptées (vide : forme non contrôlée) */
 	readonly expected: readonly string[];
+	/** Paramètres pris en valeur absolue dans chaque jeu (base de bˣ : b > 0) */
+	readonly positiveParameters?: readonly string[];
 }
 
 /** Une intégrale définie. */
@@ -87,6 +89,7 @@ interface Options {
 	readonly variable?: string;
 	readonly points?: readonly number[];
 	readonly literal?: boolean;
+	readonly positiveParameters?: readonly string[];
 }
 
 // =============================================================================
@@ -167,7 +170,8 @@ function latex(family: Family, rows: readonly Row[], options: Options = {}): Pri
 		variable: options.variable ?? 'x',
 		points: options.points ?? DEFAULT_POINTS,
 		literal: options.literal ?? false,
-		expected
+		expected,
+		...(options.positiveParameters ? { positiveParameters: options.positiveParameters } : {})
 	}));
 }
 
@@ -607,11 +611,15 @@ const LITERAL_CASES: PrimitiveCase[] = [
 			['\\frac{a}{x-b}', 'a\\ln|x-b|'],
 			['a^2x', '\\frac{a^2}{2}x^2', '\\frac{a^2x^2}{2}'],
 			['\\frac{x}{a}', '\\frac{x^2}{2a}', '\\frac{1}{2a}x^2'],
-			['\\frac{1}{a}e^{\\frac{x}{a}}', 'e^{\\frac{x}{a}}'],
-			['b^x', '\\frac{b^x}{\\ln(b)}']
+			['\\frac{1}{a}e^{\\frac{x}{a}}', 'e^{\\frac{x}{a}}']
 		],
 		{ literal: true }
 	),
+	// bˣ n'est définie que pour b > 0 : b pris en valeur absolue dans chaque jeu
+	...latex('litterale', [['b^x', '\\frac{b^x}{\\ln(b)}']], {
+		literal: true,
+		positiveParameters: ['b']
+	}),
 	// ax + b > 0 exigé (√, exposant n = 0,5) : points pour chacun des trois jeux
 	...latex('litterale', [['(ax+b)^n', '\\frac{(ax+b)^{n+1}}{a(n+1)}']], {
 		literal: true,

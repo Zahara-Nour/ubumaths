@@ -44,6 +44,8 @@ import { numericIntegrate } from './numeric';
 import { expandFunctionPowers } from '../common/function-power';
 import { toCustom } from '../custom-generator';
 import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots';
+import { integrateByChainRule } from './integrators/chain-rule';
+import { dropAbsOfPositive } from './positive-abs';
 
 // =============================================================================
 // Budget global
@@ -610,9 +612,20 @@ function integrateInternal(
 
 	// Step 5: Try integrators in priority order
 	const integrator = selectIntegrator(simplified, variable);
+	const selected = integrator
+		? integrator.integrate(simplified, variable, options, recorder, depth)
+		: null;
+	if (selected !== null && selected.status !== 'unsupported') {
+		return selected;
+	}
 
-	if (integrator) {
-		return integrator.integrate(simplified, variable, options, recorder, depth);
+	// Step 5b: recours après un refus — u′·f(u) avec u non linéaire, sin²/cos²
+	const chained = integrateByChainRule(simplified, variable, options, recorder, depth);
+	if (chained !== null) {
+		return chained;
+	}
+	if (selected !== null) {
+		return selected;
 	}
 
 	// Step 6: Unsupported
@@ -752,6 +765,10 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
 		}
+	}
+	// ln|u| → ln(u) quand u > 0 sur ℝ (ln(x² + 1), ln(eˣ + 1)) : écriture de classe
+	if (result.status === 'exact' && finalAntiderivative && startDepth === 0) {
+		finalAntiderivative = dropAbsOfPositive(finalAntiderivative, variable);
 	}
 	// u^{p/n} (n impair) n'est définie que pour u > 0 : réécrite en racines,
 	// la primitive est définie là où l'intégrande ⁿ√… l'est (∛(2x+1) sur ℝ)
