@@ -360,3 +360,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   `is_primary` par exercice, test « deux principaux refusés » vert) — seule la phrase de
   résumé de `schema-cible-spec.md` (« un seul nœud par contenu ») était fausse, corrigée.
   Aucun changement de migration ni de test.
+
+- **Orientation de transition corrigée par David (2026-10-07)** : « on refait tout à 0 » —
+  la cible se reconstruit depuis les documents v2 (source de vérité), on ne complète NI ne
+  corrige les points existants. Spec réécrite (C4 : seeds neufs complets dès l'insertion ;
+  C5 : anciens points intouchés → transfert des tags par appariement → bascule → archivage ;
+  C23 aligné). Mesuré en prod : 0 acquisition d'élève, 22 tentatives (tenant aux modèles),
+  1 026 tags modèles→points = le SEUL actif à transférer (342 1_SPE, 308 T_SPE, 173 T_EXP,
+  140 T_COMP, 63 2de). Le backfill de grade des anciens points est abandonné (inutile).

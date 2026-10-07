@@ -45,14 +45,24 @@ modèles et exercices de la PR 1 — le trigger existant est réutilisé).
 **C3 — limite.** Rattacher un point à un **nœud archivé** est refusé pour un nouveau
 rattachement ; un rattachement existant survit à l'archivage du nœud (cohérent PR 1).
 
-**C4 — transition.** `node_id` est **nullable** : les 1 007 points existants restent sans
-nœud et le site fonctionne comme aujourd'hui. La règle « 100 % des points rattachés » vaut
-pour **tout nouveau seed** (vérifiée par le test du seed, pas par une contrainte SQL — on
-ne peut pas contraindre « seulement les nouveaux »).
+**C4 — reconstruction à neuf (décision David, 2026-10-07).** La cible ne « complète » PAS
+les points existants : elle se **reconstruit depuis les documents v2**, seule source de
+vérité. Pour chaque grade, un seed NEUF crée des points neufs portant TOUS, dès
+l'insertion, leur nœud, leur grade et leur rubrique (vérifié par le test du seed). Les
+colonnes nouvelles restent facultatives en base pour une seule raison : anciens et
+nouveaux points cohabitent dans la même table jusqu'à l'extinction des anciens — pas parce
+qu'un point de la cible pourrait en manquer.
 
-**C5 — grade.** Le point porte son `grade` en propre. Backfill additif au déploiement :
-copie du grade du thème (`curriculum_themes.grade`) pour les 1 007 existants. Le grade du
-point devient la source de vérité.
+**C5 — anciens seeds : intouchés, puis transférés, puis éteints.** Les 1 007 points
+existants ne sont **jamais modifiés** (ni nœud, ni grade recopié, ni rubrique) : ils
+continuent de servir le site tels quels jusqu'à la bascule de leur grade. À la bascule
+d'un grade : les **tags modèles → points** (seul actif accroché aux anciens points —
+mesuré le 2026-10-07 : 1 026 liens, 342 en 1_SPE, 308 T_SPE, 173 T_EXP, 140 T_COMP, 63 en
+2de ; **0 acquisition d'élève**, et les tentatives tiennent aux modèles, pas aux points)
+sont **transférés** vers les points neufs par appariement de libellés — un lot présenté et
+validé comme les autres ; puis l'affichage bascule, et les anciens points du grade
+s'**archivent**. Leur destruction (avec `themes`, `objectives` et le vieux seed 6e)
+attend le volet destructif de fin de chantier.
 
 **C6 — nominal.** Plusieurs points d'un même grade sur un même nœud : permis (les sept
 points de la Trigonométrie de 1re spé se répartissent sur deux sous-notions).
@@ -141,9 +151,10 @@ qu'elle référence, ou ses références attendent le seed cycle 3 complet : à 
 de seed). L'ancien seed 6e (2020, 95 points, 0 usage) reste en place sans servir jusqu'au
 volet destructif (décision R5 = B).
 
-**C23 — coexistence.** Les seeds existants (2de, 1re/Tle spé, Tle comp., Expertes —
-conformes aux textes 2026) continuent de servir le site sans nœud ni rubrique ; leurs
-reseeds progressifs les rattacheront, grade par grade, chacun validé par ses tests.
+**C23 — coexistence.** Les seeds existants (2de, 1re/Tle spé, Tle comp., Expertes)
+continuent de servir le site **tels quels, intouchés** ; chaque grade bascule ensuite vers
+son seed NEUF construit depuis son document v2 (mécanique C4-C5 : seed neuf → transfert
+des tags → bascule → archivage des anciens), grade par grade, chacun validé par ses tests.
 
 **C24 — livraison.** Deux PR : la **migration d'abord** (additive : colonnes nullables +
 nouvelles tables + gardes), `db:migrate`, `db:types`, puis le code. Tests d'intégration
