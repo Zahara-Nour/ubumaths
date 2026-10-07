@@ -1,11 +1,12 @@
 # Seed CM1-CM2 — points du programme (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION (questions S3-S6) — aucune migration avant.**
-> ⚠️ Corrigé après retour de David : **les fractions décimales sont des fractions** — les
-> points qui les interprètent, placent, décomposent, comparent vont sous `Fractions : sens
-et écritures`, pas sous `Décimaux : numération` (on classe ce que le contenu EST). Seuls
-> restent côté Décimaux : les unités de numération décimale, le passage à l'écriture à
-> virgule, et tout ce qui porte sur l'écriture à virgule elle-même.
+> **Statut : EN ATTENTE DE VALIDATION — restent les questions S3-S6 et le rattachement
+> n° 4 (problèmes pré-algorithmes). Aucune migration avant.**
+> ✅ Déjà tranché par David le 2026-10-07 : **les fractions décimales sont des fractions**
+> (→ `Fractions : sens et écritures` ; côté Décimaux ne restent que les unités de
+> numération, l'écriture à virgule et son pont) · renommage **« arrondis et ordres de
+> grandeur »** · nouvelle sous-notion **`Entiers : division > calcul réfléchi`** ·
+> assemblages de cubes → **`Solides`** · rattachements 5 et 6 validés.
 > Source : « Programme de mathématiques pour le cycle 3 » (BOENJS du 17 avril 2025), blocs
 > « Objectifs d'apprentissage » du CM1 et du CM2, extraits **ligne à ligne** (28 p. lues).
 > Mapping : [programmes-ecarts-cycle3.md](programmes-ecarts-cycle3.md) (décisions R1-R6
@@ -88,20 +89,20 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### … > Les nombres décimaux
 
-| Code    | Énoncé (verbatim BO)                                                                                                                                                      | kind | rég. | nœud                                            |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ----------------------------------------------- |
-| CM1-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                          | s-f  | div. | Fractions : sens et écritures > définition      |
-| CM1-024 | Connaître et utiliser les relations entre unités simples, dixièmes et centièmes                                                                                           | s-f  | div. | Décimaux : numération > décomposer              |
-| CM1-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                          | s-f  | div. | Fractions : sens et écritures > droite graduée  |
-| CM1-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                   | s-f  | div. | Fractions : sens et écritures > décomposer      |
-| CM1-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                                | s-f  | div. | Fractions : sens et écritures > décomposer      |
-| CM1-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                                | s-f  | div. | Fractions : sens et écritures > comparer        |
-| CM1-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                    | s-f  | div. | Fractions : sens et écritures > comparer        |
-| CM1-030 | Passer d'une écriture sous forme d'une fraction décimale ou d'une somme de fractions décimales à une écriture à virgule et réciproquement                                 | s-f  | div. | Décimaux : numération > forme fractionnaire     |
-| CM1-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                        | s-f  | div. | Décimaux : numération > écrire                  |
-| CM1-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal                            | s-f  | div. | Décimaux : numération > **droite graduée (S3)** |
-| CM1-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                               | s-f  | div. | Décimaux : numération > arrondir                |
-| CM1-034 | Comparer, encadrer, intercaler, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                  |
+| Code    | Énoncé (verbatim BO)                                                                                                                                                      | kind | rég. | nœud                                                   |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------------------------------------------------------ |
+| CM1-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                          | s-f  | div. | Fractions : sens et écritures > définition             |
+| CM1-024 | Connaître et utiliser les relations entre unités simples, dixièmes et centièmes                                                                                           | s-f  | div. | Décimaux : numération > décomposer                     |
+| CM1-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                          | s-f  | div. | Fractions : sens et écritures > droite graduée         |
+| CM1-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                   | s-f  | div. | Fractions : sens et écritures > décomposer             |
+| CM1-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                                | s-f  | div. | Fractions : sens et écritures > décomposer             |
+| CM1-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                                | s-f  | div. | Fractions : sens et écritures > comparer               |
+| CM1-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                    | s-f  | div. | Fractions : sens et écritures > comparer               |
+| CM1-030 | Passer d'une écriture sous forme d'une fraction décimale ou d'une somme de fractions décimales à une écriture à virgule et réciproquement                                 | s-f  | div. | Décimaux : numération > forme fractionnaire            |
+| CM1-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                        | s-f  | div. | Décimaux : numération > écrire                         |
+| CM1-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal                            | s-f  | div. | Décimaux : numération > **droite graduée (S3)**        |
+| CM1-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                               | s-f  | div. | Décimaux : numération > arrondis et ordres de grandeur |
+| CM1-034 | Comparer, encadrer, intercaler, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                         |
 
 ### … > Le calcul mental — tout en `fluence` (S5)
 
@@ -123,14 +124,14 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### … > Les quatre opérations
 
-| Code    | Énoncé (verbatim BO)                                                                           | kind | rég. | nœud                                               |
-| ------- | ---------------------------------------------------------------------------------------------- | ---- | ---- | -------------------------------------------------- |
-| CM1-048 | Estimer le résultat d'une opération                                                            | s-f  | div. | Décimaux : numération > arrondir _(discutable)_    |
-| CM1-049 | Savoir effectuer un calcul contenant des parenthèses                                           | s-f  | div. | Entiers : priorités opératoires > avec parenthèses |
-| CM1-050 | Poser en colonnes et effectuer des additions et des soustractions de nombres décimaux          | s-f  | div. | Décimaux : calculs > calcul posé                   |
-| CM1-051 | Poser et effectuer des multiplications de deux nombres entiers                                 | s-f  | div. | Entiers : multiplication > calcul posé             |
-| CM1-052 | Poser et effectuer des multiplications d'un nombre décimal par un nombre entier inférieur à 10 | s-f  | div. | Décimaux : calculs > calcul posé                   |
-| CM1-053 | Poser et effectuer des divisions euclidiennes avec un diviseur à un chiffre                    | s-f  | div. | Entiers : division > calcul posé                   |
+| Code    | Énoncé (verbatim BO)                                                                           | kind | rég. | nœud                                                   |
+| ------- | ---------------------------------------------------------------------------------------------- | ---- | ---- | ------------------------------------------------------ |
+| CM1-048 | Estimer le résultat d'une opération                                                            | s-f  | div. | Décimaux : numération > arrondis et ordres de grandeur |
+| CM1-049 | Savoir effectuer un calcul contenant des parenthèses                                           | s-f  | div. | Entiers : priorités opératoires > avec parenthèses     |
+| CM1-050 | Poser en colonnes et effectuer des additions et des soustractions de nombres décimaux          | s-f  | div. | Décimaux : calculs > calcul posé                       |
+| CM1-051 | Poser et effectuer des multiplications de deux nombres entiers                                 | s-f  | div. | Entiers : multiplication > calcul posé                 |
+| CM1-052 | Poser et effectuer des multiplications d'un nombre décimal par un nombre entier inférieur à 10 | s-f  | div. | Décimaux : calculs > calcul posé                       |
+| CM1-053 | Poser et effectuer des divisions euclidiennes avec un diviseur à un chiffre                    | s-f  | div. | Entiers : division > calcul posé                       |
 
 ### … > La résolution de problèmes
 
@@ -191,32 +192,32 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### Espace et géométrie (branche `Géométrie`)
 
-| Code    | Énoncé (verbatim BO)                                                                                                                                                                                                                    | kind  | rég. | nœud                                                         | Rubrique BO               |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------------ | ------------------------- |
-| CM1-096 | Utiliser le vocabulaire géométrique approprié dans le contexte d'apprentissage des notions correspondantes                                                                                                                              | s-f   | div. | Figures planes > reconnaître et décrire                      | La géométrie plane        |
-| CM1-097 | Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas                                                                                                                                                       | s-f   | div. | Figures planes > reproduire et construire                    | idem                      |
-| CM1-098 | Connaître les codes usuels utilisés en géométrie                                                                                                                                                                                        | conn. | div. | Figures planes > reconnaître et décrire                      | idem                      |
-| CM1-099 | Décrire et reconnaître un cercle et un disque comme un ensemble de points caractérisés par leur distance à un point donné                                                                                                               | s-f   | div. | Figures planes > cercle                                      | idem                      |
-| CM1-100 | Reconnaître et utiliser la notion de perpendicularité                                                                                                                                                                                   | s-f   | div. | Figures planes > perpendiculaires et parallèles              | idem                      |
-| CM1-101 | Reconnaître et utiliser la notion de parallélisme                                                                                                                                                                                       | s-f   | div. | Figures planes > perpendiculaires et parallèles              | idem                      |
-| CM1-102 | Reconnaître et nommer les figures suivantes en faisant référence à leur définition : triangle, triangle rectangle, triangle isocèle, triangle équilatéral, quadrilatère, carré, rectangle et losange                                    | s-f   | div. | Figures planes > reconnaître et décrire                      | idem                      |
-| CM1-103 | Connaître les propriétés de parallélisme des côtés opposés, des égalités de longueurs et d'angles pour les figures usuelles : triangle rectangle, triangle isocèle, triangle équilatéral, carré, rectangle et losange                   | conn. | div. | Figures planes > reconnaître et décrire                      | idem                      |
-| CM1-104 | Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle ou un cercle ou des assemblages de ces figures sur tout support (papier quadrillé, pointé ou uni), avec une règle graduée, une équerre ou un compas | s-f   | div. | Figures planes > reproduire et construire                    | idem                      |
-| CM1-105 | Construire une figure géométrique composée de segments, de droites, de polygones usuels et de cercles                                                                                                                                   | s-f   | div. | Figures planes > reproduire et construire                    | idem                      |
-| CM1-106 | Reconnaître si une figure possède un ou plusieurs axes de symétrie                                                                                                                                                                      | s-f   | div. | Symétrie axiale (notion)                                     | idem                      |
-| CM1-107 | Compléter une figure pour la rendre symétrique par rapport à une droite donnée, horizontale ou verticale                                                                                                                                | s-f   | div. | Symétrie axiale (notion)                                     | idem                      |
-| CM1-108 | Construire, sur papier quadrillé, la figure symétrique d'une figure donnée par rapport à une droite horizontale ou verticale                                                                                                            | s-f   | div. | Symétrie axiale (notion)                                     | idem                      |
-| CM1-109 | Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre et un prisme droit                                                                                                                                               | s-f   | div. | Solides > reconnaître et décrire                             | Les solides               |
-| CM1-110 | Décrire un cube, un pavé, une pyramide et un prisme droit en faisant référence à des propriétés et en utilisant le vocabulaire approprié                                                                                                | s-f   | div. | Solides > reconnaître et décrire                             | idem                      |
-| CM1-111 | Connaître le nombre et la nature des faces d'un cube ou d'un pavé                                                                                                                                                                       | conn. | div. | Solides > reconnaître et décrire                             | idem                      |
-| CM1-112 | Connaître la nature des faces d'une pyramide                                                                                                                                                                                            | conn. | div. | Solides > reconnaître et décrire                             | idem                      |
-| CM1-113 | Connaître la nature des faces d'un prisme droit                                                                                                                                                                                         | conn. | div. | Solides > reconnaître et décrire                             | idem                      |
-| CM1-114 | Construire un cube, un pavé, une pyramide ou un prisme droit                                                                                                                                                                            | s-f   | div. | Solides > construire                                         | idem                      |
-| CM1-115 | Reconnaître un patron d'un cube                                                                                                                                                                                                         | s-f   | div. | Solides > patrons                                            | idem                      |
-| CM1-116 | Construire un patron d'un cube                                                                                                                                                                                                          | s-f   | div. | Solides > patrons                                            | idem                      |
-| CM1-117 | Connaître et utiliser le vocabulaire lié aux déplacements                                                                                                                                                                               | s-f   | div. | Repérage et déplacements > coder un déplacement              | Le repérage dans l'espace |
-| CM1-118 | Comprendre, utiliser et produire une suite d'instructions qui décrivent un déplacement en utilisant un vocabulaire spatial précis                                                                                                       | s-f   | div. | Repérage et déplacements > coder un déplacement              | idem                      |
-| CM1-119 | Résoudre des problèmes portant sur des assemblages de cubes                                                                                                                                                                             | s-f   | div. | Repérage et déplacements > positions et plans _(discutable)_ | idem                      |
+| Code    | Énoncé (verbatim BO)                                                                                                                                                                                                                    | kind  | rég. | nœud                                            | Rubrique BO               |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ----------------------------------------------- | ------------------------- |
+| CM1-096 | Utiliser le vocabulaire géométrique approprié dans le contexte d'apprentissage des notions correspondantes                                                                                                                              | s-f   | div. | Figures planes > reconnaître et décrire         | La géométrie plane        |
+| CM1-097 | Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas                                                                                                                                                       | s-f   | div. | Figures planes > reproduire et construire       | idem                      |
+| CM1-098 | Connaître les codes usuels utilisés en géométrie                                                                                                                                                                                        | conn. | div. | Figures planes > reconnaître et décrire         | idem                      |
+| CM1-099 | Décrire et reconnaître un cercle et un disque comme un ensemble de points caractérisés par leur distance à un point donné                                                                                                               | s-f   | div. | Figures planes > cercle                         | idem                      |
+| CM1-100 | Reconnaître et utiliser la notion de perpendicularité                                                                                                                                                                                   | s-f   | div. | Figures planes > perpendiculaires et parallèles | idem                      |
+| CM1-101 | Reconnaître et utiliser la notion de parallélisme                                                                                                                                                                                       | s-f   | div. | Figures planes > perpendiculaires et parallèles | idem                      |
+| CM1-102 | Reconnaître et nommer les figures suivantes en faisant référence à leur définition : triangle, triangle rectangle, triangle isocèle, triangle équilatéral, quadrilatère, carré, rectangle et losange                                    | s-f   | div. | Figures planes > reconnaître et décrire         | idem                      |
+| CM1-103 | Connaître les propriétés de parallélisme des côtés opposés, des égalités de longueurs et d'angles pour les figures usuelles : triangle rectangle, triangle isocèle, triangle équilatéral, carré, rectangle et losange                   | conn. | div. | Figures planes > reconnaître et décrire         | idem                      |
+| CM1-104 | Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle ou un cercle ou des assemblages de ces figures sur tout support (papier quadrillé, pointé ou uni), avec une règle graduée, une équerre ou un compas | s-f   | div. | Figures planes > reproduire et construire       | idem                      |
+| CM1-105 | Construire une figure géométrique composée de segments, de droites, de polygones usuels et de cercles                                                                                                                                   | s-f   | div. | Figures planes > reproduire et construire       | idem                      |
+| CM1-106 | Reconnaître si une figure possède un ou plusieurs axes de symétrie                                                                                                                                                                      | s-f   | div. | Symétrie axiale (notion)                        | idem                      |
+| CM1-107 | Compléter une figure pour la rendre symétrique par rapport à une droite donnée, horizontale ou verticale                                                                                                                                | s-f   | div. | Symétrie axiale (notion)                        | idem                      |
+| CM1-108 | Construire, sur papier quadrillé, la figure symétrique d'une figure donnée par rapport à une droite horizontale ou verticale                                                                                                            | s-f   | div. | Symétrie axiale (notion)                        | idem                      |
+| CM1-109 | Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre et un prisme droit                                                                                                                                               | s-f   | div. | Solides > reconnaître et décrire                | Les solides               |
+| CM1-110 | Décrire un cube, un pavé, une pyramide et un prisme droit en faisant référence à des propriétés et en utilisant le vocabulaire approprié                                                                                                | s-f   | div. | Solides > reconnaître et décrire                | idem                      |
+| CM1-111 | Connaître le nombre et la nature des faces d'un cube ou d'un pavé                                                                                                                                                                       | conn. | div. | Solides > reconnaître et décrire                | idem                      |
+| CM1-112 | Connaître la nature des faces d'une pyramide                                                                                                                                                                                            | conn. | div. | Solides > reconnaître et décrire                | idem                      |
+| CM1-113 | Connaître la nature des faces d'un prisme droit                                                                                                                                                                                         | conn. | div. | Solides > reconnaître et décrire                | idem                      |
+| CM1-114 | Construire un cube, un pavé, une pyramide ou un prisme droit                                                                                                                                                                            | s-f   | div. | Solides > construire                            | idem                      |
+| CM1-115 | Reconnaître un patron d'un cube                                                                                                                                                                                                         | s-f   | div. | Solides > patrons                               | idem                      |
+| CM1-116 | Construire un patron d'un cube                                                                                                                                                                                                          | s-f   | div. | Solides > patrons                               | idem                      |
+| CM1-117 | Connaître et utiliser le vocabulaire lié aux déplacements                                                                                                                                                                               | s-f   | div. | Repérage et déplacements > coder un déplacement | Le repérage dans l'espace |
+| CM1-118 | Comprendre, utiliser et produire une suite d'instructions qui décrivent un déplacement en utilisant un vocabulaire spatial précis                                                                                                       | s-f   | div. | Repérage et déplacements > coder un déplacement | idem                      |
+| CM1-119 | Résoudre des problèmes portant sur des assemblages de cubes                                                                                                                                                                             | s-f   | div. | Solides (notion)                                | idem                      |
 
 ### OGD et probabilités (branches `Statistiques` / `Probabilités`) et La proportionnalité (branche `Proportionnalité`)
 
@@ -272,20 +273,20 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### … > Les nombres décimaux
 
-| Code    | Énoncé (verbatim BO)                                                                                                                                                    | kind | rég. | nœud                                            |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ----------------------------------------------- |
-| CM2-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                        | s-f  | div. | Fractions : sens et écritures > définition      |
-| CM2-024 | Connaître et utiliser les relations entre unités simples, dixièmes, centièmes et millièmes                                                                              | s-f  | div. | Décimaux : numération > décomposer              |
-| CM2-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                        | s-f  | div. | Fractions : sens et écritures > droite graduée  |
-| CM2-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                 | s-f  | div. | Fractions : sens et écritures > décomposer      |
-| CM2-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                              | s-f  | div. | Fractions : sens et écritures > décomposer      |
-| CM2-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                              | s-f  | div. | Fractions : sens et écritures > comparer        |
-| CM2-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                  | s-f  | div. | Fractions : sens et écritures > comparer        |
-| CM2-030 | Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement                               | s-f  | div. | Décimaux : numération > forme fractionnaire     |
-| CM2-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                      | s-f  | div. | Décimaux : numération > écrire                  |
-| CM2-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre en écriture à virgule            | s-f  | div. | Décimaux : numération > **droite graduée (S3)** |
-| CM2-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                             | s-f  | div. | Décimaux : numération > arrondir                |
-| CM2-034 | Comparer, encadrer, intercaler, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                  |
+| Code    | Énoncé (verbatim BO)                                                                                                                                                    | kind | rég. | nœud                                                   |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ---- | ------------------------------------------------------ |
+| CM2-023 | Interpréter, représenter, écrire et lire des fractions décimales                                                                                                        | s-f  | div. | Fractions : sens et écritures > définition             |
+| CM2-024 | Connaître et utiliser les relations entre unités simples, dixièmes, centièmes et millièmes                                                                              | s-f  | div. | Décimaux : numération > décomposer                     |
+| CM2-025 | Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale                                        | s-f  | div. | Fractions : sens et écritures > droite graduée         |
+| CM2-026 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1                                                 | s-f  | div. | Fractions : sens et écritures > décomposer             |
+| CM2-027 | Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10                              | s-f  | div. | Fractions : sens et écritures > décomposer             |
+| CM2-028 | Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >                                                                              | s-f  | div. | Fractions : sens et écritures > comparer               |
+| CM2-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                  | s-f  | div. | Fractions : sens et écritures > comparer               |
+| CM2-030 | Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement                               | s-f  | div. | Décimaux : numération > forme fractionnaire            |
+| CM2-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                      | s-f  | div. | Décimaux : numération > écrire                         |
+| CM2-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre en écriture à virgule            | s-f  | div. | Décimaux : numération > **droite graduée (S3)**        |
+| CM2-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                             | s-f  | div. | Décimaux : numération > arrondis et ordres de grandeur |
+| CM2-034 | Comparer, encadrer, intercaler, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                         |
 
 ### … > Le calcul mental — tout en `fluence` (S5)
 
@@ -306,19 +307,19 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 | CM2-047 | Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples                                                                        | s-f   | flu. | Entiers : multiplication > distributivité             |
 | CM2-048 | Calculer le double d'un nombre décimal dans des cas simples                                                                                                          | s-f   | flu. | Décimaux : calculs > moitié (S4)                      |
 | CM2-049 | Calculer la moitié d'un nombre décimal dans des cas simples                                                                                                          | s-f   | flu. | Décimaux : calculs > moitié (S4)                      |
-| CM2-050 | Diviser un nombre entier par 4 ou par 8                                                                                                                              | s-f   | flu. | Entiers : division > quotient _(discutable)_          |
+| CM2-050 | Diviser un nombre entier par 4 ou par 8                                                                                                                              | s-f   | flu. | Entiers : division > calcul réfléchi                  |
 | CM2-051 | Multiplier un nombre décimal par 5                                                                                                                                   | s-f   | flu. | Décimaux : calculs > calcul astucieux                 |
 | CM2-052 | Multiplier un nombre décimal par 50                                                                                                                                  | s-f   | flu. | Décimaux : calculs > calcul astucieux                 |
 
 ### … > Les quatre opérations
 
-| Code    | Énoncé (verbatim BO)                                                                             | kind | rég. | nœud                                               |
-| ------- | ------------------------------------------------------------------------------------------------ | ---- | ---- | -------------------------------------------------- |
-| CM2-053 | Estimer le résultat d'une opération                                                              | s-f  | div. | Décimaux : numération > arrondir _(discutable)_    |
-| CM2-054 | Savoir réaliser un calcul contenant une ou deux paires de parenthèses                            | s-f  | div. | Entiers : priorités opératoires > avec parenthèses |
-| CM2-055 | Poser et effectuer la multiplication d'un nombre décimal par un nombre entier                    | s-f  | div. | Décimaux : calculs > calcul posé                   |
-| CM2-056 | Poser et effectuer des divisions décimales avec un dividende entier et un diviseur à un chiffre  | s-f  | div. | Décimaux : calculs > calcul posé                   |
-| CM2-057 | Poser et effectuer des divisions décimales avec un dividende décimal et un diviseur à un chiffre | s-f  | div. | Décimaux : calculs > calcul posé                   |
+| Code    | Énoncé (verbatim BO)                                                                             | kind | rég. | nœud                                                   |
+| ------- | ------------------------------------------------------------------------------------------------ | ---- | ---- | ------------------------------------------------------ |
+| CM2-053 | Estimer le résultat d'une opération                                                              | s-f  | div. | Décimaux : numération > arrondis et ordres de grandeur |
+| CM2-054 | Savoir réaliser un calcul contenant une ou deux paires de parenthèses                            | s-f  | div. | Entiers : priorités opératoires > avec parenthèses     |
+| CM2-055 | Poser et effectuer la multiplication d'un nombre décimal par un nombre entier                    | s-f  | div. | Décimaux : calculs > calcul posé                       |
+| CM2-056 | Poser et effectuer des divisions décimales avec un dividende entier et un diviseur à un chiffre  | s-f  | div. | Décimaux : calculs > calcul posé                       |
+| CM2-057 | Poser et effectuer des divisions décimales avec un dividende décimal et un diviseur à un chiffre | s-f  | div. | Décimaux : calculs > calcul posé                       |
 
 ### … > La résolution de problèmes
 
@@ -365,28 +366,28 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### Espace et géométrie
 
-| Code    | Énoncé (verbatim BO)                                                                                                                                                                                                                              | kind  | rég. | nœud                                                         | Rubrique BO                |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------------ | -------------------------- |
-| CM2-086 | Utiliser le vocabulaire géométrique approprié dans le contexte d'apprentissage des notions correspondantes                                                                                                                                        | s-f   | div. | Figures planes > reconnaître et décrire                      | La géométrie plane         |
-| CM2-087 | Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas                                                                                                                                                                 | s-f   | div. | Figures planes > reproduire et construire                    | idem                       |
-| CM2-088 | Connaître les notations et les codes usuels utilisés en géométrie                                                                                                                                                                                 | conn. | div. | Figures planes > reconnaître et décrire                      | idem                       |
-| CM2-089 | Reconnaître et utiliser la notion de perpendicularité                                                                                                                                                                                             | s-f   | div. | Figures planes > perpendiculaires et parallèles              | idem                       |
-| CM2-090 | Reconnaître et utiliser la notion de parallélisme                                                                                                                                                                                                 | s-f   | div. | Figures planes > perpendiculaires et parallèles              | idem                       |
-| CM2-091 | Décrire et reconnaître un cercle et un disque comme un ensemble de points caractérisés par leur distance à un point donné                                                                                                                         | s-f   | div. | Figures planes > cercle                                      | idem                       |
-| CM2-092 | Reconnaître et nommer les figures suivantes en s'appuyant sur leur définition : triangle, triangle rectangle, triangle isocèle, triangle équilatéral, quadrilatère, carré, rectangle, losange, trapèze, trapèze rectangle, pentagone et hexagone  | s-f   | div. | Figures planes > reconnaître et décrire                      | idem                       |
-| CM2-093 | Connaître les propriétés de parallélisme des côtés opposés, des égalités de longueurs et d'angles pour les figures usuelles : triangle rectangle, triangle isocèle, triangle équilatéral, carré, rectangle, losange, trapèze et trapèze rectangle | conn. | div. | Figures planes > reconnaître et décrire                      | idem                       |
-| CM2-094 | Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle ou un cercle ou des assemblages de ces figures sur tout support (papier quadrillé, pointé ou uni), avec une règle graduée, une équerre ou un compas           | s-f   | div. | Figures planes > reproduire et construire                    | idem                       |
-| CM2-095 | Construire une figure géométrique composée de segments, de droites, de polygones usuels et de cercles                                                                                                                                             | s-f   | div. | Figures planes > reproduire et construire                    | idem                       |
-| CM2-096 | Élaborer un programme de construction                                                                                                                                                                                                             | s-f   | div. | Figures planes > reproduire et construire                    | idem                       |
-| CM2-097 | Construire, sur papier quadrillé, la figure symétrique d'une figure donnée par rapport à une droite verticale, horizontale ou une diagonale du quadrillage                                                                                        | s-f   | div. | Symétrie axiale (notion)                                     | idem                       |
-| CM2-098 | Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre ou un prisme droit                                                                                                                                                         | s-f   | div. | Solides > reconnaître et décrire                             | Les solides                |
-| CM2-099 | Décrire un cube, un pavé, une pyramide ou un prisme droit en faisant référence à des propriétés et en utilisant le vocabulaire approprié                                                                                                          | s-f   | div. | Solides > reconnaître et décrire                             | idem                       |
-| CM2-100 | Reconnaître un patron d'un cube                                                                                                                                                                                                                   | s-f   | div. | Solides > patrons                                            | idem                       |
-| CM2-101 | Construire un patron d'un cube                                                                                                                                                                                                                    | s-f   | div. | Solides > patrons                                            | idem                       |
-| CM2-102 | Reconnaître un patron d'un pavé                                                                                                                                                                                                                   | s-f   | div. | Solides > patrons                                            | idem                       |
-| CM2-103 | Connaître et utiliser le vocabulaire lié aux déplacements                                                                                                                                                                                         | s-f   | div. | Repérage et déplacements > coder un déplacement              | Déplacements dans l'espace |
-| CM2-104 | Comprendre, utiliser et produire une suite d'instructions qui décrivent un déplacement en utilisant un vocabulaire spatial précis                                                                                                                 | s-f   | div. | Repérage et déplacements > coder un déplacement              | idem                       |
-| CM2-105 | Résoudre des problèmes portant sur des assemblages de cubes                                                                                                                                                                                       | s-f   | div. | Repérage et déplacements > positions et plans _(discutable)_ | idem                       |
+| Code    | Énoncé (verbatim BO)                                                                                                                                                                                                                              | kind  | rég. | nœud                                            | Rubrique BO                |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ----------------------------------------------- | -------------------------- |
+| CM2-086 | Utiliser le vocabulaire géométrique approprié dans le contexte d'apprentissage des notions correspondantes                                                                                                                                        | s-f   | div. | Figures planes > reconnaître et décrire         | La géométrie plane         |
+| CM2-087 | Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas                                                                                                                                                                 | s-f   | div. | Figures planes > reproduire et construire       | idem                       |
+| CM2-088 | Connaître les notations et les codes usuels utilisés en géométrie                                                                                                                                                                                 | conn. | div. | Figures planes > reconnaître et décrire         | idem                       |
+| CM2-089 | Reconnaître et utiliser la notion de perpendicularité                                                                                                                                                                                             | s-f   | div. | Figures planes > perpendiculaires et parallèles | idem                       |
+| CM2-090 | Reconnaître et utiliser la notion de parallélisme                                                                                                                                                                                                 | s-f   | div. | Figures planes > perpendiculaires et parallèles | idem                       |
+| CM2-091 | Décrire et reconnaître un cercle et un disque comme un ensemble de points caractérisés par leur distance à un point donné                                                                                                                         | s-f   | div. | Figures planes > cercle                         | idem                       |
+| CM2-092 | Reconnaître et nommer les figures suivantes en s'appuyant sur leur définition : triangle, triangle rectangle, triangle isocèle, triangle équilatéral, quadrilatère, carré, rectangle, losange, trapèze, trapèze rectangle, pentagone et hexagone  | s-f   | div. | Figures planes > reconnaître et décrire         | idem                       |
+| CM2-093 | Connaître les propriétés de parallélisme des côtés opposés, des égalités de longueurs et d'angles pour les figures usuelles : triangle rectangle, triangle isocèle, triangle équilatéral, carré, rectangle, losange, trapèze et trapèze rectangle | conn. | div. | Figures planes > reconnaître et décrire         | idem                       |
+| CM2-094 | Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle ou un cercle ou des assemblages de ces figures sur tout support (papier quadrillé, pointé ou uni), avec une règle graduée, une équerre ou un compas           | s-f   | div. | Figures planes > reproduire et construire       | idem                       |
+| CM2-095 | Construire une figure géométrique composée de segments, de droites, de polygones usuels et de cercles                                                                                                                                             | s-f   | div. | Figures planes > reproduire et construire       | idem                       |
+| CM2-096 | Élaborer un programme de construction                                                                                                                                                                                                             | s-f   | div. | Figures planes > reproduire et construire       | idem                       |
+| CM2-097 | Construire, sur papier quadrillé, la figure symétrique d'une figure donnée par rapport à une droite verticale, horizontale ou une diagonale du quadrillage                                                                                        | s-f   | div. | Symétrie axiale (notion)                        | idem                       |
+| CM2-098 | Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre ou un prisme droit                                                                                                                                                         | s-f   | div. | Solides > reconnaître et décrire                | Les solides                |
+| CM2-099 | Décrire un cube, un pavé, une pyramide ou un prisme droit en faisant référence à des propriétés et en utilisant le vocabulaire approprié                                                                                                          | s-f   | div. | Solides > reconnaître et décrire                | idem                       |
+| CM2-100 | Reconnaître un patron d'un cube                                                                                                                                                                                                                   | s-f   | div. | Solides > patrons                               | idem                       |
+| CM2-101 | Construire un patron d'un cube                                                                                                                                                                                                                    | s-f   | div. | Solides > patrons                               | idem                       |
+| CM2-102 | Reconnaître un patron d'un pavé                                                                                                                                                                                                                   | s-f   | div. | Solides > patrons                               | idem                       |
+| CM2-103 | Connaître et utiliser le vocabulaire lié aux déplacements                                                                                                                                                                                         | s-f   | div. | Repérage et déplacements > coder un déplacement | Déplacements dans l'espace |
+| CM2-104 | Comprendre, utiliser et produire une suite d'instructions qui décrivent un déplacement en utilisant un vocabulaire spatial précis                                                                                                                 | s-f   | div. | Repérage et déplacements > coder un déplacement | idem                       |
+| CM2-105 | Résoudre des problèmes portant sur des assemblages de cubes                                                                                                                                                                                       | s-f   | div. | Solides (notion)                                | idem                       |
 
 ### OGD et probabilités · La proportionnalité
 
@@ -406,32 +407,30 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ---
 
-## Rattachements discutables (validés en bloc par S6, sauf veto point par point)
+## Rattachements discutables — TRANCHÉS par David le 2026-10-07 (sauf le 4)
 
-1. **« Estimer le résultat d'une opération »** (CM1-048, CM2-053) → `Décimaux :
-numération > arrondir` : la sous-notion « arrondir » a été créée (R4) pour la famille
-   « arrondis **et ordres de grandeur** » — l'estimation d'un résultat, c'est l'ordre de
-   grandeur. Alternative : un nœud d'opérations, mais aucun ne couvre l'estimation.
-2. **« Diviser un nombre entier par 4 ou par 8 »** (CM2-050) → `Entiers : division >
-quotient` : la division a trois sous-notions (quotient, division euclidienne, calcul
-   posé) ; le calcul mental ÷4/÷8 vise le quotient exact.
-3. **« Problèmes portant sur des assemblages de cubes »** (CM1-119, CM2-105) →
-   `Repérage et déplacements > positions et plans` : choix du doc d'écarts (la vision
-   dans l'espace de la 6e ira, elle, sous `Solides`).
+1. **« Estimer le résultat d'une opération »** (CM1-048, CM2-053) — ✅ tranché : la
+   sous-notion est **renommée « arrondis et ordres de grandeur »** (`Décimaux :
+numération`), et les deux points y vont. Renommage sans impact sur la
+   correspondance (0 occurrence de l'ancien chemin dans les CSV, mesuré).
+2. **« Diviser un nombre entier par 4 ou par 8 »** (CM2-050) — ✅ tranché : **nouvelle
+   sous-notion « calcul réfléchi » sous `Entiers : division`**, le point y va.
+3. **« Problèmes portant sur des assemblages de cubes »** (CM1-119, CM2-105) — ✅
+   tranché : **tout va sous `Solides`** (notion), y compris la vision dans l'espace de
+   la 6e à son seed. La rubrique BO reste « Le repérage dans l'espace » (fidèle au
+   texte) — le nœud dit ce que le contenu EST.
 4. **« Problèmes préparant à l'utilisation d'algorithmes »** (CM2-064) → `Premiers pas
-algébriques > programmes de calcul` : le doc d'écarts laissait le choix avec
-   `Problèmes arithmétiques` « selon l'énoncé » ; le BO le classe dans la résolution de
-   problèmes mais le contenu (suivre/produire une démarche pas à pas) est celui des
-   programmes de calcul.
-5. **Périmètres CM1** (CM1-073/074/075) sur la **notion** `Périmètres` : ses
-   sous-notions (carré, rectangle, disque) sont des formules, hors programme CM1 — le
-   sens et le calcul « à la règle graduée » vivent au niveau de la notion. Les niveaux
-   affichés du JSON (`[CE2, 6e]`) sont indicatifs et seront rafraîchis.
+algébriques > programmes de calcul` — ⏳ **EN ATTENTE** (David a demandé des
+   exemples : programmes de calcul à ≤ 3 instructions, suites évolutives à règle,
+   programmes de construction, algorithmes des opérations posées — cf. partie
+   « Initiation à la pensée informatique » du BO). Alternative : `Problèmes
+arithmétiques` (notion).
+5. **Périmètres CM1** (CM1-073/074/075) sur la **notion** `Périmètres` — ✅ validé.
+   Les niveaux affichés du JSON (`[CE2, 6e]`) sont indicatifs et seront rafraîchis.
 6. **« Passer d'une écriture sous forme d'une fraction décimale … à une écriture à
    virgule et réciproquement »** (CM1-030, CM2-030) → `Décimaux : numération > forme
-fractionnaire` : c'est le pont entre les deux mondes, et les deux sous-notions
-   miroirs existent (`Fractions > forme décimale` en face). Choix : l'objet étudié est
-   l'écriture à virgule comme codage d'une fraction décimale — côté Décimaux.
+fractionnaire` — ✅ validé (le miroir `Fractions > forme décimale` reste pour
+   l'écriture décimale des fractions usuelles).
 
 ## Questions à trancher (S3-S6)
 
@@ -450,14 +449,18 @@ fractionnaire` : c'est le pont entre les deux mondes, et les deux sous-notions
 moitié`). Reco : oui (migration + JSON + diagramme + grep `correspondance/`).
 - **S5 — régime** : `fluence` pour toute la section « Le calcul mental » (13 points CM1,
   18 points CM2), `diversite` partout ailleurs. Reco : oui.
-- **S6 — validation d'ensemble** du document (dont les 6 rattachements discutables).
+- **S6 — validation d'ensemble** du document (les rattachements 1-3, 5-6 sont déjà
+  tranchés ; reste le 4 et l'ensemble).
 
 ## Après validation (plan de livraison)
 
-1. Worktree frère + migration **additive** `seed_curriculum_points_cm.sql` : les
-   éventuels ajustements d'arbre (S3/S4), puis les 246 points (codes explicites,
-   `node_id` résolu par chemin nom + parent, comme le seed des nœuds). Rollback en
-   commentaire.
+1. Worktree frère + migration **additive** `seed_curriculum_points_cm.sql` : d'abord
+   les ajustements d'arbre tranchés — renommer « arrondir » → « arrondis et ordres de
+   grandeur », créer `Entiers : division > calcul réfléchi` — plus S3/S4 si validées
+   (S4 ⇒ répercuter les 3 lignes `Décimaux : calculs > moitié` de
+   `correspondance/modeles.csv`, et le JSON + diagramme dans tous les cas) ; puis les
+   246 points (codes explicites, `node_id` résolu par chemin nom + parent, comme le
+   seed des nœuds). Rollback en commentaire.
 2. Test d'intégration : **comparaison intégrale** des 246 lignes (code, énoncé, kind,
    exigence, régime, rubrique, grade, chemin du nœud) en lecture **anonyme** (modèle du
    test du seed des nœuds), vérifié **rouge sans la migration**.
