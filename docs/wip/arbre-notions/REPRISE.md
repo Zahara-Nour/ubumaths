@@ -1,5 +1,16 @@
 # Arbre des notions — document de reprise
 
+> ⚠️ **PÉRIMÉ EN PARTIE depuis le 2026-10-07 (soir)** — lire d'abord
+> [ADR 0020](../../adr/0020-arbre-central-programmes-pointeurs.md) et la fin de
+> [arbre-notions-progress.md](../arbre-notions-progress.md). Ce qui a changé depuis ce document :
+> l'arbre est **central et SANS niveaux** (les niveaux du § 3 sont devenus indicatifs) ; les
+> programmes = **points rattachés aux nœuds** (le « pas de lien arbre ↔ programme » du § 2/ADR 0019
+> est amendé) ; la PR 1 a été amendée (plus de `grades`, 52 tests) ; le `level` des questions =
+> gradation intra-point (§ 4 à relire avec ça) ; **cycle 2 comparé et appliqué** (124 notions,
+> 449 sous-notions — `programmes-ecarts-cycle2.md`, gabarit v2) ; grades techno renommés
+> `1_TECHNO`/`T_TECHNO` (PR #922, en prod). Les questions D1-D3 du § 8 restent ouvertes ;
+> la correspondance du § 6 est à relancer sur l'arbre élargi.
+
 > Rédigé le 2026-10-07 à la fin de la session « arbre-notions », pour reprendre le chantier proprement
 > dans une nouvelle session. À lire en entier avant toute action.
 > Compléments : [ADR 0019](../../adr/0019-classement-branche-notion-sous-notion.md),
