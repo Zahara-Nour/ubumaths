@@ -445,3 +445,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   exercices en haute, 1 exclu (« debug »), 0 cible morte. Prête pour le remplissage des
   rangements dès la mise en prod de la branche (PR 1 + schéma cible). Décisions données
   prod à part : titrage des 26 sans-titre (2 titres déjà proposés), sort de « debug ».
+
+- **EN PRODUCTION (2026-10-07, soir — « on envoie » de David)** : PR #937 mergée (CI verte
+  au 2e passage : 4 tests de l'ancien monde mis au diapason B6/C13 ; crash navigateur =
+  flaky d'infra purgé au re-run) ; branche et worktree supprimés proprement (0 untracked).
+  `db push --include-all` : migrations 20261007120000 (arbre) + 20261007230000 (schéma
+  cible) APPLIQUÉES EN PROD — vérifié : 16 parcours, 1 007 points intacts (0 modifié, C5),
+  3 colonnes neuves, arbre/source_types vides (seeds de données = étape suivante).
+  `db:types` → PR #940 mergée (avec le filet `?? ''` sur la page programme :
+  `objective_id` nullable). PROCHAINES ÉTAPES : seed des NŒUDS (l'arbre 2026-10-07.12
+  depuis le JSON) + seed 6e (premier programme points→nœuds) + remplissage des rangements
+  depuis la correspondance validée + séquence C5 (transfert tags → bascule → suppression) ;
+  décisions données prod à part : titrage des 26 sans-titre, sort de « debug ».
