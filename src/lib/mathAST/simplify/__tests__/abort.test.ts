@@ -2,8 +2,9 @@
  * Tests for cooperative interruption of the simplify pipeline.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { simplify } from '../simplify';
+import { computeCost } from '../cost';
 import { parseLatex } from '../../parser';
 
 describe('simplify — AbortSignal', () => {
@@ -35,19 +36,26 @@ describe('simplify — AbortSignal', () => {
 		expect(elapsed).toBeLessThan(500);
 	});
 
-	it('returns best-so-far when signal aborts after a short timeout', async () => {
+	it('returns best-so-far when signal aborts after a short timeout', () => {
 		const node = parseLatex('((x+1)^{12} \\cdot (x-1)^{12})^{3}');
 		const ctrl = new AbortController();
-		// Abort after letting at least one synchronous phase start. The pre-abort
-		// is racy across runtimes, so we use a deterministic deadline-based test:
-		// a 5 ms timeoutMs that the first phase will likely exceed.
-		const { result, aborted, cost } = simplify(node, {
-			signal: ctrl.signal,
-			timeoutMs: 5
-		});
-		expect(aborted).toBe(true);
-		expect(result).toBeDefined();
-		expect(typeof cost).toBe('number');
+		// Horloge simulée : chaque lecture de `performance.now()` avance de 1 ms.
+		// L'échéance de 5 ms tombe donc après quelques vérifications, quelle que
+		// soit la vitesse de la machine (une vraie horloge rendait le test
+		// dépendant du processeur : un calcul rapide finissait avant l'échéance).
+		let fakeNow = 0;
+		const nowSpy = vi.spyOn(performance, 'now').mockImplementation(() => fakeNow++);
+		try {
+			const { result, aborted, cost } = simplify(node, {
+				signal: ctrl.signal,
+				timeoutMs: 5
+			});
+			expect(aborted).toBe(true);
+			expect(result).toBeDefined();
+			expect(cost).toBe(computeCost(result));
+		} finally {
+			nowSpy.mockRestore();
+		}
 	});
 
 	it('omits the aborted field on a normal completion (with signal still passed)', () => {

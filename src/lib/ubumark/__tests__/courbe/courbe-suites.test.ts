@@ -205,7 +205,8 @@ describe('suites — robustesse (S6)', () => {
 			if (node.spec) buildCourbeScene(node.spec);
 			generateCourbeTypst(node);
 		}
-		expect(performance.now() - start).toBeLessThan(50);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - start).toBeLessThan(1000);
 	});
 
 	it('scène forgée (sans analyse) : termes et suites tronqués aux plafonds', () => {
@@ -220,7 +221,8 @@ describe('suites — robustesse (S6)', () => {
 		};
 		const start = performance.now();
 		const scene = buildCourbeScene(forged);
-		expect(performance.now() - start).toBeLessThan(50);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - start).toBeLessThan(1000);
 		expect(scene.sequences.length).toBeLessThanOrEqual(COURBE_LIMITS.sequences);
 		const total = scene.sequences.reduce((n, s) => n + s.terms.length, 0);
 		expect(total).toBeLessThanOrEqual(COURBE_LIMITS.totalSequenceTerms);
