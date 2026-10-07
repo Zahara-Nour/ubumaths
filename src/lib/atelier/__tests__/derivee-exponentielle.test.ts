@@ -28,7 +28,7 @@ describe('.diff (moteur)', () => {
 	// Rangé par `tidyTerms` (comme `g = f'` dans l'atelier) : ln(a)·aˣ, la
 	// constante devant, forme des manuels
 	it('2^x garde ln(2)', () => {
-		expect(diff('2^x')).toBe('d/dx(2^x) = ln(2)*2^x\nLaTeX: \\ln\\left( 2 \\right) 2^x');
+		expect(diff('2^x')).toBe('d/dx(2^x) = ln(2)*2^x\nLaTeX: \\ln\\left( 2 \\right) \\times 2^x');
 	});
 });
 
@@ -41,7 +41,7 @@ describe('.dériver (étapes)', () => {
 		['2e^(-x)', "f'(x) = -2 \\exponentialE^{-x}"],
 		['e^(x^2)', "f'(x) = 2 x \\exponentialE^{x^2}"],
 		['x*e^x', "f'(x) = \\exponentialE^x + x \\exponentialE^x"],
-		['2^x', "f'(x) = \\ln\\left( 2 \\right) 2^x"]
+		['2^x', "f'(x) = \\ln\\left( 2 \\right) \\times 2^x"]
 	])('%s', (input, expected) => {
 		expect(answer(input)).toBe(expected);
 	});

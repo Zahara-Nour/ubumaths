@@ -702,9 +702,9 @@ Expression: sin(2*x)/sin(3*x), x → 0 (variable: x)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\cos\\left( 2 \\times x \\right) 2}{\\cos\\left( 3 \\times x \\right) 3} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) 2}{\\cos\\left( 3 \\times x \\right) 3}} \\\\ & = 0.6666666666666666 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3}} \\\\ & = 0.6666666666666666 \\end{aligned}
 Status: exact, Value: 0.6666666666666666
 
 ========== SUPERIEUR (detailed) ==========
@@ -713,10 +713,10 @@ Status: exact, Value: 0.6666666666666666
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\cos\\left( 2 \\times x \\right) 2}{\\cos\\left( 3 \\times x \\right) 3} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) 2}{\\cos\\left( 3 \\times x \\right) 3}} \\\\ & = 0.6666666666666666 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3}} \\\\ & = 0.6666666666666666 \\end{aligned}
 Status: exact, Value: 0.6666666666666666
 "
 `;
@@ -729,9 +729,9 @@ Expression: sin(x^2)/x, x → 0 (variable: x)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\cos\\left( x^2 \\right) 2 x}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) 2 x}{1}} \\\\ & = 0 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (detailed) ==========
@@ -740,10 +740,10 @@ Status: exact, Value: 0
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\sin\\left( x^2 \\right)}{x} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\cos\\left( x^2 \\right) 2 x}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) 2 x}{1}} \\\\ & = 0 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 "
 `;

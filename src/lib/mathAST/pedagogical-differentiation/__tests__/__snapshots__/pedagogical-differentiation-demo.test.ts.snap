@@ -308,35 +308,35 @@ Expression: \\sin(x^2) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [sin] Dérivée de sinus
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] Règle de la puissance (2)
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\cos\\left( x^2 \\right) 2 x
+Result: \\cos\\left( x^2 \\right) \\times 2 x
 
 ========== LYCEE (detailed) ==========
 - [sin] Dérivée de sinus
   · Avec u = x^2, on a (\\sin u)' = \\cos(u) \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] Règle de la puissance (2)
     · (x^n)' = n x^{n-1} avec n = 2.
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\cos\\left( x^2 \\right) 2 x
+Result: \\cos\\left( x^2 \\right) \\times 2 x
 
 ========== SUPERIEUR (summarized) ==========
 - [sin] (\\sin u)' = \\cos(u)\\,u'
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\cos\\left( x^2 \\right) 2 x
+Result: \\cos\\left( x^2 \\right) \\times 2 x
 
 ========== SUPERIEUR (detailed) ==========
 - [sin] (\\sin u)' = \\cos(u)\\,u'
   · Avec u = x^2, on a (\\sin u)' = \\cos(u) \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     · (x^n)' = n x^{n-1} avec n = 2.
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\cos\\left( x^2 \\right) 2 x
+Result: \\cos\\left( x^2 \\right) \\times 2 x
 "
 `;
 
@@ -378,35 +378,35 @@ Expression: \\exp(2x) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [exp] Dérivée de l'exponentielle
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] On sort la constante 2
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\exp\\left( 2 x \\right) 2
+Result: \\exp\\left( 2 x \\right) \\times 2
 
 ========== LYCEE (detailed) ==========
 - [exp] Dérivée de l'exponentielle
   · Avec u = 2 x, on a (e^u)' = e^u \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] On sort la constante 2
     · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\exp\\left( 2 x \\right) 2
+Result: \\exp\\left( 2 x \\right) \\times 2
 
 ========== SUPERIEUR (summarized) ==========
 - [exp] (e^u)' = e^u\\,u'
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] (cf)' = cf'
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\exp\\left( 2 x \\right) 2
+Result: \\exp\\left( 2 x \\right) \\times 2
 
 ========== SUPERIEUR (detailed) ==========
 - [exp] (e^u)' = e^u\\,u'
   · Avec u = 2 x, on a (e^u)' = e^u \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] (cf)' = cf'
     · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\exp\\left( 2 x \\right) 2
+Result: \\exp\\left( 2 x \\right) \\times 2
 "
 `;
 
@@ -488,35 +488,35 @@ Expression: \\exp(x^2) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [exp] Dérivée de l'exponentielle
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] Règle de la puissance (2)
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\exp\\left( x^2 \\right) 2 x
+Result: \\exp\\left( x^2 \\right) \\times 2 x
 
 ========== LYCEE (detailed) ==========
 - [exp] Dérivée de l'exponentielle
   · Avec u = x^2, on a (e^u)' = e^u \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] Règle de la puissance (2)
     · (x^n)' = n x^{n-1} avec n = 2.
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\exp\\left( x^2 \\right) 2 x
+Result: \\exp\\left( x^2 \\right) \\times 2 x
 
 ========== SUPERIEUR (summarized) ==========
 - [exp] (e^u)' = e^u\\,u'
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\exp\\left( x^2 \\right) 2 x
+Result: \\exp\\left( x^2 \\right) \\times 2 x
 
 ========== SUPERIEUR (detailed) ==========
 - [exp] (e^u)' = e^u\\,u'
   · Avec u = x^2, on a (e^u)' = e^u \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) \\times 2 x \\end{aligned}
   - [power-natural] (x^n)' = nx^{n-1}
     · (x^n)' = n x^{n-1} avec n = 2.
     \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
-Result: \\exp\\left( x^2 \\right) 2 x
+Result: \\exp\\left( x^2 \\right) \\times 2 x
 "
 `;
 
@@ -1388,35 +1388,35 @@ Expression: \\sin(2x) (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [sin] Dérivée de sinus
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] On sort la constante 2
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\cos\\left( 2 x \\right) 2
+Result: \\cos\\left( 2 x \\right) \\times 2
 
 ========== LYCEE (detailed) ==========
 - [sin] Dérivée de sinus
   · Avec u = 2 x, on a (\\sin u)' = \\cos(u) \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] On sort la constante 2
     · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\cos\\left( 2 x \\right) 2
+Result: \\cos\\left( 2 x \\right) \\times 2
 
 ========== SUPERIEUR (summarized) ==========
 - [sin] (\\sin u)' = \\cos(u)\\,u'
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] (cf)' = cf'
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\cos\\left( 2 x \\right) 2
+Result: \\cos\\left( 2 x \\right) \\times 2
 
 ========== SUPERIEUR (detailed) ==========
 - [sin] (\\sin u)' = \\cos(u)\\,u'
   · Avec u = 2 x, on a (\\sin u)' = \\cos(u) \\times u'.
-  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) \\times 2 \\end{aligned}
   - [linear-coefficient] (cf)' = cf'
     · La constante 2 sort de la dérivation : (2 \\times f)' = 2 \\times f'.
     \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
-Result: \\cos\\left( 2 x \\right) 2
+Result: \\cos\\left( 2 x \\right) \\times 2
 "
 `;
 
