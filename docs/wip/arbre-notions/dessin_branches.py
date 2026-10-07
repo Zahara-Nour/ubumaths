@@ -88,6 +88,7 @@ AL=[
 ("Inéquations : produit et quotient","2de",[("",["tableau de signes","inéquation produit","inéquation quotient"])],"aucun modèle aujourd'hui"),
 ("Équations : second degré","1re",[("",["discriminant","équations incomplètes","se ramener au second degré","mettre en équation"])],None),
 ("Inéquations : second degré","1re",[("",["inéquations du second degré","mettre en inéquation"])],None),
+("Inégalités","2de à Tle",[("",["règles de calcul","signe d'une expression","comparer et encadrer"])],None),
 ]
 FO=[
 ("Généralités sur les fonctions","3e, 2de",[("",["images et antécédents","ensemble de définition","appartenance à une courbe","résolution graphique","variations","extremums","signe"])],"reprend ta nouvelle fiche et « Calcul d'images »"),
@@ -210,7 +211,7 @@ AR=[
 ]
 nc=build(NC,"Nombres","et calculs","Branche Nombres et calculs, rangée par type de nombre : 15 notions et leurs sous-notions","c1")
 pr=build(PR,"Proportion-","nalité","Branche Proportionnalité : 5 notions et leurs sous-notions","c2")
-al=build(AL,"Algèbre","","Branche Algèbre : 7 notions et leurs sous-notions","c3")
+al=build(AL,"Algèbre","","Branche Algèbre : 8 notions et leurs sous-notions","c3")
 fo=build(FO,"Fonctions","","Branche Fonctions : 15 notions et leurs sous-notions","c4")
 in_=build(IN,"Intégration","","Branche Intégration : 4 notions et leurs sous-notions","c14")
 ed=build(ED,"Équations","différentielles","Branche Équations différentielles : 5 notions et leurs sous-notions","c15")
@@ -236,7 +237,7 @@ sec=f'''<section class="branch" id="nombres"><h2><span class="dot c1"></span>Nom
 <section class="branch" id="proportionnalite"><h2><span class="dot c2"></span>Proportionnalité <small>mise à jour, 5 notions</small></h2>
 <p class="read">Découpage demandé par David. Vitesse vient de Grandeurs et mesures.</p>
 <div class="scroll">{pr}</div></section>
-<section class="branch" id="algebre"><h2><span class="dot c3"></span>Algèbre <small>7 notions</small></h2>
+<section class="branch" id="algebre"><h2><span class="dot c3"></span>Algèbre <small>8 notions</small></h2>
 <p class="read">Calcul littéral en une seule notion ; équations et inéquations classées par forme. Équations et inéquations du second degré ici ; racines, signe, formes et variations d'un trinôme dans Fonctions. Matrices et Graphes deviennent deux branches à part.</p>
 <div class="scroll">{al}</div></section>
 <section class="branch" id="fonctions"><h2><span class="dot c4"></span>Fonctions <small>15 notions</small></h2>
