@@ -440,3 +440,8 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   indépendantes successives confirmées ; fréquence des lettres → Listes + effectifs (pas de
   VA dans l'énoncé). CSV final : 1 005 modèles + 328 exercices en haute, 1 exclu. Validation
   du lot 4 par David en attente.
+
+- **CORRESPONDANCE ENTIÈREMENT VALIDÉE (2026-10-07, lots 1-4)** : 1 005 modèles + 328
+  exercices en haute, 1 exclu (« debug »), 0 cible morte. Prête pour le remplissage des
+  rangements dès la mise en prod de la branche (PR 1 + schéma cible). Décisions données
+  prod à part : titrage des 26 sans-titre (2 titres déjà proposés), sort de « debug ».
