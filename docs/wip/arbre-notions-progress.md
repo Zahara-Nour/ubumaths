@@ -137,3 +137,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (Algèbre) et Angles (Grandeurs), 3 sous-notions de Figures planes, bloc R4, niveaux
   rafraîchis → 19 branches, 126 notions, 466 sous-notions (JSON 2026-10-07.3), diagramme
   republié.
+
+- **Programme du cycle 4 comparé (2026-10-07, soir)** : NOUVEAU programme (arrêté du 18-02-2026,
+  BO n° 10 du 05-03-2026 ; 5e dès 2026, 4e 2027, 3e 2028) + attendus/repères de l'ancien →
+  `programmes-ecarts-cycle4.md`. D2 se referme : 7 notions de géométrie proposées (dont
+  Rotations et Homothéties HORS PROGRAMME, demandées par David), ~10 sous-notions, niveaux
+  rafraîchis. Questions S1-S7 en attente.
