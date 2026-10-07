@@ -128,3 +128,7 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   `docs/wip/arbre-notions/programmes-ecarts-cycle3.md`. Proposé : 2 notions (Premiers pas
   algébriques, Angles), ~8 sous-notions, niveaux rafraîchis ; ⚠️ seed 6e en prod (95 points) =
   programme 2020, périmé. Questions R1-R6.
+
+- **R5 tranchée (2026-10-07) : option B** — le seed 6e (2020, inutilisé) reste en place sans
+  servir ; la 6e nouvelle sera le premier niveau seedé directement dans l'architecture
+  points → nœuds (ADR 0020). R1-R4 et R6 toujours en attente de validation.

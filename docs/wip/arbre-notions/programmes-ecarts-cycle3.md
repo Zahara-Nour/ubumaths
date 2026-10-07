@@ -319,7 +319,11 @@ dans le cahier de texte sont des données d'usage à ne pas perdre.
    « disque » (Périmètres) · « unités et conversions » (Aires) · « arrondir » (Décimaux :
    numération) · « courbes et repères » (Représenter des données) · extension du « calcul posé »
    (Q1 validée) à `Décimaux : calculs` et `Entiers : division`. (reco : oui à tout.)
-5. **R5 — seed 6e périmé** (§ ci-dessus) : re-seed à planifier, et quand ?
+5. ~~**R5 — seed 6e périmé**~~ — **TRANCHÉE le 2026-10-07 : option B.** Le seed 6e actuel
+   (programme 2020, jamais utilisé — 0 coche, 0 acquisition, 0 tag, mesuré le 2026-10-07) reste
+   en place mais **ne doit pas servir** ; la 6e du programme d'avril 2025 sera le **premier
+   niveau seedé directement dans l'architecture points → nœuds** (ADR 0020). D'ici là, pas de
+   suivi de programme 6e dans Chiphre.
 6. **R6 — validation d'ensemble** et application à l'arbre (JSON + diagramme).
 
 ## Programmes reçus / manquants (état au 2026-10-07, soir)
