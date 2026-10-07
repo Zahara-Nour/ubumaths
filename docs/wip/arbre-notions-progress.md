@@ -342,3 +342,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   → `schema-cible-questions.md` créé : acquis tranchés + 7 questions pour la phase 0
   (rang, rubrique BO, kind algorithme, héritage des listes, parcours, accès, régime au
   reseed).
+
+- **Phase 0 du schéma cible LANCÉE (2026-10-07, soir)** : `schema-cible-spec.md` écrit —
+  27 comportements (C1-C27) en cas nominal/limite/erreur, bâtis sur la PR 1 (nœuds +
+  rangements exercices/modèles déjà livrés, un seul nœud par contenu — l'ex-Q8 était déjà
+  tranchée). Périmètre : points→nœuds (node_id nullable en transition, grade porté par le
+  point, rubrique), références d'automatismes (contrainte de parcours, auto-référence,
+  héritage par duplication au seed), table grade_predecessors (clôture transitive, T_EXP
+  sans T_SPE dans son parcours, T_GEN hors parcours), transition (6e premier seed, seeds
+  existants intacts), accès (MESURÉ : référentiel actuel = authenticated seulement ; arbre
+  PR 1 = anon ; proposition d'alignement anon = LA question d'accès). 7 décisions B1-B7 en
+  attente de David. Pas de test ni de SQL avant validation.
