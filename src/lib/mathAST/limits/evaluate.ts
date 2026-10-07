@@ -342,7 +342,20 @@ export function evaluateLimit(
 		evaluateLimitExactForm(expr, variable, approach, direction, options)
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
-	return writeLikeInput(result, expression);
+	return withInfiniteStatus(writeLikeInput(result, expression));
+}
+
+/**
+ * Invariant de sortie : une limite dont la valeur est ±∞ a le statut
+ * `infinite`, quelle que soit la stratégie qui l'a trouvée (L'Hôpital,
+ * substitution directe, composition… rendaient `exact`). Posé ici, à la
+ * sortie unique, plutôt que stratégie par stratégie.
+ */
+function withInfiniteStatus(result: LimitResult): LimitResult {
+	if (result.status !== 'exact' || result.value === null || !isInfinity(result.value)) {
+		return result;
+	}
+	return { ...result, status: 'infinite' };
 }
 
 /**

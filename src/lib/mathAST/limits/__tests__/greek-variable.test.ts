@@ -40,7 +40,7 @@ const CASES: ReadonlyArray<readonly [string, string]> = [
 	['\\lim_{\\alpha\\to+\\infty}\\ln\\frac{\\alpha+1}{\\alpha+2}', 'exact 0'],
 	['\\lim_{\\theta\\to0}\\frac{\\sin\\theta}{\\theta}', 'exact 1'],
 	['\\lim_{\\phi\\to+\\infty}3\\phi^2-\\phi', 'infinite +inf'],
-	['\\lim_{t\\to0^+}\\ln t', 'exact -inf']
+	['\\lim_{t\\to0^+}\\ln t', 'infinite -inf']
 ];
 
 describe('limite dont la variable est une lettre grecque', () => {
