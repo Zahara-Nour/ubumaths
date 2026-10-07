@@ -18,6 +18,7 @@ import {
 	isIndeterminateResult
 } from './exact-evaluation';
 import { evaluateNumeric, getNumericValue, ZERO_TOLERANCE, NUMERIC_DELTA } from '../common';
+import { showsNoLimitAtInfinity } from './sign-tracking';
 
 // =============================================================================
 // Limit Value Types
@@ -64,7 +65,17 @@ export function classifyLimitValue(
 ): LimitValueClassification {
 	// If approach is infinity, use infinity analysis
 	if (isInfinity(approach)) {
-		return classifyAtInfinity(expr, varName, approach.sign === 'positive');
+		// Trois échantillons ne prouvent pas un infini ni un zéro : eˣ(1 + sin x)
+		// déborde en 1e6 (« +∞ ») mais retombe à 0 à chaque période. Une preuve
+		// d'absence de limite (oscillation, creux, pic) l'emporte — sinon
+		// (2eˣ(1 + sin x) − 3)/(eˣ(1 + sin x)) était une forme ∞/∞, et
+		// L'Hôpital rendait 2. Le classement fini (ln x : 13,8 ; 18,4 ; 23)
+		// n'est pas touché.
+		const positive = approach.sign === 'positive';
+		const naive = classifyAtInfinity(expr, varName, positive);
+		const decisive = naive.class !== 'finite-nonzero' && naive.class !== 'one';
+		if (decisive && showsNoLimitAtInfinity(expr, varName, positive)) return { class: 'unknown' };
+		return naive;
 	}
 
 	// Otherwise, try direct numerical evaluation

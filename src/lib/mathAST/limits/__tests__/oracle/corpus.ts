@@ -377,7 +377,11 @@ const bounded = family('fonctions bornées', 'bnd-', [
 	// Borné de signe STRICT (2 + sin x ≥ 1) : la conclusion tient
 	[PINF, 'e^x(2+\\sin x)', '+inf'],
 	[PINF, 'x^2', '+inf'],
-	[PINF, '\\frac{1+\\sin x}{x}', '0']
+	[PINF, '\\frac{1+\\sin x}{x}', '0'],
+	// Borné qui retombe à 0, mais × (→ 0) : la conclusion tient
+	[PINF, 'e^{-x}(1+\\sin x)', '0'],
+	// Borné de signe STRICT sous ln : x + ln(2 + sin x) → +∞
+	[PINF, '\\ln(e^x(2+\\sin x))', '+inf']
 ]);
 
 // Oscillantes : pas de limite
@@ -401,7 +405,16 @@ const oscillating = family('oscillantes sans limite', 'osc-', [
 	[PINF, 'e^x(1-\\sin x)', 'none'],
 	[PINF, 'x+x\\sin x', 'none'],
 	[PINF, '\\ln(x(1+\\sin x))', 'none'],
-	[PINF, 'e^{x(1+\\sin x)}', 'none']
+	[PINF, 'e^{x(1+\\sin x)}', 'none'],
+	// eˣ(1 + sin x) déborde en 1e6 : le creux se mesure plus tôt (#930)
+	[PINF, '\\ln(e^x(1+\\sin x))', 'none'],
+	[PINF, '\\frac{1}{e^x(1+\\sin x)}', 'none'],
+	[PINF, '\\sqrt{e^x(1+\\cos x)}', 'none'],
+	// 1/(x(1 + sin x)) : petite aux échantillons, mais explose aux zéros du
+	// dénominateur — ni 0 ni limite, et l'exp composée non plus
+	[PINF, '\\frac{1}{x(1+\\sin x)}', 'none'],
+	[PINF, 'e^{\\frac{1}{x(1+\\sin x)}}', 'none'],
+	[PINF, '1+\\frac{1}{x(1+\\sin x)}', 'none']
 ]);
 
 // Bords de domaine (limites à droite / à gauche seulement)
