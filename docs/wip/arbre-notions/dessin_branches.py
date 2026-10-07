@@ -133,19 +133,19 @@ SU=[
 ("Suites arithmético-géométriques","Tle, Tle comp.",[("",["solution constante","suite auxiliaire","limite"])],None),
 ]
 GE=[
-("Solides","CP à 3e",[("",["reconnaître et décrire","construire","patrons"])],"le collège (D2) viendra avec le cycle 4"),
-("Figures planes","CP à 4e",[("",["reconnaître et décrire","angles droits","perpendiculaires et parallèles","reproduire et construire","cercle","triangles","parallélogrammes","médiatrice et bissectrice"])],None),
+("Solides","CP à 3e, 1re techno",[("",["reconnaître et décrire","construire","patrons","perspective cavalière","sections planes"])],"le collège (D2) viendra avec le cycle 4"),
+("Figures planes","CP à 4e, 1re techno",[("",["reconnaître et décrire","angles droits","perpendiculaires et parallèles","reproduire et construire","cercle","triangles","parallélogrammes","médiatrice et bissectrice","polygones réguliers"])],None),
 ("Symétrie axiale","CE2 à 3e",[("",[])],None),
 ("Repérage et déplacements","CP à 3e",[("",["positions et plans","coder un déplacement","coordonnées dans le plan"])],None),
 ("Symétrie centrale","5e, 4e",[("",[])],None),
-("Translations","4e, 3e",[("",[])],None),
+("Translations","4e, 3e, 1re techno",[("",["frises et pavages"])],None),
 ("Théorème de Pythagore","4e, 3e",[("",["calculer une longueur","réciproque"])],None),
 ("Théorème de Thalès","4e, 3e",[("",["droite des milieux","calculer une longueur","réciproque"])],"droite des milieux en 4e (décision S2)"),
 ("Trigonométrie du triangle rectangle","3e",[("",["calculer une longueur","calculer un angle"])],None),
 ("Rotations","hors programme",[("",[])],"ancienne 3e — demandé par David : enrichissement, évolutions futures"),
 ("Homothéties","hors programme",[("",[])],"ancienne 3e — demandé par David"),
 ("Triangles semblables","hors programme",[("",["cas d'égalité des triangles"])],"ancienne 3e (cas d'égalité : ancienne 4e)"),
-("Repérage dans l'espace","hors programme",[("",[])],"ancien programme : pavé (4e), sphère latitude-longitude (3e)"),
+("Repérage dans l'espace","1re techno (STD2A)",[("",[])],"ancien programme : pavé (4e), sphère latitude-longitude (3e)"),
 ("Vecteurs : sans coordonnées","3e, 2de",[("",["translation et vecteur","égalité de vecteurs","somme et relation de Chasles","produit par un réel","colinéarité","combinaison linéaire"])],"aucun modèle aujourd'hui"),
 ("Vecteurs : avec coordonnées","2de",[("",["coordonnées d'un vecteur","somme et produit par un réel","norme","colinéarité et déterminant"])],"aucun modèle aujourd'hui"),
 ("Géométrie repérée","2de, 1re",[("",["milieu et distance","équations de droites","vecteur directeur","intersection de deux droites","vecteur normal et équation de droite","équation de cercle","projeté orthogonal"])],None),
@@ -184,9 +184,9 @@ DE=[
 ST=[
 ("Représenter des données","CP à 2de",[("",["effectifs et fréquences","tableaux","tableau à double entrée","diagrammes en barres","diagrammes circulaires","courbes et repères","histogrammes","fréquences cumulées"])],"aucun modèle aujourd'hui"),
 ("Indicateurs","5e à 2de",[("",["moyenne","médiane","quartiles","étendue","écart-type","boîte à moustaches"])],"aucun modèle aujourd'hui"),
-("Échantillonnage","2de, 1re",[("",["fluctuation","simulation","estimation d'une proportion"])],"aucun modèle aujourd'hui"),
+("Échantillonnage","2de, 1re, 1re techno",[("",["fluctuation","simulation","estimation d'une proportion"])],"aucun modèle aujourd'hui"),
 ("Tableaux croisés","2de",[("",["tableau croisé d'effectifs","fréquences marginales et conditionnelles"])],"croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"),
-("Statistique à deux variables","1re ens. sci., Tle comp.",[("",["nuage de points","point moyen","ajustement affine","changement de variable"])],"reprend le thème Statistiques"),
+("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp.",[("",["nuage de points","point moyen","ajustement affine","changement de variable"])],"reprend le thème Statistiques"),
 ]
 LO=[
 ("Connecteurs et contre-exemples","2de, 1re",[("",["et, ou, non","contre-exemple"])],None),
@@ -313,7 +313,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.8","statut":"validé par David (cycles 2-4 + 2de + 1re et Tle spé + 1re ens. sci. v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.9","statut":"validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re techno v2, 2026-10-06/07 ; lots Tle comp., Expertes, Tle techno à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))

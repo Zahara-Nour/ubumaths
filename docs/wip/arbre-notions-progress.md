@@ -253,3 +253,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   hors programme Repérage dans l'espace) et à la rubrique Sélection de données (points sous
   Tableaux croisés). Spécialité PCM (STI2D/STL) signalée, hors périmètre. Questions X1-X4 en
   attente.
+
+- **1re techno appliquée (2026-10-07, « je valide », X1-X4)** : libellé « 1re techno » acté ;
+  tronc commun = 0 création (points et références) ; Sélection de données = points sous
+  Tableaux croisés ; variante STD2A couverte — 4 sous-notions (polygones réguliers dans
+  Figures planes, frises et pavages dans Translations, perspective cavalière et sections
+  planes dans Solides) et le nœud hors programme Repérage dans l'espace repointé
+  (« 1re techno (STD2A) ») ; niveaux : Statistique à deux variables « 1re ens. sci.,
+  1re techno, Tle comp. », Échantillonnage « 2de, 1re, 1re techno » → 19 branches,
+  136 notions, 523 sous-notions (JSON 2026-10-07.9), diagramme republié. Restent : Tle
+  comp., Expertes, Tle techno (texte à venir), spé PCM STI2D/STL (si fournie).

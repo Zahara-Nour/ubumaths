@@ -216,6 +216,10 @@ courbes` : spé seulement. `Produit scalaire`, `Fonctions trigonométriques`, `V
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide » (X1-X4 selon les recos — libellé
+> « 1re techno », Sélection de données = points sous Tableaux croisés, STD2A couverte).
+> Appliqué à l'arbre : version 2026-10-07.9 — 136 notions, 523 sous-notions.
+
 1. **X1 — Libellé et niveaux** : libellé **« 1re techno »** pour ce programme (cohérent avec
    le grade `1_TECHNO` et le précédent « 1re ens. sci. ») ; niveaux étendus là où la techno
    introduit en parallèle : `Statistique à deux variables` → « 1re ens. sci., 1re techno,

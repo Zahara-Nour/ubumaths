@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.8",
-	"statut": "validé par David (cycles 2-4 + 2de + 1re et Tle spé + 1re ens. sci. v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.9",
+	"statut": "validé par David (cycles 2-4 + 2de + 1re/Tle spé + 1re ens. sci. + 1re techno v2, 2026-10-06/07 ; lots Tle comp., Expertes, Tle techno à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -789,13 +789,19 @@
 			"notions": [
 				{
 					"nom": "Solides",
-					"niveaux": "CP à 3e",
-					"sous_notions": ["reconnaître et décrire", "construire", "patrons"],
+					"niveaux": "CP à 3e, 1re techno",
+					"sous_notions": [
+						"reconnaître et décrire",
+						"construire",
+						"patrons",
+						"perspective cavalière",
+						"sections planes"
+					],
 					"note": "le collège (D2) viendra avec le cycle 4"
 				},
 				{
 					"nom": "Figures planes",
-					"niveaux": "CP à 4e",
+					"niveaux": "CP à 4e, 1re techno",
 					"sous_notions": [
 						"reconnaître et décrire",
 						"angles droits",
@@ -804,7 +810,8 @@
 						"cercle",
 						"triangles",
 						"parallélogrammes",
-						"médiatrice et bissectrice"
+						"médiatrice et bissectrice",
+						"polygones réguliers"
 					],
 					"note": null
 				},
@@ -832,8 +839,8 @@
 				},
 				{
 					"nom": "Translations",
-					"niveaux": "4e, 3e",
-					"sous_notions": [],
+					"niveaux": "4e, 3e, 1re techno",
+					"sous_notions": ["frises et pavages"],
 					"note": null
 				},
 				{
@@ -874,7 +881,7 @@
 				},
 				{
 					"nom": "Repérage dans l'espace",
-					"niveaux": "hors programme",
+					"niveaux": "1re techno (STD2A)",
 					"sous_notions": [],
 					"note": "ancien programme : pavé (4e), sphère latitude-longitude (3e)"
 				},
@@ -1194,7 +1201,7 @@
 				},
 				{
 					"nom": "Échantillonnage",
-					"niveaux": "2de, 1re",
+					"niveaux": "2de, 1re, 1re techno",
 					"sous_notions": ["fluctuation", "simulation", "estimation d'une proportion"],
 					"note": "aucun modèle aujourd'hui"
 				},
@@ -1209,7 +1216,7 @@
 				},
 				{
 					"nom": "Statistique à deux variables",
-					"niveaux": "1re ens. sci., Tle comp.",
+					"niveaux": "1re ens. sci., 1re techno, Tle comp.",
 					"sous_notions": [
 						"nuage de points",
 						"point moyen",
