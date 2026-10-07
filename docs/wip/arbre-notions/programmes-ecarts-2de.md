@@ -29,12 +29,18 @@ précision que les probabilités totales ne sont PAS un attendu de 2de [T].
 
 ## Ce que l'ADR 0020 change pour la 2de
 
-1. **La décision D1 (automatismes) est dissoute.** L'ancien modèle demandait d'« ajouter le
-   niveau 2de » aux notions du collège travaillées en automatismes (fractions, conversions,
-   puissances, Pythagore…). Dans le modèle ADR 0020, les automatismes de 2de sont des **points
-   du programme de 2de rattachés à des nœuds de toute la scolarité** : une fiche d'automatismes
-   de 2de trouve ses notions par les pointeurs, sans toucher aux nœuds. Même sort pour **D3**
-   (Divisibilité et la 2de) : c'est un pointeur.
+1. **La décision D1 (automatismes) est dissoute** — et précisée par David le 2026-10-07 :
+   les Automatismes sont **un mode de travail, pas des points nouveaux**. Les textes le
+   confirment (cycle 4 : « des contenus étudiés sans être automatisés au niveau précédent » ;
+   6e : « déjà étudiées au cours moyen » ; 2de : « travaillées dans les classes antérieures »).
+   Règle de pointage : **un contenu = un seul point, dans le programme qui l'introduit** ;
+   une ligne d'Automatismes qui renvoie à un contenu antérieur devient une **référence**
+   « travaillé en automatisme en 2de » vers ce point (la table `curriculum_point_automatismes
+(point_id, grade)`, déjà en place et vide, porte exactement cela) ; seule une ligne
+   d'Automatismes qui introduit du contenu **neuf** (la 2de le permet explicitement) devient un
+   point de 2de, en régime automatisme. Une fiche d'automatismes de 2de trouve ses nœuds par
+   les points de 2de ∪ les références de 2de. Même sort pour **D3** (Divisibilité et la 2de) :
+   une référence.
 2. **Règle des niveaux indicatifs du JSON** : ils tracent les programmes qui **introduisent**
    un contenu, pas ceux qui l'entretiennent. Les automatismes de 2de pointeront sans gonfler
    les niveaux affichés. Deux exceptions ici, car la 2de apporte du contenu neuf :
@@ -77,7 +83,7 @@ ensembles, Cardinal et produit cartésien` (les ex-[N] « ajouter 2de » devienn
 - « aléatoire, séries simulées, moyenne/écart type d'une série » — **[C]**
   `Statistiques > Échantillonnage > simulation` et `> Indicateurs`.
 
-## Automatismes (tous : points de 2de sur des nœuds existants)
+## Automatismes (tous : RÉFÉRENCES de 2de vers des points antérieurs — règle ci-dessus)
 
 Fractions (calculs et écritures), puissances, pourcentages et proportions, ordres de grandeur
 (→ `Décimaux : numération > arrondir`), conversions d'unités (`Unités et conversions`, `Durées >

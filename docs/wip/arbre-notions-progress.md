@@ -156,3 +156,9 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   session précédente → `programmes-ecarts-2de.md` (remplace la section 2de de
   `programmes-ecarts.md`). D1 et D3 DISSOUTES par l'ADR 0020, D2 réglée. Proposé : notion
   Tableaux croisés, ~12 sous-notions. Questions T1-T6 en attente.
+
+- **Règle des Automatismes (David, 2026-10-07)** : un contenu = UN point, dans le programme
+  qui l'introduit ; une ligne d'Automatismes renvoyant à un contenu antérieur = RÉFÉRENCE
+  (point_id, grade) — c'est le rôle de `curriculum_point_automatismes`, déjà en prod et vide ;
+  seule une ligne introduisant du neuf devient un point (régime automatisme). JAMAIS de
+  duplication de points entre programmes. À inscrire dans la spec du schéma cible ADR 0020.
