@@ -86,3 +86,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 - **Phase 0 close (2026-10-07)** : archiver un nœud à enfants actifs = interdit ; table de
   correspondance = fichier de proposition avec confiance par ligne, validé par David avant toute écriture.
 - Ensuite : question d'accès (lecture publique des listes, écriture admin seule), phase 0, PR 1 (base).
+
+- **Programme du cycle 2 comparé (2026-10-07)** : programme 2025 (arrêté du 22-10-2024, BOENJS
+  n° 41 du 31/10/2024) + livrets CP/CE1/CE2 (séquences modèles, pas des inventaires) →
+  `docs/wip/arbre-notions/programmes-ecarts-cycle2.md`. Proposé : 9 notions (Problèmes
+  arithmétiques, Longueurs, Masses, Contenances, Monnaie, Solides, Figures planes, Symétrie
+  axiale, Repérage et déplacements), ~17 sous-notions, niveaux sur 7 notions (fractions dès le
+  CE1 !). Questions P1-P7. Référentiel `curriculum_*` : rien en prod pour CP-CE2, schéma prêt.
+
+- **Question A7 ROUVERTE (2026-10-07)** : « pas de lien arbre ↔ programme officiel (A7 retiré) »
+  n'était PAS une décision de David — la question avait été retirée sans lui être posée. David :
+  « il y a un lien évident ». Options et bénéfices dans `programmes-ecarts-cycle2.md` § Lien
+  arbre ↔ référentiel ; question P7 à trancher.
