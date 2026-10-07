@@ -2,9 +2,10 @@
  * Arbre des notions — base de données (Supabase local requis)
  * ===========================================================
  *
- * Migration `<horodatage>_arbre_des_notions` (ADR 0019) :
- *   - `classification_nodes` : arbre branche > notion > sous-notion, niveaux
- *     scolaires sur la notion et (facultatifs, inclus) sur la sous-notion ;
+ * Migration `<horodatage>_arbre_des_notions` (ADR 0019, 0020) :
+ *   - `classification_nodes` : arbre branche > notion > sous-notion, SANS
+ *     niveaux scolaires (ADR 0020 : les niveaux vivent dans la couche
+ *     programme, qui pointera les nœuds) ;
  *   - `source_types` : liste fermée des types de source d'exercice ;
  *   - `exercises.source_type_id`, `question_templates.classification_node_id` ;
  *   - `exercise_classifications` : rangement d'un exercice dans un ou plusieurs
@@ -44,7 +45,6 @@ interface NodeRow {
 	parent_id: string | null;
 	name: string;
 	position: number;
-	grades: string[] | null;
 	archived_at: string | null;
 }
 
@@ -52,7 +52,6 @@ interface NodeInput {
 	kind: NodeKind;
 	name: string;
 	parent_id?: string | null;
-	grades?: string[] | null;
 	archived_at?: string | null;
 }
 
@@ -111,8 +110,8 @@ async function signedIn(email: string): Promise<SupabaseClient> {
 async function insertNode(input: NodeInput) {
 	return service
 		.from('classification_nodes')
-		.insert({ parent_id: null, grades: null, ...input })
-		.select('id, kind, parent_id, name, position, grades, archived_at')
+		.insert({ parent_id: null, ...input })
+		.select('id, kind, parent_id, name, position, archived_at')
 		.single<NodeRow>();
 }
 
@@ -218,8 +217,7 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			const notion = await seedNode({
 				kind: 'notion',
 				name: name('L notion'),
-				parent_id: branch.id,
-				grades: ['6', '5']
+				parent_id: branch.id
 			});
 			await seedNode({ kind: 'subnotion', name: name('L sous-notion'), parent_id: notion.id });
 			await seedNode({
@@ -239,14 +237,13 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 		])("%s lit l'arbre entier, nœuds archivés compris", async (_who, getClient) => {
 			const { data, error } = await getClient()
 				.from('classification_nodes')
-				.select('name, kind, grades')
+				.select('name, kind')
 				.like('name', `${TAG} L %`)
 				.order('name');
 			expect(error).toBeNull();
 			expect((data ?? []).map((r) => r.name).sort()).toEqual([...expectedNames].sort());
 			const notion = (data ?? []).find((r) => r.name === name('L notion'));
 			expect(notion?.kind).toBe('notion');
-			expect(notion?.grades).toEqual(['6', '5']);
 		});
 
 		it.each([
@@ -413,14 +410,12 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			notion = await seedNode({
 				kind: 'notion',
 				name: name('S notion'),
-				parent_id: branch.id,
-				grades: ['6', '5']
+				parent_id: branch.id
 			});
 			subnotion = await seedNode({
 				kind: 'subnotion',
 				name: name('S sous-notion'),
-				parent_id: notion.id,
-				grades: ['5']
+				parent_id: notion.id
 			});
 		});
 
@@ -429,48 +424,25 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			expect(error?.code).toBe('23514');
 		});
 
-		it('branche avec parent ou avec niveaux refusée (23514)', async () => {
+		it('branche avec parent refusée (23514)', async () => {
 			const withParent = await insertNode({
 				kind: 'branch',
 				name: name('S b1'),
 				parent_id: branch.id
 			});
 			expect(withParent.error?.code).toBe('23514');
-			const withGrades = await insertNode({ kind: 'branch', name: name('S b2'), grades: ['6'] });
-			expect(withGrades.error?.code).toBe('23514');
 		});
 
-		it('notion sans parent, sans niveaux, ou avec un code de niveau inconnu : refusée', async () => {
-			const noParent = await insertNode({ kind: 'notion', name: name('S n1'), grades: ['6'] });
+		it('notion sans parent refusée (23514)', async () => {
+			const noParent = await insertNode({ kind: 'notion', name: name('S n1') });
 			expect(noParent.error?.code).toBe('23514');
-			const noGrades = await insertNode({
-				kind: 'notion',
-				name: name('S n2'),
-				parent_id: branch.id
-			});
-			expect(noGrades.error?.code).toBe('23514');
-			const emptyGrades = await insertNode({
-				kind: 'notion',
-				name: name('S n3'),
-				parent_id: branch.id,
-				grades: []
-			});
-			expect(emptyGrades.error?.code).toBe('23514');
-			const badGrade = await insertNode({
-				kind: 'notion',
-				name: name('S n4'),
-				parent_id: branch.id,
-				grades: ['CM3']
-			});
-			expect(badGrade.error?.code).toBe('23514');
 		});
 
 		it('parent de mauvais genre refusé : notion sous notion, sous-notion sous branche', async () => {
 			const notionUnderNotion = await insertNode({
 				kind: 'notion',
 				name: name('S n5'),
-				parent_id: notion.id,
-				grades: ['6']
+				parent_id: notion.id
 			});
 			expect(notionUnderNotion.error?.code).toBe('23514');
 			expect(notionUnderNotion.error?.message).toMatch(/branche|branch/i);
@@ -496,60 +468,16 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 		it("le genre d'un nœud ne change pas", async () => {
 			const { error } = await service
 				.from('classification_nodes')
-				.update({ kind: 'notion', parent_id: branch.id, grades: ['6'] })
+				.update({ kind: 'notion', parent_id: branch.id })
 				.eq('id', subnotion.id);
 			expect(error?.code).toBe('23514');
-		});
-
-		it('sous-notion : niveaux hérités (null) ou inclus dans ceux de la notion', async () => {
-			const inherited = await insertNode({
-				kind: 'subnotion',
-				name: name('S héritée'),
-				parent_id: notion.id
-			});
-			expect(inherited.error).toBeNull();
-			expect(inherited.data?.grades).toBeNull();
-
-			const outside = await insertNode({
-				kind: 'subnotion',
-				name: name('S hors niveaux'),
-				parent_id: notion.id,
-				grades: ['5', '4']
-			});
-			expect(outside.error?.code).toBe('23514');
-
-			const empty = await insertNode({
-				kind: 'subnotion',
-				name: name('S vide'),
-				parent_id: notion.id,
-				grades: []
-			});
-			expect(empty.error?.code).toBe('23514');
-		});
-
-		it("réduire les niveaux d'une notion qui exclurait une sous-notion : refusé ; élargir : accepté", async () => {
-			const shrink = await service
-				.from('classification_nodes')
-				.update({ grades: ['6'] })
-				.eq('id', notion.id)
-				.select('grades');
-			expect(shrink.error?.code).toBe('23514');
-
-			const widen = await service
-				.from('classification_nodes')
-				.update({ grades: ['6', '5', '4'] })
-				.eq('id', notion.id)
-				.select('grades');
-			expect(widen.error).toBeNull();
-			expect(widen.data).toEqual([{ grades: ['6', '5', '4'] }]);
 		});
 
 		it('doublon de nom entre frères refusé (casse ignorée), même nom sous deux parents accepté', async () => {
 			const notionB = await seedNode({
 				kind: 'notion',
 				name: name('S notion B'),
-				parent_id: branch.id,
-				grades: ['4']
+				parent_id: branch.id
 			});
 			const first = await insertNode({
 				kind: 'subnotion',
@@ -584,8 +512,7 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			const n = await seedNode({
 				kind: 'notion',
 				name: name('A notion'),
-				parent_id: b.id,
-				grades: ['3']
+				parent_id: b.id
 			});
 			const now = new Date().toISOString();
 
@@ -650,8 +577,7 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			notion = await seedNode({
 				kind: 'notion',
 				name: name('C notion'),
-				parent_id: branch.id,
-				grades: ['2']
+				parent_id: branch.id
 			});
 			subnotion = await seedNode({
 				kind: 'subnotion',
@@ -984,8 +910,7 @@ describe('Arbre des notions (classification_nodes, source_types, rangements)', (
 			notion = await seedNode({
 				kind: 'notion',
 				name: name('Q notion'),
-				parent_id: branch.id,
-				grades: ['1_SPE']
+				parent_id: branch.id
 			});
 			const { data, error } = await service
 				.from('question_templates')

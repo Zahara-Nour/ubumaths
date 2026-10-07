@@ -118,3 +118,7 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   0019 amendée (statut) ; mesures à l'appui : 432/1 005 modèles tagués vers 499 points, mêmes
   titres à plusieurs levels sous un même point. Prochaine étape technique sur la branche : amender
   la PR 1 (retrait de `classification_nodes.grades` et des règles d'héritage/inclusion + tests).
+
+- **PR 1 amendée (2026-10-07, ADR 0020)** : `classification_nodes.grades` retirée (colonne,
+  contraintes de forme/validité, bloc inclusion du trigger de validation, bloc niveaux du trigger
+  enfants). Tests : 52 verts (les 2 tests de niveaux supprimés avec la règle).

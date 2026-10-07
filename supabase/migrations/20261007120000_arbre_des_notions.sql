@@ -47,7 +47,6 @@ create table public.classification_nodes (
 	parent_id uuid null references public.classification_nodes (id) on delete restrict,
 	name text not null,
 	position integer not null default 0,
-	grades text[] null,
 	archived_at timestamptz null,
 	created_at timestamptz not null default now(),
 	updated_at timestamptz not null default now(),
@@ -57,32 +56,16 @@ create table public.classification_nodes (
 	constraint classification_nodes_name_not_blank
 		check (btrim(name) <> ''),
 	-- Forme de chaque genre. Le genre du PARENT est vérifié par trigger.
-	--   branche     : racine, sans niveaux ;
-	--   notion      : sous une branche, au moins un niveau ;
-	--   sous-notion : sous une notion, niveaux hérités (null) ou non vides.
+	-- L'arbre ne porte AUCUN niveau scolaire (ADR 0020) : les niveaux se
+	-- dérivent des points du programme qui pointent le nœud.
 	constraint classification_nodes_shape_check check (
-		(kind = 'branch' and parent_id is null and grades is null)
-		or (kind = 'notion' and parent_id is not null and grades is not null
-			and cardinality(grades) > 0)
-		or (kind = 'subnotion' and parent_id is not null
-			and (grades is null or cardinality(grades) > 0))
-	),
-	-- Mêmes codes que la contrainte `curriculum_themes_valid_grade`
-	-- (migration 20260621100000_curriculum_tracking.sql). Un élément NULL dans
-	-- le tableau fait échouer `<@` : il est donc refusé aussi.
-	constraint classification_nodes_valid_grades check (
-		grades is null or grades <@ array[
-			'CP', 'CE1', 'CE2', 'CM1', 'CM2',
-			'6', '5', '4', '3',
-			'2', '1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_STMG', 'T_STMG'
-		]::text[]
+		(kind = 'branch' and parent_id is null)
+		or (kind in ('notion', 'subnotion') and parent_id is not null)
 	)
 );
 
 comment on table public.classification_nodes is
-	'Arbre de classement des contenus (ADR 0019) : branche > notion > sous-notion. Lecture publique, écriture admin.';
-comment on column public.classification_nodes.grades is
-	'Niveaux scolaires. Branche : null. Notion : non vide. Sous-notion : null (hérite de la notion) ou inclus dans ceux de la notion.';
+	'Arbre de classement des contenus (ADR 0019, 0020) : branche > notion > sous-notion, sans niveaux scolaires. Lecture publique, écriture admin.';
 comment on column public.classification_nodes.archived_at is
 	'Nœud retiré des listes sans être supprimé (il peut encore être référencé). Interdit tant qu''un enfant est actif.';
 
@@ -103,8 +86,8 @@ create trigger classification_nodes_updated_at
 	for each row execute function public.update_updated_at_column();
 
 -- ----------------------------------------------------------------------------
--- Validation d'une ligne : genre immuable, genre du parent, inclusion des
--- niveaux, pas d'enfant actif sous un parent archivé.
+-- Validation d'une ligne : genre immuable, genre du parent, pas d'enfant
+-- actif sous un parent archivé.
 -- ----------------------------------------------------------------------------
 create or replace function public.classification_nodes_validate()
 returns trigger
@@ -142,13 +125,6 @@ begin
 			using errcode = 'check_violation';
 	end if;
 
-	if new.kind = 'subnotion' and new.grades is not null
-		and not (new.grades <@ v_parent.grades) then
-		raise exception 'Les niveaux d''une sous-notion (%) doivent être pris parmi ceux de sa notion (%).',
-			new.grades, v_parent.grades
-			using errcode = 'check_violation';
-	end if;
-
 	-- Un nœud actif sous un parent archivé casserait l'invariant
 	-- « un nœud archivé n'a pas d'enfant actif ».
 	if new.archived_at is null and v_parent.archived_at is not null then
@@ -165,7 +141,7 @@ create trigger classification_nodes_validate
 	for each row execute function public.classification_nodes_validate();
 
 -- ----------------------------------------------------------------------------
--- Effets sur les enfants d'une modification du parent : archivage et niveaux.
+-- Effets sur les enfants d'une modification du parent : archivage.
 -- ----------------------------------------------------------------------------
 create or replace function public.classification_nodes_check_children()
 returns trigger
@@ -186,25 +162,12 @@ begin
 		end if;
 	end if;
 
-	if new.kind = 'notion' and new.grades is distinct from old.grades then
-		select c.name into v_child_name
-		from public.classification_nodes c
-		where c.parent_id = new.id
-			and c.grades is not null
-			and not (c.grades <@ new.grades)
-		limit 1;
-		if found then
-			raise exception 'Niveaux de « % » refusés : la sous-notion « % » sortirait de ses niveaux.', new.name, v_child_name
-				using errcode = 'check_violation';
-		end if;
-	end if;
-
 	return new;
 end;
 $$;
 
 create trigger classification_nodes_check_children
-	before update of archived_at, grades on public.classification_nodes
+	before update of archived_at on public.classification_nodes
 	for each row execute function public.classification_nodes_check_children();
 
 -- ============================================================================
