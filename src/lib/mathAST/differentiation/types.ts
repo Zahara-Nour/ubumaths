@@ -116,7 +116,9 @@ export class DifferentiationError extends Error {
 	constructor(
 		message: string,
 		public readonly nodeType: string,
-		public readonly details?: string
+		public readonly details?: string,
+		/** Le refus en français, destiné à l'élève (`floor` : « la partie entière… »). */
+		public readonly studentMessage?: string
 	) {
 		super(message);
 		this.name = 'DifferentiationError';

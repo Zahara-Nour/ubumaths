@@ -30,7 +30,13 @@ import type {
 	NodeMetadata
 } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
-import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
+import {
+	CustomTokenizer,
+	KNOWN_FUNCTION_NAMES,
+	unknownFunctionMessage,
+	type CustomToken,
+	type CustomTokenType
+} from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
@@ -1655,6 +1661,17 @@ class CustomPrattParser {
 		const funcToken = this.advance(); // consume FUNC token
 		const name = funcToken.value;
 
+		// `racine(x)`, `acoss(x)` : un nom inconnu se REFUSE — lu en produit de
+		// lettres, il donnait un résultat faux sans aucune erreur
+		if (!KNOWN_FUNCTION_NAMES.includes(name)) {
+			this.error(
+				unknownFunctionMessage(name),
+				funcToken.position,
+				funcToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+
 		// Check for power BEFORE arguments: sin^2
 		let power: MathNode | undefined;
 		if (this.check('CARET')) {
@@ -1704,6 +1721,12 @@ class CustomPrattParser {
 		// Create function node with power/base if present
 		if (name === 'sqrt' && nthRoot) {
 			return this.applyColor(MathAST.func('sqrt', args, { power, base: nthRoot }));
+		}
+
+		// cbrt(x) = ∛x : le même nœud que sqrt[3](x), sans quoi l'arbre aurait une
+		// fonction que ni la dérivation ni la normalisation ne connaissent
+		if (name === 'cbrt') {
+			return this.applyColor(MathAST.func('sqrt', args, { power, base: MathAST.number('3') }));
 		}
 
 		const funcNode = MathAST.func(name, args, { power, base });

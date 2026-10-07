@@ -44,6 +44,10 @@ import {
 	variableHintOf
 } from '$lib/mathAST/cli/core/variable-argument';
 import { tidyTerms } from './tidy-terms';
+import {
+	findUnknownFunctionCall,
+	unknownFunctionMessage
+} from '$lib/mathAST/parser/custom/tokenizer';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 
@@ -154,7 +158,8 @@ const VARIABLE_COMMANDS: ReadonlySet<string> = new Set([
 const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	'AMBIGUOUS_VARIABLE',
 	'BARE_FUNCTION',
-	'TAYLOR_ORDER'
+	'TAYLOR_ORDER',
+	'NOT_DIFFERENTIABLE'
 ]);
 
 /**
@@ -598,6 +603,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return runAtelierCommand(known.name, input, argument);
 	}
 
+	const unknown = findUnknownFunctionCall(rawArgument);
+	if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
+
 	// `.dériver f` : la cible tapée, sans sa variable explicite (`; t`) ni son
 	// `(x)`. Une fonction de l'atelier est en x, même quand son expression n'en
 	// contient pas : `f(x) = k` se dériverait sinon en k, et répondrait 1.
@@ -677,6 +685,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				output: rendered.text,
 				latex: derived.answer,
 				steps: derived.steps,
+				...notes
+			};
+		}
+		// Pas d'étapes (`sec(3x)`) : la dérivée du moteur, en LaTeX — son `ast`
+		// est la DÉRIVÉE (`diff.command`), pas l'entrée
+		if (result.success && result.ast !== undefined) {
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: toLatex(result.ast),
 				...notes
 			};
 		}
@@ -797,6 +816,14 @@ export function runInput(
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
 	if (PI_IN_LETTERS.test(input)) return { kind: 'refus', message: PI_IN_LETTERS_MESSAGE };
+
+	// Avant tout chemin aussi : `racine(x)`, `acoss(x)` se lisaient en produits
+	// de lettres, sans erreur. Une commande le vérifie sur son argument de
+	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
+	if (!input.startsWith('.')) {
+		const unknown = findUnknownFunctionCall(input);
+		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
+	}
 
 	syncEngine(session.atelier, session.engine);
 
@@ -1093,6 +1120,11 @@ export function runAction(
 		}
 	}
 
+	// Un refus que le moteur adresse à l'élève (`floor` : « la partie entière
+	// n'est pas dérivable partout ») : le même que celui de `.dériver`
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		return { ok: false, message: result.error?.message ?? 'Le calcul n’a pas abouti.' };
+	}
 	if (!result.success) {
 		return { ok: false, message: rendered.text || 'Le calcul n’a pas abouti.' };
 	}

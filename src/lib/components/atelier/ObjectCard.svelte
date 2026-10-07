@@ -16,7 +16,7 @@
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
 	import { forMathlive } from '$lib/atelier/mathfield';
 	import { derivativeOf, displayName } from '$lib/atelier/names';
-	import { expressionOf } from '$lib/atelier/engine';
+	import { derivativeAstOf } from '$lib/atelier/engine';
 	import {
 		INTERNAL_LETTER,
 		renameVariableIn,
@@ -116,12 +116,13 @@
 	const rendered = $derived.by(() => {
 		if (object.definition.trim() === '' || object.kind === 'list') return null;
 		// La carte `f′` est définie par `f′(x)` : c'est sa FORMULE qu'on veut lire
-		// (`2x − 3`), recalculée depuis `f` à chaque modification
-		const source = derivative ? expressionOf(atelier, object.name) : null;
+		// (`2x − 3`), recalculée depuis `f` à chaque modification — sur l'ARBRE,
+		// jamais relue depuis un texte (voir `derivativeAstOf`)
+		const derived = derivative ? derivativeAstOf(atelier, object.name) : null;
 		const ast =
-			source !== null
-				? source.ok
-					? astOf(source.expression, 'text', atelier.functionNames)
+			derived !== null
+				? derived.ok
+					? derived.ast
 					: null
 				: astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
 		if (ast === null) return null;

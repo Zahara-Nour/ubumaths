@@ -205,6 +205,12 @@ class PrattParser {
 	private currentToken: Token;
 	/** Stack of color brace positions - each entry marks that we're in a \textcolor{} scope */
 	private readonly colorScopeStack: number[] = [];
+	/**
+	 * Vrai pendant la lecture de l'argument d'un `\lim` sans parenthèses (et
+	 * remis à faux dans tout groupe : accolades, parenthèses, \left…\right,
+	 * cellules de matrice). Cf. `parseLimit` pour la règle de portée.
+	 */
+	private inLimitArgument = false;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -363,6 +369,18 @@ class PrattParser {
 	 * Parse an expression with the given minimum binding power
 	 */
 	private parseExpression(minBp: number): MathNode {
+		// Un groupe (lu au niveau NONE) ouvre une portée neuve : la règle
+		// « \lim A + \lim B » ne vaut qu'au niveau de l'argument de la limite.
+		const savedInLimitArgument = this.inLimitArgument;
+		if (minBp === BP.NONE) this.inLimitArgument = false;
+		try {
+			return this.parseExpressionBody(minBp);
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
+	}
+
+	private parseExpressionBody(minBp: number): MathNode {
 		// Parse prefix/primary (NUD)
 		let left = this.nud();
 
@@ -380,6 +398,10 @@ class PrattParser {
 
 			const bp = this.getLeftBindingPower();
 			if (bp <= minBp) {
+				break;
+			}
+			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
+			if (this.inLimitArgument && this.isOperatorBeforeLimit()) {
 				break;
 			}
 
@@ -1817,6 +1839,17 @@ class PrattParser {
 	 * Parse expression stopping at matrix delimiters (& \\ \end)
 	 */
 	private parseExpressionUntilMatrixDelimiter(): MathNode {
+		// Une cellule de matrice est un groupe : portée de \lim neuve
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = false;
+		try {
+			return this.parseMatrixCellExpression();
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
+	}
+
+	private parseMatrixCellExpression(): MathNode {
 		// Check for empty element
 		if (this.isMatrixDelimiter()) {
 			return MathAST.number('0');
@@ -1952,10 +1985,8 @@ class PrattParser {
 			if (this.check('LBRACE')) {
 				this.advance(); // consume {
 
-				// Parse variable name (should be a letter)
-				if (this.check('LETTER')) {
-					variableName = this.advance().value;
-				}
+				// Variable : une lettre latine ou grecque (\alpha, \theta…)
+				variableName = this.parseLimitVariable() ?? variableName;
 
 				// Expect \to
 				if (this.checkCommand('to') || this.checkCommand('rightarrow')) {
@@ -1996,17 +2027,48 @@ class PrattParser {
 
 				this.expect('RBRACE', "Expected '}' after limit subscript");
 			} else {
-				// Simple subscript without braces (e.g., _x)
-				if (this.check('LETTER')) {
-					variableName = this.advance().value;
-				}
+				// Simple subscript without braces (e.g., _x, _\theta)
+				variableName = this.parseLimitVariable() ?? variableName;
 			}
 		}
 
-		// Parse the expression that the limit is applied to
-		const expression = this.parseExpression(BP.UNARY);
+		// Portée (décision du 2026-10-07) : sans parenthèses, la limite porte
+		// sur TOUTE l'expression qui suit, comme un élève la lit. Elle s'arrête
+		// à la fin du groupe, devant une relation (`=`, `<`, `\le`, `\approx`…),
+		// une virgule, un `;`, ou devant un opérateur binaire suivi d'un autre
+		// `\lim` (`\lim A + \lim B`, `\lim A \times \lim B`).
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = true;
+		let expression: MathNode;
+		try {
+			expression = this.parseExpressionBody(BP.RELATION);
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
 
 		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
+	}
+
+	/**
+	 * Opérateur binaire (`+ - * / : \cdot \times \div`) dont l'opérande droit
+	 * commence par `\lim` : il sépare deux limites, il ne prolonge pas
+	 * l'argument de la première. Une juxtaposition aussi (`\lim A \lim B`,
+	 * produit implicite), alignée sur `\cdot`.
+	 */
+	private isOperatorBeforeLimit(): boolean {
+		const token = this.currentToken;
+		if (token.type === 'COMMAND' && token.value === 'lim') return true;
+		const isBinaryOperator =
+			token.type === 'PLUS' ||
+			token.type === 'MINUS' ||
+			token.type === 'STAR' ||
+			token.type === 'SLASH' ||
+			token.type === 'COLON' ||
+			(token.type === 'COMMAND' &&
+				(token.value === 'cdot' || token.value === 'times' || token.value === 'div'));
+		if (!isBinaryOperator) return false;
+		const next = this.peekNextNonWhitespace();
+		return next.type === 'COMMAND' && next.value === 'lim';
 	}
 
 	/**
@@ -2015,6 +2077,32 @@ class PrattParser {
 	 * `-2^+` prenait `^` comme puissance et le `+` du côté comme une addition
 	 * inachevée (« Unexpected token: } »).
 	 */
+	/**
+	 * Variable d'une limite : une lettre latine (`x`, `t`, `n`) ou une lettre
+	 * grecque connue du parseur (`\alpha`, `\theta`…). Pour une lettre
+	 * grecque, la variable est le NOM de la lettre (`'alpha'`), celui que porte
+	 * le nœud `greek` du corps : le moteur des limites la retrouve ainsi.
+	 * π est une constante, pas une variable : refusé avec un message clair.
+	 * Rend `undefined` si le jeton courant n'est pas une variable.
+	 */
+	private parseLimitVariable(): string | undefined {
+		if (this.check('LETTER')) {
+			return this.advance().value;
+		}
+		if (this.checkCommand('pi')) {
+			this.error(
+				"π est une constante : elle ne peut pas être la variable d'une limite (\\pi)",
+				this.currentToken.position,
+				this.currentToken.length,
+				'UNEXPECTED_TOKEN'
+			);
+		}
+		if (this.currentToken.type === 'COMMAND' && GREEK_COMMANDS.has(this.currentToken.value)) {
+			return this.advance().value;
+		}
+		return undefined;
+	}
+
 	private parseLimitApproach(): MathNode {
 		if (this.check('MINUS')) {
 			this.advance();

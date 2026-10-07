@@ -34,6 +34,12 @@ export interface OracleEntry {
 	readonly f: string;
 	/** Attendu noté à la main. */
 	readonly expected: ExpectedLimit;
+	/**
+	 * Variable de la limite, `x` par défaut. Une lettre grecque s'écrit par
+	 * son nom de commande (`alpha` pour `\alpha`), nom que portent aussi la
+	 * variable du nœud `limit` et la clé de `compile()`.
+	 */
+	readonly variable?: string;
 }
 
 export interface OracleFamily {
@@ -367,7 +373,15 @@ const bounded = family('fonctions bornées', 'bnd-', [
 	[PINF, '\\frac{\\sin(x^2)}{x}', '0'],
 	[MINF, 'e^{x}\\cos x', '0'],
 	[PINF, '\\sin\\left(\\frac{1}{x}\\right)', '0'],
-	[PINF, 'x\\sin\\left(\\frac{1}{x}\\right)', '1']
+	[PINF, 'x\\sin\\left(\\frac{1}{x}\\right)', '1'],
+	// Borné de signe STRICT (2 + sin x ≥ 1) : la conclusion tient
+	[PINF, 'e^x(2+\\sin x)', '+inf'],
+	[PINF, 'x^2', '+inf'],
+	[PINF, '\\frac{1+\\sin x}{x}', '0'],
+	// Borné qui retombe à 0, mais × (→ 0) : la conclusion tient
+	[PINF, 'e^{-x}(1+\\sin x)', '0'],
+	// Borné de signe STRICT sous ln : x + ln(2 + sin x) → +∞
+	[PINF, '\\ln(e^x(2+\\sin x))', '+inf']
 ]);
 
 // Oscillantes : pas de limite
@@ -383,7 +397,24 @@ const oscillating = family('oscillantes sans limite', 'osc-', [
 	[PINF, '\\tan x', 'none'],
 	['0^+', '\\frac{1}{x}\\sin\\left(\\frac{1}{x}\\right)', 'none'],
 	[PINF, 'x^2\\sin x', 'none'],
-	[PINF, '\\sin x+\\cos x', 'none']
+	[PINF, '\\sin x+\\cos x', 'none'],
+	// Borné qui RETOMBE à 0 (1 + sin x ∈ [0, 2]) × ∞ : signe constant, mais la
+	// fonction s'annule en −π/2 + 2kπ — pas de limite
+	[PINF, 'x(1+\\sin x)', 'none'],
+	[PINF, 'x^2(1+\\cos x)', 'none'],
+	[PINF, 'e^x(1-\\sin x)', 'none'],
+	[PINF, 'x+x\\sin x', 'none'],
+	[PINF, '\\ln(x(1+\\sin x))', 'none'],
+	[PINF, 'e^{x(1+\\sin x)}', 'none'],
+	// eˣ(1 + sin x) déborde en 1e6 : le creux se mesure plus tôt (#930)
+	[PINF, '\\ln(e^x(1+\\sin x))', 'none'],
+	[PINF, '\\frac{1}{e^x(1+\\sin x)}', 'none'],
+	[PINF, '\\sqrt{e^x(1+\\cos x)}', 'none'],
+	// 1/(x(1 + sin x)) : petite aux échantillons, mais explose aux zéros du
+	// dénominateur — ni 0 ni limite, et l'exp composée non plus
+	[PINF, '\\frac{1}{x(1+\\sin x)}', 'none'],
+	[PINF, 'e^{\\frac{1}{x(1+\\sin x)}}', 'none'],
+	[PINF, '1+\\frac{1}{x(1+\\sin x)}', 'none']
 ]);
 
 // Bords de domaine (limites à droite / à gauche seulement)
@@ -457,6 +488,57 @@ const classics = family('classiques du supérieur', 'sup-', [
 	[PINF, '\\frac{x^{100}}{e^{x}}', '0']
 ]);
 
+// Saisies SANS parenthèses après `\lim`, relevées dans le contenu en
+// production (2026-10-07) : depuis la décision du même jour, `\lim` porte sur
+// toute l'expression qui suit. Le harnais construit `\lim_{x\to a} f` tel quel ;
+// le test « portée de \lim » vérifie qu'aucune n'a besoin de parenthèses.
+const unparenthesized = family('sans parenthèses', 'bare-', [
+	[PINF, 'x^2+3x+1', '+inf'],
+	[PINF, '3\\sqrt{x}', '+inf'],
+	[PINF, '\\sqrt{x^2+1}-x', '0'],
+	['0', '\\frac{\\sin x}{x}+1', '2'],
+	['0', '1-\\frac{\\sin x}{x}', '0'],
+	// 2 − 3/ln x (contenu réel) converge trop lentement pour l'échantillonnage :
+	// testé à part (scope-without-parentheses.test.ts), remplacé ici par 3/√x
+	[PINF, '2-\\dfrac{3}{x}', '2'],
+	[PINF, '2-\\dfrac{3}{\\sqrt{x}}+\\frac{1}{x}', '2'],
+	[PINF, '\\frac{1}{x+1}+\\frac{1}{x}', '0'],
+	[PINF, '-2x^{3}+x', '-inf'],
+	['0^+', '\\frac{1}{x}+\\frac{\\sin x}{x}', '+inf'],
+	['0', '\\frac{e^x-1}{x}+\\cos x', '2'],
+	['1', '\\frac{x^2-1}{x-1}-x', '1']
+]);
+
+// Variable grecque (contenu en production, 2026-10-07 :
+// `\lim_{\alpha\to+\infty}\frac{\alpha+1}{\alpha+2}`). Le parseur refusait
+// toute variable non latine (« Expected \to in limit subscript »).
+const greekVariable: OracleFamily = {
+	name: 'variable grecque',
+	entries: [
+		{
+			id: 'greek-01',
+			at: PINF,
+			f: '\\frac{\\alpha+1}{\\alpha+2}',
+			expected: '1',
+			variable: 'alpha'
+		},
+		{
+			id: 'greek-02',
+			at: PINF,
+			f: '\\ln\\frac{\\alpha+1}{\\alpha+2}',
+			expected: '0',
+			variable: 'alpha'
+		},
+		{
+			id: 'greek-03',
+			at: '0',
+			f: '\\frac{\\sin\\theta}{\\theta}',
+			expected: '1',
+			variable: 'theta'
+		}
+	]
+};
+
 export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	polynomials,
 	rationalAtInfinity,
@@ -471,7 +553,9 @@ export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	oscillating,
 	domainEdges,
 	indeterminateForms,
-	classics
+	classics,
+	unparenthesized,
+	greekVariable
 ];
 
 /**
@@ -512,6 +596,7 @@ export function scaledVariant(entry: OracleEntry): OracleEntry {
 					? '+inf'
 					: `2-3\\left(${entry.expected}\\right)`;
 	return {
+		...entry,
 		id: `${entry.id}~2-3f`,
 		at: entry.at,
 		f: `2-3\\left(${entry.f}\\right)`,

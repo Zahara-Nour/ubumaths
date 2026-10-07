@@ -61,8 +61,8 @@ describe('Parental Consent Utilities', () => {
 				['T_SPE', 'Terminale Spécialité (17 years)'],
 				['T_EXP', 'Terminale Expert (17 years)'],
 				['T_COMP', 'Terminale Complémentaire (17 years)'],
-				['1_STMG', '1ère STMG (16 years)'],
-				['T_STMG', 'Terminale STMG (17 years)']
+				['1_TECHNO', '1ère techno (16 years)'],
+				['T_TECHNO', 'Term techno (17 years)']
 			])('returns false for grade %s (%s)', (grade) => {
 				expect(requiresParentalConsent(grade)).toBe(false);
 			});

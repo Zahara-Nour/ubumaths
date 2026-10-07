@@ -107,11 +107,16 @@ describe('f(ax+b) : coefficient en division, irrationnel ou littéral', () => {
 		'\\sin(\\frac{x}{3})',
 		'\\cos(\\frac{2x}{5}-3)',
 		'\\exp(-\\frac{x}{2})',
-		'\\sqrt[3]{x+1}',
 		'\\cos(\\pi x)',
 		'\\cos(\\sqrt{2}x+1)'
 	])('%s : F′ = f', (latex) => {
 		expect(derivativeMismatch(latex)).toBeNull();
+	});
+
+	// ∛ définie sur ℝ (2026-10-07) : F = ¾(x+1)∛(x+1), plus (x+1)^{4/3}
+	// (non définie pour x < −1, où POINTS a −2,7 et −1,3)
+	it('\\sqrt[3]{x+1} : F′ = f sur ℝ (F écrite en racine)', () => {
+		expect(derivativeMismatch('\\sqrt[3]{x+1}')).toBeNull();
 	});
 
 	it.each(['\\ln(\\frac{x}{2})', '\\sqrt{\\frac{x}{2}+1}'])('%s : F′ = f', (latex) => {

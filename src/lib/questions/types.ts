@@ -54,7 +54,7 @@ import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-rendere
  * Backward compatibility alias - prefer GradeCode in new code.
  *
  * NOTE: The old type included 'SPE_1', 'SPE_T', 'STMG' which are now
- * '1_SPE', 'T_SPE', '1_STMG', 'T_STMG' in the unified system.
+ * '1_SPE', 'T_SPE', '1_TECHNO', 'T_TECHNO' in the unified system.
  * See mapLegacyGradeCode() in utils/grades.ts for migration.
  */
 export type GradeLevel = GradeCode;

@@ -15,6 +15,7 @@
 		type HillKey
 	} from '$lib/ciphers/hill';
 	import { attempt, type CipherOutcome } from '$lib/ciphers/outcome';
+	import { REPORT_PREFIX } from '$lib/ciphers/dispatches';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 
 	// Types
@@ -162,6 +163,6 @@
 		<p class="text-sm">
 			Indice du Cabinet Noir : les rapports interceptés commencent toujours par « RAPPORT ».
 		</p>
-		<HillAttack {text} knownStart="RAPP" />
+		<HillAttack {text} knownStart={REPORT_PREFIX} />
 	{/snippet}
 </CipherWorkbench>

@@ -107,7 +107,7 @@ describe('GradeBadgeSelector - Grade Utilities', () => {
 	it('formatGradeForDisplay returns full French names', () => {
 		expect(formatGradeForDisplay('6')).toBe('6ème');
 		expect(formatGradeForDisplay('CP')).toBe('CP');
-		expect(formatGradeForDisplay('1_GEN')).toBe('1ère générale');
+		expect(formatGradeForDisplay('1_GEN')).toBe('1ère générale (maths spécifiques)');
 	});
 
 	it('GRADES contains all grade metadata', () => {

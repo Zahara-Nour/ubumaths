@@ -171,6 +171,11 @@ class RDParser {
 	private currentToken: Token;
 	/** Stack of color brace positions - each entry marks that we're in a \textcolor{} scope */
 	private readonly colorScopeStack: number[] = [];
+	/**
+	 * Vrai pendant la lecture de l'argument d'un `\lim` sans parenthèses (et
+	 * remis à faux dans tout groupe lu par `parseExpression`). Cf. `parseLimit`.
+	 */
+	private inLimitArgument = false;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -310,7 +315,15 @@ class RDParser {
 	 * expression := logicalOr
 	 */
 	private parseExpression(): MathNode {
-		return this.parseLogicalOr();
+		// Un groupe ouvre une portée neuve : la règle « \lim A + \lim B » ne
+		// vaut qu'au niveau de l'argument de la limite.
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = false;
+		try {
+			return this.parseLogicalOr();
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
 	}
 
 	/**
@@ -427,6 +440,8 @@ class RDParser {
 		let left = this.parseMultiplicative();
 
 		while (this.check('PLUS') || this.check('MINUS')) {
+			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
+			if (this.inLimitArgument && this.isOperatorBeforeLimit()) break;
 			// Capture color BEFORE consuming operator (color scope may close during parsing)
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
@@ -474,6 +489,9 @@ class RDParser {
 				// Continue the loop - it will be handled appropriately
 				continue;
 			}
+
+			// Argument de \lim : `\lim A \times \lim B` = lim(A) × lim(B)
+			if (this.inLimitArgument && this.isOperatorBeforeLimit()) break;
 
 			// Capture color BEFORE consuming operator (color scope may close during parsing)
 			const operatorColor = this.colorStack.current();
@@ -1240,10 +1258,8 @@ class RDParser {
 			if (this.check('LBRACE')) {
 				this.advance(); // consume {
 
-				// Parse variable name (should be a letter)
-				if (this.check('LETTER')) {
-					variableName = this.advance().value;
-				}
+				// Variable : une lettre latine ou grecque (\alpha, \theta…)
+				variableName = this.parseLimitVariable() ?? variableName;
 
 				// Expect \to
 				if (this.checkCommand('to') || this.checkCommand('rightarrow')) {
@@ -1284,17 +1300,50 @@ class RDParser {
 
 				this.expect('RBRACE', "Expected '}' after limit subscript");
 			} else {
-				// Simple subscript without braces (e.g., _x)
-				if (this.check('LETTER')) {
-					variableName = this.advance().value;
-				}
+				// Simple subscript without braces (e.g., _x, _\theta)
+				variableName = this.parseLimitVariable() ?? variableName;
 			}
 		}
 
-		// Parse the expression that the limit is applied to
-		const expression = this.parseUnary();
+		// Portée (décision du 2026-10-07) : sans parenthèses, la limite porte
+		// sur TOUTE l'expression qui suit, comme un élève la lit. Elle s'arrête
+		// à la fin du groupe, devant une relation (`=`, `<`, `\le`, `\approx`…),
+		// une virgule, un `;`, ou devant un opérateur binaire suivi d'un autre
+		// `\lim` (`\lim A + \lim B`, `\lim A \times \lim B`).
+		const savedInLimitArgument = this.inLimitArgument;
+		this.inLimitArgument = true;
+		let expression: MathNode;
+		try {
+			expression = this.parseAdditive();
+		} finally {
+			this.inLimitArgument = savedInLimitArgument;
+		}
 
 		return this.applyColor(MathAST.limit(expression, variableName, approach, direction));
+	}
+
+	/**
+	 * Opérateur binaire (`+ - * / : \cdot \times \div`) dont l'opérande droit
+	 * commence par `\lim` : il sépare deux limites, il ne prolonge pas
+	 * l'argument de la première. Une juxtaposition aussi (`\lim A \lim B`,
+	 * produit implicite), alignée sur `\cdot`.
+	 */
+	private isOperatorBeforeLimit(): boolean {
+		const token = this.currentToken;
+		if (token.type === 'COMMAND' && token.value === 'lim') return true;
+		const isBinaryOperator =
+			token.type === 'PLUS' ||
+			token.type === 'MINUS' ||
+			token.type === 'STAR' ||
+			token.type === 'SLASH' ||
+			token.type === 'COLON' ||
+			(token.type === 'COMMAND' &&
+				(token.value === 'cdot' || token.value === 'times' || token.value === 'div'));
+		if (!isBinaryOperator) return false;
+		let offset = 0;
+		let next = this.tokenizer.peekAt(offset);
+		while (isLatexSpacing(next)) next = this.tokenizer.peekAt(++offset);
+		return next.type === 'COMMAND' && next.value === 'lim';
 	}
 
 	/**
@@ -1302,6 +1351,32 @@ class RDParser {
 	 * `^` (le côté). Sans la prise des signes ici, `-2^+` passait par la
 	 * puissance et le `+` du côté était lu comme une addition inachevée.
 	 */
+	/**
+	 * Variable d'une limite : une lettre latine (`x`, `t`, `n`) ou une lettre
+	 * grecque connue du parseur (`\alpha`, `\theta`…). Pour une lettre
+	 * grecque, la variable est le NOM de la lettre (`'alpha'`), celui que porte
+	 * le nœud `greek` du corps : le moteur des limites la retrouve ainsi.
+	 * π est une constante, pas une variable : refusé avec un message clair.
+	 * Rend `undefined` si le jeton courant n'est pas une variable.
+	 */
+	private parseLimitVariable(): string | undefined {
+		if (this.check('LETTER')) {
+			return this.advance().value;
+		}
+		if (this.checkCommand('pi')) {
+			this.error(
+				"π est une constante : elle ne peut pas être la variable d'une limite (\\pi)",
+				this.currentToken.position,
+				this.currentToken.length,
+				'UNEXPECTED_TOKEN'
+			);
+		}
+		if (this.currentToken.type === 'COMMAND' && GREEK_COMMANDS.has(this.currentToken.value)) {
+			return this.advance().value;
+		}
+		return undefined;
+	}
+
 	private parseLimitApproach(): MathNode {
 		if (this.check('MINUS')) {
 			this.advance();

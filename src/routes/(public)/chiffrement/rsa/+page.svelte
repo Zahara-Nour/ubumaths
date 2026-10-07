@@ -14,6 +14,7 @@
 		validExponents,
 		type RsaKeys
 	} from '$lib/ciphers/rsa';
+	import { CZAR_RSA_KEY } from '$lib/ciphers/dispatches';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 
 	// Types
@@ -23,7 +24,8 @@
 	const PLAIN = 'Le trésor est caché sous la troisième pierre.';
 	const INTERCEPTED =
 		'Dépêche du Czar : nos espions attendent le signal au pont de Varsovie à minuit.';
-	const CZAR_KEYS = rsaKeys(43, 47, 5);
+	// La clé de la dépêche n° 9 : un lien de la campagne doit retrouver ici la même clé publique
+	const CZAR_KEYS = rsaKeys(CZAR_RSA_KEY.p, CZAR_RSA_KEY.q, CZAR_RSA_KEY.e);
 	const [DEFAULT_P, DEFAULT_Q, DEFAULT_E] = [31, 37, 7];
 	const PRIME_ITEMS = RSA_PRIMES.map((p) => ({ value: String(p), label: String(p) }));
 

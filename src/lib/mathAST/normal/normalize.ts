@@ -4008,6 +4008,11 @@ function stripOpposites(node: MathNode): { node: MathNode; negated: boolean } {
 	}
 }
 
+/** Un littéral entier positif ou nul (`8`, pas `8.5`). */
+function isNonNegativeIntegerLiteral(node: MathNode): boolean {
+	return isNumber(node) && /^\d+$/.test(node.value);
+}
+
 function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeContext): NormalForm {
 	const originalArg = node.args[0];
 
@@ -4031,6 +4036,21 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		const indexVal = parseFloat(node.base.value);
 		if (Number.isInteger(indexVal) && indexVal >= 2) {
 			rootIndex = BigInt(Math.floor(indexVal));
+		}
+	}
+
+	// A0. Indice IMPAIR d'un entier négatif : ⁿ√(−m) = −ⁿ√m. La racine impaire
+	// est définie sur ℝ entier et impaire — ∛(−8) = −2, ⁵√(−32) = −2. Sans ce
+	// cas, le radicande négatif tombait sur le garde `rootIndex !== 2n` plus bas
+	// et le nœud restait opaque. Une racine PAIRE d'un négatif n'est pas
+	// concernée. L'évaluation numérique (`eval/`) n'est pas touchée.
+	if (rootIndex % 2n === 1n) {
+		const unsigned = stripOpposites(originalArg);
+		if (unsigned.negated && isNonNegativeIntegerLiteral(unsigned.node)) {
+			const positiveRoot = normalizeSqrt({ ...node, args: [unsigned.node] }, ctx);
+			const result = negNormalForm(positiveRoot);
+			recordNormalizationStep(ctx, 'radical-simplify', node, result, 'summarized');
+			return result;
 		}
 	}
 

@@ -83,6 +83,19 @@
 	</p>
 </header>
 
+<a
+	href={resolve('/chiffrement/depeches')}
+	class="flex flex-col gap-1 rounded-xl border-2 border-primary bg-primary/10 p-5 transition-colors hover:bg-primary/15"
+	data-testid="depeches-card"
+>
+	<span class="text-xs tracking-wide text-muted-foreground uppercase">Défis</span>
+	<span class="text-xl font-semibold">Les Dépêches du Czar</span>
+	<span>
+		Neuf messages secrets interceptés, du chiffre de César au RSA. Saurez-vous déjouer les plans du
+		Czar Alexis ?
+	</span>
+</a>
+
 <section aria-labelledby="vocabulaire" class="rounded-xl border bg-card p-5 text-card-foreground">
 	<h2 id="vocabulaire" class="mb-3 text-xl font-semibold">Trois mots à ne pas confondre</h2>
 	<dl class="grid gap-3 sm:grid-cols-3">

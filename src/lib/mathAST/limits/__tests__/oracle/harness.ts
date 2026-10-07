@@ -75,15 +75,22 @@ export interface BuiltLimit {
  */
 export function buildLimit(entry: OracleEntry): BuiltLimit {
 	const expression = parseLatex(entry.f);
-	const bare = `\\lim_{x\\to ${entry.at}}${entry.f}`;
+	const v = limitVariableLatex(entry);
+	const bare = `\\lim_{${v}\\to ${entry.at}}${entry.f}`;
 	const parsedBare = tryParse(bare);
 	if (parsedBare && isLimit(parsedBare) && toLatex(parsedBare.expression) === toLatex(expression)) {
 		return { latex: bare, node: parsedBare, expression };
 	}
-	const wrapped = `\\lim_{x\\to ${entry.at}}\\left(${entry.f}\\right)`;
+	const wrapped = `\\lim_{${v}\\to ${entry.at}}\\left(${entry.f}\\right)`;
 	const parsedWrapped = parseLatex(wrapped);
 	if (!isLimit(parsedWrapped)) throw new Error(`${entry.id} : ${wrapped} n'est pas une limite`);
 	return { latex: wrapped, node: parsedWrapped, expression };
+}
+
+/** Variable de l'entrée telle qu'écrite dans `\lim_{…}` (`x`, `\alpha`). */
+export function limitVariableLatex(entry: OracleEntry): string {
+	const name = entry.variable ?? 'x';
+	return name.length > 1 ? `\\${name}` : name;
 }
 
 function tryParse(latex: string): MathNode | null {
@@ -146,9 +153,9 @@ function confirmsInfinite(values: readonly number[], sign: 1 | -1): boolean {
 	return Math.sign(last) === sign && Math.abs(last) > Math.abs(first) && Math.abs(last) > 1;
 }
 
-export function compileFunction(expression: MathNode): (x: number) => number {
+export function compileFunction(expression: MathNode, variable = 'x'): (x: number) => number {
 	const compiled = compile(expression);
-	return (x: number) => compiled({ x });
+	return (x: number) => compiled({ [variable]: x });
 }
 
 /** Valeur numérique d'un attendu : nombre, ±Infinity, ou null (`none`). */
@@ -167,7 +174,7 @@ export function checkExpectedNumerically(entry: OracleEntry): string | null {
 	const target = expectedNumber(entry.expected);
 	if (target === null) return null;
 	const built = buildLimit(entry);
-	const f = compileFunction(built.expression);
+	const f = compileFunction(built.expression, built.node.variable);
 	const borne = borneOf(entry, built.node);
 	for (const points of samplePoints(borne, built.node.direction)) {
 		const values = sampleValues(f, points);
@@ -325,12 +332,12 @@ function judgeMode(
 export function judgeEntry(entry: OracleEntry): Verdict {
 	const built = buildLimit(entry);
 	const borne = borneOf(entry, built.node);
-	const f = compileFunction(built.expression);
+	const f = compileFunction(built.expression, built.node.variable);
 	const limitNode = built.node;
 	const viaLim: Evaluator = (direction) =>
 		evaluateLimit(direction === limitNode.direction ? limitNode : { ...limitNode, direction });
 	const viaExpr: Evaluator = (direction) =>
-		evaluateLimit(built.expression, 'x', limitNode.approach, direction);
+		evaluateLimit(built.expression, limitNode.variable, limitNode.approach, direction);
 	const outcomes = [
 		judgeMode('lim', entry, viaLim, limitNode.direction, borne, f),
 		judgeMode('expr', entry, viaExpr, limitNode.direction, borne, f)
@@ -357,5 +364,5 @@ export function describeWrong(verdict: Verdict): string {
 		.map((o) => `[${o.mode}] ${o.summary} — ${o.wrong.join(' ; ')}`)
 		.join(' | ');
 	const { id, at, f, expected } = verdict.entry;
-	return `${id} : lim x→${at} ${f}, attendu ${expected} → ${details}`;
+	return `${id} : lim ${verdict.entry.variable ?? 'x'}→${at} ${f}, attendu ${expected} → ${details}`;
 }

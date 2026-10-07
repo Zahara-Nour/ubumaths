@@ -48,8 +48,7 @@ import { checkForm } from '$lib/mathAST/cosmetic-transforms';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, type CalcSession } from '$lib/atelier/calcul';
-import { expressionOf } from '$lib/atelier/engine';
-import { astOf } from '$lib/atelier/parse';
+import { derivativeAstOf } from '$lib/atelier/engine';
 import {
 	CORPUS,
 	PARAM_SETS,
@@ -458,12 +457,9 @@ function definedPaths(entry: DerivativeCase): {
 		}
 		if (carte.status === 'ok') {
 			const created = session.atelier.createDerivative('f');
-			const expression = created.ok ? expressionOf(session.atelier, "f'") : null;
-			// Exactement le rendu d'`ObjectCard` : relu par `astOf`, régénéré par `toLatex`
-			const ast =
-				expression?.ok === true
-					? astOf(expression.expression, 'text', session.atelier.functionNames)
-					: null;
+			const derived = created.ok ? derivativeAstOf(session.atelier, "f'") : null;
+			// Exactement le rendu d'`ObjectCard` : l'arbre de `derivativeAstOf`, régénéré par `toLatex`
+			const ast = derived?.ok === true ? derived.ast : null;
 			carte = ast === null ? REFUS : judgeTyped(single, 'carte', toLatex(ast), formChecked, carte);
 		}
 	}

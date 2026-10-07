@@ -50,6 +50,8 @@ import {
 import { substitute } from '../eval/substitute';
 import {
 	derivativeFunc,
+	fraction,
+	func,
 	number,
 	multiply,
 	percentage,
@@ -342,6 +344,26 @@ function differentiateNode(
 // Function Differentiation
 // =============================================================================
 
+/** sec, csc, cot et leurs hyperboliques, écrites avec les fonctions que le moteur dérive. */
+const RECIPROCAL_DEFINITIONS: Readonly<Record<string, (u: MathNode) => MathNode>> = {
+	sec: (u) => fraction(number('1'), func('cos', [u])),
+	csc: (u) => fraction(number('1'), func('sin', [u])),
+	cot: (u) => fraction(func('cos', [u]), func('sin', [u])),
+	sech: (u) => fraction(number('1'), func('cosh', [u])),
+	csch: (u) => fraction(number('1'), func('sinh', [u])),
+	coth: (u) => fraction(func('cosh', [u]), func('sinh', [u]))
+};
+
+/** Pourquoi la dérivée est refusée, en français — montré tel quel à l'élève. */
+const NOT_DIFFERENTIABLE_MESSAGES: Readonly<Record<string, string>> = {
+	abs: "la valeur absolue n'est pas dérivable en 0 : dérive-la par morceaux, |u| = u ou −u selon le signe de u.",
+	floor: "la partie entière n'est pas dérivable partout (elle saute à chaque entier).",
+	ceil: "la partie entière (supérieure) n'est pas dérivable partout (elle saute à chaque entier).",
+	round: "l'arrondi n'est pas dérivable partout (il saute à chaque demi-entier).",
+	sign: "la fonction signe n'est pas dérivable partout (elle saute en 0).",
+	sgn: "la fonction signe n'est pas dérivable partout (elle saute en 0)."
+};
+
 /**
  * Differentiate a function node
  * Handles built-in functions (sin, cos, etc.) and generic functions with bindings
@@ -400,6 +422,13 @@ function differentiateFunctionNode(
 				differentiateNode(u, variable, simplify, functions),
 				simplify
 			);
+		}
+
+		// sec, csc, cot (et leurs hyperboliques) : dérivées par leur DÉFINITION.
+		// Sans quoi elles tombaient dans les fonctions génériques : `3sec'(3x)`
+		const definition = RECIPROCAL_DEFINITIONS[funcName];
+		if (definition !== undefined) {
+			return differentiateNode(definition(u), variable, simplify, functions);
 		}
 
 		const du = differentiateNode(u, variable, simplify, functions);
@@ -462,16 +491,20 @@ function differentiateFunctionNode(
 				throw new DifferentiationError(
 					'Cannot differentiate absolute value',
 					'function',
-					'The derivative of |x| is not defined at x = 0 and requires sign function'
+					'The derivative of |x| is not defined at x = 0 and requires sign function',
+					NOT_DIFFERENTIABLE_MESSAGES.abs
 				);
 
 			case 'floor':
 			case 'ceil':
 			case 'round':
+			case 'sign':
+			case 'sgn':
 				throw new DifferentiationError(
 					`Cannot differentiate ${funcName}`,
 					'function',
-					`The ${funcName} function is not differentiable at integer points`
+					`The ${funcName} function is not differentiable at integer points`,
+					NOT_DIFFERENTIABLE_MESSAGES[funcName]
 				);
 
 			case 'min':

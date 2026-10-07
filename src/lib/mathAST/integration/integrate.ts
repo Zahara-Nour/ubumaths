@@ -43,6 +43,7 @@ import { substitute } from '../eval/substitute';
 import { numericIntegrate } from './numeric';
 import { expandFunctionPowers } from '../common/function-power';
 import { toCustom } from '../custom-generator';
+import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots';
 
 // =============================================================================
 // Budget global
@@ -690,7 +691,12 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 	};
 
 	// La lettre `e` tapée est la constante d'Euler (sauf si l'on intègre en `e`)
-	const expr = promoteEulerLetter(expandedExpr, opts.variable);
+	const eulerExpr = promoteEulerLetter(expandedExpr, opts.variable);
+
+	// ⁿ√u (n impair ≥ 3) → u^{1/n} : le moteur calcule en puissances ; la
+	// primitive est réécrite en racines à la sortie (définie sur ℝ, comme ⁿ√)
+	const hasOddRoot = containsOddRoot(eulerExpr);
+	const expr = hasOddRoot ? oddRootsAsPowers(eulerExpr) : eulerExpr;
 
 	// Detect variable if not specified
 	const variable = opts.variable ?? detectVariable(expr);
@@ -746,6 +752,11 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
 		}
+	}
+	// u^{p/n} (n impair) n'est définie que pour u > 0 : réécrite en racines,
+	// la primitive est définie là où l'intégrande ⁿ√… l'est (∛(2x+1) sur ℝ)
+	if (hasOddRoot && result.status === 'exact' && finalAntiderivative && startDepth === 0) {
+		finalAntiderivative = oddPowersAsRoots(finalAntiderivative);
 	}
 
 	// Filter steps by verbosity

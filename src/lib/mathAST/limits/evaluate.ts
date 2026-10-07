@@ -13,7 +13,7 @@
  * @module mathAST/limits/evaluate
  */
 
-import type { MathNode, LimitNode } from '../types';
+import type { MathNode, LimitNode, GreekLetterNode } from '../types';
 import type {
 	LimitResult,
 	LimitOptions,
@@ -37,9 +37,12 @@ import {
 	isDivision,
 	isMultiplication,
 	isSymbol,
-	isPositive
+	isPositive,
+	isGreek,
+	isVariable
 } from '../guards';
 import {
+	add,
 	divide,
 	multiply,
 	subtract,
@@ -48,7 +51,9 @@ import {
 	number,
 	opposite,
 	func,
-	ln
+	ln,
+	variable as variableNode,
+	greek
 } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
@@ -73,7 +78,17 @@ import {
 	exactConstantRational
 } from './generalized-degree';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
-import { isNegative, absRational, mulRational, negRational } from '../normal/rational';
+import {
+	isNegative,
+	absRational,
+	mulRational,
+	negRational,
+	addRational,
+	fromInteger,
+	isZero as isZeroRational
+} from '../normal/rational';
+import type { Rational } from '../normal/types';
+import { rationalToNode } from '../common/numeric';
 import { rewriteIndeterminateSum } from './sum-reduction';
 import { classifyWithSign } from './sign-tracking';
 import { substitute } from '../eval/substitute';
@@ -286,26 +301,10 @@ function outOfDomainNear(expr: MathNode, varName: string, value: number): boolea
 		evaluateNodeToApproximatedNumber(substituteValue(expr, varName, point));
 		return false;
 	} catch (error) {
-		if (!(error instanceof Error) || !/argument must be/.test(error.message)) return false;
-		// L'évaluateur refuse toute racine d'un négatif, même ∛ : la racine
-		// cubique est définie sur ℝ, ∛x en 0⁻ n'est pas « hors domaine »
-		// (revue de #906). Une racine d'indice autre que 2 ne prouve donc rien.
-		return !(error.message.startsWith('sqrt') && hasRootWithIndex(expr));
+		// L'évaluateur rend ∛ d'un négatif (indice impair, défini sur ℝ) : seule
+		// une racine d'indice pair d'un négatif lève ici.
+		return error instanceof Error && /argument must be/.test(error.message);
 	}
-}
-
-/** Une racine d'indice explicite (`\sqrt[3]{…}`) figure-t-elle dans l'expression ? */
-function hasRootWithIndex(expr: MathNode): boolean {
-	return (
-		findNodes(
-			expr,
-			(node) =>
-				node.type === 'function' &&
-				node.name === 'sqrt' &&
-				node.base !== undefined &&
-				!(node.base.type === 'number' && node.base.value === '2')
-		).length > 0
-	);
 }
 
 // =============================================================================
@@ -337,11 +336,62 @@ export function evaluateLimit(
 	direction: LimitDirection = 'both',
 	options: LimitOptions = {}
 ): LimitResult {
+	const greekResult = evaluateGreekVariableLimit(expr, variable, approach, direction, options);
+	if (greekResult !== null) return greekResult;
 	const result = rejectUnreducedInfinity(
 		evaluateLimitExactForm(expr, variable, approach, direction, options)
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
 	return writeLikeInput(result, expression);
+}
+
+/**
+ * Variable grecque (`\lim_{\alpha\to+\infty}`) : dans le corps, α est un
+ * nœud `greek`, alors que toutes les stratégies du moteur (substitution,
+ * degré, formes connues…) cherchent un nœud `variable`. On traduit donc α en
+ * variable nommée `alpha` à l'entrée, on calcule, puis on rend α dans la
+ * valeur et les étapes. Rend `null` si la variable n'est pas une lettre
+ * grecque présente dans l'expression (cas ordinaire).
+ */
+function evaluateGreekVariableLimit(
+	expr: MathNode | LimitNode,
+	variable: string | undefined,
+	approach: MathNode | undefined,
+	direction: LimitDirection,
+	options: LimitOptions
+): LimitResult | null {
+	const varName = variable ?? (isLimit(expr) ? expr.variable : undefined);
+	if (varName === undefined) return null;
+	const isTheGreek = (n: MathNode): n is GreekLetterNode => isGreek(n) && n.letter === varName;
+	const [letter] = [
+		...findNodes(expr, isTheGreek),
+		...(approach ? findNodes(approach, isTheGreek) : [])
+	];
+	if (letter === undefined) return null;
+
+	const toVariable = (n: MathNode): MathNode =>
+		mapNode(n, (m) => (isTheGreek(m) ? variableNode(varName, m.metadata) : m));
+	const toGreek = (n: MathNode): MathNode =>
+		mapNode(n, (m) => (isVariable(m) && m.name === varName ? greek(letter.letter, m.metadata) : m));
+
+	const result = evaluateLimit(
+		toVariable(expr),
+		variable,
+		approach && toVariable(approach),
+		direction,
+		options
+	);
+	return {
+		...result,
+		approach: toGreek(result.approach),
+		value: result.value && toGreek(result.value),
+		steps: result.steps.map((step) => ({
+			...step,
+			before: toGreek(step.before),
+			after: toGreek(step.after),
+			...(step.operand && { operand: toGreek(step.operand) })
+		}))
+	};
 }
 
 /**
@@ -501,11 +551,13 @@ function evaluateLimitExactForm(
 				const numValue = evaluateNodeToApproximatedNumber(expression);
 				if (Number.isFinite(numValue)) {
 					// Convert to integer if it's a whole number
+					// Irrationnelle (√2, ln 2, π) : gardée symbolique, statut exact.
+					// Un décimal à 15 chiffres présenté « exact » se faisait
+					// rationaliser plus loin (241421356237309/100000000000000).
 					const intValue = Math.round(numValue);
-					evaluatedExpr =
-						Math.abs(numValue - intValue) < ZERO_TOLERANCE
-							? numericNode(intValue)
-							: numericNode(numValue.toPrecision(15));
+					if (Math.abs(numValue - intValue) < ZERO_TOLERANCE) {
+						evaluatedExpr = numericNode(intValue);
+					}
 				}
 			} catch {
 				// If numeric evaluation fails, return the expression as-is
@@ -716,6 +768,33 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+	}
+
+	// Stratégie 2.65 : somme dont chaque terme a une limite exacte, par les
+	// seuls cas sûrs (finis → somme des limites ; infinis tous de même signe →
+	// cet infini). `\lim_{x\to0}\frac{\sin x}{x}+1` restait « non supportée » :
+	// la substitution échoue (0/0) et seul ±∞ était traité terme à terme.
+	const sumOfLimits = trySumOfLimits(expression, varName, approachPoint, dir, options);
+	if (sumOfLimits !== null) {
+		recorder.recordStepByRule(
+			'linearity',
+			expression,
+			sumOfLimits,
+			'summarized',
+			approachPoint,
+			'Limite d’une somme : lim (f + g) = lim f + lim g'
+		);
+		return createResult(
+			sumOfLimits,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(sumOfLimits) ? 'infinite' : 'exact',
+			'none',
+			'linearity',
+			recorder,
+			opts
+		);
 	}
 
 	// Stratégie 2.7 : racines et puissances non entières en ±∞ — terme dominant
@@ -1472,6 +1551,96 @@ function compareTerms(
 }
 
 /**
+ * Limite d'une somme terme à terme quand chaque terme a une limite EXACTE
+ * (ou infinie) : tous finis → somme des limites ; infinis tous de même signe
+ * → cet infini. Forme ∞ − ∞, limite approchée, inexistante ou non trouvée :
+ * null (laissé aux stratégies suivantes).
+ *
+ * ⚠️ Un terme SANS la variable est sa propre limite et reste tel quel : √2,
+ * ln 2, e, π ne passent jamais par une valeur décimale. Les parts rationnelles
+ * sont réduites en une seule (1 − 1 → 0), à la place de la première ; une
+ * limite décimale n'est jamais rationalisée en « exacte » (null).
+ *
+ * @example
+ * lim_{x→0} sin x / x + √2   // 1 + √2 (pas 241421356237309/100000000000000)
+ * lim_{x→0} tan x / x − 1    // 0 (pas « 1 − 1 »)
+ */
+function trySumOfLimits(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	if (!isAddition(expr) && !isSubtraction(expr)) return null;
+	if (nestedSums >= MAX_NESTED_SUMS) return null;
+
+	nestedSums++;
+	try {
+		const terms = flattenSumShallow(expr);
+		if (terms.length < 2) return null;
+		// Parts finies, dans l'ordre : rationnelle (cumulée) ou symbolique
+		const parts: Array<
+			| { readonly kind: 'rational' }
+			| { readonly kind: 'symbolic'; readonly sign: '+' | '-'; readonly value: MathNode }
+		> = [];
+		let rationalTotal: Rational = fromInteger(0);
+		let hasRationalPart = false;
+		const infiniteSigns = new Set<number>();
+		const addFinite = (sign: '+' | '-', value: MathNode): void => {
+			const rational = hasDecimalLiteral(value) ? null : exactConstantRational(value);
+			if (rational !== null) {
+				rationalTotal = addRational(rationalTotal, sign === '+' ? rational : negRational(rational));
+				if (!hasRationalPart) parts.push({ kind: 'rational' });
+				hasRationalPart = true;
+				return;
+			}
+			parts.push({ kind: 'symbolic', sign, value });
+		};
+		for (const { sign, term } of terms) {
+			const bare = stripDelimiters(term);
+			if (!containsVariable(bare, varName)) {
+				if (isInfinity(bare)) return null;
+				addFinite(sign, bare);
+				continue;
+			}
+			const limit = toFactorLimit(evaluateLimit(bare, varName, approach, dir, options));
+			if (limit === null) return null;
+			if (limit.kind === 'infinite') {
+				infiniteSigns.add(sign === '+' ? limit.sign : -limit.sign);
+				continue;
+			}
+			if (limit.kind === 'zero') continue;
+			// Valeur approchée (flottant) : jamais présentée comme exacte
+			if (hasDecimalLiteral(limit.value)) return null;
+			addFinite(sign, limit.value);
+		}
+		if (infiniteSigns.size > 1) return null;
+		if (infiniteSigns.size === 1) {
+			return [...infiniteSigns][0] > 0 ? positiveInfinity() : negativeInfinity();
+		}
+		let sum: MathNode | null = null;
+		for (const part of parts) {
+			let sign: '+' | '-';
+			let value: MathNode;
+			if (part.kind === 'rational') {
+				if (isZeroRational(rationalTotal)) continue;
+				sign = isNegative(rationalTotal) ? '-' : '+';
+				value = rationalToNode(absRational(rationalTotal));
+			} else {
+				sign = part.sign;
+				value = part.value;
+			}
+			if (sum === null) sum = sign === '+' ? value : opposite(value);
+			else sum = sign === '+' ? add(sum, value) : subtract(sum, value);
+		}
+		return sum ?? number('0');
+	} finally {
+		nestedSums--;
+	}
+}
+
+/**
  * Limite d'une somme en ±∞, terme à terme (somme aplatie).
  *
  * Forme ∞ − ∞ : on cherche le terme dominant parmi les termes infinis
@@ -1721,11 +1890,13 @@ function evaluateLimitInternal(
 			try {
 				const numValue = evaluateNodeToApproximatedNumber(expr);
 				if (Number.isFinite(numValue)) {
+					// Irrationnelle (√2, ln 2, π) : gardée symbolique, statut exact.
+					// Un décimal à 15 chiffres présenté « exact » se faisait
+					// rationaliser plus loin (241421356237309/100000000000000).
 					const intValue = Math.round(numValue);
-					evaluatedExpr =
-						Math.abs(numValue - intValue) < ZERO_TOLERANCE
-							? numericNode(intValue)
-							: numericNode(numValue.toPrecision(15));
+					if (Math.abs(numValue - intValue) < ZERO_TOLERANCE) {
+						evaluatedExpr = numericNode(intValue);
+					}
 				}
 			} catch {
 				// If numeric evaluation fails, return the expression as-is

@@ -105,7 +105,7 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 				'\\sqrt[3]{x^2}',
 				'\\sqrt[3]{x} \\sqrt[3]{x}'
 			],
-			['\\sqrt{2}\\sqrt{8}', '4', '4', '4', '4', '\\sqrt{2} 2 \\sqrt{2}']
+			['\\sqrt{2}\\sqrt{8}', '4', '4', '4', '4', '\\sqrt{2} \\times 2 \\sqrt{2}']
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
 			expect(parSimplify(entree)).toBe(attenduSimplify);
 			expect(parIntention(entree, 'auto')).toBe(auto);
