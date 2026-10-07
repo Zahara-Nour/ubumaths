@@ -12,6 +12,11 @@
 -- MIGRATION ADDITIVE (données seulement). Rollback :
 --   delete from public.curriculum_points
 --     where code like 'CP-%' or code like 'CE1-%' or code like 'CE2-%';
+-- ⚠️ Ce rollback n'est anodin que tant qu'AUCUN usage ne s'accroche à ces
+-- points : des tables de suivi élève référencent curriculum_points en ON
+-- DELETE CASCADE (student_point_state, etc.). Dès qu'un élève ou un modèle y
+-- est rattaché, ce delete devient DESTRUCTIF (données d'élèves mineurs) :
+-- arrêt obligatoire et accord explicite de David (règle CLAUDE.md).
 -- ============================================================================
 
 -- CP — 69 points
