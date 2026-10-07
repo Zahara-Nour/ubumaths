@@ -196,3 +196,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   König-Huygens ; niveaux : Échantillonnage « 2de, 1re », Évolutions « 4e à 2de » → 19
   branches, 136 notions, 507 sous-notions (JSON 2026-10-07.6), diagramme republié. Restent :
   Tle spé, Tle comp., Expertes au gabarit v2.
+
+- **Tle spé reprise au gabarit v2 (2026-10-07, soir)** : nouveau texte fourni par David
+  (Annexe, 14 p., vague 2026) vérifié identique au texte déjà sauvegardé
+  (`progs-lycee/terminale-spe.txt`) → `programmes-ecarts-tle-spe.md` (remplace la section
+  Tle spé de l'ancien). Les fonctions sinus et cosinus sont bien en Tle (vigilance 1re
+  levée) ; PAS de rubrique Automatismes en Tle. Seed prod T_SPE (262 points) déjà sur ce
+  texte (18 objectifs conformes, vérifié en prod lecture seule). Trois manques v1 déjà
+  comblés par le lot 1re (CN/CS, probabilités totales, épreuves indépendantes successives).
+  Proposé : 0 notion, ~10 sous-notions (6 en Analyse), 2 requalifications en points.
+  Questions V1-V5 en attente.
