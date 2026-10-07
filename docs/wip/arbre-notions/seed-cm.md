@@ -1,12 +1,13 @@
 # Seed CM1-CM2 — points du programme (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION — restent les questions S3-S6 et le rattachement
-> n° 4 (problèmes pré-algorithmes). Aucune migration avant.**
+> **Statut : EN ATTENTE DE VALIDATION — restent les questions S3-S6. Aucune migration
+> avant.**
 > ✅ Déjà tranché par David le 2026-10-07 : **les fractions décimales sont des fractions**
 > (→ `Fractions : sens et écritures` ; côté Décimaux ne restent que les unités de
 > numération, l'écriture à virgule et son pont) · renommage **« arrondis et ordres de
 > grandeur »** · nouvelle sous-notion **`Entiers : division > calcul réfléchi`** ·
-> assemblages de cubes → **`Solides`** · rattachements 5 et 6 validés.
+> assemblages de cubes → **`Solides`** · nouvelle notion **`Algorithmique >
+Préalgorithmique`** (problèmes pré-algorithmes) · rattachements 5 et 6 validés.
 > Source : « Programme de mathématiques pour le cycle 3 » (BOENJS du 17 avril 2025), blocs
 > « Objectifs d'apprentissage » du CM1 et du CM2, extraits **ligne à ligne** (28 p. lues).
 > Mapping : [programmes-ecarts-cycle3.md](programmes-ecarts-cycle3.md) (décisions R1-R6
@@ -323,15 +324,15 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### … > La résolution de problèmes
 
-| Code    | Énoncé (verbatim BO)                                                        | kind | rég. | nœud                                                                     |
-| ------- | --------------------------------------------------------------------------- | ---- | ---- | ------------------------------------------------------------------------ |
-| CM2-058 | Résoudre des problèmes additifs en une ou plusieurs étapes                  | s-f  | div. | Problèmes arithmétiques (notion)                                         |
-| CM2-059 | Résoudre des problèmes multiplicatifs de type « parties-tout » en une étape | s-f  | div. | Problèmes arithmétiques > multiplicatifs                                 |
-| CM2-060 | Résoudre des problèmes mixtes en plusieurs étapes                           | s-f  | div. | Problèmes arithmétiques > en deux étapes ou plus                         |
-| CM2-061 | Résoudre des problèmes de comparaison multiplicative                        | s-f  | div. | Problèmes arithmétiques > comparaison                                    |
-| CM2-062 | Résoudre des problèmes de dénombrement                                      | s-f  | div. | Problèmes arithmétiques > produits cartésiens                            |
-| CM2-063 | Résoudre des problèmes d'optimisation                                       | s-f  | div. | Problèmes arithmétiques > optimisation                                   |
-| CM2-064 | Résoudre des problèmes préparant à l'utilisation d'algorithmes              | s-f  | div. | `Algèbre` Premiers pas algébriques > programmes de calcul _(discutable)_ |
+| Code    | Énoncé (verbatim BO)                                                        | kind | rég. | nœud                                               |
+| ------- | --------------------------------------------------------------------------- | ---- | ---- | -------------------------------------------------- |
+| CM2-058 | Résoudre des problèmes additifs en une ou plusieurs étapes                  | s-f  | div. | Problèmes arithmétiques (notion)                   |
+| CM2-059 | Résoudre des problèmes multiplicatifs de type « parties-tout » en une étape | s-f  | div. | Problèmes arithmétiques > multiplicatifs           |
+| CM2-060 | Résoudre des problèmes mixtes en plusieurs étapes                           | s-f  | div. | Problèmes arithmétiques > en deux étapes ou plus   |
+| CM2-061 | Résoudre des problèmes de comparaison multiplicative                        | s-f  | div. | Problèmes arithmétiques > comparaison              |
+| CM2-062 | Résoudre des problèmes de dénombrement                                      | s-f  | div. | Problèmes arithmétiques > produits cartésiens      |
+| CM2-063 | Résoudre des problèmes d'optimisation                                       | s-f  | div. | Problèmes arithmétiques > optimisation             |
+| CM2-064 | Résoudre des problèmes préparant à l'utilisation d'algorithmes              | s-f  | div. | `Algorithmique` Préalgorithmique (nouvelle notion) |
 
 ### … > Algèbre · branche `Algèbre`
 
@@ -419,12 +420,12 @@ numération`), et les deux points y vont. Renommage sans impact sur la
    tranché : **tout va sous `Solides`** (notion), y compris la vision dans l'espace de
    la 6e à son seed. La rubrique BO reste « Le repérage dans l'espace » (fidèle au
    texte) — le nœud dit ce que le contenu EST.
-4. **« Problèmes préparant à l'utilisation d'algorithmes »** (CM2-064) → `Premiers pas
-algébriques > programmes de calcul` — ⏳ **EN ATTENTE** (David a demandé des
-   exemples : programmes de calcul à ≤ 3 instructions, suites évolutives à règle,
-   programmes de construction, algorithmes des opérations posées — cf. partie
-   « Initiation à la pensée informatique » du BO). Alternative : `Problèmes
-arithmétiques` (notion).
+4. **« Problèmes préparant à l'utilisation d'algorithmes »** (CM2-064) — ✅ tranché :
+   **nouvelle notion « Préalgorithmique » dans la branche `Algorithmique`**, qui
+   s'ouvre ainsi avant la 5e (ses notions actuelles commencent en 5e). Le point y va ;
+   les 4 points « Initiation à la pensée informatique » de la **6e** sont candidats au
+   même nœud (à confirmer au seed 6e — le doc d'écarts les visait vers `Repérage et
+déplacements > coder un déplacement`).
 5. **Périmètres CM1** (CM1-073/074/075) sur la **notion** `Périmètres` — ✅ validé.
    Les niveaux affichés du JSON (`[CE2, 6e]`) sont indicatifs et seront rafraîchis.
 6. **« Passer d'une écriture sous forme d'une fraction décimale … à une écriture à
@@ -456,7 +457,8 @@ moitié`). Reco : oui (migration + JSON + diagramme + grep `correspondance/`).
 
 1. Worktree frère + migration **additive** `seed_curriculum_points_cm.sql` : d'abord
    les ajustements d'arbre tranchés — renommer « arrondir » → « arrondis et ordres de
-   grandeur », créer `Entiers : division > calcul réfléchi` — plus S3/S4 si validées
+   grandeur », créer `Entiers : division > calcul réfléchi` et la notion
+   `Algorithmique > Préalgorithmique` — plus S3/S4 si validées
    (S4 ⇒ répercuter les 3 lignes `Décimaux : calculs > moitié` de
    `correspondance/modeles.csv`, et le JSON + diagramme dans tous les cas) ; puis les
    246 points (codes explicites, `node_id` résolu par chemin nom + parent, comme le
