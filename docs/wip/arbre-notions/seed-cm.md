@@ -1,7 +1,7 @@
 # Seed CM1-CM2 — points du programme (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION — restent les questions S3-S6. Aucune migration
-> avant.**
+> **Statut : VALIDÉ INTÉGRALEMENT le 2026-10-07 (« je valide tout » : S3-S6 = recos).**
+> Livraison en cours : migration + tests (branche `feat/seed-points-cm`).
 > ✅ Déjà tranché par David le 2026-10-07 : **les fractions décimales sont des fractions**
 > (→ `Fractions : sens et écritures` ; côté Décimaux ne restent que les unités de
 > numération, l'écriture à virgule et son pont) · renommage **« arrondis et ordres de
@@ -101,7 +101,7 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 | CM1-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                    | s-f  | div. | Fractions : sens et écritures > comparer               |
 | CM1-030 | Passer d'une écriture sous forme d'une fraction décimale ou d'une somme de fractions décimales à une écriture à virgule et réciproquement                                 | s-f  | div. | Décimaux : numération > forme fractionnaire            |
 | CM1-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                        | s-f  | div. | Décimaux : numération > écrire                         |
-| CM1-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal                            | s-f  | div. | Décimaux : numération > **droite graduée (S3)**        |
+| CM1-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal                            | s-f  | div. | Décimaux : numération > droite graduée                 |
 | CM1-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                               | s-f  | div. | Décimaux : numération > arrondis et ordres de grandeur |
 | CM1-034 | Comparer, encadrer, intercaler, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                         |
 
@@ -285,7 +285,7 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 | CM2-029 | Ordonner des fractions décimales dans l'ordre croissant ou décroissant                                                                                                  | s-f  | div. | Fractions : sens et écritures > comparer               |
 | CM2-030 | Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement                               | s-f  | div. | Décimaux : numération > forme fractionnaire            |
 | CM2-031 | Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)                                                                                      | s-f  | div. | Décimaux : numération > écrire                         |
-| CM2-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre en écriture à virgule            | s-f  | div. | Décimaux : numération > **droite graduée (S3)**        |
+| CM2-032 | Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre en écriture à virgule            | s-f  | div. | Décimaux : numération > droite graduée                 |
 | CM2-033 | Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal                                                                                             | s-f  | div. | Décimaux : numération > arrondis et ordres de grandeur |
 | CM2-034 | Comparer, encadrer, intercaler, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > | s-f  | div. | Décimaux : numération (notion)                         |
 
@@ -295,7 +295,7 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ----------------------------------------------------- |
 | CM2-035 | Connaître des faits numériques usuels avec des entiers — répertoire additif ✂                                                                                       | conn. | flu. | Entiers : addition et soustraction > tables           |
 | CM2-036 | Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂                                                                                 | conn. | flu. | Entiers : multiplication > tables                     |
-| CM2-037 | Connaître la moitié des nombres impairs jusqu'à 15                                                                                                                   | conn. | flu. | Décimaux : calculs > moitié (S4)                      |
+| CM2-037 | Connaître la moitié des nombres impairs jusqu'à 15                                                                                                                   | conn. | flu. | Décimaux : calculs > double et moitié                 |
 | CM2-038 | Connaître quelques relations entre des fractions usuelles                                                                                                            | conn. | flu. | Fractions : sens et écritures > égalité de fractions  |
 | CM2-039 | Connaître l'écriture décimale de fractions usuelles                                                                                                                  | conn. | flu. | Fractions : sens et écritures > forme décimale        |
 | CM2-040 | Ajouter ou soustraire un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue                                                                            | s-f   | flu. | Décimaux : calculs (notion)                           |
@@ -306,8 +306,8 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 | CM2-045 | Ajouter ou soustraire 8, 9, 18, 19, 28, 29, …, 98 ou 99 à un nombre                                                                                                  | s-f   | flu. | Entiers : addition et soustraction > calcul astucieux |
 | CM2-046 | Multiplier un nombre entier, inférieur à 10, de dizaines, de centaines ou de milliers par un nombre entier, inférieur à 10, de dizaines, de centaines ou de milliers | s-f   | flu. | Entiers : multiplication > calcul astucieux           |
 | CM2-047 | Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples                                                                        | s-f   | flu. | Entiers : multiplication > distributivité             |
-| CM2-048 | Calculer le double d'un nombre décimal dans des cas simples                                                                                                          | s-f   | flu. | Décimaux : calculs > moitié (S4)                      |
-| CM2-049 | Calculer la moitié d'un nombre décimal dans des cas simples                                                                                                          | s-f   | flu. | Décimaux : calculs > moitié (S4)                      |
+| CM2-048 | Calculer le double d'un nombre décimal dans des cas simples                                                                                                          | s-f   | flu. | Décimaux : calculs > double et moitié                 |
+| CM2-049 | Calculer la moitié d'un nombre décimal dans des cas simples                                                                                                          | s-f   | flu. | Décimaux : calculs > double et moitié                 |
 | CM2-050 | Diviser un nombre entier par 4 ou par 8                                                                                                                              | s-f   | flu. | Entiers : division > calcul réfléchi                  |
 | CM2-051 | Multiplier un nombre décimal par 5                                                                                                                                   | s-f   | flu. | Décimaux : calculs > calcul astucieux                 |
 | CM2-052 | Multiplier un nombre décimal par 50                                                                                                                                  | s-f   | flu. | Décimaux : calculs > calcul astucieux                 |
@@ -433,11 +433,10 @@ déplacements > coder un déplacement`).
 fractionnaire` — ✅ validé (le miroir `Fractions > forme décimale` reste pour
    l'écriture décimale des fractions usuelles).
 
-## Questions à trancher (S3-S6)
+## Questions S3-S6 — TRANCHÉES le 2026-10-07 (« je valide tout » = recos)
 
-> Détaillées dans le chat. Une réponse par question ; « je valide tout » = recos.
-> (S1 et S2 ne sont plus des questions : c'est la règle des puces multi-gestes du
-> 2026-10-07 appliquée et documentée ci-dessus.)
+> (S1 et S2 : règle des puces multi-gestes du 2026-10-07, appliquée et documentée
+> ci-dessus.)
 
 - **S3 — nouvelle sous-notion `Décimaux : numération > droite graduée`** : après la
   correction « fractions décimales = fractions », il ne reste que 2 points concernés

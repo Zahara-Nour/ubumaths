@@ -90,7 +90,7 @@ b4b5cf8b-32bc-4273-8c5a-20dc0e7550db;Compléter une addition à trou;Décimaux >
 c9c1966e-f644-412c-807e-b0620489a1e6;Compléter une addition à trou;Décimaux > Additionner > A trou;CM1;Nombres et calculs > Décimaux : calculs > additionner;haute;relance 2026-10-07 : famille confirmée — le format « à trou » est une variation interne de l'opération
 e49b0cf8-3b48-4f0b-90ab-9687f8e37b1e;Compléter une addition à trou ;Décimaux > Additionner > A trou;CM1;Nombres et calculs > Décimaux : calculs > additionner;haute;relance 2026-10-07 : famille confirmée — le format « à trou » est une variation interne de l'opération
 b19167c8-49f8-427f-b493-2e2e14fb8508;Trouver le complément ;Décimaux > Additionner > A trou;CM1;Nombres et calculs > Décimaux : calculs > additionner;haute;relance 2026-10-07 : famille confirmée — le format « à trou » est une variation interne de l'opération
-edc5d7d4-98a2-4118-8c7f-35dd510dbcd5;Trouver la moitié;Décimaux > Additionner > Moitié;CM1;Nombres et calculs > Décimaux : calculs > moitié;haute;correspondance directe
+edc5d7d4-98a2-4118-8c7f-35dd510dbcd5;Trouver la moitié;Décimaux > Additionner > Moitié;CM1;Nombres et calculs > Décimaux : calculs > double et moitié;haute;correspondance directe
 3bbe92f2-84f0-487f-9ca1-2077248a313b;Calculer une somme;Décimaux > Additionner > Somme;CM1;Nombres et calculs > Décimaux : calculs > additionner;haute;correspondance directe
 a0241952-7930-4e8a-aa6c-2a5b8bef664a;Calculer une somme;Décimaux > Additionner > Somme;CM1;Nombres et calculs > Décimaux : calculs > additionner;haute;correspondance directe
 f1a392f5-060d-4e1c-b7a5-2920a054b83b;Calculer une somme;Décimaux > Additionner > Somme;CM1;Nombres et calculs > Décimaux : calculs > additionner;haute;correspondance directe
@@ -148,8 +148,8 @@ ddbce820-5e75-4a7a-832e-33980cd4b43a;Calculer un produit;Décimaux > Multiplier 
 814a46a9-2f73-4b2d-91e4-2052fc425b53;Calculer un produit;Décimaux > Multiplier > Produit;CM2;Nombres et calculs > Décimaux : calculs > multiplier;haute;correspondance directe
 571ca739-e3be-47de-b431-e888a9e46f18;Calculer un produit;Décimaux > Multiplier > Produit;6;Nombres et calculs > Décimaux : calculs > multiplier;haute;correspondance directe
 6268eb21-1b8e-4264-953c-0c1abdcd6dc7;Placer la virgule dans le produit;Décimaux > Multiplier > Produit;6;Nombres et calculs > Décimaux : calculs > multiplier;haute;correspondance directe
-04586513-034d-4503-8eb8-e8a3789000b9;Multiplier par $0.5$;Décimaux > Multiplier > Produit particulier;6;Nombres et calculs > Décimaux : calculs > moitié;haute;relance 2026-10-07 : ×0,5 = moitié (la case existe)
-341cdac0-a149-438b-a1a4-ec9255fbca1c;Multiplier par $0.5$;Décimaux > Multiplier > Produit particulier;6;Nombres et calculs > Décimaux : calculs > moitié;haute;relance 2026-10-07 : ×0,5 = moitié (la case existe)
+04586513-034d-4503-8eb8-e8a3789000b9;Multiplier par $0.5$;Décimaux > Multiplier > Produit particulier;6;Nombres et calculs > Décimaux : calculs > double et moitié;haute;relance 2026-10-07 : ×0,5 = moitié (la case existe)
+341cdac0-a149-438b-a1a4-ec9255fbca1c;Multiplier par $0.5$;Décimaux > Multiplier > Produit particulier;6;Nombres et calculs > Décimaux : calculs > double et moitié;haute;relance 2026-10-07 : ×0,5 = moitié (la case existe)
 e8db6091-2d87-4f76-aab4-af17aa3071f3;Multiplier par $1.5$;Décimaux > Multiplier > Produit particulier;6;Nombres et calculs > Décimaux : calculs > calcul astucieux;haute;relance 2026-10-07 : ×1,5 / ×2,5 : technique de calcul astucieux
 7607426e-7e1e-4312-a1ee-d3c70a64764d;Multiplier par $2.5$;Décimaux > Multiplier > Produit particulier;6;Nombres et calculs > Décimaux : calculs > calcul astucieux;haute;relance 2026-10-07 : ×1,5 / ×2,5 : technique de calcul astucieux
 918598f5-d7b0-43f8-b679-f69ab2039134;Calculer astucieusement un produit;Décimaux > Multiplier > Produits astucieux;CM2;Nombres et calculs > Décimaux : calculs > calcul astucieux;haute;astucieux → calcul astucieux

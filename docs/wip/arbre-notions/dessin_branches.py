@@ -5,10 +5,10 @@ NC=[
 ("Entiers : numération","CP à 6e",[("",["comparer","décomposer","écrire","repérer","dénombrer","ordinaux et rangs"])],None),
 ("Entiers : addition et soustraction","CP à CM2",[("",["somme","différence","complément","tables","double et moitié","triple et tiers","calcul astucieux","calcul posé"])],None),
 ("Entiers : multiplication","CP à 5e",[("",["tables","produit","carrés","décomposition","distributivité","double et moitié","triple et tiers","quadruple et quart","puissances de 10","produits particuliers","calcul astucieux","calcul posé"])],None),
-("Entiers : division","CE2 à 6e",[("",["quotient","division euclidienne","calcul posé"])],None),
+("Entiers : division","CE2 à 6e",[("",["quotient","division euclidienne","calcul posé","calcul réfléchi"])],None),
 ("Entiers : priorités opératoires","CM1 à 5e",[("",["avec parenthèses","sans parenthèses","traduire une phrase"])],None),
-("Décimaux : numération","CM1 à 6e",[("",["comparer","décomposer","écrire","encadrer","forme fractionnaire","arrondir"])],None),
-("Décimaux : calculs","CM1 à 6e",[("",["additionner","soustraire","multiplier","diviser","puissances de 10","distributivité","moitié","calcul astucieux","calcul posé"])],None),
+("Décimaux : numération","CM1 à 6e",[("",["comparer","décomposer","écrire","encadrer","forme fractionnaire","arrondis et ordres de grandeur","droite graduée"])],None),
+("Décimaux : calculs","CM1 à 6e",[("",["additionner","soustraire","multiplier","diviser","puissances de 10","distributivité","double et moitié","calcul astucieux","calcul posé"])],None),
 ("Fractions : sens et écritures","CE1 à 2de",[("",["définition","comparer","décomposer","égalité de fractions","simplifier","forme décimale","droite graduée"])],None),
 ("Fractions : calculs","CE1 à 3e",[("",["additionner et soustraire","multiplier","diviser","inverse","fraction d'une quantité"])],None),
 ("Relatifs : sens et écritures","5e, 4e",[("",["définition","comparer","droite graduée"])],None),
@@ -200,6 +200,7 @@ EN=[
 ("Cardinal et produit cartésien","1re, Tle",[("",["cardinal","produit cartésien"])],None),
 ]
 AG=[
+("Préalgorithmique","CM2",[("",[])],None),
 ("Variables et instructions","5e à 2de",[("",["variables et affectation","types","instructions conditionnelles"])],None),
 ("Boucles","5e à 2de",[("",["boucle bornée","boucle non bornée"])],None),
 ("Fonctions Python","2de",[("",["définir une fonction","appeler une fonction"])],None),
@@ -244,7 +245,7 @@ de=build(DE,"Dénombrement","","Branche Dénombrement : 4 notions et leurs sous-
 st=build(ST,"Statistiques","","Branche Statistiques : 5 notions et leurs sous-notions","c17")
 lo=build(LO,"Logique","","Branche Logique : 4 notions et leurs sous-notions","c9")
 en=build(EN,"Ensembles","","Branche Ensembles : 3 notions et leurs sous-notions","c19")
-ag=build(AG,"Algorithmique","","Branche Algorithmique : 4 notions et leurs sous-notions","c16")
+ag=build(AG,"Algorithmique","","Branche Algorithmique : 5 notions et leurs sous-notions","c16")
 ma=build(MA,"Matrices","","Branche Matrices : 4 notions et leurs sous-notions","c12")
 gr=build(GR,"Graphes","","Branche Graphes : 4 notions et leurs sous-notions","c13")
 cx=build(CX,"Nombres","complexes","Branche Nombres complexes : 5 notions et leurs sous-notions","c11")
@@ -303,7 +304,7 @@ sec=f'''<section class="branch" id="nombres"><h2><span class="dot c1"></span>Nom
 <section class="branch" id="ensembles"><h2><span class="dot c19"></span>Ensembles <small>branche à part, 3 notions</small></h2>
 <p class="read">Reprend le domaine Ensembles (1re) ; les ensembles de nombres et les intervalles de 2de y trouvent leur place.</p>
 <div class="scroll">{en}</div></section>
-<section class="branch" id="algorithmique"><h2><span class="dot c16"></span>Algorithmique <small>4 notions</small></h2>
+<section class="branch" id="algorithmique"><h2><span class="dot c16"></span>Algorithmique <small>5 notions</small></h2>
 <p class="read">Aucun modèle aujourd'hui : notions tirées du programme (2de, 1re). « Fonctions Python » pour ne pas confondre avec la branche Fonctions.</p>
 <div class="scroll">{ag}</div></section>'''
 open('nc-section.html','w').write(sec)
@@ -313,7 +314,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.12","statut":"validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.13","statut":"validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))

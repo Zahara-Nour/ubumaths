@@ -480,3 +480,16 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   116 CM2), énoncés verbatim du BO (28 p. relues), nœuds résolus, rubriques C11, 1 seule
   scission (faits numériques), questions S1-S6 posées à David. EN ATTENTE DE VALIDATION —
   aucune migration avant.
+
+- **Seed CM1-CM2 VALIDÉ et construit (2026-10-07, « je valide tout » : S3-S6 = recos)** :
+  décisions de David sur les 6 rattachements discutables — fractions décimales = FRACTIONS
+  (12 points re-rattachés), renommages « arrondis et ordres de grandeur » et « double et
+  moitié », sous-notions « calcul réfléchi » (division) et « droite graduée » (décimaux),
+  notion « Préalgorithmique » EN TÊTE de la branche Algorithmique (les 4 points pensée
+  informatique de la 6e y sont candidats, à confirmer au seed 6e), assemblages de cubes
+  sous Solides. Arbre **2026-10-07.13** (19 + 137 + 539). Migration
+  `20261008120000_seed_curriculum_points_cm.sql` GÉNÉRÉE depuis seed-cm.md (script en
+  session) : ajustements d'arbre + 246 points (130 CM1 + 116 CM2, objective_id NULL,
+  codes explicites, fluence = calcul mental). Preuve rouge faite (3 tests), puis VERT :
+  comparaison intégrale fixture ↔ base en lecture anonyme (79/79 avec les voisins).
+  Correspondance : 3 chemins « moitié » répercutés dans modeles.csv.
