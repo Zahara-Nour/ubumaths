@@ -168,3 +168,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   antérieurs, pas des points de l'année. Cycle 2 : non concerné (pas de rubrique Automatismes,
   calcul mental = contenu annuel). Rien en base pour ces niveaux : erreur purement
   documentaire, corrigée avant tout pointage.
+
+- **2de appliquée (2026-10-07, « je valide tout »)** : notion Tableaux croisés, 12
+  sous-notions (isoler une variable, expressions fractionnaires, nombres irrationnels, vecteur
+  directeur, intersection de deux droites, combinaison linéaire, évolutions successives et
+  réciproque, inversion du conditionnement, compléments des fonctions de référence…), 2
+  renommages, Puissances : calculs « 5e à 2de », Fractions : sens « CE1 à 2de » → 19 branches,
+  136 notions, 495 sous-notions (JSON 2026-10-07.5), diagramme republié. Restent : 1re spé,
+  Tle spé, Tle comp., Expertes à reprendre au gabarit v2.

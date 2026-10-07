@@ -9,12 +9,12 @@ NC=[
 ("Entiers : priorités opératoires","CM1 à 5e",[("",["avec parenthèses","sans parenthèses","traduire une phrase"])],None),
 ("Décimaux : numération","CM1 à 6e",[("",["comparer","décomposer","écrire","encadrer","forme fractionnaire","arrondir"])],None),
 ("Décimaux : calculs","CM1 à 6e",[("",["additionner","soustraire","multiplier","diviser","puissances de 10","distributivité","moitié","calcul astucieux","calcul posé"])],None),
-("Fractions : sens et écritures","CE1 à 3e",[("",["définition","comparer","décomposer","égalité de fractions","simplifier","forme décimale","droite graduée"])],None),
+("Fractions : sens et écritures","CE1 à 2de",[("",["définition","comparer","décomposer","égalité de fractions","simplifier","forme décimale","droite graduée"])],None),
 ("Fractions : calculs","CE1 à 3e",[("",["additionner et soustraire","multiplier","diviser","inverse","fraction d'une quantité"])],None),
 ("Relatifs : sens et écritures","5e, 4e",[("",["définition","comparer","droite graduée"])],None),
 ("Relatifs : calculs","5e, 4e",[("",["sommes","différences","sommes algébriques","produit","quotient","carré"])],None),
 ("Puissances : sens et écritures","5e à 3e",[("",["définition","puissances de 10","notation scientifique"])],None),
-("Puissances : calculs","5e à 3e",[("",["multiplier","diviser","puissance de puissance","mélange"])],None),
+("Puissances : calculs","5e à 2de",[("",["multiplier","diviser","puissance de puissance","mélange"])],None),
 ("Racines carrées : sens et écritures","5e à 2de",[("",["définition","égalités","réduire"])],None),
 ("Racines carrées : calculs","4e, 2de",[("",["calculer","propriétés"])],None),
 ("Problèmes arithmétiques","CP à 6e",[("",["parties-tout","comparaison","en deux étapes ou plus","multiplicatifs","produits cartésiens","optimisation"])],"classés par structure ; cycle 4 à confirmer"),
@@ -77,13 +77,13 @@ def build(NC,b1,b2,label,cls):
 PR=[
 ("Situations de proportionnalité","CM1 à 3e",[("",["reconnaître","appliquer","quatrième proportionnelle"])],"reprend « Tableaux de proportionnalité »"),
 ("Pourcentages","6e à 2de",[("",["définition","calculer"])],None),
-("Évolutions","4e à 1re",[("",["variations en pourcentage"])],"coefficient multiplicateur dès la 4e ; sous-notions lycée à venir avec le lot lycée"),
+("Évolutions","4e à 1re",[("",["variations en pourcentage","évolutions successives et réciproque"])],"coefficient multiplicateur dès la 4e"),
 ("Échelle d'une carte","6e, 3e",[("",["trouver l'échelle","utiliser l'échelle"])],None),
 ("Vitesse","4e",[("",["calculer","convertir"])],"vient de Grandeurs et mesures"),
 ]
 AL=[
 ("Premiers pas algébriques","CM1 à 6e",[("",["égalités à trous","nombre inconnu","programmes de calcul","suites de motifs"])],"pensée algébrique du cycle 3 ; les lettres formelles attendent le cycle 4"),
-("Calcul littéral","5e à 2de",[("",["substitution","réduire","simplifier l'écriture","opposé d'une expression","développer","factoriser","identités remarquables"])],None),
+("Calcul littéral","5e à 2de",[("",["substitution","réduire","simplifier l'écriture","opposé d'une expression","développer","factoriser","identités remarquables","isoler une variable","expressions fractionnaires"])],None),
 ("Équations : premier degré","5e à 2de",[("",["ax = b","ax + b = c","ax + b = cx + d","mettre en équation"])],"reprend « Dans ℕ, ℤ, ℚ » : l'ensemble devient une difficulté (level)"),
 ("Équations : produit et quotient","3e, 2de",[("",["produit nul","x² = a","équation quotient"])],None),
 ("Inéquations : premier degré","3e à 2de",[("",["ax + b < c","ax + b < cx + d","mettre en inéquation"])],"aucun modèle aujourd'hui"),
@@ -97,9 +97,9 @@ FO=[
 ("Fonctions affines","3e, 2de",[("",["fonction linéaire","expression et droite","coefficient directeur et ordonnée à l'origine","variations et signe","équations"])],None),
 ("Fonction carré","3e, 2de",[("",["définition et courbe","variations","comparer des images","x² = k, x² < k"])],"aucun modèle aujourd'hui"),
 ("Fonction inverse","2de",[("",["définition et courbe","variations","comparer des images","1/x = k, 1/x < k"])],"aucun modèle aujourd'hui"),
-("Fonction racine carrée","2de",[("",["définition et courbe","variations","comparer des images"])],"aucun modèle aujourd'hui"),
-("Fonction cube","2de",[("",["définition et courbe","variations","x³ = k"])],"aucun modèle aujourd'hui"),
-("Fonction valeur absolue","2de",[("",["définition et distance","courbe","équations"])],"reprend le domaine Valeur absolue"),
+("Fonction racine carrée","2de",[("",["définition et courbe","variations","comparer des images","√x = k, √x < k"])],"aucun modèle aujourd'hui"),
+("Fonction cube","2de",[("",["définition et courbe","variations","x³ = k, x³ < k"])],"aucun modèle aujourd'hui"),
+("Fonction valeur absolue","2de",[("",["définition et distance","courbe","variations","équations et inéquations"])],"reprend le domaine Valeur absolue"),
 ("Second degré","1re",[("",["racines","signe","formes","variations","parabole","somme et produit des racines"])],"équations et inéquations → Algèbre"),
 ("Dérivation","1re, Tle, Tle comp.",[("",["nombre dérivé","tangente","fonctions dérivées","variations","étude de fonction","optimisation","fonctions composées"])],"optimisation : sous-notion, plus une notion"),
 ("Fonction exponentielle","1re",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation"])],None),
@@ -146,9 +146,9 @@ GE=[
 ("Homothéties","hors programme",[("",[])],"ancienne 3e — demandé par David"),
 ("Triangles semblables","hors programme",[("",["cas d'égalité des triangles"])],"ancienne 3e (cas d'égalité : ancienne 4e)"),
 ("Repérage dans l'espace","hors programme",[("",[])],"ancien programme : pavé (4e), sphère latitude-longitude (3e)"),
-("Vecteurs : sans coordonnées","3e, 2de",[("",["translation et vecteur","égalité de vecteurs","somme et relation de Chasles","produit par un réel","colinéarité"])],"aucun modèle aujourd'hui"),
+("Vecteurs : sans coordonnées","3e, 2de",[("",["translation et vecteur","égalité de vecteurs","somme et relation de Chasles","produit par un réel","colinéarité","combinaison linéaire"])],"aucun modèle aujourd'hui"),
 ("Vecteurs : avec coordonnées","2de",[("",["coordonnées d'un vecteur","somme et produit par un réel","norme","colinéarité et déterminant"])],"aucun modèle aujourd'hui"),
-("Géométrie repérée","2de, 1re",[("",["milieu et distance","équations de droites","vecteur normal et équation de droite","équation de cercle","projeté orthogonal"])],None),
+("Géométrie repérée","2de, 1re",[("",["milieu et distance","équations de droites","vecteur directeur","intersection de deux droites","vecteur normal et équation de droite","équation de cercle","projeté orthogonal"])],None),
 ("Produit scalaire","1re",[("",["calculer un produit scalaire","angles et longueurs","propriétés","lieux de points"])],None),
 ("Espace : sans coordonnées","Tle",[("",["vecteurs de l'espace","colinéarité et alignement","coplanarité et décomposition","positions relatives de droites et plans"])],None),
 ("Espace : avec coordonnées","Tle",[("",["coordonnées dans l'espace","représentation paramétrique d'une droite","intersections","positions relatives par le calcul"])],None),
@@ -169,7 +169,7 @@ GR_M=[
 ]
 PS=[
 ("Expériences aléatoires","CM1 à 2de",[("",["fréquences","probabilité simple","équiprobabilité","événements"])],"reprend le domaine Probabilités > Apprivoiser"),
-("Probabilités conditionnelles","2de, 1re",[("",["arbres pondérés","tableaux croisés","indépendance","problèmes en contexte"])],None),
+("Probabilités conditionnelles","2de, 1re",[("",["arbres pondérés","tableaux croisés","indépendance","inversion du conditionnement","problèmes en contexte"])],None),
 ("Variables aléatoires","1re",[("",["loi d'une variable aléatoire","compléter une loi","espérance","variance et écart-type","jeux et gains"])],None),
 ("Loi binomiale","Tle, Tle comp.",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","coefficients binomiaux","espérance et variance"])],None),
 ("Autres lois","Tle comp.",[("",["loi géométrique","loi uniforme discrète","loi uniforme continue","loi exponentielle","densité et aire","espérance"])],None),
@@ -185,6 +185,7 @@ ST=[
 ("Représenter des données","CP à 2de",[("",["effectifs et fréquences","tableaux","tableau à double entrée","diagrammes en barres","diagrammes circulaires","courbes et repères","histogrammes","fréquences cumulées"])],"aucun modèle aujourd'hui"),
 ("Indicateurs","5e à 2de",[("",["moyenne","médiane","quartiles","étendue","écart-type","boîte à moustaches"])],"aucun modèle aujourd'hui"),
 ("Échantillonnage","2de",[("",["fluctuation","simulation","estimation d'une proportion"])],"aucun modèle aujourd'hui"),
+("Tableaux croisés","2de",[("",["tableau croisé d'effectifs","fréquences marginales et conditionnelles"])],"croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"),
 ("Statistique à deux variables","Tle comp.",[("",["nuage de points","point moyen","ajustement affine","changement de variable"])],"reprend le thème Statistiques"),
 ]
 LO=[
@@ -194,7 +195,7 @@ LO=[
 ("Raisonnements","2de, 1re",[("",["par l'absurde","par contraposée","disjonction de cas"])],None),
 ]
 EN=[
-("Ensembles de nombres","2de",[("",["ℕ, ℤ, 𝔻, ℚ, ℝ","appartenance et inclusion","intervalles"])],None),
+("Ensembles de nombres","2de",[("",["ℕ, ℤ, 𝔻, ℚ, ℝ","nombres irrationnels","appartenance et inclusion","intervalles"])],None),
 ("Opérations sur les ensembles","2de, 1re",[("",["union et intersection","complémentaire","différence"])],None),
 ("Cardinal et produit cartésien","1re, Tle",[("",["cardinal","produit cartésien"])],None),
 ]
@@ -240,7 +241,7 @@ ge=build(GE,"Géométrie","","Branche Géométrie : 21 notions et leurs sous-not
 gm_=build(GR_M,"Grandeurs","et mesures","Branche Grandeurs et mesures : 10 notions et leurs sous-notions","c7")
 ps=build(PS,"Probabilités","","Branche Probabilités : 6 notions et leurs sous-notions","c8")
 de=build(DE,"Dénombrement","","Branche Dénombrement : 4 notions et leurs sous-notions","c18")
-st=build(ST,"Statistiques","","Branche Statistiques : 4 notions et leurs sous-notions","c17")
+st=build(ST,"Statistiques","","Branche Statistiques : 5 notions et leurs sous-notions","c17")
 lo=build(LO,"Logique","","Branche Logique : 4 notions et leurs sous-notions","c9")
 en=build(EN,"Ensembles","","Branche Ensembles : 3 notions et leurs sous-notions","c19")
 ag=build(AG,"Algorithmique","","Branche Algorithmique : 4 notions et leurs sous-notions","c16")
@@ -293,7 +294,7 @@ sec=f'''<section class="branch" id="nombres"><h2><span class="dot c1"></span>Nom
 <section class="branch" id="denombrement"><h2><span class="dot c18"></span>Dénombrement <small>branche à part, 4 notions</small></h2>
 <p class="read">Sorti de Probabilités (terminale). Reprend les 9 sous-domaines de l'ancien domaine Dénombrement (15 modèles).</p>
 <div class="scroll">{de}</div></section>
-<section class="branch" id="stats"><h2><span class="dot c17"></span>Statistiques <small>4 notions</small></h2>
+<section class="branch" id="stats"><h2><span class="dot c17"></span>Statistiques <small>5 notions</small></h2>
 <p class="read">Séparée des probabilités. Seule la statistique à deux variables a des modèles aujourd'hui ; les autres notions suivent le programme.</p>
 <div class="scroll">{st}</div></section>
 <section class="branch" id="logique"><h2><span class="dot c9"></span>Logique <small>4 notions</small></h2>
@@ -312,7 +313,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.4","statut":"validé par David (lycée + cycles 2, 3 et 4, 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.5","statut":"validé par David (cycles 2-4 + 2de v2, 2026-10-06/07 ; lots 1re/Tle à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))

@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.4",
-	"statut": "validé par David (lycée + cycles 2, 3 et 4, 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.5",
+	"statut": "validé par David (cycles 2-4 + 2de v2, 2026-10-06/07 ; lots 1re/Tle à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -95,7 +95,7 @@
 				},
 				{
 					"nom": "Fractions : sens et écritures",
-					"niveaux": "CE1 à 3e",
+					"niveaux": "CE1 à 2de",
 					"sous_notions": [
 						"définition",
 						"comparer",
@@ -146,7 +146,7 @@
 				},
 				{
 					"nom": "Puissances : calculs",
-					"niveaux": "5e à 3e",
+					"niveaux": "5e à 2de",
 					"sous_notions": ["multiplier", "diviser", "puissance de puissance", "mélange"],
 					"note": null
 				},
@@ -275,8 +275,8 @@
 				{
 					"nom": "Évolutions",
 					"niveaux": "4e à 1re",
-					"sous_notions": ["variations en pourcentage"],
-					"note": "coefficient multiplicateur dès la 4e ; sous-notions lycée à venir avec le lot lycée"
+					"sous_notions": ["variations en pourcentage", "évolutions successives et réciproque"],
+					"note": "coefficient multiplicateur dès la 4e"
 				},
 				{
 					"nom": "Échelle d'une carte",
@@ -316,7 +316,9 @@
 						"opposé d'une expression",
 						"développer",
 						"factoriser",
-						"identités remarquables"
+						"identités remarquables",
+						"isoler une variable",
+						"expressions fractionnaires"
 					],
 					"note": null
 				},
@@ -423,19 +425,29 @@
 				{
 					"nom": "Fonction racine carrée",
 					"niveaux": "2de",
-					"sous_notions": ["définition et courbe", "variations", "comparer des images"],
+					"sous_notions": [
+						"définition et courbe",
+						"variations",
+						"comparer des images",
+						"√x = k, √x < k"
+					],
 					"note": "aucun modèle aujourd'hui"
 				},
 				{
 					"nom": "Fonction cube",
 					"niveaux": "2de",
-					"sous_notions": ["définition et courbe", "variations", "x³ = k"],
+					"sous_notions": ["définition et courbe", "variations", "x³ = k, x³ < k"],
 					"note": "aucun modèle aujourd'hui"
 				},
 				{
 					"nom": "Fonction valeur absolue",
 					"niveaux": "2de",
-					"sous_notions": ["définition et distance", "courbe", "équations"],
+					"sous_notions": [
+						"définition et distance",
+						"courbe",
+						"variations",
+						"équations et inéquations"
+					],
 					"note": "reprend le domaine Valeur absolue"
 				},
 				{
@@ -854,7 +866,8 @@
 						"égalité de vecteurs",
 						"somme et relation de Chasles",
 						"produit par un réel",
-						"colinéarité"
+						"colinéarité",
+						"combinaison linéaire"
 					],
 					"note": "aucun modèle aujourd'hui"
 				},
@@ -875,6 +888,8 @@
 					"sous_notions": [
 						"milieu et distance",
 						"équations de droites",
+						"vecteur directeur",
+						"intersection de deux droites",
 						"vecteur normal et équation de droite",
 						"équation de cercle",
 						"projeté orthogonal"
@@ -1033,6 +1048,7 @@
 						"arbres pondérés",
 						"tableaux croisés",
 						"indépendance",
+						"inversion du conditionnement",
 						"problèmes en contexte"
 					],
 					"note": null
@@ -1158,6 +1174,15 @@
 					"note": "aucun modèle aujourd'hui"
 				},
 				{
+					"nom": "Tableaux croisés",
+					"niveaux": "2de",
+					"sous_notions": [
+						"tableau croisé d'effectifs",
+						"fréquences marginales et conditionnelles"
+					],
+					"note": "croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"
+				},
+				{
 					"nom": "Statistique à deux variables",
 					"niveaux": "Tle comp.",
 					"sous_notions": [
@@ -1205,7 +1230,12 @@
 				{
 					"nom": "Ensembles de nombres",
 					"niveaux": "2de",
-					"sous_notions": ["ℕ, ℤ, 𝔻, ℚ, ℝ", "appartenance et inclusion", "intervalles"],
+					"sous_notions": [
+						"ℕ, ℤ, 𝔻, ℚ, ℝ",
+						"nombres irrationnels",
+						"appartenance et inclusion",
+						"intervalles"
+					],
 					"note": null
 				},
 				{

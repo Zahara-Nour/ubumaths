@@ -206,6 +206,10 @@ résultat », « modéliser », usage des outils : transversal.
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (T1-T6, avec « séries regroupées en
+> classes » = simples points). Appliqué à l'arbre : version 2026-10-07.5 — 136 notions,
+> 495 sous-notions.
+
 1. **T1 — Notion « Tableaux croisés »** (Statistiques, 2de) : « tableau croisé d'effectifs »,
    « fréquences marginales et conditionnelles ». (reco : oui.)
 2. **T2 — Fonctions de référence, mise en cohérence** : Fonction valeur absolue (+ « variations »,
