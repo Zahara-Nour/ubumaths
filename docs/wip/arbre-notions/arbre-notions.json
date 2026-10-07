@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.12",
+	"version": "2026-10-07.13",
 	"statut": "validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
@@ -55,7 +55,7 @@
 				{
 					"nom": "Entiers : division",
 					"niveaux": "CE2 à 6e",
-					"sous_notions": ["quotient", "division euclidienne", "calcul posé"],
+					"sous_notions": ["quotient", "division euclidienne", "calcul posé", "calcul réfléchi"],
 					"note": null
 				},
 				{
@@ -73,7 +73,8 @@
 						"écrire",
 						"encadrer",
 						"forme fractionnaire",
-						"arrondir"
+						"arrondis et ordres de grandeur",
+						"droite graduée"
 					],
 					"note": null
 				},
@@ -87,7 +88,7 @@
 						"diviser",
 						"puissances de 10",
 						"distributivité",
-						"moitié",
+						"double et moitié",
 						"calcul astucieux",
 						"calcul posé"
 					],
@@ -1328,6 +1329,12 @@
 		{
 			"nom": "Algorithmique",
 			"notions": [
+				{
+					"nom": "Préalgorithmique",
+					"niveaux": "CM2",
+					"sous_notions": [],
+					"note": null
+				},
 				{
 					"nom": "Variables et instructions",
 					"niveaux": "5e à 2de",

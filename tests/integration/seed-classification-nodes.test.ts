@@ -4,7 +4,9 @@
  *
  * Migration `20261008090000_seed_classification_nodes` : l'arbre validé par
  * David le 2026-10-07 (tour complet des programmes CP → Tle) écrit en base —
- * 19 branches, 136 notions, 537 sous-notions, SANS niveaux scolaires
+ * 19 branches, 136 notions, 537 sous-notions, SANS niveaux scolaires — étendu
+ * par 20261008120000 (seed CM) : +Préalgorithmique, +calcul réfléchi,
+ * +droite graduée, 2 renommages → 19 + 137 + 539
  * (ADR 0020).
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
@@ -94,11 +96,11 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 	});
 
 	it('le JSON source est bien la version attendue', () => {
-		expect(arbre.version).toBe('2026-10-07.12');
+		expect(arbre.version).toBe('2026-10-07.13');
 		expect(arbre.branches).toHaveLength(19);
 	});
 
-	it("l'arbre seedé correspond EXACTEMENT au JSON (692 chemins), rien d'archivé", () => {
+	it("l'arbre seedé correspond EXACTEMENT au JSON (695 chemins), rien d'archivé", () => {
 		const byId = new Map(rows.map((r) => [r.id, r]));
 		const branchNames = new Set(arbre.branches.map((b) => b.nom));
 
@@ -126,7 +128,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		const extra = [...actual].filter((p) => !expected.has(p));
 		expect(missing, `chemins du JSON absents de la base`).toEqual([]);
 		expect(extra, `chemins en base absents du JSON`).toEqual([]);
-		expect(actual.size).toBe(19 + 136 + 537);
+		expect(actual.size).toBe(19 + 137 + 539);
 		expect(archived).toBe(0);
 	});
 
