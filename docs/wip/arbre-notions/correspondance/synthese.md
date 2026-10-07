@@ -1,3 +1,8 @@
+> ⚠️ **PÉRIMÉ le 2026-10-07** : cette synthèse décrit la passe initiale, calculée sur
+> l'arbre à 115 notions / 418 sous-notions. La correspondance a été RELANCÉE sur l'arbre
+> complet (537 sous-notions) : voir `relance-2026-10-07.md`. Les CSV de ce dossier sont à
+> jour de la relance.
+
 # Correspondance ancien classement → arbre branche > notion > sous-notion
 
 Proposition générée le 2026-10-07 depuis la production (lecture seule). Rien n'est appliqué : à relire par David.

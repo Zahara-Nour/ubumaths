@@ -407,3 +407,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   pour l'ÉTAT) + test. Résultat : **683/683 verts** (schéma cible 26, arbre 52, renommage
   11, anon-option-b 594), check:incremental 0 erreur. Les 4 conditions db:migrate seront
   réunies au moment du passage en prod (décision de pousser = David).
+
+- **Correspondance RELANCÉE sur l'arbre complet (2026-10-07, soir)** : cibles revérifiées
+  (3 mortes corrigées — les 2 renommages de sous-notions non répercutés), 160 modèles +
+  150 exercices rejugés un à un → 22 + 23 bascules (le bénéfice direct des sous-notions du
+  tour : angles associés, petit Fermat, distribution après n transitions, coordonnées du
+  projeté orthogonal, suites d'intégrales, positivité et inégalités, épreuves indépendantes
+  successives, position relative, opérations sur les dérivées…), familles NC tranchées
+  (« à trou » = l'opération confirmé, ×0,5 → moitié), « debug » EXCLU, 4 cas à trancher
+  avec David, et DÉCOUVERTE : **26 exercices sans titre** en prod (pas 2). CSV mis à jour
+  en place, 0 cible morte, synthese.md marqué périmé → `correspondance/relance-2026-10-07.md`
+  (lots 1-4 à valider par David).
