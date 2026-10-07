@@ -1,6 +1,9 @@
 # 0019 — Classement des contenus : branche > notion > sous-notion
 
-- **Statut** : acceptée (remplace [0018](0018-chapitres-liste-tenue-par-le-prof.md))
+- **Statut** : acceptée (remplace [0018](0018-chapitres-liste-tenue-par-le-prof.md) ; deux clauses
+  amendées par [0020](0020-arbre-central-programmes-pointeurs.md) : les nœuds ne portent plus de
+  niveaux scolaires, et le lien arbre ↔ programme devient structurel — les points du programme
+  pointent les nœuds)
 - **Date** : 2026-10-06 · **Décidée par** : David
 
 ## Contexte

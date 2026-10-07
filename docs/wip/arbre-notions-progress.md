@@ -110,3 +110,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   « le programme de ce niveau doit pointer ce nœud ». Restent ouvertes avant l'ADR : variante A
   (pointeurs nus) ou B (points BO rattachés aux nœuds — reco) ; un point pointe notion OU
   sous-notion, jamais une branche (reco oui).
+
+- **ADR 0020 écrite (2026-10-07, variante B confirmée par David)** : arbre central sans niveaux,
+  grain au filtre, programmes = points BO rattachés aux nœuds (notion ou sous-notion, jamais une
+  branche — corollaire de 0019, à faire infirmer par David s'il voit autrement), `level` des
+  questions = gradation intra-point, themes/objectives à retirer à terme (destructif, plus tard).
+  0019 amendée (statut) ; mesures à l'appui : 432/1 005 modèles tagués vers 499 points, mêmes
+  titres à plusieurs levels sous un même point. Prochaine étape technique sur la branche : amender
+  la PR 1 (retrait de `classification_nodes.grades` et des règles d'héritage/inclusion + tests).
