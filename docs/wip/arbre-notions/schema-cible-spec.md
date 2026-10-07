@@ -17,11 +17,15 @@ verts) a déjà livré et spécifié — on ne le re-discute pas :
   obligatoire du bon genre, nom unique dans la fratrie (casse ignorée), archivage en
   cascade (un nœud actif sous un parent archivé est refusé), **lecture anon, écriture
   admin** ;
-- `exercise_classifications` (exercice → nœud) et
-  `question_templates.classification_node_id` (modèle → nœud) : **un seul nœud par
-  contenu**, obligatoirement une notion ou une sous-notion (jamais une branche), jamais un
-  nœud archivé pour un NOUVEAU rangement — un rangement existant survit à l'archivage de
-  son nœud.
+- `exercise_classifications` (exercice → nœuds) : un exercice, plus composite qu'une
+  question, se range dans **un ou plusieurs nœuds** (table de liaison ; seul le doublon
+  exact est refusé), avec **au plus un rangement principal** (`is_primary`) — précision de
+  David du 2026-10-07, que le schéma de la PR 1 satisfaisait déjà ;
+- `question_templates.classification_node_id` (modèle → nœud) : **un seul nœud par
+  modèle** — une question est atomique ;
+- dans les deux cas : obligatoirement une notion ou une sous-notion (jamais une branche),
+  jamais un nœud archivé pour un NOUVEAU rangement — un rangement existant survit à
+  l'archivage de son nœud.
 
 La phase 0 couvre le reste : **les points de programme rattachés aux nœuds**, **les
 références d'automatismes contraintes au parcours**, **les parcours**, la **transition**

@@ -353,3 +353,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   existants intacts), accès (MESURÉ : référentiel actuel = authenticated seulement ; arbre
   PR 1 = anon ; proposition d'alignement anon = LA question d'accès). 7 décisions B1-B7 en
   attente de David. Pas de test ni de SQL avant validation.
+
+- **Précision de David sur les rangements (2026-10-07)** : un modèle de question = UN nœud ;
+  un exercice, plus composite, = UN OU PLUSIEURS nœuds. Vérifié : la PR 1 le fait déjà
+  (`exercise_classifications` en table de liaison, PK (exercise_id, node_id), au plus un
+  `is_primary` par exercice, test « deux principaux refusés » vert) — seule la phrase de
+  résumé de `schema-cible-spec.md` (« un seul nœud par contenu ») était fausse, corrigée.
+  Aucun changement de migration ni de test.
