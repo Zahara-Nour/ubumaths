@@ -356,6 +356,58 @@ function oscillatesNear(expr: MathNode, varName: string, testValues: readonly nu
 	return false;
 }
 
+/** Fenêtre fine pour les creux : 64 × 0,125 = 8 > 2π. */
+const DIP_STEP = 0.125;
+const DIP_POINTS = 64;
+/** Un point sous 1 % du maximum de |f| de CHAQUE côté : f retombe. */
+const DIP_RATIO = 0.01;
+/**
+ * Départs de la fenêtre quand |f| déborde en 1e6 (eˣ·(1 − sin x)) : le creux
+ * ne se mesure pas sur ±Infinity, il se mesure là où f est encore finie.
+ */
+const OVERFLOW_DIP_STARTS = [100, 300, 600];
+
+/**
+ * |f| retombe-t-il près de 0 sur une fenêtre de longueur 8 (> 2π) après un
+ * point de départ ? x(1 + sin x) garde son signe (`oscillatesNear` ne voit
+ * rien) mais s'annule en −π/2 + 2kπ : trois grandes valeurs ne prouvent pas
+ * +∞. Un creux est un point où |f| tombe sous 1 % du maximum atteint AVANT
+ * lui ET du maximum atteint APRÈS lui dans la fenêtre : une croissance
+ * monotone, même rapide (eˣ, ×3000 sur la fenêtre), n'en a pas. Pas de
+ * 0,125 : au pire un zéro double est manqué de 0,0625, et 1 + sin y vaut
+ * alors ~0,002 — bien sous le seuil. Les fenêtres où f n'est pas finie
+ * partout ne prouvent rien et sont ignorées.
+ */
+function dipsNear(expr: MathNode, varName: string, starts: readonly number[]): boolean {
+	for (const start of starts) {
+		const direction = Math.sign(start);
+		const magnitudes: number[] = [];
+		for (let i = 0; i < DIP_POINTS; i++) {
+			const value = evaluateNumeric(expr, varName, start + direction * i * DIP_STEP);
+			if (value === null || !Number.isFinite(value)) break;
+			magnitudes.push(Math.abs(value));
+		}
+		if (magnitudes.length < DIP_POINTS) continue;
+		if (hasDip(magnitudes)) return true;
+	}
+	return false;
+}
+
+/** Un point sous DIP_RATIO × le maximum de chaque côté. */
+function hasDip(magnitudes: readonly number[]): boolean {
+	const suffixMax: number[] = Array.from({ length: magnitudes.length }, () => 0);
+	for (let i = magnitudes.length - 2; i >= 0; i--) {
+		suffixMax[i] = Math.max(suffixMax[i + 1], magnitudes[i + 1]);
+	}
+	let prefixMax = 0;
+	for (let i = 0; i < magnitudes.length; i++) {
+		const neighbourMax = Math.min(prefixMax, suffixMax[i]);
+		if (magnitudes[i] < neighbourMax * DIP_RATIO) return true;
+		prefixMax = Math.max(prefixMax, magnitudes[i]);
+	}
+	return false;
+}
+
 /**
  * Classify at infinity.
  */
@@ -382,6 +434,8 @@ function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean):
 		const sign = Math.sign(overflows[0]);
 		if (samples.some((v) => Math.sign(v) !== sign)) return { type: 'unknown' };
 		if (oscillatesNear(expr, varName, testValues)) return { type: 'unknown' };
+		const dipStarts = OVERFLOW_DIP_STARTS.map((start) => (positive ? start : -start));
+		if (dipsNear(expr, varName, dipStarts)) return { type: 'unknown' };
 		return sign > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
 	}
 
@@ -406,6 +460,7 @@ function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean):
 		// e.g., for f(x) = x, results would be [1e6, 1e8, 1e10] - growing by 100x each time
 		if (lastAbs > 1e8 && lastAbs > firstAbs * 10) {
 			if (oscillatesNear(expr, varName, testValues)) return { type: 'unknown' };
+			if (dipsNear(expr, varName, testValues)) return { type: 'unknown' };
 			return lastResult > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
 		}
 	}
