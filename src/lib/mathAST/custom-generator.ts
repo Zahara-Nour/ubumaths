@@ -50,6 +50,7 @@ import type {
 	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
+import { GREEK_LETTERS } from './types';
 import { format } from './units/formatter';
 import {
 	needsParenthesesAsPowerBase,
@@ -94,31 +95,7 @@ export interface CustomGeneratorOptions {
  * parsers as a MathConstant; the rest produce GreekLetter nodes.
  * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
-export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([
-	'alpha',
-	'beta',
-	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega'
-]);
+export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([...GREEK_LETTERS, 'pi']);
 
 /**
  * Supported symbols in custom syntax.
@@ -758,7 +735,7 @@ export class CustomGenerator {
 		if (!SUPPORTED_GREEK.has(node.letter)) {
 			throw new Error(
 				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
-					`Only pi, alpha, beta, gamma, theta are supported.`
+					`See SUPPORTED_GREEK for the supported letters.`
 			);
 		}
 		this.emit(`\\${node.letter}`, node.metadata);
@@ -1250,7 +1227,7 @@ export class CustomGenerator {
 		if (!SUPPORTED_GREEK.has(node.letter)) {
 			throw new Error(
 				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
-					`Only pi, alpha, beta, gamma, theta are supported.`
+					`See SUPPORTED_GREEK for the supported letters.`
 			);
 		}
 		return `\\${node.letter}`;

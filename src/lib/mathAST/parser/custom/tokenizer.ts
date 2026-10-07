@@ -21,6 +21,8 @@
  * @module mathAST/parser/custom/tokenizer
  */
 
+import { GREEK_LETTERS } from '../../types';
+
 // =============================================================================
 // Token Types
 // =============================================================================
@@ -121,32 +123,7 @@ export interface CustomToken {
 /**
  * Valid symbol names that can appear after backslash
  */
-export const VALID_SYMBOLS: ReadonlySet<string> = new Set([
-	'alpha',
-	'beta',
-	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega',
-	'infty'
-]);
+export const VALID_SYMBOLS: ReadonlySet<string> = new Set([...GREEK_LETTERS, 'pi', 'infty']);
 
 /**
  * Function names that are recognized as FUNC tokens.

@@ -67,6 +67,7 @@ import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
+import { realNthRoot } from './real-root';
 
 // =============================================================================
 // Core Evaluation
@@ -414,8 +415,9 @@ function evaluateFunctionToRational(
 
 			// Fall back to floating point
 			const indexNum = base ? rationalToNumber(index) : 2;
-			const magnitude = Math.pow(Math.abs(numArgs[0]), 1 / indexNum);
-			result = negative ? -magnitude : magnitude;
+			const root = realNthRoot(numArgs[0], indexNum);
+			if (root === null) throw new Error('sqrt argument must be non-negative');
+			result = root;
 			break;
 		}
 		case 'cbrt':

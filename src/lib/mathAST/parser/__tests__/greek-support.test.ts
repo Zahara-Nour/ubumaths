@@ -35,8 +35,10 @@ describe('Greek letter support - harmonization between parsers', () => {
 		'omega'
 	];
 	// LaTeX commands neither in GREEK_COMMANDS nor in any other recognized
-	// command set — both parsers should reject these.
-	const UNSUPPORTED_GREEK = ['varphi', 'varepsilon', 'vartheta'];
+	// command set — both parsers should reject these. (`\varphi`, `\vartheta`,
+	// `\varepsilon` sont acceptés depuis le 2026-10-07 ; omicron et les
+	// majuscules identiques à une lettre latine n'ont pas de commande LaTeX.)
+	const UNSUPPORTED_GREEK = ['omicron', 'Alpha', 'Beta'];
 
 	describe('LaTeX parser', () => {
 		it.each(SUPPORTED_GREEK)('should accept supported Greek letter \\%s', (letter) => {

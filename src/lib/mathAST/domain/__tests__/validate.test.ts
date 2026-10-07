@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { isInDomain, getDomainViolations } from '../validate';
 import { variable, number, add, sqrt, ln, fraction, func } from '../../factory';
+import { parseLatex } from '../../parser';
 
 describe('isInDomain()', () => {
 	describe('sqrt(x)', () => {
@@ -173,5 +174,35 @@ describe('getDomainViolations()', () => {
 			expect(violations[0].messageEn).toContain('sqrt');
 			expect(violations[0].messageEn).toContain('requires');
 		});
+	});
+});
+
+// Racine n-ième : l'indice est porté par `base` (`\sqrt[3]{x}`). Indice impair :
+// racine définie sur ℝ (∛−8 = −2, décision #925) ; indice pair : radicande ≥ 0.
+describe('isInDomain() — racine n-ième (indice dans base)', () => {
+	it('∛x est défini en x = −8', () => {
+		expect(isInDomain(parseLatex('\\sqrt[3]{x}'), { x: -8 })).toBe(true);
+		expect(getDomainViolations(parseLatex('\\sqrt[3]{x}'), { x: -8 })).toEqual([]);
+	});
+
+	it('⁴√x n’est pas défini en x = −16', () => {
+		expect(isInDomain(parseLatex('\\sqrt[4]{x}'), { x: -16 })).toBe(false);
+	});
+
+	it('∛8 vaut 2 (pas √8) : 1/(∛x − 2) n’est pas défini en x = 8', () => {
+		expect(isInDomain(parseLatex('\\frac{1}{\\sqrt[3]{x}-2}'), { x: 8 })).toBe(false);
+	});
+
+	it('∛−8 vaut −2 : 1/(∛x + 2) n’est pas défini en x = −8', () => {
+		expect(isInDomain(parseLatex('\\frac{1}{\\sqrt[3]{x}+2}'), { x: -8 })).toBe(false);
+	});
+
+	it('ln(∛x) n’est pas défini en x = −8 (∛−8 < 0)', () => {
+		expect(isInDomain(parseLatex('\\ln(\\sqrt[3]{x})'), { x: -8 })).toBe(false);
+	});
+
+	it('√x sans indice : inchangé', () => {
+		expect(isInDomain(parseLatex('\\sqrt{x}'), { x: -8 })).toBe(false);
+		expect(isInDomain(parseLatex('\\frac{1}{\\sqrt{x}-2}'), { x: 4 })).toBe(false);
 	});
 });
