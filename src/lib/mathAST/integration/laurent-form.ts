@@ -8,6 +8,10 @@
  * par le dénominateur (un seul monôme), les exposants d'une même base sont
  * fusionnés, et les facteurs d'exposant négatif passent au dénominateur.
  *
+ * Convention d'ordre (écriture de classe) : puissances positives de la
+ * variable par degré décroissant, puis termes de degré 0 (ln|x|, constantes),
+ * puis puissances négatives (1/x avant 1/x²) : x + 2 ln|x| − 1/x.
+ *
  * @module mathAST/integration/laurent-form
  */
 
@@ -24,6 +28,7 @@ import { hashMathNode } from '../normal/hash';
 import { addRational, divRational, negRational } from '../normal/rational';
 import { add, opposite, subtract } from '../factory';
 import { containsVariable } from '../common/contains-variable';
+import { isVariable } from '../guards';
 
 // =============================================================================
 // Types
@@ -92,6 +97,16 @@ function signedTerm(coefficient: AlgebraicTerm, factors: readonly SymbolicFactor
 	};
 }
 
+/**
+ * Rang d'ordre d'un terme : son degré en `variable` (exposant de la base
+ * `variable` elle-même) ; ln|x|, constantes : 0. Trié par rang décroissant,
+ * la somme se lit polynôme décroissant, puis ln, puis puissances négatives.
+ */
+function orderRank(factors: readonly SymbolicFactor[], variable: string): number {
+	const own = factors.find((factor) => isVariable(factor.base) && factor.base.name === variable);
+	return own === undefined ? 0 : Number(own.exponent.n) / Number(own.exponent.d);
+}
+
 // =============================================================================
 // API
 // =============================================================================
@@ -123,7 +138,11 @@ export function laurentForm(form: NormalForm, variable: string): MathNode | null
 	);
 	if (!hasNegativePower || pieces.length === 0) return null;
 
-	const terms = pieces.map(({ coefficient, factors }) => signedTerm(coefficient, factors));
+	// Ordre de classe : x², x, puis ln|x| et constantes, puis 1/x, 1/x² (tri stable)
+	const ordered = [...pieces].sort(
+		(left, right) => orderRank(right.factors, variable) - orderRank(left.factors, variable)
+	);
+	const terms = ordered.map(({ coefficient, factors }) => signedTerm(coefficient, factors));
 	const [first, ...rest] = terms;
 	return rest.reduce<MathNode>(
 		(sum, term) => (term.negative ? subtract(sum, term.node) : add(sum, term.node)),

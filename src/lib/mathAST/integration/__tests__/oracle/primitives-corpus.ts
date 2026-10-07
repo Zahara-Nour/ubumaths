@@ -9,10 +9,8 @@
  *
  * `expected` : la (ou les) primitive(s) telle(s) qu'on l'ÉCRIT en classe, sans
  * « + C ». Plusieurs écritures de classe sont acceptées quand elles coexistent
- * (`\frac{x^3}{3}` ou `\frac{1}{3}x^3`). Convention du code mesurée le
- * 2026-10-06 : `\ln|u|` PARTOUT, même quand u > 0 (`\ln|x^2+1|`) ; la classe
- * écrit `\ln|x|` pour 1/x, mais `\ln(x^2+1)` quand u > 0 — l'écart est un écart
- * de FORME (`KNOWN_FORM_DIFF`), jamais une erreur de valeur.
+ * (`\frac{x^3}{3}` ou `\frac{1}{3}x^3`). Depuis le 2026-10-07 (`positive-abs.ts`),
+ * le code écrit `\ln(u)` quand u > 0 est prouvé (`\ln(x^2+1)`), `\ln|u|` sinon.
  *
  * Les paramètres littéraux (`literal: true`) sont vérifiés pour chacun des
  * jeux de `PARAMETER_SETS` (positifs, négatifs, fractionnaires ; jamais 0 ni 1).
