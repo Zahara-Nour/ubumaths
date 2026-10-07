@@ -457,3 +457,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   depuis le JSON) + seed 6e (premier programme points→nœuds) + remplissage des rangements
   depuis la correspondance validée + séquence C5 (transfert tags → bascule → suppression) ;
   décisions données prod à part : titrage des 26 sans-titre, sort de « debug ».
+
+- **Seed des NŒUDS écrit et vert en local (2026-10-08, « 1 » de David)** : migration
+  `20261008090000_seed_classification_nodes.sql` GÉNÉRÉE depuis arbre-notions.json
+  (2026-10-07.12) par script — 19 branches, 136 notions, 537 sous-notions, positions =
+  ordre du JSON, unicité par fratrie vérifiée avant génération. Test
+  `seed-classification-nodes.test.ts` : preuve rouge (692 chemins absents) puis VERT —
+  comparaison INTÉGRALE des 692 chemins JSON ↔ base (lecture anonyme, pagination
+  PostgREST), positions, rien d'archivé ; non-régression arbre + schéma cible : 81/81.
