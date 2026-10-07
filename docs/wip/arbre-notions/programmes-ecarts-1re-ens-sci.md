@@ -168,6 +168,10 @@ courbe` : la base e et la dérivation n'existent pas ici — le module vit dans 
 
 ## Questions pour David
 
+> **TOUTES TRANCHÉES le 2026-10-07** : « je valide tout » (W1-W4, libellé « 1re ens. sci. »,
+> racine n-ième et exposant 1/n = points sous « fonctions x ↦ aˣ »). Appliqué à l'arbre :
+> version 2026-10-07.8 — 136 notions, 519 sous-notions.
+
 1. **W1 — Libellé du niveau indicatif** pour ce programme dans le JSON et le diagramme :
    jusqu'ici « 1re » = 1re spé. Proposition : **« 1re ens. sci. »** (reco), alternatives
    « 1re module », « 1re TC ». Pour mémoire : le grade prod `1_GEN` (« 1ère générale (maths

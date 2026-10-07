@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.7",
-	"statut": "validé par David (cycles 2-4 + 2de + 1re et Tle spé v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.8",
+	"statut": "validé par David (cycles 2-4 + 2de + 1re et Tle spé + 1re ens. sci. v2, 2026-10-06/07 ; lots Tle comp. et Expertes à reprendre) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -274,8 +274,12 @@
 				},
 				{
 					"nom": "Évolutions",
-					"niveaux": "4e à 2de",
-					"sous_notions": ["variations en pourcentage", "évolutions successives et réciproque"],
+					"niveaux": "4e à 2de, 1re ens. sci.",
+					"sous_notions": [
+						"variations en pourcentage",
+						"évolutions successives et réciproque",
+						"taux d'évolution moyen"
+					],
 					"note": "coefficient multiplicateur dès la 4e"
 				},
 				{
@@ -485,14 +489,15 @@
 				},
 				{
 					"nom": "Fonction exponentielle",
-					"niveaux": "1re, Tle",
+					"niveaux": "1re, 1re ens. sci., Tle",
 					"sous_notions": [
 						"propriétés algébriques",
 						"dérivée",
 						"variations",
 						"courbe",
 						"équations et inéquations",
-						"suites et modélisation"
+						"suites et modélisation",
+						"fonctions x ↦ aˣ"
 					],
 					"note": null
 				},
@@ -1204,7 +1209,7 @@
 				},
 				{
 					"nom": "Statistique à deux variables",
-					"niveaux": "Tle comp.",
+					"niveaux": "1re ens. sci., Tle comp.",
 					"sous_notions": [
 						"nuage de points",
 						"point moyen",

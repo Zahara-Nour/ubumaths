@@ -234,3 +234,11 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   un point d'un programme parallèle d'une autre voie (le module `1_GEN` ne référence pas un
   point `1_SPE`, même quand les listes d'automatismes sont identiques). Contrainte à inscrire
   dans la spec du schéma cible. Doc corrigé (`programmes-ecarts-1re-ens-sci.md`).
+
+- **Module 1re ens. sci. appliqué (2026-10-07, « je valide tout », W1-W4)** : libellé de
+  niveau « 1re ens. sci. » acté (premier programme PARALLÈLE de l'arbre ; grade prod
+  `1_GEN` inchangé) ; 2 sous-notions — taux d'évolution moyen (Évolutions, « 4e à 2de,
+  1re ens. sci. »), fonctions x ↦ aˣ (Fonction exponentielle, « 1re, 1re ens. sci., Tle » ;
+  racine n-ième et exposant 1/n = points dessous) ; Statistique à deux variables
+  « 1re ens. sci., Tle comp. » → 19 branches, 136 notions, 519 sous-notions (JSON
+  2026-10-07.8), diagramme republié. Restent : Tle comp., Expertes, voie techno 1re/Tle.
