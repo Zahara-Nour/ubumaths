@@ -271,6 +271,27 @@ function judgeMode(
 		if (expected !== null) wrong.push(`pas de limite rendue, attendu ${entry.expected}`);
 		return { mode, summary, hasValue: false, wrong };
 	}
+	// Règle (g) : une valeur APPROCHÉE n'est pas une limite rendue, mais elle
+	// ne doit jamais être fausse (x^{1/5}/x^{1/3} en 0 rendait « ≈ 60 », pour +∞)
+	if (result.status === 'approximate' && result.value !== null) {
+		let approx: number;
+		try {
+			approx = isInfinity(result.value)
+				? result.value.sign === 'positive'
+					? Number.POSITIVE_INFINITY
+					: Number.NEGATIVE_INFINITY
+				: compile(result.value)({});
+		} catch {
+			approx = Number.NaN;
+		}
+		const close =
+			expected !== null &&
+			(Number.isFinite(expected)
+				? Math.abs(approx - expected) <= 1e-3 * Math.max(1, Math.abs(expected))
+				: approx === expected);
+		if (!close) wrong.push(`valeur approchée fausse (${summary}), attendu ${entry.expected}`);
+		return { mode, summary, hasValue: false, wrong };
+	}
 	let value: number | null;
 	try {
 		value = resultNumber(result);
@@ -345,9 +366,11 @@ export function judgeEntry(entry: OracleEntry): Verdict {
 	const wrong = outcomes.some((o) => o.wrong.length > 0);
 	const covered = !wrong && outcomes.some((o) => o.hasValue || isNoLimitFound(o, entry));
 	const [lim, expr] = outcomes;
+	// « Pas de limite » trouvé par \lim(…) aussi : pas d'écart (x^{-1/3} en 0)
 	const parenthesesGap =
 		built.latex.includes('\\left(') &&
 		!lim.hasValue &&
+		!isNoLimitFound(lim, entry) &&
 		(expr.hasValue || isNoLimitFound(expr, entry));
 	return { entry, outcomes, wrong, covered, parenthesesGap };
 }

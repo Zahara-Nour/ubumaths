@@ -151,11 +151,28 @@ export function extractPowerEquation(
 
 	if (powerTerm === null || powerDegree === null) return null;
 
-	// k is the opposite of the constant term (x^n - k = 0 => k = -constant)
-	const k = isZeroNode(constantTerm) ? number('0') : opposite(constantTerm);
+	// x^n + c = 0 ⇒ x^n = −c ; −x^n + c = 0 ⇒ x^n = c. Le signe du terme en
+	// x^n était ignoré : 2 − x³ = 0 rendait −∛2, 1 − x⁴ = 0 « aucune solution »
+	const negatedPower = isNegatedPower(powerTerm);
+	const k = isZeroNode(constantTerm)
+		? number('0')
+		: negatedPower
+			? constantTerm
+			: opposite(constantTerm);
 	const kSimplified = denormalize(normalize(k));
 
 	return { n: powerDegree, k: kSimplified };
+}
+
+/** Le terme en x^n est-il un opposé (−x^n, −(x^n)) ? Compte les `opposite` imbriqués. */
+function isNegatedPower(term: MathNode): boolean {
+	let negated = false;
+	let current = term;
+	while (current.type === 'opposite') {
+		negated = !negated;
+		current = current.operand;
+	}
+	return negated;
 }
 
 /**

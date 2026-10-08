@@ -44,6 +44,7 @@ import {
 	isDelimiter,
 	isMathConstant
 } from '../../guards';
+import { isOddRootIndex } from '../../eval/real-root';
 import { signOfProduct, signOfQuotient, signOfPower, signOfFunction, negateSign } from '../rules';
 
 // =============================================================================
@@ -172,9 +173,16 @@ export function analyzeExpressionStructure(expr: MathNode, variable: string): Ex
 
 	// Function
 	if (isFunction(expr)) {
+		// Racine d'indice impair `\sqrt[5]{u}` : du signe de u, comme cbrt —
+		// lue en `sqrt` (≥ 0), 1/⁵√x restait de signe inconnu
+		const oddRoot =
+			expr.name === 'sqrt' &&
+			expr.base !== undefined &&
+			isNumber(expr.base) &&
+			isOddRootIndex(Number(expr.base.value));
 		return {
 			type: 'function',
-			funcName: expr.name,
+			funcName: oddRoot ? 'cbrt' : expr.name,
 			components: [...expr.args]
 		};
 	}

@@ -177,13 +177,26 @@ export function formatEndpointValue(value: MathNode): string {
 		return constantMap[value.constant] ?? value.constant;
 	}
 
-	// Handle sqrt with nice √ symbol
-	if (isFunction(value) && value.name === 'sqrt' && value.args.length === 1) {
-		const arg = value.args[0];
-		if (isNumber(arg)) {
-			return `√${arg.value}`;
+	// Handle sqrt with nice √ symbol — avec son indice : ∛, ∜ (∛4 s'écrivait √4)
+	if (
+		isFunction(value) &&
+		(value.name === 'sqrt' || value.name === 'cbrt') &&
+		value.args.length === 1
+	) {
+		const symbol = rootSymbol(value);
+		if (symbol !== null) {
+			const arg = value.args[0];
+			if (isNumber(arg)) {
+				return `${symbol}${arg.value}`;
+			}
+			return `${symbol}(${formatEndpointValue(arg)})`;
 		}
-		return `√(${formatEndpointValue(arg)})`;
+	}
+
+	// Fonction à indice ou base (ⁿ√, log_b, …) : l'écriture complète de
+	// `toCustom` — `sqrt(2)` pour ⁵√2 se lisait √2
+	if (isFunction(value) && value.base !== undefined) {
+		return toCustom(value);
 	}
 
 	// Handle other functions
@@ -221,10 +234,11 @@ export function formatEndpointValue(value: MathNode): string {
 	// Handle multiplication: a*b
 	if (isMultiplication(value)) {
 		// Check if it's coefficient * sqrt(n) pattern for nice display
-		if (isFunction(value.right) && value.right.name === 'sqrt' && value.right.args.length === 1) {
+		if (isFunction(value.right) && value.right.args.length === 1) {
+			const symbol = rootSymbol(value.right);
 			const arg = value.right.args[0];
-			if (isNumber(arg)) {
-				return `${formatEndpointValue(value.left)}*√${arg.value}`;
+			if (symbol !== null && isNumber(arg)) {
+				return `${formatEndpointValue(value.left)}*${symbol}${arg.value}`;
 			}
 		}
 		return `${formatEndpointValue(value.left)}*${formatEndpointValue(value.right)}`;
@@ -300,4 +314,20 @@ function formatIntervalAsCondition(interval: Interval, variable: string): string
 	const upperOp = upper.type === 'closed' ? '≤' : '<';
 
 	return `${lowerVal} ${lowerOp} ${variable} ${upperOp} ${upperVal}`;
+}
+
+/**
+ * Symbole d'une racine : √ (carrée), ∛ (cubique, `\sqrt[3]` ou `cbrt`), ∜ ;
+ * `null` pour un autre indice (rendu par `toCustom`, `sqrt[5](…)`).
+ */
+function rootSymbol(node: MathNode): string | null {
+	if (!isFunction(node)) return null;
+	if (node.name === 'cbrt') return '∛';
+	if (node.name !== 'sqrt') return null;
+	if (node.base === undefined) return '√';
+	if (!isNumber(node.base)) return null;
+	if (node.base.value === '2') return '√';
+	if (node.base.value === '3') return '∛';
+	if (node.base.value === '4') return '∜';
+	return null;
 }

@@ -100,6 +100,18 @@ const EQUATIONS: readonly string[] = [
 	'ln(x)=0',
 	'ln(x)=1',
 	'e^(2x)=e',
+	// x^{p/q}, q impair : définie pour x < 0 (décision du 2026-10-08)
+	'x^(1/3)=-2',
+	'x^(2/3)=4',
+	'x^(-1/3)=-1/2',
+	'(2x-1)^(1/3)=-1',
+	'x^(4/3)=16',
+	'x^(2/5)=1',
+	'(x-1)^(2/3)=4',
+	'x^(-2/3)=4',
+	'x^(2/3)=x',
+	'x^(1/3)=x^3',
+	'x^(0.5)=2',
 	// Formes à la marge
 	'0x=5',
 	'x=x',
@@ -126,7 +138,12 @@ const INEQUALITIES: readonly string[] = [
 	'1/x>0',
 	'(x-1)/(x+2)>=0',
 	'0x<5',
-	'2<7'
+	'2<7',
+	// x^{p/q}, q impair (2026-10-08)
+	'x^(1/3)+1<0',
+	'x^(2/3)>1',
+	'x^(2/3)<4',
+	'x^(1/3)+2>0'
 ];
 
 /** Ce qui conclut faux aujourd'hui. Vide visé. */

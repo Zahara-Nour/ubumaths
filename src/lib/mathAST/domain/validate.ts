@@ -9,7 +9,12 @@ import type { MathNode } from '../types';
 import type { DomainViolation } from './types';
 import { getBuiltinDomain, getBuiltinConstraintDescription, hasRestrictedDomain } from './builtins';
 import { containsValue } from './algebra';
-import { isOddRootIndex, realNthRoot } from '../eval/real-root';
+import {
+	isOddRootIndex,
+	oddDenominatorExponent,
+	realNthRoot,
+	realRationalPower
+} from '../eval/real-root';
 
 // =============================================================================
 // Types
@@ -227,8 +232,13 @@ function checkPowerDomain(
 		});
 	}
 
-	// Check for negative base with non-integer exponent
-	if (baseValue < 0 && !Number.isInteger(expValue)) {
+	// Base négative, exposant non entier — sauf p/q de dénominateur impair,
+	// défini pour une base négative (décision du 2026-10-08)
+	if (
+		baseValue < 0 &&
+		!Number.isInteger(expValue) &&
+		oddDenominatorExponent(node.superscript) === null
+	) {
 		violations.push({
 			source: 'power',
 			parameter: 'base',
@@ -298,6 +308,10 @@ function tryEvaluate(node: MathNode, bindings: Bindings): number | null {
 
 		case 'superscript': {
 			const base = tryEvaluate(node.base, bindings);
+			const odd = oddDenominatorExponent(node.superscript);
+			if (base !== null && odd !== null) {
+				return realRationalPower(base, Number(odd.n), Number(odd.d));
+			}
 			const exp = tryEvaluate(node.superscript, bindings);
 			if (base === null || exp === null) return null;
 			return Math.pow(base, exp);

@@ -29,7 +29,10 @@ import type {
 } from './types';
 import { DEFAULT_VARIATION_OPTIONS, VariationError } from './types';
 import { differentiate } from '../differentiation';
+import { expandOddRootPowers } from '../common/odd-root-power';
+import { tidyTerms } from '../tidy/terms';
 import { computeDomain } from '../domain/compute';
+import { excludePoints } from '../domain/algebra';
 import { assertDomainResolved, DomainUnresolvedError } from '../domain/errors';
 import { analyzeSign } from '../sign';
 import { findCriticalPointsWithStatus, sortCriticalPoints } from './critical-points';
@@ -89,7 +92,10 @@ interface ResolvedOptions {
  * // Analyze with respect to a different variable
  * const result = computeVariations(parseLatex('t^3 - 3t'), { variable: 't' });
  */
-export function computeVariations(expr: MathNode, options?: VariationOptions): VariationResult {
+export function computeVariations(rawExpr: MathNode, options?: VariationOptions): VariationResult {
+	// x^{p/q}, q impair : analysée en radical ᵠ√(x^p), que dérivée, zéros et
+	// signe savent traiter ; l'expression rendue reste celle de l'appelant.
+	const expr = expandOddRootPowers(rawExpr);
 	const opts = resolveOptions(options);
 	const variable = opts.variable;
 	const steps: VariationStep[] = [];
@@ -147,14 +153,22 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 
 	// Step 2: Compute derivative
 	let derivative: MathNode;
+	// f′ AFFICHÉE : dérivée de l'expression de l'élève, écrite comme `.dériver`
+	// l'écrit ((4/3)x^{1/3}), jamais celle de la forme d'analyse ᵠ√(x^p)
+	// ({4x³}/{3∛((x⁴)²)}), qui ne sert qu'aux zéros et au signe de f′.
+	let shownDerivative: MathNode;
 	try {
 		derivative = differentiate(expr, { variable, simplify: true });
+		shownDerivative =
+			expr === rawExpr
+				? derivative
+				: tidyTerms(differentiate(rawExpr, { variable, simplify: true }));
 		stepId = recordStep(
 			steps,
 			stepId,
 			'derivative',
-			`Derivee: f'(${variable}) = ${toCustom(derivative)}`,
-			`Calcul de la derivee de f(${variable}) = ${toCustom(expr)}`,
+			`Derivee: f'(${variable}) = ${toCustom(shownDerivative)}`,
+			`Calcul de la derivee de f(${variable}) = ${toCustom(rawExpr)}`,
 			'summarized',
 			opts.verbosity
 		);
@@ -168,6 +182,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 3: Find critical points
+	// f évaluée sous sa forme d'analyse : ∛(0²) − 4 se calcule (−4), alors
+	// que 0^{(2/3)} − 4 restait tel quel
 	const { points: criticalPoints, derivativeZerosResolved } = findCriticalPointsWithStatus(
 		derivative,
 		variable,
@@ -193,9 +209,14 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	// Step 4: Analyze sign of derivative
 	let derivativeSign;
 	try {
+		// f′ non définie en un point où f l'est (∛(x²) en 0) : le signe de f′
+		// s'étudie de part et d'autre, pas sur ℝ d'un seul tenant
+		const undefinedAt = sortedCriticalPoints
+			.filter((p) => p.nature === 'derivative_undefined')
+			.map((p) => p.x);
 		derivativeSign = analyzeSign(derivative, {
 			variable,
-			domain,
+			domain: undefinedAt.length > 0 ? excludePoints(domain, undefinedAt) : domain,
 			numericFallback: opts.numericFallback,
 			verbosity: opts.verbosity
 		});
@@ -304,8 +325,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	);
 
 	return {
-		expression: expr,
-		derivative,
+		expression: rawExpr,
+		derivative: shownDerivative,
 		variable,
 		domain,
 		derivativeSign,

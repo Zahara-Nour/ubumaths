@@ -77,6 +77,7 @@ import {
 } from '$lib/math/intervals/factory';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { shouldIncludeStep } from '../common/verbosity';
+import { expandOddRootPowers } from '../common/odd-root-power';
 import { expandFunctionPowers } from '../common/function-power';
 
 /**
@@ -115,7 +116,8 @@ export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): S
 	// les zéros et le signe ignoraient (0 zéro, signe inconnu). On analyse
 	// `\sin(x)^2` ; `\cos^{-1}(x)` devient `arccos(x)`. L'expression rendue
 	// reste celle de l'appelant.
-	const expr = expandFunctionPowers(rawExpr);
+	// x^{p/q}, q impair : analysée en radical ᵠ√(x^p) (décision du 2026-10-08)
+	const expr = expandOddRootPowers(expandFunctionPowers(rawExpr));
 	const opts = mergeOptions(options);
 	const variable = opts.variable;
 	const steps: SignAnalysisStep[] = [];

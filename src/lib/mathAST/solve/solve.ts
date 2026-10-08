@@ -78,6 +78,8 @@ import {
 	computeUSolutions
 } from './solvers/transcendental';
 import { extractLinearForm } from '../analysis/coefficient-utils';
+import { expandOddRootPowers } from '../common/odd-root-power';
+import { solveByPowerSubstitution } from './power-substitution';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
 import {
@@ -104,6 +106,7 @@ import { tryRationalDecomposition, createRationalDepthState } from './rational';
 import type { Domain } from '../domain/types';
 import {
 	containsNode,
+	containsValue,
 	isUniversal,
 	isEmpty as isDomainEmpty,
 	intersect as intersectDomains
@@ -1281,6 +1284,16 @@ function matchSingleRadical(
 	node: MathNode,
 	variable: string
 ): { argument: MathNode; expNumerator: number; expDenominator: number } | null {
+	// Pattern 1b: root(u, n) — écriture que rend `denormalize` pour n ≥ 4
+	// (1/⁵√x devient ⁵√(x⁴)/x : sans ce cas, 1/⁵√x = 0 restait « non supporté »)
+	if (node.type === 'function' && node.name === 'root' && node.args.length === 2) {
+		const [arg, index] = node.args;
+		if (!getVariables(arg).has(variable) || index.type !== 'number') return null;
+		const rootIndex = Number(index.value);
+		if (!Number.isInteger(rootIndex) || rootIndex < 2) return null;
+		return { argument: arg, expNumerator: 1, expDenominator: rootIndex };
+	}
+
 	// Pattern 1: sqrt(u) or sqrt[n](u)
 	if (node.type === 'function' && (node.name === 'sqrt' || node.name === 'cbrt')) {
 		if (node.args.length !== 1) return null;
@@ -1567,9 +1580,16 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	//
 	// Le `e` SEUL (`e^x = e`) est lui aussi la constante dès qu'il ne peut pas
 	// être l'inconnue — sinon « contradictoire », réponse fausse et assurée.
-	const promotedEq = unwrapGroupingMembers(
+	const unwrapped = unwrapGroupingMembers(
 		promoteStandaloneEulerInRelation(promoteEulerInRelation(equation), opts.variable)
 	);
+	// x^{p/q}, q impair : définie pour x < 0 (décision du 2026-10-08), résolue
+	// sous la forme ᵠ√(x^p) — x^{2/3} = 4 rendait {8}, ∛(x²) = 4 rend {±8}
+	const promotedEq: RelationNode = {
+		...unwrapped,
+		left: expandOddRootPowers(unwrapped.left),
+		right: expandOddRootPowers(unwrapped.right)
+	};
 
 	// Convert to standard form: f(x) = 0
 	const expr = toStandardForm(promotedEq);
@@ -1619,6 +1639,22 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			domain,
 			error: "L'expression n'est définie nulle part",
 			conclusive: true
+		};
+	}
+
+	// x seulement en puissances rationnelles de x (x^{2/3} = x, x^{0.5} = 2) :
+	// changement de variable x = u^L (voir `power-substitution.ts`), solutions
+	// gardées dans le domaine (de définition et de recherche)
+	const bySubstitution = solveByPowerSubstitution(expr, variable, solve);
+	if (bySubstitution !== null) {
+		const kept = bySubstitution.solutions.filter(
+			(sol) => sol.approximate === undefined || containsValue(domain, sol.approximate)
+		);
+		return {
+			...bySubstitution,
+			solutions: kept,
+			status: kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : 'multiple',
+			domain
 		};
 	}
 

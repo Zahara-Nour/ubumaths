@@ -38,6 +38,7 @@ import {
 } from '../guards';
 import { flattenRelationChain } from '../flatten';
 import { inverseNotationAsFunction } from '../common/function-power';
+import { oddDenominatorExponent, realRationalPower } from './real-root';
 
 export type CompiledFn = (vars: Record<string, number>) => number;
 
@@ -140,6 +141,14 @@ export function compile(node: MathNode): CompiledFn {
 
 	if (isSuperscript(node)) {
 		const base = compile(node.base);
+		// Exposant p/q irréductible, q impair : (ᵠ√x)^p, défini pour x < 0
+		// (décision du 2026-10-08, comme ∛x) ; 0 sous un exposant négatif : ∞.
+		const odd = oddDenominatorExponent(node.superscript);
+		if (odd !== null) {
+			const p = Number(odd.n);
+			const q = Number(odd.d);
+			return (v) => realRationalPower(base(v), p, q) ?? Infinity;
+		}
 		const exponent = compile(node.superscript);
 		return (v) => Math.pow(base(v), exponent(v));
 	}

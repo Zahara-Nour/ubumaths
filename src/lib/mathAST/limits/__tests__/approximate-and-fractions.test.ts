@@ -77,10 +77,12 @@ describe("Repli numérique de L'Hôpital : statut 'approximate', jamais 'exact'"
 		expect(convertLimitResult(approximate)).toBe('indeterminate');
 	});
 
-	it("x/(√x + ln x) en +∞ : seul le repli numérique conclut → 'approximate'", () => {
+	it('x/(√x + ln x) en +∞ : +∞ (le repli numérique non confirmé est écarté, 2026-10-08)', () => {
+		// La valeur approchée de L'Hôpital doit être confirmée par f près de la
+		// borne ; écartée, une autre stratégie conclut exactement.
 		const result = limitAt('\\frac{x}{\\sqrt{x}+\\ln(x)}', 'plus');
-		expect(result.status).toBe('approximate');
-		expect(convertLimitResult(result)).toBe('indeterminate');
+		expect(result.status).toBe('infinite');
+		expect(convertLimitResult(result)).toBe('infinity');
 	});
 
 	it("valeur négative lue exactement après L'Hôpital : (1 − e^x)/x en 0 = −1", () => {

@@ -771,14 +771,12 @@ describe('Domain computation edge cases', () => {
 			expect(containsValue(result.domain, -1)).toBe(false);
 		});
 
-		it('x^(1/3) : [0 ; +∞[ (convention x^a = e^{a ln x}, alignée sur l’évaluateur)', () => {
-			// Exposant non entier : base ≥ 0 (a > 0). La racine cubique de tout
-			// réel s'écrit \sqrt[3]{x} (domaine ℝ), pas x^{1/3}.
+		it('x^(1/3) : ℝ (dénominateur impair, comme ∛x — décision du 2026-10-08)', () => {
 			const expr = parseLatex('x^{1/3}');
 			const result = computeDomain(expr, 'x');
 			expect(containsValue(result.domain, 0)).toBe(true);
 			expect(containsValue(result.domain, 8)).toBe(true);
-			expect(containsValue(result.domain, -8)).toBe(false);
+			expect(containsValue(result.domain, -8)).toBe(true);
 		});
 
 		it('x^(-1) has domain ℝ \\ {0}', () => {

@@ -1221,11 +1221,14 @@ describe('computeRange()', () => {
 			expect(containsValue(result.range, 4)).toBe(false);
 		});
 
-		it('x^(1/3) (cube root) on [-8, 8] returns null (derivative undefined at 0)', () => {
+		it('x^(1/3) (cube root) on [-8, 8] has range [-2, 2] (défini sur ℝ, 2026-10-08)', () => {
 			const expr = power(variable('x'), divide(number('1'), number('3')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-8, 8) });
-			// x^(1/3) derivative is (1/3)x^(-2/3), undefined at 0
-			expect(result.range).toBeNull();
+			expect(containsValue(result.range, -2)).toBe(true);
+			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(result.range, 2)).toBe(true);
+			expect(containsValue(result.range, -2.1)).toBe(false);
+			expect(containsValue(result.range, 2.1)).toBe(false);
 		});
 
 		it('x^(2/3) on [0, 8] has range [0, 4]', () => {
