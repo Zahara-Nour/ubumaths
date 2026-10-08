@@ -625,3 +625,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   premier coup. **Restent** : passe « points vagues » sur la 2de (PR dédiée) ; remplissage
   des rangements ; séquence C5 (transfert des liens ex- → nouveaux points, bascule, puis
   SUPPRESSION de l'ancien monde — destructif, arrêt et accord David).
+
+- **LE SEED 1re TECHNO EST EN PROD (2026-10-08, PR #966) — 1 787 points du nouveau monde,
+  586 références.** (Correction : le « tous les seeds faits » annoncé après les Expertes
+  était faux — David a rappelé la voie techno ; restaient 1_TECHNO, T_TECHNO, 1_GEN.)
+  `seed-1techno.md` validé intégralement : 105 points `1TECHNO-001`…`105` (pas d'ancien
+  seed : construit puce par puce depuis le BO PDF) ; T1 : série dans la rubrique (11 points
+  « sauf STD2A », 18 « série STD2A ») ; T2 : Situations algorithmiques `attendu` ; 9 puces
+  scindées (+9) ; 2 « modéliser » retirés ; 89 réfs (lignes propres + auto-réf 1TECHNO-066
+  - liste de 2de C16 + entretien). Vérifié prod : 0 sans nœud. Audit : rien de bloquant.
+    CI verte du premier coup. Restent : T_TECHNO, 1_GEN (ens. sci.) ; passe « points
+    vagues » 2de ; rangements ; C5.
