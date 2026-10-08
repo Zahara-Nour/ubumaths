@@ -54,10 +54,10 @@ describe('.solve : x par défaut, une autre variable après « ; »', () => {
 		expect(result.output).toContain('x = 2');
 	});
 
-	it('`3 = 2t` sans « ; » : en x, avec l’indication', () => {
+	it('`3 = 2t` sans « ; » : t devinée, t = 3/2', () => {
 		const result = run('.solve 3 = 2t');
-		expect(result.output).toContain(HINT_T);
-		expect(result.output).not.toContain('t = 3/2');
+		expect(result.output).not.toContain(HINT_T);
+		expect(result.output).toContain('t = 3/2');
 	});
 
 	it('`sin x = 0` : refus, des parenthèses', () => {
@@ -80,13 +80,9 @@ describe('.integrate : x par défaut, une autre variable après « ; »', () => 
 		expect(result.output.split('\n')[0]).toBe('∫ x^2y dy = {1/2}x^2y^2 + C');
 	});
 
-	it('`t ; t` donne t²/2, `t` sans « ; » s’intègre en x avec l’indication', () => {
+	it('`t ; t` et `t` (t devinée) donnent t²/2', () => {
 		expect(run('.integrate t ; t').output.split('\n')[0]).toBe('∫ t dt = {1/2}t^2 + C');
-		const inX = run('.integrate t');
-		expect(inX.output.split('\n')[0]).toBe('∫ t dx = tx + C');
-		expect(inX.output).toContain(
-			'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; les bornes se mettent à la fin : « ; t 0 1 ».'
-		);
+		expect(run('.integrate t').output.split('\n')[0]).toBe('∫ t dt = {1/2}t^2 + C');
 	});
 
 	it('bornes : `x^2 0 1` et `x^2 ; x 0 1` valent 1/3', () => {
@@ -102,11 +98,11 @@ describe('.integrate : x par défaut, une autre variable après « ; »', () => 
 });
 
 describe('.diff : x par défaut, une autre variable après « ; »', () => {
-	it('`t^2` sans « ; » : 0, avec l’indication', () => {
+	it('`t^2` sans « ; » : t devinée, 2t, sans indication', () => {
 		const result = run('.diff t^2');
 		expect(result.success).toBe(true);
-		expect(result.output.split('\n')[0]).toBe('d/dx(t^2) = 0');
-		expect(result.output).toContain(HINT_T);
+		expect(result.output.split('\n')[0]).toBe('d/dt(t^2) = 2t');
+		expect(result.output).not.toContain(HINT_T);
 	});
 
 	it('`t^2 ; t` : 2t, sans indication', () => {
@@ -124,12 +120,11 @@ describe('.diff : x par défaut, une autre variable après « ; »', () => {
 		expect(result.output).not.toContain('Calcul par rapport');
 	});
 
-	it('`a t^2 + b t` : plus de refus, en x (0) ; plusieurs variables, aucune n’est choisie', () => {
+	// Décision de David (2026-10-08, Q1) : une seule lettre → elle ; plusieurs sans x → « pour » exigé
+	it('`a t^2 + b t` : plusieurs lettres sans x, refus qui demande « pour »', () => {
 		const result = run('.diff a t^2 + b t');
-		expect(result.success).toBe(true);
-		expect(result.output.split('\n')[0]).toBe('d/dx(at^2+bt) = 0');
-		expect(result.output).toContain(HINT_MANY);
-		expect(result.output).not.toContain('« ; a »');
+		expect(result.success).toBe(false);
+		expect(result.error).toContain('pour t');
 	});
 
 	it('`sin x` : refus, des parenthèses', () => {
@@ -223,10 +218,8 @@ describe('revue #888 : `.integrate`, bornes avant ou après « ; t »', () => {
 		expect(result.output.split('\n')[0]).toBe('∫[0→1] t^2 dt = 1/3');
 	});
 
-	it('l’indication dit où mettre les bornes', () => {
-		expect(run('.integrate t^2').output).toContain(
-			'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; les bornes se mettent à la fin : « ; t 0 1 ».'
-		);
+	it('plus d’indication : t devinée, bornes `de … à`', () => {
+		expect(run('.integrate t^2 de 0 à 1').output).toContain('∫[0→1] t^2 dt = 1/3');
 	});
 });
 

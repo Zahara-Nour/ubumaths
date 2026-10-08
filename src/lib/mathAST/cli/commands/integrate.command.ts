@@ -36,10 +36,9 @@ import {
 	bareFunctionMessage,
 	bareFunctionName,
 	chosenVariable,
-	indexVariables,
+	keywordCommandLabel,
 	NUMERIC_BOUND,
-	otherVariableHint,
-	splitIntegralArgument
+	readCommandArguments
 } from '../core/variable-argument';
 
 /** Ajouter l'indication de variable (`otherVariableHint`) à la fin de la sortie. */
@@ -118,7 +117,15 @@ export class IntegrateCommand extends BaseCommand {
 		}
 
 		// Parse input to extract expression, variable, and optional bounds
-		const { expression, variable: explicitVariable, bounds } = splitIntegralArgument(input);
+		const reading = readCommandArguments('integrate', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable, bounds } = reading.args;
 
 		// Parse the expression
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -133,7 +140,11 @@ export class IntegrateCommand extends BaseCommand {
 			};
 		}
 
-		const chosen = chosenVariable(explicitVariable, parserOptions);
+		const chosen = chosenVariable(explicitVariable, parserOptions, {
+			node: parseResult.ast,
+			bound: ctx.evalState?.bindings.keys(),
+			label: keywordCommandLabel('integrate')
+		});
 		if (!chosen.ok) {
 			return {
 				success: false,
@@ -142,14 +153,9 @@ export class IntegrateCommand extends BaseCommand {
 			};
 		}
 		const variable = chosen.variable;
-		// x n'apparaît pas et aucune variable n'est donnée : on intègre en x, et
-		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
-		const hint =
-			explicitVariable === null
-				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys(), {
-						bounds: true
-					})
-				: null;
+		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
+		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
+		const hint: string | null = null;
 
 		try {
 			// Determine verbosity from options

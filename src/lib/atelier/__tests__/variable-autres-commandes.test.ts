@@ -27,14 +27,12 @@ function command(
 	return outcome;
 }
 
-const hint = (name: string) =>
-	`Calcul par rapport à x. Pour une autre variable, écris « ; ${name} ».`;
-
 describe('.variations', () => {
-	it('`t^2` : en x, l’indication à part, pas dans le texte', () => {
+	// Décision de David (2026-10-08, Q1) : une seule lettre → elle, sans indication
+	it('`t^2` : t devinée, sans indication', () => {
 		const outcome = command('.variations t^2');
-		expect(outcome.note).toBe(hint('t'));
-		expect(outcome.output).not.toContain('Calcul par rapport');
+		expect(outcome.note).toBeUndefined();
+		expect(outcome.output).toContain("f'(t) = 2t");
 	});
 
 	it('`t^3-3t ; t` : en t, sans indication', () => {
@@ -77,17 +75,18 @@ describe('.domaine', () => {
 		expect(outcome.note).toBeUndefined();
 	});
 
-	it('`ln(t)` : en x, avec l’indication', () => {
-		expect(command('.domaine ln(t)').note).toBe(hint('t'));
+	it('`ln(t)` : t devinée, t > 0', () => {
+		const outcome = command('.domaine ln(t)');
+		expect(outcome.output).toContain('t > 0');
+		expect(outcome.note).toBeUndefined();
 	});
 });
 
 describe('.taylor', () => {
-	it('`exp(t) 4` : l’indication dit où mettre les nombres', () => {
-		const outcome = runInput(session(), '.taylor exp(t) 4');
-		expect(outcome).toMatchObject({
-			note: 'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; l’ordre et le point se mettent à la fin : « ; t 4 0 ».'
-		});
+	it('`exp(t) 4` : t devinée, développé en t', () => {
+		const outcome = command('.taylor exp(t) 4');
+		expect(outcome.output).toContain('t^3');
+		expect(outcome.note).toBeUndefined();
 	});
 
 	it('`exp(t) 4 ; t` : sans indication', () => {

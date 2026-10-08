@@ -32,9 +32,9 @@ import {
 	bareFunctionMessage,
 	bareFunctionName,
 	chosenVariable,
-	indexVariables,
-	otherVariableHint,
-	splitTaylorArgument,
+	guessedVariable,
+	keywordCommandLabel,
+	readCommandArguments,
 	TAYLOR_SHORTCUT_FUNCTIONS
 } from '../core/variable-argument';
 import { taylorExpand, TaylorError, MAX_TAYLOR_ORDER } from '../../taylor';
@@ -93,7 +93,16 @@ export class TaylorCommand extends BaseCommand {
 		}
 
 		// Expression, variable après `;`, ordre et point (avant ou après `; t`)
-		const { expression, variable: explicitVariable, order, center } = splitTaylorArgument(input);
+		const reading = readCommandArguments('taylor', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable, order } = reading.args;
+		const center = reading.args.center ?? 0;
 
 		if (order === null || expression === '') {
 			return {
@@ -117,7 +126,9 @@ export class TaylorCommand extends BaseCommand {
 				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
 			};
 		}
-		const varName = chosen.variable;
+		// Sans variable tapée : x pour le raccourci (`.taylor sin ordre 5`), puis
+		// devinée sur l'expression lue (décision de David, 2026-10-08)
+		let varName = chosen.variable;
 
 		// L'ordre est un entier ≥ 0 (la lecture n'accepte que des chiffres) :
 		// seule la borne haute est à vérifier. Message pour l'élève, en français.
@@ -174,14 +185,23 @@ export class TaylorCommand extends BaseCommand {
 			};
 		}
 
-		// x n'apparaît pas et aucune variable n'est donnée : développement en x,
-		// et on le dit (une indication, pas un refus)
-		const hint =
-			explicitVariable === null
-				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys(), {
-						taylor: true
-					})
-				: null;
+		if (explicitVariable === null) {
+			const guessed = guessedVariable(
+				parseResult.ast,
+				ctx.evalState?.bindings.keys(),
+				keywordCommandLabel('taylor')
+			);
+			if (!guessed.ok) {
+				return {
+					success: false,
+					output: '',
+					error: { code: 'AMBIGUOUS_VARIABLE', message: guessed.message }
+				};
+			}
+			varName = guessed.variable;
+		}
+		// Plus d'indication : la variable est devinée ou exigée (2026-10-08, Q1)
+		const hint: string | null = null;
 
 		try {
 			// Get function bindings from state if available

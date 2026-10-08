@@ -603,3 +603,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   0 sans nœud, 262 anciens points et 308 liens intacts. Audit : rien de bloquant. CI verte
   du premier coup (test de l'ancien seed restreint à grade NULL avant le push). Suivent :
   Tle comp., Expertes ; passe « points vagues » sur la 2de.
+
+- **LE SEED Tle COMP. EST EN PROD (2026-10-08, PR #961) — 1 529 points du nouveau monde,
+  497 références.** `seed-tcomp.md` validé intégralement : 129 points `TCOMP-201`…`329`
+  (parcours `T_COMP` → `1_SPE`, voie parallèle à la Tle spé) ; 8 puces scindées (+8),
+  3 refusions ; entretien → 15 références vers la 2de et la 1re ; A1 → liste de 1re reprise
+  (97 réfs) ; ex-007 « modéliser » retiré (compétence), P1 : ex-030 retiré ; D1 : point
+  « déciles, rapport interdécile » (seul contenu propre aux Thèmes d'étude) en
+  approfondissement ; Démonstrations possibles en approfondissement. Vérifié prod : 0 sans
+  nœud, 139 anciens points et 140 liens intacts. Audit : rien de bloquant. CI verte du
+  premier coup. Reste : Expertes ; passe « points vagues » sur la 2de.

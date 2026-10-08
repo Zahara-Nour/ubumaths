@@ -23,14 +23,12 @@ function command(input: string): Extract<CalcResult, { kind: 'commande' }> {
 	return outcome;
 }
 
-const hint = (name: string) =>
-	`Calcul par rapport à x. Pour une autre variable, écris « ; ${name} ».`;
-
 describe('.dériver', () => {
-	it('`t^2` : 0, avec l’indication', () => {
+	// Décision de David (2026-10-08, Q1) : une seule lettre → elle, sans indication
+	it('`t^2` : t devinée, 2t', () => {
 		const outcome = command('.dériver t^2');
-		expect(outcome.latex).toBe('0');
-		expect(outcome.note).toBe(hint('t'));
+		expect(outcome.latex).toBe('2 t');
+		expect(outcome.note).toBeUndefined();
 	});
 
 	it.each([
@@ -83,16 +81,14 @@ describe('.résoudre', () => {
 		expect(latex).toContain('2');
 	});
 
-	// Revue #888 : sans x, on le dit honnêtement — plus « Je n'ai pas su lire »
+	// Décision de David (2026-10-08, Q1) : sans x, la seule lettre est devinée
 	it.each([
-		['.résoudre 3 = 2t', '3 = 2t'],
-		['.résoudre 2t+1<5', '2t+1<5']
-	])('%s sans « ; » : pas de x, dit tel quel, avec l’indication', (input, typed) => {
-		expect(runInput(session(), input)).toEqual({
-			kind: 'refus',
-			message: `Il n’y a pas de x dans « ${typed} » : rien à résoudre en x.`,
-			note: hint('t')
-		});
+		['.résoudre 3 = 2t', 't = \\dfrac{3}{2}'],
+		['.résoudre 2t+1<5', 't < 2']
+	])('%s sans « ; » : t devinée', (input, latex) => {
+		const outcome = command(input);
+		expect(outcome.latex).toBe(latex);
+		expect(outcome.note).toBeUndefined();
 	});
 
 	it('`2t+1<5 ; t` → t < 2', () => {
@@ -116,25 +112,23 @@ describe('.intégrer', () => {
 		expect(command('.intégrer x^2 y ; y').output).toBe('∫ x^2y dy = {1/2}x^2y^2 + C');
 	});
 
-	it('`t` : en x, avec l’indication (bornes comprises)', () => {
+	it('`t` : t devinée, t²/2', () => {
 		const outcome = command('.intégrer t');
-		expect(outcome.output).toBe('∫ t dx = tx + C');
-		expect(outcome.note).toBe(
-			'Calcul par rapport à x. Pour une autre variable, écris « ; t » ; les bornes se mettent à la fin : « ; t 0 1 ».'
-		);
+		expect(outcome.output).toBe('∫ t dt = {1/2}t^2 + C');
+		expect(outcome.note).toBeUndefined();
 	});
 
-	it('`t^2 0 1` : bornes ôtées pour l’indication, même texte que le moteur', () => {
+	it('`t^2 0 1` (ancienne écriture) : t devinée, 1/3', () => {
 		const outcome = command('.intégrer t^2 0 1');
-		expect(outcome.output).not.toContain('Calcul par rapport');
-		expect(outcome.note).toContain('« ; t 0 1 »');
+		expect(outcome.output.split('\n')[0]).toBe('∫[0→1] t^2 dt = 1/3');
+		expect(outcome.note).toBeUndefined();
 	});
 
-	it('un nom défini dans l’atelier n’est pas proposé (sa valeur le remplace)', () => {
+	it('un nom défini dans l’atelier n’est pas une lettre candidate (sa valeur le remplace)', () => {
 		const s = session();
 		runInput(s, 'a = 2');
 		const outcome = runInput(s, '.dériver a t^2');
-		expect(outcome).toMatchObject({ kind: 'commande', note: hint('t') });
+		expect(outcome).toMatchObject({ kind: 'commande', latex: '4 t' });
 	});
 });
 

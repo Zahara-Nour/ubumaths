@@ -345,9 +345,15 @@ export function variableNameOf(node: MathNode): string | null {
  */
 export function chosenVariable(
 	typed: string | null,
-	parserOptions?: PipelineOptions
+	parserOptions?: PipelineOptions,
+	/** Sans variable tapée : la deviner sur l'expression (`guessedVariable`) */
+	guess?: { readonly node: MathNode; readonly bound?: Iterable<string>; readonly label?: string }
 ): { ok: true; variable: string } | { ok: false; message: string } {
-	if (typed === null) return { ok: true, variable: DEFAULT_VARIABLE };
+	if (typed === null) {
+		return guess === undefined
+			? { ok: true, variable: DEFAULT_VARIABLE }
+			: guessedVariable(guess.node, guess.bound, guess.label);
+	}
 	const parsed = parse(typed, parserOptions).ast;
 	const name = parsed === undefined ? null : variableNameOf(parsed);
 	if (name === null) return { ok: false, message: `« ${typed} » n'est pas une variable.` };
@@ -372,4 +378,390 @@ export function bareFunctionName(input: string): string | null {
 /** Le refus à montrer pour une fonction écrite sans parenthèses. */
 export function bareFunctionMessage(name: string): string {
 	return `Écris ${name}(x) avec des parenthèses.`;
+}
+
+// =============================================================================
+// Mots-clés (décisions de David, 2026-10-08 — docs/wip/syntaxe-commandes-calcul.md)
+// =============================================================================
+
+/** Les commandes dont l'argument se lit avec des mots-clés. */
+export type KeywordCommand =
+	| 'diff'
+	| 'integrate'
+	| 'solve'
+	| 'eval'
+	| 'equiv'
+	| 'taylor'
+	| 'variations'
+	| 'domain';
+
+/** Un mot-clé, écrit sans accent (`à` se lit `a`). */
+type Keyword = 'pour' | 'de' | 'en' | 'ordre' | 'dans' | 'et';
+
+/** Les mots-clés que chaque commande comprend : l'expression s'arrête au premier. */
+const COMMAND_KEYWORDS: Readonly<Record<KeywordCommand, readonly Keyword[]>> = {
+	diff: ['pour'],
+	integrate: ['pour', 'de'],
+	solve: ['pour', 'dans'],
+	eval: ['en', 'pour'],
+	equiv: ['et'],
+	taylor: ['ordre', 'en', 'pour'],
+	variations: ['pour'],
+	domain: ['pour']
+};
+
+/** Le nom français d'une commande, pour les exemples des messages. */
+const COMMAND_LABELS: Readonly<Record<KeywordCommand, string>> = {
+	diff: '.dériver',
+	integrate: '.intégrer',
+	solve: '.résoudre',
+	eval: '.évaluer',
+	equiv: '.équivalent',
+	taylor: '.taylor',
+	variations: '.variations',
+	domain: '.domaine'
+};
+
+/** `x=3`, `x = 3`, `x_1=2` : une affectation de `.évaluer`. */
+const ASSIGNMENT =
+	/^(\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?)\s*=\s*(\S.*)$/s;
+
+/** L'ancienne écriture de `.évaluer` : `x^2 x=3`, une affectation finale sans mot-clé. */
+const TRAILING_ASSIGNMENT =
+	/^(.*\S)\s+(\\?[A-Za-z](?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?)\s*=\s*([^\s=<>]+)$/s;
+
+/** L'ordre de `.taylor` : un entier. */
+const ORDER = /^\d+$/;
+
+/** Le point de `.taylor` : un nombre, virgule ou point décimal, ou une fraction `p/q`. */
+const CENTER = /^[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:\/\d+)?$/;
+
+/** La virgule décimale (#880) d'une valeur ou d'une borne : `1,5` → `1.5`. */
+function decimalPoint(text: string): string {
+	return text.replace(/(\d),(\d)/g, '$1.$2');
+}
+
+/** L'argument d'une commande à mots-clés, lu. */
+export interface CommandArguments {
+	readonly expression: string;
+	/** `pour VAR` ou `; VAR` */
+	readonly variable: string | null;
+	/** `de A à B` (`.intégrer`) */
+	readonly bounds: { readonly lower: string; readonly upper: string } | null;
+	/** `ordre N` (`.taylor`) */
+	readonly order: number | null;
+	/** `en A` (`.taylor`), 0 par défaut */
+	readonly center: number | null;
+	/** `en x=3` / `pour x=3` (`.évaluer`) */
+	readonly assignment: { readonly name: string; readonly value: string } | null;
+	/** `dans INTERVALLE` (`.résoudre`) */
+	readonly interval: string | null;
+	/** `et EXPR` (`.équivalent`) */
+	readonly other: string | null;
+}
+
+export type CommandArgumentsReading =
+	| { readonly ok: true; readonly args: CommandArguments }
+	| { readonly ok: false; readonly message: string };
+
+/** Un mot de premier niveau (hors parenthèses, crochets, accolades) et sa position. */
+interface Word {
+	readonly text: string;
+	readonly start: number;
+	readonly end: number;
+}
+
+function topLevelWords(text: string): Word[] {
+	const words: Word[] = [];
+	let depth = 0;
+	let start = -1;
+	for (let index = 0; index <= text.length; index++) {
+		const char = text[index];
+		const blank = char === undefined || (/\s/.test(char) && depth === 0);
+		if (blank) {
+			if (start !== -1) words.push({ text: text.slice(start, index), start, end: index });
+			start = -1;
+			continue;
+		}
+		if (start === -1) start = index;
+		if (char === '(' || char === '[' || char === '{') depth++;
+		else if (char === ')' || char === ']' || char === '}') depth = Math.max(0, depth - 1);
+	}
+	return words;
+}
+
+/** Le mot-clé qu'est ce mot, sans accent ni majuscule — ou `null`. */
+function keywordOf(word: string, allowed: readonly Keyword[]): Keyword | null {
+	const plainWord = word.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+	return (allowed as readonly string[]).includes(plainWord) ? (plainWord as Keyword) : null;
+}
+
+/** `à` ou `a` (sans accent) : la seconde moitié de `de A à B`. */
+function isTo(word: string | undefined): boolean {
+	return word === 'à' || word === 'a' || word === 'À' || word === 'A';
+}
+
+const EMPTY_ARGUMENTS: CommandArguments = {
+	expression: '',
+	variable: null,
+	bounds: null,
+	order: null,
+	center: null,
+	assignment: null,
+	interval: null,
+	other: null
+};
+
+/**
+ * Lire l'argument d'une commande : l'expression s'arrête au PREMIER mot-clé
+ * (mot entier, entouré d'espaces, de premier niveau). Les mots-clés suivent
+ * dans n'importe quel ordre ; `de` va avec `à` (ou `a`), et une borne est un
+ * seul bloc sans espace — `de 0 a a` se lit de 0 à a, `de a a b` de a à b.
+ *
+ * Sans mot-clé : l'ancienne écriture, acceptée quand elle est SANS
+ * ambiguïté (`x^2 0 1`, `sin(x) 5 0`, `; t`). Ambiguë (`.intégrer x 3 a`,
+ * `.évaluer x^2 x=3`) : refus, avec la nouvelle forme exacte.
+ */
+export function readCommandArguments(
+	command: KeywordCommand,
+	input: string
+): CommandArgumentsReading {
+	const allowed = COMMAND_KEYWORDS[command];
+	const label = COMMAND_LABELS[command];
+	// `… ; t` en toute fin : la variable de l'ancienne écriture
+	const tail = splitVariableArgument(input);
+	const trimmed = tail.variable === null ? input.trim() : tail.expression;
+	const words = topLevelWords(trimmed);
+	const first = words.findIndex((word, index) => index > 0 && keywordOf(word.text, allowed));
+	if (first === -1) return readLegacy(command, trimmed, tail.variable);
+
+	const head = splitVariableArgument(trimmed.slice(0, words[first].start));
+	if (head.variable !== null && tail.variable !== null) {
+		return { ok: false, message: 'La variable est donnée deux fois.' };
+	}
+	const result: {
+		-readonly [K in keyof CommandArguments]: CommandArguments[K];
+	} = {
+		...EMPTY_ARGUMENTS,
+		expression: head.expression,
+		variable: head.variable ?? tail.variable
+	};
+	const seen = new Set<Keyword>();
+	let index = first;
+	while (index < words.length) {
+		const keyword = keywordOf(words[index].text, allowed) as Keyword;
+		if (seen.has(keyword)) {
+			return { ok: false, message: `« ${keyword} » est écrit deux fois.` };
+		}
+		seen.add(keyword);
+		// Les mots jusqu'au prochain mot-clé
+		let next = index + 1;
+		if (keyword === 'de') {
+			const lower = words[index + 1]?.text;
+			const upper = words[index + 3]?.text;
+			if (lower === undefined || !isTo(words[index + 2]?.text) || upper === undefined) {
+				return {
+					ok: false,
+					message: `Les bornes s'écrivent « de … à … » : ${label} ${result.expression} de ${lower ?? '0'} à ${lower === undefined ? '1' : (words[index + 2]?.text ?? '1')}.`
+				};
+			}
+			next = index + 4;
+			if (next < words.length && keywordOf(words[next].text, allowed) === null) {
+				return {
+					ok: false,
+					message: `Une borne s'écrit d'un seul bloc, sans espace (« 1/2 », « \\pi », « a ») : « ${trimmed.slice(words[index + 3].start, words[next].end)} » ?`
+				};
+			}
+			result.bounds = { lower: decimalPoint(lower), upper: decimalPoint(upper) };
+			index = next;
+			continue;
+		}
+		while (next < words.length && keywordOf(words[next].text, allowed) === null) next++;
+		const value =
+			next === index + 1 ? '' : trimmed.slice(words[index + 1].start, words[next - 1].end);
+		if (value === '') {
+			return { ok: false, message: `Il manque ce qui suit « ${keyword} ».` };
+		}
+		const problem = applyKeyword(command, keyword, value, result);
+		if (problem !== null) return { ok: false, message: problem };
+		index = next;
+	}
+	if (result.expression === '') return { ok: false, message: 'Il manque l’expression.' };
+	if (command === 'eval' && result.assignment === null) {
+		return {
+			ok: false,
+			message: `Écris la valeur après « en » : ${label} ${result.expression} en x=3.`
+		};
+	}
+	if (command === 'taylor' && result.order === null) {
+		return {
+			ok: false,
+			message: `Il manque l'ordre : ${label} ${result.expression} ordre 3.`
+		};
+	}
+	return { ok: true, args: result };
+}
+
+/** Ranger la valeur d'un mot-clé ; le message d'erreur, ou `null`. */
+function applyKeyword(
+	command: KeywordCommand,
+	keyword: Keyword,
+	value: string,
+	result: { -readonly [K in keyof CommandArguments]: CommandArguments[K] }
+): string | null {
+	// `.évaluer … en x=3` / `pour x=3`
+	if (command === 'eval') {
+		const assignment = ASSIGNMENT.exec(value);
+		if (assignment === null) return `Écris « ${keyword} x=3 » : une lettre, =, sa valeur.`;
+		if (result.assignment !== null) return 'Une seule valeur à remplacer à la fois.';
+		result.assignment = { name: assignment[1], value: decimalPoint(assignment[2].trim()) };
+		return null;
+	}
+	switch (keyword) {
+		case 'pour':
+			if (!VARIABLE_NAME.test(value)) return `« ${value} » n'est pas une variable.`;
+			if (result.variable !== null) return 'La variable est donnée deux fois.';
+			result.variable = value;
+			return null;
+		case 'ordre':
+			if (!ORDER.test(value)) return `L'ordre est un entier : « ordre 3 », pas « ordre ${value} ».`;
+			result.order = parseInt(value, 10);
+			return null;
+		case 'en': {
+			if (/\\pi|π/.test(value)) {
+				return 'Le point doit être un nombre décimal ou une fraction (en 1, en 1/2) : π n’est pas pris en charge.';
+			}
+			if (!CENTER.test(value)) {
+				return `Le point doit être un nombre décimal ou une fraction (en 1, en 1/2), pas « ${value} ».`;
+			}
+			const [numerator, denominator] = value.replace(',', '.').split('/');
+			result.center =
+				parseFloat(numerator) / (denominator === undefined ? 1 : parseFloat(denominator));
+			return null;
+		}
+		case 'dans':
+			result.interval = decimalPoint(value);
+			return null;
+		case 'et':
+			result.other = value;
+			return null;
+		case 'de':
+			return null;
+	}
+}
+
+/** L'ancienne écriture, sans mot-clé — refusée quand elle est ambiguë. */
+function readLegacy(
+	command: KeywordCommand,
+	input: string,
+	tailVariable: string | null
+): CommandArgumentsReading {
+	const label = COMMAND_LABELS[command];
+	const withTail = tailVariable === null ? input : `${input} ; ${tailVariable}`;
+	switch (command) {
+		case 'integrate': {
+			const { expression, variable, bounds } = splitIntegralArgument(withTail);
+			if (bounds !== null && ![bounds.lower, bounds.upper].every((b) => NUMERIC_BOUND.test(b))) {
+				const pour = variable === null ? '' : ` pour ${variable}`;
+				return {
+					ok: false,
+					message: `Écriture ambiguë. Pour des bornes, écris : ${label} ${expression} de ${bounds.lower} à ${bounds.upper}${pour}`
+				};
+			}
+			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression, variable, bounds } };
+		}
+		case 'taylor': {
+			const { expression, variable, order, center } = splitTaylorArgument(withTail);
+			// `2 x 3` : 2x à l'ordre 3, ou le produit 2·x·3 ? Le dernier mot de
+			// l'expression, une lettre ou un nombre seuls, se lit aussi en produit
+			const words = topLevelWords(expression);
+			const last = words[words.length - 1]?.text ?? '';
+			// (`sin x 5` : laissé au refus « des parenthèses » de la commande)
+			if (
+				order !== null &&
+				words.length > 1 &&
+				bareFunctionName(expression) === null &&
+				/^(?:[A-Za-z]|\d+(?:[.,]\d+)?)$/.test(last)
+			) {
+				const at = center === 0 ? '' : ` en ${center}`;
+				const pour = variable === null ? '' : ` pour ${variable}`;
+				return {
+					ok: false,
+					message: `Écriture ambiguë. Pour l'ordre, écris : ${label} ${expression} ordre ${order}${at}${pour}`
+				};
+			}
+			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression, variable, order, center } };
+		}
+		case 'eval': {
+			const { expression, variable } = splitVariableArgument(withTail);
+			const trailing = TRAILING_ASSIGNMENT.exec(expression);
+			if (variable === null && trailing !== null) {
+				return {
+					ok: false,
+					message: `Pour remplacer ${trailing[2]} par ${trailing[3]}, écris : ${label} ${trailing[1].replace(/\s*;$/, '')} en ${trailing[2]}=${trailing[3]}`
+				};
+			}
+			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression: withTail } };
+		}
+		case 'equiv':
+			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression: withTail } };
+		default: {
+			const { expression, variable } = splitVariableArgument(withTail);
+			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression, variable } };
+		}
+	}
+}
+
+/**
+ * Récrire un argument lu dans la forme à mots-clés — celle que le moteur
+ * relit. L'atelier s'en sert après avoir remplacé ses noms par leurs
+ * expressions, partie par partie (`a` est aussi le mot-clé `à`).
+ */
+export function writeCommandArguments(args: CommandArguments): string {
+	const parts = [args.expression];
+	if (args.bounds !== null) parts.push(`de ${args.bounds.lower} à ${args.bounds.upper}`);
+	if (args.order !== null) parts.push(`ordre ${args.order}`);
+	if (args.center !== null) parts.push(`en ${args.center}`);
+	if (args.assignment !== null) parts.push(`en ${args.assignment.name}=${args.assignment.value}`);
+	if (args.interval !== null) parts.push(`dans ${args.interval}`);
+	if (args.other !== null) parts.push(`et ${args.other}`);
+	if (args.variable !== null) parts.push(`pour ${args.variable}`);
+	return parts.join(' ');
+}
+
+/**
+ * La variable DEVINÉE quand aucune n'est donnée (décision de David,
+ * 2026-10-08, Q1) : x s'il apparaît (règle #888) ; sinon la seule lettre de
+ * l'expression ; aucune lettre : x. Plusieurs lettres sans x : `pour` exigé.
+ *
+ * @param node - L'expression lue (variables indicées réécrites ici)
+ * @param bound - Noms liés ailleurs (`.let a = 2`) : des constantes
+ */
+export function guessedVariable(
+	node: MathNode,
+	bound: Iterable<string> = [],
+	label = ''
+): { ok: true; variable: string } | { ok: false; message: string } {
+	const variables = getVariables(indexVariables(node).node);
+	if (variables.has(DEFAULT_VARIABLE)) return { ok: true, variable: DEFAULT_VARIABLE };
+	const excluded = new Set([...CONSTANT_NAMES, ...bound]);
+	const candidates = [...variables].filter((name) => !excluded.has(name)).sort();
+	if (candidates.length === 0) return { ok: true, variable: DEFAULT_VARIABLE };
+	if (candidates.length === 1) return { ok: true, variable: candidates[0] };
+	const listed = candidates.map((name) => `« ${name} »`).join(', ');
+	const command = label === '' ? '' : `${label} … `;
+	return {
+		ok: false,
+		message: `Plusieurs lettres (${listed}) : précise la variable, par exemple « ${command}pour ${candidates[candidates.length - 1]} ».`
+	};
+}
+
+/** Le nom français d'une commande à mots-clés (`.intégrer`). */
+export function keywordCommandLabel(command: KeywordCommand): string {
+	return COMMAND_LABELS[command];
+}
+
+/** Les commandes dont l'argument se lit avec des mots-clés. */
+export function isKeywordCommand(name: string): name is KeywordCommand {
+	return Object.prototype.hasOwnProperty.call(COMMAND_KEYWORDS, name);
 }

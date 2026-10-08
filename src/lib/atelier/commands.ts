@@ -88,7 +88,14 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 			example: '.factoriser x^2-4'
 		}
 	],
-	['diff', { french: 'dériver', description: 'Dériver une expression', example: '.dériver x^2' }],
+	[
+		'diff',
+		{
+			french: 'dériver',
+			description: 'Dériver une expression (pour t : une autre variable)',
+			example: '.dériver x^2'
+		}
+	],
 	[
 		'simulate',
 		{
@@ -203,14 +210,18 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 	],
 	[
 		'integrate',
-		{ french: 'intégrer', description: 'Calculer une intégrale', example: '.intégrer x^2' }
+		{
+			french: 'intégrer',
+			description: 'Calculer une intégrale (bornes : de … à …)',
+			example: '.intégrer x^2 de 0 à 1'
+		}
 	],
 	[
 		'eval',
 		{
 			french: 'évaluer',
-			description: 'Évaluer une expression en remplaçant les lettres',
-			example: '.évaluer x^2 x=3'
+			description: 'Évaluer une expression en remplaçant une lettre (en x=…)',
+			example: '.évaluer x^2 en x=3'
 		}
 	],
 	[
@@ -218,7 +229,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		{
 			french: 'équivalent',
 			description: 'Vérifier si deux écritures sont égales',
-			example: '.équivalent (x+1)^2 x^2+2x+1'
+			example: '.équivalent (x+1)^2 et x^2+2x+1'
 		}
 	],
 	// Réparée le 2026-09-16 : le dispatch parsait TOUT l'argument comme une
@@ -230,8 +241,8 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'taylor',
 		{
 			french: 'taylor',
-			description: 'Développement limité d’ordre n au voisinage d’un point',
-			example: '.taylor sin(x) 5 0'
+			description: 'Développement limité : ordre n, en un point (0 par défaut)',
+			example: '.taylor sin(x) ordre 5 en 0'
 		}
 	],
 	[
@@ -386,8 +397,8 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 			french: 'ajustement',
 			// PR c (Q173-Q177) : mêmes calculs et mêmes textes que le bloc ```nuage
 			description:
-				'Ajustement affine de deux séries : droite, point moyen G, r ; après « ; », prévisions (x = 10, y = 7) ou changement de variable (z = ln(y), t = x²…)',
-			example: '.ajustement 1,2,3,4,5,6 : 12,15,19,22,27,30 ; x = 8'
+				'Ajustement affine de deux séries : droite, point moyen G, r ; prévisions après « en » (x = 10, y = 7), changement de variable après « ; » (z = ln(y), t = x²…)',
+			example: '.ajustement 1 ; 2 ; 3 ; 4 ; 5 ; 6 : 12 ; 15 ; 19 ; 22 ; 27 ; 30 en x = 8'
 		}
 	],
 	['exact', { french: 'exact', description: 'Passer aux valeurs exactes' }],

@@ -62,13 +62,14 @@ describe('une fonction de l’atelier se dérive toujours en x', () => {
 describe('revue #880', () => {
 	// Passé à la nouvelle règle (2026-10-06) : plus de refus « Plusieurs
 	// variables possibles » — on dérive en x, et la ligne l'indique
-	it('plusieurs variables sans x : en x, avec l’indication', () => {
+	// Décision de David (2026-10-08, Q1) : plusieurs lettres sans x → « pour » exigé
+	it('plusieurs variables sans x : refus qui demande « pour »', () => {
 		const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
 
-		expect(runInput(s, '.dériver a t^2 + b t')).toMatchObject({
-			kind: 'commande',
-			latex: '0',
-			note: 'Calcul par rapport à x. Pour une autre variable, écris « ; » suivi de son nom.'
+		expect(runInput(s, '.dériver a t^2 + b t')).toEqual({
+			kind: 'refus',
+			message:
+				'Plusieurs lettres (« a », « b », « t ») : précise la variable, par exemple « .dériver … pour t ».'
 		});
 	});
 
@@ -84,8 +85,8 @@ describe('revue #880', () => {
 	it.each([
 		['.dériver x_1^2 ; x_1', 'd/dx_1(x_1^2) = 2x_1', '2 x_1'],
 		['.dériver x_{12}^2 ; x_{12}', 'd/dx_12(x_12^2) = 2x_12', '2 x_{12}'],
-		// Passé à la nouvelle règle (2026-10-06) : sans « ; », en x
-		['.dériver x_1^2', 'd/dx(x_1^2) = 0', '0']
+		// Décision de David (2026-10-08, Q1) : sans « ; », la seule lettre x_1
+		['.dériver x_1^2', 'd/dx_1(x_1^2) = 2x_1', '2 x_1']
 	])('variable indicée : %s', (input, output, latex) => {
 		expect(derive(input)).toEqual({ output, latex });
 	});
