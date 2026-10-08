@@ -518,9 +518,8 @@ proportionnalité > reconnaître` — ✅ tranché David.
 
 ## Questions (C1-C3)
 
-- **C1 — kind `demonstration`** pour les 4 points dont le geste central est démontrer
-  (5-040, 5-058, 5-065, 4-023) — le reste des « démontrer/justifier » reste s-f.
-  Reco : oui.
+- **C1 — kind `demonstration`** pour les 4 points (5-040, 5-058, 5-065, 4-023) —
+  ✅ TRANCHÉ par David le 2026-10-08.
 - **C2 — régime** : `fluence` pour les seuls 3 points issus des Automatismes (5-056,
   3-010, 3-011), `diversite` partout ailleurs — le cycle 4 n'a pas de section « calcul
   mental », ses automatismes sont des références. Reco : oui.
