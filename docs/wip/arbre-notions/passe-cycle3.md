@@ -1,6 +1,7 @@
 # Passe « puces et points » sur le cycle 3 (CM1, CM2, 6e — seed en prod) — règles du lycée
 
-> **Statut : PROPOSITION, en attente de validation par David.**
+> **Statut : VALIDÉ par David le 2026-10-09 (« cycle 3 puis cycle 4 » : doutes = recos,
+> retraits compris). Livraison en cours (branche `feat/passe-cycle3`).**
 > Même demande et même grille que [passe-cycle2.md](passe-cycle2.md) : scission des puces
 > multi-parties (deux gestes réussissables séparément, sur des nœuds différents = deux
 > points) et points vagues (spécifier avec les mots du BO ; compétence → pas un point).
@@ -17,12 +18,12 @@
 
 ## Bilan
 
-|                           | CM1 | CM2 | 6e  | Total                      |
-| ------------------------- | --- | --- | --- | -------------------------- |
-| Puces scindées            | 6   | 6   | 4   | **16 puces → +18 points**  |
-| Points spécifiés (vagues) | 1   | 1   | 7   | **9**                      |
-| Retraits                  | 1   | 1   | 0   | **2** (⚠️ suppressions)    |
-| Points après la passe     | 138 | 124 | 101 | **363** (343 + 18 + 4 − 2) |
+|                           | CM1 | CM2 | 6e  | Total                     |
+| ------------------------- | --- | --- | --- | ------------------------- |
+| Puces scindées            | 6   | 6   | 4   | **16 puces → +22 points** |
+| Points spécifiés (vagues) | 1   | 1   | 7   | **9**                     |
+| Retraits                  | 1   | 1   | 0   | **2** (⚠️ suppressions)   |
+| Points après la passe     | 138 | 124 | 101 | **363** (343 + 22 − 2)    |
 
 Comme au cycle 2, une scission garde le point d'origine pour la **première partie** (celle
 qui porte ses usages) et ajoute les autres avec un code neuf : CM1-131…, CM2-117…, 6-198…
@@ -150,7 +151,7 @@ numération > forme fractionnaire` / `Fractions : sens et écritures > décompos
 
 ## Après validation (plan de livraison)
 
-Une PR dédiée : migration (`update` des libellés et nœuds, `insert` des 18 parties et des 17
+Une PR dédiée : migration (`update` des libellés et nœuds, `insert` des 22 parties et des 17
 références, `delete` gardé des 2 points retirés), mise à jour de `seed-cm.md`, `seed-6e.md`,
 des fixtures et tests du CM, de la 6e et des seeds qui référencent 6-144, 6-152, 6-114 et
 CM2-107 ; preuve rouge, suite d'intégration, audit, CI, merge, `db:migrate` (avec le revérif
