@@ -177,8 +177,10 @@ describe('`.résoudre` sur une inéquation', () => {
 		if (result.kind !== 'commande') return;
 		expect(result.latex).toBe('x < 3');
 		expect(result.steps).toBeDefined();
-		// Le moteur, lui, n'a rien produit : c'est le trou que ce lot comble.
-		expect(result.output).toBe('');
+		// Le moteur ne rendait rien ici ; depuis le lot « radicaux du lycée »
+		// (2026-10-08), `.solve` résout l'inéquation lui aussi. Les étapes
+		// restent prioritaires : la ligne garde `x < 3`.
+		expect(result.output).toBe('S = ]-∞ ; 3[');
 	});
 
 	it('une inéquation du second degré rend son ensemble de solutions', () => {

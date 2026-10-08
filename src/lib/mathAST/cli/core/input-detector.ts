@@ -133,8 +133,10 @@ export function detectInputFormat(input: string): DetectionResult {
 		return { format: 'unknown', confidence: 0 };
 	}
 
-	// Un nom de fonction sans antislash : la syntaxe maison, même mêlée de LaTeX
-	if (hasBareFunctionCall(trimmed)) {
+	// Un nom de fonction sans antislash : la syntaxe maison, même mêlée de LaTeX.
+	// `√` aussi : le parseur LaTeX le lisait comme une lettre (√(x+1) = 3
+	// rendait x = (−√+3)/√) ; la syntaxe maison le lit comme sqrt.
+	if (hasBareFunctionCall(trimmed) || trimmed.includes('√')) {
 		return { format: 'custom', confidence: 0.9 };
 	}
 

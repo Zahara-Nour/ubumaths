@@ -119,6 +119,8 @@ function formatSingleInterval(interval: Interval): string {
 	const rightBracket = interval.upper.type === 'closed' ? ']' : '[';
 	const lower = formatEndpointValue(interval.lower.value);
 	const upper = formatEndpointValue(interval.upper.value);
+	// [a ; a] est le singleton {a} : √x ≤ x s'écrivait [0 ; 0] ∪ [1 ; +∞[
+	if (leftBracket === '[' && rightBracket === ']' && lower === upper) return `{${lower}}`;
 
 	return `${leftBracket}${lower} ; ${upper}${rightBracket}`;
 }

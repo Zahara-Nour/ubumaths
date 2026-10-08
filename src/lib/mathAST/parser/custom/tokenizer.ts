@@ -532,6 +532,14 @@ export class CustomTokenizer {
 			return this.scanMultiChar('ARROW', '<-', 2);
 		}
 
+		// ≤ ≥ ≠ tapés tels quels (clavier, copier-coller) : les mêmes relations que
+		// <= >= != — `sqrt(x)≤3` répondait « Unexpected token » (2026-10-08)
+		// √ tapé tel quel : la fonction sqrt — `√(x+1)` est `sqrt(x+1)`
+		if (char === '√') return this.scanMultiChar('FUNC', 'sqrt', 1);
+		if (char === '≤') return this.scanMultiChar('LESS_EQUAL', '<=', 1);
+		if (char === '≥') return this.scanMultiChar('GREATER_EQUAL', '>=', 1);
+		if (char === '≠') return this.scanMultiChar('NOT_EQUAL', '!=', 1);
+
 		// <=
 		if (char === '<' && this.peekChar(1) === '=') {
 			return this.scanMultiChar('LESS_EQUAL', '<=', 2);

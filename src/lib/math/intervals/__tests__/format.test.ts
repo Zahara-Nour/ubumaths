@@ -343,9 +343,10 @@ describe('formatDomainInterval edge cases', () => {
 		expect(formatDomainInterval(domain)).toBe('[0 ; 1[');
 	});
 
-	it('formats single point [a ; a]', () => {
+	it('formats single point [a ; a] as the singleton {a}', () => {
 		const domain = intervalSet([closedInterval(number(5), number(5))]);
-		expect(formatDomainInterval(domain)).toBe('[5 ; 5]');
+		// Singleton, comme en classe (√x ≤ x : {0} ∪ [1 ; +∞[, 2026-10-08)
+		expect(formatDomainInterval(domain)).toBe('{5}');
 	});
 
 	it('formats three disjoint intervals', () => {
