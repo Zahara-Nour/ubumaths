@@ -45,6 +45,7 @@ import {
 	isOne,
 	isZero,
 	makeStep,
+	prepareLinearRelation,
 	renumberSteps
 } from './_helpers';
 import { toLatex } from '../latex-generator';
@@ -148,28 +149,27 @@ const INEQUALITY_OPS = new Set(['<', '>', '<=', '>=', '!=']);
  * @throws InequalityNotSolvable when free parametric coefficients are present.
  */
 export function generateLinearInequalitySteps(
-	inequality: RelationNode,
+	input: RelationNode,
 	options: LinearInequalityStepsOptions
 ): readonly EquationStep[] {
 	const { level, includeSubSteps = true, variable: varOpt } = options;
 	const strategy: GenerationStrategy = STRATEGIES[level];
 
 	// 1. Validate the relation operator.
-	if (inequality.relation === '=') {
+	if (input.relation === '=') {
 		throw new PedagogicalInequalityError(
 			"L'égalité n'est pas une inéquation — utiliser generateLinearEquationSteps()"
 		);
 	}
-	if (!INEQUALITY_OPS.has(inequality.relation)) {
-		throw new PedagogicalInequalityError(
-			`Opérateur de relation non supporté: '${inequality.relation}'`
-		);
+	if (!INEQUALITY_OPS.has(input.relation)) {
+		throw new PedagogicalInequalityError(`Opérateur de relation non supporté: '${input.relation}'`);
 	}
 
 	// 2. Detect (or accept) the variable. `null` is valid here: it means the
 	//    inequality is fully constant (e.g. `0 < 1`) and degenerates immediately
 	//    into a conclude-truth step.
-	const variable = varOpt ?? detectVariable(inequality);
+	const variable = varOpt ?? detectVariable(input);
+	let inequality: RelationNode = input;
 
 	// 3. Sanity check on degree (degree 0 or 1 only). For constant inequalities
 	//    (no variable detected), the standard form is also a constant — degree
@@ -181,6 +181,8 @@ export function generateLinearInequalitySteps(
 		if (degree !== null && degree >= 2) {
 			throw new UnsupportedInequalityDegree(degree);
 		}
+		// Membre parenthésé déballé ; terme en x non développé → UndevelopedLinearForm
+		inequality = prepareLinearRelation(input, variable);
 
 		// 4. Reject parametric coefficients (free variables ≠ unknown).
 		const free = [...getVariables(inequality.left), ...getVariables(inequality.right)].filter(

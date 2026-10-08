@@ -15,7 +15,10 @@
 import type { MathNode, RelationNode } from '../types';
 import type { Domain, IntervalSet } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
-import { add, divide, relation } from '../factory';
+import { add, divide, relation, variable as varNode } from '../factory';
+import { flattenSumShallow } from '../flatten';
+import { containsVariable } from '../common/contains-variable';
+import { unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
 import { getNumericValue } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
@@ -34,6 +37,51 @@ export function canon(node: MathNode): MathNode {
 /** Canonicalize a RelationNode by canonicalizing both sides. */
 export function canonEquation(eq: RelationNode): RelationNode {
 	return relation(eq.relation, canon(eq.left), canon(eq.right));
+}
+
+// =============================================================================
+// Premier degré : préconditions sur la forme des membres
+// =============================================================================
+
+/**
+ * Un terme en x n'est pas de la forme `a·x` : les étapes du premier degré ne
+ * savent pas le raconter (il faudrait d'abord développer).
+ *
+ * Levée plutôt que de conclure faux. Mesuré avant cette garde (2026-10-08) :
+ * `2(x-1)=4` concluait `x = 2x/(x-1)`, `-(x-3)=0` concluait `x = 0` — le
+ * coefficient de x était lu comme `terme / x` sans vérifier qu'il est constant.
+ */
+export class UndevelopedLinearForm extends Error {
+	constructor(public readonly term: MathNode) {
+		super(
+			`pedagogical-solve: le terme ${toLatex(term)} n'est pas de la forme a·x (forme non développée).`
+		);
+		this.name = 'UndevelopedLinearForm';
+	}
+}
+
+/**
+ * Prépare une relation du premier degré pour ses étapes, ou lève
+ * `UndevelopedLinearForm`.
+ *
+ * 1. Un membre ENTIÈREMENT parenthésé se raconte comme son contenu :
+ *    `(2x-4)=0` a les étapes de `2x-4=0` — comme le solveur le lit (#860).
+ *    Sans cela, `flattenSumShallow`, qui s'arrête aux délimiteurs, voit
+ *    `(2x-4)` comme UN terme en x, de « coefficient » `(2x-4)/x`.
+ * 2. Chaque terme en x de chaque membre doit alors être `a·x`, `a` constant.
+ *    Sinon (`2(x-1)`, `-(x-3)`, `(2x-4)/2`), aucune étape plutôt que des
+ *    étapes fausses : l'appelant se replie sur la réponse du moteur.
+ */
+export function prepareLinearRelation(rel: RelationNode, variable: string): RelationNode {
+	const unwrapped = unwrapGroupingMembers(rel);
+	for (const side of [unwrapped.left, unwrapped.right]) {
+		for (const { term } of flattenSumShallow(side)) {
+			if (!containsVariable(term, variable)) continue;
+			const coefficient = canon(divide(term, varNode(variable), 'fraction'));
+			if (containsVariable(coefficient, variable)) throw new UndevelopedLinearForm(term);
+		}
+	}
+	return unwrapped;
 }
 
 // =============================================================================
