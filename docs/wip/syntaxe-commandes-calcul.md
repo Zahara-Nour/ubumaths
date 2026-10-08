@@ -1,6 +1,6 @@
 # Syntaxe des commandes de Calcul : séparer les arguments sans espaces ambigus
 
-> Proposition du 2026-10-08. **Décisions de David (2026-10-08)** : Q1 oui (variable devinée quand un seul choix), Q2 `en` ET `pour`, Q3 probabilités/statistiques inchangées. Liste complète des commandes : en cours de validation.
+> Proposition du 2026-10-08. **Décisions de David (2026-10-08)** : Q1 oui (variable devinée quand un seul choix), Q2 `en` ET `pour`, Q3 probabilités/statistiques inchangées. Liste complète validée le 2026-10-08 (incohérences corrigées : `.ajustement`, mots-clés sans accent).
 
 ## Le problème
 
@@ -58,3 +58,32 @@ Leurs arguments sont des **noms d'objets et des nombres**, jamais des expression
      Cela assouplit la règle « x par défaut » de #888 (aujourd'hui `.résoudre sin(t)=0` sans `; t` affiche une indication).
 2. Mot-clé pour `.évaluer` : `en` (« en x = 3 ») ou `pour` (« pour x = 3 ») ? Proposition : les deux.
 3. Probabilités / statistiques inchangées : d'accord ?
+
+## Compléments validés (2026-10-08)
+
+### Ordre libre des mots-clés
+
+Après l'expression, les mots-clés se placent dans n'importe quel ordre ; seule contrainte : `de` va avec `à`.
+
+- `.taylor e^x ordre 3 en 1` = `.taylor e^x en 1 ordre 3`
+- `.intégrer a*t^2 de 0 à 1 pour t` = `.intégrer a*t^2 pour t de 0 à 1`
+- `.résoudre sin(t)=0 pour t dans [0;2\pi]` = `.résoudre sin(t)=0 dans [0;2\pi] pour t`
+
+### Sans accents
+
+Les **noms de commandes** s'écrivent déjà sans accent (`.deriver`, `.resoudre`, `.integrer`, `.evaluer`, `.equivalent`, `.geometrique`… : les accents sont retirés avant la recherche). Les **mots-clés** aussi :
+
+- `à` s'écrit aussi `a` : `.integrer x de 0 a 1`. Pas de conflit avec une variable `a` : une borne est **un seul bloc sans espace** (`1/2`, `\pi`, `a`), donc `de 0 a a` se lit sans ambiguïté (de 0 à a), et `de a a b` aussi (de a à b).
+- Autres mots-clés : déjà sans accent (`de`, `en`, `pour`, `ordre`, `dans`, `et`).
+
+### `.ajustement` : la virgule est décimale
+
+`.ajustement 1,2,3,4,5,6 : 12,15,19,22,27,30 ; x = 8` séparait les valeurs par des virgules, alors que la virgule est le séparateur décimal (`1,5`). Nouvelle écriture, alignée sur `.stats` et `.évaluer` :
+
+`.ajustement 1 ; 2 ; 3 ; 4 ; 5 ; 6 : 12 ; 15 ; 19 ; 22 ; 27 ; 30 en x = 8`
+
+(ancienne écriture acceptée tant qu'elle est sans ambiguïté : aucune valeur décimale.)
+
+### `.filtrer`
+
+`.filtrer L = fille et M = oui` garde son `et` logique : pas d'expression mathématique, donc pas de conflit avec le `et` de `.équivalent`.
