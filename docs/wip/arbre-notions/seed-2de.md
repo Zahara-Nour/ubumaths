@@ -13,7 +13,9 @@
 > « ex- » trace l'ancien code : le transfert des 63 tags de 2de (étape 2 de C5) se fera
 > par cette table, mécaniquement. Mapping des nœuds :
 > [programmes-ecarts-2de.md](programmes-ecarts-2de.md) (T1-T6 tranchées le 2026-10-07,
-> sous-notions T2/T3/T4/T5 créées pour ce seed). Aucun changement d'arbre nécessaire.
+> sous-notions T2/T3/T4/T5 créées pour ce seed). Un changement d'arbre : la branche
+> Logique restructurée (C2, tranché par David le 2026-10-08 — voir discutable 1),
+> version `2026-10-07.15`.
 
 ## Attributs communs
 
@@ -84,25 +86,25 @@ base, plus des **auto-références** C13 quand la ligne porte sur un contenu int
 
 ### Vocabulaire ensembliste et logique (rubrique = le thème ; branches `Ensembles` / `Logique`)
 
-| Code  | ex-    | Énoncé                                                                                                                                              | kind  | nœud                                                                              |
-| ----- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------------------------- |
-| 2-201 | ✂001a | Notions d'élément d'un ensemble, de sous-ensemble, d'appartenance et d'inclusion                                                                    | conn. | Ensembles de nombres > appartenance et inclusion                                  |
-| 2-202 | ✂001b | Notions d'ensemble vide, de réunion, d'intersection et de complémentaire                                                                            | conn. | Opérations sur les ensembles (notion)                                             |
-| 2-203 | 002    | Symboles de base correspondants : $\varnothing$, $\in$, $\subset$, $\cap$, $\cup$, $\{\,\ldots\,\}$                                                 | conn. | Opérations sur les ensembles (notion)                                             |
-| 2-204 | 003    | Notation des ensembles de nombres et des intervalles                                                                                                | conn. | Ensembles de nombres (notion — ℕℤ𝔻ℚℝ + intervalles)                               |
-| 2-205 | 004    | Notion de couple et de produit cartésien de deux ensembles                                                                                          | conn. | Cardinal et produit cartésien > produit cartésien                                 |
-| 2-206 | 005    | Notation du complémentaire d'un sous-ensemble $A$ de $E$ : $\bar{A}$ (notation des probabilités) ou $E \setminus A$                                 | conn. | Opérations sur les ensembles > complémentaire                                     |
-| 2-207 | 006    | Notation $\operatorname{Card}(A)$ pour le cardinal d'un ensemble fini                                                                               | conn. | Cardinal et produit cartésien > cardinal                                          |
-| 2-208 | 007    | Reconnaitre ce qu'est une proposition mathématique                                                                                                  | s-f   | Quantificateurs et négation > statut des lettres et des égalités _(discutable 1)_ |
-| 2-209 | 008    | Utiliser des variables pour écrire des propositions mathématiques                                                                                   | s-f   | Quantificateurs et négation > statut des lettres et des égalités                  |
-| 2-210 | 009    | Lire et écrire des propositions contenant les connecteurs « et », « ou »                                                                            | s-f   | Connecteurs et contre-exemples > et, ou, non                                      |
-| 2-211 | 010    | Formuler la négation de propositions simples (sans implication ni quantificateurs)                                                                  | s-f   | Quantificateurs et négation > négation d'une proposition                          |
-| 2-212 | 011    | Mobiliser un contre-exemple pour montrer qu'une proposition est fausse                                                                              | s-f   | Connecteurs et contre-exemples > contre-exemple                                   |
-| 2-213 | 012    | Formuler une implication, une équivalence logique, et les mobiliser dans un raisonnement simple                                                     | s-f   | Implication et équivalence (notion — implication + équivalence)                   |
-| 2-214 | 013    | Formuler la réciproque d'une implication, la contraposée                                                                                            | s-f   | Implication et équivalence (notion — réciproque + contraposée)                    |
-| 2-215 | 014    | Lire et écrire des propositions contenant une quantification universelle ou existentielle (les symboles $\forall$ et $\exists$ sont hors programme) | s-f   | Quantificateurs et négation > pour tout, il existe                                |
-| 2-216 | 015    | Produire un raisonnement par disjonction des cas                                                                                                    | s-f   | Raisonnements > disjonction de cas                                                |
-| 2-217 | 016    | Produire un raisonnement par l'absurde                                                                                                              | s-f   | Raisonnements > par l'absurde                                                     |
+| Code  | ex-    | Énoncé                                                                                                                                              | kind  | nœud                                                            |
+| ----- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------- |
+| 2-201 | ✂001a | Notions d'élément d'un ensemble, de sous-ensemble, d'appartenance et d'inclusion                                                                    | conn. | Ensembles de nombres > appartenance et inclusion                |
+| 2-202 | ✂001b | Notions d'ensemble vide, de réunion, d'intersection et de complémentaire                                                                            | conn. | Opérations sur les ensembles (notion)                           |
+| 2-203 | 002    | Symboles de base correspondants : $\varnothing$, $\in$, $\subset$, $\cap$, $\cup$, $\{\,\ldots\,\}$                                                 | conn. | Opérations sur les ensembles (notion)                           |
+| 2-204 | 003    | Notation des ensembles de nombres et des intervalles                                                                                                | conn. | Ensembles de nombres (notion — ℕℤ𝔻ℚℝ + intervalles)             |
+| 2-205 | 004    | Notion de couple et de produit cartésien de deux ensembles                                                                                          | conn. | Cardinal et produit cartésien > produit cartésien               |
+| 2-206 | 005    | Notation du complémentaire d'un sous-ensemble $A$ de $E$ : $\bar{A}$ (notation des probabilités) ou $E \setminus A$                                 | conn. | Opérations sur les ensembles > complémentaire                   |
+| 2-207 | 006    | Notation $\operatorname{Card}(A)$ pour le cardinal d'un ensemble fini                                                                               | conn. | Cardinal et produit cartésien > cardinal                        |
+| 2-208 | 007    | Reconnaitre ce qu'est une proposition mathématique                                                                                                  | s-f   | Proposition mathématique (notion)                               |
+| 2-209 | 008    | Utiliser des variables pour écrire des propositions mathématiques                                                                                   | s-f   | Proposition mathématique > statut des lettres et des égalités   |
+| 2-210 | 009    | Lire et écrire des propositions contenant les connecteurs « et », « ou »                                                                            | s-f   | Proposition mathématique > et, ou, non                          |
+| 2-211 | 010    | Formuler la négation de propositions simples (sans implication ni quantificateurs)                                                                  | s-f   | Quantificateurs et négation > négation d'une proposition        |
+| 2-212 | 011    | Mobiliser un contre-exemple pour montrer qu'une proposition est fausse                                                                              | s-f   | Raisonnements > contre-exemple                                  |
+| 2-213 | 012    | Formuler une implication, une équivalence logique, et les mobiliser dans un raisonnement simple                                                     | s-f   | Implication et équivalence (notion — implication + équivalence) |
+| 2-214 | 013    | Formuler la réciproque d'une implication, la contraposée                                                                                            | s-f   | Implication et équivalence (notion — réciproque + contraposée)  |
+| 2-215 | 014    | Lire et écrire des propositions contenant une quantification universelle ou existentielle (les symboles $\forall$ et $\exists$ sont hors programme) | s-f   | Quantificateurs et négation > pour tout, il existe              |
+| 2-216 | 015    | Produire un raisonnement par disjonction des cas                                                                                                    | s-f   | Raisonnements > disjonction de cas                              |
+| 2-217 | 016    | Produire un raisonnement par l'absurde                                                                                                              | s-f   | Raisonnements > par l'absurde                                   |
 
 ### Algorithmique et programmation (branche `Algorithmique` ; kind → question L1)
 
@@ -392,9 +394,15 @@ ci-dessus.
 
 ## Rattachements discutables (hors scissions, traitées plus haut)
 
-1. **« Reconnaitre une proposition » / « utiliser des variables »** (2-208, 2-209) →
-   `Quantificateurs et négation > statut des lettres et des égalités` : c'est la
-   sous-notion du méta-langage. Alternative : une des autres notions de Logique.
+1. ~~Discutable~~ **TRANCHÉ (David, 2026-10-08, structure C2)** : la branche Logique
+   est restructurée — notion **`Proposition mathématique`** en tête (sous-notions
+   `statut des lettres et des égalités` + `et, ou, non`, récupérées de « Quantificateurs
+   et négation » et de « Connecteurs et contre-exemples », cette dernière disparaissant) ;
+   **`contre-exemple` rejoint `Raisonnements`**. 2-208 → la notion même, 2-209 →
+   `> statut des lettres et des égalités`, 2-210 → `> et, ou, non`, 2-212 →
+   `Raisonnements > contre-exemple`. Arbre version `2026-10-07.15` (comptes inchangés :
+   19/137/540) ; aucun point livré ne visait la branche Logique → migration de nœuds
+   sans impact sur l'existant.
 2. **Le balayage de √2** (2-257) → `Boucles > boucle bornée` (balayage à pas fixe) ;
    la première puissance dépassant un seuil (2-283) → `> boucle non bornée` (while).
 3. **« Caractérisation vectorielle du milieu »** (2-296) → `Vecteurs : sans
@@ -425,16 +433,20 @@ coordonnées` (notion) — c'est du calcul vectoriel pur ; le calcul en coordonn
   kind s-f (ou dém. pour les « Démontrer que… » 2-309, 2-311, 2-312 ?). Reco : s-f ⁺
   partout (un approfondissement n'est pas une démonstration exigible).
 - **L4 — validation d'ensemble** : les 202 points (17 scissions + 10 non-scissions
-  argumentées), les ~45 cibles de références (dont 7 auto-références), les 5
-  rattachements discutables, et `diversite` partout.
+  argumentées — **validées par David le 2026-10-08**), les ~45 cibles de références
+  (dont 7 auto-références), les rattachements discutables 2 à 5 (le 1 est tranché :
+  structure C2), et `diversite` partout.
 
 ## Après validation (plan de livraison)
 
-1. Worktree + migration additive générée depuis ce document : 202 points (codes
-   2-201…2-402 explicites) + références (cibles par code, grade '2' — auto-références
-   comprises, permises par C13). AUCUN changement d'arbre. Bloc DO auto-vérifiant
-   (comptes, kinds, 0 sans nœud, anciens 2-001…185 INTACTS). Rollback scopé, mises en
-   garde RGPD et inter-grades.
+1. Worktree + migration additive générée depuis ce document : (a) restructuration C2
+   de la branche Logique (renommage « Connecteurs et contre-exemples » →
+   « Proposition mathématique », déplacement de `statut des lettres et des égalités`
+   et de `contre-exemple` — UPDATE de nœuds, node_id préservés, aucun point existant
+   ne vise la branche) ; (b) 202 points (codes 2-201…2-402 explicites) + références
+   (cibles par code, grade '2' — auto-références comprises, permises par C13). Bloc DO
+   auto-vérifiant (comptes, kinds, 0 sans nœud, anciens 2-001…185 INTACTS, arbre
+   toujours à 696 nœuds). Rollback scopé, mises en garde RGPD et inter-grades.
 2. Test d'intégration : comparaison intégrale points + références en lecture anonyme,
    preuve rouge avant ; vérification que les 185 anciens points de 2de restent
    rattachés à leurs objectifs.

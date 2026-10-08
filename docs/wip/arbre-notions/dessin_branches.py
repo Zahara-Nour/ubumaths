@@ -189,10 +189,10 @@ ST=[
 ("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp., Tle techno",[("",["nuage de points","point moyen","ajustement affine","coefficient de corrélation","changement de variable"])],"reprend le thème Statistiques"),
 ]
 LO=[
-("Connecteurs et contre-exemples","2de, 1re",[("",["et, ou, non","contre-exemple"])],None),
+("Proposition mathématique","2de, 1re",[("",["statut des lettres et des égalités","et, ou, non"])],"tête de branche : le méta-langage (ex-« Connecteurs et contre-exemples », restructurée C2 le 2026-10-08)"),
 ("Implication et équivalence","2de, 1re",[("",["implication","réciproque","contraposée","équivalence","condition nécessaire, condition suffisante"])],None),
-("Quantificateurs et négation","2de, 1re",[("",["pour tout, il existe","statut des lettres et des égalités","négation d'une proposition"])],None),
-("Raisonnements","2de à Tle",[("",["par l'absurde","par contraposée","disjonction de cas","par équivalence"])],None),
+("Quantificateurs et négation","2de, 1re",[("",["pour tout, il existe","négation d'une proposition"])],None),
+("Raisonnements","2de à Tle",[("",["par l'absurde","par contraposée","disjonction de cas","par équivalence","contre-exemple"])],None),
 ]
 EN=[
 ("Ensembles de nombres","2de",[("",["ℕ, ℤ, 𝔻, ℚ, ℝ","nombres irrationnels","appartenance et inclusion","intervalles"])],None),
@@ -299,7 +299,7 @@ sec=f'''<section class="branch" id="nombres"><h2><span class="dot c1"></span>Nom
 <p class="read">Séparée des probabilités. Seule la statistique à deux variables a des modèles aujourd'hui ; les autres notions suivent le programme.</p>
 <div class="scroll">{st}</div></section>
 <section class="branch" id="logique"><h2><span class="dot c9"></span>Logique <small>4 notions</small></h2>
-<p class="read">Reprend le domaine Logique et raisonnement ; ses quatre sous-domaines deviennent des notions.</p>
+<p class="read">Reprend le domaine Logique et raisonnement, restructuré (C2, 2026-10-08) : « Proposition mathématique » en tête (méta-langage + connecteurs), « contre-exemple » rejoint les Raisonnements.</p>
 <div class="scroll">{lo}</div></section>
 <section class="branch" id="ensembles"><h2><span class="dot c19"></span>Ensembles <small>branche à part, 3 notions</small></h2>
 <p class="read">Reprend le domaine Ensembles (1re) ; les ensembles de nombres et les intervalles de 2de y trouvent leur place.</p>
@@ -314,7 +314,7 @@ ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),(
  ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
  ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
  ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.14","statut":"validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+out={"version":"2026-10-07.15","statut":"validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; EN BASE depuis le 2026-10-08 (CP→3e), branche Logique restructurée C2 le 2026-10-08",
  "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
 json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
 print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))
