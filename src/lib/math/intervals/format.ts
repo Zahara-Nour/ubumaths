@@ -192,9 +192,30 @@ export function formatEndpointValue(value: MathNode): string {
 		return `${value.name}(${args})`;
 	}
 
+	// Opposé : −√2, −1/3 (même rendu que la partie positive)
+	if (value.type === 'opposite') {
+		return `-${formatEndpointValue(value.operand)}`;
+	}
+
+	// Somme / différence : (1+√5)/2 doit garder ses parenthèses
+	if (value.type === 'addition' || value.type === 'subtraction') {
+		const right = formatEndpointValue(value.right);
+		const op = value.type === 'addition' ? '+' : '-';
+		return `${formatEndpointValue(value.left)}${op}${right}`;
+	}
+
 	// Handle division: a/b
 	if (isDivision(value)) {
-		return `${formatEndpointValue(value.numerator)}/${formatEndpointValue(value.denominator)}`;
+		const wrap = (node: MathNode): string => {
+			const text = formatEndpointValue(node);
+			return node.type === 'addition' || node.type === 'subtraction' ? `(${text})` : text;
+		};
+		return `${wrap(value.numerator)}/${wrap(value.denominator)}`;
+	}
+
+	// 3π : coefficient entier collé
+	if (isMultiplication(value) && isNumber(value.left) && isMathConstant(value.right)) {
+		return `${value.left.value}${formatEndpointValue(value.right)}`;
 	}
 
 	// Handle multiplication: a*b
