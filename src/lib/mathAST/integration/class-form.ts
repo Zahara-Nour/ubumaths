@@ -267,9 +267,11 @@ export function dropConstantTerms(expr: MathNode, variable: string): MathNode {
 // =============================================================================
 
 /**
- * ln(u^{2k}) → 2k·ln|u| (k entier non nul) : la normalisation écrit
+ * ln(u^{2k}) → 2k·ln|u| (k entier non nul) : la normalisation écrivait
  * ln(u²) = 2 ln u, juste pour u > 0 seulement ; ln(x²) est définie pour tout
- * x ≠ 0 et sa primitive doit l'être aussi (revue de #947). `dropAbsOfPositive`
+ * x ≠ 0 et sa primitive doit l'être aussi (revue de #947). Depuis le
+ * 2026-10-08, `normalize` écrit lui-même 2k·ln|u| ; la suite d'intégration
+ * reste verte sans cette réécriture, gardée par prudence. `dropAbsOfPositive`
  * retire ensuite |·| quand u > 0 sur ℝ (ln((x² + 1)²) → 2 ln(x² + 1)).
  */
 export function lnOfEvenPowerAsAbs(expr: MathNode): MathNode {

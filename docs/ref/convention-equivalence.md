@@ -90,6 +90,27 @@ seul domaine où le membre de gauche existe. Le décideur compare `x` à `|x|` e
 les sépare, faute de porter le domaine. Faux négatif, assumé : `√x·√x ≡ x` est
 ce qu'un élève écrit, `√x·√x ≡ |x|` est exotique.
 
+### `\ln(x^2)` et `2\ln x` (décision de David du 2026-10-08)
+
+`normalize` écrivait `ln(u^{2k}) = 2k·ln u`, une règle qui **restreint** le domaine (ℝ\* →
+]0 ; +∞[) : fausse au sens de la section « Conséquence pratique », et fausse pour tout ce qui
+lit la forme normale hors de ]0 ; +∞[ (limites en −∞, équations, primitives — revue de #947).
+Elle écrit désormais `2k·ln|u|` (`expandLogPower`, `normalize.ts`), pour `ln` comme pour
+`log` / `log_b`, exposant de numérateur pair (`x^2`, `x^4`, `x^{-2}`), et pour un trinôme carré
+développé (`ln(x²−2x+1) = 2 ln|x−1|`, comme `√`). Base prouvée positive (`x²+1`, `eˣ`) : pas de
+valeur absolue. Puissance impaire inchangée (`ln(x³) = 3 ln x`, le domaine impose x > 0).
+
+Conséquence pour la comparaison, **sans changer la convention** : `\ln(x^2) ≡ 2\ln|x|`
+devient **vrai** (il était faux), `\ln(x^2) ≡ 2\ln x` devient **faux**. Par la convention, cette
+seconde paire devrait être vraie (égales sur ]0 ; +∞[, seul domaine commun) : c'est un **faux
+négatif**, de la même famille que `√x·√x ≢ |x|` et `\ln|x| ≢ \ln x` (le décideur compare
+`ln|x|` à `ln x` sans porter le domaine). Contrairement à `√x·√x ≡ |x|`, il n'est pas
+exotique : `2\ln x` est ce qu'un élève écrit. Remède par question, sans toucher au décideur :
+déclarer l'hypothèse de l'énoncé `x > 0` (ADR 0012, plus bas) — `|x| → x` et la paire redevient
+vraie (`\ln(x^2y) ≡ 2\ln x+\ln y` aussi). Non traités, même famille (domaine restreint) :
+`ln(uv) → ln u + ln v` et `ln(u/v) → ln u − ln v` (`expandLogProduct`, `expandLogDivision`),
+laissés tels quels — `\ln(xy) ≡ \ln x+\ln y` reste vrai.
+
 ## Virgule nue : décimale ou séparateur (#520)
 
 MathLive n'a pas de `decimalSeparator` réglé : une virgule tapée au clavier physique arrive **nue**
