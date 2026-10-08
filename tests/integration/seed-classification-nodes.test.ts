@@ -12,10 +12,17 @@
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
- * (docs/wip/arbre-notions/arbre-notions.json) doit se retrouver en base, et
+ * (copie figée : tests/integration/fixtures/arbre-notions-seed.json) doit se
+ * retrouver en base, et
  * rien d'autre sous les branches du seed. Les nœuds créés par les autres
  * suites (préfixe « itest- ») vivent sous leurs propres racines : on compare
  * seulement les arbres dont la racine est une branche du JSON.
+ *
+ * ⚠️ La copie figée, pas docs/wip/arbre-notions/arbre-notions.json : le JSON
+ * de travail évolue en commit direct sur main (doc), sans CI, alors que la
+ * base ne change qu'avec une migration. Le 2026-10-08, la version .15 du JSON
+ * (branche Logique) a cassé ce test sur toutes les PR. À la migration qui
+ * seede une nouvelle version, remplacer la copie dans le même commit.
  *
  * @vitest-environment node
  */
@@ -51,7 +58,7 @@ const ANON_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 const arbre: ArbreJson = JSON.parse(
-	readFileSync('docs/wip/arbre-notions/arbre-notions.json', 'utf-8')
+	readFileSync('tests/integration/fixtures/arbre-notions-seed.json', 'utf-8')
 );
 
 /** Tous les chemins attendus, préfixés par leur genre. */

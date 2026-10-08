@@ -135,7 +135,8 @@ function actors(who: Person, extra: Partial<AttemptActors> = {}): AttemptActors 
 }
 
 function fixture(path: string) {
-	return JSON.parse(readFileSync(`docs/relecture/${path}.json`, 'utf-8')).template;
+	// Copie figée sous tests/ : docs/ se modifie sans CI (commit direct sur main)
+	return JSON.parse(readFileSync(`tests/fixtures/relecture/${path}.json`, 'utf-8')).template;
 }
 
 /** Évaluation publiée (ou non) sur la série du test, assignée à la classe */
