@@ -771,13 +771,14 @@ describe('Domain computation edge cases', () => {
 			expect(containsValue(result.domain, -1)).toBe(false);
 		});
 
-		it('x^(1/3) (cube root) has domain ℝ', () => {
+		it('x^(1/3) : [0 ; +∞[ (convention x^a = e^{a ln x}, alignée sur l’évaluateur)', () => {
+			// Exposant non entier : base ≥ 0 (a > 0). La racine cubique de tout
+			// réel s'écrit \sqrt[3]{x} (domaine ℝ), pas x^{1/3}.
 			const expr = parseLatex('x^{1/3}');
 			const result = computeDomain(expr, 'x');
-			// Odd roots are defined for all reals
 			expect(containsValue(result.domain, 0)).toBe(true);
 			expect(containsValue(result.domain, 8)).toBe(true);
-			expect(containsValue(result.domain, -8)).toBe(true);
+			expect(containsValue(result.domain, -8)).toBe(false);
 		});
 
 		it('x^(-1) has domain ℝ \\ {0}', () => {

@@ -162,7 +162,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	// `.intégrer 1/x -1 1` : « L'intégrale diverge ou n'est pas définie… »
 	'INTEGRAL_UNDEFINED',
 	// Les mots-clés (`de … à`, `en`, `ordre`…) mal écrits : la forme attendue
-	'COMMAND_SYNTAX'
+	'COMMAND_SYNTAX',
+	// `.domaine sqrt(sin(x))` : le domaine n'a pas pu être établi (#963)
+	'DOMAIN_UNRESOLVED'
 ]);
 
 /**

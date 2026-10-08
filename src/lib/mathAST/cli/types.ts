@@ -45,7 +45,9 @@ export type ErrorCode =
 	/** Dérivée refusée (`floor`, `abs`…) : message en français, destiné à l'élève */
 	| 'NOT_DIFFERENTIABLE'
 	/** Intégrale définie refusée (pôle dans [a ; b]) : message en français, destiné à l'élève */
-	| 'INTEGRAL_UNDEFINED';
+	| 'INTEGRAL_UNDEFINED'
+	/** Domaine : contrainte non résolue (refus plutôt qu'un domaine faux) — message en français, destiné à l'élève */
+	| 'DOMAIN_UNRESOLVED';
 
 /**
  * Structured error for command execution

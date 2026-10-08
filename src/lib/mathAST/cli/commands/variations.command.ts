@@ -37,6 +37,8 @@ import {
 import { computeVariations } from '../../variations/compute';
 import { getDerivativeSignSymbol, unresolvedDerivativeZerosMessage } from '../../variations/format';
 import { toCustom } from '../../custom-generator';
+import { formatEndpointValue as formatBound } from '../../domain/format';
+import { DomainUnresolvedError } from '../../domain/errors';
 import { formatInterval } from '../../domain/format';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import type { Interval } from '$lib/math/intervals/types';
@@ -247,6 +249,14 @@ export class VariationsCommand extends BaseCommand {
 				ast: parseResult.ast
 			};
 		} catch (err) {
+			// Domaine non résolu : refus en français, jamais un domaine faux
+			if (err instanceof DomainUnresolvedError) {
+				return {
+					success: false,
+					output: '',
+					error: { code: 'DOMAIN_UNRESOLVED', message: err.message }
+				};
+			}
 			const message = err instanceof Error ? err.message : "Erreur lors de l'etude des variations";
 			return {
 				success: false,
@@ -285,7 +295,7 @@ export class VariationsCommand extends BaseCommand {
 		lines.push(chalk.bold('Points critiques :'));
 
 		for (const point of points) {
-			const xStr = toCustom(point.x);
+			const xStr = formatBound(point.x);
 			const nature =
 				point.nature === 'derivative_zero' ? chalk.dim("(f'=0)") : chalk.dim("(f' non definie)");
 			lines.push(`  ${variable} = ${chalk.yellow(xStr)} ${nature}`);
@@ -338,8 +348,8 @@ export class VariationsCommand extends BaseCommand {
 
 		for (const ext of extrema) {
 			const typeStr = this.getExtremumTypeFr(ext.type);
-			const xStr = toCustom(ext.x);
-			const yStr = toCustom(ext.y);
+			const xStr = formatBound(ext.x);
+			const yStr = formatBound(ext.y);
 			const isGlobal = ext.type.includes('global');
 			const isMin = ext.type.includes('minimum');
 
@@ -364,7 +374,7 @@ export class VariationsCommand extends BaseCommand {
 		lines.push(chalk.bold('Limites aux bornes :'));
 
 		for (const bl of limits) {
-			const pointStr = toCustom(bl.point);
+			const pointStr = formatBound(bl.point);
 			const limitStr = this.formatLimitValue(bl.limit);
 			const dirStr = bl.direction === 'left' ? '^-' : bl.direction === 'right' ? '^+' : '';
 			lines.push(
@@ -408,7 +418,8 @@ export class VariationsCommand extends BaseCommand {
 		if (value.type === 'infinity') {
 			return value.sign === 'positive' ? '+inf' : '-inf';
 		}
-		return toCustom(value);
+		// Bornes exactes comme le domaine (1/2, -√2), jamais le `:/` interne
+		return formatBound(value);
 	}
 
 	/**
@@ -482,6 +493,6 @@ export class VariationsCommand extends BaseCommand {
 		if (value === 'infinity') return '+inf';
 		if (value === 'negative_infinity') return '-inf';
 		if (value === 'indeterminate') return 'indetermine';
-		return toCustom(value);
+		return formatBound(value);
 	}
 }

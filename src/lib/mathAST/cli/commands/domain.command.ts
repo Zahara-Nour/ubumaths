@@ -139,6 +139,18 @@ export class DomainCommand extends BaseCommand {
 			// Compute domain with steps
 			const result = computeDomain(parseResult.ast, variable, { showSteps: true });
 
+			// Contrainte non résolue : on refuse plutôt que d'annoncer un domaine faux
+			if (result.unresolved && result.unresolved.length > 0) {
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: 'DOMAIN_UNRESOLVED',
+						message: 'Je ne sais pas encore déterminer ce domaine.'
+					}
+				};
+			}
+
 			// Format output
 			const exprCustom = toCustom(parseResult.ast);
 			const intervalStr = formatDomainInterval(result.domain);

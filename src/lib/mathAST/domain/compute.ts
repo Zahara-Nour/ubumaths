@@ -26,12 +26,46 @@ import {
 	cotDomain,
 	secDomain,
 	cscDomain,
-	periodicExclusion
+	periodicExclusion,
+	emptyDomain,
+	greaterThanInterval,
+	lessThanInterval,
+	lessThanOrEqualInterval,
+	interval,
+	openEndpoint,
+	closedEndpoint,
+	negInfinityEndpoint as negInfinityEndpointOf,
+	posInfinityEndpoint as posInfinityEndpointOf,
+	realLine,
+	excludedPoint
 } from './factory';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { compile } from '../eval/compile';
 import { numericNode } from '../common/numeric';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
+import {
+	exactZeros,
+	solveRationalInequality,
+	constantRational,
+	rationalNode,
+	toRationalFunction
+} from './exact-roots';
+import type { Rational } from '../normal/types';
+import {
+	ZERO as RATIONAL_ZERO,
+	ONE as RATIONAL_ONE,
+	addRational,
+	subRational,
+	mulRational,
+	divRational,
+	negRational,
+	isZero as isRationalZero,
+	isNegative as isRationalNegative,
+	rationalToNumber
+} from '../normal/rational';
+import { findNodes } from '../transforms';
+import { number as numberNode, divide, multiply, add } from '../factory';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { ZERO_TOLERANCE } from '../common';
@@ -274,6 +308,14 @@ export interface ComputeDomainOptions {
 	 * cases via `PedagogicalDomainNotImplemented`.
 	 */
 	recorder?: DomainStepRecorder;
+
+	/**
+	 * Collecteur INTERNE des contraintes que le moteur n'a pas su résoudre
+	 * (renseigné par `computeDomain`, lu dans `DomainResult.unresolved`).
+	 * Une contrainte non résolue ne doit jamais être ignorée en silence :
+	 * `1/(x-1/2)` rendait ℝ.
+	 */
+	unresolved?: string[];
 }
 
 // =============================================================================
@@ -305,9 +347,10 @@ export function computeDomain(
 	// without paying any cost.
 	const recorder =
 		options.recorder ?? (options.showSteps ? createDomainStepRecorder() : getNullRecorder());
-	const internalOptions: ComputeDomainOptions = { ...options, recorder };
+	const unresolved: string[] = [];
+	const internalOptions: ComputeDomainOptions = { ...options, recorder, unresolved };
 	const constraintCountBefore = recorder.length;
-	const domain = computeDomainNode(expr, variable, steps, internalOptions);
+	const domain = normalizeExcludedPoints(computeDomainNode(expr, variable, steps, internalOptions));
 
 	// Top-level `intersection` step: if more than one constraint was emitted
 	// for this expression and the final domain is constrained (not universal),
@@ -329,7 +372,8 @@ export function computeDomain(
 	return {
 		domain,
 		variable,
-		...(options.showSteps && steps.length > 0 ? { steps } : {})
+		...(options.showSteps && steps.length > 0 ? { steps } : {}),
+		...(unresolved.length > 0 ? { unresolved } : {})
 	};
 }
 
@@ -362,9 +406,11 @@ function computeDomainNode(
 		case 'addition':
 		case 'subtraction':
 		case 'multiplication':
-			return intersect(
+			return safeIntersect(
 				computeDomainNode(node.left, variable, steps, options),
-				computeDomainNode(node.right, variable, steps, options)
+				computeDomainNode(node.right, variable, steps, options),
+				options,
+				node
 			);
 
 		// Division - intersection + exclude zeros of denominator
@@ -432,25 +478,23 @@ function computeDivisionDomain(
 	const numDomain = computeDomainNode(node.numerator, variable, steps, options);
 	const denDomain = computeDomainNode(node.denominator, variable, steps, options);
 
-	// Find zeros of denominator
-	const zeros = findZeros(node.denominator, variable);
-
 	// Combine domains
-	let domain = intersect(numDomain, denDomain);
+	let domain = safeIntersect(numDomain, denDomain, options, node.denominator);
 
-	// Exclude zeros (convert to MathNode[])
-	if (zeros.length > 0) {
-		domain = excludePoints(
-			domain,
-			zeros.map((z) => numericNode(z))
-		);
+	// Exclure les zéros du dénominateur (exacts : 1/2, √2…)
+	const nonZero = nonZeroSet(node.denominator, variable);
+	const hasZeros = nonZero === null || nonZero.kind !== 'universal';
+	if (nonZero === null) {
+		markUnresolved(options, `${toLatex(node.denominator)} \\neq 0`);
+	} else {
+		domain = restrictTo(domain, nonZero, options, node.denominator);
 	}
 
 	// Pedagogical recording (V1 MVP): emit a `division_constraint` step when
 	// the denominator has zeros to exclude. The intermediateDomain captures
 	// the post-exclusion state (i.e. what the renderer should display as the
 	// "Domaine" line when this step is rendered in isolation).
-	if (options.showSteps && options.recorder && zeros.length > 0) {
+	if (options.showSteps && options.recorder && hasZeros) {
 		const denomLatex = toLatex(node.denominator);
 		options.recorder.recordWithTemplate(
 			'division_constraint',
@@ -487,8 +531,12 @@ function computeFunctionDomain(
 	// Handle functions with periodic exclusions (tan, cot, sec, csc)
 	// For simple argument (just the variable), return PeriodicExclusion directly
 	const periodicDomain = getPeriodicExclusionDomain(node.name, arg, variable);
+	if (!periodicDomain && PERIODIC_FUNCTIONS.includes(node.name.toLowerCase())) {
+		markUnresolved(options, `${node.name}(${toLatex(arg)})`);
+		return domain;
+	}
 	if (periodicDomain) {
-		const result = intersect(domain, periodicDomain);
+		const result = safeIntersect(domain, periodicDomain, options, arg);
 
 		// Pedagogical recording (V1.1): emit tan/cot/sec/csc constraint step.
 		if (options.showSteps && options.recorder) {
@@ -540,7 +588,7 @@ function computeFunctionDomain(
 	// Compute preimage: find values of variable such that arg is in funcDomain
 	const preimage = computePreimage(arg, funcDomain, variable);
 	if (preimage) {
-		domain = intersect(domain, preimage);
+		domain = safeIntersect(domain, preimage, options, arg);
 	}
 
 	// Pedagogical recording (V1 + V1.1.a): emit a constraint step for any
@@ -570,13 +618,19 @@ function computeFunctionDomain(
 		}
 	}
 
-	// Handle nested function compositions using range analysis
-	if (arg.type === 'function' && arg.args.length > 0) {
-		domain = analyzeComposition(node.name, arg, variable, domain, steps, options);
+	// Contrainte non résolue : on le DIT (jamais ℝ en silence). L'analyse de
+	// composition historique reste tentée, mais le résultat reste incomplet.
+	if (!preimage) {
+		markUnresolved(options, `${node.name}(${toLatex(arg)})`);
+		if (arg.type === 'function' && arg.args.length > 0) {
+			domain = analyzeComposition(node.name, arg, variable, domain, steps, options);
+		}
 	}
 
 	return domain;
 }
+
+const PERIODIC_FUNCTIONS: readonly string[] = ['tan', 'cot', 'sec', 'csc'];
 
 /**
  * Get periodic exclusion domain for trigonometric functions with periodic discontinuities.
@@ -604,7 +658,7 @@ function getPeriodicExclusionDomain(
 	const name = funcName.toLowerCase();
 
 	// Only handle tan, cot, sec, csc
-	if (!['tan', 'cot', 'sec', 'csc'].includes(name)) {
+	if (!PERIODIC_FUNCTIONS.includes(name)) {
 		return null;
 	}
 
@@ -648,6 +702,28 @@ function createLinearPeriodicExclusion(
 	coeffNode: MathNode,
 	offsetNode: MathNode | null
 ): Domain | null {
+	// Coefficients rationnels exacts : base et période exactes (π/4, π/2)
+	const aExact = constantRational(coeffNode);
+	const bExact = offsetNode ? constantRational(offsetNode) : RATIONAL_ZERO;
+	if (aExact && bExact && !isRationalZero(aExact)) {
+		// a·x + b = s + kπ → x = (s − b)/a + kπ/a, s = π/2 (tan, sec) ou 0
+		const piCoefficient = divRational(
+			funcName === 'tan' || funcName === 'sec' ? { n: 1n, d: 2n } : RATIONAL_ZERO,
+			aExact
+		);
+		const constantPart = divRational(negRational(bExact), aExact);
+		const absA = isRationalNegative(aExact) ? negRational(aExact) : aExact;
+		const period = piMultipleNode(divRational(RATIONAL_ONE, absA));
+		const piPart = isRationalZero(piCoefficient) ? null : piMultipleNode(piCoefficient);
+		const base: MathNode =
+			piPart === null
+				? rationalNode(constantPart)
+				: isRationalZero(constantPart)
+					? piPart
+					: add(rationalNode(constantPart), piPart);
+		return periodicExclusion(base, period);
+	}
+
 	// Evaluate coefficient 'a' to a number
 	let a: number;
 	try {
@@ -671,18 +747,21 @@ function createLinearPeriodicExclusion(
 		}
 	}
 
-	// Determine the base singularity point for the function
-	// tan/sec: singularity at π/2, cot/csc: singularity at 0
 	const baseSingularity = funcName === 'tan' || funcName === 'sec' ? Math.PI / 2 : 0;
-
-	// Compute the new base point: x such that ax + b = baseSingularity
-	// ax + b = baseSingularity → x = (baseSingularity - b) / a
 	const newBasePoint = (baseSingularity - b) / a;
-
-	// Compute the new period: π / |a|
 	const newPeriod = Math.PI / Math.abs(a);
 
 	return periodicExclusion(numericNode(newBasePoint), numericNode(newPeriod));
+}
+
+/** q·π exact : `π`, `π/4`, `3π/2`, `−π/4`. */
+function piMultipleNode(q: Rational): MathNode {
+	const negative = isRationalNegative(q);
+	const n = negative ? -q.n : q.n;
+	const pi: MathNode = { type: 'constant', constant: 'pi' };
+	const top: MathNode = n === 1n ? pi : multiply(numberNode(n.toString()), pi, 'implicit');
+	const body: MathNode = q.d === 1n ? top : divide(top, numberNode(q.d.toString()), 'inline');
+	return negative ? { type: 'opposite', operand: body } : body;
 }
 
 /**
@@ -699,16 +778,17 @@ function computePowerDomain(
 
 	let domain = intersect(baseDomain, expDomain);
 
-	// Check for negative exponent
-	const expValue = tryGetNumericValue(node.superscript);
-	if (expValue !== null && expValue < 0) {
-		// base^(-n) requires base != 0
-		const zeros = findZeros(node.base, variable);
-		if (zeros.length > 0) {
-			domain = excludePoints(
-				domain,
-				zeros.map((z) => numericNode(z))
-			);
+	const exponentHasVariable = containsVariable(node.superscript, variable);
+	const baseHasVariable = containsVariable(node.base, variable);
+	const expValue = exponentHasVariable ? null : tryConstantValue(node.superscript);
+
+	// Exposant entier négatif : base ≠ 0
+	if (expValue !== null && expValue < 0 && Number.isInteger(expValue)) {
+		const nonZero = nonZeroSet(node.base, variable);
+		if (nonZero === null) {
+			markUnresolved(options, `${toLatex(node.base)} \\neq 0`);
+		} else if (nonZero.kind !== 'universal') {
+			domain = restrictTo(domain, nonZero, options, node.base);
 
 			// Pedagogical recording (V1.1): emit a `power_constraint` step.
 			if (options.showSteps && options.recorder) {
@@ -727,35 +807,33 @@ function computePowerDomain(
 		}
 	}
 
-	// Check for fractional exponent with even denominator (like 1/2, 1/4)
-	const fracInfo = tryGetFractionValue(node.superscript);
-	if (fracInfo !== null) {
-		const { numerator, denominator } = fracInfo;
-		if (denominator % 2 === 0 && numerator > 0) {
-			// Even root requires base >= 0
-			const preimage = computePreimage(
-				node.base,
-				intervalDomain([greaterThanOrEqualInterval(numericNode(0))]),
-				variable
-			);
-			if (preimage) {
-				domain = intersect(domain, preimage);
-			}
+	// Exposant NON entier (convention du lycée, x^a = e^{a ln x}, alignée sur
+	// l'évaluateur : Math.pow(-8, 1/3) = NaN) : base ≥ 0 si a > 0, base > 0
+	// si a < 0. Exposant variable et base variable (x^x) : base > 0.
+	const nonIntegerExponent = expValue !== null && !Number.isInteger(expValue);
+	const variableExponent = exponentHasVariable && baseHasVariable;
+	if (baseHasVariable && (nonIntegerExponent || variableExponent)) {
+		const strict = variableExponent || (expValue !== null && expValue < 0);
+		const preimage = solveInequalityForPreimage(node.base, '>=', RATIONAL_ZERO, strict, variable);
+		if (preimage) {
+			domain = intersect(domain, preimage);
+		} else {
+			markUnresolved(options, `${toLatex(node.base)} ${strict ? '>' : '\\geq'} 0`);
+		}
 
-			// Pedagogical recording (V1.1): emit an `even_root_constraint` step.
-			if (options.showSteps && options.recorder) {
-				const baseLatex = toLatex(node.base);
-				options.recorder.recordWithTemplate(
-					'even_root_constraint',
-					baseLatex,
-					buildConstraintLatex('even_root_constraint', baseLatex),
-					{ expr: baseLatex },
-					{
-						intermediateDomain: preimage === null ? undefined : preimage,
-						verbosityLevel: 'summarized'
-					}
-				);
-			}
+		// Pedagogical recording (V1.1): emit an `even_root_constraint` step.
+		if (options.showSteps && options.recorder && !strict) {
+			const baseLatex = toLatex(node.base);
+			options.recorder.recordWithTemplate(
+				'even_root_constraint',
+				baseLatex,
+				buildConstraintLatex('even_root_constraint', baseLatex),
+				{ expr: baseLatex },
+				{
+					intermediateDomain: preimage === null ? undefined : preimage,
+					verbosityLevel: 'summarized'
+				}
+			);
 		}
 	}
 
@@ -834,43 +912,32 @@ function computePreimageForSingleInterval(
 	// Check lower bound constraint
 	const lowerValue = interval.lower.value;
 	if (!isNegativeInfinity(lowerValue) && !isPositiveInfinity(lowerValue)) {
-		const bound = tryEvaluateConstant(lowerValue);
-
-		if (bound !== null) {
-			const strict = interval.lower.type === 'open';
-			const ineqDomain = solveInequalityForPreimage(expr, '>=', bound, strict, variable);
-			if (ineqDomain) {
-				resultDomain = intersect(resultDomain, ineqDomain);
-			}
-		}
+		const bound = constantRational(lowerValue);
+		if (bound === null) return null;
+		const strict = interval.lower.type === 'open';
+		const ineqDomain = solveInequalityForPreimage(expr, '>=', bound, strict, variable);
+		if (!ineqDomain) return null;
+		resultDomain = intersect(resultDomain, ineqDomain);
 	}
 
 	// Check upper bound constraint
 	const upperValue = interval.upper.value;
 	if (!isPositiveInfinity(upperValue) && !isNegativeInfinity(upperValue)) {
-		const bound = tryEvaluateConstant(upperValue);
-
-		if (bound !== null) {
-			const strict = interval.upper.type === 'open';
-			const ineqDomain = solveInequalityForPreimage(expr, '<=', bound, strict, variable);
-			if (ineqDomain) {
-				resultDomain = intersect(resultDomain, ineqDomain);
-			}
-		}
+		const bound = constantRational(upperValue);
+		if (bound === null) return null;
+		const strict = interval.upper.type === 'open';
+		const ineqDomain = solveInequalityForPreimage(expr, '<=', bound, strict, variable);
+		if (!ineqDomain) return null;
+		resultDomain = intersect(resultDomain, ineqDomain);
 	}
 
 	// Handle excluded points
 	for (const ep of targetDomain.excludedPoints) {
 		const val = tryEvaluateConstant(ep.value);
-		if (val !== null) {
-			const zeros = findZeros(subtractConstant(expr, val), variable);
-			if (zeros.length > 0) {
-				resultDomain = excludePoints(
-					resultDomain,
-					zeros.map((z) => numericNode(z))
-				);
-			}
-		}
+		if (val === null) return null;
+		const nonZero = nonZeroSet(subtractConstant(expr, val), variable);
+		if (nonZero === null) return null;
+		resultDomain = intersect(resultDomain, nonZero);
 	}
 
 	return resultDomain;
@@ -883,6 +950,473 @@ function computePreimageForSingleInterval(
 function solveInequalityForPreimage(
 	expr: MathNode,
 	op: '>=' | '<=',
+	bound: Rational,
+	strict: boolean,
+	variable: string
+): Domain | null {
+	// 0. Sans la variable : constante (vérifiée) ou paramètre (supposé admis :
+	// `.domaine ln(t)` en x n'impose rien à x)
+	if (!containsVariable(expr, variable)) {
+		const value = tryConstantValue(expr);
+		if (value === null) return universalDomain();
+		return checkBound(value, op, rationalToNumber(bound), strict)
+			? universalDomain()
+			: emptyDomain();
+	}
+
+	// 1. Fraction rationnelle à coefficients rationnels : tableau de signes exact
+	const exact = solveRationalInequality(expr, op, bound, strict, variable);
+	if (exact) return exact;
+
+	// 2. Composée monotone (ln u ≥ 0, √u − 1 > 0, |u| > 1, e^u ≥ 1…)
+	const inverted = invertMonotone(expr, op, bound, strict, variable);
+	if (inverted) return inverted;
+
+	// 3. a·x ± K, K constante irrationnelle (x − √2, 2x + π) : racine exacte
+	if (isRationalZero(bound)) {
+		const shifted = shiftedLinearRoot(expr, variable);
+		if (shifted) {
+			const up = (op === '>=') === shifted.slope > 0;
+			const point = shifted.root;
+			return intervalDomain([
+				up
+					? strict
+						? greaterThanInterval(point)
+						: greaterThanOrEqualInterval(point)
+					: strict
+						? lessThanInterval(point)
+						: lessThanOrEqualInterval(point)
+			]);
+		}
+	}
+
+	// 4. Chemin historique (coefficients flottants)
+	return solveClassifiedInequality(expr, op, rationalToNumber(bound), strict, variable);
+}
+
+/**
+ * `a·x ± K` (a rationnel non nul, K constante sans x, non rationnelle) :
+ * racine exacte ∓K/a. Seulement a entier (√3/2, pas 3√3/2 à simplifier).
+ */
+function shiftedLinearRoot(
+	expr: MathNode,
+	variable: string
+): { root: MathNode; slope: number } | null {
+	if (expr.type !== 'addition' && expr.type !== 'subtraction') return null;
+	const leftHasX = containsVariable(expr.left, variable);
+	if (leftHasX === containsVariable(expr.right, variable)) return null;
+	const linear = leftHasX ? expr.left : expr.right;
+	const constant = leftHasX ? expr.right : expr.left;
+	if (constantRational(constant) !== null || nodeNumber(constant) === null) return null;
+	const rf = toRationalFunction(linear, variable);
+	if (!rf || rf.den.length !== 1 || rf.num.length !== 2 || !isRationalZero(rf.num[0])) return null;
+	const a = divRational(rf.num[1], rf.den[0]);
+	if (a.d !== 1n) return null;
+	// signe de K dans expr : + si addition ou K à gauche, − si soustrait à droite
+	const kSign = expr.type === 'addition' || !leftHasX ? 1 : -1;
+	// L de signe −1 si soustrait à droite (K − a·x)
+	const lSign = expr.type === 'subtraction' && !leftHasX ? -1 : 1;
+	const slope = lSign * rationalToNumber(a);
+	// slope·x + kSign·K = 0 → x = −kSign·K/slope
+	const negative = kSign * slope > 0;
+	const absA = a.n < 0n ? -a.n : a.n;
+	const body: MathNode =
+		absA === 1n ? constant : divide(constant, numberNode(absA.toString()), 'inline');
+	return { root: negative ? { type: 'opposite', operand: body } : body, slope };
+}
+
+/**
+ * `expr ⊳ c` quand expr = f(u) (f monotone) ou A ± k, k·A, A/k, −A : on
+ * ramène la contrainte sur u. Uniquement quand la nouvelle borne reste
+ * rationnelle (ln u ≥ 0 → u ≥ 1, mais ln u ≥ 2 → refus plutôt que e² décimal).
+ */
+function invertMonotone(
+	expr: MathNode,
+	op: '>=' | '<=',
+	c: Rational,
+	strict: boolean,
+	variable: string
+): Domain | null {
+	const flip = op === '>=' ? '<=' : '>=';
+	if (!containsVariable(expr, variable)) {
+		const value = tryConstantValue(expr);
+		if (value === null) return null;
+		return checkBound(value, op, rationalToNumber(c), strict) ? universalDomain() : emptyDomain();
+	}
+	switch (expr.type) {
+		case 'delimiter':
+			return solveInequalityForPreimage(expr.content, op, c, strict, variable);
+		case 'positive':
+			return solveInequalityForPreimage(expr.operand, op, c, strict, variable);
+		case 'opposite':
+			return solveInequalityForPreimage(expr.operand, flip, negRational(c), strict, variable);
+		case 'addition':
+		case 'subtraction': {
+			const sign = expr.type === 'addition' ? 1 : -1;
+			const k = constantRational(expr.right);
+			if (k && !containsVariable(expr.right, variable)) {
+				const shifted = sign === 1 ? subRational(c, k) : addRational(c, k);
+				return solveInequalityForPreimage(expr.left, op, shifted, strict, variable);
+			}
+			const h = constantRational(expr.left);
+			if (h && !containsVariable(expr.left, variable)) {
+				// h + A ⊳ c → A ⊳ c − h ; h − A ⊳ c → A ⊲ h − c
+				return sign === 1
+					? solveInequalityForPreimage(expr.right, op, subRational(c, h), strict, variable)
+					: solveInequalityForPreimage(expr.right, flip, subRational(h, c), strict, variable);
+			}
+			return null;
+		}
+		case 'multiplication': {
+			const [k, a] = containsVariable(expr.left, variable)
+				? [constantRational(expr.right), expr.left]
+				: [constantRational(expr.left), expr.right];
+			if (
+				!k ||
+				isRationalZero(k) ||
+				containsVariable(expr.left, variable) === containsVariable(expr.right, variable)
+			) {
+				return null;
+			}
+			return solveInequalityForPreimage(
+				a,
+				isRationalNegative(k) ? flip : op,
+				divRational(c, k),
+				strict,
+				variable
+			);
+		}
+		case 'division': {
+			const k = constantRational(expr.denominator);
+			if (!k || isRationalZero(k) || containsVariable(expr.denominator, variable)) return null;
+			return solveInequalityForPreimage(
+				expr.numerator,
+				isRationalNegative(k) ? flip : op,
+				mulRational(c, k),
+				strict,
+				variable
+			);
+		}
+		case 'superscript':
+			if (isEulerBase(expr.base) && containsVariable(expr.superscript, variable)) {
+				return invertExp(expr.superscript, op, c, strict, variable);
+			}
+			return null;
+		case 'function': {
+			if (expr.args.length !== 1) return null;
+			const u = expr.args[0];
+			const name = expr.name.toLowerCase();
+			const cv = rationalToNumber(c);
+			if (name === 'sqrt' && !expr.base) {
+				if (op === '>=') {
+					if (cv < 0 || (cv === 0 && !strict)) return universalDomain();
+					return solveInequalityForPreimage(u, '>=', mulRational(c, c), strict, variable);
+				}
+				if (cv < 0 || (cv === 0 && strict)) return emptyDomain();
+				return solveInequalityForPreimage(u, '<=', mulRational(c, c), strict, variable);
+			}
+			if (name === 'cbrt') {
+				return solveInequalityForPreimage(
+					u,
+					op,
+					mulRational(c, mulRational(c, c)),
+					strict,
+					variable
+				);
+			}
+			if (name === 'ln' || name === 'log' || name === 'log10' || name === 'log2') {
+				if (!isRationalZero(c)) return null;
+				return solveInequalityForPreimage(u, op, RATIONAL_ONE, strict, variable);
+			}
+			if (name === 'exp') return invertExp(u, op, c, strict, variable);
+			if (name === 'abs') {
+				if (op === '>=') {
+					if (cv < 0 || (cv === 0 && !strict)) return universalDomain();
+					if (cv === 0) return nonZeroSet(u, variable);
+					const above = solveInequalityForPreimage(u, '>=', c, strict, variable);
+					const below = solveInequalityForPreimage(u, '<=', negRational(c), strict, variable);
+					return above && below ? union(above, below) : null;
+				}
+				if (cv < 0 || (cv === 0 && strict)) return emptyDomain();
+				if (cv === 0) return null;
+				const above = solveInequalityForPreimage(u, '>=', negRational(c), strict, variable);
+				const below = solveInequalityForPreimage(u, '<=', c, strict, variable);
+				return above && below ? intersect(above, below) : null;
+			}
+			return null;
+		}
+		default:
+			return null;
+	}
+}
+
+function invertExp(
+	u: MathNode,
+	op: '>=' | '<=',
+	c: Rational,
+	strict: boolean,
+	variable: string
+): Domain | null {
+	const cv = rationalToNumber(c);
+	if (op === '>=') {
+		if (cv <= 0) return universalDomain();
+		if (cv === 1) return solveInequalityForPreimage(u, '>=', RATIONAL_ZERO, strict, variable);
+		return null;
+	}
+	if (cv <= 0) return emptyDomain();
+	if (cv === 1) return solveInequalityForPreimage(u, '<=', RATIONAL_ZERO, strict, variable);
+	return null;
+}
+
+/**
+ * Ensemble des x où `expr ≠ 0`, avec des points EXACTS ; `null` si inconnu.
+ */
+function nonZeroSet(expr: MathNode, variable: string): Domain | null {
+	if (!containsVariable(expr, variable)) {
+		// Paramètre non évaluable (1/a) : supposé non nul
+		const value = tryConstantValue(expr);
+		if (value === null) return universalDomain();
+		return Math.abs(value) < ZERO_TOLERANCE ? emptyDomain() : universalDomain();
+	}
+	const exact = exactZeros(expr, variable);
+	if (exact) {
+		return exact.length === 0
+			? universalDomain()
+			: excludePoints(
+					universalDomain(),
+					exact.map((r) => r.node)
+				);
+	}
+	switch (expr.type) {
+		case 'delimiter':
+			return nonZeroSet(expr.content, variable);
+		case 'opposite':
+		case 'positive':
+			return nonZeroSet(expr.operand, variable);
+		case 'multiplication': {
+			const l = nonZeroSet(expr.left, variable);
+			const r = nonZeroSet(expr.right, variable);
+			return l && r ? intersect(l, r) : null;
+		}
+		case 'division':
+			return nonZeroSet(expr.numerator, variable);
+		case 'addition':
+		case 'subtraction': {
+			// u ≠ 0 ⟺ u > 0 ou u < 0 (e^x − 1, √x − 2, |x| − 1, x − √2)
+			const positive = solveInequalityForPreimage(expr, '>=', RATIONAL_ZERO, true, variable);
+			const negative = solveInequalityForPreimage(expr, '<=', RATIONAL_ZERO, true, variable);
+			if (positive && negative) return union(positive, negative);
+			break;
+		}
+		case 'superscript': {
+			if (isEulerBase(expr.base)) return universalDomain();
+			if (containsVariable(expr.superscript, variable)) {
+				const baseValue = containsVariable(expr.base, variable)
+					? null
+					: tryConstantValue(expr.base);
+				return baseValue !== null && baseValue > 0 ? universalDomain() : null;
+			}
+			return nonZeroSet(expr.base, variable);
+		}
+		case 'function': {
+			if (expr.args.length !== 1) return null;
+			const u = expr.args[0];
+			const name = expr.name.toLowerCase();
+			if (name === 'sqrt' || name === 'cbrt' || name === 'abs') return nonZeroSet(u, variable);
+			if (name === 'exp') return universalDomain();
+			if (name === 'ln' || name === 'log' || name === 'log10' || name === 'log2') {
+				return nonZeroSet(subtractConstant(u, 1), variable);
+			}
+			if (name === 'sin') return getPeriodicExclusionDomain('csc', u, variable);
+			if (name === 'cos') return getPeriodicExclusionDomain('sec', u, variable);
+			if (name === 'tan') return getPeriodicExclusionDomain('cot', u, variable);
+			return null;
+		}
+	}
+	// Chemin historique (coefficients flottants)
+	const classified = classifyExpression(expr, variable);
+	if (classified.kind === 'complex') return null;
+	const zeros = findZeros(expr, variable);
+	return zeros.length === 0
+		? universalDomain()
+		: excludePoints(
+				universalDomain(),
+				zeros.map((z) => numericNode(z))
+			);
+}
+
+/**
+ * `domain ∩ nonZero`, sans perte silencieuse (voir `safeIntersect`).
+ */
+function restrictTo(
+	domain: Domain,
+	nonZero: Domain,
+	options: ComputeDomainOptions,
+	source: MathNode
+): Domain {
+	return safeIntersect(domain, nonZero, options, source);
+}
+
+/**
+ * Intersection qui REFUSE ce qu'elle ne sait pas représenter : une exclusion
+ * périodique combinée à autre chose (`tan x + 1/x`) perdait l'autre
+ * contrainte en silence (`excludePoints` ignore un domaine périodique).
+ */
+function safeIntersect(
+	a: Domain,
+	b: Domain,
+	options: ComputeDomainOptions,
+	source: MathNode
+): Domain {
+	if (a.kind === 'universal') return b;
+	if (b.kind === 'universal') return a;
+	const periodicA = a.kind === 'periodic_exclusion';
+	const periodicB = b.kind === 'periodic_exclusion';
+	if (periodicA || periodicB) {
+		if (periodicA && periodicB && samePeriodic(a, b)) return a;
+		markUnresolved(options, toLatex(source));
+		return periodicA ? a : b;
+	}
+	return intersect(a, b);
+}
+
+function samePeriodic(a: Domain, b: Domain): boolean {
+	if (a.kind !== 'periodic_exclusion' || b.kind !== 'periodic_exclusion') return false;
+	const pa = nodeNumber(a.period);
+	const pb = nodeNumber(b.period);
+	const ba = nodeNumber(a.basePoint);
+	const bb = nodeNumber(b.basePoint);
+	if (pa === null || pb === null || ba === null || bb === null) return false;
+	if (Math.abs(pa - pb) > 1e-12) return false;
+	const k = Math.round((ba - bb) / pa);
+	return Math.abs(ba - bb - k * pa) < 1e-12;
+}
+
+/**
+ * Forme canonique des points exclus :
+ * - un point hors du domaine disparaît (`]0 ; +∞[ \ {0}` → `]0 ; +∞[`) ;
+ * - un point sur une borne fermée l'ouvre (`[0 ; +∞[ \ {0}` → `]0 ; +∞[`) ;
+ * - ℝ privé de points s'écrit `ℝ \ {a ; b}` (deux intervalles ouverts
+ *   jointifs y sont recollés) ; sinon le point coupe l'intervalle
+ *   (`]0 ; +∞[ \ {1}` → `]0 ; 1[ ∪ ]1 ; +∞[`).
+ */
+function normalizeExcludedPoints(domain: Domain): Domain {
+	if (domain.kind !== 'interval_set') return domain;
+	type Bound = { node: MathNode; value: number; closed: boolean };
+	const toBound = (b: { value: MathNode; type: string }): Bound | null => {
+		const value =
+			b.value.type === 'infinity'
+				? b.value.sign === 'positive'
+					? Infinity
+					: -Infinity
+				: nodeNumber(b.value);
+		return value === null ? null : { node: b.value, value, closed: b.type === 'closed' };
+	};
+	const pieces: { lo: Bound; hi: Bound }[] = [];
+	for (const i of domain.intervals) {
+		const lo = toBound(i.lower);
+		const hi = toBound(i.upper);
+		if (!lo || !hi) return domain;
+		pieces.push({ lo, hi });
+	}
+	const points: { node: MathNode; value: number }[] = [];
+	for (const p of domain.excludedPoints ?? []) {
+		const value = nodeNumber(p.value);
+		if (value === null) return domain;
+		points.push({ node: p.value, value });
+	}
+	pieces.sort((a, b) => a.lo.value - b.lo.value);
+	const near = (a: number, b: number) => Math.abs(a - b) < 1e-12 * Math.max(1, Math.abs(a));
+
+	// 1. Points sur une borne / hors du domaine
+	const interior: { node: MathNode; value: number }[] = [];
+	for (const p of points) {
+		let kept = false;
+		for (const piece of pieces) {
+			if (near(p.value, piece.lo.value)) piece.lo = { ...piece.lo, closed: false };
+			else if (near(p.value, piece.hi.value)) piece.hi = { ...piece.hi, closed: false };
+			else if (p.value > piece.lo.value && p.value < piece.hi.value) kept = true;
+		}
+		if (kept && !interior.some((q) => near(q.value, p.value))) interior.push(p);
+	}
+	const valid = pieces.filter(
+		(piece) => piece.lo.value < piece.hi.value || (piece.lo.closed && piece.hi.closed)
+	);
+	if (valid.length === 0) return emptyDomain();
+
+	// 2. ℝ privé de points ?
+	const gaps: { node: MathNode; value: number }[] = [];
+	let realLineMinusPoints =
+		valid[0].lo.value === -Infinity && valid[valid.length - 1].hi.value === Infinity;
+	for (let i = 0; realLineMinusPoints && i + 1 < valid.length; i++) {
+		const a = valid[i].hi;
+		const b = valid[i + 1].lo;
+		if (near(a.value, b.value) && !a.closed && !b.closed)
+			gaps.push({ node: a.node, value: a.value });
+		else if (!(near(a.value, b.value) && (a.closed || b.closed))) realLineMinusPoints = false;
+	}
+	const endpoint = (b: Bound) =>
+		b.value === -Infinity
+			? negInfinityEndpointOf()
+			: b.value === Infinity
+				? posInfinityEndpointOf()
+				: b.closed
+					? closedEndpoint(b.node)
+					: openEndpoint(b.node);
+	if (realLineMinusPoints) {
+		const all = [...gaps, ...interior].sort((a, b) => a.value - b.value);
+		if (all.length === 0) return universalDomain();
+		return intervalDomain(
+			[realLine()],
+			all.map((p) => excludedPoint(p.node))
+		);
+	}
+
+	// 3. Points intérieurs gardés en points exclus (]0 ; +∞[ \\ {1}) : couper
+	// l'intervalle ferait du point une borne, ce que les limites lisent
+	// comme une frontière du domaine
+	return intervalDomain(
+		valid.map((piece) => interval(endpoint(piece.lo), endpoint(piece.hi))),
+		interior.sort((a, b) => a.value - b.value).map((p) => excludedPoint(p.node))
+	);
+}
+
+function markUnresolved(options: ComputeDomainOptions, constraint: string): void {
+	options.unresolved?.push(constraint);
+}
+
+function containsVariable(node: MathNode, variable: string): boolean {
+	return findNodes(node, (n) => n.type === 'variable' && n.name === variable).length > 0;
+}
+
+function isEulerBase(node: MathNode): boolean {
+	return (
+		(node.type === 'constant' && node.constant === 'euler') ||
+		(node.type === 'variable' && node.name === 'e')
+	);
+}
+
+/** Valeur numérique d'un nœud sans variable ; null si non évaluable. */
+function tryConstantValue(node: MathNode): number | null {
+	return nodeNumber(node);
+}
+
+/** Valeur numérique (via `compile`, seul générateur sûr) ; null si non finie. */
+function nodeNumber(node: MathNode): number | null {
+	try {
+		const value = compile(node)({});
+		return typeof value === 'number' && Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Chemin historique : classification en polynôme à coefficients flottants.
+ */
+function solveClassifiedInequality(
+	expr: MathNode,
+	op: '>=' | '<=',
 	bound: number,
 	strict: boolean,
 	variable: string
@@ -891,11 +1425,9 @@ function solveInequalityForPreimage(
 
 	switch (exprType.kind) {
 		case 'linear':
-			// expr = a*x + b, solve a*x + b >= bound or a*x + b <= bound
 			return solveLinearInequality(exprType.a, exprType.b, op, bound, strict, variable);
 
 		case 'quadratic':
-			// expr = a*x² + b*x + c, solve inequality
 			return solveQuadraticInequality(
 				exprType.a,
 				exprType.b,
@@ -907,7 +1439,6 @@ function solveInequalityForPreimage(
 			);
 
 		case 'cubic':
-			// expr = a*x³ + b*x² + c*x + d, solve inequality
 			return solveCubicInequality(
 				exprType.a,
 				exprType.b,
@@ -920,7 +1451,6 @@ function solveInequalityForPreimage(
 			);
 
 		case 'quartic':
-			// expr = a*x⁴ + b*x³ + c*x² + d*x + e, solve inequality
 			return solveQuarticInequality(
 				exprType.a,
 				exprType.b,
@@ -934,14 +1464,11 @@ function solveInequalityForPreimage(
 			);
 
 		case 'constant': {
-			// Check if constant satisfies the constraint
-			const val = exprType.value;
-			const satisfied = checkBound(val, op, bound, strict);
+			const satisfied = checkBound(exprType.value, op, bound, strict);
 			return satisfied ? universalDomain() : { kind: 'empty' };
 		}
 
 		case 'complex':
-			// Cannot solve analytically
 			return null;
 	}
 }
@@ -960,33 +1487,6 @@ function checkBound(value: number, op: '>=' | '<=', bound: number, strict: boole
 // =============================================================================
 // Helper Functions
 // =============================================================================
-
-/**
- * Try to get a numeric value from a node.
- */
-function tryGetNumericValue(node: MathNode): number | null {
-	if (node.type === 'number') {
-		return parseFloat(node.value);
-	}
-	if (node.type === 'opposite' && node.operand.type === 'number') {
-		return -parseFloat(node.operand.value);
-	}
-	return null;
-}
-
-/**
- * Try to get a fraction value (numerator/denominator) from a node.
- */
-function tryGetFractionValue(node: MathNode): { numerator: number; denominator: number } | null {
-	if (node.type === 'division') {
-		const num = tryGetNumericValue(node.numerator);
-		const den = tryGetNumericValue(node.denominator);
-		if (num !== null && den !== null && den !== 0) {
-			return { numerator: num, denominator: den };
-		}
-	}
-	return null;
-}
 
 /**
  * Try to evaluate a constant MathNode to a number.

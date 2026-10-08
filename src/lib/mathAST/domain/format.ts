@@ -18,7 +18,6 @@ import {
 	formatDomainFull as intervalsFormatFull,
 	formatEndpointValue
 } from '$lib/math/intervals/format';
-import { toCustom } from '../custom-generator';
 
 // =============================================================================
 // Re-export from intervals
@@ -213,7 +212,8 @@ function formatComparisonOp(op: string): string {
  * Format a MathNode for display in domain context.
  */
 function formatMathNode(node: import('../types').MathNode): string {
-	return toCustom(node);
+	// Même rendu que les bornes d'intervalle : π/2, pas \pi/2
+	return formatEndpointValue(node);
 }
 
 /**
