@@ -77,6 +77,26 @@ calcule 229, résous 28, réduis 21, convertis 17, décompose 15, détermine 14,
 simplifie 10, factorise 9. **87 termes** à ≥ 5 énoncés ou ≥ 10 corrections = lot de relecture
 prioritaire. Bruit : nombre 68 / 151, forme 49, plus 24 / 50, chiffre 12 / 70.
 
+## Relecture contre les programmes officiels (2026-10-09)
+
+Demandée par David (« relis les programmes officiels pour vérifier le dictionnaire »). Six agents,
+textes du BO lus en entier, citations vérifiées par script. **Synthèse :
+[lexique/relecture-bo.md](lexique/relecture-bo.md)** · détail terme par terme :
+[lexique/relecture-bo-detail.md](lexique/relecture-bo-detail.md) · données :
+[lexique/relecture-bo.json](lexique/relecture-bo.json) (`niveauBO`, citations, jugements par
+portée, manquants).
+
+- **Cause racine trouvée** : le niveau des définitions est décalé d'une entrée (367 / 374),
+  depuis le refactor `b5ad54933` du 2026-04-19. Les 89 + 116 anomalies de niveau mesurées plus
+  haut en découlent : correction mécanique, pas 205 corrections de contenu.
+- Niveaux : 145 en accord, 108 trop tard, 89 trop tôt, 25 absents des programmes de la voie
+  générale. Définitions : 131 termes avec au moins un défaut (14 fausses, 10 circulaires, 73
+  inadaptées au niveau, 48 trop étroites ou trop larges, surtout des homonymes). 471 expressions
+  du BO absentes du dictionnaire.
+- **Élèves en prod** : 6e 37 · `1_GEN` 19 · T_SPE 17 · 2de 4 · 1_SPE 1 ; aucun du CP au CM2.
+  `1_GEN` a pour prérequis `2` et aucun terme : ces 19 élèves ne voient que le vocabulaire
+  jusqu'à la 2de.
+
 ## Lot 0 — spécification proposée (⏳ en attente de validation de David)
 
 Comportements testés (doivent échouer avant correction des données) :
@@ -106,8 +126,13 @@ Questions ouvertes :
 - Q1 **Niveau d'apparition** = première mention au BO (cercle : reconnaître au CE1), la
   définition exigible venant plus tard (6e) comme deuxième définition ? Et la popup montre-t-elle
   seulement la définition du niveau du lecteur (mode `discriminant`) ?
-- Q2 **Voies techno / Tle comp.** : le dictionnaire ne connaît que la voie générale ; un élève
-  `1_TECHNO` ne voit rien de `1_SPE`.
+- Q2 **Voies techno / Tle comp. / `1_GEN`** : le dictionnaire ne connaît que la voie générale ;
+  urgent pour `1_GEN` (19 élèves), pas pour la voie techno (aucun élève).
+- Q3 **Termes absents des programmes** (rotation, homothétie, PPCM, hypoténuse, monôme…) :
+  garder (« on classe ce que c'est, pas le programme »), retirer « shisma » ?
+- Q4 **471 manquants** : lesquels dans le lot 0 ? Proposition : vocabulaire et définitions que
+  le BO exige aux niveaux des élèves actuels (CP → 6e, 2de, `1_GEN`, T_SPE) et sens manquants des
+  homonymes ; le reste par lots ultérieurs.
 
 ## Reprise
 
