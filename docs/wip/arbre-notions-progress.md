@@ -703,3 +703,17 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (état final rejoué = fixtures, 363/363), CI verte. Vérifié prod : CM1 138, CM2 124, 6e 101,
   ordre 1..n, 17 réfs, 1 936 points du nouveau monde, 772 réfs. Le test 6e filtre désormais
   par grade (6-200, 6-201 sortent du motif 6-1xx).
+
+- **PASSE « PUCES ET POINTS » SUR LE CYCLE 4 EN PROD (2026-10-09, PR #977) — LA PASSE EST
+  FINIE SUR TOUS LES NIVEAUX DU PRIMAIRE ET DU COLLÈGE.** 13 puces scindées (+17 points :
+  5-107…115, 4-070…072, 3-052…056 ; 5-073 scindé, reco du doute 1), 12 spécifications, 4
+  libellés remis au mot près du BO (4-001, 4-003, 4-013, 4-020), 42 références AJOUTÉES (la
+  partie qui garde le code est celle que visent les références : 4-025 « résoudre », 5-077
+  « graphiques », 4-034/3-022 théorème direct, 3-008 analytique), **5-081 et 3-031
+  SUPPRIMÉS** (0 usage revérifié avant `db:migrate`, garde testée en local). Preuve rouge
+  (8 fichiers), intégration verte, audit sans bloquant (rejeu prod + migration = fixtures,
+  241/241), CI verte. Vérifié prod : 5e 114, 4e 72, 3e 55, ordre 1..n, 42 réfs ; **1 951
+  points du nouveau monde, 814 références, ancien monde intact (1 007)**. Laissé à David
+  (mineur, signalé par l'audit) : 3-053 (x² = a graphique) et 5-112…114 (représenter des
+  données) ne reçoivent aucune référence — les lignes d'automatismes ne les visaient pas
+  avant la scission. Restent : rangements (modèles, exercices) ; C5.
