@@ -159,7 +159,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	'AMBIGUOUS_VARIABLE',
 	'BARE_FUNCTION',
 	'TAYLOR_ORDER',
-	'NOT_DIFFERENTIABLE'
+	'NOT_DIFFERENTIABLE',
+	// `.intégrer 1/x -1 1` : « L'intégrale diverge ou n'est pas définie… »
+	'INTEGRAL_UNDEFINED'
 ]);
 
 /**

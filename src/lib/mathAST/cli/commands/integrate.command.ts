@@ -14,7 +14,8 @@
  * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
  * (voir `core/variable-argument.ts`). Plus de « dernier mot = variable » :
  * `.integrate x^2 y` intégrait en y. Les bornes sont les deux derniers
- * NOMBRES, avant ou après `; t` (`t^2 0 1 ; t` = `t^2 ; t 0 1`).
+ * mots, avant ou après `; t` (`t^2 0 1 ; t` = `t^2 ; t 0 1`) : deux nombres,
+ * ou un nombre et une lettre (`x^2 0 a` → a³/3, voir `splitIntegralArgument`).
  */
 
 import chalk from 'chalk';
@@ -22,7 +23,7 @@ import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { toLatex } from '../../latex-generator';
-import { parse } from '../core/pipeline';
+import { parse, type PipelineOptions } from '../core/pipeline';
 import { integrate, integrateDefinite, IntegrationError } from '../../integration';
 import type {
 	IntegrationVerbosity,
@@ -36,6 +37,7 @@ import {
 	bareFunctionName,
 	chosenVariable,
 	indexVariables,
+	NUMERIC_BOUND,
 	otherVariableHint,
 	splitIntegralArgument
 } from '../core/variable-argument';
@@ -160,8 +162,15 @@ export class IntegrateCommand extends BaseCommand {
 
 			if (bounds) {
 				// Definite integral - create MathNode bounds
-				const lowerNode = numericNode(bounds.lower);
-				const upperNode = numericNode(bounds.upper);
+				const lowerNode = this.boundNode(bounds.lower, parserOptions);
+				const upperNode = this.boundNode(bounds.upper, parserOptions);
+				if (lowerNode === null || upperNode === null) {
+					return {
+						success: false,
+						output: '',
+						error: { code: 'PARSE_ERROR', message: 'Failed to parse integration bounds' }
+					};
+				}
 
 				const result = integrateDefinite(parseResult.ast, lowerNode, upperNode, {
 					variable,
@@ -202,6 +211,16 @@ export class IntegrateCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
+	}
+
+	/**
+	 * Une borne : un nombre (`numericNode`, comme avant) ou une lettre, lue par
+	 * le même parseur que l'expression (`a` lié par `.let` y est remplacé).
+	 */
+	private boundNode(text: string, parserOptions: PipelineOptions | undefined): MathNode | null {
+		if (NUMERIC_BOUND.test(text)) return numericNode(parseFloat(text));
+		const parsed = parse(text, parserOptions);
+		return parsed.errors.length > 0 || !parsed.ast ? null : parsed.ast;
 	}
 
 	private formatIndefiniteResult(
@@ -248,7 +267,7 @@ export class IntegrateCommand extends BaseCommand {
 	private formatDefiniteResult(
 		expr: MathNode,
 		variable: string,
-		bounds: { lower: number; upper: number },
+		bounds: { lower: string; upper: string },
 		result: DefiniteIntegrateResult,
 		verbosity: IntegrationVerbosity
 	): CommandResult {
@@ -296,6 +315,16 @@ export class IntegrateCommand extends BaseCommand {
 			lines.push(
 				chalk.yellow(`∫[${boundStr}] ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu')
 			);
+
+			// Le moteur dit POURQUOI (pôle dans [a ; b], #947) : message en
+			// français, montré tel quel à l'élève par l'atelier
+			if (result.error !== undefined) {
+				return {
+					success: false,
+					output: lines.join('\n'),
+					error: { code: 'INTEGRAL_UNDEFINED', message: result.error }
+				};
+			}
 
 			return {
 				success: false,

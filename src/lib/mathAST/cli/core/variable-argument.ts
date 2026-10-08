@@ -64,8 +64,18 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 const BARE_FUNCTION =
 	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?\()/;
 
-/** Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`. */
-const TRAILING_BOUNDS = /^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+))\s+([-+]?(?:\d+\.?\d*|\.\d+))$/s;
+/**
+ * Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`, ou
+ * `… 0 a` — une borne est un NOMBRE, une LETTRE (`a`, `b_1`, `-a`) ou un
+ * groupe sans espace entre parenthèses : `(2)`, ce que l'atelier substitue à
+ * un objet `a = 2`.
+ * `boundPair` dit ensuite si la paire est bien une paire de bornes.
+ */
+const TRAILING_BOUNDS =
+	/^(.*\S)\s+([-+]?(?:\d+\.?\d*|\.\d+|[A-Za-z](?:_\d+)?|\([^()\s]+\)))\s+([-+]?(?:\d+\.?\d*|\.\d+|[A-Za-z](?:_\d+)?|\([^()\s]+\)))$/s;
+
+/** Une borne numérique (les autres : lettre ou groupe entre parenthèses). */
+export const NUMERIC_BOUND = /^[-+]?(?:\d+\.?\d*|\.\d+)$/;
 
 /**
  * L'ordre (entier) et le point (facultatif) de `.taylor`, en fin de texte :
@@ -166,25 +176,56 @@ export function otherVariableHint(
 
 /**
  * Séparer l'argument de `.integrate` : expression, variable après `;` (ou
- * `null`) et bornes — les deux derniers NOMBRES, avant ou après `; t`
+ * `null`) et bornes — les deux derniers mots, nombres ou lettre (`0 a`, voir
+ * `boundPair`), avant ou après `; t`
  * (`t^2 0 1 ; t` comme `t^2 ; t 0 1`).
  */
 export function splitIntegralArgument(input: string): {
 	expression: string;
 	variable: string | null;
-	bounds: { lower: number; upper: number } | null;
+	bounds: { lower: string; upper: string } | null;
 } {
 	const trimmed = input.trim();
 	// Bornes en fin (`… ; t 0 1` ou `… 0 1`), sinon juste avant `; t`
-	const trailing = TRAILING_BOUNDS.exec(trimmed);
+	const trailing = boundPair(TRAILING_BOUNDS.exec(trimmed), null);
 	const { expression, variable } = splitVariableArgument(trailing === null ? trimmed : trailing[1]);
-	const inner = trailing === null ? TRAILING_BOUNDS.exec(expression) : null;
-	const found = trailing ?? inner;
+	const accepted = trailing === null ? null : boundPair(trailing, variable);
+	const inner = trailing === null ? boundPair(TRAILING_BOUNDS.exec(expression), variable) : null;
+	const found = accepted ?? inner;
+	if (trailing !== null && accepted === null) {
+		// `t^2 ; t 0 t` : la « borne » t est la variable — rien n'est une borne
+		return { expression: trimmed, variable: null, bounds: null };
+	}
 	return {
 		expression: inner === null ? expression : inner[1].trim(),
 		variable,
-		bounds: found === null ? null : { lower: parseFloat(found[2]), upper: parseFloat(found[3]) }
+		bounds: found === null ? null : { lower: found[2], upper: found[3] }
 	};
+}
+
+/**
+ * La paire `… u v` est-elle une paire de bornes ? Deux nombres, toujours.
+ * Une lettre seulement si l'AUTRE borne est un nombre (ou un groupe `(2)`) et
+ * si la lettre n'est pas la variable : `x^2 0 a` (borne a), mais `2 x 3` reste le produit 2·x·3,
+ * `x a b` le produit x·a·b — sans nombre, rien ne dit que ce sont des bornes —
+ * et `x^2 + 3 a` la somme x² + 3a.
+ */
+function boundPair(match: RegExpExecArray | null, variable: string | null): RegExpExecArray | null {
+	if (match === null) return null;
+	const kinds = [match[2], match[3]].map(boundKind);
+	if (kinds.every((kind) => kind === 'number')) return match;
+	if (kinds.every((kind) => kind === 'letter')) return null;
+	// `x^2 + 3 a` : x² + 3a, l'expression ne s'arrête pas sur un opérateur
+	if (/[-+*/^(,=]$/.test(match[1])) return null;
+	// Variable inconnue ici (avant `; t`) : x seulement, le cas d'après la vérifie
+	const name = variable ?? DEFAULT_VARIABLE;
+	return [match[2], match[3]].some((bound) => bound.replace(/^[-+]/, '') === name) ? null : match;
+}
+
+/** Un nombre, une lettre, ou un groupe entre parenthèses (`(2)`). */
+function boundKind(bound: string): 'number' | 'letter' | 'group' {
+	if (NUMERIC_BOUND.test(bound)) return 'number';
+	return bound.endsWith(')') ? 'group' : 'letter';
 }
 
 /**

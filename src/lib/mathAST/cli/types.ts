@@ -41,7 +41,9 @@ export type ErrorCode =
 	/** `.taylor` : ordre au-delà de la limite — message en français, destiné à l'élève */
 	| 'TAYLOR_ORDER'
 	/** Dérivée refusée (`floor`, `abs`…) : message en français, destiné à l'élève */
-	| 'NOT_DIFFERENTIABLE';
+	| 'NOT_DIFFERENTIABLE'
+	/** Intégrale définie refusée (pôle dans [a ; b]) : message en français, destiné à l'élève */
+	| 'INTEGRAL_UNDEFINED';
 
 /**
  * Structured error for command execution
