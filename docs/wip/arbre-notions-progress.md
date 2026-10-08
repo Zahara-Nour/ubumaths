@@ -562,3 +562,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   106/69/51 points, 0 sans nœud, 44/40/34 réfs, fluence 5, algorithme 18, demonstration
   4, 696 nœuds (ratio), 1 007 anciens intacts. Diagramme republié (v43). Suivent, dans
   l'ordre des années : 2de (déjà extraite), 1re spé, Tle spé, Tle comp., Expertes.
+
+- **LE SEED 2de EST EN PROD (2026-10-08, PR #954) — CP→2de : 996 points du nouveau monde,
+  204 références d'automatismes.** `seed-2de.md` validé intégralement par David (11 puces
+  multi-notions scindées → 28 points, 10 non-scissions argumentées, 2 puces trop larges
+  NON retenues : ex-2-099 « représentation la plus adaptée des vecteurs » et ex-2-100
+  « méthodes diverses » — évaluation par compétence, pas des points ; L1 bloc algo en
+  `algorithme`, L2 Exemples d'algorithme `attendu`, L3 Approfondissements savoir-faire).
+  Arbre `.15` : branche Logique restructurée (C2) — « Proposition mathématique » en tête
+  (statut des lettres + et, ou, non), contre-exemple → Raisonnements ; diagramme v44.
+  Vérifié prod : 200 points (2-201…2-400), 0 sans nœud, 58 réfs dont 8 auto-références,
+  algorithme 27, démonstration 11, approfondissement 14, 185 anciens 2de et 1 007 anciens
+  intacts, 696 nœuds. Audit : rien de bloquant (rollback : tables en cascade nommées ;
+  collision de codes vérifiée en prod). CI : un timeout de l'oracle des limites (5 037 ms
+  sous charge, 0,8 s en local ×3) → relance verte ; 2ᵉ test instable connu. Suivent :
+  1re spé, Tle spé, Tle comp., Expertes.

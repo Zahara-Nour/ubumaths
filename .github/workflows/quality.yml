@@ -3,10 +3,17 @@ name: Code Quality
 on:
   push:
     branches: [main, feature/**]
-    paths-ignore:
-      - '**/*.md'
-      - 'docs/**'
-      - '.github/dependabot.yml'
+    # `paths` (et non `paths-ignore`) pour pouvoir RÉINCLURE : le dernier motif
+    # qui correspond l'emporte. docs/corrections est validé par un test
+    # (scripts/corrections : pas d'identifiant d'utilisateur, RGPD) : un commit
+    # de doc qui le touche doit déclencher la CI. Tout autre fichier lu par un
+    # test vit sous tests/ (garde : src/lib/__tests__/tests-sans-lecture-de-docs).
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!docs/**'
+      - '!.github/dependabot.yml'
+      - 'docs/corrections/**'
   pull_request:
     branches: [main]
     # No paths-ignore here: with required status checks on `main`, EVERY PR must

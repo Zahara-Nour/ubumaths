@@ -66,6 +66,8 @@ git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs
 
 Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un `.sql`) → **branche + PR**. (Plafond de 2 fichiers levé le 2026-09-14 : le raisonnement est le même à 2 qu'à 20.)
 
+⚠️ **Aucun test ne lit `docs/`** (2026-10-08 : un commit de doc a passé `docs/wip/arbre-notions/arbre-notions.json` en .15 sans CI, et le test du seed a cassé sur toutes les PR suivantes). Un fichier dont dépend un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` (copie figée, mise à jour avec la migration ou le code qui la justifie) ; garde : `src/lib/__tests__/tests-sans-lecture-de-docs.test.ts`. Seule exception : `docs/corrections/**`, validé par un test (RGPD) — un push qui le touche déclenche la CI.
+
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
 - **Migrations** : additive → `db:migrate` avant/avec le deploy ; destructive → après. Uniquement depuis la branche mergée.
