@@ -21,6 +21,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 14  | 2026-11-05 | La règle des signes (`nombrilie-regle-des-signes`)                                              | ✅ validé — Échelle de Loyauté (−2, −3 → +6), « additionner leurs forces », auto-dénonciation, bal des opposants par deux, complots en nombre impair (+ vrai du faux), chapô Quatr'esme |
 | 15  | 2026-11-09 | Les soldes de Mère Ubu (`nombrilie-soldes-mere-ubu`)                                            | ✅ validé — titre « comptaient sur / comptait mieux », thermes d'Empoche-les-Bains, parade « moins puis plus » chiffrée (8 → 4 → 6), l'ordre ne change rien                             |
 | 16  | 2026-11-12 | Le camp du Capitaine Bordure (`bedonstan-camp-de-bordure`)                                      | ✅ validé — titre « découvre la géométrie / découvre la facture », soupe sans contradiction, chute « économies d'échelle » + dormir debout, vrai du faux k = ½                          |
+| 17  | 2026-11-16 | Le paradoxe des anniversaires (`pifometrie-anniversaires`)                                      | ✅ validé — titre « flaire un complot / flaire une bonne affaire », Galopin « ne savait pas encore compter », pari gagnant du Cheval à Phynances (+ vrai du faux)                       |
 
 ## Outillage ajouté pendant la relecture
 
