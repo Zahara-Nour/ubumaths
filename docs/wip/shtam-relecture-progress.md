@@ -15,6 +15,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 8   | 2026-10-15 | L'Hôtel de l'Infini (`yoyolande-hotel-de-l-infini`)                                             | ✅ validé — réécrit autour d'un seul client de plus (n → n+1), hôtel fini de 100 chambres en contre-exemple, Dedekind                                          |
 | 9   | 2026-10-19 | 0,999… = 1 (`nombrilie-zero-virgule-neuf`)                                                      | ✅ validé — « une infinité de 9 » (pas « beaucoup »), chute « il me manque tout », le petit bout plus petit que 0,1 ; 0,01… ; « aux dépens » gardé (David)     |
 | 10  | 2026-10-22 | Les rails de Sandomir (`bedonstan-rails-de-sandomir`, ex-`bedonstan-paralleles-se-rencontrent`) | ✅ validé — réécrit : rails + chef de gare, géométrie de l'œil ; vrai du faux Euclide / projective / sphère / Lobatchevski + 3 SVG                             |
+| 11  | 2026-10-26 | Le paradoxe du barbier (`patatovie-barbier-paradoxe`)                                           | ✅ validé — barbe retirée, une joue rasée (problème sur les deux), décret de Faustroll « dans quel sens », nouvelle vitrine « hier » (un jour sur deux)        |
 
 ## Outillage ajouté pendant la relecture
 
