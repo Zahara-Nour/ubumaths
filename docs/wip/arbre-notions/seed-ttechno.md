@@ -90,7 +90,7 @@ auto-référencé (Y1/Y2) : l'indice de base 100 (TTECHNO-015).
 | Calculer un taux d'évolution réciproque                                                          | 2-379                                                       |
 | _Reconnaitre une situation se modélisant par une suite géométrique dont on identifie la raison_  | 1TECHNO-042 · 1TECHNO-036                                   |
 | Opérations et comparaisons entre des fractions simples                                           | 4-013 · 5-025                                               |
-| Opérations sur les puissances                                                                    | 3-005                                                       |
+| Opérations sur les puissances                                                                    | 3-005 · 3-052                                               |
 | Passer d'une écriture d'un nombre à une autre (décimale, fractionnaire, scientifique)            | 6-106 · 3-006                                               |
 | Estimer un ordre de grandeur                                                                     | 6-119                                                       |
 | Effectuer des conversions d'unités                                                               | CM1-068 · 6-150 · 5-051 · CE2-052 · 6-159 · 4-052 · CE2-047 |
@@ -98,7 +98,7 @@ auto-référencé (Y1/Y2) : l'indice de base 100 (TTECHNO-015).
 | Signe d'une expression du premier degré, d'une expression factorisée du second degré             | 2-328 · 2-330 · 1TECHNO-066                                 |
 | Isoler une variable dans une égalité ou une inégalité                                            | 2-273 · 2-274                                               |
 | Application numérique d'une formule                                                              | 5-035                                                       |
-| Développer, factoriser, réduire une expression algébrique simple                                 | 3-016 · 4-022 · 5-039                                       |
+| Développer, factoriser, réduire une expression algébrique simple                                 | 3-016 · 4-022 · 4-070 · 5-039                               |
 | _Calculer la dérivée d'une fonction polynomiale de degré ≤ 3_                                    | 1TECHNO-080                                                 |
 | _Coefficient directeur de la tangente en un point à l'aide de la dérivée_                        | 1TECHNO-077 · 1TECHNO-079                                   |
 | Déterminer graphiquement des images et des antécédents                                           | 3-040                                                       |
@@ -110,8 +110,8 @@ auto-référencé (Y1/Y2) : l'indice de base 100 (TTECHNO-015).
 | Lire graphiquement l'équation réduite d'une droite                                               | 2-315                                                       |
 | Équation réduite d'une droite à partir de deux de ses points                                     | 2-314                                                       |
 | _Déterminer graphiquement le coefficient directeur d'une tangente à une courbe_                  | 1TECHNO-077                                                 |
-| Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…               | 5-077 · 2-372 · 3-030                                       |
-| Passer du graphique aux données et vice versa                                                    | 5-077 · 5-096                                               |
+| Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…               | 5-077 · 5-110 · 5-111 · 2-372 · 3-030                       |
+| Passer du graphique aux données et vice versa                                                    | 5-077 · 5-110 · 5-111 · 5-096                               |
 
 (_Italique_ = ligne propre à la Tle selon le BO. Les doublons — 2-377, 1TECHNO-066,
 1TECHNO-077, 5-077 — ne comptent qu'une fois : la clé est (point, grade).) Cibles des lignes

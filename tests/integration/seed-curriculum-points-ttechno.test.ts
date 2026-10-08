@@ -171,7 +171,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 		expect(fixture.version).toBe('2026-10-07.15');
 		expect(fixture.points).toHaveLength(69);
 		expect(fixture.points.every((p) => p.grade === 'T_TECHNO')).toBe(true);
-		expect(fixture.references).toHaveLength(85);
+		expect(fixture.references).toHaveLength(89);
 	});
 
 	it('les 69 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
@@ -198,7 +198,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 			.sort();
 		const expected = fixture.references.map((r) => `${r.code}|${r.grade}`).sort();
 		expect(actual).toEqual(expected);
-		expect(actual).toHaveLength(85);
+		expect(actual).toHaveLength(89);
 		// Aucune référence ne vise l'ancien seed (grade NULL).
 		expect(refRows.every((r) => pointsById.get(r.point_id)?.grade !== null)).toBe(true);
 		const codes = new Set(actual.map((s) => s.split('|')[0]));

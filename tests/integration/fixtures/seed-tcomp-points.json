@@ -2075,6 +2075,30 @@
 		{
 			"code": "6-201",
 			"grade": "T_COMP"
+		},
+		{
+			"code": "5-108",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-110",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-111",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-070",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-052",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-056",
+			"grade": "T_COMP"
 		}
 	]
 }

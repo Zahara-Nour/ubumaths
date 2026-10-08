@@ -165,16 +165,16 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (226 points, arbre .14)', () => {
+	it('la fixture est bien celle du document validé (241 points après la passe)', () => {
 		expect(fixture.version).toBe('2026-10-07.14');
-		expect(fixture.points).toHaveLength(226);
-		expect(fixture.points.filter((p) => p.grade === '5')).toHaveLength(106);
-		expect(fixture.points.filter((p) => p.grade === '4')).toHaveLength(69);
-		expect(fixture.points.filter((p) => p.grade === '3')).toHaveLength(51);
+		expect(fixture.points).toHaveLength(241);
+		expect(fixture.points.filter((p) => p.grade === '5')).toHaveLength(114);
+		expect(fixture.points.filter((p) => p.grade === '4')).toHaveLength(72);
+		expect(fixture.points.filter((p) => p.grade === '3')).toHaveLength(55);
 		expect(fixture.references.length).toBeGreaterThan(100);
 	});
 
-	it('les 226 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 241 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -189,7 +189,7 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(226);
+		expect(pointRows).toHaveLength(241);
 	});
 
 	it('les références d’automatismes (5e, 4e, 3e) visent EXACTEMENT les cibles du document', () => {
@@ -228,5 +228,29 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 				nodesById.get(n.parent_id)?.name === 'Situations de proportionnalité'
 		);
 		expect(ratio).toBeDefined();
+	});
+
+	it('passe « puces et points » (cycle 4) : scissions, retraits, ordre d’affichage', () => {
+		const byCode = new Map(pointRows.map((r) => [r.code, r]));
+		expect(byCode.has('5-081')).toBe(false);
+		expect(byCode.has('3-031')).toBe(false);
+		// La partie qui garde le code est celle que visent les références existantes.
+		expect(byCode.get('4-025')?.name).toBe(
+			'Résoudre une équation du premier degré du type ax + b = cx + d.'
+		);
+		expect(pathOf(byCode.get('5-077')?.node_id ?? null)).toBe(
+			'Statistiques > Représenter des données > courbes et repères'
+		);
+		expect(pathOf(byCode.get('3-053')?.node_id ?? null)).toBe(
+			'Fonctions > Fonction carré > x² = k, x² < k'
+		);
+		expect(byCode.get('4-071')?.display_order).toBe((byCode.get('4-025')?.display_order ?? 0) + 1);
+		for (const grade of ['5', '4', '3']) {
+			const ordres = pointRows
+				.filter((r) => r.grade === grade)
+				.map((r) => r.display_order)
+				.sort((a, b) => a - b);
+			expect(ordres, grade).toEqual(ordres.map((_, i) => i + 1));
+		}
 	});
 });
