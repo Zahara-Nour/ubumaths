@@ -387,29 +387,29 @@ sur ces points de 2de :
 
 ### A. Lignes propres de la 1re (partie « Automatismes » du BO)
 
-| Ligne d'Automatismes de la 1re (résumé fidèle)                                       | Cible(s)                              |
-| ------------------------------------------------------------------------------------ | ------------------------------------- |
-| Appliquer un taux d'évolution pour calculer une valeur finale ou initiale            | 2-377                                 |
-| Calculer un taux d'évolution, l'exprimer en pourcentage                              | 2-367 · 2-377                         |
-| Calculer le taux d'évolution équivalent à plusieurs évolutions successives           | 2-378                                 |
-| Calculer un taux d'évolution réciproque                                              | 2-379                                 |
-| Déterminer les solutions d'une équation produit nul                                  | 2-267                                 |
-| Signe d'une expression du premier degré, d'une expression factorisée du second degré | 2-328 · 2-330 · 1SPE-251 (auto-réf)   |
-| Développer, factoriser, réduire une expression algébrique simple                     | 3-016 · 4-022 · 5-039                 |
-| Résoudre graphiquement $f(x) = k$, $f(x) < k$                                        | 2-336                                 |
-| Déterminer graphiquement le signe d'une fonction ou son tableau de variations        | 2-329 · 2-349                         |
-| Tracer une droite (équation réduite, ou point et coefficient directeur)              | 2-316                                 |
-| Lire graphiquement l'équation réduite d'une droite                                   | 2-315                                 |
-| Coefficient directeur d'une droite à partir de deux de ses points                    | 2-314                                 |
-| Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…   | 5-077 · 2-372 · 3-030                 |
-| Passer du graphique aux données et vice-versa                                        | 5-077 · 5-096                         |
-| Calculer et interpréter des indicateurs statistiques                                 | 2-382 · 2-370 · 3-029 · 4-039 · 4-040 |
-| Probabilités conditionnelles sur tableau croisé d'effectifs ou arbre pondéré         | 2-396 · 2-397                         |
-| Distinguer $P(A \cap B)$, $P_A(B)$, $P_B(A)$                                         | 2-399 · 2-400                         |
+| Ligne d'Automatismes de la 1re (résumé fidèle)                                       | Cible(s)                                      |
+| ------------------------------------------------------------------------------------ | --------------------------------------------- |
+| Appliquer un taux d'évolution pour calculer une valeur finale ou initiale            | 2-377                                         |
+| Calculer un taux d'évolution, l'exprimer en pourcentage                              | 2-367 · 2-377                                 |
+| Calculer le taux d'évolution équivalent à plusieurs évolutions successives           | 2-378                                         |
+| Calculer un taux d'évolution réciproque                                              | 2-379                                         |
+| Déterminer les solutions d'une équation produit nul                                  | 2-267                                         |
+| Signe d'une expression du premier degré, d'une expression factorisée du second degré | 2-328 · 2-330 · 1SPE-251 (auto-réf)           |
+| Développer, factoriser, réduire une expression algébrique simple                     | 3-016 · 4-022 · 4-070 · 5-039                 |
+| Résoudre graphiquement $f(x) = k$, $f(x) < k$                                        | 2-336                                         |
+| Déterminer graphiquement le signe d'une fonction ou son tableau de variations        | 2-329 · 2-349                                 |
+| Tracer une droite (équation réduite, ou point et coefficient directeur)              | 2-316                                         |
+| Lire graphiquement l'équation réduite d'une droite                                   | 2-315                                         |
+| Coefficient directeur d'une droite à partir de deux de ses points                    | 2-314                                         |
+| Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…   | 5-077 · 5-110 · 5-111 · 2-372 · 3-030         |
+| Passer du graphique aux données et vice-versa                                        | 5-077 · 5-110 · 5-111 · 5-096                 |
+| Calculer et interpréter des indicateurs statistiques                                 | 2-382 · 2-370 · 3-029 · 3-056 · 4-039 · 4-040 |
+| Probabilités conditionnelles sur tableau croisé d'effectifs ou arbre pondéré         | 2-396 · 2-397                                 |
+| Distinguer $P(A \cap B)$, $P_A(B)$, $P_B(A)$                                         | 2-399 · 2-400                                 |
 
 ### B. Reprise de la liste de 2de (C16 : « s'ajoute la liste des automatismes de seconde »)
 
-Les **58 cibles** (60 depuis la passe du cycle 3 : + 6-199, 6-201) de la liste de 2de (`seed-2de.md`), reprises **telles quelles** avec le
+Les **58 cibles** (66 depuis les passes des cycles 3 et 4 : + 6-199, 6-201, 5-108, 5-110, 5-111, 4-070, 3-052, 3-056) de la liste de 2de (`seed-2de.md`), reprises **telles quelles** avec le
 grade `1_SPE` (dédoublonnées avec A).
 
 ### C. Entretien du vocabulaire ensembliste et logique — question V1

@@ -1239,6 +1239,22 @@
 		{
 			"code": "1TECHNO-099",
 			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-110",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-111",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-070",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-052",
+			"grade": "T_TECHNO"
 		}
 	]
 }

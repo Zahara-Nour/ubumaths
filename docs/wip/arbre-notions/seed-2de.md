@@ -35,7 +35,7 @@
 
 **200 points** (185 de l'ancien découpage + 17 issus des scissions multi-notions − 2
 puces non retenues : ex-2-099 et ex-2-100, trop larges — voir discutable 3) et
-**29 lignes d'Automatismes → 58 références** distinctes (60 depuis la passe du cycle 3, qui ajoute 6-199 et 6-201) (cibles cycle 2 → 3e désormais
+**29 lignes d'Automatismes → 58 références** distinctes (66 depuis les passes des cycles 3 et 4 : + 6-199, 6-201, 5-108, 5-110, 5-111, 4-070, 3-052, 3-056) (cibles cycle 2 → 3e désormais
 toutes en base, plus **8 auto-références** C13 quand la ligne porte sur un contenu
 introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — comptes
 établis par le générateur). Libellés : repris de l'ancien référentiel (LaTeX MathLive déjà validé).
@@ -358,37 +358,37 @@ lignes portent sur du contenu INTRODUIT en 2de → **auto-références** (C13, c
 l'indice de base 100 en Tle techno). Les cibles 2-2xx/2-3xx sont les nouveaux points
 ci-dessus.
 
-| Ligne d'Automatismes de la 2de (résumé fidèle)                                                                                       | Cible(s)                                                                              |
-| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| Comparer deux nombres (différence ; quotient si strictement positifs)                                                                | 2-276 · 2-277 (auto-réf)                                                              |
-| Opérations et comparaisons entre fractions simples                                                                                   | 4-013 · 5-025                                                                         |
-| Opérations sur les puissances                                                                                                        | 3-005                                                                                 |
-| Passer d'une écriture d'un nombre à une autre (décimale, fractionnaire, pourcentage)                                                 | 6-106                                                                                 |
-| Estimer un ordre de grandeur                                                                                                         | 6-119                                                                                 |
-| Conversions d'unités : longueurs, aires, volumes, contenances, durées, vitesses, masses                                              | CM1-068 · 6-150 · 5-051 · CE2-052 · 6-159 · 4-052 · CE2-047                           |
-| Calcul littéral élémentaire (expressions additives −(a+b) ; multiplicatives 1×x, ab/c…)                                              | 3-011 · 5-039 · 4-013                                                                 |
-| Développer, factoriser, réduire (identités (a±b)², (a+b)(a−b) ; factorisations ax²+bx, ax+bx)                                        | 3-016 · 4-022 · 5-039                                                                 |
-| Résoudre x² = a, ax + b = cx + d, a/x = b, une inéquation du premier degré                                                           | 3-008 · 4-025 · 3-014 · 2-269 (auto-réf)                                              |
-| Isoler une variable dans une égalité qui en comporte plusieurs                                                                       | 2-273 · 2-274 (auto-réf)                                                              |
-| Effectuer une application numérique d'une formule                                                                                    | 5-035                                                                                 |
-| Calculer, appliquer, exprimer une proportion sous différentes formes                                                                 | 6-140 · 4-056                                                                         |
-| Utiliser une proportion pour calculer une partie connaissant le tout, ou l'inverse                                                   | 6-141                                                                                 |
-| Passer d'une formulation additive (« augmenter de 5 % ») à une formulation multiplicative                                            | 4-057                                                                                 |
-| Déterminer graphiquement des images et des antécédents                                                                               | 3-040                                                                                 |
-| Exploiter une équation de courbe (appartenance, calcul de coordonnées)                                                               | 2-331 (auto-réf)                                                                      |
-| Reconnaitre l'expression d'une fonction linéaire, affine ; leur représentation est une droite                                        | 3-041 · 3-044                                                                         |
-| Sur une droite graduée, repérer ou placer un point d'abscisse un relatif                                                             | 5-016                                                                                 |
-| Dans un repère orthogonal, lire ou placer les coordonnées d'un point                                                                 | 5-047                                                                                 |
-| Calculer périmètres (polygone, cercle), aires (rectangle, triangle, disque), volumes (pavé, prisme, cylindre, pyramide, cône, boule) | 6-144 · 6-199 · 6-147 · 6-152 · 6-201 · 5-061 · 5-052 · 5-050 · 5-053 · 4-029 · 3-021 |
-| Application simple des théorèmes de Pythagore et de Thalès                                                                           | 4-034 · 3-022                                                                         |
-| Lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente                                                        | 3-023                                                                                 |
-| Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)                                                          | 5-077 · 5-096                                                                         |
-| Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données                                                | 4-039 · 4-040 · 3-029 · 2-380 · 2-381 (auto-réf : séries en classes, contenu 2de)     |
-| Comparer des distributions à l'aide de boites à moustaches                                                                           | 3-030                                                                                 |
-| Savoir qu'une probabilité est un nombre entre 0 et 1                                                                                 | 6-186                                                                                 |
-| Calculer la probabilité de l'évènement contraire                                                                                     | 4-048                                                                                 |
-| Probabilité d'un évènement comme somme des probabilités des issues                                                                   | 4-048                                                                                 |
-| Relation P(A) = Card(A)/Card(Ω) dans le cas de l'équiprobabilité                                                                     | 6-187                                                                                 |
+| Ligne d'Automatismes de la 2de (résumé fidèle)                                                                                       | Cible(s)                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Comparer deux nombres (différence ; quotient si strictement positifs)                                                                | 2-276 · 2-277 (auto-réf)                                                                      |
+| Opérations et comparaisons entre fractions simples                                                                                   | 4-013 · 5-025                                                                                 |
+| Opérations sur les puissances                                                                                                        | 3-005 · 3-052                                                                                 |
+| Passer d'une écriture d'un nombre à une autre (décimale, fractionnaire, pourcentage)                                                 | 6-106                                                                                         |
+| Estimer un ordre de grandeur                                                                                                         | 6-119                                                                                         |
+| Conversions d'unités : longueurs, aires, volumes, contenances, durées, vitesses, masses                                              | CM1-068 · 6-150 · 5-051 · CE2-052 · 6-159 · 4-052 · CE2-047                                   |
+| Calcul littéral élémentaire (expressions additives −(a+b) ; multiplicatives 1×x, ab/c…)                                              | 3-011 · 5-039 · 4-013                                                                         |
+| Développer, factoriser, réduire (identités (a±b)², (a+b)(a−b) ; factorisations ax²+bx, ax+bx)                                        | 3-016 · 4-022 · 4-070 · 5-039                                                                 |
+| Résoudre x² = a, ax + b = cx + d, a/x = b, une inéquation du premier degré                                                           | 3-008 · 4-025 · 3-014 · 2-269 (auto-réf)                                                      |
+| Isoler une variable dans une égalité qui en comporte plusieurs                                                                       | 2-273 · 2-274 (auto-réf)                                                                      |
+| Effectuer une application numérique d'une formule                                                                                    | 5-035                                                                                         |
+| Calculer, appliquer, exprimer une proportion sous différentes formes                                                                 | 6-140 · 4-056                                                                                 |
+| Utiliser une proportion pour calculer une partie connaissant le tout, ou l'inverse                                                   | 6-141                                                                                         |
+| Passer d'une formulation additive (« augmenter de 5 % ») à une formulation multiplicative                                            | 4-057                                                                                         |
+| Déterminer graphiquement des images et des antécédents                                                                               | 3-040                                                                                         |
+| Exploiter une équation de courbe (appartenance, calcul de coordonnées)                                                               | 2-331 (auto-réf)                                                                              |
+| Reconnaitre l'expression d'une fonction linéaire, affine ; leur représentation est une droite                                        | 3-041 · 3-044                                                                                 |
+| Sur une droite graduée, repérer ou placer un point d'abscisse un relatif                                                             | 5-016                                                                                         |
+| Dans un repère orthogonal, lire ou placer les coordonnées d'un point                                                                 | 5-047                                                                                         |
+| Calculer périmètres (polygone, cercle), aires (rectangle, triangle, disque), volumes (pavé, prisme, cylindre, pyramide, cône, boule) | 6-144 · 6-199 · 6-147 · 6-152 · 6-201 · 5-061 · 5-052 · 5-050 · 5-108 · 5-053 · 4-029 · 3-021 |
+| Application simple des théorèmes de Pythagore et de Thalès                                                                           | 4-034 · 3-022                                                                                 |
+| Lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente                                                        | 3-023                                                                                         |
+| Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)                                                          | 5-077 · 5-110 · 5-111 · 5-096                                                                 |
+| Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données                                                | 4-039 · 4-040 · 3-029 · 3-056 · 2-380 · 2-381 (auto-réf : séries en classes, contenu 2de)     |
+| Comparer des distributions à l'aide de boites à moustaches                                                                           | 3-030                                                                                         |
+| Savoir qu'une probabilité est un nombre entre 0 et 1                                                                                 | 6-186                                                                                         |
+| Calculer la probabilité de l'évènement contraire                                                                                     | 4-048                                                                                         |
+| Probabilité d'un évènement comme somme des probabilités des issues                                                                   | 4-048                                                                                         |
+| Relation P(A) = Card(A)/Card(Ω) dans le cas de l'équiprobabilité                                                                     | 6-187                                                                                         |
 
 (« S'assurer de la vraisemblance d'un résultat » : transversal [T], pas de référence.)
 

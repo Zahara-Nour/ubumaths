@@ -918,6 +918,30 @@
 		{
 			"code": "6-201",
 			"grade": "1_GEN"
+		},
+		{
+			"code": "5-108",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "5-110",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "5-111",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "4-070",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "3-052",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "3-056",
+			"grade": "1_GEN"
 		}
 	]
 }

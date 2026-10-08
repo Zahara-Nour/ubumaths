@@ -170,7 +170,7 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 		expect(fixture.version).toBe('2026-10-07.15');
 		expect(fixture.points).toHaveLength(44);
 		expect(fixture.points.every((p) => p.grade === '1_GEN')).toBe(true);
-		expect(fixture.references).toHaveLength(86);
+		expect(fixture.references).toHaveLength(92);
 	});
 
 	it('les 44 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
@@ -210,7 +210,7 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 		// C14 : jamais un point d'un programme parallèle.
 		const grades = refRows.map((r) => pointsById.get(r.point_id)?.grade);
 		expect(grades.filter((g) => g === '1_SPE' || g === '1_TECHNO')).toEqual([]);
-		expect(actual).toHaveLength(86);
+		expect(actual).toHaveLength(92);
 	});
 
 	it('attributs : tout attendu, aucun algorithme, régime', () => {

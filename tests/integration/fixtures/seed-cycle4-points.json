@@ -18,7 +18,7 @@
 			"code": "5-002",
 			"grade": "5",
 			"display_order": 2,
-			"name": "Connaitre le sens et les situations d'emploi de ces opérations.",
+			"name": "Connaitre le sens et les situations d'emploi de l'addition, de la soustraction, de la multiplication et de la division.",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -486,19 +486,32 @@
 			"code": "5-038",
 			"grade": "5",
 			"display_order": 38,
-			"name": "Exploiter les relations k(a + b) = ka + kb ou k(a − b) = ka − kb pour factoriser, ou développer une expression littérale.",
+			"name": "Exploiter les relations k(a + b) = ka + kb ou k(a − b) = ka − kb pour factoriser une expression littérale.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
 			"branche": "Algèbre",
 			"notion": "Calcul littéral",
-			"sous_notion": null
+			"sous_notion": "factoriser"
+		},
+		{
+			"code": "5-107",
+			"grade": "5",
+			"display_order": 39,
+			"name": "Exploiter les relations k(a + b) = ka + kb ou k(a − b) = ka − kb pour développer une expression littérale.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "développer"
 		},
 		{
 			"code": "5-039",
 			"grade": "5",
-			"display_order": 39,
+			"display_order": 40,
 			"name": "Réduire une expression littérale de la forme ax + b, où a et b sont des nombres décimaux.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -511,7 +524,7 @@
 		{
 			"code": "5-040",
 			"grade": "5",
-			"display_order": 40,
+			"display_order": 41,
 			"name": "Démontrer une propriété générale par le calcul littéral.",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -524,7 +537,7 @@
 		{
 			"code": "5-041",
 			"grade": "5",
-			"display_order": 41,
+			"display_order": 42,
 			"name": "Utiliser un contre-exemple pour démontrer qu'une assertion est fausse.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -537,7 +550,7 @@
 		{
 			"code": "5-042",
 			"grade": "5",
-			"display_order": 42,
+			"display_order": 43,
 			"name": "Formuler des conjectures en s'appuyant sur un langage algorithmique ou un tableur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -550,7 +563,7 @@
 		{
 			"code": "5-043",
 			"grade": "5",
-			"display_order": 43,
+			"display_order": 44,
 			"name": "Donner à la lettre le statut d'inconnue.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -563,7 +576,7 @@
 		{
 			"code": "5-044",
 			"grade": "5",
-			"display_order": 44,
+			"display_order": 45,
 			"name": "Modéliser des problèmes relevant des opérations à trous par des équations du type ax = c ou x + b = c.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -576,7 +589,7 @@
 		{
 			"code": "5-045",
 			"grade": "5",
-			"display_order": 45,
+			"display_order": 46,
 			"name": "Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -589,7 +602,7 @@
 		{
 			"code": "5-046",
 			"grade": "5",
-			"display_order": 46,
+			"display_order": 47,
 			"name": "Sur une droite graduée : lire l'abscisse d'un point donné ; placer un point d'abscisse donnée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -602,7 +615,7 @@
 		{
 			"code": "5-047",
 			"grade": "5",
-			"display_order": 47,
+			"display_order": 48,
 			"name": "Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -615,7 +628,7 @@
 		{
 			"code": "5-048",
 			"grade": "5",
-			"display_order": 48,
+			"display_order": 49,
 			"name": "Construire et mettre en relation différentes représentations en perspectives cavalières des solides suivants : pavé droit, cube, cylindre de révolution, prisme droit.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -628,7 +641,7 @@
 		{
 			"code": "5-049",
 			"grade": "5",
-			"display_order": 49,
+			"display_order": 50,
 			"name": "Savoir mettre en relation une représentation en perspective cavalière et un patron d'un pavé, d'un prisme droit ou d'un cylindre de révolution.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -641,20 +654,33 @@
 		{
 			"code": "5-050",
 			"grade": "5",
-			"display_order": 50,
-			"name": "Calculer le volume du cube, du pavé droit, du prisme droit.",
+			"display_order": 51,
+			"name": "Calculer le volume du cube, du pavé droit.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Espace et géométrie > Représentation de l'espace",
 			"branche": "Grandeurs et mesures",
 			"notion": "Volumes",
-			"sous_notion": null
+			"sous_notion": "cube et pavé"
+		},
+		{
+			"code": "5-108",
+			"grade": "5",
+			"display_order": 52,
+			"name": "Calculer le volume du prisme droit.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Volumes",
+			"sous_notion": "prisme et cylindre"
 		},
 		{
 			"code": "5-051",
 			"grade": "5",
-			"display_order": 51,
+			"display_order": 53,
 			"name": "Connaitre et convertir des unités usuelles (volume et capacité).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -667,7 +693,7 @@
 		{
 			"code": "5-052",
 			"grade": "5",
-			"display_order": 52,
+			"display_order": 54,
 			"name": "Calculer l'aire du disque.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -680,7 +706,7 @@
 		{
 			"code": "5-053",
 			"grade": "5",
-			"display_order": 53,
+			"display_order": 55,
 			"name": "Calculer le volume du cylindre de révolution.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -693,7 +719,7 @@
 		{
 			"code": "5-054",
 			"grade": "5",
-			"display_order": 54,
+			"display_order": 56,
 			"name": "Définir le demi-tour, ou symétrie centrale.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -706,7 +732,7 @@
 		{
 			"code": "5-055",
 			"grade": "5",
-			"display_order": 55,
+			"display_order": 57,
 			"name": "Connaitre les propriétés du demi-tour.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -719,7 +745,7 @@
 		{
 			"code": "5-056",
 			"grade": "5",
-			"display_order": 56,
+			"display_order": 58,
 			"name": "Connaitre les mesures des angles de l'équerre dont dispose l'élève (30° 60° 90° ou 45° 45° 90°).",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -732,7 +758,7 @@
 		{
 			"code": "5-057",
 			"grade": "5",
-			"display_order": 57,
+			"display_order": 59,
 			"name": "Caractériser le parallélisme par les angles : angles alternes internes, angles correspondants.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -745,7 +771,7 @@
 		{
 			"code": "5-058",
 			"grade": "5",
-			"display_order": 58,
+			"display_order": 60,
 			"name": "Connaitre la somme des angles d'un triangle et savoir la démontrer.",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -758,7 +784,7 @@
 		{
 			"code": "5-059",
 			"grade": "5",
-			"display_order": 59,
+			"display_order": 61,
 			"name": "Construire des triangles à partir de données partielles.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -771,7 +797,7 @@
 		{
 			"code": "5-060",
 			"grade": "5",
-			"display_order": 60,
+			"display_order": 62,
 			"name": "Connaitre les propriétés des médiatrices et du cercle circonscrit dans le cas de triangles particuliers.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -784,7 +810,7 @@
 		{
 			"code": "5-061",
 			"grade": "5",
-			"display_order": 61,
+			"display_order": 63,
 			"name": "Calculer l'aire d'un triangle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -797,7 +823,7 @@
 		{
 			"code": "5-062",
 			"grade": "5",
-			"display_order": 62,
+			"display_order": 64,
 			"name": "Définir et tracer les hauteurs dans un triangle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -810,7 +836,7 @@
 		{
 			"code": "5-063",
 			"grade": "5",
-			"display_order": 63,
+			"display_order": 65,
 			"name": "Savoir que les hauteurs d'un triangle sont concourantes.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -823,7 +849,7 @@
 		{
 			"code": "5-064",
 			"grade": "5",
-			"display_order": 64,
+			"display_order": 66,
 			"name": "Définir et tracer les médianes dans un triangle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -836,7 +862,7 @@
 		{
 			"code": "5-065",
 			"grade": "5",
-			"display_order": 65,
+			"display_order": 67,
 			"name": "Démontrer qu'une médiane partage un triangle en deux triangles d'aires égales.",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -849,8 +875,8 @@
 		{
 			"code": "5-066",
 			"grade": "5",
-			"display_order": 66,
-			"name": "Utiliser ces propriétés dans le cas de triangles particuliers.",
+			"display_order": 68,
+			"name": "Utiliser les propriétés des hauteurs et des médianes dans le cas de triangles particuliers.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -862,7 +888,7 @@
 		{
 			"code": "5-067",
 			"grade": "5",
-			"display_order": 67,
+			"display_order": 69,
 			"name": "Définir le parallélogramme.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -875,7 +901,7 @@
 		{
 			"code": "5-068",
 			"grade": "5",
-			"display_order": 68,
+			"display_order": 70,
 			"name": "Construire des parallélogrammes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -888,8 +914,8 @@
 		{
 			"code": "5-069",
 			"grade": "5",
-			"display_order": 69,
-			"name": "Connaitre les propriétés caractéristiques des côtés opposés et des diagonales.",
+			"display_order": 71,
+			"name": "Connaitre les propriétés caractéristiques des côtés opposés et des diagonales d'un parallélogramme.",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -901,8 +927,8 @@
 		{
 			"code": "5-070",
 			"grade": "5",
-			"display_order": 70,
-			"name": "Utiliser une propriété caractéristique sur les diagonales ou les côtés pour les construire ou donner la nature du quadrilatère.",
+			"display_order": 72,
+			"name": "Utiliser une propriété caractéristique sur les diagonales ou les côtés pour construire des parallélogrammes ou donner la nature du quadrilatère.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -914,7 +940,7 @@
 		{
 			"code": "5-071",
 			"grade": "5",
-			"display_order": 71,
+			"display_order": 73,
 			"name": "Définir les parallélogrammes particuliers (rectangle, losange, carré).",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -927,8 +953,8 @@
 		{
 			"code": "5-072",
 			"grade": "5",
-			"display_order": 72,
-			"name": "Connaitre les propriétés caractéristiques.",
+			"display_order": 74,
+			"name": "Connaitre les propriétés caractéristiques des parallélogrammes particuliers (rectangle, losange, carré).",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -940,8 +966,8 @@
 		{
 			"code": "5-073",
 			"grade": "5",
-			"display_order": 73,
-			"name": "Savoir calculer l'aire d'un parallélogramme et de figures complexes.",
+			"display_order": 75,
+			"name": "Savoir calculer l'aire d'un parallélogramme.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -951,9 +977,22 @@
 			"sous_notion": "parallélogramme"
 		},
 		{
+			"code": "5-115",
+			"grade": "5",
+			"display_order": 76,
+			"name": "Savoir calculer l'aire de figures complexes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": null
+		},
+		{
 			"code": "5-074",
 			"grade": "5",
-			"display_order": 74,
+			"display_order": 77,
 			"name": "Résoudre des problèmes faisant appel à des conversions d'unités de longueur et d'unités d'aires.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -966,7 +1005,7 @@
 		{
 			"code": "5-075",
 			"grade": "5",
-			"display_order": 75,
+			"display_order": 78,
 			"name": "Recueillir et organiser des données.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -979,7 +1018,7 @@
 		{
 			"code": "5-076",
 			"grade": "5",
-			"display_order": 76,
+			"display_order": 79,
 			"name": "Calculer des effectifs et des fréquences (exprimées sous forme décimale, fractionnaire ou de pourcentage).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -992,33 +1031,111 @@
 		{
 			"code": "5-077",
 			"grade": "5",
-			"display_order": 77,
-			"name": "Lire et interpréter des informations présentées sous forme de tableaux, de diagrammes et de graphiques.",
+			"display_order": 80,
+			"name": "Lire et interpréter des informations présentées sous forme de graphiques.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
 			"branche": "Statistiques",
 			"notion": "Représenter des données",
-			"sous_notion": null
+			"sous_notion": "courbes et repères"
+		},
+		{
+			"code": "5-109",
+			"grade": "5",
+			"display_order": 81,
+			"name": "Lire et interpréter des informations présentées sous forme de tableaux.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "tableaux"
+		},
+		{
+			"code": "5-110",
+			"grade": "5",
+			"display_order": 82,
+			"name": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes en barres"
+		},
+		{
+			"code": "5-111",
+			"grade": "5",
+			"display_order": 83,
+			"name": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes circulaires"
 		},
 		{
 			"code": "5-078",
 			"grade": "5",
-			"display_order": 78,
-			"name": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un tableau, d'un diagramme (diagramme en barres, diagramme circulaire) ou d'un graphique cartésien.",
+			"display_order": 84,
+			"name": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un tableau.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
 			"branche": "Statistiques",
 			"notion": "Représenter des données",
-			"sous_notion": null
+			"sous_notion": "tableaux"
+		},
+		{
+			"code": "5-112",
+			"grade": "5",
+			"display_order": 85,
+			"name": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme en barres.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes en barres"
+		},
+		{
+			"code": "5-113",
+			"grade": "5",
+			"display_order": 86,
+			"name": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme circulaire.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes circulaires"
+		},
+		{
+			"code": "5-114",
+			"grade": "5",
+			"display_order": 87,
+			"name": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un graphique cartésien.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "courbes et repères"
 		},
 		{
 			"code": "5-079",
 			"grade": "5",
-			"display_order": 79,
+			"display_order": 88,
 			"name": "Choisir une représentation adaptée à ce qu'il convient de mettre en avant.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1031,7 +1148,7 @@
 		{
 			"code": "5-080",
 			"grade": "5",
-			"display_order": 80,
+			"display_order": 89,
 			"name": "Calculer et interpréter la moyenne simple d'une série de données.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1042,22 +1159,9 @@
 			"sous_notion": "moyenne"
 		},
 		{
-			"code": "5-081",
-			"grade": "5",
-			"display_order": 81,
-			"name": "Aborder les questions relatives au hasard à partir de problèmes simples.",
-			"kind": "savoir_faire",
-			"exigence": "attendu",
-			"regime_acquisition": "diversite",
-			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
-			"branche": "Probabilités",
-			"notion": "Expériences aléatoires",
-			"sous_notion": null
-		},
-		{
 			"code": "5-082",
 			"grade": "5",
-			"display_order": 82,
+			"display_order": 90,
 			"name": "Utiliser le vocabulaire des probabilités dans des contextes concrets : expérience aléatoire, issue, évènement.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1070,7 +1174,7 @@
 		{
 			"code": "5-083",
 			"grade": "5",
-			"display_order": 83,
+			"display_order": 91,
 			"name": "Attribuer des probabilités dans des cas simples (équiprobabilité).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1083,7 +1187,7 @@
 		{
 			"code": "5-084",
 			"grade": "5",
-			"display_order": 84,
+			"display_order": 92,
 			"name": "Répéter matériellement une expérience aléatoire simple. Enregistrer les résultats observés dans un tableau d'effectifs et de fréquences.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1096,7 +1200,7 @@
 		{
 			"code": "5-085",
 			"grade": "5",
-			"display_order": 85,
+			"display_order": 93,
 			"name": "Utiliser des proportions, des pourcentages.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1109,7 +1213,7 @@
 		{
 			"code": "5-086",
 			"grade": "5",
-			"display_order": 86,
+			"display_order": 94,
 			"name": "Calculer, appliquer des proportions, des pourcentages.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1122,7 +1226,7 @@
 		{
 			"code": "5-087",
 			"grade": "5",
-			"display_order": 87,
+			"display_order": 95,
 			"name": "Identifier des situations de proportionnalité dans des contextes concrets (prix, recettes, distances, échelles).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1135,7 +1239,7 @@
 		{
 			"code": "5-088",
 			"grade": "5",
-			"display_order": 88,
+			"display_order": 96,
 			"name": "Utiliser un coefficient de proportionnalité dans des contextes concrets (prix unitaire, vitesse moyenne, échelle, etc.).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1148,7 +1252,7 @@
 		{
 			"code": "5-089",
 			"grade": "5",
-			"display_order": 89,
+			"display_order": 97,
 			"name": "Représenter une situation de proportionnalité par un tableau ou un graphique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1161,7 +1265,7 @@
 		{
 			"code": "5-090",
 			"grade": "5",
-			"display_order": 90,
+			"display_order": 98,
 			"name": "Reconnaitre une situation de proportionnalité à partir d'un tableau ou d'un graphique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1174,7 +1278,7 @@
 		{
 			"code": "5-091",
 			"grade": "5",
-			"display_order": 91,
+			"display_order": 99,
 			"name": "Reconnaitre graphiquement qu'un nuage de points est ou n'est pas associé à une situation de proportionnalité entre données discrètes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1187,8 +1291,8 @@
 		{
 			"code": "5-092",
 			"grade": "5",
-			"display_order": 92,
-			"name": "Introduire l'expression : « en fonction de » dans des contextes concrets ou mathématiques.",
+			"display_order": 100,
+			"name": "Employer l'expression « en fonction de » dans des contextes concrets ou mathématiques.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1200,7 +1304,7 @@
 		{
 			"code": "5-093",
 			"grade": "5",
-			"display_order": 93,
+			"display_order": 101,
 			"name": "Produire un tableau de valeurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1213,7 +1317,7 @@
 		{
 			"code": "5-094",
 			"grade": "5",
-			"display_order": 94,
+			"display_order": 102,
 			"name": "Lire et interpréter un tableau de valeurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1226,7 +1330,7 @@
 		{
 			"code": "5-095",
 			"grade": "5",
-			"display_order": 95,
+			"display_order": 103,
 			"name": "Placer dans un repère orthogonal donné des points correspondant à un tableau de valeurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1239,7 +1343,7 @@
 		{
 			"code": "5-096",
 			"grade": "5",
-			"display_order": 96,
+			"display_order": 104,
 			"name": "Lire et interpréter un graphique cartésien donné par une courbe ou un nuage de points.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1252,7 +1356,7 @@
 		{
 			"code": "5-097",
 			"grade": "5",
-			"display_order": 97,
+			"display_order": 105,
 			"name": "Traduire la relation de dépendance entre deux grandeurs par un tableau de valeurs à partir d'une formule.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1265,7 +1369,7 @@
 		{
 			"code": "5-098",
 			"grade": "5",
-			"display_order": 98,
+			"display_order": 106,
 			"name": "Produire une formule simple représentant la dépendance de deux grandeurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1278,7 +1382,7 @@
 		{
 			"code": "5-099",
 			"grade": "5",
-			"display_order": 99,
+			"display_order": 107,
 			"name": "Caractériser graphiquement la proportionnalité.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1291,7 +1395,7 @@
 		{
 			"code": "5-100",
 			"grade": "5",
-			"display_order": 100,
+			"display_order": 108,
 			"name": "Manipuler des instructions simples et les séquencer.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1304,7 +1408,7 @@
 		{
 			"code": "5-101",
 			"grade": "5",
-			"display_order": 101,
+			"display_order": 109,
 			"name": "Identifier les entrées et sorties d'un programme.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1317,7 +1421,7 @@
 		{
 			"code": "5-102",
 			"grade": "5",
-			"display_order": 102,
+			"display_order": 110,
 			"name": "Représenter des formules sous la forme d'une expression informatique dans un langage de programmation par blocs.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1330,7 +1434,7 @@
 		{
 			"code": "5-103",
 			"grade": "5",
-			"display_order": 103,
+			"display_order": 111,
 			"name": "Calculer la valeur de formules à l'aide d'une suite d'instruction dans un langage de programmation par blocs.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1343,7 +1447,7 @@
 		{
 			"code": "5-104",
 			"grade": "5",
-			"display_order": 104,
+			"display_order": 112,
 			"name": "Prévoir la valeur d'une expression informatique avant son exécution.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1356,7 +1460,7 @@
 		{
 			"code": "5-105",
 			"grade": "5",
-			"display_order": 105,
+			"display_order": 113,
 			"name": "Analyser un programme simple donné et modifier ses paramètres.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1369,7 +1473,7 @@
 		{
 			"code": "5-106",
 			"grade": "5",
-			"display_order": 106,
+			"display_order": 114,
 			"name": "Effectuer une boucle inconditionnelle simple permettant de répéter une séquence linéaire d'instructions un nombre précis de fois.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1383,7 +1487,7 @@
 			"code": "4-001",
 			"grade": "4",
 			"display_order": 1,
-			"name": "Multiplier deux nombres relatifs : d'abord dans le cas où un seul des facteurs est négatif, puis, grâce à la distributivité, dans le cas où deux facteurs sont négatifs.",
+			"name": "Multiplier deux nombres relatifs : d'abord dans le cas où un seul des facteurs est négatif, puis, grâce à la distributivité, dans le cas où les deux facteurs sont négatifs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1409,7 +1513,7 @@
 			"code": "4-003",
 			"grade": "4",
 			"display_order": 3,
-			"name": "Savoir calculer un enchainement d'opérations avec les nombres relatifs.",
+			"name": "Savoir calculer un enchainement d'opérations avec des nombres relatifs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1539,7 +1643,7 @@
 			"code": "4-013",
 			"grade": "4",
 			"display_order": 13,
-			"name": "Calculer la valeur d'expressions comportant plusieurs opérations avec les fractions.",
+			"name": "Calculer la valeur d'expressions comportant plusieurs opérations avec des fractions.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1630,7 +1734,7 @@
 			"code": "4-020",
 			"grade": "4",
 			"display_order": 20,
-			"name": "Encadrer la racine carrée d'un entier par deux entiers consécutifs.",
+			"name": "Encadrer la racine carrée d'un entier par deux nombres entiers consécutifs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1656,19 +1760,32 @@
 			"code": "4-022",
 			"grade": "4",
 			"display_order": 22,
-			"name": "Connaitre et utiliser la distributivité simple pour développer et factoriser une expression algébrique.",
+			"name": "Connaitre et utiliser la distributivité simple pour développer une expression algébrique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
 			"branche": "Algèbre",
 			"notion": "Calcul littéral",
-			"sous_notion": null
+			"sous_notion": "développer"
+		},
+		{
+			"code": "4-070",
+			"grade": "4",
+			"display_order": 23,
+			"name": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "factoriser"
 		},
 		{
 			"code": "4-023",
 			"grade": "4",
-			"display_order": 23,
+			"display_order": 24,
 			"name": "Utiliser le calcul algébrique pour produire des démonstrations.",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1681,7 +1798,7 @@
 		{
 			"code": "4-024",
 			"grade": "4",
-			"display_order": 24,
+			"display_order": 25,
 			"name": "Résoudre une équation du premier degré du type ax + b = c.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1694,20 +1811,33 @@
 		{
 			"code": "4-025",
 			"grade": "4",
-			"display_order": 25,
-			"name": "Mettre en équation un problème et le résoudre à l'aide d'une équation du premier degré du type ax + b = cx + d.",
+			"display_order": 26,
+			"name": "Résoudre une équation du premier degré du type ax + b = cx + d.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
 			"branche": "Algèbre",
 			"notion": "Équations : premier degré",
-			"sous_notion": null
+			"sous_notion": "ax + b = cx + d"
+		},
+		{
+			"code": "4-071",
+			"grade": "4",
+			"display_order": 27,
+			"name": "Mettre en équation un problème à l'aide d'une équation du premier degré du type ax + b = cx + d.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": "mettre en équation"
 		},
 		{
 			"code": "4-026",
 			"grade": "4",
-			"display_order": 26,
+			"display_order": 28,
 			"name": "Formuler des conjectures à l'aide d'un algorithme ou d'un tableur pour résoudre de manière exacte ou approchée une équation.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1720,7 +1850,7 @@
 		{
 			"code": "4-027",
 			"grade": "4",
-			"display_order": 27,
+			"display_order": 29,
 			"name": "Reconnaitre des solides (pyramide, cône de révolution).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1733,7 +1863,7 @@
 		{
 			"code": "4-028",
 			"grade": "4",
-			"display_order": 28,
+			"display_order": 30,
 			"name": "Construire et mettre en relation différentes représentations des solides (pavé droit, cube, cylindre de révolution, prisme droit, pyramides et cônes de révolution).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1746,7 +1876,7 @@
 		{
 			"code": "4-029",
 			"grade": "4",
-			"display_order": 29,
+			"display_order": 31,
 			"name": "Connaitre le volume de la pyramide et du cône de révolution.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1759,7 +1889,7 @@
 		{
 			"code": "4-030",
 			"grade": "4",
-			"display_order": 30,
+			"display_order": 32,
 			"name": "Comprendre l'effet d'une translation.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1772,8 +1902,8 @@
 		{
 			"code": "4-031",
 			"grade": "4",
-			"display_order": 31,
-			"name": "Faire le lien avec les parallélogrammes, les angles.",
+			"display_order": 33,
+			"name": "Faire le lien entre la translation et les parallélogrammes, les angles.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1785,7 +1915,7 @@
 		{
 			"code": "4-032",
 			"grade": "4",
-			"display_order": 32,
+			"display_order": 34,
 			"name": "Connaitre et utiliser les propriétés de conservations des translations.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1798,7 +1928,7 @@
 		{
 			"code": "4-033",
 			"grade": "4",
-			"display_order": 33,
+			"display_order": 35,
 			"name": "Connaitre les trois théorèmes relatifs à la droite des milieux dans un triangle.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1811,21 +1941,34 @@
 		{
 			"code": "4-034",
 			"grade": "4",
-			"display_order": 34,
-			"name": "Connaitre le théorème de Pythagore, sa réciproque, sa contraposée.",
+			"display_order": 36,
+			"name": "Connaitre le théorème de Pythagore.",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Espace et géométrie > Triangles",
 			"branche": "Géométrie",
 			"notion": "Théorème de Pythagore",
-			"sous_notion": null
+			"sous_notion": "calculer une longueur"
+		},
+		{
+			"code": "4-072",
+			"grade": "4",
+			"display_order": 37,
+			"name": "Connaitre la réciproque et la contraposée du théorème de Pythagore.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Théorème de Pythagore",
+			"sous_notion": "réciproque"
 		},
 		{
 			"code": "4-035",
 			"grade": "4",
-			"display_order": 35,
-			"name": "Mener un travail de logique sur la réciproque et la contraposée.",
+			"display_order": 38,
+			"name": "Mener un travail de logique sur la réciproque et la contraposée : savoir que si une propriété est vraie alors sa contraposée l'est aussi, sans pour autant que sa réciproque soit vraie.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1837,7 +1980,7 @@
 		{
 			"code": "4-036",
 			"grade": "4",
-			"display_order": 36,
+			"display_order": 39,
 			"name": "Caractériser un triangle rectangle à l'aide de son cercle circonscrit, par son inscription dans un demi-cercle dont le diamètre est un côté du triangle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1850,7 +1993,7 @@
 		{
 			"code": "4-037",
 			"grade": "4",
-			"display_order": 37,
+			"display_order": 40,
 			"name": "Déterminer le centre du cercle circonscrit d'un triangle rectangle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1863,7 +2006,7 @@
 		{
 			"code": "4-038",
 			"grade": "4",
-			"display_order": 38,
+			"display_order": 41,
 			"name": "Construire des rectangles sans équerre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1876,7 +2019,7 @@
 		{
 			"code": "4-039",
 			"grade": "4",
-			"display_order": 39,
+			"display_order": 42,
 			"name": "Calculer une moyenne pondérée dans le cas d'une série discrète de petits effectifs présentée sous forme de données brutes, d'un tableau ou d'un diagramme en barres.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1889,7 +2032,7 @@
 		{
 			"code": "4-040",
 			"grade": "4",
-			"display_order": 40,
+			"display_order": 43,
 			"name": "Déterminer une médiane et l'interpréter dans le cas d'une série de petit effectif présentée sous forme de données brutes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1902,7 +2045,7 @@
 		{
 			"code": "4-041",
 			"grade": "4",
-			"display_order": 41,
+			"display_order": 44,
 			"name": "Calculer et interpréter l'étendue d'une série présentée sous forme de données brutes, d'un tableau, d'un diagramme en barres, d'un diagramme circulaire.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1915,7 +2058,7 @@
 		{
 			"code": "4-042",
 			"grade": "4",
-			"display_order": 42,
+			"display_order": 45,
 			"name": "Comprendre l'évolution de la médiane et de la moyenne quand on ajoute une valeur extrême.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1928,7 +2071,7 @@
 		{
 			"code": "4-043",
 			"grade": "4",
-			"display_order": 43,
+			"display_order": 46,
 			"name": "Résoudre des problèmes faisant intervenir les différents indicateurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1941,7 +2084,7 @@
 		{
 			"code": "4-044",
 			"grade": "4",
-			"display_order": 44,
+			"display_order": 47,
 			"name": "Résoudre des problèmes de comparaison de séries statistiques.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1954,7 +2097,7 @@
 		{
 			"code": "4-045",
 			"grade": "4",
-			"display_order": 45,
+			"display_order": 48,
 			"name": "Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1967,7 +2110,7 @@
 		{
 			"code": "4-046",
 			"grade": "4",
-			"display_order": 46,
+			"display_order": 49,
 			"name": "Utiliser le vocabulaire et les notations ensemblistes pour décrire une expérience aléatoire dans des cas simples et définir la notion d'évènement.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1980,7 +2123,7 @@
 		{
 			"code": "4-047",
 			"grade": "4",
-			"display_order": 47,
+			"display_order": 50,
 			"name": "Définir : complémentaire, réunion, intersection, ensemble vide (évènement impossible).",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1993,7 +2136,7 @@
 		{
 			"code": "4-048",
 			"grade": "4",
-			"display_order": 48,
+			"display_order": 51,
 			"name": "Calculer la probabilité d'un évènement et de l'évènement contraire.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2006,8 +2149,8 @@
 		{
 			"code": "4-049",
 			"grade": "4",
-			"display_order": 49,
-			"name": "Exemples simples d'expériences aléatoires à deux épreuves (par exemple, lancer de deux pièces, d'une pièce et d'un dé, de deux dés, etc.).",
+			"display_order": 52,
+			"name": "Calculer la probabilité d'un évènement dans des exemples simples d'expériences aléatoires à deux épreuves (par exemple, lancer de deux pièces, d'une pièce et d'un dé, de deux dés, etc.).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2019,7 +2162,7 @@
 		{
 			"code": "4-050",
 			"grade": "4",
-			"display_order": 50,
+			"display_order": 53,
 			"name": "À partir de la répétition d'une expérience aléatoire, réalisée matériellement ou simulée, comparer des graphiques de distributions (fréquentielle et probabiliste).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2032,7 +2175,7 @@
 		{
 			"code": "4-051",
 			"grade": "4",
-			"display_order": 51,
+			"display_order": 54,
 			"name": "Observer la fluctuation des fréquences pour un nombre de répétitions fixé de l'expérience aléatoire.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2045,7 +2188,7 @@
 		{
 			"code": "4-052",
 			"grade": "4",
-			"display_order": 52,
+			"display_order": 55,
 			"name": "Utiliser des grandeurs quotients, avec ou sans unités.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2058,7 +2201,7 @@
 		{
 			"code": "4-053",
 			"grade": "4",
-			"display_order": 53,
+			"display_order": 56,
 			"name": "Comparer deux nombres ou deux grandeurs à l'aide de leur rapport ou ratio.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2071,7 +2214,7 @@
 		{
 			"code": "4-054",
 			"grade": "4",
-			"display_order": 54,
+			"display_order": 57,
 			"name": "Exprimer la proportionnalité entre deux suites de nombres par des égalités de rapports ou sous forme de ratio.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2084,7 +2227,7 @@
 		{
 			"code": "4-055",
 			"grade": "4",
-			"display_order": 55,
+			"display_order": 58,
 			"name": "Déterminer une quatrième proportionnelle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2097,7 +2240,7 @@
 		{
 			"code": "4-056",
 			"grade": "4",
-			"display_order": 56,
+			"display_order": 59,
 			"name": "Calculer avec des pourcentages.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2110,7 +2253,7 @@
 		{
 			"code": "4-057",
 			"grade": "4",
-			"display_order": 57,
+			"display_order": 60,
 			"name": "Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2123,7 +2266,7 @@
 		{
 			"code": "4-058",
 			"grade": "4",
-			"display_order": 58,
+			"display_order": 61,
 			"name": "Définir le coefficient multiplicateur.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2136,7 +2279,7 @@
 		{
 			"code": "4-059",
 			"grade": "4",
-			"display_order": 59,
+			"display_order": 62,
 			"name": "Résoudre des problèmes de partage proportionnel.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2149,7 +2292,7 @@
 		{
 			"code": "4-060",
 			"grade": "4",
-			"display_order": 60,
+			"display_order": 63,
 			"name": "Savoir appliquer un programme de calcul à deux (plusieurs) étapes à un nombre simple puis à une variable.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2162,7 +2305,7 @@
 		{
 			"code": "4-061",
 			"grade": "4",
-			"display_order": 61,
+			"display_order": 64,
 			"name": "Savoir retrouver le nombre de départ après avoir remonté un programme de calcul simple.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2175,7 +2318,7 @@
 		{
 			"code": "4-062",
 			"grade": "4",
-			"display_order": 62,
+			"display_order": 65,
 			"name": "Produire une formule littérale représentant la dépendance d'une grandeur en fonction d'une autre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2188,7 +2331,7 @@
 		{
 			"code": "4-063",
 			"grade": "4",
-			"display_order": 63,
+			"display_order": 66,
 			"name": "Représenter l'expression d'une grandeur en fonction d'une autre par un graphique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2201,8 +2344,8 @@
 		{
 			"code": "4-064",
 			"grade": "4",
-			"display_order": 64,
-			"name": "Comprendre la dépendance d'une grandeur en fonction d'une autre.",
+			"display_order": 67,
+			"name": "Comprendre qu'une formule, un graphique ou un tableau de valeurs traduisent la dépendance d'une grandeur en fonction d'une autre.",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2214,7 +2357,7 @@
 		{
 			"code": "4-065",
 			"grade": "4",
-			"display_order": 65,
+			"display_order": 68,
 			"name": "Représenter des conditions simples.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2227,7 +2370,7 @@
 		{
 			"code": "4-066",
 			"grade": "4",
-			"display_order": 66,
+			"display_order": 69,
 			"name": "Écrire des instructions conditionnelles.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2240,7 +2383,7 @@
 		{
 			"code": "4-067",
 			"grade": "4",
-			"display_order": 67,
+			"display_order": 70,
 			"name": "Manipuler une variable.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2253,7 +2396,7 @@
 		{
 			"code": "4-068",
 			"grade": "4",
-			"display_order": 68,
+			"display_order": 71,
 			"name": "Écrire un programme simple donné pour réaliser un objectif ou résoudre un problème.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2266,7 +2409,7 @@
 		{
 			"code": "4-069",
 			"grade": "4",
-			"display_order": 69,
+			"display_order": 72,
 			"name": "Modifier un programme donné pour changer son comportement.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2332,19 +2475,32 @@
 			"code": "3-005",
 			"grade": "3",
 			"display_order": 5,
-			"name": "Multiplier et diviser des puissances.",
+			"name": "Multiplier des puissances.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres et calculs > Puissances",
 			"branche": "Nombres et calculs",
 			"notion": "Puissances : calculs",
-			"sous_notion": null
+			"sous_notion": "multiplier"
+		},
+		{
+			"code": "3-052",
+			"grade": "3",
+			"display_order": 6,
+			"name": "Diviser des puissances.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sous_notion": "diviser"
 		},
 		{
 			"code": "3-006",
 			"grade": "3",
-			"display_order": 6,
+			"display_order": 7,
 			"name": "Déterminer la notation scientifique d'un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2357,7 +2513,7 @@
 		{
 			"code": "3-007",
 			"grade": "3",
-			"display_order": 7,
+			"display_order": 8,
 			"name": "Résoudre des problèmes notamment en utilisant la notation scientifique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2370,8 +2526,8 @@
 		{
 			"code": "3-008",
 			"grade": "3",
-			"display_order": 8,
-			"name": "Résoudre analytiquement et graphiquement des équations de la forme x² = a.",
+			"display_order": 9,
+			"name": "Résoudre analytiquement des équations de la forme x² = a.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2381,9 +2537,22 @@
 			"sous_notion": "x² = a"
 		},
 		{
+			"code": "3-053",
+			"grade": "3",
+			"display_order": 10,
+			"name": "Résoudre graphiquement des équations de la forme x² = a.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Racine carrée",
+			"branche": "Fonctions",
+			"notion": "Fonction carré",
+			"sous_notion": "x² = k, x² < k"
+		},
+		{
 			"code": "3-009",
 			"grade": "3",
-			"display_order": 9,
+			"display_order": 11,
 			"name": "Résoudre des problèmes utilisant la racine carrée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2396,7 +2565,7 @@
 		{
 			"code": "3-010",
 			"grade": "3",
-			"display_order": 10,
+			"display_order": 12,
 			"name": "Factoriser un nombre entier positif : 60 = 2² × 3 × 5.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2409,7 +2578,7 @@
 		{
 			"code": "3-011",
 			"grade": "3",
-			"display_order": 11,
+			"display_order": 13,
 			"name": "Prendre l'opposé d'une expression : savoir que −(5 − 4x) = −5 + 4x.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2422,7 +2591,7 @@
 		{
 			"code": "3-012",
 			"grade": "3",
-			"display_order": 12,
+			"display_order": 14,
 			"name": "Simplifier des expressions produits ou des rapports comportant des facteurs communs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2435,20 +2604,33 @@
 		{
 			"code": "3-013",
 			"grade": "3",
-			"display_order": 13,
-			"name": "Utiliser la double distributivité pour développer et factoriser des expressions dont le facteur est apparent.",
+			"display_order": 15,
+			"name": "Utiliser la double distributivité pour développer des expressions.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
 			"branche": "Algèbre",
 			"notion": "Calcul littéral",
-			"sous_notion": null
+			"sous_notion": "développer"
+		},
+		{
+			"code": "3-054",
+			"grade": "3",
+			"display_order": 16,
+			"name": "Utiliser la double distributivité pour factoriser des expressions dont le facteur est apparent.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "factoriser"
 		},
 		{
 			"code": "3-014",
 			"grade": "3",
-			"display_order": 14,
+			"display_order": 17,
 			"name": "Résoudre analytiquement et graphiquement une inéquation du premier degré du type ax ⩾ b.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2461,7 +2643,7 @@
 		{
 			"code": "3-015",
 			"grade": "3",
-			"display_order": 15,
+			"display_order": 18,
 			"name": "Résoudre une équation produit nul.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2474,7 +2656,7 @@
 		{
 			"code": "3-016",
 			"grade": "3",
-			"display_order": 16,
+			"display_order": 19,
 			"name": "Manipuler les trois identités remarquables pour développer et factoriser : a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)² ; a² − b² = (a − b)(a + b).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2487,7 +2669,7 @@
 		{
 			"code": "3-017",
 			"grade": "3",
-			"display_order": 17,
+			"display_order": 20,
 			"name": "Pratiquer un raisonnement par analyse-synthèse dans le cadre d'une résolution d'équation.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2500,7 +2682,7 @@
 		{
 			"code": "3-018",
 			"grade": "3",
-			"display_order": 18,
+			"display_order": 21,
 			"name": "Définir la boule et la sphère.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2513,8 +2695,8 @@
 		{
 			"code": "3-019",
 			"grade": "3",
-			"display_order": 19,
-			"name": "Définir les grands cercles, le diamètre.",
+			"display_order": 22,
+			"name": "Définir les grands cercles et le diamètre d'une sphère.",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2526,7 +2708,7 @@
 		{
 			"code": "3-020",
 			"grade": "3",
-			"display_order": 20,
+			"display_order": 23,
 			"name": "Visualiser et réaliser des sections de pavé parallèlement à une face, de cylindre parallèlement ou perpendiculairement à son axe, d'une boule.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2539,7 +2721,7 @@
 		{
 			"code": "3-021",
 			"grade": "3",
-			"display_order": 21,
+			"display_order": 24,
 			"name": "Connaitre et utiliser la formule du volume d'une boule de rayon donné.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2552,20 +2734,33 @@
 		{
 			"code": "3-022",
 			"grade": "3",
-			"display_order": 22,
-			"name": "Connaitre et appliquer le théorème de Thalès, sa réciproque, sa contraposée (configurations des triangles emboités et configuration dite du papillon).",
+			"display_order": 25,
+			"name": "Connaitre et appliquer le théorème de Thalès (configurations des triangles emboités et configuration dite du papillon).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Espace et géométrie > Triangles",
 			"branche": "Géométrie",
 			"notion": "Théorème de Thalès",
-			"sous_notion": null
+			"sous_notion": "calculer une longueur"
+		},
+		{
+			"code": "3-055",
+			"grade": "3",
+			"display_order": 26,
+			"name": "Connaitre et appliquer la réciproque et la contraposée du théorème de Thalès (configurations des triangles emboités et configuration dite du papillon).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Théorème de Thalès",
+			"sous_notion": "réciproque"
 		},
 		{
 			"code": "3-023",
 			"grade": "3",
-			"display_order": 23,
+			"display_order": 27,
 			"name": "Connaitre et utiliser les lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2578,7 +2773,7 @@
 		{
 			"code": "3-024",
 			"grade": "3",
-			"display_order": 24,
+			"display_order": 28,
 			"name": "Définir et utiliser la translation : définition ponctuelle avec parallélogramme.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2591,7 +2786,7 @@
 		{
 			"code": "3-025",
 			"grade": "3",
-			"display_order": 25,
+			"display_order": 29,
 			"name": "Définir et utiliser les notions de vecteur, de vecteurs égaux, de vecteur nul, d'opposé d'un vecteur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2604,7 +2799,7 @@
 		{
 			"code": "3-026",
 			"grade": "3",
-			"display_order": 26,
+			"display_order": 30,
 			"name": "Définir et utiliser la somme de deux vecteurs par enchainement de deux translations.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2617,7 +2812,7 @@
 		{
 			"code": "3-027",
 			"grade": "3",
-			"display_order": 27,
+			"display_order": 31,
 			"name": "Découvrir et utiliser la relation de Chasles.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2630,7 +2825,7 @@
 		{
 			"code": "3-028",
 			"grade": "3",
-			"display_order": 28,
+			"display_order": 32,
 			"name": "Calculer des effectifs cumulés croissants.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2643,8 +2838,8 @@
 		{
 			"code": "3-029",
 			"grade": "3",
-			"display_order": 29,
-			"name": "Donner les quartiles et la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+			"display_order": 33,
+			"name": "Donner les quartiles d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2654,9 +2849,22 @@
 			"sous_notion": "quartiles"
 		},
 		{
+			"code": "3-056",
+			"grade": "3",
+			"display_order": 34,
+			"name": "Donner la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "médiane"
+		},
+		{
 			"code": "3-030",
 			"grade": "3",
-			"display_order": 30,
+			"display_order": 35,
 			"name": "Construire et utiliser des boites à moustache pour représenter les valeurs de position d'une série statistique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2667,22 +2875,9 @@
 			"sous_notion": "boîte à moustaches"
 		},
 		{
-			"code": "3-031",
-			"grade": "3",
-			"display_order": 31,
-			"name": "Comprendre et interpréter des données statistiques.",
-			"kind": "savoir_faire",
-			"exigence": "attendu",
-			"regime_acquisition": "diversite",
-			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
-			"branche": "Statistiques",
-			"notion": "Indicateurs",
-			"sous_notion": null
-		},
-		{
 			"code": "3-032",
 			"grade": "3",
-			"display_order": 32,
+			"display_order": 36,
 			"name": "Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2695,7 +2890,7 @@
 		{
 			"code": "3-033",
 			"grade": "3",
-			"display_order": 33,
+			"display_order": 37,
 			"name": "Connaitre et savoir appliquer la relation P(A ∪ B) + P(A ∩ B) = P(A) + P(B).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2708,7 +2903,7 @@
 		{
 			"code": "3-034",
 			"grade": "3",
-			"display_order": 34,
+			"display_order": 38,
 			"name": "Simuler des expériences aléatoires indépendantes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2721,7 +2916,7 @@
 		{
 			"code": "3-035",
 			"grade": "3",
-			"display_order": 35,
+			"display_order": 39,
 			"name": "Observer la stabilisation des fréquences lorsqu'on augmente le nombre de répétitions de l'expérience aléatoire, faire le lien entre fréquence et probabilité selon le nombre de répétitions.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2734,7 +2929,7 @@
 		{
 			"code": "3-036",
 			"grade": "3",
-			"display_order": 36,
+			"display_order": 40,
 			"name": "Traduire une augmentation ou une diminution en pourcentages.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2747,7 +2942,7 @@
 		{
 			"code": "3-037",
 			"grade": "3",
-			"display_order": 37,
+			"display_order": 41,
 			"name": "Relier la représentation graphique d'une situation de proportionnalité avec le théorème de Thalès.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2760,7 +2955,7 @@
 		{
 			"code": "3-038",
 			"grade": "3",
-			"display_order": 38,
+			"display_order": 42,
 			"name": "Connaitre et utiliser les fonctions linéaires.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2773,8 +2968,8 @@
 		{
 			"code": "3-039",
 			"grade": "3",
-			"display_order": 39,
-			"name": "Utiliser les différentes représentations d'une fonction.",
+			"display_order": 43,
+			"name": "Utiliser les différentes représentations d'une fonction : formule, graphique, tableau de valeurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2786,7 +2981,7 @@
 		{
 			"code": "3-040",
 			"grade": "3",
-			"display_order": 40,
+			"display_order": 44,
 			"name": "Définir et connaitre le vocabulaire : image, antécédents.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2799,7 +2994,7 @@
 		{
 			"code": "3-041",
 			"grade": "3",
-			"display_order": 41,
+			"display_order": 45,
 			"name": "Définir et utiliser les fonctions linéaires.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2812,7 +3007,7 @@
 		{
 			"code": "3-042",
 			"grade": "3",
-			"display_order": 42,
+			"display_order": 46,
 			"name": "Résoudre graphiquement des équations et des inéquations linéaires.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2825,7 +3020,7 @@
 		{
 			"code": "3-043",
 			"grade": "3",
-			"display_order": 43,
+			"display_order": 47,
 			"name": "Relier fonctions linéaires et proportionnalité.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2838,7 +3033,7 @@
 		{
 			"code": "3-044",
 			"grade": "3",
-			"display_order": 44,
+			"display_order": 48,
 			"name": "Définir et utiliser les fonctions affines.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2851,7 +3046,7 @@
 		{
 			"code": "3-045",
 			"grade": "3",
-			"display_order": 45,
+			"display_order": 49,
 			"name": "Déterminer graphiquement les coefficients d'une fonction affine.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2864,7 +3059,7 @@
 		{
 			"code": "3-046",
 			"grade": "3",
-			"display_order": 46,
+			"display_order": 50,
 			"name": "Représenter la fonction carré.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2877,7 +3072,7 @@
 		{
 			"code": "3-047",
 			"grade": "3",
-			"display_order": 47,
+			"display_order": 51,
 			"name": "Approfondir la notion de variables.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2890,7 +3085,7 @@
 		{
 			"code": "3-048",
 			"grade": "3",
-			"display_order": 48,
+			"display_order": 52,
 			"name": "Utiliser des conditions composées.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2903,7 +3098,7 @@
 		{
 			"code": "3-049",
 			"grade": "3",
-			"display_order": 49,
+			"display_order": 53,
 			"name": "Utiliser une boucle conditionnelle.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2916,7 +3111,7 @@
 		{
 			"code": "3-050",
 			"grade": "3",
-			"display_order": 50,
+			"display_order": 54,
 			"name": "Structurer des programmes.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -2929,7 +3124,7 @@
 		{
 			"code": "3-051",
 			"grade": "3",
-			"display_order": 51,
+			"display_order": 55,
 			"name": "Écrire un programme donné pour réaliser un objectif ou résoudre un problème.",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -3420,6 +3615,14 @@
 		{
 			"code": "6-198",
 			"grade": "5"
+		},
+		{
+			"code": "5-108",
+			"grade": "4"
+		},
+		{
+			"code": "4-070",
+			"grade": "3"
 		}
 	]
 }
