@@ -1,6 +1,6 @@
 # Syntaxe des commandes de Calcul : séparer les arguments sans espaces ambigus
 
-> Proposition du 2026-10-08, **à valider par David** avant tout code.
+> Proposition du 2026-10-08. **Décisions de David (2026-10-08)** : Q1 oui (variable devinée quand un seul choix), Q2 `en` ET `pour`, Q3 probabilités/statistiques inchangées. Liste complète des commandes : en cours de validation.
 
 ## Le problème
 
