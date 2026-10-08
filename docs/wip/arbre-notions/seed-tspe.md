@@ -447,7 +447,7 @@ Si A1 = oui : les **93 références** de la liste de 1re spé (qui contient déj
 
 ---
 
-## Rattachements discutables
+## Rattachements discutables — TRANCHÉS (David, 2026-10-08 : « je valide les discutables », recos retenues)
 
 1. **« Limite en ±∞ de la fonction exponentielle »** (démonstration de la section Suites,
    TSPE-391) → `Limites de fonctions > croissances comparées`, comme le doc d'écarts (V5,
