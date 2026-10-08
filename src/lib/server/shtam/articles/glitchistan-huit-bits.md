@@ -1,11 +1,11 @@
 ---
-title: Turingrad — l'ordinateur qui compte les gidouilles de Mère Ubu atteint 255, puis affiche 0, la Reine fait arrêter la machine
+title: La machine de Turingrad déborde, Mère Ubu aussi
 date: 2026-12-10
 author: merdranpo
-lede: Pendant une seconde, la fortune royale s'est évanouie. Les ingénieurs plaident « un débordement ». La Reine a retenu le mot « débordement », et en a fait un chef d'accusation.
+lede: La machine qui compte les gidouilles de Mère Ubu ne sait pas aller au-delà de 255. La Reine, elle, ne compte pas s'arrêter là.
 ---
 
-Il était minuit pile quand l'incident s'est produit. La machine chargée de compter les gidouilles du coffre personnel de Mère Ubu affichait 255. Un Palotin a déposé une gidouille de plus. L'écran a affiché 0.
+Il était minuit pile quand l'incident s'est produit. La machine chargée de compter les gidouilles du coffre personnel de Mère Ubu affichait 255. Un Palotin a déposé une gidouille de plus. Le cadran a affiché 0.
 
 La Reine, réveillée en pleine nuit, est arrivée en chemise de nuit dans la salle des machines de Turingrad. « Où est ma fortune ? » Les ingénieurs ont tenté d'expliquer. « La machine compte sur huit bits, Votre Majesté. Elle ne sait pas aller au-delà de 255. Quand on ajoute 1, elle déborde, et repart à zéro. Mais les gidouilles sont toujours dans le coffre. »
 
@@ -19,4 +19,4 @@ Les ordinateurs stockent les nombres en **binaire**, avec un nombre fixe de chif
 
 - Sur **8 bits**, on peut écrire $2^8 = 256$ nombres : de 0 à 255. En binaire, 255 s'écrit `11111111`. En ajoutant 1, on obtient `100000000`, qui a 9 chiffres : le neuvième ne tient pas, il reste `00000000`, c'est-à-dire **0**. C'est un **dépassement de capacité**.
 - Sur **64 bits**, on monte jusqu'à $2^{64} - 1$, environ $1{,}8 \times 10^{19}$.
-- De vrais bugs sont nés de ce phénomène : des compteurs de jeux vidéo, d'horloges ou de logiciels qui repartent soudain à zéro, ou deviennent négatifs.
+- De vrais bugs sont nés de ce phénomène : des compteurs de jeux vidéo, d'horloges ou de logiciels qui repartent soudain à zéro, ou deviennent négatifs. En 2014, la vidéo _Gangnam Style_ s'approchait de 2 147 483 647 vues, la limite d'un compteur sur 32 bits : YouTube a dû passer son compteur à 64 bits.

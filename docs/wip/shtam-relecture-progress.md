@@ -28,6 +28,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 21  | 2026-11-30 | La duplication du cube (`bedonstan-duplication-du-cube`)                                        | ❌ abandonné (David) — « à la règle et au compas » trop difficile à comprendre ; fichier supprimé, créneau du 30 novembre libre                                                                    |
 | 22  | 2026-12-03 | Le capitaine aux 97 Palotins (`nombrilie-nombre-premier-solitude`)                              | ✅ validé — réécrit : capitaine qui ne peut ranger 97 Palotins en rangs égaux, titre « rentrer dans le rang », renvoyer un Palotin                                                                 |
 | 23  | 2026-12-07 | Les gidouilles qui font des petits (`nombrilie-interets-composes`)                              | ✅ validé — réécrit : « l'argent fait des petits » pris à la lettre, titre « aucun intérêt à composer… Elle, si. », tokos / Aristote ; NB : l'article sur e (1er février) parle aussi des intérêts |
+| 24  | 2026-12-10 | Le débordement des huit bits (`glitchistan-huit-bits`)                                          | ✅ validé — titre « déborde, Mère Ubu aussi », chapô « ne compte pas s'arrêter là », cadran, Gangnam Style 32 bits                                                                                 |
 
 ## Outillage ajouté pendant la relecture
 
