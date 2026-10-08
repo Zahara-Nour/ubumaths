@@ -53,7 +53,9 @@ import {
 	func,
 	ln,
 	variable as variableNode,
-	greek
+	greek,
+	power,
+	mathConstant
 } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
@@ -637,6 +639,35 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+	}
+
+	// Stratégie 1.9 : u^v, u ET v variables (xˣ, x^{1/x}), forme 0^0, ∞^0 ou
+	// 1^∞ (ou borne infinie) : u^v = e^{v ln u}. Le domaine est u > 0
+	// (convention x^a = e^{a ln x}) : la substitution directe de 0^0 (= 1 par
+	// hasard sur main) ne doit pas conclure. Avant la substitution directe.
+	const expOfLog = isExponentialIndeterminate(expression, varName, approachPoint, dir)
+		? tryExponentialOfLogarithm(expression, varName, approachPoint, dir, options)
+		: null;
+	if (expOfLog !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			expOfLog,
+			'summarized',
+			approachPoint,
+			'Écriture exponentielle : u^v = e^{v ln u}'
+		);
+		return createResult(
+			expOfLog,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(expOfLog) ? 'infinite' : 'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
 	}
 
 	// Strategy 2: Try direct substitution
@@ -1257,6 +1288,67 @@ function tryLogarithmOfPositiveLimit(
 	if (value.n === value.d) return number('0');
 	const constant = exactConstantNode(inner.value);
 	return constant === null ? null : ln(constant);
+}
+
+/** Formes 0^0, ∞^0, 1^∞ d'une puissance u^v (ou borne infinie). */
+function isExponentialIndeterminate(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection
+): boolean {
+	if (!isSuperscript(expression) || isEulerBase(expression.base)) return false;
+	if (!containsVariable(expression.base, varName)) return false;
+	if (!containsVariable(expression.superscript, varName)) return false;
+	if (isInfinity(approach)) return true;
+	const form = detectIndeterminateForm(expression, varName, approach, dir);
+	return form === '0^0' || form === '∞^0' || form === '1^∞';
+}
+
+/** Garde-fou de récursion : v·ln u peut reformer une puissance. */
+let nestedExpLog = 0;
+
+/**
+ * lim u^v = e^{lim v ln u} (u, v dépendant de la variable) : continuité de
+ * exp. v ln u → +∞ donne +∞, → −∞ donne 0, → 0 donne 1. Seule une limite
+ * intérieure exacte conclut ; null sinon.
+ */
+function tryExponentialOfLogarithm(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	if (!isSuperscript(expression) || isEulerBase(expression.base)) return null;
+	const base = expression.base;
+	const exponent = expression.superscript;
+	if (!containsVariable(base, varName) || !containsVariable(exponent, varName)) return null;
+	if (nestedExpLog >= 2) return null;
+	nestedExpLog++;
+	try {
+		const inner = evaluateLimit(
+			multiply(exponent, ln(base), 'implicit'),
+			varName,
+			approach,
+			dir,
+			options
+		);
+		if (inner.value === null || inner.value === undefined) return null;
+		if (inner.status !== 'exact' && inner.status !== 'infinite') return null;
+		if (isInfinity(inner.value)) {
+			return inner.value.sign === 'positive' ? positiveInfinity() : number('0');
+		}
+		// v ln u → 0 : e⁰ = 1 (`exactConstantRational` ne lit pas 0)
+		if (isNumber(inner.value) && Number(inner.value.value) === 0) return number('1');
+		const constant = exactConstantNode(inner.value);
+		if (constant === null) return null;
+		// e¹ s'écrit e
+		if (isNumber(constant) && Number(constant.value) === 1) return mathConstant('euler');
+		return power(mathConstant('euler'), constant);
+	} finally {
+		nestedExpLog--;
+	}
 }
 
 // =============================================================================

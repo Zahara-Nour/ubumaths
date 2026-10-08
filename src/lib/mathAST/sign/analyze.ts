@@ -64,6 +64,7 @@ import type {
 } from './types';
 import { DEFAULT_SIGN_OPTIONS, SignAnalysisError } from './types';
 import { computeDomain } from '../domain/compute';
+import { assertDomainResolved } from '../domain/errors';
 import { findZerosWithStatus, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
 import { determineSignOnInterval } from './helpers/interval-sign';
 import { sampleSignOnInterval } from './helpers/sampling';
@@ -131,6 +132,8 @@ export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): S
 		recordStep(steps, stepId++, 'use_provided_domain', 'Using provided domain', opts.verbosity);
 	} else {
 		const domainResult = computeDomain(expr, variable);
+		// Contrainte non résolue : on refuse plutôt que de signer sur ℝ
+		assertDomainResolved(domainResult);
 		domain = domainResult.domain;
 		recordStep(
 			steps,

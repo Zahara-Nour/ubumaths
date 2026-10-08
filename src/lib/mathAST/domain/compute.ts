@@ -1224,7 +1224,9 @@ function nonZeroSet(expr: MathNode, variable: string): Domain | null {
 			const name = expr.name.toLowerCase();
 			if (name === 'sqrt' || name === 'cbrt' || name === 'abs') return nonZeroSet(u, variable);
 			if (name === 'exp') return universalDomain();
-			if (name === 'ln' || name === 'log') return nonZeroSet(subtractConstant(u, 1), variable);
+			if (name === 'ln' || name === 'log' || name === 'log10' || name === 'log2') {
+				return nonZeroSet(subtractConstant(u, 1), variable);
+			}
 			if (name === 'sin') return getPeriodicExclusionDomain('csc', u, variable);
 			if (name === 'cos') return getPeriodicExclusionDomain('sec', u, variable);
 			if (name === 'tan') return getPeriodicExclusionDomain('cot', u, variable);

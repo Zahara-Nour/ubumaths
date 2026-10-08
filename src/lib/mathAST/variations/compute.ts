@@ -30,6 +30,7 @@ import type {
 import { DEFAULT_VARIATION_OPTIONS, VariationError } from './types';
 import { differentiate } from '../differentiation';
 import { computeDomain } from '../domain/compute';
+import { assertDomainResolved, DomainUnresolvedError } from '../domain/errors';
 import { analyzeSign } from '../sign';
 import { findCriticalPointsWithStatus, sortCriticalPoints } from './critical-points';
 import { buildMonotonicIntervals, mergeMonotonicIntervals } from './monotonicity';
@@ -111,6 +112,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	} else {
 		try {
 			const domainResult = computeDomain(expr, variable);
+			// Contrainte non résolue : on refuse (pas de tableau sur un domaine faux)
+			assertDomainResolved(domainResult);
 			domain = domainResult.domain;
 			stepId = recordStep(
 				steps,
@@ -122,6 +125,7 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 				opts.verbosity
 			);
 		} catch (err) {
+			if (err instanceof DomainUnresolvedError) throw err;
 			throw new VariationError(
 				'Cannot compute domain',
 				expr,

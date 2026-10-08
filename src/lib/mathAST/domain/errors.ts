@@ -93,3 +93,25 @@ export function createDomainViolation(
 		messageEn: `${source}(${parameter}) requires ${constraint}, got ${parameter} = ${value}`
 	};
 }
+
+/**
+ * Le domaine de définition n'a pas pu être déterminé (`DomainResult.unresolved`).
+ * Levée par les analyses qui en dépendent (variations, signe) : elles refusent
+ * plutôt que d'annoncer ℝ. Message en français, destiné à l'élève.
+ */
+export class DomainUnresolvedError extends Error {
+	readonly name = 'DomainUnresolvedError';
+
+	constructor(public readonly constraints: readonly string[]) {
+		super(
+			`Je ne sais pas encore déterminer le domaine de définition (contrainte non résolue : ${constraints[0] ?? '?'}).`
+		);
+	}
+}
+
+/** Lève `DomainUnresolvedError` si le calcul de domaine est incomplet. */
+export function assertDomainResolved(result: { readonly unresolved?: readonly string[] }): void {
+	if (result.unresolved && result.unresolved.length > 0) {
+		throw new DomainUnresolvedError(result.unresolved);
+	}
+}
