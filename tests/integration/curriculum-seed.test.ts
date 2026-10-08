@@ -299,16 +299,19 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 		await cleanupCompetenceTestData();
 	});
 
-	it('un élève connecté lit les 262 points', async () => {
+	it('un élève connecté lit les 262 points de l’ancien seed', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
 
+		// Ancien seed seulement (grade NULL) : le seed points → nœuds de Tle spé
+		// (20261009120000) occupe aussi des codes TSPE-3xx/5xx.
 		const { data, error } = await client
 			.from('curriculum_points')
 			.select('code')
-			.like('code', 'TSPE-%');
+			.like('code', 'TSPE-%')
+			.is('grade', null);
 		expect(error).toBeNull();
 		expect(data ?? []).toHaveLength(262);
 	});
