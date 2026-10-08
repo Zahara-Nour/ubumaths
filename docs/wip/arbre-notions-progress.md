@@ -591,3 +591,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   CI : le test de l'ancien seed (« aucune liste 1_SPE ») mis au diapason. Report C5 des
   liens documenté (vocabulaire → points de 2de). Suivent : Tle spé, Tle comp., Expertes ;
   passe « points vagues » sur la 2de à faire.
+
+- **LE SEED Tle SPÉ EST EN PROD (2026-10-08, PR #960) — 1 400 points du nouveau monde,
+  400 références.** `seed-tspe.md` validé intégralement : 239 points `TSPE-301`…`539`
+  (base 301 : l'ancien seed occupe 001…262) ; 7 puces scindées en plus de l'ancien
+  découpage (+8), 6 refusions (parties visant le même nœud, sans lien) ; entretien
+  (U5/V1) → 23 références vers 2de/1re (vocabulaire, logique, listes, transformation par
+  exp) ; A1 : liste d'automatismes de 1re spé reprise pour le cycle terminal (103 réfs au
+  total) ; P1 : « Résoudre des problèmes impliquant des grandeurs et mesures » retirée.
+  18 Exemples d'algorithme (E1), 18 démonstrations, 50 approfondissements. Vérifié prod :
+  0 sans nœud, 262 anciens points et 308 liens intacts. Audit : rien de bloquant. CI verte
+  du premier coup (test de l'ancien seed restreint à grade NULL avant le push). Suivent :
+  Tle comp., Expertes ; passe « points vagues » sur la 2de.
