@@ -412,16 +412,19 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 		await cleanupCompetenceTestData();
 	});
 
-	it('un élève connecté lit les 139 points', async () => {
+	it('un élève connecté lit les 139 points de l’ancien seed', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
 
+		// Ancien seed seulement (grade NULL) : le seed points → nœuds de Tle comp.
+		// (20261009160000) occupe aussi des codes TCOMP-2xx/3xx.
 		const { data, error } = await client
 			.from('curriculum_points')
 			.select('code')
-			.like('code', 'TCOMP-%');
+			.like('code', 'TCOMP-%')
+			.is('grade', null);
 		expect(error).toBeNull();
 		expect(data ?? []).toHaveLength(139);
 	});
