@@ -926,7 +926,8 @@ const REVIEW_913_CASES: PrimitiveCase[] = [
 		['\\frac{1}{4x^2+1}'],
 		['\\frac{1}{2x^2-x-1}'],
 		['\\frac{x+1}{x^2+2x+5}'],
-		['\\frac{1}{x^2+x+1}'],
+		// Même √ dans le coefficient et l'argument (décision de David, 2026-10-08)
+		['\\frac{1}{x^2+x+1}', '\\frac{2}{\\sqrt{3}}\\arctan(\\frac{2x+1}{\\sqrt{3}})'],
 		['\\frac{1}{9-x^2}'],
 		['\\frac{4}{x^2-2x}'],
 		['0.3x^2-1.25x'],
@@ -1028,16 +1029,27 @@ const REVIEW_913_CASES: PrimitiveCase[] = [
 	...latex('revue-913', [
 		['\\frac{x}{x^2+2x+5}'],
 		['\\frac{3}{2x^2+8}'],
-		['\\frac{2x-1}{x^2+x+1}'],
+		// Même √ dans le coefficient et l'argument (décision de David, 2026-10-08)
+		[
+			'\\frac{2x-1}{x^2+x+1}',
+			'\\ln(x^2+x+1)-\\frac{4}{\\sqrt{3}}\\arctan(\\frac{2x+1}{\\sqrt{3}})'
+		],
 		['\\frac{1}{-x^2+2x-5}'],
 		['\\frac{x^3}{x^2+1}']
 	]),
-	...latex('revue-913', [['|x|'], ['|x-3|'], ['x\\cdot2^x'], ['\\frac{\\ln x}{x^3}']]),
+	...latex('revue-913', [
+		['|x|'],
+		['|x-3|'],
+		// Facteur aˣ mis en évidence (décision de David, 2026-10-08)
+		['x\\cdot2^x', '2^x(\\frac{x}{\\ln(2)}-\\frac{1}{(\\ln(2))^2})'],
+		['\\frac{\\ln x}{x^3}']
+	]),
 	...latex(
 		'revue-913',
 		[
 			['\\frac{\\sin x}{\\cos x}'],
-			['\\tan^2(x)'],
+			// Terme positif en tête (décision de David, 2026-10-08)
+			['\\tan^2(x)', '\\tan(x)-x'],
 			['\\frac{1}{\\tan(2x+1)}'],
 			['\\frac{3}{\\cos^2(x)}']
 		],

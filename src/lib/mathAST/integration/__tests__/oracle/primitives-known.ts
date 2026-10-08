@@ -50,8 +50,7 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 		'rendu « \\dfrac{1}{2} \\exponentialE^x + \\dfrac{1}{2} \\exponentialE^{-x} »',
 	'latex:x^2e^{x}': 'rendu « x^2 \\exponentialE^x - 2 x \\exponentialE^x + 2 \\exponentialE^x »',
 	'latex:e^{x}\\sin(x)':
-		'rendu « -\\dfrac{1}{2} \\cos\\left( x \\right) \\exponentialE^x + \\dfrac{1}{2} \\exponentialE^x \\sin\\left( x \\right) »',
-	'latex:(2x-1)e^{x}': 'rendu « 2 x \\exponentialE^x - 3 \\exponentialE^x »',
+		'rendu « \\dfrac{1}{2} \\exponentialE^x \\sin\\left( x \\right) - \\dfrac{1}{2} \\cos\\left( x \\right) \\exponentialE^x »',
 	'latex:100e^{-0.05t}': 'rendu « -2000 \\exponentialE^{-\\dfrac{1}{20} t} »',
 	'latex:ae^{-kx}': 'rendu « \\dfrac{-a \\exponentialE^{-k x}}{k} »',
 	'latex:ae^{-kt}': 'rendu « \\dfrac{-a \\exponentialE^{-k t}}{k} »',

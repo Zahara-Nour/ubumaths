@@ -61,8 +61,10 @@ import {
 	absProductForm,
 	arctanClassForm,
 	dropConstantTerms,
+	exponentialFactorForm,
 	groupLnTerms,
 	lnOfEvenPowerAsAbs,
+	positiveLeadForm,
 	powerOfSumForm
 } from './class-form';
 
@@ -878,6 +880,11 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
 		}
+		// (x − 1)eˣ, 2ˣ(x/ln 2 − 1/(ln 2)²) : facteur exponentiel mis en évidence
+		finalAntiderivative =
+			exponentialFactorForm(finalAntiderivative, variable) ?? finalAntiderivative;
+		// tan x − x plutôt que −x + tan x : un seul terme négatif, placé derrière
+		finalAntiderivative = positiveLeadForm(finalAntiderivative, variable);
 	}
 	// ln|c·u| → ln|u| (ln|c| absorbé dans la constante, cf. ln-constant.ts),
 	// puis ln|u| → ln(u) quand u > 0 sur ℝ (ln(x² + 1), ln(eˣ + 1)) : écriture de classe
