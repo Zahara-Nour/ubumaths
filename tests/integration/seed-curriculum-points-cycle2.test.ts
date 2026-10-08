@@ -6,7 +6,10 @@
  * cycle 2 (69 CP + 82 CE1 + 76 CE2) de l'Annexe 4 (arrêté du 22-10-2024,
  * BOENJS n° 41 du 31 octobre 2024), VALIDÉS par David le 2026-10-08
  * (docs/wip/arbre-notions/seed-cycle2.md). Aucun changement de l'arbre : les
- * points se rattachent à l'arbre 2026-10-07.13 tel quel.
+ * points se rattachent à l'arbre 2026-10-07.13 tel quel. Puis la passe « puces et
+ * points » (migration `20261011080000_passe_puces_points_cycle2`, validée le
+ * 2026-10-08, docs/wip/arbre-notions/passe-cycle2.md) : 16 puces scindées (+17 points),
+ * 9 points spécifiés → 244 points (72 CP + 89 CE1 + 83 CE2).
  *
  * La preuve est INTÉGRALE, pas un échantillon : chaque point de la fixture
  * (générée depuis le document validé) doit se retrouver en base avec TOUS ses
@@ -156,15 +159,15 @@ describe('Seed des points du cycle 2 (curriculum_points → classification_nodes
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (227 points, arbre .13)', () => {
+	it('la fixture est bien celle du document validé (244 points après la passe)', () => {
 		expect(fixture.version).toBe('2026-10-07.13');
-		expect(fixture.points).toHaveLength(227);
-		expect(fixture.points.filter((p) => p.grade === 'CP')).toHaveLength(69);
-		expect(fixture.points.filter((p) => p.grade === 'CE1')).toHaveLength(82);
-		expect(fixture.points.filter((p) => p.grade === 'CE2')).toHaveLength(76);
+		expect(fixture.points).toHaveLength(244);
+		expect(fixture.points.filter((p) => p.grade === 'CP')).toHaveLength(72);
+		expect(fixture.points.filter((p) => p.grade === 'CE1')).toHaveLength(89);
+		expect(fixture.points.filter((p) => p.grade === 'CE2')).toHaveLength(83);
 	});
 
-	it('les 227 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 244 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -179,7 +182,7 @@ describe('Seed des points du cycle 2 (curriculum_points → classification_nodes
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(227);
+		expect(pointRows).toHaveLength(244);
 	});
 
 	it('architecture cible : objective_id NULL et rang NULL sur tout le seed', () => {
@@ -191,7 +194,42 @@ describe('Seed des points du cycle 2 (curriculum_points → classification_nodes
 
 	it('le régime suit la décision : fluence = tout le calcul mental, rien d’autre', () => {
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
-		expect(fluents).toHaveLength(30);
+		expect(fluents).toHaveLength(34);
 		expect(fluents.every((r) => (r.rubrique ?? '').endsWith('> Le calcul mental'))).toBe(true);
+	});
+
+	it('passe « puces et points » : scissions, spécifications, ordre d’affichage', () => {
+		const byCode = new Map(pointRows.map((r) => [r.code, r]));
+		// Les parties neuves existent, rangées juste après leur première partie.
+		const after: [string, string][] = [
+			['CP-070', 'CP-001'],
+			['CP-071', 'CP-045'],
+			['CE1-083', 'CE1-028'],
+			['CE2-078', 'CE2-077'],
+			['CE2-083', 'CE2-075']
+		];
+		for (const [neuf, avant] of after) {
+			expect(byCode.get(neuf)?.display_order, neuf).toBe(
+				(byCode.get(avant)?.display_order ?? 0) + 1
+			);
+		}
+		expect(byCode.get('CE2-022')?.name).toBe(
+			'Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.'
+		);
+		expect(pathOf(byCode.get('CE2-078')?.node_id ?? null)).toBe(
+			'Nombres et calculs > Entiers : multiplication > décomposition'
+		);
+		expect(byCode.get('CE1-052')?.kind).toBe('connaissance');
+		expect(byCode.get('CP-039')?.name).toBe(
+			'Utiliser le lexique associé aux masses : lourd, léger.'
+		);
+		// Dans chaque grade, l'ordre d'affichage est une permutation de 1..n.
+		for (const grade of ['CP', 'CE1', 'CE2']) {
+			const ordres = pointRows
+				.filter((r) => r.grade === grade)
+				.map((r) => r.display_order)
+				.sort((a, b) => a - b);
+			expect(ordres, grade).toEqual(ordres.map((_, i) => i + 1));
+		}
 	});
 });
