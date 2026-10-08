@@ -265,9 +265,9 @@ l'aire du disque, le volume du cylindre de révolution » (5e) traverse deux not
 | 4-049 | Exemples simples d'expériences aléatoires à deux épreuves (par exemple, lancer de deux pièces, d'une pièce et d'un dé, de deux dés, etc.).                           | s-f   | div. | `Probabilités` Expériences aléatoires (notion)                                | idem                   |
 | 4-050 | À partir de la répétition d'une expérience aléatoire, réalisée matériellement ou simulée, comparer des graphiques de distributions (fréquentielle et probabiliste).  | s-f   | div. | `Probabilités` Expériences aléatoires > fréquences                            | idem                   |
 | 4-051 | Observer la fluctuation des fréquences pour un nombre de répétitions fixé de l'expérience aléatoire.                                                                 | s-f   | div. | `Probabilités` Expériences aléatoires > fréquences                            | idem                   |
-| 4-052 | Utiliser des grandeurs quotients, avec ou sans unités.                                                                                                               | s-f   | div. | `Proportionnalité` Vitesse (notion) _(discutable 7)_                          | Proportionnalité       |
-| 4-053 | Comparer deux nombres ou deux grandeurs à l'aide de leur rapport ou ratio.                                                                                           | s-f   | div. | `Proportionnalité` Situations de proportionnalité (notion) _(discutable 7)_   | idem                   |
-| 4-054 | Exprimer la proportionnalité entre deux suites de nombres par des égalités de rapports ou sous forme de ratio.                                                       | s-f   | div. | `Proportionnalité` Situations de proportionnalité (notion)                    | idem                   |
+| 4-052 | Utiliser des grandeurs quotients, avec ou sans unités.                                                                                                               | s-f   | div. | `Proportionnalité` Vitesse (notion)                                           | Proportionnalité       |
+| 4-053 | Comparer deux nombres ou deux grandeurs à l'aide de leur rapport ou ratio.                                                                                           | s-f   | div. | `Proportionnalité` Situations de proportionnalité > ratio ✚                   | idem                   |
+| 4-054 | Exprimer la proportionnalité entre deux suites de nombres par des égalités de rapports ou sous forme de ratio.                                                       | s-f   | div. | `Proportionnalité` Situations de proportionnalité > ratio ✚                   | idem                   |
 | 4-055 | Déterminer une quatrième proportionnelle.                                                                                                                            | s-f   | div. | `Proportionnalité` Situations de proportionnalité > quatrième proportionnelle | idem                   |
 | 4-056 | Calculer avec des pourcentages.                                                                                                                                      | s-f   | div. | `Proportionnalité` Pourcentages > calculer                                    | idem                   |
 | 4-057 | Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur                                                 | s-f   | div. | `Proportionnalité` Évolutions > variations en pourcentage                     | idem                   |
@@ -503,10 +503,12 @@ appliquer` — ✅ tranché David.
    4-037, 4-038) → `Figures planes > triangles` — ✅ tranché David (4-038 INVERSÉ par
    rapport à la reco : la construction sans équerre passe par la propriété du triangle
    rectangle inscrit dans le demi-cercle, elle reste chez les triangles).
-7. **Grandeurs quotients / rapports et ratios** (4-052, 4-053, 4-054) : grandeurs
-   quotients → `Vitesse` (notion, le doc d'écarts l'acte) ; rapports/ratios → la notion
-   `Situations de proportionnalité` (pas de sous-notion dédiée ; le filtre n'a pas été
-   jugé suffisant au tour des programmes).
+7. **Grandeurs quotients / rapports et ratios** (4-052, 4-053, 4-054) — ✅ tranché
+   David : **nouvelle sous-notion « ratio »** sous `Situations de proportionnalité`
+   (✚ : création d'arbre dans la migration, JSON dessin_branches.py + diagramme à
+   répercuter) pour 4-053 et 4-054 ; grandeurs quotients → `Vitesse` (notion). Le
+   partage proportionnel (4-059) reste sous `appliquer` (plus large que le ratio) —
+   les automatismes 3e « partager selon un ratio » le ciblent.
 8. **« Simplifier des expressions produits ou des rapports »** (3-012) → `Calcul
 littéral > simplifier l'écriture` (les rapports effleurent « expressions
    fractionnaires », mais le geste est la simplification) ; **analyse-synthèse**
@@ -533,11 +535,12 @@ proportionnalité > reconnaître`. Alternative : `Théorème de Thalès` (notion
 ## Après validation (plan de livraison)
 
 1. Worktree + migration **additive** `seed_curriculum_points_cycle4.sql` générée depuis
-   ce document : les 226 points (5e puis 4e puis 3e), PUIS les références par grade
-   (cibles résolues par code — y compris les cibles intra-migration 5-xxx/4-xxx, déjà
-   insérées). Bloc DO : comptes par grade, 0 sans nœud, comptes de références par
-   grade, fluence = 3, algorithme = 17, demonstration = 4. Rollback scopé en
-   commentaire avec la mise en garde RGPD habituelle.
+   ce document : d'abord la **sous-notion « ratio »** (Situations de proportionnalité,
+   - dessin_branches.py → JSON .14 + diagramme), puis les 226 points (5e puis 4e puis 3e), PUIS les références par grade
+     (cibles résolues par code — y compris les cibles intra-migration 5-xxx/4-xxx, déjà
+     insérées). Bloc DO : comptes par grade, 0 sans nœud, comptes de références par
+     grade, fluence = 3, algorithme = 17, demonstration = 4. Rollback scopé en
+     commentaire avec la mise en garde RGPD habituelle.
 2. Test d'intégration : comparaison intégrale des points ET des références des trois
    grades en lecture anonyme, preuve rouge avant.
 3. `security-auditor`, PR, CI verte, merge, `db:migrate`, vérification prod.
