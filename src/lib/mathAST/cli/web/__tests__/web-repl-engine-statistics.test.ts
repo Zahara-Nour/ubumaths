@@ -88,7 +88,9 @@ describe('écarts voulus par rapport à l’ancien moteur', () => {
 	});
 
 	it('.linreg ajuste des abscisses petites mais distinctes', () => {
-		const result = new WebReplEngine().execute('.linreg 0.000001,0.000002,0.000003 : 1,2,3');
+		const result = new WebReplEngine().execute(
+			'.linreg 0.000001 ; 0.000002 ; 0.000003 : 1 ; 2 ; 3'
+		);
 
 		expect(result.success).toBe(true);
 		expect(result.output).toContain('r = 1');
@@ -181,7 +183,8 @@ describe('`.ajustement` en français', () => {
 describe('`.ajustement` complété : mêmes calculs et mêmes textes que le bloc ```nuage', () => {
 	const lines = (command: string) => new WebReplEngine().execute(command).output.split('\n');
 	const SERIES = '.linreg 1,2,3,4,5,6 : 12,15,19,22,27,30';
-	const EXPONENTIAL = '.linreg 0,1,2,3,4,5 : 2.1,3,4.6,6.9,10.2,15.4';
+	// Valeurs décimales : « ; » entre les valeurs (2026-10-08, la virgule est décimale)
+	const EXPONENTIAL = '.linreg 0 ; 1 ; 2 ; 3 ; 4 ; 5 : 2,1 ; 3 ; 4,6 ; 6,9 ; 10,2 ; 15,4';
 
 	it('point moyen, droite arrondie au millième, r (plus de R²)', () => {
 		const output = lines(SERIES);

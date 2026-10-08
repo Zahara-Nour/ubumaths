@@ -107,19 +107,17 @@ describe('le parcours de la vue Calcul', () => {
 		expect(container.querySelector('.refus')).toBeTruthy();
 	});
 
-	// Décision de David (2026-10-06) : en x sauf « ; v ». Quand x manque,
-	// l'indication s'affiche AVEC la réponse — qui, elle, se compose en
-	// mathématiques (le texte de la ligne n'est alors pas affiché).
-	it('`.dériver t^2` montre la réponse ET l’indication de variable', async () => {
+	// Décision de David (2026-10-08, Q1) : une seule lettre est la variable.
+	// L'ancienne indication « Calcul par rapport à x » n'a plus lieu d'être ;
+	// une note visible avec la réponse reste couverte par « f′ existe déjà ».
+	it('`.dériver t^2` montre la réponse en t, sans indication de variable', async () => {
 		const { submit, container } = await open();
 
 		await submit('.dériver t^2');
 
 		const reponse = container.querySelector('.historique li .reponse');
 		expect(reponse?.querySelector('.math')).toBeTruthy();
-		expect(reponse?.textContent).toContain(
-			'Calcul par rapport à x. Pour une autre variable, écris « ; t ».'
-		);
+		expect(reponse?.textContent).not.toContain('Calcul par rapport à x');
 	});
 
 	// ⚠️ « f′ existe déjà » était collé au TEXTE de la ligne, que la vue

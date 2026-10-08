@@ -28,7 +28,10 @@ import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from 
 import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { preprocess } from '../../normal';
-import { number, opposite, add } from '../../factory';
+import { number, opposite, add, subtract } from '../../factory';
+import { findZerosWithStatus } from '../../sign/helpers/zeros';
+import { closedEndpoint, interval, intervalSet, openEndpoint } from '../../domain/factory';
+import { toLatex } from '../../latex-generator';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
@@ -37,9 +40,8 @@ import {
 	bareFunctionMessage,
 	bareFunctionName,
 	chosenVariable,
-	indexVariables,
-	otherVariableHint,
-	splitVariableArgument
+	readCommandArguments,
+	keywordCommandLabel
 } from '../core/variable-argument';
 
 /**
@@ -861,7 +863,15 @@ export class SolveCommand extends BaseCommand {
 		}
 
 		// Variable explicite après un point-virgule, sinon x
-		const { expression, variable: explicitVariable } = splitVariableArgument(input);
+		const reading = readCommandArguments('solve', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable } = reading.args;
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -888,7 +898,11 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
-		const chosen = chosenVariable(explicitVariable, parserOptions);
+		const chosen = chosenVariable(explicitVariable, parserOptions, {
+			node: parseResult.ast,
+			bound: ctx.evalState?.bindings.keys(),
+			label: keywordCommandLabel('solve')
+		});
 		if (!chosen.ok) {
 			return {
 				success: false,
@@ -896,12 +910,19 @@ export class SolveCommand extends BaseCommand {
 				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
 			};
 		}
-		// x n'apparaît pas et aucune variable n'est donnée : on résout en x, et
-		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
-		const hint =
-			explicitVariable === null
-				? otherVariableHint(indexVariables(parseResult.ast).node, ctx.evalState?.bindings.keys())
-				: null;
+		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
+		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
+		const hint: string | null = null;
+
+		// `dans [a ; b]` : les solutions dans l'intervalle (décision de David, 2026-10-08)
+		if (reading.args.interval !== null) {
+			return this.solveInInterval(
+				parseResult.ast,
+				chosen.variable,
+				reading.args.interval,
+				parserOptions
+			);
+		}
 
 		try {
 			// Solve the equation
@@ -933,6 +954,74 @@ export class SolveCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
+	}
+
+	/**
+	 * Résoudre dans un intervalle BORNÉ, écrit à la française : `[0 ; 2\pi]`,
+	 * `]0 ; 1]`. Les zéros de `gauche − droite` sur ce domaine, familles
+	 * périodiques comprises (`findZerosWithStatus`, celui des tableaux de signes).
+	 */
+	private solveInInterval(
+		equation: RelationNode,
+		variable: string,
+		text: string,
+		parserOptions: Parameters<typeof parse>[1]
+	): CommandResult {
+		const fail = (message: string): CommandResult => ({
+			success: false,
+			output: '',
+			error: { code: 'COMMAND_SYNTAX', message }
+		});
+		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
+		if (written === null) {
+			return fail(
+				`Écris l'intervalle avec des crochets et « ; » : dans [0 ; 2\\pi], pas « ${text} ».`
+			);
+		}
+		const lower = parse(written[2], parserOptions).ast;
+		const upper = parse(written[3], parserOptions).ast;
+		const finite = (node: MathNode | undefined): boolean => {
+			if (node === undefined) return false;
+			const value = evaluate(node, { mode: 'decimal' });
+			return (
+				value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
+			);
+		};
+		if (lower === undefined || upper === undefined || !finite(lower) || !finite(upper)) {
+			return fail(`Les bornes de l'intervalle doivent être des nombres : « ${text} ».`);
+		}
+		const domain = intervalSet([
+			interval(
+				written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
+				written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
+			)
+		]);
+		const { zeros, resolved } = findZerosWithStatus(
+			subtract(equation.left, equation.right),
+			variable,
+			domain
+		);
+		if (!resolved) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'PARSE_ERROR', message: 'Je n’ai pas su résoudre cette équation.' }
+			};
+		}
+		const values = [...zeros]
+			.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0))
+			.map((zero) => zero.value);
+		const latex =
+			values.length === 0
+				? 'S = \\emptyset'
+				: values.length === 1
+					? `${variable} = ${toLatex(values[0])}`
+					: `S = \\left\\{ ${values.map((v) => toLatex(v)).join(' \\,;\\, ')} \\right\\}`;
+		const output =
+			values.length === 0
+				? 'Pas de solution dans cet intervalle'
+				: values.map((v) => `${variable} = ${toCustom(v)}`).join(' ou ');
+		return { success: true, output, latex };
 	}
 
 	/**

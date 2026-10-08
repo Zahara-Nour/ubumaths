@@ -36,6 +36,8 @@ export type ErrorCode =
 	| 'MATH_ERROR'
 	/** Ce qui suit le « ; » n'est pas une variable : message en français, destiné à l'élève */
 	| 'AMBIGUOUS_VARIABLE'
+	/** Mots-clés d'une commande mal écrits (`de … à`, `en x=3`, `ordre`…) : message en français, destiné à l'élève */
+	| 'COMMAND_SYNTAX'
 	/** Fonction usuelle sans parenthèses (`sin x`) : message en français, destiné à l'élève */
 	| 'BARE_FUNCTION'
 	/** `.taylor` : ordre au-delà de la limite — message en français, destiné à l'élève */

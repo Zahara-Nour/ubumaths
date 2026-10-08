@@ -29,8 +29,8 @@ import {
 	bareFunctionName,
 	chosenVariable,
 	indexVariables,
-	otherVariableHint,
-	splitVariableArgument
+	readCommandArguments,
+	keywordCommandLabel
 } from '../core/variable-argument';
 
 // =============================================================================
@@ -94,7 +94,15 @@ export class DiffCommand extends BaseCommand {
 		}
 
 		// Variable explicite après un point-virgule, sinon x
-		const { expression, variable: explicitVariable } = splitVariableArgument(input);
+		const reading = readCommandArguments('diff', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable } = reading.args;
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -113,7 +121,11 @@ export class DiffCommand extends BaseCommand {
 		// calcul : la dérivation traite un indice en constante
 		const indexed = indexVariables(parseResult.ast);
 
-		const chosen = chosenVariable(explicitVariable, parserOptions);
+		const chosen = chosenVariable(explicitVariable, parserOptions, {
+			node: parseResult.ast,
+			bound: ctx.evalState?.bindings.keys(),
+			label: keywordCommandLabel('diff')
+		});
 		if (!chosen.ok) {
 			return {
 				success: false,
@@ -122,12 +134,9 @@ export class DiffCommand extends BaseCommand {
 			};
 		}
 		const variable = chosen.variable;
-		// x n'apparaît pas et aucune variable n'est donnée : on calcule en x, et
-		// on le dit (décision de David, 2026-10-06 : une indication, pas un refus)
-		const hint =
-			explicitVariable === null
-				? otherVariableHint(indexed.node, ctx.evalState?.bindings.keys())
-				: null;
+		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
+		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
+		const hint: string | null = null;
 		const variableLabel = toCustom(indexed.restore(variableNode(variable)));
 
 		try {
