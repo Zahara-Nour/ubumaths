@@ -123,6 +123,28 @@ leur ancien code → transfert des liens **un pour un**.
 
 ---
 
+## Transfert C5 : liens des anciens points de vocabulaire repris de la 2de
+
+Conséquence mécanique de U5 + V1 (constatée par le contrôle de traçabilité du
+générateur) : 11 anciens points de 1re (vocabulaire repris mot pour mot de la 2de) ne
+deviennent pas des points de 1re ; leur contenu vit dans les points de 2de, visés par les
+références d'entretien. Leurs **22 liens** de modèles sont à reporter, au transfert C5,
+sur ces points de 2de :
+
+| Ancien point                                 | Liens | Report vers   |
+| -------------------------------------------- | ----- | ------------- |
+| 1SPE-001 (notions d'ensembles)               | 4     | 2-201 · 2-202 |
+| 1SPE-002 (symboles, complémentaire)          | 1     | 2-203 · 2-206 |
+| 1SPE-003 (ensembles de nombres, intervalles) | 4     | 2-204         |
+| 1SPE-004 (couple, produit cartésien)         | 2     | 2-205         |
+| 1SPE-005 (Card)                              | 1     | 2-207         |
+| 1SPE-006 (connecteurs)                       | 3     | 2-210         |
+| 1SPE-007 (contre-exemple)                    | 3     | 2-212         |
+| 1SPE-008 (implication, équivalence)          | 1     | 2-213         |
+| 1SPE-009 (réciproque, contraposée)           | 1     | 2-214         |
+| 1SPE-014 (disjonction des cas)               | 1     | 2-216         |
+| 1SPE-015 (absurde)                           | 1     | 2-217         |
+
 ## Les 165 points
 
 ### Vocabulaire ensembliste et logique (rubrique = le thème)
