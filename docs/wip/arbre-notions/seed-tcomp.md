@@ -1,6 +1,7 @@
 # Seed Tle complémentaire — points du programme ET références (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION. Aucune migration avant.** ⚠️ Soin maximal.
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : scissions,
+> refusions, entretien, A1, discutables, P1 = oui, D1 = (a)). Livraison en cours.** ⚠️ Soin maximal.
 > Source : « Programme de l'enseignement optionnel de mathématiques complémentaires de la
 > classe terminale de la voie générale » (12 p., refourni par David le 2026-10-07), relu
 > **puce par puce**. Ancien découpage (`docs/wip/referentiel/terminale-comp-programme.md`,
@@ -116,7 +117,10 @@ comp. insiste lui aussi sur les automatismes et les activités rituelles.
    `Échantillonnage > simulation` ; somme de n variables : `Sommes et concentration >
 échantillons`, comme « Simulation d'un échantillon » en Tle spé (TSPE-515).
 
-## Questions
+## Questions — TOUTES TRANCHÉES (David, 2026-10-08 : « je valide tout »)
+
+> **P1 = oui** (ex-030 retiré) · **D1 = (a)** : un point « déciles, rapport interdécile » en
+> `approfondissement`.
 
 - **P1 — puces larges** : retirer « Dans le cadre de la résolution de problème, utiliser
   le calcul des limites » (0 lien, son geste précis est déjà un point), garder « …utiliser
