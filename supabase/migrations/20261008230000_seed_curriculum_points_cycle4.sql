@@ -16,7 +16,9 @@
 --   delete from public.classification_nodes where kind = 'subnotion'
 --     and name = 'ratio'
 --     and parent_id = (select id from public.classification_nodes
---                       where kind = 'notion' and name = 'Situations de proportionnalité');
+--                       where kind = 'notion' and name = 'Situations de proportionnalité'
+--                         and parent_id = (select id from public.classification_nodes
+--                                           where kind = 'branch' and name = 'Proportionnalité'));
 -- ⚠️ Ce rollback n'est anodin que tant qu'AUCUN usage ne s'accroche à ces
 -- points : tables de suivi élève en ON DELETE CASCADE, et références
 -- d'automatismes d'AUTRES grades (2de…) qui viseraient ces points. Dès qu'un
@@ -770,7 +772,8 @@ begin
 	if not exists (select 1 from public.classification_nodes c
 	                 join public.classification_nodes p on p.id = c.parent_id
 	                 join public.classification_nodes b on b.id = p.parent_id
-	                where c.name = 'ratio' and p.name = 'Situations de proportionnalité'
+	                where c.kind = 'subnotion' and c.name = 'ratio'
+	                  and p.name = 'Situations de proportionnalité'
 	                  and b.name = 'Proportionnalité') then
 		raise exception 'sous-notion « ratio » absente';
 	end if;
