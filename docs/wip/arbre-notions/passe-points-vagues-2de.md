@@ -1,6 +1,7 @@
 # Passe « points vagues » sur la 2de (seed en prod)
 
-> **Statut : PROPOSITION, en attente de validation par David.**
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : P1 retrait
+> de 2-332, P2 nœud de 2-262, 5 reformulations). Livraison en cours.**
 > Règle de David (2026-10-08, seed 1re spé, V2) : « des points trop vagues mériteraient
 > d'être spécifiés pour être questionnables, à moins que ce soit un point relevant de
 > l'évaluation par compétence ». Contraintes : **ne rien ajouter au BO** (on spécifie avec
@@ -30,7 +31,7 @@ les touche pas.
 | **2-395** | « Passer du registre de la langue naturelle au registre symbolique et inversement »                                                | ✏️ « changer de registre » en général est une compétence ; ici le registre symbolique est celui des **notations de probabilités que le BO de 2de introduit** ($P_A(B)$ en 2-390, $\bar{A}$ en 2-206, $\cap$ en 2-203). Même traitement qu'en 1re spé (le libellé nomme les notations).                                                                | « Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\bar{A}$, $P(A \cap B)$, $P_A(B)$), et inversement »                                                                    |
 | **2-262** | « **Exemples simples de calcul** sur des expressions algébriques, en particulier sur des expressions fractionnaires »              | ✏️ « exemples simples de calcul » n'a pas de geste ; on garde les mots du BO en verbe. **Nœud** : son ancien jumeau (2-060) porte **7 modèles**, tous de calcul littéral général (développer $(a+b)^2$, $(a-b)^2$, factoriser, opposé, réduire) — le transfert C5 les amènera ici ; la sous-notion `expressions fractionnaires` ne leur convient pas. | « Calculer sur des expressions algébriques simples, en particulier sur des expressions fractionnaires » → **`Calcul littéral`** (notion), au lieu de `Calcul littéral > expressions fractionnaires` (question P2) |
 
-## Questions
+## Questions — TRANCHÉES (David, 2026-10-08 : « je valide tout »)
 
 - **P1 — Retrait de 2-332 : c'est une suppression (`DELETE`) en prod.** Ce qui sera
   perdu : **la ligne du point, et rien d'autre** — 0 modèle, 0 exercice, 0 suivi élève,
