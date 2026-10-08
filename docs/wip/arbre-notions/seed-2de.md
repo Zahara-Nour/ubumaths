@@ -426,6 +426,10 @@ bornée` (balayage à pas fixe) ; la première puissance dépassant un seuil (2-
 
 - **L1** — bloc « Algorithmique et programmation » (2-218 à 2-234) : kind **`algorithme`**
   pour les 17 (cohérence verticale avec le cycle 4).
+- ⚠️ **L2 CORRIGÉE le 2026-10-08 (question E1 du seed 1re spé)** : je l'avais présentée en
+  omettant la décision de David du 2026-08-29 (« Exemples d'algorithme = illustrations, pas des
+  attendus »). Tranché en connaissance de cause : exigence **`approfondissement`** ; les 10
+  points sont corrigés par la migration du seed 1re spé. Texte d'origine de L2 :
 - **L2** — les 10 « Exemples d'algorithme » hors bloc (2-241, 2-242, 2-257, 2-283,
   2-321, 2-322, 2-361, 2-362, 2-387, 2-388) : kind `algorithme`, exigence **`attendu`**
   (rubrique propre du BO, distincte des Approfondissements).

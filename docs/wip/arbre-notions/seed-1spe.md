@@ -1,6 +1,7 @@
 # Seed 1re spécialité — points du programme ET références d'automatismes (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION. Aucune migration avant.** ⚠️ Niveau à soin
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : scissions,
+> discutables 1-5, S1, V2, E1 = (a), V1 = références). Livraison en cours.** ⚠️ Niveau à soin
 > maximal (classes réelles de lycée). Source : « Programme d'enseignement de spécialité
 > de mathématiques de la classe de première de la voie générale » (11 p., refourni par
 > David le 2026-10-07), relu **puce par puce** — c'est le texte qui fait foi, pas
@@ -417,7 +418,10 @@ Inégalités > comparer et encadrer`.
 Représenter des données > effectifs et fréquences` (c'est une distribution de
    fréquences). Alternative : `Variables aléatoires` (notion), sa section dans le BO.
 
-## Questions
+## Questions — TOUTES TRANCHÉES (David, 2026-10-08 : « je valide tout »)
+
+> **E1 = (a)** : Exemples d'algorithme en `approfondissement` (12 en 1re) ET correction
+> des 10 de 2de dans la même migration. **V1 = oui** : 14 références d'entretien.
 
 - **E1 — ⚠️ l'exigence des Exemples d'algorithme (et correction de la 2de).** Le
   **2026-08-29**, tu avais acté (ancien doc 1re spé) : « les Exemples d'algorithmes du BO
