@@ -1,6 +1,7 @@
 # Seed Tle spécialité — points du programme ET références (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION. Aucune migration avant.** ⚠️ Soin maximal (classes
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : scissions,
+> refusions, entretien, discutables, A1 = oui, P1 = oui). Livraison en cours.** ⚠️ Soin maximal (classes
 > réelles). Source : « Programme de l'enseignement de spécialité de mathématiques de la
 > classe terminale de la voie générale » (14 p., refourni par David le 2026-10-07), relu
 > **puce par puce** — le texte fait foi. Ancien découpage
@@ -465,7 +466,11 @@ rectangles` (approcher l'aire sous 1/x). Alternative : `Logarithmes` (notion).
 5. **Marche aléatoire** (TSPE-535, 538) → `Probabilités conditionnelles > épreuves
 indépendantes successives`, comme en 1re (1SPE-344).
 
-## Questions
+## Questions — TOUTES TRANCHÉES (David, 2026-10-08 : « je valide tout »)
+
+> **A1 = oui** : la liste de 1re spé (93 références) reprise avec le grade `T_SPE`.
+> **P1 = oui** : « Résoudre des problèmes impliquant des grandeurs et mesures » retirée, les
+> quatre autres gardées.
 
 - **A1 — liste d'automatismes en Tle** : reprendre la liste de 1re spé (93 références) avec
   le grade `T_SPE` ? Reco : **oui** — le BO de 1re les attache à « l'ensemble du cycle
