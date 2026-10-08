@@ -42,6 +42,7 @@ import {
 	binomOf,
 	factorialOf
 } from '../factorial-notation';
+import { numberAfterFactorMessage } from '../number-after-factor';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -526,6 +527,15 @@ class RDParser {
 				left = this.applyColorWithOperator(
 					MathAST.multiply(left, right, 'implicit'),
 					operatorColor
+				);
+			} else if (this.check('NUMBER')) {
+				// `x2`, `(a)2`, `\sqrt{2}3` : nombre après un facteur, refusé avec un message clair
+				const token = this.currentToken;
+				this.error(
+					numberAfterFactorMessage(token.value),
+					token.position,
+					token.length,
+					'UNEXPECTED_TOKEN'
 				);
 			} else {
 				// No more multiplication operators

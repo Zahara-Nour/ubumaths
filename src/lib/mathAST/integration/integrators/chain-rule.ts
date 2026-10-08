@@ -168,6 +168,26 @@ function takeProportional(pool: MathNode[], target: MathNode, variable: string):
 // =============================================================================
 
 /**
+ * Exposants constants réduits : `differentiate` rend x^{4/3} → (4/3)·x^{4/3 − 1},
+ * exposant non calculé, que `normalize` ne réduit pas non plus — le facteur
+ * x^{1/3} de l'intégrande n'y était pas reconnu. Réduit en x^{1/3} (rationnel
+ * exact, jamais un flottant).
+ */
+function foldConstantExponents(node: MathNode, variable: string): MathNode {
+	return mapNode(node, (n) => {
+		if (!isSuperscript(n) || isNumber(n.superscript)) return n;
+		if (containsVariable(n.superscript, variable)) return n;
+		let exponent: Rational | null;
+		try {
+			exponent = extractExactRational(denormalize(normalize(n.superscript)));
+		} catch {
+			return n;
+		}
+		return exponent === null ? n : power(n.base, rationalToNode(exponent));
+	});
+}
+
+/**
  * f(U) telle que intégrande = f(u) · u′, ou null. Les constantes restent dans
  * f(U) (intégrées par linéarité).
  */
@@ -233,6 +253,7 @@ function chainRuleSubstitution(
 			continue;
 		}
 		if (!containsVariable(du, variable)) continue;
+		du = foldConstantExponents(du, variable);
 		const rest = quotientByDerivative(integrand, du, u, fresh, variable);
 		if (rest === null) continue;
 		const inner = integrate(rest, { ...options, variable: freshName, _depth: depth + 1 });

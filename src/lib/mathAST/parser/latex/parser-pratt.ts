@@ -36,6 +36,7 @@ import {
 	binomOf,
 	factorialOf
 } from '../factorial-notation';
+import { numberAfterFactorMessage } from '../number-after-factor';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
 import type { ParserSecurityOptions } from '../security';
 
@@ -564,6 +565,16 @@ class PrattParser {
 		// If we get here, try implicit multiplication
 		if (this.shouldInsertImplicitMultiply()) {
 			return this.parseImplicitMultiply(left);
+		}
+
+		// `x2`, `(a)2`, `\sqrt{2}3` : nombre après un facteur, refusé avec un message clair
+		if (token.type === 'NUMBER') {
+			this.error(
+				numberAfterFactorMessage(token.value),
+				token.position,
+				token.length,
+				'UNEXPECTED_TOKEN'
+			);
 		}
 
 		this.error(

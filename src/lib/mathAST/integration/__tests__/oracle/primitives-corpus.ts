@@ -824,7 +824,7 @@ const REVIEW_913_CASES: PrimitiveCase[] = [
 	// ∛ définie sur ℝ (décision du 2026-10-07) : points de part et d'autre de 2,5
 	...latex('revue-913', [['\\sqrt[3]{2x-5}']], { points: [-1.5, 0.7, 2.1, 3.3, 5.5] }),
 	...latex('revue-913', [['\\sqrt{ax+b}']], { literal: true, points: AFFINE_POSITIVE }),
-	// `x2^x` : illisible par parseLatex (refus attendu) ; référence f écrite avec ·
+	// `x2^x` : refusé par parseLatex (x2 ambigu : x·2, x², x₂ ?), message « écris 2x ou x\cdot 2 » ; f écrite avec ·
 	{
 		family: 'revue-913',
 		path: 'latex',
