@@ -310,7 +310,12 @@ export class IntegrateCommand extends BaseCommand {
 				}
 			}
 
-			return { success: true, output: lines.join('\n'), ast: result.antiderivative ?? undefined };
+			// `ast` porte la VALEUR de l'intégrale (le résultat de la commande,
+			// comme pour une primitive) : l'atelier la rend en LaTeX (2026-10-08)
+			const valueAst =
+				result.value ??
+				(result.approximate !== undefined ? numericNode(result.approximate) : undefined);
+			return { success: true, output: lines.join('\n'), ast: valueAst };
 		} else {
 			lines.push(
 				chalk.yellow(`∫[${boundStr}] ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu')

@@ -763,6 +763,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// `.intégrer` : même exception — son `result.ast` est la PRIMITIVE, ou la
+	// VALEUR d'une intégrale définie (voir `integrate.command.ts`). Sans lui, la
+	// ligne montrait le texte du terminal, « ∫ x^2 dx = {1/3}x^3 + C » (2026-10-08).
+	if (name === 'integrate' && result.success && result.ast !== undefined) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: integralLatex(result.ast, rendered.text),
+			...noted
+		};
+	}
+
 	return {
 		kind: 'commande',
 		input,
@@ -770,6 +783,18 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		...(rendered.latex && { latex: rendered.latex }),
 		...noted
 	};
+}
+
+/**
+ * Le LaTeX du résultat de `.intégrer`, lu sur la première ligne du moteur :
+ * `∫[a→b] … = v` (valeur exacte), `∫[a→b] … ≈ v` (approchée), sinon une
+ * primitive, `∫ … = F + C` — la constante y reste, comme dans le texte.
+ */
+function integralLatex(ast: MathNode, text: string): string {
+	const firstLine = text.split('\n')[0] ?? '';
+	const latex = toLatex(ast);
+	if (!firstLine.startsWith('∫[')) return `${latex} + C`;
+	return / ≈ /.test(firstLine) ? `\\approx ${latex}` : latex;
 }
 
 /**
