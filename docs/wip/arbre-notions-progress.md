@@ -633,6 +633,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   seed : construit puce par puce depuis le BO PDF) ; T1 : série dans la rubrique (11 points
   « sauf STD2A », 18 « série STD2A ») ; T2 : Situations algorithmiques `attendu` ; 9 puces
   scindées (+9) ; 2 « modéliser » retirés ; 89 réfs (lignes propres + auto-réf 1TECHNO-066
+
   - liste de 2de C16 + entretien). Vérifié prod : 0 sans nœud. Audit : rien de bloquant.
     CI verte du premier coup. Restent : T_TECHNO, 1_GEN (ens. sci.) ; passe « points
     vagues » 2de ; rangements ; C5.
+
+- **LE SEED Tle TECHNO EST EN PROD (2026-10-08, PR #968) — 1 856 points du nouveau monde,
+  671 références ; ancien monde intact (1 007 points).** `seed-ttechno.md` validé (« je te
+  suis » : recommandations suivies sur les 7 discutables, T3, T4) : 69 points
+  `TTECHNO-001`…`069` (pas d'ancien seed, construit puce par puce depuis le BO PDF) ; T1 :
+  14 points « série STD2A » ; T3 : 8 Situations algorithmiques en `approfondissement` ;
+  8 puces scindées (+8) ; 85 réfs (53 Automatismes de Tle dont l'auto-réf TTECHNO-015, T4 :
+  pas de reprise de la liste de 1re ; 32 d'entretien, dont tout le bloc Algorithmique →
+  1TECHNO-003…013). Preuve rouge (3/4), intégration 184 fichiers verts, audit sans
+  bloquant, CI verte du premier coup. Vérifié prod : 0 sans nœud. Restent : 1_GEN (ens.
+  sci.) ; passe « points vagues » 2de ; rangements ; C5.
