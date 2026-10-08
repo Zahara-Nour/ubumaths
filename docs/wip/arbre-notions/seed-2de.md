@@ -32,9 +32,10 @@
 
 **200 points** (185 de l'ancien découpage + 17 issus des scissions multi-notions − 2
 puces non retenues : ex-2-099 et ex-2-100, trop larges — voir discutable 3) et
-**~30 lignes d'Automatismes → références** (cibles cycle 2 → 3e désormais toutes en
-base, plus des **auto-références** C13 quand la ligne porte sur un contenu introduit en
-2de). Libellés : repris de l'ancien référentiel (LaTeX MathLive déjà validé).
+**29 lignes d'Automatismes → 58 références** distinctes (cibles cycle 2 → 3e désormais
+toutes en base, plus **8 auto-références** C13 quand la ligne porte sur un contenu
+introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — comptes
+établis par le générateur). Libellés : repris de l'ancien référentiel (LaTeX MathLive déjà validé).
 
 ---
 
@@ -432,7 +433,7 @@ bornée` (balayage à pas fixe) ; la première puissance dépassant un seuil (2-
   **`approfondissement`**, y compris les « Démontrer que… » (2-307, 2-309, 2-310) : le
   kind `demonstration` reste réservé aux démonstrations exigibles.
 - **L4** — validation d'ensemble : 200 points, 5 discutables tranchés (dont le retrait
-  d'ex-2-099/100), références + 7 auto-références, `diversite` partout.
+  d'ex-2-099/100), 58 références dont 8 auto-références, `diversite` partout.
 
 ## Après validation (plan de livraison)
 
