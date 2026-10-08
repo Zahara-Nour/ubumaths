@@ -19,7 +19,7 @@
 import type { MathNode } from '../../types';
 import type { SolveResult, Solution } from '../../solve';
 import { isSolverFailure } from '../../solve/types';
-import type { Domain } from '../../domain/types';
+import type { Domain, IntervalSet } from '../../domain/types';
 import { isDivision, isInfinity, isMultiplication, isNumber, isPiConstant } from '../../guards';
 import { toLatex } from '../../latex-generator';
 import { tidy } from '../../tidy';
@@ -114,7 +114,10 @@ export function solutionsLatex(result: SolveResult): string | null {
 			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}`;
 		}
 		case 'infinite':
-			return 'S = \\mathbb{R}';
+			// Une identité sur un domaine (`x²/x = x`) : tout le domaine, pas ℝ
+			return result.domain === undefined
+				? 'S = \\mathbb{R}'
+				: inequalitySolutionLatex(result.domain);
 		case 'no-solution':
 			return isSolverFailure(result) ? null : 'S = \\emptyset';
 		case 'no-real-solution':
@@ -128,6 +131,53 @@ export function solutionsLatex(result: SolveResult): string | null {
 function boundLatex(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'negative' ? '-\\infty' : '+\\infty';
 	return toLatex(tidyValue(value));
+}
+
+/**
+ * Les points qu'il manque à ℝ, quand l'ensemble EST ℝ privé d'un nombre fini
+ * de points — `]-∞ ; 0[ ∪ ]0 ; +∞[` → [0], `]-∞ ; +∞[` → [] —, sinon `null`.
+ *
+ * ⚠️ Le solveur d'inéquations rend ℝ sous la forme d'un intervalle
+ * `]-∞ ; +∞[` : `.résoudre x+1>x` affichait `S = ]-\infty ; +\infty[`, et
+ * `x² > 0` `]-∞ ; 0[ ∪ ]0 ; +∞[` là où `.domaine 1/x` écrit `ℝ \ {0}`
+ * (2026-10-08).
+ */
+function realLineExclusions(domain: IntervalSet): MathNode[] | null {
+	const { intervals } = domain;
+	const first = intervals[0];
+	const last = intervals[intervals.length - 1];
+	if (first === undefined || last === undefined) return null;
+	if (!isInfinity(first.lower.value) || first.lower.value.sign !== 'negative') return null;
+	if (!isInfinity(last.upper.value) || last.upper.value.sign === 'negative') return null;
+	const gaps: MathNode[] = [];
+	for (let i = 0; i + 1 < intervals.length; i++) {
+		const upper = intervals[i].upper;
+		const lower = intervals[i + 1].lower;
+		// Deux intervalles qui se touchent en un point exclu des deux côtés
+		if (upper.type !== 'open' || lower.type !== 'open') return null;
+		if (toLatex(upper.value) !== toLatex(lower.value)) return null;
+		gaps.push(upper.value);
+	}
+	return [...gaps, ...domain.excludedPoints.map((p) => p.value)];
+}
+
+/**
+ * Le même ensemble, ℝ privé de points écrit comme tel : un `]-∞ ; +∞[` dont
+ * les points manquants sont des `excludedPoints` — la forme que les
+ * formateurs de domaine écrivent `ℝ` ou `ℝ \ {0}`, comme `.domaine`.
+ * Tout autre ensemble est rendu inchangé.
+ */
+export function withRealLineWritten(domain: Domain): Domain {
+	if (domain.kind !== 'interval_set') return domain;
+	const missing = realLineExclusions(domain);
+	const first = domain.intervals[0];
+	const last = domain.intervals[domain.intervals.length - 1];
+	if (missing === null || first === undefined || last === undefined) return domain;
+	return {
+		kind: 'interval_set',
+		intervals: [{ kind: 'interval', lower: first.lower, upper: last.upper }],
+		excludedPoints: missing.map((value) => ({ kind: 'excluded_point', value }))
+	};
 }
 
 /**
@@ -145,6 +195,12 @@ export function inequalitySolutionLatex(domain: Domain): string | null {
 			return 'S = \\mathbb{R}';
 		case 'interval_set': {
 			if (domain.intervals.length === 0) return 'S = \\emptyset';
+			const whole = realLineExclusions(domain);
+			if (whole !== null) {
+				if (whole.length === 0) return 'S = \\mathbb{R}';
+				const points = whole.map((p) => toLatex(tidyValue(p)));
+				return `S = \\mathbb{R} \\setminus \\left\\{ ${points.join(' \\,;\\, ')} \\right\\}`;
+			}
 			const intervals = domain.intervals.map((i) => {
 				const open = i.lower.type === 'open' ? ']' : '[';
 				const close = i.upper.type === 'open' ? '[' : ']';

@@ -149,3 +149,87 @@ describe('revue : x² qui s’annulent, singletons, <= et ≤ (2026-10-08)', () 
 		expect(answer('ln(x)=1')).toBe('x = \\exponentialE');
 	});
 });
+
+describe('√ tapé sans parenthèses : la racine porte sur l’atome qui suit', () => {
+	it.each([
+		['√x=3', 'x = 9'],
+		['√x<2', 'S = [0 ; 4['],
+		['√x+1=3', 'x = 4'],
+		// Inchangés
+		['√(x+1)=3', 'x = 8'],
+		['sqrt(x)=3', 'x = 9'],
+		['\\sqrt{x}=3', 'x = 9']
+	])('%s → %s', (equation, expected) => {
+		expect(answer(equation)).toBe(expected);
+	});
+
+	it('√2x = 4 se lit √2 · x : x = 2√2', () => {
+		expect(answer('√2x=4')).toBe(answer('sqrt(2)x=4'));
+		expect(answer('√2x=4')).toBe('x = 2\\sqrt{2}');
+	});
+
+	it('√u_n = 2 se lit √(u_n) : pas de refus « plusieurs lettres »', () => {
+		expect(answer('√u_n=2')).toBe(answer('sqrt(u_n)=2'));
+		expect(answer('√x_1=2')).toBe(answer('sqrt(x_1)=2'));
+	});
+
+	it('2x + √3 = 0 : x = −√3/2', () => {
+		expect(answer('2x+√3=0')).toBe(answer('2x+sqrt(3)=0'));
+		expect(answer('2x+√3=0')).toContain('\\sqrt{3}');
+	});
+});
+
+describe('ℝ s’écrit \\mathbb{R}, ℝ privé de points \\mathbb{R} \\setminus', () => {
+	it.each([
+		['x+1>x', 'S = \\mathbb{R}'],
+		['x>=x', 'S = \\mathbb{R}'],
+		['x^2>=0', 'S = \\mathbb{R}'],
+		['x^2>0', 'S = \\mathbb{R} \\setminus \\left\\{ 0 \\right\\}'],
+		['(x-1)(x-2)>0 ; x', 'S = ]-\\infty ; 1[ \\cup ]2 ; +\\infty['],
+		// Inchangés
+		['x+1<x', 'S = \\emptyset'],
+		['1/x>0', 'S = ]0 ; +\\infty[']
+	])('%s → %s', (inequality, expected) => {
+		expect(answer(inequality)).toBe(expected);
+	});
+
+	it('deux points exclus : « ; » en LaTeX comme en texte', () => {
+		const result = runInput(session(), '.résoudre (x^2-1)^2>0');
+		expect(result.kind === 'commande' ? result.latex : '').toBe(
+			'S = \\mathbb{R} \\setminus \\left\\{ -1 \\,;\\, 1 \\right\\}'
+		);
+		expect(result.kind === 'commande' ? result.output : '').toBe('S = ℝ \\ {-1 ; 1}');
+	});
+
+	it('le texte du terminal écrit ℝ \\ {0}, comme .domaine', () => {
+		const result = runInput(session(), '.résoudre x^2>0');
+		expect(result.kind === 'commande' ? result.output : '').toBe('S = ℝ \\ {0}');
+	});
+});
+
+describe('une identité sur le domaine a pour solutions TOUT le domaine', () => {
+	it.each([
+		['x^2/x=x', 'S = \\mathbb{R} \\setminus \\left\\{ 0 \\right\\}'],
+		['(x^2+x)/x=x+1', 'S = \\mathbb{R} \\setminus \\left\\{ 0 \\right\\}'],
+		['x/x=1', 'S = \\mathbb{R} \\setminus \\left\\{ 0 \\right\\}'],
+		['(x^2-1)/(x-1)=x+1', 'S = \\mathbb{R} \\setminus \\left\\{ 1 \\right\\}'],
+		// Inchangés
+		['(x^2-1)/(x-1)=2', 'S = \\emptyset'],
+		['1/x=2', 'x = \\dfrac{1}{2}'],
+		['x+1=x+1', 'S = \\mathbb{R}'],
+		['x+1=x', 'S = \\emptyset']
+	])('%s → %s', (equation, expected) => {
+		expect(answer(equation)).toBe(expected);
+	});
+});
+
+describe('bornes en racine carrée : \\sqrt{…} jamais échappé (2de)', () => {
+	it.each([
+		['x^2>2', 'S = ]-\\infty ; -\\sqrt{2}[ \\cup ]\\sqrt{2} ; +\\infty['],
+		['x^2<3', 'S = ]-\\sqrt{3} ; \\sqrt{3}['],
+		['x^2>=5', 'S = ]-\\infty ; -\\sqrt{5}] \\cup [\\sqrt{5} ; +\\infty['],
+		['(x-1)^2<2', 'S = ]1 - \\sqrt{2} ; 1 + \\sqrt{2}[']
+	])('%s → %s', (inequality, expected) => {
+		expect(answer(inequality)).toBe(expected);
+	});
+});

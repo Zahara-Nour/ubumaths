@@ -130,10 +130,10 @@ const ATELIER_CASES: readonly (readonly [string, string])[] = [
 	['.domaine 1/(2x+5)', 'Domaine : ℝ \\ {-5/2}'],
 	['.domaine ln(x-1/2)', 'Domaine : ]1/2 ; +∞['],
 	['.domaine ln(3-2x)', 'Domaine : ]-∞ ; 3/2['],
-	['.domaine 1/(6x^2-5x+1)', 'Domaine : ℝ \\ {1/3, 1/2}'],
+	['.domaine 1/(6x^2-5x+1)', 'Domaine : ℝ \\ {1/3 ; 1/2}'],
 	// irrationnels
-	['.domaine 1/(x^2-2)', 'Domaine : ℝ \\ {-√2, √2}'],
-	['.domaine 1/(2x^2-1)', 'Domaine : ℝ \\ {-√2/2, √2/2}'],
+	['.domaine 1/(x^2-2)', 'Domaine : ℝ \\ {-√2 ; √2}'],
+	['.domaine 1/(2x^2-1)', 'Domaine : ℝ \\ {-√2/2 ; √2/2}'],
 	['.domaine sqrt(x^2-x-1)', 'Domaine : ]-∞ ; (1-√5)/2] ∪ [(1+√5)/2 ; +∞['],
 	// composées, valeur absolue
 	['.domaine sqrt(ln(x))', 'Domaine : [1 ; +∞['],
