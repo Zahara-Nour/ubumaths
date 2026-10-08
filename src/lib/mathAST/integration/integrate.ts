@@ -45,11 +45,18 @@ import { expandFunctionPowers } from '../common/function-power';
 import { toCustom } from '../custom-generator';
 import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots';
 import { integrateByChainRule } from './integrators/chain-rule';
+import { integrateByIdentity } from './integrators/identities';
 import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
-import { dropConstantTerms, groupLnTerms, powerOfSumForm } from './class-form';
+import {
+	absProductForm,
+	arctanClassForm,
+	dropConstantTerms,
+	groupLnTerms,
+	powerOfSumForm
+} from './class-form';
 
 // =============================================================================
 // Budget global
@@ -223,6 +230,11 @@ function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
 function promoteEulerLetter(node: MathNode, variable: string | undefined): MathNode {
 	if (variable === 'e') return node;
 	return mapNode(node, (n) => (isVariable(n) && n.name === 'e' ? euler() : n));
+}
+
+/** L'arbre contient-il une valeur absolue `|…|` ? */
+function containsAbs(node: MathNode): boolean {
+	return findNodes(node, (n) => isFunction(n) && n.name === 'abs').length > 0;
 }
 
 /** L'arbre contient-il un appel `exp(…)` ? */
@@ -650,10 +662,15 @@ function integrateInternal(
 		return selected;
 	}
 
-	// Step 5b: recours après un refus — u′·f(u) avec u non linéaire, sin²/cos²
+	// Step 5b: recours après un refus — u′·f(u) avec u non linéaire, sin²/cos²,
+	// puis identités usuelles (1/cos², tan², 1/tan, |ax + b|, ln x / xᵖ)
 	const chained = integrateByChainRule(simplified, variable, options, recorder, depth);
 	if (chained !== null) {
 		return chained;
+	}
+	const byIdentity = integrateByIdentity(simplified, variable, options, recorder, depth);
+	if (byIdentity !== null) {
+		return byIdentity;
 	}
 	if (selected !== null) {
 		return selected;
@@ -797,13 +814,18 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		startDepth === 0
 	) {
 		// c·uⁿ⁺¹ gardée en puissance de u (⅓(x + 1)³) : écriture de classe, non développée
-		const powerForm = powerOfSumForm(finalAntiderivative, variable);
+		// k·u|u| (primitive de |au + b|, |·| tapée par l'élève) gardée en produit
+		const powerForm =
+			powerOfSumForm(finalAntiderivative, variable) ??
+			(containsAbs(rawExpr) ? absProductForm(finalAntiderivative, variable) : null);
 		finalAntiderivative =
 			powerForm ??
 			dropConstantTerms(
 				groupLnTerms(normalizeAntiderivative(finalAntiderivative, variable), variable),
 				variable
 			);
+		// arctan((2x + 1)/√3) plutôt que arctan(⅔√3 x + ⅓√3)
+		finalAntiderivative = arctanClassForm(finalAntiderivative, variable);
 		// `\exp(…)` seulement si l'élève l'a tapé : sinon `e^{…}`, comme sa saisie
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);

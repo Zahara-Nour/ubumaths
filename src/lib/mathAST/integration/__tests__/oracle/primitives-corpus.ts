@@ -1022,6 +1022,25 @@ const REVIEW_913_CASES: PrimitiveCase[] = [
 		['|2x-1|']
 	]),
 	...latex('revue-913', [['\\frac{1}{\\cos^2(2x)}']], { points: [-0.6, -0.3, 0.2, 0.5, 0.7] }),
+	// --- Refus levés (feat/primitives-refusees-2, 2026-10-08) ---
+	...latex('revue-913', [
+		['\\frac{x}{x^2+2x+5}'],
+		['\\frac{3}{2x^2+8}'],
+		['\\frac{2x-1}{x^2+x+1}'],
+		['\\frac{1}{-x^2+2x-5}'],
+		['\\frac{x^3}{x^2+1}']
+	]),
+	...latex('revue-913', [['|x|'], ['|x-3|'], ['x\\cdot2^x'], ['\\frac{\\ln x}{x^3}']]),
+	...latex(
+		'revue-913',
+		[
+			['\\frac{\\sin x}{\\cos x}'],
+			['\\tan^2(x)'],
+			['\\frac{1}{\\tan(2x+1)}'],
+			['\\frac{3}{\\cos^2(x)}']
+		],
+		{ points: [-0.6, -0.3, 0.2, 0.5, 0.7] }
+	),
 	...latex(
 		'revue-913',
 		[['\\frac{a}{(x-b)^3}'], ['\\frac{1}{(kx+m)^3}'], ['\\frac{1}{(x-a)(x-b)}']],
@@ -1105,6 +1124,9 @@ const L = (f: string, lower: string, upper: string, exact: string) =>
 
 export const DEFINITE_CASES: readonly DefiniteCase[] = [
 	L('x^2', '0', '1', '\\frac{1}{3}'),
+	// Discriminant < 0 accepté (décision de David, 2026-10-08)
+	L('\\frac{1}{x^2+1}', '0', '1', '\\frac{\\pi}{4}'),
+	L('\\frac{1}{x^2+2x+2}', '-1', '0', '\\frac{\\pi}{4}'),
 	L('\\frac{1}{x}', '1', 'e', '1'),
 	L('\\sin(x)', '0', '\\pi', '2'),
 	L('x', '0', '2', '2'),

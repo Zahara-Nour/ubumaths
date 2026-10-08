@@ -6,8 +6,11 @@
  *   a(x − r₁)(x − r₂) ou a(x − r)², puis confié à la décomposition existante ;
  * - racines littérales simples (x² − t², t² − x²) : formule des résidus
  *   F = Σ N(rᵢ)/D′(rᵢ) · ln|x − rᵢ| (racines simples) ;
- * - Δ < 0 : refus, la primitive fait intervenir arctan (hors programme du
- *   lycée) ; racines irrationnelles : refus (non traité).
+ * - Δ < 0 (décision de David du 2026-10-08) : αx + β = (α/2a)·D′ + k, d'où
+ *   (α/2a)·ln|D| + k·∫1/D, et D = a((x + p)² + q²) donne
+ *   ∫1/D = arctan((x + p)/q)/(a q). Le |·| de ln|D| est ôté en fin
+ *   d'intégration quand D > 0 sur ℝ (a > 0) ; racines irrationnelles : refus
+ *   (non traité).
  *
  * Convention sur les paramètres littéraux (la même que 1/(x² + a²) →
  * arctan(x/a)/a et que aˣ → aˣ / ln a dans basic.ts) : ils sont supposés
@@ -21,6 +24,8 @@
 import type { MathNode } from '../../types';
 import type { Rational } from '../../normal/types';
 import { isNumber } from '../../guards';
+import { containsVariable } from '../rules';
+import { normalize, denormalize } from '../../normal';
 import {
 	number,
 	variable as variableNode,
@@ -29,7 +34,8 @@ import {
 	divide,
 	multiply,
 	opposite,
-	power
+	power,
+	func
 } from '../../factory';
 import { extractExactRational, rationalToNode } from '../../common/numeric';
 import {
@@ -50,7 +56,13 @@ import { lnAbsRule } from '../rules';
 // =============================================================================
 
 export type QuadraticFactorization =
-	| { readonly kind: 'negative-discriminant' }
+	| {
+			readonly kind: 'negative-discriminant';
+			readonly a: Rational;
+			readonly b: Rational;
+			/** −Δ = 4ac − b² > 0 */
+			readonly minusDelta: Rational;
+	  }
 	| {
 			readonly kind: 'rational-roots';
 			readonly leading: Rational;
@@ -126,7 +138,9 @@ export function factorQuadratic(
 	if (c !== null) {
 		// Δ = b² − 4ac ; racines (−b ± √Δ) / 2a
 		const delta = subRational(mulRational(b, b), mulRational(rational(4n, 1n), mulRational(a, c)));
-		if (isSign(delta) < 0) return { kind: 'negative-discriminant' };
+		if (isSign(delta) < 0) {
+			return { kind: 'negative-discriminant', a, b, minusDelta: negRational(delta) };
+		}
 		const sqrtDelta = rationalSqrt(delta);
 		if (sqrtDelta === null) return null;
 		const twoA = mulRational(rational(2n, 1n), a);
@@ -199,4 +213,85 @@ export function residueAntiderivative(
 		return multiply(coefficient, lnAbsRule(subtract(variableNode(variable), root)), 'implicit');
 	});
 	return terms.slice(1).reduce<MathNode>((acc, term) => add(acc, term), terms[0]);
+}
+
+// =============================================================================
+// Discriminant négatif : ln + arctan
+// =============================================================================
+
+/** Valeur rationnelle exacte de `node` (après normalisation), ou null */
+function exactValue(node: MathNode): Rational | null {
+	try {
+		return extractExactRational(denormalize(normalize(node)));
+	} catch {
+		return null;
+	}
+}
+
+/** c · node, sans facteur 1 ni 0 (null pour c = 0) */
+function scaled(coefficient: Rational, node: MathNode): MathNode | null {
+	if (coefficient.n === 0n) return null;
+	if (coefficient.n === coefficient.d) return node;
+	if (coefficient.n === -coefficient.d) return opposite(node);
+	return multiply(rationalToNode(coefficient), node, 'implicit');
+}
+
+/**
+ * ∫ (αx + β)/D avec D = ax² + bx + c de discriminant Δ < 0 :
+ * (α/2a)·ln|D| + (2k·sgn(a)/s)·arctan((2|a|x + sgn(a)·b)/s), où
+ * k = β − αb/(2a) et s = √(−Δ). Rend null si le numérateur n'est pas affine
+ * à coefficients rationnels.
+ */
+export function negativeDiscriminantAntiderivative(
+	numerator: MathNode,
+	denominator: MathNode,
+	factorization: Extract<QuadraticFactorization, { kind: 'negative-discriminant' }>,
+	variable: string
+): MathNode | null {
+	let slope: MathNode;
+	try {
+		slope = differentiate(numerator, { variable });
+	} catch {
+		return null;
+	}
+	if (containsVariable(slope, variable)) return null;
+	const alpha = exactValue(slope);
+	const beta = exactValue(substitute(numerator, { [variable]: number('0') }, { maxIterations: 1 }));
+	if (alpha === null || beta === null) return null;
+
+	const { a, b, minusDelta } = factorization;
+	const twoA = mulRational(rational(2n, 1n), a);
+	const k = subRational(beta, divRational(mulRational(alpha, b), twoA));
+	const positiveA = isSign(a) > 0;
+
+	const lnTerm = scaled(divRational(alpha, twoA), lnAbsRule(denominator));
+
+	let arctanTerm: MathNode | null = null;
+	if (k.n !== 0n) {
+		// s = √(−Δ) : rationnel si −Δ est un carré, sinon √(−Δ)
+		const exactS = rationalSqrt(minusDelta);
+		const sNode =
+			exactS !== null ? rationalToNode(exactS) : func('sqrt', [rationalToNode(minusDelta)]);
+		const absA = positiveA ? a : negRational(a);
+		const shift = positiveA ? b : negRational(b);
+		const x = variableNode(variable);
+		const twoAbsA = mulRational(rational(2n, 1n), absA);
+		const linear = twoAbsA.n === twoAbsA.d ? x : multiply(rationalToNode(twoAbsA), x, 'implicit');
+		const affine =
+			isSign(shift) === 0
+				? linear
+				: isSign(shift) > 0
+					? add(linear, rationalToNode(shift))
+					: subtract(linear, rationalToNode(negRational(shift)));
+		const numeratorCoefficient = mulRational(rational(positiveA ? 2n : -2n, 1n), k);
+		const argument = divide(affine, sNode, 'fraction');
+		const coefficient =
+			exactS !== null
+				? rationalToNode(divRational(numeratorCoefficient, exactS))
+				: divide(rationalToNode(numeratorCoefficient), sNode, 'fraction');
+		arctanTerm = multiply(coefficient, func('arctan', [argument]), 'implicit');
+	}
+
+	if (lnTerm === null) return arctanTerm;
+	return arctanTerm === null ? lnTerm : add(lnTerm, arctanTerm);
 }
