@@ -1,7 +1,7 @@
 # Seed 2de — points du programme ET références d'automatismes (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION (section « puces multi-parties » + questions
-> L1-L4). Aucune migration avant.** ⚠️ Niveau à soin maximal : classes réelles de 2de.
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (puces multi-parties,
+> discutables 1-5, L1-L4). Livraison en cours.** ⚠️ Niveau à soin maximal : classes réelles de 2de.
 > Source : « Programme de mathématiques de la classe de seconde générale et
 > technologique » (13 p., lues ligne à ligne), rubriques Contenus / Capacités
 > attendues / Démonstrations / Exemples d'algorithme / Approfondissements possibles +
@@ -111,23 +111,23 @@ base, plus des **auto-références** C13 quand la ligne porte sur un contenu int
 
 | Code  | ex-    | Énoncé                                                                                                                                   | kind  | nœud                                                     |
 | ----- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------- |
-| 2-218 | 017    | Variables informatiques de type entier, booléen, flottant, chaine de caractères                                                          | conn. | Variables et instructions > types                        |
-| 2-219 | 018    | Affectation (notée $\leftarrow$ en langage naturel)                                                                                      | conn. | Variables et instructions > variables et affectation     |
-| 2-220 | 019    | Séquence d'instructions                                                                                                                  | conn. | Variables et instructions (notion)                       |
-| 2-221 | 020    | Instruction conditionnelle                                                                                                               | conn. | Variables et instructions > instructions conditionnelles |
-| 2-222 | 021    | Boucle bornée (`for`), boucle non bornée (`while`)                                                                                       | conn. | Boucles (notion)                                         |
-| 2-223 | 022    | Choisir ou déterminer le type d'une variable (entier, flottant ou chaine de caractères)                                                  | s-f   | Variables et instructions > types                        |
-| 2-224 | 023    | Concevoir et écrire une instruction d'affectation, une séquence d'instructions, une instruction conditionnelle                           | s-f   | Variables et instructions (notion)                       |
-| 2-225 | 024    | Écrire une formule permettant un calcul combinant des variables                                                                          | s-f   | Variables et instructions > variables et affectation     |
-| 2-226 | ✂025a | Programmer, dans des cas simples, une boucle bornée                                                                                      | s-f   | Boucles > boucle bornée                                  |
-| 2-227 | ✂025b | Programmer, dans des cas simples, une boucle non bornée                                                                                  | s-f   | Boucles > boucle non bornée                              |
-| 2-228 | 026    | Dans des cas plus complexes : lire, comprendre, modifier ou compléter un algorithme ou un programme                                      | s-f   | Variables et instructions (notion)                       |
-| 2-229 | 027    | Fonctions à un ou plusieurs arguments                                                                                                    | conn. | Fonctions Python > définir une fonction                  |
-| 2-230 | 028    | Fonction renvoyant un nombre aléatoire ; série statistique obtenue par la répétition de l'appel d'une telle fonction                     | conn. | `Statistiques` Échantillonnage > simulation              |
-| 2-231 | 029    | Écrire des fonctions simples ; appeler une fonction                                                                                      | s-f   | Fonctions Python (notion)                                |
-| 2-232 | 030    | Lire, comprendre, modifier, compléter des fonctions plus complexes                                                                       | s-f   | Fonctions Python (notion)                                |
-| 2-233 | 031    | Lire et comprendre une fonction renvoyant une moyenne, un écart type (aucune connaissance sur les listes n'est exigée)                   | s-f   | Fonctions Python (notion)                                |
-| 2-234 | 032    | Écrire des fonctions renvoyant le résultat numérique d'une expérience aléatoire, d'une répétition d'expériences aléatoires indépendantes | s-f   | `Statistiques` Échantillonnage > simulation              |
+| 2-218 | 017    | Variables informatiques de type entier, booléen, flottant, chaine de caractères                                                          | algo. | Variables et instructions > types                        |
+| 2-219 | 018    | Affectation (notée $\leftarrow$ en langage naturel)                                                                                      | algo. | Variables et instructions > variables et affectation     |
+| 2-220 | 019    | Séquence d'instructions                                                                                                                  | algo. | Variables et instructions (notion)                       |
+| 2-221 | 020    | Instruction conditionnelle                                                                                                               | algo. | Variables et instructions > instructions conditionnelles |
+| 2-222 | 021    | Boucle bornée (`for`), boucle non bornée (`while`)                                                                                       | algo. | Boucles (notion)                                         |
+| 2-223 | 022    | Choisir ou déterminer le type d'une variable (entier, flottant ou chaine de caractères)                                                  | algo. | Variables et instructions > types                        |
+| 2-224 | 023    | Concevoir et écrire une instruction d'affectation, une séquence d'instructions, une instruction conditionnelle                           | algo. | Variables et instructions (notion)                       |
+| 2-225 | 024    | Écrire une formule permettant un calcul combinant des variables                                                                          | algo. | Variables et instructions > variables et affectation     |
+| 2-226 | ✂025a | Programmer, dans des cas simples, une boucle bornée                                                                                      | algo. | Boucles > boucle bornée                                  |
+| 2-227 | ✂025b | Programmer, dans des cas simples, une boucle non bornée                                                                                  | algo. | Boucles > boucle non bornée                              |
+| 2-228 | 026    | Dans des cas plus complexes : lire, comprendre, modifier ou compléter un algorithme ou un programme                                      | algo. | Variables et instructions (notion)                       |
+| 2-229 | 027    | Fonctions à un ou plusieurs arguments                                                                                                    | algo. | Fonctions Python > définir une fonction                  |
+| 2-230 | 028    | Fonction renvoyant un nombre aléatoire ; série statistique obtenue par la répétition de l'appel d'une telle fonction                     | algo. | `Statistiques` Échantillonnage > simulation              |
+| 2-231 | 029    | Écrire des fonctions simples ; appeler une fonction                                                                                      | algo. | Fonctions Python (notion)                                |
+| 2-232 | 030    | Lire, comprendre, modifier, compléter des fonctions plus complexes                                                                       | algo. | Fonctions Python (notion)                                |
+| 2-233 | 031    | Lire et comprendre une fonction renvoyant une moyenne, un écart type (aucune connaissance sur les listes n'est exigée)                   | algo. | Fonctions Python (notion)                                |
+| 2-234 | 032    | Écrire des fonctions renvoyant le résultat numérique d'une expérience aléatoire, d'une répétition d'expériences aléatoires indépendantes | algo. | `Statistiques` Échantillonnage > simulation              |
 
 ### Nombres et calculs, algèbre > Arithmétique (branches `Arithmétique` / `Nombres et calculs`)
 
@@ -421,24 +421,18 @@ bornée` (balayage à pas fixe) ; la première puissance dépassant un seuil (2-
    référentiel : le balayage de √2 (ex-2-055) et la première puissance (ex-2-078)
    étaient classés [D] — le BO les met en « Exemple d'algorithme » → kind `algo.` ici.
 
-## Questions (L1-L4)
+## Questions (L1-L4) — TRANCHÉES (David, 2026-10-08 : « je valide »)
 
-- **L1 — kind du bloc « Algorithmique et programmation »** (2-218 à 2-234) : `algo.`
-  partout (reco — cohérence avec le cycle 4 : tout le domaine en kind algorithme, le
-  filtre « algo » montre alors tout le programme d'algorithmique), ou conserver la
-  distinction conn./s-f de l'ancien référentiel (telle qu'affichée dans les tableaux) ?
-- **L2 — les « Exemples d'algorithme »** (10 points marqués `algo.` hors bloc
-  algorithmique : 2-241, 2-242, 2-257, 2-283, 2-321, 2-322, 2-361, 2-362, 2-387,
-  2-388) : exigence **`attendu`** (reco — le BO les présente comme partie du
-  programme, et les sujets les utilisent) ou `approfondissement` (le choix de l'ancien
-  référentiel, qui les groupait avec les Approfondissements) ?
-- **L3 — les ⁺ (Approfondissements possibles)** : exigence `approfondissement`,
-  kind s-f (ou dém. pour les « Démontrer que… » 2-307, 2-309, 2-310 ?). Reco : s-f ⁺
-  partout (un approfondissement n'est pas une démonstration exigible).
-- **L4 — validation d'ensemble** : les 200 points (17 scissions + 10 non-scissions
-  et les 5 discutables : **tous validés/tranchés par David le 2026-10-08**, dont le
-  retrait d'ex-2-099/100), les ~45 cibles de références (dont 7 auto-références), et
-  `diversite` partout.
+- **L1** — bloc « Algorithmique et programmation » (2-218 à 2-234) : kind **`algorithme`**
+  pour les 17 (cohérence verticale avec le cycle 4).
+- **L2** — les 10 « Exemples d'algorithme » hors bloc (2-241, 2-242, 2-257, 2-283,
+  2-321, 2-322, 2-361, 2-362, 2-387, 2-388) : kind `algorithme`, exigence **`attendu`**
+  (rubrique propre du BO, distincte des Approfondissements).
+- **L3** — les 14 Approfondissements possibles (⁺) : kind **savoir-faire**, exigence
+  **`approfondissement`**, y compris les « Démontrer que… » (2-307, 2-309, 2-310) : le
+  kind `demonstration` reste réservé aux démonstrations exigibles.
+- **L4** — validation d'ensemble : 200 points, 5 discutables tranchés (dont le retrait
+  d'ex-2-099/100), références + 7 auto-références, `diversite` partout.
 
 ## Après validation (plan de livraison)
 
