@@ -164,7 +164,7 @@ export function solveByPowerSubstitution(
 	const f = compile(expr);
 	const solutions: Solution[] = [];
 	for (const s of inU.solutions) {
-		// Valeur lue sur le nœud : `approximate` du solveur peut être faux (√2 → 1)
+		// Valeur lue sur le nœud (source de vérité), `approximate` en secours
 		const uValue = numericValue(s.value) ?? s.approximate;
 		if (uValue === undefined) {
 			// Paramètre (x^{1/3} = a) : pas de contrôle numérique possible. L
