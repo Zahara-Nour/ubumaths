@@ -1,6 +1,7 @@
 # Passe « puces et points » sur le cycle 2 (seed en prod) — règles du lycée
 
-> **Statut : PROPOSITION, en attente de validation par David.**
+> **Statut : VALIDÉ par David le 2026-10-08 (« je valide cycle 2 », doutes = recos). EN PROD
+> (PR #974, `db:migrate` le 2026-10-09, vérifié : 72 CP, 89 CE1, 83 CE2, 34 en fluence).**
 > Demande de David (2026-10-08) : « la passe que l'on vient de faire pour la 2nde il faut le
 > faire pour le cycle 2, le cycle 3 et le cycle 4. Je veux le même soin à traiter les puces
 > et points du programme que ce qu'on a fait pour le lycée. »

@@ -677,3 +677,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   points du nouveau monde, ancien monde intact (1 007). Restent : rangements (1 005
   modèles, 328 exercices) ; C5 (transfert, bascule, suppression de l'ancien monde —
   destructif, arrêt et accord David).
+
+- **PASSE « PUCES ET POINTS » SUR LE CYCLE 2 EN PROD (2026-10-09, PR #974).** Demande de
+  David : « le même soin qu'au lycée » pour les cycles 2, 3, 4 (le primaire et le collège
+  avaient été seedés avec une règle lâche : puce sur plusieurs sous-notions → point sur la
+  notion, quasi aucune scission). BO relus en entier (cycle 2 : BO 31-10-2024 ; cycle 3 :
+  BO 17-04-2025 ; cycle 4 : BO 05-03-2026 — tous en vigueur en 2026, retrouvés dans les
+  uploads de session). `passe-cycle2.md` validé : 16 scissions (+17 points), 9
+  spécifications avec les « Exemples de réussite », CE1-052 en connaissance, 0 suppression,
+  aucune référence touchée → 244 points. Preuve rouge (3 tests de la passe), intégration
+  185 fichiers verts, audit sans bloquant (mineurs du rollback corrigés), CI verte.
+  Vérifié prod : 72/89/83, 34 fluence, ordre 1..n par grade, 2 réfs CE2-022 intactes,
+  1 916 points du nouveau monde. **En validation** : `passe-cycle3.md` (16 scissions, 9
+  spécifications, 2 retraits, 17 réfs ajoutées) et `passe-cycle4.md` (12 scissions, 12
+  spécifications, 4 libellés au mot près, 2 retraits, 42 réfs ajoutées) — analysés par
+  agents puis vérifiés (nœuds, BO, réfs, usages des retraits = 0, codes neufs libres).
