@@ -31,7 +31,7 @@
 			"code": "6-103",
 			"grade": "6",
 			"display_order": 3,
-			"name": "Connaître des grands nombres entiers",
+			"name": "Connaître des grands nombres entiers, jusqu'au milliard",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -174,19 +174,32 @@
 			"code": "6-114",
 			"grade": "6",
 			"display_order": 14,
-			"name": "Additionner et soustraire des nombres décimaux",
+			"name": "Additionner des nombres décimaux",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": null
+			"sous_notion": "additionner"
+		},
+		{
+			"code": "6-198",
+			"grade": "6",
+			"display_order": 15,
+			"name": "Soustraire des nombres décimaux",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sous_notion": "soustraire"
 		},
 		{
 			"code": "6-115",
 			"grade": "6",
-			"display_order": 15,
+			"display_order": 16,
 			"name": "Multiplier un nombre entier ou un nombre décimal par 0,1, par 0,01, et par 0,001",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -199,8 +212,8 @@
 		{
 			"code": "6-116",
 			"grade": "6",
-			"display_order": 16,
-			"name": "Connaître le lien avec la division par 10, 100 et par 1 000",
+			"display_order": 17,
+			"name": "Connaître le lien entre la multiplication par 0,1, par 0,01 et par 0,001 et la division par 10, 100 et par 1 000",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -212,8 +225,8 @@
 		{
 			"code": "6-117",
 			"grade": "6",
-			"display_order": 17,
-			"name": "Comprendre le sens de la multiplication de deux nombres décimaux",
+			"display_order": 18,
+			"name": "Comprendre le sens de la multiplication de deux nombres décimaux en prenant appui sur le calcul de l'aire d'un rectangle et sur des conversions d'unités",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -225,7 +238,7 @@
 		{
 			"code": "6-118",
 			"grade": "6",
-			"display_order": 18,
+			"display_order": 19,
 			"name": "Calculer le produit de deux nombres décimaux",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -238,7 +251,7 @@
 		{
 			"code": "6-119",
 			"grade": "6",
-			"display_order": 19,
+			"display_order": 20,
 			"name": "Contrôler les résultats à l'aide d'ordres de grandeur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -251,7 +264,7 @@
 		{
 			"code": "6-120",
 			"grade": "6",
-			"display_order": 20,
+			"display_order": 21,
 			"name": "Résoudre des problèmes mettant en jeu des multiplications entre des nombres décimaux",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -264,7 +277,7 @@
 		{
 			"code": "6-121",
 			"grade": "6",
-			"display_order": 21,
+			"display_order": 22,
 			"name": "Diviser un nombre décimal par un nombre entier non nul inférieur à 10",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -277,7 +290,7 @@
 		{
 			"code": "6-122",
 			"grade": "6",
-			"display_order": 22,
+			"display_order": 23,
 			"name": "Résoudre des problèmes mettant en jeu des divisions décimales",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -290,7 +303,7 @@
 		{
 			"code": "6-123",
 			"grade": "6",
-			"display_order": 23,
+			"display_order": 24,
 			"name": "Effectuer la division euclidienne d'un nombre entier par un nombre entier inférieur à 100",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -303,7 +316,7 @@
 		{
 			"code": "6-124",
 			"grade": "6",
-			"display_order": 24,
+			"display_order": 25,
 			"name": "Résoudre des problèmes mettant en jeu des divisions euclidiennes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -316,7 +329,7 @@
 		{
 			"code": "6-125",
 			"grade": "6",
-			"display_order": 25,
+			"display_order": 26,
 			"name": "Relier une fraction au résultat exact de la division de son numérateur par son dénominateur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -329,7 +342,7 @@
 		{
 			"code": "6-126",
 			"grade": "6",
-			"display_order": 26,
+			"display_order": 27,
 			"name": "Comprendre et connaître la définition du quotient d'un entier a par un entier b non nul",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -342,7 +355,7 @@
 		{
 			"code": "6-127",
 			"grade": "6",
-			"display_order": 27,
+			"display_order": 28,
 			"name": "Compléter des égalités à trous multiplicatives",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -355,7 +368,7 @@
 		{
 			"code": "6-128",
 			"grade": "6",
-			"display_order": 28,
+			"display_order": 29,
 			"name": "Placer une fraction sur une demi-droite graduée dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -368,7 +381,7 @@
 		{
 			"code": "6-129",
 			"grade": "6",
-			"display_order": 29,
+			"display_order": 30,
 			"name": "Graduer un segment de longueur donnée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -381,7 +394,7 @@
 		{
 			"code": "6-130",
 			"grade": "6",
-			"display_order": 30,
+			"display_order": 31,
 			"name": "Savoir que la fraction a/b peut représenter un nombre entier, un nombre décimal non entier ou un nombre non décimal",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -394,7 +407,7 @@
 		{
 			"code": "6-131",
 			"grade": "6",
-			"display_order": 31,
+			"display_order": 32,
 			"name": "Utiliser une multiplication pour appliquer une fraction à un nombre entier",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -407,7 +420,7 @@
 		{
 			"code": "6-132",
 			"grade": "6",
-			"display_order": 32,
+			"display_order": 33,
 			"name": "Établir des égalités de fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -420,7 +433,7 @@
 		{
 			"code": "6-133",
 			"grade": "6",
-			"display_order": 33,
+			"display_order": 34,
 			"name": "Comparer et encadrer des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -433,7 +446,7 @@
 		{
 			"code": "6-134",
 			"grade": "6",
-			"display_order": 34,
+			"display_order": 35,
 			"name": "Ordonner une liste de nombres écrits sous forme de fractions ou de nombres mixtes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -446,7 +459,7 @@
 		{
 			"code": "6-135",
 			"grade": "6",
-			"display_order": 35,
+			"display_order": 36,
 			"name": "Additionner et soustraire des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -459,7 +472,7 @@
 		{
 			"code": "6-136",
 			"grade": "6",
-			"display_order": 36,
+			"display_order": 37,
 			"name": "Multiplier une fraction par un nombre entier",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -472,7 +485,7 @@
 		{
 			"code": "6-137",
 			"grade": "6",
-			"display_order": 37,
+			"display_order": 38,
 			"name": "Résoudre des problèmes mettant en jeu des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -485,7 +498,7 @@
 		{
 			"code": "6-138",
 			"grade": "6",
-			"display_order": 38,
+			"display_order": 39,
 			"name": "Inventer des problèmes mettant en jeu des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -498,7 +511,7 @@
 		{
 			"code": "6-139",
 			"grade": "6",
-			"display_order": 39,
+			"display_order": 40,
 			"name": "Comprendre le sens d'un pourcentage",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -511,7 +524,7 @@
 		{
 			"code": "6-140",
 			"grade": "6",
-			"display_order": 40,
+			"display_order": 41,
 			"name": "Calculer une proportion (rapport entre une partie et le tout) et l'exprimer sous forme de pourcentage dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -524,7 +537,7 @@
 		{
 			"code": "6-141",
 			"grade": "6",
-			"display_order": 41,
+			"display_order": 42,
 			"name": "Appliquer un pourcentage à une grandeur ou à un nombre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -537,8 +550,8 @@
 		{
 			"code": "6-142",
 			"grade": "6",
-			"display_order": 42,
-			"name": "Utiliser des modèles pré-algébriques pour résoudre des problèmes algébriques",
+			"display_order": 43,
+			"name": "Utiliser des modèles pré-algébriques (schémas en barre) pour résoudre des problèmes algébriques",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -550,7 +563,7 @@
 		{
 			"code": "6-143",
 			"grade": "6",
-			"display_order": 43,
+			"display_order": 44,
 			"name": "Identifier la structure d'un motif évolutif en repérant une régularité et en identifiant une structure",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -563,20 +576,33 @@
 		{
 			"code": "6-144",
 			"grade": "6",
-			"display_order": 44,
-			"name": "Calculer le périmètre d'un carré et d'un rectangle",
+			"display_order": 45,
+			"name": "Calculer le périmètre d'un carré",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
 			"rubrique": "Grandeurs et mesures > Les longueurs > Automatismes",
 			"branche": "Grandeurs et mesures",
 			"notion": "Périmètres",
-			"sous_notion": null
+			"sous_notion": "carré"
+		},
+		{
+			"code": "6-199",
+			"grade": "6",
+			"display_order": 46,
+			"name": "Calculer le périmètre d'un rectangle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Grandeurs et mesures > Les longueurs > Automatismes",
+			"branche": "Grandeurs et mesures",
+			"notion": "Périmètres",
+			"sous_notion": "rectangle"
 		},
 		{
 			"code": "6-145",
 			"grade": "6",
-			"display_order": 45,
+			"display_order": 47,
 			"name": "Savoir que le périmètre du disque est proportionnel à son diamètre",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -589,7 +615,7 @@
 		{
 			"code": "6-146",
 			"grade": "6",
-			"display_order": 46,
+			"display_order": 48,
 			"name": "Connaître la formule du périmètre d'un disque",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -602,7 +628,7 @@
 		{
 			"code": "6-147",
 			"grade": "6",
-			"display_order": 47,
+			"display_order": 49,
 			"name": "Calculer le périmètre d'un disque",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -615,7 +641,7 @@
 		{
 			"code": "6-148",
 			"grade": "6",
-			"display_order": 48,
+			"display_order": 50,
 			"name": "Calculer des périmètres de figures composées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -628,7 +654,7 @@
 		{
 			"code": "6-149",
 			"grade": "6",
-			"display_order": 49,
+			"display_order": 51,
 			"name": "Résoudre des problèmes impliquant des longueurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -641,7 +667,7 @@
 		{
 			"code": "6-150",
 			"grade": "6",
-			"display_order": 50,
+			"display_order": 52,
 			"name": "Effectuer des conversions d'aire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -654,33 +680,59 @@
 		{
 			"code": "6-151",
 			"grade": "6",
-			"display_order": 51,
-			"name": "Connaître la formule de l'aire d'un carré ou d'un rectangle",
+			"display_order": 53,
+			"name": "Connaître la formule de l'aire d'un carré",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Grandeurs et mesures > Les aires",
 			"branche": "Grandeurs et mesures",
 			"notion": "Aires",
-			"sous_notion": null
+			"sous_notion": "carré"
+		},
+		{
+			"code": "6-200",
+			"grade": "6",
+			"display_order": 54,
+			"name": "Connaître la formule de l'aire d'un rectangle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Grandeurs et mesures > Les aires",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "rectangle"
 		},
 		{
 			"code": "6-152",
 			"grade": "6",
-			"display_order": 52,
-			"name": "Calculer l'aire d'un carré ou d'un rectangle",
+			"display_order": 55,
+			"name": "Calculer l'aire d'un carré",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Grandeurs et mesures > Les aires",
 			"branche": "Grandeurs et mesures",
 			"notion": "Aires",
-			"sous_notion": null
+			"sous_notion": "carré"
+		},
+		{
+			"code": "6-201",
+			"grade": "6",
+			"display_order": 56,
+			"name": "Calculer l'aire d'un rectangle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Grandeurs et mesures > Les aires",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "rectangle"
 		},
 		{
 			"code": "6-153",
 			"grade": "6",
-			"display_order": 53,
+			"display_order": 57,
 			"name": "Connaître l'unité centimètre cube",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -693,7 +745,7 @@
 		{
 			"code": "6-154",
 			"grade": "6",
-			"display_order": 54,
+			"display_order": 58,
 			"name": "Comparer des volumes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -706,8 +758,8 @@
 		{
 			"code": "6-155",
 			"grade": "6",
-			"display_order": 55,
-			"name": "Déterminer un volume",
+			"display_order": 59,
+			"name": "Déterminer un volume en lien avec le dénombrement d'assemblages de cubes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -719,7 +771,7 @@
 		{
 			"code": "6-156",
 			"grade": "6",
-			"display_order": 56,
+			"display_order": 60,
 			"name": "Savoir combien de jours il y a dans une année (bissextile ou non), combien d'années il y a dans un siècle, et dans un millénaire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -732,7 +784,7 @@
 		{
 			"code": "6-157",
 			"grade": "6",
-			"display_order": 57,
+			"display_order": 61,
 			"name": "Effectuer des calculs sur des horaires et des durées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -745,7 +797,7 @@
 		{
 			"code": "6-158",
 			"grade": "6",
-			"display_order": 58,
+			"display_order": 62,
 			"name": "Résoudre des problèmes impliquant des horaires et des durées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -758,7 +810,7 @@
 		{
 			"code": "6-159",
 			"grade": "6",
-			"display_order": 59,
+			"display_order": 63,
 			"name": "Convertir des durées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -771,7 +823,7 @@
 		{
 			"code": "6-160",
 			"grade": "6",
-			"display_order": 60,
+			"display_order": 64,
 			"name": "Connaître et utiliser la définition de la distance entre deux points",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -784,7 +836,7 @@
 		{
 			"code": "6-161",
 			"grade": "6",
-			"display_order": 61,
+			"display_order": 65,
 			"name": "Connaître et utiliser la définition du milieu d'un segment",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -797,7 +849,7 @@
 		{
 			"code": "6-162",
 			"grade": "6",
-			"display_order": 62,
+			"display_order": 66,
 			"name": "Connaître les définitions d'un cercle, d'un disque, d'un rayon, d'un diamètre, d'une corde",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -810,7 +862,7 @@
 		{
 			"code": "6-163",
 			"grade": "6",
-			"display_order": 63,
+			"display_order": 67,
 			"name": "Comprendre la définition d'un cercle et celle d'un disque sous la forme d'ensembles de points",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -823,7 +875,7 @@
 		{
 			"code": "6-164",
 			"grade": "6",
-			"display_order": 64,
+			"display_order": 68,
 			"name": "Résoudre des problèmes mettant en jeu des distances à un point",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -836,7 +888,7 @@
 		{
 			"code": "6-165",
 			"grade": "6",
-			"display_order": 65,
+			"display_order": 69,
 			"name": "Connaître la définition de la médiatrice d'un segment",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -849,7 +901,7 @@
 		{
 			"code": "6-166",
 			"grade": "6",
-			"display_order": 66,
+			"display_order": 70,
 			"name": "Comprendre et utiliser la propriété caractéristique de la médiatrice d'un segment",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -862,7 +914,7 @@
 		{
 			"code": "6-167",
 			"grade": "6",
-			"display_order": 67,
+			"display_order": 71,
 			"name": "Résoudre des problèmes en s'appuyant sur la propriété caractéristique de la médiatrice",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -875,7 +927,7 @@
 		{
 			"code": "6-168",
 			"grade": "6",
-			"display_order": 68,
+			"display_order": 72,
 			"name": "Connaître et utiliser les angles ainsi que le lexique et les notations qui s'y rapportent : angle droit, angle plat, angle plein, angle nul, angle aigu, angle obtus, angles opposés par le sommet, angles adjacents, angles supplémentaires",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -888,7 +940,7 @@
 		{
 			"code": "6-169",
 			"grade": "6",
-			"display_order": 69,
+			"display_order": 73,
 			"name": "Mesurer un angle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -901,7 +953,7 @@
 		{
 			"code": "6-170",
 			"grade": "6",
-			"display_order": 70,
+			"display_order": 74,
 			"name": "Construire un angle de mesure donnée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -914,7 +966,7 @@
 		{
 			"code": "6-171",
 			"grade": "6",
-			"display_order": 71,
+			"display_order": 75,
 			"name": "Connaître la définition de la bissectrice d'un angle saillant",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -927,7 +979,7 @@
 		{
 			"code": "6-172",
 			"grade": "6",
-			"display_order": 72,
+			"display_order": 76,
 			"name": "Utiliser la définition de la bissectrice d'un angle pour effectuer des constructions et résoudre des problèmes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -940,7 +992,7 @@
 		{
 			"code": "6-173",
 			"grade": "6",
-			"display_order": 73,
+			"display_order": 77,
 			"name": "Construire des triangles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -953,7 +1005,7 @@
 		{
 			"code": "6-174",
 			"grade": "6",
-			"display_order": 74,
+			"display_order": 78,
 			"name": "Connaître et utiliser les propriétés angulaires des triangles particuliers : triangle rectangle, triangle isocèle, triangle équilatéral",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -966,7 +1018,7 @@
 		{
 			"code": "6-175",
 			"grade": "6",
-			"display_order": 75,
+			"display_order": 79,
 			"name": "Connaître la valeur de la somme des mesures des angles d'un triangle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -979,8 +1031,8 @@
 		{
 			"code": "6-176",
 			"grade": "6",
-			"display_order": 76,
-			"name": "L'utiliser pour calculer des angles, effectuer des constructions et résoudre des problèmes",
+			"display_order": 80,
+			"name": "Utiliser la valeur de la somme des mesures des angles d'un triangle pour calculer des angles, effectuer des constructions et résoudre des problèmes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -992,7 +1044,7 @@
 		{
 			"code": "6-177",
 			"grade": "6",
-			"display_order": 77,
+			"display_order": 81,
 			"name": "Savoir que les médiatrices d'un triangle sont concourantes",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1005,7 +1057,7 @@
 		{
 			"code": "6-178",
 			"grade": "6",
-			"display_order": 78,
+			"display_order": 82,
 			"name": "Connaître et construire le cercle circonscrit à un triangle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1018,7 +1070,7 @@
 		{
 			"code": "6-179",
 			"grade": "6",
-			"display_order": 79,
+			"display_order": 83,
 			"name": "Connaître la définition du symétrique d'un point par rapport à une droite",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1031,7 +1083,7 @@
 		{
 			"code": "6-180",
 			"grade": "6",
-			"display_order": 80,
+			"display_order": 84,
 			"name": "Connaître et utiliser les propriétés de la symétrie axiale pour effectuer des constructions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1044,8 +1096,8 @@
 		{
 			"code": "6-181",
 			"grade": "6",
-			"display_order": 81,
-			"name": "Voir dans l'espace des assemblages de cubes",
+			"display_order": 85,
+			"name": "Voir dans l'espace des assemblages de cubes : passage, dans les deux sens, entre l'objet à trois dimensions et ses diverses représentations à deux dimensions ; dénombrements",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1057,7 +1109,7 @@
 		{
 			"code": "6-182",
 			"grade": "6",
-			"display_order": 82,
+			"display_order": 86,
 			"name": "Planifier une enquête et recueillir des données",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1070,7 +1122,7 @@
 		{
 			"code": "6-183",
 			"grade": "6",
-			"display_order": 83,
+			"display_order": 87,
 			"name": "Réaliser des mesures et les consigner dans un tableau",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1083,7 +1135,7 @@
 		{
 			"code": "6-184",
 			"grade": "6",
-			"display_order": 84,
+			"display_order": 88,
 			"name": "Construire un tableau simple pour présenter des données (observations, caractères)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1096,7 +1148,7 @@
 		{
 			"code": "6-185",
 			"grade": "6",
-			"display_order": 85,
+			"display_order": 89,
 			"name": "Faire un choix en filtrant les données d'un tableau selon un critère",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1109,7 +1161,7 @@
 		{
 			"code": "6-186",
 			"grade": "6",
-			"display_order": 86,
+			"display_order": 90,
 			"name": "Savoir que la probabilité d'un évènement est un nombre compris entre 0 et 1",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1122,7 +1174,7 @@
 		{
 			"code": "6-187",
 			"grade": "6",
-			"display_order": 87,
+			"display_order": 91,
 			"name": "Calculer des probabilités dans des situations simples d'équiprobabilité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1135,7 +1187,7 @@
 		{
 			"code": "6-188",
 			"grade": "6",
-			"display_order": 88,
+			"display_order": 92,
 			"name": "Comparer des résultats d'une expérience aléatoire répétée à une probabilité calculée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1148,7 +1200,7 @@
 		{
 			"code": "6-189",
 			"grade": "6",
-			"display_order": 89,
+			"display_order": 93,
 			"name": "Connaître la définition de la proportionnalité entre deux grandeurs et la mettre en lien avec des expressions de la vie courante",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1161,7 +1213,7 @@
 		{
 			"code": "6-190",
 			"grade": "6",
-			"display_order": 90,
+			"display_order": 94,
 			"name": "Identifier si une situation relève du « modèle » de la proportionnalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1174,7 +1226,7 @@
 		{
 			"code": "6-191",
 			"grade": "6",
-			"display_order": 91,
+			"display_order": 95,
 			"name": "Résoudre un problème de proportionnalité en choisissant une procédure adaptée : propriété de linéarité pour la multiplication ou l'addition, retour à l'unité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1187,7 +1239,7 @@
 		{
 			"code": "6-192",
 			"grade": "6",
-			"display_order": 92,
+			"display_order": 96,
 			"name": "Représenter une situation de proportionnalité à l'aide d'un tableau ou de notations symboliques",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1200,7 +1252,7 @@
 		{
 			"code": "6-193",
 			"grade": "6",
-			"display_order": 93,
+			"display_order": 97,
 			"name": "S'initier à la résolution de problèmes d'échelles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1213,7 +1265,7 @@
 		{
 			"code": "6-194",
 			"grade": "6",
-			"display_order": 94,
+			"display_order": 98,
 			"name": "Identifier une instruction ou une séquence d'instructions",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1226,7 +1278,7 @@
 		{
 			"code": "6-195",
 			"grade": "6",
-			"display_order": 95,
+			"display_order": 99,
 			"name": "Produire et exécuter une séquence d'instructions",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1239,7 +1291,7 @@
 		{
 			"code": "6-196",
 			"grade": "6",
-			"display_order": 96,
+			"display_order": 100,
 			"name": "Répéter à la main une séquence d'instructions pour accomplir une tâche imposée",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1252,7 +1304,7 @@
 		{
 			"code": "6-197",
 			"grade": "6",
-			"display_order": 97,
+			"display_order": 101,
 			"name": "Programmer la construction d'un chemin simple",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -1291,6 +1343,9 @@
 		"CM2-088",
 		"CM2-092",
 		"CM2-098",
-		"CM2-107"
+		"CM2-107",
+		"CM2-123",
+		"CM2-124",
+		"CM2-125"
 	]
 }

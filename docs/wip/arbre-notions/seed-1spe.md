@@ -409,7 +409,7 @@ sur ces points de 2de :
 
 ### B. Reprise de la liste de 2de (C16 : « s'ajoute la liste des automatismes de seconde »)
 
-Les **58 cibles** de la liste de 2de (`seed-2de.md`), reprises **telles quelles** avec le
+Les **58 cibles** (60 depuis la passe du cycle 3 : + 6-199, 6-201) de la liste de 2de (`seed-2de.md`), reprises **telles quelles** avec le
 grade `1_SPE` (dédoublonnées avec A).
 
 ### C. Entretien du vocabulaire ensembliste et logique — question V1

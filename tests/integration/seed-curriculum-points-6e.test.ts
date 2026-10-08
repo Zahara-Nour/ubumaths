@@ -129,7 +129,7 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 			if (!data || data.length < 1000) break;
 		}
 		pointsById = new Map(allPoints.map((p) => [p.id, p]));
-		pointRows = allPoints.filter((p) => /^6-1\d{2}$/.test(p.code));
+		pointRows = allPoints.filter((p) => p.grade === '6');
 
 		const nodes: NodeRow[] = [];
 		for (let from = 0; ; from += 1000) {
@@ -165,14 +165,14 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (97 points, 28 références)', () => {
+	it('la fixture est bien celle du document validé (101 points, 31 références après la passe)', () => {
 		expect(fixture.version).toBe('2026-10-07.13');
-		expect(fixture.points).toHaveLength(97);
-		expect(fixture.references).toHaveLength(28);
-		expect(new Set(fixture.references).size).toBe(28);
+		expect(fixture.points).toHaveLength(101);
+		expect(fixture.references).toHaveLength(31);
+		expect(new Set(fixture.references).size).toBe(31);
 	});
 
-	it('les 97 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 101 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -187,7 +187,7 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(97);
+		expect(pointRows).toHaveLength(101);
 	});
 
 	it('les 28 références d’automatismes de la 6e visent EXACTEMENT les cibles du document', () => {
@@ -203,7 +203,7 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
-		expect(fluents.map((r) => r.code).sort()).toEqual(['6-144', '6-156']);
+		expect(fluents.map((r) => r.code).sort()).toEqual(['6-144', '6-156', '6-199']);
 		expect(fluents.every((r) => (r.rubrique ?? '').endsWith('> Automatismes'))).toBe(true);
 
 		const algos = pointRows.filter((r) => r.kind === 'algorithme');
@@ -215,5 +215,21 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		expect(anciens).toHaveLength(95);
 		expect(anciens.every((p) => p.objective_id !== null)).toBe(true);
 		expect(anciens.every((p) => p.grade === null && p.node_id === null)).toBe(true);
+	});
+
+	it('passe « puces et points » (cycle 3) : 4 scissions, ordre d’affichage', () => {
+		const byCode = new Map(pointRows.map((r) => [r.code, r]));
+		for (const [neuf, avant] of [
+			['6-198', '6-114'],
+			['6-199', '6-144'],
+			['6-200', '6-151'],
+			['6-201', '6-152']
+		]) {
+			expect(byCode.get(neuf)?.display_order, neuf).toBe(
+				(byCode.get(avant)?.display_order ?? 0) + 1
+			);
+		}
+		const ordres = pointRows.map((r) => r.display_order).sort((a, b) => a - b);
+		expect(ordres).toEqual(ordres.map((_, i) => i + 1));
 	});
 });

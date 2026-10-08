@@ -366,49 +366,49 @@ les références dans la même migration). Lignes au contenu neuf → points ⚙
 
 ### Grade 5 (références)
 
-| Ligne d'Automatismes de la 5e (résumé fidèle)                                      | Cible(s)          |
-| ---------------------------------------------------------------------------------- | ----------------- |
-| Critères de divisibilité par 2, 5 et 10 vus en CM1 et CM2                          | CM1-011           |
-| Quotient et reste d'une division euclidienne (17 = 3 × 5 + 2)                      | 6-123             |
-| Tables pour factoriser un entier en produit de deux nombres (21 = 3 × 7)           | CM2-036           |
-| Produits en lien avec les tables : 0,6 × 7 ; 40 × 0,03                             | 6-118             |
-| Multiplier et diviser par 10, 100, 1 000                                           | CM2-042 · CM2-043 |
-| Additionner et soustraire des décimaux (2,7 + 1,4)                                 | 6-114             |
-| Additionner, soustraire, multiplier des décimaux à une ou deux décimales           | 6-114 · 6-118     |
-| Compléter une addition à trou par une soustraction (2 + … = 7)                     | CE2-020           |
-| Écriture décimale des fractions simples (1/2, 1/4, 3/4…)                           | CM2-039           |
-| Nombre quotient : compléter 3 × … = 7 par 7/3                                      | 6-127             |
-| Abscisse d'un point en tiers, quarts, moitiés, dixièmes                            | 6-128             |
-| Reconnaitre des fractions égales (2/3 = …/15)                                      | 6-132             |
-| Comparer deux fractions                                                            | 6-133             |
-| Fraction = entier + fraction < 1 (17/5 = 3 + 2/5)                                  | CM2-014           |
-| Addition et soustraction de fractions simples                                      | 6-135             |
-| Prendre une fraction simple d'un nombre (1/3 de 18)                                | 6-131             |
-| Prendre 1 %, 10 % ou 50 % d'un nombre                                              | 6-141             |
-| Un même nombre sous de multiples formes (1,2 = 12/10 = 6/5 = 120 %)                | 6-106             |
-| Unités d'aires et de volume                                                        | 6-150 · 6-153     |
-| Poursuivre une suite de motifs évolutive                                           | CM2-069           |
-| Nombre d'éléments à une étape donnée                                               | CM2-070           |
-| Structure d'un motif évolutif                                                      | 6-143             |
-| Nombre quotient                                                                    | 6-126             |
-| Placer / repérer un décimal sur une demi-droite graduée                            | 6-107 · 6-108     |
-| Vues et dénombrement d'empilements de cubes ; cube et pavé en perspective          | 6-181             |
-| Reconnaitre un patron d'un cube                                                    | CM2-100           |
-| Symétrique d'une figure sur quadrillage (axe vertical, horizontal, diagonale)      | CM2-097           |
-| Symétrique par rapport à un axe, d'un point, d'une figure, sur feuille blanche     | 6-180             |
-| Lexique des angles (plein, plat, nul, droit, opposés, adjacents, supplémentaires…) | 6-168             |
-| Angle droit = 90°, angle plat = 180°                                               | CM2-081 · 6-168   |
-| Reconnaitre une bissectrice                                                        | 6-171             |
-| Reconnaitre un triangle isocèle, équilatéral, rectangle sur schéma codé            | CM2-092           |
-| Somme des angles d'un triangle, calculer le 3e angle                               | 6-176             |
-| Médiatrice, cercle circonscrit (notions)                                           | 6-165 · 6-178     |
-| Reconnaitre quadrilatère, parallélogramme, rectangle, losange, carré, trapèze…     | CM2-092           |
-| Exploiter le codage d'une figure                                                   | CM2-088           |
-| Échelle de probabilité, évènements types (pile, dé, urne, loto…)                   | 6-186 · 6-187     |
-| Probabilité sous diverses formes (fraction, décimale, pourcentage)                 | 6-186             |
-| « Une chance sur quatre » ↔ probabilité 1/4                                       | CM2-111           |
-| Reconnaitre une situation de proportionnalité                                      | 6-190             |
-| Procédure adaptée (linéarité, retour à l'unité) ; pourcentage de voix              | 6-191 · 6-140     |
+| Ligne d'Automatismes de la 5e (résumé fidèle)                                      | Cible(s)              |
+| ---------------------------------------------------------------------------------- | --------------------- |
+| Critères de divisibilité par 2, 5 et 10 vus en CM1 et CM2                          | CM1-011               |
+| Quotient et reste d'une division euclidienne (17 = 3 × 5 + 2)                      | 6-123                 |
+| Tables pour factoriser un entier en produit de deux nombres (21 = 3 × 7)           | CM2-036               |
+| Produits en lien avec les tables : 0,6 × 7 ; 40 × 0,03                             | 6-118                 |
+| Multiplier et diviser par 10, 100, 1 000                                           | CM2-042 · CM2-043     |
+| Additionner et soustraire des décimaux (2,7 + 1,4)                                 | 6-114 · 6-198         |
+| Additionner, soustraire, multiplier des décimaux à une ou deux décimales           | 6-114 · 6-198 · 6-118 |
+| Compléter une addition à trou par une soustraction (2 + … = 7)                     | CE2-020               |
+| Écriture décimale des fractions simples (1/2, 1/4, 3/4…)                           | CM2-039               |
+| Nombre quotient : compléter 3 × … = 7 par 7/3                                      | 6-127                 |
+| Abscisse d'un point en tiers, quarts, moitiés, dixièmes                            | 6-128                 |
+| Reconnaitre des fractions égales (2/3 = …/15)                                      | 6-132                 |
+| Comparer deux fractions                                                            | 6-133                 |
+| Fraction = entier + fraction < 1 (17/5 = 3 + 2/5)                                  | CM2-014               |
+| Addition et soustraction de fractions simples                                      | 6-135                 |
+| Prendre une fraction simple d'un nombre (1/3 de 18)                                | 6-131                 |
+| Prendre 1 %, 10 % ou 50 % d'un nombre                                              | 6-141                 |
+| Un même nombre sous de multiples formes (1,2 = 12/10 = 6/5 = 120 %)                | 6-106                 |
+| Unités d'aires et de volume                                                        | 6-150 · 6-153         |
+| Poursuivre une suite de motifs évolutive                                           | CM2-069               |
+| Nombre d'éléments à une étape donnée                                               | CM2-070               |
+| Structure d'un motif évolutif                                                      | 6-143                 |
+| Nombre quotient                                                                    | 6-126                 |
+| Placer / repérer un décimal sur une demi-droite graduée                            | 6-107 · 6-108         |
+| Vues et dénombrement d'empilements de cubes ; cube et pavé en perspective          | 6-181                 |
+| Reconnaitre un patron d'un cube                                                    | CM2-100               |
+| Symétrique d'une figure sur quadrillage (axe vertical, horizontal, diagonale)      | CM2-097               |
+| Symétrique par rapport à un axe, d'un point, d'une figure, sur feuille blanche     | 6-180                 |
+| Lexique des angles (plein, plat, nul, droit, opposés, adjacents, supplémentaires…) | 6-168                 |
+| Angle droit = 90°, angle plat = 180°                                               | CM2-081 · 6-168       |
+| Reconnaitre une bissectrice                                                        | 6-171                 |
+| Reconnaitre un triangle isocèle, équilatéral, rectangle sur schéma codé            | CM2-092               |
+| Somme des angles d'un triangle, calculer le 3e angle                               | 6-176                 |
+| Médiatrice, cercle circonscrit (notions)                                           | 6-165 · 6-178         |
+| Reconnaitre quadrilatère, parallélogramme, rectangle, losange, carré, trapèze…     | CM2-092               |
+| Exploiter le codage d'une figure                                                   | CM2-088               |
+| Échelle de probabilité, évènements types (pile, dé, urne, loto…)                   | 6-186 · 6-187         |
+| Probabilité sous diverses formes (fraction, décimale, pourcentage)                 | 6-186                 |
+| « Une chance sur quatre » ↔ probabilité 1/4                                       | CM2-111               |
+| Reconnaitre une situation de proportionnalité                                      | 6-190                 |
+| Procédure adaptée (linéarité, retour à l'unité) ; pourcentage de voix              | 6-191 · 6-140         |
 
 ### Grade 4 (références)
 
@@ -439,7 +439,7 @@ les références dans la même migration). Lignes au contenu neuf → points ⚙
 | Reconnaitre les solides : cube, pavé, cylindre, prisme droit                        | CM2-098                       |
 | Formules du volume du cube, pavé, prisme, cylindre                                  | 5-050 · 5-053                 |
 | Base d'un prisme donné en perspective cavalière                                     | 5-048                         |
-| Aires des figures planes usuelles : triangle, rectangle, disque                     | 5-061 · 6-152 · 5-052         |
+| Aires des figures planes usuelles : triangle, rectangle, disque                     | 5-061 · 6-152 · 6-201 · 5-052 |
 | Images de figures par symétrie axiale ou demi-tour (dont identification axe/centre) | 6-180 · 5-054                 |
 | Reconnaitre un parallélogramme (définition, propriété, codages)                     | 5-070                         |
 | Parallélogramme particulier par ses propriétés (diagonales)                         | 5-072                         |

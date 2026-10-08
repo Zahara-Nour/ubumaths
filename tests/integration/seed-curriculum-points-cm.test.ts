@@ -158,14 +158,14 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (246 points, arbre .13)', () => {
+	it('la fixture est bien celle du document validé (262 points après la passe)', () => {
 		expect(fixture.version).toBe('2026-10-07.13');
-		expect(fixture.points).toHaveLength(246);
-		expect(fixture.points.filter((p) => p.grade === 'CM1')).toHaveLength(130);
-		expect(fixture.points.filter((p) => p.grade === 'CM2')).toHaveLength(116);
+		expect(fixture.points).toHaveLength(262);
+		expect(fixture.points.filter((p) => p.grade === 'CM1')).toHaveLength(138);
+		expect(fixture.points.filter((p) => p.grade === 'CM2')).toHaveLength(124);
 	});
 
-	it('les 246 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 262 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -180,7 +180,7 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(246);
+		expect(pointRows).toHaveLength(262);
 	});
 
 	it('architecture cible : objective_id NULL et rang NULL sur tout le seed', () => {
@@ -242,7 +242,29 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 
 	it('le régime suit la décision S5 : fluence = tout le calcul mental, rien d’autre', () => {
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
-		expect(fluents).toHaveLength(31);
+		expect(fluents).toHaveLength(33);
 		expect(fluents.every((r) => (r.rubrique ?? '').endsWith('> Le calcul mental'))).toBe(true);
+	});
+
+	it('passe « puces et points » (cycle 3) : scissions, retraits, ordre d’affichage', () => {
+		const byCode = new Map(pointRows.map((r) => [r.code, r]));
+		expect(byCode.has('CM1-096')).toBe(false);
+		expect(byCode.has('CM2-086')).toBe(false);
+		expect(byCode.get('CM1-132')?.display_order).toBe(
+			(byCode.get('CM1-034')?.display_order ?? 0) + 1
+		);
+		expect(byCode.get('CM2-125')?.display_order).toBe(
+			(byCode.get('CM2-124')?.display_order ?? 0) + 1
+		);
+		expect(pathOf(byCode.get('CM2-120')?.node_id ?? null)).toBe(
+			'Grandeurs et mesures > Aires > rectangle'
+		);
+		for (const grade of ['CM1', 'CM2']) {
+			const ordres = pointRows
+				.filter((r) => r.grade === grade)
+				.map((r) => r.display_order)
+				.sort((a, b) => a - b);
+			expect(ordres, grade).toEqual(ordres.map((_, i) => i + 1));
+		}
 	});
 });

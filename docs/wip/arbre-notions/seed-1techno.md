@@ -103,7 +103,7 @@ second degré » vise le point de 1re techno (**auto-référence** : 1TECHNO-066
 
 ### B. Reprise de la liste de 2de (C16 : « s'ajoute la liste des automatismes de seconde »)
 
-Les **58 cibles** de la liste de 2de, reprises telles quelles avec le grade `1_TECHNO`.
+Les **58 cibles** (60 depuis la passe du cycle 3 : + 6-199, 6-201) de la liste de 2de, reprises telles quelles avec le grade `1_TECHNO`.
 
 ### E. Entretien du vocabulaire de 2de (U5/V1) — 10 références (tableau plus haut)
 
