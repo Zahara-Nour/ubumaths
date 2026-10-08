@@ -17,16 +17,16 @@
 
 ## Attributs communs
 
-| Attribut               | Valeur                                                                                                                                                               |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `grade`                | `5` / `4` / `3`                                                                                                                                                      |
-| `code`                 | `5-001`… / `4-001`… / `3-001`… — aucun préfixe existant en base, codes explicites dans la migration                                                                  |
-| `objective_id`, `rang` | `NULL`                                                                                                                                                               |
-| `rubrique`             | « domaine > section » (C11), ex. `Nombres et calculs > Puissances` ; suffixe `> Automatismes` pour les 3 points issus d'une ligne d'Automatismes                     |
-| `kind`                 | conn. / s-f ; **dém.** (`demonstration`) quand le geste central est démontrer (4 points) ; **algo.** (`algorithme`) pour tout « La pensée informatique » (17 points) |
-| `exigence`             | `attendu` partout (les Prolongements ne deviennent pas des points)                                                                                                   |
-| `regime_acquisition`   | `diversite` partout, sauf les **3 points issus des Automatismes → `fluence`**                                                                                        |
-| `display_order`        | ordre de lecture du BO (les points d'automatismes à leur place, avant les objectifs de leur section)                                                                 |
+| Attribut               | Valeur                                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `grade`                | `5` / `4` / `3`                                                                                                                                                          |
+| `code`                 | `5-001`… / `4-001`… / `3-001`… — aucun préfixe existant en base, codes explicites dans la migration                                                                      |
+| `objective_id`, `rang` | `NULL`                                                                                                                                                                   |
+| `rubrique`             | « domaine > section » (C11), ex. `Nombres et calculs > Puissances` ; suffixe `> Automatismes` pour les 3 points issus d'une ligne d'Automatismes                         |
+| `kind`                 | conn. / s-f ; **dém.** (`demonstration`) quand le geste central est démontrer (4 points) ; **algo.** (`algorithme`) pour « La pensée informatique » et 5-011 (18 points) |
+| `exigence`             | `attendu` partout (les Prolongements ne deviennent pas des points)                                                                                                       |
+| `regime_acquisition`   | `diversite` partout, sauf les **3 points issus des Automatismes → `fluence`**                                                                                            |
+| `display_order`        | ordre de lecture du BO (les points d'automatismes à leur place, avant les objectifs de leur section)                                                                     |
 
 **226 points** (106 en 5e, 69 en 4e, 51 en 3e — dont 3 lignes d'Automatismes au contenu
 neuf : les angles de l'équerre en 5e, la décomposition en facteurs premiers et l'opposé
@@ -42,19 +42,19 @@ l'aire du disque, le volume du cylindre de révolution » (5e) traverse deux not
 
 ### Nombres et calculs > Opérations
 
-| Code  | Énoncé (verbatim BO)                                                                                                                                  | kind  | rég. | nœud                                                                |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------------------- |
-| 5-001 | Additionner, soustraire, multiplier et diviser pour résoudre des problèmes et contrôler la vraisemblance de son résultat.                             | s-f   | div. | Décimaux : calculs (notion)                                         |
-| 5-002 | Connaitre le sens et les situations d'emploi de ces opérations.                                                                                       | conn. | div. | Décimaux : calculs (notion)                                         |
-| 5-003 | Diviser par un nombre décimal.                                                                                                                        | s-f   | div. | Décimaux : calculs > diviser                                        |
-| 5-004 | Enchainer des opérations.                                                                                                                             | s-f   | div. | Entiers : priorités opératoires (notion)                            |
-| 5-005 | Traduire un problème, une succession donnée d'opérations, un programme de calcul, en une seule expression, en faisant appel ou non à des parenthèses. | s-f   | div. | Entiers : priorités opératoires > traduire une phrase               |
-| 5-006 | Nommer un calcul, distinguer sommes et produits, termes et facteurs.                                                                                  | s-f   | div. | Entiers : priorités opératoires > traduire une phrase               |
-| 5-007 | Connaitre et utiliser les priorités opératoires.                                                                                                      | s-f   | div. | Entiers : priorités opératoires (notion)                            |
-| 5-008 | Connaitre et utiliser la distributivité simple sur des exemples numériques.                                                                           | s-f   | div. | Entiers : multiplication > distributivité                           |
-| 5-009 | Utiliser les notions de multiples et diviseurs.                                                                                                       | s-f   | div. | `Arithmétique` Divisibilité > multiples et diviseurs                |
-| 5-010 | Connaitre les critères de divisibilité par 3 et par 9.                                                                                                | conn. | div. | `Arithmétique` Divisibilité > critères de divisibilité              |
-| 5-011 | Mobiliser un algorithme dans le cadre du calcul numérique.                                                                                            | s-f   | div. | `Algorithmique` Variables et instructions (notion) _(discutable 1)_ |
+| Code  | Énoncé (verbatim BO)                                                                                                                                  | kind  | rég. | nœud                                                   |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------ |
+| 5-001 | Additionner, soustraire, multiplier et diviser pour résoudre des problèmes et contrôler la vraisemblance de son résultat.                             | s-f   | div. | Décimaux : calculs (notion)                            |
+| 5-002 | Connaitre le sens et les situations d'emploi de ces opérations.                                                                                       | conn. | div. | Décimaux : calculs (notion)                            |
+| 5-003 | Diviser par un nombre décimal.                                                                                                                        | s-f   | div. | Décimaux : calculs > diviser                           |
+| 5-004 | Enchainer des opérations.                                                                                                                             | s-f   | div. | Entiers : priorités opératoires (notion)               |
+| 5-005 | Traduire un problème, une succession donnée d'opérations, un programme de calcul, en une seule expression, en faisant appel ou non à des parenthèses. | s-f   | div. | Entiers : priorités opératoires > traduire une phrase  |
+| 5-006 | Nommer un calcul, distinguer sommes et produits, termes et facteurs.                                                                                  | s-f   | div. | Entiers : priorités opératoires > traduire une phrase  |
+| 5-007 | Connaitre et utiliser les priorités opératoires.                                                                                                      | s-f   | div. | Entiers : priorités opératoires (notion)               |
+| 5-008 | Connaitre et utiliser la distributivité simple sur des exemples numériques.                                                                           | s-f   | div. | Entiers : multiplication > distributivité              |
+| 5-009 | Utiliser les notions de multiples et diviseurs.                                                                                                       | s-f   | div. | `Arithmétique` Divisibilité > multiples et diviseurs   |
+| 5-010 | Connaitre les critères de divisibilité par 3 et par 9.                                                                                                | conn. | div. | `Arithmétique` Divisibilité > critères de divisibilité |
+| 5-011 | Mobiliser un algorithme dans le cadre du calcul numérique.                                                                                            | algo. | div. | `Algorithmique` Variables et instructions (notion)     |
 
 ### … > Nombres relatifs
 
@@ -487,9 +487,8 @@ les références dans la même migration). Lignes au contenu neuf → points ⚙
 révolution. » (5e) traverse `Aires` et `Volumes` → 5-052 et 5-053.
 
 1. **« Mobiliser un algorithme dans le cadre du calcul numérique »** (5-011) →
-   `Variables et instructions` (notion) : c'est la porte algorithmique du calcul
-   numérique de 5e ; Préalgorithmique reste la maison du CM2-6e. Alternative :
-   Préalgorithmique.
+   `Variables et instructions` (notion), kind `algorithme` — ✅ tranché David
+   (Préalgorithmique reste l'avant-programmation du CM2-6e).
 2. **« Connaitre les carrés des entiers de 0 à 12 »** (5-029) → `Entiers :
 multiplication > carrés` — ✅ tranché David.
 3. **Contre-exemple et conjectures** (5-041, 5-042) → `Calcul littéral` (notion) —
@@ -536,7 +535,7 @@ proportionnalité > reconnaître` — ✅ tranché David.
    - dessin_branches.py → JSON .14 + diagramme), puis les 226 points (5e puis 4e puis 3e), PUIS les références par grade
      (cibles résolues par code — y compris les cibles intra-migration 5-xxx/4-xxx, déjà
      insérées). Bloc DO : comptes par grade, 0 sans nœud, comptes de références par
-     grade, fluence = 3, algorithme = 17, demonstration = 4. Rollback scopé en
+     grade, fluence = 3, algorithme = 18, demonstration = 4. Rollback scopé en
      commentaire avec la mise en garde RGPD habituelle.
 2. Test d'intégration : comparaison intégrale des points ET des références des trois
    grades en lecture anonyme, preuve rouge avant.
