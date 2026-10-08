@@ -744,6 +744,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// Pas d'étapes (degré ≥ 3, transcendante, trigonométrique) : les solutions
+	// du moteur, en LaTeX — bâties sur son résultat STRUCTURÉ (`solve-latex.ts`).
+	// Sans lui, la ligne montrait le texte du terminal,
+	// « x = 0 ou x = {1/2}sqrt(2) ou x = -{1/2}sqrt(2) » (2026-10-08).
+	if (name === 'solve' && result.success && result.latex !== undefined) {
+		return { kind: 'commande', input, output: rendered.text, latex: result.latex, ...noted };
+	}
+
 	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
 	// dit rien à l'élève — mesuré, `.deriver )(` et `.resoudre )` (2026-10-05)
 	if (!result.success && rendered.text.trim() === '') {
@@ -1120,6 +1128,10 @@ export function runAction(
 		const solved = solveSteps(`${substituted.expression}=0`);
 		if (solved !== null) {
 			return { ok: true, output: rendered.text, latex: solved.answer, steps: solved.steps };
+		}
+		// Pas d'étapes : les solutions du moteur en LaTeX, comme `.résoudre`
+		if (result.success && result.latex !== undefined) {
+			return { ok: true, output: rendered.text, latex: result.latex };
 		}
 	}
 

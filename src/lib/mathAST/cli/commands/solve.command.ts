@@ -22,6 +22,7 @@
 import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
+import { solutionsLatex } from './solve-latex';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from '../../solve';
 import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
@@ -910,10 +911,11 @@ export class SolveCommand extends BaseCommand {
 			});
 
 			// Format output with toggle support
-			return this.withHint(
-				this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx),
-				hint
-			);
+			const formatted = this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx);
+			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
+			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
+			const latex = solutionsLatex(result);
+			return this.withHint(latex === null ? formatted : { ...formatted, latex }, hint);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
