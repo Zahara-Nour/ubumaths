@@ -89,6 +89,12 @@ export interface CommandResult {
 	readonly success: boolean;
 	readonly error?: CommandError;
 	readonly ast?: MathNode;
+	/**
+	 * La réponse en LaTeX, quand la commande sait l'écrire depuis ses données
+	 * structurées (`.solve` : toutes les solutions, que `ast` ne porte pas —
+	 * il n'en garde que la première).
+	 */
+	readonly latex?: string;
 	/** Optional HTML-formatted output for web display */
 	readonly outputHtml?: string;
 

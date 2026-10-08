@@ -1487,6 +1487,7 @@ export class WebReplEngine {
 			success: boolean;
 			error?: unknown;
 			ast?: MathNode;
+			latex?: string;
 			outputHtml?: string;
 			// Toggle support fields
 			exactOutput?: string;
@@ -1522,6 +1523,7 @@ export class WebReplEngine {
 				output: cmdResult.output,
 				outputHtml: cmdResult.outputHtml,
 				ast: cmdResult.ast || ast,
+				...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
 				// Pass through toggle fields if present
 				exactOutput: cmdResult.exactOutput,
 				exactOutputHtml: cmdResult.exactOutputHtml,
@@ -1550,6 +1552,7 @@ export class WebReplEngine {
 			output: cmdResult.output,
 			outputHtml,
 			ast: cmdResult.ast || ast,
+			...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
 			// Pass through toggle fields if present
 			exactOutput: cmdResult.exactOutput,
 			exactOutputHtml: cmdResult.exactOutputHtml,
