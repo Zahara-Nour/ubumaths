@@ -67,7 +67,32 @@ import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
-import { realNthRoot } from './real-root';
+import { oddDenominatorExponent, realNthRoot } from './real-root';
+
+/**
+ * base^{exp} pour un exposant non entier : racine exacte si la base est un
+ * entier ≥ 0 dont la racine ᵠ-ième tombe juste, sinon flottant. Une base
+ * négative est refusée (convention x^a = e^{a ln x}).
+ */
+function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
+	// x^{p/q} = (x^{1/q})^p = (q-th root of x)^p
+	if (isIntegerRational(base) && base.n >= 0n && exp.d !== 1n) {
+		const exactRoot = integerNthRoot(base.n, exp.d);
+		if (exactRoot !== null) {
+			const pNum = Number(exp.n);
+			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
+				return powRational(fromInteger(exactRoot), pNum);
+			}
+		}
+	}
+
+	const baseNum = rationalToNumber(base);
+	const expNum = rationalToNumber(exp);
+	if (baseNum < 0 && !Number.isInteger(expNum)) {
+		throw new Error('Cannot compute non-integer power of negative number');
+	}
+	return floatToRational(Math.pow(baseNum, expNum));
+}
 
 // =============================================================================
 // Core Evaluation
@@ -640,34 +665,14 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 			}
 		}
 
-		// For fractional exponent p/q (where base is a non-negative integer):
-		// Try to compute exact nth root first
-		// x^{p/q} = (x^{1/q})^p = (q-th root of x)^p
-		if (isIntegerRational(base) && base.n >= 0n && exp.d !== 1n) {
-			const p = exp.n; // numerator of exponent
-			const q = exp.d; // denominator of exponent (the root index)
-
-			// Try exact q-th root of base
-			const exactRoot = integerNthRoot(base.n, q);
-			if (exactRoot !== null) {
-				// x^{p/q} = (exactRoot)^p
-				const pNum = Number(p);
-				if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
-					return powRational(fromInteger(exactRoot), pNum);
-				}
-			}
+		// Exposant p/q irréductible, q impair (décision du 2026-10-08) : la
+		// puissance d'un négatif vaut (ᵠ√x)^p = ±|x|^{p/q}, comme ∛x
+		if (base.n < 0n && oddDenominatorExponent(node.superscript) !== null) {
+			const magnitude = nonNegativeRationalPower(negRational(base), exp);
+			return exp.n % 2n !== 0n ? negRational(magnitude) : magnitude;
 		}
 
-		// For non-integer exponent, compute via floating point
-		const baseNum = rationalToNumber(base);
-		const expNum = rationalToNumber(exp);
-
-		// Handle negative base with non-integer exponent
-		if (baseNum < 0 && !Number.isInteger(expNum)) {
-			throw new Error('Cannot compute non-integer power of negative number');
-		}
-
-		return floatToRational(Math.pow(baseNum, expNum));
+		return nonNegativeRationalPower(base, exp);
 	}
 
 	// FunctionNode (includes sqrt, cbrt, nthroot)

@@ -62,6 +62,9 @@ import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../f
 import { isEulerBase } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { expandFunctionPowers } from '../common/function-power';
+import { expandOddRootPowers, hasOddRootPower } from '../common/odd-root-power';
+import { toLatex } from '../latex-generator';
+import { combineVariablePowers } from '../common/variable-powers';
 import { matchKnownLimit, getKnownLimitValue, structurallyEqual } from './known-limits';
 import { LimitStepRecorderImpl } from './step-recorder';
 import { containsVariable } from '../common/contains-variable';
@@ -344,7 +347,39 @@ export function evaluateLimit(
 		evaluateLimitExactForm(expr, variable, approach, direction, options)
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
-	return withInfiniteStatus(writeLikeInput(result, expression));
+	const twoSided = oddRootTwoSided(expr, variable, approach, options, result, expression);
+	return withInfiniteStatus(writeLikeInput(twoSided ?? result, expression));
+}
+
+/**
+ * Limite bilatérale « non supportée » d'une puissance x^{p/q}, q impair
+ * (x^{-1/3} en 0) : on la tranche par ses deux limites latérales, que le
+ * moteur sait calculer — différentes : pas de limite ; égales : leur valeur.
+ * `null` hors de ce cas (rien ne change pour les autres expressions).
+ */
+function oddRootTwoSided(
+	expr: MathNode | LimitNode,
+	variable: string | undefined,
+	approach: MathNode | undefined,
+	options: LimitOptions,
+	result: LimitResult,
+	expression: MathNode
+): LimitResult | null {
+	if (result.status !== 'unsupported' || result.direction !== 'both') return null;
+	if (!hasOddRootPower(expression) || isInfinity(result.approach)) return null;
+	const side = (direction: 'left' | 'right'): LimitResult =>
+		isLimit(expr)
+			? evaluateLimit({ ...expr, direction }, undefined, undefined, direction, options)
+			: evaluateLimit(expr, variable, approach, direction, options);
+	const left = side('left');
+	const right = side('right');
+	const known = (r: LimitResult) =>
+		(r.status === 'exact' || r.status === 'infinite') && r.value !== null;
+	if (!known(left) || !known(right)) return null;
+	if (toLatex(left.value as MathNode) === toLatex(right.value as MathNode)) {
+		return { ...left, direction: 'both' };
+	}
+	return { ...result, status: 'does-not-exist', value: null };
 }
 
 /**
@@ -525,6 +560,13 @@ function evaluateLimitExactForm(
 	// `\cos^{-1}(x)` est la réciproque : la limite se calcule sur `arccos(x)`
 	// (la substitution directe rendait cos(0) = 1). `\sin^2(x)` → `\sin(x)^2`.
 	expression = expandFunctionPowers(expression);
+
+	// x^{p/q}, q impair : définie pour x < 0 (décision du 2026-10-08) ; la
+	// limite se calcule sur le radical ᵠ√(x^p), que les stratégies savent
+	// signer (x^{-1/3} en 0⁻ rendait +∞ au lieu de −∞).
+	// Produits / quotients de puissances de x réunis : x^{1/5}/x^{1/3} = x^{-2/15}
+	// (L'Hôpital rendait « ≈ 60 » pour +∞) — avant la réécriture en radical
+	expression = expandOddRootPowers(combineVariablePowers(expression, varName));
 
 	// Validate domain accessibility
 	const domainValidation = validateApproachInDomain(expression, varName, approachPoint, dir);

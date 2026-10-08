@@ -1,7 +1,8 @@
 /**
  * Racine d'indice impair d'un négatif (décision du 2026-10-07) : ⁿ√a = −ⁿ√|a|
  * pour n impair (∛x définie sur ℝ, programme). Indice pair d'un négatif : non
- * défini (erreur / NaN). Les puissances fractionnaires `x^{1/3}` ne changent pas.
+ * défini (erreur / NaN). Les puissances `x^{p/q}`, q impair, suivent depuis le
+ * 2026-10-08 (voir `odd-denominator-power.test.ts`).
  */
 import { describe, it, expect } from 'vitest';
 import { evaluate, evaluateNodeToApproximatedNumber } from '../evaluate';
@@ -44,8 +45,8 @@ describe('evaluate — racine d’indice impair d’un négatif', () => {
 		expect(() => evaluateNodeToApproximatedNumber(parseLatex('\\sqrt{-4}'))).toThrow();
 	});
 
-	it('(−8)^{1/3} inchangé : erreur', () => {
-		expect(() => evaluateNodeToApproximatedNumber(parseLatex('(-8)^{\\frac{1}{3}}'))).toThrow();
+	it('(−8)^{1/3} = −2 (exposant de dénominateur impair, 2026-10-08)', () => {
+		expect(evaluateNodeToApproximatedNumber(parseLatex('(-8)^{\\frac{1}{3}}'))).toBe(-2);
 	});
 });
 
@@ -68,8 +69,8 @@ describe('compile — racine d’indice impair d’un négatif', () => {
 		expect(compile(parseLatex('\\sqrt[4]{x}'))({ x: -16 })).toBeNaN();
 	});
 
-	it('(−8)^{1/3} inchangé : NaN', () => {
-		expect(compile(parseLatex('x^{\\frac{1}{3}}'))({ x: -8 })).toBeNaN();
+	it('(−8)^{1/3} = −2 (exposant de dénominateur impair, 2026-10-08)', () => {
+		expect(compile(parseLatex('x^{\\frac{1}{3}}'))({ x: -8 })).toBeCloseTo(-2, 12);
 	});
 
 	it('tracé : ∛x a des valeurs pour x < 0 (createSafeEvaluator)', () => {

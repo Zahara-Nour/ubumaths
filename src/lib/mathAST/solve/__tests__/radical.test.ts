@@ -294,13 +294,12 @@ describe('Radical equation solver', () => {
 	// General fractional exponents (SuperscriptNode)
 	// =========================================================================
 	describe('General fractional exponents (SuperscriptNode)', () => {
-		it('should solve x^(2/3) = 4 → x = 4^(3/2) = 8', () => {
+		it('x^(2/3) = 4 → x = ±8 (x^{2/3} = ∛(x²) défini sur ℝ, décision du 2026-10-08)', () => {
 			const lhs = subtract(superscript(variable('x'), frac(2, 3)), number('4'));
 			const result = solve(eq(lhs, number('0')));
 
-			expect(result.status).toBe('unique');
-			expect(result.solutions).toHaveLength(1);
-			expect(toLatex(result.solutions[0].value)).toBe('8');
+			expect(result.solutions).toHaveLength(2);
+			expect(result.solutions.map((s) => toLatex(s.value)).sort()).toEqual(['-8', '8']);
 		});
 
 		it('should solve x^(1/2) - 3 = 0 → x = 9', () => {

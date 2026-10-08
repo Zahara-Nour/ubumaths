@@ -9,7 +9,8 @@
 import type { MathNode, DivisionNode } from '../types';
 import type { ExtendedNormalizeResult } from '../normal/types';
 import type { LimitDirection, LimitOptions, IndeterminateForm } from './types';
-import { isDivision } from '../guards';
+import { isDivision, isInfinity } from '../guards';
+import { compile } from '../eval/compile';
 import { differentiate } from '../differentiation';
 import { detectIndeterminateForm, classifyLimitValue } from './indeterminate';
 import type { LimitStepRecorder } from './step-recorder';
@@ -208,6 +209,15 @@ export function applyLhopital(
 			}
 		}
 
+		// Garde-fou : la valeur approchée doit être confirmée par f elle-même
+		// près de la borne. Sinon refus honnête (x^{1/5}/x^{1/3} en 0 rendait
+		// « ≈ 60 », pour +∞ : f′/g′ mal classée « non indéterminée »).
+		if (
+			approximateEvaluation !== null &&
+			!confirmedNumerically(expr, varName, approach, direction, approximateEvaluation)
+		) {
+			approximateEvaluation = null;
+		}
 		if (approximateEvaluation !== null) {
 			recorder.recordStep(
 				'lhopital',
@@ -429,8 +439,11 @@ function tryDirectEvaluationNumeric(
 	const numClass = classifyLimitValue(expr.numerator, varName, approach, direction);
 	const denClass = classifyLimitValue(expr.denominator, varName, approach, direction);
 
-	// Both have finite values
+	// Both have finite values — classes FINIES exigées : une valeur échantillonnée
+	// près d'un infini (x^{-4/5} / x^{-2/3} en 0) donnait « ≈ 60 » pour +∞
 	if (
+		isFiniteClass(numClass.class) &&
+		isFiniteClass(denClass.class) &&
 		numClass.numericValue !== undefined &&
 		denClass.numericValue !== undefined &&
 		denClass.numericValue !== 0
@@ -549,4 +562,59 @@ export function convertToLhopitalForm(
 
 	// For other forms, return null (not yet implemented)
 	return null;
+}
+
+/**
+ * La valeur `value` est-elle confirmée par f près de la borne ? Échantillons
+ * à h = 10⁻⁴, 10⁻⁶, 10⁻⁸ (ou ±10⁴, 10⁶, 10⁸ à l'infini), côté(s) demandé(s) :
+ * valeur finie → les trois proches de value (écart relatif ≤ 10⁻³) ; ±∞ → |f|
+ * croissante, du bon signe. Non calculable : non confirmée.
+ */
+function confirmedNumerically(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	value: MathNode
+): boolean {
+	let f: (scope: Record<string, number>) => unknown;
+	let target: number;
+	let point: number;
+	try {
+		f = compile(expr);
+		target = isInfinity(value)
+			? value.sign === 'positive'
+				? Infinity
+				: -Infinity
+			: Number(compile(value)({}));
+		point = isInfinity(approach)
+			? approach.sign === 'positive'
+				? Infinity
+				: -Infinity
+			: Number(compile(approach)({}));
+	} catch {
+		return false;
+	}
+	const steps = [1e-4, 1e-6, 1e-8];
+	const sides: number[] = direction === 'left' ? [-1] : direction === 'right' ? [1] : [-1, 1];
+	for (const side of sides) {
+		const xs = Number.isFinite(point)
+			? steps.map((h) => point + side * h)
+			: steps.map((h) => Math.sign(point) / h);
+		const ys = xs.map((x) => {
+			const y = f({ [varName]: x });
+			return typeof y === 'number' ? y : Number.NaN;
+		});
+		if (ys.some((y) => Number.isNaN(y))) return false;
+		if (Number.isFinite(target)) {
+			const tolerance = 1e-3 * Math.max(1, Math.abs(target));
+			if (ys.some((y) => !(Math.abs(y - target) <= tolerance))) return false;
+		} else {
+			const last = ys[ys.length - 1];
+			if (Math.sign(last) !== Math.sign(target)) return false;
+			if (!(Math.abs(last) > Math.abs(ys[0]))) return false;
+		}
+		if (!Number.isFinite(point)) break;
+	}
+	return true;
 }

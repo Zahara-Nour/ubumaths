@@ -42,6 +42,7 @@ import {
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { compile } from '../eval/compile';
+import { isOddRootIndex, oddDenominatorExponent } from '../eval/real-root';
 import { numericNode } from '../common/numeric';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
 import {
@@ -781,9 +782,13 @@ function computePowerDomain(
 	const exponentHasVariable = containsVariable(node.superscript, variable);
 	const baseHasVariable = containsVariable(node.base, variable);
 	const expValue = exponentHasVariable ? null : tryConstantValue(node.superscript);
+	// Exposant p/q irréductible, q impair (décision du 2026-10-08) : x^{p/q} =
+	// (ᵠ√x)^p est défini sur ℝ si p > 0, sur ℝ* si p < 0, comme ∛x
+	const oddRootExponent = exponentHasVariable ? null : oddDenominatorExponent(node.superscript);
 
-	// Exposant entier négatif : base ≠ 0
-	if (expValue !== null && expValue < 0 && Number.isInteger(expValue)) {
+	// Exposant entier négatif, ou p/q négatif de dénominateur impair : base ≠ 0
+	const negativeIntegerExponent = expValue !== null && expValue < 0 && Number.isInteger(expValue);
+	if (negativeIntegerExponent || (oddRootExponent !== null && oddRootExponent.n < 0n)) {
 		const nonZero = nonZeroSet(node.base, variable);
 		if (nonZero === null) {
 			markUnresolved(options, `${toLatex(node.base)} \\neq 0`);
@@ -807,10 +812,11 @@ function computePowerDomain(
 		}
 	}
 
-	// Exposant NON entier (convention du lycée, x^a = e^{a ln x}, alignée sur
-	// l'évaluateur : Math.pow(-8, 1/3) = NaN) : base ≥ 0 si a > 0, base > 0
-	// si a < 0. Exposant variable et base variable (x^x) : base > 0.
-	const nonIntegerExponent = expValue !== null && !Number.isInteger(expValue);
+	// Exposant NON entier hors du cas q impair (dénominateur pair, décimal,
+	// irrationnel : convention du lycée, x^a = e^{a ln x}) : base ≥ 0 si a > 0,
+	// base > 0 si a < 0. Exposant variable et base variable (x^x) : base > 0.
+	const nonIntegerExponent =
+		expValue !== null && !Number.isInteger(expValue) && oddRootExponent === null;
 	const variableExponent = exponentHasVariable && baseHasVariable;
 	if (baseHasVariable && (nonIntegerExponent || variableExponent)) {
 		const strict = variableExponent || (expValue !== null && expValue < 0);
@@ -1101,6 +1107,10 @@ function invertMonotone(
 			if (isEulerBase(expr.base) && containsVariable(expr.superscript, variable)) {
 				return invertExp(expr.superscript, op, c, strict, variable);
 			}
+			if (!containsVariable(expr.superscript, variable)) {
+				const odd = oddDenominatorExponent(expr.superscript);
+				if (odd !== null) return invertOddRootPower(expr.base, odd, op, c, strict, variable);
+			}
 			return null;
 		case 'function': {
 			if (expr.args.length !== 1) return null;
@@ -1115,14 +1125,12 @@ function invertMonotone(
 				if (cv < 0 || (cv === 0 && strict)) return emptyDomain();
 				return solveInequalityForPreimage(u, '<=', mulRational(c, c), strict, variable);
 			}
-			if (name === 'cbrt') {
-				return solveInequalityForPreimage(
-					u,
-					op,
-					mulRational(c, mulRational(c, c)),
-					strict,
-					variable
-				);
+			// ⁿ√u, n impair : croissante sur ℝ, comme cbrt
+			const oddIndex =
+				name === 'sqrt' && expr.base !== undefined ? tryConstantValue(expr.base) : null;
+			if (name === 'cbrt' || (oddIndex !== null && isOddRootIndex(oddIndex))) {
+				const n = name === 'cbrt' ? 3 : (oddIndex as number);
+				return solveInequalityForPreimage(u, op, powRationalInt(c, n), strict, variable);
 			}
 			if (name === 'ln' || name === 'log' || name === 'log10' || name === 'log2') {
 				if (!isRationalZero(c)) return null;
@@ -1148,6 +1156,45 @@ function invertMonotone(
 		default:
 			return null;
 	}
+}
+
+/**
+ * `u^{p/q} ⊳ c`, q impair (décision du 2026-10-08) : u^{p/q} = ᵠ√(u^p).
+ * - p = 1 : croissante, u ⊳ c^q ;
+ * - c = 0, p impair : du signe de u ;
+ * - c = 0, p pair : ≥ 0 partout, nul seulement en u = 0.
+ * Les autres cas : `null` (refus).
+ */
+function invertOddRootPower(
+	u: MathNode,
+	exponent: { n: bigint; d: bigint },
+	op: '>=' | '<=',
+	c: Rational,
+	strict: boolean,
+	variable: string
+): Domain | null {
+	if (exponent.n === 1n) {
+		return solveInequalityForPreimage(
+			u,
+			op,
+			powRationalInt(c, Number(exponent.d)),
+			strict,
+			variable
+		);
+	}
+	if (!isRationalZero(c)) return null;
+	if (exponent.n % 2n !== 0n)
+		return solveInequalityForPreimage(u, op, RATIONAL_ZERO, strict, variable);
+	if (op === '>=') return strict ? nonZeroSet(u, variable) : universalDomain();
+	// u^{p/q} ≤ 0, p pair : seulement u = 0 (exposant > 0), jamais (exposant < 0)
+	return strict || exponent.n < 0n ? emptyDomain() : null;
+}
+
+/** c^n exact. */
+function powRationalInt(c: Rational, n: number): Rational {
+	let result = RATIONAL_ONE;
+	for (let i = 0; i < n; i++) result = mulRational(result, c);
+	return result;
 }
 
 function invertExp(

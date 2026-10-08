@@ -539,6 +539,41 @@ const greekVariable: OracleFamily = {
 	]
 };
 
+// Puissances x^{p/q}, q impair : définies pour x < 0, comme ∛x (décision du
+// 2026-10-08). L'échantillonnage passe par `compile`, qui les calcule sur ℝ.
+const oddRootPowers = family('puissance de dénominateur impair', 'oddpow-', [
+	[MINF, 'x^{\\frac{1}{3}}', '-inf'],
+	[MINF, 'x^{\\frac{2}{3}}', '+inf'],
+	[MINF, 'x^{-\\frac{1}{3}}', '0'],
+	[MINF, '(2x-1)^{\\frac{1}{3}}', '-inf'],
+	['0^-', 'x^{-\\frac{1}{3}}', '-inf'],
+	['0^-', 'x^{-\\frac{2}{3}}', '+inf'],
+	['0', 'x^{\\frac{1}{3}}', '0'],
+	['-8', 'x^{\\frac{2}{3}}', '4'],
+	['-8', 'x^{\\frac{1}{3}}', '-2'],
+	[MINF, '\\frac{x^{\\frac{1}{3}}}{x}', '0'],
+	// Revue du 2026-10-08 : grand dénominateur, deux côtés, x^{2/3} − c
+	['0^-', 'x^{-\\frac{1}{13}}', '-inf'],
+	['0', 'x^{-\\frac{1}{3}}', 'none'],
+	['0^-', 'x^{\\frac{2}{3}}', '0'],
+	[MINF, 'x^{\\frac{2}{3}}-4', '+inf'],
+	['-8', 'x^{\\frac{2}{3}}-4', '0'],
+	// Seconde revue (2026-10-08) : produits / quotients de puissances de x
+	['0', '\\frac{x^{\\frac{1}{5}}}{x^{\\frac{1}{3}}}', '+inf'],
+	['0^+', '\\frac{x^{\\frac{1}{3}}}{\\sqrt{x}}', '+inf'],
+	['0^+', '\\frac{x\\sqrt{x}}{x^{\\frac{1}{3}}}', '0'],
+	['0', '\\frac{2x^{\\frac{1}{5}}}{x^{\\frac{1}{3}}}', '+inf'],
+	['0', 'x^{\\frac{1}{3}}x^{-\\frac{1}{3}}', '1'],
+	['0^-', '\\frac{x^{\\frac{1}{3}}}{x^{\\frac{2}{3}}}', '-inf'],
+	['0^+', '\\frac{\\sqrt[5]{x}}{\\sqrt[3]{x}}', '+inf'],
+	// Troisième revue : exposant réuni négatif, gardé au dénominateur
+	['0', '\\frac{x^{\\frac{1}{3}}(e^x-1)}{x^{\\frac{4}{3}}}', '1'],
+	['0', '\\frac{x^{\\frac{1}{3}}\\ln(1+x)}{x^{\\frac{4}{3}}}', '1'],
+	['0', '\\frac{x^{\\frac{1}{3}}\\sin x}{x^{\\frac{1}{3}}x}', '1'],
+	['0', '\\frac{x^{\\frac{2}{3}}\\sin x}{x^{\\frac{5}{3}}}', '1'],
+	[PINF, '\\frac{x^{\\frac{1}{3}}e^x}{x^{\\frac{4}{3}}}', '+inf']
+]);
+
 export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	polynomials,
 	rationalAtInfinity,
@@ -555,7 +590,8 @@ export const ORACLE_CORPUS: readonly OracleFamily[] = [
 	indeterminateForms,
 	classics,
 	unparenthesized,
-	greekVariable
+	greekVariable,
+	oddRootPowers
 ];
 
 /**

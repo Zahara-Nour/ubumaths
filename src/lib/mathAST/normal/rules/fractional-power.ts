@@ -24,10 +24,10 @@
  *
  * ## Ce que ce module ne fait PAS, décidé
  *
- * - **Bases négatives ou nulles** (`(-8)^{1/3}`, `0^{-1/2}`) : la puissance
- *   réelle d'une base négative dépend de la convention (`∛(-8) = -2`, mais
- *   `(-8)^{1/3}` n'est pas définie en lecture `exp(⅓ ln(-8))`). On ne conclut
- *   pas : le nœud reste tel quel.
+ * - **Bases nulles, ou négatives sous un dénominateur PAIR** (`0^{-1/2}`,
+ *   `(-8)^{1/2}`) : pas de valeur réelle, on ne conclut pas : le nœud reste
+ *   tel quel. Un dénominateur IMPAIR est une racine impaire, définie sur ℝ
+ *   (décision du 2026-10-08) : `(-8)^{1/3} = ∛(-8) = -2`.
  * - **Grandeurs** (`[m]^{1/2}`) : les unités ont leur propre algèbre.
  * - **Exposants à grand dénominateur ou numérateur** (au-delà du plafond) :
  *   `2^{0.123}` deviendrait la racine 1000ᵉ de 2 élevée à la puissance 123,
@@ -45,6 +45,7 @@ import { isDelimiter, isSuperscript, isUnit } from '../../guards';
 import { findNodes, mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 import type { Rational } from '../types';
+import { oddDenominatorExponent } from '../../eval/real-root';
 
 /** Plafond de l'indice de la racine (dénominateur de l'exposant). */
 const MAX_ROOT_INDEX = 12n;
@@ -72,8 +73,14 @@ function rewriteFractionalPowerAt(node: MathNode, ctx: FractionalPowerContext): 
 	if (exponent.d > MAX_ROOT_INDEX || power > MAX_ROOT_POWER) return null;
 
 	if (findNodes(node.base, isUnit).length > 0) return null;
+	// Base négative : seule la racine IMPAIRE est réelle (∛(−8) = −2,
+	// décision du 2026-10-08) ; q pair ou base nulle : on ne conclut pas
 	const baseValue = ctx.rationalValue(node.base);
-	if (baseValue !== null && baseValue.n <= 0n) return null;
+	if (baseValue !== null && baseValue.n === 0n) return null;
+	// (exposant ÉCRIT p/q : `(-32)^{0.2}` reste non conclu, comme dans `evaluate`)
+	if (baseValue !== null && baseValue.n < 0n && oddDenominatorExponent(node.superscript) === null) {
+		return null;
+	}
 
 	const radicand = isDelimiter(node.base) ? node.base.content : node.base;
 	const root =

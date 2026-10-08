@@ -799,6 +799,39 @@ export const CORPUS: readonly DerivativeCase[] = [
 		f: (x) => 8 * x * x,
 		expected: '16x'
 	},
+	// x^{p/q}, q impair : définie pour x < 0, comme ∛x (décision du 2026-10-08)
+	{
+		id: 'pow-14',
+		family: 'puissances',
+		latex: R`x^{\frac{1}{3}}`,
+		custom: 'x^(1/3)',
+		f: (x) => cbrt(x),
+		expected: R`\frac{1}{3}x^{-\frac{2}{3}}`
+	},
+	{
+		id: 'pow-15',
+		family: 'puissances',
+		latex: R`x^{\frac{2}{3}}`,
+		custom: 'x^(2/3)',
+		f: (x) => cbrt(x) ** 2,
+		expected: R`\frac{2}{3}x^{-\frac{1}{3}}`
+	},
+	{
+		id: 'pow-16',
+		family: 'puissances',
+		latex: R`x^{-\frac{1}{3}}`,
+		custom: 'x^(-1/3)',
+		f: (x) => 1 / cbrt(x),
+		expected: R`-\frac{1}{3}x^{-\frac{4}{3}}`
+	},
+	{
+		id: 'pow-17',
+		family: 'puissances',
+		latex: R`(2x-1)^{\frac{1}{3}}`,
+		custom: '(2x-1)^(1/3)',
+		f: (x) => cbrt(2 * x - 1),
+		expected: R`\frac{2(2x-1)^{-\frac{2}{3}}}{3}`
+	},
 
 	// ---------------------------------------------------------------------------
 	// Exponentielle — le défaut `(e^u)'` avec ln(e)

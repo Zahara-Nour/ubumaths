@@ -276,6 +276,18 @@ const LATEX_CASES: PrimitiveCase[] = [
 		['\\sqrt[3]{x^2}', '\\frac{3}{5}x\\sqrt[3]{x^2}']
 	]),
 
+	// --- x^{p/q}, q impair : définie sur ℝ (ℝ* si p < 0), décision du 2026-10-08 ---
+	...latex('puissance', [
+		['x^{\\frac{1}{3}}', '\\frac{3}{4}x^{\\frac{4}{3}}', '\\frac{3}{4}x\\sqrt[3]{x}'],
+		['x^{-\\frac{1}{3}}', '\\frac{3}{2}x^{\\frac{2}{3}}', '\\frac{3}{2}\\sqrt[3]{x^2}'],
+		[
+			'(2x-1)^{\\frac{1}{3}}',
+			'\\frac{3}{8}(2x-1)^{\\frac{4}{3}}',
+			'\\frac{3}{8}(2x-1)\\sqrt[3]{2x-1}'
+		],
+		['x^{\\frac{4}{6}}', '\\frac{3}{5}x^{\\frac{5}{3}}', '\\frac{3}{5}x\\sqrt[3]{x^2}']
+	]),
+
 	// --- 1/x ---
 	...latex('inverse', [
 		['\\frac{1}{x}', '\\ln|x|'],
@@ -1158,6 +1170,9 @@ export const DEFINITE_CASES: readonly DefiniteCase[] = [
 	L('x^3', '-1', '2', '\\frac{15}{4}'),
 	L('\\frac{1}{x^2}', '1', '2', '\\frac{1}{2}'),
 	L('\\sqrt{x}', '0', '4', '\\frac{16}{3}'),
+	// x^{1/3} définie sur ℝ (2026-10-08) : 3/4 − 12
+	L('x^{\\frac{1}{3}}', '-8', '1', '-\\frac{45}{4}'),
+	definite('atelier', 'x^(1/3) -8 1', 'x^{\\frac{1}{3}}', '-8', '1', '-\\frac{45}{4}'),
 	L('e^{2x}', '0', '1', '\\frac{e^2-1}{2}'),
 	L('xe^{x}', '0', '1', '1'),
 	L('\\ln(x)', '1', 'e', '1'),

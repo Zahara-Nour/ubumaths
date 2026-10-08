@@ -4521,6 +4521,23 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 	return result;
 }
 
+/** `cbrt(a)` → `\sqrt[3]{a}` ; `root(a, n)`, n entier littéral ≥ 2 → `\sqrt[n]{a}`. */
+function namedRootAsSqrt(
+	node: MathNode & { type: 'function' }
+): (MathNode & { type: 'function' }) | null {
+	if (node.power !== undefined) return null;
+	if (node.name === 'cbrt' && node.args.length === 1) {
+		return { type: 'function', name: 'sqrt', args: [node.args[0]], base: number('3') };
+	}
+	if (node.name === 'root' && node.args.length === 2) {
+		const index = node.args[1];
+		if (index.type === 'number' && /^\d+$/.test(index.value) && Number(index.value) >= 2) {
+			return { type: 'function', name: 'sqrt', args: [node.args[0]], base: index };
+		}
+	}
+	return null;
+}
+
 /**
  * Normalizes a function call.
  * Arguments are normalized first to ensure canonical representation.
@@ -4556,6 +4573,13 @@ function normalizeFunction(
 	if (name === 'sqrt' && node.args.length === 1) {
 		return normalizeSqrt(node, ctx);
 	}
+
+	// 2b. `cbrt(a)` et `root(a, n)` — écritures que rend `denormalize` (une
+	//     primitive ¾x·cbrt(x)) — ont la forme normale de `\sqrt[n]{a}` : sans
+	//     ce pas, cbrt(−8) restait opaque (∫_{−8}^{1} x^{1/3} dx rendait
+	//     ¾cbrt(1) + 6cbrt(−8) au lieu de −45/4).
+	const asRoot = namedRootAsSqrt(node);
+	if (asRoot !== null) return normalizeSqrt(asRoot, ctx);
 
 	// 3. Canonicalize arguments for other functions
 	const canonicalNode = canonicalizeFunctionNode(node, ctx);

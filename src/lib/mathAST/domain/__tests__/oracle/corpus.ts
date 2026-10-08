@@ -9,8 +9,10 @@
  * - périodique : `R \ {a + k T}` (exclus a + kT, k ∈ ℤ).
  *
  * Conventions (décidées ici, documentées dans `oracle.test.ts`) :
- * - x^a, a non entier : x ≥ 0 si a > 0, x > 0 si a < 0 (x^a = e^{a ln x},
- *   comme l'évaluateur : Math.pow(−8, 1/3) = NaN) ; `\sqrt[3]{x}` : ℝ ;
+ * - x^{p/q}, p/q irréductible et q IMPAIR (décision du 2026-10-08) : (ᵠ√x)^p,
+ *   ℝ si p > 0, ℝ* si p < 0, comme `\sqrt[3]{x}` : ℝ ;
+ * - x^a, a non entier autre (q pair, décimal, irrationnel) : x ≥ 0 si a > 0,
+ *   x > 0 si a < 0 (x^a = e^{a ln x}) ;
  * - tan, 1/sin, 1/cos : rendu `ℝ \ {a + k·T : k ∈ ℤ}` avec a, T exacts.
  */
 
@@ -210,17 +212,35 @@ export const DOMAIN_CORPUS: readonly DomainFamily[] = [
 		['trig-14', '\\sin(\\frac{1}{x})', 'R \\ {0}'],
 		['trig-15', '\\tan(x)+\\frac{1}{x}', 'REFUS']
 	]),
-	family('puissances fractionnaires (convention x^a = e^{a ln x})', [
+	family('puissances fractionnaires (q impair : racine ; sinon x^a = e^{a ln x})', [
 		['pow-1', 'x^{\\frac{1}{2}}', '[0 ; +oo['],
-		['pow-2', 'x^{\\frac{1}{3}}', '[0 ; +oo['],
+		['pow-2', 'x^{\\frac{1}{3}}', 'R'],
 		['pow-3', 'x^{-\\frac{1}{2}}', ']0 ; +oo['],
 		['pow-4', 'x^{1.5}', '[0 ; +oo['],
-		['pow-5', '(x-1)^{\\frac{2}{3}}', '[1 ; +oo['],
+		['pow-5', '(x-1)^{\\frac{2}{3}}', 'R'],
 		['pow-6', 'x^{\\sqrt{2}}', '[0 ; +oo['],
 		['pow-7', 'x^x', ']0 ; +oo['],
 		['pow-8', '(2x+1)^{\\frac{1}{4}}', '[-\\frac{1}{2} ; +oo['],
 		['pow-9', 'x^{3}', 'R'],
-		['pow-10', '(1-x)^{-\\frac{1}{3}}', ']-oo ; 1[']
+		['pow-10', '(1-x)^{-\\frac{1}{3}}', 'R \\ {1}'],
+		// Dénominateur impair : défini pour une base négative (2026-10-08)
+		['pow-11', 'x^{\\frac{2}{3}}', 'R'],
+		['pow-12', 'x^{-\\frac{1}{3}}', 'R \\ {0}'],
+		['pow-13', '(2x-1)^{\\frac{1}{3}}', 'R'],
+		['pow-14', 'x^{\\frac{4}{6}}', 'R'],
+		['pow-15', '(x-1)^{\\frac{5}{3}}', 'R'],
+		['pow-16', 'x^{-\\frac{2}{3}}', 'R \\ {0}'],
+		['pow-17', '(x+2)^{-\\frac{1}{5}}', 'R \\ {-2}'],
+		// Dénominateur pair, décimal : inchangés
+		['pow-18', 'x^{\\frac{3}{4}}', '[0 ; +oo['],
+		['pow-19', 'x^{\\frac{2}{6}}', 'R'],
+		['pow-20', 'x^{0.2}', '[0 ; +oo['],
+		['pow-21', 'x^{-\\frac{3}{2}}', ']0 ; +oo['],
+		// Composées (revue du 2026-10-08)
+		['pow-22', '\\ln(x^{\\frac{2}{3}})', 'R \\ {0}'],
+		['pow-23', '(x^{\\frac{1}{3}})^{\\frac{1}{2}}', '[0 ; +oo['],
+		['pow-24', '\\ln(x^{\\frac{1}{3}})', ']0 ; +oo['],
+		['pow-25', 'x^{-\\frac{1}{13}}', 'R \\ {0}']
 	]),
 	family('exponentielles', [
 		['exp-1', 'e^x', 'R'],
