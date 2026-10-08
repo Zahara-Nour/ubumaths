@@ -1,6 +1,7 @@
 # Seed 1re technologique — points du programme ET références (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION. Aucune migration avant.** ⚠️ Soin maximal.
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : scissions,
+> entretien, « modéliser » retirés, références, discutables, T1, T2). Livraison en cours.** ⚠️ Soin maximal.
 > Source : « Programme de mathématiques de la classe de première de la voie
 > technologique » (10 p., `progs-lycee/premiere-techno.pdf`, fourni par David le
 > 2026-10-07), relu **puce par puce** — enseignement commun à toutes les séries
@@ -128,7 +129,10 @@ solution`, qui porte les balayages de Tle — mais la continuité n'est pas au p
 5. **« Cylindres de révolution »** (STD2A, 1TECHNO-024) → `Solides > reconnaître et
 décrire`.
 
-## Questions
+## Questions — TOUTES TRANCHÉES (David, 2026-10-08 : « je valide tout »)
+
+> **T1** : la série est dite dans la rubrique (sauf STD2A / série STD2A), exigence `attendu`.
+> **T2** : Situations algorithmiques = `algorithme` `attendu`.
 
 - **T1 — séries STD2A / sauf STD2A.** Le programme est commun, mais deux parties dépendent de
   la série : l'Algorithmique (**sauf** STD2A, 11 points) et les Activités géométriques
