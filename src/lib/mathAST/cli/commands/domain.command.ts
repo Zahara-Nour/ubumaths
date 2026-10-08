@@ -146,7 +146,7 @@ export class DomainCommand extends BaseCommand {
 					output: '',
 					error: {
 						code: 'DOMAIN_UNRESOLVED',
-						message: `Je ne sais pas encore déterminer ce domaine (contrainte non résolue : ${result.unresolved[0]}).`
+						message: 'Je ne sais pas encore déterminer ce domaine.'
 					}
 				};
 			}

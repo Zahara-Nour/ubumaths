@@ -103,9 +103,8 @@ export class DomainUnresolvedError extends Error {
 	readonly name = 'DomainUnresolvedError';
 
 	constructor(public readonly constraints: readonly string[]) {
-		super(
-			`Je ne sais pas encore déterminer le domaine de définition (contrainte non résolue : ${constraints[0] ?? '?'}).`
-		);
+		// La contrainte reste dans `constraints` : son écriture interne n'est pas pour l'élève
+		super('Je ne sais pas encore déterminer le domaine de définition de cette fonction.');
 	}
 }
 
