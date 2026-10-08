@@ -23,6 +23,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 16  | 2026-11-12 | Le camp du Capitaine Bordure (`bedonstan-camp-de-bordure`)                                      | ✅ validé — titre « découvre la géométrie / découvre la facture », soupe sans contradiction, chute « économies d'échelle » + dormir debout, vrai du faux k = ½                          |
 | 17  | 2026-11-16 | Le paradoxe des anniversaires (`pifometrie-anniversaires`)                                      | ✅ validé — titre « flaire un complot / flaire une bonne affaire », Galopin « ne savait pas encore compter », pari gagnant du Cheval à Phynances (+ vrai du faux)                       |
 | 18  | 2026-11-19 | 0,1 + 0,2 (`glitchistan-virgule-flottante`)                                                     | ✅ validé — titre « additionner / soustraire… de l'argent » (David), chapô résumé, somme versée en trop (pas manquante), livret à 5 % : 775 ans                                         |
+| 19  | 2026-11-23 | Les poules ont des dents (`patatovie-poules-dents`)                                             | ✅ validé — Moscou retiré (palais d'Hiver), titre « la logique a du mordant », chapô de David (« ses raisons que le bon sens… »), « vraie à vide », point « divisible par 4 » retiré    |
 
 ## Outillage ajouté pendant la relecture
 
