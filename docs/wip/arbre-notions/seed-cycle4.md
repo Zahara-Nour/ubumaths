@@ -233,20 +233,20 @@ l'aire du disque, le volume du cylindre de révolution » (5e) traverse deux not
 
 ### Espace et géométrie · branche `Géométrie` (sauf mention)
 
-| Code  | Énoncé (verbatim BO)                                                                                                                                                 | kind  | rég. | nœud                                               | Rubrique BO                      |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | -------------------------------------------------- | -------------------------------- |
-| 4-027 | Reconnaitre des solides (pyramide, cône de révolution).                                                                                                              | s-f   | div. | Solides > reconnaître et décrire                   | Représentation de l'espace       |
-| 4-028 | Construire et mettre en relation différentes représentations des solides (pavé droit, cube, cylindre de révolution, prisme droit, pyramides et cônes de révolution). | s-f   | div. | Solides > perspective cavalière                    | idem                             |
-| 4-029 | Connaitre le volume de la pyramide et du cône de révolution.                                                                                                         | conn. | div. | `Grandeurs et mesures` Volumes > pyramide et cône  | idem                             |
-| 4-030 | Comprendre l'effet d'une translation.                                                                                                                                | conn. | div. | Translations (notion)                              | Parallélogrammes et translations |
-| 4-031 | Faire le lien avec les parallélogrammes, les angles.                                                                                                                 | s-f   | div. | Translations (notion)                              | idem                             |
-| 4-032 | Connaitre et utiliser les propriétés de conservations des translations.                                                                                              | s-f   | div. | Translations (notion)                              | idem                             |
-| 4-033 | Connaitre les trois théorèmes relatifs à la droite des milieux dans un triangle.                                                                                     | conn. | div. | Théorème de Thalès > droite des milieux            | Triangles                        |
-| 4-034 | Connaitre le théorème de Pythagore, sa réciproque, sa contraposée.                                                                                                   | conn. | div. | Théorème de Pythagore (notion)                     | Triangles                        |
-| 4-035 | Mener un travail de logique sur la réciproque et la contraposée.                                                                                                     | s-f   | div. | Théorème de Pythagore > réciproque                 | Triangles                        |
-| 4-036 | Caractériser un triangle rectangle à l'aide de son cercle circonscrit, par son inscription dans un demi-cercle dont le diamètre est un côté du triangle.             | s-f   | div. | Figures planes > triangles _(discutable 6)_        | Triangles                        |
-| 4-037 | Déterminer le centre du cercle circonscrit d'un triangle rectangle.                                                                                                  | s-f   | div. | Figures planes > triangles                         | Triangles                        |
-| 4-038 | Construire des rectangles sans équerre.                                                                                                                              | s-f   | div. | Figures planes > parallélogrammes _(discutable 6)_ | Triangles                        |
+| Code  | Énoncé (verbatim BO)                                                                                                                                                 | kind  | rég. | nœud                                              | Rubrique BO                      |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------- | -------------------------------- |
+| 4-027 | Reconnaitre des solides (pyramide, cône de révolution).                                                                                                              | s-f   | div. | Solides > reconnaître et décrire                  | Représentation de l'espace       |
+| 4-028 | Construire et mettre en relation différentes représentations des solides (pavé droit, cube, cylindre de révolution, prisme droit, pyramides et cônes de révolution). | s-f   | div. | Solides > perspective cavalière                   | idem                             |
+| 4-029 | Connaitre le volume de la pyramide et du cône de révolution.                                                                                                         | conn. | div. | `Grandeurs et mesures` Volumes > pyramide et cône | idem                             |
+| 4-030 | Comprendre l'effet d'une translation.                                                                                                                                | conn. | div. | Translations (notion)                             | Parallélogrammes et translations |
+| 4-031 | Faire le lien avec les parallélogrammes, les angles.                                                                                                                 | s-f   | div. | Translations (notion)                             | idem                             |
+| 4-032 | Connaitre et utiliser les propriétés de conservations des translations.                                                                                              | s-f   | div. | Translations (notion)                             | idem                             |
+| 4-033 | Connaitre les trois théorèmes relatifs à la droite des milieux dans un triangle.                                                                                     | conn. | div. | Théorème de Thalès > droite des milieux           | Triangles                        |
+| 4-034 | Connaitre le théorème de Pythagore, sa réciproque, sa contraposée.                                                                                                   | conn. | div. | Théorème de Pythagore (notion)                    | Triangles                        |
+| 4-035 | Mener un travail de logique sur la réciproque et la contraposée.                                                                                                     | s-f   | div. | Théorème de Pythagore > réciproque                | Triangles                        |
+| 4-036 | Caractériser un triangle rectangle à l'aide de son cercle circonscrit, par son inscription dans un demi-cercle dont le diamètre est un côté du triangle.             | s-f   | div. | Figures planes > triangles                        | Triangles                        |
+| 4-037 | Déterminer le centre du cercle circonscrit d'un triangle rectangle.                                                                                                  | s-f   | div. | Figures planes > triangles                        | Triangles                        |
+| 4-038 | Construire des rectangles sans équerre.                                                                                                                              | s-f   | div. | Figures planes > triangles (tranché David)        | Triangles                        |
 
 ### OGD et probabilités · Proportionnalité, fonctions · La pensée informatique
 
@@ -491,19 +491,20 @@ révolution. » (5e) traverse `Aires` et `Volumes` → 5-052 et 5-053.
    numérique de 5e ; Préalgorithmique reste la maison du CM2-6e. Alternative :
    Préalgorithmique.
 2. **« Connaitre les carrés des entiers de 0 à 12 »** (5-029) → `Entiers :
-multiplication > carrés` : c'est un répertoire de faits numériques, la sous-notion
-   existe pour ça. Alternative : `Puissances > définition`.
-3. **Contre-exemple et conjectures** (5-041, 5-042) → `Calcul littéral` (notion) : le
-   BO les place dans le calcul littéral de 5e ; la branche `Logique` reste lycée.
+multiplication > carrés` — ✅ tranché David.
+3. **Contre-exemple** (5-041) → `Calcul littéral` (notion) — ✅ tranché David.
+   **Conjectures avec algorithme ou tableur** (5-042) — ⏳ EN ATTENTE (question de
+   David) : reco `Calcul littéral` (notion), le contenu est la conjecture ALGÉBRIQUE
+   (prélude de 5-040, démontrer par le calcul littéral) et l'outil n'est qu'un
+   support ; alternative : `Algorithmique > Variables et instructions`.
 4. **« Coefficient de proportionnalité »** (5-088) → `Situations de proportionnalité >
-appliquer` (le geste : s'en servir). Alternative : la notion.
+appliquer` — ✅ tranché David.
 5. **« Exprimer l'opposé d'un nombre rationnel »** (4-007) → `Fractions : sens et
-écritures > définition` (signe d'une écriture fractionnaire relative). Alternative :
-   `Relatifs : sens et écritures > définition`.
-6. **Cercle circonscrit du triangle rectangle** (4-036, 4-037) → `Figures planes >
-triangles` (configuration, pas le théorème de Pythagore) ; **« Construire des
-   rectangles sans équerre »** (4-038) → `Figures planes > parallélogrammes` (le
-   rectangle y vit). Le BO les classe dans « Triangles », la rubrique le garde.
+écritures > définition` — ✅ tranché David.
+6. **Cercle circonscrit du triangle rectangle ET rectangles sans équerre** (4-036,
+   4-037, 4-038) → `Figures planes > triangles` — ✅ tranché David (4-038 INVERSÉ par
+   rapport à la reco : la construction sans équerre passe par la propriété du triangle
+   rectangle inscrit dans le demi-cercle, elle reste chez les triangles).
 7. **Grandeurs quotients / rapports et ratios** (4-052, 4-053, 4-054) : grandeurs
    quotients → `Vitesse` (notion, le doc d'écarts l'acte) ; rapports/ratios → la notion
    `Situations de proportionnalité` (pas de sous-notion dédiée ; le filtre n'a pas été
