@@ -5,7 +5,7 @@
 			"code": "CM1-001",
 			"grade": "CM1",
 			"display_order": 1,
-			"name": "Comparer et dénombrer des collections en les organisant",
+			"name": "Dénombrer des collections en les organisant",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -15,9 +15,22 @@
 			"sous_notion": "dénombrer"
 		},
 		{
-			"code": "CM1-002",
+			"code": "CM1-131",
 			"grade": "CM1",
 			"display_order": 2,
+			"name": "Comparer des collections en les organisant",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : numération",
+			"sous_notion": "comparer"
+		},
+		{
+			"code": "CM1-002",
+			"grade": "CM1",
+			"display_order": 3,
 			"name": "Construire des collections de cardinal donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -30,7 +43,7 @@
 		{
 			"code": "CM1-003",
 			"grade": "CM1",
-			"display_order": 3,
+			"display_order": 4,
 			"name": "Connaître et utiliser les relations entre les unités de numération",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -43,7 +56,7 @@
 		{
 			"code": "CM1-004",
 			"grade": "CM1",
-			"display_order": 4,
+			"display_order": 5,
 			"name": "Connaître la suite écrite et la suite orale des nombres jusqu'à 999 999",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -56,7 +69,7 @@
 		{
 			"code": "CM1-005",
 			"grade": "CM1",
-			"display_order": 5,
+			"display_order": 6,
 			"name": "Connaître la valeur des chiffres en fonction de leur position dans un nombre",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -69,7 +82,7 @@
 		{
 			"code": "CM1-006",
 			"grade": "CM1",
-			"display_order": 6,
+			"display_order": 7,
 			"name": "Connaître et utiliser diverses représentations d'un nombre et passer de l'une à l'autre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -82,7 +95,7 @@
 		{
 			"code": "CM1-007",
 			"grade": "CM1",
-			"display_order": 7,
+			"display_order": 8,
 			"name": "Comprendre et savoir utiliser les expressions « égal à », « supérieur à », « inférieur à », « compris entre … et … »",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -95,7 +108,7 @@
 		{
 			"code": "CM1-008",
 			"grade": "CM1",
-			"display_order": 8,
+			"display_order": 9,
 			"name": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et >",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -108,7 +121,7 @@
 		{
 			"code": "CM1-009",
 			"grade": "CM1",
-			"display_order": 9,
+			"display_order": 10,
 			"name": "Ordonner des nombres dans l'ordre croissant ou décroissant",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -121,7 +134,7 @@
 		{
 			"code": "CM1-010",
 			"grade": "CM1",
-			"display_order": 10,
+			"display_order": 11,
 			"name": "Savoir placer des nombres et repérer des points sur une demi-droite graduée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -134,7 +147,7 @@
 		{
 			"code": "CM1-011",
 			"grade": "CM1",
-			"display_order": 11,
+			"display_order": 12,
 			"name": "Savoir reconnaître les multiples de 2, de 5 et de 10 à partir de leur écriture chiffrée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -147,7 +160,7 @@
 		{
 			"code": "CM1-012",
 			"grade": "CM1",
-			"display_order": 12,
+			"display_order": 13,
 			"name": "Savoir déterminer si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -160,7 +173,7 @@
 		{
 			"code": "CM1-013",
 			"grade": "CM1",
-			"display_order": 13,
+			"display_order": 14,
 			"name": "Savoir déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -173,7 +186,7 @@
 		{
 			"code": "CM1-014",
 			"grade": "CM1",
-			"display_order": 14,
+			"display_order": 15,
 			"name": "Savoir interpréter, représenter, écrire et lire des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -186,7 +199,7 @@
 		{
 			"code": "CM1-015",
 			"grade": "CM1",
-			"display_order": 15,
+			"display_order": 16,
 			"name": "Savoir écrire une fraction supérieure à 1 comme la somme d'un entier et d'une fraction inférieure à 1",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -199,7 +212,7 @@
 		{
 			"code": "CM1-016",
 			"grade": "CM1",
-			"display_order": 16,
+			"display_order": 17,
 			"name": "Savoir écrire la somme d'un entier et d'une fraction inférieure à 1 comme une unique fraction",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -212,7 +225,7 @@
 		{
 			"code": "CM1-017",
 			"grade": "CM1",
-			"display_order": 17,
+			"display_order": 18,
 			"name": "Savoir encadrer une fraction par deux nombres entiers consécutifs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -225,7 +238,7 @@
 		{
 			"code": "CM1-018",
 			"grade": "CM1",
-			"display_order": 18,
+			"display_order": 19,
 			"name": "Savoir placer une fraction ou la somme d'un nombre entier et d'une fraction inférieure à un sur une demi-droite graduée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -238,7 +251,7 @@
 		{
 			"code": "CM1-019",
 			"grade": "CM1",
-			"display_order": 19,
+			"display_order": 20,
 			"name": "Savoir repérer un point d'une demi-droite graduée par une fraction ou par la somme d'un nombre entier et d'une fraction",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -251,7 +264,7 @@
 		{
 			"code": "CM1-020",
 			"grade": "CM1",
-			"display_order": 20,
+			"display_order": 21,
 			"name": "Comparer des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -264,7 +277,7 @@
 		{
 			"code": "CM1-021",
 			"grade": "CM1",
-			"display_order": 21,
+			"display_order": 22,
 			"name": "Additionner et soustraire des fractions",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -277,7 +290,7 @@
 		{
 			"code": "CM1-022",
 			"grade": "CM1",
-			"display_order": 22,
+			"display_order": 23,
 			"name": "Déterminer une fraction d'une quantité ou d'une grandeur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -290,7 +303,7 @@
 		{
 			"code": "CM1-023",
 			"grade": "CM1",
-			"display_order": 23,
+			"display_order": 24,
 			"name": "Interpréter, représenter, écrire et lire des fractions décimales",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -303,7 +316,7 @@
 		{
 			"code": "CM1-024",
 			"grade": "CM1",
-			"display_order": 24,
+			"display_order": 25,
 			"name": "Connaître et utiliser les relations entre unités simples, dixièmes et centièmes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -316,7 +329,7 @@
 		{
 			"code": "CM1-025",
 			"grade": "CM1",
-			"display_order": 25,
+			"display_order": 26,
 			"name": "Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -329,7 +342,7 @@
 		{
 			"code": "CM1-026",
 			"grade": "CM1",
-			"display_order": 26,
+			"display_order": 27,
 			"name": "Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -342,7 +355,7 @@
 		{
 			"code": "CM1-027",
 			"grade": "CM1",
-			"display_order": 27,
+			"display_order": 28,
 			"name": "Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et de fractions décimales ayant un numérateur inférieur à 10",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -355,7 +368,7 @@
 		{
 			"code": "CM1-028",
 			"grade": "CM1",
-			"display_order": 28,
+			"display_order": 29,
 			"name": "Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -368,7 +381,7 @@
 		{
 			"code": "CM1-029",
 			"grade": "CM1",
-			"display_order": 29,
+			"display_order": 30,
 			"name": "Ordonner des fractions décimales dans l'ordre croissant ou décroissant",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -381,7 +394,7 @@
 		{
 			"code": "CM1-030",
 			"grade": "CM1",
-			"display_order": 30,
+			"display_order": 31,
 			"name": "Passer d'une écriture sous forme d'une fraction décimale ou d'une somme de fractions décimales à une écriture à virgule et réciproquement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -394,7 +407,7 @@
 		{
 			"code": "CM1-031",
 			"grade": "CM1",
-			"display_order": 31,
+			"display_order": 32,
 			"name": "Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -407,7 +420,7 @@
 		{
 			"code": "CM1-032",
 			"grade": "CM1",
-			"display_order": 32,
+			"display_order": 33,
 			"name": "Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -420,7 +433,7 @@
 		{
 			"code": "CM1-033",
 			"grade": "CM1",
-			"display_order": 33,
+			"display_order": 34,
 			"name": "Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -433,20 +446,33 @@
 		{
 			"code": "CM1-034",
 			"grade": "CM1",
-			"display_order": 34,
-			"name": "Comparer, encadrer, intercaler, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"display_order": 35,
+			"name": "Comparer, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": null
+			"sous_notion": "comparer"
+		},
+		{
+			"code": "CM1-132",
+			"grade": "CM1",
+			"display_order": 36,
+			"name": "Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : numération",
+			"sous_notion": "encadrer"
 		},
 		{
 			"code": "CM1-035",
 			"grade": "CM1",
-			"display_order": 35,
+			"display_order": 37,
 			"name": "Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire additif ✂",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -459,7 +485,7 @@
 		{
 			"code": "CM1-036",
 			"grade": "CM1",
-			"display_order": 36,
+			"display_order": 38,
 			"name": "Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire multiplicatif ✂",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -472,7 +498,7 @@
 		{
 			"code": "CM1-037",
 			"grade": "CM1",
-			"display_order": 37,
+			"display_order": 39,
 			"name": "Connaître quelques relations entre des fractions usuelles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -485,7 +511,7 @@
 		{
 			"code": "CM1-038",
 			"grade": "CM1",
-			"display_order": 38,
+			"display_order": 40,
 			"name": "Connaître l'écriture décimale de fractions usuelles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -498,20 +524,33 @@
 		{
 			"code": "CM1-039",
 			"grade": "CM1",
-			"display_order": 39,
-			"name": "Ajouter ou soustraire un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue",
+			"display_order": 41,
+			"name": "Ajouter un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": null
+			"sous_notion": "additionner"
+		},
+		{
+			"code": "CM1-133",
+			"grade": "CM1",
+			"display_order": 42,
+			"name": "Soustraire un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sous_notion": "soustraire"
 		},
 		{
 			"code": "CM1-040",
 			"grade": "CM1",
-			"display_order": 40,
+			"display_order": 43,
 			"name": "Multiplier un nombre entier par 10, 100 ou 1 000",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -524,7 +563,7 @@
 		{
 			"code": "CM1-041",
 			"grade": "CM1",
-			"display_order": 41,
+			"display_order": 44,
 			"name": "Multiplier un nombre décimal par 10",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -537,7 +576,7 @@
 		{
 			"code": "CM1-042",
 			"grade": "CM1",
-			"display_order": 42,
+			"display_order": 45,
 			"name": "Diviser un nombre décimal par 10",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -550,7 +589,7 @@
 		{
 			"code": "CM1-043",
 			"grade": "CM1",
-			"display_order": 43,
+			"display_order": 46,
 			"name": "Ajouter ou soustraire 8, 9, 18, 19, 28, 29, 38 ou 39, à un nombre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -563,7 +602,7 @@
 		{
 			"code": "CM1-044",
 			"grade": "CM1",
-			"display_order": 44,
+			"display_order": 47,
 			"name": "Multiplier un nombre entier inférieur à 10 par un nombre entier de dizaines ou de centaines",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -576,7 +615,7 @@
 		{
 			"code": "CM1-045",
 			"grade": "CM1",
-			"display_order": 45,
+			"display_order": 48,
 			"name": "Multiplier un nombre entier par 4 ou par 8",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -589,7 +628,7 @@
 		{
 			"code": "CM1-046",
 			"grade": "CM1",
-			"display_order": 46,
+			"display_order": 49,
 			"name": "Multiplier un nombre entier par 5",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -602,7 +641,7 @@
 		{
 			"code": "CM1-047",
 			"grade": "CM1",
-			"display_order": 47,
+			"display_order": 50,
 			"name": "Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -615,7 +654,7 @@
 		{
 			"code": "CM1-048",
 			"grade": "CM1",
-			"display_order": 48,
+			"display_order": 51,
 			"name": "Estimer le résultat d'une opération",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -628,7 +667,7 @@
 		{
 			"code": "CM1-049",
 			"grade": "CM1",
-			"display_order": 49,
+			"display_order": 52,
 			"name": "Savoir effectuer un calcul contenant des parenthèses",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -641,7 +680,7 @@
 		{
 			"code": "CM1-050",
 			"grade": "CM1",
-			"display_order": 50,
+			"display_order": 53,
 			"name": "Poser en colonnes et effectuer des additions et des soustractions de nombres décimaux",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -654,7 +693,7 @@
 		{
 			"code": "CM1-051",
 			"grade": "CM1",
-			"display_order": 51,
+			"display_order": 54,
 			"name": "Poser et effectuer des multiplications de deux nombres entiers",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -667,7 +706,7 @@
 		{
 			"code": "CM1-052",
 			"grade": "CM1",
-			"display_order": 52,
+			"display_order": 55,
 			"name": "Poser et effectuer des multiplications d'un nombre décimal par un nombre entier inférieur à 10",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -680,7 +719,7 @@
 		{
 			"code": "CM1-053",
 			"grade": "CM1",
-			"display_order": 53,
+			"display_order": 56,
 			"name": "Poser et effectuer des divisions euclidiennes avec un diviseur à un chiffre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -693,20 +732,33 @@
 		{
 			"code": "CM1-054",
 			"grade": "CM1",
-			"display_order": 54,
-			"name": "Résoudre des problèmes additifs en une étape des types « parties-tout » et « comparaison »",
+			"display_order": 57,
+			"name": "Résoudre des problèmes additifs en une étape du type « parties-tout »",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
 			"branche": "Nombres et calculs",
 			"notion": "Problèmes arithmétiques",
-			"sous_notion": null
+			"sous_notion": "parties-tout"
+		},
+		{
+			"code": "CM1-134",
+			"grade": "CM1",
+			"display_order": 58,
+			"name": "Résoudre des problèmes additifs en une étape du type « comparaison »",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+			"branche": "Nombres et calculs",
+			"notion": "Problèmes arithmétiques",
+			"sous_notion": "comparaison"
 		},
 		{
 			"code": "CM1-055",
 			"grade": "CM1",
-			"display_order": 55,
+			"display_order": 59,
 			"name": "Résoudre des problèmes additifs en deux ou trois étapes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -719,7 +771,7 @@
 		{
 			"code": "CM1-056",
 			"grade": "CM1",
-			"display_order": 56,
+			"display_order": 60,
 			"name": "Résoudre des problèmes multiplicatifs de type « parties-tout » en une étape",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -732,7 +784,7 @@
 		{
 			"code": "CM1-057",
 			"grade": "CM1",
-			"display_order": 57,
+			"display_order": 61,
 			"name": "Résoudre des problèmes de comparaison multiplicative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -745,7 +797,7 @@
 		{
 			"code": "CM1-058",
 			"grade": "CM1",
-			"display_order": 58,
+			"display_order": 62,
 			"name": "Résoudre des problèmes mixtes en deux ou trois étapes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -758,7 +810,7 @@
 		{
 			"code": "CM1-059",
 			"grade": "CM1",
-			"display_order": 59,
+			"display_order": 63,
 			"name": "Résoudre des problèmes de dénombrement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -771,7 +823,7 @@
 		{
 			"code": "CM1-060",
 			"grade": "CM1",
-			"display_order": 60,
+			"display_order": 64,
 			"name": "Résoudre des problèmes d'optimisation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -784,7 +836,7 @@
 		{
 			"code": "CM1-061",
 			"grade": "CM1",
-			"display_order": 61,
+			"display_order": 65,
 			"name": "Trouver le nombre manquant dans une égalité à trous",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -797,7 +849,7 @@
 		{
 			"code": "CM1-062",
 			"grade": "CM1",
-			"display_order": 62,
+			"display_order": 66,
 			"name": "Déterminer la valeur d'un nombre inconnu en utilisant un symbole ou une lettre pour le représenter",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -810,7 +862,7 @@
 		{
 			"code": "CM1-063",
 			"grade": "CM1",
-			"display_order": 63,
+			"display_order": 67,
 			"name": "Résoudre des problèmes algébriques",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -823,7 +875,7 @@
 		{
 			"code": "CM1-064",
 			"grade": "CM1",
-			"display_order": 64,
+			"display_order": 68,
 			"name": "Exécuter un programme de calcul",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -836,7 +888,7 @@
 		{
 			"code": "CM1-065",
 			"grade": "CM1",
-			"display_order": 65,
+			"display_order": 69,
 			"name": "Identifier et formuler une règle de calcul pour poursuivre une suite de nombres",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -849,7 +901,7 @@
 		{
 			"code": "CM1-066",
 			"grade": "CM1",
-			"display_order": 66,
+			"display_order": 70,
 			"name": "Identifier des régularités et poursuivre une suite de motifs évolutive",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -862,7 +914,7 @@
 		{
 			"code": "CM1-067",
 			"grade": "CM1",
-			"display_order": 67,
+			"display_order": 71,
 			"name": "Connaître et utiliser les unités de longueur du millimètre au kilomètre et les symboles associés",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -875,7 +927,7 @@
 		{
 			"code": "CM1-068",
 			"grade": "CM1",
-			"display_order": 68,
+			"display_order": 72,
 			"name": "Connaître les relations entre les unités de longueur",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -888,7 +940,7 @@
 		{
 			"code": "CM1-069",
 			"grade": "CM1",
-			"display_order": 69,
+			"display_order": 73,
 			"name": "Choisir une unité adaptée pour exprimer une longueur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -901,7 +953,7 @@
 		{
 			"code": "CM1-070",
 			"grade": "CM1",
-			"display_order": 70,
+			"display_order": 74,
 			"name": "Comparer des longueurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -914,7 +966,7 @@
 		{
 			"code": "CM1-071",
 			"grade": "CM1",
-			"display_order": 71,
+			"display_order": 75,
 			"name": "Disposer de quelques longueurs de référence",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -927,7 +979,7 @@
 		{
 			"code": "CM1-072",
 			"grade": "CM1",
-			"display_order": 72,
+			"display_order": 76,
 			"name": "Estimer la longueur d'un objet ou d'une distance",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -940,7 +992,7 @@
 		{
 			"code": "CM1-073",
 			"grade": "CM1",
-			"display_order": 73,
+			"display_order": 77,
 			"name": "Savoir ce qu'est le périmètre d'une figure plane",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -953,7 +1005,7 @@
 		{
 			"code": "CM1-074",
 			"grade": "CM1",
-			"display_order": 74,
+			"display_order": 78,
 			"name": "Déterminer le périmètre d'un polygone en utilisant une règle graduée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -966,7 +1018,7 @@
 		{
 			"code": "CM1-075",
 			"grade": "CM1",
-			"display_order": 75,
+			"display_order": 79,
 			"name": "Résoudre des problèmes mettant en jeu les longueurs des côtés d'un polygone et son périmètre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -979,7 +1031,7 @@
 		{
 			"code": "CM1-076",
 			"grade": "CM1",
-			"display_order": 76,
+			"display_order": 80,
 			"name": "Connaître et utiliser les unités de masse du milligramme au kilogramme et la tonne, et les symboles associés",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -992,7 +1044,7 @@
 		{
 			"code": "CM1-077",
 			"grade": "CM1",
-			"display_order": 77,
+			"display_order": 81,
 			"name": "Connaître les relations entre les unités de masse",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1005,7 +1057,7 @@
 		{
 			"code": "CM1-078",
 			"grade": "CM1",
-			"display_order": 78,
+			"display_order": 82,
 			"name": "Choisir une unité adaptée pour exprimer une masse",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1018,7 +1070,7 @@
 		{
 			"code": "CM1-079",
 			"grade": "CM1",
-			"display_order": 79,
+			"display_order": 83,
 			"name": "Comparer des masses",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1031,7 +1083,7 @@
 		{
 			"code": "CM1-080",
 			"grade": "CM1",
-			"display_order": 80,
+			"display_order": 84,
 			"name": "Disposer de quelques masses de référence",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1044,7 +1096,7 @@
 		{
 			"code": "CM1-081",
 			"grade": "CM1",
-			"display_order": 81,
+			"display_order": 85,
 			"name": "Estimer la masse d'un objet",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1057,7 +1109,7 @@
 		{
 			"code": "CM1-082",
 			"grade": "CM1",
-			"display_order": 82,
+			"display_order": 86,
 			"name": "Connaître et utiliser les unités de contenance du millilitre à l'hectolitre et les symboles associés",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1070,7 +1122,7 @@
 		{
 			"code": "CM1-083",
 			"grade": "CM1",
-			"display_order": 83,
+			"display_order": 87,
 			"name": "Connaître les relations entre les unités de contenance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1083,7 +1135,7 @@
 		{
 			"code": "CM1-084",
 			"grade": "CM1",
-			"display_order": 84,
+			"display_order": 88,
 			"name": "Choisir une unité adaptée pour exprimer une contenance",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1096,7 +1148,7 @@
 		{
 			"code": "CM1-085",
 			"grade": "CM1",
-			"display_order": 85,
+			"display_order": 89,
 			"name": "Comparer des contenances",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1109,7 +1161,7 @@
 		{
 			"code": "CM1-086",
 			"grade": "CM1",
-			"display_order": 86,
+			"display_order": 90,
 			"name": "Comparer les aires de différentes figures planes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1122,8 +1174,8 @@
 		{
 			"code": "CM1-087",
 			"grade": "CM1",
-			"display_order": 87,
-			"name": "Déterminer des aires",
+			"display_order": 91,
+			"name": "Déterminer des aires en utilisant une unité et un quadrillage",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1135,7 +1187,7 @@
 		{
 			"code": "CM1-088",
 			"grade": "CM1",
-			"display_order": 88,
+			"display_order": 92,
 			"name": "Connaître et utiliser les centimètres carrés pour exprimer des aires",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1148,7 +1200,7 @@
 		{
 			"code": "CM1-089",
 			"grade": "CM1",
-			"display_order": 89,
+			"display_order": 93,
 			"name": "Utiliser le lexique spécifique associé aux angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1161,7 +1213,7 @@
 		{
 			"code": "CM1-090",
 			"grade": "CM1",
-			"display_order": 90,
+			"display_order": 94,
 			"name": "Comprendre et utiliser les notations des angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1174,7 +1226,7 @@
 		{
 			"code": "CM1-091",
 			"grade": "CM1",
-			"display_order": 91,
+			"display_order": 95,
 			"name": "Comparer des angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1187,7 +1239,7 @@
 		{
 			"code": "CM1-092",
 			"grade": "CM1",
-			"display_order": 92,
+			"display_order": 96,
 			"name": "Lire l'heure sur une horloge à aiguilles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1200,7 +1252,7 @@
 		{
 			"code": "CM1-093",
 			"grade": "CM1",
-			"display_order": 93,
+			"display_order": 97,
 			"name": "Positionner les aiguilles d'une horloge correspondant à une heure donnée en heure et minute",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1213,7 +1265,7 @@
 		{
 			"code": "CM1-094",
 			"grade": "CM1",
-			"display_order": 94,
+			"display_order": 98,
 			"name": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure et minute)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1226,7 +1278,7 @@
 		{
 			"code": "CM1-095",
 			"grade": "CM1",
-			"display_order": 95,
+			"display_order": 99,
 			"name": "Résoudre des problèmes à une ou deux étapes impliquant des durées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1237,22 +1289,9 @@
 			"sous_notion": "calculer"
 		},
 		{
-			"code": "CM1-096",
-			"grade": "CM1",
-			"display_order": 96,
-			"name": "Utiliser le vocabulaire géométrique approprié dans le contexte d'apprentissage des notions correspondantes",
-			"kind": "savoir_faire",
-			"exigence": "attendu",
-			"regime_acquisition": "diversite",
-			"rubrique": "Espace et géométrie > La géométrie plane",
-			"branche": "Géométrie",
-			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
-		},
-		{
 			"code": "CM1-097",
 			"grade": "CM1",
-			"display_order": 97,
+			"display_order": 100,
 			"name": "Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1265,7 +1304,7 @@
 		{
 			"code": "CM1-098",
 			"grade": "CM1",
-			"display_order": 98,
+			"display_order": 101,
 			"name": "Connaître les codes usuels utilisés en géométrie",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1278,7 +1317,7 @@
 		{
 			"code": "CM1-099",
 			"grade": "CM1",
-			"display_order": 99,
+			"display_order": 102,
 			"name": "Décrire et reconnaître un cercle et un disque comme un ensemble de points caractérisés par leur distance à un point donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1291,7 +1330,7 @@
 		{
 			"code": "CM1-100",
 			"grade": "CM1",
-			"display_order": 100,
+			"display_order": 103,
 			"name": "Reconnaître et utiliser la notion de perpendicularité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1304,7 +1343,7 @@
 		{
 			"code": "CM1-101",
 			"grade": "CM1",
-			"display_order": 101,
+			"display_order": 104,
 			"name": "Reconnaître et utiliser la notion de parallélisme",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1317,7 +1356,7 @@
 		{
 			"code": "CM1-102",
 			"grade": "CM1",
-			"display_order": 102,
+			"display_order": 105,
 			"name": "Reconnaître et nommer les figures suivantes en faisant référence à leur définition : triangle, triangle rectangle, triangle isocèle, triangle équilatéral, quadrilatère, carré, rectangle et losange",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1330,7 +1369,7 @@
 		{
 			"code": "CM1-103",
 			"grade": "CM1",
-			"display_order": 103,
+			"display_order": 106,
 			"name": "Connaître les propriétés de parallélisme des côtés opposés, des égalités de longueurs et d'angles pour les figures usuelles : triangle rectangle, triangle isocèle, triangle équilatéral, carré, rectangle et losange",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1343,7 +1382,7 @@
 		{
 			"code": "CM1-104",
 			"grade": "CM1",
-			"display_order": 104,
+			"display_order": 107,
 			"name": "Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle ou un cercle ou des assemblages de ces figures sur tout support (papier quadrillé, pointé ou uni), avec une règle graduée, une équerre ou un compas",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1356,7 +1395,7 @@
 		{
 			"code": "CM1-105",
 			"grade": "CM1",
-			"display_order": 105,
+			"display_order": 108,
 			"name": "Construire une figure géométrique composée de segments, de droites, de polygones usuels et de cercles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1369,7 +1408,7 @@
 		{
 			"code": "CM1-106",
 			"grade": "CM1",
-			"display_order": 106,
+			"display_order": 109,
 			"name": "Reconnaître si une figure possède un ou plusieurs axes de symétrie",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1382,7 +1421,7 @@
 		{
 			"code": "CM1-107",
 			"grade": "CM1",
-			"display_order": 107,
+			"display_order": 110,
 			"name": "Compléter une figure pour la rendre symétrique par rapport à une droite donnée, horizontale ou verticale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1395,7 +1434,7 @@
 		{
 			"code": "CM1-108",
 			"grade": "CM1",
-			"display_order": 108,
+			"display_order": 111,
 			"name": "Construire, sur papier quadrillé, la figure symétrique d'une figure donnée par rapport à une droite horizontale ou verticale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1408,7 +1447,7 @@
 		{
 			"code": "CM1-109",
 			"grade": "CM1",
-			"display_order": 109,
+			"display_order": 112,
 			"name": "Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre et un prisme droit",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1421,7 +1460,7 @@
 		{
 			"code": "CM1-110",
 			"grade": "CM1",
-			"display_order": 110,
+			"display_order": 113,
 			"name": "Décrire un cube, un pavé, une pyramide et un prisme droit en faisant référence à des propriétés et en utilisant le vocabulaire approprié",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1434,7 +1473,7 @@
 		{
 			"code": "CM1-111",
 			"grade": "CM1",
-			"display_order": 111,
+			"display_order": 114,
 			"name": "Connaître le nombre et la nature des faces d'un cube ou d'un pavé",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1447,7 +1486,7 @@
 		{
 			"code": "CM1-112",
 			"grade": "CM1",
-			"display_order": 112,
+			"display_order": 115,
 			"name": "Connaître la nature des faces d'une pyramide",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1460,7 +1499,7 @@
 		{
 			"code": "CM1-113",
 			"grade": "CM1",
-			"display_order": 113,
+			"display_order": 116,
 			"name": "Connaître la nature des faces d'un prisme droit",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1473,7 +1512,7 @@
 		{
 			"code": "CM1-114",
 			"grade": "CM1",
-			"display_order": 114,
+			"display_order": 117,
 			"name": "Construire un cube, un pavé, une pyramide ou un prisme droit",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1486,7 +1525,7 @@
 		{
 			"code": "CM1-115",
 			"grade": "CM1",
-			"display_order": 115,
+			"display_order": 118,
 			"name": "Reconnaître un patron d'un cube",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1499,7 +1538,7 @@
 		{
 			"code": "CM1-116",
 			"grade": "CM1",
-			"display_order": 116,
+			"display_order": 119,
 			"name": "Construire un patron d'un cube",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1512,7 +1551,7 @@
 		{
 			"code": "CM1-117",
 			"grade": "CM1",
-			"display_order": 117,
+			"display_order": 120,
 			"name": "Connaître et utiliser le vocabulaire lié aux déplacements",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1525,7 +1564,7 @@
 		{
 			"code": "CM1-118",
 			"grade": "CM1",
-			"display_order": 118,
+			"display_order": 121,
 			"name": "Comprendre, utiliser et produire une suite d'instructions qui décrivent un déplacement en utilisant un vocabulaire spatial précis",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1538,7 +1577,7 @@
 		{
 			"code": "CM1-119",
 			"grade": "CM1",
-			"display_order": 119,
+			"display_order": 122,
 			"name": "Résoudre des problèmes portant sur des assemblages de cubes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1551,33 +1590,98 @@
 		{
 			"code": "CM1-120",
 			"grade": "CM1",
-			"display_order": 120,
-			"name": "Recueillir des données et produire un tableau, un diagramme en barres ou un ensemble de points dans un repère pour les présenter",
+			"display_order": 123,
+			"name": "Recueillir des données et produire un tableau pour les présenter",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
 			"branche": "Statistiques",
 			"notion": "Représenter des données",
-			"sous_notion": null
+			"sous_notion": "tableaux"
+		},
+		{
+			"code": "CM1-135",
+			"grade": "CM1",
+			"display_order": 124,
+			"name": "Recueillir des données et produire un diagramme en barres pour les présenter",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes en barres"
+		},
+		{
+			"code": "CM1-136",
+			"grade": "CM1",
+			"display_order": 125,
+			"name": "Recueillir des données et produire un ensemble de points dans un repère pour les présenter",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "courbes et repères"
 		},
 		{
 			"code": "CM1-121",
 			"grade": "CM1",
-			"display_order": 121,
-			"name": "Lire et interpréter les données d'un tableau à simple ou double entrée, d'un diagramme en barres ou d'une courbe",
+			"display_order": 126,
+			"name": "Lire et interpréter les données d'un tableau à simple entrée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
 			"branche": "Statistiques",
 			"notion": "Représenter des données",
-			"sous_notion": null
+			"sous_notion": "tableaux"
+		},
+		{
+			"code": "CM1-137",
+			"grade": "CM1",
+			"display_order": 127,
+			"name": "Lire et interpréter les données d'un tableau à double entrée",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "tableau à double entrée"
+		},
+		{
+			"code": "CM1-138",
+			"grade": "CM1",
+			"display_order": 128,
+			"name": "Lire et interpréter les données d'un diagramme en barres",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes en barres"
+		},
+		{
+			"code": "CM1-139",
+			"grade": "CM1",
+			"display_order": 129,
+			"name": "Lire et interpréter les données d'une courbe",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "courbes et repères"
 		},
 		{
 			"code": "CM1-122",
 			"grade": "CM1",
-			"display_order": 122,
+			"display_order": 130,
 			"name": "Résoudre des problèmes en une ou plusieurs étapes en utilisant les données d'un tableau à simple ou double entrée, d'un diagramme en barres ou d'une courbe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1590,7 +1694,7 @@
 		{
 			"code": "CM1-123",
 			"grade": "CM1",
-			"display_order": 123,
+			"display_order": 131,
 			"name": "Identifier des expériences aléatoires",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1603,7 +1707,7 @@
 		{
 			"code": "CM1-124",
 			"grade": "CM1",
-			"display_order": 124,
+			"display_order": 132,
 			"name": "Identifier toutes les issues possibles lors d'une expérience aléatoire simple",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1616,7 +1720,7 @@
 		{
 			"code": "CM1-125",
 			"grade": "CM1",
-			"display_order": 125,
+			"display_order": 133,
 			"name": "Comprendre et utiliser le vocabulaire approprié : « impossible », « possible », « certain », « probable », « peu probable », « une chance sur deux »",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1629,7 +1733,7 @@
 		{
 			"code": "CM1-126",
 			"grade": "CM1",
-			"display_order": 126,
+			"display_order": 134,
 			"name": "Comparer des issues d'expériences aléatoires ou des évènements selon leur probabilité de réalisation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1642,7 +1746,7 @@
 		{
 			"code": "CM1-127",
 			"grade": "CM1",
-			"display_order": 127,
+			"display_order": 135,
 			"name": "Comprendre que ce n'est pas parce qu'il y a deux issues possibles que chacune a une chance sur deux de se réaliser",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1655,7 +1759,7 @@
 		{
 			"code": "CM1-128",
 			"grade": "CM1",
-			"display_order": 128,
+			"display_order": 136,
 			"name": "Reconnaître des situations d'équiprobabilité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1668,7 +1772,7 @@
 		{
 			"code": "CM1-129",
 			"grade": "CM1",
-			"display_order": 129,
+			"display_order": 137,
 			"name": "Identifier une situation de proportionnalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1681,7 +1785,7 @@
 		{
 			"code": "CM1-130",
 			"grade": "CM1",
-			"display_order": 130,
+			"display_order": 138,
 			"name": "Savoir résoudre un problème de proportionnalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2124,19 +2228,32 @@
 			"code": "CM2-034",
 			"grade": "CM2",
 			"display_order": 34,
-			"name": "Comparer, encadrer, intercaler, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"name": "Comparer, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": null
+			"sous_notion": "comparer"
+		},
+		{
+			"code": "CM2-117",
+			"grade": "CM2",
+			"display_order": 35,
+			"name": "Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : numération",
+			"sous_notion": "encadrer"
 		},
 		{
 			"code": "CM2-035",
 			"grade": "CM2",
-			"display_order": 35,
+			"display_order": 36,
 			"name": "Connaître des faits numériques usuels avec des entiers — répertoire additif ✂",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2149,7 +2266,7 @@
 		{
 			"code": "CM2-036",
 			"grade": "CM2",
-			"display_order": 36,
+			"display_order": 37,
 			"name": "Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2162,7 +2279,7 @@
 		{
 			"code": "CM2-037",
 			"grade": "CM2",
-			"display_order": 37,
+			"display_order": 38,
 			"name": "Connaître la moitié des nombres impairs jusqu'à 15",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2175,7 +2292,7 @@
 		{
 			"code": "CM2-038",
 			"grade": "CM2",
-			"display_order": 38,
+			"display_order": 39,
 			"name": "Connaître quelques relations entre des fractions usuelles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2188,7 +2305,7 @@
 		{
 			"code": "CM2-039",
 			"grade": "CM2",
-			"display_order": 39,
+			"display_order": 40,
 			"name": "Connaître l'écriture décimale de fractions usuelles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2201,20 +2318,33 @@
 		{
 			"code": "CM2-040",
 			"grade": "CM2",
-			"display_order": 40,
-			"name": "Ajouter ou soustraire un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue",
+			"display_order": 41,
+			"name": "Ajouter un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": null
+			"sous_notion": "additionner"
+		},
+		{
+			"code": "CM2-118",
+			"grade": "CM2",
+			"display_order": 42,
+			"name": "Soustraire un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sous_notion": "soustraire"
 		},
 		{
 			"code": "CM2-041",
 			"grade": "CM2",
-			"display_order": 41,
+			"display_order": 43,
 			"name": "Ajouter un nombre entier à un nombre décimal lorsqu'il y a une retenue",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2227,7 +2357,7 @@
 		{
 			"code": "CM2-042",
 			"grade": "CM2",
-			"display_order": 42,
+			"display_order": 44,
 			"name": "Multiplier un nombre décimal par 10, 100 ou 1 000",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2240,7 +2370,7 @@
 		{
 			"code": "CM2-043",
 			"grade": "CM2",
-			"display_order": 43,
+			"display_order": 45,
 			"name": "Diviser un nombre décimal par 10, 100 ou 1 000",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2253,7 +2383,7 @@
 		{
 			"code": "CM2-044",
 			"grade": "CM2",
-			"display_order": 44,
+			"display_order": 46,
 			"name": "Ajouter deux nombres décimaux inférieurs à 10, s'écrivant avec au plus un chiffre après la virgule",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2266,7 +2396,7 @@
 		{
 			"code": "CM2-045",
 			"grade": "CM2",
-			"display_order": 45,
+			"display_order": 47,
 			"name": "Ajouter ou soustraire 8, 9, 18, 19, 28, 29, …, 98 ou 99 à un nombre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2279,7 +2409,7 @@
 		{
 			"code": "CM2-046",
 			"grade": "CM2",
-			"display_order": 46,
+			"display_order": 48,
 			"name": "Multiplier un nombre entier, inférieur à 10, de dizaines, de centaines ou de milliers par un nombre entier, inférieur à 10, de dizaines, de centaines ou de milliers",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2292,7 +2422,7 @@
 		{
 			"code": "CM2-047",
 			"grade": "CM2",
-			"display_order": 47,
+			"display_order": 49,
 			"name": "Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2305,7 +2435,7 @@
 		{
 			"code": "CM2-048",
 			"grade": "CM2",
-			"display_order": 48,
+			"display_order": 50,
 			"name": "Calculer le double d'un nombre décimal dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2318,7 +2448,7 @@
 		{
 			"code": "CM2-049",
 			"grade": "CM2",
-			"display_order": 49,
+			"display_order": 51,
 			"name": "Calculer la moitié d'un nombre décimal dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2331,7 +2461,7 @@
 		{
 			"code": "CM2-050",
 			"grade": "CM2",
-			"display_order": 50,
+			"display_order": 52,
 			"name": "Diviser un nombre entier par 4 ou par 8",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2344,7 +2474,7 @@
 		{
 			"code": "CM2-051",
 			"grade": "CM2",
-			"display_order": 51,
+			"display_order": 53,
 			"name": "Multiplier un nombre décimal par 5",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2357,7 +2487,7 @@
 		{
 			"code": "CM2-052",
 			"grade": "CM2",
-			"display_order": 52,
+			"display_order": 54,
 			"name": "Multiplier un nombre décimal par 50",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2370,7 +2500,7 @@
 		{
 			"code": "CM2-053",
 			"grade": "CM2",
-			"display_order": 53,
+			"display_order": 55,
 			"name": "Estimer le résultat d'une opération",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2383,7 +2513,7 @@
 		{
 			"code": "CM2-054",
 			"grade": "CM2",
-			"display_order": 54,
+			"display_order": 56,
 			"name": "Savoir réaliser un calcul contenant une ou deux paires de parenthèses",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2396,7 +2526,7 @@
 		{
 			"code": "CM2-055",
 			"grade": "CM2",
-			"display_order": 55,
+			"display_order": 57,
 			"name": "Poser et effectuer la multiplication d'un nombre décimal par un nombre entier",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2409,7 +2539,7 @@
 		{
 			"code": "CM2-056",
 			"grade": "CM2",
-			"display_order": 56,
+			"display_order": 58,
 			"name": "Poser et effectuer des divisions décimales avec un dividende entier et un diviseur à un chiffre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2422,7 +2552,7 @@
 		{
 			"code": "CM2-057",
 			"grade": "CM2",
-			"display_order": 57,
+			"display_order": 59,
 			"name": "Poser et effectuer des divisions décimales avec un dividende décimal et un diviseur à un chiffre",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2435,8 +2565,8 @@
 		{
 			"code": "CM2-058",
 			"grade": "CM2",
-			"display_order": 58,
-			"name": "Résoudre des problèmes additifs en une ou plusieurs étapes",
+			"display_order": 60,
+			"name": "Résoudre des problèmes additifs en une étape",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2446,9 +2576,22 @@
 			"sous_notion": null
 		},
 		{
+			"code": "CM2-119",
+			"grade": "CM2",
+			"display_order": 61,
+			"name": "Résoudre des problèmes additifs en plusieurs étapes",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+			"branche": "Nombres et calculs",
+			"notion": "Problèmes arithmétiques",
+			"sous_notion": "en deux étapes ou plus"
+		},
+		{
 			"code": "CM2-059",
 			"grade": "CM2",
-			"display_order": 59,
+			"display_order": 62,
 			"name": "Résoudre des problèmes multiplicatifs de type « parties-tout » en une étape",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2461,7 +2604,7 @@
 		{
 			"code": "CM2-060",
 			"grade": "CM2",
-			"display_order": 60,
+			"display_order": 63,
 			"name": "Résoudre des problèmes mixtes en plusieurs étapes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2474,7 +2617,7 @@
 		{
 			"code": "CM2-061",
 			"grade": "CM2",
-			"display_order": 61,
+			"display_order": 64,
 			"name": "Résoudre des problèmes de comparaison multiplicative",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2487,7 +2630,7 @@
 		{
 			"code": "CM2-062",
 			"grade": "CM2",
-			"display_order": 62,
+			"display_order": 65,
 			"name": "Résoudre des problèmes de dénombrement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2500,7 +2643,7 @@
 		{
 			"code": "CM2-063",
 			"grade": "CM2",
-			"display_order": 63,
+			"display_order": 66,
 			"name": "Résoudre des problèmes d'optimisation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2513,7 +2656,7 @@
 		{
 			"code": "CM2-064",
 			"grade": "CM2",
-			"display_order": 64,
+			"display_order": 67,
 			"name": "Résoudre des problèmes préparant à l'utilisation d'algorithmes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2526,7 +2669,7 @@
 		{
 			"code": "CM2-065",
 			"grade": "CM2",
-			"display_order": 65,
+			"display_order": 68,
 			"name": "Trouver le nombre manquant dans une égalité à trous",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2539,7 +2682,7 @@
 		{
 			"code": "CM2-066",
 			"grade": "CM2",
-			"display_order": 66,
+			"display_order": 69,
 			"name": "Résoudre des problèmes algébriques",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2552,7 +2695,7 @@
 		{
 			"code": "CM2-067",
 			"grade": "CM2",
-			"display_order": 67,
+			"display_order": 70,
 			"name": "Exécuter ou produire un programme de calcul",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2565,7 +2708,7 @@
 		{
 			"code": "CM2-068",
 			"grade": "CM2",
-			"display_order": 68,
+			"display_order": 71,
 			"name": "Identifier et formuler une règle de calcul pour poursuivre une suite de nombres",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2578,7 +2721,7 @@
 		{
 			"code": "CM2-069",
 			"grade": "CM2",
-			"display_order": 69,
+			"display_order": 72,
 			"name": "Identifier des régularités et poursuivre une suite de motifs évolutive",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2591,7 +2734,7 @@
 		{
 			"code": "CM2-070",
 			"grade": "CM2",
-			"display_order": 70,
+			"display_order": 73,
 			"name": "Trouver le nombre d'éléments pour une étape donnée dans une suite de motifs évolutive",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2604,7 +2747,7 @@
 		{
 			"code": "CM2-071",
 			"grade": "CM2",
-			"display_order": 71,
+			"display_order": 74,
 			"name": "Comparer les aires de différentes figures planes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2617,8 +2760,8 @@
 		{
 			"code": "CM2-072",
 			"grade": "CM2",
-			"display_order": 72,
-			"name": "Déterminer des aires",
+			"display_order": 75,
+			"name": "Déterminer des aires en utilisant une unité et un quadrillage",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -2630,7 +2773,7 @@
 		{
 			"code": "CM2-073",
 			"grade": "CM2",
-			"display_order": 73,
+			"display_order": 76,
 			"name": "Connaître et utiliser les unités centimètre carré, décimètre carré et mètre carré pour exprimer des aires",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2643,7 +2786,7 @@
 		{
 			"code": "CM2-074",
 			"grade": "CM2",
-			"display_order": 74,
+			"display_order": 77,
 			"name": "Convertir des aires entre différentes unités",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2656,20 +2799,33 @@
 		{
 			"code": "CM2-075",
 			"grade": "CM2",
-			"display_order": 75,
-			"name": "Déterminer l'aire d'un carré ou d'un rectangle",
+			"display_order": 78,
+			"name": "Déterminer l'aire d'un carré",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Grandeurs et mesures > Les aires",
 			"branche": "Grandeurs et mesures",
 			"notion": "Aires",
-			"sous_notion": null
+			"sous_notion": "carré"
+		},
+		{
+			"code": "CM2-120",
+			"grade": "CM2",
+			"display_order": 79,
+			"name": "Déterminer l'aire d'un rectangle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Grandeurs et mesures > Les aires",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "rectangle"
 		},
 		{
 			"code": "CM2-076",
 			"grade": "CM2",
-			"display_order": 76,
+			"display_order": 80,
 			"name": "Utiliser le lexique spécifique associé aux angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2682,7 +2838,7 @@
 		{
 			"code": "CM2-077",
 			"grade": "CM2",
-			"display_order": 77,
+			"display_order": 81,
 			"name": "Comprendre et utiliser les notations des angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2695,7 +2851,7 @@
 		{
 			"code": "CM2-078",
 			"grade": "CM2",
-			"display_order": 78,
+			"display_order": 82,
 			"name": "Comparer des angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2708,7 +2864,7 @@
 		{
 			"code": "CM2-079",
 			"grade": "CM2",
-			"display_order": 79,
+			"display_order": 83,
 			"name": "Construire un angle égal à la somme de deux angles donnés ou un angle multiple d'un angle donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2721,7 +2877,7 @@
 		{
 			"code": "CM2-080",
 			"grade": "CM2",
-			"display_order": 80,
+			"display_order": 84,
 			"name": "Construire par pliage la moitié d'un angle donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2734,7 +2890,7 @@
 		{
 			"code": "CM2-081",
 			"grade": "CM2",
-			"display_order": 81,
+			"display_order": 85,
 			"name": "Savoir qu'un angle droit mesure 90°",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2747,7 +2903,7 @@
 		{
 			"code": "CM2-082",
 			"grade": "CM2",
-			"display_order": 82,
+			"display_order": 86,
 			"name": "Lire l'heure sur une horloge à aiguilles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2760,7 +2916,7 @@
 		{
 			"code": "CM2-083",
 			"grade": "CM2",
-			"display_order": 83,
+			"display_order": 87,
 			"name": "Positionner les aiguilles d'une horloge correspondant à une heure donnée en heure, minute et seconde",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2773,7 +2929,7 @@
 		{
 			"code": "CM2-084",
 			"grade": "CM2",
-			"display_order": 84,
+			"display_order": 88,
 			"name": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure, minute et seconde)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2786,7 +2942,7 @@
 		{
 			"code": "CM2-085",
 			"grade": "CM2",
-			"display_order": 85,
+			"display_order": 89,
 			"name": "Résoudre des problèmes à une ou plusieurs étapes impliquant des durées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2797,22 +2953,9 @@
 			"sous_notion": "calculer"
 		},
 		{
-			"code": "CM2-086",
-			"grade": "CM2",
-			"display_order": 86,
-			"name": "Utiliser le vocabulaire géométrique approprié dans le contexte d'apprentissage des notions correspondantes",
-			"kind": "savoir_faire",
-			"exigence": "attendu",
-			"regime_acquisition": "diversite",
-			"rubrique": "Espace et géométrie > La géométrie plane",
-			"branche": "Géométrie",
-			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
-		},
-		{
 			"code": "CM2-087",
 			"grade": "CM2",
-			"display_order": 87,
+			"display_order": 90,
 			"name": "Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2825,7 +2968,7 @@
 		{
 			"code": "CM2-088",
 			"grade": "CM2",
-			"display_order": 88,
+			"display_order": 91,
 			"name": "Connaître les notations et les codes usuels utilisés en géométrie",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2838,7 +2981,7 @@
 		{
 			"code": "CM2-089",
 			"grade": "CM2",
-			"display_order": 89,
+			"display_order": 92,
 			"name": "Reconnaître et utiliser la notion de perpendicularité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2851,7 +2994,7 @@
 		{
 			"code": "CM2-090",
 			"grade": "CM2",
-			"display_order": 90,
+			"display_order": 93,
 			"name": "Reconnaître et utiliser la notion de parallélisme",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2864,7 +3007,7 @@
 		{
 			"code": "CM2-091",
 			"grade": "CM2",
-			"display_order": 91,
+			"display_order": 94,
 			"name": "Décrire et reconnaître un cercle et un disque comme un ensemble de points caractérisés par leur distance à un point donné",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2877,7 +3020,7 @@
 		{
 			"code": "CM2-092",
 			"grade": "CM2",
-			"display_order": 92,
+			"display_order": 95,
 			"name": "Reconnaître et nommer les figures suivantes en s'appuyant sur leur définition : triangle, triangle rectangle, triangle isocèle, triangle équilatéral, quadrilatère, carré, rectangle, losange, trapèze, trapèze rectangle, pentagone et hexagone",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2890,7 +3033,7 @@
 		{
 			"code": "CM2-093",
 			"grade": "CM2",
-			"display_order": 93,
+			"display_order": 96,
 			"name": "Connaître les propriétés de parallélisme des côtés opposés, des égalités de longueurs et d'angles pour les figures usuelles : triangle rectangle, triangle isocèle, triangle équilatéral, carré, rectangle, losange, trapèze et trapèze rectangle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2903,7 +3046,7 @@
 		{
 			"code": "CM2-094",
 			"grade": "CM2",
-			"display_order": 94,
+			"display_order": 97,
 			"name": "Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle ou un cercle ou des assemblages de ces figures sur tout support (papier quadrillé, pointé ou uni), avec une règle graduée, une équerre ou un compas",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2916,7 +3059,7 @@
 		{
 			"code": "CM2-095",
 			"grade": "CM2",
-			"display_order": 95,
+			"display_order": 98,
 			"name": "Construire une figure géométrique composée de segments, de droites, de polygones usuels et de cercles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2929,7 +3072,7 @@
 		{
 			"code": "CM2-096",
 			"grade": "CM2",
-			"display_order": 96,
+			"display_order": 99,
 			"name": "Élaborer un programme de construction",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2942,7 +3085,7 @@
 		{
 			"code": "CM2-097",
 			"grade": "CM2",
-			"display_order": 97,
+			"display_order": 100,
 			"name": "Construire, sur papier quadrillé, la figure symétrique d'une figure donnée par rapport à une droite verticale, horizontale ou une diagonale du quadrillage",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2955,7 +3098,7 @@
 		{
 			"code": "CM2-098",
 			"grade": "CM2",
-			"display_order": 98,
+			"display_order": 101,
 			"name": "Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre ou un prisme droit",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2968,7 +3111,7 @@
 		{
 			"code": "CM2-099",
 			"grade": "CM2",
-			"display_order": 99,
+			"display_order": 102,
 			"name": "Décrire un cube, un pavé, une pyramide ou un prisme droit en faisant référence à des propriétés et en utilisant le vocabulaire approprié",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2981,7 +3124,7 @@
 		{
 			"code": "CM2-100",
 			"grade": "CM2",
-			"display_order": 100,
+			"display_order": 103,
 			"name": "Reconnaître un patron d'un cube",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2994,7 +3137,7 @@
 		{
 			"code": "CM2-101",
 			"grade": "CM2",
-			"display_order": 101,
+			"display_order": 104,
 			"name": "Construire un patron d'un cube",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3007,7 +3150,7 @@
 		{
 			"code": "CM2-102",
 			"grade": "CM2",
-			"display_order": 102,
+			"display_order": 105,
 			"name": "Reconnaître un patron d'un pavé",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3020,7 +3163,7 @@
 		{
 			"code": "CM2-103",
 			"grade": "CM2",
-			"display_order": 103,
+			"display_order": 106,
 			"name": "Connaître et utiliser le vocabulaire lié aux déplacements",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3033,7 +3176,7 @@
 		{
 			"code": "CM2-104",
 			"grade": "CM2",
-			"display_order": 104,
+			"display_order": 107,
 			"name": "Comprendre, utiliser et produire une suite d'instructions qui décrivent un déplacement en utilisant un vocabulaire spatial précis",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3046,7 +3189,7 @@
 		{
 			"code": "CM2-105",
 			"grade": "CM2",
-			"display_order": 105,
+			"display_order": 108,
 			"name": "Résoudre des problèmes portant sur des assemblages de cubes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3059,33 +3202,98 @@
 		{
 			"code": "CM2-106",
 			"grade": "CM2",
-			"display_order": 106,
-			"name": "Recueillir des données et produire un tableau, un diagramme en barres ou un ensemble de points dans un repère pour présenter des données recueillies",
+			"display_order": 109,
+			"name": "Recueillir des données et produire un tableau pour présenter des données recueillies",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
 			"branche": "Statistiques",
 			"notion": "Représenter des données",
-			"sous_notion": null
+			"sous_notion": "tableaux"
+		},
+		{
+			"code": "CM2-121",
+			"grade": "CM2",
+			"display_order": 110,
+			"name": "Recueillir des données et produire un diagramme en barres pour présenter des données recueillies",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes en barres"
+		},
+		{
+			"code": "CM2-122",
+			"grade": "CM2",
+			"display_order": 111,
+			"name": "Recueillir des données et produire un ensemble de points dans un repère pour présenter des données recueillies",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "courbes et repères"
 		},
 		{
 			"code": "CM2-107",
 			"grade": "CM2",
-			"display_order": 107,
-			"name": "Lire et interpréter les données d'un tableau, d'un diagramme en barres, d'un diagramme circulaire ou d'une courbe",
+			"display_order": 112,
+			"name": "Lire et interpréter les données d'un tableau",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
 			"branche": "Statistiques",
 			"notion": "Représenter des données",
-			"sous_notion": null
+			"sous_notion": "tableaux"
+		},
+		{
+			"code": "CM2-123",
+			"grade": "CM2",
+			"display_order": 113,
+			"name": "Lire et interpréter les données d'un diagramme en barres",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes en barres"
+		},
+		{
+			"code": "CM2-124",
+			"grade": "CM2",
+			"display_order": 114,
+			"name": "Lire et interpréter les données d'un diagramme circulaire",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "diagrammes circulaires"
+		},
+		{
+			"code": "CM2-125",
+			"grade": "CM2",
+			"display_order": 115,
+			"name": "Lire et interpréter les données d'une courbe",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Organisation et gestion de données",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "courbes et repères"
 		},
 		{
 			"code": "CM2-108",
 			"grade": "CM2",
-			"display_order": 108,
+			"display_order": 116,
 			"name": "Résoudre des problèmes en une ou deux étapes en utilisant les données d'un tableau, d'un diagramme en barres, d'un diagramme circulaire ou d'une courbe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3098,7 +3306,7 @@
 		{
 			"code": "CM2-109",
 			"grade": "CM2",
-			"display_order": 109,
+			"display_order": 117,
 			"name": "Identifier toutes les issues possibles lors d'une expérience aléatoire simple",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3111,7 +3319,7 @@
 		{
 			"code": "CM2-110",
 			"grade": "CM2",
-			"display_order": 110,
+			"display_order": 118,
 			"name": "Identifier toutes les issues réalisant un évènement dans une expérience aléatoire simple",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3124,7 +3332,7 @@
 		{
 			"code": "CM2-111",
 			"grade": "CM2",
-			"display_order": 111,
+			"display_order": 119,
 			"name": "Dans une situation d'équiprobabilité, lors d'une expérience aléatoire simple, exprimer la probabilité d'un évènement sous la forme « a chances sur b »",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3137,7 +3345,7 @@
 		{
 			"code": "CM2-112",
 			"grade": "CM2",
-			"display_order": 112,
+			"display_order": 120,
 			"name": "Comparer des probabilités dans des cas simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3150,7 +3358,7 @@
 		{
 			"code": "CM2-113",
 			"grade": "CM2",
-			"display_order": 113,
+			"display_order": 121,
 			"name": "Comprendre la notion d'indépendance lors de la répétition de la même expérience aléatoire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3163,7 +3371,7 @@
 		{
 			"code": "CM2-114",
 			"grade": "CM2",
-			"display_order": 114,
+			"display_order": 122,
 			"name": "Dans des situations d'équiprobabilité, recenser toutes les issues possibles d'une expérience aléatoire en deux étapes dans un tableau ou dans un arbre afin de déterminer des probabilités",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3176,7 +3384,7 @@
 		{
 			"code": "CM2-115",
 			"grade": "CM2",
-			"display_order": 115,
+			"display_order": 123,
 			"name": "Identifier une situation de proportionnalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3189,7 +3397,7 @@
 		{
 			"code": "CM2-116",
 			"grade": "CM2",
-			"display_order": 116,
+			"display_order": 124,
 			"name": "Savoir résoudre un problème de proportionnalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",

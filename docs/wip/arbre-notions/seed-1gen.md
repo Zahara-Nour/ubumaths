@@ -105,7 +105,7 @@ second degré », qui vise le point du module (**auto-référence** : 1GEN-027),
 
 ### B. Reprise de la liste de 2de (C16 : « À la liste ci-dessous s'ajoute la liste des automatismes travaillés en classe de seconde »)
 
-Les **58 cibles** de la liste de 2de, reprises telles quelles avec le grade `1_GEN` (comme en
+Les **58 cibles** (60 depuis la passe du cycle 3 : + 6-199, 6-201) de la liste de 2de, reprises telles quelles avec le grade `1_GEN` (comme en
 1re spé et en 1re techno).
 
 ### E. Entretien (U5/V1) — 7 références (tableau plus haut)
