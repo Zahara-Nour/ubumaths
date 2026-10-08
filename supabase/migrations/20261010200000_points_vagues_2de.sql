@@ -37,6 +37,9 @@ begin
 	if v_id is null then
 		raise exception 'point 2-332 (grade 2) introuvable';
 	end if;
+	-- Verrou jusqu'à la fin de la transaction : aucun usage ne peut s'insérer entre le
+	-- comptage et la suppression (une clé étrangère prend un verrou incompatible).
+	perform 1 from public.curriculum_points where id = v_id for update;
 	select (select count(*) from public.curriculum_point_automatismes where point_id = v_id)
 	     + (select count(*) from public.question_template_points where point_id = v_id)
 	     + (select count(*) from public.exercise_curriculum_points where point_id = v_id)
