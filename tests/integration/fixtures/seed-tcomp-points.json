@@ -1,0 +1,2072 @@
+{
+	"version": "2026-10-07.15",
+	"points": [
+		{
+			"code": "TCOMP-201",
+			"grade": "T_COMP",
+			"display_order": 1,
+			"name": "Notion de couple, de triplet et plus généralement de $n$-uplet et celle de produit cartésien",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Vocabulaire ensembliste et logique",
+			"branche": "Ensembles",
+			"notion": "Cardinal et produit cartésien",
+			"sous_notion": "produit cartésien"
+		},
+		{
+			"code": "TCOMP-202",
+			"grade": "T_COMP",
+			"display_order": 2,
+			"name": "Statistique descriptive : caractéristiques de dispersion — déciles, rapport interdécile",
+			"kind": "connaissance",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Thèmes d'étude > Répartition des richesses, inégalités",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "déciles et rapport interdécile"
+		},
+		{
+			"code": "TCOMP-203",
+			"grade": "T_COMP",
+			"display_order": 3,
+			"name": "Approche intuitive de la notion de limite, finie ou infinie, d'une suite",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "TCOMP-204",
+			"grade": "T_COMP",
+			"display_order": 4,
+			"name": "Approche intuitive des opérations sur les limites",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "opérations"
+		},
+		{
+			"code": "TCOMP-205",
+			"grade": "T_COMP",
+			"display_order": 5,
+			"name": "Approche intuitive du passage à la limite dans les inégalités et du théorème des gendarmes",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "comparaison et encadrement"
+		},
+		{
+			"code": "TCOMP-206",
+			"grade": "T_COMP",
+			"display_order": 6,
+			"name": "Limite d'une suite géométrique de raison positive",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "suites géométriques"
+		},
+		{
+			"code": "TCOMP-207",
+			"grade": "T_COMP",
+			"display_order": 7,
+			"name": "Limite de la somme des termes d'une suite géométrique de raison positive strictement inférieure à $1$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "suites géométriques"
+		},
+		{
+			"code": "TCOMP-208",
+			"grade": "T_COMP",
+			"display_order": 8,
+			"name": "Suites arithmético-géométriques",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites arithmético-géométriques",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-209",
+			"grade": "T_COMP",
+			"display_order": 9,
+			"name": "Calculer une limite de suite géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "suites géométriques"
+		},
+		{
+			"code": "TCOMP-210",
+			"grade": "T_COMP",
+			"display_order": 10,
+			"name": "Calculer la limite de la somme des termes d'une suite géométrique de raison positive et strictement inférieure à $1$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "suites géométriques"
+		},
+		{
+			"code": "TCOMP-211",
+			"grade": "T_COMP",
+			"display_order": 11,
+			"name": "Représenter graphiquement une suite donnée par une relation de récurrence $u_{n+1} = f(u_n)$ où $f$ est une fonction continue d'un intervalle $I$ dans lui-même",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites récurrentes",
+			"sous_notion": "escalier"
+		},
+		{
+			"code": "TCOMP-212",
+			"grade": "T_COMP",
+			"display_order": 12,
+			"name": "Conjecturer le comportement global ou asymptotique d'une suite donnée par une relation de récurrence $u_{n+1} = f(u_n)$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites récurrentes",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-213",
+			"grade": "T_COMP",
+			"display_order": 13,
+			"name": "Pour une récurrence arithmético-géométrique : rechercher une suite constante solution particulière",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites arithmético-géométriques",
+			"sous_notion": "solution constante"
+		},
+		{
+			"code": "TCOMP-214",
+			"grade": "T_COMP",
+			"display_order": 14,
+			"name": "Pour une récurrence arithmético-géométrique : utiliser une suite constante solution particulière pour déterminer toutes les solutions",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites arithmético-géométriques",
+			"sous_notion": "suite auxiliaire"
+		},
+		{
+			"code": "TCOMP-215",
+			"grade": "T_COMP",
+			"display_order": 15,
+			"name": "Limite des sommes des termes d'une suite géométrique de raison positive strictement inférieure à $1$ (démonstration)",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Limites de suites",
+			"sous_notion": "suites géométriques"
+		},
+		{
+			"code": "TCOMP-216",
+			"grade": "T_COMP",
+			"display_order": 16,
+			"name": "Recherche de seuils",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites et modélisation",
+			"sous_notion": "seuil"
+		},
+		{
+			"code": "TCOMP-217",
+			"grade": "T_COMP",
+			"display_order": 17,
+			"name": "Pour une suite récurrente $u_{n+1} = f(u_n)$, calcul des termes successifs",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites récurrentes",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-218",
+			"grade": "T_COMP",
+			"display_order": 18,
+			"name": "Recherche de valeurs approchées de constantes mathématiques, par exemple $\\pi$, $\\ln 2$, $\\sqrt{2}$",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites et modélisation",
+			"sous_notion": "algorithmes"
+		},
+		{
+			"code": "TCOMP-219",
+			"grade": "T_COMP",
+			"display_order": 19,
+			"name": "Notion de limite d'une fonction ; asymptotes horizontales ou verticales",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Limites de fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-220",
+			"grade": "T_COMP",
+			"display_order": 20,
+			"name": "Lien entre la notion de limite et la continuité",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sous_notion": "continuité en un point"
+		},
+		{
+			"code": "TCOMP-221",
+			"grade": "T_COMP",
+			"display_order": 21,
+			"name": "Limites des fonctions de référence (carré, cube, racine carrée, inverse, exponentielle, logarithme)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Limites de fonctions",
+			"sous_notion": "opérations"
+		},
+		{
+			"code": "TCOMP-222",
+			"grade": "T_COMP",
+			"display_order": 22,
+			"name": "Théorème des valeurs intermédiaires (admis). Cas des fonctions strictement monotones",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sous_notion": "valeurs intermédiaires"
+		},
+		{
+			"code": "TCOMP-223",
+			"grade": "T_COMP",
+			"display_order": 23,
+			"name": "Réciproque d'une fonction continue strictement monotone sur un intervalle, représentation graphique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sous_notion": "fonction réciproque"
+		},
+		{
+			"code": "TCOMP-224",
+			"grade": "T_COMP",
+			"display_order": 24,
+			"name": "Fonction logarithme népérien : réciproque de la fonction exponentielle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "réciproque de l'exponentielle"
+		},
+		{
+			"code": "TCOMP-225",
+			"grade": "T_COMP",
+			"display_order": 25,
+			"name": "Limites et représentation graphique de la fonction logarithme népérien",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "courbe"
+		},
+		{
+			"code": "TCOMP-226",
+			"grade": "T_COMP",
+			"display_order": 26,
+			"name": "Équation fonctionnelle du logarithme népérien",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "propriétés algébriques"
+		},
+		{
+			"code": "TCOMP-227",
+			"grade": "T_COMP",
+			"display_order": 27,
+			"name": "Fonction dérivée du logarithme népérien",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "dérivée"
+		},
+		{
+			"code": "TCOMP-228",
+			"grade": "T_COMP",
+			"display_order": 28,
+			"name": "Fonction dérivée de $x \\mapsto f(ax + b)$, $x \\mapsto e^{u(x)}$, $x \\mapsto \\ln u(x)$, $x \\mapsto u(x)^2$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions composées"
+		},
+		{
+			"code": "TCOMP-229",
+			"grade": "T_COMP",
+			"display_order": 29,
+			"name": "Calculer une fonction dérivée",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "opérations sur les dérivées"
+		},
+		{
+			"code": "TCOMP-230",
+			"grade": "T_COMP",
+			"display_order": 30,
+			"name": "Calculer des limites",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Limites de fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-231",
+			"grade": "T_COMP",
+			"display_order": 31,
+			"name": "Dresser un tableau de variation",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "étude de fonction"
+		},
+		{
+			"code": "TCOMP-232",
+			"grade": "T_COMP",
+			"display_order": 32,
+			"name": "Dans le cadre de la résolution de problème, utiliser l'allure des courbes représentatives des fonctions inverse, carré, cube, racine carrée, exponentielle et logarithme",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-233",
+			"grade": "T_COMP",
+			"display_order": 33,
+			"name": "Exploiter le tableau de variation pour déterminer le nombre de solutions d'une équation du type $f(x) = k$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sous_notion": "valeurs intermédiaires"
+		},
+		{
+			"code": "TCOMP-234",
+			"grade": "T_COMP",
+			"display_order": 34,
+			"name": "Exploiter le tableau de variation pour résoudre une inéquation du type $f(x) \\leqslant k$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "variations"
+		},
+		{
+			"code": "TCOMP-235",
+			"grade": "T_COMP",
+			"display_order": 35,
+			"name": "Déterminer des valeurs approchées, un encadrement d'une solution d'une équation du type $f(x) = k$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sous_notion": "encadrement d'une solution"
+		},
+		{
+			"code": "TCOMP-236",
+			"grade": "T_COMP",
+			"display_order": 36,
+			"name": "Utiliser l'équation fonctionnelle du logarithme pour transformer une écriture",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "propriétés algébriques"
+		},
+		{
+			"code": "TCOMP-237",
+			"grade": "T_COMP",
+			"display_order": 37,
+			"name": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation, une inéquation",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "équations et inéquations"
+		},
+		{
+			"code": "TCOMP-238",
+			"grade": "T_COMP",
+			"display_order": 38,
+			"name": "Utiliser l'équation fonctionnelle du logarithme pour résoudre une équation, une inéquation",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "équations et inéquations"
+		},
+		{
+			"code": "TCOMP-239",
+			"grade": "T_COMP",
+			"display_order": 39,
+			"name": "Utiliser la relation $\\ln q^n = n \\ln q$ pour déterminer un seuil",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Suites",
+			"notion": "Suites et modélisation",
+			"sous_notion": "seuil"
+		},
+		{
+			"code": "TCOMP-240",
+			"grade": "T_COMP",
+			"display_order": 40,
+			"name": "Relations $\\ln(ab) = \\ln a + \\ln b$, $\\ln\\left(\\frac{1}{a}\\right) = -\\ln a$",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "propriétés algébriques"
+		},
+		{
+			"code": "TCOMP-241",
+			"grade": "T_COMP",
+			"display_order": 41,
+			"name": "Calcul de la fonction dérivée du logarithme, en admettant sa dérivabilité",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "dérivée"
+		},
+		{
+			"code": "TCOMP-242",
+			"grade": "T_COMP",
+			"display_order": 42,
+			"name": "Calcul de la fonction dérivée de $\\ln u$, de $\\exp u$",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions composées"
+		},
+		{
+			"code": "TCOMP-243",
+			"grade": "T_COMP",
+			"display_order": 43,
+			"name": "Méthodes de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : balayage, dichotomie, méthode de Newton",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sous_notion": "encadrement d'une solution"
+		},
+		{
+			"code": "TCOMP-244",
+			"grade": "T_COMP",
+			"display_order": 44,
+			"name": "Algorithme de Briggs pour le calcul de logarithmes",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-245",
+			"grade": "T_COMP",
+			"display_order": 45,
+			"name": "Sur des exemples, notion d'une solution d'équation différentielle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "Généralités",
+			"sous_notion": "notion de solution"
+		},
+		{
+			"code": "TCOMP-246",
+			"grade": "T_COMP",
+			"display_order": 46,
+			"name": "Notion de primitive, en liaison avec l'équation différentielle $y' = f$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = f",
+			"sous_notion": "primitives : notion"
+		},
+		{
+			"code": "TCOMP-247",
+			"grade": "T_COMP",
+			"display_order": 47,
+			"name": "Deux primitives d'une même fonction continue sur un intervalle diffèrent d'une constante",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = f",
+			"sous_notion": "primitives : notion"
+		},
+		{
+			"code": "TCOMP-248",
+			"grade": "T_COMP",
+			"display_order": 48,
+			"name": "Équation différentielle $y' = ay + b$, où $a$ et $b$ sont des réels",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = ay + b",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-249",
+			"grade": "T_COMP",
+			"display_order": 49,
+			"name": "Allure des courbes des solutions de l'équation différentielle $y' = ay + b$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "Généralités",
+			"sous_notion": "allure des courbes"
+		},
+		{
+			"code": "TCOMP-250",
+			"grade": "T_COMP",
+			"display_order": 50,
+			"name": "Vérifier qu'une fonction donnée est solution d'une équation différentielle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "Généralités",
+			"sous_notion": "notion de solution"
+		},
+		{
+			"code": "TCOMP-251",
+			"grade": "T_COMP",
+			"display_order": 51,
+			"name": "Déterminer les primitives d'une fonction, en reconnaissant la dérivée d'une fonction de référence",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = f",
+			"sous_notion": "primitives des fonctions de référence"
+		},
+		{
+			"code": "TCOMP-252",
+			"grade": "T_COMP",
+			"display_order": 52,
+			"name": "Déterminer les primitives d'une fonction de la forme $2uu'$, $e^{u}u'$ ou $\\frac{u'}{u}$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = f",
+			"sous_notion": "formes u′eᵘ, 2uu′, u′/u"
+		},
+		{
+			"code": "TCOMP-253",
+			"grade": "T_COMP",
+			"display_order": 53,
+			"name": "Résoudre une équation différentielle $y' = ay$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = ay",
+			"sous_notion": "solution générale"
+		},
+		{
+			"code": "TCOMP-254",
+			"grade": "T_COMP",
+			"display_order": 54,
+			"name": "Pour une équation différentielle $y' = ay + b$ : déterminer une solution particulière constante",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = ay + b",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-255",
+			"grade": "T_COMP",
+			"display_order": 55,
+			"name": "Pour une équation différentielle $y' = ay + b$ : utiliser une solution particulière constante pour déterminer la solution générale",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = ay + b",
+			"sous_notion": "solution générale"
+		},
+		{
+			"code": "TCOMP-256",
+			"grade": "T_COMP",
+			"display_order": 56,
+			"name": "Deux primitives d'une même fonction continue sur un intervalle diffèrent d'une constante (démonstration)",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = f",
+			"sous_notion": "primitives : notion"
+		},
+		{
+			"code": "TCOMP-257",
+			"grade": "T_COMP",
+			"display_order": 57,
+			"name": "Résolution de l'équation différentielle $y' = ay$",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "y′ = ay",
+			"sous_notion": "solution générale"
+		},
+		{
+			"code": "TCOMP-258",
+			"grade": "T_COMP",
+			"display_order": 58,
+			"name": "Sur des exemples, résolution approchée d'une équation différentielle par la méthode d'Euler",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Primitives et équations différentielles",
+			"branche": "Équations différentielles",
+			"notion": "Généralités",
+			"sous_notion": "méthode d'Euler"
+		},
+		{
+			"code": "TCOMP-259",
+			"grade": "T_COMP",
+			"display_order": 59,
+			"name": "Dérivée seconde d'une fonction",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": "dérivée seconde"
+		},
+		{
+			"code": "TCOMP-260",
+			"grade": "T_COMP",
+			"display_order": 60,
+			"name": "Fonction convexe sur un intervalle : définition par la position relative de la courbe représentative et des sécantes",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": "caractérisations"
+		},
+		{
+			"code": "TCOMP-261",
+			"grade": "T_COMP",
+			"display_order": 61,
+			"name": "Lorsque $f$ est dérivable, équivalence admise avec la position de la courbe par rapport aux tangentes",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": "caractérisations"
+		},
+		{
+			"code": "TCOMP-262",
+			"grade": "T_COMP",
+			"display_order": 62,
+			"name": "Caractérisation admise de la convexité par la croissance de $f'$, la positivité de $f''$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": "caractérisations"
+		},
+		{
+			"code": "TCOMP-263",
+			"grade": "T_COMP",
+			"display_order": 63,
+			"name": "Point d'inflexion",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": "point d'inflexion"
+		},
+		{
+			"code": "TCOMP-264",
+			"grade": "T_COMP",
+			"display_order": 64,
+			"name": "Reconnaitre sur une représentation graphique une fonction convexe, concave, un point d'inflexion",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": "lecture graphique"
+		},
+		{
+			"code": "TCOMP-265",
+			"grade": "T_COMP",
+			"display_order": 65,
+			"name": "Étudier la convexité, la concavité, d'une fonction deux fois dérivable sur un intervalle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions convexes",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-266",
+			"grade": "T_COMP",
+			"display_order": 66,
+			"name": "Définition de l'intégrale d'une fonction continue et positive sur $[a, b]$ comme aire sous la courbe. Notation $\\int_a^b f(x)\\,\\mathrm{d}x$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": "aire algébrique"
+		},
+		{
+			"code": "TCOMP-267",
+			"grade": "T_COMP",
+			"display_order": 67,
+			"name": "Relation de Chasles",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Calcul d'intégrales",
+			"sous_notion": "relation de Chasles"
+		},
+		{
+			"code": "TCOMP-268",
+			"grade": "T_COMP",
+			"display_order": 68,
+			"name": "Valeur moyenne d'une fonction continue sur $[a, b]$. Approche graphique et numérique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Valeur moyenne",
+			"sous_notion": "calcul"
+		},
+		{
+			"code": "TCOMP-269",
+			"grade": "T_COMP",
+			"display_order": 69,
+			"name": "La valeur moyenne est comprise entre les bornes de la fonction",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Valeur moyenne",
+			"sous_notion": "encadrement"
+		},
+		{
+			"code": "TCOMP-270",
+			"grade": "T_COMP",
+			"display_order": 70,
+			"name": "Approximation d'une intégrale par la méthode des rectangles",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Calcul d'intégrales",
+			"sous_notion": "méthode des rectangles"
+		},
+		{
+			"code": "TCOMP-271",
+			"grade": "T_COMP",
+			"display_order": 71,
+			"name": "Présentation de l'intégrale des fonctions continues de signe quelconque",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": "aire algébrique"
+		},
+		{
+			"code": "TCOMP-272",
+			"grade": "T_COMP",
+			"display_order": 72,
+			"name": "Théorème : si $f$ est continue sur $[a, b]$, la fonction $F$ définie sur $[a, b]$ par $F(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est dérivable sur $[a, b]$ et a pour dérivée $f$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Fonction intégrale",
+			"sous_notion": "dérivée d'une fonction intégrale"
+		},
+		{
+			"code": "TCOMP-273",
+			"grade": "T_COMP",
+			"display_order": 73,
+			"name": "Calcul d'intégrales à l'aide de primitives : si $F$ est une primitive de $f$, alors $\\int_a^b f(x)\\,\\mathrm{d}x = F(b) - F(a)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Calcul d'intégrales",
+			"sous_notion": "par une primitive"
+		},
+		{
+			"code": "TCOMP-274",
+			"grade": "T_COMP",
+			"display_order": 74,
+			"name": "Estimer graphiquement ou encadrer une intégrale",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": "lecture graphique"
+		},
+		{
+			"code": "TCOMP-275",
+			"grade": "T_COMP",
+			"display_order": 75,
+			"name": "Estimer graphiquement ou encadrer une valeur moyenne",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Valeur moyenne",
+			"sous_notion": "encadrement"
+		},
+		{
+			"code": "TCOMP-276",
+			"grade": "T_COMP",
+			"display_order": 76,
+			"name": "Calculer une intégrale",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Calcul d'intégrales",
+			"sous_notion": "par une primitive"
+		},
+		{
+			"code": "TCOMP-277",
+			"grade": "T_COMP",
+			"display_order": 77,
+			"name": "Calculer une valeur moyenne",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Valeur moyenne",
+			"sous_notion": "calcul"
+		},
+		{
+			"code": "TCOMP-278",
+			"grade": "T_COMP",
+			"display_order": 78,
+			"name": "Calculer l'aire sous une courbe",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": "aire algébrique"
+		},
+		{
+			"code": "TCOMP-279",
+			"grade": "T_COMP",
+			"display_order": 79,
+			"name": "Calculer l'aire entre deux courbes",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": "aire entre deux courbes"
+		},
+		{
+			"code": "TCOMP-280",
+			"grade": "T_COMP",
+			"display_order": 80,
+			"name": "Interpréter une intégrale dans un contexte issu d'une autre discipline",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-281",
+			"grade": "T_COMP",
+			"display_order": 81,
+			"name": "Interpréter une valeur moyenne dans un contexte issu d'une autre discipline",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Valeur moyenne",
+			"sous_notion": "interprétation"
+		},
+		{
+			"code": "TCOMP-282",
+			"grade": "T_COMP",
+			"display_order": 82,
+			"name": "Dérivée de $x \\mapsto \\int_a^x f(t)\\,\\mathrm{d}t$ lorsque $f$ est une fonction continue positive croissante",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Fonction intégrale",
+			"sous_notion": "dérivée d'une fonction intégrale"
+		},
+		{
+			"code": "TCOMP-283",
+			"grade": "T_COMP",
+			"display_order": 83,
+			"name": "Méthode des rectangles, des trapèzes",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Calcul d'intégrales",
+			"sous_notion": "méthode des rectangles"
+		},
+		{
+			"code": "TCOMP-284",
+			"grade": "T_COMP",
+			"display_order": 84,
+			"name": "Méthode de Monte-Carlo pour un calcul d'aire",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Intégration",
+			"branche": "Intégration",
+			"notion": "Intégrale et aire",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-285",
+			"grade": "T_COMP",
+			"display_order": 85,
+			"name": "Loi uniforme sur $\\{1, 2, \\ldots, n\\}$. Espérance",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "loi uniforme discrète"
+		},
+		{
+			"code": "TCOMP-286",
+			"grade": "T_COMP",
+			"display_order": 86,
+			"name": "Épreuve de Bernoulli. Loi de Bernoulli : définition, espérance et écart type",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "schéma de Bernoulli"
+		},
+		{
+			"code": "TCOMP-287",
+			"grade": "T_COMP",
+			"display_order": 87,
+			"name": "Schéma de Bernoulli. Représentation par un arbre",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "schéma de Bernoulli"
+		},
+		{
+			"code": "TCOMP-288",
+			"grade": "T_COMP",
+			"display_order": 88,
+			"name": "Coefficients binomiaux : définition (nombre de façons d'obtenir $k$ succès dans un schéma de Bernoulli de taille $n$), triangle de Pascal, symétrie",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "coefficients binomiaux"
+		},
+		{
+			"code": "TCOMP-289",
+			"grade": "T_COMP",
+			"display_order": 89,
+			"name": "Variable aléatoire suivant une loi binomiale $\\mathcal{B}(n, p)$. Interprétation : nombre de succès dans le schéma de Bernoulli",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-290",
+			"grade": "T_COMP",
+			"display_order": 90,
+			"name": "Loi binomiale : expression",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "calcul de probabilités"
+		},
+		{
+			"code": "TCOMP-291",
+			"grade": "T_COMP",
+			"display_order": 91,
+			"name": "Loi binomiale : espérance et écart type (admis)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "espérance et variance"
+		},
+		{
+			"code": "TCOMP-292",
+			"grade": "T_COMP",
+			"display_order": 92,
+			"name": "Loi binomiale : représentation graphique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-293",
+			"grade": "T_COMP",
+			"display_order": 93,
+			"name": "Loi géométrique : définition, expression, espérance (admise), représentation graphique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "loi géométrique"
+		},
+		{
+			"code": "TCOMP-294",
+			"grade": "T_COMP",
+			"display_order": 94,
+			"name": "Loi géométrique : propriété caractéristique (loi sans mémoire)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "absence de mémoire"
+		},
+		{
+			"code": "TCOMP-295",
+			"grade": "T_COMP",
+			"display_order": 95,
+			"name": "Identifier des situations où une variable aléatoire suit une loi de Bernoulli, une loi binomiale ou une loi géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "reconnaître une loi"
+		},
+		{
+			"code": "TCOMP-296",
+			"grade": "T_COMP",
+			"display_order": 96,
+			"name": "Déterminer des coefficients binomiaux à l'aide du triangle de Pascal",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "coefficients binomiaux"
+		},
+		{
+			"code": "TCOMP-297",
+			"grade": "T_COMP",
+			"display_order": 97,
+			"name": "Dans le cas où $X$ suit une loi binomiale, calculer à l'aide d'une calculatrice ou d'un logiciel les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$, etc.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "calcul de probabilités"
+		},
+		{
+			"code": "TCOMP-298",
+			"grade": "T_COMP",
+			"display_order": 98,
+			"name": "Calculer explicitement les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$ pour une variable aléatoire $X$ suivant une loi géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "loi géométrique"
+		},
+		{
+			"code": "TCOMP-299",
+			"grade": "T_COMP",
+			"display_order": 99,
+			"name": "Dans le cas où $X$ suit une loi binomiale, déterminer un intervalle $I$ pour lequel la probabilité $P(X \\in I)$ est inférieure à une valeur donnée $\\alpha$, ou supérieure à $1 - \\alpha$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "intervalle de fluctuation"
+		},
+		{
+			"code": "TCOMP-300",
+			"grade": "T_COMP",
+			"display_order": 100,
+			"name": "Dans le cadre de la résolution de problème, utiliser l'espérance des lois précédentes (uniforme, de Bernoulli, binomiale, géométrique)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "espérance"
+		},
+		{
+			"code": "TCOMP-301",
+			"grade": "T_COMP",
+			"display_order": 101,
+			"name": "Utiliser en situation la caractérisation d'une loi géométrique par l'absence de mémoire",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "absence de mémoire"
+		},
+		{
+			"code": "TCOMP-302",
+			"grade": "T_COMP",
+			"display_order": 102,
+			"name": "Calculer des probabilités dans des situations faisant intervenir des probabilités conditionnelles",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": null
+		},
+		{
+			"code": "TCOMP-303",
+			"grade": "T_COMP",
+			"display_order": 103,
+			"name": "Calculer des probabilités dans des situations faisant intervenir des répétitions d'expériences aléatoires",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "TCOMP-304",
+			"grade": "T_COMP",
+			"display_order": 104,
+			"name": "Espérance et écart type d'une variable aléatoire suivant une loi de Bernoulli",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "schéma de Bernoulli"
+		},
+		{
+			"code": "TCOMP-305",
+			"grade": "T_COMP",
+			"display_order": 105,
+			"name": "Espérance d'une variable aléatoire uniforme sur $\\{1, 2, \\ldots, n\\}$",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "loi uniforme discrète"
+		},
+		{
+			"code": "TCOMP-306",
+			"grade": "T_COMP",
+			"display_order": 106,
+			"name": "Espérance d'une variable aléatoire suivant une loi binomiale ($n \\leqslant 3$)",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "espérance et variance"
+		},
+		{
+			"code": "TCOMP-307",
+			"grade": "T_COMP",
+			"display_order": 107,
+			"name": "Caractérisation d'une loi géométrique par l'absence de mémoire",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois discrètes",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "absence de mémoire"
+		},
+		{
+			"code": "TCOMP-308",
+			"grade": "T_COMP",
+			"display_order": 108,
+			"name": "Notion de loi à densité à partir d'exemples. Représentation d'une probabilité comme une aire",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "densité et aire"
+		},
+		{
+			"code": "TCOMP-309",
+			"grade": "T_COMP",
+			"display_order": 109,
+			"name": "Fonction de répartition $x \\mapsto P(X \\leqslant x)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "fonction de répartition"
+		},
+		{
+			"code": "TCOMP-310",
+			"grade": "T_COMP",
+			"display_order": 110,
+			"name": "Espérance et variance d'une loi à densité, expressions sous forme d'intégrales",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "espérance et variance"
+		},
+		{
+			"code": "TCOMP-311",
+			"grade": "T_COMP",
+			"display_order": 111,
+			"name": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$. Fonction de densité, fonction de répartition. Espérance et variance",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "loi uniforme continue"
+		},
+		{
+			"code": "TCOMP-312",
+			"grade": "T_COMP",
+			"display_order": 112,
+			"name": "Loi exponentielle. Fonction densité, fonction de répartition. Espérance",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "loi exponentielle"
+		},
+		{
+			"code": "TCOMP-313",
+			"grade": "T_COMP",
+			"display_order": 113,
+			"name": "Propriété d'absence de mémoire de la loi exponentielle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "absence de mémoire"
+		},
+		{
+			"code": "TCOMP-314",
+			"grade": "T_COMP",
+			"display_order": 114,
+			"name": "Déterminer si une fonction est une densité de probabilité",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "densité et aire"
+		},
+		{
+			"code": "TCOMP-315",
+			"grade": "T_COMP",
+			"display_order": 115,
+			"name": "Calculer des probabilités pour une variable aléatoire à densité",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "densité et aire"
+		},
+		{
+			"code": "TCOMP-316",
+			"grade": "T_COMP",
+			"display_order": 116,
+			"name": "Calculer l'espérance d'une variable aléatoire à densité",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Autres lois",
+			"sous_notion": "espérance et variance"
+		},
+		{
+			"code": "TCOMP-317",
+			"grade": "T_COMP",
+			"display_order": 117,
+			"name": "Simulation d'une variable de Bernoulli ou d'un lancer de dé (ou d'une variable uniforme sur un ensemble fini) à partir d'une variable aléatoire de loi uniforme sur $[0, 1]$",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "simulation"
+		},
+		{
+			"code": "TCOMP-318",
+			"grade": "T_COMP",
+			"display_order": 118,
+			"name": "Simulation du comportement de la somme de $n$ variables aléatoires indépendantes et de même loi",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Lois à densité",
+			"branche": "Probabilités",
+			"notion": "Sommes et concentration",
+			"sous_notion": "échantillons"
+		},
+		{
+			"code": "TCOMP-319",
+			"grade": "T_COMP",
+			"display_order": 119,
+			"name": "Nuage de points",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "nuage de points"
+		},
+		{
+			"code": "TCOMP-320",
+			"grade": "T_COMP",
+			"display_order": 120,
+			"name": "Point moyen",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "point moyen"
+		},
+		{
+			"code": "TCOMP-321",
+			"grade": "T_COMP",
+			"display_order": 121,
+			"name": "Ajustement affine. Droite des moindres carrés",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "TCOMP-322",
+			"grade": "T_COMP",
+			"display_order": 122,
+			"name": "Coefficient de corrélation",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "coefficient de corrélation"
+		},
+		{
+			"code": "TCOMP-323",
+			"grade": "T_COMP",
+			"display_order": 123,
+			"name": "Ajustement se ramenant par changement de variable à un ajustement affine",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "changement de variable"
+		},
+		{
+			"code": "TCOMP-324",
+			"grade": "T_COMP",
+			"display_order": 124,
+			"name": "Application des ajustements à des interpolations ou extrapolations",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "TCOMP-325",
+			"grade": "T_COMP",
+			"display_order": 125,
+			"name": "Représenter un nuage de points",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "nuage de points"
+		},
+		{
+			"code": "TCOMP-326",
+			"grade": "T_COMP",
+			"display_order": 126,
+			"name": "Calculer les coordonnées d'un point moyen",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "point moyen"
+		},
+		{
+			"code": "TCOMP-327",
+			"grade": "T_COMP",
+			"display_order": 127,
+			"name": "Déterminer une droite de régression, à l'aide de la calculatrice, d'un logiciel ou par calcul",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "TCOMP-328",
+			"grade": "T_COMP",
+			"display_order": 128,
+			"name": "Dans le cadre d'une résolution de problème, utiliser un ajustement pour interpoler, extrapoler",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "TCOMP-329",
+			"grade": "T_COMP",
+			"display_order": 129,
+			"name": "Droite des moindres carrés (démonstration)",
+			"kind": "demonstration",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		}
+	],
+	"references": [
+		{
+			"code": "2-201",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-202",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-203",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-204",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-206",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-207",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-208",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-209",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-210",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-211",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-212",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-213",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-214",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-215",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "1SPE-294",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-377",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-367",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-378",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-379",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-267",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-328",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-330",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "1SPE-251",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-016",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-022",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-039",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-336",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-329",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-349",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-316",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-315",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-314",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-077",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-372",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-030",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-096",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-382",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-370",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-029",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-039",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-040",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-396",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-397",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-399",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-400",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-276",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-277",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-013",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-025",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-005",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-106",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-119",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "CM1-068",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-150",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-051",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "CE2-052",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-159",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-052",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "CE2-047",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-011",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-008",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-025",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-014",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-269",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-273",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-274",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-035",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-140",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-056",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-141",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-057",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-040",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-331",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-041",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-044",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-016",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-047",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-144",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-147",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-152",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-061",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-052",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-050",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "5-053",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-029",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-021",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-034",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-022",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "3-023",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-380",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-381",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-186",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "4-048",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "6-187",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-205",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-216",
+			"grade": "T_COMP"
+		},
+		{
+			"code": "2-217",
+			"grade": "T_COMP"
+		}
+	]
+}
