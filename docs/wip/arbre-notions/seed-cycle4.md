@@ -492,11 +492,9 @@ révolution. » (5e) traverse `Aires` et `Volumes` → 5-052 et 5-053.
    Préalgorithmique.
 2. **« Connaitre les carrés des entiers de 0 à 12 »** (5-029) → `Entiers :
 multiplication > carrés` — ✅ tranché David.
-3. **Contre-exemple** (5-041) → `Calcul littéral` (notion) — ✅ tranché David.
-   **Conjectures avec algorithme ou tableur** (5-042) — ⏳ EN ATTENTE (question de
-   David) : reco `Calcul littéral` (notion), le contenu est la conjecture ALGÉBRIQUE
-   (prélude de 5-040, démontrer par le calcul littéral) et l'outil n'est qu'un
-   support ; alternative : `Algorithmique > Variables et instructions`.
+3. **Contre-exemple et conjectures** (5-041, 5-042) → `Calcul littéral` (notion) —
+   ✅ tranché David (le contenu est la conjecture algébrique, prélude de 5-040 ;
+   l'outil n'est qu'un support — vaut aussi pour la jumelle 4-026 → Équations).
 4. **« Coefficient de proportionnalité »** (5-088) → `Situations de proportionnalité >
 appliquer` — ✅ tranché David.
 5. **« Exprimer l'opposé d'un nombre rationnel »** (4-007) → `Fractions : sens et
