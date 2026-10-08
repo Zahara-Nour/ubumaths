@@ -1,6 +1,7 @@
 # Seed Tle technologique — points du programme ET références (architecture points → nœuds)
 
-> **Statut : PROPOSITION, en attente de validation par David.** ⚠️ Soin maximal (classes de lycée).
+> **Statut : VALIDÉ par David le 2026-10-08 (« je te suis » : recommandations suivies sur
+> les 7 discutables, T3 et T4). Livraison en cours.** ⚠️ Soin maximal (classes de lycée).
 > Source : « Annexe — Programme d'enseignement de mathématiques de la classe terminale de la
 > voie technologique » (11 p., `progs-lycee/terminale-techno.pdf`, fourni par David le
 > 2026-10-07), relu **puce par puce** — enseignement commun à toutes les séries. **Pas
@@ -149,7 +150,10 @@ simulation`, pour le lien avec la simulation de 1re.
    `Solides > sections planes` (doc d'écarts : on coupe un solide). Alternative :
    `Figures planes > coniques`, où vont la tangente et le raccordement.
 
-## Questions
+## Questions — TRANCHÉES (David, 2026-10-08 : « je te suis », recommandations suivies)
+
+> **T3** : Situations algorithmiques = `algorithme` `approfondissement`.
+> **T4** : la liste d'automatismes de Tle seule, sans reprise de la liste de 1re.
 
 - **T3 — Situations algorithmiques de Tle : `approfondissement`.** Le BO de 1re disait
   qu'elles « **doivent** toutes faire l'objet d'un travail spécifique » (→ `attendu`, T2).
