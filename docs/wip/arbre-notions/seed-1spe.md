@@ -77,6 +77,66 @@ scission, `+` = deux anciens points fusionnés, — = sans ancien équivalent).
 | « Passer du registre de la langue naturelle au registre symbolique et inversement » (variables aléatoires)                                                                                                          | ✅ gardée — même choix qu'en 2de (2-395, probabilités conditionnelles).                                         |
 | « Choisir une forme adaptée… » · « calculer le produit scalaire en choisissant une méthode adaptée » · « Résoudre un problème d'optimisation » · « Utiliser la notion d'espérance dans une résolution de problème » | ✅ gardées : le problème est circonscrit à UN outil et UN geste (mêmes choix qu'en 2de : 2-275, 2-353).         |
 
+## ⚠️ Points trop vagues : spécifier ou retirer (question V2)
+
+> Règle de David (2026-10-08) : « des points trop vagues mériteraient d'être spécifiés
+> pour être questionnables, à moins que ce soit un point relevant de l'évaluation par
+> compétence ». Le libellé STOCKÉ devient le libellé spécifié (verbe d'action + objet
+> précis, sans rien ajouter au BO). Les Contenus (conn.) gardent le texte du BO : ils
+> nomment un savoir, questionnable tel quel (énoncer, appliquer).
+
+### A. Compétence → retiré
+
+| Point                                                                                     | Liens | Pourquoi                                                                                                                                                                                    |
+| ----------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1SPE-223 « Proposer, modéliser une situation permettant de générer une suite de nombres » | 0     | « Modéliser » est une des six compétences ; sa part questionnable est déjà portée par 1SPE-224 (relation pour un motif, un dénombrement) et 1SPE-235 (croissance linéaire / exponentielle). |
+
+### B. Capacités à spécifier
+
+| Point        | Libellé du BO                                                                                                                         | Libellé spécifié proposé                                                                                                                                                                                                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1SPE-203** | Utiliser les quantificateurs (∀ et ∃ non exigibles)                                                                                   | Écrire une proposition à l'aide de « pour tout » ou « il existe », et déterminer si elle est vraie (les symboles $\forall$ et $\exists$ ne sont pas exigibles)                                                                                                                                                               |
+| **1SPE-222** | Dans le cadre de l'étude d'une suite, utiliser le registre de la langue naturelle, algébrique, graphique, et passer de l'un à l'autre | Passer de l'expression d'une suite à sa représentation graphique et inversement : lire des termes sur un nuage de points ou un escalier, associer une formule à un nuage, conjecturer le sens de variation — nœud → `Généralités sur les suites > représentation graphique` (ses **7 modèles liés** sont exactement ceux-là) |
+| **1SPE-356** | Passer du registre de la langue naturelle au registre symbolique et inversement                                                       | Traduire un évènement décrit en langage naturel à l'aide de la variable aléatoire ($\{X = a\}$, $\{X \leqslant a\}$, $\{X > a\}$…), et inversement                                                                                                                                                                           |
+| **1SPE-357** | Modéliser une situation à l'aide d'une variable aléatoire                                                                             | Définir la variable aléatoire associée à une situation (gain d'un jeu, nombre de succès…) et donner l'ensemble de ses valeurs                                                                                                                                                                                                |
+| **1SPE-367** | Étudier sur des exemples la distance entre la moyenne d'un échantillon simulé de taille $n$ et l'espérance                            | Calculer, sur des échantillons simulés de tailles croissantes, l'écart entre la moyenne observée et l'espérance, et constater qu'il tend à diminuer                                                                                                                                                                          |
+
+### C. Approfondissements : un titre de sujet → un geste
+
+| Point        | Libellé du BO                                              | Libellé spécifié proposé                                                                                                   |
+| ------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **1SPE-242** | Tour de Hanoï                                              | Tour de Hanoï : établir la relation de récurrence du nombre minimal de déplacements et en déduire son expression explicite |
+| **1SPE-243** | Somme des $n$ premiers carrés, des $n$ premiers cubes      | Établir ou vérifier les formules de la somme des $n$ premiers carrés et des $n$ premiers cubes                             |
+| **1SPE-244** | Remboursement d'un emprunt par annuités constantes         | Calculer l'annuité constante de remboursement d'un emprunt à l'aide d'une suite géométrique                                |
+| **1SPE-326** | Loi des sinus                                              | Établir la loi des sinus et l'utiliser pour calculer une longueur ou un angle                                              |
+| **1SPE-327** | Concourance des hauteurs d'un triangle                     | Démontrer à l'aide du produit scalaire que les hauteurs d'un triangle sont concourantes                                    |
+| **1SPE-328** | Les médianes d'un triangle concourent au centre de gravité | Démontrer que les médianes d'un triangle concourent au centre de gravité                                                   |
+| **1SPE-347** | Exemples de succession de plusieurs épreuves indépendantes | Calculer une probabilité dans une succession de plus de deux épreuves indépendantes                                        |
+| **1SPE-348** | Exemples de marches aléatoires                             | Marche aléatoire : déterminer la loi de la position après quelques pas                                                     |
+
+### D. Exemples d'algorithme : un sujet → « écrire ou compléter un algorithme qui… »
+
+| Point        | Libellé du BO                                                                          | Libellé spécifié proposé                                                                                                                  |
+| ------------ | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **1SPE-238** | Calcul de termes d'une suite, de sommes de termes                                      | Écrire ou compléter un algorithme calculant des termes d'une suite ou des sommes de termes                                                |
+| **1SPE-239** | Calcul de seuil                                                                        | Écrire ou compléter un algorithme de recherche de seuil                                                                                   |
+| **1SPE-240** | Calcul de factorielle                                                                  | Écrire ou compléter un algorithme calculant $n!$                                                                                          |
+| **1SPE-241** | Liste des premiers termes d'une suite : Syracuse, Fibonacci                            | Écrire ou compléter un algorithme listant les premiers termes d'une suite (suites de Syracuse, de Fibonacci)                              |
+| **1SPE-290** | Méthode de Newton, en se limitant à des cas favorables                                 | Écrire ou compléter un algorithme approchant une solution de $f(x) = 0$ par la méthode de Newton (cas favorables)                         |
+| **1SPE-300** | Construction de l'exponentielle par la méthode d'Euler                                 | Écrire ou compléter un algorithme construisant une approximation de la fonction exponentielle par la méthode d'Euler                      |
+| **1SPE-301** | Valeur approchée de $e$ à l'aide de la suite $((1 + 1/n)^n)$                           | Écrire ou compléter un algorithme donnant une valeur approchée de $e$ à l'aide de la suite $\left(\left(1 + \tfrac{1}{n}\right)^n\right)$ |
+| **1SPE-311** | Approximation de $\pi$ par la méthode d'Archimède                                      | Écrire ou compléter un algorithme approchant $\pi$ par la méthode d'Archimède                                                             |
+| **1SPE-346** | Méthode de Monte-Carlo : aire sous la parabole, nombre $\pi$                           | Écrire ou compléter un algorithme estimant, par la méthode de Monte-Carlo, l'aire sous une parabole ou le nombre $\pi$                    |
+| **1SPE-362** | Algorithme renvoyant l'espérance, la variance ou l'écart type d'une variable aléatoire | Écrire ou compléter un algorithme renvoyant l'espérance, la variance ou l'écart type d'une variable aléatoire                             |
+| **1SPE-363** | Fréquence d'apparition des lettres d'un texte, en français, en anglais                 | Écrire ou compléter un algorithme calculant la fréquence d'apparition des lettres d'un texte                                              |
+
+Les autres capacités du document ont déjà un verbe d'action et un objet précis
+(calculer, déterminer, représenter, résoudre…) : questionnables telles quelles.
+
+⚠️ **La 2de (en prod) n'a pas eu cette passe** (ex. « Modéliser par des fonctions des
+situations issues des mathématiques… », les titres d'approfondissements) : à faire en
+une PR dédiée après la 1re, si V2 est validée.
+
 ## Anciens points absents du texte littéral du BO — S1 TRANCHÉE (David, 2026-10-08)
 
 L'ancien seed contient des libellés ajoutés à la relecture du 2026-08-30, absents du
@@ -419,6 +479,7 @@ Représenter des données > effectifs et fréquences` (c'est une distribution de
   contenu d'une année antérieure que ce programme demande d'entretenir ; sans elles, la
   page Programme de 1re ne montre pas ce vocabulaire) ou rien.
 - **S1 — TRANCHÉE** : ex-050, ex-054, ex-056 gardés comme points (1SPE-245, 249, 252) ; 062 et 017 non repris.
+- **V2 — les points trop vagues** (section dédiée) : 1 retrait (compétence), 5 capacités, 8 approfondissements et 11 exemples d'algorithme reformulés pour être questionnables (reco : oui).
 - **Validation d'ensemble** : les 12 scissions (26 points), les non-scissions, les 2 puces
   larges non retenues, les 5 discutables, les références (A + B).
 
