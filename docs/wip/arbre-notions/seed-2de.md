@@ -22,7 +22,7 @@
 | Attribut               | Valeur                                                                                                                                                                                                    |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `grade`                | `2`                                                                                                                                                                                                       |
-| `code`                 | **`2-201` à `2-402`** (code = 200 + display_order). L'ancien seed occupe `2-001`…`2-185` jusqu'à l'étape 4 de C5 (index de codes global)                                                                  |
+| `code`                 | **`2-201` à `2-400`** (code = 200 + display_order). L'ancien seed occupe `2-001`…`2-185` jusqu'à l'étape 4 de C5 (index de codes global)                                                                  |
 | `objective_id`, `rang` | `NULL`                                                                                                                                                                                                    |
 | `rubrique`             | « thème > objectif » du BO (C11), ex. `Fonctions > Variations et extrémums d'une fonction` ; la partie transversale « Vocabulaire ensembliste et logique » n'a pas d'objectifs → rubrique = le thème seul |
 | `kind`                 | conn. (Contenus) / s-f (Capacités) / dém. (Démonstrations) / **algo.** — questions L1-L2 ci-dessous                                                                                                       |
@@ -30,7 +30,8 @@
 | `regime_acquisition`   | `diversite` partout (pas de répertoire de faits nouveau en 2de ; les automatismes sont des références)                                                                                                    |
 | `display_order`        | ordre du BO (scissions insérées à leur place)                                                                                                                                                             |
 
-**202 points** (185 de l'ancien découpage + 17 issus des scissions multi-notions) et
+**200 points** (185 de l'ancien découpage + 17 issus des scissions multi-notions − 2
+puces non retenues : ex-2-099 et ex-2-100, trop larges — voir discutable 3) et
 **~30 lignes d'Automatismes → références** (cibles cycle 2 → 3e désormais toutes en
 base, plus des **auto-références** C13 quand la ligne porte sur un contenu introduit en
 2de). Libellés : repris de l'ancien référentiel (LaTeX MathLive déjà validé).
@@ -78,7 +79,7 @@ base, plus des **auto-références** C13 quand la ligne porte sur un contenu int
 
 ---
 
-## Les 202 points
+## Les 200 points
 
 > Colonnes : code (nouveau) · ex- (ancien code, pour le transfert des tags) · énoncé
 > (libellé de l'ancien référentiel, LaTeX MathLive) · kind · nœud. Rubrique = titre de
@@ -216,135 +217,133 @@ base, plus des **auto-références** C13 quand la ligne porte sur un contenu int
 | 2-301 | 096 | Calculer la distance entre deux points                                                                                       | s-f   | Géométrie repérée > milieu et distance                     |
 | 2-302 | 097 | Calculer les coordonnées du milieu d'un segment                                                                              | s-f   | Géométrie repérée > milieu et distance                     |
 | 2-303 | 098 | Caractériser alignement et parallélisme par la colinéarité de vecteurs                                                       | s-f   | Vecteurs : avec coordonnées > colinéarité et déterminant   |
-| 2-304 | 099 | Résoudre des problèmes en utilisant la représentation la plus adaptée des vecteurs                                           | s-f   | Vecteurs : sans coordonnées (notion)                       |
-| 2-305 | 100 | Résoudre des problèmes avec des méthodes diverses (méthodes vectorielles, repérées ou non, méthodes géométriques)            | s-f   | Géométrie repérée (notion) _(discutable 3)_                |
-| 2-306 | 101 | Caractérisations de la colinéarité de deux vecteurs non nuls : nullité du déterminant ; proportionnalité des coordonnées     | dém.  | Vecteurs : avec coordonnées > colinéarité et déterminant   |
-| 2-307 | 102 | Barycentre de deux ou trois points                                                                                           | s-f ⁺ | Vecteurs : sans coordonnées (notion)                       |
-| 2-308 | 103 | Formule permettant le calcul des coordonnées du milieu d'un segment                                                          | s-f ⁺ | Géométrie repérée > milieu et distance                     |
-| 2-309 | 104 | Démontrer que les hauteurs d'un triangle sont concourantes                                                                   | s-f ⁺ | Géométrie repérée (notion)                                 |
-| 2-310 | 105 | Expression de l'aire d'un triangle : $\tfrac{1}{2}ab\sin C$                                                                  | s-f ⁺ | `Grandeurs et mesures` Aires > triangle quelconque         |
-| 2-311 | 106 | Démontrer que l'isobarycentre de trois points non alignés est l'intersection des médianes                                    | s-f ⁺ | Vecteurs : sans coordonnées (notion)                       |
-| 2-312 | 107 | Démontrer que le point de concours des médiatrices est le centre du cercle circonscrit                                       | s-f ⁺ | Géométrie repérée (notion)                                 |
+| 2-304 | 101 | Caractérisations de la colinéarité de deux vecteurs non nuls : nullité du déterminant ; proportionnalité des coordonnées     | dém.  | Vecteurs : avec coordonnées > colinéarité et déterminant   |
+| 2-305 | 102 | Barycentre de deux ou trois points                                                                                           | s-f ⁺ | Vecteurs : sans coordonnées (notion)                       |
+| 2-306 | 103 | Formule permettant le calcul des coordonnées du milieu d'un segment                                                          | s-f ⁺ | Géométrie repérée > milieu et distance                     |
+| 2-307 | 104 | Démontrer que les hauteurs d'un triangle sont concourantes                                                                   | s-f ⁺ | Géométrie repérée (notion)                                 |
+| 2-308 | 105 | Expression de l'aire d'un triangle : $\tfrac{1}{2}ab\sin C$                                                                  | s-f ⁺ | `Grandeurs et mesures` Aires > triangle quelconque         |
+| 2-309 | 106 | Démontrer que l'isobarycentre de trois points non alignés est l'intersection des médianes                                    | s-f ⁺ | Vecteurs : sans coordonnées (notion)                       |
+| 2-310 | 107 | Démontrer que le point de concours des médiatrices est le centre du cercle circonscrit                                       | s-f ⁺ | Géométrie repérée (notion)                                 |
 
 ### … > Droites du plan
 
 | Code  | ex- | Énoncé                                                                                                                   | kind  | nœud                                                                          |
 | ----- | --- | ------------------------------------------------------------------------------------------------------------------------ | ----- | ----------------------------------------------------------------------------- |
-| 2-313 | 108 | Vecteur directeur d'une droite                                                                                           | conn. | Géométrie repérée > vecteur directeur                                         |
-| 2-314 | 109 | Équation de droite : équation cartésienne, équation réduite                                                              | conn. | Géométrie repérée > équations de droites                                      |
-| 2-315 | 110 | Pente (ou coefficient directeur) d'une droite non parallèle à l'axe des ordonnées                                        | conn. | `Fonctions` Fonctions affines > coefficient directeur et ordonnée à l'origine |
-| 2-316 | 111 | Déterminer une équation de droite à partir de deux points, d'un point et un vecteur directeur, ou d'un point et la pente | s-f   | Géométrie repérée > équations de droites                                      |
-| 2-317 | 112 | Déterminer la pente ou un vecteur directeur d'une droite donnée par une équation ou une représentation graphique         | s-f   | Géométrie repérée > vecteur directeur                                         |
-| 2-318 | 113 | Tracer une droite connaissant son équation cartésienne ou réduite                                                        | s-f   | Géométrie repérée > équations de droites                                      |
-| 2-319 | 114 | Établir que trois points sont alignés ou non                                                                             | s-f   | Vecteurs : avec coordonnées > colinéarité et déterminant                      |
-| 2-320 | 115 | Déterminer si deux droites sont parallèles ou sécantes                                                                   | s-f   | Géométrie repérée > intersection de deux droites                              |
-| 2-321 | 116 | Déterminer le point d'intersection de deux droites sécantes données par leur équation réduite                            | s-f   | Géométrie repérée > intersection de deux droites                              |
-| 2-322 | 117 | En utilisant le déterminant, établir la forme générale d'une équation de droite                                          | dém.  | Géométrie repérée > équations de droites                                      |
-| 2-323 | 118 | Étudier l'alignement de trois points dans le plan                                                                        | algo. | Vecteurs : avec coordonnées > colinéarité et déterminant                      |
-| 2-324 | 119 | Déterminer une équation de droite passant par deux points donnés                                                         | algo. | Géométrie repérée > équations de droites                                      |
-| 2-325 | 120 | Ensemble des points équidistants d'un point et de l'axe des abscisses                                                    | s-f ⁺ | Géométrie repérée (notion)                                                    |
-| 2-326 | 121 | Représentation, sur des exemples, de parties du plan décrites par des inégalités sur les coordonnées                     | s-f ⁺ | Géométrie repérée (notion)                                                    |
+| 2-311 | 108 | Vecteur directeur d'une droite                                                                                           | conn. | Géométrie repérée > vecteur directeur                                         |
+| 2-312 | 109 | Équation de droite : équation cartésienne, équation réduite                                                              | conn. | Géométrie repérée > équations de droites                                      |
+| 2-313 | 110 | Pente (ou coefficient directeur) d'une droite non parallèle à l'axe des ordonnées                                        | conn. | `Fonctions` Fonctions affines > coefficient directeur et ordonnée à l'origine |
+| 2-314 | 111 | Déterminer une équation de droite à partir de deux points, d'un point et un vecteur directeur, ou d'un point et la pente | s-f   | Géométrie repérée > équations de droites                                      |
+| 2-315 | 112 | Déterminer la pente ou un vecteur directeur d'une droite donnée par une équation ou une représentation graphique         | s-f   | Géométrie repérée > vecteur directeur                                         |
+| 2-316 | 113 | Tracer une droite connaissant son équation cartésienne ou réduite                                                        | s-f   | Géométrie repérée > équations de droites                                      |
+| 2-317 | 114 | Établir que trois points sont alignés ou non                                                                             | s-f   | Vecteurs : avec coordonnées > colinéarité et déterminant                      |
+| 2-318 | 115 | Déterminer si deux droites sont parallèles ou sécantes                                                                   | s-f   | Géométrie repérée > intersection de deux droites                              |
+| 2-319 | 116 | Déterminer le point d'intersection de deux droites sécantes données par leur équation réduite                            | s-f   | Géométrie repérée > intersection de deux droites                              |
+| 2-320 | 117 | En utilisant le déterminant, établir la forme générale d'une équation de droite                                          | dém.  | Géométrie repérée > équations de droites                                      |
+| 2-321 | 118 | Étudier l'alignement de trois points dans le plan                                                                        | algo. | Vecteurs : avec coordonnées > colinéarité et déterminant                      |
+| 2-322 | 119 | Déterminer une équation de droite passant par deux points donnés                                                         | algo. | Géométrie repérée > équations de droites                                      |
+| 2-323 | 120 | Ensemble des points équidistants d'un point et de l'axe des abscisses                                                    | s-f ⁺ | Géométrie repérée (notion)                                                    |
+| 2-324 | 121 | Représentation, sur des exemples, de parties du plan décrites par des inégalités sur les coordonnées                     | s-f ⁺ | Géométrie repérée (notion)                                                    |
 
 ### Fonctions > Représentation algébrique et graphique des fonctions (branche `Fonctions`)
 
 | Code  | ex-    | Énoncé                                                                                                                                                | kind  | nœud                                                               |
 | ----- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------ |
-| 2-327 | 122    | Fonction à valeurs réelles définie sur un intervalle ou une réunion finie d'intervalles de $\mathbb{R}$                                               | conn. | Généralités sur les fonctions (notion)                             |
-| 2-328 | 123    | Recherche de domaine d'étude (ensemble de définition)                                                                                                 | conn. | Généralités sur les fonctions > ensemble de définition             |
-| 2-329 | 124    | Courbe représentative : la courbe d'équation $y = f(x)$ est l'ensemble des points du plan dont les coordonnées $(x\,;\,y)$ vérifient $y = f(x)$       | conn. | Généralités sur les fonctions > appartenance à une courbe          |
-| 2-330 | ✂125a | Signe d'une fonction affine                                                                                                                           | conn. | Fonctions affines > variations et signe                            |
-| 2-331 | ✂125b | Signe des fonctions de référence                                                                                                                      | conn. | Généralités sur les fonctions > signe                              |
-| 2-332 | 126    | Tableau de signes pour une fonction produit ou quotient                                                                                               | conn. | `Algèbre` Inéquations : produit et quotient > tableau de signes    |
-| 2-333 | 127    | Exploiter l'équation $y = f(x)$ d'une courbe : appartenance, calcul de coordonnées                                                                    | s-f   | Généralités sur les fonctions > appartenance à une courbe          |
-| 2-334 | 128    | Modéliser par des fonctions des situations issues des mathématiques, des autres disciplines ou de la vie courante ou citoyenne                        | s-f   | Généralités sur les fonctions (notion)                             |
-| 2-335 | ✂129a | Fonction valeur absolue : définition et courbe représentative                                                                                         | s-f   | Fonction valeur absolue (notion — définition et distance + courbe) |
-| 2-336 | ✂129b | Fonction carré : définition et courbe représentative                                                                                                  | s-f   | Fonction carré > définition et courbe                              |
-| 2-337 | ✂129c | Fonction inverse : définition et courbe représentative                                                                                                | s-f   | Fonction inverse > définition et courbe                            |
-| 2-338 | 130    | Résoudre une équation ou une inéquation du type $f(x) = k$, $f(x) < k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle        | s-f   | Généralités sur les fonctions > résolution graphique               |
-| 2-339 | 131    | Résoudre une équation ou une inéquation de la forme $f(x) = 0$, $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit ou un quotient | s-f   | `Algèbre` Inéquations : produit et quotient > tableau de signes    |
-| 2-340 | 132    | Résoudre, graphiquement ou à l'aide d'un outil numérique, une équation ou inéquation du type $f(x) = g(x)$, $f(x) < g(x)$                             | s-f   | Généralités sur les fonctions > résolution graphique               |
-| 2-341 | ✂133a | Fonction affine : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                              | s-f   | Fonctions affines > équations                                      |
-| 2-342 | ✂133b | Fonction valeur absolue : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                      | s-f   | Fonction valeur absolue > équations et inéquations                 |
-| 2-343 | ✂133c | Fonction carré : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                               | s-f   | Fonction carré > x² = k, x² < k                                    |
-| 2-344 | ✂133d | Fonction inverse : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                             | s-f   | Fonction inverse > 1/x = k, 1/x < k                                |
-| 2-345 | ✂133e | Fonction racine carrée : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                       | s-f   | Fonction racine carrée > √x = k, √x < k                            |
-| 2-346 | ✂133f | Fonction cube : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                                | s-f   | Fonction cube > x³ = k, x³ < k                                     |
+| 2-325 | 122    | Fonction à valeurs réelles définie sur un intervalle ou une réunion finie d'intervalles de $\mathbb{R}$                                               | conn. | Généralités sur les fonctions (notion)                             |
+| 2-326 | 123    | Recherche de domaine d'étude (ensemble de définition)                                                                                                 | conn. | Généralités sur les fonctions > ensemble de définition             |
+| 2-327 | 124    | Courbe représentative : la courbe d'équation $y = f(x)$ est l'ensemble des points du plan dont les coordonnées $(x\,;\,y)$ vérifient $y = f(x)$       | conn. | Généralités sur les fonctions > appartenance à une courbe          |
+| 2-328 | ✂125a | Signe d'une fonction affine                                                                                                                           | conn. | Fonctions affines > variations et signe                            |
+| 2-329 | ✂125b | Signe des fonctions de référence                                                                                                                      | conn. | Généralités sur les fonctions > signe                              |
+| 2-330 | 126    | Tableau de signes pour une fonction produit ou quotient                                                                                               | conn. | `Algèbre` Inéquations : produit et quotient > tableau de signes    |
+| 2-331 | 127    | Exploiter l'équation $y = f(x)$ d'une courbe : appartenance, calcul de coordonnées                                                                    | s-f   | Généralités sur les fonctions > appartenance à une courbe          |
+| 2-332 | 128    | Modéliser par des fonctions des situations issues des mathématiques, des autres disciplines ou de la vie courante ou citoyenne                        | s-f   | Généralités sur les fonctions (notion)                             |
+| 2-333 | ✂129a | Fonction valeur absolue : définition et courbe représentative                                                                                         | s-f   | Fonction valeur absolue (notion — définition et distance + courbe) |
+| 2-334 | ✂129b | Fonction carré : définition et courbe représentative                                                                                                  | s-f   | Fonction carré > définition et courbe                              |
+| 2-335 | ✂129c | Fonction inverse : définition et courbe représentative                                                                                                | s-f   | Fonction inverse > définition et courbe                            |
+| 2-336 | 130    | Résoudre une équation ou une inéquation du type $f(x) = k$, $f(x) < k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle        | s-f   | Généralités sur les fonctions > résolution graphique               |
+| 2-337 | 131    | Résoudre une équation ou une inéquation de la forme $f(x) = 0$, $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit ou un quotient | s-f   | `Algèbre` Inéquations : produit et quotient > tableau de signes    |
+| 2-338 | 132    | Résoudre, graphiquement ou à l'aide d'un outil numérique, une équation ou inéquation du type $f(x) = g(x)$, $f(x) < g(x)$                             | s-f   | Généralités sur les fonctions > résolution graphique               |
+| 2-339 | ✂133a | Fonction affine : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                              | s-f   | Fonctions affines > équations                                      |
+| 2-340 | ✂133b | Fonction valeur absolue : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                      | s-f   | Fonction valeur absolue > équations et inéquations                 |
+| 2-341 | ✂133c | Fonction carré : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                               | s-f   | Fonction carré > x² = k, x² < k                                    |
+| 2-342 | ✂133d | Fonction inverse : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                             | s-f   | Fonction inverse > 1/x = k, 1/x < k                                |
+| 2-343 | ✂133e | Fonction racine carrée : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                       | s-f   | Fonction racine carrée > √x = k, √x < k                            |
+| 2-344 | ✂133f | Fonction cube : résoudre graphiquement ou algébriquement une équation ou une inéquation du type $f(x) = k$, $f(x) < k$                                | s-f   | Fonction cube > x³ = k, x³ < k                                     |
 
 ### … > Variations et extrémums d'une fonction
 
 | Code  | ex-    | Énoncé                                                                                                                                                        | kind  | nœud                                                              |
 | ----- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------------------- |
-| 2-347 | 134    | Croissance, décroissance, monotonie d'une fonction définie sur un intervalle ; tableau de variations                                                          | conn. | Généralités sur les fonctions > variations                        |
-| 2-348 | 135    | Maximum, minimum d'une fonction sur un intervalle                                                                                                             | conn. | Généralités sur les fonctions > extremums                         |
-| 2-349 | 136    | Pour une fonction affine donnée par $f(x) = mx + p$, interprétation de $m$ comme taux d'accroissement et de $p$ comme ordonnée à l'origine                    | conn. | Fonctions affines > coefficient directeur et ordonnée à l'origine |
-| 2-350 | 137    | Variations d'une fonction affine selon le signe du coefficient directeur                                                                                      | conn. | Fonctions affines > variations et signe                           |
-| 2-351 | 138    | Relier représentation graphique et tableau de variations                                                                                                      | s-f   | Généralités sur les fonctions > variations                        |
-| 2-352 | 139    | Déterminer graphiquement les extrémums d'une fonction sur un intervalle                                                                                       | s-f   | Généralités sur les fonctions > extremums                         |
-| 2-353 | 140    | Exploiter un logiciel de géométrie dynamique ou de calcul formel, la calculatrice ou Python pour décrire les variations d'une fonction donnée par une formule | s-f   | Généralités sur les fonctions > variations                        |
-| 2-354 | 141    | Pour une fonction affine, relier sens de variation, signe de la fonction et droite représentative                                                             | s-f   | Fonctions affines > variations et signe                           |
-| 2-355 | 142    | Traiter des problèmes d'optimisation                                                                                                                          | s-f   | Généralités sur les fonctions > extremums                         |
-| 2-356 | ✂143a | Fonction valeur absolue : signe et variations                                                                                                                 | s-f   | Fonction valeur absolue > variations                              |
-| 2-357 | ✂143b | Fonction carré : signe et variations                                                                                                                          | s-f   | Fonction carré > variations                                       |
-| 2-358 | 144    | Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ numériquement ou graphiquement                                | s-f   | Généralités sur les fonctions > variations _(discutable 4)_       |
-| 2-359 | 145    | Variations des fonctions affines                                                                                                                              | dém.  | Fonctions affines > variations et signe                           |
-| 2-360 | 146    | Position relative des courbes d'équation $y = x$ et $y = x^2$, pour $x \geqslant 0$                                                                           | dém.  | Fonction carré > définition et courbe                             |
-| 2-361 | ✂147a | Variations de la fonction carré                                                                                                                               | dém.  | Fonction carré > variations                                       |
-| 2-362 | ✂147b | Variations de la fonction inverse                                                                                                                             | dém.  | Fonction inverse > variations                                     |
-| 2-363 | 148    | Pour une fonction dont le tableau de variations est donné, algorithmes d'approximation numérique d'un extrémum (balayage, dichotomie)                         | algo. | Généralités sur les fonctions > extremums                         |
-| 2-364 | 149    | Algorithme de calcul approché de longueur d'une portion de courbe représentative de fonction                                                                  | algo. | Généralités sur les fonctions (notion)                            |
-| 2-365 | 150    | Relier les courbes représentatives de la fonction racine carrée et de la fonction carré sur $\mathbb{R}^+$                                                    | s-f ⁺ | Fonction racine carrée > définition et courbe                     |
+| 2-345 | 134    | Croissance, décroissance, monotonie d'une fonction définie sur un intervalle ; tableau de variations                                                          | conn. | Généralités sur les fonctions > variations                        |
+| 2-346 | 135    | Maximum, minimum d'une fonction sur un intervalle                                                                                                             | conn. | Généralités sur les fonctions > extremums                         |
+| 2-347 | 136    | Pour une fonction affine donnée par $f(x) = mx + p$, interprétation de $m$ comme taux d'accroissement et de $p$ comme ordonnée à l'origine                    | conn. | Fonctions affines > coefficient directeur et ordonnée à l'origine |
+| 2-348 | 137    | Variations d'une fonction affine selon le signe du coefficient directeur                                                                                      | conn. | Fonctions affines > variations et signe                           |
+| 2-349 | 138    | Relier représentation graphique et tableau de variations                                                                                                      | s-f   | Généralités sur les fonctions > variations                        |
+| 2-350 | 139    | Déterminer graphiquement les extrémums d'une fonction sur un intervalle                                                                                       | s-f   | Généralités sur les fonctions > extremums                         |
+| 2-351 | 140    | Exploiter un logiciel de géométrie dynamique ou de calcul formel, la calculatrice ou Python pour décrire les variations d'une fonction donnée par une formule | s-f   | Généralités sur les fonctions > variations                        |
+| 2-352 | 141    | Pour une fonction affine, relier sens de variation, signe de la fonction et droite représentative                                                             | s-f   | Fonctions affines > variations et signe                           |
+| 2-353 | 142    | Traiter des problèmes d'optimisation                                                                                                                          | s-f   | Généralités sur les fonctions > extremums                         |
+| 2-354 | ✂143a | Fonction valeur absolue : signe et variations                                                                                                                 | s-f   | Fonction valeur absolue > variations                              |
+| 2-355 | ✂143b | Fonction carré : signe et variations                                                                                                                          | s-f   | Fonction carré > variations                                       |
+| 2-356 | 144    | Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ numériquement ou graphiquement                                | s-f   | Généralités sur les fonctions > variations _(discutable 4)_       |
+| 2-357 | 145    | Variations des fonctions affines                                                                                                                              | dém.  | Fonctions affines > variations et signe                           |
+| 2-358 | 146    | Position relative des courbes d'équation $y = x$ et $y = x^2$, pour $x \geqslant 0$                                                                           | dém.  | Fonction carré > définition et courbe                             |
+| 2-359 | ✂147a | Variations de la fonction carré                                                                                                                               | dém.  | Fonction carré > variations                                       |
+| 2-360 | ✂147b | Variations de la fonction inverse                                                                                                                             | dém.  | Fonction inverse > variations                                     |
+| 2-361 | 148    | Pour une fonction dont le tableau de variations est donné, algorithmes d'approximation numérique d'un extrémum (balayage, dichotomie)                         | algo. | Généralités sur les fonctions > extremums                         |
+| 2-362 | 149    | Algorithme de calcul approché de longueur d'une portion de courbe représentative de fonction                                                                  | algo. | Généralités sur les fonctions (notion)                            |
+| 2-363 | 150    | Relier les courbes représentatives de la fonction racine carrée et de la fonction carré sur $\mathbb{R}^+$                                                    | s-f ⁺ | Fonction racine carrée > définition et courbe                     |
 
 ### Statistiques et probabilités > Information chiffrée et statistique descriptive (branches `Proportionnalité` / `Statistiques`)
 
 | Code  | ex- | Énoncé                                                                                                                                                                                                             | kind  | nœud                                                                                 |
 | ----- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | ------------------------------------------------------------------------------------ |
-| 2-366 | 151 | Ensembles de référence inclus les uns dans les autres : pourcentage de pourcentage                                                                                                                                 | conn. | `Proportionnalité` Pourcentages > calculer                                           |
-| 2-367 | 152 | Évolution : variation absolue (variation additive) $V_2 - V_1$                                                                                                                                                     | conn. | `Proportionnalité` Évolutions > variations en pourcentage                            |
-| 2-368 | 153 | Évolution : coefficient multiplicateur (variation multiplicative) $\tfrac{V_2}{V_1}$                                                                                                                               | conn. | `Proportionnalité` Évolutions > variations en pourcentage                            |
-| 2-369 | 154 | Évolution : variation relative (taux d'évolution) $\tfrac{V_2 - V_1}{V_1}$                                                                                                                                         | conn. | `Proportionnalité` Évolutions > variations en pourcentage                            |
-| 2-370 | 155 | Évolutions successives, évolution réciproque : relation sur les coefficients multiplicateurs (produit, inverse)                                                                                                    | conn. | `Proportionnalité` Évolutions > évolutions successives et réciproque                 |
-| 2-371 | 156 | Linéarité de la moyenne                                                                                                                                                                                            | conn. | `Statistiques` Indicateurs > moyenne                                                 |
-| 2-372 | 157 | Indicateurs de dispersion : écart type                                                                                                                                                                             | conn. | `Statistiques` Indicateurs > écart-type                                              |
-| 2-373 | 158 | Influence sur la moyenne, la médiane, de l'ajout ou de la suppression d'une valeur dans la série                                                                                                                   | conn. | `Statistiques` Indicateurs (notion)                                                  |
-| 2-374 | 159 | Représentation graphique : histogramme, polygone des fréquences cumulées                                                                                                                                           | conn. | `Statistiques` Représenter des données (notion — histogrammes + fréquences cumulées) |
-| 2-375 | 160 | Calcul de la moyenne à partir de la moyenne et des effectifs de chaque classe (moyenne pondérée) ; cas particulier où la répartition est uniforme dans chaque classe                                               | conn. | `Statistiques` Indicateurs > moyenne                                                 |
-| 2-376 | 161 | Détermination de la classe médiane à partir des effectifs des classes ; estimation de la médiane dans le cas de répartition uniforme dans la classe médiane                                                        | conn. | `Statistiques` Indicateurs > médiane                                                 |
-| 2-377 | 162 | Exploiter la relation entre effectifs, proportions et pourcentages                                                                                                                                                 | s-f   | `Statistiques` Représenter des données > effectifs et fréquences                     |
-| 2-378 | 163 | Traiter des situations simples mettant en jeu des pourcentages de pourcentages                                                                                                                                     | s-f   | `Proportionnalité` Pourcentages > calculer                                           |
-| 2-379 | 164 | Exploiter la relation entre deux valeurs successives et leur taux d'évolution                                                                                                                                      | s-f   | `Proportionnalité` Évolutions > variations en pourcentage                            |
-| 2-380 | 165 | Calculer le taux d'évolution global à partir des taux d'évolution successifs                                                                                                                                       | s-f   | `Proportionnalité` Évolutions > évolutions successives et réciproque                 |
-| 2-381 | 166 | Calculer un taux d'évolution réciproque                                                                                                                                                                            | s-f   | `Proportionnalité` Évolutions > évolutions successives et réciproque                 |
-| 2-382 | 167 | Pour une série regroupée en classes, calculer la moyenne à partir de la moyenne et des effectifs de chaque classe                                                                                                  | s-f   | `Statistiques` Indicateurs > moyenne                                                 |
-| 2-383 | 168 | Pour une série regroupée en classes, déterminer la classe médiane et estimer la médiane dans le cas d'une répartition uniforme                                                                                     | s-f   | `Statistiques` Indicateurs > médiane                                                 |
-| 2-384 | 169 | Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs ou couples d'indicateurs (moyenne–écart type, médiane–écart interquartile) ou sur des représentations graphiques données | s-f   | `Statistiques` Indicateurs (notion)                                                  |
+| 2-364 | 151 | Ensembles de référence inclus les uns dans les autres : pourcentage de pourcentage                                                                                                                                 | conn. | `Proportionnalité` Pourcentages > calculer                                           |
+| 2-365 | 152 | Évolution : variation absolue (variation additive) $V_2 - V_1$                                                                                                                                                     | conn. | `Proportionnalité` Évolutions > variations en pourcentage                            |
+| 2-366 | 153 | Évolution : coefficient multiplicateur (variation multiplicative) $\tfrac{V_2}{V_1}$                                                                                                                               | conn. | `Proportionnalité` Évolutions > variations en pourcentage                            |
+| 2-367 | 154 | Évolution : variation relative (taux d'évolution) $\tfrac{V_2 - V_1}{V_1}$                                                                                                                                         | conn. | `Proportionnalité` Évolutions > variations en pourcentage                            |
+| 2-368 | 155 | Évolutions successives, évolution réciproque : relation sur les coefficients multiplicateurs (produit, inverse)                                                                                                    | conn. | `Proportionnalité` Évolutions > évolutions successives et réciproque                 |
+| 2-369 | 156 | Linéarité de la moyenne                                                                                                                                                                                            | conn. | `Statistiques` Indicateurs > moyenne                                                 |
+| 2-370 | 157 | Indicateurs de dispersion : écart type                                                                                                                                                                             | conn. | `Statistiques` Indicateurs > écart-type                                              |
+| 2-371 | 158 | Influence sur la moyenne, la médiane, de l'ajout ou de la suppression d'une valeur dans la série                                                                                                                   | conn. | `Statistiques` Indicateurs (notion)                                                  |
+| 2-372 | 159 | Représentation graphique : histogramme, polygone des fréquences cumulées                                                                                                                                           | conn. | `Statistiques` Représenter des données (notion — histogrammes + fréquences cumulées) |
+| 2-373 | 160 | Calcul de la moyenne à partir de la moyenne et des effectifs de chaque classe (moyenne pondérée) ; cas particulier où la répartition est uniforme dans chaque classe                                               | conn. | `Statistiques` Indicateurs > moyenne                                                 |
+| 2-374 | 161 | Détermination de la classe médiane à partir des effectifs des classes ; estimation de la médiane dans le cas de répartition uniforme dans la classe médiane                                                        | conn. | `Statistiques` Indicateurs > médiane                                                 |
+| 2-375 | 162 | Exploiter la relation entre effectifs, proportions et pourcentages                                                                                                                                                 | s-f   | `Statistiques` Représenter des données > effectifs et fréquences                     |
+| 2-376 | 163 | Traiter des situations simples mettant en jeu des pourcentages de pourcentages                                                                                                                                     | s-f   | `Proportionnalité` Pourcentages > calculer                                           |
+| 2-377 | 164 | Exploiter la relation entre deux valeurs successives et leur taux d'évolution                                                                                                                                      | s-f   | `Proportionnalité` Évolutions > variations en pourcentage                            |
+| 2-378 | 165 | Calculer le taux d'évolution global à partir des taux d'évolution successifs                                                                                                                                       | s-f   | `Proportionnalité` Évolutions > évolutions successives et réciproque                 |
+| 2-379 | 166 | Calculer un taux d'évolution réciproque                                                                                                                                                                            | s-f   | `Proportionnalité` Évolutions > évolutions successives et réciproque                 |
+| 2-380 | 167 | Pour une série regroupée en classes, calculer la moyenne à partir de la moyenne et des effectifs de chaque classe                                                                                                  | s-f   | `Statistiques` Indicateurs > moyenne                                                 |
+| 2-381 | 168 | Pour une série regroupée en classes, déterminer la classe médiane et estimer la médiane dans le cas d'une répartition uniforme                                                                                     | s-f   | `Statistiques` Indicateurs > médiane                                                 |
+| 2-382 | 169 | Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs ou couples d'indicateurs (moyenne–écart type, médiane–écart interquartile) ou sur des représentations graphiques données | s-f   | `Statistiques` Indicateurs (notion)                                                  |
 
 ### … > Croisement de deux variables qualitatives
 
 | Code  | ex- | Énoncé                                                                                                                                                                | kind  | nœud                                                                       |
 | ----- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------- |
-| 2-385 | 170 | Tableau croisé d'effectifs                                                                                                                                            | conn. | `Statistiques` Tableaux croisés > tableau croisé d'effectifs               |
-| 2-386 | 171 | Fréquence conditionnelle, fréquence marginale                                                                                                                         | conn. | `Statistiques` Tableaux croisés > fréquences marginales et conditionnelles |
-| 2-387 | 172 | Calculer des fréquences conditionnelles et des fréquences marginales                                                                                                  | s-f   | `Statistiques` Tableaux croisés > fréquences marginales et conditionnelles |
-| 2-388 | 173 | Compléter un tableau croisé par des raisonnements sur les effectifs ou en utilisant des fréquences conditionnelles                                                    | s-f   | `Statistiques` Tableaux croisés > tableau croisé d'effectifs               |
-| 2-389 | 174 | À partir de deux listes représentant deux caractères d'individus, déterminer un sous-ensemble d'individus répondant à un critère (filtre, utilisation de ET, OU, NON) | algo. | `Statistiques` Tableaux croisés (notion)                                   |
-| 2-390 | 175 | Dresser le tableau croisé de deux variables qualitatives à partir du fichier des individus et calculer des fréquences conditionnelles ou marginales                   | algo. | `Statistiques` Tableaux croisés > tableau croisé d'effectifs               |
+| 2-383 | 170 | Tableau croisé d'effectifs                                                                                                                                            | conn. | `Statistiques` Tableaux croisés > tableau croisé d'effectifs               |
+| 2-384 | 171 | Fréquence conditionnelle, fréquence marginale                                                                                                                         | conn. | `Statistiques` Tableaux croisés > fréquences marginales et conditionnelles |
+| 2-385 | 172 | Calculer des fréquences conditionnelles et des fréquences marginales                                                                                                  | s-f   | `Statistiques` Tableaux croisés > fréquences marginales et conditionnelles |
+| 2-386 | 173 | Compléter un tableau croisé par des raisonnements sur les effectifs ou en utilisant des fréquences conditionnelles                                                    | s-f   | `Statistiques` Tableaux croisés > tableau croisé d'effectifs               |
+| 2-387 | 174 | À partir de deux listes représentant deux caractères d'individus, déterminer un sous-ensemble d'individus répondant à un critère (filtre, utilisation de ET, OU, NON) | algo. | `Statistiques` Tableaux croisés (notion)                                   |
+| 2-388 | 175 | Dresser le tableau croisé de deux variables qualitatives à partir du fichier des individus et calculer des fréquences conditionnelles ou marginales                   | algo. | `Statistiques` Tableaux croisés > tableau croisé d'effectifs               |
 
 ### … > Probabilités
 
 | Code  | ex-    | Énoncé                                                                                                                                        | kind  | nœud                                                                       |
 | ----- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------- |
-| 2-391 | 176    | Version vulgarisée de la loi des grands nombres : lorsque $n$ est grand, sauf exception, la fréquence observée est proche de la probabilité   | conn. | `Statistiques` Échantillonnage > fluctuation                               |
-| 2-392 | 177    | Probabilité conditionnelle d'un évènement $B$ sachant un évènement $A$ de probabilité non nulle ; notation $P_A(B)$                           | conn. | `Probabilités` Probabilités conditionnelles (notion)                       |
-| 2-393 | 178    | Arbres de probabilité, application au calcul de probabilités                                                                                  | conn. | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-394 | 179    | Observer la loi des grands nombres à l'aide d'une simulation sur Python ou tableur                                                            | s-f   | `Statistiques` Échantillonnage > simulation                                |
-| 2-395 | ✂180a | Construire un arbre pondéré en lien avec une situation donnée                                                                                 | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-396 | ✂180b | Construire un tableau en lien avec une situation donnée                                                                                       | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
-| 2-397 | 181    | Passer du registre de la langue naturelle au registre symbolique et inversement                                                               | s-f   | `Probabilités` Probabilités conditionnelles (notion)                       |
-| 2-398 | ✂182a | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs                      | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
-| 2-399 | ✂182b | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité                             | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-400 | 183    | Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles             | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-401 | 184    | Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-402 | 185    | Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »                                       | s-f   | `Probabilités` Probabilités conditionnelles > inversion du conditionnement |
+| 2-389 | 176    | Version vulgarisée de la loi des grands nombres : lorsque $n$ est grand, sauf exception, la fréquence observée est proche de la probabilité   | conn. | `Statistiques` Échantillonnage > fluctuation                               |
+| 2-390 | 177    | Probabilité conditionnelle d'un évènement $B$ sachant un évènement $A$ de probabilité non nulle ; notation $P_A(B)$                           | conn. | `Probabilités` Probabilités conditionnelles (notion)                       |
+| 2-391 | 178    | Arbres de probabilité, application au calcul de probabilités                                                                                  | conn. | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-392 | 179    | Observer la loi des grands nombres à l'aide d'une simulation sur Python ou tableur                                                            | s-f   | `Statistiques` Échantillonnage > simulation                                |
+| 2-393 | ✂180a | Construire un arbre pondéré en lien avec une situation donnée                                                                                 | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-394 | ✂180b | Construire un tableau en lien avec une situation donnée                                                                                       | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
+| 2-395 | 181    | Passer du registre de la langue naturelle au registre symbolique et inversement                                                               | s-f   | `Probabilités` Probabilités conditionnelles (notion)                       |
+| 2-396 | ✂182a | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs                      | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
+| 2-397 | ✂182b | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité                             | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-398 | 183    | Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles             | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-399 | 184    | Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-400 | 185    | Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »                                       | s-f   | `Probabilités` Probabilités conditionnelles > inversion du conditionnement |
 
 ---
 
@@ -373,7 +372,7 @@ ci-dessus.
 | Utiliser une proportion pour calculer une partie connaissant le tout, ou l'inverse                                                   | 6-141                                                                             |
 | Passer d'une formulation additive (« augmenter de 5 % ») à une formulation multiplicative                                            | 4-057                                                                             |
 | Déterminer graphiquement des images et des antécédents                                                                               | 3-040                                                                             |
-| Exploiter une équation de courbe (appartenance, calcul de coordonnées)                                                               | 2-333 (auto-réf)                                                                  |
+| Exploiter une équation de courbe (appartenance, calcul de coordonnées)                                                               | 2-331 (auto-réf)                                                                  |
 | Reconnaitre l'expression d'une fonction linéaire, affine ; leur représentation est une droite                                        | 3-041 · 3-044                                                                     |
 | Sur une droite graduée, repérer ou placer un point d'abscisse un relatif                                                             | 5-016                                                                             |
 | Dans un repère orthogonal, lire ou placer les coordonnées d'un point                                                                 | 5-047                                                                             |
@@ -381,7 +380,7 @@ ci-dessus.
 | Application simple des théorèmes de Pythagore et de Thalès                                                                           | 4-034 · 3-022                                                                     |
 | Lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente                                                        | 3-023                                                                             |
 | Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)                                                          | 5-077 · 5-096                                                                     |
-| Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données                                                | 4-039 · 4-040 · 3-029 · 2-382 · 2-383 (auto-réf : séries en classes, contenu 2de) |
+| Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données                                                | 4-039 · 4-040 · 3-029 · 2-380 · 2-381 (auto-réf : séries en classes, contenu 2de) |
 | Comparer des distributions à l'aide de boites à moustaches                                                                           | 3-030                                                                             |
 | Savoir qu'une probabilité est un nombre entre 0 et 1                                                                                 | 6-186                                                                             |
 | Calculer la probabilité de l'évènement contraire                                                                                     | 4-048                                                                             |
@@ -403,20 +402,24 @@ ci-dessus.
    `Raisonnements > contre-exemple`. Arbre version `2026-10-07.15` (comptes inchangés :
    19/137/540) ; aucun point livré ne visait la branche Logique → migration de nœuds
    sans impact sur l'existant.
-2. **Le balayage de √2** (2-257) → `Boucles > boucle bornée` (balayage à pas fixe) ;
-   la première puissance dépassant un seuil (2-283) → `> boucle non bornée` (while).
-3. **« Caractérisation vectorielle du milieu »** (2-296) → `Vecteurs : sans
-coordonnées` (notion) — c'est du calcul vectoriel pur ; le calcul en coordonnées
-   vit dans `Géométrie repérée > milieu et distance` (2-301/302). **« Problèmes avec
-   des méthodes diverses »** (2-305) → `Géométrie repérée` (notion) : le choix de
-   méthode est le cœur de la géométrie repérée de 2de.
-4. **« Comparer f(a) et f(b) pour une fonction de référence »** (2-358) →
-   `Généralités sur les fonctions > variations` : capacité générique (utiliser la
-   monotonie), pas une par fonction. Alternative : scinder par fonction vers leurs
-   « comparer des images ».
-5. **Kinds corrigés par rapport à l'ancien référentiel** : le balayage de √2
-   (ex-2-055) et la première puissance (ex-2-078) étaient classés [D] — le BO les met
-   en « Exemple d'algorithme » → kind `algo.` ici.
+2. **TRANCHÉ (David, 2026-10-08)** : le balayage de √2 (2-257) → `Boucles > boucle
+bornée` (balayage à pas fixe) ; la première puissance dépassant un seuil (2-283) →
+   `> boucle non bornée` (while).
+3. **TRANCHÉ (David, 2026-10-08)** : « Caractérisation vectorielle du milieu »
+   (2-296) → `Vecteurs : sans coordonnées` (notion) — calcul vectoriel pur ; le calcul
+   en coordonnées vit dans `Géométrie repérée > milieu et distance` (2-301/302).
+   ⛔ **Les puces ex-2-099 (« représentation la plus adaptée des vecteurs ») et
+   ex-2-100 (« problèmes avec des méthodes diverses ») ne deviennent PAS des points** :
+   trop larges pour être cochées honnêtement (« résous un problème de géométrie comme
+   tu veux ») — c'est de l'évaluation par compétence, pas un point de programme.
+   Vérifié en prod le 2026-10-08 : aucun exercice rattaché à 2-099/2-100, rien ne
+   tombe au transfert C5.
+4. **TRANCHÉ (David, 2026-10-08)** : « Comparer f(a) et f(b) pour une fonction de
+   référence » (2-356) → `Généralités sur les fonctions > variations` : capacité
+   générique (utiliser la monotonie), UN seul point, pas une scission par fonction.
+5. **TRANCHÉ (David, 2026-10-08)** — kinds corrigés par rapport à l'ancien
+   référentiel : le balayage de √2 (ex-2-055) et la première puissance (ex-2-078)
+   étaient classés [D] — le BO les met en « Exemple d'algorithme » → kind `algo.` ici.
 
 ## Questions (L1-L4)
 
@@ -425,17 +428,17 @@ coordonnées` (notion) — c'est du calcul vectoriel pur ; le calcul en coordonn
   filtre « algo » montre alors tout le programme d'algorithmique), ou conserver la
   distinction conn./s-f de l'ancien référentiel (telle qu'affichée dans les tableaux) ?
 - **L2 — les « Exemples d'algorithme »** (10 points marqués `algo.` hors bloc
-  algorithmique : 2-241, 2-242, 2-257, 2-283, 2-323, 2-324, 2-363, 2-364, 2-389,
-  2-390) : exigence **`attendu`** (reco — le BO les présente comme partie du
+  algorithmique : 2-241, 2-242, 2-257, 2-283, 2-321, 2-322, 2-361, 2-362, 2-387,
+  2-388) : exigence **`attendu`** (reco — le BO les présente comme partie du
   programme, et les sujets les utilisent) ou `approfondissement` (le choix de l'ancien
   référentiel, qui les groupait avec les Approfondissements) ?
 - **L3 — les ⁺ (Approfondissements possibles)** : exigence `approfondissement`,
-  kind s-f (ou dém. pour les « Démontrer que… » 2-309, 2-311, 2-312 ?). Reco : s-f ⁺
+  kind s-f (ou dém. pour les « Démontrer que… » 2-307, 2-309, 2-310 ?). Reco : s-f ⁺
   partout (un approfondissement n'est pas une démonstration exigible).
-- **L4 — validation d'ensemble** : les 202 points (17 scissions + 10 non-scissions
-  argumentées — **validées par David le 2026-10-08**), les ~45 cibles de références
-  (dont 7 auto-références), les rattachements discutables 2 à 5 (le 1 est tranché :
-  structure C2), et `diversite` partout.
+- **L4 — validation d'ensemble** : les 200 points (17 scissions + 10 non-scissions
+  et les 5 discutables : **tous validés/tranchés par David le 2026-10-08**, dont le
+  retrait d'ex-2-099/100), les ~45 cibles de références (dont 7 auto-références), et
+  `diversite` partout.
 
 ## Après validation (plan de livraison)
 
@@ -443,7 +446,7 @@ coordonnées` (notion) — c'est du calcul vectoriel pur ; le calcul en coordonn
    de la branche Logique (renommage « Connecteurs et contre-exemples » →
    « Proposition mathématique », déplacement de `statut des lettres et des égalités`
    et de `contre-exemple` — UPDATE de nœuds, node_id préservés, aucun point existant
-   ne vise la branche) ; (b) 202 points (codes 2-201…2-402 explicites) + références
+   ne vise la branche) ; (b) 200 points (codes 2-201…2-400 explicites) + références
    (cibles par code, grade '2' — auto-références comprises, permises par C13). Bloc DO
    auto-vérifiant (comptes, kinds, 0 sans nœud, anciens 2-001…185 INTACTS, arbre
    toujours à 696 nœuds). Rollback scopé, mises en garde RGPD et inter-grades.
