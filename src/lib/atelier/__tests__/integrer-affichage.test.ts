@@ -37,7 +37,7 @@ describe('.intégrer : primitive en LaTeX', () => {
 describe('.intégrer : intégrale définie, la VALEUR en LaTeX', () => {
 	it.each([
 		['.intégrer x^2 0 1', '\\dfrac{1}{3}'],
-		['.intégrer x^2 0 a', '\\dfrac{1}{3} a^3'],
+		['.intégrer x^2 de 0 à a', '\\dfrac{1}{3} a^3'],
 		['.intégrer 2x 0 3', '9']
 	])('%s → %s', (input, latex) => {
 		expect(latexOf(input)).toBe(latex);

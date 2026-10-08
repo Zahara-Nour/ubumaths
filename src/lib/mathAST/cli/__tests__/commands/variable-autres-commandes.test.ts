@@ -51,16 +51,19 @@ describe('.variations : x par défaut, une autre variable après « ; »', () =>
 		expect(result.output).not.toContain('Calcul par rapport');
 	});
 
-	it('`t^2` sans « ; » : en x, avec l’indication', () => {
+	// Décision de David (2026-10-08, Q1) : une seule lettre → elle
+	it('`t^2` sans « ; » : t devinée', () => {
 		const result = run('.variations t^2');
 		expect(result.success).toBe(true);
-		expect(result.output).toContain(HINT_T);
+		expect(result.output).toContain("f'(t) = 2t");
+		expect(result.output).not.toContain(HINT_T);
 	});
 
-	it('ancienne syntaxe `t^2 t` : le produit t³, en x, avec l’indication', () => {
+	it('ancienne syntaxe `t^2 t` : le produit t³, en t', () => {
 		const result = run('.variations t^2 t');
 		expect(result.success).toBe(true);
-		expect(result.output).toContain(HINT_T);
+		expect(result.output).toContain('Expression : t^2t');
+		expect(result.output).not.toContain(HINT_T);
 	});
 
 	it('`sin x` : refus, des parenthèses', () => {
@@ -90,9 +93,10 @@ describe('.domain : x par défaut, une autre variable après « ; »', () => {
 		expect(result.output).not.toContain('Calcul par rapport');
 	});
 
-	it('`ln(t)` sans « ; » : en x, avec l’indication', () => {
+	it('`ln(t)` sans « ; » : t devinée', () => {
 		const result = run('.domain ln(t)');
-		expect(result.output).toContain(HINT_T);
+		expect(result.output).toContain('t > 0');
+		expect(result.output).not.toContain(HINT_T);
 	});
 
 	it('`ln x` : refus, des parenthèses', () => {
@@ -138,11 +142,11 @@ describe('.taylor : x par défaut, une autre variable après « ; »', () => {
 		expect(result.output.split('\n')[0]).toContain('t=1');
 	});
 
-	it('`exp(t) 4` sans « ; » : en x (une constante), l’indication dit où mettre les nombres', () => {
+	it('`exp(t) 4` sans « ; » : t devinée, développé en t', () => {
 		const result = run('.taylor exp(t) 4');
 		expect(result.success).toBe(true);
-		expect(result.output.split('\n')[1]).toBe('exp(t)');
-		expect(result.output).toContain(HINT_TAYLOR_T);
+		expect(result.output.split('\n')[1]).toBe('1+t+{1/2}t^2+{1/6}t^3+{1/24}t^4');
+		expect(result.output).not.toContain(HINT_TAYLOR_T);
 	});
 
 	it('`sin x 5` : refus, des parenthèses', () => {

@@ -1701,7 +1701,7 @@ export class WebReplEngine {
 	/**
 	 * Execute the .linreg / .ajustement command (least squares line).
 	 *
-	 * Usage: .ajustement x1,x2,x3 : y1,y2,y3 [; x = 10] [; y = 7] [; z = ln(y)]
+	 * Usage: .ajustement x1 ; x2 ; x3 : y1 ; y2 ; y3 [; z = ln(y)] [en x = 10] [en y = 7]
 	 * Returns: the line, a and b, the mean point G and r — then the predictions,
 	 * and with a change of variable the line in z (or t) and the relation
 	 * between x and y. ⚠️ Computed AND worded like the ```nuage block (manche 15,
@@ -1709,11 +1709,8 @@ export class WebReplEngine {
 	 * variable (`statistics/variable-change`), texts from `ubumark/utils/scatter-lines`.
 	 */
 	private executeLinregCommand(args: string): ReplExecutionResult {
-		const usage = 'Usage: .linreg x1,x2,x3 : y1,y2,y3';
-		// Une option vide (« ; » final) ne dit rien : ignorée
-		const [data, ...optionTexts] = args.split(';').map((s) => s.trim());
-		const options = optionTexts.filter((option) => option.length > 0);
-		if (!data.includes(':')) {
+		const usage = 'Usage: .ajustement x1 ; x2 ; x3 : y1 ; y2 ; y3 [en x = 10]';
+		if (!args.includes(':')) {
 			return {
 				success: false,
 				output: usage,
@@ -1721,7 +1718,7 @@ export class WebReplEngine {
 					code: 'INVALID_OPTIONS',
 					message: usage,
 					suggestion:
-						'Separez les valeurs X et Y par deux-points (:), puis les options par « ; » : .ajustement 1,2,3 : 2,4,7 ; x = 5'
+						'Separez les valeurs X et Y par deux-points (:), les valeurs par « ; », puis la prévision : .ajustement 1 ; 2 ; 3 : 2 ; 4 ; 7 en x = 5'
 				}),
 				error: {
 					code: 'INVALID_OPTIONS',
@@ -1729,20 +1726,9 @@ export class WebReplEngine {
 				}
 			};
 		}
-
-		const [xPart, yPart] = data.split(':').map((s) => s.trim());
-
-		// Parse X values
-		const xRaw = xPart
-			.split(',')
-			.map((s) => s.trim())
-			.filter((s) => s.length > 0);
-
-		// Parse Y values
-		const yRaw = yPart
-			.split(',')
-			.map((s) => s.trim())
-			.filter((s) => s.length > 0);
+		const read = readLinregArguments(args);
+		if (!read.ok) return this.statsFailure(read.message);
+		const { xRaw, yRaw, options } = read;
 
 		// SECURITY: Limit number of values to prevent DoS — the block's limit (Q167):
 		// exact fractions, 1000 points took ≈ 3 s, synchronously (review)
@@ -2041,4 +2027,72 @@ function linregLatex(left: string, term: string, slope: Fraction, intercept: Fra
 	const b = linregLatexNumber(intercept);
 	const sign = b.startsWith('-') ? '-' : '+';
 	return `${left} = ${linregLatexNumber(slope)}${term} ${sign} ${b.replace(/^-/, '')}`;
+}
+
+/**
+ * Lire l'argument de `.ajustement` (décision de David, 2026-10-08) :
+ * `X1 ; X2 … : Y1 ; Y2 … en x = 8` — la virgule est DÉCIMALE, les valeurs se
+ * séparent par « ; », les prévisions suivent `en` (ou `pour`), un changement
+ * de variable (`z = ln(y)`) se range parmi les « ; » de Y.
+ *
+ * L'ancienne écriture (`1,2,3 : 4,5,6 ; x = 8`) reste acceptée tant qu'aucune
+ * valeur n'est décimale : sinon on ne devine pas, on propose la nouvelle.
+ */
+function readLinregArguments(
+	args: string
+):
+	| { ok: true; xRaw: string[]; yRaw: string[]; options: string[] }
+	| { ok: false; message: string } {
+	const colon = args.indexOf(':');
+	const xPart = args.slice(0, colon).trim();
+	const rest = args.slice(colon + 1);
+	const items = (text: string) =>
+		text
+			.split(';')
+			.map((item) => item.trim())
+			.filter((item) => item.length > 0);
+
+	// Ancienne écriture : des virgules entre les X, aucun point-virgule
+	if (!xPart.includes(';') && xPart.includes(',')) {
+		const [yPart, ...optionTexts] = rest.split(';').map((item) => item.trim());
+		const split = (text: string) =>
+			text
+				.split(',')
+				.map((item) => item.trim())
+				.filter((item) => item.length > 0);
+		const xRaw = split(xPart);
+		const yRaw = split(yPart);
+		if ([...xRaw, ...yRaw].some((value) => /[.]/.test(value))) {
+			const options = optionTexts.filter((option) => option.length > 0);
+			const prediction = options.find((option) => /^[xy]\s*=/i.test(option));
+			const others = options.filter((option) => option !== prediction);
+			const written = (values: string[]) => values.map((v) => v.replace('.', ',')).join(' ; ');
+			const proposal =
+				`.ajustement ${written(xRaw)} : ${written(yRaw)}` +
+				others.map((option) => ` ; ${option}`).join('') +
+				(prediction === undefined ? '' : ` en ${prediction}`);
+			return {
+				ok: false,
+				message: `La virgule est décimale : sépare les valeurs par « ; ». ${proposal}`
+			};
+		}
+		return { ok: true, xRaw, yRaw, options: optionTexts.filter((option) => option.length > 0) };
+	}
+
+	// Nouvelle écriture : les prévisions après le premier `en` / `pour`
+	const keyword = /\s(?:en|pour)\s/i.exec(` ${rest} `);
+	const data = keyword === null ? rest : ` ${rest} `.slice(0, keyword.index);
+	const predictions =
+		keyword === null
+			? []
+			: ` ${rest} `
+					.slice(keyword.index)
+					.split(/;|\s(?:en|pour)\s/i)
+					.map((item) => item.trim())
+					.filter((item) => item.length > 0);
+	const yItems = items(data);
+	// `z = ln(y)` parmi les Y : un changement de variable, pas une valeur
+	const yRaw = yItems.filter((item) => !item.includes('='));
+	const options = [...yItems.filter((item) => item.includes('=')), ...predictions];
+	return { ok: true, xRaw: items(xPart), yRaw, options };
 }

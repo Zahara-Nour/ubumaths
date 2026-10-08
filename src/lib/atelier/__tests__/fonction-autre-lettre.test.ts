@@ -59,8 +59,9 @@ describe('f(t) = t^2 : rangée en x, montrée en t', () => {
 		const s = session();
 		runInput(s, 'f(t) = t^2');
 
+		// Décision de David (2026-10-08, Q1) : dérivée dans SA lettre
 		const out = outputOf(runInput(s, '.dériver f')).replace(/\s/g, '');
-		expect(out).toMatch(/2x$/);
+		expect(out).toMatch(/2t$/);
 		expect(s.atelier.get("f'")?.status).toBe('ok');
 	});
 
@@ -296,5 +297,65 @@ describe('relecture d’une lettre refusée', () => {
 
 	it.each(['', 'tt', '1', 't_1'])('letterRejection refuse la forme « %s »', (letter) => {
 		expect(letterRejection(letter, 'f', [])).not.toBeNull();
+	});
+});
+
+/**
+ * Décision de David (2026-10-08, Q1) : une fonction de l'atelier se traite
+ * dans SA lettre — rangée en x, la réponse est montrée en t.
+ */
+describe('f(t) = t^2 : les commandes répondent en t', () => {
+	const latexOf = (input: string, setup = ['f(t) = t^2']) => {
+		const s = session();
+		for (const line of setup) runInput(s, line);
+		const r = runInput(s, input);
+		expect(r, input).toMatchObject({ kind: 'commande' });
+		return r.kind === 'commande' ? (r.latex ?? '').replace(/\s/g, '') : '';
+	};
+
+	it('.dériver f → 2t', () => {
+		expect(latexOf('.dériver f')).toBe('2t');
+	});
+
+	it('.intégrer f → t³/3 + C', () => {
+		expect(latexOf('.intégrer f')).toBe('\\dfrac{1}{3}t^3+C');
+	});
+
+	it('.taylor f ordre 3 en 1 : en t', () => {
+		const latex = latexOf('.taylor f ordre 3 en 1');
+		expect(latex).toContain('t');
+		expect(latex).not.toContain('x');
+	});
+
+	it('.variations f / .domaine f : en t', () => {
+		const s = session();
+		runInput(s, 'f(t) = t^2');
+		for (const input of ['.variations f', '.domaine f']) {
+			const r = runInput(s, input);
+			expect(r.kind === 'commande' ? r.output : '', input).toContain('t');
+			expect(r.kind === 'commande' ? r.output : '', input).not.toMatch(/(?<![a-z])x(?![a-z])/);
+		}
+	});
+
+	it('.résoudre f=0 et f(t)=0 : t = 2 (f(t) = 2t − 4)', () => {
+		// Le TEXTE du moteur : le LaTeX des étapes lit `(2t-4)=0` faux (t = 0),
+		// défaut antérieur de `solveSteps` sur un membre entre parenthèses
+		for (const input of ['.résoudre f=0', '.résoudre f(t)=0']) {
+			const s = session();
+			runInput(s, 'f(t) = 2t-4');
+			const r = runInput(s, input);
+			expect(r.kind === 'commande' ? r.output : '', input).toMatch(/\nt = 2$/);
+		}
+	});
+
+	it('deux fonctions de lettres différentes : en x, et la ligne le dit', () => {
+		const s = session();
+		runInput(s, 'f(t) = t^2');
+		runInput(s, 'g(u) = 3u');
+		const r = runInput(s, '.dériver f+g');
+		expect(r).toMatchObject({ kind: 'commande' });
+		if (r.kind !== 'commande') return;
+		expect((r.latex ?? '').replace(/\s/g, '')).toBe('2x+3');
+		expect(r.note).toContain('en x');
 	});
 });

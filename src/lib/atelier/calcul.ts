@@ -18,7 +18,13 @@ import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber, withPiCommand, mixedNotationMessage } from './parse';
-import { INTERNAL_LETTER, internalDefinition, letterRejection } from './letter';
+import {
+	INTERNAL_LETTER,
+	internalDefinition,
+	letterRejection,
+	renameVariable,
+	typedLetterOf
+} from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -39,10 +45,13 @@ import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
-	isVariableHint,
-	splitVariableArgument,
-	variableHintOf
+	guessedVariable,
+	isKeywordCommand,
+	readCommandArguments,
+	writeCommandArguments,
+	type CommandArguments
 } from '$lib/mathAST/cli/core/variable-argument';
+import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
 import { tidyTerms } from './tidy-terms';
 import {
 	findUnknownFunctionCall,
@@ -144,16 +153,6 @@ export type ActionOutcome =
 const UNREADABLE_COMMAND =
 	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
 
-/** Les commandes qui calculent en x, sauf `; v` — et l'indiquent quand x manque. */
-const VARIABLE_COMMANDS: ReadonlySet<string> = new Set([
-	'diff',
-	'solve',
-	'integrate',
-	'variations',
-	'domain',
-	'taylor'
-]);
-
 /** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
 const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	'AMBIGUOUS_VARIABLE',
@@ -161,7 +160,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	'TAYLOR_ORDER',
 	'NOT_DIFFERENTIABLE',
 	// `.intégrer 1/x -1 1` : « L'intégrale diverge ou n'est pas définie… »
-	'INTEGRAL_UNDEFINED'
+	'INTEGRAL_UNDEFINED',
+	// Les mots-clés (`de … à`, `en`, `ordre`…) mal écrits : la forme attendue
+	'COMMAND_SYNTAX'
 ]);
 
 /**
@@ -492,6 +493,72 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	exponential: (atelier, argument) => exponentialCommand(atelier, argument)
 };
 
+/**
+ * Remplacer les noms de l'atelier dans chaque PARTIE d'un argument à
+ * mots-clés : l'expression, les bornes, la valeur, l'intervalle, la seconde
+ * expression — jamais la variable ni le nom remplacé (`en x=3`).
+ * `null` si une partie ne se compose pas.
+ */
+function substituteArguments(
+	args: CommandArguments,
+	substitute: (text: string) => string | null
+): CommandArguments | null {
+	const expression = substitute(args.expression);
+	const lower = args.bounds === null ? null : substitute(args.bounds.lower);
+	const upper = args.bounds === null ? null : substitute(args.bounds.upper);
+	const value = args.assignment === null ? null : substitute(args.assignment.value);
+	const interval = args.interval === null ? null : substitute(args.interval);
+	const other = args.other === null ? null : substitute(args.other);
+	if (expression === null) return null;
+	if (args.bounds !== null && (lower === null || upper === null)) return null;
+	if (
+		[args.assignment, args.interval, args.other].some(
+			(part, i) => part !== null && [value, interval, other][i] === null
+		)
+	) {
+		return null;
+	}
+	return {
+		...args,
+		expression,
+		bounds: lower === null || upper === null ? null : { lower, upper },
+		assignment: args.assignment === null || value === null ? null : { ...args.assignment, value },
+		interval,
+		other
+	};
+}
+
+/**
+ * La lettre des fonctions de l'atelier citées SEULES (`f`, `f'`, pas `f(2t)`,
+ * dont l'appel porte déjà son argument) dans une saisie : `single` si toutes
+ * ont la même lettre autre que x et que x n'est pas tapé à côté ; `mixed` si
+ * les lettres se mêlent ; `null` sinon (rien à récrire).
+ */
+function functionLetterOf(
+	session: CalcSession,
+	typed: string
+): { kind: 'single'; letter: string } | { kind: 'mixed' } | null {
+	const letters = new Set<string>();
+	let rest = typed;
+	for (const object of session.atelier.objects) {
+		if (object.kind !== 'function') continue;
+		const escaped = object.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const bare = new RegExp(`(?<![A-Za-z_])${escaped}'*(?![A-Za-z_0-9'(])`, 'g');
+		if (!bare.test(typed)) continue;
+		letters.add(typedLetterOf(session.atelier, object));
+		rest = rest.replace(bare, ' ');
+	}
+	if (letters.size === 0) return null;
+	// x tapé à côté (hors appels `f(x)`) : il se mêle à la lettre de la fonction
+	const typedX = /(?<![A-Za-z\\_])x(?![A-Za-z_])/.test(
+		rest.replace(/[A-Za-z_]\w*'*\([^()]*\)/g, ' ')
+	);
+	if (typedX) letters.add(INTERNAL_LETTER);
+	if (letters.size > 1) return { kind: 'mixed' };
+	const [letter] = letters;
+	return letter === INTERNAL_LETTER ? null : { kind: 'single', letter };
+}
+
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
 function randomSeed(): number {
 	return 1000 + Math.floor(Math.random() * 9000);
@@ -592,10 +659,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			message: `« ${derived} » est une suite : elle ne se dérive pas.`
 		};
 	}
-	const argument = !rawArgument.includes("'")
-		? substituteNames(session, rawArgument)
-		: (expandCommandArgument(session.atelier, rawArgument) ??
-			substituteNames(session, expandInput(session.atelier, rawArgument)));
+	// `f'(x)` → son expression d'abord, puis les noms (voir plus haut)
+	const substitute = (text: string): string | null =>
+		!text.includes("'")
+			? substituteNames(session, text)
+			: (expandCommandArgument(session.atelier, text) ??
+				substituteNames(session, expandInput(session.atelier, text)));
+	const argument = substitute(rawArgument);
 	if (argument === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
 	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
@@ -608,46 +678,87 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const unknown = findUnknownFunctionCall(rawArgument);
 	if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
 
-	// `.dériver f` : la cible tapée, sans sa variable explicite (`; t`) ni son
-	// `(x)`. Une fonction de l'atelier est en x, même quand son expression n'en
-	// contient pas : `f(x) = k` se dériverait sinon en k, et répondrait 1.
-	const typedTarget = splitVariableArgument(typedArgument).expression;
+	// Les commandes à mots-clés (`de … à`, `pour`, `en`, `ordre`, `dans`, `et` —
+	// décisions de David, 2026-10-08) : lues sur la saisie TAPÉE, avant que les
+	// noms soient remplacés (`a` est aussi le mot-clé `à`), puis remplacées
+	// partie par partie et récrites pour le moteur
+	const keyworded = isKeywordCommand(name) && space !== -1 ? name : null;
+	const reading = keyworded === null ? null : readCommandArguments(keyworded, rawArgument);
+	if (reading !== null && !reading.ok) return { kind: 'refus', message: reading.message };
+	const typedArgs = reading?.args ?? null;
+	if (
+		name === 'equiv' &&
+		typedArgs !== null &&
+		typedArgs.other === null &&
+		!rawArgument.includes('===')
+	) {
+		return {
+			kind: 'refus',
+			message: 'Écris « et » entre les deux expressions : .équivalent (x+1)^2 et x^2+2x+1'
+		};
+	}
+	const args = typedArgs === null ? null : substituteArguments(typedArgs, substitute);
+	if (typedArgs !== null && args === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
+
+	// `.dériver f` : la cible tapée, sans sa variable ni son `(x)`. Une
+	// fonction de l'atelier est rangée en x (#905), même quand son expression
+	// n'en contient pas : `f(x) = k` se dériverait sinon en k, et répondrait 1.
+	const typedTarget = typedArgs?.expression ?? typedArgument;
 	const diffTarget = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typedTarget)?.[1] ?? typedTarget;
 	const derivesFunction = name === 'diff' && session.atelier.get(diffTarget)?.kind === 'function';
-	const commandArgument =
-		derivesFunction && splitVariableArgument(argument).variable === null
-			? `${argument} ; x`
-			: argument;
+
+	// La variable : tapée, sinon x pour une fonction de l'atelier, sinon devinée
+	// (x présent → x ; une seule lettre → elle ; plusieurs sans x → refus)
+	// Une fonction de l'atelier se traite dans SA lettre (#905, décision de
+	// David 2026-10-08) : rangée en x, son expression est récrite en t, et le
+	// calcul se fait en t. Plusieurs lettres mêlées : en x, et on le dit.
+	// ⚠️ Seulement si la variable n'est pas tapée, ou si c'est SA lettre : avec
+	// f(t) = t³, `.dériver f pour x` lit f en x (comme sur main, f est rangée
+	// en x) au lieu de dériver t³ par rapport à x (revue #962).
+	const letter =
+		typedArgs === null || name === 'equiv' ? null : functionLetterOf(session, typedArgs.expression);
+	const typedVariable = typedArgs?.variable ?? typedArgs?.assignment?.name ?? null;
+	const rewrites =
+		letter?.kind === 'single' && (typedVariable === null || typedVariable === letter.letter);
+	let finalArgs =
+		args === null || !rewrites || letter?.kind !== 'single'
+			? args
+			: {
+					...args,
+					expression: renameVariable(
+						args.expression,
+						INTERNAL_LETTER,
+						letter.letter,
+						'url',
+						session.atelier.functionNames
+					),
+					variable: name === 'eval' ? args.variable : (args.variable ?? letter.letter)
+				};
+	const letterNote =
+		letter?.kind === 'mixed' && typedVariable === null
+			? 'Fonctions écrites avec des lettres différentes : calcul en x.'
+			: null;
+	if (finalArgs !== null && finalArgs.variable === null && name !== 'eval' && name !== 'equiv') {
+		const parsed = parseCommandExpression(finalArgs.expression).ast;
+		if (derivesFunction) finalArgs = { ...finalArgs, variable: INTERNAL_LETTER };
+		else if (parsed !== undefined) {
+			const guessed = guessedVariable(
+				parsed,
+				engine.getEvalState().bindings.keys(),
+				`.${known.french}`
+			);
+			if (!guessed.ok) return { kind: 'refus', message: guessed.message };
+			if (guessed.variable !== 'x') finalArgs = { ...finalArgs, variable: guessed.variable };
+		}
+	}
+	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
 	const result = engine.execute(executed);
-	// x absent, aucune variable donnée : le moteur calcule en x et ajoute une
-	// indication à sa sortie. Elle est montrée À PART (`note`) : une ligne dont
-	// la réponse se compose en mathématiques n'affiche pas son texte.
-	// Mêmes noms liés que le moteur (`.let a = 2`), mêmes bornes ôtées
-	// (`.intégrer`), mêmes ordre et point ôtés (`.taylor`)
-	const hint = VARIABLE_COMMANDS.has(name)
-		? variableHintOf(commandArgument, {
-				bound: engine.getEvalState().bindings.keys(),
-				integral: name === 'integrate',
-				taylor: name === 'taylor'
-			})
-		: null;
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
-	const engineRendered = renderResult(result, { fromCommand: true });
-	const rendered =
-		hint === null
-			? engineRendered
-			: {
-					...engineRendered,
-					text: engineRendered.text
-						.split('\n')
-						.filter((line) => !isVariableHint(line))
-						.join('\n')
-						.trim()
-				};
-	const noted = hint === null ? {} : { note: hint };
+	const rendered = renderResult(result, { fromCommand: true });
+	const noted = notesOf(letterNote);
 
 	// Un refus que le moteur adresse à l'élève, en français (`.dériver x^2 ; ab`
 	// : « « ab » n'est pas une variable. », `.dériver sin x` : « Écris sin(x)… ») :
@@ -676,10 +787,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		const note = derivesFunction
 			? derivativeNote(session.atelier.createDerivative(diffTarget))
 			: null;
-		const notes = notesOf(hint, note);
+		const notes = notesOf(letterNote, note);
 		// Les étapes dérivent la même chose que le moteur, variable comprise
-		const { expression, variable } = splitVariableArgument(commandArgument);
-		const derived = deriveSteps(expression, undefined, variable ?? undefined);
+		const derived = deriveSteps(
+			finalArgs?.expression ?? argument,
+			undefined,
+			finalArgs?.variable ?? undefined
+		);
 		if (derived !== null) {
 			return {
 				kind: 'commande',
@@ -721,18 +835,15 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		}
 	}
 
-	const solved = name === 'solve' ? solveSteps(argument) : null;
-	// Pas de x, aucune variable donnée : résoudre « en x » n'a pas de sens, et
-	// le moteur ne sait pas les inéquations (`.résoudre 2t+1<5` répondait « Je
-	// n'ai pas su lire »). On le dit, avec l'indication (revue #888).
-	if (name === 'solve' && solved === null && hint !== null) {
-		const typed = splitVariableArgument(typedArgument).expression.trim();
-		return {
-			kind: 'refus',
-			message: `Il n’y a pas de x dans « ${typed} » : rien à résoudre en x.`,
-			note: hint
-		};
-	}
+	// `dans [a ; b]` : les étapes ne savent pas restreindre, le moteur si
+	const solved =
+		name === 'solve' && finalArgs !== null && finalArgs.interval === null
+			? solveSteps(
+					finalArgs.variable === null
+						? finalArgs.expression
+						: `${finalArgs.expression} ; ${finalArgs.variable}`
+				)
+			: null;
 	if (solved !== null) {
 		return {
 			kind: 'commande',

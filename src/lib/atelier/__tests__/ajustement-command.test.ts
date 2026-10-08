@@ -24,7 +24,9 @@ describe('`.ajustement` dans l’atelier', () => {
 	});
 
 	it('changement de variable : la droite en z', () => {
-		const result = run('.ajustement 0,1,2,3,4,5 : 2.1,3,4.6,6.9,10.2,15.4 ; z = ln(y) ; x = 7');
+		const result = run(
+			'.ajustement 0 ; 1 ; 2 ; 3 ; 4 ; 5 : 2,1 ; 3 ; 4,6 ; 6,9 ; 10,2 ; 15,4 ; z = ln(y) en x = 7'
+		);
 
 		expect(result?.output).toContain('z = 0,401x + 0,723');
 		expect(result?.output).toContain('Pour x = 7 : y ≈ 34,152 (extrapolation)');

@@ -60,15 +60,17 @@ describe('.intégrer : écho lisible', () => {
 	});
 });
 
+// Bornes littérales : en écriture `de … à` depuis le 2026-10-08 (l'ancienne
+// `x 3 a` est ambiguë avec ∫ 3ax dx, refusée — voir syntaxe-mots-cles.test.ts)
 describe('.intégrer : bornes littérales', () => {
 	it('`x^2 0 a` → a³/3', () => {
-		const { output } = command('.intégrer x^2 0 a');
+		const { output } = command('.intégrer x^2 de 0 à a');
 		expect(output.split('\n')[0]).toMatch(/^∫\[0→a\] x\^2 dx = /);
 		expect(output.split('\n')[0]).toContain('a^3');
 	});
 
 	it('`x 1 b` → (b²−1)/2', () => {
-		const { output } = command('.intégrer x 1 b');
+		const { output } = command('.intégrer x de 1 à b');
 		expect(output.split('\n')[0]).toMatch(/^∫\[1→b\] x dx = /);
 		expect(output.split('\n')[0]).toContain('b^2');
 	});
@@ -76,7 +78,7 @@ describe('.intégrer : bornes littérales', () => {
 	it('un objet `a = 2` est substitué : `x^2 0 a` → 8/3', () => {
 		const s = session();
 		runInput(s, 'a = 2');
-		expect(command('.intégrer x^2 0 a', s).output.split('\n')[0]).toMatch(/= 8\/3$/);
+		expect(command('.intégrer x^2 de 0 à a', s).output.split('\n')[0]).toMatch(/= 8\/3$/);
 	});
 
 	it('pas de bornes sans nombre : `x a b` reste une primitive', () => {
@@ -95,7 +97,9 @@ describe('.intégrer : bornes littérales', () => {
 	});
 
 	it('`t^2 ; t 0 a` : borne littérale après la variable', () => {
-		expect(command('.intégrer t^2 ; t 0 a').output.split('\n')[0]).toMatch(/^∫\[0→a\] t\^2 dt = /);
+		expect(command('.intégrer t^2 de 0 à a pour t').output.split('\n')[0]).toMatch(
+			/^∫\[0→a\] t\^2 dt = /
+		);
 	});
 
 	it('`a x 0 2` → 2a (inchangé)', () => {

@@ -127,7 +127,7 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 		// une commande sans raisonnement à montrer n'invente pas d'étapes — il
 		// lui faut seulement une commande qui le reste. `.équivalent` répond
 		// oui ou non : il n'y a rien à dérouler derrière.
-		const result = runInput(session(), '.équivalent (x+1)^2 x^2+2x+1');
+		const result = runInput(session(), '.équivalent (x+1)^2 et x^2+2x+1');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
