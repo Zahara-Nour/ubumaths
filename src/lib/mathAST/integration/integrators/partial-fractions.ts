@@ -38,6 +38,7 @@ import { hashMathNode } from '../../normal/hash';
 import {
 	factorQuadratic,
 	factoredDenominator,
+	negativeDiscriminantAntiderivative,
 	residueAntiderivative
 } from './quadratic-denominator';
 
@@ -1175,7 +1176,7 @@ function integratePartialFraction(
 /**
  * Dénominateur trinôme non factorisé : racines rationnelles → réécrit
  * a(x − r₁)(x − r₂) et ré-intégré ; racines ±t littérales → résidus ;
- * Δ < 0 → refus explicite (arctan, hors programme du lycée). null : autre cas.
+ * Δ < 0 → (α/2a)·ln|D| + terme en arctan. null : autre cas.
  */
 function integrateQuadraticDenominator(
 	expr: MathNode & { type: 'division' },
@@ -1189,21 +1190,17 @@ function integrateQuadraticDenominator(
 	const denominator = expr.denominator;
 	const factorization = factorQuadratic(denominator, variable);
 	if (factorization === null) return null;
-	if (factorization.kind === 'negative-discriminant') {
-		return {
-			variable,
-			status: 'unsupported',
-			antiderivative: null,
-			integrandType: 'rational',
-			technique: 'partial-fractions',
-			steps: recorder.getSteps(),
-			error:
-				'Dénominateur de discriminant négatif : la primitive fait intervenir arctan, hors programme du lycée'
-		};
-	}
-
 	let fractionPart: MathNode | null;
-	if (factorization.kind === 'rational-roots') {
+	if (factorization.kind === 'negative-discriminant') {
+		// Décision de David (2026-10-08) : Δ < 0 accepté, ln(D) + terme en arctan
+		fractionPart = negativeDiscriminantAntiderivative(
+			remainder,
+			denominator,
+			factorization,
+			variable
+		);
+		if (fractionPart === null) return null;
+	} else if (factorization.kind === 'rational-roots') {
 		const factored = factoredDenominator(variable, factorization.leading, factorization.roots);
 		recorder.recordCustomStep(
 			'factor-denominator',
@@ -1532,6 +1529,17 @@ export const partialFractionsIntegrator: Integrator = {
 					constantNote: CONSTANT_OF_INTEGRATION_NOTE
 				};
 			}
+			// Trinôme irréductible seul (x³/(x² + 1)) : ln + arctan
+			const trinomial = integrateQuadraticDenominator(
+				expr,
+				remainder,
+				quotient,
+				variable,
+				options,
+				recorder,
+				depth
+			);
+			if (trinomial !== null) return trinomial;
 			return {
 				variable,
 				status: 'unsupported',

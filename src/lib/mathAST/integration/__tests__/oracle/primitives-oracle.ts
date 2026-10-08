@@ -440,6 +440,17 @@ function produceDefiniteAtelier(
 }
 
 export function judgeDefinite(c: DefiniteCase, session: CalcSession): Verdict {
+	if (c.refusal) {
+		// Singularité dans [a ; b] : toute valeur rendue est fausse
+		const produced =
+			c.path === 'latex' ? produceDefiniteLatex(c) : produceDefiniteAtelier(c, session);
+		if ('status' in produced) return produced;
+		return {
+			status: 'faux',
+			rendered: toLatex(produced.node),
+			reason: '(d) valeur rendue à travers une singularité de f dans [a ; b]'
+		};
+	}
 	const f = compileLatex(c.f);
 	const exact = compileLatex(c.exact);
 	const lower = compileLatex(c.lower);

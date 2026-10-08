@@ -34,7 +34,13 @@ import {
 	isFunction
 } from '../guards';
 import { mapNode, findNodes, getChildren } from '../transforms';
-import { makeAbortChecker } from '../common/abort';
+import {
+	AbortError,
+	getActiveAbortChecker,
+	makeAbortChecker,
+	withActiveAbortChecker,
+	type AbortChecker
+} from '../common/abort';
 import { simplifiedAdd, simplifiedMultiply, simplifiedOpposite } from '../common/simplify';
 import { isEulerBase } from '../differentiation/rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
@@ -45,11 +51,21 @@ import { expandFunctionPowers } from '../common/function-power';
 import { toCustom } from '../custom-generator';
 import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots';
 import { integrateByChainRule } from './integrators/chain-rule';
+import { integrateByIdentity } from './integrators/identities';
 import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
-import { dropConstantTerms, groupLnTerms, powerOfSumForm } from './class-form';
+import { antiderivativeDiscontinuity } from './singularity';
+import { compile } from '../eval/compile';
+import {
+	absProductForm,
+	arctanClassForm,
+	dropConstantTerms,
+	groupLnTerms,
+	lnOfEvenPowerAsAbs,
+	powerOfSumForm
+} from './class-form';
 
 // =============================================================================
 // Budget global
@@ -92,6 +108,14 @@ const MAX_INTEGRATION_MS = 1500;
  * chaque niveau suffirait à geler un seul appel.
  */
 const MAX_INTEGRATION_NODES = 3000;
+
+/**
+ * Marge de la mise en forme finale (normalisation, écriture de classe) au-delà
+ * de MAX_INTEGRATION_MS : passé ce délai, le signal ambiant (`common/abort.ts`)
+ * interrompt toute normalisation en cours — aucune entrée ne peut geler, même
+ * hors de la boucle budgétée (revue de #947 : 1/((x + 1)² + 3)).
+ */
+const FINISHING_MS = 500;
 
 /** Appels `integrate` en cours (imbriqués via les intégrateurs) */
 let activeIntegrations = 0;
@@ -190,7 +214,9 @@ function extractConstantMultiplier(
  * @param expr - The antiderivative to normalize
  * @returns The normalized expression
  */
-function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
+function normalizeAntiderivative(rawExpr: MathNode, variable?: string): MathNode {
+	// ln(u²) = 2 ln|u| AVANT la normalisation, qui écrirait 2 ln u (u > 0 seulement)
+	const expr = lnOfEvenPowerAsAbs(rawExpr);
 	// Développer (1+9x²)^512 produirait un polynôme de degré 1024 : au-delà
 	// de cette borne, la primitive est rendue telle quelle
 	if (hasLargeSumPower(expr)) {
@@ -198,7 +224,7 @@ function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
 	}
 	try {
 		const normalForm = normalize(expr, {
-			abortChecker: makeAbortChecker(undefined, NORMALIZE_RESULT_TIMEOUT_MS)
+			abortChecker: withAmbient(makeAbortChecker(undefined, NORMALIZE_RESULT_TIMEOUT_MS))
 		});
 		// x − 1/x, −2/√x : terme à terme, pas réduit au même dénominateur
 		const termwise = variable === undefined ? null : laurentForm(normalForm, variable);
@@ -223,6 +249,11 @@ function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
 function promoteEulerLetter(node: MathNode, variable: string | undefined): MathNode {
 	if (variable === 'e') return node;
 	return mapNode(node, (n) => (isVariable(n) && n.name === 'e' ? euler() : n));
+}
+
+/** L'arbre contient-il une valeur absolue `|…|` ? */
+function containsAbs(node: MathNode): boolean {
+	return findNodes(node, (n) => isFunction(n) && n.name === 'abs').length > 0;
 }
 
 /** L'arbre contient-il un appel `exp(…)` ? */
@@ -650,10 +681,15 @@ function integrateInternal(
 		return selected;
 	}
 
-	// Step 5b: recours après un refus — u′·f(u) avec u non linéaire, sin²/cos²
+	// Step 5b: recours après un refus — u′·f(u) avec u non linéaire, sin²/cos²,
+	// puis identités usuelles (1/cos², tan², 1/tan, |ax + b|, ln x / xᵖ)
 	const chained = integrateByChainRule(simplified, variable, options, recorder, depth);
 	if (chained !== null) {
 		return chained;
+	}
+	const byIdentity = integrateByIdentity(simplified, variable, options, recorder, depth);
+	if (byIdentity !== null) {
+		return byIdentity;
 	}
 	if (selected !== null) {
 		return selected;
@@ -699,11 +735,37 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
-	// Premier appel (non imbriqué) : le budget repart de zéro
+	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
+	// calcul — mise en forme finale comprise — est placé sous le signal ambiant
 	if (activeIntegrations === 0) {
 		integrationSteps = 0;
 		integrationDeadline = performance.now() + MAX_INTEGRATION_MS;
+		const outer = getActiveAbortChecker();
+		const hardDeadline = integrationDeadline + FINISHING_MS;
+		const checker: AbortChecker = () => (outer?.() ?? false) || performance.now() > hardDeadline;
+		try {
+			return withActiveAbortChecker(checker, () => integrateCounted(rawExpr, options));
+		} catch (error) {
+			// Signal de l'appelant : il lui revient ; le nôtre : refus propre
+			if (!(error instanceof AbortError) || outer?.()) throw error;
+			return oversizedResult(
+				options?.variable ?? 'x',
+				`Budget de calcul dépassé (${MAX_INTEGRATION_MS + FINISHING_MS} ms)`
+			);
+		}
 	}
+	return integrateCounted(rawExpr, options);
+}
+
+/** Le signal ambiant (budget global) combiné à un délai local */
+function withAmbient(local: AbortChecker | undefined): AbortChecker | undefined {
+	const ambient = getActiveAbortChecker();
+	if (ambient === undefined) return local;
+	if (local === undefined) return ambient;
+	return () => ambient() || local();
+}
+
+function integrateCounted(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
 	activeIntegrations++;
 	try {
 		const result = integrateWithinBudget(rawExpr, options);
@@ -797,13 +859,18 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		startDepth === 0
 	) {
 		// c·uⁿ⁺¹ gardée en puissance de u (⅓(x + 1)³) : écriture de classe, non développée
-		const powerForm = powerOfSumForm(finalAntiderivative, variable);
+		// k·u|u| (primitive de |au + b|, |·| tapée par l'élève) gardée en produit
+		const powerForm =
+			powerOfSumForm(finalAntiderivative, variable) ??
+			(containsAbs(rawExpr) ? absProductForm(finalAntiderivative, variable) : null);
 		finalAntiderivative =
 			powerForm ??
 			dropConstantTerms(
 				groupLnTerms(normalizeAntiderivative(finalAntiderivative, variable), variable),
 				variable
 			);
+		// arctan((2x + 1)/√3) plutôt que arctan(⅔√3 x + ⅓√3)
+		finalAntiderivative = arctanClassForm(finalAntiderivative, variable);
 		// `\exp(…)` seulement si l'élève l'a tapé : sinon `e^{…}`, comme sa saisie
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
@@ -840,6 +907,15 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 // =============================================================================
 // Definite Integral Function
 // =============================================================================
+
+/** Valeur numérique d'une borne (NaN si littérale : `a`, `b`) */
+function numericBound(bound: MathNode): number {
+	try {
+		return compile(bound)({});
+	} catch {
+		return Number.NaN;
+	}
+}
 
 /**
  * Compute a definite integral from lower to upper bound.
@@ -948,6 +1024,27 @@ export function integrateDefinite(
 	// pour `evaluate` et `compile` — sinon ∫₁ᵉ dx/x restait `ln(e)`
 	const lowerBound = promoteEulerLetter(lower, variable);
 	const upperBound = promoteEulerLetter(upper, variable);
+
+	// F(b) − F(a) n'a de sens que si F est continue sur [a ; b] : à travers un
+	// pôle, refus explicite — jamais une valeur (revue de #947)
+	const discontinuity = antiderivativeDiscontinuity(
+		indefiniteResult.antiderivative,
+		variable,
+		numericBound(lowerBound),
+		numericBound(upperBound)
+	);
+	if (discontinuity !== null) {
+		return {
+			...indefiniteResult,
+			status: 'unsupported',
+			lowerBound: lower,
+			upperBound: upper,
+			value: null,
+			approximate: undefined,
+			steps: [],
+			error: `L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}] : ${discontinuity}`
+		};
+	}
 
 	recorder.recordStep(
 		'fundamental-theorem',

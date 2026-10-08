@@ -8,7 +8,8 @@
  *    discriminant < 0 et de coefficient dominant > 0, eᵘ + c avec c > 0) ;
  * 3. fractions rationnelles à dénominateur trinôme NON factorisé : factorisé
  *    par ses racines (rationnelles, ou ±t pour x² − t²), puis décomposé ;
- *    discriminant < 0 hors forme x² + c : refus (arctan hors programme du lycée).
+ *    discriminant < 0 : (α/2a)·ln(ax² + bx + c) + terme en arctan (décision de
+ *    David du 2026-10-08, qui lève le refus « arctan hors programme »).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -182,12 +183,17 @@ describe('fractions rationnelles à dénominateur trinôme', () => {
 		expect(rendered('\\frac{x+1}{x^2+2x+5}')).not.toContain('\\left|');
 	});
 
-	it.each(['\\frac{1}{x^2+2x+2}', '\\frac{1}{x^2+x+1}', '\\frac{x}{x^2+2x+5}'])(
-		'%s : discriminant < 0, refus (arctan hors programme du lycée)',
-		(latex) => {
-			const result = integrate(parseLatex(latex), { variable: 'x' });
-			expect(result.status).toBe('unsupported');
-			expect(result.error).toContain('arctan');
-		}
-	);
+	// Décision de David (2026-10-08) : discriminant < 0 accepté, terme en arctan
+	it.each([
+		'\\frac{1}{x^2+2x+2}',
+		'\\frac{1}{x^2+x+1}',
+		'\\frac{x}{x^2+2x+5}',
+		'\\frac{1}{4x^2+1}',
+		'\\frac{3}{2x^2+8}',
+		'\\frac{2x-1}{x^2+x+1}',
+		'\\frac{1}{-x^2+2x-5}',
+		'\\frac{x^3}{x^2+1}'
+	])('%s : discriminant < 0, F′ = f (ln + arctan)', (latex) => {
+		expect(derivativeMismatch(latex)).toBeNull();
+	});
 });
