@@ -1,6 +1,7 @@
 # Seed 1re enseignement scientifique — points du programme ET références (architecture points → nœuds)
 
-> **Statut : PROPOSITION, en attente de validation par David.** ⚠️ Soin maximal (lycée).
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : titres non
+> retenus, scissions, entretien, références, 4 discutables). Livraison en cours.** ⚠️ Soin maximal (lycée).
 > Source : « Annexe — Programme de mathématiques intégré à l'enseignement scientifique en
 > classe de première générale » (7 p., `progs-lycee/premiere-ens-sci.pdf`, fourni par David
 > le 2026-10-07), relu **puce par puce** — le « module spécifique » des élèves de 1re
@@ -131,7 +132,7 @@ modélisation`, par symétrie.
    exponentielle »** (1GEN-043) → `Fonction exponentielle > suites et modélisation`.
    Alternative : `fonctions x ↦ aˣ`.
 
-## Questions
+## Questions — TRANCHÉES (David, 2026-10-08 : « je valide tout »)
 
 - **Validation d'ensemble** : les titres non retenus comme points, les 4 scissions,
   l'entretien (7 références), les références A + B (mêmes cibles qu'en 1re techno,
