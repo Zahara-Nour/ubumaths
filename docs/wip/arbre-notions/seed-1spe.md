@@ -367,7 +367,7 @@ Si V1 = oui : 13 références vers les points de 2de que la 1re reprend mot pour
 
 ---
 
-## Rattachements discutables
+## Rattachements discutables — TRANCHÉS (David, 2026-10-08 : « ok pour les discutables », recos retenues)
 
 1. **« Calcul de factorielle »** (1SPE-240) → `Dénombrement > Arrangements et permutations >
 factorielle`. Le doc d'écarts l'avait classé « [T] simple exemple » ; mais la règle
