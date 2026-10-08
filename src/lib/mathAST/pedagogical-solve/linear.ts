@@ -40,6 +40,7 @@ import {
 	isOne,
 	isZero,
 	makeStep,
+	prepareLinearRelation,
 	renumberSteps
 } from './_helpers';
 
@@ -121,16 +122,18 @@ function chooseAddOrSubtract(operand: MathNode): {
  * @throws if the equation is not first-degree in the chosen variable.
  */
 export function generateLinearEquationSteps(
-	equation: RelationNode,
+	input: RelationNode,
 	options: LinearEquationStepsOptions
 ): readonly EquationStep[] {
 	const { level, includeSubSteps = true, variable: varOpt } = options;
 	const strategy: GenerationStrategy = STRATEGIES[level];
 
-	const variable = varOpt ?? detectVariable(equation);
+	const variable = varOpt ?? detectVariable(input);
 	if (variable === null) {
 		throw new Error('generateLinearEquationSteps: cannot detect a single variable');
 	}
+	// Membre parenthésé déballé ; terme en x non développé → UndevelopedLinearForm
+	const equation = prepareLinearRelation(input, variable);
 
 	// Sanity check: must be linear in the chosen variable
 	const exprForDegree = canon(
