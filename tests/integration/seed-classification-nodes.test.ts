@@ -6,8 +6,9 @@
  * David le 2026-10-07 (tour complet des programmes CP → Tle) écrit en base —
  * 19 branches, 136 notions, 537 sous-notions, SANS niveaux scolaires — étendu
  * par 20261008120000 (seed CM) : +Préalgorithmique, +calcul réfléchi,
- * +droite graduée, 2 renommages → 19 + 137 + 539
- * (ADR 0020).
+ * +droite graduée, 2 renommages → 19 + 137 + 539 ; +ratio (seed cycle 4) → 540 ;
+ * branche Logique restructurée (seed 2de, décision C2 : renommage et
+ * déplacements, comptes inchangés) — version .15 (ADR 0020).
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
@@ -96,7 +97,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 	});
 
 	it('le JSON source est bien la version attendue', () => {
-		expect(arbre.version).toBe('2026-10-07.14');
+		expect(arbre.version).toBe('2026-10-07.15');
 		expect(arbre.branches).toHaveLength(19);
 	});
 
