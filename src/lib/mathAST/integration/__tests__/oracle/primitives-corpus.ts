@@ -1193,6 +1193,11 @@ export const DEFINITE_CASES: readonly DefiniteCase[] = [
 	definite('latex', '\\cos(x)', '\\cos(x)', '0', 'b', '\\sin(b)', { literal: true }),
 	definite('atelier', 'x^2 0 a', 'x^2', '0', 'a', '\\frac{a^3}{3}', { literal: true }),
 	definite('atelier', 'a x 0 2', 'ax', '0', '2', '2a', { literal: true }),
+	definite('atelier', 'x 1 b', 'x', '1', 'b', '\\frac{b^2-1}{2}', { literal: true }),
+	definite('atelier', 't^2 ; t 0 a', 't^2', '0', 'a', '\\frac{a^3}{3}', {
+		literal: true,
+		variable: 't'
+	}),
 	// Revue de #913
 	definite(
 		'latex',

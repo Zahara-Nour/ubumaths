@@ -118,6 +118,11 @@ function cleanText(output: string): string {
 			// Le nombre d'Euler en notation « custom » : l'élève lit e, pas `\euler`
 			// (`f(1)` pour f(x) = e^x répondait « \euler », 2026-10-05)
 			.replace(/\\euler(?![A-Za-z])/g, 'e')
+			// La division « en ligne » de la notation custom : `1/x` tapé se lit
+			// comme une division en ligne, que `toCustom` écrit `1:/x`. L'élève a
+			// tapé `1/x`, il lit `1/x` (`.intégrer 1/x 1 2` affichait « 1:/x »,
+			// 2026-10-08). Sans perte : une division en ligne garde ses parenthèses.
+			.replace(/:\//g, '/')
 			.trim()
 	);
 }
