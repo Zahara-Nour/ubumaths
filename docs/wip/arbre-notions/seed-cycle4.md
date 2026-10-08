@@ -510,15 +510,12 @@ appliquer` — ✅ tranché David.
    partage proportionnel (4-059) reste sous `appliquer` (plus large que le ratio) —
    les automatismes 3e « partager selon un ratio » le ciblent.
 8. **« Simplifier des expressions produits ou des rapports »** (3-012) → `Calcul
-littéral > simplifier l'écriture` (les rapports effleurent « expressions
-   fractionnaires », mais le geste est la simplification) ; **analyse-synthèse**
-   (3-017) → `Équations : premier degré` (notion) — le raisonnement vit dans la
-   résolution d'équations au collège.
+littéral > simplifier l'écriture` ; **analyse-synthèse** (3-017) → `Équations :
+premier degré` (notion) — ✅ tranché David.
 9. **« Relier le graphique de proportionnalité et Thalès »** (3-037) → `Situations de
-proportionnalité > reconnaître`. Alternative : `Théorème de Thalès` (notion).
-10. **Pensée informatique → `Variables et instructions` / `Boucles`** (S5 = option A,
-    déjà tranchée) : la programmation par blocs est une modalité ; les 17 points portent
-    kind `algorithme`.
+proportionnalité > reconnaître` — ✅ tranché David.
+10. **Pensée informatique → `Variables et instructions` / `Boucles`** (S5 = option A) —
+    ✅ confirmé David ; les 17 points portent kind `algorithme`.
 
 ## Questions (C1-C3)
 
