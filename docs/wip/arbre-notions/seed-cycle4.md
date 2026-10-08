@@ -1,6 +1,7 @@
 # Seed cycle 4 (5e, 4e, 3e) — points du programme ET références d'automatismes
 
-> **Statut : EN ATTENTE DE VALIDATION (questions C1-C3). Aucune migration avant.**
+> **Statut : VALIDÉ INTÉGRALEMENT le 2026-10-08 (points 1-10, C1, C2 tranchés un à un
+> par David). Livraison en cours (branche `feat/seed-points-cycle4`).**
 > Source : « Annexe 2 — Programme de mathématiques pour le cycle 4 » (arrêté du 18
 > février 2026, BO n° 10 du 5 mars 2026), extraite **ligne à ligne** (20 p.) : blocs
 > « Objectifs d'apprentissage » (→ points) et rubriques « Automatismes » (→ références ;
@@ -25,7 +26,7 @@
 | `rubrique`             | « domaine > section » (C11), ex. `Nombres et calculs > Puissances` ; suffixe `> Automatismes` pour les 3 points issus d'une ligne d'Automatismes                         |
 | `kind`                 | conn. / s-f ; **dém.** (`demonstration`) quand le geste central est démontrer (4 points) ; **algo.** (`algorithme`) pour « La pensée informatique » et 5-011 (18 points) |
 | `exigence`             | `attendu` partout (les Prolongements ne deviennent pas des points)                                                                                                       |
-| `regime_acquisition`   | `diversite` partout, sauf les **3 points issus des Automatismes → `fluence`**                                                                                            |
+| `regime_acquisition`   | `diversite` partout, sauf **5 points en `fluence`** (C2 étendu : 5-029, 5-030, 5-056, 3-010, 3-011)                                                                      |
 | `display_order`        | ordre de lecture du BO (les points d'automatismes à leur place, avant les objectifs de leur section)                                                                     |
 
 **226 points** (106 en 5e, 69 en 4e, 51 en 3e — dont 3 lignes d'Automatismes au contenu
@@ -84,14 +85,14 @@ l'aire du disque, le volume du cylindre de révolution » (5e) traverse deux not
 
 ### … > Puissances
 
-| Code  | Énoncé (verbatim BO)                                                                                               | kind  | rég. | nœud                                               |
-| ----- | ------------------------------------------------------------------------------------------------------------------ | ----- | ---- | -------------------------------------------------- |
-| 5-028 | Découvrir la notion de puissance d'un nombre et sa notation dans le cas du carré et du cube.                       | conn. | div. | Puissances : sens et écritures > définition        |
-| 5-029 | Connaitre les carrés des entiers de 0 à 12.                                                                        | conn. | div. | Entiers : multiplication > carrés _(discutable 2)_ |
-| 5-030 | Connaitre le cube de 10.                                                                                           | conn. | div. | Puissances : sens et écritures > puissances de 10  |
-| 5-031 | Savoir écrire un nombre sous la forme d'une puissance 2 ou 3.                                                      | s-f   | div. | Puissances : sens et écritures > définition        |
-| 5-032 | Calculer la valeur numérique d'expressions contenant des puissances simples, additions, soustractions et produits. | s-f   | div. | Puissances : calculs > mélange                     |
-| 5-033 | Calculer la valeur d'une expression littérale contenant une puissance simple.                                      | s-f   | div. | `Algèbre` Calcul littéral > substitution           |
+| Code  | Énoncé (verbatim BO)                                                                                               | kind  | rég. | nœud                                              |
+| ----- | ------------------------------------------------------------------------------------------------------------------ | ----- | ---- | ------------------------------------------------- |
+| 5-028 | Découvrir la notion de puissance d'un nombre et sa notation dans le cas du carré et du cube.                       | conn. | div. | Puissances : sens et écritures > définition       |
+| 5-029 | Connaitre les carrés des entiers de 0 à 12.                                                                        | conn. | flu. | Entiers : multiplication > carrés                 |
+| 5-030 | Connaitre le cube de 10.                                                                                           | conn. | flu. | Puissances : sens et écritures > puissances de 10 |
+| 5-031 | Savoir écrire un nombre sous la forme d'une puissance 2 ou 3.                                                      | s-f   | div. | Puissances : sens et écritures > définition       |
+| 5-032 | Calculer la valeur numérique d'expressions contenant des puissances simples, additions, soustractions et produits. | s-f   | div. | Puissances : calculs > mélange                    |
+| 5-033 | Calculer la valeur d'une expression littérale contenant une puissance simple.                                      | s-f   | div. | `Algèbre` Calcul littéral > substitution          |
 
 ### … > Calcul littéral et algébrique · branche `Algèbre`
 
@@ -520,12 +521,13 @@ proportionnalité > reconnaître` — ✅ tranché David.
 
 - **C1 — kind `demonstration`** pour les 4 points (5-040, 5-058, 5-065, 4-023) —
   ✅ TRANCHÉ par David le 2026-10-08.
-- **C2 — régime** : `fluence` pour les seuls 3 points issus des Automatismes (5-056,
-  3-010, 3-011), `diversite` partout ailleurs — le cycle 4 n'a pas de section « calcul
-  mental », ses automatismes sont des références. Reco : oui.
-- **C3 — validation d'ensemble** : les 226 points, la scission unique, les ~100 lignes
-  de références (41 en 5e, 33 en 4e, 27 en 3e → cibles dédupliquées par grade), les 10
-  rattachements discutables.
+- **C2 — régime** — ✅ TRANCHÉ par David le 2026-10-08, version ÉTENDUE : `fluence`
+  pour les 3 points issus des Automatismes (5-056, 3-010, 3-011) PLUS les répertoires
+  de faits 5-029 (carrés de 0 à 12, re-travaillé en automatisme en 4e et 3e) et 5-030
+  (cube de 10) ; `diversite` pour les 221 autres.
+- **C3 — validation d'ensemble** — ✅ ACQUISE : les 10 rattachements ont tous été
+  tranchés individuellement par David (2026-10-08), la sous-notion « ratio » créée,
+  C1 et C2 tranchés. Le document est INTÉGRALEMENT VALIDÉ — livraison en cours.
 
 ## Après validation (plan de livraison)
 
@@ -534,7 +536,7 @@ proportionnalité > reconnaître` — ✅ tranché David.
    - dessin_branches.py → JSON .14 + diagramme), puis les 226 points (5e puis 4e puis 3e), PUIS les références par grade
      (cibles résolues par code — y compris les cibles intra-migration 5-xxx/4-xxx, déjà
      insérées). Bloc DO : comptes par grade, 0 sans nœud, comptes de références par
-     grade, fluence = 3, algorithme = 18, demonstration = 4. Rollback scopé en
+     grade, fluence = 5, algorithme = 18, demonstration = 4. Rollback scopé en
      commentaire avec la mise en garde RGPD habituelle.
 2. Test d'intégration : comparaison intégrale des points ET des références des trois
    grades en lecture anonyme, preuve rouge avant.
