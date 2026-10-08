@@ -69,6 +69,9 @@ import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
 import { oddDenominatorExponent, realNthRoot } from './real-root';
 
+/** Indice maximal d'une racine entière exacte (comme l'exposant entier, ≤ 1000). */
+const MAX_EXACT_ROOT_INDEX = 1000n;
+
 /**
  * base^{exp} pour un exposant non entier : racine exacte si la base est un
  * entier ≥ 0 dont la racine ᵠ-ième tombe juste, sinon flottant. Une base
@@ -76,7 +79,10 @@ import { oddDenominatorExponent, realNthRoot } from './real-root';
  */
 function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 	// x^{p/q} = (x^{1/q})^p = (q-th root of x)^p
-	if (isIntegerRational(base) && base.n >= 0n && exp.d !== 1n) {
+	// ⚠️ q borné : un exposant irrationnel (`ln 1000 / ln 2`) arrive ici en
+	// rationnel tiré d'un flottant, q ≈ 2⁵² — `integerNthRoot` bouclait alors
+	// 2⁵² fois (2026-10-09, tableau de signes de `2^n > 1000`)
+	if (isIntegerRational(base) && base.n >= 0n && exp.d !== 1n && exp.d <= MAX_EXACT_ROOT_INDEX) {
 		const exactRoot = integerNthRoot(base.n, exp.d);
 		if (exactRoot !== null) {
 			const pNum = Number(exp.n);

@@ -40,10 +40,11 @@ import { parse, type PipelineOptions } from './pipeline';
 
 /**
  * La FORME d'un nom de variable après le point-virgule : `t`, `x_1`, `x_{12}`,
- * `\theta`. Ce n'est qu'un filtre : le nom réel est celui que le parseur de
- * l'expression donne à ce texte (`variableNameOf`).
+ * `\theta`, et l'indice d'une suite `u_{n+1}`, `u_{n-1}`. Ce n'est qu'un
+ * filtre : le nom réel est celui que le parseur de l'expression donne à ce
+ * texte (`variableNameOf`).
  */
-const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?$/;
+const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9+-]+\}))?$/;
 
 /**
  * Noms que l'expression contient mais qu'on ne propose pas comme autre
@@ -311,7 +312,9 @@ export function indexVariables(node: MathNode): {
 	const originals = new Map<string, MathNode>();
 	const flat = mapNode(node, (n) => {
 		if (!isSubscript(n) || !(isVariable(n.base) || isGreek(n.base))) return n;
-		const name = toLatex(n);
+		// Sans espaces : `u_{n+1}`, pas `u_{n + 1}` — le nom se relit d'un seul
+		// mot après « pour », et s'affiche comme l'élève l'a tapé
+		const name = toLatex(n).replace(/\s+/g, '');
 		originals.set(name, n);
 		return variable(name);
 	});
@@ -727,6 +730,20 @@ export function writeCommandArguments(args: CommandArguments): string {
 	if (args.other !== null) parts.push(`et ${args.other}`);
 	if (args.variable !== null) parts.push(`pour ${args.variable}`);
 	return parts.join(' ');
+}
+
+/**
+ * Les lettres d'une expression autres que la variable, `e`, `i`, `pi` et les
+ * noms liés (`.let a = 2`), triées : les PARAMÈTRES (`u_0`, `q` dans
+ * `u_0·q^n = 10` résolue en n). Variables indicées réécrites ici.
+ */
+export function parameterLetters(
+	node: MathNode,
+	variable: string,
+	bound: Iterable<string> = []
+): string[] {
+	const excluded = new Set([...CONSTANT_NAMES, ...bound, variable]);
+	return [...getVariables(indexVariables(node).node)].filter((name) => !excluded.has(name)).sort();
 }
 
 /**
