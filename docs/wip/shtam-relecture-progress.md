@@ -26,6 +26,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 19  | 2026-11-23 | Les poules ont des dents (`patatovie-poules-dents`)                                             | ✅ validé — Moscou retiré (palais d'Hiver), titre « la logique a du mordant », chapô de David (« ses raisons que le bon sens… »), « vraie à vide », point « divisible par 4 » retiré    |
 | 20  | 2026-11-26 | La grande rue de Sinusborg (`yoyolande-sinus-revient-toujours`)                                 | ✅ validé — réécrit : rue en forme de sinus, quartiers des Hauts et des Bas, titre « hauts et bas », promoteur et ses 40 « maisons les plus hautes »                                    |
 | 21  | 2026-11-30 | La duplication du cube (`bedonstan-duplication-du-cube`)                                        | ❌ abandonné (David) — « à la règle et au compas » trop difficile à comprendre ; fichier supprimé, créneau du 30 novembre libre                                                         |
+| 22  | 2026-12-03 | Le capitaine aux 97 Palotins (`nombrilie-nombre-premier-solitude`)                              | ✅ validé — réécrit : capitaine qui ne peut ranger 97 Palotins en rangs égaux, titre « rentrer dans le rang », renvoyer un Palotin                                                      |
 
 ## Outillage ajouté pendant la relecture
 
