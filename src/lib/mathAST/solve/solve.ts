@@ -1668,6 +1668,10 @@ function filterSolutionsByDomain(
 	recorder: import('./types').SolveStepRecorder
 ): SolveResult {
 	if (isUniversal(domain)) return { ...result, domain };
+	// ⚠️ Une identité (`x²/x = x` se ramène à 0 = 0) n'a pas de liste à
+	// filtrer : ses solutions sont TOUT le domaine. Le statut recalculé
+	// ci-dessous la changeait en « aucune solution » (2026-10-08).
+	if (result.status === 'infinite') return { ...result, domain };
 
 	const kept: Solution[] = [];
 	for (const sol of result.solutions) {

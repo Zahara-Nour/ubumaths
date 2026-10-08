@@ -384,6 +384,11 @@ export class CustomTokenizer {
 	private openers: Array<'call' | 'group'> = [];
 	/** Type du dernier jeton produit (une parenthèse qui suit un FUNC ouvre un appel) */
 	private lastTokenType: CustomTokenType | null = null;
+	/**
+	 * Jetons déjà lus, à rendre avant tout nouveau scan : les parenthèses
+	 * implicites de `√x` (voir `scanBareRootArgument`).
+	 */
+	private pendingTokens: CustomToken[] = [];
 
 	constructor(input: string) {
 		// Keep original input (don't strip whitespace)
@@ -448,6 +453,7 @@ export class CustomTokenizer {
 		this.matrixDepth = 0;
 		this.openers = [];
 		this.lastTokenType = null;
+		this.pendingTokens = [];
 	}
 
 	/**
@@ -472,7 +478,7 @@ export class CustomTokenizer {
 	 * Scans the next token and keeps track of the opened parentheses / braces.
 	 */
 	private scanToken(): CustomToken {
-		const token = this.scanRawToken();
+		const token = this.pendingTokens.shift() ?? this.scanRawToken();
 		if (token.type === 'LPAREN') {
 			this.openers.push(this.lastTokenType === 'FUNC' ? 'call' : 'group');
 		} else if (token.type === 'LBRACE') {
@@ -535,7 +541,11 @@ export class CustomTokenizer {
 		// ≤ ≥ ≠ tapés tels quels (clavier, copier-coller) : les mêmes relations que
 		// <= >= != — `sqrt(x)≤3` répondait « Unexpected token » (2026-10-08)
 		// √ tapé tel quel : la fonction sqrt — `√(x+1)` est `sqrt(x+1)`
-		if (char === '√') return this.scanMultiChar('FUNC', 'sqrt', 1);
+		if (char === '√') {
+			const func = this.scanMultiChar('FUNC', 'sqrt', 1);
+			this.scanBareRootArgument();
+			return func;
+		}
 		if (char === '≤') return this.scanMultiChar('LESS_EQUAL', '<=', 1);
 		if (char === '≥') return this.scanMultiChar('GREATER_EQUAL', '>=', 1);
 		if (char === '≠') return this.scanMultiChar('NOT_EQUAL', '!=', 1);
@@ -794,6 +804,84 @@ export class CustomTokenizer {
 			position: startPos,
 			length: 1
 		};
+	}
+
+	/**
+	 * `√` tapé SANS parenthèses : la racine porte sur l'ATOME qui suit, un
+	 * nombre ou une lettre, comme sur une calculatrice — `√x` = sqrt(x),
+	 * `√2x` = sqrt(2)·x, `√x+1` = sqrt(x)+1 (décision de David, 2026-10-08 ;
+	 * l'élève recevait « Function sqrt requires parentheses »). L'atome est
+	 * mis en file entre deux parenthèses implicites (longueur 0).
+	 *
+	 * Tout autre suite (`√(`, `√-x`, un nom de fonction `√ln(x)`) ne change
+	 * pas : le parseur exige ses parenthèses, comme avant.
+	 */
+	private scanBareRootArgument(): void {
+		if (this.position >= this.length) return;
+		const next = this.input[this.position];
+		let atom: CustomToken | null = null;
+		if (this.isDigit(next)) {
+			atom = this.scanNumber();
+		} else if (this.isLetter(next)) {
+			const start = this.position;
+			const scanned = this.scanIdentifier();
+			if (scanned.type === 'LETTER') atom = scanned;
+			else this.position = start;
+		}
+		if (atom === null) return;
+		// L'indice fait partie de l'atome : `√u_n` = sqrt(u_n), `√x_1`,
+		// `√u_{n+1}` (suites : u_{n+1} = √u_n + 2) — sans lui, `√u_n` donnait
+		// sqrt(u)·n et « Plusieurs lettres (n, u) » (revue, 2026-10-08)
+		const atomTokens: CustomToken[] = [atom];
+		if (atom.type === 'LETTER') atomTokens.push(...this.scanBareRootSubscript());
+		const lastToken = atomTokens[atomTokens.length - 1];
+		const end = lastToken.position + lastToken.length;
+		this.pendingTokens.push(
+			{ type: 'LPAREN', value: '(', position: atom.position, length: 0 },
+			...atomTokens,
+			{ type: 'RPAREN', value: ')', position: end, length: 0 }
+		);
+	}
+
+	/**
+	 * L'indice d'une lettre sous `√` : `_n`, `_1`, `_{n+1}` (accolades
+	 * équilibrées) — ou rien. Sans indice lisible, la position est rendue.
+	 */
+	private scanBareRootSubscript(): CustomToken[] {
+		if (this.input[this.position] !== '_') return [];
+		const start = this.position;
+		const tokens: CustomToken[] = [this.scanMultiChar('UNDERSCORE', '_', 1)];
+		const next = this.input[this.position];
+		if (next === undefined) {
+			this.position = start;
+			return [];
+		}
+		if (this.isDigit(next)) {
+			tokens.push(this.scanNumber());
+			return tokens;
+		}
+		if (this.isLetter(next)) {
+			const letter = this.scanIdentifier();
+			if (letter.type === 'LETTER') return [...tokens, letter];
+			this.position = start;
+			return [];
+		}
+		if (next === '{') {
+			let depth = 0;
+			do {
+				const token = this.scanRawToken();
+				if (token.type === 'EOF') {
+					this.position = start;
+					return [];
+				}
+				if (token.type === 'LBRACE') depth++;
+				else if (token.type === 'RBRACE') depth--;
+				tokens.push(token);
+			} while (depth > 0);
+			return tokens;
+		}
+		this.position = start;
+		return [];
 	}
 
 	/**

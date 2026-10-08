@@ -305,9 +305,9 @@ describe('Symbolic bounds edge cases', () => {
 			expect(formatDomainInterval(d)).toBe('ℝ \\ {π}');
 		});
 
-		it('formats ℝ \\ {√2, π, e}', () => {
+		it('formats ℝ \\ {√2 ; π ; e}', () => {
 			const d = excludePoints(universalDomain(), [bound('sqrt(2)'), bound('\\pi'), bound('e')]);
-			expect(formatDomainInterval(d)).toBe('ℝ \\ {√2, π, e}');
+			expect(formatDomainInterval(d)).toBe('ℝ \\ {√2 ; π ; e}');
 		});
 
 		it('containsValue respects symbolic excluded points', () => {

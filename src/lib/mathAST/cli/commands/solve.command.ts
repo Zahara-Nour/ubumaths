@@ -22,7 +22,7 @@
 import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
-import { solutionsLatex, inequalitySolutionLatex } from './solve-latex';
+import { solutionsLatex, inequalitySolutionLatex, withRealLineWritten } from './solve-latex';
 import { solveInequality } from '../../solve/inequality';
 import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';
@@ -1031,7 +1031,11 @@ export class SolveCommand extends BaseCommand {
 			if (result.status === 'partial') return unsolved;
 			const latex = inequalitySolutionLatex(result.solution);
 			if (latex === null) return unsolved;
-			return { success: true, output: `S = ${formatInterval(result.solution)}`, latex };
+			return {
+				success: true,
+				output: `S = ${formatInterval(withRealLineWritten(result.solution))}`,
+				latex
+			};
 		} catch {
 			return unsolved;
 		}
@@ -1386,7 +1390,11 @@ export class SolveCommand extends BaseCommand {
 			}
 
 			case 'infinite': {
-				const msg = 'Solutions infinies: toute valeur est solution';
+				// Une identité sur un domaine (`x²/x = x`) : tout le domaine
+				const msg =
+					result.domain === undefined || result.domain.kind === 'universal'
+						? 'Solutions infinies: toute valeur est solution'
+						: `Solutions infinies: toute valeur du domaine est solution, S = ${formatInterval(withRealLineWritten(result.domain))}`;
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
 				const headerHtmlPrefix =
 					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
