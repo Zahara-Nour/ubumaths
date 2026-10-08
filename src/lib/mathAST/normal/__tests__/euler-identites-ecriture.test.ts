@@ -68,7 +68,8 @@ describe('Témoins : forme normale inchangée (mesurée avant le correctif)', ()
 		['e^{x}', 'e^x'],
 		['\\exponentialE^{x}+1', '\\exponentialE^x + 1'],
 		['x^{2}\\ln(x)', 'x^2 \\ln\\left( x \\right)'],
-		['\\ln(x^{2})', '2 \\ln\\left( x \\right)'],
+		// ln(x²) = 2 ln|x| sur ℝ* (décision du 2026-10-08 ; 2 ln x avant)
+		['\\ln(x^{2})', '2 \\ln\\left( \\left| x \\right| \\right)'],
 		['\\exp(x)\\exp(2x)', '\\exp\\left( 3 x \\right)'],
 		['\\ln(\\exp(x))', 'x'],
 		['\\exponentialE^{2}', '\\exponentialE^2'],

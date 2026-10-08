@@ -3834,23 +3834,81 @@ function expandLogInteger(n: bigint, logName: LogFunctionName, base?: MathNode):
 }
 
 /**
- * Expands log(x^n) = n·log(x)
+ * a² ± 2ab + b² → a ± b (forme développée d'un carré, comme pour √) ; null
+ * sinon. Sert à ln((x − 1)²) = ln(x² − 2x + 1) = 2 ln|x − 1|.
+ */
+function perfectSquareTrinomialBase(form: NormalForm, ctx?: NormalizeContext): MathNode | null {
+	if (!isOnePolynomial(form.denominator) || form.numerator.length !== 3) return null;
+	const factored = tryFactorPerfectSquareTrinomial(form.numerator, ctx);
+	return factored === null ? null : denormalize(factored);
+}
+
+/** Base d'un facteur strictement positive pour tout réel : e^…, exp(…), b^… (b > 0), π */
+function isPositiveFactorBase(node: MathNode): boolean {
+	if (isExpLikeBase(node)) return true;
+	if (node.type === 'constant') return node.constant === 'pi';
+	if (isSuperscript(node)) {
+		return isEulerConstant(node.base) || (isNumber(node.base) && Number(node.base.value) > 0);
+	}
+	return false;
+}
+
+/**
+ * u > 0 pour tout réel, prouvé sur la forme normale (jamais supposé) : chaque
+ * terme a un coefficient rationnel > 0 et des facteurs positifs ou de
+ * puissance paire, et au moins un terme est strictement positif (x² + 1,
+ * eˣ + x², 3). Un paramètre littéral n'est jamais supposé positif.
+ */
+function isProvablyPositiveForm(form: NormalForm): boolean {
+	if (!isOnePolynomial(form.denominator)) return false;
+	if (form.numerator.length === 0) return false;
+	let hasStrictlyPositiveTerm = false;
+	for (const term of form.numerator) {
+		if (term.coefficient.terms.some((t) => t.hasImaginaryUnit)) return false;
+		if (!isPureRational(term.coefficient)) return false;
+		const value = getRationalValue(term.coefficient);
+		if (value === null || value.n <= 0n) return false;
+		let strictlyPositive = true;
+		for (const factor of term.monomial) {
+			if (isPositiveFactorBase(factor.base)) continue;
+			if (factor.exponent.n % 2n !== 0n) return false;
+			strictlyPositive = false;
+		}
+		if (strictlyPositive) hasStrictlyPositiveTerm = true;
+	}
+	return hasStrictlyPositiveTerm;
+}
+
+/**
+ * Expands log(u^r) = r·log(u), ou r·log|u| quand le numérateur de r est pair
+ * (décision de David, 2026-10-08) : ln(x²) est définie sur ℝ*, 2 ln x sur
+ * ]0 ; +∞[ seulement — ln(x²) = 2 ln|x|. Base prouvée positive : |u| = u, la
+ * valeur absolue n'est pas écrite. Puissance impaire : le domaine de ln(uⁿ)
+ * impose déjà u > 0, n·ln u est juste.
  * Uses recursive normalization to handle composition (e.g., ln(exp(x)) = x)
  */
 function expandLogPower(
 	info: { base: MathNode; exponent: Rational },
 	logName: LogFunctionName,
-	logBase?: MathNode
+	logBase?: MathNode,
+	ctx?: NormalizeContext
 ): NormalForm {
+	const evenNumerator = info.exponent.n % 2n === 0n;
+	const argument: MathNode =
+		evenNumerator && !isProvablyPositiveForm(normalizeNode(info.base, ctx))
+			? { type: 'function', name: 'abs', args: [info.base] }
+			: info.base;
+
 	// Use normalizeNode to allow ln(exp(x)) = x composition rule
 	const logNode: MathNode & { type: 'function'; base?: MathNode } = {
 		type: 'function',
 		name: logName,
-		args: [info.base]
+		args: [argument]
 	};
 	if (logBase) logNode.base = logBase;
 
-	const logBaseForm = normalizeNode(logNode);
+	// ctx transmis : sous l'hypothèse u ≥ 0 (ADR 0012), |u| → u
+	const logBaseForm = normalizeNode(logNode, ctx);
 	const expForm = normalFormFromRational(info.exponent);
 	return mulNormalForms(expForm, logBaseForm);
 }
@@ -3862,7 +3920,8 @@ function expandLogPower(
 function expandLogProduct(
 	factors: MathNode[],
 	logName: LogFunctionName,
-	base?: MathNode
+	base?: MathNode,
+	ctx?: NormalizeContext
 ): NormalForm {
 	if (factors.length === 0) return ZERO_NORMAL_FORM;
 
@@ -3874,7 +3933,7 @@ function expandLogProduct(
 			args: [f]
 		};
 		if (base) logNode.base = base;
-		return normalizeNode(logNode);
+		return normalizeNode(logNode, ctx);
 	};
 
 	if (factors.length === 1) return normalizeLogFactor(factors[0]);
@@ -3922,7 +3981,8 @@ function expandLogRational(
 function expandLogDivision(
 	form: NormalForm,
 	logName: LogFunctionName,
-	base?: MathNode
+	base?: MathNode,
+	ctx?: NormalizeContext
 ): NormalForm {
 	const numNode = denormalize(normalFormFromFraction(form.numerator, ONE_POLYNOMIAL));
 	const denNode = denormalize(normalFormFromFraction(form.denominator, ONE_POLYNOMIAL));
@@ -3943,8 +4003,8 @@ function expandLogDivision(
 	};
 	if (base) logDenNode.base = base;
 
-	const logNum: NormalForm = normalizeNode(logNumNode);
-	const logDen: NormalForm = normalizeNode(logDenNode);
+	const logNum: NormalForm = normalizeNode(logNumNode, ctx);
+	const logDen: NormalForm = normalizeNode(logDenNode, ctx);
 
 	return subNormalForms(logNum, logDen);
 }
@@ -4620,21 +4680,32 @@ function normalizeFunction(
 				return expandLogRational(ratVal.n, ratVal.d, 'ln');
 			}
 
+			// ln(a² ± 2ab + b²) = 2·ln|a ± b|
+			const squareBase = perfectSquareTrinomialBase(argForm, ctx);
+			if (squareBase !== null) {
+				return expandLogPower(
+					{ base: squareBase, exponent: { n: 2n, d: 1n } },
+					'ln',
+					undefined,
+					ctx
+				);
+			}
+
 			// ln(x^n) = n·ln(x) — but only if exponent != 1
 			const powerInfo = extractSimplePower(argForm);
 			if (powerInfo && !isOneRational(powerInfo.exponent)) {
-				return expandLogPower(powerInfo, 'ln');
+				return expandLogPower(powerInfo, 'ln', undefined, ctx);
 			}
 
 			// ln(a·b·c) = ln(a) + ln(b) + ln(c)
 			const factors = extractProductFactors(argForm);
 			if (factors.length > 1) {
-				return expandLogProduct(factors, 'ln');
+				return expandLogProduct(factors, 'ln', undefined, ctx);
 			}
 
 			// ln(a/b) = ln(a) - ln(b)
 			if (!isOnePolynomial(argForm.denominator)) {
-				return expandLogDivision(argForm, 'ln');
+				return expandLogDivision(argForm, 'ln', undefined, ctx);
 			}
 		}
 
@@ -4667,21 +4738,32 @@ function normalizeFunction(
 				return expandLogRational(ratVal.n, ratVal.d, 'log', logBase);
 			}
 
+			// log(a² ± 2ab + b²) = 2·log|a ± b|
+			const squareBase = perfectSquareTrinomialBase(argForm, ctx);
+			if (squareBase !== null) {
+				return expandLogPower(
+					{ base: squareBase, exponent: { n: 2n, d: 1n } },
+					'log',
+					logBase,
+					ctx
+				);
+			}
+
 			// log(x^n) = n·log(x) — but only if exponent != 1
 			const powerInfo = extractSimplePower(argForm);
 			if (powerInfo && !isOneRational(powerInfo.exponent)) {
-				return expandLogPower(powerInfo, 'log', logBase);
+				return expandLogPower(powerInfo, 'log', logBase, ctx);
 			}
 
 			// log(a·b·c) = log(a) + log(b) + log(c)
 			const factors = extractProductFactors(argForm);
 			if (factors.length > 1) {
-				return expandLogProduct(factors, 'log', logBase);
+				return expandLogProduct(factors, 'log', logBase, ctx);
 			}
 
 			// log(a/b) = log(a) - log(b)
 			if (!isOnePolynomial(argForm.denominator)) {
-				return expandLogDivision(argForm, 'log', logBase);
+				return expandLogDivision(argForm, 'log', logBase, ctx);
 			}
 		}
 
