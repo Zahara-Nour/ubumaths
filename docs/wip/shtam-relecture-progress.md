@@ -22,6 +22,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 15  | 2026-11-09 | Les soldes de Mère Ubu (`nombrilie-soldes-mere-ubu`)                                            | ✅ validé — titre « comptaient sur / comptait mieux », thermes d'Empoche-les-Bains, parade « moins puis plus » chiffrée (8 → 4 → 6), l'ordre ne change rien                             |
 | 16  | 2026-11-12 | Le camp du Capitaine Bordure (`bedonstan-camp-de-bordure`)                                      | ✅ validé — titre « découvre la géométrie / découvre la facture », soupe sans contradiction, chute « économies d'échelle » + dormir debout, vrai du faux k = ½                          |
 | 17  | 2026-11-16 | Le paradoxe des anniversaires (`pifometrie-anniversaires`)                                      | ✅ validé — titre « flaire un complot / flaire une bonne affaire », Galopin « ne savait pas encore compter », pari gagnant du Cheval à Phynances (+ vrai du faux)                       |
+| 18  | 2026-11-19 | 0,1 + 0,2 (`glitchistan-virgule-flottante`)                                                     | ✅ validé — titre « additionner / soustraire… de l'argent » (David), chapô résumé, somme versée en trop (pas manquante), livret à 5 % : 775 ans                                         |
 
 ## Outillage ajouté pendant la relecture
 
