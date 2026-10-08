@@ -1,0 +1,3417 @@
+{
+	"version": "2026-10-07.14",
+	"points": [
+		{
+			"code": "5-001",
+			"grade": "5",
+			"display_order": 1,
+			"name": "Additionner, soustraire, multiplier et diviser pour résoudre des problèmes et contrôler la vraisemblance de son résultat.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "5-002",
+			"grade": "5",
+			"display_order": 2,
+			"name": "Connaitre le sens et les situations d'emploi de ces opérations.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "5-003",
+			"grade": "5",
+			"display_order": 3,
+			"name": "Diviser par un nombre décimal.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : calculs",
+			"sous_notion": "diviser"
+		},
+		{
+			"code": "5-004",
+			"grade": "5",
+			"display_order": 4,
+			"name": "Enchainer des opérations.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : priorités opératoires",
+			"sous_notion": null
+		},
+		{
+			"code": "5-005",
+			"grade": "5",
+			"display_order": 5,
+			"name": "Traduire un problème, une succession donnée d'opérations, un programme de calcul, en une seule expression, en faisant appel ou non à des parenthèses.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : priorités opératoires",
+			"sous_notion": "traduire une phrase"
+		},
+		{
+			"code": "5-006",
+			"grade": "5",
+			"display_order": 6,
+			"name": "Nommer un calcul, distinguer sommes et produits, termes et facteurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : priorités opératoires",
+			"sous_notion": "traduire une phrase"
+		},
+		{
+			"code": "5-007",
+			"grade": "5",
+			"display_order": 7,
+			"name": "Connaitre et utiliser les priorités opératoires.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : priorités opératoires",
+			"sous_notion": null
+		},
+		{
+			"code": "5-008",
+			"grade": "5",
+			"display_order": 8,
+			"name": "Connaitre et utiliser la distributivité simple sur des exemples numériques.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : multiplication",
+			"sous_notion": "distributivité"
+		},
+		{
+			"code": "5-009",
+			"grade": "5",
+			"display_order": 9,
+			"name": "Utiliser les notions de multiples et diviseurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Arithmétique",
+			"notion": "Divisibilité",
+			"sous_notion": "multiples et diviseurs"
+		},
+		{
+			"code": "5-010",
+			"grade": "5",
+			"display_order": 10,
+			"name": "Connaitre les critères de divisibilité par 3 et par 9.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Arithmétique",
+			"notion": "Divisibilité",
+			"sous_notion": "critères de divisibilité"
+		},
+		{
+			"code": "5-011",
+			"grade": "5",
+			"display_order": 11,
+			"name": "Mobiliser un algorithme dans le cadre du calcul numérique.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-012",
+			"grade": "5",
+			"display_order": 12,
+			"name": "Définir les nombres relatifs.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "5-013",
+			"grade": "5",
+			"display_order": 13,
+			"name": "Définir l'opposé et la valeur absolue d'un nombre.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "5-014",
+			"grade": "5",
+			"display_order": 14,
+			"name": "Définir la notion de nombre positif, strictement positif, négatif, strictement négatif.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "5-015",
+			"grade": "5",
+			"display_order": 15,
+			"name": "Utiliser les nombres relatifs pour représenter des grandeurs observables qui peuvent prendre des valeurs inférieures à zéro (température, temps, altitude, etc.), en particulier dans le cadre de la résolution de problèmes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : sens et écritures",
+			"sous_notion": null
+		},
+		{
+			"code": "5-016",
+			"grade": "5",
+			"display_order": 16,
+			"name": "Lire l'abscisse d'un nombre relatif sur une droite graduée et placer un nombre relatif d'abscisse donnée.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : sens et écritures",
+			"sous_notion": "droite graduée"
+		},
+		{
+			"code": "5-017",
+			"grade": "5",
+			"display_order": 17,
+			"name": "Comparer et ranger dans l'ordre croissant et décroissant des nombres décimaux relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : sens et écritures",
+			"sous_notion": "comparer"
+		},
+		{
+			"code": "5-018",
+			"grade": "5",
+			"display_order": 18,
+			"name": "Additionner deux nombres décimaux relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "sommes"
+		},
+		{
+			"code": "5-019",
+			"grade": "5",
+			"display_order": 19,
+			"name": "Additionner plusieurs nombres décimaux relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "sommes"
+		},
+		{
+			"code": "5-020",
+			"grade": "5",
+			"display_order": 20,
+			"name": "Soustraire deux nombres décimaux relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "différences"
+		},
+		{
+			"code": "5-021",
+			"grade": "5",
+			"display_order": 21,
+			"name": "Connaitre et justifier les situations dans lesquelles des parenthèses sont indispensables au sens des écritures.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "sommes algébriques"
+		},
+		{
+			"code": "5-022",
+			"grade": "5",
+			"display_order": 22,
+			"name": "Simplifier l'écriture de sommes comportant des parenthèses.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "sommes algébriques"
+		},
+		{
+			"code": "5-023",
+			"grade": "5",
+			"display_order": 23,
+			"name": "Enchainer additions et soustractions de décimaux relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "sommes algébriques"
+		},
+		{
+			"code": "5-024",
+			"grade": "5",
+			"display_order": 24,
+			"name": "Résoudre des problèmes mobilisant addition et soustraction de nombres décimaux relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "5-025",
+			"grade": "5",
+			"display_order": 25,
+			"name": "Comparer des fractions.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sous_notion": "comparer"
+		},
+		{
+			"code": "5-026",
+			"grade": "5",
+			"display_order": 26,
+			"name": "Additionner et soustraire des fractions de dénominateurs quelconques.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "additionner et soustraire"
+		},
+		{
+			"code": "5-027",
+			"grade": "5",
+			"display_order": 27,
+			"name": "Résoudre des problèmes avec des additions et soustractions de fractions.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "additionner et soustraire"
+		},
+		{
+			"code": "5-028",
+			"grade": "5",
+			"display_order": 28,
+			"name": "Découvrir la notion de puissance d'un nombre et sa notation dans le cas du carré et du cube.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "5-029",
+			"grade": "5",
+			"display_order": 29,
+			"name": "Connaitre les carrés des entiers de 0 à 12.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : multiplication",
+			"sous_notion": "carrés"
+		},
+		{
+			"code": "5-030",
+			"grade": "5",
+			"display_order": 30,
+			"name": "Connaitre le cube de 10.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "puissances de 10"
+		},
+		{
+			"code": "5-031",
+			"grade": "5",
+			"display_order": 31,
+			"name": "Savoir écrire un nombre sous la forme d'une puissance 2 ou 3.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "5-032",
+			"grade": "5",
+			"display_order": 32,
+			"name": "Calculer la valeur numérique d'expressions contenant des puissances simples, additions, soustractions et produits.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sous_notion": "mélange"
+		},
+		{
+			"code": "5-033",
+			"grade": "5",
+			"display_order": 33,
+			"name": "Calculer la valeur d'une expression littérale contenant une puissance simple.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "substitution"
+		},
+		{
+			"code": "5-034",
+			"grade": "5",
+			"display_order": 34,
+			"name": "Produire des formules (double, triple, carré, successeur, prédécesseur, aire, périmètre, etc.).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "5-035",
+			"grade": "5",
+			"display_order": 35,
+			"name": "Calculer la valeur d'une expression littérale par substitution.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "substitution"
+		},
+		{
+			"code": "5-036",
+			"grade": "5",
+			"display_order": 36,
+			"name": "Tester si une égalité entre expressions algébriques comportant une variable est vraie ou fausse.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "substitution"
+		},
+		{
+			"code": "5-037",
+			"grade": "5",
+			"display_order": 37,
+			"name": "Déterminer si une expression littérale est une somme ou un produit.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "5-038",
+			"grade": "5",
+			"display_order": 38,
+			"name": "Exploiter les relations k(a + b) = ka + kb ou k(a − b) = ka − kb pour factoriser, ou développer une expression littérale.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "5-039",
+			"grade": "5",
+			"display_order": 39,
+			"name": "Réduire une expression littérale de la forme ax + b, où a et b sont des nombres décimaux.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "réduire"
+		},
+		{
+			"code": "5-040",
+			"grade": "5",
+			"display_order": 40,
+			"name": "Démontrer une propriété générale par le calcul littéral.",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "5-041",
+			"grade": "5",
+			"display_order": 41,
+			"name": "Utiliser un contre-exemple pour démontrer qu'une assertion est fausse.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "5-042",
+			"grade": "5",
+			"display_order": 42,
+			"name": "Formuler des conjectures en s'appuyant sur un langage algorithmique ou un tableur.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "5-043",
+			"grade": "5",
+			"display_order": 43,
+			"name": "Donner à la lettre le statut d'inconnue.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": null
+		},
+		{
+			"code": "5-044",
+			"grade": "5",
+			"display_order": 44,
+			"name": "Modéliser des problèmes relevant des opérations à trous par des équations du type ax = c ou x + b = c.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": "mettre en équation"
+		},
+		{
+			"code": "5-045",
+			"grade": "5",
+			"display_order": 45,
+			"name": "Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": null
+		},
+		{
+			"code": "5-046",
+			"grade": "5",
+			"display_order": 46,
+			"name": "Sur une droite graduée : lire l'abscisse d'un point donné ; placer un point d'abscisse donnée.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Repérage sur une droite et dans le plan",
+			"branche": "Géométrie",
+			"notion": "Repérage et déplacements",
+			"sous_notion": "coordonnées dans le plan"
+		},
+		{
+			"code": "5-047",
+			"grade": "5",
+			"display_order": 47,
+			"name": "Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Repérage sur une droite et dans le plan",
+			"branche": "Géométrie",
+			"notion": "Repérage et déplacements",
+			"sous_notion": "coordonnées dans le plan"
+		},
+		{
+			"code": "5-048",
+			"grade": "5",
+			"display_order": 48,
+			"name": "Construire et mettre en relation différentes représentations en perspectives cavalières des solides suivants : pavé droit, cube, cylindre de révolution, prisme droit.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective cavalière"
+		},
+		{
+			"code": "5-049",
+			"grade": "5",
+			"display_order": 49,
+			"name": "Savoir mettre en relation une représentation en perspective cavalière et un patron d'un pavé, d'un prisme droit ou d'un cylindre de révolution.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "patrons"
+		},
+		{
+			"code": "5-050",
+			"grade": "5",
+			"display_order": 50,
+			"name": "Calculer le volume du cube, du pavé droit, du prisme droit.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Volumes",
+			"sous_notion": null
+		},
+		{
+			"code": "5-051",
+			"grade": "5",
+			"display_order": 51,
+			"name": "Connaitre et convertir des unités usuelles (volume et capacité).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Volumes",
+			"sous_notion": "conversions"
+		},
+		{
+			"code": "5-052",
+			"grade": "5",
+			"display_order": 52,
+			"name": "Calculer l'aire du disque.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "disque"
+		},
+		{
+			"code": "5-053",
+			"grade": "5",
+			"display_order": 53,
+			"name": "Calculer le volume du cylindre de révolution.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Volumes",
+			"sous_notion": "prisme et cylindre"
+		},
+		{
+			"code": "5-054",
+			"grade": "5",
+			"display_order": 54,
+			"name": "Définir le demi-tour, ou symétrie centrale.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Transformations",
+			"branche": "Géométrie",
+			"notion": "Symétrie centrale",
+			"sous_notion": null
+		},
+		{
+			"code": "5-055",
+			"grade": "5",
+			"display_order": 55,
+			"name": "Connaitre les propriétés du demi-tour.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Transformations",
+			"branche": "Géométrie",
+			"notion": "Symétrie centrale",
+			"sous_notion": null
+		},
+		{
+			"code": "5-056",
+			"grade": "5",
+			"display_order": 56,
+			"name": "Connaitre les mesures des angles de l'équerre dont dispose l'élève (30° 60° 90° ou 45° 45° 90°).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Espace et géométrie > Angles > Automatismes",
+			"branche": "Grandeurs et mesures",
+			"notion": "Angles",
+			"sous_notion": null
+		},
+		{
+			"code": "5-057",
+			"grade": "5",
+			"display_order": 57,
+			"name": "Caractériser le parallélisme par les angles : angles alternes internes, angles correspondants.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Angles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "perpendiculaires et parallèles"
+		},
+		{
+			"code": "5-058",
+			"grade": "5",
+			"display_order": 58,
+			"name": "Connaitre la somme des angles d'un triangle et savoir la démontrer.",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-059",
+			"grade": "5",
+			"display_order": 59,
+			"name": "Construire des triangles à partir de données partielles.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-060",
+			"grade": "5",
+			"display_order": 60,
+			"name": "Connaitre les propriétés des médiatrices et du cercle circonscrit dans le cas de triangles particuliers.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-061",
+			"grade": "5",
+			"display_order": 61,
+			"name": "Calculer l'aire d'un triangle.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "triangle quelconque"
+		},
+		{
+			"code": "5-062",
+			"grade": "5",
+			"display_order": 62,
+			"name": "Définir et tracer les hauteurs dans un triangle.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-063",
+			"grade": "5",
+			"display_order": 63,
+			"name": "Savoir que les hauteurs d'un triangle sont concourantes.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-064",
+			"grade": "5",
+			"display_order": 64,
+			"name": "Définir et tracer les médianes dans un triangle.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-065",
+			"grade": "5",
+			"display_order": 65,
+			"name": "Démontrer qu'une médiane partage un triangle en deux triangles d'aires égales.",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-066",
+			"grade": "5",
+			"display_order": 66,
+			"name": "Utiliser ces propriétés dans le cas de triangles particuliers.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "5-067",
+			"grade": "5",
+			"display_order": 67,
+			"name": "Définir le parallélogramme.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "parallélogrammes"
+		},
+		{
+			"code": "5-068",
+			"grade": "5",
+			"display_order": 68,
+			"name": "Construire des parallélogrammes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "parallélogrammes"
+		},
+		{
+			"code": "5-069",
+			"grade": "5",
+			"display_order": 69,
+			"name": "Connaitre les propriétés caractéristiques des côtés opposés et des diagonales.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "parallélogrammes"
+		},
+		{
+			"code": "5-070",
+			"grade": "5",
+			"display_order": 70,
+			"name": "Utiliser une propriété caractéristique sur les diagonales ou les côtés pour les construire ou donner la nature du quadrilatère.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "parallélogrammes"
+		},
+		{
+			"code": "5-071",
+			"grade": "5",
+			"display_order": 71,
+			"name": "Définir les parallélogrammes particuliers (rectangle, losange, carré).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "parallélogrammes"
+		},
+		{
+			"code": "5-072",
+			"grade": "5",
+			"display_order": 72,
+			"name": "Connaitre les propriétés caractéristiques.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "parallélogrammes"
+		},
+		{
+			"code": "5-073",
+			"grade": "5",
+			"display_order": 73,
+			"name": "Savoir calculer l'aire d'un parallélogramme et de figures complexes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "parallélogramme"
+		},
+		{
+			"code": "5-074",
+			"grade": "5",
+			"display_order": 74,
+			"name": "Résoudre des problèmes faisant appel à des conversions d'unités de longueur et d'unités d'aires.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes",
+			"branche": "Grandeurs et mesures",
+			"notion": "Aires",
+			"sous_notion": "unités et conversions"
+		},
+		{
+			"code": "5-075",
+			"grade": "5",
+			"display_order": 75,
+			"name": "Recueillir et organiser des données.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": null
+		},
+		{
+			"code": "5-076",
+			"grade": "5",
+			"display_order": 76,
+			"name": "Calculer des effectifs et des fréquences (exprimées sous forme décimale, fractionnaire ou de pourcentage).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "effectifs et fréquences"
+		},
+		{
+			"code": "5-077",
+			"grade": "5",
+			"display_order": 77,
+			"name": "Lire et interpréter des informations présentées sous forme de tableaux, de diagrammes et de graphiques.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": null
+		},
+		{
+			"code": "5-078",
+			"grade": "5",
+			"display_order": 78,
+			"name": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un tableau, d'un diagramme (diagramme en barres, diagramme circulaire) ou d'un graphique cartésien.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": null
+		},
+		{
+			"code": "5-079",
+			"grade": "5",
+			"display_order": 79,
+			"name": "Choisir une représentation adaptée à ce qu'il convient de mettre en avant.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": null
+		},
+		{
+			"code": "5-080",
+			"grade": "5",
+			"display_order": 80,
+			"name": "Calculer et interpréter la moyenne simple d'une série de données.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "moyenne"
+		},
+		{
+			"code": "5-081",
+			"grade": "5",
+			"display_order": 81,
+			"name": "Aborder les questions relatives au hasard à partir de problèmes simples.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": null
+		},
+		{
+			"code": "5-082",
+			"grade": "5",
+			"display_order": 82,
+			"name": "Utiliser le vocabulaire des probabilités dans des contextes concrets : expérience aléatoire, issue, évènement.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "événements"
+		},
+		{
+			"code": "5-083",
+			"grade": "5",
+			"display_order": 83,
+			"name": "Attribuer des probabilités dans des cas simples (équiprobabilité).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "équiprobabilité"
+		},
+		{
+			"code": "5-084",
+			"grade": "5",
+			"display_order": 84,
+			"name": "Répéter matériellement une expérience aléatoire simple. Enregistrer les résultats observés dans un tableau d'effectifs et de fréquences.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "fréquences"
+		},
+		{
+			"code": "5-085",
+			"grade": "5",
+			"display_order": 85,
+			"name": "Utiliser des proportions, des pourcentages.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Pourcentages",
+			"sous_notion": "calculer"
+		},
+		{
+			"code": "5-086",
+			"grade": "5",
+			"display_order": 86,
+			"name": "Calculer, appliquer des proportions, des pourcentages.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Pourcentages",
+			"sous_notion": "calculer"
+		},
+		{
+			"code": "5-087",
+			"grade": "5",
+			"display_order": 87,
+			"name": "Identifier des situations de proportionnalité dans des contextes concrets (prix, recettes, distances, échelles).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "reconnaître"
+		},
+		{
+			"code": "5-088",
+			"grade": "5",
+			"display_order": 88,
+			"name": "Utiliser un coefficient de proportionnalité dans des contextes concrets (prix unitaire, vitesse moyenne, échelle, etc.).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "appliquer"
+		},
+		{
+			"code": "5-089",
+			"grade": "5",
+			"display_order": 89,
+			"name": "Représenter une situation de proportionnalité par un tableau ou un graphique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": null
+		},
+		{
+			"code": "5-090",
+			"grade": "5",
+			"display_order": 90,
+			"name": "Reconnaitre une situation de proportionnalité à partir d'un tableau ou d'un graphique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "reconnaître"
+		},
+		{
+			"code": "5-091",
+			"grade": "5",
+			"display_order": 91,
+			"name": "Reconnaitre graphiquement qu'un nuage de points est ou n'est pas associé à une situation de proportionnalité entre données discrètes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "reconnaître"
+		},
+		{
+			"code": "5-092",
+			"grade": "5",
+			"display_order": 92,
+			"name": "Introduire l'expression : « en fonction de » dans des contextes concrets ou mathématiques.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-093",
+			"grade": "5",
+			"display_order": 93,
+			"name": "Produire un tableau de valeurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-094",
+			"grade": "5",
+			"display_order": 94,
+			"name": "Lire et interpréter un tableau de valeurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-095",
+			"grade": "5",
+			"display_order": 95,
+			"name": "Placer dans un repère orthogonal donné des points correspondant à un tableau de valeurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-096",
+			"grade": "5",
+			"display_order": 96,
+			"name": "Lire et interpréter un graphique cartésien donné par une courbe ou un nuage de points.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-097",
+			"grade": "5",
+			"display_order": 97,
+			"name": "Traduire la relation de dépendance entre deux grandeurs par un tableau de valeurs à partir d'une formule.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-098",
+			"grade": "5",
+			"display_order": 98,
+			"name": "Produire une formule simple représentant la dépendance de deux grandeurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-099",
+			"grade": "5",
+			"display_order": 99,
+			"name": "Caractériser graphiquement la proportionnalité.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "reconnaître"
+		},
+		{
+			"code": "5-100",
+			"grade": "5",
+			"display_order": 100,
+			"name": "Manipuler des instructions simples et les séquencer.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-101",
+			"grade": "5",
+			"display_order": 101,
+			"name": "Identifier les entrées et sorties d'un programme.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-102",
+			"grade": "5",
+			"display_order": 102,
+			"name": "Représenter des formules sous la forme d'une expression informatique dans un langage de programmation par blocs.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-103",
+			"grade": "5",
+			"display_order": 103,
+			"name": "Calculer la valeur de formules à l'aide d'une suite d'instruction dans un langage de programmation par blocs.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-104",
+			"grade": "5",
+			"display_order": 104,
+			"name": "Prévoir la valeur d'une expression informatique avant son exécution.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-105",
+			"grade": "5",
+			"display_order": 105,
+			"name": "Analyser un programme simple donné et modifier ses paramètres.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "5-106",
+			"grade": "5",
+			"display_order": 106,
+			"name": "Effectuer une boucle inconditionnelle simple permettant de répéter une séquence linéaire d'instructions un nombre précis de fois.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Boucles",
+			"sous_notion": "boucle bornée"
+		},
+		{
+			"code": "4-001",
+			"grade": "4",
+			"display_order": 1,
+			"name": "Multiplier deux nombres relatifs : d'abord dans le cas où un seul des facteurs est négatif, puis, grâce à la distributivité, dans le cas où deux facteurs sont négatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "produit"
+		},
+		{
+			"code": "4-002",
+			"grade": "4",
+			"display_order": 2,
+			"name": "Diviser deux nombres relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": "quotient"
+		},
+		{
+			"code": "4-003",
+			"grade": "4",
+			"display_order": 3,
+			"name": "Savoir calculer un enchainement d'opérations avec les nombres relatifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-004",
+			"grade": "4",
+			"display_order": 4,
+			"name": "Utiliser le vocabulaire (somme, quotient, etc.) à partir d'un enchainement d'opérations dans un programme de calcul et inversement.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+			"branche": "Nombres et calculs",
+			"notion": "Relatifs : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-005",
+			"grade": "4",
+			"display_order": 5,
+			"name": "Simplifier une fraction.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sous_notion": "simplifier"
+		},
+		{
+			"code": "4-006",
+			"grade": "4",
+			"display_order": 6,
+			"name": "Définir la notion de nombre rationnel : le quotient de deux nombres entiers relatifs.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "4-007",
+			"grade": "4",
+			"display_order": 7,
+			"name": "Exprimer l'opposé d'un nombre rationnel.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "4-008",
+			"grade": "4",
+			"display_order": 8,
+			"name": "Calculer le produit de nombres rationnels.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "multiplier"
+		},
+		{
+			"code": "4-009",
+			"grade": "4",
+			"display_order": 9,
+			"name": "Calculer et représenter la fraction d'une fraction, d'un nombre, d'une quantité.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "fraction d'une quantité"
+		},
+		{
+			"code": "4-010",
+			"grade": "4",
+			"display_order": 10,
+			"name": "Définir l'inverse d'un nombre et connaitre sa notation.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "inverse"
+		},
+		{
+			"code": "4-011",
+			"grade": "4",
+			"display_order": 11,
+			"name": "Déterminer l'inverse d'une fraction.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "inverse"
+		},
+		{
+			"code": "4-012",
+			"grade": "4",
+			"display_order": 12,
+			"name": "Diviser des fractions.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": "diviser"
+		},
+		{
+			"code": "4-013",
+			"grade": "4",
+			"display_order": 13,
+			"name": "Calculer la valeur d'expressions comportant plusieurs opérations avec les fractions.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-014",
+			"grade": "4",
+			"display_order": 14,
+			"name": "Résoudre des problèmes mobilisant les opérations sur les fractions : addition, soustraction, multiplication, division, inverse.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-015",
+			"grade": "4",
+			"display_order": 15,
+			"name": "Définir les puissances d'exposant positif d'un nombre a.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "4-016",
+			"grade": "4",
+			"display_order": 16,
+			"name": "Multiplier des puissances d'exposant entier naturel d'un même nombre entre elles.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sous_notion": "multiplier"
+		},
+		{
+			"code": "4-017",
+			"grade": "4",
+			"display_order": 17,
+			"name": "Multiplier des puissances d'un même exposant entier naturel de deux nombres entre elles.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sous_notion": "multiplier"
+		},
+		{
+			"code": "4-018",
+			"grade": "4",
+			"display_order": 18,
+			"name": "Résoudre des problèmes faisant intervenir des puissances.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sous_notion": "mélange"
+		},
+		{
+			"code": "4-019",
+			"grade": "4",
+			"display_order": 19,
+			"name": "Comprendre et connaitre la définition de la racine carrée d'un nombre positif.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Racine carrée",
+			"branche": "Nombres et calculs",
+			"notion": "Racines carrées : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "4-020",
+			"grade": "4",
+			"display_order": 20,
+			"name": "Encadrer la racine carrée d'un entier par deux entiers consécutifs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Racine carrée",
+			"branche": "Nombres et calculs",
+			"notion": "Racines carrées : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "4-021",
+			"grade": "4",
+			"display_order": 21,
+			"name": "Produire des formules et tester leur vraisemblance : aires de formes géométriques simples, nombres pairs/impairs, etc.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "4-022",
+			"grade": "4",
+			"display_order": 22,
+			"name": "Connaitre et utiliser la distributivité simple pour développer et factoriser une expression algébrique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "4-023",
+			"grade": "4",
+			"display_order": 23,
+			"name": "Utiliser le calcul algébrique pour produire des démonstrations.",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "4-024",
+			"grade": "4",
+			"display_order": 24,
+			"name": "Résoudre une équation du premier degré du type ax + b = c.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": "ax + b = c"
+		},
+		{
+			"code": "4-025",
+			"grade": "4",
+			"display_order": 25,
+			"name": "Mettre en équation un problème et le résoudre à l'aide d'une équation du premier degré du type ax + b = cx + d.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": null
+		},
+		{
+			"code": "4-026",
+			"grade": "4",
+			"display_order": 26,
+			"name": "Formuler des conjectures à l'aide d'un algorithme ou d'un tableur pour résoudre de manière exacte ou approchée une équation.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": null
+		},
+		{
+			"code": "4-027",
+			"grade": "4",
+			"display_order": 27,
+			"name": "Reconnaitre des solides (pyramide, cône de révolution).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "reconnaître et décrire"
+		},
+		{
+			"code": "4-028",
+			"grade": "4",
+			"display_order": 28,
+			"name": "Construire et mettre en relation différentes représentations des solides (pavé droit, cube, cylindre de révolution, prisme droit, pyramides et cônes de révolution).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective cavalière"
+		},
+		{
+			"code": "4-029",
+			"grade": "4",
+			"display_order": 29,
+			"name": "Connaitre le volume de la pyramide et du cône de révolution.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Volumes",
+			"sous_notion": "pyramide et cône"
+		},
+		{
+			"code": "4-030",
+			"grade": "4",
+			"display_order": 30,
+			"name": "Comprendre l'effet d'une translation.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes et translations",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": null
+		},
+		{
+			"code": "4-031",
+			"grade": "4",
+			"display_order": 31,
+			"name": "Faire le lien avec les parallélogrammes, les angles.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes et translations",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": null
+		},
+		{
+			"code": "4-032",
+			"grade": "4",
+			"display_order": 32,
+			"name": "Connaitre et utiliser les propriétés de conservations des translations.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Parallélogrammes et translations",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": null
+		},
+		{
+			"code": "4-033",
+			"grade": "4",
+			"display_order": 33,
+			"name": "Connaitre les trois théorèmes relatifs à la droite des milieux dans un triangle.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Théorème de Thalès",
+			"sous_notion": "droite des milieux"
+		},
+		{
+			"code": "4-034",
+			"grade": "4",
+			"display_order": 34,
+			"name": "Connaitre le théorème de Pythagore, sa réciproque, sa contraposée.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Théorème de Pythagore",
+			"sous_notion": null
+		},
+		{
+			"code": "4-035",
+			"grade": "4",
+			"display_order": 35,
+			"name": "Mener un travail de logique sur la réciproque et la contraposée.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Théorème de Pythagore",
+			"sous_notion": "réciproque"
+		},
+		{
+			"code": "4-036",
+			"grade": "4",
+			"display_order": 36,
+			"name": "Caractériser un triangle rectangle à l'aide de son cercle circonscrit, par son inscription dans un demi-cercle dont le diamètre est un côté du triangle.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "4-037",
+			"grade": "4",
+			"display_order": 37,
+			"name": "Déterminer le centre du cercle circonscrit d'un triangle rectangle.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "4-038",
+			"grade": "4",
+			"display_order": 38,
+			"name": "Construire des rectangles sans équerre.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "triangles"
+		},
+		{
+			"code": "4-039",
+			"grade": "4",
+			"display_order": 39,
+			"name": "Calculer une moyenne pondérée dans le cas d'une série discrète de petits effectifs présentée sous forme de données brutes, d'un tableau ou d'un diagramme en barres.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "moyenne"
+		},
+		{
+			"code": "4-040",
+			"grade": "4",
+			"display_order": 40,
+			"name": "Déterminer une médiane et l'interpréter dans le cas d'une série de petit effectif présentée sous forme de données brutes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "médiane"
+		},
+		{
+			"code": "4-041",
+			"grade": "4",
+			"display_order": 41,
+			"name": "Calculer et interpréter l'étendue d'une série présentée sous forme de données brutes, d'un tableau, d'un diagramme en barres, d'un diagramme circulaire.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "étendue"
+		},
+		{
+			"code": "4-042",
+			"grade": "4",
+			"display_order": 42,
+			"name": "Comprendre l'évolution de la médiane et de la moyenne quand on ajoute une valeur extrême.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-043",
+			"grade": "4",
+			"display_order": 43,
+			"name": "Résoudre des problèmes faisant intervenir les différents indicateurs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-044",
+			"grade": "4",
+			"display_order": 44,
+			"name": "Résoudre des problèmes de comparaison de séries statistiques.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-045",
+			"grade": "4",
+			"display_order": 45,
+			"name": "Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": null
+		},
+		{
+			"code": "4-046",
+			"grade": "4",
+			"display_order": 46,
+			"name": "Utiliser le vocabulaire et les notations ensemblistes pour décrire une expérience aléatoire dans des cas simples et définir la notion d'évènement.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "événements"
+		},
+		{
+			"code": "4-047",
+			"grade": "4",
+			"display_order": 47,
+			"name": "Définir : complémentaire, réunion, intersection, ensemble vide (évènement impossible).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "événements"
+		},
+		{
+			"code": "4-048",
+			"grade": "4",
+			"display_order": 48,
+			"name": "Calculer la probabilité d'un évènement et de l'évènement contraire.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "probabilité simple"
+		},
+		{
+			"code": "4-049",
+			"grade": "4",
+			"display_order": 49,
+			"name": "Exemples simples d'expériences aléatoires à deux épreuves (par exemple, lancer de deux pièces, d'une pièce et d'un dé, de deux dés, etc.).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": null
+		},
+		{
+			"code": "4-050",
+			"grade": "4",
+			"display_order": 50,
+			"name": "À partir de la répétition d'une expérience aléatoire, réalisée matériellement ou simulée, comparer des graphiques de distributions (fréquentielle et probabiliste).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "fréquences"
+		},
+		{
+			"code": "4-051",
+			"grade": "4",
+			"display_order": 51,
+			"name": "Observer la fluctuation des fréquences pour un nombre de répétitions fixé de l'expérience aléatoire.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "fréquences"
+		},
+		{
+			"code": "4-052",
+			"grade": "4",
+			"display_order": 52,
+			"name": "Utiliser des grandeurs quotients, avec ou sans unités.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Vitesse",
+			"sous_notion": null
+		},
+		{
+			"code": "4-053",
+			"grade": "4",
+			"display_order": 53,
+			"name": "Comparer deux nombres ou deux grandeurs à l'aide de leur rapport ou ratio.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "ratio"
+		},
+		{
+			"code": "4-054",
+			"grade": "4",
+			"display_order": 54,
+			"name": "Exprimer la proportionnalité entre deux suites de nombres par des égalités de rapports ou sous forme de ratio.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "ratio"
+		},
+		{
+			"code": "4-055",
+			"grade": "4",
+			"display_order": 55,
+			"name": "Déterminer une quatrième proportionnelle.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "quatrième proportionnelle"
+		},
+		{
+			"code": "4-056",
+			"grade": "4",
+			"display_order": 56,
+			"name": "Calculer avec des pourcentages.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Pourcentages",
+			"sous_notion": "calculer"
+		},
+		{
+			"code": "4-057",
+			"grade": "4",
+			"display_order": 57,
+			"name": "Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Évolutions",
+			"sous_notion": "variations en pourcentage"
+		},
+		{
+			"code": "4-058",
+			"grade": "4",
+			"display_order": 58,
+			"name": "Définir le coefficient multiplicateur.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Évolutions",
+			"sous_notion": "variations en pourcentage"
+		},
+		{
+			"code": "4-059",
+			"grade": "4",
+			"display_order": 59,
+			"name": "Résoudre des problèmes de partage proportionnel.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "appliquer"
+		},
+		{
+			"code": "4-060",
+			"grade": "4",
+			"display_order": 60,
+			"name": "Savoir appliquer un programme de calcul à deux (plusieurs) étapes à un nombre simple puis à une variable.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "4-061",
+			"grade": "4",
+			"display_order": 61,
+			"name": "Savoir retrouver le nombre de départ après avoir remonté un programme de calcul simple.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "4-062",
+			"grade": "4",
+			"display_order": 62,
+			"name": "Produire une formule littérale représentant la dépendance d'une grandeur en fonction d'une autre.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "4-063",
+			"grade": "4",
+			"display_order": 63,
+			"name": "Représenter l'expression d'une grandeur en fonction d'une autre par un graphique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "4-064",
+			"grade": "4",
+			"display_order": 64,
+			"name": "Comprendre la dépendance d'une grandeur en fonction d'une autre.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "4-065",
+			"grade": "4",
+			"display_order": 65,
+			"name": "Représenter des conditions simples.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": "instructions conditionnelles"
+		},
+		{
+			"code": "4-066",
+			"grade": "4",
+			"display_order": 66,
+			"name": "Écrire des instructions conditionnelles.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": "instructions conditionnelles"
+		},
+		{
+			"code": "4-067",
+			"grade": "4",
+			"display_order": 67,
+			"name": "Manipuler une variable.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": "variables et affectation"
+		},
+		{
+			"code": "4-068",
+			"grade": "4",
+			"display_order": 68,
+			"name": "Écrire un programme simple donné pour réaliser un objectif ou résoudre un problème.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "4-069",
+			"grade": "4",
+			"display_order": 69,
+			"name": "Modifier un programme donné pour changer son comportement.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "3-001",
+			"grade": "3",
+			"display_order": 1,
+			"name": "Mettre une fraction sous forme irréductible.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sous_notion": "simplifier"
+		},
+		{
+			"code": "3-002",
+			"grade": "3",
+			"display_order": 2,
+			"name": "Rendre irréductible une fraction.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sous_notion": "simplifier"
+		},
+		{
+			"code": "3-003",
+			"grade": "3",
+			"display_order": 3,
+			"name": "Résoudre des problèmes faisant appel à des fractions.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Nombres rationnels",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "3-004",
+			"grade": "3",
+			"display_order": 4,
+			"name": "Définir les puissances d'exposant négatif d'un nombre.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "3-005",
+			"grade": "3",
+			"display_order": 5,
+			"name": "Multiplier et diviser des puissances.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sous_notion": null
+		},
+		{
+			"code": "3-006",
+			"grade": "3",
+			"display_order": 6,
+			"name": "Déterminer la notation scientifique d'un nombre.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "notation scientifique"
+		},
+		{
+			"code": "3-007",
+			"grade": "3",
+			"display_order": 7,
+			"name": "Résoudre des problèmes notamment en utilisant la notation scientifique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Puissances",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sous_notion": "notation scientifique"
+		},
+		{
+			"code": "3-008",
+			"grade": "3",
+			"display_order": 8,
+			"name": "Résoudre analytiquement et graphiquement des équations de la forme x² = a.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Racine carrée",
+			"branche": "Algèbre",
+			"notion": "Équations : produit et quotient",
+			"sous_notion": "x² = a"
+		},
+		{
+			"code": "3-009",
+			"grade": "3",
+			"display_order": 9,
+			"name": "Résoudre des problèmes utilisant la racine carrée.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Racine carrée",
+			"branche": "Nombres et calculs",
+			"notion": "Racines carrées : calculs",
+			"sous_notion": "calculer"
+		},
+		{
+			"code": "3-010",
+			"grade": "3",
+			"display_order": 10,
+			"name": "Factoriser un nombre entier positif : 60 = 2² × 3 × 5.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres et calculs > Multiples et diviseurs > Automatismes",
+			"branche": "Arithmétique",
+			"notion": "Nombres premiers",
+			"sous_notion": "décomposition en facteurs premiers"
+		},
+		{
+			"code": "3-011",
+			"grade": "3",
+			"display_order": 11,
+			"name": "Prendre l'opposé d'une expression : savoir que −(5 − 4x) = −5 + 4x.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique > Automatismes",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "opposé d'une expression"
+		},
+		{
+			"code": "3-012",
+			"grade": "3",
+			"display_order": 12,
+			"name": "Simplifier des expressions produits ou des rapports comportant des facteurs communs.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "simplifier l'écriture"
+		},
+		{
+			"code": "3-013",
+			"grade": "3",
+			"display_order": 13,
+			"name": "Utiliser la double distributivité pour développer et factoriser des expressions dont le facteur est apparent.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": null
+		},
+		{
+			"code": "3-014",
+			"grade": "3",
+			"display_order": 14,
+			"name": "Résoudre analytiquement et graphiquement une inéquation du premier degré du type ax ⩾ b.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Inéquations : premier degré",
+			"sous_notion": "ax + b < c"
+		},
+		{
+			"code": "3-015",
+			"grade": "3",
+			"display_order": 15,
+			"name": "Résoudre une équation produit nul.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : produit et quotient",
+			"sous_notion": "produit nul"
+		},
+		{
+			"code": "3-016",
+			"grade": "3",
+			"display_order": 16,
+			"name": "Manipuler les trois identités remarquables pour développer et factoriser : a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)² ; a² − b² = (a − b)(a + b).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sous_notion": "identités remarquables"
+		},
+		{
+			"code": "3-017",
+			"grade": "3",
+			"display_order": 17,
+			"name": "Pratiquer un raisonnement par analyse-synthèse dans le cadre d'une résolution d'équation.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sous_notion": null
+		},
+		{
+			"code": "3-018",
+			"grade": "3",
+			"display_order": 18,
+			"name": "Définir la boule et la sphère.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "reconnaître et décrire"
+		},
+		{
+			"code": "3-019",
+			"grade": "3",
+			"display_order": 19,
+			"name": "Définir les grands cercles, le diamètre.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "reconnaître et décrire"
+		},
+		{
+			"code": "3-020",
+			"grade": "3",
+			"display_order": 20,
+			"name": "Visualiser et réaliser des sections de pavé parallèlement à une face, de cylindre parallèlement ou perpendiculairement à son axe, d'une boule.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "sections planes"
+		},
+		{
+			"code": "3-021",
+			"grade": "3",
+			"display_order": 21,
+			"name": "Connaitre et utiliser la formule du volume d'une boule de rayon donné.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Représentation de l'espace",
+			"branche": "Grandeurs et mesures",
+			"notion": "Volumes",
+			"sous_notion": "boule"
+		},
+		{
+			"code": "3-022",
+			"grade": "3",
+			"display_order": 22,
+			"name": "Connaitre et appliquer le théorème de Thalès, sa réciproque, sa contraposée (configurations des triangles emboités et configuration dite du papillon).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Théorème de Thalès",
+			"sous_notion": null
+		},
+		{
+			"code": "3-023",
+			"grade": "3",
+			"display_order": 23,
+			"name": "Connaitre et utiliser les lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Triangles",
+			"branche": "Géométrie",
+			"notion": "Trigonométrie du triangle rectangle",
+			"sous_notion": null
+		},
+		{
+			"code": "3-024",
+			"grade": "3",
+			"display_order": 24,
+			"name": "Définir et utiliser la translation : définition ponctuelle avec parallélogramme.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Translations et vecteurs",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": null
+		},
+		{
+			"code": "3-025",
+			"grade": "3",
+			"display_order": 25,
+			"name": "Définir et utiliser les notions de vecteur, de vecteurs égaux, de vecteur nul, d'opposé d'un vecteur.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Translations et vecteurs",
+			"branche": "Géométrie",
+			"notion": "Vecteurs : sans coordonnées",
+			"sous_notion": null
+		},
+		{
+			"code": "3-026",
+			"grade": "3",
+			"display_order": 26,
+			"name": "Définir et utiliser la somme de deux vecteurs par enchainement de deux translations.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Translations et vecteurs",
+			"branche": "Géométrie",
+			"notion": "Vecteurs : sans coordonnées",
+			"sous_notion": "somme et relation de Chasles"
+		},
+		{
+			"code": "3-027",
+			"grade": "3",
+			"display_order": 27,
+			"name": "Découvrir et utiliser la relation de Chasles.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Espace et géométrie > Translations et vecteurs",
+			"branche": "Géométrie",
+			"notion": "Vecteurs : sans coordonnées",
+			"sous_notion": "somme et relation de Chasles"
+		},
+		{
+			"code": "3-028",
+			"grade": "3",
+			"display_order": 28,
+			"name": "Calculer des effectifs cumulés croissants.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Représenter des données",
+			"sous_notion": "fréquences cumulées"
+		},
+		{
+			"code": "3-029",
+			"grade": "3",
+			"display_order": 29,
+			"name": "Donner les quartiles et la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "quartiles"
+		},
+		{
+			"code": "3-030",
+			"grade": "3",
+			"display_order": 30,
+			"name": "Construire et utiliser des boites à moustache pour représenter les valeurs de position d'une série statistique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": "boîte à moustaches"
+		},
+		{
+			"code": "3-031",
+			"grade": "3",
+			"display_order": 31,
+			"name": "Comprendre et interpréter des données statistiques.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": null
+		},
+		{
+			"code": "3-032",
+			"grade": "3",
+			"display_order": 32,
+			"name": "Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+			"branche": "Statistiques",
+			"notion": "Indicateurs",
+			"sous_notion": null
+		},
+		{
+			"code": "3-033",
+			"grade": "3",
+			"display_order": 33,
+			"name": "Connaitre et savoir appliquer la relation P(A ∪ B) + P(A ∩ B) = P(A) + P(B).",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "événements"
+		},
+		{
+			"code": "3-034",
+			"grade": "3",
+			"display_order": 34,
+			"name": "Simuler des expériences aléatoires indépendantes.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "fréquences"
+		},
+		{
+			"code": "3-035",
+			"grade": "3",
+			"display_order": 35,
+			"name": "Observer la stabilisation des fréquences lorsqu'on augmente le nombre de répétitions de l'expérience aléatoire, faire le lien entre fréquence et probabilité selon le nombre de répétitions.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sous_notion": "fréquences"
+		},
+		{
+			"code": "3-036",
+			"grade": "3",
+			"display_order": 36,
+			"name": "Traduire une augmentation ou une diminution en pourcentages.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Évolutions",
+			"sous_notion": "variations en pourcentage"
+		},
+		{
+			"code": "3-037",
+			"grade": "3",
+			"display_order": 37,
+			"name": "Relier la représentation graphique d'une situation de proportionnalité avec le théorème de Thalès.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Proportionnalité",
+			"notion": "Situations de proportionnalité",
+			"sous_notion": "reconnaître"
+		},
+		{
+			"code": "3-038",
+			"grade": "3",
+			"display_order": 38,
+			"name": "Connaitre et utiliser les fonctions linéaires.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "fonction linéaire"
+		},
+		{
+			"code": "3-039",
+			"grade": "3",
+			"display_order": 39,
+			"name": "Utiliser les différentes représentations d'une fonction.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "3-040",
+			"grade": "3",
+			"display_order": 40,
+			"name": "Définir et connaitre le vocabulaire : image, antécédents.",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "images et antécédents"
+		},
+		{
+			"code": "3-041",
+			"grade": "3",
+			"display_order": 41,
+			"name": "Définir et utiliser les fonctions linéaires.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "fonction linéaire"
+		},
+		{
+			"code": "3-042",
+			"grade": "3",
+			"display_order": 42,
+			"name": "Résoudre graphiquement des équations et des inéquations linéaires.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "fonction linéaire"
+		},
+		{
+			"code": "3-043",
+			"grade": "3",
+			"display_order": 43,
+			"name": "Relier fonctions linéaires et proportionnalité.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "fonction linéaire"
+		},
+		{
+			"code": "3-044",
+			"grade": "3",
+			"display_order": 44,
+			"name": "Définir et utiliser les fonctions affines.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": null
+		},
+		{
+			"code": "3-045",
+			"grade": "3",
+			"display_order": 45,
+			"name": "Déterminer graphiquement les coefficients d'une fonction affine.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "coefficient directeur et ordonnée à l'origine"
+		},
+		{
+			"code": "3-046",
+			"grade": "3",
+			"display_order": 46,
+			"name": "Représenter la fonction carré.",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Proportionnalité, fonctions > Fonctions",
+			"branche": "Fonctions",
+			"notion": "Fonction carré",
+			"sous_notion": "définition et courbe"
+		},
+		{
+			"code": "3-047",
+			"grade": "3",
+			"display_order": 47,
+			"name": "Approfondir la notion de variables.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": "variables et affectation"
+		},
+		{
+			"code": "3-048",
+			"grade": "3",
+			"display_order": 48,
+			"name": "Utiliser des conditions composées.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": "instructions conditionnelles"
+		},
+		{
+			"code": "3-049",
+			"grade": "3",
+			"display_order": 49,
+			"name": "Utiliser une boucle conditionnelle.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Boucles",
+			"sous_notion": "boucle non bornée"
+		},
+		{
+			"code": "3-050",
+			"grade": "3",
+			"display_order": 50,
+			"name": "Structurer des programmes.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "3-051",
+			"grade": "3",
+			"display_order": 51,
+			"name": "Écrire un programme donné pour réaliser un objectif ou résoudre un problème.",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "La pensée informatique",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		}
+	],
+	"references": [
+		{
+			"code": "CM1-011",
+			"grade": "5"
+		},
+		{
+			"code": "6-123",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-036",
+			"grade": "5"
+		},
+		{
+			"code": "6-118",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-042",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-043",
+			"grade": "5"
+		},
+		{
+			"code": "6-114",
+			"grade": "5"
+		},
+		{
+			"code": "CE2-020",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-039",
+			"grade": "5"
+		},
+		{
+			"code": "6-127",
+			"grade": "5"
+		},
+		{
+			"code": "6-128",
+			"grade": "5"
+		},
+		{
+			"code": "6-132",
+			"grade": "5"
+		},
+		{
+			"code": "6-133",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-014",
+			"grade": "5"
+		},
+		{
+			"code": "6-135",
+			"grade": "5"
+		},
+		{
+			"code": "6-131",
+			"grade": "5"
+		},
+		{
+			"code": "6-141",
+			"grade": "5"
+		},
+		{
+			"code": "6-106",
+			"grade": "5"
+		},
+		{
+			"code": "6-150",
+			"grade": "5"
+		},
+		{
+			"code": "6-153",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-069",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-070",
+			"grade": "5"
+		},
+		{
+			"code": "6-143",
+			"grade": "5"
+		},
+		{
+			"code": "6-126",
+			"grade": "5"
+		},
+		{
+			"code": "6-107",
+			"grade": "5"
+		},
+		{
+			"code": "6-108",
+			"grade": "5"
+		},
+		{
+			"code": "6-181",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-100",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-097",
+			"grade": "5"
+		},
+		{
+			"code": "6-180",
+			"grade": "5"
+		},
+		{
+			"code": "6-168",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-081",
+			"grade": "5"
+		},
+		{
+			"code": "6-171",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-092",
+			"grade": "5"
+		},
+		{
+			"code": "6-176",
+			"grade": "5"
+		},
+		{
+			"code": "6-165",
+			"grade": "5"
+		},
+		{
+			"code": "6-178",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-088",
+			"grade": "5"
+		},
+		{
+			"code": "6-186",
+			"grade": "5"
+		},
+		{
+			"code": "6-187",
+			"grade": "5"
+		},
+		{
+			"code": "CM2-111",
+			"grade": "5"
+		},
+		{
+			"code": "6-190",
+			"grade": "5"
+		},
+		{
+			"code": "6-191",
+			"grade": "5"
+		},
+		{
+			"code": "6-140",
+			"grade": "5"
+		},
+		{
+			"code": "5-018",
+			"grade": "4"
+		},
+		{
+			"code": "5-020",
+			"grade": "4"
+		},
+		{
+			"code": "5-013",
+			"grade": "4"
+		},
+		{
+			"code": "CM2-036",
+			"grade": "4"
+		},
+		{
+			"code": "CM2-042",
+			"grade": "4"
+		},
+		{
+			"code": "CM2-043",
+			"grade": "4"
+		},
+		{
+			"code": "6-127",
+			"grade": "4"
+		},
+		{
+			"code": "CP-017",
+			"grade": "4"
+		},
+		{
+			"code": "5-026",
+			"grade": "4"
+		},
+		{
+			"code": "5-025",
+			"grade": "4"
+		},
+		{
+			"code": "6-126",
+			"grade": "4"
+		},
+		{
+			"code": "6-131",
+			"grade": "4"
+		},
+		{
+			"code": "5-029",
+			"grade": "4"
+		},
+		{
+			"code": "5-028",
+			"grade": "4"
+		},
+		{
+			"code": "5-030",
+			"grade": "4"
+		},
+		{
+			"code": "5-007",
+			"grade": "4"
+		},
+		{
+			"code": "5-045",
+			"grade": "4"
+		},
+		{
+			"code": "5-039",
+			"grade": "4"
+		},
+		{
+			"code": "CE2-022",
+			"grade": "4"
+		},
+		{
+			"code": "5-036",
+			"grade": "4"
+		},
+		{
+			"code": "5-054",
+			"grade": "4"
+		},
+		{
+			"code": "5-016",
+			"grade": "4"
+		},
+		{
+			"code": "5-047",
+			"grade": "4"
+		},
+		{
+			"code": "CM2-098",
+			"grade": "4"
+		},
+		{
+			"code": "5-050",
+			"grade": "4"
+		},
+		{
+			"code": "5-053",
+			"grade": "4"
+		},
+		{
+			"code": "5-048",
+			"grade": "4"
+		},
+		{
+			"code": "5-061",
+			"grade": "4"
+		},
+		{
+			"code": "6-152",
+			"grade": "4"
+		},
+		{
+			"code": "5-052",
+			"grade": "4"
+		},
+		{
+			"code": "6-180",
+			"grade": "4"
+		},
+		{
+			"code": "5-070",
+			"grade": "4"
+		},
+		{
+			"code": "5-072",
+			"grade": "4"
+		},
+		{
+			"code": "5-062",
+			"grade": "4"
+		},
+		{
+			"code": "5-064",
+			"grade": "4"
+		},
+		{
+			"code": "6-165",
+			"grade": "4"
+		},
+		{
+			"code": "6-171",
+			"grade": "4"
+		},
+		{
+			"code": "5-080",
+			"grade": "4"
+		},
+		{
+			"code": "5-076",
+			"grade": "4"
+		},
+		{
+			"code": "6-141",
+			"grade": "4"
+		},
+		{
+			"code": "4-013",
+			"grade": "3"
+		},
+		{
+			"code": "4-015",
+			"grade": "3"
+		},
+		{
+			"code": "4-016",
+			"grade": "3"
+		},
+		{
+			"code": "4-017",
+			"grade": "3"
+		},
+		{
+			"code": "5-029",
+			"grade": "3"
+		},
+		{
+			"code": "4-005",
+			"grade": "3"
+		},
+		{
+			"code": "5-026",
+			"grade": "3"
+		},
+		{
+			"code": "5-010",
+			"grade": "3"
+		},
+		{
+			"code": "CM1-011",
+			"grade": "3"
+		},
+		{
+			"code": "4-024",
+			"grade": "3"
+		},
+		{
+			"code": "5-045",
+			"grade": "3"
+		},
+		{
+			"code": "5-039",
+			"grade": "3"
+		},
+		{
+			"code": "5-033",
+			"grade": "3"
+		},
+		{
+			"code": "5-037",
+			"grade": "3"
+		},
+		{
+			"code": "4-022",
+			"grade": "3"
+		},
+		{
+			"code": "4-021",
+			"grade": "3"
+		},
+		{
+			"code": "5-016",
+			"grade": "3"
+		},
+		{
+			"code": "5-047",
+			"grade": "3"
+		},
+		{
+			"code": "CM2-098",
+			"grade": "3"
+		},
+		{
+			"code": "4-029",
+			"grade": "3"
+		},
+		{
+			"code": "4-028",
+			"grade": "3"
+		},
+		{
+			"code": "4-036",
+			"grade": "3"
+		},
+		{
+			"code": "4-034",
+			"grade": "3"
+		},
+		{
+			"code": "4-033",
+			"grade": "3"
+		},
+		{
+			"code": "6-180",
+			"grade": "3"
+		},
+		{
+			"code": "5-054",
+			"grade": "3"
+		},
+		{
+			"code": "4-030",
+			"grade": "3"
+		},
+		{
+			"code": "5-080",
+			"grade": "3"
+		},
+		{
+			"code": "4-040",
+			"grade": "3"
+		},
+		{
+			"code": "4-041",
+			"grade": "3"
+		},
+		{
+			"code": "4-059",
+			"grade": "3"
+		},
+		{
+			"code": "6-141",
+			"grade": "3"
+		},
+		{
+			"code": "6-193",
+			"grade": "3"
+		},
+		{
+			"code": "4-057",
+			"grade": "3"
+		}
+	]
+}

@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.13",
+	"version": "2026-10-07.14",
 	"statut": "validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
 	"branches": [
 		{
@@ -276,7 +276,7 @@
 				{
 					"nom": "Situations de proportionnalité",
 					"niveaux": "CM1 à 3e",
-					"sous_notions": ["reconnaître", "appliquer", "quatrième proportionnelle"],
+					"sous_notions": ["reconnaître", "appliquer", "quatrième proportionnelle", "ratio"],
 					"note": "reprend « Tableaux de proportionnalité »"
 				},
 				{

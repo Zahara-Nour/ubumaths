@@ -96,11 +96,11 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 	});
 
 	it('le JSON source est bien la version attendue', () => {
-		expect(arbre.version).toBe('2026-10-07.13');
+		expect(arbre.version).toBe('2026-10-07.14');
 		expect(arbre.branches).toHaveLength(19);
 	});
 
-	it("l'arbre seedé correspond EXACTEMENT au JSON (695 chemins), rien d'archivé", () => {
+	it("l'arbre seedé correspond EXACTEMENT au JSON (696 chemins), rien d'archivé", () => {
 		const byId = new Map(rows.map((r) => [r.id, r]));
 		const branchNames = new Set(arbre.branches.map((b) => b.nom));
 
@@ -128,7 +128,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		const extra = [...actual].filter((p) => !expected.has(p));
 		expect(missing, `chemins du JSON absents de la base`).toEqual([]);
 		expect(extra, `chemins en base absents du JSON`).toEqual([]);
-		expect(actual.size).toBe(19 + 137 + 539);
+		expect(actual.size).toBe(19 + 137 + 540);
 		expect(archived).toBe(0);
 	});
 
