@@ -555,3 +555,10 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   d'automatismes (44/40/34) vers cycle 2/CM/6e et INTRA-cycle 4. Preuve rouge (5 tests)
   puis 93/93 verts avec les 6 voisins. dessin_branches.py + HTML régénérés (diagramme à
   republier après merge).
+
+- **LE SEED CYCLE 4 EST EN PROD (2026-10-08, PR #948) — CP→3e complet : 796 points du
+  nouveau monde, 146 références d'automatismes.** Audit : rien de bloquant (I-1/I-2
+  intégrés avant merge), CI verte du premier coup sur le commit corrigé. Vérifié prod :
+  106/69/51 points, 0 sans nœud, 44/40/34 réfs, fluence 5, algorithme 18, demonstration
+  4, 696 nœuds (ratio), 1 007 anciens intacts. Diagramme republié (v43). Suivent, dans
+  l'ordre des années : 2de (déjà extraite), 1re spé, Tle spé, Tle comp., Expertes.
