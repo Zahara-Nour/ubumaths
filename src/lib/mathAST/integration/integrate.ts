@@ -27,7 +27,6 @@ import {
 	isAddition,
 	isSubtraction,
 	isMultiplication,
-	isNumber,
 	isDelimiter,
 	isVariable,
 	isSuperscript,
@@ -46,7 +45,7 @@ import { isEulerBase } from '../differentiation/rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
-import { numericIntegrate } from './numeric';
+import { adaptiveSimpson } from './numeric';
 import { expandFunctionPowers } from '../common/function-power';
 import { toCustom } from '../custom-generator';
 import { containsOddRoot, oddPowersAsRoots, oddRootsAsPowers } from './odd-roots';
@@ -56,14 +55,16 @@ import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
-import { antiderivativeDiscontinuity } from './singularity';
+import { antiderivativeDiscontinuity, numericIntegrand } from './singularity';
 import { compile } from '../eval/compile';
 import {
 	absProductForm,
 	arctanClassForm,
 	dropConstantTerms,
+	exponentialFactorForm,
 	groupLnTerms,
 	lnOfEvenPowerAsAbs,
+	positiveLeadForm,
 	powerOfSumForm
 } from './class-form';
 
@@ -116,6 +117,10 @@ const MAX_INTEGRATION_NODES = 3000;
  * hors de la boucle budgétée (revue de #947 : 1/((x + 1)² + 3)).
  */
 const FINISHING_MS = 500;
+
+/** Repli numérique : tolérance et profondeur de Simpson adaptatif */
+const NUMERIC_TOLERANCE = 1e-6;
+const NUMERIC_MAX_DEPTH = 15;
 
 /** Appels `integrate` en cours (imbriqués via les intégrateurs) */
 let activeIntegrations = 0;
@@ -875,6 +880,11 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		if (!containsExpFunction(rawExpr)) {
 			finalAntiderivative = expAsEulerPower(finalAntiderivative);
 		}
+		// (x − 1)eˣ, 2ˣ(x/ln 2 − 1/(ln 2)²) : facteur exponentiel mis en évidence
+		finalAntiderivative =
+			exponentialFactorForm(finalAntiderivative, variable) ?? finalAntiderivative;
+		// tan x − x plutôt que −x + tan x : un seul terme négatif, placé derrière
+		finalAntiderivative = positiveLeadForm(finalAntiderivative, variable);
 	}
 	// ln|c·u| → ln|u| (ln|c| absorbé dans la constante, cf. ln-constant.ts),
 	// puis ln|u| → ln(u) quand u > 0 sur ℝ (ln(x² + 1), ln(eˣ + 1)) : écriture de classe
@@ -956,55 +966,62 @@ export function integrateDefinite(
 	const indefiniteResult = integrate(expr, options);
 
 	if (indefiniteResult.status === 'unsupported' || !indefiniteResult.antiderivative) {
-		// If symbolic integration failed and numeric fallback is enabled, try numeric integration
-		if (opts.allowNumeric && isNumber(lower) && isNumber(upper)) {
-			const variable = indefiniteResult.variable;
-
-			try {
-				const numericResult = numericIntegrate(
-					expr,
-					variable,
-					parseFloat(lower.value),
-					parseFloat(upper.value),
-					{
-						tolerance: 1e-6,
-						maxDepth: 15,
-						method: 'adaptive-simpson'
-					}
+		// Repli numérique : bornes numériques (−1, π, e compris), f contrôlée
+		// comme F l'est plus bas — jamais une valeur à travers un pôle de f
+		const variable = indefiniteResult.variable;
+		const lowerBound = promoteEulerLetter(lower, variable);
+		const upperBound = promoteEulerLetter(upper, variable);
+		const a = numericBound(lowerBound);
+		const b = numericBound(upperBound);
+		if (opts.allowNumeric && Number.isFinite(a) && Number.isFinite(b)) {
+			const integrand = numericIntegrand(expr, variable, a, b);
+			const refused = (error: string): DefiniteIntegrateResult => ({
+				...indefiniteResult,
+				status: 'unsupported',
+				lowerBound: lower,
+				upperBound: upper,
+				value: null,
+				approximate: undefined,
+				error
+			});
+			if (integrand.kind === 'unchecked') {
+				return refused(
+					"Impossible d'intégrer symboliquement ou numériquement : la fonction ne se calcule pas en nombres"
 				);
-
-				const recorder = createStepRecorder();
-				recorder.recordStep(
-					'numeric-simpson',
-					`Approximation numérique par la méthode de Simpson adaptative`,
-					expr,
-					numericNode(numericResult.value),
-					'summarized',
-					undefined,
-					`Erreur estimée: ${numericResult.error.toExponential(2)}`
-				);
-
-				return {
-					...indefiniteResult,
-					status: 'approximate',
-					technique: 'numeric',
-					lowerBound: lower,
-					upperBound: upper,
-					value: numericNode(numericResult.value),
-					approximate: numericResult.value,
-					steps: recorder.getStepsFiltered(opts.verbosity)
-				};
-			} catch (error) {
-				// Numeric integration also failed
-				return {
-					...indefiniteResult,
-					lowerBound: lower,
-					upperBound: upper,
-					value: null,
-					approximate: undefined,
-					error: `Impossible d'intégrer symboliquement ou numériquement: ${error instanceof Error ? error.message : String(error)}`
-				};
 			}
+			if (integrand.kind === 'singular') {
+				return refused(
+					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}] : ${integrand.reason}`
+				);
+			}
+			const value = adaptiveSimpson(integrand.f, a, b, NUMERIC_TOLERANCE, NUMERIC_MAX_DEPTH);
+			if (!Number.isFinite(value)) {
+				return refused(
+					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}]`
+				);
+			}
+
+			const recorder = createStepRecorder();
+			recorder.recordStep(
+				'numeric-simpson',
+				`Approximation numérique par la méthode de Simpson adaptative`,
+				expr,
+				numericNode(value),
+				'summarized',
+				undefined,
+				`Erreur estimée: ${NUMERIC_TOLERANCE.toExponential(2)}`
+			);
+
+			return {
+				...indefiniteResult,
+				status: 'approximate',
+				technique: 'numeric',
+				lowerBound: lower,
+				upperBound: upper,
+				value: numericNode(value),
+				approximate: value,
+				steps: recorder.getStepsFiltered(opts.verbosity)
+			};
 		}
 
 		// Numeric fallback disabled or bounds are not numeric

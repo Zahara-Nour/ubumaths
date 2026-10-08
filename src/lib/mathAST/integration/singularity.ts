@@ -41,6 +41,11 @@ const ZOOM_WIDTH = 1e-13;
 const LOOKBACK = 5;
 /** Écart toléré, relatif à l'ordre de grandeur de F */
 const RELATIVE_TOLERANCE = 1e-4;
+/** Prolongement par continuité : voisins à h = 10⁻⁷·max(1, |x|), puis h/100 */
+const REMOVABLE_STEP = 1e-7;
+const REMOVABLE_RATIO = 100;
+/** Écart relatif toléré entre ces voisins */
+const REMOVABLE_TOLERANCE = 1e-6;
 
 // =============================================================================
 // Outils
@@ -128,7 +133,98 @@ function blowUpIn(F: (x: number) => number, segment: Segment, tolerance: number)
 }
 
 // =============================================================================
-// Point d'entrée
+// Balayage commun (F, ou f dans le repli numérique)
+// =============================================================================
+
+/**
+ * Raison pour laquelle `fn` n'est pas continue sur [lo ; hi], ou null.
+ * `subject` nomme la fonction contrôlée dans les messages.
+ */
+function scanDiscontinuity(
+	fn: (x: number) => number,
+	lo: number,
+	hi: number,
+	subject: 'la primitive' | 'la fonction'
+): string | null {
+	const length = hi - lo;
+
+	// Grille : bornes approchées de l'intérieur (F peut y valoir 0·∞, x ln x en 0)
+	const xs: number[] = [lo + length * NEAR_END];
+	for (let i = 1; i < GRID_SEGMENTS; i++) xs.push(lo + (length * i) / GRID_SEGMENTS);
+	xs.push(hi - length * NEAR_END);
+	const values = xs.map(fn);
+	const bad = values.findIndex((v) => !Number.isFinite(v));
+	if (bad !== -1) return `${subject} n'y est pas définie (x ≈ ${format(xs[bad])})`;
+
+	const magnitudes = values.map(Math.abs).sort((p, q) => p - q);
+	const tolerance = RELATIVE_TOLERANCE * Math.max(1, magnitudes[magnitudes.length >> 1]);
+
+	// Limites unilatérales aux bornes
+	for (const [end, toward] of [
+		[lo, 1],
+		[hi, -1]
+	] as const) {
+		const near = fn(end + toward * length * NEAR_END);
+		const nearer = fn(end + toward * length * NEARER_END);
+		if (!Number.isFinite(nearer) || Math.abs(nearer - near) > tolerance) {
+			return `${subject} diverge en x = ${format(end)}`;
+		}
+	}
+
+	// Sauts (tan, −1/x) puis divergences logarithmiques (ln|·|), segment par segment
+	for (let i = 0; i + 1 < xs.length; i++) {
+		const segment: Segment = {
+			left: xs[i],
+			right: xs[i + 1],
+			fLeft: values[i],
+			fRight: values[i + 1]
+		};
+		const at = jumpIn(fn, segment, tolerance) ?? blowUpIn(fn, segment, tolerance);
+		if (at !== null) return `la fonction a une singularité en x ≈ ${format(at)}`;
+	}
+	return null;
+}
+
+/** f compilée, ou null (paramètres libres, nœud non compilable) */
+function compiledIn(node: MathNode, variable: string): ((x: number) => number) | null {
+	if (hasFreeSymbols(node, variable)) return null;
+	try {
+		const compiled = compile(node);
+		return (x: number): number => compiled({ [variable]: x });
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * f prolongée par continuité en ses points isolés non définis (sin x / x en
+ * 0) : valeur commune des voisins à deux distances, des deux côtés dans
+ * [lo ; hi]. Un pôle (1/x² : 10¹⁴ puis 10¹⁸) ou un saut reste NaN.
+ */
+function extendedByContinuity(
+	f: (x: number) => number,
+	lo: number,
+	hi: number
+): (x: number) => number {
+	return (x: number): number => {
+		const value = f(x);
+		if (Number.isFinite(value)) return value;
+		const h = REMOVABLE_STEP * Math.max(1, Math.abs(x));
+		const neighbours = [x - h, x + h, x - h / REMOVABLE_RATIO, x + h / REMOVABLE_RATIO]
+			.filter((p) => p >= lo && p <= hi)
+			.map(f);
+		if (neighbours.length < 2 || !neighbours.every(Number.isFinite)) return Number.NaN;
+		const reference = neighbours[0];
+		const scale = Math.max(1, Math.abs(reference));
+		if (neighbours.some((v) => Math.abs(v - reference) > REMOVABLE_TOLERANCE * scale)) {
+			return Number.NaN;
+		}
+		return neighbours.reduce((sum, v) => sum + v, 0) / neighbours.length;
+	};
+}
+
+// =============================================================================
+// Points d'entrée
 // =============================================================================
 
 /**
@@ -142,51 +238,43 @@ export function antiderivativeDiscontinuity(
 	upper: number
 ): string | null {
 	if (!Number.isFinite(lower) || !Number.isFinite(upper) || lower === upper) return null;
-	if (hasFreeSymbols(antiderivative, variable)) return null;
-	let compiled: ReturnType<typeof compile>;
-	try {
-		compiled = compile(antiderivative);
-	} catch {
-		return null;
-	}
-	const F = (x: number): number => compiled({ [variable]: x });
+	const F = compiledIn(antiderivative, variable);
+	if (F === null) return null;
+	return scanDiscontinuity(F, Math.min(lower, upper), Math.max(lower, upper), 'la primitive');
+}
+
+/** Intégrande prêt pour la quadrature, ou raison du refus */
+export type NumericIntegrand =
+	| { readonly kind: 'regular'; readonly f: (x: number) => number }
+	| { readonly kind: 'singular'; readonly reason: string }
+	| { readonly kind: 'unchecked' };
+
+/**
+ * Repli numérique (primitive refusée) : pas de F à contrôler, c'est f qui doit
+ * être continue sur [a ; b] — sinon Simpson rend un nombre à travers un pôle
+ * (e^x / x sur [−1 ; 1]). Les singularités prolongeables (sin x / x en 0)
+ * sont levées : la fonction rendue les prolonge par continuité. Une f non
+ * bornée mais intégrable (1/√x en 0) est refusée aussi : prudence, aucune
+ * valeur douteuse. `unchecked` : paramètres libres ou f non compilable.
+ */
+export function numericIntegrand(
+	integrand: MathNode,
+	variable: string,
+	lower: number,
+	upper: number
+): NumericIntegrand {
+	const f = compiledIn(integrand, variable);
+	if (f === null) return { kind: 'unchecked' };
 	const lo = Math.min(lower, upper);
 	const hi = Math.max(lower, upper);
-	const length = hi - lo;
-
-	// Grille : bornes approchées de l'intérieur (F peut y valoir 0·∞, x ln x en 0)
-	const xs: number[] = [lo + length * NEAR_END];
-	for (let i = 1; i < GRID_SEGMENTS; i++) xs.push(lo + (length * i) / GRID_SEGMENTS);
-	xs.push(hi - length * NEAR_END);
-	const values = xs.map(F);
-	const bad = values.findIndex((v) => !Number.isFinite(v));
-	if (bad !== -1) return `la primitive n'y est pas définie (x ≈ ${format(xs[bad])})`;
-
-	const magnitudes = values.map(Math.abs).sort((p, q) => p - q);
-	const tolerance = RELATIVE_TOLERANCE * Math.max(1, magnitudes[magnitudes.length >> 1]);
-
-	// Limites unilatérales aux bornes
-	for (const [end, toward] of [
-		[lo, 1],
-		[hi, -1]
-	] as const) {
-		const near = F(end + toward * length * NEAR_END);
-		const nearer = F(end + toward * length * NEARER_END);
-		if (!Number.isFinite(nearer) || Math.abs(nearer - near) > tolerance) {
-			return `la primitive diverge en x = ${format(end)}`;
+	const extended = extendedByContinuity(f, lo, hi);
+	if (lo === hi) return { kind: 'regular', f: extended };
+	// Les bornes elles-mêmes (Simpson les évalue) : prolongeables, ou refus
+	for (const end of [lo, hi]) {
+		if (!Number.isFinite(extended(end))) {
+			return { kind: 'singular', reason: `la fonction diverge en x = ${format(end)}` };
 		}
 	}
-
-	// Sauts (tan, −1/x) puis divergences logarithmiques (ln|·|), segment par segment
-	for (let i = 0; i + 1 < xs.length; i++) {
-		const segment: Segment = {
-			left: xs[i],
-			right: xs[i + 1],
-			fLeft: values[i],
-			fRight: values[i + 1]
-		};
-		const at = jumpIn(F, segment, tolerance) ?? blowUpIn(F, segment, tolerance);
-		if (at !== null) return `la fonction a une singularité en x ≈ ${format(at)}`;
-	}
-	return null;
+	const reason = scanDiscontinuity(extended, lo, hi, 'la fonction');
+	return reason === null ? { kind: 'regular', f: extended } : { kind: 'singular', reason };
 }

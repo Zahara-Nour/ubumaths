@@ -50,8 +50,7 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 		'rendu « \\dfrac{1}{2} \\exponentialE^x + \\dfrac{1}{2} \\exponentialE^{-x} »',
 	'latex:x^2e^{x}': 'rendu « x^2 \\exponentialE^x - 2 x \\exponentialE^x + 2 \\exponentialE^x »',
 	'latex:e^{x}\\sin(x)':
-		'rendu « -\\dfrac{1}{2} \\cos\\left( x \\right) \\exponentialE^x + \\dfrac{1}{2} \\exponentialE^x \\sin\\left( x \\right) »',
-	'latex:(2x-1)e^{x}': 'rendu « 2 x \\exponentialE^x - 3 \\exponentialE^x »',
+		'rendu « \\dfrac{1}{2} \\exponentialE^x \\sin\\left( x \\right) - \\dfrac{1}{2} \\cos\\left( x \\right) \\exponentialE^x »',
 	'latex:100e^{-0.05t}': 'rendu « -2000 \\exponentialE^{-\\dfrac{1}{20} t} »',
 	'latex:ae^{-kx}': 'rendu « \\dfrac{-a \\exponentialE^{-k x}}{k} »',
 	'latex:ae^{-kt}': 'rendu « \\dfrac{-a \\exponentialE^{-k t}}{k} »',
@@ -64,5 +63,8 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'latex:\\sin^2(x)': 'rendu « \\dfrac{1}{2} x - \\dfrac{1}{4} \\sin\\left( 2 x \\right) »',
 	'latex:\\cos^2(x)': 'rendu « \\dfrac{1}{2} x + \\dfrac{1}{4} \\sin\\left( 2 x \\right) »',
 	'latex:\\frac{2}{1-x^2}':
-		'rendu « \\ln\\left( \\left| x + 1 \\right| \\right) - \\ln\\left( \\left| x - 1 \\right| \\right) »'
+		'rendu « \\ln\\left( \\left| x + 1 \\right| \\right) - \\ln\\left( \\left| x - 1 \\right| \\right) »',
+	// Repli numérique (sans primitive élémentaire) : valeur approchée déclarée
+	'def:latex:e^{-x^2} [0 ; 1]': 'rendu « 0.7468241332296146 » (approché)',
+	'def:latex:\\frac{\\sin x}{x} [-1 ; 2]': 'rendu « 2.5514960453586943 » (approché)'
 };
