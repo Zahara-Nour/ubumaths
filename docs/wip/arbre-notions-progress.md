@@ -545,3 +545,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   d'Automatismes dispatchées en références (cibles cycle 2/CM/6e ET intra-cycle 4 par
   codes prévisionnels 5-xxx/4-xxx). La 2de déjà extraite (13 p.) attend son tour.
   EN ATTENTE DE VALIDATION (C1-C3) — aucune migration avant.
+
+- **Seed cycle 4 VALIDÉ et construit (2026-10-08, points 1-10 + C1 + C2 tranchés un à un
+  par David)** : migration `20261008230000_seed_curriculum_points_cycle4.sql` GÉNÉRÉE
+  depuis seed-cycle4.md — sous-notion « ratio » (Situations de proportionnalité, arbre
+  **2026-10-07.14** : 19+137+540), 226 points (106/69/51), kinds demonstration ×4 et
+  algorithme ×18 (dont 5-011), fluence ×5 (C2 étendu : + carrés 0-12 et cube de 10),
+  4-038 (rectangles sans équerre) → triangles (inversion David), ET 118 références
+  d'automatismes (44/40/34) vers cycle 2/CM/6e et INTRA-cycle 4. Preuve rouge (5 tests)
+  puis 93/93 verts avec les 6 voisins. dessin_branches.py + HTML régénérés (diagramme à
+  republier après merge).
