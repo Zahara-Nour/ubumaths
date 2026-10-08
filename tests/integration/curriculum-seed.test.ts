@@ -94,19 +94,21 @@ describe('Seed du programme — 1ʳᵉ spécialité', () => {
 		);
 	});
 
-	it('laisse regime_acquisition au défaut et ne crée aucune liste d’automatismes', async () => {
+	it('laisse regime_acquisition au défaut et aucune liste d’automatismes ne vise ses points', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
+		expect(points).toHaveLength(173);
 		// Le prof bascule en `fluence` les points qu'il décide de travailler par
 		// répétition ; le seed ne présume de rien.
 		expect(points.every((p) => p.regime_acquisition === 'diversite')).toBe(true);
 
-		// Aucune liste d'automatismes : les points concernés appartiennent aux
-		// programmes des années antérieures, dont les arbres n'existent pas encore.
+		// La liste d'automatismes de 1re spé est celle du seed points → nœuds
+		// (20261009080000) : elle ne vise jamais un point de cet ancien seed.
 		const { data: listes } = await service
 			.from('curriculum_point_automatismes')
 			.select('point_id')
 			.eq('grade', '1_SPE');
-		expect(listes ?? []).toHaveLength(0);
+		const anciens = new Set(points.map((p) => p.id));
+		expect((listes ?? []).filter((l) => anciens.has(l.point_id))).toEqual([]);
 	});
 
 	it('marque en approfondissement les 28 points hors attendus', async () => {
