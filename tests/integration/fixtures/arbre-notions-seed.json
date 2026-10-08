@@ -1,6 +1,6 @@
 {
-	"version": "2026-10-07.14",
-	"statut": "validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; rien en base",
+	"version": "2026-10-07.15",
+	"statut": "validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; EN BASE depuis le 2026-10-08 (CP→3e), branche Logique restructurée C2 le 2026-10-08",
 	"branches": [
 		{
 			"nom": "Nombres et calculs",
@@ -1258,10 +1258,10 @@
 			"nom": "Logique",
 			"notions": [
 				{
-					"nom": "Connecteurs et contre-exemples",
+					"nom": "Proposition mathématique",
 					"niveaux": "2de, 1re",
-					"sous_notions": ["et, ou, non", "contre-exemple"],
-					"note": null
+					"sous_notions": ["statut des lettres et des égalités", "et, ou, non"],
+					"note": "tête de branche : le méta-langage (ex-« Connecteurs et contre-exemples », restructurée C2 le 2026-10-08)"
 				},
 				{
 					"nom": "Implication et équivalence",
@@ -1278,11 +1278,7 @@
 				{
 					"nom": "Quantificateurs et négation",
 					"niveaux": "2de, 1re",
-					"sous_notions": [
-						"pour tout, il existe",
-						"statut des lettres et des égalités",
-						"négation d'une proposition"
-					],
+					"sous_notions": ["pour tout, il existe", "négation d'une proposition"],
 					"note": null
 				},
 				{
@@ -1292,7 +1288,8 @@
 						"par l'absurde",
 						"par contraposée",
 						"disjonction de cas",
-						"par équivalence"
+						"par équivalence",
+						"contre-exemple"
 					],
 					"note": null
 				}
