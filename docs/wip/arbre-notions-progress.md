@@ -661,3 +661,19 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   bloquant, CI verte. Restent : passe « points vagues » 2de ; rangements (1 005 modèles,
   328 exercices) ; C5 (transfert, bascule, suppression de l'ancien monde — destructif,
   arrêt et accord David).
+
+- **PASSE « POINTS VAGUES » SUR LA 2de EN PROD (2026-10-08, PR #972).**
+  `passe-points-vagues-2de.md` validée intégralement : 200 points relus, 6 touchés.
+  **2-332 SUPPRIMÉ** (« Modéliser par des fonctions… », compétence) — accord explicite de
+  David après exposé de la perte (la ligne seule : 0 usage dans les 6 tables qui
+  référencent les points, ancien jumeau 2-128 sans lien, aucune mention dans `src/`) ;
+  garde dans la migration (verrou de ligne + refus si usage), testée en local avec un usage
+  fabriqué ; usage revérifié à 0 en prod juste avant `db:migrate`. **5 libellés
+  spécifiés** avec les mots du BO (2-262, 2-277, 2-392, 2-394, 2-395) ; **2-262** passe
+  sur la notion `Calcul littéral` (son ancien jumeau 2-060 porte 7 modèles de calcul
+  littéral général). `seed-2de.md`, fixture et test de la 2de mis à jour (199 points).
+  Preuve rouge (2 tests de la passe), intégration 185 fichiers verts, audit sans
+  bloquant (mineur corrigé : verrou), CI verte. Vérifié prod : 199 points de 2de, 1 899
+  points du nouveau monde, ancien monde intact (1 007). Restent : rangements (1 005
+  modèles, 328 exercices) ; C5 (transfert, bascule, suppression de l'ancien monde —
+  destructif, arrêt et accord David).

@@ -1,7 +1,7 @@
 # Passe « points vagues » sur la 2de (seed en prod)
 
 > **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : P1 retrait
-> de 2-332, P2 nœud de 2-262, 5 reformulations). Livraison en cours.**
+> de 2-332, P2 nœud de 2-262, 5 reformulations). EN PROD (PR #972, `db:migrate` le 2026-10-08, vérifié : 199 points).**
 > Règle de David (2026-10-08, seed 1re spé, V2) : « des points trop vagues mériteraient
 > d'être spécifiés pour être questionnables, à moins que ce soit un point relevant de
 > l'évaluation par compétence ». Contraintes : **ne rien ajouter au BO** (on spécifie avec
