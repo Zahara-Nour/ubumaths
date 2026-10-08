@@ -1,6 +1,8 @@
 # Passe « puces et points » sur le cycle 4 (5e, 4e, 3e — seed en prod) — règles du lycée
 
-> **Statut : PROPOSITION, en attente de validation par David.**
+> **Statut : VALIDÉ par David le 2026-10-09 (« cycle 3 puis cycle 4 » : doutes = recos —
+> dont la scission de 5-073 —, retraits compris). Avec 5-073 : 13 puces scindées (+17 points),
+> 5e = 114, total = **241**. Livraison en cours (branche `feat/passe-cycle4`).**
 > Même demande et même grille que [passe-cycle2.md](passe-cycle2.md) et
 > [passe-cycle3.md](passe-cycle3.md). Source : « Annexe 2 — Programme de mathématiques pour le
 > cycle 4 » (arrêté du 18 février 2026, BO n° 10 du 5 mars 2026 — **le texte de 2026**), 20 p.,

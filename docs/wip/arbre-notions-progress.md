@@ -692,3 +692,14 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   spécifications, 2 retraits, 17 réfs ajoutées) et `passe-cycle4.md` (12 scissions, 12
   spécifications, 4 libellés au mot près, 2 retraits, 42 réfs ajoutées) — analysés par
   agents puis vérifiés (nœuds, BO, réfs, usages des retraits = 0, codes neufs libres).
+
+- **PASSE « PUCES ET POINTS » SUR LE CYCLE 3 EN PROD (2026-10-09, PR #976).** Validée par
+  David (« cycle 3 puis cycle 4 », doutes = recos, retraits compris). 16 puces scindées
+  (+22 points : CM1-131…139, CM2-117…125, 6-198…201), 9 spécifications, 17 références
+  AJOUTÉES (la ligne qui visait le point d'origine couvre la nouvelle partie ; les réfs de
+  1re/Tle viennent de la liste de 2de reprise, passée de 58 à 60 cibles), **CM1-096 et
+  CM2-086 SUPPRIMÉS** (0 usage revérifié juste avant `db:migrate` ; garde avec verrou,
+  testée en local). Preuve rouge (9 fichiers), intégration verte, audit sans bloquant
+  (état final rejoué = fixtures, 363/363), CI verte. Vérifié prod : CM1 138, CM2 124, 6e 101,
+  ordre 1..n, 17 réfs, 1 936 points du nouveau monde, 772 réfs. Le test 6e filtre désormais
+  par grade (6-200, 6-201 sortent du motif 6-1xx).

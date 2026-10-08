@@ -1,7 +1,7 @@
 # Passe « puces et points » sur le cycle 3 (CM1, CM2, 6e — seed en prod) — règles du lycée
 
 > **Statut : VALIDÉ par David le 2026-10-09 (« cycle 3 puis cycle 4 » : doutes = recos,
-> retraits compris). Livraison en cours (branche `feat/passe-cycle3`).**
+> retraits compris). EN PROD (PR #976, `db:migrate` le 2026-10-09, vérifié).**
 > Même demande et même grille que [passe-cycle2.md](passe-cycle2.md) : scission des puces
 > multi-parties (deux gestes réussissables séparément, sur des nœuds différents = deux
 > points) et points vagues (spécifier avec les mots du BO ; compétence → pas un point).
