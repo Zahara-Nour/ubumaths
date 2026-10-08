@@ -34,7 +34,13 @@ import {
 	isFunction
 } from '../guards';
 import { mapNode, findNodes, getChildren } from '../transforms';
-import { makeAbortChecker } from '../common/abort';
+import {
+	AbortError,
+	getActiveAbortChecker,
+	makeAbortChecker,
+	withActiveAbortChecker,
+	type AbortChecker
+} from '../common/abort';
 import { simplifiedAdd, simplifiedMultiply, simplifiedOpposite } from '../common/simplify';
 import { isEulerBase } from '../differentiation/rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
@@ -50,11 +56,14 @@ import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
+import { antiderivativeDiscontinuity } from './singularity';
+import { compile } from '../eval/compile';
 import {
 	absProductForm,
 	arctanClassForm,
 	dropConstantTerms,
 	groupLnTerms,
+	lnOfEvenPowerAsAbs,
 	powerOfSumForm
 } from './class-form';
 
@@ -99,6 +108,14 @@ const MAX_INTEGRATION_MS = 1500;
  * chaque niveau suffirait à geler un seul appel.
  */
 const MAX_INTEGRATION_NODES = 3000;
+
+/**
+ * Marge de la mise en forme finale (normalisation, écriture de classe) au-delà
+ * de MAX_INTEGRATION_MS : passé ce délai, le signal ambiant (`common/abort.ts`)
+ * interrompt toute normalisation en cours — aucune entrée ne peut geler, même
+ * hors de la boucle budgétée (revue de #947 : 1/((x + 1)² + 3)).
+ */
+const FINISHING_MS = 500;
 
 /** Appels `integrate` en cours (imbriqués via les intégrateurs) */
 let activeIntegrations = 0;
@@ -197,7 +214,9 @@ function extractConstantMultiplier(
  * @param expr - The antiderivative to normalize
  * @returns The normalized expression
  */
-function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
+function normalizeAntiderivative(rawExpr: MathNode, variable?: string): MathNode {
+	// ln(u²) = 2 ln|u| AVANT la normalisation, qui écrirait 2 ln u (u > 0 seulement)
+	const expr = lnOfEvenPowerAsAbs(rawExpr);
 	// Développer (1+9x²)^512 produirait un polynôme de degré 1024 : au-delà
 	// de cette borne, la primitive est rendue telle quelle
 	if (hasLargeSumPower(expr)) {
@@ -205,7 +224,7 @@ function normalizeAntiderivative(expr: MathNode, variable?: string): MathNode {
 	}
 	try {
 		const normalForm = normalize(expr, {
-			abortChecker: makeAbortChecker(undefined, NORMALIZE_RESULT_TIMEOUT_MS)
+			abortChecker: withAmbient(makeAbortChecker(undefined, NORMALIZE_RESULT_TIMEOUT_MS))
 		});
 		// x − 1/x, −2/√x : terme à terme, pas réduit au même dénominateur
 		const termwise = variable === undefined ? null : laurentForm(normalForm, variable);
@@ -716,11 +735,37 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
-	// Premier appel (non imbriqué) : le budget repart de zéro
+	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
+	// calcul — mise en forme finale comprise — est placé sous le signal ambiant
 	if (activeIntegrations === 0) {
 		integrationSteps = 0;
 		integrationDeadline = performance.now() + MAX_INTEGRATION_MS;
+		const outer = getActiveAbortChecker();
+		const hardDeadline = integrationDeadline + FINISHING_MS;
+		const checker: AbortChecker = () => (outer?.() ?? false) || performance.now() > hardDeadline;
+		try {
+			return withActiveAbortChecker(checker, () => integrateCounted(rawExpr, options));
+		} catch (error) {
+			// Signal de l'appelant : il lui revient ; le nôtre : refus propre
+			if (!(error instanceof AbortError) || outer?.()) throw error;
+			return oversizedResult(
+				options?.variable ?? 'x',
+				`Budget de calcul dépassé (${MAX_INTEGRATION_MS + FINISHING_MS} ms)`
+			);
+		}
 	}
+	return integrateCounted(rawExpr, options);
+}
+
+/** Le signal ambiant (budget global) combiné à un délai local */
+function withAmbient(local: AbortChecker | undefined): AbortChecker | undefined {
+	const ambient = getActiveAbortChecker();
+	if (ambient === undefined) return local;
+	if (local === undefined) return ambient;
+	return () => ambient() || local();
+}
+
+function integrateCounted(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
 	activeIntegrations++;
 	try {
 		const result = integrateWithinBudget(rawExpr, options);
@@ -863,6 +908,15 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 // Definite Integral Function
 // =============================================================================
 
+/** Valeur numérique d'une borne (NaN si littérale : `a`, `b`) */
+function numericBound(bound: MathNode): number {
+	try {
+		return compile(bound)({});
+	} catch {
+		return Number.NaN;
+	}
+}
+
 /**
  * Compute a definite integral from lower to upper bound.
  *
@@ -970,6 +1024,27 @@ export function integrateDefinite(
 	// pour `evaluate` et `compile` — sinon ∫₁ᵉ dx/x restait `ln(e)`
 	const lowerBound = promoteEulerLetter(lower, variable);
 	const upperBound = promoteEulerLetter(upper, variable);
+
+	// F(b) − F(a) n'a de sens que si F est continue sur [a ; b] : à travers un
+	// pôle, refus explicite — jamais une valeur (revue de #947)
+	const discontinuity = antiderivativeDiscontinuity(
+		indefiniteResult.antiderivative,
+		variable,
+		numericBound(lowerBound),
+		numericBound(upperBound)
+	);
+	if (discontinuity !== null) {
+		return {
+			...indefiniteResult,
+			status: 'unsupported',
+			lowerBound: lower,
+			upperBound: upper,
+			value: null,
+			approximate: undefined,
+			steps: [],
+			error: `L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}] : ${discontinuity}`
+		};
+	}
 
 	recorder.recordStep(
 		'fundamental-theorem',

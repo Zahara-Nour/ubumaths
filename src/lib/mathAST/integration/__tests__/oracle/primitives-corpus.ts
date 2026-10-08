@@ -67,7 +67,7 @@ export interface PrimitiveCase {
 
 /** Une intégrale définie. */
 export interface DefiniteCase {
-	readonly family: 'definie' | 'definie-litterale' | 'revue-913';
+	readonly family: 'definie' | 'definie-litterale' | 'revue-913' | 'revue-947';
 	readonly path: Path;
 	/** Chemin latex : l'intégrande ; chemin atelier : tout l'argument, bornes comprises */
 	readonly input: string;
@@ -80,6 +80,8 @@ export interface DefiniteCase {
 	/** Valeur exacte attendue, en LaTeX (évaluée numériquement) */
 	readonly exact: string;
 	readonly literal: boolean;
+	/** Singularité dans [a ; b] : REFUS attendu, toute valeur rendue est fausse */
+	readonly refusal: boolean;
 }
 
 type Row = readonly [input: string, ...expected: string[]];
@@ -1103,7 +1105,12 @@ function definite(
 	lower: string,
 	upper: string,
 	exact: string,
-	options: { variable?: string; literal?: boolean; family?: 'revue-913' } = {}
+	options: {
+		variable?: string;
+		literal?: boolean;
+		family?: 'revue-913' | 'revue-947';
+		refusal?: boolean;
+	} = {}
 ): DefiniteCase {
 	return {
 		family: options.family ?? (options.literal === true ? 'definie-litterale' : 'definie'),
@@ -1114,7 +1121,8 @@ function definite(
 		lower,
 		upper,
 		exact,
-		literal: options.literal ?? false
+		literal: options.literal ?? false,
+		refusal: options.refusal ?? false
 	};
 }
 
@@ -1293,5 +1301,45 @@ export const DEFINITE_CASES: readonly DefiniteCase[] = [
 	}),
 	definite('latex', '\\sin(3x-\\pi)', '\\sin(3x-\\pi)', '0', '1', '\\frac{\\cos(3)-1}{3}', {
 		family: 'revue-913'
+	}),
+	// Revue de #947 : singularité dans [a ; b] → refus (la valeur exacte n'existe pas)
+	...[
+		['\\frac{\\cos x}{\\sin x}', '-3', '2'],
+		['\\tan^2(x)', '-3', '2'],
+		['\\frac{1}{\\cos^2(x)}', '-3', '2'],
+		['\\frac{1}{\\tan(x)}', '-3', '2'],
+		['\\frac{2}{\\tan(3x+1)}', '-3', '2'],
+		['\\frac{1}{\\cos^2(\\pi x)}', '-3', '2'],
+		['\\frac{1}{x}', '-1', '1'],
+		['\\frac{1}{x^2}', '-1', '1']
+	].map(([f, lower, upper]) =>
+		definite('latex', f, f, lower, upper, '0', { family: 'revue-947', refusal: true })
+	),
+	definite('atelier', '1/x -1 1', '\\frac{1}{x}', '-1', '1', '0', {
+		family: 'revue-947',
+		refusal: true
+	}),
+	definite('atelier', 'tan(x) 0 3', '\\tan x', '0', '3', '0', {
+		family: 'revue-947',
+		refusal: true
+	}),
+	// …et près d'un pôle sans le franchir : valeur juste
+	definite('latex', '\\frac{1}{\\cos^2(x)}', '\\frac{1}{\\cos^2(x)}', '-1', '1', '2\\tan(1)', {
+		family: 'revue-947'
+	}),
+	definite(
+		'latex',
+		'\\frac{\\cos x}{\\sin x}',
+		'\\frac{\\cos x}{\\sin x}',
+		'1',
+		'3',
+		'\\ln(\\sin(3))-\\ln(\\sin(1))',
+		{ family: 'revue-947' }
+	),
+	definite('latex', '\\frac{1}{\\sqrt{x}}', '\\frac{1}{\\sqrt{x}}', '0', '1', '2', {
+		family: 'revue-947'
+	}),
+	definite('atelier', 'tan(x) 0 1', '\\tan x', '0', '1', '-\\ln(\\cos(1))', {
+		family: 'revue-947'
 	})
 ];

@@ -32,6 +32,7 @@ import { containsVariable } from '../rules';
 import { classifyIntegrand } from '../classify';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 import { integrate } from '../integrate';
+import { createStepRecorder } from '../step-recorder';
 
 // =============================================================================
 // Types
@@ -242,15 +243,34 @@ export function integrateByIdentity(
 	// c/D (c constant ≠ 1) = c · 1/D : les identités ci-dessous voient 1/D
 	if (!isOne(numerator) && !containsVariable(numerator, variableName)) {
 		const unit = divide(number('1'), node.denominator, 'fraction');
-		if (integrateByIdentity(unit, variableName, options, recorder, depth) === null) return null;
-		return integrateRewritten(
+		// Exploration sur un enregistreur à part : ses étapes ne sont reprises
+		// qu'en cas de succès, APRÈS celle de la factorisation (pas de doublon)
+		const explored = createStepRecorder();
+		const unitResult = integrateByIdentity(unit, variableName, options, explored, depth);
+		if (unitResult === null || unitResult.antiderivative === null) return null;
+		recorder.recordStep(
+			'rewrite-identity',
+			'Factorisation de la constante du numérateur',
 			expr,
 			multiply(node.numerator, unit, 'implicit'),
-			'Factorisation de la constante du numérateur',
+			'detailed'
+		);
+		for (const step of explored.getSteps()) {
+			recorder.recordStep(
+				step.rule,
+				step.description,
+				step.before,
+				step.after,
+				step.verbosityLevel,
+				step.operand,
+				step.technicalNote
+			);
+		}
+		return exactResult(
+			expr,
+			multiply(node.numerator, unitResult.antiderivative, 'implicit'),
 			variableName,
-			options,
-			recorder,
-			depth
+			recorder
 		);
 	}
 

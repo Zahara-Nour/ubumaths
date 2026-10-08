@@ -49,6 +49,7 @@ import { extractExactRational, rationalToNode } from '../common/numeric';
 import { divRational, mulRational, negRational } from '../normal/rational';
 import { findNodes } from '../transforms';
 import { toLatex } from '../latex-generator';
+import { checkAbort, getActiveAbortChecker } from '../common/abort';
 
 // =============================================================================
 // Types
@@ -64,6 +65,15 @@ interface PowerOfSum {
 	base: MathNode | null;
 	exponent: Rational | null;
 }
+
+// =============================================================================
+// Constantes
+// =============================================================================
+
+/** Taille (en bits) au-delà de laquelle l'argument d'arctan n'est pas réécrit */
+const MAX_ARCTAN_BITS = 64;
+/** Facteurs carrés k² cherchés jusqu'à k = MAX_SQUARE_FACTOR (au-delà : √ non réduite, valeur juste) */
+const MAX_SQUARE_FACTOR = 10_000n;
 
 // =============================================================================
 // Sommes signées
@@ -251,6 +261,31 @@ export function dropConstantTerms(expr: MathNode, variable: string): MathNode {
 }
 
 // =============================================================================
+// ln(u²ᵏ) = 2k ln|u|
+// =============================================================================
+
+/**
+ * ln(u^{2k}) → 2k·ln|u| (k entier non nul) : la normalisation écrit
+ * ln(u²) = 2 ln u, juste pour u > 0 seulement ; ln(x²) est définie pour tout
+ * x ≠ 0 et sa primitive doit l'être aussi (revue de #947). `dropAbsOfPositive`
+ * retire ensuite |·| quand u > 0 sur ℝ (ln((x² + 1)²) → 2 ln(x² + 1)).
+ */
+export function lnOfEvenPowerAsAbs(expr: MathNode): MathNode {
+	return mapNode(expr, (n) => {
+		if (!isFunction(n) || n.name !== 'ln' || n.args.length !== 1) return n;
+		if (n.base !== undefined || n.power !== undefined) return n;
+		const arg = unwrap(n.args[0]);
+		if (!isSuperscript(arg)) return n;
+		const exponent = extractExactRational(arg.superscript);
+		if (exponent === null || exponent.d !== 1n || exponent.n === 0n || exponent.n % 2n !== 0n) {
+			return n;
+		}
+		const lnAbs = func('ln', [func('abs', [unwrap(arg.base)])]);
+		return multiply(rationalToNode(exponent), lnAbs, 'implicit');
+	});
+}
+
+// =============================================================================
 // k · u|u| (primitive de |au + b|)
 // =============================================================================
 
@@ -291,6 +326,10 @@ export function absProductForm(expr: MathNode, variable: string): MathNode | nul
 // =============================================================================
 // arctan((Px + Q)/S) : argument affine non développé
 // =============================================================================
+
+function bitLength(value: bigint): number {
+	return (value < 0n ? -value : value).toString(2).length;
+}
 
 function bigintSqrt(value: bigint): bigint | null {
 	if (value < 0n) return null;
@@ -340,6 +379,9 @@ function affineArctanArgument(arg: MathNode, variable: string): MathNode | null 
 	const v = t.n;
 	let node: MathNode;
 	const uv = u * v;
+	// Entiers géants (coefficients décimaux, ≈ 1e62) : extraire les carrés
+	// gèlerait l'onglet ; l'argument est alors rendu inchangé
+	if (bitLength(uv) > MAX_ARCTAN_BITS) return null;
 	const sqrtUV = bigintSqrt(uv);
 	if (sqrtUV !== null) {
 		// S = √(uv)/v rationnel : (Px + Q)·v/√(uv) ramené en fraction d'entiers
@@ -354,7 +396,9 @@ function affineArctanArgument(arg: MathNode, variable: string): MathNode | null 
 		// S = √(uv)/v : (Px + Q)·v/√(uv), √(uv) sans facteur carré extrait
 		let inside = uv;
 		let outside = 1n;
-		for (let k = 2n; k * k <= inside; k++) {
+		const shouldAbort = getActiveAbortChecker();
+		for (let k = 2n; k <= MAX_SQUARE_FACTOR && k * k <= inside; k++) {
+			checkAbort(shouldAbort);
 			while (inside % (k * k) === 0n) {
 				inside /= k * k;
 				outside *= k;
