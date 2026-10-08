@@ -42,7 +42,15 @@
 --   update public.curriculum_points set name = $pt$Connaitre et utiliser le vocabulaire lié aux positions relatives.$pt$, kind = 'savoir_faire', node_id = (select id from public.classification_nodes where kind = 'subnotion' and name = $pt$positions et plans$pt$ and parent_id = (select id from public.classification_nodes where kind = 'notion' and name = $pt$Repérage et déplacements$pt$ and parent_id = (select id from public.classification_nodes where kind = 'branch' and name = $pt$Géométrie$pt$))) where code = 'CE1-076' and grade = 'CE1';
 --   update public.curriculum_points set name = $pt$Utiliser le vocabulaire géométrique approprié.$pt$, kind = 'savoir_faire', node_id = (select id from public.classification_nodes where kind = 'subnotion' and name = $pt$reconnaître et décrire$pt$ and parent_id = (select id from public.classification_nodes where kind = 'notion' and name = $pt$Figures planes$pt$ and parent_id = (select id from public.classification_nodes where kind = 'branch' and name = $pt$Géométrie$pt$))) where code = 'CE1-069' and grade = 'CE1';
 --   update public.curriculum_points set name = $pt$Utiliser le vocabulaire géométrique approprié.$pt$, kind = 'savoir_faire', node_id = (select id from public.classification_nodes where kind = 'subnotion' and name = $pt$reconnaître et décrire$pt$ and parent_id = (select id from public.classification_nodes where kind = 'notion' and name = $pt$Figures planes$pt$ and parent_id = (select id from public.classification_nodes where kind = 'branch' and name = $pt$Géométrie$pt$))) where code = 'CE2-067' and grade = 'CE2';
---   (puis remettre display_order = numéro du code pour CP-, CE1-, CE2- : update … set display_order = substring(code from '\d+$')::int where grade in ('CP','CE1','CE2'))
+--   update public.curriculum_points set display_order = substring(code from '[0-9]+$')::int
+--    where grade in ('CP', 'CE1', 'CE2');
+-- ⚠️ Ce rollback n'est anodin que tant qu'AUCUN usage ne s'accroche aux 17 points neufs.
+-- Supprimer un point efface EN SILENCE (ON DELETE CASCADE) : le suivi élève
+-- (student_point_state), les rattachements d'exercices du prof
+-- (exercise_curriculum_points), journal_entry_points, srs_anti_fraud_flags et les
+-- références d'automatismes qui les viseraient ; question_template_points (ON DELETE
+-- RESTRICT) fait échouer le rollback. Dès qu'un usage existe : DESTRUCTIF (données
+-- d'élèves mineurs) — arrêt obligatoire et accord explicite de David (règle CLAUDE.md).
 -- ============================================================================
 
 -- ---- 1. Points existants : libellés, nœuds, kind ----------------------------
