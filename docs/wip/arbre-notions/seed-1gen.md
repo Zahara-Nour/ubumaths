@@ -1,7 +1,7 @@
 # Seed 1re enseignement scientifique — points du programme ET références (architecture points → nœuds)
 
 > **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : titres non
-> retenus, scissions, entretien, références, 4 discutables). Livraison en cours.** ⚠️ Soin maximal (lycée).
+> retenus, scissions, entretien, références, 4 discutables). EN PROD (PR #971, `db:migrate` le 2026-10-08, vérifié).** ⚠️ Soin maximal (lycée).
 > Source : « Annexe — Programme de mathématiques intégré à l'enseignement scientifique en
 > classe de première générale » (7 p., `progs-lycee/premiere-ens-sci.pdf`, fourni par David
 > le 2026-10-07), relu **puce par puce** — le « module spécifique » des élèves de 1re

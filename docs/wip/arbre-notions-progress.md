@@ -648,3 +648,16 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   1TECHNO-003…013). Preuve rouge (3/4), intégration 184 fichiers verts, audit sans
   bloquant, CI verte du premier coup. Vérifié prod : 0 sans nœud. Restent : 1_GEN (ens.
   sci.) ; passe « points vagues » 2de ; rangements ; C5.
+
+- **LE SEED 1re ENS. SCI. (1_GEN) EST EN PROD (2026-10-08, PR #971) — TOUS LES SEEDS SONT
+  FAITS : 1 900 points du nouveau monde sur 17 niveaux, 755 références ; ancien monde
+  intact (1 007 points).** `seed-1gen.md` validé intégralement : 44 points `1GEN-001`…`044`
+  (pas d'ancien seed), tout `attendu`, aucun algorithme ; colonne « Situations et
+  problèmes » non exigible ; intitulés « Analyse statistique de deux caractères … » traités
+  comme préfixes ; 4 puces scindées (+4) ; 84 réfs (lignes Automatismes = mêmes cibles
+  qu'en 1re techno, auto-réf 1GEN-027 ; liste de 2de C16 ; 7 d'entretien) ; aucune cible
+  1_SPE / 1_TECHNO (bloc DO + test). Preuve rouge 3/4 (après ajout d'un compte au test
+  d'attributs, qui passait sur base vide), intégration 185 fichiers verts, audit sans
+  bloquant, CI verte. Restent : passe « points vagues » 2de ; rangements (1 005 modèles,
+  328 exercices) ; C5 (transfert, bascule, suppression de l'ancien monde — destructif,
+  arrêt et accord David).
