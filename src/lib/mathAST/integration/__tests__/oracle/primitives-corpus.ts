@@ -1341,5 +1341,25 @@ export const DEFINITE_CASES: readonly DefiniteCase[] = [
 	}),
 	definite('atelier', 'tan(x) 0 1', '\\tan x', '0', '1', '-\\ln(\\cos(1))', {
 		family: 'revue-947'
+	}),
+	// Repli numérique (primitive refusée) : pôle de f dans [a ; b] → refus
+	...[
+		['\\frac{e^x}{x}', '-1', '1'],
+		['\\frac{e^x}{x}', '0', '1'],
+		['\\frac{\\sin x}{x^2}', '-1', '1'],
+		['\\frac{\\sin x}{x^2}', '0', '1'],
+		['\\frac{\\cos x}{x-1}', '0', '2'],
+		['\\frac{e^x}{x^2-1}', '0', '2'],
+		['\\frac{1}{\\ln x}', '0', '2']
+	].map(([f, lower, upper]) =>
+		definite('latex', f, f, lower, upper, '0', { family: 'revue-947', refusal: true })
+	),
+	// …f continue ou prolongeable (sin x / x en 0) : valeur approchée juste
+	definite('latex', 'e^{-x^2}', 'e^{-x^2}', '0', '1', '0.7468241328124271', {
+		family: 'revue-947'
+	}),
+	// 0 hors de la grille de Simpson du corpus (pas de 3/4000) : Si(2) + Si(1)
+	definite('latex', '\\frac{\\sin x}{x}', '\\frac{\\sin x}{x}', '-1', '2', '2.5514960472018393', {
+		family: 'revue-947'
 	})
 ];

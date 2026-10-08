@@ -64,5 +64,8 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'latex:\\sin^2(x)': 'rendu « \\dfrac{1}{2} x - \\dfrac{1}{4} \\sin\\left( 2 x \\right) »',
 	'latex:\\cos^2(x)': 'rendu « \\dfrac{1}{2} x + \\dfrac{1}{4} \\sin\\left( 2 x \\right) »',
 	'latex:\\frac{2}{1-x^2}':
-		'rendu « \\ln\\left( \\left| x + 1 \\right| \\right) - \\ln\\left( \\left| x - 1 \\right| \\right) »'
+		'rendu « \\ln\\left( \\left| x + 1 \\right| \\right) - \\ln\\left( \\left| x - 1 \\right| \\right) »',
+	// Repli numérique (sans primitive élémentaire) : valeur approchée déclarée
+	'def:latex:e^{-x^2} [0 ; 1]': 'rendu « 0.7468241332296146 » (approché)',
+	'def:latex:\\frac{\\sin x}{x} [-1 ; 2]': 'rendu « 2.5514960453586943 » (approché)'
 };
