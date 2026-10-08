@@ -2,12 +2,15 @@
  * Seed des points de 2de + références d'automatismes — (Supabase local requis)
  * ===========================================================================
  *
- * Migration `20261008235000_seed_curriculum_points_2de` : les 200 points du
+ * Migration `20261008235000_seed_curriculum_points_2de` : les points du
  * programme de seconde générale et technologique (codes 2-201…2-400), les
  * références d'automatismes du grade '2' vers le parcours antérieur ET vers la
  * 2de elle-même (auto-références C13), et la restructuration C2 de la branche
  * Logique. VALIDÉS par David le 2026-10-08 (docs/wip/arbre-notions/seed-2de.md :
- * puces multi-parties, discutables 1-5, L1-L4).
+ * puces multi-parties, discutables 1-5, L1-L4). Puis la passe « points vagues »
+ * (migration `20261010200000_points_vagues_2de`, validée le 2026-10-08,
+ * docs/wip/arbre-notions/passe-points-vagues-2de.md) : 2-332 retiré, cinq libellés
+ * spécifiés, 2-262 sur la notion Calcul littéral → 199 points.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '2', l'ensemble exact des
@@ -171,14 +174,14 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (200 points, arbre .15)', () => {
+	it('la fixture est bien celle du document validé (199 points, arbre .15)', () => {
 		expect(fixture.version).toBe('2026-10-07.15');
-		expect(fixture.points).toHaveLength(200);
+		expect(fixture.points).toHaveLength(199);
 		expect(fixture.points.every((p) => p.grade === '2')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(50);
 	});
 
-	it('les 200 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 199 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -193,7 +196,7 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(200);
+		expect(pointRows).toHaveLength(199);
 	});
 
 	it('les références d’automatismes du grade 2 visent EXACTEMENT les cibles du document', () => {
@@ -204,6 +207,21 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		expect(actual).toEqual(expected);
 		// Aucune référence ne vise l'ancien seed (grade NULL).
 		expect(refRows.every((r) => pointsById.get(r.point_id)?.grade !== null)).toBe(true);
+	});
+
+	it('passe « points vagues » : 2-332 retiré, cinq libellés spécifiés, 2-262 sur la notion', () => {
+		expect(pointRows.some((r) => r.code === '2-332')).toBe(false);
+		const byCode = new Map(pointRows.map((r) => [r.code, r]));
+		expect(byCode.get('2-394')?.name).toBe(
+			"Construire un tableau croisé d'effectifs en lien avec une situation donnée"
+		);
+		expect(byCode.get('2-277')?.name).not.toContain('cette comparaison');
+		expect(byCode.get('2-395')?.name).toContain('$P_A(B)$');
+		expect(byCode.get('2-392')?.name).toContain(
+			'la fréquence observée est proche de la probabilité'
+		);
+		expect(byCode.get('2-262')?.name).toMatch(/^Calculer sur des expressions algébriques simples/);
+		expect(pathOf(byCode.get('2-262')?.node_id ?? null)).toBe('Algèbre > Calcul littéral');
 	});
 
 	it('architecture cible et décisions L1-L3 (L2 corrigée par E1) : kinds, exigences, régime', () => {

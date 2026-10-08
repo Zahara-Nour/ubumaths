@@ -1,7 +1,10 @@
 # Seed 2de — points du programme ET références d'automatismes (architecture points → nœuds)
 
 > **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (puces multi-parties,
-> discutables 1-5, L1-L4). Livraison en cours.** ⚠️ Niveau à soin maximal : classes réelles de 2de.
+> discutables 1-5, L1-L4). EN PROD.** ⚠️ Niveau à soin maximal : classes réelles de 2de.
+> **Passe « points vagues » (validée le 2026-10-08, [passe-points-vagues-2de.md](passe-points-vagues-2de.md))** :
+> 2-332 retiré (compétence « modéliser ») ; 2-262, 2-277, 2-392, 2-394, 2-395 spécifiés ;
+> 2-262 passe sur la notion `Calcul littéral`. **199 points** depuis.
 > Source : « Programme de mathématiques de la classe de seconde générale et
 > technologique » (13 p., lues ligne à ligne), rubriques Contenus / Capacités
 > attendues / Démonstrations / Exemples d'algorithme / Approfondissements possibles +
@@ -80,7 +83,7 @@ introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — co
 
 ---
 
-## Les 200 points
+## Les 199 points (2-332 retiré par la passe « points vagues »)
 
 > Colonnes : code (nouveau) · ex- (ancien code, pour le transfert des tags) · énoncé
 > (libellé de l'ancien référentiel, LaTeX MathLive) · kind · nœud. Rubrique = titre de
@@ -171,7 +174,7 @@ introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — co
 | ----- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------------- |
 | 2-260 | 058    | Règles de calcul sur les puissances entières relatives                                                                                                         | conn. | `Nombres et calculs` Puissances : calculs (notion)          |
 | 2-261 | 059    | Règles de calcul sur les racines carrées ; relation $\sqrt{a^2} = \|a\|$                                                                                       | conn. | `Nombres et calculs` Racines carrées : calculs > propriétés |
-| 2-262 | 060    | Exemples simples de calcul sur des expressions algébriques, en particulier sur des expressions fractionnaires                                                  | conn. | Calcul littéral > expressions fractionnaires                |
+| 2-262 | 060    | Calculer sur des expressions algébriques simples, en particulier sur des expressions fractionnaires                                                            | conn. | Calcul littéral (notion)                                    |
 | 2-263 | 061    | Somme d'inégalités ; produit d'une inégalité par un réel positif, négatif, en liaison avec le sens de variation d'une fonction affine                          | conn. | Inégalités > règles de calcul                               |
 | 2-264 | 062    | Comparaison additive (par différence), comparaison multiplicative (par rapport, pour deux nombres strictement positifs)                                        | conn. | Inégalités > comparer et encadrer                           |
 | 2-265 | ✂063a | Ensemble des solutions des équations du type $ax + b = 0$                                                                                                      | conn. | Équations : premier degré > ax + b = c                      |
@@ -186,7 +189,7 @@ introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — co
 | 2-274 | 069    | Exprimer une variable en fonction de l'autre dans une relation du premier degré $ax + by = c$                                                                  | s-f   | Calcul littéral > isoler une variable                       |
 | 2-275 | 070    | Choisir la forme la plus adaptée (factorisée, développée réduite) d'une expression en vue de la résolution d'un problème                                       | s-f   | Calcul littéral (notion)                                    |
 | 2-276 | 071    | Comparer deux quantités en utilisant leur différence, ou leur rapport (ratio) dans le cas de quantités positives                                               | s-f   | Inégalités > comparer et encadrer                           |
-| 2-277 | 072    | Interpréter, selon le contexte, cette comparaison en termes de variation additive ou multiplicative                                                            | s-f   | Inégalités > comparer et encadrer                           |
+| 2-277 | 072    | Interpréter, selon le contexte, la comparaison de deux quantités par leur différence ou par leur rapport en termes de variation additive ou multiplicative     | s-f   | Inégalités > comparer et encadrer                           |
 | 2-278 | 073    | Modéliser un problème par une inéquation                                                                                                                       | s-f   | Inéquations : premier degré > mettre en inéquation          |
 | 2-279 | 074    | Donner l'ensemble des solutions d'une équation du premier degré du type $ax = b$, $a + x = b$, $ax + b = cx + d$                                               | s-f   | Équations : premier degré (notion — formes = level)         |
 | 2-280 | 075    | Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax \geqslant b$, $a + x \geqslant b$, $ax + b \geqslant cx + d$                     | s-f   | Inéquations : premier degré (notion — formes = level)       |
@@ -256,7 +259,6 @@ introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — co
 | 2-329 | ✂125b | Signe des fonctions de référence                                                                                                                      | conn. | Généralités sur les fonctions > signe                              |
 | 2-330 | 126    | Tableau de signes pour une fonction produit ou quotient                                                                                               | conn. | `Algèbre` Inéquations : produit et quotient > tableau de signes    |
 | 2-331 | 127    | Exploiter l'équation $y = f(x)$ d'une courbe : appartenance, calcul de coordonnées                                                                    | s-f   | Généralités sur les fonctions > appartenance à une courbe          |
-| 2-332 | 128    | Modéliser par des fonctions des situations issues des mathématiques, des autres disciplines ou de la vie courante ou citoyenne                        | s-f   | Généralités sur les fonctions (notion)                             |
 | 2-333 | ✂129a | Fonction valeur absolue : définition et courbe représentative                                                                                         | s-f   | Fonction valeur absolue (notion — définition et distance + courbe) |
 | 2-334 | ✂129b | Fonction carré : définition et courbe représentative                                                                                                  | s-f   | Fonction carré > définition et courbe                              |
 | 2-335 | ✂129c | Fonction inverse : définition et courbe représentative                                                                                                | s-f   | Fonction inverse > définition et courbe                            |
@@ -331,20 +333,20 @@ introduit en 2de : 2-269, 2-273, 2-274, 2-276, 2-277, 2-331, 2-380, 2-381 — co
 
 ### … > Probabilités
 
-| Code  | ex-    | Énoncé                                                                                                                                        | kind  | nœud                                                                       |
-| ----- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------- |
-| 2-389 | 176    | Version vulgarisée de la loi des grands nombres : lorsque $n$ est grand, sauf exception, la fréquence observée est proche de la probabilité   | conn. | `Statistiques` Échantillonnage > fluctuation                               |
-| 2-390 | 177    | Probabilité conditionnelle d'un évènement $B$ sachant un évènement $A$ de probabilité non nulle ; notation $P_A(B)$                           | conn. | `Probabilités` Probabilités conditionnelles (notion)                       |
-| 2-391 | 178    | Arbres de probabilité, application au calcul de probabilités                                                                                  | conn. | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-392 | 179    | Observer la loi des grands nombres à l'aide d'une simulation sur Python ou tableur                                                            | s-f   | `Statistiques` Échantillonnage > simulation                                |
-| 2-393 | ✂180a | Construire un arbre pondéré en lien avec une situation donnée                                                                                 | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-394 | ✂180b | Construire un tableau en lien avec une situation donnée                                                                                       | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
-| 2-395 | 181    | Passer du registre de la langue naturelle au registre symbolique et inversement                                                               | s-f   | `Probabilités` Probabilités conditionnelles (notion)                       |
-| 2-396 | ✂182a | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs                      | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
-| 2-397 | ✂182b | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité                             | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-398 | 183    | Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles             | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-399 | 184    | Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
-| 2-400 | 185    | Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »                                       | s-f   | `Probabilités` Probabilités conditionnelles > inversion du conditionnement |
+| Code  | ex-    | Énoncé                                                                                                                                                           | kind  | nœud                                                                       |
+| ----- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------- |
+| 2-389 | 176    | Version vulgarisée de la loi des grands nombres : lorsque $n$ est grand, sauf exception, la fréquence observée est proche de la probabilité                      | conn. | `Statistiques` Échantillonnage > fluctuation                               |
+| 2-390 | 177    | Probabilité conditionnelle d'un évènement $B$ sachant un évènement $A$ de probabilité non nulle ; notation $P_A(B)$                                              | conn. | `Probabilités` Probabilités conditionnelles (notion)                       |
+| 2-391 | 178    | Arbres de probabilité, application au calcul de probabilités                                                                                                     | conn. | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-392 | 179    | Observer, à l'aide d'une simulation sur Python ou tableur, que lorsque $n$ est grand la fréquence observée est proche de la probabilité (loi des grands nombres) | s-f   | `Statistiques` Échantillonnage > simulation                                |
+| 2-393 | ✂180a | Construire un arbre pondéré en lien avec une situation donnée                                                                                                    | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-394 | ✂180b | Construire un tableau croisé d'effectifs en lien avec une situation donnée                                                                                       | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
+| 2-395 | 181    | Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\bar{A}$, $P(A \cap B)$, $P_A(B)$), et inversement                       | s-f   | `Probabilités` Probabilités conditionnelles (notion)                       |
+| 2-396 | ✂182a | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs                                         | s-f   | `Probabilités` Probabilités conditionnelles > tableaux croisés             |
+| 2-397 | ✂182b | Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité                                                | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-398 | 183    | Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles                                | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-399 | 184    | Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant                    | s-f   | `Probabilités` Probabilités conditionnelles > arbres pondérés              |
+| 2-400 | 185    | Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »                                                          | s-f   | `Probabilités` Probabilités conditionnelles > inversion du conditionnement |
 
 ---
 
