@@ -20,6 +20,7 @@ import {
 	isAddition,
 	isDelimiter,
 	isDivision,
+	isEulerConstant,
 	isFunction,
 	isMultiplication,
 	isOpposite,
@@ -50,6 +51,7 @@ import { divRational, mulRational, negRational } from '../normal/rational';
 import { findNodes } from '../transforms';
 import { toLatex } from '../latex-generator';
 import { checkAbort, getActiveAbortChecker } from '../common/abort';
+import { compile } from '../eval/compile';
 
 // =============================================================================
 // Types
@@ -368,9 +370,17 @@ function affineArctanArgument(arg: MathNode, variable: string): MathNode | null 
 	const atZero = substitute(arg, { [variable]: number('0') }, { maxIterations: 1 });
 	const r = exactRationalOf(fraction(atZero, slopeNode));
 	const t = exactRationalOf(multiply(slopeNode, slopeNode, 'implicit'));
-	if (r === null || r.n === 0n || t === null || t.n <= 0n) return null;
+	if (r === null || t === null || t.n <= 0n) return null;
 	const m = exactRationalOf(slopeNode);
-	const negative = m !== null ? m.n < 0n : (exactRationalOf(atZero)?.n ?? 0n) * r.n < 0n;
+	// Sans terme constant, seule une pente irrationnelle est réécrite : arctan(½x) inchangé,
+	// arctan(½√2 x) → arctan(x/√2)
+	if (r.n === 0n && m !== null) return null;
+	const negative =
+		m !== null
+			? m.n < 0n
+			: r.n === 0n
+				? compile(slopeNode)({}) < 0
+				: (exactRationalOf(atZero)?.n ?? 0n) * r.n < 0n;
 
 	// P = dénominateur de r : Px + Pr entiers ; S² = P²/t = u/v
 	const p = r.d;
@@ -429,10 +439,181 @@ function gcdBig(a: bigint, b: bigint): bigint {
  * affines AVEC terme constant sont réécrits (arctan(½x) inchangé).
  */
 export function arctanClassForm(expr: MathNode, variable: string): MathNode {
-	return mapNode(expr, (n) => {
+	const rewritten = mapNode(expr, (n) => {
 		if (!isFunction(n) || n.name !== 'arctan' || n.args.length !== 1) return n;
 		if (!containsVariable(n.args[0], variable)) return n;
-		const rewritten = affineArctanArgument(n.args[0], variable);
-		return rewritten === null ? n : func('arctan', [rewritten]);
+		const argument = affineArctanArgument(n.args[0], variable);
+		return argument === null ? n : func('arctan', [argument]);
 	});
+	return arctanCoefficientsOverRoot(rewritten, variable);
+}
+
+/** √s (s entier) de l'argument d'arctan, s'il y en a exactement une ; sinon null */
+function arctanRootRadicand(arctan: MathNode): bigint | null {
+	const roots = findNodes(arctan, (n) => isFunction(n) && n.name === 'sqrt');
+	if (roots.length !== 1) return null;
+	const root = roots[0];
+	if (!isFunction(root) || root.args.length !== 1) return null;
+	const radicand = extractExactRational(root.args[0]);
+	return radicand !== null && radicand.d === 1n && radicand.n > 1n ? radicand.n : null;
+}
+
+/**
+ * k√s · arctan(…/√s) → (ks)/√s · arctan(…/√s) : MÊME √ dans le coefficient et
+ * l'argument (décision de David, 2026-10-08) — 2/√3 · arctan((2x + 1)/√3),
+ * et non ⅔√3. Terme inchangé si son coefficient n'est pas k√s.
+ */
+function arctanCoefficientsOverRoot(expr: MathNode, variable: string): MathNode {
+	const terms = signedTerms(expr);
+	let changed = false;
+	const rewritten = terms.map((term): SignedTerm => {
+		const factors = factorsOf(term.node);
+		const arctans = factors.filter((f) => isFunction(f) && f.name === 'arctan');
+		if (arctans.length !== 1 || !containsVariable(arctans[0], variable)) return term;
+		const others = factors.filter((f) => f !== arctans[0]);
+		if (others.length === 0 || others.some((f) => containsVariable(f, variable))) return term;
+		const s = arctanRootRadicand(arctans[0]);
+		if (s === null) return term;
+		const coefficient = productOf(others) ?? number('1');
+		const root = func('sqrt', [number(s.toString())]);
+		const k = exactRationalOf(fraction(coefficient, root));
+		if (k === null || k.n === 0n) return term;
+		// k√s = ks/√s
+		const over = mulRational(k, { n: s, d: 1n });
+		const negative = over.n < 0n;
+		const magnitude = negative ? -over.n : over.n;
+		const denominator =
+			over.d === 1n ? root : multiply(number(over.d.toString()), root, 'implicit');
+		changed = true;
+		return {
+			negative: term.negative !== negative,
+			node: multiply(fraction(number(magnitude.toString()), denominator), arctans[0], 'implicit')
+		};
+	});
+	return changed ? sumOf(rewritten) : expr;
+}
+
+// =============================================================================
+// Terme positif en tête
+// =============================================================================
+
+/** Terme transcendant : fonction (hors √ et |·|) ou exponentielle de la variable */
+function isTranscendentalTerm(node: MathNode, variable: string): boolean {
+	return (
+		findNodes(
+			node,
+			(n) =>
+				(isFunction(n) && n.name !== 'sqrt' && n.name !== 'abs') ||
+				(isSuperscript(n) && containsVariable(n.superscript, variable))
+		).length > 0
+	);
+}
+
+/** (−½)·x² → −(½·x²) : le signe d'un premier facteur opposé porté par le terme */
+function withFactorSign(term: SignedTerm): SignedTerm {
+	const node = term.node;
+	if (!isMultiplication(node)) return term;
+	const factors = factorsOf(node);
+	if (!isOpposite(factors[0])) return term;
+	const rest = [factors[0].operand, ...factors.slice(1)];
+	const product = rest.reduce((left, right) => multiply(left, right, node.displayStyle));
+	return { negative: !term.negative, node: product };
+}
+
+/**
+ * Un SEUL terme négatif, en tête, et un terme transcendant présent : le terme
+ * négatif passe derrière (décision de David, 2026-10-08, cohérente avec
+ * `tidy` : les négatifs derrière) — tan x − x, et non −x + tan x. Un polynôme
+ * ou une somme algébrique (x − 1/x) garde son ordre de degrés (−4,9t² + 5t).
+ */
+export function positiveLeadForm(expr: MathNode, variable: string): MathNode {
+	const terms = signedTerms(expr).map(withFactorSign);
+	if (terms.length < 2 || !terms[0].negative) return expr;
+	if (terms.filter((term) => term.negative).length !== 1) return expr;
+	if (!terms.some((term) => isTranscendentalTerm(term.node, variable))) return expr;
+	return sumOf([...terms.slice(1), terms[0]]);
+}
+
+// =============================================================================
+// Facteur exponentiel mis en évidence
+// =============================================================================
+
+/** Px + Q (P, Q entiers, P ≠ 0), écrit positif en tête ; null si les deux sont négatifs */
+function leadingPositiveAffine(variable: string, p: bigint, q: bigint): MathNode | null {
+	if (p > 0n) return integerAffine(variable, p, q);
+	if (q <= 0n) return null;
+	const x: MathNode = { type: 'variable', name: variable };
+	const px = p === -1n ? x : multiply(number((-p).toString()), x, 'implicit');
+	return subtract(number(q.toString()), px);
+}
+
+/** Q − x en tête positive, ou −(|P|x + |Q|) quand les deux sont négatifs */
+function signedAffineFactor(variable: string, p: bigint, q: bigint, e: MathNode): MathNode {
+	const affine = leadingPositiveAffine(variable, p, q);
+	if (affine !== null) return multiply(delimiter('parentheses', affine), e, 'implicit');
+	const positive = integerAffine(variable, -p, -q);
+	return opposite(multiply(delimiter('parentheses', positive), e, 'implicit'));
+}
+
+/** k·x/ln a ou k/(ln a)² (k entier non nul), signe à part */
+function overLnTerm(k: bigint, numerator: MathNode | null, denominator: MathNode): SignedTerm {
+	const negative = k < 0n;
+	const magnitude = negative ? -k : k;
+	const top =
+		numerator === null
+			? number(magnitude.toString())
+			: magnitude === 1n
+				? numerator
+				: multiply(number(magnitude.toString()), numerator, 'implicit');
+	return { negative, node: fraction(top, denominator) };
+}
+
+/**
+ * F = (Px + Q)·E, E = bᵘ (b constante, u contenant la variable) apparue
+ * plusieurs fois dans F : le facteur E mis en évidence (décision de David,
+ * 2026-10-08) ; null sinon (forme développée gardée).
+ *
+ * - b = e, P et Q entiers : (x − 1)eˣ, (2x − 3)eˣ, −(x + 2)e⁻ˣ ;
+ * - b ≠ e, P·ln b et Q·(ln b)² entiers : 2ˣ(x/ln 2 − 1/(ln 2)²).
+ */
+export function exponentialFactorForm(expr: MathNode, variable: string): MathNode | null {
+	const exponentials = findNodes(
+		expr,
+		(n) =>
+			isSuperscript(n) &&
+			containsVariable(n.superscript, variable) &&
+			!containsVariable(n.base, variable)
+	);
+	if (exponentials.length < 2) return null;
+	const e = exponentials[0];
+	if (!isSuperscript(e)) return null;
+	const hash = hashMathNode(e);
+	if (exponentials.some((n) => hashMathNode(n) !== hash)) return null;
+
+	let cofactor: MathNode;
+	let slope: MathNode;
+	try {
+		cofactor = denormalize(normalize(divide(expr, e, 'fraction')));
+		if (!containsVariable(cofactor, variable)) return null;
+		slope = differentiate(cofactor, { variable });
+	} catch {
+		return null;
+	}
+	const atZero = substitute(cofactor, { [variable]: number('0') }, { maxIterations: 1 });
+	const x: MathNode = { type: 'variable', name: variable };
+
+	if (isEulerConstant(e.base)) {
+		const p = exactRationalOf(slope);
+		const q = exactRationalOf(atZero);
+		if (p === null || q === null || p.n === 0n || p.d !== 1n || q.d !== 1n) return null;
+		return signedAffineFactor(variable, p.n, q.n, e);
+	}
+
+	const ln = func('ln', [e.base]);
+	const p = exactRationalOf(multiply(slope, ln, 'implicit'));
+	const q = exactRationalOf(multiply(atZero, power(ln, number('2')), 'implicit'));
+	if (p === null || q === null || p.n === 0n || p.d !== 1n || q.d !== 1n) return null;
+	const terms = [overLnTerm(p.n, x, ln)];
+	if (q.n !== 0n) terms.push(overLnTerm(q.n, null, power(ln, number('2'))));
+	return multiply(e, delimiter('parentheses', sumOf(terms)), 'implicit');
 }

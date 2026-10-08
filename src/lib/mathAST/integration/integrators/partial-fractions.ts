@@ -1091,6 +1091,10 @@ function integratePartialFraction(
 		) {
 			const cValue = parseFloat(coeffs.c.value);
 			const sqrtC = Math.sqrt(cValue);
+			// √c exacte : 1/(x² + 2) → arctan(x/√2)/√2, jamais 1,4142… (valeur approchée)
+			const sqrtCNode = Number.isInteger(sqrtC)
+				? number(sqrtC.toString())
+				: func('sqrt', [coeffs.c]);
 			const xVar: MathNode = { type: 'variable', name: variable };
 
 			// Check if we have extended coefficients (xCoeff, constCoeff) from solveMixedFactors
@@ -1120,8 +1124,8 @@ function integratePartialFraction(
 					if (sqrtC === 1) {
 						atanPart = func('arctan', [xVar]);
 					} else {
-						const atanArg = divide(xVar, number(sqrtC.toString()), 'fraction');
-						atanPart = divide(func('arctan', [atanArg]), number(sqrtC.toString()), 'fraction');
+						const atanArg = divide(xVar, sqrtCNode, 'fraction');
+						atanPart = divide(func('arctan', [atanArg]), sqrtCNode, 'fraction');
 					}
 					atanPart = implicitMultiply(createCoeffNode(C), atanPart);
 
@@ -1143,8 +1147,8 @@ function integratePartialFraction(
 			if (sqrtC === 1) {
 				atanTerm = func('arctan', [xVar]);
 			} else {
-				const atanArg = divide(xVar, number(sqrtC.toString()), 'fraction');
-				atanTerm = divide(func('arctan', [atanArg]), number(sqrtC.toString()), 'fraction');
+				const atanArg = divide(xVar, sqrtCNode, 'fraction');
+				atanTerm = divide(func('arctan', [atanArg]), sqrtCNode, 'fraction');
 			}
 
 			// Multiply by the coefficient (handles cases like -1/(x²+1) → -arctan(x))
