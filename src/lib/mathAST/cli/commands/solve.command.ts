@@ -25,6 +25,7 @@ import { toCustom } from '../../custom-generator';
 import { solutionsLatex } from './solve-latex';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from '../../solve';
+import { isSolverFailure } from '../../solve/types';
 import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { preprocess } from '../../normal';
@@ -40,6 +41,7 @@ import {
 	bareFunctionMessage,
 	bareFunctionName,
 	chosenVariable,
+	indexVariables,
 	readCommandArguments,
 	keywordCommandLabel
 } from '../core/variable-argument';
@@ -887,6 +889,23 @@ export class SolveCommand extends BaseCommand {
 		}
 
 		// Verify it's an equation (relation with =)
+		// `dans` : une équation seulement (revue #962)
+		if (
+			reading.args.interval !== null &&
+			isRelation(parseResult.ast) &&
+			parseResult.ast.relation !== '='
+		) {
+			return {
+				success: false,
+				output: '',
+				error: {
+					code: 'COMMAND_SYNTAX',
+					message:
+						'« dans » ne s’emploie qu’avec une équation (=) : résous l’inéquation sans « dans ».'
+				}
+			};
+		}
+
 		if (!isRelation(parseResult.ast) || parseResult.ast.relation !== '=') {
 			return {
 				success: false,
@@ -909,6 +928,21 @@ export class SolveCommand extends BaseCommand {
 				output: '',
 				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
 			};
+		}
+		// Variable tapée absente d'une équation qui en contient d'autres : on ne
+		// résout pas « en t » ce qui n'a pas de t (revue #962)
+		if (explicitVariable !== null) {
+			const present = getVariables(indexVariables(parseResult.ast).node);
+			if (present.size > 0 && !present.has(chosen.variable)) {
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: 'COMMAND_SYNTAX',
+						message: `« ${explicitVariable} » n’apparaît pas dans l’équation.`
+					}
+				};
+			}
 		}
 		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
 		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
@@ -989,6 +1023,34 @@ export class SolveCommand extends BaseCommand {
 		};
 		if (lower === undefined || upper === undefined || !finite(lower) || !finite(upper)) {
 			return fail(`Les bornes de l'intervalle doivent être des nombres : « ${text} ».`);
+		}
+		const lowerNumber = evaluate(lower, { mode: 'decimal' });
+		const upperNumber = evaluate(upper, { mode: 'decimal' });
+		const lowerValue = lowerNumber.status === 'value' ? Number(lowerNumber.value) : NaN;
+		const upperValue = upperNumber.status === 'value' ? Number(upperNumber.value) : NaN;
+		const closed = written[1] === '[' && written[4] === ']';
+		if (lowerValue > upperValue || (lowerValue === upperValue && !closed)) {
+			return fail(
+				`Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
+			);
+		}
+		const intervalLatex = `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`;
+		// Identité (`x = x`, `0 = 0`) : tout l'intervalle ; impossible : ∅ — comme
+		// sans `dans`, puis restreint à l'intervalle
+		try {
+			const whole = solve(equation, { variable });
+			if (whole.status === 'infinite') {
+				return {
+					success: true,
+					output: `Tous les nombres de ${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
+					latex: `S = ${intervalLatex}`
+				};
+			}
+			if (whole.status === 'no-solution' && !isSolverFailure(whole)) {
+				return { success: true, output: 'Pas de solution', latex: 'S = \\emptyset' };
+			}
+		} catch {
+			// Le solveur ne sait pas : les zéros sur l'intervalle prennent le relais
 		}
 		const domain = intervalSet([
 			interval(

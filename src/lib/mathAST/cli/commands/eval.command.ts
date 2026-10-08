@@ -14,6 +14,7 @@ import { bindingsToRecord } from '../core/eval-state';
 import { parse } from '../core/pipeline';
 import { readCommandArguments } from '../core/variable-argument';
 import type { MathNode } from '../../types';
+import { getVariables } from '../../eval/substitute';
 
 // =============================================================================
 // Eval Command
@@ -68,7 +69,37 @@ export class EvalCommand extends BaseCommand {
 				return { success: false, output: '', error: { code: 'PARSE_ERROR', message } };
 			}
 			ast = parsed.ast;
-			if (assignment !== null && value?.ast !== undefined) {
+			// Ce qui ne se calculerait pas : refus clairs, en français (revue #962)
+			const bound = ctx.evalState?.bindings;
+			const free = (node: MathNode): string[] =>
+				[...getVariables(node)].filter((name) => !(bound?.has(name) ?? false)).sort();
+			const fail = (message: string): CommandResult => ({
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message }
+			});
+			// Sans état (hors REPL) : l'erreur INVALID_OPTIONS plus bas
+			const letters = ast === undefined || !ctx.evalState ? [] : free(ast);
+			const written = reading.args.expression;
+			if (assignment === null) {
+				if (letters.length > 0) {
+					return fail(`Il manque la valeur : .évaluer ${written} en ${letters[0]}=3, par exemple.`);
+				}
+			} else if (ctx.evalState && ast !== undefined && value?.ast !== undefined) {
+				if (!letters.includes(assignment.name)) {
+					return fail(`« ${assignment.name} » n'apparaît pas dans ${written}.`);
+				}
+				if (free(value.ast).length > 0) {
+					return fail(
+						`La valeur de ${assignment.name} doit être un nombre, pas « ${assignment.value} ».`
+					);
+				}
+				const rest = letters.filter((name) => name !== assignment.name);
+				if (rest.length > 0) {
+					return fail(
+						`Il reste ${rest.length === 1 ? 'une lettre' : 'des lettres'} sans valeur : ${rest.join(', ')}. On ne remplace qu’une lettre à la fois.`
+					);
+				}
 				assigned = { [assignment.name]: value.ast };
 			}
 		}

@@ -712,12 +712,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Une fonction de l'atelier se traite dans SA lettre (#905, décision de
 	// David 2026-10-08) : rangée en x, son expression est récrite en t, et le
 	// calcul se fait en t. Plusieurs lettres mêlées : en x, et on le dit.
+	// ⚠️ Seulement si la variable n'est pas tapée, ou si c'est SA lettre : avec
+	// f(t) = t³, `.dériver f pour x` lit f en x (comme sur main, f est rangée
+	// en x) au lieu de dériver t³ par rapport à x (revue #962).
 	const letter =
-		typedArgs === null || name === 'eval' || name === 'equiv'
-			? null
-			: functionLetterOf(session, typedArgs.expression);
+		typedArgs === null || name === 'equiv' ? null : functionLetterOf(session, typedArgs.expression);
+	const typedVariable = typedArgs?.variable ?? typedArgs?.assignment?.name ?? null;
+	const rewrites =
+		letter?.kind === 'single' && (typedVariable === null || typedVariable === letter.letter);
 	let finalArgs =
-		args === null || letter === null || letter.kind !== 'single'
+		args === null || !rewrites || letter?.kind !== 'single'
 			? args
 			: {
 					...args,
@@ -728,10 +732,10 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 						'url',
 						session.atelier.functionNames
 					),
-					variable: args.variable ?? letter.letter
+					variable: name === 'eval' ? args.variable : (args.variable ?? letter.letter)
 				};
 	const letterNote =
-		letter?.kind === 'mixed'
+		letter?.kind === 'mixed' && typedVariable === null
 			? 'Fonctions écrites avec des lettres différentes : calcul en x.'
 			: null;
 	if (finalArgs !== null && finalArgs.variable === null && name !== 'eval' && name !== 'equiv') {

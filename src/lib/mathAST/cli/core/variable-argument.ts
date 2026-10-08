@@ -436,6 +436,11 @@ const ORDER = /^\d+$/;
 /** Le point de `.taylor` : un nombre, virgule ou point décimal, ou une fraction `p/q`. */
 const CENTER = /^[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:\/\d+)?$/;
 
+/** La virgule décimale (#880) d'une valeur ou d'une borne : `1,5` → `1.5`. */
+function decimalPoint(text: string): string {
+	return text.replace(/(\d),(\d)/g, '$1.$2');
+}
+
 /** L'argument d'une commande à mots-clés, lu. */
 export interface CommandArguments {
 	readonly expression: string;
@@ -567,7 +572,7 @@ export function readCommandArguments(
 					message: `Une borne s'écrit d'un seul bloc, sans espace (« 1/2 », « \\pi », « a ») : « ${trimmed.slice(words[index + 3].start, words[next].end)} » ?`
 				};
 			}
-			result.bounds = { lower, upper };
+			result.bounds = { lower: decimalPoint(lower), upper: decimalPoint(upper) };
 			index = next;
 			continue;
 		}
@@ -609,7 +614,7 @@ function applyKeyword(
 		const assignment = ASSIGNMENT.exec(value);
 		if (assignment === null) return `Écris « ${keyword} x=3 » : une lettre, =, sa valeur.`;
 		if (result.assignment !== null) return 'Une seule valeur à remplacer à la fois.';
-		result.assignment = { name: assignment[1], value: assignment[2].trim() };
+		result.assignment = { name: assignment[1], value: decimalPoint(assignment[2].trim()) };
 		return null;
 	}
 	switch (keyword) {
@@ -623,14 +628,19 @@ function applyKeyword(
 			result.order = parseInt(value, 10);
 			return null;
 		case 'en': {
-			if (!CENTER.test(value)) return `Le point est un nombre : « en 1 », pas « en ${value} ».`;
+			if (/\\pi|π/.test(value)) {
+				return 'Le point doit être un nombre décimal ou une fraction (en 1, en 1/2) : π n’est pas pris en charge.';
+			}
+			if (!CENTER.test(value)) {
+				return `Le point doit être un nombre décimal ou une fraction (en 1, en 1/2), pas « ${value} ».`;
+			}
 			const [numerator, denominator] = value.replace(',', '.').split('/');
 			result.center =
 				parseFloat(numerator) / (denominator === undefined ? 1 : parseFloat(denominator));
 			return null;
 		}
 		case 'dans':
-			result.interval = value;
+			result.interval = decimalPoint(value);
 			return null;
 		case 'et':
 			result.other = value;
@@ -662,6 +672,24 @@ function readLegacy(
 		}
 		case 'taylor': {
 			const { expression, variable, order, center } = splitTaylorArgument(withTail);
+			// `2 x 3` : 2x à l'ordre 3, ou le produit 2·x·3 ? Le dernier mot de
+			// l'expression, une lettre ou un nombre seuls, se lit aussi en produit
+			const words = topLevelWords(expression);
+			const last = words[words.length - 1]?.text ?? '';
+			// (`sin x 5` : laissé au refus « des parenthèses » de la commande)
+			if (
+				order !== null &&
+				words.length > 1 &&
+				bareFunctionName(expression) === null &&
+				/^(?:[A-Za-z]|\d+(?:[.,]\d+)?)$/.test(last)
+			) {
+				const at = center === 0 ? '' : ` en ${center}`;
+				const pour = variable === null ? '' : ` pour ${variable}`;
+				return {
+					ok: false,
+					message: `Écriture ambiguë. Pour l'ordre, écris : ${label} ${expression} ordre ${order}${at}${pour}`
+				};
+			}
 			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression, variable, order, center } };
 		}
 		case 'eval': {
@@ -670,7 +698,7 @@ function readLegacy(
 			if (variable === null && trailing !== null) {
 				return {
 					ok: false,
-					message: `Pour remplacer ${trailing[2]} par ${trailing[3]}, écris : ${label} ${trailing[1]} en ${trailing[2]}=${trailing[3]}`
+					message: `Pour remplacer ${trailing[2]} par ${trailing[3]}, écris : ${label} ${trailing[1].replace(/\s*;$/, '')} en ${trailing[2]}=${trailing[3]}`
 				};
 			}
 			return { ok: true, args: { ...EMPTY_ARGUMENTS, expression: withTail } };
