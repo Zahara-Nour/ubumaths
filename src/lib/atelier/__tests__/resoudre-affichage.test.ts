@@ -75,10 +75,14 @@ describe('.résoudre trigonométrique : la famille périodique entière', () => 
 });
 
 describe('.résoudre : ce qui n’est pas sûr reste du texte', () => {
-	it('échec du solveur : le message, sans LaTeX', () => {
+	// Plus « Type d'equation non supporte: unknown » brut (revue, 2026-10-09)
+	it('échec du solveur : un refus en français, sans LaTeX', () => {
 		const outcome = run('.résoudre x^5+x+1=0');
 		expect(outcome).not.toHaveProperty('latex');
-		expect(outcome).toMatchObject({ output: expect.stringContaining('non supporte') });
+		expect(outcome).toMatchObject({
+			kind: 'refus',
+			message: 'Je ne sais pas encore résoudre cette équation.'
+		});
 	});
 
 	it('période en dérive flottante (sin(x/3) = 0) : pas de famille écrite de travers', () => {

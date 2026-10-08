@@ -80,6 +80,7 @@ import {
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { solveByPowerSubstitution } from './power-substitution';
+import { solveConstantBaseExponential } from './constant-base-exponential';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { compile } from '../eval/compile';
 import { findFirst } from '../transforms';
@@ -1869,6 +1870,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Try trig recursive decomposition for non-linear trig arguments
 	if (!result) {
 		result = tryTrigRecursiveDecomposition(expr, variable, opts);
+	}
+
+	// aⁿ = b, base constante autre que e (suites géométriques : 2^n = 1024)
+	if (!result) {
+		result = solveConstantBaseExponential(expr, variable, solve, opts);
 	}
 
 	// Try exp/log recursive decomposition for non-linear exp/log arguments

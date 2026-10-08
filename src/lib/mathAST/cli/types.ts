@@ -49,7 +49,9 @@ export type ErrorCode =
 	/** Domaine : contrainte non résolue (refus plutôt qu'un domaine faux) — message en français, destiné à l'élève */
 	| 'DOMAIN_UNRESOLVED'
 	/** Inéquation lue mais pas résolue (signe inconnu) : message en français, destiné à l'élève */
-	| 'INEQUALITY_UNSOLVED';
+	| 'INEQUALITY_UNSOLVED'
+	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
+	| 'EQUATION_UNSOLVED';
 
 /**
  * Structured error for command execution

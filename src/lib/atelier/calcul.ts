@@ -38,7 +38,7 @@ import { exponentialCommand, geometricCommand, uniformCommand } from './law-comm
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
-import { INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
+import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
@@ -860,7 +860,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// Une inéquation que le moteur a LUE sans savoir la résoudre : on le dit, et
 	// pas « Je n'ai pas su lire » — APRÈS les étapes, qui savent parfois faire
-	if (name === 'solve' && !result.success && result.error?.code === INEQUALITY_UNSOLVED) {
+	// Même chose pour une équation qu'aucun solveur ne traite (`x^5+x+1=0`,
+	// un paramètre : `u_0*q^n=10 pour n`) : refus en français (revue, 2026-10-09)
+	if (
+		name === 'solve' &&
+		!result.success &&
+		(result.error?.code === INEQUALITY_UNSOLVED || result.error?.code === EQUATION_UNSOLVED)
+	) {
 		return { kind: 'refus', message: result.error.message, ...noted };
 	}
 

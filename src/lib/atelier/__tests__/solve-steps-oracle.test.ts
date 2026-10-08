@@ -127,6 +127,11 @@ const EQUATIONS: readonly string[] = [
 	'sqrt(x)=3',
 	'sqrt(x)=-1',
 	'3sqrt(x)-6=0',
+	// Suites géométriques : inconnue en exposant (2026-10-09)
+	'2^x=1024',
+	'3*2^x=96',
+	'1.5^x=10',
+	'2^(x+1)=32',
 	// Formes à la marge
 	'0x=5',
 	'x=x',
@@ -167,7 +172,11 @@ const INEQUALITIES: readonly string[] = [
 	'sqrt(x)>=-1',
 	'sqrt(x)< -1',
 	'sqrt(x+2)<x',
-	'1/sqrt(x)<2'
+	'1/sqrt(x)<2',
+	// Suites géométriques : base < 1, le sens change (2026-10-09)
+	'2^x>1000',
+	'0.8^x<0.1',
+	'0.5^x<=0.25'
 ];
 
 /** Ce qui conclut faux aujourd'hui. Vide visé. */

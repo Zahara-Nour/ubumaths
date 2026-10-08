@@ -45,7 +45,8 @@ import {
 	chosenVariable,
 	indexVariables,
 	readCommandArguments,
-	keywordCommandLabel
+	keywordCommandLabel,
+	parameterLetters
 } from '../core/variable-argument';
 
 /** Les relations d'inéquation que `.solve` résout. */
@@ -56,6 +57,17 @@ export const INEQUALITY_UNSOLVED = 'INEQUALITY_UNSOLVED' satisfies ErrorCode;
 
 /** Ce qu'on dit alors — jamais « pas su lire » : l'inéquation a été lue. */
 export const INEQUALITY_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette inéquation.';
+
+/** Code de l'équation lue que le moteur ne sait pas (encore) résoudre. */
+export const EQUATION_UNSOLVED = 'EQUATION_UNSOLVED' satisfies ErrorCode;
+
+/** Ce qu'on dit alors, au lieu de « Type d'equation non supporte: unknown ». */
+export const EQUATION_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette équation.';
+
+/** Une solution qui dépendrait de paramètres (`u_0·q^n = 10` en n). */
+function parameterMessage(letters: readonly string[]): string {
+	return `La solution dépend de ${letters.join(', ')} : je ne sais pas encore résoudre avec un paramètre.`;
+}
 
 /**
  * Negate a math node, properly handling double negatives.
@@ -938,8 +950,16 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
+		// Les inconnues indicées (`u_n`, `x_1`, `u_{n+1}`) deviennent des variables
+		// ordinaires, nommées comme `chosenVariable` les nomme. Sans ça, la
+		// variable était devinée sur l'arbre réécrit (`u_n`) et le solveur
+		// recevait l'arbre BRUT, où `u_n` est un indice de base `u` : `.résoudre
+		// u_n+1=3` répondait « Type d'equation non supporte » (2026-10-08).
+		const flattened = indexVariables(parseResult.ast).node;
+		const relation: RelationNode = isRelation(flattened) ? flattened : parseResult.ast;
+
 		const chosen = chosenVariable(explicitVariable, parserOptions, {
-			node: parseResult.ast,
+			node: relation,
 			bound: ctx.evalState?.bindings.keys(),
 			label: keywordCommandLabel('solve')
 		});
@@ -953,7 +973,7 @@ export class SolveCommand extends BaseCommand {
 		// Variable tapée absente d'une équation qui en contient d'autres : on ne
 		// résout pas « en t » ce qui n'a pas de t (revue #962)
 		if (explicitVariable !== null) {
-			const present = getVariables(indexVariables(parseResult.ast).node);
+			const present = getVariables(relation);
 			if (present.size > 0 && !present.has(chosen.variable)) {
 				return {
 					success: false,
@@ -971,27 +991,38 @@ export class SolveCommand extends BaseCommand {
 
 		// `dans [a ; b]` : les solutions dans l'intervalle (décision de David, 2026-10-08)
 		if (reading.args.interval !== null) {
-			return this.solveInInterval(
-				parseResult.ast,
-				chosen.variable,
-				reading.args.interval,
-				parserOptions
-			);
+			return this.solveInInterval(relation, chosen.variable, reading.args.interval, parserOptions);
 		}
 
-		if (parseResult.ast.relation !== '=') {
-			return this.withHint(this.solveInequalityRelation(parseResult.ast, chosen.variable), hint);
+		if (relation.relation !== '=') {
+			return this.withHint(this.solveInequalityRelation(relation, chosen.variable), hint);
 		}
 
 		try {
 			// Solve the equation
-			const result = solve(parseResult.ast, {
+			const result = solve(relation, {
 				variable: chosen.variable,
 				verbosity
 			});
 
+			// Échec du solveur (aucun ne s'applique) : un refus en français, jamais
+			// « Type d'equation non supporte: unknown » montré tel quel (revue,
+			// 2026-10-09 : `.résoudre u_0*q^n=10 pour n`). Une absence de solution
+			// DÉMONTRÉE n'est pas un échec (`isSolverFailure`).
+			if (isSolverFailure(result)) {
+				const letters = parameterLetters(relation, chosen.variable, ctx.evalState?.bindings.keys());
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: EQUATION_UNSOLVED,
+						message: letters.length > 0 ? parameterMessage(letters) : EQUATION_UNSOLVED_MESSAGE
+					}
+				};
+			}
+
 			// Format output with toggle support
-			const formatted = this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx);
+			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx);
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
 			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
 			const latex = solutionsLatex(result);
