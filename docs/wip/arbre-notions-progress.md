@@ -577,3 +577,17 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   collision de codes vérifiée en prod). CI : un timeout de l'oracle des limites (5 037 ms
   sous charge, 0,8 s en local ×3) → relance verte ; 2ᵉ test instable connu. Suivent :
   1re spé, Tle spé, Tle comp., Expertes.
+
+- **LE SEED 1re SPÉ EST EN PROD (2026-10-08, PR #957) — 1 161 points du nouveau monde,
+  297 références.** `seed-1spe.md` validé intégralement (11 puces scindées → 24 points ;
+  S1 : 3 anciens points absents du texte littéral GARDÉS car des modèles les travaillent
+  — remarque de David ; V2 : règle « point vague → spécifier, compétence → retirer »,
+  2 retraits, 1 refusion, 3 reformulations ; V1 : 14 références d'entretien du
+  vocabulaire de 2de ; C16 : liste de 2de reprise). **E1** : les Exemples d'algorithme
+  sont `approfondissement` (décision du 2026-08-29, que j'avais mal présentée en 2de) —
+  les 10 de 2de corrigés dans la même migration. Vérifié prod : 165 points, 0 sans nœud,
+  93 réfs (1 auto-référence), algorithme 17, démonstration 12, approfondissement 29,
+  E1 = 10, 173 anciens points et leurs 342 liens intacts. Audit : rien de bloquant.
+  CI : le test de l'ancien seed (« aucune liste 1_SPE ») mis au diapason. Report C5 des
+  liens documenté (vocabulaire → points de 2de). Suivent : Tle spé, Tle comp., Expertes ;
+  passe « points vagues » sur la 2de à faire.
