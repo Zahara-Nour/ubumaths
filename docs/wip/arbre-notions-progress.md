@@ -613,3 +613,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   approfondissement ; Démonstrations possibles en approfondissement. Vérifié prod : 0 sans
   nœud, 139 anciens points et 140 liens intacts. Audit : rien de bloquant. CI verte du
   premier coup. Reste : Expertes ; passe « points vagues » sur la 2de.
+
+- **LE SEED MATHS EXPERTES EST EN PROD (2026-10-08, PR #965) — TOUS LES SEEDS SONT FAITS :
+  1 682 points du nouveau monde sur 14 niveaux (CP → Tle, voies générales), 0 sans nœud,
+  497 références.** `seed-texp.md` validé intégralement : 153 points `TEXP-201`…`353`,
+  reprise UN POUR UN de l'ancien découpage (aucune scission ni fusion nouvelle), rubrique =
+  thème seul pour Arithmétique et Graphes et matrices (le BO ne les découpe pas), 4 Exemples
+  d'algorithmes et 28 Problèmes possibles en approfondissement, A1 = non (aucune
+  référence : la liste de 1re est portée par la Tle spé, suivie en parallèle). Vérifié
+  prod : 153 anciens points et 173 liens intacts. Audit : rien de bloquant. CI verte du
+  premier coup. **Restent** : passe « points vagues » sur la 2de (PR dédiée) ; remplissage
+  des rangements ; séquence C5 (transfert des liens ex- → nouveaux points, bascule, puis
+  SUPPRESSION de l'ancien monde — destructif, arrêt et accord David).
