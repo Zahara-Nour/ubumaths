@@ -47,7 +47,9 @@ export type ErrorCode =
 	/** Intégrale définie refusée (pôle dans [a ; b]) : message en français, destiné à l'élève */
 	| 'INTEGRAL_UNDEFINED'
 	/** Domaine : contrainte non résolue (refus plutôt qu'un domaine faux) — message en français, destiné à l'élève */
-	| 'DOMAIN_UNRESOLVED';
+	| 'DOMAIN_UNRESOLVED'
+	/** Inéquation lue mais pas résolue (signe inconnu) : message en français, destiné à l'élève */
+	| 'INEQUALITY_UNSOLVED';
 
 /**
  * Structured error for command execution

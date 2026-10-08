@@ -19,7 +19,8 @@
 import type { MathNode } from '../../types';
 import type { SolveResult, Solution } from '../../solve';
 import { isSolverFailure } from '../../solve/types';
-import { isDivision, isMultiplication, isNumber, isPiConstant } from '../../guards';
+import type { Domain } from '../../domain/types';
+import { isDivision, isInfinity, isMultiplication, isNumber, isPiConstant } from '../../guards';
 import { toLatex } from '../../latex-generator';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
@@ -118,6 +119,49 @@ export function solutionsLatex(result: SolveResult): string | null {
 			return isSolverFailure(result) ? null : 'S = \\emptyset';
 		case 'no-real-solution':
 			return 'S = \\emptyset';
+		default:
+			return null;
+	}
+}
+
+/** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */
+function boundLatex(value: MathNode): string {
+	if (isInfinity(value)) return value.sign === 'negative' ? '-\\infty' : '+\\infty';
+	return toLatex(tidyValue(value));
+}
+
+/**
+ * L'ensemble des solutions d'une inéquation, en LaTeX, à la française :
+ * `S = [0 ; 4[`, `S = ]-\infty ; -2] \cup [2 ; +\infty[`, `S = \emptyset`,
+ * `S = \mathbb{R}` — la forme des conclusions de `pedagogical-solve`. Les
+ * points exclus s'écrivent `\setminus \left\{ … \right\}`. `null` pour un
+ * domaine qui n'est pas une réunion d'intervalles (condition, périodique).
+ */
+export function inequalitySolutionLatex(domain: Domain): string | null {
+	switch (domain.kind) {
+		case 'empty':
+			return 'S = \\emptyset';
+		case 'universal':
+			return 'S = \\mathbb{R}';
+		case 'interval_set': {
+			if (domain.intervals.length === 0) return 'S = \\emptyset';
+			const intervals = domain.intervals.map((i) => {
+				const open = i.lower.type === 'open' ? ']' : '[';
+				const close = i.upper.type === 'open' ? '[' : ']';
+				const lower = boundLatex(i.lower.value);
+				const upper = boundLatex(i.upper.value);
+				// [a ; a] est le singleton {a} (√x ≤ x : {0} ∪ [1 ; +∞[)
+				if (open === '[' && close === ']' && lower === upper) return `\\{${lower}\\}`;
+				return `${open}${lower} ; ${upper}${close}`;
+			});
+			const excluded = domain.excludedPoints.map((p) => toLatex(tidyValue(p.value)));
+			const minus =
+				excluded.length === 0
+					? ''
+					: ` \\setminus \\left\\{ ${excluded.join(' \\,;\\, ')} \\right\\}`;
+			const set = intervals.join(' \\cup ');
+			return `S = ${excluded.length > 0 && intervals.length > 1 ? `\\left(${set}\\right)` : set}${minus}`;
+		}
 		default:
 			return null;
 	}

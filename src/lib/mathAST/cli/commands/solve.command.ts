@@ -20,9 +20,11 @@
  */
 
 import { BaseCommand, type OptionDefinition } from './base-command';
-import type { CommandContext, CommandResult } from '../types';
+import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
-import { solutionsLatex } from './solve-latex';
+import { solutionsLatex, inequalitySolutionLatex } from './solve-latex';
+import { solveInequality } from '../../solve/inequality';
+import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from '../../solve';
 import { isSolverFailure } from '../../solve/types';
@@ -45,6 +47,15 @@ import {
 	readCommandArguments,
 	keywordCommandLabel
 } from '../core/variable-argument';
+
+/** Les relations d'inéquation que `.solve` résout. */
+const INEQUALITY_RELATIONS: ReadonlySet<string> = new Set(['<', '>', '<=', '>=']);
+
+/** Code de l'inéquation que le moteur ne sait pas (encore) résoudre. */
+export const INEQUALITY_UNSOLVED = 'INEQUALITY_UNSOLVED' satisfies ErrorCode;
+
+/** Ce qu'on dit alors — jamais « pas su lire » : l'inéquation a été lue. */
+export const INEQUALITY_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette inéquation.';
 
 /**
  * Negate a math node, properly handling double negatives.
@@ -873,7 +884,11 @@ export class SolveCommand extends BaseCommand {
 				error: { code: 'COMMAND_SYNTAX', message: reading.message }
 			};
 		}
-		const { expression, variable: explicitVariable } = reading.args;
+		const { variable: explicitVariable } = reading.args;
+		// `<-` est l'affectation du terminal (`x <- 5`, lue par le REPL avant le
+		// parseur) : dans une inéquation, c'est « < » suivi d'un moins. Sans ça,
+		// `sqrt(x)<-1` répondait « Je n'ai pas su lire » (2026-10-08).
+		const expression = reading.args.expression.replace(/<-/g, '< -');
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -906,7 +921,13 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
-		if (!isRelation(parseResult.ast) || parseResult.ast.relation !== '=') {
+		// Une inéquation est résolue elle aussi (plus bas, `solveInequalityRelation`) :
+		// toute inéquation tapée dans l'atelier répondait « Je n'ai pas su lire
+		// cette expression » (2026-10-08), alors que `solveInequality` sait faire
+		if (
+			!isRelation(parseResult.ast) ||
+			(parseResult.ast.relation !== '=' && !INEQUALITY_RELATIONS.has(parseResult.ast.relation))
+		) {
 			return {
 				success: false,
 				output: '',
@@ -958,6 +979,10 @@ export class SolveCommand extends BaseCommand {
 			);
 		}
 
+		if (parseResult.ast.relation !== '=') {
+			return this.withHint(this.solveInequalityRelation(parseResult.ast, chosen.variable), hint);
+		}
+
 		try {
 			// Solve the equation
 			const result = solve(parseResult.ast, {
@@ -987,6 +1012,28 @@ export class SolveCommand extends BaseCommand {
 				output: '',
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
+		}
+	}
+
+	/**
+	 * Une inéquation : l'ensemble de `solveInequality` (tableau de signes, domaine
+	 * de définition compris — √x < 2 donne [0 ; 4[, pas ]-∞ ; 4[). Un signe
+	 * qu'on n'a pas pu établir sur un morceau : on le DIT, sans ensemble faux.
+	 */
+	private solveInequalityRelation(inequality: RelationNode, variable: string): CommandResult {
+		const unsolved: CommandResult = {
+			success: false,
+			output: '',
+			error: { code: INEQUALITY_UNSOLVED, message: INEQUALITY_UNSOLVED_MESSAGE }
+		};
+		try {
+			const result = solveInequality(inequality, { variable });
+			if (result.status === 'partial') return unsolved;
+			const latex = inequalitySolutionLatex(result.solution);
+			if (latex === null) return unsolved;
+			return { success: true, output: `S = ${formatInterval(result.solution)}`, latex };
+		} catch {
+			return unsolved;
 		}
 	}
 

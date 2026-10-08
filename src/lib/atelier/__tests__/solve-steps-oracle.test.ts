@@ -112,6 +112,21 @@ const EQUATIONS: readonly string[] = [
 	'x^(2/3)=x',
 	'x^(1/3)=x^3',
 	'x^(0.5)=2',
+	// Racines carrées du lycée (2026-10-08) : √u = c exact, √u = v avec v ≥ 0
+	'sqrt(x)=sqrt(2)',
+	'sqrt(x)=2sqrt(2)',
+	'sqrt(x+1)=sqrt(5)',
+	'sqrt(x)=x-2',
+	'sqrt(x+3)=x+1',
+	'sqrt(2x+3)=x',
+	'sqrt(x+5)=x-1',
+	'sqrt(x)=2x-1',
+	'sqrt(x+1)=-x',
+	'sqrt(x+2)=x',
+	'2sqrt(x)=x',
+	'sqrt(x)=3',
+	'sqrt(x)=-1',
+	'3sqrt(x)-6=0',
 	// Formes à la marge
 	'0x=5',
 	'x=x',
@@ -143,7 +158,16 @@ const INEQUALITIES: readonly string[] = [
 	'x^(1/3)+1<0',
 	'x^(2/3)>1',
 	'x^(2/3)<4',
-	'x^(1/3)+2>0'
+	'x^(1/3)+2>0',
+	// Racines carrées du lycée (2026-10-08)
+	'sqrt(x)<2',
+	'sqrt(x)>3',
+	'sqrt(x)<=1',
+	'sqrt(x-1)>2',
+	'sqrt(x)>=-1',
+	'sqrt(x)< -1',
+	'sqrt(x+2)<x',
+	'1/sqrt(x)<2'
 ];
 
 /** Ce qui conclut faux aujourd'hui. Vide visé. */

@@ -81,6 +81,8 @@ import { extractLinearForm } from '../analysis/coefficient-utils';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { solveByPowerSubstitution } from './power-substitution';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { compile } from '../eval/compile';
+import { findFirst } from '../transforms';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
 import {
 	number,
@@ -95,7 +97,12 @@ import {
 	parentheses
 } from '../factory';
 import { numericNode } from '../common/numeric';
-import { flattenSumShallow, flattenProductShallow, unflattenSum } from '../flatten';
+import {
+	flattenSumShallow,
+	flattenProductShallow,
+	unflattenSum,
+	unflattenProduct
+} from '../flatten';
 import { getVariables } from '../eval/substitute';
 import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
@@ -1200,10 +1207,20 @@ function extractRadicalEquation(expr: MathNode, variable: string): RadicalEquati
 
 		// c = -b/a
 		const constantNumeric = -bNumeric / aNumeric;
+		// c gardé EXACT quand il l'est : √x = √2 rendait x = 7999…/4·10²⁸ (le
+		// flottant 1,41421… élevé au carré). La forme symbolique −b/a, réduite,
+		// n'est retenue que si elle vaut bien c.
+		const signedCoeff = sign === '-' ? opposite(matched.coeffNode) : matched.coeffNode;
+		const minusB = remainingTerms.length > 0 ? unflattenSum(remainingTerms) : null;
+		const exact =
+			minusB === null
+				? number('0')
+				: exactConstant(divide(opposite(minusB), signedCoeff, 'fraction'), constantNumeric);
 		const constantNode =
-			Math.abs(constantNumeric - Math.round(constantNumeric)) < 1e-12
+			exact ??
+			(Math.abs(constantNumeric - Math.round(constantNumeric)) < 1e-12
 				? numericNode(Math.round(constantNumeric))
-				: numericNode(constantNumeric);
+				: numericNode(constantNumeric));
 
 		return {
 			argument: matched.argument,
@@ -1225,6 +1242,23 @@ interface RadicalPatternMatch {
 	readonly expNumerator: number;
 	readonly expDenominator: number;
 	readonly coeffNumeric: number;
+	/** Le coefficient a de a·√u, sous forme exacte (`1` sans facteur). */
+	readonly coeffNode: MathNode;
+}
+
+/**
+ * La forme réduite de `node`, si elle vaut bien `expected` — sinon `null`
+ * (une réduction qui échoue ou s'écarte ne remplace jamais le nombre).
+ */
+function exactConstant(node: MathNode, expected: number): MathNode | null {
+	try {
+		const reduced = denormalize(normalize(node));
+		const value = evaluateNodeToApproximatedNumber(reduced);
+		const tolerance = 1e-9 * Math.max(1, Math.abs(expected));
+		return Math.abs(value - expected) <= tolerance ? reduced : null;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -1264,7 +1298,8 @@ function tryRadicalPatterns(term: MathNode, variable: string): RadicalPatternMat
 			}
 
 			if (allConstant) {
-				return { ...radical, coeffNumeric };
+				const others = factors.filter((_, j) => j !== i);
+				return { ...radical, coeffNumeric, coeffNode: unflattenProduct(others) ?? number('1') };
 			}
 		}
 		return null;
@@ -1272,7 +1307,7 @@ function tryRadicalPatterns(term: MathNode, variable: string): RadicalPatternMat
 
 	// Single term (no product)
 	const radical = matchSingleRadical(term, variable);
-	if (radical) return { ...radical, coeffNumeric: 1 };
+	if (radical) return { ...radical, coeffNumeric: 1, coeffNode: number('1') };
 
 	return null;
 }
@@ -1474,6 +1509,143 @@ function tryRadicalDecomposition(
 		steps: recorder.getStepsFiltered(opts.verbosity),
 		...(family ? { periodicSolutions: family } : {})
 	};
+}
+
+/** Le nœud contient-il une racine (√, ∛, ᵑ√, puissance fractionnaire) de la variable ? */
+function containsRadicalOf(node: MathNode, variable: string): boolean {
+	return findFirst(node, (n) => matchSingleRadical(n, variable) !== null) !== undefined;
+}
+
+/** Garde de récursion du repli sur la forme réduite. */
+let reducedFormDepth = 0;
+
+/**
+ * Résoudre `normalize(expr) = 0` quand la forme réduite DIFFÈRE de l'écriture
+ * (des termes se sont annulés ou regroupés). `null` sinon, ou en cas d'échec.
+ */
+function tryReducedForm(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (reducedFormDepth > 0) return null;
+	let reduced: MathNode;
+	try {
+		reduced = denormalize(normalize(expr));
+	} catch {
+		return null;
+	}
+	if (nodesEqual(reduced, expr)) return null;
+	reducedFormDepth++;
+	try {
+		const result = solve(equals(reduced, number('0')), {
+			variable,
+			verbosity: opts.verbosity
+		});
+		return isSolverFailure(result) ? null : result;
+	} finally {
+		reducedFormDepth--;
+	}
+}
+
+/**
+ * √u = v, v dépendant de x — la méthode du lycée : √u = v ⇔ v ≥ 0 et u = v².
+ *
+ * Mesuré le 2026-10-08 : `√x = x − 2` revenait « Type d'equation non
+ * supporte » — `tryRadicalDecomposition` exige un membre constant. On isole
+ * donc la racine (a·√u + R = 0 → √u = −R/a), on résout u = v², et on ne garde
+ * que les solutions où v ≥ 0 (u = v² ≥ 0 suit). Une seule racine carrée : une
+ * deuxième dans v (√x + √(x+1) = 1) n'est pas du lycée, et la mise au carré
+ * ne l'éliminerait pas.
+ */
+function trySquareRootIsolation(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (radicalDecompositionDepth >= MAX_RADICAL_DECOMPOSITION_DEPTH) return null;
+	const terms = flattenSumShallow(expr);
+	for (let i = 0; i < terms.length; i++) {
+		const { sign, term } = terms[i];
+		const matched = tryRadicalPatterns(term, variable);
+		if (!matched || matched.expNumerator !== 1 || matched.expDenominator !== 2) continue;
+
+		const rest = unflattenSum(terms.filter((_, j) => j !== i));
+		if (rest === null || !getVariables(rest).has(variable)) continue;
+		if (containsRadicalOf(rest, variable)) continue;
+
+		// a·√u + R = 0 → √u = v = −R/a
+		const signedCoeff = sign === '-' ? opposite(matched.coeffNode) : matched.coeffNode;
+		const v = denormalize(normalize(divide(opposite(rest), signedCoeff, 'fraction')));
+		const u = matched.argument;
+
+		const recorder = createStepRecorder();
+		recorder.recordStep(
+			'square-root-isolation',
+			'On isole la racine, puis on élève au carré en gardant la condition v ≥ 0',
+			expr,
+			equals(u, superscript(parentheses(v), number('2'))),
+			'summarized'
+		);
+
+		radicalDecompositionDepth++;
+		let subResult: SolveResult;
+		try {
+			subResult = solve(equals(u, superscript(parentheses(v), number('2'))), {
+				variable,
+				verbosity: opts.verbosity
+			});
+		} finally {
+			radicalDecompositionDepth--;
+		}
+		if (isSolverFailure(subResult) || subResult.periodicSolutions) return null;
+		if (subResult.status === 'infinite') return null;
+
+		let vAt: (x: number) => number;
+		try {
+			const compiled = compile(v);
+			vAt = (x) => compiled({ [variable]: x });
+		} catch {
+			return null;
+		}
+		const kept: Solution[] = [];
+		for (const sol of subResult.solutions) {
+			let approx = sol.approximate;
+			if (approx === undefined) {
+				try {
+					approx = evaluateNodeToApproximatedNumber(sol.value);
+				} catch {
+					return null;
+				}
+			}
+			const vValue = vAt(approx);
+			if (!Number.isFinite(vValue)) return null;
+			if (vValue >= -1e-9 * Math.max(1, Math.abs(approx)))
+				kept.push({ ...sol, approximate: approx });
+		}
+
+		const solutions = deduplicateSolutions(kept).sort(
+			(a, b) => (a.approximate ?? 0) - (b.approximate ?? 0)
+		);
+		return {
+			variable,
+			status:
+				solutions.length === 0 ? 'no-solution' : solutions.length === 1 ? 'unique' : 'multiple',
+			solutions,
+			equationType: 'unknown',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity),
+			conclusive: true
+		};
+	}
+
+	return null;
 }
 
 // =============================================================================
@@ -1710,6 +1882,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		result = tryRadicalDecomposition(expr, variable, opts);
 	}
 
+	// √u = v, v dépendant de x : v ≥ 0 et u = v²
+	if (!result) {
+		result = trySquareRootIsolation(expr, variable, opts);
+	}
+
 	// Try rational decomposition (P(x)/Q(x) = 0). Runs after the polynomial-
 	// shaped paths above (product, trig, exp/log, radical) so that
 	// already-polynomial expressions take their proper specialized route ;
@@ -1788,6 +1965,15 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);
 		if (factored) result = factored;
+	}
+	// Une équation qui ne devient affine (ou d'un degré moindre) qu'une fois
+	// développée et réduite : `x² + 5 = (x + 1)²`, `x² − x² + 2x = 4`. Le
+	// classement lit l'écriture (« quadratique ») et le solveur du second degré
+	// échoue, a = 0 — mesuré le 2026-10-08 : `√(x² + 5) = x + 1` (u = v² en
+	// arrive là) revenait « non supporte ». En repli : on résout la forme réduite.
+	if (isSolverFailure(result)) {
+		const reduced = tryReducedForm(expr, variable, opts);
+		if (reduced) result = reduced;
 	}
 
 	// --- Apply domain filtering (single exit point) ---
