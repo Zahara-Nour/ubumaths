@@ -393,6 +393,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Devise** : « **La route est droite, mais la courbe est forte** »
 - **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
 - **Paysage canon** : steppes orientales parsemées de polyèdres en pierre, élevés par les soins d'Achras. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
+- **Relief de Lobatchevsk** 🟡 (décision de David, 2026-10-08) : la ville est bâtie sur un col en forme de **selle de cheval**, une surface à courbure négative. Comme dans la géométrie de Lobatchevski, la somme des angles d'un triangle tracé dans ses rues est **inférieure à 180°**. Achras en tire une fierté locale : « À Lobatchevsk, un triangle bien élevé a moins de 180 degrés. » Pendant, en géométrie, de la sphère (somme supérieure à 180°).
 
 #### Yoyolande — _Fonctions_
 

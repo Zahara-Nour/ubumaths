@@ -29,6 +29,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 22  | 2026-12-03 | Le capitaine aux 97 Palotins (`nombrilie-nombre-premier-solitude`)                              | ✅ validé — réécrit : capitaine qui ne peut ranger 97 Palotins en rangs égaux, titre « rentrer dans le rang », renvoyer un Palotin                                                                 |
 | 23  | 2026-12-07 | Les gidouilles qui font des petits (`nombrilie-interets-composes`)                              | ✅ validé — réécrit : « l'argent fait des petits » pris à la lettre, titre « aucun intérêt à composer… Elle, si. », tokos / Aristote ; NB : l'article sur e (1er février) parle aussi des intérêts |
 | 24  | 2026-12-10 | Le débordement des huit bits (`glitchistan-huit-bits`)                                          | ✅ validé — titre « déborde, Mère Ubu aussi », chapô « ne compte pas s'arrêter là », cadran, Gangnam Style 32 bits                                                                                 |
+| 25  | 2026-12-14 | Le triangle du pôle Nord (`bedonstan-triangle-pole-nord`)                                       | ✅ validé — titre « record de chaleur… 270 degrés », chapô de David, échelle (10 000 km, mètre de 1791), maquette en papier, SVG ; lore : Lobatchevsk bâtie sur un col en selle (Compendium)       |
 
 ## Outillage ajouté pendant la relecture
 
