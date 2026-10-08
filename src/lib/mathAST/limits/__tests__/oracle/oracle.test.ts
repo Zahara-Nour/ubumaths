@@ -13,7 +13,7 @@
  * « Non supporté » n'est pas un échec : il est compté (couverture).
  */
 
-import { describe, it, expect } from 'vitest';
+import { beforeAll, describe, it, expect } from 'vitest';
 import { GENERATED_VARIANTS, ORACLE_CORPUS, WAITING_LIST, type OracleEntry } from './corpus';
 import {
 	buildLimit,
@@ -54,6 +54,13 @@ function ratio(part: number, total: number): string {
 }
 
 describe('oracle numérique des limites', () => {
+	// Le jugement complet se fait une fois, ici, avec son propre budget : sous la
+	// charge d'un shard de CI, il dépassait les 5 s par défaut du premier test qui
+	// l'appelait (0,8 s en local). La garde de lenteur reste le test TIME_BUDGET_MS.
+	beforeAll(() => {
+		runOracle();
+	}, TIME_BUDGET_MS * 2);
+
 	it('les identifiants du corpus sont uniques', () => {
 		const ids = [...ALL_ENTRIES, ...WAITING_LIST].map((entry) => entry.id);
 		expect(new Set(ids).size).toBe(ids.length);
