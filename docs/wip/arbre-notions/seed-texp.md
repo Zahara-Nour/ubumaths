@@ -1,6 +1,7 @@
 # Seed Maths expertes — points du programme (architecture points → nœuds)
 
-> **Statut : EN ATTENTE DE VALIDATION. Aucune migration avant.** ⚠️ Soin maximal. Le
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : reprise un
+> pour un, rubriques, discutables, A1 = non). Livraison en cours.** ⚠️ Soin maximal. Le
 > **dernier seed** du référentiel.
 > Source : « Programme d'enseignement optionnel de mathématiques expertes de terminale
 > générale » (11 p., fourni par David le 2026-10-07 ; texte en vigueur reconduit), relu
@@ -82,7 +83,9 @@ polynomiales > racines d'un polynôme` : on cherche des racines (l'outil est
    (notion) (quels premiers sont somme de deux carrés). Alternative pour le second :
    `PGCD, Bézout et Gauss > équations diophantiennes`.
 
-## Questions
+## Questions — TOUTES TRANCHÉES (David, 2026-10-08 : « je valide tout »)
+
+> **A1 = non** : aucune référence en Expertes (la liste de 1re est portée par la Tle spé).
 
 - **A1 — liste d'automatismes de 1re en Expertes ?** Reco : **non** — l'élève d'Expertes
   suit en même temps la Tle spé, dont la liste (A1) contient déjà celle de 1re : la
