@@ -25,10 +25,10 @@ l'évaluation par compétence n'est pas un point.
 
 |                           | CP  | CE1 | CE2 | Total                                                                                |
 | ------------------------- | --- | --- | --- | ------------------------------------------------------------------------------------ |
-| Puces scindées            | 3   | 7   | 7   | **17 puces → +18 points**                                                            |
+| Puces scindées            | 3   | 7   | 6   | **16 puces → +17 points**                                                            |
 | Points spécifiés (vagues) | 5   | 2   | 1   | **8** (+ les faits multiplicatifs, spécifiés par leur scission ; + CE1-012, doute 3) |
 | Retraits                  | 0   | 0   | 0   | **0**                                                                                |
-| Points après la passe     | 72  | 89  | 84  | **245** (227 + 18)                                                                   |
+| Points après la passe     | 72  | 89  | 83  | **244** (227 + 17)                                                                   |
 
 **Aucune suppression.** Une scission garde le point d'origine (son code, ses usages) pour la
 **première partie**, et ajoute les autres parties avec un code neuf en fin de série
@@ -42,7 +42,7 @@ qui garde le code CE2-022. Aucune référence à déplacer.
 
 ---
 
-## 1. Puces scindées (17 → +18 points)
+## 1. Puces scindées (16 → +17 points)
 
 | Point       | Puce du BO                                                                                                                           | Parties proposées (libellé → nœud)                                                                                                                                                                                                                                                | Pourquoi                                                                                                                                                         |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -62,7 +62,6 @@ qui garde le code CE2-022. Aucune référence à déplacer.
 | **CE2-071** | « Connaitre et utiliser le codage d'un angle droit et celui qui indique que des segments ont la même longueur. »                     | CE2-071 « Connaitre et utiliser le codage d'un angle droit » → `Figures planes > angles droits` · **CE2-081** « Connaitre et utiliser le codage qui indique que des segments ont la même longueur » → `> reconnaître et décrire`                                                  | Deux codages, deux sous-notions (aujourd'hui : la notion).                                                                                                       |
 | **CE2-074** | « Produire un tableau ou un diagramme en barres… »                                                                                   | comme CE1-081 → **CE2-082**                                                                                                                                                                                                                                                       | idem                                                                                                                                                             |
 | **CE2-075** | « Lire et interpréter les données d'un tableau à double entrée ou d'un diagramme en barres. »                                        | CE2-075 « …d'un tableau à double entrée » → `> tableau à double entrée` · **CE2-083** « Lire et interpréter les données d'un diagramme en barres » → `> diagrammes en barres`                                                                                                     | Deux supports, deux sous-notions.                                                                                                                                |
-| **CE2-076** | « Résoudre des problèmes en utilisant les données d'un tableau à double entrée ou d'un diagramme en barre. »                         | CE2-076 « …d'un tableau à double entrée » → `> tableau à double entrée` · **CE2-084** « Résoudre des problèmes en utilisant les données d'un diagramme en barres » → `> diagrammes en barres`                                                                                     | idem                                                                                                                                                             |
 
 Chaque partie garde le kind et le régime de la puce (sauf CE1-052, signalé).
 
@@ -103,6 +102,11 @@ mot juste) — même règle que les puces de vocabulaire du lycée.
   déplacements (plans, instructions « avancer, reculer, tourner… », l. 2154) ; les
   constructions de solides et d'assemblages ; toutes les puces de calcul mental (déjà au
   grain du fait numérique) ; toutes les puces de problèmes (chacune nomme son type).
+- **Problèmes à partir de données** : « Résoudre des problèmes en utilisant les données d'un
+  tableau à double entrée ou d'un diagramme en barre » (CE2-076) reste **sur la notion** —
+  le geste évalué est la résolution, la représentation n'est que la source des données, et
+  sa lecture est déjà portée par les points scindés CE2-075 / CE2-083. Même décision au
+  cycle 3 (CM1-122, CM2-108), par cohérence. Alternative : scinder (voir doute 4).
 - **Rattachements déjà tranchés** (discutables 1-8 du seed) : non rouverts, sauf le 1 et
   le 8 que les scissions de CE1-028/CE2-022, CE1-073 et CE2-071 rendent caducs (les parties
   ont chacune leur sous-notion).
@@ -123,15 +127,19 @@ mot juste) — même règle que les puces de vocabulaire du lycée.
    donne pas d'exemple propre à cette puce. Reco : la spécifier **comme CP-010** (même puce,
    mêmes mots du BO de CP). Alternative : la laisser telle quelle.
 
+4. **CE2-076** (« Résoudre des problèmes en utilisant les données d'un tableau à double
+   entrée ou d'un diagramme en barre ») : reco **garder sur la notion** (voir ci-dessus).
+   Alternative : scinder en deux, comme la lecture des données (CE2-075).
+
 ## Questions
 
-- **Validation d'ensemble** : les 17 scissions, les 8 spécifications, les cas gardés, et
-  les 3 doutes ci-dessus.
+- **Validation d'ensemble** : les 16 scissions, les 8 spécifications, les cas gardés, et
+  les 4 doutes ci-dessus.
 
 ## Après validation (plan de livraison)
 
 Une PR dédiée (ou une PR par cycle, selon ce que tu préfères) : migration **additive**
-(`update` du libellé, du nœud, et du kind pour CE1-052 ; `insert` des 18 parties neuves ;
+(`update` du libellé, du nœud, et du kind pour CE1-052 ; `insert` des 17 parties neuves ;
 décalage de l'ordre d'affichage), aucune suppression ; mise à jour de `seed-cycle2.md`, de
-la fixture et du test intégral du cycle 2 (245 points) ; preuve rouge, suite d'intégration,
+la fixture et du test intégral du cycle 2 (244 points) ; preuve rouge, suite d'intégration,
 audit, CI, merge, `db:migrate`, vérification en prod.
