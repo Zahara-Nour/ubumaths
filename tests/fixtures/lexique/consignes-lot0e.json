@@ -1,0 +1,206 @@
+{
+	"source": "Lot 0e du lexique, validé par David le 2026-10-09 (35 fiches ; 12 réponses enregistrées par la page, validation des 23 autres confirmée par David dans la conversation) : docs/wip/lexique/lot0e-consignes.md (copie figée). L'exclusion de « chiffre » vaut pour le mot : son homonyme « chiffre (cryptographie) » est exclu aussi (revue du 2026-10-09).",
+	"verbes": [
+		{
+			"term": "calculer",
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Trouver le résultat d'une ou de plusieurs opérations : calculer $7 + 5$, c'est trouver $12$."
+				},
+				{
+					"grade": "5",
+					"content": "Calculer, c'est obtenir un résultat numérique. On calcule le périmètre d'un carré de $3$ cm de côté : $12$ cm ; on exprime le périmètre d'un carré de côté $c$ : $4c$."
+				}
+			],
+			"forms": ["calcule", "calculez"]
+		},
+		{
+			"term": "exprimer",
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Exprimer une mesure dans une unité, c'est l'écrire avec cette unité : $1$ m s'exprime aussi $100$ cm."
+				},
+				{
+					"grade": "5",
+					"content": "Exprimer une grandeur en fonction d'une autre, c'est l'écrire avec une expression littérale : le périmètre d'un rectangle de largeur $L$ et de longueur $2L$ s'exprime par $6L$. À la différence de « calculer », le résultat contient une lettre."
+				}
+			],
+			"forms": ["exprime", "exprimez"]
+		},
+		{
+			"term": "déterminer",
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Trouver ce qui est demandé : déterminer la moitié de $14$, c'est trouver $7$."
+				},
+				{
+					"grade": "5",
+					"content": "Trouver ce qui est demandé (un nombre, une expression, un point…) en montrant comment on l'a obtenu : déterminer l'image de $3$ par une fonction, déterminer les solutions d'une équation."
+				}
+			],
+			"forms": ["détermine", "déterminez"]
+		},
+		{
+			"term": "justifier",
+			"grade": "5",
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Donner les raisons qui montrent qu'une réponse est vraie : un calcul, une propriété, une mesure ou un contre-exemple."
+				}
+			],
+			"forms": ["justifie", "justifiez"]
+		},
+		{
+			"term": "vérifier",
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "S'assurer qu'une réponse est juste : vérifier avec la règle que des points sont alignés, ou refaire un calcul autrement."
+				},
+				{
+					"grade": "5",
+					"content": "Vérifier qu'un nombre est solution d'une équation, c'est le remplacer dans l'équation et constater que l'égalité est vraie."
+				}
+			],
+			"forms": ["vérifie", "vérifiez"]
+		},
+		{
+			"term": "tracer",
+			"grade": "CE2",
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Dessiner une ligne ou une figure avec la règle, l'équerre ou le compas : tracer un segment de $5$ cm."
+				}
+			],
+			"forms": ["trace", "tracez"]
+		},
+		{
+			"term": "estimer",
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Donner une valeur approchée sans calcul exact ni mesure précise : estimer la longueur de la classe, ou que $298 + 403$ fait environ $700$."
+				}
+			],
+			"forms": ["estime", "estimez"]
+		},
+		{
+			"term": "comparer",
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Dire lequel de deux nombres, de deux longueurs ou de deux collections est le plus grand, ou s'ils sont égaux ; on écrit $<$, $>$ ou $=$."
+				}
+			],
+			"forms": ["compare", "comparez"]
+		}
+	],
+	"formes": [
+		{
+			"term": "résoudre",
+			"forms": ["résous", "résolvez"],
+			"synonyms": []
+		},
+		{
+			"term": "réduire",
+			"forms": ["réduis", "réduisez"],
+			"synonyms": []
+		},
+		{
+			"term": "convertir",
+			"forms": ["convertis", "convertissez"],
+			"synonyms": []
+		},
+		{
+			"term": "décomposer",
+			"forms": ["décompose", "décomposez"],
+			"synonyms": []
+		},
+		{
+			"term": "développer",
+			"forms": ["développe", "développez"],
+			"synonyms": []
+		},
+		{
+			"term": "simplifier",
+			"forms": ["simplifie", "simplifiez"],
+			"synonyms": []
+		},
+		{
+			"term": "factoriser",
+			"forms": ["factorise", "factorisez"],
+			"synonyms": []
+		},
+		{
+			"term": "arrondir",
+			"forms": ["arrondis", "arrondissez"],
+			"synonyms": []
+		},
+		{
+			"term": "démontrer",
+			"forms": ["démontre", "démontrez"],
+			"synonyms": []
+		},
+		{
+			"term": "encadrer",
+			"forms": ["encadre", "encadrez"],
+			"synonyms": []
+		},
+		{
+			"term": "ordonner",
+			"forms": ["ordonne", "ordonnez", "range", "rangez"],
+			"synonyms": ["ranger"]
+		},
+		{
+			"term": "construire",
+			"forms": ["construis", "construisez"],
+			"synonyms": []
+		},
+		{
+			"term": "représenter",
+			"forms": ["représente", "représentez"],
+			"synonyms": []
+		}
+	],
+	"exclus": [
+		"nombre",
+		"chiffre",
+		"calcul",
+		"résultat",
+		"valeur",
+		"opération",
+		"plus",
+		"moins",
+		"égal",
+		"forme",
+		"problème",
+		"figure",
+		"point",
+		"droite",
+		"chiffre (cryptographie)"
+	],
+	"consignesEnProd": [
+		"calcule",
+		"résous",
+		"réduis",
+		"convertis",
+		"décompose",
+		"détermine",
+		"développe",
+		"simplifie",
+		"factorise",
+		"encadre",
+		"exprime"
+	]
+}

@@ -1,4 +1,6 @@
-# Lot 0e — verbes de consigne et mots jamais soulignés : proposition
+# Lot 0e — verbes de consigne et mots jamais soulignés
+
+**Validé par David le 2026-10-09** : les 35 fiches. La page n'a enregistré que 12 réponses (écritures probablement refusées par la limite de débit, échec peu visible) ; David a confirmé dans la conversation avoir tout validé.
 
 Demandé par David le 2026-10-09 : reconnaître les consignes conjuguées des énoncés (« Résous » → « résoudre »), ajouter « déterminer » et « exprimer » (« calculer » demande un résultat numérique, « exprimer » une expression littérale), et chercher dans le BO les autres verbes de consigne. Préalable aux mots cliquables (lot 2). Données : [lot0e-decisions.json](lot0e-decisions.json).
 

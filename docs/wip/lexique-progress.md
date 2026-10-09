@@ -164,7 +164,7 @@ suis ») :
 
 ## Lot 0e — verbes de consigne et mots jamais soulignés
 
-⏳ Proposé le 2026-10-09 (demande de David : ajouter « déterminer » et « exprimer », chercher les autres consignes dans le BO) : [lexique/lot0e-consignes.md](lexique/lot0e-consignes.md) — 8 verbes définis, 13 entrées qui reçoivent leurs formes conjuguées, 14 mots jamais soulignés ; relecture par David sur https://claude.ai/artifact/65y4jubu5hQ2YQxLxdgqab (base `avis`). Champs prévus dans `MathTerm` : `forms` (formes reconnues) et `autoLink: false` (jamais souligné automatiquement).
+✅ Validé par David le 2026-10-09 (35 fiches, confirmé dans la conversation) et appliqué sur la branche `feat/lexique-consignes` : champs `forms` et `autoLink` dans `MathTerm`, tests « formes uniques », « consignes de prod reconnues », « liste fermée des mots exclus ». Corrigé à la revue : « chiffre (cryptographie) » exclu aussi (l'exclusion vaut pour le mot), « décomposer » et « ordonner » passent au CP comme leurs cibles et le BO. **Pour le lot 2** : comparer des mots entiers et décider du sort des accents (« tracé » ≠ « trace », « ordonnée » ≠ « ordonne »). Proposé le 2026-10-09 (demande de David : ajouter « déterminer » et « exprimer », chercher les autres consignes dans le BO) : [lexique/lot0e-consignes.md](lexique/lot0e-consignes.md) — 8 verbes définis, 13 entrées qui reçoivent leurs formes conjuguées, 14 mots jamais soulignés ; relecture par David sur https://claude.ai/artifact/65y4jubu5hQ2YQxLxdgqab (base `avis`). Champs prévus dans `MathTerm` : `forms` (formes reconnues) et `autoLink: false` (jamais souligné automatiquement).
 
 ## Reprise
 
