@@ -2,24 +2,24 @@
 
 Règle (Q1, 2026-10-09) : le niveau d'un terme est celui de sa **première mention au BO** dans son sens mathématique. Quand le BO emploie tôt un **sens plus simple**, le terme avance avec une **définition simple** à ce niveau, et la définition actuelle reste plus haut. Sources : [relecture-bo.md](relecture-bo.md) (citations complètes dans `relecture-bo.json`). Rien n'est encore appliqué au dictionnaire.
 
-**221 termes** dont le niveau diffère du BO (les 145 autres sont d'accord) : 56 avancent ou reculent avec une nouvelle définition simple · 53 avancent tels quels · 71 reculent · 9 gardent leur niveau malgré la relecture · 24 sont hors programme et restent · **8 à trancher**.
+**221 termes** dont le niveau diffère du BO (les 145 autres sont d'accord) : 56 avancent ou reculent avec une nouvelle définition simple · 53 avancent tels quels · 73 reculent · 13 gardent leur niveau malgré la relecture · 26 sont hors programme et restent · dont **8 cas tranchés par David** (section 1).
 
 Les définitions actuelles ne sont pas corrigées ici (fausses, circulaires, inadaptées : lot 0c), sauf pour les déplacer de niveau.
 
-## 1. À trancher
+## 1. Cas tranchés par David (2026-10-09)
 
-| Terme            | Actuel | Proposé   | Pourquoi c'est à toi                                                                                                                                                |
-| ---------------- | ------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PGCD             | 3e     | Expertes  | Le BO ne nomme le PGCD qu'en Maths expertes ; il a disparu du collège.                                                                                              |
-| PPCM             | 3e     | Expertes  | Absent de tout programme ; rangé avec le PGCD.                                                                                                                      |
-| valeur approchée | CM2    | 1re spé   | Aucun texte du CP à la 2de n'écrit « valeur approchée » (il dit arrondi, encadrement, ordre de grandeur) ; le mot est pourtant courant en classe dès le collège.    |
-| signe            | 5e     | 2de       | Le cycle 4 de 2026 n'emploie « signe » que pour le signe « = » ; « signe d'un nombre relatif » n'apparaît qu'en 2de. Usage courant en 5e.                           |
-| distance à zéro  | 5e     | 2de       | Le BO de 5e dit « valeur absolue » ; « distance à zéro » n'apparaît qu'en 2de. Usage courant en 5e.                                                                 |
-| produit en croix | 6e     | 4e        | Absent des programmes de 2026 et explicitement exclu au cycle 3 ; on le sort au moins de la 6e.                                                                     |
-| ordonnée         | 5e     | 2de       | Le cycle 4 dit « coordonnées d'un point » (5e) sans nommer l'ordonnée ; le mot n'apparaît qu'en 2de.                                                                |
-| hyperbole        | 2de    | Tle comp. | Le BO ne nomme l'hyperbole qu'en Maths complémentaires (que les élèves de spécialité ne suivent pas) ; c'est pourtant la courbe de la fonction inverse, vue en 2de. |
+Le BO les mentionne tard ; David a suivi les recommandations (« Ok pour 1 »).
 
-Pour chacun : soit on suit le BO (proposé), soit on garde le niveau d'usage en classe.
+| Terme            | Actuel | Retenu       | Ce que dit le BO | Choix                                                                                            |
+| ---------------- | ------ | ------------ | ---------------- | ------------------------------------------------------------------------------------------------ |
+| PGCD             | 3e     | **Expertes** | Expertes         | BO suivi : le PGCD n'est plus au programme du collège.                                           |
+| PPCM             | 3e     | **Expertes** | absent           | BO suivi, rangé avec le PGCD.                                                                    |
+| valeur approchée | CM2    | **6e**       | 1re spé          | Usage en classe : le mot qui regroupe arrondi et troncature (6e).                                |
+| signe            | 5e     | **5e**       | 2de              | Usage en classe : vocabulaire des nombres relatifs (5e).                                         |
+| distance à zéro  | 5e     | **5e**       | 2de              | Usage en classe : la valeur absolue se définit en 5e comme la distance à zéro.                   |
+| produit en croix | 6e     | **4e**       | absent           | Hors programme, d'usage courant au cycle 4 ; sorti de la 6e.                                     |
+| ordonnée         | 5e     | **5e**       | 2de              | Usage en classe : les coordonnées d'un point sont au programme de 5e.                            |
+| hyperbole        | 2de    | **2de**      | Tle comp.        | Usage en classe : courbe de la fonction inverse (2de), sinon invisible des élèves de spécialité. |
 
 ## 2. Nouvelles définitions simples (à relire)
 
@@ -157,6 +157,7 @@ Le terme passe au niveau proposé avec la **nouvelle définition** ; l'actuelle 
 | entier naturel                     | CP → **4e**       | « Multiplier des puissances d’exposant entier naturel d’un même nombre entre elles. »                                        |                                                                                                                                                                                                   |
 | impair                             | CP → **CE1**      | « L’élève sait dire si un nombre est pair ou impair. »                                                                       |                                                                                                                                                                                                   |
 | décomposition en facteurs premiers | 4e → **3e**       | « Factoriser un nombre entier positif : 60 = 2² × 3 × 5. »                                                                   |                                                                                                                                                                                                   |
+| PGCD                               | 3e → **Expertes** | « PGCD de deux entiers. Algorithme d’Euclide. »                                                                              | BO suivi : le PGCD n'est plus au programme du collège.                                                                                                                                            |
 | dividende                          | CE2 → **CM2**     | « Poser et effectuer des divisions décimales avec un dividende entier et un diviseur à un chiffre »                          |                                                                                                                                                                                                   |
 | diviseur (opération)               | CE2 → **CM1**     | « Poser et effectuer des divisions euclidiennes avec un diviseur à un chiffre »                                              |                                                                                                                                                                                                   |
 | triple                             | CE1 → **5e**      | « Produire des formules (double, triple, carré, successeur, prédécesseur, aire, périmètre, etc.). »                          | Ni le cycle 2 ni le cycle 3 n'emploient « triple ».                                                                                                                                               |
@@ -164,6 +165,7 @@ Le terme passe au niveau proposé avec la **nouvelle définition** ; l'actuelle 
 | arithmétique                       | 6e → **5e**       | « par des méthodes arithmétiques s'appuyant sur les opérations inverses. »                                                   |                                                                                                                                                                                                   |
 | Euclide                            | 6e → **5e**       | « Éléments d’Euclide (Livre I, proposition 27 ou 28). »                                                                      |                                                                                                                                                                                                   |
 | numération                         | CP → **CE2**      | « Connaître et utiliser les relations entre les unités de numération »                                                       | Corrigé à la main : « unités de numération » (point CE2-003), manqué par la relecture.                                                                                                            |
+| valeur approchée                   | CM2 → **6e**      | « Détermination d’une valeur approchée de e à l’aide de la suite »                                                           | Usage en classe : le mot qui regroupe arrondi et troncature (6e).                                                                                                                                 |
 | fraction irréductible              | 5e → **3e**       | « Mettre une fraction sous forme irréductible. »                                                                             |                                                                                                                                                                                                   |
 | simplifier une fraction            | 5e → **4e**       | « Simplifier une fraction. »                                                                                                 |                                                                                                                                                                                                   |
 | polynôme                           | 2de → **1re spé** | « Fonction polynôme du second degré donnée sous forme factorisée. »                                                          |                                                                                                                                                                                                   |
@@ -224,17 +226,21 @@ Le terme passe au niveau proposé avec la **nouvelle définition** ; l'actuelle 
 | ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | facteur            | CE2     | Le mot apparaît dans un objectif de CE1, mais le BO le donne à apprendre en CE2 (« Comprendre et utiliser les mots « facteur », « produit » et « multiple » »). |
 | divisible          | CM1     | Les critères de divisibilité par 2, 5 et 10 sont au programme de CM1 : le mot y est employé.                                                                    |
+| signe              | 5e      | Usage en classe : vocabulaire des nombres relatifs (5e).                                                                                                        |
+| distance à zéro    | 5e      | Usage en classe : la valeur absolue se définit en 5e comme la distance à zéro.                                                                                  |
 | inégalité          | 4e      | Le texte de 2de dit que les inégalités ont été étudiées au cycle 4.                                                                                             |
 | taux               | 4e      | Le texte de 2de dit que les taux d'évolution ont été travaillés au cycle 4.                                                                                     |
+| ordonnée           | 5e      | Usage en classe : les coordonnées d'un point sont au programme de 5e.                                                                                           |
 | raison             | 1re spé | Le texte de 1re ne nomme pas la raison, mais la définition des suites arithmétiques et géométriques (1re) la contient.                                          |
 | suite croissante   | 1re spé | 1re spé : « Sens de variation d'une suite ».                                                                                                                    |
 | suite décroissante | 1re spé | 1re spé : « Sens de variation d'une suite ».                                                                                                                    |
+| hyperbole          | 2de     | Usage en classe : courbe de la fonction inverse (2de), sinon invisible des élèves de spécialité.                                                                |
 | pi                 | 6e      | Le cycle 4 rappelle que les élèves ont rencontré « le nombre π » au cycle 3 (périmètre du disque en 6e).                                                        |
 | hypothèse          | 4e      | Le cycle 4 emploie « hypothèse » (« L'équiprobabilité est une hypothèse qui ne se démontre pas »).                                                              |
 
 ## 6. Hors programme (Q3 : gardés)
 
-convention (4e) · partie décimale (CM1) · troncature (6e) · monôme (3e → 1re spé) · base (4e) · série (Tle spé) · rotation (4e) · homothétie (3e) · hypoténuse (4e) · ellipse (2de) · octogone (CM1) · chiffre (cryptographie) (6e) · chiffrer (6e) · déchiffrer (6e) · décrypter (6e) · clé (cryptographie) (6e) · chiffre de César (6e) · analyse de fréquences (5e) · chiffre de Vigenère (2de) · méthode de Kasiski (2de) · indice de coïncidence (2de) · exponentiation rapide (Expertes) · clé publique (Expertes) · clé privée (Expertes). Le vocabulaire du Cabinet Noir reste au niveau des pages `/chiffrement`.
+convention (4e) · PPCM (3e → Expertes) · partie décimale (CM1) · troncature (6e) · monôme (3e → 1re spé) · produit en croix (6e → 4e) · base (4e) · série (Tle spé) · rotation (4e) · homothétie (3e) · hypoténuse (4e) · ellipse (2de) · octogone (CM1) · chiffre (cryptographie) (6e) · chiffrer (6e) · déchiffrer (6e) · décrypter (6e) · clé (cryptographie) (6e) · chiffre de César (6e) · analyse de fréquences (5e) · chiffre de Vigenère (2de) · méthode de Kasiski (2de) · indice de coïncidence (2de) · exponentiation rapide (Expertes) · clé publique (Expertes) · clé privée (Expertes). Le vocabulaire du Cabinet Noir reste au niveau des pages `/chiffrement`.
 
 ## 7. Verbes et adjectifs rattachés
 

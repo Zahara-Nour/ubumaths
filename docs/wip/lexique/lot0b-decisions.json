@@ -99,14 +99,14 @@
 		"g": "3"
 	},
 	"55": {
-		"a": "T",
+		"a": "R",
 		"g": "T_EXP",
-		"note": "Le BO ne nomme le PGCD qu'en Maths expertes ; il a disparu du collège."
+		"tranche": "BO suivi : le PGCD n'est plus au programme du collège."
 	},
 	"56": {
-		"a": "T",
+		"a": "H",
 		"g": "T_EXP",
-		"note": "Absent de tout programme ; rangé avec le PGCD."
+		"tranche": "BO suivi, rangé avec le PGCD."
 	},
 	"57": {
 		"a": "A0",
@@ -179,9 +179,9 @@
 		"note": "Absent des programmes : gardé en 6e."
 	},
 	"90": {
-		"a": "T",
-		"g": "1_SPE",
-		"note": "Aucun texte du CP à la 2de n'écrit « valeur approchée » (il dit arrondi, encadrement, ordre de grandeur) ; le mot est pourtant courant en classe dès le collège."
+		"a": "R",
+		"g": "6",
+		"tranche": "Usage en classe : le mot qui regroupe arrondi et troncature (6e)."
 	},
 	"91": {
 		"a": "A",
@@ -235,14 +235,12 @@
 		"note": "La notation $|a|$ n'arrive qu'en 2de."
 	},
 	"109": {
-		"a": "T",
-		"g": "2",
-		"note": "Le cycle 4 de 2026 n'emploie « signe » que pour le signe « = » ; « signe d'un nombre relatif » n'apparaît qu'en 2de. Usage courant en 5e."
+		"a": "K",
+		"tranche": "Usage en classe : vocabulaire des nombres relatifs (5e)."
 	},
 	"110": {
-		"a": "T",
-		"g": "2",
-		"note": "Le BO de 5e dit « valeur absolue » ; « distance à zéro » n'apparaît qu'en 2de. Usage courant en 5e."
+		"a": "K",
+		"tranche": "Usage en classe : la valeur absolue se définit en 5e comme la distance à zéro."
 	},
 	"117": {
 		"a": "A0",
@@ -416,9 +414,9 @@
 		"g": "6"
 	},
 	"177": {
-		"a": "T",
+		"a": "H",
 		"g": "4",
-		"note": "Absent des programmes de 2026 et explicitement exclu au cycle 3 ; on le sort au moins de la 6e."
+		"tranche": "Hors programme, d'usage courant au cycle 4 ; sorti de la 6e."
 	},
 	"178": {
 		"a": "K",
@@ -502,9 +500,8 @@
 		"current": "5"
 	},
 	"213": {
-		"a": "T",
-		"g": "2",
-		"note": "Le cycle 4 dit « coordonnées d'un point » (5e) sans nommer l'ordonnée ; le mot n'apparaît qu'en 2de."
+		"a": "K",
+		"tranche": "Usage en classe : les coordonnées d'un point sont au programme de 5e."
 	},
 	"214": {
 		"a": "R",
@@ -799,9 +796,8 @@
 		"g": "CE2"
 	},
 	"344": {
-		"a": "T",
-		"g": "T_COMP",
-		"note": "Le BO ne nomme l'hyperbole qu'en Maths complémentaires (que les élèves de spécialité ne suivent pas) ; c'est pourtant la courbe de la fonction inverse, vue en 2de."
+		"a": "K",
+		"tranche": "Usage en classe : courbe de la fonction inverse (2de), sinon invisible des élèves de spécialité."
 	},
 	"347": {
 		"a": "A",
