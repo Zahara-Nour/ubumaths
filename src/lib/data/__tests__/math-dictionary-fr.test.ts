@@ -69,6 +69,30 @@ const LOT_0E: Consignes = JSON.parse(
 	readFileSync('tests/fixtures/lexique/consignes-lot0e.json', 'utf-8')
 );
 
+/** Mots, synonymes et étiquettes d'homonymes validés par David (lot 0f, 2026-10-09) : copie figée de docs/wip/lexique/lot0f-mots.md. */
+interface MissingWords {
+	entrees: {
+		term: string;
+		sense: string | null;
+		grade: string;
+		definitions: { grade: string; content: string }[];
+		synonyms: string[];
+	}[];
+	renvois: { term: string; grade: string; derivedFrom: string }[];
+	synonymes: { term: string; ajouts: string[] }[];
+	etiquettes: { term: string; sense: string }[];
+	supprimees: { term: string; content: string }[];
+	definitionsAjoutees: { term: string; definitions: { grade: string; content: string }[] }[];
+	exclus: string[];
+	orthographe: { avant: string[]; apres: string[] };
+	formulesSansAccent: string[];
+	minute: string[];
+	repereSynonymeRetire: string;
+}
+const LOT_0F: MissingWords = JSON.parse(
+	readFileSync('tests/fixtures/lexique/mots-lot0f.json', 'utf-8')
+);
+
 /** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
 function normalizeName(text: string): string {
 	return text
@@ -387,7 +411,106 @@ describe('math-dictionary-fr', () => {
 		const excluded = MATH_DICTIONARY.filter((t) => t.autoLink === false).map((t) =>
 			t.sense ? `${t.term} (${t.sense})` : t.term
 		);
-		expect(excluded.sort()).toEqual([...LOT_0E.exclus].sort());
+		expect(excluded.sort()).toEqual([...LOT_0E.exclus, ...LOT_0F.exclus].sort());
+	});
+
+	// Mots manquants du programme officiel, synonymes et étiquettes d'homonymes :
+	// chaque texte a été relu par David.
+	it('should contain the words validated in lot 0f, word for word', () => {
+		expect(LOT_0F.entrees).toHaveLength(138);
+		expect(LOT_0F.renvois).toHaveLength(3);
+		expect(LOT_0F.synonymes).toHaveLength(13);
+		expect(LOT_0F.etiquettes).toHaveLength(12);
+		const wrong: string[] = [];
+		const lines = (items: { grade: string; content: string }[]) =>
+			items.map((i) => `${i.grade} : ${i.content}`);
+		for (const expected of LOT_0F.entrees) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
+			);
+			if (!term) {
+				wrong.push(`${expected.term} : introuvable`);
+				continue;
+			}
+			if (term.grade !== expected.grade) {
+				wrong.push(`${expected.term} : niveau ${term.grade}, attendu ${expected.grade}`);
+			}
+			const actual = lines(term.definitions?.items ?? []).join('\n');
+			if (actual !== lines(expected.definitions).join('\n')) {
+				wrong.push(`${expected.term} : définitions « ${actual} »`);
+			}
+			for (const synonym of expected.synonyms) {
+				if (!term.synonyms?.includes(synonym))
+					wrong.push(`${expected.term} : synonyme « ${synonym} » absent`);
+			}
+		}
+		for (const expected of LOT_0F.renvois) {
+			const term = MATH_DICTIONARY.find((t) => t.term === expected.term);
+			if (term?.derivedFrom !== expected.derivedFrom || term.grade !== expected.grade) {
+				wrong.push(`${expected.term} : renvoi ${term?.derivedFrom ?? 'introuvable'}`);
+			}
+		}
+		for (const expected of LOT_0F.synonymes) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && !t.sense && !t.derivedFrom
+			);
+			for (const synonym of expected.ajouts) {
+				if (!term?.synonyms?.includes(synonym))
+					wrong.push(`${expected.term} : synonyme « ${synonym} » absent`);
+			}
+		}
+		for (const expected of LOT_0F.etiquettes) {
+			if (!MATH_DICTIONARY.some((t) => t.term === expected.term && t.sense === expected.sense)) {
+				wrong.push(`${expected.term} (${expected.sense}) : introuvable`);
+			}
+		}
+		for (const removed of LOT_0F.supprimees) {
+			const still = MATH_DICTIONARY.some(
+				(t) =>
+					t.term === removed.term && t.definitions?.items.some((i) => i.content === removed.content)
+			);
+			if (still) wrong.push(`${removed.term} : doublon « ${removed.content} » encore là`);
+		}
+		for (const expected of LOT_0F.definitionsAjoutees) {
+			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
+			const tail = lines(term?.definitions?.items ?? []).slice(-expected.definitions.length);
+			if (tail.join('\n') !== lines(expected.definitions).join('\n')) {
+				wrong.push(`${expected.term} : définitions ajoutées absentes`);
+			}
+		}
+		// Orthographe du BO (« évènement ») et accents dans les formules
+		const names = MATH_DICTIONARY.map((t) => t.term);
+		for (const old of LOT_0F.orthographe.avant)
+			if (names.includes(old)) wrong.push(`« ${old} » : ancienne orthographe`);
+		for (const now of LOT_0F.orthographe.apres)
+			if (!names.includes(now)) wrong.push(`« ${now} » : introuvable`);
+		for (const term of MATH_DICTIONARY) {
+			for (const item of term.definitions?.items ?? []) {
+				if (item.content.includes('événement')) wrong.push(`${term.term} : « événement »`);
+				for (const unaccented of LOT_0F.formulesSansAccent)
+					if (item.content.includes(unaccented)) wrong.push(`${term.term} : ${unaccented}`);
+			}
+		}
+		const minute = MATH_DICTIONARY.find((t) => t.term === 'minute');
+		const minuteLevels = (minute?.definitions?.items ?? []).map((i) => i.grade);
+		if (minuteLevels.join() !== LOT_0F.minute.join()) {
+			wrong.push(`minute : niveaux ${minuteLevels.join(', ')}`);
+		}
+		const repere = MATH_DICTIONARY.find((t) => t.term === 'repère');
+		if (repere?.synonyms?.includes(LOT_0F.repereSynonymeRetire)) {
+			wrong.push(`repère : synonyme « ${LOT_0F.repereSynonymeRetire} »`);
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	// Un mot à plusieurs sens se lit « carré (géométrie) » ou « carré (puissance) » :
+	// une entrée sans étiquette à côté d'une autre ne dit pas de quel sens elle parle.
+	it('should label every entry of a word that has several meanings', () => {
+		const principals = MATH_DICTIONARY.filter((t) => !t.derivedFrom);
+		const unlabeled = principals.filter(
+			(t) => !t.sense && principals.some((other) => other !== t && other.term === t.term)
+		);
+		expect(unlabeled.map((t) => t.term)).toEqual([]);
 	});
 
 	// Sinon, dans le glossaire, la fiche d'un renvoi (« Voir : X ») n'a aucune

@@ -13,7 +13,7 @@
 import { browser } from '$app/environment';
 import { isGradeCode, type GradeCode } from '$lib/types/grades';
 import type { GameState, FeedbackType } from './types';
-import MATH_DICTIONARY, { getTermsForGrade } from '$lib/data/math-dictionary-fr';
+import { allWordsNormalized, getWordsForLevel, normalizeString } from './dictionary-words';
 
 /** localStorage key for game state persistence */
 const STORAGE_KEY = 'mathemo_state';
@@ -26,35 +26,6 @@ const MAX_ATTEMPTS = 10;
 
 /** Default starting attempts (classic Wordle has 6) */
 const DEFAULT_ATTEMPTS = 6;
-
-/**
- * Normalize string by removing accents and converting to lowercase.
- * Allows players to type without accents.
- */
-function normalizeString(str: string): string {
-	return str
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '')
-		.toLowerCase();
-}
-
-/** Pre-computed set of all single-word terms (normalized) for fast validation */
-const allWordsNormalized = new Set(
-	MATH_DICTIONARY.filter((t) => !t.term.includes(' ')).map((t) => normalizeString(t.term))
-);
-
-/**
- * Get single-word terms for a given grade level.
- * Returns normalized term strings (without accents) for the game.
- */
-function getWordsForLevel(level: GradeCode): string[] {
-	// Un homonyme (« base » d'une puissance, d'un solide, de vecteurs) ne doit
-	// pas sortir plus souvent qu'un autre mot
-	const words = getTermsForGrade(level)
-		.filter((t) => !t.term.includes(' '))
-		.map((t) => normalizeString(t.term));
-	return [...new Set(words)];
-}
 
 /**
  * Get a random word for a given grade level.

@@ -1,5 +1,5 @@
 {
-	"source": "Lot 0e du lexique, validé par David le 2026-10-09 (35 fiches ; 12 réponses enregistrées par la page, validation des 23 autres confirmée par David dans la conversation) : docs/wip/lexique/lot0e-consignes.md (copie figée). L'exclusion de « chiffre » vaut pour le mot : son homonyme « chiffre (cryptographie) » est exclu aussi (revue du 2026-10-09).",
+	"source": "Lot 0e du lexique, validé par David le 2026-10-09 (35 fiches ; 12 réponses enregistrées par la page, validation des 23 autres confirmée par David dans la conversation) : docs/wip/lexique/lot0e-consignes.md (copie figée). L'exclusion de « chiffre » vaut pour le mot : son homonyme « chiffre (cryptographie) » est exclu aussi (revue du 2026-10-09). Mise à jour par le lot 0f (2026-10-09) : « chiffre » porte l'étiquette « numération ».",
 	"verbes": [
 		{
 			"term": "calculer",
@@ -175,7 +175,7 @@
 	],
 	"exclus": [
 		"nombre",
-		"chiffre",
+		"chiffre (numération)",
 		"calcul",
 		"résultat",
 		"valeur",

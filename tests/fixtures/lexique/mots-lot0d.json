@@ -1,5 +1,5 @@
 {
-	"source": "Lot 0d-1 du lexique, validé par David le 2026-10-09 (87 OK, « racine (polynôme) » dans sa version, coquille corrigée) : docs/wip/lexique/lot0d-mots.md (copie figée).",
+	"source": "Lot 0d-1 du lexique, validé par David le 2026-10-09 (87 OK, « racine (polynôme) » dans sa version, coquille corrigée) : docs/wip/lexique/lot0d-mots.md (copie figée). Mise à jour par le lot 0f (2026-10-09) : 2e définition de « minute » au CM2, définition de 2de de « boucle ».",
 	"entrees": [
 		{
 			"term": "cube",
@@ -457,7 +457,7 @@
 					"content": "Unité de durée, notée $\\text{min}$ : il y a $60$ minutes dans une heure."
 				},
 				{
-					"grade": "CM1",
+					"grade": "CM2",
 					"content": "Une minute dure $60$ secondes : $1\\,\\text{min} = 60\\,\\text{s}$."
 				}
 			]
@@ -547,6 +547,10 @@
 				{
 					"grade": "5",
 					"content": "Partie d'un programme répétée plusieurs fois : un nombre de fois fixé (« répéter $10$ fois ») ou tant qu'une condition est vraie."
+				},
+				{
+					"grade": "2",
+					"content": "En Python, une boucle bornée (« for ») répète des instructions un nombre de fois fixé à l'avance : « for k in range(5): » les répète $5$ fois, $k$ prenant les valeurs $0$ à $4$. Une boucle non bornée (« while ») les répète tant qu'une condition est vraie : « while u < 100: »."
 				}
 			]
 		},
