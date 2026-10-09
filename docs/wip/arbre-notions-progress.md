@@ -830,7 +830,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Cela couvre les 55 facettes archivées, les 2 « définition » créées, et les modèles, points et
     exercices qui suivent.
   - **Q1 = oui** (David) : « optimisation » se fond dans « variations ».
-  - Q2 à Q7 et la section D ne sont pas tranchées : ne pas les appliquer.
+  - **Q2 = oui** (David) : « Décimaux : calculs » garde les opérations, les techniques y sont versées.
+  - Q3 à Q7 et la section D ne sont pas tranchées : ne pas les appliquer.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;

@@ -3,7 +3,8 @@
 > **Sections A et B VALIDÉES par David le 2026-10-09** (« A et B validées »).
 >
 > - **Q1 = oui** : « optimisation » se fond dans « variations ».
-> - Q2 à Q7 et la section D (renommages) attendent encore sa réponse.
+> - **Q2 = oui** : « Décimaux : calculs » garde les opérations ; les techniques y sont versées, chaque point allant sur l'opération qu'il travaille (sur la notion s'il en couvre plusieurs).
+> - Q3 à Q7 et la section D (renommages) attendent encore sa réponse.
 >
 > Rien n'est écrit en base.
 >
