@@ -255,17 +255,17 @@ notes et revues dans [lexique/lot2-progress.md](lexique/lot2-progress.md).
 
 ## Lot 0h — mots manquants mesurés dans les énoncés publiés
 
-⏳ En relecture par David depuis le 2026-10-09 (« ok » à la fournée choisie sur données) :
-https://claude.ai/artifact/LweSAj5ysULyajoQJukWGC (base `avis`, 32 fiches) ; décisions
-`lexique/lot0h-decisions.json`.
+✅ Validé par David le 2026-10-09 (32 fiches « OK », toutes enregistrées) et livré #1000 (branche
+`feat/lexique-lot0h`) : https://claude.ai/artifact/LweSAj5ysULyajoQJukWGC ; proposition
+[lexique/lot0h-mots.md](lexique/lot0h-mots.md), copie figée `tests/fixtures/lexique/mots-lot0h.json`,
+décisions `lexique/lot0h-decisions.json`. Ajout à la revue : forme féminine « équilibrée ».
 
 - Mesure : mots des 3 212 énoncés publiés absents du dictionnaire (≥ 5 occurrences), consignes
   triviales écartées (« complète » 242, « donne » 308, « considère » 220).
 - **Graphie « événement »** : les énoncés l'écrivent ainsi (42 fois) ; le dictionnaire suit le BO
   (« évènement ») et les mots cliquables comparent les accents exactement → synonymes « événement »,
   « événement contraire », « événements indépendants », « événement impossible / certain »,
-  « système complet d'événements ». Le test du lot 0f qui cherchait « événement » partout doit
-  alors exclure les synonymes.
+  « système complet d'événements ». Le test du lot 0f exempte ces six synonymes, et eux seuls.
 - **24 mots** : ensemble des solutions (50 énoncés), représentant (vecteur), équilibré, indiscernable,
   urne, tirage avec / sans remise, intérêts composés, ajustement affine, inégalité de concentration,
   méthode des rectangles, escalier (suite, absent du BO), Tle expertes (nombre complexe, forme
