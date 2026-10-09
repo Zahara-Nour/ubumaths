@@ -52,6 +52,22 @@ d'une même tâche à petite échelle.
 7. **Tagging des contenus** : le nœud direct d'un modèle (un seul, 0019) reste la source de
    vérité ; ses points doivent appartenir à ce nœud, et taguer un point suggère le nœud
    automatiquement. Un contenu rangé sans aucun point est, par définition, hors programme.
+
+   **Précisions de David (2026-10-09).** Elles font suite à l'analyse
+   `docs/wip/arbre-notions/c5-architecture-liens.md` :
+
+   - **Le nœud d'une ressource est stocké.** C'est lui que lit le filtre ; il ne se déduit pas
+     des points. Une ressource sans point garde son nœud, et ce nœud peut être plus fin que
+     celui de son point.
+   - **Le lien ressource → point se saisit.** Il ne se déduit pas du nœud, car le point porte
+     des bornes que le nœud n'a pas : CE1-021 « … de même dénominateur » et 5-026 « … de
+     dénominateurs quelconques » sont sur le même nœud. Le nœud sert seulement à proposer les
+     points candidats.
+   - **« Appartenir à ce nœud » se lit ainsi** : le point est sur le nœud de la ressource ou
+     sur la notion de ce nœud. Pour un exercice, il est sur l'un de ses nœuds ou sur leur
+     notion. Une règle en base refuse le reste.
+   - **Un modèle porte exactement un point par programme** ; un exercice en porte plusieurs.
+
 8. **Le `level` des questions est une gradation à l'intérieur d'un point** (du facile au
    difficile), plus un axe global 1-20. La progression d'Automaths suit l'ordre des points du
    programme du niveau de l'élève, puis le level à l'intérieur du point.

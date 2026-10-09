@@ -142,10 +142,20 @@ suis ») :
   « exemple jamais avant son terme ». ✅ Livré #979 (2026-10-09), avec 10 synonymes accentués et « tangeant » retiré.
 - **0b — niveaux** : appliquer `niveauBO` de `relecture-bo.json` ; quand le BO emploie tôt un
   sens plus simple, ajouter une définition de niveau inférieur au lieu de déplacer le terme ;
-  liste des cas disputés à David.
+  liste des cas disputés à David. ⏳ Proposition prête (2026-10-09) :
+  [lexique/lot0b-niveaux.md](lexique/lot0b-niveaux.md) — 221 termes, 56 nouvelles définitions
+  simples, 8 cas tranchés par David (« Ok pour 1 », 2026-10-09 : ses recommandations suivies) ; décisions machine-lisibles dans `lexique/lot0b-decisions.json`
+  (clés = rang de l'entrée dans le dictionnaire du 2026-10-09, avant le retrait de « shisma » et
+  « tangeant »). Les 56 nouvelles définitions validées sans correction par David le 2026-10-09 (page à cocher
+  https://claude.ai/artifact/YH7RFgXAWkohW6xBPhKSKx, base `avis` : 56 « ok »). ✅ Livré #982 (2026-10-09, branche
+  `feat/lexique-niveaux-bo`) : 185 termes et 15 dérivés changent de niveau ; test « niveaux validés
+  du lot 0b » sur la copie figée `tests/fixtures/lexique/niveaux-lot0b.json` (200 écarts sur l'ancien
+  dictionnaire). À l'application, « construire » suit « construction » (CM1) et cinq renvois faux de
+  dérivés sont corrigés (ordonner, croissant, décroissant → ordre ; décomposer → décomposition ;
+  simplifier → simplification) : un dérivé ne précède jamais son terme (test).
 - **0c — définitions** : 14 fausses et 10 circulaires d'abord, puis homonymes (sens manquants,
   entrées séparées : cube, base, racine…) et définitions inadaptées ; relecture de David par
-  lots.
+  lots. ⏳ Proposition prête (2026-10-09) : [lexique/lot0c-definitions.md](lexique/lot0c-definitions.md) — 116 entrées (16 fausses, 11 circulaires, 54 sens, 35 niveau), décisions dans `lexique/lot0c-decisions.json` ; relecture par David sur https://claude.ai/artifact/9jvhVk9fdx75xy3aWDbVAy (base `avis`, documents `t<rang dans la liste>`).
 - **0d — manquants** (Q4), `1_GEN`, formes conjuguées des consignes et liste des mots jamais
   repérés (tests 4 à 6), utiles au lot 2.
 

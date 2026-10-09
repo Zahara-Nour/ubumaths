@@ -729,3 +729,52 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 mathématique > et, ou, non` ; 4 exercices de 2de, rangement secondaire → `Raisonnements >
 contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé (le rangement
   est une métadonnée, pas une modification du contenu).
+
+- **RANGEMENTS EN PROD (2026-10-09, PR #981).** Migration de données
+  `20261011200000_rangements_modeles_exercices` : 1 005 modèles → `classification_node_id`,
+  328 exercices → 450 `exercise_classifications` (premier nœud = principal), « debug » exclu,
+  types de source « Bac » (7) et « Concours » (1). Résolution stricte des chemins ;
+  `updated_at` préservé (triggers de date suspendus le temps du remplissage) ; garde « rien
+  déjà rangé » ; vérification « tout ou rien » ; `lock_timeout` 5 s. Preuve : le test fabrique
+  des copies des identifiants de la prod puis rejoue le fichier (comparaison intégrale +
+  branches d'échec) ; neutralisations rouges ; intégration 186 fichiers verts ; audit sans
+  bloquant (374/374 chemins résolus en prod, RLS inchangée). Vérifié prod : 1 005 / 450 / 328
+  principaux / 8 types, dates inchangées, triggers réactivés. **Suite : séquence C5** —
+  (2) transfert des liens modèles → points (lots à valider par David, contrôle de cohérence
+  avec le nœud du modèle), (3) bascule du code, (4) suppression de l'ancien monde (arrêt).
+- **2026-10-09 — lien modèles ↔ points : décision d'architecture OUVERTE.** La proposition de
+  l'étape 2 de C5 (`c5-transfert-liens.md`) est suspendue par la question de David : « un double
+  travail ? ». Analyse dans `c5-architecture-liens.md`.
+  - Ma recommandation initiale (option 4 : déduire le lien du nœud) est **retirée**. Ses bornes
+    font de chaque point un objet plus fin que son nœud : CE1-021 « de même dénominateur » et
+    5-026 « de dénominateurs quelconques » partagent un nœud.
+  - Reco révisée : l'ADR 0020 § 7 telle que décidée.
+    - Le nœud stocké est le filtre ; les points saisis sont le programme.
+    - Chaque point est contraint au nœud de la ressource ou à sa notion.
+    - Un modèle a un point par programme.
+  - **Attente : Q1 (nœud stocké ou déduit des points), Q2 (un point par programme), Q3 (passe
+    « bornes »).** Ne rien écrire en base avant.
+- **2026-10-09 — DÉCIDÉ par David : Q1 = B, Q2 = exactement un point par programme.**
+  - Q1 = B : le nœud est stocké ; les points sont saisis et contraints au nœud de la ressource
+    ou à sa notion (un exercice : l'un de ses nœuds ou leur notion).
+  - Les précisions sont inscrites dans l'ADR 0020 § 7.
+  - Q3 (la passe « bornes ») est encore ouverte.
+  - Suite : le lot de l'étape 2 de C5 sous ces règles, à présenter à David.
+- **2026-10-09 — QA = (a), la règle stricte.**
+  - David : « la structure la plus propre possible, même s'il y a beaucoup de travail ».
+  - Un modèle et son point pointent le même nœud. Seule exception : le point peut être sur la
+    notion qui contient ce nœud, quand la puce du BO couvre toute la notion (exemple : CP-014
+    « Comprendre le sens de l'addition et de la soustraction ») ; 265 points sont dans ce cas.
+  - Ma proposition (b), une contrainte seulement à la notion, est retirée : elle cachait les
+    défauts de catégorisation au lieu de les corriger.
+  - Les 97 désaccords deviennent un **audit de la catégorisation**, à corriger. Les corrections
+    possibles :
+    - déplacer le modèle ;
+    - fusionner une sous-notion « facette » avec la sous-notion de contenu qui la recouvre ;
+    - remonter à la notion un point qui couvre plusieurs sous-notions ;
+    - supprimer un doublon de l'arbre ;
+    - retirer un tag hors programme.
+  - Les mêmes défauts attendent le balisage des cycles 2 à 4 : 33 sous-notions portent
+    123 modèles mais aucun point (par exemple « somme » : 30 modèles, alors que les points du
+    CP sont sur « calcul astucieux », « tables » et « calcul posé »).
+  - Q3 (la passe « bornes ») : mon avis est donné, la décision de David est en attente.

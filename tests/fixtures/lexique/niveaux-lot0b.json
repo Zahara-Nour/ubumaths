@@ -1,0 +1,1614 @@
+{
+	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09).",
+	"principaux": [
+		{
+			"term": "abscisse",
+			"sense": null,
+			"grade": "6",
+			"decision": "A",
+			"niveauxDefinitions": ["6", "5"]
+		},
+		{
+			"term": "aigu",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "algèbre",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "aligné",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A0",
+			"niveauxDefinitions": ["CP"]
+		},
+		{
+			"term": "analyse de fréquences",
+			"sense": null,
+			"grade": "5",
+			"decision": "H",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "angle",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "angle aigu",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "angle obtus",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "appartenir",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "arbre de probabilités",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "arête",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "CM1"]
+		},
+		{
+			"term": "arithmétique",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "arrondi",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "axe",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE1"]
+		},
+		{
+			"term": "barycentre",
+			"sense": null,
+			"grade": "2",
+			"decision": "A0",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "base",
+			"sense": null,
+			"grade": "4",
+			"decision": "H",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "calculatrice",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "capacité",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "carré",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "carré parfait",
+			"sense": null,
+			"grade": "4",
+			"decision": "A0",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "centimètre",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "chiffre",
+			"sense": "cryptographie",
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "chiffre de César",
+			"sense": null,
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "chiffre de Vigenère",
+			"sense": null,
+			"grade": "2",
+			"decision": "H",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "chiffrer",
+			"sense": null,
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "clé",
+			"sense": "cryptographie",
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "clé privée",
+			"sense": null,
+			"grade": "T_EXP",
+			"decision": "H",
+			"niveauxDefinitions": ["T_EXP"]
+		},
+		{
+			"term": "clé publique",
+			"sense": null,
+			"grade": "T_EXP",
+			"decision": "H",
+			"niveauxDefinitions": ["T_EXP"]
+		},
+		{
+			"term": "codage",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE1"]
+		},
+		{
+			"term": "coefficient de proportionnalité",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "coefficient directeur",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "coefficient multiplicateur",
+			"sense": null,
+			"grade": "4",
+			"decision": "A0",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "concave",
+			"sense": null,
+			"grade": "T_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["T_SPE"]
+		},
+		{
+			"term": "cône",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "conjecture",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "construction",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "contraposée",
+			"sense": null,
+			"grade": "4",
+			"decision": "A0",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "convention",
+			"sense": null,
+			"grade": "4",
+			"decision": "H",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "convexe",
+			"sense": null,
+			"grade": "T_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["T_SPE"]
+		},
+		{
+			"term": "cosinus",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "côté",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE2"]
+		},
+		{
+			"term": "courbe",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "3"]
+		},
+		{
+			"term": "critère de divisibilité",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "croissante",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "cube",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "cylindre",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "décamètre",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "déchiffrer",
+			"sense": null,
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "décimètre",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R+",
+			"niveauxDefinitions": ["CE2", "CM1"]
+		},
+		{
+			"term": "décomposition",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "3"]
+		},
+		{
+			"term": "décomposition en facteurs premiers",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "décroissante",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "décrypter",
+			"sense": null,
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "degré",
+			"sense": null,
+			"grade": "4",
+			"decision": "A",
+			"niveauxDefinitions": ["4", "1_SPE"]
+		},
+		{
+			"term": "demi-droite",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "6"]
+		},
+		{
+			"term": "démonstration",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "dénominateur",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE1"]
+		},
+		{
+			"term": "développement",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "développer",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "diagonale",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A",
+			"niveauxDefinitions": ["CE2", "CM1"]
+		},
+		{
+			"term": "diagramme",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "diamètre",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "différence",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "distance à zéro",
+			"sense": null,
+			"grade": "5",
+			"decision": "K",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "distributivité",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "5"]
+		},
+		{
+			"term": "dividende",
+			"sense": null,
+			"grade": "CM2",
+			"decision": "R",
+			"niveauxDefinitions": ["CM2"]
+		},
+		{
+			"term": "diviseur",
+			"sense": "opération",
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "divisible",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "K",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "division euclidienne",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "5"]
+		},
+		{
+			"term": "dixième",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "CM1"]
+		},
+		{
+			"term": "échelle",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "effectif",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A",
+			"niveauxDefinitions": ["CE2", "5"]
+		},
+		{
+			"term": "ellipse",
+			"sense": null,
+			"grade": "2",
+			"decision": "H",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "encadrement",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "5"]
+		},
+		{
+			"term": "ensemble",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "2"]
+		},
+		{
+			"term": "entier naturel",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "équation",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "équiprobabilité",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "équivalence",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "espace",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "étendue",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "Euclide",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "événement",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "4"]
+		},
+		{
+			"term": "événement contraire",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "expérience aléatoire",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "exponentiation rapide",
+			"sense": null,
+			"grade": "T_EXP",
+			"decision": "H",
+			"niveauxDefinitions": ["T_EXP"]
+		},
+		{
+			"term": "exponentielle",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "A0",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "exposant négatif",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "extrémité",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE1"]
+		},
+		{
+			"term": "extremum",
+			"sense": null,
+			"grade": "2",
+			"decision": "A0",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "face",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "facteur",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "K",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "factorisation",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "factoriser",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "figure",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A0",
+			"niveauxDefinitions": ["CP"]
+		},
+		{
+			"term": "fonction carrée",
+			"sense": null,
+			"grade": "3",
+			"decision": "A0",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "fonction exponentielle",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "A0",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "formule",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "fraction",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "5"]
+		},
+		{
+			"term": "fraction irréductible",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "fractions égales",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "fréquence",
+			"sense": null,
+			"grade": "6",
+			"decision": "A0",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "géométrie",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "gradué",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A0",
+			"niveauxDefinitions": ["CP"]
+		},
+		{
+			"term": "grandeur",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "hauteur",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A0",
+			"niveauxDefinitions": ["CP"]
+		},
+		{
+			"term": "hectomètre",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "hexagone",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "homothétie",
+			"sense": null,
+			"grade": "3",
+			"decision": "H",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "hyperbole",
+			"sense": null,
+			"grade": "2",
+			"decision": "K",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "hypoténuse",
+			"sense": null,
+			"grade": "4",
+			"decision": "H",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "hypothèse",
+			"sense": null,
+			"grade": "4",
+			"decision": "K",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "impair",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "R",
+			"niveauxDefinitions": ["CE1"]
+		},
+		{
+			"term": "implication",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "inconnue",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "5"]
+		},
+		{
+			"term": "indice de coïncidence",
+			"sense": null,
+			"grade": "2",
+			"decision": "H",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "inégalité",
+			"sense": null,
+			"grade": "4",
+			"decision": "K",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "inéquation",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "infini",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "intercaler",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A0",
+			"niveauxDefinitions": ["CP"]
+		},
+		{
+			"term": "intersection",
+			"sense": null,
+			"grade": "4",
+			"decision": "A0",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "issue",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "largeur",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE2"]
+		},
+		{
+			"term": "limite",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "A0",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "masse",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE1"]
+		},
+		{
+			"term": "médiane",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "méthode de Kasiski",
+			"sense": null,
+			"grade": "2",
+			"decision": "H",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "milieu",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE1"]
+		},
+		{
+			"term": "millimètre",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R+",
+			"niveauxDefinitions": ["CE2", "CM1"]
+		},
+		{
+			"term": "mise au même dénominateur",
+			"sense": null,
+			"grade": "CM2",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM2"]
+		},
+		{
+			"term": "monôme",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "H",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "moyenne",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "multiple",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A",
+			"niveauxDefinitions": ["CE2", "5"]
+		},
+		{
+			"term": "multiplication",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE1"]
+		},
+		{
+			"term": "notation scientifique",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "numérateur",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE1"]
+		},
+		{
+			"term": "numération",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "obtus",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "octogone",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "H",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "opérateur",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "ordonnée",
+			"sense": null,
+			"grade": "5",
+			"decision": "K",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "ordonnée à l'origine",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "ordre",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE1"]
+		},
+		{
+			"term": "ordre de grandeur",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "origine",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "parabole",
+			"sense": null,
+			"grade": "3",
+			"decision": "A0",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "parallèle",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "parallélogramme",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "partie décimale",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "H",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "patron",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "pavé",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "pentagone",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A0",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "périmètre",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "perpendiculaire",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "perspective",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "PGCD",
+			"sense": null,
+			"grade": "T_EXP",
+			"decision": "R",
+			"niveauxDefinitions": ["T_EXP"]
+		},
+		{
+			"term": "pi",
+			"sense": null,
+			"grade": "6",
+			"decision": "K",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "plan",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "polygone",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "polynôme",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "pourcentage",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "PPCM",
+			"sense": null,
+			"grade": "T_EXP",
+			"decision": "H",
+			"niveauxDefinitions": ["T_EXP"]
+		},
+		{
+			"term": "prisme",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "probabilité",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "5"]
+		},
+		{
+			"term": "produit en croix",
+			"sense": null,
+			"grade": "4",
+			"decision": "H",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "proportion",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "proportionnalité",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "6"]
+		},
+		{
+			"term": "propriété",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "6"]
+		},
+		{
+			"term": "puissance",
+			"sense": null,
+			"grade": "5",
+			"decision": "A",
+			"niveauxDefinitions": ["5", "4"]
+		},
+		{
+			"term": "pyramide",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "CM1"]
+		},
+		{
+			"term": "quadruple",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "R",
+			"niveauxDefinitions": ["CM1"]
+		},
+		{
+			"term": "quelconque",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "quotient",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "racine carrée",
+			"sense": null,
+			"grade": "4",
+			"decision": "A0",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "radian",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "radical",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "raison",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "K",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "raisonnement",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "rang",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "1_SPE"]
+		},
+		{
+			"term": "rapporteur",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "ratio",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "rayon",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "réciproque",
+			"sense": null,
+			"grade": "6",
+			"decision": "A",
+			"niveauxDefinitions": ["6", "4"]
+		},
+		{
+			"term": "repère",
+			"sense": null,
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "5"]
+		},
+		{
+			"term": "reste",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "rotation",
+			"sense": null,
+			"grade": "4",
+			"decision": "H",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "schéma",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A0",
+			"niveauxDefinitions": ["CP"]
+		},
+		{
+			"term": "sécante",
+			"sense": null,
+			"grade": "2",
+			"decision": "R",
+			"niveauxDefinitions": ["2"]
+		},
+		{
+			"term": "secteur",
+			"sense": null,
+			"grade": "CM2",
+			"decision": "A0",
+			"niveauxDefinitions": ["CM2"]
+		},
+		{
+			"term": "série",
+			"sense": null,
+			"grade": "T_SPE",
+			"decision": "H",
+			"niveauxDefinitions": ["T_SPE"]
+		},
+		{
+			"term": "signe",
+			"sense": null,
+			"grade": "5",
+			"decision": "K",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "simplification",
+			"sense": null,
+			"grade": "6",
+			"decision": "A0",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "simplifier une fraction",
+			"sense": null,
+			"grade": "4",
+			"decision": "R",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "solide",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CM1"]
+		},
+		{
+			"term": "solution",
+			"sense": "équation",
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "sommet",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "CE2"]
+		},
+		{
+			"term": "sphère",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "suite",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "1_SPE"]
+		},
+		{
+			"term": "suite croissante",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "K",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "suite décroissante",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "K",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "symétrie",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "A",
+			"niveauxDefinitions": ["CE2", "6"]
+		},
+		{
+			"term": "synthèse",
+			"sense": null,
+			"grade": "3",
+			"decision": "R",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "système d'équations",
+			"sense": null,
+			"grade": "T_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["T_SPE"]
+		},
+		{
+			"term": "tableau de proportionnalité",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "tableau de valeurs",
+			"sense": null,
+			"grade": "5",
+			"decision": "A",
+			"niveauxDefinitions": ["5", "3"]
+		},
+		{
+			"term": "taux",
+			"sense": null,
+			"grade": "4",
+			"decision": "K",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "taux de variation",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "terme",
+			"sense": null,
+			"grade": "CE2",
+			"decision": "R",
+			"niveauxDefinitions": ["CE2"]
+		},
+		{
+			"term": "terme",
+			"sense": "suite",
+			"grade": "CM1",
+			"decision": "A",
+			"niveauxDefinitions": ["CM1", "1_SPE"]
+		},
+		{
+			"term": "trapèze",
+			"sense": null,
+			"grade": "CM2",
+			"decision": "R",
+			"niveauxDefinitions": ["CM2"]
+		},
+		{
+			"term": "triple",
+			"sense": null,
+			"grade": "5",
+			"decision": "R",
+			"niveauxDefinitions": ["5"]
+		},
+		{
+			"term": "troncature",
+			"sense": null,
+			"grade": "6",
+			"decision": "H",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "union",
+			"sense": null,
+			"grade": "4",
+			"decision": "A0",
+			"niveauxDefinitions": ["4"]
+		},
+		{
+			"term": "univers",
+			"sense": null,
+			"grade": "6",
+			"decision": "A",
+			"niveauxDefinitions": ["6", "2"]
+		},
+		{
+			"term": "valeur",
+			"sense": null,
+			"grade": "CP",
+			"decision": "A",
+			"niveauxDefinitions": ["CP", "5"]
+		},
+		{
+			"term": "valeur absolue",
+			"sense": null,
+			"grade": "5",
+			"decision": "A",
+			"niveauxDefinitions": ["5", "2"]
+		},
+		{
+			"term": "valeur approchée",
+			"sense": null,
+			"grade": "6",
+			"decision": "R",
+			"niveauxDefinitions": ["6"]
+		},
+		{
+			"term": "variance",
+			"sense": null,
+			"grade": "1_SPE",
+			"decision": "R",
+			"niveauxDefinitions": ["1_SPE"]
+		},
+		{
+			"term": "vecteur",
+			"sense": null,
+			"grade": "3",
+			"decision": "A0",
+			"niveauxDefinitions": ["3"]
+		},
+		{
+			"term": "virgule",
+			"sense": null,
+			"grade": "CE1",
+			"decision": "A",
+			"niveauxDefinitions": ["CE1", "CM1"]
+		},
+		{
+			"term": "vitesse",
+			"sense": null,
+			"grade": "5",
+			"decision": "A0",
+			"niveauxDefinitions": ["5"]
+		}
+	],
+	"derives": [
+		{
+			"term": "multiplier",
+			"grade": "CP"
+		},
+		{
+			"term": "euclidienne",
+			"grade": "CM1"
+		},
+		{
+			"term": "arrondir",
+			"grade": "CM1"
+		},
+		{
+			"term": "résoudre",
+			"grade": "5"
+		},
+		{
+			"term": "solution",
+			"grade": "5"
+		},
+		{
+			"term": "construire",
+			"grade": "CM1"
+		},
+		{
+			"term": "graduer",
+			"grade": "CP"
+		},
+		{
+			"term": "racine",
+			"grade": "4"
+		},
+		{
+			"term": "aligner",
+			"grade": "CP"
+		},
+		{
+			"term": "coder",
+			"grade": "CE1"
+		},
+		{
+			"term": "secant",
+			"grade": "2"
+		},
+		{
+			"term": "sphérique",
+			"grade": "3"
+		},
+		{
+			"term": "conjecturer",
+			"grade": "5"
+		},
+		{
+			"term": "déduire",
+			"grade": "5"
+		},
+		{
+			"term": "démontrer",
+			"grade": "5"
+		}
+	]
+}

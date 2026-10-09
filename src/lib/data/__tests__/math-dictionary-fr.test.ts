@@ -7,8 +7,18 @@ import MATH_DICTIONARY, {
 	resolveGradedField,
 	type MathTerm
 } from '../math-dictionary-fr';
+import { readFileSync } from 'node:fs';
 import { GRADE_CODES } from '$lib/types/grades';
 import { hasAccessToGrade } from '$lib/utils/grades';
+
+/** Niveaux validés par David (lot 0b, 2026-10-09) : copie figée de docs/wip/lexique/lot0b-niveaux.md. */
+interface ValidatedLevels {
+	principaux: { term: string; sense: string | null; grade: string; niveauxDefinitions: string[] }[];
+	derives: { term: string; grade: string }[];
+}
+const LOT_0B: ValidatedLevels = JSON.parse(
+	readFileSync('tests/fixtures/lexique/niveaux-lot0b.json', 'utf-8')
+);
 
 /** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
 function normalizeName(text: string): string {
@@ -133,6 +143,53 @@ describe('math-dictionary-fr', () => {
 				if (!hasAccessToGrade(item.grade, term.grade)) {
 					early.push(`${term.term} : terme ${term.grade}, exemple ${item.grade}`);
 				}
+			}
+		}
+		expect(early).toEqual([]);
+	});
+
+	// Un terme est rangé au niveau de sa première mention au BO ; un sens plus
+	// simple employé plus tôt ajoute une définition au lieu de déplacer l'ancienne.
+	it('should place each reviewed term at the level validated in lot 0b', () => {
+		// Une copie vide ou tronquée ne doit pas passer en silence
+		expect(LOT_0B.principaux).toHaveLength(221);
+		expect(LOT_0B.derives).toHaveLength(15);
+		const wrong: string[] = [];
+		for (const expected of LOT_0B.principaux) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
+			);
+			if (!term) {
+				wrong.push(`${expected.term} : introuvable`);
+				continue;
+			}
+			const levels = (term.definitions?.items ?? []).map((item) => item.grade).join(', ');
+			const expectedLevels = expected.niveauxDefinitions.join(', ');
+			if (term.grade !== expected.grade || levels !== expectedLevels) {
+				wrong.push(
+					`${expected.term} : ${term.grade} [${levels}], attendu ${expected.grade} [${expectedLevels}]`
+				);
+			}
+		}
+		for (const expected of LOT_0B.derives) {
+			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && t.derivedFrom);
+			if (term?.grade !== expected.grade) {
+				const found = term?.grade ?? 'introuvable';
+				wrong.push(`${expected.term} (dérivé) : ${found}, attendu ${expected.grade}`);
+			}
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	// Sinon, dans le glossaire, « Forme dérivée de X » ouvre une fiche X sans
+	// définition au niveau du lecteur.
+	it('should never place a derived term before the term it points to', () => {
+		const early: string[] = [];
+		for (const term of MATH_DICTIONARY) {
+			if (!term.derivedFrom) continue;
+			const target = MATH_DICTIONARY.find((t) => t.term === term.derivedFrom && !t.derivedFrom);
+			if (target && !hasAccessToGrade(term.grade, target.grade)) {
+				early.push(`${term.term} (${term.grade}) → ${target.term} (${target.grade})`);
 			}
 		}
 		expect(early).toEqual([]);

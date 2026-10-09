@@ -22,7 +22,14 @@
 import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
-import { solutionsLatex, inequalitySolutionLatex, withRealLineWritten } from './solve-latex';
+import {
+	solutionsLatex,
+	inequalitySolutionLatex,
+	inequalityThresholdText,
+	logarithmicValueLatex,
+	logarithmicValueText,
+	withRealLineWritten
+} from './solve-latex';
 import { solveInequality } from '../../solve/inequality';
 import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';
@@ -1060,11 +1067,13 @@ export class SolveCommand extends BaseCommand {
 		try {
 			const result = solveInequality(inequality, { variable });
 			if (result.status === 'partial') return unsolved;
-			const latex = inequalitySolutionLatex(result.solution);
+			const latex = inequalitySolutionLatex(result.solution, variable);
 			if (latex === null) return unsolved;
+			// Un seuil en ln (`0.8^n < 0.1`) : `n > ln(0.1)/ln(0.8) ≈ 10.32`, comme le LaTeX
+			const threshold = inequalityThresholdText(result.solution, variable);
 			return {
 				success: true,
-				output: `S = ${formatInterval(withRealLineWritten(result.solution))}`,
+				output: threshold ?? `S = ${formatInterval(withRealLineWritten(result.solution))}`,
 				latex
 			};
 		} catch {
@@ -1155,16 +1164,23 @@ export class SolveCommand extends BaseCommand {
 		const values = [...zeros]
 			.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0))
 			.map((zero) => zero.value);
+		// Une solution en ln : décimaux gardés, valeur approchée, comme sans `dans`
+		const only = zeros.length === 1 ? zeros[0] : null;
 		const latex =
 			values.length === 0
 				? 'S = \\emptyset'
 				: values.length === 1
-					? `${variable} = ${toLatex(values[0])}`
+					? `${variable} = ${(only && logarithmicValueLatex(only.value, only.approximate)) ?? toLatex(values[0])}`
 					: `S = \\left\\{ ${values.map((v) => toLatex(v)).join(' \\,;\\, ')} \\right\\}`;
 		const output =
 			values.length === 0
 				? 'Pas de solution dans cet intervalle'
-				: values.map((v) => `${variable} = ${toCustom(v)}`).join(' ou ');
+				: values
+						.map(
+							(v) =>
+								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
+						)
+						.join(' ou ');
 		return { success: true, output, latex };
 	}
 
@@ -1323,8 +1339,12 @@ export class SolveCommand extends BaseCommand {
 			case 'unique':
 			case 'multiple': {
 				// Build exact and decimal solution strings
+				// Une seule solution en ln : sa valeur approchée, comme le LaTeX
 				const exactSolutions = result.solutions
-					.map((sol) => `${result.variable} = ${toCustom(sol.value)}`)
+					.map(
+						(sol) =>
+							`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}`
+					)
 					.join(result.solutions.length > 1 ? ' ou ' : '');
 
 				// Check if a fraction has a terminating decimal representation

@@ -137,11 +137,10 @@ describe('revue : x² qui s’annulent, singletons, <= et ≤ (2026-10-08)', () 
 		expect(answer(inequality)).toBe(expected);
 	});
 
+	// Une borne en ln s'écrit en seuil, valeur approchée comprise (décision de
+	// David, 2026-10-09)
 	it('e^(2x) >= 3 est résolue (borne ln(3)/2)', () => {
-		const latex = answer('e^(2x)>=3');
-		expect(latex).toMatch(/^S = \[/);
-		expect(latex).toContain('\\ln');
-		expect(latex).toMatch(/; \+\\infty\[$/);
+		expect(answer('e^(2x)>=3')).toBe('x \\geq \\dfrac{\\ln\\left( 3 \\right)}{2} \\approx 0{,}55');
 	});
 
 	it('le nombre e s’écrit \\exponentialE, que MathLive rend « e » (vérifié)', () => {

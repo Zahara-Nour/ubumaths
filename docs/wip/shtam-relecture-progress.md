@@ -31,6 +31,8 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 24  | 2026-12-10 | Le débordement des huit bits (`glitchistan-huit-bits`)                                          | ✅ validé — titre « déborde, Mère Ubu aussi », chapô « ne compte pas s'arrêter là », cadran, Gangnam Style 32 bits                                                                                 |
 | 25  | 2026-12-14 | Le triangle du pôle Nord (`bedonstan-triangle-pole-nord`)                                       | ✅ validé — titre « record de chaleur… 270 degrés », chapô de David, échelle (10 000 km, mètre de 1791), maquette en papier, SVG ; lore : Lobatchevsk bâtie sur un col en selle (Compendium)       |
 | 26  | 2026-12-17 | Thalès dans le puits (`bedonstan-thales-puits`, ex-`bedonstan-thales-ombre-facturee`)           | ✅ validé — réécrit : Thalès tombe dans un puits et le mesure par les ombres (anecdote de Platon), titre « prend la mesure de la situation », chapô de David, SVG                                  |
+| 27  | 2026-12-21 | Le procès du cercle (`bedonstan-cercle-tourne-en-rond`)                                         | ✅ validé — titre « tourner en rond / un peu trop carré », réplique « sans coins, on gaspille moins de clôture », « même longueur de clôture » (David)                                             |
+| 28  | 2026-12-24 | L'échiquier du Czar (`yoyolande-echiquier-du-czar`)                                             | ✅ validé — Père Ubu signe (pas Mère Ubu), pari symétrique (1 000 gidouilles d'or), fin : le Czar compte lui-même (500 milliards d'années), titre « manque de finir sur la paille »                |
 
 ## Outillage ajouté pendant la relecture
 

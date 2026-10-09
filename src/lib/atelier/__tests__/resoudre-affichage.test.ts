@@ -41,7 +41,8 @@ describe('.résoudre sans étapes : les solutions en LaTeX', () => {
 		],
 		['.résoudre x^3=8', 'x = 2'],
 		['.résoudre x^4=2', 'S = \\left\\{ -\\sqrt[4]{2} \\,;\\, \\sqrt[4]{2} \\right\\}'],
-		['.résoudre e^x=2', 'x = \\ln\\left( 2 \\right)'],
+		// Une solution en ln : sa valeur approchée (décision de David, 2026-10-09)
+		['.résoudre e^x=2', 'x = \\ln\\left( 2 \\right) \\approx 0{,}69'],
 		['.résoudre sqrt(x)=1/2', 'x = \\dfrac{1}{4}']
 	])('%s → %s', (input, latex) => {
 		const shown = latexOf(input);
