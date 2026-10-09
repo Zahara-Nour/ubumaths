@@ -147,8 +147,8 @@ suis ») :
   simples, 8 cas tranchés par David (« Ok pour 1 », 2026-10-09 : ses recommandations suivies) ; décisions machine-lisibles dans `lexique/lot0b-decisions.json`
   (clés = rang de l'entrée dans le dictionnaire du 2026-10-09, avant le retrait de « shisma » et
   « tangeant »). Les 56 nouvelles définitions validées sans correction par David le 2026-10-09 (page à cocher
-  https://claude.ai/artifact/YH7RFgXAWkohW6xBPhKSKx, base `avis` : 56 « ok »). ✅ Appliqué sur la branche
-  `feat/lexique-niveaux-bo` : 185 termes et 15 dérivés changent de niveau ; test « niveaux validés
+  https://claude.ai/artifact/YH7RFgXAWkohW6xBPhKSKx, base `avis` : 56 « ok »). ✅ Livré #982 (2026-10-09, branche
+  `feat/lexique-niveaux-bo`) : 185 termes et 15 dérivés changent de niveau ; test « niveaux validés
   du lot 0b » sur la copie figée `tests/fixtures/lexique/niveaux-lot0b.json` (200 écarts sur l'ancien
   dictionnaire). À l'application, « construire » suit « construction » (CM1) et cinq renvois faux de
   dérivés sont corrigés (ordonner, croissant, décroissant → ordre ; décomposer → décomposition ;
