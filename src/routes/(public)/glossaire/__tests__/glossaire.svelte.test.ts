@@ -131,4 +131,22 @@ describe('glossaire', () => {
 			.element(page.getByRole('button', { name: /^discriminant/ }))
 			.not.toBeInTheDocument();
 	});
+
+	it('le badge de la fiche suit le filtre de niveau', async () => {
+		await render(Glossaire);
+		await page
+			.getByRole('button', { name: /niveau/i })
+			.first()
+			.click();
+		await page.getByRole('option', { name: '1ère technologique' }).click();
+		await openTerm('nombre dérivé');
+		await expect.element(page.getByRole('dialog')).toHaveTextContent(/1ère technologique/);
+		await expect.element(page.getByRole('dialog')).not.toHaveTextContent(/spécialité/);
+	});
+
+	it('sans filtre, le badge montre le niveau d’origine du mot', async () => {
+		await render(Glossaire);
+		await openTerm('nombre dérivé');
+		await expect.element(page.getByRole('dialog')).toHaveTextContent(/spécialité/);
+	});
 });

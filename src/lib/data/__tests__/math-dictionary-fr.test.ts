@@ -627,6 +627,7 @@ describe('math-dictionary-fr', () => {
 		// de 1re techno que le mot n'est pas pour lui
 		it('should tell at which level a reader meets a shared word', () => {
 			expect(gradeMetBy(find('nombre dérivé'), '1_TECHNO')).toBe('1_TECHNO');
+			expect(gradeMetBy(find('nombre dérivé'), 'T_TECHNO')).toBe('1_TECHNO');
 			expect(gradeMetBy(find('nombre dérivé'), '1_SPE')).toBe('1_SPE');
 			expect(gradeMetBy(find('seuil'), 'T_COMP')).toBe('1_GEN');
 			expect(gradeMetBy(find('croissance linéaire'), 'T_SPE')).toBe('1_SPE');
