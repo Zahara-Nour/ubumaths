@@ -22,8 +22,21 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 const TOLERANCE = 1e-9;
 
-/** Nombre maximal de divisions de la période par 2 (2π → π → π/2 → …). */
-const MAX_HALVINGS = 4;
+/** Nombre maximal de divisions de la période (2π → π → π/2 → …). */
+const MAX_DIVISIONS = 4;
+
+/**
+ * Diviseurs essayés par défaut : 2 (2π → π). La division par 3 (2π → 2π/3)
+ * est demandée par `tryTrigEquality` seul (`cos 2x = cos x` → 2kπ/3) : ailleurs
+ * elle réécrivait l'écriture du manuel (`2cos²x − cos x − 1 = 0` : cos x = 1
+ * ou cos x = −1/2 devenait 2kπ/3, revue 2026-10-09).
+ */
+const DEFAULT_DIVISORS: readonly number[] = [2];
+
+export interface MergeOptions {
+	/** Diviseurs de la période essayés, dans l'ordre (par défaut : 2) */
+	readonly divisors?: readonly number[];
+}
 
 /** Plus grand multiple essayé de la plus longue période pour la période commune. */
 const MAX_COMMON_MULTIPLE = 12;
@@ -58,44 +71,49 @@ interface NumericSolution {
 }
 
 /**
- * Diviser la période par 2 tant que l'ensemble des bases est invariant par
- * translation d'une demi-période : `{π/6, 5π/6, −π/6, −5π/6} + 2kπ` devient
- * `{π/6, −π/6} + kπ`. De chaque paire, on garde la base de plus petite valeur
+ * Diviser la période par d (2, et 3 si demandé) tant que l'ensemble des bases est
+ * invariant par translation de T/d : `{π/6, 5π/6, −π/6, −5π/6} + 2kπ` devient
+ * `{π/6, −π/6} + kπ`, `{0, 2π/3, 4π/3} + 2kπ` devient `2kπ/3` (cos 2x = cos x,
+ * revue 2026-10-09). De chaque orbite, on garde la base de plus petite valeur
  * absolue (la positive à égalité).
  */
-function reduceByHalving(
+function reduceByDivision(
 	bases: readonly NumericSolution[],
 	period: MathNode,
-	periodNumeric: number
+	periodNumeric: number,
+	divisors: readonly number[]
 ): { bases: readonly NumericSolution[]; period: MathNode; periodNumeric: number } {
 	let current = bases;
 	let currentPeriod = period;
 	let currentNumeric = periodNumeric;
 
-	for (let i = 0; i < MAX_HALVINGS; i++) {
-		const half = currentNumeric / 2;
-		const invariant = current.every((b) =>
-			current.some((other) => congruent(other.numeric, b.numeric + half, currentNumeric))
-		);
-		if (!invariant || current.length % 2 !== 0) break;
+	for (let i = 0; i < MAX_DIVISIONS; i++) {
+		const divisor = divisors.find((d) => {
+			if (current.length % d !== 0) return false;
+			const shift = currentNumeric / d;
+			return current.every((b) =>
+				current.some((other) => congruent(other.numeric, b.numeric + shift, currentNumeric))
+			);
+		});
+		if (divisor === undefined) break;
 
+		const reduced = currentNumeric / divisor;
 		const kept: NumericSolution[] = [];
 		for (const b of current) {
-			if (kept.some((k) => congruent(k.numeric, b.numeric, half))) continue;
-			const partner = current.find((o) => congruent(o.numeric, b.numeric + half, currentNumeric));
-			const better =
-				partner === undefined ||
-				Math.abs(b.numeric) < Math.abs(partner.numeric) - TOLERANCE ||
-				(Math.abs(Math.abs(b.numeric) - Math.abs(partner.numeric)) <= TOLERANCE &&
-					b.numeric >= partner.numeric)
-					? b
-					: partner;
-			kept.push(better);
+			if (kept.some((k) => congruent(k.numeric, b.numeric, reduced))) continue;
+			const orbit = current.filter((o) => congruent(o.numeric, b.numeric, reduced));
+			const best = orbit.reduce((x, y) =>
+				Math.abs(y.numeric) < Math.abs(x.numeric) - TOLERANCE ||
+				(Math.abs(Math.abs(y.numeric) - Math.abs(x.numeric)) <= TOLERANCE && y.numeric > x.numeric)
+					? y
+					: x
+			);
+			kept.push(best);
 		}
 
 		current = kept;
-		currentPeriod = simplified(divide(currentPeriod, number('2'), 'fraction'));
-		currentNumeric = half;
+		currentPeriod = simplified(divide(currentPeriod, number(String(divisor)), 'fraction'));
+		currentNumeric = reduced;
 	}
 
 	return { bases: current, period: currentPeriod, periodNumeric: currentNumeric };
@@ -127,10 +145,11 @@ function commonMultiple(
  *
  * Les bases de chaque famille sont recopiées sur la période commune
  * (`x₀ + k·T` pour k = 0 … L/T − 1), dédoublonnées modulo cette période,
- * puis la période est réduite si l'ensemble le permet (voir `reduceByHalving`).
+ * puis la période est réduite si l'ensemble le permet (voir `reduceByDivision`).
  */
 export function mergePeriodicFamilies(
-	families: readonly PeriodicSolutionFamily[]
+	families: readonly PeriodicSolutionFamily[],
+	options: MergeOptions = {}
 ): PeriodicSolutionFamily | null {
 	if (families.length === 0) return null;
 
@@ -171,7 +190,12 @@ export function mergePeriodicFamilies(
 		}
 	}
 
-	const reduced = reduceByHalving(bases, commonPeriod, commonNumeric);
+	const reduced = reduceByDivision(
+		bases,
+		commonPeriod,
+		commonNumeric,
+		options.divisors ?? DEFAULT_DIVISORS
+	);
 	const sorted = [...reduced.bases].sort((a, b) => a.numeric - b.numeric);
 
 	return {

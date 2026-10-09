@@ -19,7 +19,7 @@ import {
 	isAddition,
 	isSubtraction
 } from '../guards';
-import { number, opposite, multiply, divide, add } from '../factory';
+import { number, opposite, multiply, divide, add, subtract } from '../factory';
 import { numericNode, getNumericValue } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { containsVariable } from '../common/contains-variable';
@@ -433,6 +433,18 @@ function extractLinearFromSubtraction(node: MathNode, variable: string): LinearF
 			return {
 				coefficient: leftLinear.coefficient,
 				offset: newOffset
+			};
+		}
+	}
+
+	// b − (a·x + c) = (−a)·x + (b − c). `sin(π/4 − x) = 0` perdait sa famille
+	// périodique : « S = {−3π/4 ; π/4} », sans « + kπ » (revue 2026-10-09)
+	if (rightVars.has(variable) && !leftVars.has(variable)) {
+		const rightLinear = extractLinearForm(node.right, variable);
+		if (rightLinear) {
+			return {
+				coefficient: opposite(rightLinear.coefficient),
+				offset: rightLinear.offset === null ? node.left : subtract(node.left, rightLinear.offset)
 			};
 		}
 	}

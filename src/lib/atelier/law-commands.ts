@@ -331,10 +331,12 @@ function eventShapes(v: string): RegExp[] {
 	const n = String.raw`-?\d+(?:[.,]\d+)?`;
 	const op = '(?:⩽|⩾|<|>|=)';
 	const s = ' ?';
+	// X ⩽ a ou a ⩽ X ⩽ b : de part et d'autre du « sachant que » (2026-10-09)
+	const side = `(?:${v}${s}${op}${s}${n}|${n}${s}${op}${s}${v}${s}${op}${s}${n})`;
 	return [
 		`^P\\(${s}${v}${s}${op}${s}${n}${s}\\)$`,
 		`^P\\(${s}${n}${s}${op}${s}${v}${s}${op}${s}${n}${s}\\)$`,
-		`^P\\(${s}${v}${s}${op}${s}${n}${s}\\|${s}${v}${s}${op}${s}${n}${s}\\)$`,
+		`^P\\(${s}${side}${s}\\|${s}${side}${s}\\)$`,
 		`^P\\(${s}\\|${s}${v}${s}(?:[-+]${s}\\d+(?:[.,]\\d+)?${s})?\\|${s}${op}${s}${n}${s}\\)$`
 	].map((source) => new RegExp(source));
 }
@@ -374,7 +376,7 @@ export function lawEvent(atelier: Atelier, input: string): LawEventResult {
 		const v = variable;
 		return {
 			ok: false,
-			message: `Seuls les événements de la forme P(${v} ⩽ a), P(a ⩽ ${v} ⩽ b), P(|${v} − m| ⩽ a) et P(${v} > a | ${v} > b) sont pris en charge.`
+			message: `Seuls les événements de la forme P(${v} ⩽ a), P(a ⩽ ${v} ⩽ b), P(|${v} − m| ⩽ a) et P(A | B) (par exemple P(${v} > a | ${v} > b)) sont pris en charge.`
 		};
 	}
 	const node = parseStatChartContent(

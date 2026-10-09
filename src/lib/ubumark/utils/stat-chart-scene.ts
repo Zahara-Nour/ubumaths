@@ -28,7 +28,8 @@ import type {
 	SimulatedNamedLaw,
 	StatChartIndicator,
 	StatChartSpec,
-	StatChartUnit
+	StatChartUnit,
+	QueryInterval
 } from '../types/stat-chart';
 import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
@@ -1722,10 +1723,7 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 		...binomial.queries.map((query) =>
 			queryLine(
 				query.display,
-				contrary(
-					binomialProbability(distribution, (k) => k >= query.low && k <= query.high),
-					query.complement
-				),
+				conditional((contains) => binomialProbability(distribution, contains), query),
 				binomial.places,
 				locale
 			)
@@ -1768,6 +1766,36 @@ function contrary(
 	complement: boolean | undefined
 ): { num: bigint; den: bigint } {
 	return complement === true ? { num: value.den - value.num, den: value.den } : value;
+}
+
+/** P(X ∈ E) pour X ~ U(a ; b) : le nombre de valeurs de E sur b − a + 1 */
+function uniformCount(
+	a: number,
+	b: number,
+	contains: (k: number) => boolean
+): { num: bigint; den: bigint } {
+	let count = 0n;
+	for (let k = a; k <= b; k++) if (contains(k)) count++;
+	return { num: count, den: BigInt(b - a + 1) };
+}
+
+/**
+ * La probabilité d'une requête d'une loi discrète : P(low ⩽ X ⩽ high),
+ * éventuellement contraire, ou P(A ∩ B) / P(B) si elle est conditionnelle
+ * (le parseur a refusé P(B) = 0)
+ */
+function conditional(
+	probability: (contains: (k: number) => boolean) => { num: bigint; den: bigint },
+	query: QueryInterval
+): { num: bigint; den: bigint } {
+	const inEvent = (k: number) => k >= query.low && k <= query.high;
+	const given = query.condition;
+	if (given === undefined) return contrary(probability(inEvent), query.complement);
+	const inGiven = (k: number) => k >= given.low && k <= given.high;
+	return {
+		num: probability((k) => inEvent(k) && inGiven(k)).num,
+		den: probability(inGiven).num
+	};
 }
 
 function queryLine(
@@ -1927,10 +1955,7 @@ function buildUniformScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 			...uniform.queries.map((query) =>
 				queryLine(
 					query.display,
-					contrary(
-						uniformProbability(uniform.a, uniform.b, query.low, query.high),
-						query.complement
-					),
+					conditional((contains) => uniformCount(uniform.a, uniform.b, contains), query),
 					uniform.places,
 					locale
 				)

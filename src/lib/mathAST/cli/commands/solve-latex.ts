@@ -270,12 +270,12 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 	return [...solutions].sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 }
 
-/** Les membres d'une famille périodique (`x = a + 2kπ`), en LaTeX et en texte — ou `null`. */
-function periodicMembers(
-	result: SolveResult
+/** Les membres d'UNE famille (`x = a + 2kπ`), en LaTeX et en texte — ou `null`. */
+function familyMembers(
+	variable: string,
+	periodic: PeriodicSolutionFamily
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
-	if (result.periodicSolutions === undefined) return null;
-	const family = shortestFamily(result.periodicSolutions);
+	const family = shortestFamily(periodic);
 	if (family.baseSolutions.length === 0) return null;
 	const term = periodTerm(family.period);
 	if (term === null) return null;
@@ -284,11 +284,32 @@ function periodicMembers(
 		return { base, isZero: isNumber(base) && base.value === '0' };
 	});
 	const member = (written: string, isZero: boolean, k: string) =>
-		`${result.variable} = ${isZero ? k : `${written} + ${k}`}`;
+		`${variable} = ${isZero ? k : `${written} + ${k}`}`;
 	return {
 		latex: bases.map(({ base, isZero }) => member(toLatex(base), isZero, term.latex)),
 		text: bases.map(({ base, isZero }) => member(toCustom(base), isZero, term.text))
 	};
+}
+
+/**
+ * Les membres d'une solution périodique, en LaTeX et en texte — ou `null`.
+ * L'écriture du manuel d'abord (`displayFamilies` : une période par famille,
+ * `sin 2x = sin x` → 2kπ ou π/3 + 2kπ/3), sinon la famille réunie.
+ */
+function periodicMembers(
+	result: SolveResult
+): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
+	if (result.periodicSolutions === undefined) return null;
+	if (result.displayFamilies !== undefined && result.displayFamilies.length > 0) {
+		const parts = result.displayFamilies.map((f) => familyMembers(result.variable, f));
+		if (parts.every((p) => p !== null)) {
+			return {
+				latex: parts.flatMap((p) => p?.latex ?? []),
+				text: parts.flatMap((p) => p?.text ?? [])
+			};
+		}
+	}
+	return familyMembers(result.variable, result.periodicSolutions);
 }
 
 /** La famille périodique, `x = a + 2k\pi \text{ ou } … , \; k \in \mathbb{Z}` — ou `null`. */
