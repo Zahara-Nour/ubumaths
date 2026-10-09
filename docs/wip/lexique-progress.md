@@ -253,6 +253,27 @@ notes et revues dans [lexique/lot2-progress.md](lexique/lot2-progress.md).
   `components/markdown/outside-focus.ts`. À vérifier à la main sur tablette iOS : le `focus()`
   programmatique ouvre-t-il le clavier ?
 
+## Lot 0h — mots manquants mesurés dans les énoncés publiés
+
+⏳ En relecture par David depuis le 2026-10-09 (« ok » à la fournée choisie sur données) :
+https://claude.ai/artifact/LweSAj5ysULyajoQJukWGC (base `avis`, 32 fiches) ; décisions
+`lexique/lot0h-decisions.json`.
+
+- Mesure : mots des 3 212 énoncés publiés absents du dictionnaire (≥ 5 occurrences), consignes
+  triviales écartées (« complète » 242, « donne » 308, « considère » 220).
+- **Graphie « événement »** : les énoncés l'écrivent ainsi (42 fois) ; le dictionnaire suit le BO
+  (« évènement ») et les mots cliquables comparent les accents exactement → synonymes « événement »,
+  « événement contraire », « événements indépendants », « événement impossible / certain »,
+  « système complet d'événements ». Le test du lot 0f qui cherchait « événement » partout doit
+  alors exclure les synonymes.
+- **24 mots** : ensemble des solutions (50 énoncés), représentant (vecteur), équilibré, indiscernable,
+  urne, tirage avec / sans remise, intérêts composés, ajustement affine, inégalité de concentration,
+  méthode des rectangles, escalier (suite, absent du BO), Tle expertes (nombre complexe, forme
+  algébrique, affixe, module, argument, forme exponentielle, matrice, graphe, chaîne de Markov),
+  Tle comp. (loi uniforme, fonction de densité, loi exponentielle), et « fonction exponentielle
+  (de base a) » de 1re générale.
+- **Homonyme** : l'actuelle « fonction exponentielle » (exp) prend une étiquette, proposée « exp ».
+
 ## Reprise
 
 Scripts d'analyse dans le scratchpad (non versionnés) : copie du dictionnaire avec imports
