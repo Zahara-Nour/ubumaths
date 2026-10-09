@@ -97,7 +97,7 @@ portée, manquants).
   `1_GEN` a pour prérequis `2` et aucun terme : ces 19 élèves ne voient que le vocabulaire
   jusqu'à la 2de.
 
-## Lot 0 — spécification proposée (⏳ en attente de validation de David)
+## Lot 0 — spécification
 
 Comportements testés (doivent échouer avant correction des données) :
 
@@ -121,18 +121,33 @@ Travail sur les données :
   exprimer, encadrer) ; D4 définitions par niveau ancrées sur les 66 points « Définir » ;
   D5 relecture par David des 87 termes prioritaires.
 
-Questions ouvertes :
+Questions tranchées le 2026-10-09 — David a suivi les recommandations de Claude (« je te
+suis ») :
 
-- Q1 **Niveau d'apparition** = première mention au BO (cercle : reconnaître au CE1), la
-  définition exigible venant plus tard (6e) comme deuxième définition ? Et la popup montre-t-elle
-  seulement la définition du niveau du lecteur (mode `discriminant`) ?
-- Q2 **Voies techno / Tle comp. / `1_GEN`** : le dictionnaire ne connaît que la voie générale ;
-  urgent pour `1_GEN` (19 élèves), pas pour la voie techno (aucun élève).
-- Q3 **Termes absents des programmes** (rotation, homothétie, PPCM, hypoténuse, monôme…) :
-  garder (« on classe ce que c'est, pas le programme »), retirer « shisma » ?
-- Q4 **471 manquants** : lesquels dans le lot 0 ? Proposition : vocabulaire et définitions que
-  le BO exige aux niveaux des élèves actuels (CP → 6e, 2de, `1_GEN`, T_SPE) et sens manquants des
-  homonymes ; le reste par lots ultérieurs.
+- Q1 **Niveau d'apparition** = première mention au BO (cercle : reconnaître au CE1) ; la
+  définition exigible (6e) s'ajoute comme deuxième définition. La popup ne montre que la
+  définition du niveau du lecteur ; `/glossaire` montre la progression.
+- Q2 **`1_GEN`** (19 élèves) traité dès le lot 0 ; voie techno et Tle comp. plus tard (aucun
+  élève).
+- Q3 **Termes absents des programmes** gardés (rotation, homothétie, PPCM, hypoténuse…) ;
+  « shisma » retiré.
+- Q4 **Manquants du lot 0** : vocabulaire et définitions exigés par le BO aux niveaux des élèves
+  actuels (CP → 6e, 2de, `1_GEN`, T_SPE) et sens manquants des homonymes ; le reste par lots.
+
+## Découpage du lot 0
+
+- **0a — mécanique, sans choix pédagogique** (branche `fix/lexique-niveaux-definitions`,
+  worktree `../ubumaths-wt-lexique`) : niveau de chaque définition remis à celui de son terme
+  (204), 25 accents + 3 majuscules de noms propres, « shisma » retiré ; tests 1 à 3 ci-dessus +
+  « exemple jamais avant son terme ». ⏳ en cours.
+- **0b — niveaux** : appliquer `niveauBO` de `relecture-bo.json` ; quand le BO emploie tôt un
+  sens plus simple, ajouter une définition de niveau inférieur au lieu de déplacer le terme ;
+  liste des cas disputés à David.
+- **0c — définitions** : 14 fausses et 10 circulaires d'abord, puis homonymes (sens manquants,
+  entrées séparées : cube, base, racine…) et définitions inadaptées ; relecture de David par
+  lots.
+- **0d — manquants** (Q4), `1_GEN`, formes conjuguées des consignes et liste des mots jamais
+  repérés (tests 4 à 6), utiles au lot 2.
 
 ## Reprise
 

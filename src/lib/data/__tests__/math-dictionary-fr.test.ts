@@ -8,6 +8,16 @@ import MATH_DICTIONARY, {
 	type MathTerm
 } from '../math-dictionary-fr';
 import { GRADE_CODES } from '$lib/types/grades';
+import { hasAccessToGrade } from '$lib/utils/grades';
+
+/** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
+function normalizeName(text: string): string {
+	return text
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase()
+		.trim();
+}
 
 describe('math-dictionary-fr', () => {
 	// -----------------------------------------------------------------------
@@ -66,6 +76,66 @@ describe('math-dictionary-fr', () => {
 				).toBe(true);
 			}
 		}
+	});
+
+	it('should have no duplicate terms, ignoring accents and case', () => {
+		const keys = MATH_DICTIONARY.map(
+			(t) => `${normalizeName(t.term)}|${normalizeName(t.sense ?? '')}`
+		);
+		const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
+		expect(duplicates).toEqual([]);
+	});
+
+	// -----------------------------------------------------------------------
+	// Niveaux des définitions
+	// -----------------------------------------------------------------------
+	// Le refactor GradedField du 2026-04-19 avait rangé chaque définition au
+	// niveau de l'entrée précédente : « moyenne » (6e) n'avait de définition
+	// qu'en Terminale, et la fiche du glossaire restait vide en 6e.
+
+	it('should show a definition to every reader who has access to the term', () => {
+		const hidden: string[] = [];
+		for (const term of MATH_DICTIONARY) {
+			if (term.derivedFrom || !term.definitions) continue;
+			for (const reader of GRADE_CODES) {
+				if (!hasAccessToGrade(reader, term.grade)) continue;
+				if (resolveGradedField(term.definitions, reader).length === 0) {
+					hidden.push(`${term.term} (${term.grade}) caché en ${reader}`);
+				}
+			}
+		}
+		expect(hidden).toEqual([]);
+	});
+
+	it('should start definitions at the term grade, then go up', () => {
+		const misplaced: string[] = [];
+		for (const term of MATH_DICTIONARY) {
+			const items = term.definitions?.items ?? [];
+			if (items.length === 0) continue;
+			if (items[0].grade !== term.grade) {
+				misplaced.push(`${term.term} : terme ${term.grade}, définition ${items[0].grade}`);
+			}
+			for (let i = 1; i < items.length; i++) {
+				const previous = items[i - 1].grade;
+				const current = items[i].grade;
+				if (current === previous || !hasAccessToGrade(current, previous)) {
+					misplaced.push(`${term.term} : ${previous} puis ${current}`);
+				}
+			}
+		}
+		expect(misplaced).toEqual([]);
+	});
+
+	it('should never place an example before its term', () => {
+		const early: string[] = [];
+		for (const term of MATH_DICTIONARY) {
+			for (const item of term.exemples?.items ?? []) {
+				if (!hasAccessToGrade(item.grade, term.grade)) {
+					early.push(`${term.term} : terme ${term.grade}, exemple ${item.grade}`);
+				}
+			}
+		}
+		expect(early).toEqual([]);
 	});
 
 	it('should have valid derivedFrom references', () => {
