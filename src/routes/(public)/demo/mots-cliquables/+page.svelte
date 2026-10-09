@@ -37,16 +37,16 @@
 	const QUESTION: QuestionInstance = {
 		templateId: 'demo-mots-cliquables',
 		statement: resolvedMarkdown(
-			'Calcule l’aire d’un rectangle de longueur $5$ et de largeur $3$ : $\\mathcal{A}=\\placeholder[0]{}$'
+			'Calcule l’aire d’un carré de côté $3$ : $\\mathcal{A}=\\placeholder[0]{}$'
 		),
-		blanks: [{ expectedAnswer: '15', expectedAnswerLatex: '15', type: 'math' }],
-		correction: { steps: [resolvedMarkdown('L’aire du rectangle vaut $5 \\times 3 = 15$.')] },
+		blanks: [{ expectedAnswer: '9', expectedAnswerLatex: '9', type: 'math' }],
+		correction: { steps: [resolvedMarkdown('L’aire du carré vaut $3 \\times 3 = 9$.')] },
 		grades: ['6'],
 		theme: 'Grandeurs',
 		domain: 'Aires',
 		level: 1,
 		generatedAt: '2026-10-10T00:00:00.000Z'
-	} as QuestionInstance;
+	};
 
 	const HINTS: ExerciseHint[] = [
 		{
@@ -94,14 +94,21 @@
 	<div class="flex items-center gap-3">
 		<span class="text-sm font-medium">Niveau de lecture</span>
 		<div class="w-56">
-			<MySelect type="single" bind:value={grade} items={levelItems} />
+			<MySelect
+				type="single"
+				bind:value={grade}
+				items={levelItems}
+				triggerAriaLabel="Niveau de lecture"
+			/>
 		</div>
 	</div>
 
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>1. Une question, comme en entraînement</Card.Title>
-			<Card.Description>Touche « aire », puis la case de réponse.</Card.Description>
+			<Card.Description>
+				Touche « aire » ou « carré », puis la case de réponse. En 5e, « carré » a deux sens.
+			</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<QuestionCard interactive instance={QUESTION} />
