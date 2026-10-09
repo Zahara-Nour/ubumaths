@@ -886,6 +886,13 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - **Suite : PR 1, migration de nettoyage de l'arbre** (worktree `ubumaths-wt-facettes`, branche
     `feat/arbre-nettoyage-facettes`). Les tests d'abord, puis la migration, puis les fixtures et les docs mises à jour.
     La PR 2 suivra, avec les 473 tags et les deux règles en base.
+- **2026-10-10 — PR 1 #1002 FUSIONNÉE** (nettoyage des facettes, arbre .16).
+  - Migration `20261012080000_nettoyage_facettes_arbre.sql` : 41 tests, intégration complète verte (2 641),
+    code-reviewer et security-auditor sans point bloquant, durcissements intégrés.
+  - L'audit a vérifié en lecture seule que la prod est exactement dans l'état de départ attendu.
+  - **`db:migrate` EN ATTENTE** : refusé par le filtre de sécurité automatique de Claude Code, pas par David. À lancer
+    par David (`! pnpm db:migrate`), puis vérification en prod.
+  - Le worktree `ubumaths-wt-facettes` est gardé jusqu'à la migration appliquée.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
