@@ -1,6 +1,8 @@
 # C5, étape 2 — transfert des liens modèles → points : proposition
 
-> **Statut : PROPOSITION, en attente de validation par David.** Rien n'est écrit en base.
+> **Statut : SUSPENDU (2026-10-09)** — David a mis en doute le double travail (nœud ET tags) ;
+> analyse et recommandation d'architecture dans [c5-architecture-liens.md](c5-architecture-liens.md).
+> Si l'option 4 est retenue, ce transfert n'a plus lieu : les anciens tags servent d'audit. Rien n'est écrit en base.
 > Séquence C5 (`schema-cible-spec.md`) : (1) seeds neufs ✅ ; **(2) transfert des liens des
 > modèles vers les nouveaux points** ; (3) bascule du code ; (4) suppression de l'ancien monde.
 > Mesuré en prod le 2026-10-09 : **1 026 liens**, tous vers des anciens points (grade NULL),
