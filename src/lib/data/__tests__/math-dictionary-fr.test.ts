@@ -421,6 +421,12 @@ describe('math-dictionary-fr', () => {
 		expect(LOT_0F.renvois).toHaveLength(3);
 		expect(LOT_0F.synonymes).toHaveLength(13);
 		expect(LOT_0F.etiquettes).toHaveLength(12);
+		expect(LOT_0F.supprimees).toHaveLength(1);
+		expect(LOT_0F.definitionsAjoutees).toHaveLength(3);
+		expect(LOT_0F.exclus).toHaveLength(3);
+		expect(LOT_0F.orthographe.avant).toHaveLength(2);
+		expect(LOT_0F.orthographe.apres).toHaveLength(2);
+		expect(LOT_0F.formulesSansAccent).toHaveLength(2);
 		const wrong: string[] = [];
 		const lines = (items: { grade: string; content: string }[]) =>
 			items.map((i) => `${i.grade} : ${i.content}`);
@@ -484,9 +490,10 @@ describe('math-dictionary-fr', () => {
 			if (names.includes(old)) wrong.push(`« ${old} » : ancienne orthographe`);
 		for (const now of LOT_0F.orthographe.apres)
 			if (!names.includes(now)) wrong.push(`« ${now} » : introuvable`);
+		// Nom, sens, synonymes, formes, définitions et exemples : partout
 		for (const term of MATH_DICTIONARY) {
+			if (JSON.stringify(term).includes('événement')) wrong.push(`${term.term} : « événement »`);
 			for (const item of term.definitions?.items ?? []) {
-				if (item.content.includes('événement')) wrong.push(`${term.term} : « événement »`);
 				for (const unaccented of LOT_0F.formulesSansAccent)
 					if (item.content.includes(unaccented)) wrong.push(`${term.term} : ${unaccented}`);
 			}

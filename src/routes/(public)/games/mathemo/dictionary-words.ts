@@ -8,25 +8,22 @@ import type { GradeCode } from '$lib/types/grades';
 // ne pourrait jamais être trouvé
 const PLAYABLE_WORD = /^[a-z]+$/;
 
-/**
- * Normalize string by removing accents and converting to lowercase.
- * Allows players to type without accents.
- */
+/** Minuscules, accents retirés : le joueur tape sans accents. */
 export function normalizeString(str: string): string {
-	return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+	return str
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase();
 }
 
 function playableWords(terms: MathTerm[]): string[] {
 	return terms.map((t) => normalizeString(t.term)).filter((word) => PLAYABLE_WORD.test(word));
 }
 
-/** Pre-computed set of all playable terms (normalized) for fast validation */
+/** Tous les mots jouables, normalisés : sert à valider une proposition du joueur. */
 export const allWordsNormalized = new Set(playableWords(MATH_DICTIONARY));
 
-/**
- * Get playable terms for a given grade level.
- * Returns normalized term strings (without accents) for the game.
- */
+/** Mots jouables d'un niveau, normalisés (sans accents), chacun une seule fois. */
 export function getWordsForLevel(level: GradeCode): string[] {
 	// Un homonyme (« base » d'une puissance, d'un solide, de vecteurs) ne doit
 	// pas sortir plus souvent qu'un autre mot
