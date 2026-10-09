@@ -142,7 +142,11 @@ suis ») :
   « exemple jamais avant son terme ». ✅ Livré #979 (2026-10-09), avec 10 synonymes accentués et « tangeant » retiré.
 - **0b — niveaux** : appliquer `niveauBO` de `relecture-bo.json` ; quand le BO emploie tôt un
   sens plus simple, ajouter une définition de niveau inférieur au lieu de déplacer le terme ;
-  liste des cas disputés à David.
+  liste des cas disputés à David. ⏳ Proposition prête (2026-10-09) :
+  [lexique/lot0b-niveaux.md](lexique/lot0b-niveaux.md) — 221 termes, 56 nouvelles définitions
+  simples, 8 cas à trancher ; décisions machine-lisibles dans `lexique/lot0b-decisions.json`
+  (clés = rang de l'entrée dans le dictionnaire du 2026-10-09, avant le retrait de « shisma » et
+  « tangeant »). En attente de validation de David.
 - **0c — définitions** : 14 fausses et 10 circulaires d'abord, puis homonymes (sens manquants,
   entrées séparées : cube, base, racine…) et définitions inadaptées ; relecture de David par
   lots.
