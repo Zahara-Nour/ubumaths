@@ -162,6 +162,10 @@ suis ») :
 - **0d — manquants** (Q4), `1_GEN`, formes conjuguées des consignes et liste des mots jamais
   repérés (tests 4 à 6), utiles au lot 2. ✅ Lot 0d-1 validé par David le 2026-10-09 (87 OK, « racine » dans sa version) et livré #991 (branche `feat/lexique-mots`) — section « AJOUTS DU LOT 0d » du dictionnaire, test « mots ajoutés au lot 0d, au mot près » (88 écarts sur l'ancien dictionnaire). Proposition : 88 mots (13 homonymes, 23 demandés par le BO, 47 pour les classes actuelles, 5 synonymes) — [lexique/lot0d-mots.md](lexique/lot0d-mots.md), décisions `lexique/lot0d-decisions.json` ; relecture par David sur https://claude.ai/artifact/V9eqVHsZcWXJJR9Mq8bEJi (base `avis`). Les formes conjuguées et les mots jamais repérés viendront dans un lot à part, avant le lot 2.
 
+## Lot 0e — verbes de consigne et mots jamais soulignés
+
+⏳ Proposé le 2026-10-09 (demande de David : ajouter « déterminer » et « exprimer », chercher les autres consignes dans le BO) : [lexique/lot0e-consignes.md](lexique/lot0e-consignes.md) — 8 verbes définis, 13 entrées qui reçoivent leurs formes conjuguées, 14 mots jamais soulignés ; relecture par David sur https://claude.ai/artifact/65y4jubu5hQ2YQxLxdgqab (base `avis`). Champs prévus dans `MathTerm` : `forms` (formes reconnues) et `autoLink: false` (jamais souligné automatiquement).
+
 ## Reprise
 
 Scripts d'analyse dans le scratchpad (non versionnés) : copie du dictionnaire avec imports
