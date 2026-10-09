@@ -75,7 +75,7 @@ export interface Entry {
 	 */
 	readonly steps?: readonly RenderedStep[];
 	/**
-	 * Le tableau de variations, quand l'action en a produit un.
+	 * Le tableau de variations, quand l'action ou `.variations` en a produit un.
 	 *
 	 * Il se dessine sous la ligne — le moteur, lui, n'en rendait qu'une
 	 * description en texte de terminal.
@@ -273,6 +273,7 @@ export class CalcDesk {
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
+			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
 			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
 				? { note: result.note }
 				: {}),

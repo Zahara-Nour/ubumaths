@@ -32,7 +32,7 @@ import { differentiate } from '../differentiation';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { tidyTerms } from '../tidy/terms';
 import { computeDomain } from '../domain/compute';
-import { excludePoints } from '../domain/algebra';
+import { containsValue, excludePoints } from '../domain/algebra';
 import { assertDomainResolved, DomainUnresolvedError } from '../domain/errors';
 import { analyzeSign } from '../sign';
 import { findCriticalPointsWithStatus, sortCriticalPoints } from './critical-points';
@@ -258,7 +258,9 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	// zéros incomplet serait une conclusion fausse.
 	const monotonicIntervals = unresolved
 		? []
-		: mergeMonotonicIntervals(buildMonotonicIntervals(derivativeSign));
+		: mergeMonotonicIntervals(buildMonotonicIntervals(derivativeSign), (value) =>
+				isExcludedFrom(domain, value)
+			);
 	stepId = recordStep(
 		steps,
 		stepId,
@@ -448,6 +450,17 @@ function resolveOptions(options?: VariationOptions): ResolvedOptions {
 		tolerance: options?.tolerance ?? DEFAULT_VARIATION_OPTIONS.tolerance,
 		strictMode: options?.strictMode ?? DEFAULT_VARIATION_OPTIONS.strictMode
 	};
+}
+
+/**
+ * La valeur est-elle INTERDITE (hors du domaine de f) ?
+ *
+ * Un domaine conditionnel ne se teste pas en un point (`containsValue` y
+ * répond `false` par prudence) : on ne coupe alors rien, comme avant.
+ */
+function isExcludedFrom(domain: Domain, value: number): boolean {
+	if (!Number.isFinite(value) || domain.kind === 'condition_domain') return false;
+	return !containsValue(domain, value);
 }
 
 /**

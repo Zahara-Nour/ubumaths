@@ -73,8 +73,8 @@ describe('f(x) = x eˣ', () => {
 	// ne connaissant que `exp(…)`, pas `e^…`.
 	it('limites : 0 en −∞ (croissances comparées), +∞ en +∞', () => {
 		const text = commandOutput('x e^x');
-		expect(text).toContain('lim_{x -> -∞^+} f(x) = 0');
-		expect(text).toContain('lim_{x -> +∞^-} f(x) = +inf');
+		expect(text).toContain('lim (x → -∞) f(x) = 0');
+		expect(text).toContain('lim (x → +∞) f(x) = +∞');
 		// Un extremum non atteint ne s'annonce pas : la limite 0 en −∞ n'est
 		// pas un « Maximum global : f(−∞) ».
 		expect(text).not.toMatch(/Maximum/);

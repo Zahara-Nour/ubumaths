@@ -37,6 +37,7 @@ import {
 import { computeVariations } from '../../variations/compute';
 import { getDerivativeSignSymbol, unresolvedDerivativeZerosMessage } from '../../variations/format';
 import { toCustom } from '../../custom-generator';
+import { readableText, reducedDerivative } from '../../variations/display';
 import { formatEndpointValue as formatBound } from '../../domain/format';
 import { DomainUnresolvedError } from '../../domain/errors';
 import { formatInterval } from '../../domain/format';
@@ -75,37 +76,37 @@ import type {
  * ```
  * > .variations x^2
  * Expression : x^2
- * Derivee : f'(x) = 2x
+ * Dérivée : f'(x) = 2x
  *
- * Domaine : R (tous les reels)
+ * Domaine : ℝ
  *
  * Points critiques :
  *   x = 0 (f'=0)
  *
  * Signe de f'(x) :
- *   ]-inf ; 0[ : -  (f decroissante)
+ *   ]-∞ ; 0[ : -  (f décroissante)
  *   {0}       : 0  (f constante)
- *   ]0 ; +inf[ : +  (f croissante)
+ *   ]0 ; +∞[ : +  (f croissante)
  *
  * Extrema :
  *   Minimum global : f(0) = 0
  *
  * > .variations x^3 - 3x
  * Expression : x^3 - 3x
- * Derivee : f'(x) = 3x^2 - 3
+ * Dérivée : f'(x) = 3x^2 - 3
  *
- * Domaine : R (tous les reels)
+ * Domaine : ℝ
  *
  * Points critiques :
  *   x = -1 (f'=0)
  *   x = 1 (f'=0)
  *
  * Signe de f'(x) :
- *   ]-inf ; -1[ : +  (f croissante)
+ *   ]-∞ ; -1[ : +  (f croissante)
  *   {-1}       : 0  (f constante)
- *   ]-1 ; 1[    : -  (f decroissante)
+ *   ]-1 ; 1[    : -  (f décroissante)
  *   {1}        : 0  (f constante)
- *   ]1 ; +inf[  : +  (f croissante)
+ *   ]1 ; +∞[  : +  (f croissante)
  *
  * Extrema :
  *   Maximum local : f(-1) = 2
@@ -198,7 +199,10 @@ export class VariationsCommand extends BaseCommand {
 			// Expression header
 			lines.push(chalk.bold('Expression :') + ' ' + chalk.cyan(toCustom(result.expression)));
 			lines.push(
-				chalk.bold('Derivee :') + ` f'(${variable}) = ` + chalk.cyan(toCustom(result.derivative))
+				chalk.bold('Dérivée :') +
+					` f'(${variable}) = ` +
+					// Réduite et lisible : `-2/(2x-1)^2`, jamais `{-2}/{(2x-1)^2}`
+					chalk.cyan(readableText(reducedDerivative(result.derivative)))
 			);
 			lines.push('');
 
@@ -274,7 +278,7 @@ export class VariationsCommand extends BaseCommand {
 			case 'empty':
 				return 'ensemble vide';
 			case 'universal':
-				return 'R (tous les reels)';
+				return 'ℝ';
 			default:
 				return formatInterval(domain);
 		}
@@ -297,7 +301,7 @@ export class VariationsCommand extends BaseCommand {
 		for (const point of points) {
 			const xStr = formatBound(point.x);
 			const nature =
-				point.nature === 'derivative_zero' ? chalk.dim("(f'=0)") : chalk.dim("(f' non definie)");
+				point.nature === 'derivative_zero' ? chalk.dim("(f'=0)") : chalk.dim("(f' non définie)");
 			lines.push(`  ${variable} = ${chalk.yellow(xStr)} ${nature}`);
 		}
 
@@ -312,7 +316,7 @@ export class VariationsCommand extends BaseCommand {
 		variable: string
 	): string {
 		if (intervals.length === 0) {
-			return chalk.bold(`Signe de f'(${variable}) :`) + ' ' + chalk.dim('indetermine');
+			return chalk.bold(`Signe de f'(${variable}) :`) + ' ' + chalk.dim('indéterminé');
 		}
 
 		const lines: string[] = [];
@@ -376,9 +380,12 @@ export class VariationsCommand extends BaseCommand {
 		for (const bl of limits) {
 			const pointStr = formatBound(bl.point);
 			const limitStr = this.formatLimitValue(bl.limit);
-			const dirStr = bl.direction === 'left' ? '^-' : bl.direction === 'right' ? '^+' : '';
+			// `lim (x → 1/2⁻) f(x) = -∞`, plus la notation `lim_{x -> 1/2^-}`
+			// Un côté n'a de sens qu'en un point fini : `x → -∞`, pas `-∞⁺`
+			const side = bl.point.type === 'infinity' ? undefined : bl.direction;
+			const dirStr = side === 'left' ? '⁻' : side === 'right' ? '⁺' : '';
 			lines.push(
-				`  lim_{${variable} -> ${chalk.yellow(pointStr)}${dirStr}} f(${variable}) = ${chalk.cyan(limitStr)}`
+				`  lim (${variable} → ${chalk.yellow(pointStr)}${dirStr}) f(${variable}) = ${chalk.cyan(limitStr)}`
 			);
 		}
 
@@ -416,7 +423,7 @@ export class VariationsCommand extends BaseCommand {
 	 */
 	private formatEndpointValue(value: MathNode): string {
 		if (value.type === 'infinity') {
-			return value.sign === 'positive' ? '+inf' : '-inf';
+			return value.sign === 'positive' ? '+∞' : '-∞';
 		}
 		// Bornes exactes comme le domaine (1/2, -√2), jamais le `:/` interne
 		return formatBound(value);
@@ -462,11 +469,11 @@ export class VariationsCommand extends BaseCommand {
 			case 'increasing':
 				return 'f croissante';
 			case 'decreasing':
-				return 'f decroissante';
+				return 'f décroissante';
 			case 'constant':
 				return 'f constante';
 			case 'unknown':
-				return 'indetermine';
+				return 'sens indéterminé';
 		}
 	}
 
@@ -490,9 +497,9 @@ export class VariationsCommand extends BaseCommand {
 	 * Format a limit value.
 	 */
 	private formatLimitValue(value: LimitValue): string {
-		if (value === 'infinity') return '+inf';
-		if (value === 'negative_infinity') return '-inf';
-		if (value === 'indeterminate') return 'indetermine';
+		if (value === 'infinity') return '+∞';
+		if (value === 'negative_infinity') return '-∞';
+		if (value === 'indeterminate') return 'indéterminée';
 		return formatBound(value);
 	}
 }

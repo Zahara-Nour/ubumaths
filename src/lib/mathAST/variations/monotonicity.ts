@@ -139,6 +139,8 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
  * Point intervals at zeros are excluded from merging (they represent critical points).
  *
  * @param intervals - Array of monotonic intervals to merge
+ * @param isCut - Vrai pour une jonction à ne jamais franchir : une valeur
+ *   exclue du domaine de f (la monotonie ne se recolle pas par-dessus)
  * @returns Array with adjacent same-monotonicity intervals merged
  *
  * @example
@@ -146,7 +148,8 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
  * // Output: [decreasing on ]-2 ; 0[, constant at 0, increasing on ]0 ; 3[]
  */
 export function mergeMonotonicIntervals(
-	intervals: readonly MonotonicInterval[]
+	intervals: readonly MonotonicInterval[],
+	isCut: (value: number) => boolean = () => false
 ): MonotonicInterval[] {
 	if (intervals.length === 0) {
 		return [];
@@ -163,7 +166,10 @@ export function mergeMonotonicIntervals(
 			current.monotonicity === next.monotonicity &&
 			!isPointInterval(current.interval) &&
 			!isPointInterval(next.interval) &&
-			areIntervalsAdjacent(current.interval, next.interval)
+			areIntervalsAdjacent(current.interval, next.interval) &&
+			// ⚠️ Une valeur interdite coupe l'étude : 1/(2x-1) est décroissante
+			// sur ]-∞ ; 1/2[ et sur ]1/2 ; +∞[, JAMAIS sur ℝ (f(0) = -1 < f(1) = 1)
+			!isCut(endpointToNumber(current.interval.upper.value))
 		) {
 			// Merge by extending current interval to include next
 			current = {
