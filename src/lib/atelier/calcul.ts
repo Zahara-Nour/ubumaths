@@ -35,8 +35,15 @@ import {
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
+import {
+	resolveCommand,
+	suggestFor,
+	commandCatalog,
+	ATELIER_ONLY_COMMANDS,
+	plain
+} from './commands';
 import { renderResult } from './render';
+import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
@@ -699,6 +706,12 @@ function functionLetterOf(
 	return letter === INTERNAL_LETTER ? null : { kind: 'single', letter };
 }
 
+/** Ce que répond `.mode`, en français. */
+const MODE_MESSAGES: Readonly<Record<'exact' | 'decimal', string>> = {
+	exact: 'Mode exact : les résultats restent exacts (fractions, racines).',
+	decimal: 'Mode décimal : les résultats sont donnés en valeur approchée.'
+};
+
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
 function randomSeed(): number {
 	return 1000 + Math.floor(Math.random() * 9000);
@@ -747,6 +760,51 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 * commande : sans ça, `.simp` ne dépliait rien là où `.simplifier` dépliait.
 	 */
 	const name = known.name.toLowerCase();
+
+	// `.aide` : l'aide de l'ÉLÈVE, en français (décision de David, 2026-10-09).
+	// L'aide du moteur — anglaise, pour le développeur — reste derrière
+	// `.aide dev`. Aucune aide par commande n'existe : `.aide intégrer` montre
+	// l'aide générale plutôt qu'un refus.
+	if (name === 'help') {
+		const helpArgument =
+			space === -1
+				? ''
+				: resolved
+						.slice(space + 1)
+						.trim()
+						.toLowerCase();
+		if (helpArgument !== DEV_HELP_ARGUMENT) {
+			return { kind: 'commande', input, output: studentHelpText(engine) };
+		}
+		const developer = engine.execute('.help');
+		return { kind: 'commande', input, output: renderResult(developer, { fromCommand: true }).text };
+	}
+
+	// `.mode`, `.exact`, `.décimal` : le moteur répond en anglais (« Mode set
+	// to: exact ») et ne lit pas `décimal` avec son accent. L'atelier change le
+	// mode lui-même et répond en français (décision de David, 2026-10-09).
+	if (name === 'mode' || name === 'exact' || name === 'decimal') {
+		const modeArgument =
+			name !== 'mode'
+				? name
+				: space === -1
+					? ''
+					: plain(resolved.slice(space + 1).trim()).toLowerCase();
+		if (modeArgument === 'exact' || modeArgument === 'decimal') {
+			engine.execute(`.${modeArgument}`);
+			return { kind: 'commande', input, output: MODE_MESSAGES[modeArgument] };
+		}
+		if (modeArgument === '') {
+			const current = engine.getEvalState().mode === 'decimal' ? 'decimal' : 'exact';
+			const other = current === 'exact' ? '.mode décimal' : '.mode exact';
+			return {
+				kind: 'commande',
+				input,
+				output: `Mode actuel : ${current === 'exact' ? 'exact' : 'décimal'}. ${MODE_MESSAGES[current]} Pour changer : ${other}.`
+			};
+		}
+		return { kind: 'refus', message: 'Écris « .mode exact » ou « .mode décimal ».' };
+	}
 
 	// Les simulations lisent des NOMS de listes : elles passent avant la substitution
 	// des noms par leurs expressions, qui en ferait des listes de nombres
