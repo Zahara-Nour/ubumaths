@@ -1,4 +1,6 @@
-# Lot 0c — définitions à reprendre : proposition
+# Lot 0c — définitions à reprendre
+
+**Validé par David le 2026-10-09** sur la page à cocher : 115 « OK », « inconnue » corrigée par lui (sa version ci-dessous).
 
 Relecture : [relecture-bo.md](relecture-bo.md). Chaque entrée remplace **toutes** les définitions du terme. Validation par David sur la page à cocher (lien dans [lexique-progress.md](../lexique-progress.md)). Données machine-lisibles : [lot0c-decisions.json](lot0c-decisions.json). Les homonymes qui demandent une entrée séparée (cube solide, série statistique, degré d'angle…) relèvent du lot 0d.
 
@@ -17,7 +19,7 @@ Réduisait les relatifs à ℤ, alors que la 5e travaille les décimaux relatifs
 L'exemple disait « l'inconnue est x = 2 », confondant l'inconnue (x) et la solution (2).
 
 - **Avant** : CM1 : Nombre qu'on ne connaît pas encore et qu'on cherche. On peut le représenter par un symbole ($\square$, $?$) ou par une lettre. · 5e : Valeur à trouver dans une équation. Souvent notée $x$. Ex : dans $2x + 3 = 7$, l'inconnue est $x = 2$.
-- **Proposé** : CM1 : Nombre qu'on ne connaît pas encore et qu'on cherche. On peut le représenter par un symbole ($\square$, $?$) ou par une lettre. · 5e : Nombre que l'on cherche dans une équation, désigné par une lettre : dans $2x + 3 = 7$, l'inconnue est $x$ ; sa valeur, $2$, est la solution.
+- **Proposé** : CM1 : Nombre qu'on ne connaît pas encore et qu'on cherche. On peut le représenter par un symbole ($\square$, $?$) ou par une lettre. · 5e : Nombre que l'on cherche dans une équation, désigné par une lettre : dans $5x + 3 = 13$, l'inconnue est $x$ ; $2$ est la solution car $5 \times 2 + 3 = 13$. _(Version de David.)_
 
 ### surface — CM1
 

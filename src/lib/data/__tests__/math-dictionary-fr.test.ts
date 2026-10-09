@@ -11,13 +11,32 @@ import { readFileSync } from 'node:fs';
 import { GRADE_CODES } from '$lib/types/grades';
 import { hasAccessToGrade } from '$lib/utils/grades';
 
-/** Niveaux validés par David (lot 0b, 2026-10-09) : copie figée de docs/wip/lexique/lot0b-niveaux.md. */
+/**
+ * Niveaux validés par David (lot 0b, 2026-10-09) : copie figée de docs/wip/lexique/lot0b-niveaux.md,
+ * mise à jour par le lot 0c pour les entrées qu'il a reprises (voir le champ `source` du JSON).
+ */
 interface ValidatedLevels {
 	principaux: { term: string; sense: string | null; grade: string; niveauxDefinitions: string[] }[];
 	derives: { term: string; grade: string }[];
 }
 const LOT_0B: ValidatedLevels = JSON.parse(
 	readFileSync('tests/fixtures/lexique/niveaux-lot0b.json', 'utf-8')
+);
+
+/** Définitions validées par David (lot 0c, 2026-10-09) : copie figée de docs/wip/lexique/lot0c-definitions.md. */
+interface ValidatedDefinitions {
+	entrees: {
+		term: string;
+		sense: string | null;
+		grade: string;
+		derivedFrom?: string | null;
+		keepDefs: boolean;
+		definitions?: { grade: string; content: string }[];
+		synonymesRetires: string[];
+	}[];
+}
+const LOT_0C: ValidatedDefinitions = JSON.parse(
+	readFileSync('tests/fixtures/lexique/definitions-lot0c.json', 'utf-8')
 );
 
 /** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
@@ -152,8 +171,9 @@ describe('math-dictionary-fr', () => {
 	// simple employé plus tôt ajoute une définition au lieu de déplacer l'ancienne.
 	it('should place each reviewed term at the level validated in lot 0b', () => {
 		// Une copie vide ou tronquée ne doit pas passer en silence
-		expect(LOT_0B.principaux).toHaveLength(221);
-		expect(LOT_0B.derives).toHaveLength(15);
+		// 221 et 15 au lot 0b ; le lot 0c a fait d'« exponentielle » un renvoi
+		expect(LOT_0B.principaux).toHaveLength(220);
+		expect(LOT_0B.derives).toHaveLength(16);
 		const wrong: string[] = [];
 		for (const expected of LOT_0B.principaux) {
 			const term = MATH_DICTIONARY.find(
@@ -176,6 +196,53 @@ describe('math-dictionary-fr', () => {
 			if (term?.grade !== expected.grade) {
 				const found = term?.grade ?? 'introuvable';
 				wrong.push(`${expected.term} (dérivé) : ${found}, attendu ${expected.grade}`);
+			}
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	// Les définitions affichées aux élèves sont celles que David a relues une à
+	// une : une modification non relue doit faire échouer ce test.
+	it('should carry the definitions validated in lot 0c, word for word', () => {
+		expect(LOT_0C.entrees).toHaveLength(116);
+		const wrong: string[] = [];
+		for (const expected of LOT_0C.entrees) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense
+			);
+			if (!term) {
+				wrong.push(`${expected.term} : introuvable`);
+				continue;
+			}
+			if (term.grade !== expected.grade) {
+				wrong.push(`${expected.term} : niveau ${term.grade}, attendu ${expected.grade}`);
+			}
+			// Sans clé `derivedFrom`, une entrée qui garde ses définitions reste un terme principal
+			const expectedTarget =
+				'derivedFrom' in expected
+					? expected.derivedFrom
+					: expected.keepDefs
+						? term.derivedFrom
+						: null;
+			if ((term.derivedFrom ?? null) !== (expectedTarget ?? null)) {
+				wrong.push(
+					`${expected.term} : renvoi ${term.derivedFrom ?? 'aucun'}, attendu ${expectedTarget ?? 'aucun'}`
+				);
+			}
+			if (!expected.keepDefs) {
+				const actual = (term.definitions?.items ?? []).map((i) => `${i.grade} : ${i.content}`);
+				const wanted = (expected.definitions ?? []).map((i) => `${i.grade} : ${i.content}`);
+				const index = wanted.findIndex((line, i) => actual[i] !== line);
+				if (index !== -1 || actual.length !== wanted.length) {
+					const at = index === -1 ? wanted.length : index;
+					wrong.push(
+						`${expected.term} : définition ${at + 1} « ${actual[at] ?? '—'} », attendu « ${wanted[at] ?? '—'} »`
+					);
+				}
+			}
+			for (const removed of expected.synonymesRetires) {
+				if (term.synonyms?.includes(removed))
+					wrong.push(`${expected.term} : synonyme « ${removed} »`);
 			}
 		}
 		expect(wrong).toEqual([]);

@@ -22,7 +22,8 @@
 			],
 			[
 				"5",
-				"Nombre que l'on cherche dans une équation, désigné par une lettre : dans $2x + 3 = 7$, l'inconnue est $x$ ; sa valeur, $2$, est la solution."
+				"Nombre que l'on cherche dans une équation, désigné par une lettre : dans $5x + 3 = 13$, l'inconnue est $x$ ; $2$ est la solution car $5 \\times 2 + 3 = 13$.",
+				"David"
 			]
 		]
 	},
