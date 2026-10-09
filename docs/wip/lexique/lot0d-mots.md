@@ -44,7 +44,7 @@ Le seul « base » était celle d'une puissance ; en 2de et en terminale, le mot
 
 > « Racines, signe, expression de la somme et du produit des racines. » (1spe.txt, Algèbre > Équations, fonctions polynômes du second degré > Contenus ; points 1SPE-244, 1SPE-245 ; « racine évidente » : 1SPE-253)
 
-- 1re spé : Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$ : $2$ est une racine de $x^2 - 4$.
+- 1re spé : Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$. Ainsi, $2$ est une racine de $x^2 - 4$, car $2^2 - 4 = 0$. _(Version de David, coquille corrigée : « $0^2$ » → « $2^2$ ».)_
 
 ### échelle (axe gradué) — CE2
 

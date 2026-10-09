@@ -70,7 +70,8 @@
 		"defs": [
 			[
 				"1_SPE",
-				"Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$ : $2$ est une racine de $x^2 - 4$."
+				"Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$. Ainsi, $2$ est une racine de $x^2 - 4$, car $2^2 - 4 = 0$.",
+				"David"
 			]
 		]
 	},
