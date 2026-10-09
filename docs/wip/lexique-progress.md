@@ -245,9 +245,9 @@ notes et revues dans [lexique/lot2-progress.md](lexique/lot2-progress.md).
 - Repérage `src/lib/lexicon/` (positions `TextNode.terms`, sans découper l'arbre), dictionnaire chargé
   à la demande, marquage `[mot]{.def}` / `{.def=…}` / `{.nodef}`, fiche en popover (dialog
   accessible), niveau de l'élève sinon le plus petit de la question, jamais en évaluation notée.
-- **Écart à la spécification, à trancher par David** : pas de mot cliquable dans les réponses de QCM
-  (un choix est un bouton ; un clic sur le mot envoyait la réponse). Option : revoir la structure d'un
-  choix pour qu'il ne soit plus un bouton entier.
+- **QCM** : pas de mot cliquable dans les réponses (un choix est un bouton ; un clic sur le mot
+  envoyait la réponse). **Décidé par David le 2026-10-09** (« ok » à la recommandation) : on garde
+  ainsi, l'énoncé du QCM a ses mots cliquables, pas les réponses.
 - Hors lot, signalé : `HintReference.svelte` a probablement le même défaut de focus que la fiche avait
   (fermeture par un clic dans un champ → focus renvoyé au bouton).
 
