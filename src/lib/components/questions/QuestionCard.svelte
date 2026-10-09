@@ -44,6 +44,7 @@
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 	import CourseCardView from './CourseCardView.svelte';
+	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 
 	// Props
 	interface Props {
@@ -65,6 +66,12 @@
 		collectOnly = false,
 		unitKeys
 	}: Props = $props();
+
+	// Mots cliquables : jamais en évaluation notée (décision de David, 2026-10-08)
+	provideQuestionLexicon(
+		() => instance.grades,
+		() => !collectOnly
+	);
 
 	// ============================================================================
 	// STATE MANAGEMENT

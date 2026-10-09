@@ -45,8 +45,12 @@ export interface TextNode extends BaseNode {
 	detail?: DetailKind;
 	/** Marquage à la main d'un mot du lexique : `[mot]{.def}`, `{.def=…}`, `{.nodef}` */
 	lexicon?: LexiconMark;
-	/** Mot du dictionnaire repéré dans ce texte : il devient cliquable (mots cliquables) */
-	term?: TermLink;
+	/**
+	 * Mots du dictionnaire repérés dans ce texte (mots cliquables) : positions
+	 * dans `content`. Le texte n'est pas découpé : l'arbre garde sa forme, et les
+	 * champs de réponse voisins ne sont pas recréés quand le repérage arrive.
+	 */
+	terms?: TermRange[];
 }
 
 /** Marquage à la main d'un mot du lexique dans un texte. */
@@ -57,9 +61,12 @@ export interface LexiconMark {
 	target?: string;
 }
 
-/** Entrées du dictionnaire qu'ouvre un mot cliquable : plusieurs pour un homonyme. */
-export interface TermLink {
-	/** Nom de l'entrée, suivi de son sens pour un homonyme : « carré (puissance) » */
+/** Un mot cliquable dans un texte, et les entrées qu'il ouvre (plusieurs pour un homonyme). */
+export interface TermRange {
+	/** Début et fin (exclue) du mot dans le texte */
+	start: number;
+	end: number;
+	/** Nom de chaque entrée, suivi de son sens pour un homonyme : « carré (puissance) » */
 	ids: string[];
 }
 

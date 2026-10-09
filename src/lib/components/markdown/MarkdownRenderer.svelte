@@ -66,7 +66,7 @@
 	} from './restricted-rendering';
 	import type { ContentLocale } from '$lib/types/locale';
 	import type { GradeCode } from '$lib/types/grades';
-	import { linkDocument } from '$lib/lexicon/linker';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
 	import { provideLexicon, readLexicon } from './lexicon-context';
 
 	interface Props {
@@ -163,6 +163,11 @@
 	provideLexicon(() => lexiconGrade);
 	const lexicon = readLexicon();
 
+	// Le dictionnaire n'est chargé qu'au premier énoncé à mots cliquables
+	$effect(() => {
+		if (lexicon()) loadLexiconRuntime();
+	});
+
 	/**
 	 * Source effectivement analysée : en mode restreint, les blocs de code
 	 * perdent leur langue (```trig → bloc de code texte). Le contenu stocké
@@ -185,7 +190,8 @@
 		const finish = (doc: DocumentNode) => {
 			const safe = isRestricted() ? restrictDocument(doc) : doc;
 			const grade = lexicon();
-			return grade ? linkDocument(safe, grade) : safe;
+			const runtime = lexiconRuntime();
+			return grade && runtime ? runtime.linkDocument(safe, grade) : safe;
 		};
 
 		// Check cache first

@@ -20,7 +20,18 @@ ignorent le champ et rendent le texte.
    la correction concise/détaillée ne les prend pas pour des détails (pas de message d'erreur).
 2. ✅ Passe de repérage `src/lib/lexicon/` (comportements 2 à 8, 10, 12, 15 à 18) + données
    (« premier », « expression »).
-3. ⏳ Rendu : contexte « lexique », popover, `MarkdownRenderer` et `FillBlanksInput`.
-4. Branchements : `QuestionCard` (pas en évaluation notée), `FlashCard`, `CorrectionCard` ; niveau de
+3. ✅ Rendu : contexte « lexique », popover, `MarkdownRenderer` et `FillBlanksInput`.
+4. ✅ Branchements : `QuestionCard` (pas en évaluation notée), `FlashCard`, `CorrectionCard` ; niveau de
    l'élève posé par le layout racine ; glossaire `?q=`.
-5. Vérifications, revue, PR.
+5. ⏳ Vérifications, revue, PR.
+
+## Notes d'implémentation
+
+- **Pas de découpage des nœuds texte** : la première version découpait chaque nœud ; à l'arrivée du
+  dictionnaire, les positions des nœuds changeaient et Svelte recréait les champs de réponse
+  (3 tests FlashCard / aperçu en échec : saisie impossible juste après l'affichage). Les mots repérés
+  sont désormais des positions (`TextNode.terms`) ; test « le champ de réponse reste le même ».
+- **Dictionnaire chargé à la demande** (`runtime-store.svelte.ts`) : 228 Ko de source, à ne pas mettre
+  dans `MarkdownRenderer`, chargé par presque toutes les pages. Le texte s'affiche d'abord sans
+  soulignement.
+- Mesure : index d'un niveau ≈ 19 ms (une fois), repérage d'un énoncé ≈ 0,03 ms.

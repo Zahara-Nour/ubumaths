@@ -31,6 +31,8 @@
 
 <script lang="ts">
 	import { parseMarkdown } from '$lib/ubumark';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { readLexicon } from '$lib/components/markdown/lexicon-context';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';
 	import type { MathfieldElement } from 'mathlive';
@@ -189,10 +191,20 @@
 			.flat();
 	}
 
+	// Mots cliquables : repérés au niveau de lecture posé par le cadre de la question
+	// (le dictionnaire est chargé au premier besoin)
+	const lexicon = readLexicon();
+	$effect(() => {
+		if (lexicon()) loadLexiconRuntime();
+	});
+
 	// Parse statement to AST and augment expression nodes
 	// In flash mode, skip augmentation (no "= ?" appended to expressions)
 	let augmentedAST = $derived.by(() => {
-		const ast = parseMarkdown(statement);
+		const grade = lexicon();
+		const runtime = lexiconRuntime();
+		const parsed = parseMarkdown(statement);
+		const ast = grade && runtime ? runtime.linkDocument(parsed, grade) : parsed;
 		if (flashMode) return ast;
 		const augmented = augmentASTForExpressions(ast, expressions);
 		if (onlyBlanks) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 	import { GRADES } from '$lib/types/grades';
@@ -145,6 +146,15 @@
 	function scrollToLetter(letter: string) {
 		document.getElementById(`letter-${letter}`)?.scrollIntoView({ behavior: 'smooth' });
 	}
+
+	// Lien « Voir dans le glossaire » d'un mot cliquable : `/glossaire?q=aire`
+	onMount(() => {
+		const query = new URLSearchParams(window.location.search).get('q');
+		if (query) {
+			searchQuery = query;
+			debouncedQuery = query;
+		}
+	});
 
 	// ===== Derived =====
 

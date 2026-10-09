@@ -93,7 +93,7 @@ export type {
 	InputState,
 	// Lexique (mots cliquables)
 	LexiconMark,
-	TermLink
+	TermRange
 } from './types';
 
 // Variation Table Types

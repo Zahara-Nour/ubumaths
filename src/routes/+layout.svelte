@@ -55,8 +55,12 @@
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
+	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
+
+	// Niveau de l'élève connecté : lu par les mots cliquables des questions
+	provideReaderGrade(() => data.profile?.grade);
 
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));

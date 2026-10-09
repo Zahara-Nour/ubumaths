@@ -8,7 +8,8 @@ import { describe, expect, it } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
 import type { DocumentNode, TextNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
-import { lexiconGrade, linkDocument } from '../linker';
+import { lexiconGrade } from '../grade';
+import { linkDocument } from '../linker';
 
 /** Texte de chaque nœud texte, avec les entrées ouvertes par les mots repérés. */
 function texts(doc: DocumentNode): TextNode[] {
@@ -26,16 +27,9 @@ function texts(doc: DocumentNode): TextNode[] {
 
 /** Mots repérés, dans l'ordre du texte : [mot tel qu'écrit, entrées]. */
 function links(markdown: string, grade: GradeCode): [string, string[]][] {
-	return texts(linkDocument(parseMarkdown(markdown), grade))
-		.filter((n) => n.term)
-		.map((n) => [n.content, n.term?.ids ?? []]);
-}
-
-/** Texte complet, pour vérifier que le découpage ne perd ni n'ajoute rien. */
-function plain(doc: DocumentNode): string {
-	return texts(doc)
-		.map((n) => n.content)
-		.join('');
+	return texts(linkDocument(parseMarkdown(markdown), grade)).flatMap((n) =>
+		(n.terms ?? []).map((t): [string, string[]] => [n.content.slice(t.start, t.end), t.ids])
+	);
 }
 
 describe('mots cliquables : repérage', () => {
@@ -47,9 +41,15 @@ describe('mots cliquables : repérage', () => {
 		]);
 	});
 
-	it('le découpage garde le texte exact', () => {
-		const doc = parseMarkdown('Calcule l’aire du rectangle, puis trace un angle droit.');
-		expect(plain(linkDocument(doc, '6'))).toBe(plain(doc));
+	// Un nœud découpé changeait les positions des champs de réponse voisins, que
+	// Svelte recréait à l'arrivée du dictionnaire (saisie perdue)
+	it('l’arbre garde sa forme : aucun nœud ajouté, texte inchangé', () => {
+		const doc = parseMarkdown('Calcule l’aire $x$ du rectangle, puis trace un angle droit.');
+		const linked = linkDocument(doc, '6');
+		expect(texts(linked).map((n) => n.content)).toEqual(texts(doc).map((n) => n.content));
+		expect(JSON.stringify(linked.children.map((b) => b.type))).toBe(
+			JSON.stringify(doc.children.map((b) => b.type))
+		);
 	});
 
 	it('2. mots entiers seulement : « angle » ne s’allume pas dans « rectangle »', () => {

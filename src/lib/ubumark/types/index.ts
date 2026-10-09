@@ -58,7 +58,7 @@ export type {
 	InputState,
 	// Lexique (mots cliquables)
 	LexiconMark,
-	TermLink
+	TermRange
 } from './ast';
 
 export { DEFAULT_IMAGE_SIZE_MAPPINGS } from './ast';

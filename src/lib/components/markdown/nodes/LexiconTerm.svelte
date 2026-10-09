@@ -16,7 +16,7 @@
 	import type { Snippet } from 'svelte';
 	import { resolve } from '$app/paths';
 	import * as Popover from '$lib/components/ui/popover';
-	import { lexiconCard } from '$lib/lexicon/card';
+	import { lexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import { provideLexicon, readLexicon } from '../lexicon-context';
 
@@ -32,9 +32,11 @@
 	const lexicon = readLexicon();
 	provideLexicon(() => null);
 
+	// Le repérage a déjà chargé le dictionnaire : un mot cliquable n'existe qu'après
 	let card = $derived.by(() => {
 		const grade = lexicon();
-		return grade ? lexiconCard(ids, grade) : [];
+		const runtime = lexiconRuntime();
+		return grade && runtime ? runtime.lexiconCard(ids, grade) : [];
 	});
 </script>
 

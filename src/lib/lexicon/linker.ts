@@ -7,16 +7,16 @@
  * Spécification validée par David le 2026-10-09 :
  * docs/wip/lexique/lot2-mots-cliquables-spec.md.
  *
- * Une passe pure sur l'AST d'ubumark : chaque nœud texte est découpé, et les
- * morceaux repérés portent `term = { ids }`. L'AST reçu n'est jamais modifié
- * (il peut venir du cache des rendus).
+ * Une passe pure sur l'AST d'ubumark : chaque nœud texte reçoit les positions
+ * de ses mots repérés (`terms`), sans être découpé, pour que l'arbre garde sa
+ * forme. L'AST reçu n'est jamais modifié (il peut venir du cache des rendus).
  *
  * @module lexicon/linker
  */
 
 import MATH_DICTIONARY, { isTermVisibleTo, type MathTerm } from '$lib/data/math-dictionary-fr';
-import { GRADES, isGradeCode, type GradeCode } from '$lib/types/grades';
-import type { DocumentNode, LexiconMark, TextNode } from '$lib/ubumark';
+import type { GradeCode } from '$lib/types/grades';
+import type { DocumentNode, LexiconMark, TermRange, TextNode } from '$lib/ubumark';
 
 // ---------------------------------------------------------------------------
 // Entrées
@@ -32,26 +32,6 @@ const TERMS_BY_ID = new Map(MATH_DICTIONARY.map((term) => [termId(term), term]))
 /** Entrée du dictionnaire par son identifiant. */
 export function getTermById(id: string): MathTerm | undefined {
 	return TERMS_BY_ID.get(id);
-}
-
-// ---------------------------------------------------------------------------
-// Niveau de lecture
-// ---------------------------------------------------------------------------
-
-/**
- * Niveau de lecture : celui de l'élève ; sans lui (visiteur, professeur), le
- * plus petit niveau de la question, pour les définitions les plus simples.
- */
-export function lexiconGrade(
-	profileGrade: string | null | undefined,
-	questionGrades: readonly string[] = []
-): GradeCode | null {
-	if (profileGrade && isGradeCode(profileGrade)) return profileGrade;
-	const grades = questionGrades.filter(isGradeCode);
-	if (grades.length === 0) return null;
-	return grades.reduce((lowest, grade) =>
-		GRADES[grade].schoolYear < GRADES[lowest].schoolYear ? grade : lowest
-	);
 }
 
 // ---------------------------------------------------------------------------
@@ -188,26 +168,26 @@ function idsKey(entries: MathTerm[]): string {
 	return entries.map(termId).join('|');
 }
 
+/** Le nœud texte, avec les positions des mots repérés (aucun découpage). */
 function linkText(
 	node: TextNode,
 	index: LexiconIndex,
 	grade: GradeCode,
 	seen: Set<string>
-): TextNode[] {
-	if (node.code || node.lexicon?.mode === 'block') return [node];
+): TextNode {
+	if (node.code || node.lexicon?.mode === 'block') return node;
 	if (node.lexicon?.mode === 'force') {
 		const entries = markedEntries(node.content, node.lexicon, index, grade);
-		if (entries.length === 0) return [node];
+		if (entries.length === 0) return node;
 		seen.add(idsKey(entries));
-		return [{ ...node, term: { ids: entries.map(termId) } }];
+		return { ...node, terms: [{ start: 0, end: node.content.length, ids: entries.map(termId) }] };
 	}
-	if (!index.auto) return [node];
+	if (!index.auto) return node;
 
-	const pieces: TextNode[] = [];
+	const terms: TermRange[] = [];
 	// Expression compilée une fois par niveau : on repart du début du texte
 	const regex = index.auto;
 	regex.lastIndex = 0;
-	let position = 0;
 	let match: RegExpExecArray | null;
 	while ((match = regex.exec(node.content)) !== null) {
 		const entries = autoEntries(index, matchedName(match, index.autoNames));
@@ -215,29 +195,37 @@ function linkText(
 		// Première occurrence seulement : les suivantes restent du texte
 		if (entries.length === 0 || seen.has(key)) continue;
 		seen.add(key);
-		if (match.index > position) {
-			pieces.push({ ...node, content: node.content.slice(position, match.index) });
-		}
-		pieces.push({ ...node, content: match[0], term: { ids: entries.map(termId) } });
-		position = match.index + match[0].length;
+		terms.push({
+			start: match.index,
+			end: match.index + match[0].length,
+			ids: entries.map(termId)
+		});
 	}
-	if (pieces.length === 0) return [node];
-	if (position < node.content.length) {
-		pieces.push({ ...node, content: node.content.slice(position) });
-	}
-	return pieces;
+	return terms.length > 0 ? { ...node, terms } : node;
 }
 
 // ---------------------------------------------------------------------------
 // Passe sur le document
 // ---------------------------------------------------------------------------
 
-/** Nœuds dont les enfants sont du texte d'énoncé : paragraphes, titres, listes, encadrés. */
-type Container = { type: string; children?: unknown[]; items?: unknown[] };
+/** Nœud qui contient du texte d'énoncé : paragraphe, titre, liste, élément de liste, encadré. */
+interface Container {
+	type: string;
+	children?: unknown[];
+	items?: unknown[];
+}
+
+function isContainer(node: unknown): node is Container {
+	return typeof node === 'object' && node !== null && 'type' in node;
+}
+
+function isText(node: unknown): node is TextNode {
+	return isContainer(node) && node.type === 'text';
+}
 
 /**
  * Copie du document où les mots du dictionnaire visibles au niveau `grade`
- * sont repérés (`TextNode.term`), dans l'ordre du texte : un mot n'est repéré
+ * sont repérés (`TextNode.terms`), dans l'ordre du texte : un mot n'est repéré
  * qu'une fois par document. Les tableaux, liens, formules et blocs spéciaux
  * ne sont pas touchés.
  */
@@ -245,22 +233,20 @@ export function linkDocument(doc: DocumentNode, grade: GradeCode): DocumentNode 
 	const index = getIndex(grade);
 	const seen = new Set<string>();
 
-	function visit<T>(node: T): T {
-		if (!node || typeof node !== 'object') return node;
-		const container = node as Container;
-		if (Array.isArray(container.children)) {
-			const children = container.children.flatMap((child) =>
-				(child as TextNode).type === 'text'
-					? linkText(child as TextNode, index, grade, seen)
-					: [visit(child)]
+	function visit(node: unknown): unknown {
+		if (!isContainer(node)) return node;
+		if (Array.isArray(node.children)) {
+			const children = node.children.map((child) =>
+				isText(child) ? linkText(child, index, grade, seen) : visit(child)
 			);
-			return { ...node, children } as T;
+			return { ...node, children };
 		}
-		if (Array.isArray(container.items)) {
-			return { ...node, items: container.items.map((item) => visit(item)) } as T;
+		if (Array.isArray(node.items)) {
+			return { ...node, items: node.items.map(visit) };
 		}
 		return node;
 	}
 
-	return visit(doc);
+	// Même forme que le document reçu : seuls des champs `terms` s'ajoutent
+	return visit(doc) as DocumentNode;
 }

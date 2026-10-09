@@ -1,6 +1,7 @@
 /**
  * Mots cliquables (lot 2 du lexique, spécification validée par David le
- * 2026-10-09) : rendu dans un énoncé et fiche ouverte au clic.
+ * 2026-10-09) : rendu dans un énoncé et fiche ouverte au clic. Le dictionnaire
+ * est chargé à la demande : les mots se soulignent après son arrivée (attente).
  */
 import { describe, it, expect } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
@@ -18,7 +19,7 @@ describe('mots cliquables dans un énoncé', () => {
 			content: 'Calcule l’aire du rectangle.',
 			lexiconGrade: '6'
 		});
-		expect(lexiconButtons(container)).toEqual(['Calcule', 'aire', 'rectangle']);
+		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule', 'aire', 'rectangle']);
 	});
 
 	it('sans niveau, ou avec null, aucun mot n’est souligné', async () => {
@@ -36,15 +37,17 @@ describe('mots cliquables dans un énoncé', () => {
 			content: 'Calcule l’aire.',
 			grade: '6'
 		});
-		expect(lexiconButtons(container)).toEqual(['Calcule', 'aire']);
+		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule', 'aire']);
 	});
 
 	it('le texte affiché ne change pas, espaces autour des formules compris', async () => {
 		const content = 'La fonction $f$ est une fonction affine, $g$ aussi.';
 		const avec = await render(MarkdownRenderer, { content, lexiconGrade: '3' });
 		const sans = await render(MarkdownRenderer, { content });
+		await expect
+			.poll(() => lexiconButtons(avec.container))
+			.toEqual(['fonction', 'fonction affine']);
 		expect(avec.container.textContent).toBe(sans.container.textContent);
-		expect(lexiconButtons(avec.container)).toEqual(['fonction', 'fonction affine']);
 	});
 
 	it('9 et 11. un clic ouvre la fiche : définition au niveau de l’élève et lien vers le glossaire', async () => {

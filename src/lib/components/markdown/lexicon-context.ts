@@ -14,6 +14,8 @@
 
 import { getContext, hasContext, setContext } from 'svelte';
 import type { GradeCode } from '$lib/types/grades';
+import { lexiconGrade } from '$lib/lexicon/grade';
+import { readReaderGrade } from '$lib/lexicon/reader-grade';
 
 const LEXICON_KEY = Symbol('markdown-lexicon');
 
@@ -36,4 +38,17 @@ export function provideLexicon(get: () => GradeCode | null | undefined): void {
 /** Le niveau de lecture des mots cliquables, ou `null` : pas de mot souligné. */
 export function readLexicon(): LexiconGetter {
 	return hasContext(LEXICON_KEY) ? getContext<LexiconGetter>(LEXICON_KEY) : () => null;
+}
+
+/**
+ * Cadre d'une question : mots cliquables dans l'énoncé, les réponses et la
+ * correction, au niveau de l'élève connecté, sinon au plus petit niveau de la
+ * question (visiteur, professeur). `enabled` faux : évaluation notée, aucun mot.
+ */
+export function provideQuestionLexicon(
+	questionGrades: () => readonly string[] | undefined,
+	enabled: () => boolean = () => true
+): void {
+	const reader = readReaderGrade();
+	provideLexicon(() => (enabled() ? lexiconGrade(reader(), questionGrades() ?? []) : null));
 }
