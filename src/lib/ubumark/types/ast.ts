@@ -43,6 +43,24 @@ export interface TextNode extends BaseNode {
 	highlight?: boolean;
 	/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
 	detail?: DetailKind;
+	/** Marquage à la main d'un mot du lexique : `[mot]{.def}`, `{.def=…}`, `{.nodef}` */
+	lexicon?: LexiconMark;
+	/** Mot du dictionnaire repéré dans ce texte : il devient cliquable (mots cliquables) */
+	term?: TermLink;
+}
+
+/** Marquage à la main d'un mot du lexique dans un texte. */
+export interface LexiconMark {
+	/** `force` : toujours cliquable ; `block` : jamais repéré automatiquement */
+	mode: 'force' | 'block';
+	/** Entrée visée par `{.def=carré (géométrie)}` */
+	target?: string;
+}
+
+/** Entrées du dictionnaire qu'ouvre un mot cliquable : plusieurs pour un homonyme. */
+export interface TermLink {
+	/** Nom de l'entrée, suivi de son sens pour un homonyme : « carré (puissance) » */
+	ids: string[];
 }
 
 /**

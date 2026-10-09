@@ -60,6 +60,19 @@ export const CALLOUT_MARKER_REGEX = /^\s*\[!([^\]\s]*)\]\s?(.*)$/;
  */
 export const INLINE_DETAIL_REGEX = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(\p{L}+)\}/gu;
 
+/**
+ * Mot du lexique marqué à la main (lot 2 du lexique) : `[mot]{.def}`,
+ * `[mot]{.def=carré (géométrie)}` (entrée visée) ou `[mot]{.nodef}`. Même
+ * syntaxe que les détails en ligne, mais ce n'est pas un détail de correction.
+ */
+export const LEXICON_MARK_REGEX =
+	/\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(def|nodef)(?:=([^{}\n]+))?\}/gu;
+
+/** `def` / `nodef` : mots réservés au lexique, jamais un type de détail. */
+export function isLexiconMarkWord(raw: string): boolean {
+	return raw === 'def' || raw === 'nodef';
+}
+
 /** Caractère de masquage : ni crochet, ni accolade, ni lettre. */
 const MASK_CHAR = '';
 

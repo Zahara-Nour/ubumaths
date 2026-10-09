@@ -55,7 +55,10 @@ export type {
 	// Video types
 	VideoProvider,
 	// Input state
-	InputState
+	InputState,
+	// Lexique (mots cliquables)
+	LexiconMark,
+	TermLink
 } from './ast';
 
 export { DEFAULT_IMAGE_SIZE_MAPPINGS } from './ast';
