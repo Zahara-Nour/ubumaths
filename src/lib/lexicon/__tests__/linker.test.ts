@@ -125,6 +125,13 @@ describe('mots cliquables : repérage', () => {
 		expect(links('Cet événement est certain.', 'CM1')).toContainEqual(['événement', ['évènement']]);
 	});
 
+	it('reconnaît le féminin d’un adjectif : « pièce équilibrée »', () => {
+		expect(links('On lance une pièce équilibrée.', '5')).toContainEqual([
+			'équilibrée',
+			['équilibré']
+		]);
+	});
+
 	it('« fonction exponentielle » ouvre le sens de la filière de l’élève', () => {
 		expect(links('Trace la fonction exponentielle.', '1_GEN')).toContainEqual([
 			'fonction exponentielle',

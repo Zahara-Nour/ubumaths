@@ -8743,7 +8743,9 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5'
+		grade: '5',
+		// Féminin : « pièce équilibrée », « roues équilibrées »
+		forms: ['équilibrée']
 	},
 	{
 		term: 'indiscernable',

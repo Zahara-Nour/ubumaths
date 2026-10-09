@@ -536,10 +536,12 @@ describe('math-dictionary-fr', () => {
 			if (names.includes(old)) wrong.push(`« ${old} » : ancienne orthographe`);
 		for (const now of LOT_0F.orthographe.apres)
 			if (!names.includes(now)) wrong.push(`« ${now} » : introuvable`);
-		// Nom, sens, formes, définitions et exemples : partout, sauf les synonymes, qui
-		// gardent la graphie « événement » des énoncés publiés (lot 0h)
+		// Nom, sens, formes, définitions et exemples : partout, sauf les synonymes validés
+		// au lot 0h, qui gardent la graphie « événement » des énoncés publiés
+		const spellingSynonyms = new Set(LOT_0H.synonymes.flatMap((s) => s.ajouts));
 		for (const term of MATH_DICTIONARY) {
-			if (JSON.stringify({ ...term, synonyms: undefined }).includes('événement'))
+			const synonyms = (term.synonyms ?? []).filter((s) => !spellingSynonyms.has(s));
+			if (JSON.stringify({ ...term, synonyms }).includes('événement'))
 				wrong.push(`${term.term} : « événement »`);
 			for (const item of term.definitions?.items ?? []) {
 				for (const unaccented of LOT_0F.formulesSansAccent)
@@ -601,6 +603,13 @@ describe('math-dictionary-fr', () => {
 				wrong.push(`${expected.term} (${expected.sense}) : introuvable`);
 			}
 		}
+		// Le renvoi « exponentielle » mène à la fonction exp (glossaire et fiche prennent
+		// le premier terme principal de ce nom)
+		const target = MATH_DICTIONARY.find(
+			(t) => t.term === 'fonction exponentielle' && !t.derivedFrom
+		);
+		if (target?.sense !== 'exp')
+			wrong.push(`exponentielle : renvoi vers ${target?.sense ?? 'rien'}`);
 		expect(wrong).toEqual([]);
 	});
 
