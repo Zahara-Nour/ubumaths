@@ -21,7 +21,11 @@
 - **D16 et A78 (2026-10-09)** : « Extremum de (x + a)eˣ » et « Intervalle où f est croissante, f′ de la forme (ax + b)eˣ »
   vont sous « Dérivation > variations » avec 1SPE-283. Leur contenu est l'étude des variations par le signe de f′ ;
   l'exponentielle n'y intervient que par eˣ > 0.
-- Restent à trancher : C23, C37, D10, D24, D33, D51, D53-D56-D57, D54, D61, D69, D81, D88-D89, A93-A94.
+- **D10 (2026-10-09)** : « Calculer un nombre dérivé » va sous « Dérivation > opérations sur les dérivées » avec 1SPE-274
+  (f′(a) d'un polynôme se calcule par la fonction dérivée, jamais par la limite).
+- **D24 (2026-10-09)** : « Parité et périodicité de cosinus et sinus » va sous « Généralités sur les fonctions > parité »
+  avec 1SPE-280 (QCM de parité : l'élève applique le test f(−x) = ±f(x)).
+- Restent à trancher : C23, C37, D33, D51, D53-D56-D57, D54, D61, D69, D81, D88-D89, A93-A94.
 
 ## En bref
 
