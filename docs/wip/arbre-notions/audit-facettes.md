@@ -5,7 +5,8 @@
 > - **Q1 = oui** : « optimisation » se fond dans « variations ».
 > - **Q2 = oui** : « Décimaux : calculs » garde les opérations ; les techniques y sont versées, chaque point allant sur l'opération qu'il travaille (sur la notion s'il en couvre plusieurs).
 > - **Q3, « double et moitié » = deux nœuds** : on garde le nœud sous l'addition ET celui sous la multiplication, comme le BO.
-> - Q3 (« triple et tiers »), Q4 à Q7 et la section D (renommages) attendent encore sa réponse.
+> - **Q4 = maintenant** : les notions coupées « avec / sans coordonnées » (Vecteurs, Espace, Orthogonalité dans l'espace) sont refondues par objet, avec le nettoyage de l'arbre. Les noms proposés (« Vecteurs », « Espace », « Orthogonalité et distances dans l'espace ») attendent sa confirmation.
+> - Q3 (« triple et tiers »), Q5 à Q7 et la section D (renommages) attendent encore sa réponse.
 >
 > Rien n'est écrit en base.
 >
