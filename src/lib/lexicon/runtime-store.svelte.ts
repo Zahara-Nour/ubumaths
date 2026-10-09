@@ -21,9 +21,15 @@ export function lexiconRuntime(): LexiconRuntime | null {
 	return current;
 }
 
-/** Lancer le chargement, une seule fois. */
+/** Lancer le chargement, une seule fois ; après un échec (réseau, déploiement), au prochain besoin. */
 export function loadLexiconRuntime(): void {
-	loading ??= import('./runtime').then((module) => {
-		current = module;
-	});
+	loading ??= import('./runtime')
+		.then((module) => {
+			current = module;
+		})
+		.catch((error: unknown) => {
+			// Les énoncés restent lisibles, sans mot cliquable
+			console.warn('[mots cliquables] dictionnaire non chargé', error);
+			loading = null;
+		});
 }

@@ -23,6 +23,9 @@ describe('mots cliquables dans un énoncé', () => {
 	});
 
 	it('sans niveau, ou avec null, aucun mot n’est souligné', async () => {
+		// Dictionnaire chargé d'abord : l'absence prouve le refus, pas un chargement en retard
+		const avec = await render(MarkdownRenderer, { content: 'Calcule l’aire.', lexiconGrade: '6' });
+		await expect.poll(() => lexiconButtons(avec.container)).toEqual(['Calcule', 'aire']);
 		const sans = await render(MarkdownRenderer, { content: 'Calcule l’aire du rectangle.' });
 		expect(lexiconButtons(sans.container)).toEqual([]);
 		const coupe = await render(MarkdownRenderer, {
@@ -82,5 +85,39 @@ describe('mots cliquables dans un énoncé', () => {
 		expect(document.querySelectorAll('button.lexicon-term')).toHaveLength(3);
 		await userEvent.keyboard('{Escape}');
 		await expect.element(link).not.toBeInTheDocument();
+	});
+
+	// Revue d'accessibilité du 2026-10-09 : fiche ouverte, toucher le champ de
+	// réponse rendait le focus au mot (piège de bits-ui) ; l'élève ne pouvait pas taper
+	it('un clic dans un champ à côté y laisse le curseur', async () => {
+		await render(MarkdownRenderer, { content: 'Calcule l’aire du rectangle.', lexiconGrade: '6' });
+		const field = document.body.appendChild(document.createElement('input'));
+		// Loin du mot : la fiche ne le recouvre pas, comme un champ de réponse sous l'énoncé
+		field.style.cssText = 'position: fixed; bottom: 8px; right: 8px;';
+		try {
+			await page.getByRole('button', { name: 'aire', exact: true }).click();
+			await expect.element(page.getByRole('dialog', { name: 'aire' })).toBeInTheDocument();
+			await userEvent.click(field);
+			await expect.poll(() => document.activeElement).toBe(field);
+		} finally {
+			field.remove();
+		}
+	});
+
+	it('la fiche s’annonce comme une boîte de dialogue au nom du mot, focus sur elle', async () => {
+		await render(MarkdownRenderer, { content: 'Calcule l’aire du rectangle.', lexiconGrade: '6' });
+		await page.getByRole('button', { name: 'aire', exact: true }).click();
+		const dialog = page.getByRole('dialog', { name: 'aire' });
+		await expect.element(dialog).toHaveAccessibleDescription(/surface/i);
+		await expect.poll(() => document.activeElement).toBe(dialog.element());
+	});
+
+	it('Échap rend le focus au mot', async () => {
+		await render(MarkdownRenderer, { content: 'Calcule l’aire du rectangle.', lexiconGrade: '6' });
+		const word = page.getByRole('button', { name: 'aire', exact: true });
+		await word.click();
+		await expect.element(page.getByRole('dialog', { name: 'aire' })).toBeInTheDocument();
+		await userEvent.keyboard('{Escape}');
+		await expect.poll(() => document.activeElement).toBe(word.element());
 	});
 });

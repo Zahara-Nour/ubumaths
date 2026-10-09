@@ -156,8 +156,10 @@
 				<span class="choice-letter">{getChoiceLetter(i)}</span>
 
 				<!-- Choice content - now a ResolvedMarkdown string rendered directly -->
+				<!-- Pas de mot cliquable : le choix est déjà un bouton, un clic sur le mot
+				     enverrait la réponse (revue du 2026-10-09) -->
 				<div class="choice-content">
-					<MarkdownRenderer content={choice.content} {genericFunctions} />
+					<MarkdownRenderer content={choice.content} {genericFunctions} lexiconGrade={null} />
 				</div>
 
 				<!-- Validation indicator -->

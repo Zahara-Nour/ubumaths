@@ -35,3 +35,18 @@ ignorent le champ et rendent le texte.
   dans `MarkdownRenderer`, chargé par presque toutes les pages. Le texte s'affiche d'abord sans
   soulignement.
 - Mesure : index d'un niveau ≈ 19 ms (une fois), repérage d'un énoncé ≈ 0,03 ms.
+
+## Revues (2026-10-09)
+
+- **Code** : QCM — un choix est un `<button>` ; un mot cliquable dedans envoyait la réponse au clic.
+  Coupé (`lexiconGrade={null}` sur le rendu d'un choix), **à trancher par David** (autre option :
+  revoir la structure d'un choix). Lien du glossaire en nouvel onglet (une série d'entraînement
+  n'existe qu'en mémoire). Budget des figures dérivé de la source. Chargement retenté après un échec.
+  Textes à trous : repérage après le découpage en phrases. Tests du champ stable (fichier à part,
+  prouvé rouge en déplaçant les nœuds) et de l'absence (dictionnaire chargé d'abord) renforcés.
+- **Accessibilité** : fiche ouverte, toucher le champ de réponse rendait le focus au mot (piège de
+  bits-ui) ; corrigé et testé. Fiche annoncée en `dialog` (nom = le mot, description = définitions),
+  focus sur la fiche à l'ouverture, retour au mot avec Échap. Soulignement `decoration-foreground/60`
+  (≈ 5:1, contre 1,5:1). Même défaut de focus probable dans `HintReference.svelte` (hors lot).
+- **Pour les auteurs** : un marquage `[mot]{.def}` au milieu de `**gras**` casse le gras (même limite
+  que `{.rappel}`) : écrire `**[mot]{.def}**` ou marquer hors du gras.

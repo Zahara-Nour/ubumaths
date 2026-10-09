@@ -225,7 +225,8 @@
 	 * imbriqués compris) : un nouveau budget à chaque nouveau contenu.
 	 */
 	let renderBudget = $derived.by(() => {
-		void ast;
+		// La source, pas l'AST : l'arrivée des mots cliquables ne recalcule pas les figures
+		void source;
 		return createRenderBudget();
 	});
 	provideRenderBudget(() => renderBudget);

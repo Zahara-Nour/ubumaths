@@ -200,11 +200,8 @@
 
 	// Parse statement to AST and augment expression nodes
 	// In flash mode, skip augmentation (no "= ?" appended to expressions)
-	let augmentedAST = $derived.by(() => {
-		const grade = lexicon();
-		const runtime = lexiconRuntime();
-		const parsed = parseMarkdown(statement);
-		const ast = grade && runtime ? runtime.linkDocument(parsed, grade) : parsed;
+	let structuredAST = $derived.by(() => {
+		const ast = parseMarkdown(statement);
 		if (flashMode) return ast;
 		const augmented = augmentASTForExpressions(ast, expressions);
 		if (onlyBlanks) {
@@ -219,6 +216,14 @@
 			};
 		}
 		return augmented;
+	});
+
+	// Mots repérés en dernier : les positions portent sur le texte affiché (après le
+	// découpage en phrases de `onlyBlanks`)
+	let augmentedAST = $derived.by(() => {
+		const grade = lexicon();
+		const runtime = lexiconRuntime();
+		return grade && runtime ? runtime.linkDocument(structuredAST, grade) : structuredAST;
 	});
 
 	// Build InputState[] from blanks + validationResults (or correction mode)
