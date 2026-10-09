@@ -90,6 +90,8 @@ interface StatText {
 		/** Lois à densité (PR b) : `[a ; b]` déjà écrit selon la langue */
 		uniformDensity: (interval: string) => string;
 		exponential: (lambda: string) => string;
+		/** N(μ ; σ²) (2026-10-09) */
+		normal: (mu: string, variance: string) => string;
 		/** Après « P(X = 3) = 0 » */
 		pointZero: (variable: string) => string;
 		/** Axe vertical et description de la courbe */
@@ -221,6 +223,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			notShown: 'valeurs suivantes non représentées',
 			uniformDensity: (interval) => `loi uniforme sur ${interval}`,
 			exponential: (lambda) => `E(${lambda})`,
+			normal: (mu, variance) => `N(${mu} ; ${variance})`,
 			pointZero: (variable) => `loi à densité : P(${variable} = x) = 0`,
 			density: 'Densité',
 			densityCurve: 'Courbe de densité',
@@ -334,6 +337,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			notShown: 'following values not shown',
 			uniformDensity: (interval) => `uniform distribution on ${interval}`,
 			exponential: (lambda) => `Exp(${lambda})`,
+			normal: (mu, variance) => `N(${mu}, ${variance})`,
 			pointZero: (variable) => `continuous distribution: P(${variable} = x) = 0`,
 			density: 'Density',
 			densityCurve: 'Density curve',

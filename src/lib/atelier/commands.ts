@@ -167,6 +167,17 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		// Loi normale (2026-10-09) : le nom `normal` est pris par la forme normale du moteur
+		'gaussian',
+		{
+			french: 'normale',
+			description: 'Loi normale N(μ ; σ²), avec μ et σ : courbe, E, V, σ, probabilités',
+			example: '.normale Y 0 1 P(-1,96 ⩽ Y ⩽ 1,96)',
+			exampleSetup: {},
+			section: 'probabilites'
+		}
+	],
+	[
 		'compare',
 		{
 			french: 'comparer',
@@ -404,7 +415,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'binomial',
 	'geometric',
 	'uniform',
-	'exponential'
+	'exponential',
+	'gaussian'
 ]);
 
 /**

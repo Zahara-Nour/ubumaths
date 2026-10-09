@@ -371,6 +371,19 @@ export class Atelier {
 	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
 	#lastRemoval: RemovalUndo | null = null;
 
+	/**
+	 * Les lois des variables aléatoires (décision de David, 2026-10-09) :
+	 * variable → ligne de tête du bloc ```loi (`X ~ B(10 ; 0,3)`), posée par
+	 * `.binomiale`, `.geometrique`, `.uniforme`, `.exponentielle`, `.normale`,
+	 * pour que `P(X ⩽ 3)` tapé seul se calcule.
+	 *
+	 * ⚠️ Hors de `serialize()` : rien de rangé d'une visite à l'autre, et ce
+	 * n'est PAS un objet de l'atelier (aucune liste créée, Q142) — X peut
+	 * nommer en même temps un objet et une variable aléatoire. Pas réactif :
+	 * aucune vue ne l'affiche. `restore()` (vider, rejouer, charger) l'oublie.
+	 */
+	#laws = new Map<string, string>();
+
 	get objects(): readonly AtelierObject[] {
 		return this.items;
 	}
@@ -395,6 +408,16 @@ export class Atelier {
 
 	get(name: string): AtelierObject | undefined {
 		return this.items.find((o) => o.name === name);
+	}
+
+	/** Retenir la loi de `variable` : remplace la précédente (2026-10-09) */
+	rememberLaw(variable: string, head: string): void {
+		this.#laws.set(variable, head);
+	}
+
+	/** La ligne de tête de la loi de `variable`, si une commande l'a définie */
+	lawOf(variable: string): string | undefined {
+		return this.#laws.get(variable);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -979,6 +1002,7 @@ export class Atelier {
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
+		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
 
 		for (const stored of state.objects) {

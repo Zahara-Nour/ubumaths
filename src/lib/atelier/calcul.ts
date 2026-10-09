@@ -48,7 +48,13 @@ import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
-import { exponentialCommand, geometricCommand, uniformCommand } from './law-commands';
+import {
+	exponentialCommand,
+	geometricCommand,
+	lawEvent,
+	normalCommand,
+	uniformCommand
+} from './law-commands';
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
@@ -218,20 +224,27 @@ const EVENT_COMPARATOR = String.raw`(?:<=|>=|[⩽⩾≤≥<>=]|\\(?:leqslant|geq
 
 /**
  * La probabilité d'un événement tapée seule : `P(X ⩽ 3)`, `P(2 ⩽ X ⩽ 5)`,
- * `P(X\leqslant 3)`. Une majuscule seule comparée, dans `P(…)`.
+ * `P(X\leqslant 3)`, `P(|Y| ⩽ 1,96)` — et aussi `P(x ⩽ 3)` ou `P(2X ⩽ 3)`,
+ * que `lawEvent` refuse en français (avant : « … écrit après un facteur »).
+ * Une comparaison DANS les parenthèses de `P(…)` : `P(x)<3` n'en est pas une.
  */
 const EVENT_PROBABILITY = new RegExp(
-	String.raw`^P\s*(?:\\left)?\(\s*(?:[^()]*?${EVENT_COMPARATOR}\s*)?[A-Z]\s*${EVENT_COMPARATOR}`
+	String.raw`^P\s*(?:\\left)?\((?=[^()]*${EVENT_COMPARATOR})[^()]*\)\s*$`
 );
 
 /**
- * L'atelier ne garde pas les lois (`.binomiale` ne crée rien, Q142) : la
- * probabilité se demande dans la ligne de la loi. Sans ce refus, `P(X ⩽ 3)`
- * répondait « Nombre « 3 » écrit après un facteur… » et `P(X\leqslant 3)` se
- * recopiait tel quel (2026-10-09).
+ * L'atelier RETIENT la loi d'une variable aléatoire (décision de David,
+ * 2026-10-09) : `P(X ⩽ 3)` tapé seul se calcule sur la loi posée par
+ * `.binomiale X 10 0,3` (`lawEvent`). Avant, un refus renvoyait à la ligne de
+ * la loi ; sans lui, `P(X ⩽ 3)` répondait « Nombre « 3 » écrit après un
+ * facteur… » et `P(X\leqslant 3)` se recopiait tel quel.
  */
-const EVENT_PROBABILITY_MESSAGE =
-	'Une probabilité se calcule dans la ligne de la loi : .binomiale X 10 0,3 P(X ⩽ 3) — de même avec .geometrique, .uniforme et .exponentielle.';
+function eventProbability(atelier: Atelier, input: string): CalcResult {
+	const outcome = lawEvent(atelier, input);
+	return outcome.ok
+		? { kind: 'commande', input, output: outcome.text }
+		: { kind: 'refus', message: outcome.message };
+}
 
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
@@ -637,7 +650,9 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	// Lois de maths complémentaires (manche 13, PR c) : même chemin que `.binomiale`
 	geometric: (atelier, argument) => geometricCommand(atelier, argument),
 	uniform: (atelier, argument) => uniformCommand(atelier, argument),
-	exponential: (atelier, argument) => exponentialCommand(atelier, argument)
+	exponential: (atelier, argument) => exponentialCommand(atelier, argument),
+	// Loi normale (2026-10-09) : `gaussian`, `normal` est la forme normale du moteur
+	gaussian: (atelier, argument) => normalCommand(atelier, argument)
 };
 
 /**
@@ -1273,7 +1288,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// de lettres, sans erreur. Une commande le vérifie sur son argument de
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
-		if (EVENT_PROBABILITY.test(input)) return { kind: 'refus', message: EVENT_PROBABILITY_MESSAGE };
+		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
 	}

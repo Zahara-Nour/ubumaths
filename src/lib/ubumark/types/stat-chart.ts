@@ -84,6 +84,17 @@ export interface LawThreshold {
 }
 
 /**
+ * Une probabilité P(low ⩽ X ⩽ high) d'une loi discrète ; `complement` :
+ * l'événement contraire, pour `P(|X − m| > a)` (2026-10-09)
+ */
+export interface QueryInterval {
+	display: string;
+	low: number;
+	high: number;
+	complement?: boolean;
+}
+
+/**
  * Loi d'une variable aléatoire finie (lot 6, Q41) : valeurs et probabilités
  * TELLES QU'ÉCRITES par l'auteur (`1/6` reste `1/6`).
  */
@@ -107,7 +118,7 @@ export interface LawData {
 		/** Décimales affichées (`arrondi:`, 3 par défaut) */
 		places: number;
 		/** `probabilités:` : P(low ⩽ X ⩽ high), et leur écriture normalisée */
-		queries: { display: string; low: number; high: number }[];
+		queries: QueryInterval[];
 		/** `diagramme: oui` : les bâtons de la loi */
 		chart: boolean;
 		/** `intervalle:` : le niveau 1 − α en fraction (`19/20`), sinon null (Q140) */
@@ -129,18 +140,22 @@ export interface LawData {
 		 * P(low ⩽ X ⩽ high), `high` null : pas de borne haute ; `given` :
 		 * conditionnée par X ⩾ given (P(X > a | X > b)), sinon null
 		 */
-		queries: { display: string; low: number; high: number | null; given: number | null }[];
+		queries: (Omit<QueryInterval, 'high'> & { high: number | null; given: number | null })[];
 		chart: boolean;
 		/** `seuil:` (manche 14), comme la loi binomiale ; sinon null */
 		threshold: LawThreshold | null;
 	} | null;
 	/**
-	 * Loi à densité (`X ~ U([a ; b])`, `X ~ E(λ)`, manche 13, PR b) : pas de
-	 * tableau ; sinon null
+	 * Loi à densité (`X ~ U([a ; b])`, `X ~ E(λ)`, manche 13, PR b ;
+	 * `X ~ N(μ ; σ²)`, 2026-10-09) : pas de tableau ; sinon null
 	 */
 	density: {
 		/** Paramètres tels qu'écrits (`0,5`, `1/3`) */
-		law: { family: 'uniform'; a: string; b: string } | { family: 'exponential'; lambda: string };
+		law:
+			| { family: 'uniform'; a: string; b: string }
+			| { family: 'exponential'; lambda: string }
+			/** `X ~ N(μ ; σ²)` : μ et σ² tels qu'écrits (2026-10-09) */
+			| { family: 'normal'; mu: string; variance: string };
 		places: number;
 		queries: DensityQuery[];
 		/** `diagramme: oui` : la courbe de densité */
@@ -155,7 +170,7 @@ export interface LawData {
 		a: number;
 		b: number;
 		places: number;
-		queries: { display: string; low: number; high: number }[];
+		queries: QueryInterval[];
 		chart: boolean;
 	} | null;
 }
@@ -172,6 +187,8 @@ export interface DensityQuery {
 	given: string | null;
 	/** P(X = x) : vaut 0 (loi à densité) */
 	point: boolean;
+	/** `P(|X − m| > a)` : 1 − P(m − a ⩽ X ⩽ m + a) (2026-10-09) */
+	complement?: boolean;
 }
 
 /** Lignes d'un tableau d'effectifs (Q128), dans l'ordre de l'auteur */

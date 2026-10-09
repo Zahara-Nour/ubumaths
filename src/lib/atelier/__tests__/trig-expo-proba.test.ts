@@ -84,16 +84,17 @@ describe('équations en aˣ : changement de variable X = aˣ', () => {
 });
 
 describe('P(X ⩽ 3) tapé seul : jamais un message de syntaxe hors sujet', () => {
-	it.each(['P(X ⩽ 3)', 'P(X\\leqslant 3)', 'P(X=2)', 'P(X <= 3)'])(
-		'%s explique comment obtenir la probabilité',
+	// Depuis le 2026-10-09, l'atelier RETIENT la loi (lois-retenues.test.ts) :
+	// après `.binomiale X 10 0,3`, la probabilité se calcule au lieu d'être refusée
+	it.each(['P(X ⩽ 3)', 'P(X\\leqslant 3)', 'P(X <= 3)'])(
+		'%s après .binomiale X 10 0,3 : calculée',
 		(input) => {
 			const s = session();
 			runInput(s, '.binomiale X 10 0,3');
 			const result = runInput(s, input);
-			expect(result.kind, JSON.stringify(result)).toBe('refus');
-			if (result.kind !== 'refus') return;
-			expect(result.message).toContain('.binomiale X 10 0,3 P(X ⩽ 3)');
-			expect(result.message).not.toContain('facteur');
+			expect(result.kind, JSON.stringify(result)).toBe('commande');
+			expect(JSON.stringify(result)).toContain('≈ 0,650');
+			expect(JSON.stringify(result)).not.toContain('facteur');
 		}
 	);
 
@@ -104,16 +105,16 @@ describe('P(X ⩽ 3) tapé seul : jamais un message de syntaxe hors sujet', () =
 	});
 
 	it.each(['P(X<3)', 'P(X⩾3)', 'P(X>3)', 'P(2⩽X⩽5)', 'P(X ≤ 3)', 'P(X >= 3)', 'P(X\\leq 3)'])(
-		'%s : même refus',
+		'%s sans loi : le refus dit comment la définir',
 		(input) => {
 			const result = runInput(session(), input);
-			expect(result.kind === 'refus' && result.message).toContain('ligne de la loi');
+			expect(result.kind === 'refus' && result.message).toContain('X n’a pas de loi');
 		}
 	);
 
 	it.each(['P(2)', 'P(x+1)', 'P(x)<3'])('%s n’est pas un événement : pas ce refus', (input) => {
 		const result = runInput(session(), input);
-		expect(result.kind === 'refus' ? result.message : '').not.toContain('ligne de la loi');
+		expect(result.kind === 'refus' ? result.message : '').not.toContain('pas de loi');
 	});
 });
 

@@ -72,7 +72,8 @@ import {
 	type StatChartNode,
 	type StatChartReading,
 	type StatChartSpec,
-	type StatChartUnit
+	type StatChartUnit,
+	type QueryInterval
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
 import { resolveNamedColor } from '$lib/theme/named-colors';
@@ -167,6 +168,7 @@ type NamedLawLine =
 	| { family: 'uniform'; name: string; a: string; b: string; line: number }
 	| { family: 'uniform-density'; name: string; a: string; b: string; line: number }
 	| { family: 'exponential'; name: string; lambda: string; line: number }
+	| { family: 'normal'; name: string; mu: string; variance: string; line: number }
 	| null;
 
 /** Une ligne de données d'un tableau croisé, avant le contrôle d'ensemble */
@@ -348,6 +350,12 @@ const UNIFORM_BRACKET_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*\[/;
 
 /** `X ~ E(0,5)`, `X ~ Exp(0.5)` : la loi exponentielle, λ (manche 13, PR b) */
 const EXPONENTIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*(?:E|Exp)\s*\(\s*(.+?)\s*\)$/;
+
+/**
+ * `X ~ N(0 ; 1)`, `X ~ N(100 ; 225)` : la loi normale, μ et σ² — la notation du
+ * programme de terminale (2026-10-09) ; « , » suivi d'une espace : N(0, 1)
+ */
+const NORMAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*N\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
 
 const DENSITY_CDF_ONLY = 'seulement avec une loi à densité (X ~ U([a ; b]) ou E(λ))';
 
@@ -1536,6 +1544,71 @@ function parseQuery(
 	return { display, low, high };
 }
 
+/** `P(|X| ⩽ 1,96)`, `P(|X − 3| > 1)`, `P(|X + 2| < 0,5)` : centre et rayon */
+const QUERY_ABSOLUTE = new RegExp(
+	`^P\\(\\s*\\|\\s*([A-Za-z])\\s*(?:([-−+])\\s*(\\d+(?:[.,]\\d+)?)\\s*)?\\|\\s*${OPERATOR}\\s*(${PLAIN_NUMBER})\\s*\\)$`
+);
+
+/** Une probabilité de valeur absolue, traduite en intervalle (2026-10-09) */
+interface AbsoluteQuery {
+	/** `P(m − a ⩽ X ⩽ m + a)` (ou `<`), l'écriture que lisent les lois */
+	inner: string;
+	/** `P(|X − 3| > 1)`, vrai signe moins */
+	display: string;
+	/** `>`, `⩾` : l'événement contraire de l'intervalle */
+	complement: boolean;
+}
+
+/** Une fraction décimale écrite pour les lois : `-1.96` */
+function decimalText(value: Fraction): string {
+	let places = 0;
+	while (places < 40 && (value.num * 10n ** BigInt(places)) % value.den !== 0n) places++;
+	const negative = value.num < 0n;
+	const magnitude = ((negative ? -value.num : value.num) * 10n ** BigInt(places)) / value.den;
+	const digits = magnitude.toString().padStart(places + 1, '0');
+	const text = places === 0 ? digits : `${digits.slice(0, -places)}.${digits.slice(-places)}`;
+	return negative ? `-${text}` : text;
+}
+
+/**
+ * `P(|X − m| ⩽ a)` = P(m − a ⩽ X ⩽ m + a), `P(|X − m| > a)` = 1 − … (Tle) :
+ * un `|` qui OUVRE une valeur absolue n'est pas le « sachant que »
+ * (`P(X > 5 | X > 2)`). null : pas de valeur absolue ; sinon le message.
+ */
+function absoluteQuery(text: string, name: string): AbsoluteQuery | string | null {
+	if (!/^P\(\s*\|/.test(text)) return null;
+	const form = `probabilités : « ${text} » : écrire P(|${name}| ⩽ a) ou P(|${name} − m| ⩽ a), avec ⩽, <, ⩾ ou >`;
+	const match = QUERY_ABSOLUTE.exec(text);
+	if (!match) return form;
+	const [, variable, sign, shift, written, radiusText] = match;
+	const op = QUERY_OPERATORS[written];
+	if (op === '=') return form;
+	const radius = Fraction.parse(radiusText);
+	const offset = shift === undefined ? Fraction.ZERO : Fraction.parse(shift);
+	if (radius === null || offset === null) return form;
+	if (radius.isNegative()) return `probabilités : « ${text} » : a est un nombre positif`;
+	// |X − m| : centre m ; |X + m| : centre −m
+	const center = sign === '+' ? Fraction.ZERO.sub(offset) : offset;
+	// L'intervalle, ou son contraire : |X − m| > a ⟺ non (|X − m| ⩽ a) ; ⩾ ⟺ non (<)
+	const inside = op === '⩽' || op === '>' ? '⩽' : '<';
+	const shown = shift === undefined ? '' : ` ${sign === '+' ? '+' : '−'} ${shift}`;
+	return {
+		inner: `P(${decimalText(center.sub(radius))} ${inside} ${variable} ${inside} ${decimalText(center.add(radius))})`,
+		display: `P(|${variable}${shown}| ${op} ${radiusText})`,
+		complement: op === '>' || op === '⩾'
+	};
+}
+
+/** La probabilité lue sur l'intervalle, écrite et éventuellement contraire comme tapée */
+function withAbsolute<T extends { display: string; complement?: boolean }>(
+	query: T,
+	absolute: AbsoluteQuery | null
+): T {
+	return absolute === null
+		? query
+		: { ...query, display: absolute.display, complement: absolute.complement };
+}
+
 /**
  * `seuil: P(X > k) ⩽ 0,05` (Q140 ; loi géométrique : manche 14) : l'événement,
  * la comparaison, α strictement entre 0 et 1. Rend le message d'erreur, sans
@@ -1611,16 +1684,18 @@ function checkBinomial(
 		if (!masked.includes(k)) masked.push(k);
 	}
 
-	const queries: { display: string; low: number; high: number }[] = [];
+	const queries: QueryInterval[] = [];
 	const queriesLine = optionLines.probabilites ?? 0;
 	const written = (options.binomialQueries ?? '')
 		.split(';')
 		.map((q) => q.trim())
 		.filter((q) => q !== '');
-	for (const text of written) {
-		const query = parseQuery(text, binomial.name, 0, n);
+	for (const raw of written) {
+		const absolute = absoluteQuery(raw, binomial.name);
+		if (typeof absolute === 'string') return at(queriesLine, absolute);
+		const query = parseQuery(absolute?.inner ?? raw, binomial.name, 0, n);
 		if (typeof query === 'string') return at(queriesLine, query);
-		queries.push(query);
+		queries.push(withAbsolute(query, absolute));
 	}
 
 	const threshold = parseThreshold(options.binomialThreshold, binomial.name);
@@ -1700,7 +1775,11 @@ function checkGeometric(
 		.split(';')
 		.map((q) => q.trim())
 		.filter((q) => q !== '');
-	for (const text of written) {
+	for (const raw of written) {
+		// `P(|X − 3| ⩽ 1)` : une valeur absolue, pas « sachant que » (2026-10-09)
+		const absolute = absoluteQuery(raw, name);
+		if (typeof absolute === 'string') return at(queriesLine, absolute);
+		const text = absolute?.inner ?? raw;
 		if (text.includes('|')) {
 			const form = `probabilités : « ${text} » : écrire P(${name} > a | ${name} > b) avec a > b`;
 			const conditional = QUERY_CONDITIONAL.exec(text);
@@ -1752,12 +1831,17 @@ function checkGeometric(
 				line: queriesLine
 			});
 		}
-		queries.push({
-			display: query.display,
-			low: query.low,
-			high: query.high === Infinity ? null : query.high,
-			given: null
-		});
+		queries.push(
+			withAbsolute(
+				{
+					display: query.display,
+					low: query.low,
+					high: query.high === Infinity ? null : query.high,
+					given: null
+				},
+				absolute
+			)
+		);
 	}
 
 	// `seuil:` (manche 14) : comme la loi binomiale, k de 0 à 1 000
@@ -1827,13 +1911,16 @@ function checkUniform(
 	if (typeof masked === 'string') return at(optionLines.masquer ?? 0, masked);
 
 	const queriesLine = optionLines.probabilites ?? 0;
-	const queries: { display: string; low: number; high: number }[] = [];
+	const queries: QueryInterval[] = [];
 	const written = (options.binomialQueries ?? '')
 		.split(';')
 		.map((q) => q.trim())
 		.filter((q) => q !== '');
 	const warnings: StatChartIssue[] = [];
-	for (const text of written) {
+	for (const raw of written) {
+		const absolute = absoluteQuery(raw, uniform.name);
+		if (typeof absolute === 'string') return at(queriesLine, absolute);
+		const text = absolute?.inner ?? raw;
 		const query = parseQuery(text, uniform.name, a, b);
 		if (typeof query === 'string') return at(queriesLine, query);
 		// Q158 : un événement non vide, tout entier hors de [a ; b], par ses bornes
@@ -1845,7 +1932,7 @@ function checkUniform(
 				line: queriesLine
 			});
 		}
-		queries.push(query);
+		queries.push(withAbsolute(query, absolute));
 	}
 
 	return {
@@ -1868,7 +1955,15 @@ function checkUniform(
  * Une probabilité d'une loi à densité (PR b) : bornes TELLES QU'ÉCRITES ; les
  * contrôles de forme et de variable sont ceux de `parseQuery`.
  */
-function parseDensityQuery(text: string, name: string): DensityQuery | string {
+function parseDensityQuery(raw: string, name: string): DensityQuery | string {
+	// `P(|X − m| ⩽ a)` : une valeur absolue, pas « sachant que » (2026-10-09)
+	const absolute = absoluteQuery(raw, name);
+	if (typeof absolute === 'string') return absolute;
+	if (absolute !== null) {
+		const inner = parseDensityQuery(absolute.inner, name);
+		return typeof inner === 'string' ? inner : withAbsolute(inner, absolute);
+	}
+	const text = raw;
 	if (text.includes('|')) {
 		const form = `probabilités : « ${text} » : écrire P(${name} > a | ${name} > b) avec a > b`;
 		const conditional = QUERY_CONDITIONAL.exec(text);
@@ -1917,7 +2012,8 @@ function parseDensityQuery(text: string, name: string): DensityQuery | string {
 function checkDensity(
 	density:
 		| { family: 'uniform-density'; name: string; a: string; b: string; line: number }
-		| { family: 'exponential'; name: string; lambda: string; line: number },
+		| { family: 'exponential'; name: string; lambda: string; line: number }
+		| { family: 'normal'; name: string; mu: string; variance: string; line: number },
 	options: Options,
 	optionLines: Partial<Record<OptionKey, number>>
 ): { law: LawData; warnings: StatChartIssue[] } | { error: StatChartIssue } {
@@ -1941,6 +2037,22 @@ function checkDensity(
 			high: b.toNumber(),
 			text: `dans [${density.a} ; ${density.b}]`
 		};
+	} else if (density.family === 'normal') {
+		const mu = Fraction.parse(density.mu);
+		const variance = Fraction.parse(density.variance);
+		if (mu === null) return at(density.line, 'N(μ ; σ²) : μ est un nombre');
+		if (variance === null || variance.isNegative() || variance.equals(Fraction.ZERO)) {
+			return at(density.line, 'N(μ ; σ²) : σ² est un nombre strictement positif');
+		}
+		// F n'a pas de formule : Φ se lit à la calculatrice
+		if (options.cdf) {
+			return at(
+				optionLines.repartition ?? 0,
+				'répartition : la loi normale n’a pas de formule pour F(x)'
+			);
+		}
+		law = { family: 'normal', mu: density.mu, variance: density.variance };
+		support = { low: -Infinity, high: Infinity, text: 'dans ℝ' };
 	} else {
 		const lambda = Fraction.parse(density.lambda);
 		if (lambda === null || lambda.isNegative() || lambda.equals(Fraction.ZERO)) {
@@ -2065,6 +2177,15 @@ function checkSimulatedNamedLaw(
 		const { a, b } = checked.law.uniform!;
 		return {
 			simulation: { ...common, values: checked.law.values, named: { family: 'uniform', a, b } }
+		};
+	}
+	// La loi normale ne se simule pas (hors périmètre du 2026-10-09)
+	if (named.family === 'normal') {
+		return {
+			error: {
+				message: `Ligne ${named.line} : la loi normale ne se simule pas : utiliser un bloc \`\`\`loi`,
+				line: named.line
+			}
 		};
 	}
 	const checked = checkDensity(named, options, optionLines);
@@ -2772,13 +2893,15 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				// Lois à densité (PR b) : `U([a ; b])` AVANT `U(a ; b)`, qui la lirait aussi
 				const density = UNIFORM_DENSITY_REGEX.exec(content);
 				const exponential = density ? null : EXPONENTIAL_REGEX.exec(content);
-				const geometric = density || exponential ? null : GEOMETRIC_REGEX.exec(content);
+				const normal = density || exponential ? null : NORMAL_REGEX.exec(content);
+				const geometric = density || exponential || normal ? null : GEOMETRIC_REGEX.exec(content);
 				// `U([0 ; 10[`, `U([0 ; 10)` : une loi à densité mal écrite, pas la loi discrète (revue)
 				if (!density && UNIFORM_BRACKET_REGEX.test(content)) {
 					throw new LineError('U([a ; b]) : écrire U([0 ; 10]) avec deux nombres');
 				}
-				const uniform = density || exponential || geometric ? null : UNIFORM_REGEX.exec(content);
-				if (density || exponential || geometric || uniform) {
+				const uniform =
+					density || exponential || normal || geometric ? null : UNIFORM_REGEX.exec(content);
+				if (density || exponential || normal || geometric || uniform) {
 					if (
 						lawVariable !== null ||
 						lawProbabilities !== null ||
@@ -2800,6 +2923,14 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 							family: 'exponential',
 							name: exponential[1],
 							lambda: exponential[2],
+							line
+						};
+					} else if (normal) {
+						lawNamed = {
+							family: 'normal',
+							name: normal[1],
+							mu: normal[2],
+							variance: normal[3],
 							line
 						};
 					} else {
@@ -3059,7 +3190,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		});
 	}
 	// `répartition:` et `aire:` : les lois à densité (PR b)
-	const isDensity = lawNamed?.family === 'uniform-density' || lawNamed?.family === 'exponential';
+	const isDensity =
+		lawNamed?.family === 'uniform-density' ||
+		lawNamed?.family === 'exponential' ||
+		lawNamed?.family === 'normal';
 	for (const key of ['repartition', 'aire'] as const) {
 		if (errors.length === 0 && seenOptions.has(key) && !isDensity) {
 			const line = optionLines[key] ?? 0;

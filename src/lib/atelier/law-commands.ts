@@ -1,16 +1,20 @@
 /**
  * Atelier — les commandes de lois : `.geometrique`, `.uniforme`,
- * `.exponentielle` (manche 13, PR c), et ce qu'elles partagent avec
- * `.binomiale` (Q142).
+ * `.exponentielle` (manche 13, PR c), `.normale` (2026-10-09), et ce qu'elles
+ * partagent avec `.binomiale` (Q142).
  *
  * Chaque commande écrit le bloc ```loi correspondant et en montre la scène sous
  * la ligne de l'historique : les MÊMES textes et les mêmes valeurs que dans une
  * fiche, sans code de calcul en double. Aucune liste n'est créée (Q142).
  *
+ * L'atelier RETIENT la loi (2026-10-09) : `P(X ⩽ 3)` tapé seul la relit et
+ * passe par le même bloc (`lawEvent`) — une seule fonction de calcul.
+ *
  * @module atelier/law-commands
  */
 
 import type { Atelier } from './atelier.svelte';
+import { Fraction } from '$lib/statistics/fraction';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { buildStatChartScene, type StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 
@@ -22,6 +26,11 @@ export type LawCommandResult =
 	| { readonly ok: true; readonly text: string; readonly chart: StatChartScene }
 	| { readonly ok: false; readonly message: string };
 
+/** `P(X ⩽ 3)` tapé seul : la ligne de la probabilité, ou le refus */
+export type LawEventResult =
+	| { readonly ok: true; readonly text: string }
+	| { readonly ok: false; readonly message: string };
+
 // =============================================================================
 // Constantes
 // =============================================================================
@@ -31,6 +40,7 @@ const INDICATORS = 'indicateurs: espérance ; variance ; écart type';
 const GEOMETRIC_EXAMPLE = '.geometrique X 0,2';
 const UNIFORM_EXAMPLE = '.uniforme X 1 6 ou .uniforme X [0 ; 10]';
 const EXPONENTIAL_EXAMPLE = '.exponentielle T 0,5';
+const NORMAL_EXAMPLE = '.normale Y 0 1';
 
 /** `X 0,2` puis, éventuellement, les options séparées par « ; » */
 const ONE_PARAMETER = /^([A-Z])\s+(\S+)(?:\s+(.*))?$/;
@@ -107,6 +117,23 @@ export function runLawBlock(
 }
 
 /**
+ * `runLawBlock`, puis la loi RETENUE si le bloc l'accepte (2026-10-09) : une
+ * nouvelle loi de X remplace l'ancienne ; une ligne refusée ne touche à rien.
+ * `lines[0]` est la ligne de tête (`X ~ B(10 ; 0,3)`).
+ */
+export function runAndRememberLaw(
+	atelier: Atelier,
+	lines: readonly string[],
+	variable: string,
+	text: string | null,
+	example: string
+): LawCommandResult {
+	const result = runLawBlock(lines, variable, text, example);
+	if (result.ok) atelier.rememberLaw(variable, lines[0]);
+	return result;
+}
+
+/**
  * `seuil P(X > k) ⩽ 0,05` (binomiale ; géométrique, manche 14) : la ligne du
  * bloc ; `seuil` sans valeur expliqué (revue) ; null si ce n'est pas un seuil
  */
@@ -134,7 +161,7 @@ function query(option: string): string | null {
 // =============================================================================
 
 /** `.geometrique X 0,2 [P(X ⩽ 3) ; P(X > 5 | X > 2) ; jusqu'à 15 ; seuil P(X > k) ⩽ 0,05]` */
-export function geometricCommand(_atelier: Atelier, argument: string): LawCommandResult {
+export function geometricCommand(atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
 	if (written === null) return { ok: false, message: SINGLE_LINE };
 	const head = ONE_PARAMETER.exec(written);
@@ -166,17 +193,18 @@ export function geometricCommand(_atelier: Atelier, argument: string): LawComman
 		}
 	}
 	if (queries.length > 0) lines.push(`probabilités: ${queries.join(' ; ')}`);
-	return runLawBlock(lines, variable, null, GEOMETRIC_EXAMPLE);
+	return runAndRememberLaw(atelier, lines, variable, null, GEOMETRIC_EXAMPLE);
 }
 
 /** `.uniforme X 1 6 [P(…)]` (discrète) ou `.uniforme X [0 ; 10] [P(…)]` (à densité) */
-export function uniformCommand(_atelier: Atelier, argument: string): LawCommandResult {
+export function uniformCommand(atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
 	if (written === null) return { ok: false, message: SINGLE_LINE };
 	const interval = INTERVAL.exec(written);
 	if (interval) {
 		const [, variable, bounds, rest] = interval;
 		return uniformBlock(
+			atelier,
 			variable,
 			[`${variable} ~ U([${bounds.trim()}])`, INDICATORS, 'répartition: oui', 'diagramme: oui'],
 			rest
@@ -190,6 +218,7 @@ export function uniformCommand(_atelier: Atelier, argument: string): LawCommandR
 	if (!discrete) return lawUsageError(written, UNIFORM_EXAMPLE);
 	const [, variable, a, b, rest] = discrete;
 	return uniformBlock(
+		atelier,
 		variable,
 		[`${variable} ~ U(${a} ; ${b})`, INDICATORS, 'diagramme: oui'],
 		rest
@@ -198,6 +227,7 @@ export function uniformCommand(_atelier: Atelier, argument: string): LawCommandR
 
 /** Les options `P(…)` d'une loi uniforme, puis le bloc */
 function uniformBlock(
+	atelier: Atelier,
 	variable: string,
 	lines: string[],
 	rest: string | undefined
@@ -210,11 +240,11 @@ function uniformBlock(
 		queries.push(option);
 	}
 	if (queries.length > 0) lines.push(`probabilités: ${queries.join(' ; ')}`);
-	return runLawBlock(lines, variable, null, UNIFORM_EXAMPLE);
+	return runAndRememberLaw(atelier, lines, variable, null, UNIFORM_EXAMPLE);
 }
 
 /** `.exponentielle T 0,5 [P(T ⩽ 2) ; P(T > 5 | T > 2)]` */
-export function exponentialCommand(_atelier: Atelier, argument: string): LawCommandResult {
+export function exponentialCommand(atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
 	if (written === null) return { ok: false, message: SINGLE_LINE };
 	const head = ONE_PARAMETER.exec(written);
@@ -229,5 +259,135 @@ export function exponentialCommand(_atelier: Atelier, argument: string): LawComm
 		queries.push(option);
 	}
 	if (queries.length > 0) lines.push(`probabilités: ${queries.join(' ; ')}`);
-	return runLawBlock(lines, variable, null, EXPONENTIAL_EXAMPLE);
+	return runAndRememberLaw(atelier, lines, variable, null, EXPONENTIAL_EXAMPLE);
+}
+
+/**
+ * σ² écrit pour le bloc : décimal exact (`0,25`), sinon fraction (`1/9`) ;
+ * `N(μ ; σ²)` est la notation du programme, la calculatrice demande σ
+ */
+function varianceText(sigma: Fraction): string {
+	const variance = sigma.mul(sigma);
+	if (!variance.isDecimal()) return variance.toString();
+	let places = 0;
+	while (places < 40 && (variance.num * 10n ** BigInt(places)) % variance.den !== 0n) places++;
+	const digits = ((variance.num * 10n ** BigInt(places)) / variance.den).toString();
+	if (places === 0) return digits;
+	const padded = digits.padStart(places + 1, '0');
+	return `${padded.slice(0, -places)},${padded.slice(-places)}`;
+}
+
+/** `.normale Y 0 1 [P(Y ⩽ 1,96) ; P(-1,96 ⩽ Y ⩽ 1,96)]` : Y suit N(μ ; σ²), σ donné */
+export function normalCommand(atelier: Atelier, argument: string): LawCommandResult {
+	const written = normalizeLawArgument(argument);
+	if (written === null) return { ok: false, message: SINGLE_LINE };
+	const head = TWO_PARAMETERS.exec(written);
+	if (!head) return lawUsageError(written, NORMAL_EXAMPLE);
+	const [, variable, mu, sigmaText, rest] = head;
+	const sigma = Fraction.parse(sigmaText);
+	if (sigma === null || sigma.isNegative() || sigma.equals(Fraction.ZERO)) {
+		return { ok: false, message: 'σ est un nombre strictement positif' };
+	}
+	const lines = [`${variable} ~ N(${mu} ; ${varianceText(sigma)})`, INDICATORS, 'diagramme: oui'];
+	const queries: string[] = [];
+	for (const option of lawOptions(rest)) {
+		if (!query(option)) {
+			return { ok: false, message: `« ${option} » : écrire P(${variable} ⩽ 1,96)` };
+		}
+		queries.push(option);
+	}
+	if (queries.length > 0) lines.push(`probabilités: ${queries.join(' ; ')}`);
+	return runAndRememberLaw(atelier, lines, variable, null, NORMAL_EXAMPLE);
+}
+
+// =============================================================================
+// Probabilité tapée seule (2026-10-09)
+// =============================================================================
+
+/**
+ * `P(X\leqslant 3)`, `P\left(X<=3\right)`, `P(T ⩽ 1{,}5)` : l'écriture du bloc
+ * (`⩽ ⩾ < > =`, `|`, virgule décimale, moins ASCII)
+ */
+function eventText(input: string): string {
+	return input
+		.trim()
+		.replace(/\\(?:left|right)/g, '')
+		.replace(/\\(?:leqslant|leq|le)(?![a-zA-Z])/g, '⩽')
+		.replace(/\\(?:geqslant|geq|ge)(?![a-zA-Z])/g, '⩾')
+		.replace(/\\lt(?![a-zA-Z])/g, '<')
+		.replace(/\\gt(?![a-zA-Z])/g, '>')
+		.replace(/\\(?:mid|vert|lvert|rvert)(?![a-zA-Z])/g, '|')
+		.replace(/\\[,;:! ]/g, ' ')
+		.replace(/\{,\}/g, ',')
+		.replace(/[−–]/g, '-')
+		.replace(/≤|<=/g, '⩽')
+		.replace(/≥|>=/g, '⩾')
+		.replace(/^P\s*\(/, 'P(')
+		.replace(/\s+/g, ' ');
+}
+
+/** Les formes d'événement que lisent les lois, pour la variable `v` */
+function eventShapes(v: string): RegExp[] {
+	const n = String.raw`-?\d+(?:[.,]\d+)?`;
+	const op = '(?:⩽|⩾|<|>|=)';
+	const s = ' ?';
+	return [
+		`^P\\(${s}${v}${s}${op}${s}${n}${s}\\)$`,
+		`^P\\(${s}${n}${s}${op}${s}${v}${s}${op}${s}${n}${s}\\)$`,
+		`^P\\(${s}${v}${s}${op}${s}${n}${s}\\|${s}${v}${s}${op}${s}${n}${s}\\)$`,
+		`^P\\(${s}\\|${s}${v}${s}(?:[-+]${s}\\d+(?:[.,]\\d+)?${s})?\\|${s}${op}${s}${n}${s}\\)$`
+	].map((source) => new RegExp(source));
+}
+
+/**
+ * `P(X ⩽ 3)` tapé seul dans Calcul : relit la loi RETENUE de X et passe par le
+ * même bloc ```loi que la ligne de la loi — même texte, mêmes valeurs. Sans
+ * loi : le refus dit comment en définir une.
+ */
+export function lawEvent(atelier: Atelier, input: string): LawEventResult {
+	// Un saut de ligne ou un « ; » glisserait une ligne ou une probabilité de plus dans le bloc
+	if (/[\r\n;]/.test(input)) {
+		return { ok: false, message: 'Écris une seule probabilité, par exemple P(X ⩽ 3)' };
+	}
+	const event = eventText(input);
+	const variable = /[A-Z]/.exec(event.slice(2))?.[0];
+	if (variable === undefined) {
+		// `P(x ⩽ 3)` : une minuscule n'est pas une variable aléatoire (revue)
+		const lower = /[a-z]/.exec(event.slice(2))?.[0];
+		return {
+			ok: false,
+			message:
+				lower === undefined
+					? 'Écris la probabilité ainsi : P(X ⩽ 3)'
+					: `${lower} n’a pas de loi : une variable aléatoire s’écrit en majuscule, par exemple P(${lower.toUpperCase()} ⩽ 3)`
+		};
+	}
+	const head = atelier.lawOf(variable);
+	if (head === undefined) {
+		return {
+			ok: false,
+			message: `${variable} n’a pas de loi : définis-la avec une commande de loi (.binomiale, .geometrique, .uniforme, .exponentielle, .normale), par exemple .normale ${variable} 0 1`
+		};
+	}
+	// `P(2X ⩽ 3)`, `P(X² ⩽ 4)` : hors des formes que lisent les lois (revue)
+	if (!eventShapes(variable).some((shape) => shape.test(event))) {
+		const v = variable;
+		return {
+			ok: false,
+			message: `Seuls les événements de la forme P(${v} ⩽ a), P(a ⩽ ${v} ⩽ b), P(|${v} − m| ⩽ a) et P(${v} > a | ${v} > b) sont pris en charge.`
+		};
+	}
+	const node = parseStatChartContent(
+		'loi',
+		[head, 'indicateurs: aucun', `probabilités: ${event}`].join('\n')
+	);
+	if (node.spec === null) {
+		const message = node.errors[0]?.message ?? 'Écris la probabilité ainsi : P(X ⩽ 3)';
+		return { ok: false, message: message.replace(/^Ligne \d+ : (?:probabilités : )?/, '') };
+	}
+	const scene = buildStatChartScene(node.spec, { locale: 'fr' });
+	const line = scene.indicators[scene.indicators.length - 1];
+	return line === undefined
+		? { ok: false, message: 'Écris la probabilité ainsi : P(X ⩽ 3)' }
+		: { ok: true, text: line };
 }
