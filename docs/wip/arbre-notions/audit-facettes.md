@@ -12,8 +12,10 @@
 > - **Q6 validée par David (2026-10-09)** : dans « Situations de proportionnalité », « reconnaître » devient « caractérisation » ;
 >   « appliquer » s'archive, ses points de résolution de problèmes (CM1-130, CM2-116, 6-191) et son modèle vont sur la notion ;
 >   une sous-notion « coefficient de proportionnalité » reçoit 5-088 et les 2 modèles « Déterminer le coefficient de
->   proportionnalité » (aujourd'hui sous « reconnaître »). Place de 4-059 (partage proportionnel) : à confirmer.
-> - **Reste à trancher** : la place de 4-059 et la section D (renommages).
+>   proportionnalité » (aujourd'hui sous « reconnaître »). **4-059 (partage proportionnel) va sous « ratio »** (David) :
+>   le BO le formule « partager selon un ratio ».
+> - **Section D validée par David (2026-10-09)** (« ok pour le renommage ») : tous les renommages proposés.
+> - **L'audit est entièrement tranché.** Suite : les questions restantes du lot, la question d'accès, puis la migration de l'arbre.
 >
 > Principe (ADR 0020 § 3 précisé le 2026-10-09) : **une notion n'a qu'un découpage, par contenu mathématique** — un objet,
 > une propriété ou une technique de calcul —, jamais par activité, par registre ou par outil ; ce que l'élève fait, ce sont

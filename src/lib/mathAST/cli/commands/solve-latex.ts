@@ -18,14 +18,14 @@
 
 import type { MathNode } from '../../types';
 import type { SolveResult, Solution } from '../../solve';
+import type { PeriodicSolutionFamily } from '../../solve/types';
+import { mergePeriodicFamilies } from '../../solve/periodic';
 import { isSolverFailure } from '../../solve/types';
 import type { Domain, IntervalSet } from '../../domain/types';
 import {
-	isDivision,
 	isEulerConstant,
 	isFunction,
 	isInfinity,
-	isMultiplication,
 	isNumber,
 	isPiConstant,
 	isSuperscript,
@@ -39,7 +39,7 @@ import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
 
-/** Au-delà, un coefficient de période trahit une dérive flottante (20000000000000000/3333333333333333). */
+/** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
 
 /** Une valeur mise au propre (`{1/2}sqrt(2)` → `\dfrac{\sqrt{2}}{2}`, `exp(-1)` → `1/e`). */
@@ -202,37 +202,63 @@ export function inequalityThresholdText(domain: Domain, variable: string): strin
 	return value === null ? null : `${variable} ${threshold.textSign} ${value}`;
 }
 
-/** Un entier positif raisonnable, sinon `null`. */
-function smallInteger(node: MathNode): number | null {
-	if (!isNumber(node) || !/^\d+$/.test(node.value)) return null;
-	const n = Number(node.value);
-	return n >= 1 && n <= MAX_PERIOD_INTEGER ? n : null;
+/** Plus grand dénominateur reconnu dans une période (`\dfrac{k\pi}{12}`). */
+const MAX_PERIOD_DENOMINATOR = 24;
+
+/** Écart toléré pour reconnaître une période rationnelle (en π ou non). */
+const PERIOD_TOLERANCE = 1e-9;
+
+/** Le terme `k·T` d'une période, en LaTeX et en texte. */
+interface PeriodTerm {
+	readonly latex: string;
+	readonly text: string;
+}
+
+function gcd(a: number, b: number): number {
+	return b === 0 ? a : gcd(b, a % b);
 }
 
 /**
- * Le terme `k·T` d'une période T = (a/b)·π : `k\pi`, `2k\pi`, `\dfrac{k\pi}{2}`,
- * `\dfrac{2k\pi}{3}` — ou `null` si T n'a pas cette forme.
+ * Le terme `k·T` d'une période T = (p/q)·π — `k\pi`, `6k\pi`, `\dfrac{k\pi}{3}` —
+ * ou T = p/q sans π (`sin(πx) = 0` : période 1 → `k`). `null` si T n'a pas
+ * cette forme : on n'écrit pas une famille qu'on ne sait pas dire.
+ *
+ * Lue sur sa VALEUR, le nœud étant exact (2π/(1/3) = 6π, voir
+ * `solvers/transcendental.ts`) : 6π, 2·3π ou 18π/3 s'écrivent tous `6k\pi`.
  */
-function periodTermLatex(period: MathNode): string | null {
-	let numerator = 1;
-	let denominator = 1;
-	if (!isPiConstant(period)) {
-		if (!isMultiplication(period) || !isPiConstant(period.right)) return null;
-		const coefficient = period.left;
-		if (isDivision(coefficient)) {
-			const a = smallInteger(coefficient.numerator);
-			const b = smallInteger(coefficient.denominator);
-			if (a === null || b === null) return null;
-			numerator = a;
-			denominator = b;
-		} else {
-			const a = smallInteger(coefficient);
-			if (a === null) return null;
-			numerator = a;
-		}
+function periodTerm(period: MathNode): PeriodTerm | null {
+	const value = numericValue(period);
+	if (value === null || value <= 0) return null;
+	const withPi = findNodes(period, isPiConstant).length > 0;
+	const ratio = withPi ? value / Math.PI : value;
+	for (let q = 1; q <= MAX_PERIOD_DENOMINATOR; q++) {
+		const p = Math.round(ratio * q);
+		if (Math.abs(ratio * q - p) > PERIOD_TOLERANCE * q) continue;
+		if (p < 1 || p > MAX_PERIOD_INTEGER) return null;
+		const g = gcd(p, q);
+		const [a, b] = [p / g, q / g];
+		const pi = withPi ? '\\pi' : '';
+		const top = `${a === 1 ? '' : a}k${pi}`;
+		return {
+			latex: b === 1 ? top : `\\dfrac{${top}}{${b}}`,
+			// Écrit comme les solutions (`\pi/4`, `{5\pi}/6`) : `k\pi/2`, `{2k\pi}/3`
+			text: b === 1 ? top : a === 1 ? `${top}/${b}` : `{${top}}/${b}`
+		};
 	}
-	const top = `${numerator === 1 ? '' : numerator}k\\pi`;
-	return denominator === 1 ? top : `\\dfrac{${top}}{${denominator}}`;
+	return null;
+}
+
+/**
+ * La famille écrite au plus court : `{0 ; 3π} + 6kπ` devient `3kπ`, `{0 ; π} +
+ * 2kπ` devient `kπ` (réduction de `mergePeriodicFamilies`, qui rend la MÊME
+ * famille) ; `null` de la réunion → la famille d'origine.
+ */
+function shortestFamily(family: PeriodicSolutionFamily): PeriodicSolutionFamily {
+	try {
+		return mergePeriodicFamilies([family]) ?? family;
+	} catch {
+		return family;
+	}
 }
 
 /** Les solutions rangées dans l'ordre croissant, quand toutes ont une valeur approchée. */
@@ -244,18 +270,43 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 	return [...solutions].sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 }
 
+/** Les membres d'une famille périodique (`x = a + 2kπ`), en LaTeX et en texte — ou `null`. */
+function periodicMembers(
+	result: SolveResult
+): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
+	if (result.periodicSolutions === undefined) return null;
+	const family = shortestFamily(result.periodicSolutions);
+	if (family.baseSolutions.length === 0) return null;
+	const term = periodTerm(family.period);
+	if (term === null) return null;
+	const bases = sorted(family.baseSolutions).map((solution) => {
+		const base = tidyValue(solution.value);
+		return { base, isZero: isNumber(base) && base.value === '0' };
+	});
+	const member = (written: string, isZero: boolean, k: string) =>
+		`${result.variable} = ${isZero ? k : `${written} + ${k}`}`;
+	return {
+		latex: bases.map(({ base, isZero }) => member(toLatex(base), isZero, term.latex)),
+		text: bases.map(({ base, isZero }) => member(toCustom(base), isZero, term.text))
+	};
+}
+
 /** La famille périodique, `x = a + 2k\pi \text{ ou } … , \; k \in \mathbb{Z}` — ou `null`. */
 function periodicLatex(result: SolveResult): string | null {
-	const family = result.periodicSolutions;
-	if (family === undefined || family.baseSolutions.length === 0) return null;
-	const term = periodTermLatex(family.period);
-	if (term === null) return null;
-	const members = sorted(family.baseSolutions).map((solution) => {
-		const base = tidyValue(solution.value);
-		const isZero = isNumber(base) && base.value === '0';
-		return `${result.variable} = ${isZero ? term : `${toLatex(base)} + ${term}`}`;
-	});
-	return `${members.join(' \\text{ ou } ')}, \\; k \\in \\mathbb{Z}`;
+	const members = periodicMembers(result);
+	if (members === null) return null;
+	return `${members.latex.join(' \\text{ ou } ')}, \\; k \\in \\mathbb{Z}`;
+}
+
+/**
+ * La même famille en texte, période comprise : `x = 3k\pi, k ∈ ℤ`. Le texte
+ * disait « x = 0 ou x = 3\pi » — deux solutions pour une infinité
+ * (2026-10-09). `null` sans famille, ou si elle ne s'écrit pas.
+ */
+export function periodicSolutionsText(result: SolveResult): string | null {
+	const members = periodicMembers(result);
+	if (members === null) return null;
+	return `${members.text.join(' ou ')}, k ∈ ℤ`;
 }
 
 /**

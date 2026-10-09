@@ -845,7 +845,16 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     - « reconnaître » devient « caractérisation » ;
     - « appliquer » va sur la notion ;
     - nouvelle sous-notion « coefficient de proportionnalité » (5-088 et 2 modèles).
-  - Restent non tranchées : la place de 4-059 (partage proportionnel) et la section D.
+  - **4-059 (partage proportionnel) va sous « ratio »** (David).
+  - **Section D validée** (David, « ok pour le renommage ») : tous les renommages.
+  - **AUDIT ENTIÈREMENT TRANCHÉ.** Suite :
+    1. les questions restantes du lot ;
+    2. la question d'accès ;
+    3. la phase 0 TDD ;
+    4. la migration de l'arbre (PR 1) ;
+    5. le lot recalculé sur l'arbre propre (PR 2).
+- **2026-10-09 — Lot : D16 et A78 tranchés** (David). Ils vont sous « Dérivation > variations »
+  avec 1SPE-283. Les décisions du lot sont tenues en tête de `c5-transfert-liens.md`.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
