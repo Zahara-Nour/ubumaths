@@ -167,8 +167,8 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (69 points, arbre .15)', () => {
-		expect(fixture.version).toBe('2026-10-07.15');
+	it('la fixture est bien celle du document validé (69 points, arbre .16)', () => {
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(69);
 		expect(fixture.points.every((p) => p.grade === 'T_TECHNO')).toBe(true);
 		expect(fixture.references).toHaveLength(89);

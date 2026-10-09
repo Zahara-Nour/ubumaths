@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "1TECHNO-001",
@@ -311,7 +311,7 @@
 			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "1TECHNO-025",
@@ -454,7 +454,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "1TECHNO-036",
@@ -467,7 +467,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "1TECHNO-037",
@@ -544,7 +544,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": null
 		},
 		{
@@ -558,7 +558,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Généralités sur les suites",
-			"sous_notion": "calculer un terme"
+			"sous_notion": "explicite ou par récurrence"
 		},
 		{
 			"code": "1TECHNO-044",
@@ -597,7 +597,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "1TECHNO-047",
@@ -610,7 +610,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "1TECHNO-048",
@@ -623,7 +623,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "raison"
+			"sous_notion": null
 		},
 		{
 			"code": "1TECHNO-049",
@@ -636,7 +636,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "raison"
+			"sous_notion": null
 		},
 		{
 			"code": "1TECHNO-050",
@@ -648,8 +648,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
-			"sous_notion": "algorithmes"
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
 		},
 		{
 			"code": "1TECHNO-051",
@@ -661,8 +661,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
-			"sous_notion": "algorithmes"
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
 		},
 		{
 			"code": "1TECHNO-052",
@@ -674,7 +674,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": "seuil"
 		},
 		{
@@ -766,7 +766,7 @@
 			"rubrique": "Analyse > Fonctions de la variable réelle",
 			"branche": "Fonctions",
 			"notion": "Généralités sur les fonctions",
-			"sous_notion": "résolution graphique"
+			"sous_notion": "équations et inéquations f(x) = k"
 		},
 		{
 			"code": "1TECHNO-060",
@@ -870,7 +870,7 @@
 			"rubrique": "Analyse > Fonctions de la variable réelle",
 			"branche": "Fonctions",
 			"notion": "Généralités sur les fonctions",
-			"sous_notion": "résolution graphique"
+			"sous_notion": "équations et inéquations f(x) = k"
 		},
 		{
 			"code": "1TECHNO-068",
@@ -974,7 +974,7 @@
 			"rubrique": "Analyse > Dérivation",
 			"branche": "Fonctions",
 			"notion": "Dérivation",
-			"sous_notion": "variations"
+			"sous_notion": "variations et extremums"
 		},
 		{
 			"code": "1TECHNO-076",
@@ -987,7 +987,7 @@
 			"rubrique": "Analyse > Dérivation",
 			"branche": "Fonctions",
 			"notion": "Dérivation",
-			"sous_notion": "étude de fonction"
+			"sous_notion": "variations et extremums"
 		},
 		{
 			"code": "1TECHNO-077",
@@ -1052,7 +1052,7 @@
 			"rubrique": "Analyse > Dérivation",
 			"branche": "Fonctions",
 			"notion": "Dérivation",
-			"sous_notion": "étude de fonction"
+			"sous_notion": "variations et extremums"
 		},
 		{
 			"code": "1TECHNO-082",

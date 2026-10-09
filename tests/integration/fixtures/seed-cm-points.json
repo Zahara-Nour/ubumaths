@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.13",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "CM1-001",
@@ -12,7 +12,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CM1-131",
@@ -25,7 +25,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-002",
@@ -38,7 +38,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CM1-003",
@@ -51,7 +51,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-004",
@@ -64,7 +64,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CM1-005",
@@ -77,7 +77,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-006",
@@ -90,7 +90,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CM1-007",
@@ -103,7 +103,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-008",
@@ -116,7 +116,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-009",
@@ -129,7 +129,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-010",
@@ -142,7 +142,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "repérer"
+			"sous_notion": "droite graduée"
 		},
 		{
 			"code": "CM1-011",
@@ -207,7 +207,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-016",
@@ -220,7 +220,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-017",
@@ -233,7 +233,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-018",
@@ -272,7 +272,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-021",
@@ -285,7 +285,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "additionner et soustraire"
+			"sous_notion": "addition et soustraction"
 		},
 		{
 			"code": "CM1-022",
@@ -324,7 +324,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-025",
@@ -350,7 +350,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-027",
@@ -363,7 +363,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM1-028",
@@ -376,7 +376,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-029",
@@ -389,7 +389,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-030",
@@ -415,7 +415,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CM1-032",
@@ -454,7 +454,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM1-132",
@@ -467,7 +467,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "encadrer"
+			"sous_notion": "encadrement"
 		},
 		{
 			"code": "CM1-035",
@@ -532,7 +532,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "additionner"
+			"sous_notion": "addition"
 		},
 		{
 			"code": "CM1-133",
@@ -545,7 +545,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "soustraire"
+			"sous_notion": "soustraction"
 		},
 		{
 			"code": "CM1-040",
@@ -571,7 +571,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "puissances de 10"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM1-042",
@@ -584,7 +584,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "puissances de 10"
+			"sous_notion": "division"
 		},
 		{
 			"code": "CM1-043",
@@ -688,7 +688,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul posé"
+			"sous_notion": null
 		},
 		{
 			"code": "CM1-051",
@@ -714,7 +714,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul posé"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM1-053",
@@ -961,7 +961,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-071",
@@ -974,7 +974,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-072",
@@ -987,7 +987,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-073",
@@ -1078,7 +1078,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-080",
@@ -1091,7 +1091,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-081",
@@ -1104,7 +1104,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-082",
@@ -1156,7 +1156,7 @@
 			"rubrique": "Grandeurs et mesures > Les contenances",
 			"branche": "Grandeurs et mesures",
 			"notion": "Contenances",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CM1-086",
@@ -1234,7 +1234,7 @@
 			"rubrique": "Grandeurs et mesures > Les angles",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "comparer"
+			"sous_notion": "comparaison"
 		},
 		{
 			"code": "CM1-092",
@@ -1247,7 +1247,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CM1-093",
@@ -1260,7 +1260,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CM1-094",
@@ -1273,7 +1273,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CM1-095",
@@ -1286,7 +1286,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CM1-097",
@@ -1299,7 +1299,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM1-098",
@@ -1312,7 +1312,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-099",
@@ -1364,7 +1364,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-103",
@@ -1377,7 +1377,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-104",
@@ -1390,7 +1390,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM1-105",
@@ -1403,7 +1403,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM1-106",
@@ -1455,7 +1455,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-110",
@@ -1468,7 +1468,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-111",
@@ -1481,7 +1481,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-112",
@@ -1494,7 +1494,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-113",
@@ -1507,7 +1507,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM1-114",
@@ -1520,7 +1520,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM1-115",
@@ -1780,7 +1780,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "reconnaître"
+			"sous_notion": "caractérisation"
 		},
 		{
 			"code": "CM1-130",
@@ -1793,7 +1793,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "appliquer"
+			"sous_notion": null
 		},
 		{
 			"code": "CM2-001",
@@ -1806,7 +1806,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-002",
@@ -1819,7 +1819,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CM2-003",
@@ -1832,7 +1832,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CM2-004",
@@ -1845,7 +1845,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-005",
@@ -1858,7 +1858,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-006",
@@ -1871,7 +1871,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-007",
@@ -1884,7 +1884,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "repérer"
+			"sous_notion": "droite graduée"
 		},
 		{
 			"code": "CM2-008",
@@ -1975,7 +1975,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-015",
@@ -1988,7 +1988,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-016",
@@ -2001,7 +2001,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-017",
@@ -2040,7 +2040,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-020",
@@ -2053,7 +2053,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "additionner et soustraire"
+			"sous_notion": "addition et soustraction"
 		},
 		{
 			"code": "CM2-021",
@@ -2066,7 +2066,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "multiplier"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM2-022",
@@ -2105,7 +2105,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-025",
@@ -2131,7 +2131,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-027",
@@ -2144,7 +2144,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CM2-028",
@@ -2157,7 +2157,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-029",
@@ -2170,7 +2170,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-030",
@@ -2196,7 +2196,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CM2-032",
@@ -2235,7 +2235,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CM2-117",
@@ -2248,7 +2248,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "encadrer"
+			"sous_notion": "encadrement"
 		},
 		{
 			"code": "CM2-035",
@@ -2287,7 +2287,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "double et moitié"
+			"sous_notion": "division"
 		},
 		{
 			"code": "CM2-038",
@@ -2326,7 +2326,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "additionner"
+			"sous_notion": "addition"
 		},
 		{
 			"code": "CM2-118",
@@ -2339,7 +2339,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "soustraire"
+			"sous_notion": "soustraction"
 		},
 		{
 			"code": "CM2-041",
@@ -2352,7 +2352,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "additionner"
+			"sous_notion": "addition"
 		},
 		{
 			"code": "CM2-042",
@@ -2365,7 +2365,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "puissances de 10"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM2-043",
@@ -2378,7 +2378,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "puissances de 10"
+			"sous_notion": "division"
 		},
 		{
 			"code": "CM2-044",
@@ -2391,7 +2391,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "additionner"
+			"sous_notion": "addition"
 		},
 		{
 			"code": "CM2-045",
@@ -2443,7 +2443,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "double et moitié"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM2-049",
@@ -2456,7 +2456,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "double et moitié"
+			"sous_notion": "division"
 		},
 		{
 			"code": "CM2-050",
@@ -2482,7 +2482,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul astucieux"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM2-052",
@@ -2495,7 +2495,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul astucieux"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM2-053",
@@ -2534,7 +2534,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul posé"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "CM2-056",
@@ -2547,7 +2547,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul posé"
+			"sous_notion": "division"
 		},
 		{
 			"code": "CM2-057",
@@ -2560,7 +2560,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "calcul posé"
+			"sous_notion": "division"
 		},
 		{
 			"code": "CM2-058",
@@ -2859,7 +2859,7 @@
 			"rubrique": "Grandeurs et mesures > Les angles",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "comparer"
+			"sous_notion": "comparaison"
 		},
 		{
 			"code": "CM2-079",
@@ -2872,7 +2872,7 @@
 			"rubrique": "Grandeurs et mesures > Les angles",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "construire"
+			"sous_notion": "construction"
 		},
 		{
 			"code": "CM2-080",
@@ -2885,7 +2885,7 @@
 			"rubrique": "Grandeurs et mesures > Les angles",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "construire"
+			"sous_notion": "construction"
 		},
 		{
 			"code": "CM2-081",
@@ -2898,7 +2898,7 @@
 			"rubrique": "Grandeurs et mesures > Les angles",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "mesurer en degrés"
+			"sous_notion": "mesure en degrés"
 		},
 		{
 			"code": "CM2-082",
@@ -2911,7 +2911,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CM2-083",
@@ -2924,7 +2924,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CM2-084",
@@ -2937,7 +2937,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CM2-085",
@@ -2950,7 +2950,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CM2-087",
@@ -2963,7 +2963,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM2-088",
@@ -2976,7 +2976,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM2-089",
@@ -3028,7 +3028,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM2-093",
@@ -3041,7 +3041,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM2-094",
@@ -3054,7 +3054,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM2-095",
@@ -3067,7 +3067,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM2-096",
@@ -3080,7 +3080,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CM2-097",
@@ -3106,7 +3106,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM2-099",
@@ -3119,7 +3119,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CM2-100",
@@ -3392,7 +3392,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "reconnaître"
+			"sous_notion": "caractérisation"
 		},
 		{
 			"code": "CM2-116",
@@ -3405,7 +3405,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "appliquer"
+			"sous_notion": null
 		}
 	]
 }

@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "TEXP-201",
@@ -1039,7 +1039,7 @@
 			"rubrique": "Arithmétique",
 			"branche": "Arithmétique",
 			"notion": "Nombres premiers",
-			"sous_notion": "reconnaître un nombre premier"
+			"sous_notion": "primalité"
 		},
 		{
 			"code": "TEXP-281",
@@ -1052,7 +1052,7 @@
 			"rubrique": "Arithmétique",
 			"branche": "Arithmétique",
 			"notion": "Nombres premiers",
-			"sous_notion": "reconnaître un nombre premier"
+			"sous_notion": "primalité"
 		},
 		{
 			"code": "TEXP-282",
@@ -1169,7 +1169,7 @@
 			"rubrique": "Arithmétique",
 			"branche": "Arithmétique",
 			"notion": "Nombres premiers",
-			"sous_notion": "reconnaître un nombre premier"
+			"sous_notion": "primalité"
 		},
 		{
 			"code": "TEXP-291",
@@ -1234,7 +1234,7 @@
 			"rubrique": "Arithmétique",
 			"branche": "Arithmétique",
 			"notion": "Nombres premiers",
-			"sous_notion": "reconnaître un nombre premier"
+			"sous_notion": "primalité"
 		},
 		{
 			"code": "TEXP-296",
@@ -1273,7 +1273,7 @@
 			"rubrique": "Arithmétique",
 			"branche": "Arithmétique",
 			"notion": "Nombres premiers",
-			"sous_notion": "reconnaître un nombre premier"
+			"sous_notion": "primalité"
 		},
 		{
 			"code": "TEXP-299",
@@ -1754,7 +1754,7 @@
 			"rubrique": "Graphes et matrices",
 			"branche": "Graphes",
 			"notion": "Vocabulaire des graphes",
-			"sous_notion": "modélisation par un graphe"
+			"sous_notion": null
 		},
 		{
 			"code": "TEXP-336",
@@ -1767,7 +1767,7 @@
 			"rubrique": "Graphes et matrices",
 			"branche": "Matrices",
 			"notion": "Suites et matrices",
-			"sous_notion": "modélisation"
+			"sous_notion": null
 		},
 		{
 			"code": "TEXP-337",

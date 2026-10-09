@@ -166,7 +166,7 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 	}
 
 	it('la fixture est bien celle du document validé (101 points, 31 références après la passe)', () => {
-		expect(fixture.version).toBe('2026-10-07.13');
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(101);
 		expect(fixture.references).toHaveLength(31);
 		expect(new Set(fixture.references).size).toBe(31);

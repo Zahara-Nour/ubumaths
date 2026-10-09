@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "TSPE-301",
@@ -233,7 +233,7 @@
 			"rubrique": "Algèbre et géométrie > Combinatoire et dénombrement",
 			"branche": "Dénombrement",
 			"notion": "Problèmes de dénombrement",
-			"sous_notion": "reconnaître le modèle"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-319",
@@ -297,8 +297,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Combinatoire et dénombrement",
 			"branche": "Dénombrement",
-			"notion": "Problèmes de dénombrement",
-			"sous_notion": "algorithmique"
+			"notion": "Combinaisons",
+			"sous_notion": "triangle de Pascal"
 		},
 		{
 			"code": "TSPE-324",
@@ -310,8 +310,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Combinatoire et dénombrement",
 			"branche": "Dénombrement",
-			"notion": "Problèmes de dénombrement",
-			"sous_notion": "algorithmique"
+			"notion": "Arrangements et permutations",
+			"sous_notion": "permutations"
 		},
 		{
 			"code": "TSPE-325",
@@ -323,8 +323,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Combinatoire et dénombrement",
 			"branche": "Dénombrement",
-			"notion": "Problèmes de dénombrement",
-			"sous_notion": "algorithmique"
+			"notion": "Combinaisons",
+			"sous_notion": "combinaisons"
 		},
 		{
 			"code": "TSPE-326",
@@ -336,7 +336,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "vecteurs de l'espace"
 		},
 		{
@@ -349,7 +349,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "vecteurs de l'espace"
 		},
 		{
@@ -362,7 +362,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "colinéarité et alignement"
 		},
 		{
@@ -375,7 +375,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "colinéarité et alignement"
 		},
 		{
@@ -388,7 +388,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "coplanarité et décomposition"
 		},
 		{
@@ -401,7 +401,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "coplanarité et décomposition"
 		},
 		{
@@ -414,8 +414,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "coordonnées dans l'espace"
+			"notion": "Espace",
+			"sous_notion": "coordonnées"
 		},
 		{
 			"code": "TSPE-333",
@@ -427,8 +427,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "coordonnées dans l'espace"
+			"notion": "Espace",
+			"sous_notion": "coplanarité et décomposition"
 		},
 		{
 			"code": "TSPE-334",
@@ -440,7 +440,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "vecteurs de l'espace"
 		},
 		{
@@ -453,7 +453,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "coplanarité et décomposition"
 		},
 		{
@@ -466,8 +466,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
-			"sous_notion": "positions relatives de droites et plans"
+			"notion": "Espace",
+			"sous_notion": "positions relatives et intersections"
 		},
 		{
 			"code": "TSPE-337",
@@ -479,7 +479,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "coplanarité et décomposition"
 		},
 		{
@@ -492,7 +492,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": "coplanarité et décomposition"
 		},
 		{
@@ -505,7 +505,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Espace : sans coordonnées",
+			"notion": "Espace",
 			"sous_notion": null
 		},
 		{
@@ -518,7 +518,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": null
 		},
 		{
@@ -531,7 +531,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Manipulation des vecteurs, des droites et des plans de l'espace",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": null
 		},
 		{
@@ -544,7 +544,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
@@ -557,7 +557,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
@@ -570,8 +570,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "norme et distance"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
 			"code": "TSPE-345",
@@ -583,8 +583,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "norme et distance"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
 			"code": "TSPE-346",
@@ -596,8 +596,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "norme et distance"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
 			"code": "TSPE-347",
@@ -609,7 +609,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
@@ -622,7 +622,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "orthogonalité de droites et plans"
 		},
 		{
@@ -635,8 +635,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "vecteur normal à un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-350",
@@ -648,7 +648,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "projeté orthogonal"
 		},
 		{
@@ -661,7 +661,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "orthogonalité de droites et plans"
 		},
 		{
@@ -674,7 +674,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "orthogonalité de droites et plans"
 		},
 		{
@@ -687,7 +687,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "orthogonalité de droites et plans"
 		},
 		{
@@ -700,7 +700,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "angles"
 		},
 		{
@@ -713,7 +713,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "angles"
 		},
 		{
@@ -726,7 +726,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "projeté orthogonal"
 		},
 		{
@@ -739,7 +739,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "orthogonalité de droites et plans"
 		},
 		{
@@ -752,8 +752,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "vecteur normal à un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-359",
@@ -765,7 +765,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "projeté orthogonal"
 		},
 		{
@@ -778,7 +778,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "sphère"
 		},
 		{
@@ -791,7 +791,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "sphère"
 		},
 		{
@@ -804,7 +804,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Orthogonalité et distances dans l'espace",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : sans coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "produit scalaire dans l'espace"
 		},
 		{
@@ -817,8 +817,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "représentation paramétrique d'une droite"
+			"notion": "Espace",
+			"sous_notion": "représentation paramétrique"
 		},
 		{
 			"code": "TSPE-364",
@@ -830,8 +830,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "équation cartésienne d'un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-365",
@@ -843,8 +843,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "représentation paramétrique d'une droite"
+			"notion": "Espace",
+			"sous_notion": "représentation paramétrique"
 		},
 		{
 			"code": "TSPE-366",
@@ -856,8 +856,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "représentation paramétrique d'une droite"
+			"notion": "Espace",
+			"sous_notion": "représentation paramétrique"
 		},
 		{
 			"code": "TSPE-367",
@@ -869,8 +869,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "équation cartésienne d'un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-368",
@@ -882,8 +882,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "équation cartésienne d'un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-369",
@@ -895,8 +895,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "coordonnées du projeté orthogonal"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "projeté orthogonal"
 		},
 		{
 			"code": "TSPE-370",
@@ -908,8 +908,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "coordonnées du projeté orthogonal"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "projeté orthogonal"
 		},
 		{
 			"code": "TSPE-371",
@@ -921,8 +921,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "positions relatives par le calcul"
+			"notion": "Espace",
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-372",
@@ -934,8 +934,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "intersections"
+			"notion": "Espace",
+			"sous_notion": "positions relatives et intersections"
 		},
 		{
 			"code": "TSPE-373",
@@ -947,8 +947,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "équation cartésienne d'un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-374",
@@ -960,8 +960,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Espace : avec coordonnées",
-			"sous_notion": "intersections"
+			"notion": "Espace",
+			"sous_notion": "positions relatives et intersections"
 		},
 		{
 			"code": "TSPE-375",
@@ -973,8 +973,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
-			"sous_notion": "vecteur normal à un plan"
+			"notion": "Orthogonalité et distances dans l'espace",
+			"sous_notion": "vecteur normal et équation cartésienne"
 		},
 		{
 			"code": "TSPE-376",
@@ -986,7 +986,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "sphère"
 		},
 		{
@@ -999,7 +999,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre et géométrie > Représentations paramétriques et équations cartésiennes",
 			"branche": "Géométrie",
-			"notion": "Orthogonalité : avec coordonnées",
+			"notion": "Orthogonalité et distances dans l'espace",
 			"sous_notion": "sphère"
 		},
 		{
@@ -1129,7 +1129,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": null
 		},
 		{
@@ -1194,7 +1194,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": "seuil"
 		},
 		{
@@ -1207,8 +1207,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
-			"sous_notion": "algorithmes"
+			"notion": "Limites de suites",
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-394",
@@ -1507,7 +1507,7 @@
 			"rubrique": "Analyse > Compléments sur la dérivation",
 			"branche": "Fonctions",
 			"notion": "Dérivation",
-			"sous_notion": "étude de fonction"
+			"sous_notion": "variations et extremums"
 		},
 		{
 			"code": "TSPE-417",
@@ -1533,7 +1533,7 @@
 			"rubrique": "Analyse > Compléments sur la dérivation",
 			"branche": "Fonctions",
 			"notion": "Convexité",
-			"sous_notion": "lecture graphique"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-419",
@@ -1546,7 +1546,7 @@
 			"rubrique": "Analyse > Compléments sur la dérivation",
 			"branche": "Fonctions",
 			"notion": "Convexité",
-			"sous_notion": "lecture graphique"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-420",
@@ -1988,7 +1988,7 @@
 			"rubrique": "Analyse > Fonctions sinus et cosinus",
 			"branche": "Fonctions",
 			"notion": "Fonctions trigonométriques",
-			"sous_notion": "parité et périodicité"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-454",
@@ -2131,7 +2131,7 @@
 			"rubrique": "Analyse > Primitives, équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-465",
@@ -2196,7 +2196,7 @@
 			"rubrique": "Analyse > Primitives, équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay + b",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-470",
@@ -2209,7 +2209,7 @@
 			"rubrique": "Analyse > Primitives, équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay + f",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-471",
@@ -2235,7 +2235,7 @@
 			"rubrique": "Analyse > Primitives, équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-473",
@@ -2378,7 +2378,7 @@
 			"rubrique": "Analyse > Calcul intégral",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "calcul"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-484",
@@ -2404,7 +2404,7 @@
 			"rubrique": "Analyse > Calcul intégral",
 			"branche": "Intégration",
 			"notion": "Intégrale et aire",
-			"sous_notion": "lecture graphique"
+			"sous_notion": "aire algébrique"
 		},
 		{
 			"code": "TSPE-486",
@@ -2417,7 +2417,7 @@
 			"rubrique": "Analyse > Calcul intégral",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "encadrement"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-487",
@@ -2508,7 +2508,7 @@
 			"rubrique": "Analyse > Calcul intégral",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "interprétation"
+			"sous_notion": null
 		},
 		{
 			"code": "TSPE-494",
@@ -2651,7 +2651,7 @@
 			"rubrique": "Probabilités > Succession d'épreuves indépendantes, schéma de Bernoulli",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "coefficients binomiaux"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TSPE-505",
@@ -2703,7 +2703,7 @@
 			"rubrique": "Probabilités > Succession d'épreuves indépendantes, schéma de Bernoulli",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "reconnaître une loi"
+			"sous_notion": "schéma de Bernoulli"
 		},
 		{
 			"code": "TSPE-509",
@@ -2716,7 +2716,7 @@
 			"rubrique": "Probabilités > Succession d'épreuves indépendantes, schéma de Bernoulli",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "calcul de probabilités"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TSPE-510",
@@ -2729,7 +2729,7 @@
 			"rubrique": "Probabilités > Succession d'épreuves indépendantes, schéma de Bernoulli",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "calcul de probabilités"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TSPE-511",
@@ -2755,7 +2755,7 @@
 			"rubrique": "Probabilités > Succession d'épreuves indépendantes, schéma de Bernoulli",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "coefficients binomiaux"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TSPE-513",

@@ -166,7 +166,7 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 	}
 
 	it('la fixture est bien celle du document validé (241 points après la passe)', () => {
-		expect(fixture.version).toBe('2026-10-07.14');
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(241);
 		expect(fixture.points.filter((p) => p.grade === '5')).toHaveLength(114);
 		expect(fixture.points.filter((p) => p.grade === '4')).toHaveLength(72);

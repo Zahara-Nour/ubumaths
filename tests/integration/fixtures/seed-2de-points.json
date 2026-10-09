@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "2-201",
@@ -493,7 +493,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Arithmétique",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "simplifier"
+			"sous_notion": "simplification"
 		},
 		{
 			"code": "2-239",
@@ -688,7 +688,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Nombres réels",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "encadrer"
+			"sous_notion": "encadrement"
 		},
 		{
 			"code": "2-254",
@@ -831,7 +831,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Algèbre",
 			"branche": "Algèbre",
 			"notion": "Inégalités",
-			"sous_notion": "comparer et encadrer"
+			"sous_notion": "comparaison et encadrement"
 		},
 		{
 			"code": "2-265",
@@ -922,7 +922,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Algèbre",
 			"branche": "Nombres et calculs",
 			"notion": "Racines carrées : calculs",
-			"sous_notion": "calculer"
+			"sous_notion": "techniques de calcul"
 		},
 		{
 			"code": "2-272",
@@ -987,7 +987,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Algèbre",
 			"branche": "Algèbre",
 			"notion": "Inégalités",
-			"sous_notion": "comparer et encadrer"
+			"sous_notion": "comparaison et encadrement"
 		},
 		{
 			"code": "2-277",
@@ -1000,7 +1000,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Algèbre",
 			"branche": "Algèbre",
 			"notion": "Inégalités",
-			"sous_notion": "comparer et encadrer"
+			"sous_notion": "comparaison et encadrement"
 		},
 		{
 			"code": "2-278",
@@ -1013,7 +1013,7 @@
 			"rubrique": "Nombres et calculs, algèbre > Algèbre",
 			"branche": "Algèbre",
 			"notion": "Inéquations : premier degré",
-			"sous_notion": "mettre en inéquation"
+			"sous_notion": null
 		},
 		{
 			"code": "2-279",
@@ -1129,7 +1129,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "égalité de vecteurs"
 		},
 		{
@@ -1142,7 +1142,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "égalité de vecteurs"
 		},
 		{
@@ -1155,7 +1155,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "produit par un réel"
 		},
 		{
@@ -1168,7 +1168,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "colinéarité"
 		},
 		{
@@ -1181,7 +1181,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "combinaison linéaire"
 		},
 		{
@@ -1194,8 +1194,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "coordonnées d'un vecteur"
+			"notion": "Vecteurs",
+			"sous_notion": "coordonnées"
 		},
 		{
 			"code": "2-293",
@@ -1207,7 +1207,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "norme"
 		},
 		{
@@ -1220,8 +1220,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "coordonnées d'un vecteur"
+			"notion": "Vecteurs",
+			"sous_notion": "coordonnées"
 		},
 		{
 			"code": "2-295",
@@ -1233,8 +1233,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "colinéarité et déterminant"
+			"notion": "Vecteurs",
+			"sous_notion": "colinéarité"
 		},
 		{
 			"code": "2-296",
@@ -1246,7 +1246,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": null
 		},
 		{
@@ -1259,7 +1259,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": "somme et relation de Chasles"
 		},
 		{
@@ -1272,8 +1272,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "coordonnées d'un vecteur"
+			"notion": "Vecteurs",
+			"sous_notion": "coordonnées"
 		},
 		{
 			"code": "2-299",
@@ -1285,8 +1285,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "coordonnées d'un vecteur"
+			"notion": "Vecteurs",
+			"sous_notion": "coordonnées"
 		},
 		{
 			"code": "2-300",
@@ -1298,8 +1298,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "somme et produit par un réel"
+			"notion": "Vecteurs",
+			"sous_notion": "coordonnées"
 		},
 		{
 			"code": "2-301",
@@ -1337,8 +1337,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "colinéarité et déterminant"
+			"notion": "Vecteurs",
+			"sous_notion": "colinéarité"
 		},
 		{
 			"code": "2-304",
@@ -1350,8 +1350,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "colinéarité et déterminant"
+			"notion": "Vecteurs",
+			"sous_notion": "colinéarité"
 		},
 		{
 			"code": "2-305",
@@ -1363,7 +1363,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": null
 		},
 		{
@@ -1415,7 +1415,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : sans coordonnées",
+			"notion": "Vecteurs",
 			"sous_notion": null
 		},
 		{
@@ -1519,8 +1519,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Droites du plan",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "colinéarité et déterminant"
+			"notion": "Vecteurs",
+			"sous_notion": "colinéarité"
 		},
 		{
 			"code": "2-318",
@@ -1571,8 +1571,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Géométrie > Droites du plan",
 			"branche": "Géométrie",
-			"notion": "Vecteurs : avec coordonnées",
-			"sous_notion": "colinéarité et déterminant"
+			"notion": "Vecteurs",
+			"sous_notion": "colinéarité"
 		},
 		{
 			"code": "2-322",
@@ -1754,7 +1754,7 @@
 			"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
 			"branche": "Fonctions",
 			"notion": "Généralités sur les fonctions",
-			"sous_notion": "résolution graphique"
+			"sous_notion": "équations et inéquations f(x) = k"
 		},
 		{
 			"code": "2-337",
@@ -1780,7 +1780,7 @@
 			"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
 			"branche": "Fonctions",
 			"notion": "Généralités sur les fonctions",
-			"sous_notion": "résolution graphique"
+			"sous_notion": "équations et inéquations f(x) = k"
 		},
 		{
 			"code": "2-339",
@@ -2118,7 +2118,7 @@
 			"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
 			"branche": "Proportionnalité",
 			"notion": "Pourcentages",
-			"sous_notion": "calculer"
+			"sous_notion": "calculs de pourcentages"
 		},
 		{
 			"code": "2-365",
@@ -2274,7 +2274,7 @@
 			"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
 			"branche": "Proportionnalité",
 			"notion": "Pourcentages",
-			"sous_notion": "calculer"
+			"sous_notion": "calculs de pourcentages"
 		},
 		{
 			"code": "2-377",

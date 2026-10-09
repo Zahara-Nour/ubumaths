@@ -159,7 +159,7 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 	}
 
 	it('la fixture est bien celle du document validé (262 points après la passe)', () => {
-		expect(fixture.version).toBe('2026-10-07.13');
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(262);
 		expect(fixture.points.filter((p) => p.grade === 'CM1')).toHaveLength(138);
 		expect(fixture.points.filter((p) => p.grade === 'CM2')).toHaveLength(124);

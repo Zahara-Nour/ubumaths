@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "TCOMP-201",
@@ -206,7 +206,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques, modèles discrets",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": "seuil"
 		},
 		{
@@ -232,8 +232,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques, modèles discrets",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
-			"sous_notion": "algorithmes"
+			"notion": "Limites de suites",
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-219",
@@ -402,7 +402,7 @@
 			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
 			"branche": "Fonctions",
 			"notion": "Dérivation",
-			"sous_notion": "étude de fonction"
+			"sous_notion": "variations et extremums"
 		},
 		{
 			"code": "TCOMP-232",
@@ -505,7 +505,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": "seuil"
 		},
 		{
@@ -675,7 +675,7 @@
 			"rubrique": "Analyse > Primitives et équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = f",
-			"sous_notion": "formes u′eᵘ, 2uu′, u′/u"
+			"sous_notion": "forme (v′∘u)×u′"
 		},
 		{
 			"code": "TCOMP-253",
@@ -688,7 +688,7 @@
 			"rubrique": "Analyse > Primitives et équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-254",
@@ -714,7 +714,7 @@
 			"rubrique": "Analyse > Primitives et équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay + b",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-256",
@@ -740,7 +740,7 @@
 			"rubrique": "Analyse > Primitives et équations différentielles",
 			"branche": "Équations différentielles",
 			"notion": "y′ = ay",
-			"sous_notion": "solution générale"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-258",
@@ -831,7 +831,7 @@
 			"rubrique": "Analyse > Fonctions convexes",
 			"branche": "Fonctions",
 			"notion": "Convexité",
-			"sous_notion": "lecture graphique"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-265",
@@ -883,7 +883,7 @@
 			"rubrique": "Analyse > Intégration",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "calcul"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-269",
@@ -896,7 +896,7 @@
 			"rubrique": "Analyse > Intégration",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "encadrement"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-270",
@@ -961,7 +961,7 @@
 			"rubrique": "Analyse > Intégration",
 			"branche": "Intégration",
 			"notion": "Intégrale et aire",
-			"sous_notion": "lecture graphique"
+			"sous_notion": "aire algébrique"
 		},
 		{
 			"code": "TCOMP-275",
@@ -974,7 +974,7 @@
 			"rubrique": "Analyse > Intégration",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "encadrement"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-276",
@@ -1000,7 +1000,7 @@
 			"rubrique": "Analyse > Intégration",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "calcul"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-278",
@@ -1052,7 +1052,7 @@
 			"rubrique": "Analyse > Intégration",
 			"branche": "Intégration",
 			"notion": "Valeur moyenne",
-			"sous_notion": "interprétation"
+			"sous_notion": null
 		},
 		{
 			"code": "TCOMP-282",
@@ -1141,8 +1141,8 @@
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Probabilités et statistique > Lois discrètes",
-			"branche": "Probabilités",
-			"notion": "Loi binomiale",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
 			"sous_notion": "coefficients binomiaux"
 		},
 		{
@@ -1169,7 +1169,7 @@
 			"rubrique": "Probabilités et statistique > Lois discrètes",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "calcul de probabilités"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TCOMP-291",
@@ -1234,7 +1234,7 @@
 			"rubrique": "Probabilités et statistique > Lois discrètes",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "reconnaître une loi"
+			"sous_notion": "schéma de Bernoulli"
 		},
 		{
 			"code": "TCOMP-296",
@@ -1245,8 +1245,8 @@
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Probabilités et statistique > Lois discrètes",
-			"branche": "Probabilités",
-			"notion": "Loi binomiale",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
 			"sous_notion": "coefficients binomiaux"
 		},
 		{
@@ -1260,7 +1260,7 @@
 			"rubrique": "Probabilités et statistique > Lois discrètes",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "calcul de probabilités"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TCOMP-298",
