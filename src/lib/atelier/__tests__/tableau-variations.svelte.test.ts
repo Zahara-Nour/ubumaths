@@ -59,8 +59,14 @@ describe('le tableau de variations dans le DOM', () => {
 		expect(racine.querySelectorAll('svg').length).toBeGreaterThan(0);
 	});
 
-	it('une fonction à asymptote garde le texte du moteur', () => {
+	it('une fonction à valeur interdite a son tableau (1/x)', () => {
 		const racine = afficherVariations('1/x');
+
+		expect(racine.querySelectorAll('table').length).toBeGreaterThan(0);
+	});
+
+	it('un domaine troué se replie, la réponse reste', () => {
+		const racine = afficherVariations('sqrt(x^2-1)');
 
 		expect(racine.querySelectorAll('table').length).toBe(0);
 		// La réponse ne disparaît pas.

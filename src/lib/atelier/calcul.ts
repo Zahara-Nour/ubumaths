@@ -47,10 +47,10 @@ import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
+import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
 	guessedVariable,
@@ -60,12 +60,10 @@ import {
 	type CommandArguments
 } from '$lib/mathAST/cli/core/variable-argument';
 import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
-import { tidyTerms } from './tidy-terms';
 import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
 } from '$lib/mathAST/parser/custom/tokenizer';
-import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import {
 	decimalCommaDeep,
@@ -123,6 +121,8 @@ export type CalcResult =
 			readonly steps?: readonly RenderedStep[];
 			/** Le graphique d'une simulation, dessiné sous la ligne (Q80) */
 			readonly chart?: StatChartScene;
+			/** Le tableau de variations de `.variations`, quand il se dessine */
+			readonly table?: VariationTableNode;
 			/**
 			 * Une indication affichée AVEC la réponse, qu'elle soit en
 			 * mathématiques ou en texte : `.dériver t^2` calcule en x et le dit
@@ -963,6 +963,28 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		}
 	}
 
+	// ⚠️ `.variations` rendait le bloc d'un terminal (`{-2}/{(2x-1)^2}`, `-inf`,
+	// « decroissante ») : la dérivée en LaTeX, le tableau quand il se dessine,
+	// le détail à déplier — comme le bouton « Variations » (2026-10-09)
+	if (name === 'variations' && result.success) {
+		const studied = variationsRendering(
+			finalArgs?.expression ?? argument,
+			'f',
+			finalArgs?.variable ?? undefined
+		);
+		if (studied !== null) {
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: studied.answer,
+				steps: studied.steps,
+				...(studied.table !== undefined && { table: studied.table }),
+				...noted
+			};
+		}
+	}
+
 	// `dans [a ; b]` : les étapes ne savent pas restreindre, le moteur si
 	const solved =
 		name === 'solve' && finalArgs !== null && finalArgs.interval === null
@@ -1119,6 +1141,7 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 				output: decimalCommaText(result.output),
 				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
 				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
+				...(result.table !== undefined && { table: decimalCommaDeep(result.table) }),
 				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
 			};
 		// La commande que cite un refus se relit avec ses virgules
@@ -1363,43 +1386,6 @@ const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> 
 };
 
 /**
- * Le tableau de variations d'une expression, et la dérivée qui l'accompagne —
- * ou `null`.
- *
- * ⚠️ Rien n'est recalculé ici : `computeVariations` trouve les sens, les points
- * critiques et les limites, et le pont les traduit. Aucun chemin ne jette : une
- * exception remonterait jusqu'à `desk.runFromPanel`, qui n'afficherait alors
- * AUCUNE ligne.
- *
- * ⚠️ **La dérivée voyage avec le tableau parce qu'elle est la seule chose qu'il
- * ne dit PAS.** Le tableau montre le SIGNE de f', jamais f' elle-même — et
- * c'est ce qu'on écrit au-dessus d'un tableau de variations. Tout le reste du
- * bloc texte du moteur (domaine, points critiques, signe, extremum, limites) y
- * figure déjà, en moins lisible. Relevé par David sur capture.
- *
- * @param expression - L'expression SUBSTITUÉE (§6 bis)
- * @param name - Le nom de l'objet, pour étiqueter les lignes `f'(x)` et `f(x)`
- */
-function variationTableOf(
-	expression: string,
-	name: string
-): { readonly table: VariationTableNode; readonly derivative: string } | null {
-	try {
-		const node = astOf(expression, 'text');
-		if (node === null) return null;
-
-		const variations = computeVariations(node, { variable: 'x' });
-		const table = variationTableNode(variations, name);
-		if (table === null) return null;
-
-		// `tidy` : comme la carte f′ et « Dériver » (retour de David, `3 3 x^2`)
-		return { table, derivative: `${name}'(x) = ${toLatex(tidyTerms(variations.derivative))}` };
-	} catch {
-		return null;
-	}
-}
-
-/**
  * Lancer une action du panneau sur un objet.
  *
  * ⚠️ **L'expression est substituée avant l'appel** (§6 bis) : passer `f(x)` au
@@ -1490,14 +1476,16 @@ function computeAction(
 		}
 	}
 
+	// Le même rendu que `.variations` tapé : dérivée, détail, tableau
 	if (actionId === 'variations') {
-		const variations = variationTableOf(substituted.expression, name);
-		if (variations !== null) {
+		const studied = variationsRendering(substituted.expression, name);
+		if (studied !== null) {
 			return {
 				ok: true,
 				output: rendered.text,
-				latex: variations.derivative,
-				table: variations.table
+				latex: studied.answer,
+				steps: studied.steps,
+				...(studied.table !== undefined && { table: studied.table })
 			};
 		}
 	}

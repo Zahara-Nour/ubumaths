@@ -70,9 +70,11 @@ describe('« Variations » rend un tableau', () => {
 });
 
 describe('le repli de l’action', () => {
-	it('une fonction à asymptote garde le texte du moteur', () => {
+	// 1/x a désormais son tableau (double barre, 2026-10-09) : le repli se
+	// vérifie sur un domaine troué
+	it('un domaine troué garde une réponse', () => {
 		const s = session();
-		runInput(s, 'h(x) = 1/x');
+		runInput(s, 'h(x) = sqrt(x^2-1)');
 
 		const outcome = runAction(s, 'variations', 'h');
 
