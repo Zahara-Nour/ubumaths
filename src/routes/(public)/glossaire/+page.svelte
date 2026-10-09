@@ -118,8 +118,16 @@
 		showTermDialog = true;
 	}
 
+	/** Terme principal de ce nom : un renvoi peut porter le même nom que sa cible (« solution »). */
+	function findPrincipal(name: string): MathTerm | undefined {
+		return (
+			MATH_DICTIONARY.find((t) => t.term === name && !t.derivedFrom) ??
+			MATH_DICTIONARY.find((t) => t.term === name)
+		);
+	}
+
 	function openTermByName(name: string) {
-		const term = MATH_DICTIONARY.find((t) => t.term === name);
+		const term = findPrincipal(name);
 		if (term) openTerm(term);
 	}
 
@@ -333,6 +341,16 @@
 				: []}
 
 			{@const derivedFrom = selectedTerm.derivedFrom}
+			<!-- Un renvoi sans définition propre montre celle du terme cité : l'élève lit tout de suite -->
+			{@const target = derivedFrom ? findPrincipal(derivedFrom) : undefined}
+			{@const shownDefinitions =
+				definitions.length === 0 && target?.definitions
+					? resolveForLevel(target.definitions, selectedLevel)
+					: definitions}
+			{@const definitionTitle =
+				definitions.length === 0 && target
+					? `Définition de « ${target.term}${target.sense ? ` (${target.sense})` : ''} »`
+					: 'Définition'}
 
 			<Dialog.Header>
 				<Dialog.Title class="text-2xl font-bold">
@@ -355,8 +373,8 @@
 
 			<div class="space-y-4 py-4">
 				{#if derivedFrom}
-					<p class="text-muted-foreground italic">
-						Forme dérivée de
+					<p class="text-muted-foreground">
+						Voir :
 						<button
 							class="font-medium text-primary underline"
 							onclick={() => openTermByName(derivedFrom)}
@@ -366,10 +384,10 @@
 					</p>
 				{/if}
 
-				{#if definitions.length > 0}
+				{#if shownDefinitions.length > 0}
 					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Définition</h3>
-						{#each definitions as def (def)}
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">{definitionTitle}</h3>
+						{#each shownDefinitions as def (def)}
 							<div class="text-sm">
 								<InlineMarkdown content={def} />
 							</div>

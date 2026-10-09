@@ -32,6 +32,43 @@ describe('glossaire', () => {
 		await expect.element(link).toHaveAttribute('href', '/chiffrement/depeches');
 	});
 
+	// Avant : la fiche d'un renvoi n'affichait que « Forme dérivée de X », faux
+	// pour un raccourci ou un nom propre, et il fallait cliquer encore pour lire.
+	it('un renvoi affiche la définition du terme cité, sans clic de plus', async () => {
+		await render(Glossaire);
+		await openTerm('multiplier');
+		const dialog = page.getByRole('dialog');
+		await expect.element(dialog).toHaveTextContent(/Voir : multiplication/);
+		await expect.element(dialog).toHaveTextContent(/compter vite des paquets identiques/);
+		await expect.element(dialog).not.toHaveTextContent(/Forme dérivée/);
+	});
+
+	it('la définition du terme cité suit le niveau choisi', async () => {
+		await render(Glossaire);
+		await page
+			.getByRole('button', { name: /niveau/i })
+			.first()
+			.click();
+		await page.getByRole('option', { name: 'CP', exact: true }).click();
+		await openTerm('multiplier');
+		const dialog = page.getByRole('dialog');
+		await expect.element(dialog).toHaveTextContent(/compter vite des paquets identiques/);
+		// Définition de CE1 : pas encore pour un lecteur de CP
+		await expect.element(dialog).not.toHaveTextContent(/addition répétée/);
+	});
+
+	it('un renvoi qui a sa propre définition garde la sienne', async () => {
+		await render(Glossaire);
+		await openTerm('Thalès');
+		const dialog = page.getByRole('dialog');
+		await expect.element(dialog).toHaveTextContent(/Mathématicien grec/);
+		await expect
+			.element(dialog.getByRole('button', { name: 'théorème de Thalès' }))
+			.toBeInTheDocument();
+		// Ni remplacée ni doublée par celle du théorème
+		await expect.element(dialog).not.toHaveTextContent(/droites sécantes/);
+	});
+
 	it('le filtre propose la Terminale maths expertes', async () => {
 		await render(Glossaire);
 		await page
