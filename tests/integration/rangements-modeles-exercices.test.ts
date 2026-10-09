@@ -215,3 +215,48 @@ describe('Rangements des modèles et des exercices (migration de données)', () 
 		expect(t.rows.every((r) => r.tgenabled === 'O')).toBe(true);
 	});
 });
+
+describe('Rangements : les branches d’échec de la migration', () => {
+	let pg: Client;
+
+	beforeAll(async () => {
+		pg = await getPostgresClient();
+	});
+
+	afterAll(async () => {
+		await pg.query('rollback').catch(() => undefined);
+	});
+
+	it('TOUT ou RIEN : un modèle manquant fait échouer la migration (présence partielle)', async () => {
+		await pg.query('begin');
+		try {
+			const presents = fixture.modeles.slice(1).map((m) => m.id);
+			await pg.query(
+				`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title)
+				 select unnest($1::uuid[]), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'copie de la prod'`,
+				[presents]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/identifiants partiellement présents : 1004 modèle\(s\)/
+			);
+		} finally {
+			await pg.query('rollback');
+		}
+	});
+
+	it('la garde refuse le remplissage si un rangement existe déjà', async () => {
+		await pg.query('begin');
+		try {
+			await pg.query(
+				`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title, classification_node_id)
+				 values (gen_random_uuid(), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'déjà rangé',
+				         (select id from public.classification_nodes where kind = 'notion' and archived_at is null limit 1))`
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/rangements déjà présents/
+			);
+		} finally {
+			await pg.query('rollback');
+		}
+	});
+});

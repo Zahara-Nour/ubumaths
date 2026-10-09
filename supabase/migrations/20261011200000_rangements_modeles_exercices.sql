@@ -26,8 +26,11 @@
 --
 -- Accès : aucun changement (colonnes et table créées par 20261007120000, droits inchangés).
 --
--- Rollback (valable tant qu'aucun rangement n'a été saisi à la main depuis — il n'existe
--- pas encore d'interface pour le faire) :
+-- Rollback — ⚠️ LUI-MÊME DESTRUCTIF : il efface TOUS les rangements, y compris ceux qu'un
+-- professeur aurait saisis depuis (l'API le permet déjà, même sans écran dédié). Avant de
+-- l'exécuter : compter ce qui a été saisi depuis, et appliquer la règle CLAUDE.md (arrêt,
+-- explication en français de ce qui serait perdu, décision de David). À jouer d'un bloc :
+--   begin;
 --   delete from public.exercise_classifications;
 --   alter table public.question_templates disable trigger update_question_templates_updated_at;
 --   update public.question_templates set classification_node_id = null where classification_node_id is not null;
@@ -36,8 +39,13 @@
 --   update public.exercises set source_type_id = null where source_type_id is not null;
 --   alter table public.exercises enable trigger exercises_updated_at;
 --   delete from public.source_types where name in ('Bac', 'Concours');
+--   commit;
 -- Aucune donnée d'élève n'est touchée, ni par la migration ni par son rollback.
 -- ============================================================================
+
+-- Une écriture concurrente sur question_templates ou exercises (un prof qui édite) fait
+-- échouer proprement la migration au lieu d'empiler les écritures en attente.
+set local lock_timeout = '5s';
 
 -- ---- 0. Garde : rien n'est déjà rangé (sinon ce remplissage écraserait une saisie) ----
 do $garde$
