@@ -103,5 +103,10 @@ describe('glossaire', () => {
 		await page.getByRole('option', { name: '1ère technologique' }).click();
 		await page.getByPlaceholder('Rechercher un terme...').fill('nombre dérivé');
 		await expect.element(page.getByRole('button', { name: /^nombre dérivé/ })).toBeInTheDocument();
+		// « discriminant », de 1re spé, est exclu du programme de 1re techno
+		await page.getByPlaceholder('Rechercher un terme...').fill('discriminant');
+		await expect
+			.element(page.getByRole('button', { name: /^discriminant/ }))
+			.not.toBeInTheDocument();
 	});
 });

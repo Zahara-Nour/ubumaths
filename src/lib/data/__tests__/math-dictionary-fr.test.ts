@@ -9,7 +9,7 @@ import MATH_DICTIONARY, {
 	type MathTerm
 } from '../math-dictionary-fr';
 import { readFileSync } from 'node:fs';
-import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
+import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
 import { hasAccessToGrade } from '$lib/utils/grades';
 
 /**
@@ -626,13 +626,15 @@ describe('math-dictionary-fr', () => {
 			expect(getTermsForGrade('2')).not.toContain(find('seuil'));
 		});
 
-		// Ni un niveau qui voit déjà le contenu (inutile), ni un niveau antérieur
-		// (ce serait un changement de niveau déguisé) : seulement une filière parallèle
-		it('should only share with parallel branches', () => {
+		// Ni un niveau qui voit déjà le contenu (inutile), ni un niveau d'une autre année
+		// (une définition de Tle spé lue en 1re générale serait un changement de niveau
+		// déguisé) : seulement une filière parallèle de la même année
+		it('should only share with parallel branches of the same year', () => {
 			const wrong: string[] = [];
 			const check = (where: string, grade: GradeCode, sharedWith: GradeCode[] = []) => {
 				for (const other of sharedWith) {
-					if (hasAccessToGrade(other, grade) || hasAccessToGrade(grade, other)) {
+					const sameYear = GRADES[other].schoolYear === GRADES[grade].schoolYear;
+					if (!sameYear || hasAccessToGrade(other, grade) || hasAccessToGrade(grade, other)) {
 						wrong.push(`${where} [${grade}] partagé avec ${other}`);
 					}
 				}

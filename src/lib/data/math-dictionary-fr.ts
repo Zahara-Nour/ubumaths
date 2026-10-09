@@ -95,7 +95,7 @@ export interface MathTerm {
 	grade: GradeCode;
 	/**
 	 * Filières parallèles qui lisent aussi ce terme : « seuil », de 1re spé, est au
-	 * programme de 1re générale. Sa définition de 1re spé porte le même `sharedWith`.
+	 * programme de 1re générale. Sa définition de son propre niveau porte le même `sharedWith`.
 	 */
 	sharedWith?: GradeCode[];
 	synonyms?: string[];
