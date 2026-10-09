@@ -14,8 +14,9 @@
 -->
 <script lang="ts">
 	import { escapeHtml } from '../utils';
-	import type { DetailKind } from '$lib/ubumark';
+	import type { DetailKind, TermLink } from '$lib/ubumark';
 	import { inlineDetailClass } from '../detail-styles';
+	import LexiconTerm from './LexiconTerm.svelte';
 
 	interface Props {
 		content: string;
@@ -24,6 +25,8 @@
 		code?: boolean;
 		/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
 		detail?: DetailKind;
+		/** Mot du dictionnaire repéré : il ouvre sa fiche (mots cliquables) */
+		term?: TermLink;
 		class?: string;
 	}
 
@@ -33,6 +36,7 @@
 		italic = false,
 		code = false,
 		detail,
+		term,
 		class: rawClassName = ''
 	}: Props = $props();
 
@@ -42,18 +46,21 @@
 	let escapedContent = $derived(escapeHtml(content));
 </script>
 
-{#if code}
-	<code class="rounded bg-muted px-1 py-0.5 text-sm text-foreground {className}"
-		>{#if bold}<strong
-				>{#if italic}<em>{@html escapedContent}</em>{:else}{@html escapedContent}{/if}</strong
-			>{:else if italic}<em>{@html escapedContent}</em>{:else}{@html escapedContent}{/if}</code
-	>
-{:else if bold}
-	<strong class={className}
-		>{#if italic}<em>{@html escapedContent}</em>{:else}{@html escapedContent}{/if}</strong
-	>
-{:else if italic}
-	<em class={className}>{@html escapedContent}</em>
-{:else}
-	<span class={className}>{@html escapedContent}</span>
-{/if}
+{#snippet formatted()}{#if code}
+		<code class="rounded bg-muted px-1 py-0.5 text-sm text-foreground {className}"
+			>{#if bold}<strong
+					>{#if italic}<em>{@html escapedContent}</em>{:else}{@html escapedContent}{/if}</strong
+				>{:else if italic}<em>{@html escapedContent}</em>{:else}{@html escapedContent}{/if}</code
+		>
+	{:else if bold}
+		<strong class={className}
+			>{#if italic}<em>{@html escapedContent}</em>{:else}{@html escapedContent}{/if}</strong
+		>
+	{:else if italic}
+		<em class={className}>{@html escapedContent}</em>
+	{:else}
+		<span class={className}>{@html escapedContent}</span>
+	{/if}{/snippet}
+
+{#if term}<LexiconTerm ids={term.ids}>{@render formatted()}</LexiconTerm
+	>{:else}{@render formatted()}{/if}

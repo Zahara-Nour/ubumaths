@@ -106,6 +106,7 @@
 				bold={child.bold}
 				italic={child.italic}
 				code={child.code}
+				term={child.term}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
 			{#key child.expression}<MathInline

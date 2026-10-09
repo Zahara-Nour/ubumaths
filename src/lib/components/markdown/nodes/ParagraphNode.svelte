@@ -169,6 +169,7 @@
 				italic={child.italic}
 				code={child.code}
 				detail={child.detail}
+				term={child.term}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}

@@ -65,6 +65,9 @@
 		stripFenceLanguages
 	} from './restricted-rendering';
 	import type { ContentLocale } from '$lib/types/locale';
+	import type { GradeCode } from '$lib/types/grades';
+	import { linkDocument } from '$lib/lexicon/linker';
+	import { provideLexicon, readLexicon } from './lexicon-context';
 
 	interface Props {
 		/** Markdown content to render (template or resolved instance) */
@@ -123,6 +126,12 @@
 		 * un parent restreint l'impose. Absent : rendu complet.
 		 */
 		restricted?: boolean;
+		/**
+		 * Niveau de lecture des mots cliquables (lot 2 du lexique) : les mots du
+		 * dictionnaire visibles à ce niveau ouvrent leur fiche. Absent : celui
+		 * d'un rendu parent ou du cadre de la question ; `null` : aucun mot.
+		 */
+		lexiconGrade?: GradeCode | null;
 	}
 
 	let {
@@ -143,13 +152,16 @@
 		onHintOpen,
 		locale,
 		showAuthoringErrors,
-		restricted
+		restricted,
+		lexiconGrade
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
 	provideAuthoringErrors(() => showAuthoringErrors);
 	provideRestrictedRendering(() => restricted);
 	const isRestricted = readRestrictedRendering();
+	provideLexicon(() => lexiconGrade);
+	const lexicon = readLexicon();
 
 	/**
 	 * Source effectivement analysée : en mode restreint, les blocs de code
@@ -168,8 +180,13 @@
 			return { type: 'document', children: [] };
 		}
 
-		// Mode restreint : filet sur l'AST (copie, le cache n'est pas modifié)
-		const finish = (doc: DocumentNode) => (isRestricted() ? restrictDocument(doc) : doc);
+		// Mode restreint : filet sur l'AST ; mots cliquables : repérés au niveau du
+		// lecteur (copies, le cache n'est pas modifié)
+		const finish = (doc: DocumentNode) => {
+			const safe = isRestricted() ? restrictDocument(doc) : doc;
+			const grade = lexicon();
+			return grade ? linkDocument(safe, grade) : safe;
+		};
 
 		// Check cache first
 		const cached = getCachedAST(source, parseOptions);
