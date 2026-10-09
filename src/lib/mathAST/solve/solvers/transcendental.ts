@@ -740,9 +740,12 @@ function solveTrigonometric(
 	if (Math.abs(absA - 1) < 1e-10) {
 		xPeriodNode = basePeriodNode;
 	} else {
-		xPeriodNode = denormalize(
-			normalize(divide(basePeriodNode, number(absA.toString()), 'fraction'))
-		);
+		// Période EXACTE : 2π / |a| sur le nœud du coefficient. `absA.toString()`
+		// écrivait 1/3 en 0.3333333333333333 : sin(x/3) = 0 recevait une période
+		// 20000000000000000/3333333333333333·π, que l'affichage refusait — et la
+		// réponse perdait son « + 6kπ » (2026-10-09).
+		const absCoeff = aNumeric < 0 ? opposite(coeffNode) : coeffNode;
+		xPeriodNode = denormalize(normalize(divide(basePeriodNode, absCoeff, 'fraction')));
 	}
 
 	// Build periodic solution family

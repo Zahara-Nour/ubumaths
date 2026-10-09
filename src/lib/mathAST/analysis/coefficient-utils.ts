@@ -342,6 +342,17 @@ export function extractLinearForm(node: MathNode, variable: string): LinearForm 
 		return extractLinearForm(node.content, variable);
 	}
 
+	// Opposé : −(ax + b) = (−a)x + (−b). `sin(−x/3) = 0` perdait sa famille
+	// périodique, l'argument n'étant pas reconnu affine (2026-10-09)
+	if (isOpposite(node)) {
+		const inner = extractLinearForm(node.operand, variable);
+		if (!inner) return null;
+		return {
+			coefficient: opposite(inner.coefficient),
+			offset: inner.offset === null ? null : opposite(inner.offset)
+		};
+	}
+
 	return null;
 }
 
