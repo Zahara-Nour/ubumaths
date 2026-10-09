@@ -237,10 +237,19 @@ renvoi vers une cible visible, partage seulement avec une filière parallèle de
 
 ## Lot 2 — mots cliquables
 
-⏳ Spécification proposée le 2026-10-09, en attente de validation :
-[lexique/lot2-mots-cliquables-spec.md](lexique/lot2-mots-cliquables-spec.md) (18 comportements,
-mesure sur les 3 212 énoncés publiés, deux questions de contenu : synonyme « premier », mot
-« expression »). Rien n'est codé avant le « oui » de David.
+✅ Spécification validée par David le 2026-10-09 (« je valide », avec ses deux choix : synonyme
+« premier » retiré, « expression » dans la liste fermée) et livré #998 (branche
+`feat/lexique-mots-cliquables`) : [lexique/lot2-mots-cliquables-spec.md](lexique/lot2-mots-cliquables-spec.md),
+notes et revues dans [lexique/lot2-progress.md](lexique/lot2-progress.md).
+
+- Repérage `src/lib/lexicon/` (positions `TextNode.terms`, sans découper l'arbre), dictionnaire chargé
+  à la demande, marquage `[mot]{.def}` / `{.def=…}` / `{.nodef}`, fiche en popover (dialog
+  accessible), niveau de l'élève sinon le plus petit de la question, jamais en évaluation notée.
+- **Écart à la spécification, à trancher par David** : pas de mot cliquable dans les réponses de QCM
+  (un choix est un bouton ; un clic sur le mot envoyait la réponse). Option : revoir la structure d'un
+  choix pour qu'il ne soit plus un bouton entier.
+- Hors lot, signalé : `HintReference.svelte` a probablement le même défaut de focus que la fiche avait
+  (fermeture par un clic dans un champ → focus renvoyé au bouton).
 
 ## Reprise
 
