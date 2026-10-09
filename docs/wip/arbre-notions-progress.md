@@ -868,6 +868,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - D53, D56, D57 : avec 2-400. D54 : sous « probabilités totales », avec 1SPE-340, à scinder.
   - D61 : avec 2-378.
   - Reste avant la migration : la question d'accès, puis la phase 0 TDD (comportements à valider).
+- **2026-10-09 — État final consolidé** (arbre → audit → lot → crible, toutes les décisions appliquées en simulation) :
+  - nœuds : 3 sous-notions créées, 6 re-parentées, 63 renommées, 74 archivées (dont 3 notions) ;
+  - points : 125 re-rattachés ; modèles : 234 déplacés ;
+  - rangements d'exercices : 49 déplacés et **4 supprimés (doublons)** ;
+  - tags : 473 ; couples sans point : 21.
+  - Simulation : 0 violation.
+  - Le CSV du lot est mis à jour (494 couples).
+  - **Les 4 suppressions sont des DELETE** : arrêt et accord de David requis. Ce sont des exercices rangés à la
+    fois sur une facette et sur sa destination ; deux d'entre eux transfèrent leur rangement principal.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
