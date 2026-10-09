@@ -845,7 +845,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     - « reconnaître » devient « caractérisation » ;
     - « appliquer » va sur la notion ;
     - nouvelle sous-notion « coefficient de proportionnalité » (5-088 et 2 modèles).
-  - Restent non tranchées : la place de 4-059 (partage proportionnel) et la section D.
+  - **4-059 (partage proportionnel) va sous « ratio »** (David).
+  - Reste non tranchée : la section D (renommages).
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
