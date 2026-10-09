@@ -877,6 +877,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Le CSV du lot est mis à jour (494 couples).
   - **Les 4 suppressions sont des DELETE** : arrêt et accord de David requis. Ce sont des exercices rangés à la
     fois sur une facette et sur sa destination ; deux d'entre eux transfèrent leur rangement principal.
+- **2026-10-09 — David : « ok » aux quatre points.**
+  - Il accepte les 4 suppressions de rangements en doublon.
+  - Il valide en bloc le reste du lot et du crible.
+  - Question d'accès : personne ne gagne d'accès. Les états des élèves sur les points neufs restent lisibles par l'élève,
+    son prof et l'admin.
+  - Il valide les 8 comportements à tester de la migration de l'arbre.
+  - **Suite : PR 1, migration de nettoyage de l'arbre** (worktree `ubumaths-wt-facettes`, branche
+    `feat/arbre-nettoyage-facettes`). Les tests d'abord, puis la migration, puis les fixtures et les docs mises à jour.
+    La PR 2 suivra, avec les 473 tags et les deux règles en base.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
