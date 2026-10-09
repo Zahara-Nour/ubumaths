@@ -754,3 +754,9 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     - Un modèle a un point par programme.
   - **Attente : Q1 (nœud stocké ou déduit des points), Q2 (un point par programme), Q3 (passe
     « bornes »).** Ne rien écrire en base avant.
+- **2026-10-09 — DÉCIDÉ par David : Q1 = B, Q2 = exactement un point par programme.**
+  - Q1 = B : le nœud est stocké ; les points sont saisis et contraints au nœud de la ressource
+    ou à sa notion (un exercice : l'un de ses nœuds ou leur notion).
+  - Les précisions sont inscrites dans l'ADR 0020 § 7.
+  - Q3 (la passe « bornes ») est encore ouverte.
+  - Suite : le lot de l'étape 2 de C5 sous ces règles, à présenter à David.

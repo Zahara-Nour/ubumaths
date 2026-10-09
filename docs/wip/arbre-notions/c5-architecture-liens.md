@@ -1,7 +1,18 @@
 # Le lien entre modèles et points : quelle structure ? (décision d'architecture)
 
-> **Statut : ANALYSE RÉVISÉE le 2026-10-09. L'option 4, recommandée plus bas, est RETIRÉE.** Rien
-> n'est écrit en base ; la décision revient à David.
+> **DÉCIDÉ par David le 2026-10-09.**
+>
+> - **Q1 = B.** Le nœud est stocké ; les points sont saisis à la main et contraints au nœud de
+>   la ressource ou à sa notion. C'est l'ADR 0020 § 7, avec les précisions qui y sont
+>   inscrites.
+> - **Q2 = exactement un point par programme** pour un modèle.
+> - Q3 (la passe « bornes », avant ou après C5) est encore ouverte.
+>
+> L'étape 2 de C5 reprend sous ces règles : [c5-transfert-liens.md](c5-transfert-liens.md).
+>
+> L'analyse qui a mené à la décision suit. L'option 4 qu'elle recommandait a été retirée.
+>
+> **Révision du 2026-10-09, avant la décision : l'option 4 est RETIRÉE.**
 >
 > - **Pourquoi l'option 4 tombe.** L'exemple de David se vérifie dans les données : le nœud
 >   `Fractions : calculs > additionner et soustraire` porte à la fois CE1-021 « … de même
