@@ -74,8 +74,10 @@ import {
 	decimalCommaProse,
 	decimalCommaStep,
 	decimalCommaText,
-	commaRefusal
+	commaRefusal,
+	coupleOrSetRefusal
 } from './decimal-comma';
+import { listCitedMessage } from './list-cited';
 
 // =============================================================================
 // Types
@@ -334,15 +336,13 @@ const KIND_WORDS: Readonly<Record<Exclude<ObjectKind, 'list'>, string>> = {
 };
 
 /**
- * `M = L`, `2L + 1` : une liste lue comme un nombre. Le moteur la prenait pour
- * une lettre libre et rendait `2L+1`, une valeur « saine » sans aucun sens.
+ * `M = L`, `2L + 1` : une liste lue comme un nombre — la règle des cartes
+ * (`listCitedMessage`, la même détection).
  */
 function listCitedAsNumber(atelier: Atelier, text: string): string | null {
 	const ast = astOf(text, 'text', atelier.functionNames);
 	if (ast === null) return null;
-	const variables = new Set(getVariables(ast));
-	const list = atelier.objects.find((o) => o.kind === 'list' && variables.has(o.name));
-	return list === undefined ? null : `${list.name} est une liste : utilise .stats ${list.name}`;
+	return listCitedMessage(atelier.objects, getVariables(ast));
 }
 
 /**
@@ -373,6 +373,18 @@ function commaListRefusal(name: string, body: string): string | null {
 	return corrected
 		? `Pour séparer des valeurs, utilise « ; » : ${name} = ${entries.join(' ; ')}`
 		: null;
+}
+
+/**
+ * `L = (1 ; 2 ; 3)` : trois valeurs ou plus entre parenthèses, c'est une liste
+ * mal écrite, pas un couple — on montre la forme qui la crée.
+ */
+function bracketedListRefusal(name: string, body: string): string | null {
+	const inner = /^\s*\((.*)\)\s*$/s.exec(body);
+	if (inner === null) return null;
+	const read = individualEntries(inner[1], false);
+	if (!('entries' in read) || read.entries.length < 3) return null;
+	return `Pour créer une liste, écris les valeurs sans parenthèses : ${name} = ${read.entries.join(' ; ')}`;
 }
 
 /**
@@ -1205,6 +1217,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		const [, name, parameter, body] = definition;
 		const commaList = parameter === undefined ? commaListRefusal(name, body) : null;
 		if (commaList !== null) return { kind: 'refus', message: commaList };
+		const bracketed = parameter === undefined ? bracketedListRefusal(name, body) : null;
+		if (bracketed !== null) return { kind: 'refus', message: bracketed };
+		// `A = (1 ; 2)` : le refus d'une saisie (#983), pas un objet en erreur
+		const typed = coupleOrSetRefusal(body);
+		if (typed !== null) return { kind: 'refus', message: typed };
 		const result = defineObject(session, name, parameter, body, provenance);
 		// `u(n) = …` dit « explicite » (S3) : le mode d'une suite étant gardé à la
 		// modification, c'est ici qu'une récurrence retapée en explicite le devient

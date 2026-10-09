@@ -443,13 +443,13 @@ describe('la règle de la virgule dans la saisie (décision de David)', () => {
 
 	it.each(['(1 ; 2)', '(1;2)+(3;4)'])('un couple est refusé : %s', (input) => {
 		expect(said(runInput(session(), input))).toBe(
-			'Les couples (a ; b) ne sont pas encore pris en charge dans Calcul.'
+			"Les couples (a ; b) ne sont pas encore pris en charge dans l'atelier."
 		);
 	});
 
 	it.each(['{1 ; 2 ; 3}', '{1,5 ; 2}'])('un ensemble est refusé : %s', (input) => {
 		expect(said(runInput(session(), input))).toBe(
-			'Les ensembles {a ; b} ne sont pas encore pris en charge dans Calcul.'
+			"Les ensembles {a ; b} ne sont pas encore pris en charge dans l'atelier."
 		);
 	});
 

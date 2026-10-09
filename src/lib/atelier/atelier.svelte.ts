@@ -60,6 +60,7 @@ import {
 import { astOf as astOfDefinition } from './parse';
 import { INTERNAL_LETTER, letterRejection } from './letter';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { listCitedMessage } from './list-cited';
 import { transformAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
@@ -1386,6 +1387,15 @@ export class Atelier {
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
 			const refs = this.#refsOf(o).filter((r) => !(r.name === o.name && o.kind === 'sequence'));
+			// Une liste citée comme un nombre (`a = L + 1`) : le refus de Calcul
+			// (#985), jamais L lu comme une lettre libre
+			if (!ownError.get(o.name)) {
+				const cited = listCitedMessage(
+					this.items,
+					refs.map((r) => r.name)
+				);
+				if (cited !== null) ownError.set(o.name, cited);
+			}
 			deps.set(
 				o.name,
 				refs.filter((r) => usable(r.name)).map((r) => r.name)

@@ -25,6 +25,7 @@ import {
 import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
+import { coupleOrSetRefusal } from './decimal-comma';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -400,6 +401,7 @@ export function parseDefinition(
 	if (!result.ast) {
 		return {
 			error:
+				coupleOrSetRefusal(definition) ??
 				mixedNotationMessage(definition) ??
 				`« ${definition.trim()} » n'est pas une expression valide.`
 		};
