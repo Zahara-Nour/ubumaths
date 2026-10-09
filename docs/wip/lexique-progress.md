@@ -216,6 +216,24 @@ documents `t<id>`) ; proposition [lexique/lot0f-mots.md](lexique/lot0f-mots.md),
   rectangles, droites remarquables, dénominateur commun. Le reste des 269 est écarté (vocabulaire
   courant : « long », « lourd », « gauche »…).
 
+## Lot 0g — mots partagés entre les filières de 1re
+
+✅ Décidé par David le 2026-10-09 (option « 1 » : une entrée peut appartenir à plusieurs niveaux ;
+« oui » aux comportements et à la liste ; « n'oublie pas le niveau 1_TECHNO ») et livré #996 (branche
+`feat/lexique-filieres`). `sharedWith` sur une entrée ou une définition ; `canRead` /
+`isTermVisibleTo` s'appuient sur la hiérarchie des niveaux (Tle comp. suit la 1re générale, Tle
+techno la 1re techno). 25 entrées + 7 définitions partagées ; filtre « 1ère technologique » dans le
+glossaire ; 1re générale et 1re techno dans le choix du niveau de Mathémo. Spécification et liste :
+[lexique/lot0g-filieres.md](lexique/lot0g-filieres.md) ; copie figée
+`tests/fixtures/lexique/filieres-lot0g.json`. Garde-fous : définition lisible dans chaque filière,
+renvoi vers une cible visible, partage seulement avec une filière parallèle de la même année.
+
+- **Questions ouvertes (produit, à David)** : le badge de niveau du glossaire montre le niveau
+  d'origine (« 1ère spécialité maths » pour un mot partagé, vu en 1re techno) ; le filtre ne propose
+  ni la Tle comp. ni la Tle techno ; « fonction exponentielle » demande une définition propre à la
+  1re générale ($x \mapsto a^x$), que `sharedWith` ne permet pas ; ancien `games/mathemo/words.ts`
+  (code mort) à supprimer ou non.
+
 ## Reprise
 
 Scripts d'analyse dans le scratchpad (non versionnés) : copie du dictionnaire avec imports
