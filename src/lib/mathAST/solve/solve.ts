@@ -58,6 +58,7 @@ import type {
 } from './types';
 import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
 import { trySubstitution } from './substitution';
+import { trySinCosRatio } from './sin-cos-ratio';
 import { mergePeriodicFamilies } from './periodic';
 import { isDelimiter, isMultiplication, isRelation } from '../guards';
 import {
@@ -1978,6 +1979,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const substituted = trySubstitution(expr, variable, opts, solve);
 		if (substituted) result = substituted;
+	}
+	// a·sin(u) + b·cos(u) = 0 → tan(u) = −b/a (`sin x = cos x`, revue 2026-10-09)
+	if (isSolverFailure(result)) {
+		const ratio = trySinCosRatio(expr, variable, opts, solve);
+		if (ratio) result = ratio;
 	}
 	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);

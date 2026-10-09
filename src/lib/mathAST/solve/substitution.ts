@@ -14,7 +14,8 @@
  * réunies (`mergePeriodicFamilies`).
  *
  * Pour l'exponentielle, `e^{2x}` se lit `(eˣ)²` : les exposants doivent être
- * des multiples entiers positifs d'un même argument.
+ * des multiples entiers positifs d'un même argument. Une base constante aussi :
+ * `4^x − 3·2^x + 2 = 0` se lit en X = 2ˣ (4ˣ = (2ˣ)², 8ˣ = (2ˣ)³).
  *
  * @module mathAST/solve/substitution
  */
@@ -28,7 +29,9 @@ import {
 	equals,
 	euler,
 	func,
+	multiply,
 	number,
+	opposite,
 	superscript,
 	variable as variableNode
 } from '../factory';
@@ -41,6 +44,7 @@ import { isPolynomialIn } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { getRuleDescription } from './descriptions-fr';
 import { mergePeriodicFamilies } from './periodic';
+import { extractLinearForm } from '../analysis/coefficient-utils';
 
 // =============================================================================
 // Types
@@ -52,10 +56,25 @@ type SolveFn = (equation: RelationNode, options?: SolveOptions) => SolveResult;
 
 type SolverOptions = Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>>;
 
-/** L'atome repéré : sa fonction et l'argument commun. */
+/**
+ * L'atome repéré : sa fonction et l'argument commun. `base` : la base
+ * constante d'une puissance aᵘ (`2^x`, `4^x`) ; absente pour eᵘ.
+ */
 interface AtomFamily {
 	readonly kind: AtomKind;
 	readonly argument: MathNode;
+	readonly base?: MathNode;
+	/**
+	 * Exposants affines de même pente, à une constante près : `2^(x+1)` =
+	 * 2·2ˣ, `2^(−x)` = 1/2ˣ. L'équation en X devient RATIONNELLE.
+	 */
+	readonly affine?: true;
+}
+
+/** Un exposant affine `p·x + q` lu en base e : pente `p·ln a`. */
+interface AffineShape {
+	readonly offset: MathNode | null;
+	readonly slope: number;
 }
 
 // =============================================================================
@@ -66,6 +85,9 @@ const SUBSTITUTABLE: readonly AtomKind[] = ['sin', 'cos', 'tan', 'ln', 'exp'];
 
 /** Noms candidats pour la nouvelle inconnue (`e` et `i` sont des constantes). */
 const FRESH_NAMES = ['u', 't', 'w', 'v', 'z'] as const;
+
+/** Plus grande puissance de X acceptée par la lecture affine (`8^x` = X³). */
+const MAX_AFFINE_MULTIPLE = 6;
 
 /** Garde de récursion : chaque retour à x rappelle `solve`. */
 const MAX_SUBSTITUTION_DEPTH = 2;
@@ -88,11 +110,19 @@ function dependsOn(node: MathNode, name: string): boolean {
 	return getVariables(node).has(name);
 }
 
-/** `(kind, argument)` si le nœud est un atome candidat dépendant de l'inconnue. */
-function readAtom(
-	node: MathNode,
-	name: string
-): { readonly kind: AtomKind; readonly argument: MathNode } | null {
+/** Une base constante utilisable : sans lettre, > 0, ≠ 1 (`2`, `4`, `0.5`). */
+function isConstantBase(node: MathNode): boolean {
+	if (getVariables(node).size > 0) return false;
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) && value > 0 && Math.abs(value - 1) > 1e-12;
+	} catch {
+		return false;
+	}
+}
+
+/** `(kind, argument[, base])` si le nœud est un atome candidat dépendant de l'inconnue. */
+function readAtom(node: MathNode, name: string): AtomFamily | null {
 	if (isFunction(node)) {
 		const kind = node.name;
 		if (!isAtomKind(kind) || node.args.length !== 1) return null;
@@ -104,7 +134,22 @@ function readAtom(
 	if (isSuperscript(node) && isEulerConstant(node.base) && dependsOn(node.superscript, name)) {
 		return { kind: 'exp', argument: node.superscript };
 	}
+	// aᵘ, base constante : `4^x − 3·2^x + 2 = 0` se lit en X = 2ˣ (2026-10-09)
+	if (isSuperscript(node) && isConstantBase(node.base) && dependsOn(node.superscript, name)) {
+		return { kind: 'exp', argument: node.superscript, base: node.base };
+	}
 	return null;
+}
+
+/**
+ * L'exposant ramené à la base e : `u·ln a` pour aᵘ, `u` pour eᵘ. Deux atomes
+ * sont de la même famille quand ces exposants sont multiples entiers l'un de
+ * l'autre — 4ˣ = (2ˣ)², 8ˣ = (2ˣ)³ ; 2ˣ et 3ˣ, sans lien, ne le sont pas.
+ */
+function exponentInBaseE(atom: AtomFamily): MathNode {
+	return atom.base === undefined
+		? atom.argument
+		: multiply(atom.argument, func('ln', [atom.base]), 'implicit');
 }
 
 /** Entier positif `n` tel que `argument = n · base`, sinon `null`. */
@@ -150,10 +195,114 @@ function findAtomFamily(expr: MathNode, name: string): AtomFamily | null {
 	}
 
 	// Exponentielle : l'argument de base est celui dont tous les autres sont
-	// des multiples entiers (`2x` et `x` → base `x`).
+	// des multiples entiers (`2x` et `x` → base `x` ; `4^x` et `2^x` → `2^x`).
 	for (const candidate of atoms) {
-		if (atoms.every((a) => integerMultiple(a.argument, candidate.argument) !== null)) {
-			return { kind, argument: candidate.argument };
+		const reference = exponentInBaseE(candidate);
+		if (atoms.every((a) => integerMultiple(exponentInBaseE(a), reference) !== null)) {
+			return candidate;
+		}
+	}
+	return affineFamily(atoms, name);
+}
+
+/** L'exposant affine `p·x + q` d'un atome eᵘ / aᵘ, pente lue en base e ; sinon `null`. */
+function affineShape(atom: AtomFamily, name: string): AffineShape | null {
+	const form = extractLinearForm(atom.argument, name);
+	if (form === null || dependsOn(form.coefficient, name)) return null;
+	if (form.offset !== null && dependsOn(form.offset, name)) return null;
+	try {
+		const p = evaluateNodeToApproximatedNumber(form.coefficient);
+		const lnA = atom.base === undefined ? 1 : Math.log(evaluateNodeToApproximatedNumber(atom.base));
+		const slope = p * lnA;
+		return Number.isFinite(slope) && Math.abs(slope) > 1e-12
+			? { offset: form.offset, slope }
+			: null;
+	} catch {
+		return null;
+	}
+}
+
+/** L'entier non nul m tel que `slope = m·reference`, sinon `null`. */
+function slopeMultiple(slope: number, reference: number): number | null {
+	const ratio = slope / reference;
+	const m = Math.round(ratio);
+	return m !== 0 && Math.abs(ratio - m) < 1e-9 && Math.abs(m) <= MAX_AFFINE_MULTIPLE ? m : null;
+}
+
+/**
+ * Exposants affines dont les pentes sont multiples entiers (signés) d'une
+ * même pente : `2ˣ + 2^(x+1)`, `2^(−x) + 2ˣ`, `3^(x+1) − 3ˣ`. La référence est
+ * l'atome de plus petite pente POSITIVE (X = 2ˣ, pas 2^(−x)).
+ */
+function affineFamily(atoms: readonly AtomFamily[], name: string): AtomFamily | null {
+	const shapes = atoms.map((a) => affineShape(a, name));
+	if (shapes.some((shape) => shape === null)) return null;
+	let reference: number | null = null;
+	shapes.forEach((shape, i) => {
+		if (shape === null || shape.slope <= 0) return;
+		if (reference === null || shape.slope < (shapes[reference]?.slope ?? Infinity)) reference = i;
+	});
+	if (reference === null) return null;
+	const referenceShape = shapes[reference];
+	if (referenceShape === null || referenceShape === undefined) return null;
+	if (shapes.some((s) => s === null || slopeMultiple(s.slope, referenceShape.slope) === null)) {
+		return null;
+	}
+	return { ...atoms[reference], affine: true };
+}
+
+/** `base^exponent`, e compris (`base` absente). */
+function powerOf(base: MathNode | undefined, exponent: MathNode): MathNode {
+	return superscript(base ?? euler(), exponent);
+}
+
+/**
+ * Un atome de la famille affine, écrit en X : a^(p·x + q) = a^q · a_ref^(−m·q_ref) · X^m
+ * (X = a_ref^(p_ref·x + q_ref)). `null` s'il ne s'y prête pas.
+ */
+function affineAtomInX(
+	atom: AtomFamily,
+	family: AtomFamily,
+	name: string,
+	x: MathNode
+): MathNode | null {
+	const shape = affineShape(atom, name);
+	const reference = affineShape(family, name);
+	if (shape === null || reference === null) return null;
+	const m = slopeMultiple(shape.slope, reference.slope);
+	if (m === null) return null;
+	const factors: MathNode[] = [];
+	if (shape.offset !== null) factors.push(powerOf(atom.base, shape.offset));
+	if (reference.offset !== null) {
+		const scaled = multiply(number(String(Math.abs(m))), reference.offset, 'implicit');
+		factors.push(powerOf(family.base, m > 0 ? opposite(scaled) : scaled));
+	}
+	const xPower = Math.abs(m) === 1 ? x : superscript(x, number(String(Math.abs(m))));
+	const inX = m > 0 ? xPower : divide(number('1'), xPower, 'fraction');
+	if (factors.length === 0) return inX;
+	const product = factors.reduce((acc, f) => multiply(acc, f, 'implicit'));
+	// `normalize` laisse 3·3^(−1·1) tel quel : la constante (> 0) est écrite en
+	// fraction quand elle en est une — 3^(x+1) = 3·X, 2^(x−1) = X/2
+	const constant = smallFraction(product) ?? denormalize(normalize(product));
+	return multiply(constant, inX, 'implicit');
+}
+
+/** Plus grand dénominateur cherché pour écrire une constante en fraction. */
+const MAX_CONSTANT_DENOMINATOR = 1000;
+
+/** Une constante positive écrite `p` ou `p/q` si c'en est une, sinon `null`. */
+function smallFraction(node: MathNode): MathNode | null {
+	let value: number;
+	try {
+		value = evaluateNodeToApproximatedNumber(node);
+	} catch {
+		return null;
+	}
+	if (!Number.isFinite(value) || value <= 0) return null;
+	for (let q = 1; q <= MAX_CONSTANT_DENOMINATOR; q++) {
+		const p = Math.round(value * q);
+		if (p >= 1 && Math.abs(value * q - p) < 1e-9 * q) {
+			return q === 1 ? number(String(p)) : divide(number(String(p)), number(String(q)), 'fraction');
 		}
 	}
 	return null;
@@ -175,7 +324,15 @@ function substituteAtom(
 	const rewritten = mapNode(expr, (node) => {
 		const atom = readAtom(node, name);
 		if (atom === null) return node;
-		const multiple = integerMultiple(atom.argument, family.argument);
+		if (family.affine) {
+			const inX = affineAtomInX(atom, family, name, u);
+			if (inX === null) failed = true;
+			return inX ?? node;
+		}
+		const multiple =
+			family.kind === 'exp'
+				? integerMultiple(exponentInBaseE(atom), exponentInBaseE(family))
+				: integerMultiple(atom.argument, family.argument);
 		const power = functionPower(node);
 		if (multiple === null || power === null) {
 			failed = true;
@@ -188,10 +345,10 @@ function substituteAtom(
 	return rewritten;
 }
 
-/** L'atome lui-même, `sin(A)` ou `e^A`, pour le retour à x. */
+/** L'atome lui-même, `sin(A)`, `e^A` ou `a^A`, pour le retour à x. */
 function atomNode(family: AtomFamily): MathNode {
 	return family.kind === 'exp'
-		? superscript(euler(), family.argument)
+		? superscript(family.base ?? euler(), family.argument)
 		: func(family.kind, [family.argument]);
 }
 
@@ -231,7 +388,8 @@ export function trySubstitution(
 	if (fresh === null) return null;
 
 	const inU = substituteAtom(expr, variable, family, fresh);
-	if (inU === null || !isPolynomialIn(inU, fresh)) return null;
+	// Famille affine : 2^(−x) = 1/X, l'équation en X peut être rationnelle
+	if (inU === null || (!family.affine && !isPolynomialIn(inU, fresh))) return null;
 
 	const atom = atomNode(family);
 	const recorder = createStepRecorder();
