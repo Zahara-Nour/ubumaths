@@ -166,6 +166,46 @@ suis ») :
 
 ✅ Validé par David le 2026-10-09 (35 fiches, confirmé dans la conversation) et livré #994 (branche `feat/lexique-consignes`) : champs `forms` et `autoLink` dans `MathTerm`, tests « formes uniques », « consignes de prod reconnues », « liste fermée des mots exclus ». Corrigé à la revue : « chiffre (cryptographie) » exclu aussi (l'exclusion vaut pour le mot), « décomposer » et « ordonner » passent au CP comme leurs cibles et le BO. **Pour le lot 2** : comparer des mots entiers et décider du sort des accents (« tracé » ≠ « trace », « ordonnée » ≠ « ordonne »). Proposé le 2026-10-09 (demande de David : ajouter « déterminer » et « exprimer », chercher les autres consignes dans le BO) : [lexique/lot0e-consignes.md](lexique/lot0e-consignes.md) — 8 verbes définis, 13 entrées qui reçoivent leurs formes conjuguées, 14 mots jamais soulignés ; relecture par David sur https://claude.ai/artifact/65y4jubu5hQ2YQxLxdgqab (base `avis`). Champs prévus dans `MathTerm` : `forms` (formes reconnues) et `autoLink: false` (jamais souligné automatiquement).
 
+## Lot 0f — mots manquants, synonymes, homonymes (demandé par David le 2026-10-09)
+
+« On fait ce qui est en attente » : orthographe « évènement », étiquettes des anciens homonymes,
+mots manquants. ⏳ En relecture par David sur https://claude.ai/artifact/Ts1SdTAhUphzHjCqP6pqzy
+(base `avis`, documents `t<id>` ; 177 fiches). Décisions machine-lisibles :
+`lexique/lot0f-decisions.json` (proposition avant relecture).
+
+- **138 mots** rédigés par trois agents (primaire 34, collège 43, lycée 61) à partir du tri des 269
+  restants, puis relus : niveaux vérifiés dans le BO, notes reprises. Mes ajustements : « caractère
+  (statistique) » au CE1 (au CP le mot n'est que dans le texte pour le professeur), « épreuve » en 4e
+  (le CM2 dit « étapes » aux élèves), « liste » prend le sens « informatique », « angles alternes
+  internes » sans trait d'union comme au BO. Niveaux à confirmer par David : « repère orthonormé » et
+  « combinaison linéaire » en 2de (notion nommée autrement au BO de 2de), « perspective cavalière » au CE1.
+- **Niveau 3e des « classes »** : seuls les attendus et repères de 2019-2020 (`attendus-3`,
+  `reperes-c4`) en parlent ; le programme de cycle 4 de 2026 non. On garde la 2de.
+- **3 renvois** (suite minorée, suite bornée → suite majorée ; extrapolation → interpolation),
+  **13 entrées existantes reçoivent des synonymes** (nombre rationnel, arbre pondéré, droite graduée…).
+  Refusés : « partie » (« une partie » de jeu, « Partie A »), « horaire » (« sens horaire »).
+- **Homonymes** : 12 étiquettes (carré, cube, base → puissance ; image → fonction ; tangente →
+  courbe…) ; « diviseur » sans étiquette, doublon de « diviseur (arithmétique) », supprimé. Les renvois
+  « solution », « racine », « complémentaire » restent sans étiquette (le mot seul vise le sens courant).
+- **Définitions ajoutées** : boucle (2de, for/while), cosinus et sinus (1re spé : cercle trigonométrique ;
+  Tle spé : parité, période).
+- **Jamais soulignés, proposés** (mesuré sur les énoncés publiés le 2026-10-09) : « seconde (durée) »
+  (dérivée seconde, classe de Seconde), « classe (statistique) » (4 classes d'élèves sur 4),
+  « liste (informatique) » (3 listes de dénombrement sur 3).
+- **Mécanique** : « évènement », accents de « opposé » et « hypoténuse » dans les formules,
+  2e définition de « minute » au CM2, « repère » perd le synonyme « repère orthonormé ».
+- **Page à cocher durcie** après la perte du lot 0e : file d'écriture unique espacée, nouvel essai
+  automatique, bandeau rouge tant qu'une réponse attend, « tout est relu » seulement quand le serveur
+  a toutes les réponses. Testée avec une base factice qui refuse une écriture sur deux.
+- **Question ouverte (architecture, à poser à David)** : un mot commun à la 1re spé et à la 1re
+  générale (« seuil », « fonction polynôme du second degré », « évènements indépendants ») n'est
+  visible que d'une filière : `1_GEN` et `1_SPE` ne se voient pas l'une l'autre (19 élèves en `1_GEN`).
+- **Fournée suivante** (non rédigés) : repère orthogonal, moyenne pondérée, diagramme en barres,
+  inégalité de concentration, connecteur logique, ensemble des solutions, position relative, plan
+  médiateur, suites adjacentes, succès, bijection, identité, formule de König-Huygens, méthode des
+  rectangles, droites remarquables, dénominateur commun. Le reste des 269 est écarté (vocabulaire
+  courant : « long », « lourd », « gauche »…).
+
 ## Reprise
 
 Scripts d'analyse dans le scratchpad (non versionnés) : copie du dictionnaire avec imports
