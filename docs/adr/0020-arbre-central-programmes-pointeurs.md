@@ -38,6 +38,23 @@ d'une même tâche à petite échelle.
 3. **Le grain de l'arbre est celui du filtre** : il sert à catégoriser et retrouver, pas à
    recopier le BO. Critère de création d'une sous-notion : « voudra-t-on filtrer la banque
    là-dessus ? ». Trois niveaux maximum, inchangé.
+
+   **Précision de David (2026-10-09) : un seul découpage par notion, par contenu.**
+
+   - **Une sous-notion découpe sa notion par contenu mathématique** : un objet, une propriété ou
+     une technique de calcul (terme général, discriminant, loi d'une variable aléatoire, calcul
+     posé).
+   - **Elle ne découpe jamais** :
+     - par activité (reconnaître, calculer, compléter) ;
+     - par registre (lecture graphique, problèmes en contexte) ;
+     - par outil (algorithmique, tableur).
+   - **Ce que l'élève fait, ce sont les points du programme qui le disent.**
+   - **Les « facettes » disparaissent.** Ce sont les sous-notions créées pour le filtre pendant
+     les rangements. Elles se fondent dans les sous-notions de contenu (audit
+     `docs/wip/arbre-notions/audit-facettes.md`).
+   - **Le critère « voudra-t-on filtrer là-dessus ? » ne vaut plus** que pour décider de
+     découper un contenu plus finement.
+
 4. **Un programme (un niveau scolaire) = un ensemble de points rattachés aux nœuds de l'arbre.**
    Le point garde le grain du BO : libellé exact, connaissance / savoir-faire / démonstration,
    attendu / approfondissement, bornes (« dénominateur ≤ 12 »), régime d'acquisition, ordre de

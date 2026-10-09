@@ -806,3 +806,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Cela demande un audit des 39 notions qui montrent le symptôme, puis une réécriture du critère
     de l'ADR 0020 § 3, puis un recalcul du lot.
   - Attente de sa décision. Ne pas reprendre le lot avant.
+- **2026-10-09 — DÉCIDÉ par David (« oui ») : un seul découpage par notion, par contenu.**
+  - Le critère est précisé dans l'ADR 0020 § 3 : objet, propriété ou technique ; jamais
+    activité, registre ou outil.
+  - Ordre de la suite :
+    1. audit des facettes (`audit-facettes.md`) : les 39 notions qui montrent le symptôme,
+       plus les sous-notions-facettes repérées ailleurs ;
+    2. validation par David ;
+    3. migration de l'arbre, des seeds et des rangements ;
+    4. recalcul du lot de l'étape 2 sur l'arbre propre, avec les verdicts du crible.
