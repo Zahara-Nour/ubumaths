@@ -859,6 +859,9 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   D24 avec 1SPE-280.
 - **2026-10-09 — Lot : D69 tranché** (David) : il reste en place, sans point. « suites majorées,
   minorées » ne se vide donc pas (Q7 sans objet pour elle).
+- **2026-10-09 — Lot : D81, D88 et D89 tranchés** (David), selon ma recommandation :
+  - D81 garde « seuil », avec TSPE-387 ;
+  - D88 et D89 restent sous « escalier », sans tag de 1re spé.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;

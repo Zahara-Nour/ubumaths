@@ -27,7 +27,11 @@
   avec 1SPE-280 (QCM de parité : l'élève applique le test f(−x) = ±f(x)).
 - **D69 (2026-10-09)** : « Suite majorée, minorée ou bornée » reste sous « Limites de suites > suites majorées, minorées »,
   **sans point** : aucun point du BO de Tle spé ne le décrit, et TSPE-384 (convergence monotone) le créditerait à tort.
-- Restent à trancher : C23, C37, D33, D51, D53-D56-D57, D54, D61, D81, D88-D89, A93-A94.
+- **D81 (2026-10-09)** : « Seuil : plus petit entier n tel que qⁿ dépasse une valeur (logarithme) » reste sous
+  « Suites > Modèles d'évolution > seuil » ; Tle spé : TSPE-387 (sur la notion) ; Tle comp. : TCOMP-239.
+- **D88, D89 (2026-10-09)** : les deux modèles de l'escalier restent sous « Suites > Suites récurrentes > escalier » ;
+  le tag de 1re spé est retiré (l'escalier est au BO de Tle comp. et de Tle spé, à taguer plus tard).
+- Restent à trancher : A93-A94, C23, C37, D33, D51, D53-D56-D57, D54, D61.
 
 ## En bref
 
