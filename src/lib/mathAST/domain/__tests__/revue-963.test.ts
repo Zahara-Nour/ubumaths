@@ -49,8 +49,8 @@ describe('1. limites de u^v par e^{v ln u}', () => {
 
 	it('`.variations x^x` : lim en 0⁺ = 1, en +∞ = +∞', () => {
 		const result = run('.variations x^x');
-		expect(result.output).toContain('lim_{x -> 0^+} f(x) = 1');
-		expect(result.output).not.toContain('indetermine');
+		expect(result.output).toContain('lim (x → 0⁺) f(x) = 1');
+		expect(result.output).not.toContain('indétermin');
 	});
 });
 
@@ -76,16 +76,16 @@ describe('2. domaine non résolu : refus, jamais un domaine', () => {
 
 describe('3. `.variations` : bornes exactes sans `:/`', () => {
 	it.each([
-		['1/(2x-1)', 'lim_{x -> 1/2^-}'],
-		['1/(3x+2)', 'lim_{x -> -2/3^-}'],
-		['1/(x^2-2)', 'lim_{x -> -√2^-}'],
-		['ln(2x-1)', ']1/2 ; +inf[']
+		['1/(2x-1)', 'lim (x → 1/2⁻)'],
+		['1/(3x+2)', 'lim (x → -2/3⁻)'],
+		['1/(x^2-2)', 'lim (x → -√2⁻)'],
+		['ln(2x-1)', ']1/2 ; +∞[']
 	])('`.variations %s` contient « %s »', (expression, expected) => {
 		// L'écho de la saisie (« Expression : 1:/(2x-1) ») garde la notation
 		// custom ; les bornes, non
 		const output = run(`.variations ${expression}`)
 			.output.split('\n')
-			.filter((line) => !line.startsWith('Expression :') && !line.startsWith('Derivee :'))
+			.filter((line) => !line.startsWith('Expression :') && !line.startsWith('Dérivée :'))
 			.join('\n');
 		expect(output).toContain(expected);
 		expect(output).not.toContain(':/');

@@ -7,6 +7,8 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput } from '../calcul';
+import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { readableText } from '$lib/mathAST/variations/display';
 
 function output(input: string): string {
 	const result = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input);
@@ -40,20 +42,19 @@ describe('.variations x^(1/3)', () => {
 	const text = () => output('.variations x^(1/3)');
 
 	it('domaine ℝ', () => {
-		// `.variations` écrit ℝ « R (tous les reels) »
-		expect(text()).toMatch(/Domaine : (ℝ|R \(tous les reels\))\n/);
+		expect(text()).toMatch(/Domaine : ℝ\n/);
 	});
 
 	it('limites en −∞ et +∞', () => {
 		const t = text();
-		expect(t).toMatch(/x -> -∞.*= -inf/);
-		expect(t).toMatch(/x -> \+∞.*= \+inf/);
+		expect(t).toMatch(/x → -∞.*= -∞/);
+		expect(t).toMatch(/x → \+∞.*= \+∞/);
 	});
 
 	it('croissante sur ℝ, sans extremum', () => {
 		const t = text();
-		expect(t).toMatch(/\]-inf ; \+inf\[ : \+ {2}\(f croissante\)/);
-		expect(t).not.toMatch(/decroissante/i);
+		expect(t).toMatch(/\]-∞ ; \+∞\[ : \+ {2}\(f croissante\)/);
+		expect(t).not.toMatch(/décroissante/i);
 		expect(t).toMatch(/Extrema : aucun/);
 	});
 });
@@ -61,10 +62,10 @@ describe('.variations x^(1/3)', () => {
 describe('.variations x^(2/3)', () => {
 	it('décroissante puis croissante, minimum en 0', () => {
 		const t = output('.variations x^(2/3)');
-		expect(t).toMatch(/\]-inf ; 0\[ : - {2}\(f decroissante\)/);
-		expect(t).toMatch(/\]0 ; \+inf\[ : \+ {2}\(f croissante\)/);
+		expect(t).toMatch(/\]-∞ ; 0\[ : - {2}\(f décroissante\)/);
+		expect(t).toMatch(/\]0 ; \+∞\[ : \+ {2}\(f croissante\)/);
 		expect(t).toMatch(/Minimum global : f\(0\)/);
-		expect(t).toMatch(/x -> -∞.*= \+inf/);
+		expect(t).toMatch(/x → -∞.*= \+∞/);
 	});
 });
 
@@ -78,9 +79,9 @@ describe('.variations : valeur de l’extremum calculée', () => {
 });
 
 describe('.variations : f′ affichée comme `.dériver` l’écrit', () => {
-	/** La ligne « Derivee : … » de `.variations`, et la dérivée de `.dériver`. */
+	/** La ligne « Dérivée : … » de `.variations`, et la dérivée de `.dériver`. */
 	function derivatives(f: string): { variations: string; derive: string } {
-		const line = /Derivee : f'\(x\) = (.*)/.exec(output(`.variations ${f}`));
+		const line = /Dérivée : f'\(x\) = (.*)/.exec(output(`.variations ${f}`));
 		const derive = /= (.*)$/.exec(output(`.dériver ${f}`).split('\n')[0]);
 		return { variations: line?.[1] ?? '', derive: derive?.[1] ?? '' };
 	}
@@ -88,7 +89,11 @@ describe('.variations : f′ affichée comme `.dériver` l’écrit', () => {
 	it.each(['x^(4/3)', 'x^(1/3)', 'x^(2/3)-4', 'x^(-1/3)', 'x^3-3x'])('%s', (f) => {
 		const { variations, derive } = derivatives(f);
 		expect(variations).not.toMatch(/sqrt\[/);
-		expect(variations).toBe(derive);
+		// Même expression ; `.variations` l'écrit en texte lisible (`4x^{1/3}/3`),
+		// sans les accolades de fraction de `.dériver` (`{4x^{1/3}}/3`)
+		const parsed = parseCustomSafe(derive).ast;
+		expect(parsed).toBeDefined();
+		if (parsed !== undefined) expect(variations).toBe(readableText(parsed));
 	});
 });
 
@@ -118,7 +123,7 @@ describe('.résoudre : x^{p/q} = c, q impair (troisième revue)', () => {
 describe('.variations x^(2/3)-x : points critiques (quatrième revue)', () => {
 	it('x = 0 (f′ non définie) et x = 8/27 (f′ = 0)', () => {
 		const text = output('.variations x^(2/3)-x');
-		expect(text).toMatch(/x = 0 \(f' non definie\)/);
+		expect(text).toMatch(/x = 0 \(f' non définie\)/);
 		expect(text).toMatch(/x = 8\/27 \(f'=0\)/);
 	});
 });
