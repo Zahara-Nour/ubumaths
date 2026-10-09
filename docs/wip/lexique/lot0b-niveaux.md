@@ -273,3 +273,9 @@ Un terme dérivé suit le niveau du terme qu'il cite, sauf renvoi faux (corrigé
 | conjecturer    | conjecture                         | 4e     | **5e**                                                                                |
 | déduire        | démonstration                      | 4e     | **5e**                                                                                |
 | démontrer      | démonstration                      | 4e     | **5e**                                                                                |
+
+**Corrigé à l'application (revue du 2026-10-09).** Un dérivé ne doit jamais précéder le terme qu'il
+cite : sinon, dans le glossaire, « Forme dérivée de X » ouvre une fiche X sans définition au niveau
+du lecteur (test ajouté). Six cas : « construire » suit « construction » (**CM1**, et non CP) ; les
+cinq renvois faux sont corrigés dès ce lot : « ordonner », « croissant », « décroissant » →
+« ordre » ; « décomposer » → « décomposition » ; « simplifier » → « simplification ».
