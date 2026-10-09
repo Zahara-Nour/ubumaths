@@ -717,3 +717,15 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
   (mineur, signalé par l'audit) : 3-053 (x² = a graphique) et 5-112…114 (représenter des
   données) ne reçoivent aucune référence — les lignes d'automatismes ne les visaient pas
   avant la scission. Restent : rangements (modèles, exercices) ; C5.
+
+- **RANGEMENTS — LANCÉS (2026-10-09, « ok on commence le rangement »).** Ordre retenu avec
+  David : rangements PUIS C5 (transfert des liens → bascule du code → suppression). Prod
+  mesurée : 1 005 modèles et 329 exercices, **ensembles d'identifiants identiques** à la
+  correspondance validée (empreintes md5 égales), 0 rangé, 0 type de source. **Décisions de
+  David** : livraison par **migration de données** (prouvée en rejouant la migration en local
+  sur des copies des identifiants de la prod) ; **types de source** (7 « Bac », 1 « Concours »)
+  dans la même livraison. Correspondance mise à jour : 7 cibles périmées par la restructuration
+  C2 de la branche Logique (3 modèles → `Raisonnements > contre-exemple` ou `Proposition
+mathématique > et, ou, non` ; 4 exercices de 2de, rangement secondaire → `Raisonnements >
+contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé (le rangement
+  est une métadonnée, pas une modification du contenu).
