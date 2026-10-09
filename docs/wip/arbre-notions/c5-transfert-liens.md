@@ -25,7 +25,9 @@
   (f′(a) d'un polynôme se calcule par la fonction dérivée, jamais par la limite).
 - **D24 (2026-10-09)** : « Parité et périodicité de cosinus et sinus » va sous « Généralités sur les fonctions > parité »
   avec 1SPE-280 (QCM de parité : l'élève applique le test f(−x) = ±f(x)).
-- Restent à trancher : C23, C37, D33, D51, D53-D56-D57, D54, D61, D69, D81, D88-D89, A93-A94.
+- **D69 (2026-10-09)** : « Suite majorée, minorée ou bornée » reste sous « Limites de suites > suites majorées, minorées »,
+  **sans point** : aucun point du BO de Tle spé ne le décrit, et TSPE-384 (convergence monotone) le créditerait à tort.
+- Restent à trancher : C23, C37, D33, D51, D53-D56-D57, D54, D61, D81, D88-D89, A93-A94.
 
 ## En bref
 

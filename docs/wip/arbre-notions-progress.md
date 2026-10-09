@@ -857,6 +857,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   avec 1SPE-283. Les décisions du lot sont tenues en tête de `c5-transfert-liens.md`.
 - **2026-10-09 — Lot : D10 et D24 tranchés** (David), selon ma recommandation : D10 avec 1SPE-274,
   D24 avec 1SPE-280.
+- **2026-10-09 — Lot : D69 tranché** (David) : il reste en place, sans point. « suites majorées,
+  minorées » ne se vide donc pas (Q7 sans objet pour elle).
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
