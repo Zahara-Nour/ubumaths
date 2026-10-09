@@ -4,6 +4,7 @@
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import {
+		gradeMetBy,
 		isTermVisibleTo,
 		resolveGradedField,
 		type GradedField,
@@ -42,7 +43,9 @@
 				'1_SPE',
 				'1_TECHNO',
 				'T_SPE',
-				'T_EXP'
+				'T_EXP',
+				'T_COMP',
+				'T_TECHNO'
 			] as const
 		).map((code) => ({
 			value: code,
@@ -113,6 +116,12 @@
 		if (level !== 'all') return resolveGradedField(field, level as GradeCode);
 		const all = field.items.map((item) => item.content);
 		return field.mode === 'discriminant' ? all.slice(-1) : all;
+	}
+
+	/** Niveau affiché : celui où le lecteur du filtre rencontre le terme, sinon celui d'origine */
+	function displayedGrade(term: MathTerm): GradeCode {
+		if (selectedLevel === 'all') return term.grade;
+		return gradeMetBy(term, selectedLevel as GradeCode) ?? term.grade;
 	}
 
 	function openTerm(term: MathTerm) {
@@ -322,7 +331,7 @@
 							</div>
 						{/if}
 						<span class="ml-auto shrink-0 text-xs text-muted-foreground">
-							{GRADES[term.grade].displayName}
+							{GRADES[displayedGrade(term)].displayName}
 						</span>
 					</button>
 				{/each}
@@ -367,7 +376,7 @@
 			</Dialog.Header>
 
 			<div class="flex flex-wrap items-center gap-2 pb-2">
-				<Badge variant="secondary">{GRADES[selectedTerm.grade].displayName}</Badge>
+				<Badge variant="secondary">{GRADES[displayedGrade(selectedTerm)].displayName}</Badge>
 				{#each selectedTerm.tags as tag (tag)}
 					<Badge variant="outline" class="text-xs">{tag}</Badge>
 				{/each}

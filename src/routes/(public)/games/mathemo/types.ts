@@ -16,16 +16,6 @@ import type { GradeCode } from '$lib/types/grades';
 export type FeedbackType = 'x' | 'c' | '_';
 
 /**
- * Display label keys used in WORD_LISTS (French grade names)
- */
-export type Difficulty = '6ème' | '5ème' | '4ème' | '3ème' | '2nde' | '1ère' | 'Tale';
-
-/**
- * Map of difficulty level to word list
- */
-export type WordLists = Record<Difficulty, string[]>;
-
-/**
  * Grade levels available in Mathemo
  * Middle school through high school, with the three branches of 1re
  */

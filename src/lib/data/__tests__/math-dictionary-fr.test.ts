@@ -4,6 +4,7 @@ import MATH_DICTIONARY, {
 	getTermsByTag,
 	getTermsByTagAndGrade,
 	getTermsForGrade,
+	gradeMetBy,
 	isTermVisibleTo,
 	resolveGradedField,
 	type MathTerm
@@ -620,6 +621,16 @@ describe('math-dictionary-fr', () => {
 				definitionsOf(echantillon).items[0].content
 			]);
 			expect(getTermsForGrade('1_GEN')).not.toContain(echantillon);
+		});
+
+		// Le glossaire affiche ce niveau : « 1ère spécialité » ferait croire à un élève
+		// de 1re techno que le mot n'est pas pour lui
+		it('should tell at which level a reader meets a shared word', () => {
+			expect(gradeMetBy(find('nombre dérivé'), '1_TECHNO')).toBe('1_TECHNO');
+			expect(gradeMetBy(find('nombre dérivé'), '1_SPE')).toBe('1_SPE');
+			expect(gradeMetBy(find('seuil'), 'T_COMP')).toBe('1_GEN');
+			expect(gradeMetBy(find('croissance linéaire'), 'T_SPE')).toBe('1_SPE');
+			expect(gradeMetBy(find('seuil'), '2')).toBeUndefined();
 		});
 
 		it('should still hide « seuil » from a 2de student', () => {

@@ -9018,6 +9018,16 @@ export function isTermVisibleTo(term: MathTerm, readerGrade: GradeCode): boolean
 }
 
 /**
+ * Niveau où ce lecteur rencontre le terme : celui du terme s'il le voit par la
+ * hiérarchie, sinon la filière partagée qui le lui donne (« nombre dérivé », de
+ * 1re spé, est rencontré en 1re techno). `undefined` si le terme lui est caché.
+ */
+export function gradeMetBy(term: MathTerm, readerGrade: GradeCode): GradeCode | undefined {
+	if (hasAccessToGrade(readerGrade, term.grade)) return term.grade;
+	return term.sharedWith?.find((other) => hasAccessToGrade(readerGrade, other));
+}
+
+/**
  * Returns all terms visible at the given grade: introduced at this grade or
  * earlier, or shared with this branch of 1re.
  */
