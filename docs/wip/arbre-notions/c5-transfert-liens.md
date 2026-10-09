@@ -31,7 +31,23 @@
   « Suites > Modèles d'évolution > seuil » ; Tle spé : TSPE-387 (sur la notion) ; Tle comp. : TCOMP-239.
 - **D88, D89 (2026-10-09)** : les deux modèles de l'escalier restent sous « Suites > Suites récurrentes > escalier » ;
   le tag de 1re spé est retiré (l'escalier est au BO de Tle comp. et de Tle spé, à taguer plus tard).
-- Restent à trancher : A93-A94, C23, C37, D33, D51, D53-D56-D57, D54, D61.
+- **Les dernières questions sont tranchées le 2026-10-09.** David : « je suis tes reco ».
+  - **A93, A94** : le tag de 1re spé est retiré, parce que les modèles travaillent pour tout x alors que le BO se borne aux
+    valeurs remarquables. Ils restent sous « Fonctions trigonométriques > angles associés », marqués « à borner ».
+  - **C23** : 1SPE-254 (« choisir une forme adaptée »).
+  - **C37** : TEXP-260 (alignement) ; le modèle est marqué « à scinder ».
+  - **D33** : le modèle descend sous « Graphes > Chaînes et connexité > chaînes et cycles », avec TEXP-315 ; il est marqué
+    « à scinder ».
+  - **D51** : le doublon est fusionné dans « Dénombrement > Combinaisons > coefficients binomiaux ».
+    - Y vont : le modèle (TSPE-314, TCOMP-296), TCOMP-288, TTECHNO-059 et TTECHNO-061.
+    - TSPE-504, TSPE-512 et TTECHNO-065 vont sous « Loi binomiale > expression de la loi ».
+    - « Loi binomiale > coefficients binomiaux » est archivée (Q7).
+  - **D53, D56, D57** : les trois modèles vont sous « Probabilités conditionnelles > inversion du conditionnement », avec
+    2-400 ; ils n'ont plus de point de 1re spé.
+  - **D54** : le modèle va sous « Probabilités conditionnelles > probabilités totales », avec 1SPE-340 ; il est marqué
+    « à scinder ».
+  - **D61** : le modèle va sous « Évolutions > évolutions successives et réciproque », avec 2-378.
+- **Toutes les questions du lot sont tranchées.**
 
 ## En bref
 

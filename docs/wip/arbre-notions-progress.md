@@ -862,6 +862,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
 - **2026-10-09 — Lot : D81, D88 et D89 tranchés** (David), selon ma recommandation :
   - D81 garde « seuil », avec TSPE-387 ;
   - D88 et D89 restent sous « escalier », sans tag de 1re spé.
+- **2026-10-09 — LOT ENTIÈREMENT TRANCHÉ** (David : « je suis tes reco » pour les dernières questions).
+  - A93-A94 : tag retiré, à borner. C23 : 1SPE-254. C37 : TEXP-260, à scinder.
+  - D33 : sous « chaînes et cycles », avec TEXP-315, à scinder. D51 : fusion dans Dénombrement.
+  - D53, D56, D57 : avec 2-400. D54 : sous « probabilités totales », avec 1SPE-340, à scinder.
+  - D61 : avec 2-378.
+  - Reste avant la migration : la question d'accès, puis la phase 0 TDD (comportements à valider).
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
