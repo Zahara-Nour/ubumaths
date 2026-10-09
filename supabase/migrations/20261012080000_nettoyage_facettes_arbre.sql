@@ -1,8 +1,11 @@
 -- ============================================================================
 -- Nettoyage de l'arbre des notions : les facettes disparaissent (audit des facettes).
 -- ============================================================================
--- Fichier GÉNÉRÉ — ne pas éditer à la main (générateur gen-nettoyage.py, depuis l'état final
--- consolidé : audit, lot de l'étape 2 de C5 et crible ; les tags sont la migration suivante).
+-- Fichier GÉNÉRÉ par un script de travail (gen-nettoyage.py) depuis l'état final consolidé de
+-- l'audit, du lot de l'étape 2 de C5 et du crible ; le script et ses données de travail sont
+-- tenus HORS du dépôt. La copie figée des opérations est
+-- tests/integration/fixtures/nettoyage-facettes.json. Les tags (modèle → point) sont la
+-- migration suivante.
 --
 -- Source de vérité : docs/wip/arbre-notions/audit-facettes.md, ENTIÈREMENT TRANCHÉ par David le
 -- 2026-10-09 (sections A et B, Q1 à Q7, renommages de la section D), et
@@ -30,18 +33,35 @@
 -- rollback ci-dessous, fabrique des copies des identifiants de la prod, puis rejoue CE fichier.
 --
 -- Gardes : l'arbre doit être dans l'état attendu (sinon rien ne change) — chemins résolus
--- STRICTEMENT, nœuds actifs, sous-notions à créer absentes, points, modèles et rangements sur
--- leur nœud de départ, doublons présents.
--- `updated_at` des modèles PRÉSERVÉ (ranger n'est pas modifier le contenu).
+-- STRICTEMENT par leur nom exact (un nœud déjà renommé ne se résout plus : la résolution
+-- échoue), nœuds actifs, sous-notions à créer absentes, points et modèles sur leur nœud de
+-- départ ; pour les exercices, TOUT ou RIEN sur les 51 exercices, et dès qu'ils existent les
+-- 53 rangements en jeu exactement dans l'état attendu (nœud, principal, et position des
+-- doublons). Résolution et gardes précèdent toute écriture ; chaque écriture redemande en plus
+-- le nœud de DÉPART, si bien qu'une écriture concurrente n'est jamais écrasée en silence (les
+-- comptes de la vérification finale la détectent).
+-- `updated_at` des modèles ET des points PRÉSERVÉ (ranger n'est pas modifier le contenu) : leurs
+-- triggers de date sont suspendus le temps du rangement, puis rétablis. Quand le principal est
+-- transféré, le rangement gardé prend aussi la POSITION du supprimé (convention de la #981 : le
+-- principal est le premier).
+--
+-- ⚠️ Ne JAMAIS jouer ce fichier hors d'une transaction : pnpm db:migrate (supabase db push)
+-- l'exécute en une seule transaction ; en autocommit, l'atomicité et la suspension des triggers
+-- ne tiennent plus.
 --
 -- Accès : AUCUN changement — personne ne gagne d'accès (question posée à David et validée le
 -- 2026-10-09) : l'arbre et les points restent lisibles par tous, les rangements gardent les
 -- droits des modèles et des exercices. Aucune donnée d'élève n'est touchée.
 --
--- Rollback — à jouer dans une transaction (begin; … commit;), en retirant les « -- » du bloc :
--- il dés-archive, remet chaque point, modèle et rangement à son nœud d'avant, recrée les
--- doublons supprimés (principal et position d'origine), re-parente et renomme à l'envers, puis
--- supprime les sous-notions créées. Le test l'exécute à chaque passage.
+-- Rollback — à jouer dans une transaction ouverte par l'opérateur, en retirant les « -- » du
+-- bloc (il ne contient lui-même ni begin ni commit) : il dés-archive, remet chaque point,
+-- modèle et rangement à son nœud d'avant (dates de modification préservées), rend au
+-- rangement gardé sa position d'origine, recrée les doublons supprimés (principal, position et
+-- date de création d'origine), re-parente et renomme à l'envers, puis supprime les sous-notions
+-- créées — après avoir vérifié qu'elles sont vides, sinon il s'arrête avec un message lisible.
+-- Une vérification finale compte chaque opération défaite. Le bloc entre les marqueurs
+-- ci-dessous est EXACTEMENT celui que tests/integration/nettoyage-facettes.test.ts extrait et
+-- exécute.
 -- ROLLBACK:BEGIN
 -- set local lock_timeout = '5s';
 -- drop table if exists pg_temp._nfr_ref;
@@ -381,12 +401,13 @@
 --   ($nf$Géométrie > Espace : avec coordonnées$nf$, $nf$notion$nf$),
 --   ($nf$Géométrie > Orthogonalité : avec coordonnées$nf$, $nf$notion$nf$),
 --   ($nf$Géométrie > Vecteurs : avec coordonnées$nf$, $nf$notion$nf$);
--- create temporary table _nfr_supp (exercise_id uuid, de_ref text, garde_ref text, principal boolean, position integer);
--- insert into _nfr_supp (exercise_id, de_ref, garde_ref, principal, position) values
---   ($nf$0879ff83-2b20-4056-9bf6-43b976d83176$nf$::uuid, $nf$Suites > Généralités sur les suites > calculer un terme$nf$, $nf$Suites > Généralités sur les suites > explicite ou par récurrence$nf$, true, 0),
---   ($nf$3dece6b2-cdf2-4aeb-89e5-f46e5dbbbc59$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, true, 0),
---   ($nf$d08caa8a-abc2-4fa7-ac95-f9b51c08376a$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, false, 1),
---   ($nf$ee7bb639-9c0c-4cef-99d7-7973b623cfe9$nf$::uuid, $nf$Fonctions > Dérivation > étude de fonction$nf$, $nf$Fonctions > Dérivation > variations et extremums$nf$, false, 1);
+-- create temporary table _nfr_supp (exercise_id uuid, de_ref text, garde_ref text, principal boolean, position integer,
+-- 	garde_principal boolean, garde_position integer, created_at timestamptz);
+-- insert into _nfr_supp (exercise_id, de_ref, garde_ref, principal, position, garde_principal, garde_position, created_at) values
+--   ($nf$0879ff83-2b20-4056-9bf6-43b976d83176$nf$::uuid, $nf$Suites > Généralités sur les suites > calculer un terme$nf$, $nf$Suites > Généralités sur les suites > explicite ou par récurrence$nf$, true, 0, false, 1, $nf$2026-10-09 04:33:22.46264+00$nf$::timestamptz),
+--   ($nf$3dece6b2-cdf2-4aeb-89e5-f46e5dbbbc59$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, true, 0, false, 1, $nf$2026-10-09 04:33:22.46264+00$nf$::timestamptz),
+--   ($nf$d08caa8a-abc2-4fa7-ac95-f9b51c08376a$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, false, 1, true, 0, $nf$2026-10-09 04:33:22.46264+00$nf$::timestamptz),
+--   ($nf$ee7bb639-9c0c-4cef-99d7-7973b623cfe9$nf$::uuid, $nf$Fonctions > Dérivation > étude de fonction$nf$, $nf$Fonctions > Dérivation > variations et extremums$nf$, false, 1, true, 0, $nf$2026-10-09 04:33:22.46264+00$nf$::timestamptz);
 -- create temporary table _nfr_rang (exercise_id uuid, de_ref text, vers_ref text);
 -- insert into _nfr_rang (exercise_id, de_ref, vers_ref) values
 --   ($nf$0151950f-3d0b-4d0b-bc0b-30085f27e0f9$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$),
@@ -885,12 +906,13 @@
 --   from _nfr_arch a join _nfr_id i on i.ref = a.ref where n.id = i.id and a.kind = 'notion';
 -- update public.classification_nodes n set archived_at = null
 --   from _nfr_arch a join _nfr_id i on i.ref = a.ref where n.id = i.id and a.kind = 'subnotion';
--- -- 2. rangements d'exercices : le principal revient, les doublons sont recréés, les déplacés reviennent
--- update public.exercise_classifications c set is_primary = false
+-- -- 2. rangements d'exercices : le rangement gardé rend le principal et reprend sa position d'origine,
+-- --    les doublons sont recréés (principal, position et date de création d'origine), les déplacés reviennent
+-- update public.exercise_classifications c set is_primary = false, position = s.garde_position
 --   from _nfr_supp s join _nfr_id g on g.ref = s.garde_ref
 --  where s.principal and c.exercise_id = s.exercise_id and c.node_id = g.id;
--- insert into public.exercise_classifications (exercise_id, node_id, is_primary, position)
--- select s.exercise_id, d.id, s.principal, s.position
+-- insert into public.exercise_classifications (exercise_id, node_id, is_primary, position, created_at)
+-- select s.exercise_id, d.id, s.principal, s.position, s.created_at
 --   from _nfr_supp s join _nfr_id d on d.ref = s.de_ref join public.exercises x on x.id = s.exercise_id;
 -- update public.exercise_classifications c set node_id = d.id
 --   from _nfr_rang r join _nfr_id d on d.ref = r.de_ref join _nfr_id v on v.ref = r.vers_ref
@@ -901,18 +923,83 @@
 --   from _nfr_mod m join _nfr_id d on d.ref = m.de_ref join _nfr_id v on v.ref = m.vers_ref
 --  where q.id = m.id and q.classification_node_id = v.id;
 -- alter table public.question_templates enable trigger update_question_templates_updated_at;
--- -- 4. points
+-- -- 4. points (date de modification préservée)
+-- alter table public.curriculum_points disable trigger update_curriculum_points_updated_at;
 -- update public.curriculum_points p set node_id = d.id
 --   from _nfr_pts x join _nfr_id d on d.ref = x.de_ref join _nfr_id v on v.ref = x.vers_ref
 --  where p.code = x.code and p.grade is not null and p.node_id = v.id;
+-- alter table public.curriculum_points enable trigger update_curriculum_points_updated_at;
 -- -- 5. re-parenter à l'envers (parent et position d'origine)
 -- update public.classification_nodes n set parent_id = p.id, position = r.position
 --   from _nfr_rep r join _nfr_id i on i.ref = r.ref join _nfr_id p on p.ref = r.parent_ref where n.id = i.id;
 -- -- 6. renommer à l'envers
 -- update public.classification_nodes n set name = r.ancien_nom
 --   from _nfr_ren r join _nfr_id i on i.ref = r.ref where n.id = i.id;
--- -- 7. supprimer les sous-notions créées (vides : leur contenu est revenu)
+-- -- 7. supprimer les sous-notions créées. Leur contenu est revenu à son nœud d'avant ; un contenu
+-- --    ajouté DEPUIS la migration arrête le rollback avec un message lisible (pas l'erreur brute
+-- --    de la clé étrangère) : c'est à l'opérateur de le ranger ailleurs d'abord.
+-- do $nfr_vides$
+-- declare
+-- 	v_detail text;
+-- begin
+-- 	select string_agg(format('%s (points : %s, modèles : %s, rangements d''exercice : %s, nœuds enfants : %s)',
+-- 	                         x.ref, x.points, x.modeles, x.rangements, x.enfants), ' | ' order by x.ref)
+-- 	  into v_detail
+-- 	  from (select d.ref,
+-- 	               (select count(*) from public.curriculum_points p where p.node_id = i.id) as points,
+-- 	               (select count(*) from public.question_templates q where q.classification_node_id = i.id) as modeles,
+-- 	               (select count(*) from public.exercise_classifications c where c.node_id = i.id) as rangements,
+-- 	               (select count(*) from public.classification_nodes n where n.parent_id = i.id) as enfants
+-- 	          from _nfr_del d join _nfr_id i on i.ref = d.ref) x
+-- 	 where x.points + x.modeles + x.rangements + x.enfants > 0;
+-- 	if v_detail is not null then
+-- 		raise exception 'rollback : sous-notion(s) créée(s) non vide(s), à vider avant de rejouer le rollback : %', v_detail;
+-- 	end if;
+-- end $nfr_vides$;
 -- delete from public.classification_nodes n using _nfr_del d join _nfr_id i on i.ref = d.ref where n.id = i.id;
+-- -- 8. vérifications : chaque opération est défaite, modèles et rangements TOUT ou RIEN (absents en
+-- --    base locale)
+-- do $nfr_check$
+-- declare
+-- 	v_n integer; v_m integer; v_ex integer;
+-- begin
+-- 	select count(*) into v_n from _nfr_arch a join _nfr_id i on i.ref = a.ref
+-- 	  join public.classification_nodes n on n.id = i.id and n.archived_at is null;
+-- 	if v_n <> 74 then raise exception 'rollback : nœuds dés-archivés : %/74', v_n; end if;
+-- 	select count(*) into v_ex from (select exercise_id from _nfr_rang union select exercise_id from _nfr_supp) e
+-- 	  join public.exercises x on x.id = e.exercise_id;
+-- 	if v_ex not in (0, 51) then
+-- 		raise exception 'rollback : identifiants partiellement présents : % exercice(s) sur 51', v_ex;
+-- 	end if;
+-- 	select count(*) into v_n from _nfr_supp s join _nfr_id d on d.ref = s.de_ref join _nfr_id g on g.ref = s.garde_ref
+-- 	  join public.exercise_classifications c on c.exercise_id = s.exercise_id and c.node_id = d.id
+-- 	   and c.is_primary = s.principal and c.position = s.position and c.created_at = s.created_at
+-- 	  join public.exercise_classifications k on k.exercise_id = s.exercise_id and k.node_id = g.id
+-- 	   and k.is_primary = s.garde_principal and k.position = s.garde_position;
+-- 	if v_n <> (case when v_ex = 0 then 0 else 4 end) then
+-- 		raise exception 'rollback : doublons recréés : %/4 (exercices présents : %)', v_n, v_ex;
+-- 	end if;
+-- 	select count(*) into v_n from _nfr_rang r join _nfr_id d on d.ref = r.de_ref
+-- 	  join public.exercise_classifications c on c.exercise_id = r.exercise_id and c.node_id = d.id;
+-- 	if v_n <> (case when v_ex = 0 then 0 else 49 end) then
+-- 		raise exception 'rollback : rangements d''exercice revenus : %/49 (exercices présents : %)', v_n, v_ex;
+-- 	end if;
+-- 	select count(*) into v_m from _nfr_mod m join public.question_templates q on q.id = m.id;
+-- 	select count(*) into v_n from _nfr_mod m join _nfr_id d on d.ref = m.de_ref
+-- 	  join public.question_templates q on q.id = m.id and q.classification_node_id = d.id;
+-- 	if v_n <> v_m or v_m not in (0, 234) then raise exception 'rollback : modèles revenus : %/%', v_n, v_m; end if;
+-- 	select count(*) into v_n from _nfr_pts x join _nfr_id d on d.ref = x.de_ref
+-- 	  join public.curriculum_points p on p.code = x.code and p.grade is not null and p.node_id = d.id;
+-- 	if v_n <> 125 then raise exception 'rollback : points revenus : %/125', v_n; end if;
+-- 	select count(*) into v_n from _nfr_rep r join _nfr_id i on i.ref = r.ref join _nfr_id p on p.ref = r.parent_ref
+-- 	  join public.classification_nodes n on n.id = i.id and n.parent_id = p.id and n.position = r.position;
+-- 	if v_n <> 6 then raise exception 'rollback : nœuds re-parentés à l''envers : %/6', v_n; end if;
+-- 	select count(*) into v_n from _nfr_ren r join _nfr_id i on i.ref = r.ref
+-- 	  join public.classification_nodes n on n.id = i.id and n.name = r.ancien_nom;
+-- 	if v_n <> 63 then raise exception 'rollback : nœuds renommés à l''envers : %/63', v_n; end if;
+-- 	select count(*) into v_n from _nfr_del d join _nfr_id i on i.ref = d.ref join public.classification_nodes n on n.id = i.id;
+-- 	if v_n <> 0 then raise exception 'rollback : sous-notions créées encore présentes : %/3', v_n; end if;
+-- end $nfr_check$;
 -- drop table _nfr_ref; drop table _nfr_id; drop table _nfr_arch; drop table _nfr_supp; drop table _nfr_rang;
 -- drop table _nfr_mod; drop table _nfr_pts; drop table _nfr_rep; drop table _nfr_ren; drop table _nfr_del;
 -- ROLLBACK:END
@@ -933,7 +1020,8 @@ create temporary table _nf_modeles (id uuid primary key, de_ref text not null, v
 create temporary table _nf_rangements (exercise_id uuid not null, de_ref text not null, vers_ref text, vers_cree text,
 	principal boolean not null, primary key (exercise_id, de_ref));
 create temporary table _nf_suppressions (exercise_id uuid not null, de_ref text not null, garde_ref text not null,
-	principal_transfere boolean not null, primary key (exercise_id, de_ref));
+	principal_transfere boolean not null, position integer not null, garde_principal boolean not null,
+	garde_position integer not null, primary key (exercise_id, de_ref));
 create temporary table _nf_archiver (ref text primary key, kind text not null);
 insert into _nf_ref (ref, branche, notion, sous_notion) values
   ($nf$Algèbre > Calcul littéral > développer$nf$, $nf$Algèbre$nf$, $nf$Calcul littéral$nf$, $nf$développer$nf$),
@@ -1666,11 +1754,11 @@ insert into _nf_rangements (exercise_id, de_ref, vers_ref, vers_cree, principal)
   ($nf$f10fb8e8-9a5a-41cf-a329-04667d060676$nf$::uuid, $nf$Suites > Suites et modélisation > algorithmes$nf$, $nf$Suites > Suites et modélisation$nf$, null, false),
   ($nf$f2dbdd65-67fb-46f3-8c8c-fc24271a4b59$nf$::uuid, $nf$Fonctions > Dérivation > étude de fonction$nf$, $nf$Fonctions > Dérivation > variations$nf$, null, true),
   ($nf$fade62b2-56be-4d2e-a14d-e8ad873199ee$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, null, true);
-insert into _nf_suppressions (exercise_id, de_ref, garde_ref, principal_transfere) values
-  ($nf$0879ff83-2b20-4056-9bf6-43b976d83176$nf$::uuid, $nf$Suites > Généralités sur les suites > calculer un terme$nf$, $nf$Suites > Généralités sur les suites > explicite ou par récurrence$nf$, true),
-  ($nf$3dece6b2-cdf2-4aeb-89e5-f46e5dbbbc59$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, true),
-  ($nf$d08caa8a-abc2-4fa7-ac95-f9b51c08376a$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, false),
-  ($nf$ee7bb639-9c0c-4cef-99d7-7973b623cfe9$nf$::uuid, $nf$Fonctions > Dérivation > étude de fonction$nf$, $nf$Fonctions > Dérivation > variations$nf$, false);
+insert into _nf_suppressions (exercise_id, de_ref, garde_ref, principal_transfere, position, garde_principal, garde_position) values
+  ($nf$0879ff83-2b20-4056-9bf6-43b976d83176$nf$::uuid, $nf$Suites > Généralités sur les suites > calculer un terme$nf$, $nf$Suites > Généralités sur les suites > explicite ou par récurrence$nf$, true, 0, false, 1),
+  ($nf$3dece6b2-cdf2-4aeb-89e5-f46e5dbbbc59$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, true, 0, false, 1),
+  ($nf$d08caa8a-abc2-4fa7-ac95-f9b51c08376a$nf$::uuid, $nf$Probabilités > Variables aléatoires > jeux et gains$nf$, $nf$Probabilités > Variables aléatoires > espérance$nf$, false, 1, true, 0),
+  ($nf$ee7bb639-9c0c-4cef-99d7-7973b623cfe9$nf$::uuid, $nf$Fonctions > Dérivation > étude de fonction$nf$, $nf$Fonctions > Dérivation > variations$nf$, false, 1, true, 0);
 insert into _nf_archiver (ref, kind) values
   ($nf$Algèbre > Inégalités > signe d'une expression$nf$, $nf$subnotion$nf$),
   ($nf$Algèbre > Inéquations : premier degré > mettre en inéquation$nf$, $nf$subnotion$nf$),
@@ -1777,20 +1865,16 @@ begin
 	if v_n <> 0 then
 		raise exception 'état inattendu : % sous-notion(s) à créer existe(nt) déjà', v_n;
 	end if;
-	-- 3c. les nœuds à renommer portent encore leur ancien nom
-	select count(*) into v_n from _nf_renommer r join _nf_id i on i.ref = r.ref
-	  join public.classification_nodes n on n.id = i.id where n.name <> r.ancien_nom;
-	if v_n <> 0 then
-		raise exception 'état inattendu : % nœud(s) déjà renommé(s)', v_n;
-	end if;
-	-- 3d. chaque point (nouvelle génération : grade non nul) existe une fois, sur son nœud de départ
+	-- (Un nœud à renommer porte forcément son ancien nom : son chemin d'aujourd'hui s'est résolu
+	-- par nom exact ; déjà renommé, il aurait fait échouer la résolution.)
+	-- 3c. chaque point (nouvelle génération : grade non nul) existe une fois, sur son nœud de départ
 	select count(*), count(*) filter (where p.node_id = d.id) into v_presents, v_bien
 	  from _nf_points x join public.curriculum_points p on p.code = x.code and p.grade is not null
 	  join _nf_id d on d.ref = x.de_ref;
 	if v_presents <> 125 or v_bien <> 125 then
 		raise exception 'état inattendu : points présents %/125, sur leur nœud de départ %/125', v_presents, v_bien;
 	end if;
-	-- 3e. modèles : TOUT ou RIEN, et sur leur nœud de départ
+	-- 3d. modèles : TOUT ou RIEN, et sur leur nœud de départ
 	select count(*), count(*) filter (where q.classification_node_id = d.id) into v_presents, v_bien
 	  from _nf_modeles m join public.question_templates q on q.id = m.id join _nf_id d on d.ref = m.de_ref;
 	if v_presents not in (0, 234) then
@@ -1799,18 +1883,29 @@ begin
 	if v_bien <> v_presents then
 		raise exception 'état inattendu : % modèle(s) hors de leur nœud de départ', v_presents - v_bien;
 	end if;
-	-- 3f. rangements d'exercices : TOUT ou RIEN (les 49 à déplacer et les 4 doublons), doublons présents
-	select (select count(*) from _nf_rangements r join _nf_id d on d.ref = r.de_ref
-	          join public.exercise_classifications c on c.exercise_id = r.exercise_id and c.node_id = d.id
-	           and c.is_primary = r.principal)
-	     + (select count(*) from _nf_suppressions s join _nf_id d on d.ref = s.de_ref join _nf_id g on g.ref = s.garde_ref
-	          join public.exercise_classifications c on c.exercise_id = s.exercise_id and c.node_id = d.id
-	           and c.is_primary = s.principal_transfere
-	          join public.exercise_classifications k on k.exercise_id = s.exercise_id and k.node_id = g.id
-	           and (not s.principal_transfere or not k.is_primary))
-	  into v_presents;
-	if v_presents not in (0, 53) then
-		raise exception 'identifiants partiellement présents : % rangement(s) d''exercice sur 53', v_presents;
+	-- 3e. exercices : TOUT ou RIEN sur les 51 exercices concernés ; dès qu'ils existent, les
+	--     53 rangements en jeu (49 à déplacer, 4 doublons avec leur rangement gardé) sont
+	--     EXACTEMENT dans l'état attendu : nœud de départ, principal, et position des doublons
+	--     (le rollback la restaure)
+	select count(*) into v_presents
+	  from (select exercise_id from _nf_rangements union select exercise_id from _nf_suppressions) e
+	  join public.exercises x on x.id = e.exercise_id;
+	if v_presents not in (0, 51) then
+		raise exception 'identifiants partiellement présents : % exercice(s) sur 51', v_presents;
+	end if;
+	if v_presents > 0 then
+		select (select count(*) from _nf_rangements r join _nf_id d on d.ref = r.de_ref
+		          join public.exercise_classifications c on c.exercise_id = r.exercise_id and c.node_id = d.id
+		           and c.is_primary = r.principal)
+		     + (select count(*) from _nf_suppressions s join _nf_id d on d.ref = s.de_ref join _nf_id g on g.ref = s.garde_ref
+		          join public.exercise_classifications c on c.exercise_id = s.exercise_id and c.node_id = d.id
+		           and c.is_primary = s.principal_transfere and c.position = s.position
+		          join public.exercise_classifications k on k.exercise_id = s.exercise_id and k.node_id = g.id
+		           and k.is_primary = s.garde_principal and k.position = s.garde_position)
+		  into v_bien;
+		if v_bien <> 53 then
+			raise exception 'état inattendu : % rangement(s) d''exercice sur 53 dans l''état attendu', v_bien;
+		end if;
 	end if;
 end $garde$;
 
@@ -1845,25 +1940,37 @@ update public.classification_nodes n set parent_id = r.parent_id, position = r.p
 update public.classification_nodes n set name = r.nouveau_nom
   from _nf_renommer r join _nf_id i on i.ref = r.ref where n.id = i.id;
 
--- ---- 7. Re-rattacher les points -----------------------------------------------------------
+-- Chaque écriture des étapes 7 à 9 redemande le nœud de DÉPART : une écriture concurrente
+-- (arrivée après les gardes) n'est jamais écrasée, et les comptes de l'étape 11 la détectent.
+
+-- ---- 7. Re-rattacher les points, `updated_at` préservé --------------------------------------
+alter table public.curriculum_points disable trigger update_curriculum_points_updated_at;
 update public.curriculum_points p set node_id = d.id
-  from _nf_points x join _nf_dest d on d.cle = coalesce(x.vers_ref, '+' || x.vers_cree)
- where p.code = x.code and p.grade is not null;
+  from _nf_points x join _nf_id s on s.ref = x.de_ref join _nf_dest d on d.cle = coalesce(x.vers_ref, '+' || x.vers_cree)
+ where p.code = x.code and p.grade is not null and p.node_id = s.id;
+alter table public.curriculum_points enable trigger update_curriculum_points_updated_at;
 
 -- ---- 8. Ranger les modèles ailleurs, `updated_at` préservé ----------------------------------
 alter table public.question_templates disable trigger update_question_templates_updated_at;
 update public.question_templates q set classification_node_id = d.id
-  from _nf_modeles m join _nf_dest d on d.cle = coalesce(m.vers_ref, '+' || m.vers_cree)
- where q.id = m.id;
+  from _nf_modeles m join _nf_id s on s.ref = m.de_ref join _nf_dest d on d.cle = coalesce(m.vers_ref, '+' || m.vers_cree)
+ where q.id = m.id and q.classification_node_id = s.id;
 alter table public.question_templates enable trigger update_question_templates_updated_at;
 
--- ---- 9. Rangements d'exercices : doublons supprimés (principal transféré), puis déplacés ---
+-- ---- 9. Rangements d'exercices : doublons supprimés, puis déplacés ------------------------
+-- Quand le doublon supprimé était le principal, le rangement gardé hérite du drapeau ET de sa
+-- position (le principal est le premier). La position est lue en base avant la suppression ;
+-- la suppression précède la promotion (index « un seul principal par exercice »).
+create temporary table _nf_supp_lignes as
+	select s.exercise_id, s.principal_transfere, s.garde_principal, d.id as de_id, g.id as garde_id, c.position as de_position
+	  from _nf_suppressions s join _nf_id d on d.ref = s.de_ref join _nf_id g on g.ref = s.garde_ref
+	  join public.exercise_classifications c on c.exercise_id = s.exercise_id and c.node_id = d.id;
 delete from public.exercise_classifications c
- using _nf_suppressions s join _nf_id d on d.ref = s.de_ref
- where c.exercise_id = s.exercise_id and c.node_id = d.id;
-update public.exercise_classifications c set is_primary = true
-  from _nf_suppressions s join _nf_id g on g.ref = s.garde_ref
- where s.principal_transfere and c.exercise_id = s.exercise_id and c.node_id = g.id;
+ using _nf_supp_lignes l
+ where c.exercise_id = l.exercise_id and c.node_id = l.de_id;
+update public.exercise_classifications c set is_primary = true, position = l.de_position
+  from _nf_supp_lignes l
+ where l.principal_transfere and c.exercise_id = l.exercise_id and c.node_id = l.garde_id;
 update public.exercise_classifications c set node_id = v.id
   from _nf_rangements r join _nf_id d on d.ref = r.de_ref join _nf_dest v on v.cle = coalesce(r.vers_ref, '+' || r.vers_cree)
  where c.exercise_id = r.exercise_id and c.node_id = d.id;
@@ -1897,6 +2004,24 @@ begin
 	select count(*) into v_n from _nf_modeles m join _nf_dest d on d.cle = coalesce(m.vers_ref, '+' || m.vers_cree)
 	  join public.question_templates q on q.id = m.id and q.classification_node_id = d.id;
 	if v_n <> v_m or v_m not in (0, 234) then raise exception 'modèles rangés : %/%', v_n, v_m; end if;
+	-- Rangements d'exercices : les 49 déplacés sont à destination (principal inchangé), les 4
+	-- doublons ont disparu et leur rangement gardé est principal comme attendu — 53 si les
+	-- exercices existent, 0 sinon
+	select count(*) into v_m
+	  from (select exercise_id from _nf_rangements union select exercise_id from _nf_suppressions) e
+	  join public.exercises x on x.id = e.exercise_id;
+	select (select count(*) from _nf_rangements r join _nf_dest v on v.cle = coalesce(r.vers_ref, '+' || r.vers_cree)
+	          join public.exercise_classifications c on c.exercise_id = r.exercise_id and c.node_id = v.id
+	           and c.is_primary = r.principal)
+	     + (select count(*) from _nf_supp_lignes l
+	          join public.exercise_classifications k on k.exercise_id = l.exercise_id and k.node_id = l.garde_id
+	           and k.is_primary = (l.principal_transfere or l.garde_principal)
+	         where not exists (select 1 from public.exercise_classifications c
+	                            where c.exercise_id = l.exercise_id and c.node_id = l.de_id))
+	  into v_n;
+	if v_n <> (case when v_m = 0 then 0 else 53 end) then
+		raise exception 'rangements d''exercice appliqués : %/53 (exercices présents : %)', v_n, v_m;
+	end if;
 	-- Plus rien sur un nœud archivé : ni point, ni modèle, ni rangement d'exercice
 	select (select count(*) from public.curriculum_points p join public.classification_nodes n on n.id = p.node_id
 	         where n.archived_at is not null)
@@ -1913,6 +2038,6 @@ begin
 	if v_n <> 0 then raise exception 'exercices sans rangement principal unique : %', v_n; end if;
 end $check$;
 
-drop table _nf_dest; drop table _nf_crees; drop table _nf_id; drop table _nf_ref; drop table _nf_creer;
+drop table _nf_supp_lignes; drop table _nf_dest; drop table _nf_crees; drop table _nf_id; drop table _nf_ref; drop table _nf_creer;
 drop table _nf_reparenter; drop table _nf_renommer; drop table _nf_points; drop table _nf_modeles;
 drop table _nf_rangements; drop table _nf_suppressions; drop table _nf_archiver;
