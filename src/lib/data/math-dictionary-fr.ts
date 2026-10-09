@@ -92,7 +92,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'nombre',
 		tags: ['transversal'],
 		definitions: {
-			items: [{ grade: 'CP', content: 'Concept mathématique représentant une quantité.' }]
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Ce qui sert à dire combien il y a d'objets (trente-quatre cubes), à quelle place on est (le quatrième) ou combien mesure une longueur."
+				}
+			]
 		},
 		grade: 'CP'
 	},
@@ -131,7 +137,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['transversal', 'operations'],
 		definitions: {
 			items: [
-				{ grade: 'CP', content: "Résultat d'une addition. Ex : la somme de $3$ et $5$ est $8$." }
+				{
+					grade: 'CP',
+					content:
+						"Une somme d'argent, c'est ce que valent ensemble des pièces et des billets : un billet de $10$ € et une pièce de $2$ € font une somme de $12$ €."
+				},
+				{ grade: 'CE2', content: "Résultat d'une addition. Ex : la somme de $3$ et $5$ est $8$." }
 			]
 		},
 		grade: 'CP'
@@ -169,7 +180,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '6',
-					content: "Résultat d'une division. Dans $15 \\div 4 = 3$ reste $3$, le quotient est $3$."
+					content:
+						"Résultat exact d'une division : le quotient de $3$ par $4$ est $\\frac{3}{4} = 0{,}75$. Dans une division euclidienne, le quotient est le nombre entier trouvé : $15 = 4 \\times 3 + 3$ (quotient $3$, reste $3$)."
+				},
+				{
+					grade: '5',
+					content:
+						"Le quotient de $a$ par $b$ ($b \\neq 0$) est le nombre qui, multiplié par $b$, donne $a$ ; on l'écrit $a \\div b$ ou $\\frac{a}{b}$ : $3 \\times \\frac{7}{3} = 7$."
 				}
 			]
 		},
@@ -206,7 +223,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'soustraction',
 		tags: ['transversal', 'operations'],
 		definitions: {
-			items: [{ grade: 'CP', content: 'Opération qui associe à deux nombres leur différence.' }]
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Opération qui sert à enlever, à retirer ou à trouver ce qui manque : $56 - 14 = 42$. C'est l'opération inverse de l'addition."
+				}
+			]
 		},
 		grade: 'CP'
 	},
@@ -220,7 +243,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 					content:
 						"Calcul qui permet de compter vite des paquets identiques. Ex : $3$ paquets de $4$ billes, c'est $3$ fois $4$ billes : $4 + 4 + 4 = 12$."
 				},
-				{ grade: 'CE1', content: 'Opération qui associe à deux nombres leur produit.' }
+				{
+					grade: 'CE1',
+					content:
+						"Opération qui remplace une addition répétée : $3 \\times 20$, c'est $20 + 20 + 20$. Son résultat s'appelle le produit."
+				}
 			]
 		},
 		grade: 'CP'
@@ -229,7 +256,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'division',
 		tags: ['transversal', 'operations'],
 		definitions: {
-			items: [{ grade: 'CE2', content: 'Opération qui associe à deux nombres leur quotient.' }]
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Opération qui sert à partager en parts égales, ou à chercher combien de fois un nombre est contenu dans un autre. C'est l'opération inverse de la multiplication : $7 \\times 13 = 91$, donc $91 \\div 7 = 13$."
+				}
+			]
 		},
 		grade: 'CE2'
 	},
@@ -264,7 +297,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['transversal', 'operations'],
 		definitions: {
 			items: [
-				{ grade: '5', content: 'Symbole indiquant une opération ($+$, $-$, $\\times$, $\\div$).' }
+				{
+					grade: '5',
+					content:
+						"Ce qui agit sur un nombre pour le transformer : « prendre les $\\frac{3}{4}$ de » est un opérateur ; les $\\frac{3}{4}$ de $20$, c'est $15$."
+				}
 			]
 		},
 		grade: '5'
@@ -277,7 +314,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CE2',
 					content:
-						"Chaque élément d'une somme ou d'une suite. Ex : dans $3 + 5$, les termes sont $3$ et $5$."
+						"Chacun des nombres d'une addition ou d'une soustraction : $12$ et $25$ sont les termes de l'addition $12 + 25$."
 				}
 			]
 		},
@@ -312,8 +349,16 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'compter',
 		tags: ['transversal'],
-		grade: 'CP',
-		derivedFrom: 'calcul'
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Dire les nombres dans l'ordre : un, deux, trois… Compter des objets, c'est trouver combien il y en a."
+				}
+			]
+		},
+		grade: 'CP'
 	},
 	{
 		term: 'soustraire',
@@ -360,7 +405,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'CP',
-					content: 'Relation entre deux expressions ayant la même valeur. Symbole : $=$.'
+					content:
+						'Écriture avec le signe $=$ qui dit que deux calculs ou deux nombres valent la même chose : $3 + 2 = 5$.'
+				},
+				{
+					grade: '5',
+					content:
+						'Écriture $A = B$ qui affirme que deux expressions ont la même valeur ; elle peut être vraie ou fausse : $2x + 1 = 7$ est vraie pour $x = 3$, fausse pour $x = 4$.'
 				}
 			]
 		},
@@ -393,7 +444,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'inférieur',
 		tags: ['transversal'],
 		definitions: {
-			items: [{ grade: 'CE1', content: 'Plus petit que. Symbole : $<$ ou $\\leq$.' }]
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						'« Inférieur à » veut dire « plus petit que » ; on écrit le signe $<$ : $49 < 53$.'
+				},
+				{
+					grade: '3',
+					content:
+						"« Inférieur ou égal à » s'écrit $\\leq$ : $x \\leq 3$ veut dire que $x$ est plus petit que $3$ ou égal à $3$."
+				}
+			]
 		},
 		grade: 'CE1'
 	},
@@ -426,7 +488,17 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'moins',
 		tags: ['transversal', 'operations'],
 		definitions: {
-			items: [{ grade: 'CP', content: 'Symbole $-$ de la soustraction ou du signe négatif.' }]
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Mot qu'on lit pour le signe $-$ : $56 - 14$ se lit « 56 moins 14 ». « Moins que » sert aussi à comparer : $3$, c'est moins que $5$."
+				},
+				{
+					grade: '5',
+					content: 'Le signe $-$ indique aussi un nombre négatif : $-4$ se lit « moins 4 ».'
+				}
+			]
 		},
 		grade: 'CP'
 	},
@@ -437,7 +509,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'CP',
-					content: 'Processus de calcul : addition, soustraction, multiplication, division.'
+					content:
+						"Calcul comme l'addition ($+$) ou la soustraction ($-$) ; plus tard viennent la multiplication ($\\times$) et la division ($\\div$)."
 				}
 			]
 		},
@@ -452,8 +525,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 					grade: 'CP',
 					content:
 						"Façon de ranger des nombres : dans l'ordre croissant, du plus petit au plus grand ; dans l'ordre décroissant, du plus grand au plus petit."
-				},
-				{ grade: 'CE1', content: 'Relation de comparaison entre nombres ($<$, $>$, $=$).' }
+				}
 			]
 		},
 		grade: 'CP'
@@ -486,7 +558,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'CP',
-					content: 'Situation nécessitant un raisonnement mathématique pour être résolue.'
+					content:
+						'Petite histoire avec des nombres et une question : pour répondre, on cherche quel calcul faire.'
+				},
+				{
+					grade: '6',
+					content: 'Situation qui demande de chercher et de raisonner pour répondre à une question.'
 				}
 			]
 		},
@@ -504,7 +581,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'supérieur',
 		tags: ['transversal'],
 		definitions: {
-			items: [{ grade: 'CE1', content: 'Plus grand que. Symbole : $>$ ou $\\geq$.' }]
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						'« Supérieur à » veut dire « plus grand que » ; on écrit le signe $>$ : $53 > 49$.'
+				},
+				{
+					grade: '3',
+					content:
+						"« Supérieur ou égal à » s'écrit $\\geq$ : $x \\geq 3$ veut dire que $x$ est plus grand que $3$ ou égal à $3$."
+				}
+			]
 		},
 		grade: 'CE1'
 	},
@@ -546,7 +634,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['entiers', 'arithmétique'],
 		definitions: {
 			items: [
-				{ grade: 'CP', content: 'Nombre entier divisible par $2$. Ex : $0, 2, 4, 6, 8, \\ldots$' }
+				{
+					grade: 'CP',
+					content:
+						"Un nombre pair est le double d'un nombre : $0$, $2$, $4$, $6$, $8$, $10$… Son chiffre des unités est $0$, $2$, $4$, $6$ ou $8$."
+				},
+				{ grade: 'CM1', content: 'Nombre entier divisible par $2$.' }
 			]
 		},
 		grade: 'CP'
@@ -558,8 +651,10 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'CE1',
-					content: "Nombre entier qui n'est pas divisible par $2$. Ex : $1, 3, 5, 7, 9, \\ldots$"
-				}
+					content:
+						"Nombre qui n'est pas pair : $1$, $3$, $5$, $7$, $9$, $11$… Son chiffre des unités est $1$, $3$, $5$, $7$ ou $9$."
+				},
+				{ grade: 'CM1', content: "Nombre entier qui n'est pas divisible par $2$." }
 			]
 		},
 		grade: 'CE1'
@@ -639,7 +734,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM1',
 					content:
-						'$b$ est un diviseur de $a$ si $a \\div b$ est un entier (reste $0$). Ex : $3$ est un diviseur de $12$.'
+						'$3$ est un diviseur de $12$ car la division de $12$ par $3$ tombe juste : $12 = 3 \\times 4$.'
+				},
+				{
+					grade: '5',
+					content:
+						'$b$ est un diviseur de $a$ si $a$ est un multiple de $b$ : $a = b \\times k$ avec $k$ entier.'
 				}
 			]
 		},
@@ -724,7 +824,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM1',
 					content:
-						'Règle permettant de savoir si un nombre est divisible par un autre sans faire la division. Ex : un nombre est divisible par $3$ si la somme de ses chiffres est divisible par $3$.'
+						'Règle qui permet de savoir, sans poser la division, si un nombre est divisible par un autre : un nombre est divisible par $2$ si son chiffre des unités est $0$, $2$, $4$, $6$ ou $8$.'
+				},
+				{
+					grade: '5',
+					content:
+						'Un nombre est divisible par $3$ (ou par $9$) si la somme de ses chiffres est divisible par $3$ (ou par $9$).'
 				}
 			]
 		},
@@ -811,7 +916,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CP',
 					content:
-						"La moitié d'un nombre est ce nombre divisé par $2$. Ex : la moitié de $14$ est $7$."
+						"La moitié d'un nombre, c'est le nombre dont il est le double : la moitié de $14$ est $7$, car $7 + 7 = 14$."
 				}
 			]
 		},
@@ -829,7 +934,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'quart',
 		tags: ['entiers', 'operations'],
 		definitions: {
-			items: [{ grade: 'CE1', content: "Le quart d'un nombre est ce nombre divisé par $4$." }]
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Un quart, c'est une des $4$ parts égales d'un tout partagé en $4$. Un quart d'heure, c'est $15$ minutes."
+				}
+			]
 		},
 		grade: 'CE1'
 	},
@@ -847,7 +958,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'tiers',
 		tags: ['entiers', 'operations', 'fractions'],
 		definitions: {
-			items: [{ grade: 'CE1', content: "Le tiers d'un nombre est ce nombre divisé par $3$." }]
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Le tiers d'un tout, c'est une part quand ce tout est partagé en $3$ parts égales."
+				}
+			]
 		},
 		grade: 'CE1'
 	},
@@ -1003,7 +1120,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM1',
 					content:
-						"Partie d'un nombre décimal située à droite de la virgule. Ex : dans $3{,}14$, la partie décimale est $0{,}14$."
+						"Ce qui reste d'un nombre décimal quand on enlève sa partie entière : la partie décimale de $3{,}14$ est $0{,}14$."
 				}
 			]
 		},
@@ -1015,7 +1132,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definitions: {
 			items: [
 				{ grade: 'CE1', content: "Une part d'un tout partagé en dix parts égales." },
-				{ grade: 'CM1', content: 'Premier rang après la virgule. $0{,}1 = \\frac{1}{10}$.' }
+				{
+					grade: 'CM1',
+					content:
+						"Un dixième, c'est une unité partagée en $10$ parts égales : $\\frac{1}{10} = 0{,}1$. Dix dixièmes font une unité ; le chiffre des dixièmes est le premier après la virgule."
+				}
 			]
 		},
 		grade: 'CE1'
@@ -1025,7 +1146,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['décimaux', 'numération'],
 		definitions: {
 			items: [
-				{ grade: 'CM1', content: 'Deuxième rang après la virgule. $0{,}01 = \\frac{1}{100}$.' }
+				{
+					grade: 'CM1',
+					content:
+						"Un centième, c'est une unité partagée en $100$ parts égales : $\\frac{1}{100} = 0{,}01$. Dix centièmes font un dixième ; le chiffre des centièmes est le deuxième après la virgule."
+				}
 			]
 		},
 		grade: 'CM1'
@@ -1035,7 +1160,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['décimaux', 'numération'],
 		definitions: {
 			items: [
-				{ grade: 'CM2', content: 'Troisième rang après la virgule. $0{,}001 = \\frac{1}{1000}$.' }
+				{
+					grade: 'CM2',
+					content:
+						"Un millième, c'est une unité partagée en $1\\,000$ parts égales : $\\frac{1}{1\\,000} = 0{,}001$. Dix millièmes font un centième."
+				}
 			]
 		},
 		grade: 'CM2'
@@ -1048,7 +1177,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM1',
 					content:
-						'Fraction dont le dénominateur est une puissance de $10$. Ex : $\\frac{7}{10}$, $\\frac{314}{100}$.'
+						'Fraction dont le dénominateur est $10$, $100$ ou $1\\,000$ : $\\frac{7}{10}$, $\\frac{35}{100}$.'
 				}
 			]
 		},
@@ -1062,7 +1191,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM1',
 					content:
-						"Valeur approchée d'un nombre obtenue en tronquant puis ajustant le dernier chiffre conservé. Ex : $3{,}14$ arrondi au dixième est $3{,}1$."
+						"L'arrondi à l'unité d'un nombre est l'entier le plus proche de ce nombre : l'arrondi de $7{,}8$ est $8$, celui de $7{,}3$ est $7$."
+				},
+				{
+					grade: '6',
+					content:
+						'On arrondit aussi au dixième ou au centième : $3{,}14$ arrondi au dixième est $3{,}1$.'
 				}
 			]
 		},
@@ -1131,7 +1265,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'intercaler',
 		tags: ['décimaux'],
 		definitions: {
-			items: [{ grade: 'CP', content: 'Placer un nombre entre deux autres sur la droite graduée.' }]
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Intercaler un nombre entre deux nombres, c'est trouver un nombre plus grand que le premier et plus petit que le second : $25$ est entre $20$ et $30$."
+				}
+			]
 		},
 		grade: 'CP'
 	},
@@ -1150,9 +1290,9 @@ const MATH_DICTIONARY: MathTerm[] = [
 						"Nombre qui sert à parler de parts égales d'un tout. Ex : $\\frac{1}{2}$ (un demi) : on partage en $2$ parts égales et on en prend $1$ ; $\\frac{3}{4}$ : on partage en $4$ et on en prend $3$."
 				},
 				{
-					grade: '5',
+					grade: '6',
 					content:
-						'Écriture de la forme $\\frac{a}{b}$ où $a$ est le numérateur et $b$ le dénominateur ($b \\neq 0$).'
+						'Quotient de deux nombres entiers : $\\frac{3}{7}$ est le nombre qui, multiplié par $7$, donne $3$. Une fraction est à la fois ce nombre et son écriture ($3$ est le numérateur, $7$ le dénominateur).'
 				}
 			]
 		},
@@ -1208,7 +1348,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '4',
 					content:
-						'Diviser le numérateur et le dénominateur par un même nombre. Ex : $\\frac{6}{8} = \\frac{3}{4}$.'
+						'Diviser le numérateur et le dénominateur par un même nombre entier, diviseur des deux : $\\frac{6}{8} = \\frac{3}{4}$.'
 				}
 			]
 		},
@@ -1266,7 +1406,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'simplification',
 		tags: ['fractions', 'calcul-littéral'],
 		definitions: {
-			items: [{ grade: '6', content: 'Action de simplifier une fraction ou une expression.' }]
+			items: [
+				{
+					grade: '6',
+					content:
+						"Simplifier une fraction, c'est diviser son numérateur et son dénominateur par un même nombre entier pour obtenir une fraction égale plus simple : $\\frac{6}{8} = \\frac{3}{4}$."
+				},
+				{
+					grade: '5',
+					content:
+						"Plus généralement, simplifier une écriture, c'est la remplacer par une écriture égale plus simple : $3x + 2x$ devient $5x$."
+				}
+			]
 		},
 		grade: '6'
 	},
@@ -1288,12 +1439,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '5',
 					content:
-						"Nombre muni d'un signe ($+$ ou $-$). L'ensemble des relatifs est $\\mathbb{Z} = \\{\\ldots, -2, -1, 0, 1, 2, \\ldots\\}$."
+						'Nombre positif (comme $3$ ou $+2{,}5$), négatif (comme $-4$ ou $-0{,}7$) ou nul ($0$). Avec eux, toutes les soustractions sont possibles : $3 - 5 = -2$.'
 				}
 			]
 		},
 		grade: '5',
-		synonyms: ['relatif', 'entier relatif']
+		synonyms: ['relatif']
 	},
 	{
 		term: 'positif',
@@ -1354,7 +1505,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'distance à zéro',
 		tags: ['relatifs'],
 		definitions: {
-			items: [{ grade: '5', content: "La distance à zéro d'un nombre est sa valeur absolue." }]
+			items: [
+				{
+					grade: '5',
+					content:
+						"Écart entre un nombre et $0$ sur une droite graduée, sans tenir compte du signe : la distance à zéro de $-3$ est $3$, comme celle de $3$. On l'appelle aussi valeur absolue."
+				}
+			]
 		},
 		grade: '5',
 		synonyms: ['valeur absolue']
@@ -1362,14 +1519,30 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'irrationnel',
 		tags: ['relatifs'],
-		grade: '3',
-		derivedFrom: 'nombre relatif'
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Nombre réel qui ne peut pas s'écrire comme quotient de deux entiers : $\\sqrt{2}$ et $\\pi$ sont irrationnels."
+				}
+			]
+		},
+		grade: '2'
 	},
 	{
 		term: 'rationnel',
 		tags: ['relatifs'],
-		grade: '4',
-		derivedFrom: 'nombre relatif'
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						'Nombre égal au quotient de deux nombres entiers relatifs : $\\frac{-3}{4}$, $0{,}5 = \\frac{1}{2}$ ou $7 = \\frac{7}{1}$.'
+				}
+			]
+		},
+		grade: '4'
 	},
 	{
 		term: 'relatif',
@@ -1388,7 +1561,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '5',
-					content: 'Suite de nombres et de lettres reliés par des opérations. Ex : $3x + 2$.'
+					content:
+						"Écriture qui combine des nombres, parfois des lettres, avec des signes d'opérations et des parenthèses : $3 \\times (5 + 2)$ ou $3x + 2$."
 				}
 			]
 		},
@@ -1416,7 +1590,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '5',
 					content:
-						'Lettre représentant un nombre inconnu ou pouvant varier. Ex : $x$ dans $2x + 3$.'
+						"Lettre qui peut prendre différentes valeurs : dans $2x + 3$, on peut remplacer $x$ par n'importe quel nombre."
+				},
+				{
+					grade: '4',
+					content:
+						'En informatique, une variable est une case de la mémoire qui porte un nom et contient une valeur, qui peut changer pendant le programme.'
 				}
 			]
 		},
@@ -1445,7 +1624,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '5',
 					content:
-						"Valeur à trouver dans une équation. Souvent notée $x$. Ex : dans $2x + 3 = 7$, l'inconnue est $x = 2$."
+						"Nombre que l'on cherche dans une équation, désigné par une lettre : dans $5x + 3 = 13$, l'inconnue est $x$ ; $2$ est la solution car $5 \\times 2 + 3 = 13$."
 				}
 			]
 		},
@@ -1485,7 +1664,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['calcul-littéral'],
 		definitions: {
 			items: [
-				{ grade: '5', content: 'Transformer une somme en produit. Ex : $3x + 6 = 3(x + 2)$.' }
+				{
+					grade: '5',
+					content:
+						"Écrire sous forme d'un produit : une somme, $3x + 6 = 3(x + 2)$, ou un nombre entier, $21 = 3 \\times 7$."
+				}
 			]
 		},
 		grade: '5'
@@ -1526,7 +1709,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['calcul-littéral'],
 		definitions: {
 			items: [
-				{ grade: '3', content: 'Formule algébrique classique. Ex : $(a + b)^2 = a^2 + 2ab + b^2$.' }
+				{
+					grade: '3',
+					content:
+						'Chacune des trois égalités vraies pour tous nombres $a$ et $b$ : $(a+b)^2 = a^2 + 2ab + b^2$, $(a-b)^2 = a^2 - 2ab + b^2$ et $(a-b)(a+b) = a^2 - b^2$.'
+				}
 			]
 		},
 		grade: '3'
@@ -1536,10 +1723,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['calcul-littéral'],
 		definitions: {
 			items: [
+				{ grade: '5', content: 'Nombre qui multiplie : dans $5x$, le coefficient de $x$ est $5$.' },
 				{
-					grade: '5',
+					grade: '3',
 					content:
-						'Nombre qui multiplie une variable. Ex : dans $5x$, le coefficient de $x$ est $5$.'
+						'Les coefficients de la fonction affine $x \\mapsto ax + b$ sont les nombres $a$ et $b$.'
 				}
 			]
 		},
@@ -1552,7 +1740,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '1_SPE',
-					content: "Expression constituée d'un coefficient et de variables. Ex : $3x^2$."
+					content: "Produit d'un nombre par une puissance d'une lettre, comme $3x^2$ ou $-5x$."
 				}
 			]
 		},
@@ -1562,7 +1750,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'polynôme',
 		tags: ['calcul-littéral'],
 		definitions: {
-			items: [{ grade: '1_SPE', content: 'Somme de monômes. Ex : $2x^2 + 3x - 1$.' }]
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						'Expression comme $ax^2 + bx + c$ ou $ax^3 + bx^2 + cx + d$ : une somme de termes « nombre × puissance de $x$ ». Le plus grand exposant de coefficient non nul est son degré : $2x^2 + 3x - 1$ est de degré $2$.'
+				}
+			]
 		},
 		grade: '1_SPE'
 	},
@@ -1579,7 +1773,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Plus grand exposant de la variable dans un polynôme. Ex : le degré de $2x^3 + x$ est $3$.'
+						"Plus grand exposant de $x$ dont le coefficient n'est pas nul : $2x^3 + x$ est de degré $3$."
 				}
 			]
 		},
@@ -1654,7 +1848,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'factorisation',
 		tags: ['calcul-littéral'],
 		definitions: {
-			items: [{ grade: '5', content: 'Action de transformer une somme en produit.' }]
+			items: [
+				{
+					grade: '5',
+					content: "Écriture sous forme d'un produit : $3x + 6 = 3(x + 2)$ ou $21 = 3 \\times 7$."
+				}
+			]
 		},
 		grade: '5'
 	},
@@ -1704,7 +1903,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CE2',
 					content:
-						"Longueur du contour d'une figure. Ex : le périmètre d'un rectangle est $2(L + l)$."
+						"Longueur du contour d'une figure : on l'obtient en ajoutant les longueurs de tous ses côtés."
+				},
+				{
+					grade: '5',
+					content:
+						"Le périmètre d'un rectangle de longueur $L$ et de largeur $l$ est $2 \\times (L + l)$."
 				}
 			]
 		},
@@ -1718,7 +1922,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM1',
 					content:
-						"Mesure de la surface d'une figure. Ex : l'aire d'un rectangle est $L \\times l$."
+						"L'aire d'une figure mesure l'étendue de sa surface ; on peut la trouver en comptant des carrés-unités, par exemple des carrés de $1$ cm de côté ($\\text{cm}^2$)."
+				},
+				{
+					grade: '6',
+					content:
+						"L'aire d'un rectangle est le produit de sa longueur par sa largeur : $4\\,\\text{cm} \\times 3\\,\\text{cm} = 12\\,\\text{cm}^2$."
 				}
 			]
 		},
@@ -1732,7 +1941,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CM2',
 					content:
-						"Mesure de l'espace occupé par un solide. Ex : le volume d'un pavé droit est $L \\times l \\times h$."
+						"Le volume d'un solide mesure la place qu'il occupe ; on peut le trouver en comptant des cubes-unités, par exemple des cubes de $1$ cm de côté ($\\text{cm}^3$)."
+				},
+				{
+					grade: '5',
+					content:
+						"Le volume d'un pavé droit est le produit de sa longueur, de sa largeur et de sa hauteur."
 				}
 			]
 		},
@@ -1778,7 +1992,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CE1',
 					content:
-						'Grandeur mesurant la quantité de matière. Unités : $\\text{g}$, $\\text{kg}$, $\\text{t}$.'
+						'On mesure une masse en grammes ($\\text{g}$) et en kilogrammes ($\\text{kg}$) : $1\\,\\text{kg} = 1\\,000\\,\\text{g}$.'
 				}
 			]
 		},
@@ -1804,7 +2018,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'CE1',
-					content: 'Grandeur mesurant un intervalle de temps. Unités : secondes, minutes, heures.'
+					content:
+						'Temps qui passe entre deux instants, par exemple entre le début et la fin de la récréation ; on la mesure en heures et en minutes.'
 				}
 			]
 		},
@@ -1867,7 +2082,10 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definitions: {
 			items: [
 				{ grade: 'CE1', content: "Angle plus petit qu'un angle droit." },
-				{ grade: '6', content: 'Angle mesurant moins de $90°$.' }
+				{
+					grade: '6',
+					content: 'Angle dont la mesure est comprise entre $0°$ et $90°$ (ni nul, ni droit).'
+				}
 			]
 		},
 		grade: 'CE1'
@@ -2010,7 +2228,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'mesure',
 		tags: ['grandeurs'],
 		definitions: {
-			items: [{ grade: 'CE1', content: "Évaluation d'une grandeur à l'aide d'une unité." }]
+			items: [
+				{
+					grade: 'CE1',
+					content: 'Nombre trouvé en mesurant, avec son unité : la table mesure $120$ cm.'
+				}
+			]
 		},
 		grade: 'CE1'
 	},
@@ -2048,7 +2271,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'surface',
 		tags: ['géométrie', 'grandeurs'],
 		definitions: {
-			items: [{ grade: 'CM1', content: "Étendue d'une figure plane. Synonyme d'aire." }]
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Partie du plan délimitée par une figure, ou bord extérieur d'un solide. Son aire est la mesure de son étendue : on compare des surfaces selon leur aire."
+				}
+			]
 		},
 		grade: 'CM1'
 	},
@@ -2200,7 +2429,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['proportionnalité'],
 		definitions: {
 			items: [
-				{ grade: '6', content: 'Égalité de deux rapports. Ex : $\\frac{a}{b} = \\frac{c}{d}$.' }
+				{
+					grade: '6',
+					content:
+						"Part que représente une partie dans le tout : $3$ élèves sur $12$, c'est une proportion de $\\frac{3}{12} = \\frac{1}{4}$, soit $25\\,\\%$."
+				}
 			]
 		},
 		grade: '6'
@@ -2215,7 +2448,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 					content:
 						"Deux grandeurs sont proportionnelles quand, si l'une est multipliée par $2$, $3$, $10$…, l'autre l'est aussi. Ex : $1$ cahier coûte $2$ €, $3$ cahiers coûtent $6$ €."
 				},
-				{ grade: '6', content: 'Relation entre deux grandeurs dont le rapport est constant.' }
+				{
+					grade: '6',
+					content:
+						"Deux grandeurs sont proportionnelles si l'on obtient les valeurs de l'une en multipliant celles de l'autre par un même nombre non nul."
+				}
 			]
 		},
 		grade: 'CM1'
@@ -2224,7 +2461,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'rapport',
 		tags: ['proportionnalité'],
 		definitions: {
-			items: [{ grade: '6', content: 'Quotient de deux grandeurs. Ex : rapport $\\frac{a}{b}$.' }]
+			items: [
+				{
+					grade: '6',
+					content:
+						"Le rapport d'une partie au tout est la fraction qui indique quelle part elle représente : $3$ filles sur $12$ élèves, c'est un rapport de $\\frac{3}{12}$, soit $\\frac{1}{4}$."
+				}
+			]
 		},
 		grade: '6'
 	},
@@ -2232,7 +2475,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'ratio',
 		tags: ['proportionnalité'],
 		definitions: {
-			items: [{ grade: '4', content: 'Rapport entre deux quantités. Synonyme de rapport.' }]
+			items: [
+				{
+					grade: '4',
+					content:
+						'Façon de comparer des quantités par leurs parts : un ratio de $2 : 3$ veut dire $2$ parts pour $3$ parts. On peut comparer plus de deux quantités, comme $2 : 3 : 5$.'
+				}
+			]
 		},
 		grade: '4'
 	},
@@ -2253,7 +2502,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '4',
 					content:
-						'$a^n$ est le produit de $n$ facteurs égaux a $a$. Ex : $2^3 = 2 \\times 2 \\times 2 = 8$.'
+						'Pour un entier $n \\geq 1$, $a^n$ est le produit de $n$ facteurs égaux à $a$ : $2^3 = 2 \\times 2 \\times 2 = 8$. Par convention, $a^0 = 1$ pour $a \\neq 0$.'
 				}
 			]
 		},
@@ -2267,7 +2516,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '4',
 					content:
-						"Nombre indiquant combien de fois la base est multipliée par elle-même. Dans $a^n$, $n$ est l'exposant."
+						"Dans $a^n$, l'exposant $n$ est le nombre de facteurs égaux à $a$ : $2^3 = 2 \\times 2 \\times 2$ a trois facteurs."
 				}
 			]
 		},
@@ -2326,9 +2575,10 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['puissances'],
 		definitions: {
 			items: [
+				{ grade: '4', content: 'Nombre de la forme $10^n$, comme $10^3 = 1\\,000$.' },
 				{
-					grade: '4',
-					content: 'Nombre de la forme $10^n$. Ex : $10^3 = 1000$, $10^{-2} = 0{,}01$.'
+					grade: '3',
+					content: 'Avec les exposants négatifs : $10^{-2} = \\frac{1}{100} = 0{,}01$.'
 				}
 			]
 		},
@@ -2338,7 +2588,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'exposant négatif',
 		tags: ['puissances'],
 		definitions: {
-			items: [{ grade: '3', content: '$a^{-n} = \\frac{1}{a^n}$. Ex : $2^{-3} = \\frac{1}{8}$.' }]
+			items: [
+				{
+					grade: '3',
+					content:
+						"Pour $a \\neq 0$ et $n$ entier positif, $a^{-n} = \\frac{1}{a^n}$, l'inverse de $a^n$ : $2^{-3} = \\frac{1}{8}$."
+				}
+			]
 		},
 		grade: '3'
 	},
@@ -2383,7 +2639,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '4',
-					content: "Entier qui est le carré d'un autre entier. Ex : $1, 4, 9, 16, 25, 36, \\ldots$"
+					content: "Entier qui est le carré d'un entier : $0$, $1$, $4$, $9$, $16$, $25$…"
 				}
 			]
 		},
@@ -2401,7 +2657,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						"Relation qui associe à chaque élément d'un ensemble de départ un unique élément d'un ensemble d'arrivée."
+						'Procédé qui, à chaque nombre $x$, associe un seul nombre, noté $f(x)$ : la fonction $f : x \\mapsto 2x + 1$ associe $7$ à $3$.'
+				},
+				{
+					grade: '2',
+					content:
+						'Une fonction $f$ définie sur un ensemble $D$ associe à chaque réel $x$ de $D$ un unique réel $f(x)$, son image.'
 				}
 			]
 		},
@@ -2471,18 +2732,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '2',
 					content:
-						'Une fonction est croissante sur un intervalle si, quand $x$ augmente, $f(x)$ augmente.'
+						'$f$ est croissante sur un intervalle $I$ si, pour tous réels $a$ et $b$ de $I$ tels que $a \\leq b$, on a $f(a) \\leq f(b)$ : quand $x$ augmente, $f(x)$ augmente ou reste égal.'
 				}
 			]
 		},
 		grade: '2'
 	},
-	{
-		term: 'croissant',
-		tags: ['fonctions'],
-		grade: '3',
-		derivedFrom: 'ordre'
-	},
+	{ term: 'croissant', tags: ['fonctions'], grade: 'CP', derivedFrom: 'ordre' },
 	{
 		term: 'décroissante',
 		tags: ['fonctions'],
@@ -2491,18 +2747,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '2',
 					content:
-						'Une fonction est décroissante sur un intervalle si, quand $x$ augmente, $f(x)$ diminue.'
+						'$f$ est décroissante sur un intervalle $I$ si, pour tous réels $a$ et $b$ de $I$ tels que $a \\leq b$, on a $f(a) \\geq f(b)$ : quand $x$ augmente, $f(x)$ diminue ou reste égal.'
 				}
 			]
 		},
 		grade: '2'
 	},
-	{
-		term: 'décroissant',
-		tags: ['fonctions'],
-		grade: '3',
-		derivedFrom: 'ordre'
-	},
+	{ term: 'décroissant', tags: ['fonctions'], grade: 'CP', derivedFrom: 'ordre' },
 	{
 		term: 'maximum',
 		tags: ['fonctions'],
@@ -2555,8 +2806,16 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'représenter',
 		tags: ['fonctions'],
-		grade: '2',
-		derivedFrom: 'courbe représentative'
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						'Montrer une situation, des données ou un nombre par un dessin, un schéma, un tableau ou un graphique : représenter une fraction, représenter des données par un diagramme.'
+				}
+			]
+		},
+		grade: 'CE1'
 	},
 	{
 		term: 'abscisse',
@@ -2595,7 +2854,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '2',
 					content:
-						"Valeur $f(0)$, le point où la courbe coupe l'axe des ordonnées. Pour $f(x) = ax + b$, c'est $b$."
+						"Pour une fonction affine $x \\mapsto ax + b$, c'est le nombre $b = f(0)$ : la droite qui la représente coupe l'axe des ordonnées au point d'ordonnée $b$."
 				}
 			]
 		},
@@ -2608,7 +2867,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '2',
-					content: "Pente d'une droite. Pour $f(x) = ax + b$, le coefficient directeur est $a$."
+					content:
+						"Pour une fonction affine $x \\mapsto ax + b$, c'est le nombre $a$ : quand $x$ augmente de $1$, $f(x)$ augmente de $a$. On l'appelle aussi la pente de la droite."
 				}
 			]
 		},
@@ -2717,7 +2977,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Fonction $f'$ qui donne le taux de variation instantané de $f$. $f'(a)$ est la pente de la tangente en $a$."
+						"Fonction dérivée de $f$ : la fonction $f'$ qui, à chaque nombre $x$ où $f$ est dérivable, associe le nombre dérivé $f'(x)$."
 				}
 			]
 		},
@@ -2731,7 +2991,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Droite qui touche la courbe en un point et à la même pente que la courbe en ce point.'
+						"Tangente à la courbe de $f$ au point d'abscisse $a$ : la droite qui passe par ce point et dont le coefficient directeur est le nombre dérivé $f'(a)$. C'est la position limite des sécantes qui passent par ce point."
 				}
 			]
 		},
@@ -2741,7 +3001,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'nombre dérivé',
 		tags: ['fonctions'],
 		definitions: {
-			items: [{ grade: '1_SPE', content: "Valeur de la dérivée en un point : $f'(a)$." }]
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Nombre $f'(a)$ dont se rapproche le taux de variation $\\frac{f(a+h) - f(a)}{h}$ quand $h$ se rapproche de $0$. C'est le coefficient directeur de la tangente à la courbe au point d'abscisse $a$."
+				}
+			]
 		},
 		grade: '1_SPE'
 	},
@@ -2765,7 +3031,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '2',
-					content: "Maximum ou minimum local d'une fonction. En un extremum, $f'(a) = 0$."
+					content:
+						'Le plus grand (maximum) ou le plus petit (minimum) des nombres $f(x)$ quand $x$ parcourt un intervalle.'
 				}
 			]
 		},
@@ -2809,7 +3076,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '2',
 					content:
-						'Ensemble de nombres réels compris entre deux bornes. Ex : $[2; 5]$, $]-\\infty; 3[$.'
+						'Ensemble des réels $x$ qui vérifient une ou deux inégalités : $[2 ; 5]$ contient les $x$ tels que $2 \\leq x \\leq 5$ ; $]-\\infty ; 3[$ contient les $x$ tels que $x < 3$.'
 				}
 			]
 		},
@@ -2843,24 +3110,16 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['fonctions'],
 		definitions: {
 			items: [
-				{ grade: 'T_SPE', content: "Se dit d'une fonction sans saut ni trou sur un intervalle." }
-			]
-		},
-		grade: 'T_SPE'
-	},
-	{
-		term: 'continuité',
-		tags: ['fonctions'],
-		definitions: {
-			items: [
 				{
 					grade: 'T_SPE',
-					content: "Propriété d'une fonction continue : pas de rupture dans la courbe."
+					content:
+						"Une fonction $f$ est continue en $a$ si $f(x)$ se rapproche de $f(a)$ quand $x$ se rapproche de $a$ : $\\lim_{x \\to a} f(x) = f(a)$. Continue sur un intervalle, sa courbe s'y trace sans lever le crayon."
 				}
 			]
 		},
 		grade: 'T_SPE'
 	},
+	{ term: 'continuité', tags: ['fonctions'], grade: 'T_SPE', derivedFrom: 'continu' },
 	{
 		term: 'dériver',
 		tags: ['fonctions'],
@@ -2870,15 +3129,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'exponentielle',
 		tags: ['fonctions'],
-		definitions: {
-			items: [
-				{
-					grade: '1_SPE',
-					content: 'Fonction $f(x) = e^x$. Seule fonction égale à sa propre dérivée.'
-				}
-			]
-		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		derivedFrom: 'fonction exponentielle'
 	},
 	{
 		term: 'intégrale',
@@ -2887,7 +3139,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'T_SPE',
-					content: "Outil du calcul intégral. $\\int_a^b f(x)\\,dx$ mesure l'aire sous la courbe."
+					content:
+						"Pour $f$ continue et positive sur $[a ; b]$, $\\int_a^b f(x)\\,\\mathrm{d}x$ est l'aire du domaine compris entre la courbe de $f$, l'axe des abscisses et les droites d'équations $x = a$ et $x = b$. Pour $f$ continue de signe quelconque, c'est $F(b) - F(a)$, où $F$ est une primitive de $f$."
 				}
 			]
 		},
@@ -2903,7 +3156,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'limite',
 		tags: ['fonctions', 'suites'],
 		definitions: {
-			items: [{ grade: '1_SPE', content: 'Valeur vers laquelle tend une suite ou une fonction.' }]
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Une suite a pour limite le réel $\\ell$ si ses termes deviennent aussi proches de $\\ell$ que l'on veut quand $n$ est assez grand ; elle a pour limite $+\\infty$ si ses termes deviennent aussi grands que l'on veut."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Le réel $\\ell$ est la limite de $(u_n)$ si tout intervalle ouvert contenant $\\ell$ contient tous les termes $u_n$ à partir d'un certain rang ; même idée pour $f(x)$ quand $x$ tend vers $a$ ou vers $+\\infty$."
+				}
+			]
 		},
 		grade: '1_SPE'
 	},
@@ -2979,6 +3243,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 					grade: 'CP',
 					content:
 						'Place occupée dans une file ou une liste : premier, deuxième, troisième… Ex : Léa est au troisième rang de la file.'
+				},
+				{
+					grade: '6',
+					content:
+						"Le rang d'un chiffre est sa place dans l'écriture d'un nombre : dans $3{,}52$, le chiffre $5$ est au rang des dixièmes."
 				},
 				{
 					grade: '1_SPE',
@@ -3128,8 +3397,9 @@ const MATH_DICTIONARY: MathTerm[] = [
 						"La probabilité d'un évènement dit s'il a beaucoup ou peu de chances de se produire. Ex : avec une pièce, on a une chance sur deux d'obtenir pile."
 				},
 				{
-					grade: '5',
-					content: "Nombre entre $0$ et $1$ mesurant la chance qu'un événement se produise."
+					grade: '6',
+					content:
+						"Nombre compris entre $0$ et $1$ qui mesure la chance qu'un évènement se produise : $0$ s'il est impossible, $1$ s'il est certain."
 				}
 			]
 		},
@@ -3239,7 +3509,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '6',
 					content:
-						"Rapport du nombre d'occurrences d'un événement au nombre total d'expériences. $f = \\frac{\\text{effectif}}{\\text{total}}$."
+						"La fréquence d'un résultat est le nombre de fois où il est obtenu divisé par le nombre total d'essais : $5$ « pile » sur $20$ lancers donne $\\frac{5}{20} = 0{,}25$."
 				}
 			]
 		},
@@ -3292,7 +3562,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'T_SPE',
-					content: 'Nombre de façons de choisir $k$ éléments parmi $n$ : $\\binom{n}{k}$.'
+					content:
+						"Une combinaison de $k$ éléments d'un ensemble $E$ à $n$ éléments est une partie de $E$ à $k$ éléments (l'ordre ne compte pas). Il y en a $\\binom{n}{k}$."
 				}
 			]
 		},
@@ -3320,7 +3591,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '5',
 					content:
-						'Somme des valeurs divisée par le nombre de valeurs. $\\bar{x} = \\frac{\\sum x_i}{n}$.'
+						'Nombre obtenu en additionnant toutes les valeurs puis en divisant par le nombre de valeurs : la moyenne de $8$, $12$ et $13$ est $(8 + 12 + 13) \\div 3 = 11$.'
+				},
+				{
+					grade: '4',
+					content:
+						'Moyenne pondérée : chaque valeur compte autant de fois que son effectif (ou son coefficient).'
 				}
 			]
 		},
@@ -3393,7 +3669,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						'Valeurs qui partagent une série ordonnée en quatre parties de même effectif ($Q_1$, $Q_2$, $Q_3$).'
+						"Le premier quartile $Q_1$ est la plus petite valeur de la série telle qu'au moins un quart des valeurs lui sont inférieures ou égales ; le troisième quartile $Q_3$, la plus petite telle qu'au moins trois quarts le sont."
 				}
 			]
 		},
@@ -3420,7 +3696,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '1_SPE',
-					content: "Carré de l'écart type. $V = \\frac{\\sum (x_i - \\bar{x})^2}{n}$."
+					content:
+						"Moyenne des carrés des écarts à la moyenne ; pour une variable aléatoire $X$ : $V(X) = E\\big((X - E(X))^2\\big)$. L'écart type est $\\sqrt{V}$."
 				}
 			]
 		},
@@ -3464,7 +3741,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'droite',
 		tags: ['géométrie'],
 		definitions: {
-			items: [{ grade: 'CP', content: 'Ligne infinie, sans courbure. Notée $(AB)$.' }]
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Ligne bien droite, tracée à la règle, qui ne s'arrête pas : on n'en dessine qu'un morceau."
+				},
+				{
+					grade: '6',
+					content:
+						'Ligne droite illimitée des deux côtés ; la droite qui passe par $A$ et $B$ se note $(AB)$.'
+				}
+			]
 		},
 		grade: 'CP'
 	},
@@ -3516,7 +3804,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '6',
-					content: 'Transformation qui associe à un point son symétrique par rapport à un axe.'
+					content:
+						"Le symétrique d'un point $A$ par rapport à une droite $(d)$ est le point $A'$ tel que $(d)$ soit la médiatrice du segment $[AA']$ (ou $A$ lui-même si $A$ est sur $(d)$). La symétrie axiale transforme une figure comme un pliage le long de $(d)$."
 				}
 			]
 		},
@@ -3529,7 +3818,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '5',
-					content: 'Transformation qui associe à un point son symétrique par rapport à un centre.'
+					content:
+						"Demi-tour autour d'un point $O$ : l'image d'un point $M$ est le point $M'$ tel que $O$ soit le milieu du segment $[MM']$."
 				}
 			]
 		},
@@ -3543,7 +3833,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '4',
 					content:
-						'Transformation qui déplace chaque point de la même direction, du même sens et de la même distance.'
+						'Transformation qui déplace chaque point dans la même direction, dans le même sens et de la même distance.'
+				},
+				{
+					grade: '3',
+					content:
+						"La translation qui transforme $A$ en $B$ associe à tout point $M$ le point $M'$ tel que $ABM'M$ soit un parallélogramme (éventuellement aplati)."
 				}
 			]
 		},
@@ -3599,7 +3894,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						'Si deux droites parallèles coupent deux sécantes, alors elles déterminent des segments proportionnels.'
+						"Si deux droites sécantes en $A$ sont coupées par deux droites parallèles $(BC)$ et $(MN)$, avec $B$ et $M$ sur l'une, $C$ et $N$ sur l'autre, alors $\\frac{AM}{AB} = \\frac{AN}{AC} = \\frac{MN}{BC}$."
 				}
 			]
 		},
@@ -3694,7 +3989,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['géométrie'],
 		definitions: {
 			items: [
-				{ grade: 'CE2', content: "Segment joignant le centre d'un cercle à un point du cercle." }
+				{
+					grade: 'CE2',
+					content:
+						"Segment qui va du centre d'un cercle à un point du cercle ; c'est aussi sa longueur : un cercle de rayon $4$ cm."
+				}
 			]
 		},
 		grade: 'CE2'
@@ -3707,7 +4006,12 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'CE2',
 					content:
-						"Segment passant par le centre d'un cercle et joignant deux points du cercle. $d = 2r$."
+						'Segment qui joint deux points du cercle en passant par son centre ; il est deux fois plus long que le rayon.'
+				},
+				{
+					grade: '3',
+					content:
+						"Segment qui joint deux points d'un cercle ou d'une sphère en passant par le centre ; sa longueur est le double du rayon : $d = 2r$."
 				}
 			]
 		},
@@ -3722,14 +4026,34 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'rectangle',
 		tags: ['géométrie'],
-		definitions: { items: [{ grade: 'CP', content: 'Quadrilatère ayant quatre angles droits.' }] },
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Figure qui a $4$ côtés et $4$ coins comme ceux d'une feuille ; ses côtés opposés ont la même longueur."
+				},
+				{ grade: 'CE2', content: 'Quadrilatère qui a quatre angles droits.' }
+			]
+		},
 		grade: 'CP'
 	},
 	{
 		term: 'carré',
 		sense: 'géométrie',
 		tags: ['géométrie'],
-		definitions: { items: [{ grade: 'CP', content: 'Rectangle ayant quatre côtés égaux.' }] },
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content: "Figure qui a $4$ côtés de même longueur et $4$ coins comme ceux d'une feuille."
+				},
+				{
+					grade: 'CE2',
+					content: 'Quadrilatère qui a quatre angles droits et quatre côtés de même longueur.'
+				}
+			]
+		},
 		grade: 'CP'
 	},
 	{
@@ -3743,7 +4067,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['géométrie'],
 		definitions: {
 			items: [
-				{ grade: '5', content: 'Quadrilatère dont les côtés opposés sont parallèles et égaux.' }
+				{ grade: '5', content: 'Quadrilatère dont les côtés opposés sont parallèles deux à deux.' }
 			]
 		},
 		grade: '5'
@@ -3752,7 +4076,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'trapèze',
 		tags: ['géométrie'],
 		definitions: {
-			items: [{ grade: 'CM2', content: 'Quadrilatère ayant exactement deux côtés parallèles.' }]
+			items: [{ grade: 'CM2', content: 'Quadrilatère qui a deux côtés opposés parallèles.' }]
 		},
 		grade: 'CM2'
 	},
@@ -3880,7 +4204,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						'Objet mathématique défini par une direction, un sens et une norme (longueur). Noté $\\vec{AB}$.'
+						'Le vecteur $\\overrightarrow{AB}$ décrit la translation qui transforme $A$ en $B$ : une direction (celle de la droite $(AB)$), un sens (de $A$ vers $B$) et une longueur ($AB$).'
 				}
 			]
 		},
@@ -3891,7 +4215,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['géométrie'],
 		definitions: {
 			items: [
-				{ grade: '2', content: "Longueur d'un vecteur. $\\|\\vec{u}\\| = \\sqrt{x^2 + y^2}$." }
+				{
+					grade: '2',
+					content:
+						"Longueur d'un vecteur : la norme de $\\overrightarrow{AB}$ est la distance $AB$. Dans une base orthonormée, si $\\vec{u}$ a pour coordonnées $(x ; y)$, sa norme est $\\sqrt{x^2 + y^2}$."
+				}
 			]
 		},
 		grade: '2'
@@ -3912,7 +4240,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Produit scalaire de deux vecteurs : $\\vec{u} \\cdot \\vec{v} = \\|u\\|\\|v\\|\\cos(\\theta)$.'
+						"Produit scalaire de deux vecteurs non nuls $\\vec{u}$ et $\\vec{v}$ : le nombre $\\vec{u} \\cdot \\vec{v} = \\|\\vec{u}\\| \\times \\|\\vec{v}\\| \\times \\cos(\\vec{u}, \\vec{v})$ ; il vaut $0$ si l'un des vecteurs est nul. En base orthonormée, c'est $xx' + yy'$."
 				}
 			]
 		},
@@ -3923,7 +4251,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'adjacent',
 		tags: ['géométrie'],
 		definitions: {
-			items: [{ grade: '6', content: 'Se dit de deux angles ayant un côté commun.' }]
+			items: [
+				{
+					grade: '6',
+					content:
+						"Deux angles adjacents ont le même sommet, un côté commun, et sont situés de part et d'autre de ce côté."
+				}
+			]
 		},
 		grade: '6'
 	},
@@ -3933,7 +4267,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definitions: {
 			items: [
 				{ grade: 'CE1', content: "Se dit d'un angle plus petit qu'un angle droit." },
-				{ grade: '6', content: "Se dit d'un angle mesurant moins de $90°$." }
+				{
+					grade: '6',
+					content:
+						"Se dit d'un angle dont la mesure est comprise entre $0°$ et $90°$ (ni nul, ni droit)."
+				}
 			]
 		},
 		grade: 'CE1'
@@ -3981,7 +4319,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'barycentre',
 		tags: ['géométrie'],
 		definitions: {
-			items: [{ grade: '2', content: "Point d'équilibre d'un système de points pondérés." }]
+			items: [
+				{
+					grade: '2',
+					content:
+						"Barycentre de $A$ et $B$ affectés des coefficients $a$ et $b$ ($a + b \\neq 0$) : le point $G$ tel que $a\\overrightarrow{GA} + b\\overrightarrow{GB} = \\vec{0}$. Si $a = b$, c'est le milieu de $[AB]$."
+				}
+			]
 		},
 		grade: '2'
 	},
@@ -4180,7 +4524,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '2',
 					content:
-						'Courbe formée de deux branches, représentant la fonction inverse ou une conique.'
+						"Courbe représentative de la fonction inverse $x \\mapsto \\frac{1}{x}$ : deux branches, l'une pour $x < 0$, l'autre pour $x > 0$."
 				}
 			]
 		},
@@ -4248,7 +4592,17 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'parabole',
 		tags: ['géométrie', 'fonctions'],
 		definitions: {
-			items: [{ grade: '3', content: 'Courbe en U représentant une fonction du second degré.' }]
+			items: [
+				{
+					grade: '3',
+					content: 'Courbe en forme de U, comme celle de la fonction carré $x \\mapsto x^2$.'
+				},
+				{
+					grade: '1_SPE',
+					content:
+						"Courbe représentative d'une fonction polynôme du second degré $x \\mapsto ax^2 + bx + c$ ($a \\neq 0$) : tournée vers le haut si $a > 0$, vers le bas si $a < 0$."
+				}
+			]
 		},
 		grade: '3'
 	},
@@ -4330,7 +4684,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: 'CM1',
-					content: 'Solide dont les deux bases sont des polygones égaux et parallèles.'
+					content:
+						'Un prisme droit est un solide qui a deux faces superposables et parallèles, ses bases (des polygones) ; toutes ses autres faces sont des rectangles.'
 				}
 			]
 		},
@@ -4348,7 +4703,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				},
 				{
 					grade: 'CM1',
-					content: 'Solide dont la base est un polygone et les faces latérales sont des triangles.'
+					content:
+						'Solide dont la base est un polygone et dont les autres faces sont des triangles qui ont un sommet commun, le sommet de la pyramide.'
 				}
 			]
 		},
@@ -4443,7 +4799,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['géométrie'],
 		definitions: {
 			items: [
-				{ grade: 'T_SPE', content: "Se dit d'une figure ou d'une courbe qui présente un creux." }
+				{
+					grade: 'T_SPE',
+					content:
+						"Une fonction $f$ est concave sur un intervalle $I$ si sa courbe y est située au-dessus de chacune de ses sécantes, entre les deux points d'intersection : c'est le cas de $x \\mapsto -x^2$, dont la courbe a la forme d'un dôme."
+				}
 			]
 		},
 		grade: 'T_SPE'
@@ -4456,7 +4816,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: 'T_SPE',
 					content:
-						"Se dit d'une figure ou d'une courbe qui ne présente pas de creux. Un segment joignant deux points de la figure reste à l'intérieur."
+						"Une fonction $f$ est convexe sur un intervalle $I$ si sa courbe y est située en dessous de chacune de ses sécantes, entre les deux points d'intersection : c'est le cas de $x \\mapsto x^2$, dont la courbe a la forme d'un creux."
 				}
 			]
 		},
@@ -4505,8 +4865,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 					grade: 'CE2',
 					content:
 						'Une figure présente une symétrie quand elle a un axe de symétrie : en la pliant le long de cette droite, les deux moitiés se superposent exactement.'
-				},
-				{ grade: '6', content: 'Transformation géométrique (axiale ou centrale).' }
+				}
 			]
 		},
 		grade: 'CE2'
@@ -4539,6 +4898,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 					grade: 'CM1',
 					content:
 						"Groupe d'objets ou de points réunis parce qu'ils ont quelque chose en commun. Ex : le cercle est l'ensemble des points situés à la même distance du centre."
+				},
+				{
+					grade: '4',
+					content:
+						"Collection d'objets bien déterminés, ses éléments : l'ensemble des issues d'un lancer de dé est $\\{1, 2, 3, 4, 5, 6\\}$."
 				},
 				{
 					grade: '2',
@@ -4727,7 +5091,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['logique'],
 		definitions: {
 			items: [
-				{ grade: '3', content: 'Raisonnement partant des hypothèses pour arriver à la conclusion.' }
+				{
+					grade: '3',
+					content:
+						"Dans un raisonnement par analyse-synthèse, étape où l'on vérifie que les valeurs trouvées pendant l'analyse sont vraiment des solutions."
+				}
 			]
 		},
 		grade: '3'
@@ -4758,7 +5126,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '6',
 					content:
-						"Caractéristique d'un objet mathématique qui a été démontrée. Ex : la somme des angles d'un triangle vaut $180°$."
+						"Énoncé vrai pour tous les objets d'une même sorte, démontré ou admis : « la somme des angles d'un triangle vaut $180°$ » est une propriété des triangles."
 				}
 			]
 		},

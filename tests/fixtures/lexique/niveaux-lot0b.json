@@ -1,5 +1,5 @@
 {
-	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09).",
+	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09). Mise à jour par le lot 0c (2026-10-09) : niveaux des définitions reprises, « exponentielle » devenu un renvoi.",
 	"principaux": [
 		{
 			"term": "abscisse",
@@ -90,7 +90,7 @@
 			"sense": null,
 			"grade": "CM1",
 			"decision": "A0",
-			"niveauxDefinitions": ["CM1"]
+			"niveauxDefinitions": ["CM1", "6"]
 		},
 		{
 			"term": "axe",
@@ -300,7 +300,7 @@
 			"sense": null,
 			"grade": "CM1",
 			"decision": "A0",
-			"niveauxDefinitions": ["CM1"]
+			"niveauxDefinitions": ["CM1", "5"]
 		},
 		{
 			"term": "croissante",
@@ -433,7 +433,7 @@
 			"sense": null,
 			"grade": "CE2",
 			"decision": "R",
-			"niveauxDefinitions": ["CE2"]
+			"niveauxDefinitions": ["CE2", "3"]
 		},
 		{
 			"term": "différence",
@@ -524,7 +524,7 @@
 			"sense": null,
 			"grade": "CM1",
 			"decision": "A",
-			"niveauxDefinitions": ["CM1", "2"]
+			"niveauxDefinitions": ["CM1", "4", "2"]
 		},
 		{
 			"term": "entier naturel",
@@ -602,13 +602,6 @@
 			"grade": "T_EXP",
 			"decision": "H",
 			"niveauxDefinitions": ["T_EXP"]
-		},
-		{
-			"term": "exponentielle",
-			"sense": null,
-			"grade": "1_SPE",
-			"decision": "A0",
-			"niveauxDefinitions": ["1_SPE"]
 		},
 		{
 			"term": "exposant négatif",
@@ -692,7 +685,7 @@
 			"sense": null,
 			"grade": "CE1",
 			"decision": "A",
-			"niveauxDefinitions": ["CE1", "5"]
+			"niveauxDefinitions": ["CE1", "6"]
 		},
 		{
 			"term": "fraction irréductible",
@@ -790,7 +783,7 @@
 			"sense": null,
 			"grade": "CE1",
 			"decision": "R",
-			"niveauxDefinitions": ["CE1"]
+			"niveauxDefinitions": ["CE1", "CM1"]
 		},
 		{
 			"term": "implication",
@@ -867,7 +860,7 @@
 			"sense": null,
 			"grade": "1_SPE",
 			"decision": "A0",
-			"niveauxDefinitions": ["1_SPE"]
+			"niveauxDefinitions": ["1_SPE", "T_SPE"]
 		},
 		{
 			"term": "masse",
@@ -923,7 +916,7 @@
 			"sense": null,
 			"grade": "5",
 			"decision": "R",
-			"niveauxDefinitions": ["5"]
+			"niveauxDefinitions": ["5", "4"]
 		},
 		{
 			"term": "multiple",
@@ -1000,7 +993,7 @@
 			"sense": null,
 			"grade": "CP",
 			"decision": "A",
-			"niveauxDefinitions": ["CP", "CE1"]
+			"niveauxDefinitions": ["CP"]
 		},
 		{
 			"term": "ordre de grandeur",
@@ -1021,7 +1014,7 @@
 			"sense": null,
 			"grade": "3",
 			"decision": "A0",
-			"niveauxDefinitions": ["3"]
+			"niveauxDefinitions": ["3", "1_SPE"]
 		},
 		{
 			"term": "parallèle",
@@ -1070,7 +1063,7 @@
 			"sense": null,
 			"grade": "CE2",
 			"decision": "R",
-			"niveauxDefinitions": ["CE2"]
+			"niveauxDefinitions": ["CE2", "5"]
 		},
 		{
 			"term": "perpendiculaire",
@@ -1147,7 +1140,7 @@
 			"sense": null,
 			"grade": "CM1",
 			"decision": "A",
-			"niveauxDefinitions": ["CM1", "5"]
+			"niveauxDefinitions": ["CM1", "6"]
 		},
 		{
 			"term": "produit en croix",
@@ -1210,7 +1203,7 @@
 			"sense": null,
 			"grade": "6",
 			"decision": "R",
-			"niveauxDefinitions": ["6"]
+			"niveauxDefinitions": ["6", "5"]
 		},
 		{
 			"term": "racine carrée",
@@ -1252,7 +1245,7 @@
 			"sense": null,
 			"grade": "CP",
 			"decision": "A",
-			"niveauxDefinitions": ["CP", "1_SPE"]
+			"niveauxDefinitions": ["CP", "6", "1_SPE"]
 		},
 		{
 			"term": "rapporteur",
@@ -1343,7 +1336,7 @@
 			"sense": null,
 			"grade": "6",
 			"decision": "A0",
-			"niveauxDefinitions": ["6"]
+			"niveauxDefinitions": ["6", "5"]
 		},
 		{
 			"term": "simplifier une fraction",
@@ -1406,7 +1399,7 @@
 			"sense": null,
 			"grade": "CE2",
 			"decision": "A",
-			"niveauxDefinitions": ["CE2", "6"]
+			"niveauxDefinitions": ["CE2"]
 		},
 		{
 			"term": "synthèse",
@@ -1609,6 +1602,10 @@
 		{
 			"term": "démontrer",
 			"grade": "5"
+		},
+		{
+			"term": "exponentielle",
+			"grade": "1_SPE"
 		}
 	]
 }
