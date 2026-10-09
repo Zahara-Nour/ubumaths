@@ -180,8 +180,8 @@ documents `t<id>`) ; proposition [lexique/lot0f-mots.md](lexique/lot0f-mots.md),
 
 - **Mathémo** (livré avec #995) : le clavier du jeu n'a que a–z ; les mots à trait d'union
   (« demi-droite », déjà sur main, et 5 nouveaux) ne sont plus tirés au sort (`dictionary-words.ts`).
-  L'ancien `games/mathemo/words.ts` (liste codée en dur) n'est importé nulle part : code mort laissé
-  en place, à supprimer si David le veut.
+  L'ancien `games/mathemo/words.ts` (liste codée en dur, importée nulle part) a été supprimé par
+  #997 : ses 271 mots sont déjà au dictionnaire, sauf les coquilles « shisma » et « tangeant ».
 
 - **138 mots** rédigés par trois agents (primaire 34, collège 43, lycée 61) à partir du tri des 269
   restants, puis relus : niveaux vérifiés dans le BO, notes reprises. Mes ajustements : « caractère
@@ -228,11 +228,19 @@ glossaire ; 1re générale et 1re techno dans le choix du niveau de Mathémo. Sp
 `tests/fixtures/lexique/filieres-lot0g.json`. Garde-fous : définition lisible dans chaque filière,
 renvoi vers une cible visible, partage seulement avec une filière parallèle de la même année.
 
-- **Questions ouvertes (produit, à David)** : le badge de niveau du glossaire montre le niveau
-  d'origine (« 1ère spécialité maths » pour un mot partagé, vu en 1re techno) ; le filtre ne propose
-  ni la Tle comp. ni la Tle techno ; « fonction exponentielle » demande une définition propre à la
-  1re générale ($x \mapsto a^x$), que `sharedWith` ne permet pas ; ancien `games/mathemo/words.ts`
-  (code mort) à supprimer ou non.
+- **Suite (#997, recommandations validées par David, « go »)** : le badge de niveau du glossaire
+  montre le niveau où le lecteur du filtre rencontre le mot (`gradeMetBy`) ; filtre Tle maths
+  complémentaires et Tle techno ; ancien `games/mathemo/words.ts` supprimé.
+- **Reste** : « fonction exponentielle » demande une définition propre à la 1re générale
+  ($x \mapsto a^x$) — homonyme « fonction exponentielle (de base $a$) » prévu dans la prochaine
+  fournée de mots, étiquettes à soumettre à David.
+
+## Lot 2 — mots cliquables
+
+⏳ Spécification proposée le 2026-10-09, en attente de validation :
+[lexique/lot2-mots-cliquables-spec.md](lexique/lot2-mots-cliquables-spec.md) (18 comportements,
+mesure sur les 3 212 énoncés publiés, deux questions de contenu : synonyme « premier », mot
+« expression »). Rien n'est codé avant le « oui » de David.
 
 ## Reprise
 
