@@ -79,4 +79,17 @@ describe('glossaire', () => {
 			.element(page.getByRole('option', { name: 'Terminale maths expertes' }))
 			.toBeInTheDocument();
 	});
+
+	// Les mots de la 1re générale (enseignement scientifique) ne se voyaient
+	// qu'en « Tous les niveaux » : aucun autre niveau n'y donne accès.
+	it('le filtre propose la 1re générale, qui montre ses mots', async () => {
+		await render(Glossaire);
+		await page
+			.getByRole('button', { name: /niveau/i })
+			.first()
+			.click();
+		await page.getByRole('option', { name: '1ère générale (maths spécifiques)' }).click();
+		await page.getByPlaceholder('Rechercher un terme...').fill('discret');
+		await expect.element(page.getByRole('button', { name: /^discret/ })).toBeInTheDocument();
+	});
 });

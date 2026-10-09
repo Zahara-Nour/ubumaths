@@ -1,4 +1,6 @@
-# Lot 0d-1 — mots à ajouter : proposition
+# Lot 0d-1 — mots à ajouter
+
+**Validé par David le 2026-10-09** sur la page à cocher : 87 « OK », « racine » (polynôme) dans sa version, coquille corrigée.
 
 Première fournée tirée des 353 manquants de la relecture pour les niveaux des élèves actuels ([relecture-bo.md](relecture-bo.md)). Validation par David sur la page à cocher (lien dans [lexique-progress.md](../lexique-progress.md)). Données : [lot0d-decisions.json](lot0d-decisions.json).
 

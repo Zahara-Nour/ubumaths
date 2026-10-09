@@ -1,0 +1,972 @@
+{
+	"source": "Lot 0d-1 du lexique, validé par David le 2026-10-09 (87 OK, « racine (polynôme) » dans sa version, coquille corrigée) : docs/wip/lexique/lot0d-mots.md (copie figée).",
+	"entrees": [
+		{
+			"term": "cube",
+			"sense": "solide",
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Solide qui a $6$ faces carrées, toutes pareilles, comme un dé."
+				},
+				{
+					"grade": "CM1",
+					"content": "Pavé droit dont les $6$ faces sont des carrés de même taille ; il a $12$ arêtes et $8$ sommets."
+				}
+			]
+		},
+		{
+			"term": "degré",
+			"sense": "angle",
+			"grade": "CM2",
+			"definitions": [
+				{
+					"grade": "CM2",
+					"content": "Unité de mesure des angles, notée $°$ : l'angle droit mesure $90°$, un demi-tour $180°$."
+				}
+			]
+		},
+		{
+			"term": "base",
+			"sense": "solide",
+			"grade": "CE2",
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Dans une pyramide, la face sur laquelle elle est posée, qui n'est pas forcément un triangle. Un prisme ou un cylindre a deux bases, parallèles et superposables."
+				}
+			]
+		},
+		{
+			"term": "base",
+			"sense": "vecteurs",
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Une base du plan est formée de deux vecteurs non colinéaires $\\vec{i}$ et $\\vec{j}$ ; elle est orthonormée si ces vecteurs sont orthogonaux et de norme $1$."
+				},
+				{
+					"grade": "T_SPE",
+					"content": "Une base de l'espace est formée de trois vecteurs non coplanaires $\\vec{i}$, $\\vec{j}$, $\\vec{k}$ : tout vecteur s'écrit d'une seule façon $x\\vec{i} + y\\vec{j} + z\\vec{k}$."
+				}
+			]
+		},
+		{
+			"term": "racine",
+			"sense": "polynôme",
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$. Ainsi, $2$ est une racine de $x^2 - 4$, car $2^2 - 4 = 0$."
+				}
+			]
+		},
+		{
+			"term": "échelle",
+			"sense": "axe gradué",
+			"grade": "CE2",
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Sur un axe gradué ou un diagramme, ce que représente l'écart entre deux graduations : par exemple, $1$ carreau pour $10$ élèves."
+				}
+			]
+		},
+		{
+			"term": "image",
+			"sense": "transformation",
+			"grade": "4",
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "L'image d'un point par une transformation (symétrie, translation…) est le point sur lequel elle l'envoie : par la symétrie de centre $O$, l'image de $M$ est le point $M'$ tel que $O$ soit le milieu de $[MM']$."
+				}
+			]
+		},
+		{
+			"term": "complémentaire",
+			"sense": "ensemble",
+			"grade": "4",
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Le complémentaire d'un ensemble $A$ est l'ensemble des éléments qui ne sont pas dans $A$ : pour un dé, le complémentaire de « obtenir un nombre pair » est « obtenir un nombre impair »."
+				}
+			]
+		},
+		{
+			"term": "plan",
+			"sense": "lieu",
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Dessin d'un lieu vu de dessus, qui aide à se repérer : le plan de la classe, le plan du quartier."
+				}
+			]
+		},
+		{
+			"term": "série statistique",
+			"sense": null,
+			"grade": "5",
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Liste des valeurs relevées dans une enquête ou une expérience : les notes d'une classe, les tailles des élèves…"
+				}
+			]
+		},
+		{
+			"term": "fonction paire",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Une fonction $f$ est paire si, pour tout $x$ de son ensemble de définition, $-x$ en fait aussi partie et $f(-x) = f(x)$ : sa courbe est symétrique par rapport à l'axe des ordonnées. Ex : $x \\mapsto x^2$."
+				}
+			]
+		},
+		{
+			"term": "fonction impaire",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Une fonction $f$ est impaire si, pour tout $x$ de son ensemble de définition, $-x$ en fait aussi partie et $f(-x) = -f(x)$ : sa courbe est symétrique par rapport à l'origine. Ex : $x \\mapsto x^3$."
+				}
+			]
+		},
+		{
+			"term": "fonction réciproque",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Quand une fonction $f$ associe à chaque $x$ d'un intervalle un nombre $y$, et que chaque $y$ vient d'un seul $x$, la fonction réciproque fait le chemin inverse : elle associe $x$ à $y$. Ex : $\\ln$ est la réciproque de $\\exp$."
+				}
+			]
+		},
+		{
+			"term": "impossible",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Se dit d'un évènement qui ne peut jamais se produire : obtenir $7$ en lançant un dé à six faces."
+				},
+				{
+					"grade": "6",
+					"content": "Un évènement impossible a une probabilité égale à $0$."
+				}
+			]
+		},
+		{
+			"term": "possible",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Se dit d'un évènement qui peut se produire, sans que ce soit sûr : obtenir $6$ en lançant un dé."
+				}
+			]
+		},
+		{
+			"term": "certain",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Se dit d'un évènement qui se produit à coup sûr : obtenir un nombre plus petit que $7$ en lançant un dé à six faces."
+				},
+				{
+					"grade": "6",
+					"content": "Un évènement certain a une probabilité égale à $1$."
+				}
+			]
+		},
+		{
+			"term": "probable",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Se dit d'un évènement qui a beaucoup de chances de se produire : en lançant un dé, obtenir un nombre plus grand que $1$ est probable."
+				}
+			]
+		},
+		{
+			"term": "peu probable",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Se dit d'un évènement qui a peu de chances de se produire : tirer la seule boule rouge d'un sac qui contient aussi $20$ boules bleues."
+				}
+			]
+		},
+		{
+			"term": "une chance sur deux",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Un évènement a une chance sur deux de se produire quand il a autant de chances de se produire que de ne pas se produire : obtenir pile en lançant une pièce."
+				}
+			]
+		},
+		{
+			"term": "compris entre",
+			"sense": null,
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Un nombre est compris entre deux nombres s'il est plus grand que le premier et plus petit que le second : $35$ est compris entre $30$ et $40$."
+				}
+			]
+		},
+		{
+			"term": "en fonction de",
+			"sense": null,
+			"grade": "5",
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Une grandeur s'exprime en fonction d'une autre quand on peut la calculer à partir d'elle : le prix payé en fonction du nombre de places, le périmètre d'un carré en fonction de son côté."
+				}
+			]
+		},
+		{
+			"term": "condition nécessaire",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "« B est une condition nécessaire pour A » veut dire que A ne peut pas être vrai sans B : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être pair est une condition nécessaire pour être multiple de $4$."
+				}
+			]
+		},
+		{
+			"term": "condition suffisante",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "« A est une condition suffisante pour B » veut dire qu'il suffit que A soit vrai pour que B le soit : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être multiple de $4$ est une condition suffisante pour être pair."
+				}
+			]
+		},
+		{
+			"term": "disque",
+			"sense": null,
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Figure ronde et pleine, comme une pièce posée à plat."
+				},
+				{
+					"grade": "6",
+					"content": "Ensemble des points situés à une distance du centre inférieure ou égale au rayon ; le cercle en est le bord."
+				}
+			]
+		},
+		{
+			"term": "boule",
+			"sense": null,
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Solide tout rond, comme une balle."
+				},
+				{
+					"grade": "3",
+					"content": "Ensemble des points de l'espace situés à une distance du centre inférieure ou égale au rayon ; la sphère en est la surface."
+				}
+			]
+		},
+		{
+			"term": "corde",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Segment qui joint deux points d'un cercle. Une corde qui passe par le centre est un diamètre."
+				}
+			]
+		},
+		{
+			"term": "angle nul",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Angle dont les deux côtés sont confondus : il mesure $0°$."
+				}
+			]
+		},
+		{
+			"term": "angle plat",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Angle dont les deux côtés sont dans le prolongement l'un de l'autre : il mesure $180°$."
+				}
+			]
+		},
+		{
+			"term": "angle plein",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Angle qui fait un tour complet : il mesure $360°$."
+				}
+			]
+		},
+		{
+			"term": "angle saillant",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Angle dont la mesure est comprise entre $0°$ et $180°$ : c'est l'angle que l'on mesure d'habitude avec le rapporteur."
+				}
+			]
+		},
+		{
+			"term": "angles supplémentaires",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Deux angles sont supplémentaires quand la somme de leurs mesures est égale à $180°$."
+				}
+			]
+		},
+		{
+			"term": "grand cercle",
+			"sense": null,
+			"grade": "3",
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Sur une sphère, cercle qui a le même centre et le même rayon que la sphère : l'équateur est un grand cercle de la Terre."
+				}
+			]
+		},
+		{
+			"term": "ensemble vide",
+			"sense": null,
+			"grade": "4",
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Ensemble qui ne contient aucun élément, noté $\\varnothing$ : un évènement impossible correspond à l'ensemble vide."
+				}
+			]
+		},
+		{
+			"term": "contenance",
+			"sense": null,
+			"grade": "CE2",
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Quantité de liquide qu'un récipient peut contenir ; on la mesure en litres ($\\text{L}$), décilitres ($\\text{dL}$) ou centilitres ($\\text{cL}$)."
+				}
+			]
+		},
+		{
+			"term": "triangle rectangle",
+			"sense": null,
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Triangle qui a un angle droit."
+				}
+			]
+		},
+		{
+			"term": "axe de symétrie",
+			"sense": null,
+			"grade": "CE2",
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Droite le long de laquelle on peut plier une figure pour que ses deux moitiés se superposent exactement."
+				}
+			]
+		},
+		{
+			"term": "nombre ordinal",
+			"sense": null,
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Nombre qui indique un rang : premier, deuxième, troisième…"
+				}
+			]
+		},
+		{
+			"term": "heure",
+			"sense": null,
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Unité de durée, notée $\\text{h}$ : une journée dure $24$ heures."
+				},
+				{
+					"grade": "CE1",
+					"content": "Une heure dure $60$ minutes : $1\\,\\text{h} = 60\\,\\text{min}$."
+				}
+			]
+		},
+		{
+			"term": "minute",
+			"sense": null,
+			"grade": "CP",
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Unité de durée, notée $\\text{min}$ : il y a $60$ minutes dans une heure."
+				},
+				{
+					"grade": "CM1",
+					"content": "Une minute dure $60$ secondes : $1\\,\\text{min} = 60\\,\\text{s}$."
+				}
+			]
+		},
+		{
+			"term": "gramme",
+			"sense": null,
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Unité de masse, notée $\\text{g}$ : un trombone pèse environ $1$ g. Il faut $1\\,000$ grammes pour faire $1$ kilogramme."
+				}
+			]
+		},
+		{
+			"term": "kilogramme",
+			"sense": null,
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Unité de masse, notée $\\text{kg}$ : $1\\,\\text{kg} = 1\\,000\\,\\text{g}$. Un litre d'eau pèse environ $1$ kg."
+				}
+			]
+		},
+		{
+			"term": "litre",
+			"sense": null,
+			"grade": "CE2",
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Unité de contenance, notée $\\text{L}$ : une bouteille d'eau contient souvent $1$ L. $1\\,\\text{L} = 10\\,\\text{dL} = 100\\,\\text{cL}$."
+				}
+			]
+		},
+		{
+			"term": "retenue",
+			"sense": null,
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Dans une opération posée, le chiffre que l'on reporte dans la colonne de gauche : $7 + 5 = 12$, on écrit $2$ et on retient $1$."
+				}
+			]
+		},
+		{
+			"term": "demi",
+			"sense": null,
+			"grade": "CE1",
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Un demi, c'est une des $2$ parts égales d'un tout partagé en $2$ : $\\frac{1}{2}$. Deux demis font un tout."
+				}
+			]
+		},
+		{
+			"term": "programme de calcul",
+			"sense": null,
+			"grade": "CM1",
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Suite d'instructions de calcul à appliquer à un nombre : « choisis un nombre, multiplie-le par $3$, puis ajoute $5$ »."
+				}
+			]
+		},
+		{
+			"term": "algorithme",
+			"sense": null,
+			"grade": "CM2",
+			"definitions": [
+				{
+					"grade": "CM2",
+					"content": "Suite d'instructions précises qui permet d'obtenir un résultat ou de résoudre un problème, comme une recette."
+				}
+			]
+		},
+		{
+			"term": "boucle",
+			"sense": null,
+			"grade": "5",
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Partie d'un programme répétée plusieurs fois : un nombre de fois fixé (« répéter $10$ fois ») ou tant qu'une condition est vraie."
+				}
+			]
+		},
+		{
+			"term": "instruction conditionnelle",
+			"sense": null,
+			"grade": "4",
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Instruction d'un programme exécutée seulement si une condition est vraie : « si … alors … sinon … »."
+				}
+			]
+		},
+		{
+			"term": "million",
+			"sense": null,
+			"grade": "CM2",
+			"definitions": [
+				{
+					"grade": "CM2",
+					"content": "Mille milliers : $1\\,000\\,000$."
+				}
+			]
+		},
+		{
+			"term": "milliard",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Mille millions : $1\\,000\\,000\\,000$."
+				}
+			]
+		},
+		{
+			"term": "nombre mixte",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Écriture d'un nombre comme un entier plus une fraction plus petite que $1$ : $2 + \\frac{3}{4}$, qui vaut $\\frac{11}{4}$."
+				}
+			]
+		},
+		{
+			"term": "point d'intersection",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Point commun à deux droites, ou à deux lignes, qui se coupent."
+				}
+			]
+		},
+		{
+			"term": "cercle circonscrit",
+			"sense": null,
+			"grade": "6",
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Cercle qui passe par les trois sommets d'un triangle ; son centre est le point de rencontre des médiatrices des côtés."
+				}
+			]
+		},
+		{
+			"term": "taux d'évolution",
+			"sense": null,
+			"grade": "3",
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Variation d'une grandeur rapportée à sa valeur de départ, souvent en pourcentage : passer de $50$ à $60$, c'est un taux d'évolution de $\\frac{60 - 50}{50} = 20\\,\\%$."
+				}
+			]
+		},
+		{
+			"term": "nombre réel",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Nombre qui repère un point sur une droite graduée : les entiers, les décimaux et les fractions, mais aussi $\\sqrt{2}$ ou $\\pi$. Leur ensemble se note $\\mathbb{R}$."
+				}
+			]
+		},
+		{
+			"term": "colinéaire",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Deux vecteurs sont colinéaires si l'un est égal à l'autre multiplié par un nombre : $\\vec{v} = k\\vec{u}$. Les points $A$, $B$, $C$ sont alignés quand $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires."
+				}
+			]
+		},
+		{
+			"term": "vecteur directeur",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Vecteur non nul qui donne la direction d'une droite : $\\overrightarrow{AB}$ est un vecteur directeur de la droite $(AB)$."
+				}
+			]
+		},
+		{
+			"term": "déterminant",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Le déterminant des vecteurs $\\vec{u}(x ; y)$ et $\\vec{v}(x' ; y')$ est le nombre $xy' - x'y$ ; il est nul si et seulement si les deux vecteurs sont colinéaires."
+				}
+			]
+		},
+		{
+			"term": "équation réduite",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Une droite non parallèle à l'axe des ordonnées a une équation de la forme $y = mx + p$ : c'est son équation réduite ($m$ est le coefficient directeur, $p$ l'ordonnée à l'origine)."
+				}
+			]
+		},
+		{
+			"term": "sens de variation",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Le sens de variation d'une fonction dit sur quels intervalles elle est croissante ou décroissante ; on le résume dans un tableau de variations."
+				}
+			]
+		},
+		{
+			"term": "fonction de référence",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Fonction dont on connaît la courbe et les variations : $x \\mapsto x^2$, $x \\mapsto \\frac{1}{x}$, $x \\mapsto \\sqrt{x}$, $x \\mapsto x^3$, $x \\mapsto |x|$."
+				}
+			]
+		},
+		{
+			"term": "histogramme",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Diagramme qui représente des données regroupées en classes : pour chaque classe, un rectangle dont l'aire est proportionnelle à l'effectif."
+				}
+			]
+		},
+		{
+			"term": "écart interquartile",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Différence $Q_3 - Q_1$ entre le troisième et le premier quartile : plus il est petit, plus les valeurs centrales de la série sont regroupées."
+				}
+			]
+		},
+		{
+			"term": "forme factorisée",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Écriture d'une expression sous forme d'un produit : $(x - 1)(x + 3)$ est une forme factorisée de $x^2 + 2x - 3$."
+				}
+			]
+		},
+		{
+			"term": "probabilité conditionnelle",
+			"sense": null,
+			"grade": "2",
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Probabilité que l'évènement $B$ se réalise quand on sait que $A$ est réalisé ; on la note $P_A(B)$ et $P_A(B) = \\frac{P(A \\cap B)}{P(A)}$."
+				}
+			]
+		},
+		{
+			"term": "croissance linéaire",
+			"sense": null,
+			"grade": "1_GEN",
+			"definitions": [
+				{
+					"grade": "1_GEN",
+					"content": "Une grandeur a une croissance linéaire quand elle augmente de la même quantité à chaque étape : $100$, $110$, $120$, $130$… (on ajoute $10$)."
+				}
+			]
+		},
+		{
+			"term": "croissance exponentielle",
+			"sense": null,
+			"grade": "1_GEN",
+			"definitions": [
+				{
+					"grade": "1_GEN",
+					"content": "Une grandeur a une croissance exponentielle quand elle est multipliée par le même nombre, plus grand que $1$, à chaque étape : $100$, $110$, $121$, $133{,}1$… (on multiplie par $1{,}1$)."
+				}
+			]
+		},
+		{
+			"term": "discret",
+			"sense": null,
+			"grade": "1_GEN",
+			"definitions": [
+				{
+					"grade": "1_GEN",
+					"content": "Se dit d'une grandeur qui évolue par étapes (chaque année, chaque mois…), par opposition à « continu » : une suite modélise une évolution discrète."
+				}
+			]
+		},
+		{
+			"term": "discriminant",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Pour $ax^2 + bx + c$ ($a \\neq 0$), le nombre $\\Delta = b^2 - 4ac$ : son signe dit si l'équation $ax^2 + bx + c = 0$ a deux, une ou aucune solution réelle."
+				}
+			]
+		},
+		{
+			"term": "forme canonique",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Écriture d'une fonction polynôme du second degré sous la forme $a(x - \\alpha)^2 + \\beta$ : le sommet de sa parabole est le point $(\\alpha ; \\beta)$."
+				}
+			]
+		},
+		{
+			"term": "évènements indépendants",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Deux évènements $A$ et $B$ sont indépendants si $P(A \\cap B) = P(A) \\times P(B)$ : savoir que l'un est réalisé ne change pas la probabilité de l'autre."
+				}
+			]
+		},
+		{
+			"term": "épreuve de Bernoulli",
+			"sense": null,
+			"grade": "1_SPE",
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Expérience aléatoire à deux issues : le succès, de probabilité $p$, et l'échec, de probabilité $1 - p$."
+				}
+			]
+		},
+		{
+			"term": "schéma de Bernoulli",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Répétition de $n$ épreuves de Bernoulli identiques et indépendantes."
+				}
+			]
+		},
+		{
+			"term": "loi binomiale",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Loi du nombre de succès dans un schéma de Bernoulli de $n$ épreuves de probabilité de succès $p$ : $P(X = k) = \\binom{n}{k} p^k (1 - p)^{n - k}$."
+				}
+			]
+		},
+		{
+			"term": "coefficient binomial",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "$\\binom{n}{k}$ (« $k$ parmi $n$ ») : le nombre de façons de choisir $k$ éléments parmi $n$, sans tenir compte de l'ordre. Ex : $\\binom{4}{2} = 6$."
+				}
+			]
+		},
+		{
+			"term": "factorielle",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "$n! = 1 \\times 2 \\times \\cdots \\times n$ pour $n \\geq 1$, et $0! = 1$ : c'est le nombre de façons de ranger $n$ objets. Ex : $4! = 24$."
+				}
+			]
+		},
+		{
+			"term": "raisonnement par récurrence",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Pour démontrer qu'une propriété $P(n)$ est vraie pour tout entier $n \\geq n_0$ : on vérifie $P(n_0)$ (initialisation), puis on montre que si $P(n)$ est vraie, alors $P(n + 1)$ l'est aussi (hérédité)."
+				}
+			]
+		},
+		{
+			"term": "asymptote",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Droite dont la courbe se rapproche autant qu'on veut : si $\\lim_{x \\to +\\infty} f(x) = 2$, la droite d'équation $y = 2$ est asymptote horizontale ; si $\\lim_{x \\to 1} f(x) = +\\infty$, la droite d'équation $x = 1$ est asymptote verticale."
+				}
+			]
+		},
+		{
+			"term": "fonction composée",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "La composée de $u$ suivie de $v$ est la fonction $x \\mapsto v(u(x))$ : on applique $u$, puis $v$ au résultat. Ex : $x \\mapsto \\sqrt{x^2 + 1}$."
+				}
+			]
+		},
+		{
+			"term": "dérivée seconde",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Dérivée de la dérivée : $f'' = (f')'$. Son signe indique où $f$ est convexe ($f'' \\geq 0$) ou concave ($f'' \\leq 0$)."
+				}
+			]
+		},
+		{
+			"term": "point d'inflexion",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Point où la courbe traverse sa tangente : la fonction y passe de convexe à concave, ou l'inverse ; $f''$ y change de signe."
+				}
+			]
+		},
+		{
+			"term": "théorème des valeurs intermédiaires",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Si $f$ est continue sur $[a ; b]$, alors pour tout réel $k$ compris entre $f(a)$ et $f(b)$, l'équation $f(x) = k$ a au moins une solution dans $[a ; b]$."
+				}
+			]
+		},
+		{
+			"term": "équation différentielle",
+			"sense": null,
+			"grade": "T_SPE",
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Équation dont l'inconnue est une fonction, reliée à sa dérivée : $y' = 2y$ a pour solutions les fonctions $x \\mapsto Ce^{2x}$."
+				}
+			]
+		}
+	],
+	"synonymes": [
+		{
+			"term": "pavé",
+			"ajouts": ["pavé droit"]
+		},
+		{
+			"term": "union",
+			"ajouts": ["réunion"]
+		},
+		{
+			"term": "symétrie centrale",
+			"ajouts": ["demi-tour"]
+		},
+		{
+			"term": "prisme",
+			"ajouts": ["prisme droit"]
+		},
+		{
+			"term": "fractions égales",
+			"ajouts": ["fractions équivalentes"]
+		}
+	]
+}
