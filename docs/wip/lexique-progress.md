@@ -248,8 +248,10 @@ notes et revues dans [lexique/lot2-progress.md](lexique/lot2-progress.md).
 - **QCM** : pas de mot cliquable dans les réponses (un choix est un bouton ; un clic sur le mot
   envoyait la réponse). **Décidé par David le 2026-10-09** (« ok » à la recommandation) : on garde
   ainsi, l'énoncé du QCM a ses mots cliquables, pas les réponses.
-- Hors lot, signalé : `HintReference.svelte` a probablement le même défaut de focus que la fiche avait
-  (fermeture par un clic dans un champ → focus renvoyé au bouton).
+- `HintReference.svelte` avait le même défaut de focus que la fiche (fermeture par un clic dans un
+  champ → focus renvoyé au bouton) : corrigé #999 (validé par David, « ok »), fonction commune
+  `components/markdown/outside-focus.ts`. À vérifier à la main sur tablette iOS : le `focus()`
+  programmatique ouvre-t-il le clavier ?
 
 ## Reprise
 
