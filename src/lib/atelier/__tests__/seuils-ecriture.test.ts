@@ -164,9 +164,9 @@ describe('base e : la même règle (revue, 2026-10-09)', () => {
 		);
 	});
 
-	it('une inéquation avec « dans » : un refus en français, jamais une ligne vide', () => {
+	it('une inéquation avec « dans » : l’ensemble restreint, la borne en ln approchée', () => {
 		const result = solve('0.8^n<0.1 dans [0;100]');
-		expect(result.kind).toBe('refus');
-		expect(result.kind === 'refus' && result.message).toMatch(/dans/);
+		expect(answer(result)).toContain('\\approx10{,}32');
+		expect(text(result)).toBe('S = ]ln(0,1)/ln(0,8) ; 100] avec ln(0,1)/ln(0,8) ≈ 10,32');
 	});
 });

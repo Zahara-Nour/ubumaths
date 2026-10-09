@@ -113,10 +113,6 @@ describe('.évaluer : lettre de la fonction, refus clairs', () => {
 });
 
 describe('.résoudre … dans : refus clairs', () => {
-	it('inéquation + dans : refus clair', () => {
-		expect(refusal('.résoudre x^2<4 dans [0;5]')).toContain('dans');
-	});
-
 	it('pour t absent : refus clair', () => {
 		expect(refusal('.résoudre x^2=4 pour t dans [0;3]')).toContain('t');
 	});

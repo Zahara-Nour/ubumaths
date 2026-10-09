@@ -298,7 +298,31 @@ export function solutionsLatex(result: SolveResult): string | null {
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */
 function boundLatex(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'negative' ? '-\\infty' : '+\\infty';
-	return toLatex(tidyValue(value));
+	// Décimaux gardés dans les ln (`\ln(0{,}1)`), comme un seuil
+	const tidied = tidyValue(value);
+	return hasLogarithm(tidied)
+		? frenchDecimals(toLatex(keepLogDecimals(value, tidied)))
+		: toLatex(tidied);
+}
+
+/**
+ * Les bornes FINIES qui contiennent un ln, avec leur valeur approchée — dites
+ * après un ensemble borné : `… \text{ avec } \dfrac{\ln(0{,}1)}{\ln(0{,}8)}
+ * \approx 10{,}32`. Une borne qui revient n'est dite qu'une fois.
+ */
+export function logarithmicBounds(domain: Domain): { latex: string; text: string }[] {
+	if (domain.kind !== 'interval_set') return [];
+	const bounds: { latex: string; text: string }[] = [];
+	for (const { lower, upper } of domain.intervals) {
+		for (const { value } of [lower, upper]) {
+			if (isInfinity(value)) continue;
+			const latex = logarithmicValueLatex(value);
+			const text = logarithmicValueText(value);
+			if (latex === null || text === null || bounds.some((b) => b.latex === latex)) continue;
+			bounds.push({ latex, text });
+		}
+	}
+	return bounds;
 }
 
 /**

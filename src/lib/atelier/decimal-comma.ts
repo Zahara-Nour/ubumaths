@@ -117,7 +117,8 @@ const DIGIT_CHAIN = /\d+(?:[.,]\d+){2,}/g;
 const DECIMAL_COMMA = /(?<=\d),(?=\d)/g;
 
 /** Le message d'un couple : `(1 ; 2)` n'est pas lu par Calcul. */
-export const COUPLE_MESSAGE = 'Les couples (a ; b) ne sont pas encore pris en charge dans Calcul.';
+export const COUPLE_MESSAGE =
+	"Les couples (a ; b) ne sont pas encore pris en charge dans l'atelier.";
 
 /**
  * Plusieurs virgules entre chiffres hors d'une commande de séries : aucune
@@ -127,7 +128,8 @@ export const SERIES_HINT =
 	'Une virgule sert à écrire un nombre décimal, comme 0,5. Pour une série de valeurs, utilise « ; » dans une commande, par exemple .stats 1 ; 2 ; 3.';
 
 /** Le message d'un ensemble : `{1 ; 2}` n'est pas lu par Calcul. */
-export const SET_MESSAGE = 'Les ensembles {a ; b} ne sont pas encore pris en charge dans Calcul.';
+export const SET_MESSAGE =
+	"Les ensembles {a ; b} ne sont pas encore pris en charge dans l'atelier.";
 
 /**
  * Ce qui précède une accolade de GROUPE LaTeX, pas d'ensemble : `\frac{`,
@@ -267,14 +269,21 @@ export function commaRefusal(
 			return `Sépare les valeurs avec « ; » : ${echo.replace(typed, fixed)}`;
 		}
 	}
-	if (options?.couples === true) {
-		if (typedSet(text)) return SET_MESSAGE;
-		for (let i = 0; i < text.length; i++) {
-			if (text[i] !== '(' || /[A-Za-z_]\s*$/.test(text.slice(0, i))) continue;
-			const close = closingParenthesis(text, i);
-			if (close !== -1 && firstLevel(text.slice(i + 1, close)).includes(';')) {
-				return COUPLE_MESSAGE;
-			}
+	return options?.couples === true ? coupleOrSetRefusal(text) : null;
+}
+
+/**
+ * `(1 ; 2)`, `{1 ; 2}` : un couple, un ensemble, que Calcul ne lit pas encore —
+ * le même refus pour une saisie, une définition de Calcul (`A = (1 ; 2)`) et
+ * une carte. `max(1 ; 5)` est un appel, pas un couple.
+ */
+export function coupleOrSetRefusal(text: string): string | null {
+	if (typedSet(text)) return SET_MESSAGE;
+	for (let i = 0; i < text.length; i++) {
+		if (text[i] !== '(' || /[A-Za-z_]\s*$/.test(text.slice(0, i))) continue;
+		const close = closingParenthesis(text, i);
+		if (close !== -1 && firstLevel(text.slice(i + 1, close)).includes(';')) {
+			return COUPLE_MESSAGE;
 		}
 	}
 	return null;

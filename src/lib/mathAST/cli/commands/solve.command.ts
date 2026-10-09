@@ -28,6 +28,7 @@ import {
 	inequalityThresholdText,
 	logarithmicValueLatex,
 	logarithmicValueText,
+	logarithmicBounds,
 	withRealLineWritten
 } from './solve-latex';
 import { solveInequality } from '../../solve/inequality';
@@ -41,6 +42,8 @@ import { preprocess } from '../../normal';
 import { number, opposite, add, subtract } from '../../factory';
 import { findZerosWithStatus } from '../../sign/helpers/zeros';
 import { closedEndpoint, interval, intervalSet, openEndpoint } from '../../domain/factory';
+import { intersect, isEmpty } from '../../domain/algebra';
+import type { Domain } from '../../domain/types';
 import { toLatex } from '../../latex-generator';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
@@ -922,24 +925,6 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
-		// Verify it's an equation (relation with =)
-		// `dans` : une équation seulement (revue #962)
-		if (
-			reading.args.interval !== null &&
-			isRelation(parseResult.ast) &&
-			parseResult.ast.relation !== '='
-		) {
-			return {
-				success: false,
-				output: '',
-				error: {
-					code: 'COMMAND_SYNTAX',
-					message:
-						'« dans » ne s’emploie qu’avec une équation (=) : résous l’inéquation sans « dans ».'
-				}
-			};
-		}
-
 		// Une inéquation est résolue elle aussi (plus bas, `solveInequalityRelation`) :
 		// toute inéquation tapée dans l'atelier répondait « Je n'ai pas su lire
 		// cette expression » (2026-10-08), alors que `solveInequality` sait faire
@@ -1082,6 +1067,42 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	/**
+	 * `.résoudre 0,8^n < 0,1 dans [0 ; 100]` : l'ensemble de l'inéquation (celui
+	 * de `solveInequalityRelation`) intersecté avec l'intervalle. Une borne en
+	 * ln reçoit sa valeur approchée, comme un seuil (#980) :
+	 * `S = ]\dfrac{\ln(0{,}1)}{\ln(0{,}8)} ; 100] \text{ avec } … \approx 10{,}32`.
+	 */
+	private solveInequalityInInterval(
+		inequality: RelationNode,
+		variable: string,
+		domain: Domain
+	): CommandResult {
+		const unsolved: CommandResult = {
+			success: false,
+			output: '',
+			error: { code: INEQUALITY_UNSOLVED, message: INEQUALITY_UNSOLVED_MESSAGE }
+		};
+		try {
+			const result = solveInequality(inequality, { variable });
+			if (result.status === 'partial') return unsolved;
+			const restricted = intersect(result.solution, domain);
+			const set = inequalitySolutionLatex(restricted);
+			if (set === null) return unsolved;
+			if (isEmpty(restricted)) {
+				return { success: true, output: 'Pas de solution dans cet intervalle', latex: set };
+			}
+			const bounds = logarithmicBounds(restricted);
+			return {
+				success: true,
+				output: `S = ${formatInterval(restricted)}${bounds.map((b) => ` avec ${b.text}`).join('')}`,
+				latex: `${set}${bounds.map((b) => ` \\text{ avec } ${b.latex}`).join('')}`
+			};
+		} catch {
+			return unsolved;
+		}
+	}
+
+	/**
 	 * Résoudre dans un intervalle BORNÉ, écrit à la française : `[0 ; 2\pi]`,
 	 * `]0 ; 1]`. Les zéros de `gauche − droite` sur ce domaine, familles
 	 * périodiques comprises (`findZerosWithStatus`, celui des tableaux de signes).
@@ -1125,6 +1146,16 @@ export class SolveCommand extends BaseCommand {
 				`Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
 			);
 		}
+		const domain = intervalSet([
+			interval(
+				written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
+				written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
+			)
+		]);
+		// Une inéquation : son ensemble solution, restreint à l'intervalle
+		if (equation.relation !== '=') {
+			return this.solveInequalityInInterval(equation, variable, domain);
+		}
 		const intervalLatex = `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`;
 		// Identité (`x = x`, `0 = 0`) : tout l'intervalle ; impossible : ∅ — comme
 		// sans `dans`, puis restreint à l'intervalle
@@ -1143,12 +1174,6 @@ export class SolveCommand extends BaseCommand {
 		} catch {
 			// Le solveur ne sait pas : les zéros sur l'intervalle prennent le relais
 		}
-		const domain = intervalSet([
-			interval(
-				written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
-				written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
-			)
-		]);
 		const { zeros, resolved } = findZerosWithStatus(
 			subtract(equation.left, equation.right),
 			variable,
