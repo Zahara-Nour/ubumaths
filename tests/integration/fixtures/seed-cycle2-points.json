@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.13",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "CP-001",
@@ -12,7 +12,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CP-070",
@@ -25,7 +25,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CP-002",
@@ -38,7 +38,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CP-003",
@@ -51,7 +51,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CP-004",
@@ -64,7 +64,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CP-005",
@@ -77,7 +77,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CP-006",
@@ -90,7 +90,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CP-007",
@@ -103,7 +103,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CP-008",
@@ -116,7 +116,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "repérer"
+			"sous_notion": "droite graduée"
 		},
 		{
 			"code": "CP-009",
@@ -233,7 +233,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : multiplication",
-			"sous_notion": "produit"
+			"sous_notion": null
 		},
 		{
 			"code": "CP-018",
@@ -441,7 +441,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CP-034",
@@ -454,7 +454,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CP-035",
@@ -467,7 +467,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CP-036",
@@ -493,7 +493,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CP-038",
@@ -532,7 +532,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CP-041",
@@ -623,7 +623,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CP-047",
@@ -636,7 +636,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CP-048",
@@ -649,7 +649,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CP-049",
@@ -662,7 +662,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-050",
@@ -675,7 +675,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-051",
@@ -688,7 +688,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-052",
@@ -701,7 +701,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-053",
@@ -714,7 +714,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CP-054",
@@ -727,7 +727,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-055",
@@ -740,7 +740,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-056",
@@ -753,7 +753,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-057",
@@ -766,7 +766,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-058",
@@ -779,7 +779,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CP-059",
@@ -792,7 +792,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CP-060",
@@ -805,7 +805,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CP-061",
@@ -857,7 +857,7 @@
 			"rubrique": "Espace et géométrie > Le repérage dans l'espace",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CP-065",
@@ -948,7 +948,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CE1-002",
@@ -961,7 +961,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CE1-003",
@@ -974,7 +974,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CE1-004",
@@ -987,7 +987,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CE1-005",
@@ -1000,7 +1000,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CE1-006",
@@ -1013,7 +1013,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CE1-007",
@@ -1026,7 +1026,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE1-008",
@@ -1039,7 +1039,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE1-009",
@@ -1052,7 +1052,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE1-010",
@@ -1065,7 +1065,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "repérer"
+			"sous_notion": "droite graduée"
 		},
 		{
 			"code": "CE1-011",
@@ -1182,7 +1182,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE1-020",
@@ -1195,7 +1195,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE1-021",
@@ -1208,7 +1208,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "additionner et soustraire"
+			"sous_notion": "addition et soustraction"
 		},
 		{
 			"code": "CE1-022",
@@ -1234,7 +1234,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : multiplication",
-			"sous_notion": "produit"
+			"sous_notion": null
 		},
 		{
 			"code": "CE1-024",
@@ -1247,7 +1247,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : multiplication",
-			"sous_notion": "produit"
+			"sous_notion": null
 		},
 		{
 			"code": "CE1-025",
@@ -1533,7 +1533,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-045",
@@ -1546,7 +1546,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-046",
@@ -1559,7 +1559,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-047",
@@ -1572,7 +1572,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-048",
@@ -1585,7 +1585,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-049",
@@ -1624,7 +1624,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-052",
@@ -1637,7 +1637,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-085",
@@ -1650,7 +1650,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE1-053",
@@ -1754,7 +1754,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CE1-060",
@@ -1767,7 +1767,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CE1-061",
@@ -1780,7 +1780,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CE1-062",
@@ -1793,7 +1793,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "convertir"
+			"sous_notion": "conversions"
 		},
 		{
 			"code": "CE1-063",
@@ -1806,7 +1806,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CE1-064",
@@ -1819,7 +1819,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-065",
@@ -1832,7 +1832,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-066",
@@ -1845,7 +1845,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-067",
@@ -1858,7 +1858,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-068",
@@ -1871,7 +1871,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CE1-069",
@@ -1884,7 +1884,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-070",
@@ -1897,7 +1897,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-071",
@@ -1910,7 +1910,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-072",
@@ -1923,7 +1923,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CE1-073",
@@ -1936,7 +1936,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE1-087",
@@ -1962,7 +1962,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CE1-075",
@@ -2027,7 +2027,7 @@
 			"rubrique": "Espace et géométrie > Le repérage dans l'espace",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CE1-080",
@@ -2105,7 +2105,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CE2-002",
@@ -2118,7 +2118,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "dénombrer"
+			"sous_notion": "dénombrement"
 		},
 		{
 			"code": "CE2-003",
@@ -2131,7 +2131,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CE2-004",
@@ -2144,7 +2144,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CE2-005",
@@ -2157,7 +2157,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "CE2-006",
@@ -2170,7 +2170,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "CE2-007",
@@ -2183,7 +2183,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE2-008",
@@ -2196,7 +2196,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE2-009",
@@ -2209,7 +2209,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE2-010",
@@ -2222,7 +2222,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "repérer"
+			"sous_notion": "droite graduée"
 		},
 		{
 			"code": "CE2-011",
@@ -2261,7 +2261,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "CE2-014",
@@ -2274,7 +2274,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "additionner et soustraire"
+			"sous_notion": "addition et soustraction"
 		},
 		{
 			"code": "CE2-015",
@@ -2313,7 +2313,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : multiplication",
-			"sous_notion": "produit"
+			"sous_notion": null
 		},
 		{
 			"code": "CE2-018",
@@ -2625,7 +2625,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-039",
@@ -2638,7 +2638,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-040",
@@ -2651,7 +2651,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-041",
@@ -2664,7 +2664,7 @@
 			"rubrique": "Grandeurs et mesures > Les longueurs",
 			"branche": "Grandeurs et mesures",
 			"notion": "Longueurs",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-042",
@@ -2755,7 +2755,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-049",
@@ -2768,7 +2768,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-050",
@@ -2781,7 +2781,7 @@
 			"rubrique": "Grandeurs et mesures > Les masses",
 			"branche": "Grandeurs et mesures",
 			"notion": "Masses",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-051",
@@ -2794,7 +2794,7 @@
 			"rubrique": "Grandeurs et mesures > Les contenances",
 			"branche": "Grandeurs et mesures",
 			"notion": "Contenances",
-			"sous_notion": "comparer et mesurer"
+			"sous_notion": "comparaison et mesure"
 		},
 		{
 			"code": "CE2-052",
@@ -2885,7 +2885,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CE2-058",
@@ -2898,7 +2898,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "lire l'heure"
+			"sous_notion": "lecture de l'heure"
 		},
 		{
 			"code": "CE2-059",
@@ -2911,7 +2911,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CE2-060",
@@ -2924,7 +2924,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "CE2-061",
@@ -2937,7 +2937,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-062",
@@ -2950,7 +2950,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-063",
@@ -2963,7 +2963,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-064",
@@ -2976,7 +2976,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-065",
@@ -2989,7 +2989,7 @@
 			"rubrique": "Espace et géométrie > Les solides",
 			"branche": "Géométrie",
 			"notion": "Solides",
-			"sous_notion": "construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CE2-066",
@@ -3015,7 +3015,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-068",
@@ -3028,7 +3028,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-069",
@@ -3041,7 +3041,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-070",
@@ -3054,7 +3054,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reproduire et construire"
+			"sous_notion": "constructions"
 		},
 		{
 			"code": "CE2-071",
@@ -3080,7 +3080,7 @@
 			"rubrique": "Espace et géométrie > La géométrie plane",
 			"branche": "Géométrie",
 			"notion": "Figures planes",
-			"sous_notion": "reconnaître et décrire"
+			"sous_notion": "propriétés"
 		},
 		{
 			"code": "CE2-072",

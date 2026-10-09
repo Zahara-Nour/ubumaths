@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.13",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "6-101",
@@ -12,7 +12,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "6-102",
@@ -25,7 +25,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "décomposer"
+			"sous_notion": "décomposition"
 		},
 		{
 			"code": "6-103",
@@ -38,7 +38,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Entiers : numération",
-			"sous_notion": "écrire"
+			"sous_notion": "écritures"
 		},
 		{
 			"code": "6-104",
@@ -116,7 +116,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "6-110",
@@ -129,7 +129,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "6-111",
@@ -168,7 +168,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : numération",
-			"sous_notion": "encadrer"
+			"sous_notion": "encadrement"
 		},
 		{
 			"code": "6-114",
@@ -181,7 +181,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "additionner"
+			"sous_notion": "addition"
 		},
 		{
 			"code": "6-198",
@@ -194,7 +194,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "soustraire"
+			"sous_notion": "soustraction"
 		},
 		{
 			"code": "6-115",
@@ -207,7 +207,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "puissances de 10"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "6-116",
@@ -220,7 +220,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "puissances de 10"
+			"sous_notion": null
 		},
 		{
 			"code": "6-117",
@@ -233,7 +233,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "multiplier"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "6-118",
@@ -246,7 +246,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "multiplier"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "6-119",
@@ -272,7 +272,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "multiplier"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "6-121",
@@ -285,7 +285,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "diviser"
+			"sous_notion": "division"
 		},
 		{
 			"code": "6-122",
@@ -298,7 +298,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers et décimaux",
 			"branche": "Nombres et calculs",
 			"notion": "Décimaux : calculs",
-			"sous_notion": "diviser"
+			"sous_notion": "division"
 		},
 		{
 			"code": "6-123",
@@ -441,7 +441,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "6-134",
@@ -454,7 +454,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : sens et écritures",
-			"sous_notion": "comparer"
+			"sous_notion": "ordre"
 		},
 		{
 			"code": "6-135",
@@ -467,7 +467,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "additionner et soustraire"
+			"sous_notion": "addition et soustraction"
 		},
 		{
 			"code": "6-136",
@@ -480,7 +480,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Nombres et calculs",
 			"notion": "Fractions : calculs",
-			"sous_notion": "multiplier"
+			"sous_notion": "multiplication"
 		},
 		{
 			"code": "6-137",
@@ -532,7 +532,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Proportionnalité",
 			"notion": "Pourcentages",
-			"sous_notion": "calculer"
+			"sous_notion": "calculs de pourcentages"
 		},
 		{
 			"code": "6-141",
@@ -545,7 +545,7 @@
 			"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
 			"branche": "Proportionnalité",
 			"notion": "Pourcentages",
-			"sous_notion": "calculer"
+			"sous_notion": "calculs de pourcentages"
 		},
 		{
 			"code": "6-142",
@@ -779,7 +779,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées > Automatismes",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "convertir"
+			"sous_notion": "conversions"
 		},
 		{
 			"code": "6-157",
@@ -792,7 +792,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "6-158",
@@ -805,7 +805,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "calculer"
+			"sous_notion": "calcul de durées"
 		},
 		{
 			"code": "6-159",
@@ -818,7 +818,7 @@
 			"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
 			"branche": "Grandeurs et mesures",
 			"notion": "Durées",
-			"sous_notion": "convertir"
+			"sous_notion": "conversions"
 		},
 		{
 			"code": "6-160",
@@ -948,7 +948,7 @@
 			"rubrique": "Espace et géométrie > Étude de configurations planes",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "mesurer en degrés"
+			"sous_notion": "mesure en degrés"
 		},
 		{
 			"code": "6-170",
@@ -961,7 +961,7 @@
 			"rubrique": "Espace et géométrie > Étude de configurations planes",
 			"branche": "Grandeurs et mesures",
 			"notion": "Angles",
-			"sous_notion": "construire"
+			"sous_notion": "construction"
 		},
 		{
 			"code": "6-171",
@@ -1208,7 +1208,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "reconnaître"
+			"sous_notion": "caractérisation"
 		},
 		{
 			"code": "6-190",
@@ -1221,7 +1221,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "reconnaître"
+			"sous_notion": "caractérisation"
 		},
 		{
 			"code": "6-191",
@@ -1234,7 +1234,7 @@
 			"rubrique": "La proportionnalité",
 			"branche": "Proportionnalité",
 			"notion": "Situations de proportionnalité",
-			"sous_notion": "appliquer"
+			"sous_notion": null
 		},
 		{
 			"code": "6-192",

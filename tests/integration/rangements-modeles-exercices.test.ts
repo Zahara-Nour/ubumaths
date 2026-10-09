@@ -12,6 +12,10 @@
  * **depuis son fichier**, telle qu'elle sera jouée en production, dans une transaction
  * annulée à la fin. La preuve est INTÉGRALE : chaque rangement est comparé à la fixture.
  *
+ * Depuis le nettoyage des facettes (20261012080000), l'arbre en base n'est plus celui que la
+ * #981 connaissait (nœuds renommés, archivés) : chaque rejeu exécute d'abord, dans la même
+ * transaction, le rollback écrit dans la migration de nettoyage (arbre .15 restauré).
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -20,6 +24,9 @@ import type { Client } from 'pg';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
+import { extractRollback } from '../helpers/database/migration-rollback';
+import { readNodePaths } from '../helpers/database/classification-paths';
+import { insertProdCopies } from '../helpers/database/prod-copies';
 
 // ============================================================================
 // TYPES
@@ -47,6 +54,8 @@ interface Fixture {
 // ============================================================================
 
 const MIGRATION = 'supabase/migrations/20261011200000_rangements_modeles_exercices.sql';
+/** Le nettoyage des facettes, postérieur : son rollback rend l'arbre que la #981 connaissait. */
+const NETTOYAGE = 'supabase/migrations/20261012080000_nettoyage_facettes_arbre.sql';
 const fixture: Fixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/rangements.json', 'utf-8')
 );
@@ -77,36 +86,19 @@ describe('Rangements des modèles et des exercices (migration de données)', () 
 		pg = await getPostgresClient();
 
 		await pg.query('begin');
+		await pg.query(extractRollback(NETTOYAGE));
 		// L'état de la prod : les modèles et exercices de la correspondance, plus « debug ».
-		await pg.query(
-			`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title, created_at, updated_at)
-			 select unnest($1::uuid[]), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'copie de la prod', $2::timestamptz, $2::timestamptz`,
-			[fixture.modeles.map((m) => m.id), AVANT]
-		);
-		await pg.query(
-			`insert into public.exercises (id, created_by, category, title, created_at, updated_at)
-			 select unnest($1::uuid[]), $2::uuid, 'application', 'copie de la prod', $3::timestamptz, $3::timestamptz`,
-			[[...fixture.exercices.map((e) => e.id), ...fixture.exclus], auteur, AVANT]
-		);
+		await insertProdCopies(pg, {
+			templateIds: fixture.modeles.map((m) => m.id),
+			exerciseIds: [...fixture.exercices.map((e) => e.id), ...fixture.exclus],
+			authorId: auteur,
+			timestamp: AVANT
+		});
 
 		// La migration, rejouée depuis son fichier.
 		await pg.query(readFileSync(MIGRATION, 'utf-8'));
 
-		const noeuds = await pg.query<{ id: string; parent_id: string | null; name: string }>(
-			'select id, parent_id, name from public.classification_nodes'
-		);
-		const parNoeud = new Map(noeuds.rows.map((n) => [n.id, n]));
-		for (const n of noeuds.rows) {
-			const parts: string[] = [];
-			for (
-				let c: typeof n | undefined = n;
-				c;
-				c = c.parent_id ? parNoeud.get(c.parent_id) : undefined
-			) {
-				parts.unshift(c.name);
-			}
-			cheminDe.set(n.id, parts.join(' > '));
-		}
+		for (const [id, node] of await readNodePaths(pg)) cheminDe.set(id, node.path);
 
 		const q = await pg.query<{
 			id: string;
@@ -230,6 +222,7 @@ describe('Rangements : les branches d’échec de la migration', () => {
 	it('TOUT ou RIEN : un modèle manquant fait échouer la migration (présence partielle)', async () => {
 		await pg.query('begin');
 		try {
+			await pg.query(extractRollback(NETTOYAGE));
 			const presents = fixture.modeles.slice(1).map((m) => m.id);
 			await pg.query(
 				`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title)

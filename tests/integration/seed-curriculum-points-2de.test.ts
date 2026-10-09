@@ -174,8 +174,8 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (199 points, arbre .15)', () => {
-		expect(fixture.version).toBe('2026-10-07.15');
+	it('la fixture est bien celle du document validé (199 points, arbre .16)', () => {
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(199);
 		expect(fixture.points.every((p) => p.grade === '2')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(50);

@@ -8,7 +8,12 @@
  * par 20261008120000 (seed CM) : +Préalgorithmique, +calcul réfléchi,
  * +droite graduée, 2 renommages → 19 + 137 + 539 ; +ratio (seed cycle 4) → 540 ;
  * branche Logique restructurée (seed 2de, décision C2 : renommage et
- * déplacements, comptes inchangés) — version .15 (ADR 0020).
+ * déplacements, comptes inchangés) — version .15 (ADR 0020) ; puis NETTOYÉ de
+ * ses facettes par 20261012080000 (audit tranché par David le 2026-10-09,
+ * ADR 0020 § 3 précisé) — version .16 : 3 sous-notions créées, 6 re-parentées,
+ * 63 nœuds renommés, 74 archivés → 19 + 134 + 472 nœuds ACTIFS. Un nœud
+ * archivé reste en base (ADR 0019) : la copie figée les liste à part
+ * (« archives »), et le test les compare aussi.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
@@ -37,6 +42,8 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 interface ArbreJson {
 	version: string;
 	branches: { nom: string; notions: { nom: string; sous_notions: string[] }[] }[];
+	/** Nœuds archivés (version .16) : genre et chemin final. */
+	archives: { kind: 'notion' | 'subnotion'; chemin: string }[];
 }
 
 interface NodeRow {
@@ -104,18 +111,19 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 	});
 
 	it('le JSON source est bien la version attendue', () => {
-		expect(arbre.version).toBe('2026-10-07.15');
+		expect(arbre.version).toBe('2026-10-09.16');
 		expect(arbre.branches).toHaveLength(19);
+		expect(arbre.archives).toHaveLength(74);
 	});
 
-	it("l'arbre seedé correspond EXACTEMENT au JSON (696 chemins), rien d'archivé", () => {
+	it("l'arbre ACTIF correspond EXACTEMENT au JSON (625 chemins), les archivés à sa liste (74)", () => {
 		const byId = new Map(rows.map((r) => [r.id, r]));
 		const branchNames = new Set(arbre.branches.map((b) => b.nom));
 
 		// Chemins réels de la base, restreints aux arbres dont la racine est une
 		// branche du JSON (les nœuds « itest- » des autres suites sont ignorés).
 		const actual = new Set<string>();
-		let archived = 0;
+		const archived = new Set<string>();
 		for (const r of rows) {
 			let path = r.name;
 			let root = r;
@@ -126,8 +134,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 				root = parent;
 			}
 			if (!branchNames.has(root.name)) continue;
-			if (r.archived_at !== null) archived += 1;
-			actual.add(`${r.kind}|${path}`);
+			(r.archived_at === null ? actual : archived).add(`${r.kind}|${path}`);
 		}
 
 		const expected = expectedPaths();
@@ -136,22 +143,24 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		const extra = [...actual].filter((p) => !expected.has(p));
 		expect(missing, `chemins du JSON absents de la base`).toEqual([]);
 		expect(extra, `chemins en base absents du JSON`).toEqual([]);
-		expect(actual.size).toBe(19 + 137 + 540);
-		expect(archived).toBe(0);
+		expect(actual.size).toBe(19 + 134 + 472);
+		expect([...archived].sort()).toEqual(arbre.archives.map((a) => `${a.kind}|${a.chemin}`).sort());
 	});
 
-	it("les positions suivent l'ordre du JSON (branches et notions)", () => {
+	it("les positions suivent l'ordre du JSON (branches et notions actives)", () => {
 		const branches = rows
 			.filter((r) => r.kind === 'branch' && arbre.branches.some((b) => b.nom === r.name))
 			.sort((a, b) => a.position - b.position)
 			.map((r) => r.name);
 		expect(branches).toEqual(arbre.branches.map((b) => b.nom));
 
-		// Les notions de la première et de la dernière branche, dans l'ordre.
+		// Les notions actives de la première et de la dernière branche, dans l'ordre.
 		for (const b of [arbre.branches[0], arbre.branches[18]]) {
 			const branchRow = rows.find((r) => r.kind === 'branch' && r.name === b.nom);
 			const notions = rows
-				.filter((r) => r.kind === 'notion' && r.parent_id === branchRow?.id)
+				.filter(
+					(r) => r.kind === 'notion' && r.parent_id === branchRow?.id && r.archived_at === null
+				)
 				.sort((a, b2) => a.position - b2.position)
 				.map((r) => r.name);
 			expect(notions, b.nom).toEqual(b.notions.map((n) => n.nom));

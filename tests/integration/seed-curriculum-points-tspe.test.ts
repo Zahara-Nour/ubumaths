@@ -168,8 +168,8 @@ describe('Seed des points de Tle spécialité (points + références)', () => {
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (239 points, arbre .15)', () => {
-		expect(fixture.version).toBe('2026-10-07.15');
+	it('la fixture est bien celle du document validé (239 points, arbre .16)', () => {
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(239);
 		expect(fixture.points.every((p) => p.grade === 'T_SPE')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(100);

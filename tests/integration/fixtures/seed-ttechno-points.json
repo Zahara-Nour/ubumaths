@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "TTECHNO-001",
@@ -259,7 +259,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "TTECHNO-021",
@@ -272,7 +272,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "TTECHNO-022",
@@ -285,7 +285,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "raison"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "TTECHNO-023",
@@ -298,7 +298,7 @@
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "raison"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "TTECHNO-024",
@@ -388,8 +388,8 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Analyse > Suites numériques",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
-			"sous_notion": "algorithmes"
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
 		},
 		{
 			"code": "TTECHNO-031",
@@ -636,7 +636,7 @@
 			"rubrique": "Analyse > Fonction inverse",
 			"branche": "Fonctions",
 			"notion": "Dérivation",
-			"sous_notion": "étude de fonction"
+			"sous_notion": "variations et extremums"
 		},
 		{
 			"code": "TTECHNO-050",
@@ -764,8 +764,8 @@
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
-			"branche": "Probabilités",
-			"notion": "Loi binomiale",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
 			"sous_notion": "coefficients binomiaux"
 		},
 		{
@@ -790,8 +790,8 @@
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
-			"branche": "Probabilités",
-			"notion": "Loi binomiale",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
 			"sous_notion": "coefficients binomiaux"
 		},
 		{
@@ -805,7 +805,7 @@
 			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "reconnaître une loi"
+			"sous_notion": "schéma de Bernoulli"
 		},
 		{
 			"code": "TTECHNO-063",
@@ -818,7 +818,7 @@
 			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "calcul de probabilités"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TTECHNO-064",
@@ -831,7 +831,7 @@
 			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "calcul de probabilités"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TTECHNO-065",
@@ -844,7 +844,7 @@
 			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
 			"branche": "Probabilités",
 			"notion": "Loi binomiale",
-			"sous_notion": "coefficients binomiaux"
+			"sous_notion": "expression de la loi"
 		},
 		{
 			"code": "TTECHNO-066",

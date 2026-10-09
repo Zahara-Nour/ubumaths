@@ -1,5 +1,5 @@
 {
-	"version": "2026-10-07.15",
+	"version": "2026-10-09.16",
 	"points": [
 		{
 			"code": "1GEN-001",
@@ -168,7 +168,7 @@
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "1GEN-014",
@@ -219,7 +219,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": null
 		},
 		{
@@ -233,7 +233,7 @@
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
 			"branche": "Suites",
 			"notion": "Suites arithmétiques",
-			"sous_notion": "calculer un terme"
+			"sous_notion": null
 		},
 		{
 			"code": "1GEN-019",
@@ -271,7 +271,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": "seuil"
 		},
 		{
@@ -363,7 +363,7 @@
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "reconnaître"
+			"sous_notion": "définition"
 		},
 		{
 			"code": "1GEN-029",
@@ -493,7 +493,7 @@
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
 			"branche": "Fonctions",
 			"notion": "Fonction exponentielle",
-			"sous_notion": "suites et modélisation"
+			"sous_notion": "croissance et décroissance exponentielles"
 		},
 		{
 			"code": "1GEN-039",
@@ -506,7 +506,7 @@
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": "calculer un terme"
+			"sous_notion": null
 		},
 		{
 			"code": "1GEN-040",
@@ -558,7 +558,7 @@
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
 			"branche": "Fonctions",
 			"notion": "Fonction exponentielle",
-			"sous_notion": "suites et modélisation"
+			"sous_notion": "croissance et décroissance exponentielles"
 		},
 		{
 			"code": "1GEN-044",
@@ -570,7 +570,7 @@
 			"regime_acquisition": "diversite",
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
 			"branche": "Suites",
-			"notion": "Suites et modélisation",
+			"notion": "Modèles d'évolution",
 			"sous_notion": "seuil"
 		}
 	],

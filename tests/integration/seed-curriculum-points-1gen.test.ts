@@ -166,8 +166,8 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (44 points, arbre .15)', () => {
-		expect(fixture.version).toBe('2026-10-07.15');
+	it('la fixture est bien celle du document validé (44 points, arbre .16)', () => {
+		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(44);
 		expect(fixture.points.every((p) => p.grade === '1_GEN')).toBe(true);
 		expect(fixture.references).toHaveLength(92);
