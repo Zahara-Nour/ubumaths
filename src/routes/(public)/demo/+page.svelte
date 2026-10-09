@@ -72,6 +72,13 @@
 			color: 'from-teal-500 to-green-500'
 		},
 		{
+			title: 'Mots cliquables',
+			description: 'Page de test des mots cliquables et des indices (tablette, téléphone)',
+			href: '/demo/mots-cliquables',
+			icon: FileText,
+			color: 'from-sky-500 to-cyan-500'
+		},
+		{
 			title: 'Test de Thème',
 			description: 'Test des modes clair/sombre et palette de couleurs',
 			href: '/demo/theme-test',
