@@ -195,10 +195,15 @@ describe('.ajustement X1 ; X2 … : Y1 ; Y2 … en x = 8', () => {
 		expect(text).toMatch(/4,5/);
 	});
 
-	it('ancien format sans décimale : accepté', () => {
-		expect(output('.ajustement 1,2,3,4,5,6 : 12,15,19,22,27,30 ; x = 8')).toContain(
-			'Pour x = 8 : y ≈ 37,419 (extrapolation)'
-		);
+	// Décision de David (2026-10-09) : plusieurs virgules entre chiffres sans
+	// « ; » sont refusées avec la forme corrigée — jamais une lecture devinée
+	it('ancien format sans décimale : refus qui propose les points-virgules', () => {
+		const outcome = run('.ajustement 1,2,3 : 12,15,19 ; x = 8');
+		expect(outcome).toEqual({
+			kind: 'refus',
+			message:
+				'Pour séparer des valeurs, utilise « ; » : .ajustement 1 ; 2 ; 3 : 12 ; 15 ; 19 ; x = 8'
+		});
 	});
 
 	it('ancien format avec une décimale : refus qui propose les points-virgules', () => {
