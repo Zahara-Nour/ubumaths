@@ -18,9 +18,9 @@ ignorent le champ et rendent le texte.
 
 1. ✅ Marquage à la main dans ubumark : `[mot]{.def}`, `{.def=…}`, `{.nodef}` → `TextNode.lexicon` ;
    la correction concise/détaillée ne les prend pas pour des détails (pas de message d'erreur).
-2. ⏳ Passe de repérage `src/lib/lexicon/` (comportements 2 à 8, 10, 12, 15 à 18) + données
+2. ✅ Passe de repérage `src/lib/lexicon/` (comportements 2 à 8, 10, 12, 15 à 18) + données
    (« premier », « expression »).
-3. Rendu : contexte « lexique », popover, `MarkdownRenderer` et `FillBlanksInput`.
+3. ⏳ Rendu : contexte « lexique », popover, `MarkdownRenderer` et `FillBlanksInput`.
 4. Branchements : `QuestionCard` (pas en évaluation notée), `FlashCard`, `CorrectionCard` ; niveau de
    l'élève posé par le layout racine ; glossaire `?q=`.
 5. Vérifications, revue, PR.
