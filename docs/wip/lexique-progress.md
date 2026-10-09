@@ -160,7 +160,7 @@ suis ») :
   devient « Voir : X », et un renvoi sans définition propre affiche celle de X au niveau choisi.
   ✅ Livré #986.
 - **0d — manquants** (Q4), `1_GEN`, formes conjuguées des consignes et liste des mots jamais
-  repérés (tests 4 à 6), utiles au lot 2.
+  repérés (tests 4 à 6), utiles au lot 2. ⏳ Lot 0d-1 proposé (2026-10-09) : 88 mots (13 homonymes, 23 demandés par le BO, 47 pour les classes actuelles, 5 synonymes) — [lexique/lot0d-mots.md](lexique/lot0d-mots.md), décisions `lexique/lot0d-decisions.json` ; relecture par David sur https://claude.ai/artifact/V9eqVHsZcWXJJR9Mq8bEJi (base `avis`). Les formes conjuguées et les mots jamais repérés viendront dans un lot à part, avant le lot 2.
 
 ## Reprise
 

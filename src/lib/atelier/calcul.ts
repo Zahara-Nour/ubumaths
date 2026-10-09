@@ -213,6 +213,26 @@ const PI_IN_LETTERS = /(?<![\p{L}\\])pi(?!\p{L})/u;
 /** Ce qu'on répond à `pi` écrit en lettres. */
 const PI_IN_LETTERS_MESSAGE = 'Écris π avec \\pi ou le symbole π.';
 
+/** Un comparateur d'événement : `⩽ ⩾ ≤ ≥ < > =`, `<=`, `>=`, `\leqslant`, `\leq`… */
+const EVENT_COMPARATOR = String.raw`(?:<=|>=|[⩽⩾≤≥<>=]|\\(?:leqslant|geqslant|leq|geq|le|ge|lt|gt))`;
+
+/**
+ * La probabilité d'un événement tapée seule : `P(X ⩽ 3)`, `P(2 ⩽ X ⩽ 5)`,
+ * `P(X\leqslant 3)`. Une majuscule seule comparée, dans `P(…)`.
+ */
+const EVENT_PROBABILITY = new RegExp(
+	String.raw`^P\s*(?:\\left)?\(\s*(?:[^()]*?${EVENT_COMPARATOR}\s*)?[A-Z]\s*${EVENT_COMPARATOR}`
+);
+
+/**
+ * L'atelier ne garde pas les lois (`.binomiale` ne crée rien, Q142) : la
+ * probabilité se demande dans la ligne de la loi. Sans ce refus, `P(X ⩽ 3)`
+ * répondait « Nombre « 3 » écrit après un facteur… » et `P(X\leqslant 3)` se
+ * recopiait tel quel (2026-10-09).
+ */
+const EVENT_PROBABILITY_MESSAGE =
+	'Une probabilité se calcule dans la ligne de la loi : .binomiale X 10 0,3 P(X ⩽ 3) — de même avec .geometrique, .uniforme et .exponentielle.';
+
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
 /**
@@ -1230,6 +1250,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// de lettres, sans erreur. Une commande le vérifie sur son argument de
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
+		if (EVENT_PROBABILITY.test(input)) return { kind: 'refus', message: EVENT_PROBABILITY_MESSAGE };
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
 	}

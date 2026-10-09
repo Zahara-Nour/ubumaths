@@ -24,6 +24,7 @@ import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
 import {
 	solutionsLatex,
+	periodicSolutionsText,
 	inequalitySolutionLatex,
 	inequalityThresholdText,
 	logarithmicValueLatex,
@@ -1179,11 +1180,14 @@ export class SolveCommand extends BaseCommand {
 			variable,
 			domain
 		);
+		// Un échec de RÉSOLUTION, pas de lecture : le même refus que sans `dans` —
+		// l'atelier changeait ce PARSE_ERROR en « Je n'ai pas su lire cette
+		// expression » (revue, 2026-10-09)
 		if (!resolved) {
 			return {
 				success: false,
 				output: '',
-				error: { code: 'PARSE_ERROR', message: 'Je n’ai pas su résoudre cette équation.' }
+				error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
 			};
 		}
 		const values = [...zeros]
@@ -1431,22 +1435,25 @@ export class SolveCommand extends BaseCommand {
 					: exactSolutions;
 
 				// Only toggle if decimal provides different/useful info
-				const canToggle = hasUsefulApproximate;
+				// Une famille périodique : la période fait partie de la réponse — le
+				// texte disait « x = 0 ou x = 3\\pi » pour sin(x/3) = 0 (2026-10-09)
+				const periodicText = periodicSolutionsText(result);
+				const exactText = periodicText ?? exactSolutions;
+				const decimalText = periodicText ?? decimalSolutions;
+				const canToggle = periodicText === null && hasUsefulApproximate;
 
 				// Build full output strings
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
 				const headerHtmlPrefix =
 					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
-				const exactOutput = headerPrefix + exactSolutions;
-				const decimalOutput = headerPrefix + decimalSolutions;
+				const exactOutput = headerPrefix + exactText;
+				const decimalOutput = headerPrefix + decimalText;
 
 				const exactOutputHtml =
-					headerHtmlPrefix +
-					`<span class="text-green-400">${this.escapeHtml(exactSolutions)}</span>`;
+					headerHtmlPrefix + `<span class="text-green-400">${this.escapeHtml(exactText)}</span>`;
 				const decimalOutputHtml =
-					headerHtmlPrefix +
-					`<span class="text-green-400">${this.escapeHtml(decimalSolutions)}</span>`;
+					headerHtmlPrefix + `<span class="text-green-400">${this.escapeHtml(decimalText)}</span>`;
 
 				// Use current mode to determine initial display
 				const useDecimal = currentMode === 'decimal';

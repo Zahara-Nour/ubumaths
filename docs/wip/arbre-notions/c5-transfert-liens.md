@@ -13,6 +13,16 @@
 >
 > Le détail de chaque couple (modèle, programme), avec son nœud avant et après et son point : [c5-transfert-liens.csv](c5-transfert-liens.csv).
 
+## Décisions de David sur les cas à trancher
+
+> Le lot sera recalculé sur l'arbre nettoyé par l'audit des facettes (`audit-facettes.md`, tranché le 2026-10-09) :
+> « étude de fonction » s'y fond dans « Dérivation > variations ».
+
+- **D16 et A78 (2026-10-09)** : « Extremum de (x + a)eˣ » et « Intervalle où f est croissante, f′ de la forme (ax + b)eˣ »
+  vont sous « Dérivation > variations » avec 1SPE-283. Leur contenu est l'étude des variations par le signe de f′ ;
+  l'exponentielle n'y intervient que par eˣ > 0.
+- Restent à trancher : C23, C37, D10, D24, D33, D51, D53-D56-D57, D54, D61, D69, D81, D88-D89, A93-A94.
+
 ## En bref
 
 - **490 couples** (modèle, programme) viennent des 1 026 anciens tags (432 modèles).

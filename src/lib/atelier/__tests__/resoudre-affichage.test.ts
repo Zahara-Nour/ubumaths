@@ -86,9 +86,11 @@ describe('.résoudre : ce qui n’est pas sûr reste du texte', () => {
 		});
 	});
 
-	it('période en dérive flottante (sin(x/3) = 0) : pas de famille écrite de travers', () => {
-		const outcome = run('.résoudre sin(x/3)=0');
-		expect(outcome).not.toHaveProperty('latex');
+	// Ce test gardait le symptôme : la période calculée en flottant (2π/0,333…)
+	// était refusée, et le texte rendait « x = 0 ou x = 3π » sans période. Elle
+	// est désormais exacte (2026-10-09, voir trig-expo-proba.test.ts).
+	it('sin(x/3) = 0 : la période exacte, la famille entière', () => {
+		expect(latexOf('.résoudre sin(x/3)=0')).toBe('x = 3k\\pi, \\; k \\in \\mathbb{Z}');
 	});
 });
 
