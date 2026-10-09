@@ -790,3 +790,19 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     re-rattachés ; 5 sous-notions se vident (à archiver ?).
   - La question d'accès de la future migration est posée à David. Ne rien écrire en base avant
     sa validation.
+- **2026-10-09 — Crible des 339 automatiques** (`c5-crible-automatiques.md`), sur le go de David.
+  Chaque modèle a été relu sur son contenu en prod.
+  - Verdicts : 308 confirmés, 22 changent de point, 9 couples déplacent le modèle (8 modèles),
+    aucun tag retiré.
+  - 6 modèles sont à scinder ; ils gardent leur point principal en attendant.
+  - 3 questions s'ajoutent : A78 suit D16 ; A93-A94 (angles associés pour tout x, alors que le
+    BO de 1re spé se borne aux valeurs remarquables) ; A171 suit D36.
+  - D36 trouve une place sans contradiction : TSPE-371, sous « Espace : avec coordonnées >
+    positions relatives par le calcul » (« étudier une situation d'alignement »).
+- **2026-10-09 — QUESTION OUVERTE de David : faut-il deux sortes de sous-notions ?** Il s'agit
+  des facettes (découpage par activité, créées pour le filtre pendant les rangements) et des
+  sous-notions de contenu.
+  - Ma reco : un seul découpage, par contenu mathématique.
+  - Cela demande un audit des 39 notions qui montrent le symptôme, puis une réécriture du critère
+    de l'ADR 0020 § 3, puis un recalcul du lot.
+  - Attente de sa décision. Ne pas reprendre le lot avant.
