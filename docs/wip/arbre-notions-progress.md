@@ -841,7 +841,11 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     - **noms de Q4** gardés : « Vecteurs », « Espace », « Orthogonalité et distances dans l'espace » ;
     - **Q5** : les notions-activités sont gardées, et « Suites et modélisation » devient « Modèles d'évolution » ;
     - **Q7** : on archive les sous-notions que le lot viderait.
-  - Restent non tranchées : Q6 et la section D. Ne pas les appliquer.
+  - **Q6 validée** (David) :
+    - « reconnaître » devient « caractérisation » ;
+    - « appliquer » va sur la notion ;
+    - nouvelle sous-notion « coefficient de proportionnalité » (5-088 et 2 modèles).
+  - Restent non tranchées : la place de 4-059 (partage proportionnel) et la section D.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;

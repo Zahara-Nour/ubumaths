@@ -9,7 +9,11 @@
 >   **noms de Q4** gardés (« Vecteurs », « Espace », « Orthogonalité et distances dans l'espace », et les sous-notions
 >   proposées) ; **Q5** : les notions-activités sont gardées, « Suites et modélisation » devient « Modèles d'évolution » ;
 >   **Q7** : les sous-notions que le lot viderait s'archivent (selon les réponses à D51 et D69).
-> - **Reste à trancher** : Q6 (proportionnalité) et la section D (renommages).
+> - **Q6 validée par David (2026-10-09)** : dans « Situations de proportionnalité », « reconnaître » devient « caractérisation » ;
+>   « appliquer » s'archive, ses points de résolution de problèmes (CM1-130, CM2-116, 6-191) et son modèle vont sur la notion ;
+>   une sous-notion « coefficient de proportionnalité » reçoit 5-088 et les 2 modèles « Déterminer le coefficient de
+>   proportionnalité » (aujourd'hui sous « reconnaître »). Place de 4-059 (partage proportionnel) : à confirmer.
+> - **Reste à trancher** : la place de 4-059 et la section D (renommages).
 >
 > Principe (ADR 0020 § 3 précisé le 2026-10-09) : **une notion n'a qu'un découpage, par contenu mathématique** — un objet,
 > une propriété ou une technique de calcul —, jamais par activité, par registre ou par outil ; ce que l'élève fait, ce sont
