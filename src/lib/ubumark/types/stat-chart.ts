@@ -92,6 +92,11 @@ export interface QueryInterval {
 	low: number;
 	high: number;
 	complement?: boolean;
+	/**
+	 * `P(A | B)` (lois discrètes, 2026-10-09) : B en bornes entières ;
+	 * la probabilité vaut P(A ∩ B) / P(B)
+	 */
+	condition?: { low: number; high: number };
 }
 
 /**

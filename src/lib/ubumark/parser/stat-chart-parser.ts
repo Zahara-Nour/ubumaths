@@ -1599,6 +1599,39 @@ function absoluteQuery(text: string, name: string): AbsoluteQuery | string | nul
 	};
 }
 
+/**
+ * `P(A | B)` d'une loi discrète (binomiale, uniforme ; 2026-10-09) : A et B des
+ * événements que lit `parseQuery` (X > a, X ⩽ b, a ⩽ X ⩽ b). `support` : les
+ * valeurs de probabilité non nulle ; un B qui l'évite est refusé (P(B) = 0).
+ * null : pas de « | » ; sinon la requête ou le message.
+ */
+function conditionalQuery(
+	text: string,
+	name: string,
+	first: number,
+	last: number,
+	support: { low: number; high: number }
+): QueryInterval | string | null {
+	if (!text.includes('|')) return null;
+	const match = /^P\(([^|]*)\|([^|]*)\)$/.exec(text);
+	const form = `probabilités : « ${text} » : écrire P(${name} > a | ${name} > b), P(${name} ⩽ a | ${name} ⩾ b)…`;
+	if (!match) return form;
+	const event = parseQuery(`P(${match[1].trim()})`, name, first, last);
+	if (typeof event === 'string') return event;
+	const given = parseQuery(`P(${match[2].trim()})`, name, first, last);
+	if (typeof given === 'string') return given;
+	if (Math.max(given.low, support.low) > Math.min(given.high, support.high)) {
+		return `probabilités : ${given.display} = 0 : la probabilité sachant cet événement n’est pas définie`;
+	}
+	const inner = (display: string) => display.slice(2, -1);
+	return {
+		display: `P(${inner(event.display)} | ${inner(given.display)})`,
+		low: event.low,
+		high: event.high,
+		condition: { low: given.low, high: given.high }
+	};
+}
+
 /** La probabilité lue sur l'intervalle, écrite et éventuellement contraire comme tapée */
 function withAbsolute<T extends { display: string; complement?: boolean }>(
 	query: T,
@@ -1690,9 +1723,22 @@ function checkBinomial(
 		.split(';')
 		.map((q) => q.trim())
 		.filter((q) => q !== '');
+	// P(B) > 0 : B rencontre les valeurs de probabilité non nulle (p = 0 : 0 seul ; p = 1 : n seul)
+	const support = p.equals(Fraction.ZERO)
+		? { low: 0, high: 0 }
+		: p.equals(Fraction.ONE)
+			? { low: n, high: n }
+			: { low: 0, high: n };
 	for (const raw of written) {
 		const absolute = absoluteQuery(raw, binomial.name);
 		if (typeof absolute === 'string') return at(queriesLine, absolute);
+		const conditional =
+			absolute === null ? conditionalQuery(raw, binomial.name, 0, n, support) : null;
+		if (typeof conditional === 'string') return at(queriesLine, conditional);
+		if (conditional !== null) {
+			queries.push(conditional);
+			continue;
+		}
 		const query = parseQuery(absolute?.inner ?? raw, binomial.name, 0, n);
 		if (typeof query === 'string') return at(queriesLine, query);
 		queries.push(withAbsolute(query, absolute));
@@ -1921,6 +1967,13 @@ function checkUniform(
 		const absolute = absoluteQuery(raw, uniform.name);
 		if (typeof absolute === 'string') return at(queriesLine, absolute);
 		const text = absolute?.inner ?? raw;
+		const conditional =
+			absolute === null ? conditionalQuery(raw, uniform.name, a, b, { low: a, high: b }) : null;
+		if (typeof conditional === 'string') return at(queriesLine, conditional);
+		if (conditional !== null) {
+			queries.push(conditional);
+			continue;
+		}
 		const query = parseQuery(text, uniform.name, a, b);
 		if (typeof query === 'string') return at(queriesLine, query);
 		// Q158 : un événement non vide, tout entier hors de [a ; b], par ses bornes

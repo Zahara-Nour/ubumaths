@@ -31,18 +31,26 @@ import { createStepRecorder } from './step-recorder';
 type SolveFn = (equation: RelationNode, options?: SolveOptions) => SolveResult;
 
 /** Un terme `k·f(u)` lu : son coefficient signé et son argument. */
-interface TrigTerm {
+export interface TrigTerm {
 	readonly coefficient: MathNode;
 	readonly argument: MathNode;
 }
 
-/** `k·sin(u)` (resp. cos), k sans l'inconnue, ou `null`. */
-function readTerm(term: SignedTerm, name: 'sin' | 'cos', variable: string): TrigTerm | null {
+/**
+ * `k·sin(u)` (resp. cos, tan), k sans l'inconnue, ou `null`. `requireVariable` :
+ * l'argument doit contenir l'inconnue (sinon `cos(π/3)` est lu aussi).
+ */
+export function readTrigTerm(
+	term: SignedTerm,
+	name: 'sin' | 'cos' | 'tan',
+	variable: string,
+	requireVariable = true
+): TrigTerm | null {
 	const pattern = P.prod(P.func(name, [P._('u')]), P.___('coeff', P.isFreeOf(variable)));
 	const bindings = tryMatch(pattern, term.term);
 	if (!bindings) return null;
 	const argument = getBindingNode(bindings, 'u');
-	if (!argument || !getVariables(argument).has(variable)) return null;
+	if (!argument || (requireVariable && !getVariables(argument).has(variable))) return null;
 	const coeffBinding = bindings.get('coeff');
 	const factors =
 		coeffBinding && isProductSequenceBinding(coeffBinding) ? coeffBinding.factors : [];
@@ -80,8 +88,8 @@ export function trySinCosRatio(
 	const terms = flattenSumShallow(expr);
 	if (terms.length !== 2) return null;
 	const [first, second] = terms;
-	const sine = readTerm(first, 'sin', variable) ?? readTerm(second, 'sin', variable);
-	const cosine = readTerm(first, 'cos', variable) ?? readTerm(second, 'cos', variable);
+	const sine = readTrigTerm(first, 'sin', variable) ?? readTrigTerm(second, 'sin', variable);
+	const cosine = readTrigTerm(first, 'cos', variable) ?? readTrigTerm(second, 'cos', variable);
 	if (sine === null || cosine === null) return null;
 	if (!nodesEqual(sine.argument, cosine.argument)) return null;
 	if (!nonZero(sine.coefficient) || !nonZero(cosine.coefficient)) return null;

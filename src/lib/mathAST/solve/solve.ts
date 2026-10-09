@@ -59,6 +59,7 @@ import type {
 import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
 import { trySubstitution } from './substitution';
 import { trySinCosRatio } from './sin-cos-ratio';
+import { tryTrigEquality } from './trig-equality';
 import { mergePeriodicFamilies } from './periodic';
 import { isDelimiter, isMultiplication, isRelation } from '../guards';
 import {
@@ -1984,6 +1985,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const ratio = trySinCosRatio(expr, variable, opts, solve);
 		if (ratio) result = ratio;
+	}
+	// cos a = cos b, sin a = sin b, tan a = tan b (`cos 2x = cos x`, revue 2026-10-09)
+	if (isSolverFailure(result)) {
+		const equality = tryTrigEquality(expr, variable, opts, solve);
+		if (equality) result = equality;
 	}
 	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);

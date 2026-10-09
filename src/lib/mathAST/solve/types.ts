@@ -183,6 +183,14 @@ export interface SolveResult {
 	/** Periodic solution family for trig equations (used by sign module for zero enumeration) */
 	readonly periodicSolutions?: PeriodicSolutionFamily;
 
+	/**
+	 * L'écriture du manuel, quand elle diffère de `periodicSolutions` : une
+	 * famille par branche de la résolution, chacune avec SA période
+	 * (`sin 2x = sin x` : 2kπ ou π/3 + 2kπ/3). Même ensemble que
+	 * `periodicSolutions`, qui reste la référence des calculs (2026-10-09).
+	 */
+	readonly displayFamilies?: readonly PeriodicSolutionFamily[];
+
 	/** Domain of definition of the expression (where the equation is defined) */
 	readonly domain?: Domain;
 }
