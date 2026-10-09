@@ -17,7 +17,14 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
-import { astOf, readNumber, withPiCommand, mixedNotationMessage } from './parse';
+import {
+	astOf,
+	readNumber,
+	readListValue,
+	individualEntries,
+	withPiCommand,
+	mixedNotationMessage
+} from './parse';
 import {
 	INTERNAL_LETTER,
 	internalDefinition,
@@ -294,6 +301,7 @@ const DERIVATIVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?'+)\s*(?:\(\s*[A-Za-z]\s*\)
 function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	if (parameter === 'n') return 'sequence';
 	if (parameter !== undefined) return 'function';
+	if (isNumberList(body)) return 'list';
 
 	const ast = astOf(body);
 	if (ast === null) return 'value';
@@ -303,6 +311,68 @@ function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	// nœud lui-même qui le dit (`derivativeOrder`).
 	if (/[A-Za-z](?:_\d+)?['’]/.test(body)) return 'function';
 	return 'value';
+}
+
+/**
+ * `L = 1,5 ; 2 ; 3,5` : au moins deux nombres (ou fractions d'entiers), et
+ * RIEN d'autre, séparés par « ; » (règle de #983 : la virgule entre deux
+ * chiffres est décimale). Une seule valeur reste un nombre (`a = 1,5`), et un
+ * membre de droite qui contient autre chose qu'un nombre n'est jamais une liste.
+ */
+function isNumberList(body: string): boolean {
+	// Le découpage de la carte (`individualEntries`) : un « ; » final ne compte
+	// pas, un trou (`1 ; ; 2`) ou un mot fait que ce n'est pas une liste
+	const read = individualEntries(body, false);
+	return 'entries' in read && read.entries.length >= 2;
+}
+
+/** Ce qu'on dit d'un objet existant, pour refuser d'en faire une liste. */
+const KIND_WORDS: Readonly<Record<Exclude<ObjectKind, 'list'>, string>> = {
+	value: 'un nombre : supprime-le',
+	function: 'une fonction : supprime-la',
+	sequence: 'une suite : supprime-la'
+};
+
+/**
+ * `M = L`, `2L + 1` : une liste lue comme un nombre. Le moteur la prenait pour
+ * une lettre libre et rendait `2L+1`, une valeur « saine » sans aucun sens.
+ */
+function listCitedAsNumber(atelier: Atelier, text: string): string | null {
+	const ast = astOf(text, 'text', atelier.functionNames);
+	if (ast === null) return null;
+	const variables = new Set(getVariables(ast));
+	const list = atelier.objects.find((o) => o.kind === 'list' && variables.has(o.name));
+	return list === undefined ? null : `${list.name} est une liste : utilise .stats ${list.name}`;
+}
+
+/**
+ * `L = 1,2,3` ou `L = 12, 15, 9` : l'ancienne écriture d'une liste, refusée en
+ * montrant la forme à retaper (règle de #983) — jamais 1,2 et 3 devinés.
+ *
+ * Même test que la carte (`commaUsedAsSeparator`) : un segment n'est fautif que
+ * s'il ne se lit pas comme un nombre et que ses morceaux sont tous des nombres,
+ * ou tous des fractions (`1,5/2` ne se corrige pas en « 1 ; 5/2 »).
+ */
+function commaListRefusal(name: string, body: string): string | null {
+	if (/\p{L}/u.test(body) || !body.includes(',')) return null;
+	const entries: string[] = [];
+	let corrected = false;
+	for (const segment of body.split(';').map((part) => part.trim())) {
+		if (readListValue(segment) !== null) {
+			entries.push(segment);
+			continue;
+		}
+		const pieces = segment.split(',').map((piece) => piece.trim());
+		const readable = (piece: string) => piece !== '' && readListValue(piece) !== null;
+		const allNumbers = pieces.every((piece) => !piece.includes('/') && readable(piece));
+		const allFractions = pieces.every((piece) => piece.includes('/') && readable(piece));
+		if (pieces.length < 2 || !(allNumbers || allFractions)) return null;
+		entries.push(...pieces);
+		corrected = true;
+	}
+	return corrected
+		? `Pour séparer des valeurs, utilise « ; » : ${name} = ${entries.join(' ; ')}`
+		: null;
 }
 
 /**
@@ -320,6 +390,17 @@ function defineObject(
 ): CalcResult {
 	const { atelier } = session;
 	const existing = atelier.get(name);
+
+	// Le type rangé ne change pas (règle de l'atelier) : une liste tapée sur le
+	// nom d'un autre objet le laissait en erreur, sans un mot (revue)
+	if (existing !== undefined && existing.kind !== 'list' && kindOf(parameter, body) === 'list') {
+		return {
+			kind: 'refus',
+			message: `« ${name} » est déjà ${KIND_WORDS[existing.kind]} ou choisis un autre nom pour créer une liste.`
+		};
+	}
+	const citedList = listCitedAsNumber(atelier, body);
+	if (citedList !== null) return { kind: 'refus', message: citedList };
 
 	// `f(t) = t^2` : la carte garde t, l'atelier range en x (`letter.ts`). La
 	// lettre est jugée AVANT le renommage : `f(a)` avec un objet `a`, ou x dans
@@ -1122,6 +1203,8 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, body] = definition;
+		const commaList = parameter === undefined ? commaListRefusal(name, body) : null;
+		if (commaList !== null) return { kind: 'refus', message: commaList };
 		const result = defineObject(session, name, parameter, body, provenance);
 		// `u(n) = …` dit « explicite » (S3) : le mode d'une suite étant gardé à la
 		// modification, c'est ici qu'une récurrence retapée en explicite le devient
@@ -1149,6 +1232,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// moteur comme des nombres — il ne sait pas itérer une récurrence
 	const withTerms = recurrenceTermsIn(session.atelier, input);
 	if (!withTerms.ok) return { kind: 'refus', message: withTerms.message };
+
+	const citedList = listCitedAsNumber(session.atelier, input);
+	if (citedList !== null) return { kind: 'refus', message: citedList };
 
 	// Le moteur répondrait « Invalid backslash sequence », en anglais (revue #911)
 	const mixed = mixedNotationMessage(input);
