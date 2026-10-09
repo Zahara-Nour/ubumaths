@@ -248,8 +248,8 @@ describe('math-dictionary-fr', () => {
 		expect(wrong).toEqual([]);
 	});
 
-	// Sinon, dans le glossaire, « Forme dérivée de X » ouvre une fiche X sans
-	// définition au niveau du lecteur.
+	// Sinon, dans le glossaire, la fiche d'un renvoi (« Voir : X ») n'a aucune
+	// définition à montrer au niveau du lecteur.
 	it('should never place a derived term before the term it points to', () => {
 		const early: string[] = [];
 		for (const term of MATH_DICTIONARY) {
@@ -263,7 +263,9 @@ describe('math-dictionary-fr', () => {
 	});
 
 	it('should have valid derivedFrom references', () => {
-		const termNames = new Set(MATH_DICTIONARY.map((t) => t.term));
+		// Un renvoi pointe vers un terme principal : « solution » → « solution (équation) »,
+		// jamais vers lui-même ni vers un autre renvoi
+		const termNames = new Set(MATH_DICTIONARY.filter((t) => !t.derivedFrom).map((t) => t.term));
 		for (const term of MATH_DICTIONARY) {
 			if (term.derivedFrom) {
 				expect(
