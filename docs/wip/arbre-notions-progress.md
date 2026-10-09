@@ -742,3 +742,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   principaux / 8 types, dates inchangées, triggers réactivés. **Suite : séquence C5** —
   (2) transfert des liens modèles → points (lots à valider par David, contrôle de cohérence
   avec le nœud du modèle), (3) bascule du code, (4) suppression de l'ancien monde (arrêt).
+- **2026-10-09 — lien modèles ↔ points : décision d'architecture OUVERTE.** La proposition de
+  l'étape 2 de C5 (`c5-transfert-liens.md`) est suspendue par la question de David : « un double
+  travail ? ». Analyse dans `c5-architecture-liens.md`.
+  - Ma recommandation initiale (option 4 : déduire le lien du nœud) est **retirée**. Ses bornes
+    font de chaque point un objet plus fin que son nœud : CE1-021 « de même dénominateur » et
+    5-026 « de dénominateurs quelconques » partagent un nœud.
+  - Reco révisée : l'ADR 0020 § 7 telle que décidée.
+    - Le nœud stocké est le filtre ; les points saisis sont le programme.
+    - Chaque point est contraint au nœud de la ressource ou à sa notion.
+    - Un modèle a un point par programme.
+  - **Attente : Q1 (nœud stocké ou déduit des points), Q2 (un point par programme), Q3 (passe
+    « bornes »).** Ne rien écrire en base avant.

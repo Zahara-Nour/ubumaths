@@ -1,10 +1,44 @@
 # Le lien entre modèles et points : quelle structure ? (décision d'architecture)
 
-> **Statut : ANALYSE ET RECOMMANDATION, en attente de la décision de David.** Rien n'est écrit en
-> base. Suspend la proposition de transfert [c5-transfert-liens.md](c5-transfert-liens.md).
-> Question de David (2026-10-09) : « Est-ce qu'il n'y a pas un double travail ? le chemin modèle →
-> point → nœud devait suffire » ; puis « donne-moi tes recommandations pour la structure la plus
-> propre, même si ça demande du travail ».
+> **Statut : ANALYSE RÉVISÉE le 2026-10-09. L'option 4, recommandée plus bas, est RETIRÉE.** Rien
+> n'est écrit en base ; la décision revient à David.
+>
+> - **Pourquoi l'option 4 tombe.** L'exemple de David se vérifie dans les données : le nœud
+>   `Fractions : calculs > additionner et soustraire` porte à la fois CE1-021 « … de même
+>   dénominateur » et 5-026 « … de dénominateurs quelconques ». Le nœud ne dit pas si une question
+>   respecte les bornes d'un point. Le lien modèle → point se **saisit** donc à la main.
+> - **Recommandation révisée** (en attente de David) : l'**ADR 0020 § 7 telle qu'elle a été
+>   décidée**.
+>   - Le nœud est stocké (c'est le filtre) ; les points sont saisis (c'est le programme).
+>   - Chaque point doit être sur le nœud de la ressource ou sur sa notion ; pour un exercice, sur
+>     l'un de ses nœuds.
+>   - Un modèle a un seul point par programme.
+>   - La déduction depuis le nœud ne sert plus qu'à proposer des candidats.
+> - **Le modèle de David « nœud déduit des points »**, mesuré :
+>   - 0 tag d'exercice en prod ;
+>   - 573 modèles non tagués, dont 16 n'ont de point dans aucun programme ;
+>   - 248 points sont posés sur une notion qui a des sous-notions, donc 36 modèles tagués
+>     perdraient leur sous-notion ;
+>   - 6 modèles auraient deux nœuds.
+> - **Charge de l'étape 2 de C5 sous la règle révisée**, sur 490 couples (modèle, programme) :
+>   - 341 se règlent automatiquement ;
+>   - 52 sont à choisir ;
+>   - 5 sont affinables (le modèle descend à la sous-notion de son point) ;
+>   - 92 sont des désaccords.
+> - **Au passage.** CE2-014, CM1-021, CM2-020 et 6-135 n'ont pas les bornes du BO (même
+>   dénominateur ou multiple, dénominateurs ≤ 12, ≤ 20, ≤ 60). Elles sont dans les « exemples de
+>   réussite » et dans les paragraphes d'année. Une passe « bornes » est à décider.
+>
+> Le document est à réécrire après la décision de David. La proposition de transfert
+> [c5-transfert-liens.md](c5-transfert-liens.md) reste suspendue.
+>
+> Les questions de David, dans l'ordre :
+>
+> 1. (2026-10-09) « Est-ce qu'il n'y a pas un double travail ? le chemin modèle → point → nœud
+>    devait suffire. »
+> 2. « Donne-moi tes recommandations pour la structure la plus propre, même si ça demande du
+>    travail. »
+> 3. La reformulation de son modèle : on tague des points, et des points on remonte à l'arbre.
 
 ## Le constat
 
