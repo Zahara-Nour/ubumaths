@@ -19,6 +19,7 @@
 	import { lexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import { provideLexicon, readLexicon } from '../lexicon-context';
+	import { keepOutsideFocus } from '../outside-focus';
 
 	interface Props {
 		/** Entrées du dictionnaire ouvertes par ce mot (plusieurs pour un homonyme) */
@@ -43,29 +44,14 @@
 	const uid = $props.id();
 	let contentRef = $state<HTMLElement | null>(null);
 
+	// Fiche fermée en touchant le champ de réponse : le curseur y reste
+	const outsideFocus = keepOutsideFocus();
+
 	// À l'ouverture, le focus va sur la fiche (lue en entier), pas sur son lien
 	function focusCard(event: Event) {
+		outsideFocus.reset();
 		event.preventDefault();
 		contentRef?.focus();
-	}
-
-	// Fiche ouverte, l'élève touche le champ de réponse : le focus doit y rester,
-	// au lieu de revenir au mot (comportement par défaut de bits-ui)
-	const FOCUSABLE =
-		'input, textarea, select, math-field, button, a[href], [tabindex], [contenteditable]';
-	let outsideTarget: HTMLElement | null = null;
-
-	function rememberOutsideTarget(event: PointerEvent) {
-		const target = event.target instanceof Element ? event.target : null;
-		outsideTarget = target?.closest<HTMLElement>(FOCUSABLE) ?? document.body;
-	}
-
-	function restoreFocus(event: Event) {
-		if (outsideTarget) {
-			event.preventDefault();
-			if (outsideTarget !== document.body) outsideTarget.focus();
-		}
-		outsideTarget = null;
 	}
 </script>
 
@@ -85,8 +71,8 @@
 			aria-labelledby="{uid}-titre-0"
 			aria-describedby={card.map((_, i) => `${uid}-definitions-${i}`).join(' ')}
 			onOpenAutoFocus={focusCard}
-			onInteractOutside={rememberOutsideTarget}
-			onCloseAutoFocus={restoreFocus}
+			onInteractOutside={outsideFocus.onInteractOutside}
+			onCloseAutoFocus={outsideFocus.onCloseAutoFocus}
 		>
 			{#each card as entry, i (entry.id)}
 				<div class="space-y-1">
