@@ -3124,6 +3124,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'fonction exponentielle',
+		sense: 'exp',
 		tags: ['fonctions'],
 		definitions: {
 			items: [
@@ -3547,7 +3548,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CM1'
+		grade: 'CM1',
+		synonyms: ['événement']
 	},
 	{
 		term: 'univers',
@@ -3582,7 +3584,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definitions: {
 			items: [{ grade: '4', content: "Complémentaire d'un évènement. $P(\\bar{A}) = 1 - P(A)$." }]
 		},
-		grade: '4'
+		grade: '4',
+		synonyms: ['événement contraire']
 	},
 	{
 		term: 'arbre de probabilités',
@@ -5485,7 +5488,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: 'CM1',
-		synonyms: ['évènement impossible']
+		synonyms: ['évènement impossible', 'événement impossible']
 	},
 	{
 		term: 'possible',
@@ -5515,7 +5518,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: 'CM1',
-		synonyms: ['évènement certain']
+		synonyms: ['évènement certain', 'événement certain']
 	},
 	{
 		term: 'probable',
@@ -6268,7 +6271,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: '1_SPE',
-		sharedWith: ['1_GEN', '1_TECHNO']
+		sharedWith: ['1_GEN', '1_TECHNO'],
+		synonyms: ['événements indépendants']
 	},
 	{
 		term: 'épreuve de Bernoulli',
@@ -8275,7 +8279,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: '1_SPE',
-		synonyms: ["système complet d'évènements"]
+		synonyms: ["système complet d'évènements", "système complet d'événements"]
 	},
 	{
 		term: 'projeté orthogonal',
@@ -8693,6 +8697,377 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: '1_GEN',
 		sharedWith: ['1_TECHNO'],
 		derivedFrom: 'interpolation'
+	},
+
+	// =========================================================================
+	// AJOUTS DU LOT 0h (mots des énoncés publiés, validés par David)
+	// =========================================================================
+	{
+		term: 'ensemble des solutions',
+		tags: ['équations'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Ensemble de tous les nombres qui vérifient une équation ou une inéquation ; on le note souvent $S$. Ex : l'équation $2x + 6 = 0$ a pour ensemble des solutions $S = \\{-3\\}$, l'inéquation $x > 2$ a pour ensemble des solutions l'intervalle $]2 ; +\\infty[$, et une équation sans solution a pour ensemble des solutions l'ensemble vide $\\varnothing$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'représentant',
+		sense: 'vecteur',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Un représentant d'un vecteur est une flèche qui le dessine, d'une origine à une extrémité. Un vecteur a une infinité de représentants, tous de même direction, de même sens et de même longueur. Ex : si $ABDC$ est un parallélogramme, $\\overrightarrow{AB}$ et $\\overrightarrow{CD}$ sont deux représentants du même vecteur."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'équilibré',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Se dit d'un dé, d'une pièce ou d'une roue qui n'avantage aucune issue : chaque issue a la même chance de se produire. Ex : avec un dé équilibré à six faces, chaque face a la probabilité $\\frac{1}{6}$ d'apparaître."
+				}
+			]
+		},
+		grade: '5',
+		// Féminin : « pièce équilibrée », « roues équilibrées »
+		forms: ['équilibrée']
+	},
+	{
+		term: 'indiscernable',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Se dit d'objets que l'on ne peut pas distinguer : des boules indiscernables au toucher ont toutes la même chance d'être tirées quand on en choisit une sans regarder."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'urne',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						'Boîte ou sac dont on tire des objets au hasard, sans regarder, dans les problèmes de probabilités. Ex : une urne contient $3$ boules rouges et $2$ boules bleues ; on en tire une au hasard.'
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'tirage avec remise',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Tirages successifs où l'objet tiré est remis dans l'urne avant le tirage suivant : la composition de l'urne ne change pas, et les tirages sont indépendants. Ex : avec remise, on peut tirer deux fois la même boule."
+				}
+			]
+		},
+		grade: 'T_SPE',
+		synonyms: ['avec remise']
+	},
+	{
+		term: 'tirage sans remise',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Tirages successifs où l'objet tiré n'est pas remis dans l'urne : la composition de l'urne change à chaque tirage, et les tirages ne sont pas indépendants. Ex : sans remise, on ne peut pas tirer deux fois la même boule."
+				}
+			]
+		},
+		grade: 'T_SPE',
+		synonyms: ['sans remise']
+	},
+	{
+		term: 'intérêts composés',
+		tags: ['proportionnalité', 'suites'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						"Placement où les intérêts de chaque année s'ajoutent au capital et rapportent à leur tour des intérêts : le capital est multiplié chaque année par le même nombre. Ex : à $3\\,\\%$ par an, un capital de $1\\,000$ € devient $1\\,000 \\times 1{,}03^n$ € au bout de $n$ années.",
+					sharedWith: ['1_SPE']
+				}
+			]
+		},
+		grade: '1_GEN',
+		sharedWith: ['1_SPE']
+	},
+	{
+		term: 'ajustement affine',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						'Remplacer un nuage de points par une droite qui en passe au plus près, pour décrire la tendance et faire des prévisions (interpolation, extrapolation). Ex : la droite de Mayer et la droite des moindres carrés sont deux ajustements affines.',
+					sharedWith: ['1_TECHNO']
+				}
+			]
+		},
+		grade: '1_GEN',
+		sharedWith: ['1_TECHNO']
+	},
+	{
+		term: 'inégalité de concentration',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Si $M_n$ est la moyenne d'un échantillon de taille $n$ d'une variable aléatoire d'espérance $\\mu$ et de variance $V$, alors pour tout réel $\\delta > 0$ : $P(|M_n - \\mu| \\geq \\delta) \\leq \\frac{V}{n\\delta^2}$. Plus l'échantillon est grand, plus sa moyenne a de chances d'être proche de $\\mu$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'méthode des rectangles',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Méthode qui approche une intégrale par une somme d'aires de rectangles : on découpe $[a ; b]$ en $n$ intervalles de même largeur $\\frac{b - a}{n}$ et, sur chacun, on prend un rectangle dont la hauteur est une valeur de la fonction (à une extrémité de l'intervalle). Plus $n$ est grand, meilleure est l'approximation.",
+					sharedWith: ['T_COMP']
+				}
+			]
+		},
+		grade: 'T_SPE',
+		sharedWith: ['T_COMP']
+	},
+	{
+		term: 'escalier',
+		sense: 'suite',
+		tags: ['suites'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Construction graphique des termes d'une suite définie par $u_{n+1} = f(u_n)$ : depuis $u_0$ sur l'axe des abscisses, on va verticalement jusqu'à la courbe de $f$, puis horizontalement jusqu'à la droite d'équation $y = x$, ce qui donne $u_1$ en abscisse, et on recommence. Selon la fonction, le tracé forme un escalier ou une spirale."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'nombre complexe',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Nombre de la forme $a + ib$, où $a$ et $b$ sont des réels et $i$ un nombre tel que $i^2 = -1$ ; $a$ est sa partie réelle, $b$ sa partie imaginaire. Ex : $3 - 2i$ est un nombre complexe ; les réels sont les nombres complexes de partie imaginaire nulle.'
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'forme algébrique',
+		tags: ['calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Écriture d'un nombre complexe sous la forme $z = a + ib$, avec $a$ et $b$ réels. Elle est unique : deux nombres complexes sont égaux si et seulement s'ils ont la même partie réelle et la même partie imaginaire."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'affixe',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Dans un plan muni d'un repère orthonormé, l'affixe du point $M(a ; b)$ est le nombre complexe $z = a + ib$ ; de même, l'affixe du vecteur $\\vec{w}(a ; b)$ est $a + ib$. Ex : le point $A(2 ; -1)$ a pour affixe $2 - i$."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'module',
+		sense: 'nombre complexe',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Le module de $z = a + ib$ est le réel positif $|z| = \\sqrt{a^2 + b^2}$ : c'est la distance entre l'origine du repère et le point d'affixe $z$. Ex : $|3 + 4i| = 5$."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'argument',
+		sense: 'nombre complexe',
+		tags: ['géométrie', 'trigonométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Dans un repère orthonormé direct $(O ; \\vec{u}, \\vec{v})$, un argument d'un nombre complexe $z$ non nul est une mesure, en radians, de l'angle orienté $(\\vec{u}, \\overrightarrow{OM})$, où $M$ est le point d'affixe $z$. Il est défini à $2\\pi$ près ; l'argument principal est celui de $]-\\pi ; \\pi]$. Ex : $i$ a pour argument principal $\\frac{\\pi}{2}$."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'forme exponentielle',
+		tags: ['calcul-littéral', 'trigonométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Écriture d'un nombre complexe non nul sous la forme $z = re^{i\\theta}$, où $r = |z|$ est son module et $\\theta$ un argument. Ex : $1 + i = \\sqrt{2}\\,e^{i\\frac{\\pi}{4}}$."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'matrice',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Tableau de nombres réels rangés en $n$ lignes et $p$ colonnes : on dit qu'elle est de taille $n \\times p$. Une matrice carrée a autant de lignes que de colonnes ; une matrice colonne n'a qu'une colonne. Ex : $\\begin{pmatrix} 1 & 2 \\\\ 0 & -3 \\end{pmatrix}$ est une matrice carrée de taille $2 \\times 2$."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'graphe',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						'Ensemble de points, appelés sommets, reliés par des lignes, appelées arêtes. Dans un graphe orienté, les arêtes ont un sens ; dans un graphe pondéré, chaque arête porte un nombre, son poids. Ex : un plan de métro, dont les stations sont les sommets.'
+				}
+			]
+		},
+		grade: 'T_EXP',
+		synonyms: ['graphe orienté', 'graphe pondéré']
+	},
+	{
+		term: 'chaîne de Markov',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_EXP',
+					content:
+						"Suite de variables aléatoires $(X_n)$ qui décrit l'évolution d'un système entre quelques états : la probabilité de passer d'un état à un autre ne dépend que de l'état présent. On la représente par un graphe orienté pondéré et par sa matrice de transition. Ex : chaque jour, le temps est « beau » ou « pluvieux », avec des probabilités qui dépendent du temps de la veille."
+				}
+			]
+		},
+		grade: 'T_EXP'
+	},
+	{
+		term: 'loi uniforme',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_COMP',
+					content:
+						"Loi d'une variable aléatoire dont toutes les valeurs ont la même chance : sur $\\{1, 2, \\ldots, n\\}$, chaque valeur a la probabilité $\\frac{1}{n}$ et l'espérance vaut $\\frac{n + 1}{2}$. Sur un intervalle $[a ; b]$, c'est une loi à densité, de densité constante égale à $\\frac{1}{b - a}$."
+				}
+			]
+		},
+		grade: 'T_COMP'
+	},
+	{
+		term: 'fonction de densité',
+		tags: ['probabilités', 'fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_COMP',
+					content:
+						'Une variable aléatoire $X$ suit une loi à densité $f$ sur un intervalle $I$ si $f$ est continue et positive sur $I$, avec une aire totale égale à $1$ sous sa courbe, et si $P(c \\leq X \\leq d) = \\int_c^d f(x)\\,\\mathrm{d}x$ pour tout intervalle $[c ; d]$ inclus dans $I$ : une probabilité est une aire.'
+				}
+			]
+		},
+		grade: 'T_COMP',
+		synonyms: ['densité', 'loi à densité']
+	},
+	{
+		term: 'loi exponentielle',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_COMP',
+					content:
+						"Loi à densité de paramètre $\\lambda > 0$ sur $[0 ; +\\infty[$, de densité $f(x) = \\lambda e^{-\\lambda x}$ : $P(X \\leq t) = 1 - e^{-\\lambda t}$ et l'espérance vaut $\\frac{1}{\\lambda}$. Elle modélise des durées de vie sans vieillissement, comme celle d'un composant électronique."
+				}
+			]
+		},
+		grade: 'T_COMP'
+	},
+	{
+		term: 'fonction exponentielle',
+		sense: 'de base a',
+		tags: ['fonctions', 'puissances'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						'Pour un réel $a > 0$, la fonction $x \\mapsto a^x$ prolonge les puissances : $a^0 = 1$, $a^1 = a$ et $a^{x + y} = a^x \\times a^y$. Elle est croissante si $a > 1$ et décroissante si $0 < a < 1$ ; elle modélise une croissance ou une décroissance exponentielle. Ex : $2^{0{,}5} = \\sqrt{2}$.'
+				}
+			]
+		},
+		grade: '1_GEN'
 	},
 
 	// =========================================================================

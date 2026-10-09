@@ -120,6 +120,29 @@ describe('mots cliquables : repérage', () => {
 		expect(links('Le carré de 5.', 'CE1')).toEqual([['carré', ['carré (géométrie)']]]);
 	});
 
+	// Les énoncés publiés écrivent « événement », le dictionnaire « évènement » (BO) : lot 0h
+	it('reconnaît la graphie « événement » des énoncés', () => {
+		expect(links('Cet événement est certain.', 'CM1')).toContainEqual(['événement', ['évènement']]);
+	});
+
+	it('reconnaît le féminin d’un adjectif : « pièce équilibrée »', () => {
+		expect(links('On lance une pièce équilibrée.', '5')).toContainEqual([
+			'équilibrée',
+			['équilibré']
+		]);
+	});
+
+	it('« fonction exponentielle » ouvre le sens de la filière de l’élève', () => {
+		expect(links('Trace la fonction exponentielle.', '1_GEN')).toContainEqual([
+			'fonction exponentielle',
+			['fonction exponentielle (de base a)']
+		]);
+		expect(links('Trace la fonction exponentielle.', '1_SPE')).toContainEqual([
+			'fonction exponentielle',
+			['fonction exponentielle (exp)']
+		]);
+	});
+
 	it('n’abîme pas l’arbre d’origine, qui peut venir du cache', () => {
 		const doc = parseMarkdown('Calcule l’aire.');
 		const before = JSON.stringify(doc);
