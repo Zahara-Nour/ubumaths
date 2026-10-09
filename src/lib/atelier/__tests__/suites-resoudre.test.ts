@@ -61,24 +61,25 @@ describe('l’inconnue en exposant : aⁿ = b', () => {
 	it.each([
 		['2^n=1024', 'n=10'],
 		['3*2^n=96', 'n=5'],
-		// 1,5 s'affiche 3/2 : convention de `tidy` pour toutes les solutions
-		['1.5^n=10', 'n=\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(\\dfrac{3}{2}\\right)}'],
+		// Le décimal tapé reste décimal dans le ln, valeur approchée comprise
+		// (décision de David, 2026-10-09 — voir `seuils-ecriture.test.ts`)
+		['1.5^n=10', 'n=\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\approx5{,}68'],
 		['2^{n+1}=32', 'n=4'],
-		['e^n=5', 'n=\\ln\\left(5\\right)']
+		['e^n=5', 'n=\\ln\\left(5\\right)\\approx1{,}61']
 	])('%s → %s', (input, expected) => {
 		expect(answer(solve(input))).toBe(expected);
 	});
 
 	it('2^n>1000 → n > ln 1000 / ln 2', () => {
 		expect(answer(solve('2^n>1000'))).toBe(
-			'S=]\\dfrac{\\ln\\left(1000\\right)}{\\ln\\left(2\\right)};+\\infty['
+			'n>\\dfrac{\\ln\\left(1000\\right)}{\\ln\\left(2\\right)}\\approx9{,}97'
 		);
 	});
 
 	// Base < 1 : la fonction décroît, le sens de l'inégalité change
 	it('0.8^n<0.1 → n > ln 0,1 / ln 0,8', () => {
 		expect(answer(solve('0.8^n<0.1'))).toBe(
-			'S=]\\dfrac{\\ln\\left(\\dfrac{1}{10}\\right)}{\\ln\\left(\\dfrac{4}{5}\\right)};+\\infty['
+			'n>\\dfrac{\\ln\\left(0{,}1\\right)}{\\ln\\left(0{,}8\\right)}\\approx10{,}32'
 		);
 	});
 
