@@ -18,5 +18,5 @@ La prochaine enquête de l'Institut portera sur la question suivante : « Lisez-
 Un sondage ne dit quelque chose de la population que si l'**échantillon** lui ressemble. Ici, il y a un **biais de sélection** : seules les personnes qui aiment les sondages ont répondu.
 
 - Un bon échantillon se tire **au hasard** dans toute la population, et on s'assure que les personnes difficiles à joindre sont aussi représentées.
-- Même un très **grand** échantillon ne corrige pas un biais : un million de réponses d'amateurs de sondages donneraient toujours 100 %.
+- Même un très **grand** échantillon ne corrige pas un biais : un million de réponses d'amateurs de sondages donneraient toujours 100 %. En 1936, le magazine américain _Literary Digest_ a recueilli 2,4 millions de réponses et prédit la défaite du président Roosevelt. Roosevelt a été largement réélu : le magazine avait surtout interrogé ses abonnés et des propriétaires de téléphone ou de voiture, plus riches que la moyenne. L'institut Gallup, avec un échantillon bien plus petit mais mieux choisi, avait vu juste.
 - Ce piège est fréquent : un sondage en ligne sur un site de jeux vidéo trouvera beaucoup de joueurs ; un avis laissé sur un restaurant vient surtout des clients très contents ou très mécontents.

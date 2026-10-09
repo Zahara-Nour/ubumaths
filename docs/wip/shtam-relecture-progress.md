@@ -35,6 +35,7 @@ Branche `relecture/shtam` (worktree `ubumaths-wt-relecture`).
 | 28  | 2026-12-24 | L'échiquier du Czar (`yoyolande-echiquier-du-czar`)                                             | ✅ validé — Père Ubu signe (pas Mère Ubu), pari symétrique (1 000 gidouilles d'or), fin : le Czar compte lui-même (500 milliards d'années), titre « manque de finir sur la paille »                |
 | 29  | 2026-12-28 | La soupe de Père Ubu (`yoyolande-soupe-de-pere-ubu`, ex-`yoyolande-asymptote-patiente`)         | ✅ validé — réécrit sans personnification : soupe qui tend vers 20 °C (Newton), titre « refroidit, son appétit non », chapô « tout vient à point… sauf »                                           |
 | 30  | 2026-12-31 | Les logarithmes du Cabinet (`yoyolande-logarithme-comptables`)                                  | ✅ validé — réécrit : rappel de la machine arrêtée (art. 24), Laplace « doublé la vie », journées doublées, salaire « ×2 » = +0,3 gidouille ; chapô « travailler plus pour gagner plus »           |
+| 31  | 2027-01-04 | Le sondage sur les sondages (`pifometrie-sondage-sondages`)                                     | ✅ validé — ajout du Literary Digest (1936) au vrai du faux ; titre et chapô (« sans appel ») gardés                                                                                               |
 
 ## Outillage ajouté pendant la relecture
 
