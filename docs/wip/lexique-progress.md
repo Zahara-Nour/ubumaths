@@ -155,7 +155,7 @@ suis ») :
   simplifier → simplification) : un dérivé ne précède jamais son terme (test).
 - **0c — définitions** : 14 fausses et 10 circulaires d'abord, puis homonymes (sens manquants,
   entrées séparées : cube, base, racine…) et définitions inadaptées ; relecture de David par
-  lots.
+  lots. ⏳ Proposition prête (2026-10-09) : [lexique/lot0c-definitions.md](lexique/lot0c-definitions.md) — 116 entrées (16 fausses, 11 circulaires, 54 sens, 35 niveau), décisions dans `lexique/lot0c-decisions.json` ; relecture par David sur https://claude.ai/artifact/9jvhVk9fdx75xy3aWDbVAy (base `avis`, documents `t<rang dans la liste>`).
 - **0d — manquants** (Q4), `1_GEN`, formes conjuguées des consignes et liste des mots jamais
   repérés (tests 4 à 6), utiles au lot 2.
 
