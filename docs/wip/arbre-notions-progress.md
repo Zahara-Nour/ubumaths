@@ -729,3 +729,16 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 mathématique > et, ou, non` ; 4 exercices de 2de, rangement secondaire → `Raisonnements >
 contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé (le rangement
   est une métadonnée, pas une modification du contenu).
+
+- **RANGEMENTS EN PROD (2026-10-09, PR #981).** Migration de données
+  `20261011200000_rangements_modeles_exercices` : 1 005 modèles → `classification_node_id`,
+  328 exercices → 450 `exercise_classifications` (premier nœud = principal), « debug » exclu,
+  types de source « Bac » (7) et « Concours » (1). Résolution stricte des chemins ;
+  `updated_at` préservé (triggers de date suspendus le temps du remplissage) ; garde « rien
+  déjà rangé » ; vérification « tout ou rien » ; `lock_timeout` 5 s. Preuve : le test fabrique
+  des copies des identifiants de la prod puis rejoue le fichier (comparaison intégrale +
+  branches d'échec) ; neutralisations rouges ; intégration 186 fichiers verts ; audit sans
+  bloquant (374/374 chemins résolus en prod, RLS inchangée). Vérifié prod : 1 005 / 450 / 328
+  principaux / 8 types, dates inchangées, triggers réactivés. **Suite : séquence C5** —
+  (2) transfert des liens modèles → points (lots à valider par David, contrôle de cohérence
+  avec le nœud du modèle), (3) bascule du code, (4) suppression de l'ancien monde (arrêt).
