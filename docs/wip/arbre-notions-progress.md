@@ -778,3 +778,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     123 modèles mais aucun point (par exemple « somme » : 30 modèles, alors que les points du
     CP sont sur « calcul astucieux », « tables » et « calcul posé »).
   - Q3 (la passe « bornes ») : mon avis est donné, la décision de David est en attente.
+- **2026-10-09 — Lot de l'étape 2 de C5 proposé** : `c5-transfert-liens.md` et le CSV des 495
+  couples, à valider par David.
+  - 341 couples se règlent automatiquement, 151 demandent une décision : 53 choix,
+    47 déplacements de modèle, 10 retags, 15 retraits, 14 remontées de points, 11 fusions,
+    1 doublon.
+  - 17 cas sont à trancher, regroupés en 14 questions.
+  - La simulation, avec toutes les corrections appliquées, ne trouve aucune violation de la
+    règle.
+  - Effets : 56 modèles et 4 rangements d'exercices changent de nœud ; 13 points sont
+    re-rattachés ; 5 sous-notions se vident (à archiver ?).
+  - La question d'accès de la future migration est posée à David. Ne rien écrire en base avant
+    sa validation.
