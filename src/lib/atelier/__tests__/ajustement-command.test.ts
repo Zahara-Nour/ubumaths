@@ -17,7 +17,8 @@ function run(text: string) {
 
 describe('`.ajustement` dans l’atelier', () => {
 	it('prévision : extrapolation', () => {
-		const result = run('.ajustement 1,2,3,4,5,6 : 12,15,19,22,27,30 ; x = 8');
+		// « ; » sépare (décision de David, 2026-10-09) : `1,2,3` est refusé
+		const result = run('.ajustement 1 ; 2 ; 3 ; 4 ; 5 ; 6 : 12 ; 15 ; 19 ; 22 ; 27 ; 30 ; x = 8');
 
 		expect(result?.output).toContain('Point moyen : G(3,5 ; 20,833)');
 		expect(result?.output).toContain('Pour x = 8 : y ≈ 37,419 (extrapolation)');

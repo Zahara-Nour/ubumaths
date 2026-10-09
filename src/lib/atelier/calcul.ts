@@ -60,6 +60,15 @@ import {
 } from '$lib/mathAST/parser/custom/tokenizer';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import {
+	decimalCommaDeep,
+	decimalCommaInput,
+	decimalCommaLatex,
+	decimalCommaProse,
+	decimalCommaStep,
+	decimalCommaText,
+	commaRefusal
+} from './decimal-comma';
 
 // =============================================================================
 // Types
@@ -150,6 +159,12 @@ export type ActionOutcome =
  * Le membre gauche doit avoir la forme d'un nom d'objet : sinon c'est un test
  * d'égalité, que le moteur sait déjà traiter (§2 L1).
  */
+/**
+ * Les commandes qui lisent des SÉRIES (`.stats 12 ; 15 ; 9`) : les seules où
+ * proposer `12 ; 15 ; 9` à la place de `12,15,9` donne une saisie qui passe.
+ */
+const SERIES_COMMANDS: ReadonlySet<string> = new Set(['stats', 'linreg']);
+
 /** Ce qu'on répond quand le moteur n'a pas su lire une commande, et ne l'a pas dit. */
 const UNREADABLE_COMMAND =
 	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
@@ -426,6 +441,15 @@ function substituteNames(session: CalcSession, argument: string): string | null 
 	let result = argument;
 	for (const object of session.atelier.objects) {
 		if (object.status !== 'ok') continue;
+		// Une liste n'a pas d'expression : ce sont ses VALEURS que lit une
+		// commande de séries (`.stats L` répondait « certaines valeurs ne sont
+		// pas des nombres valides »)
+		if (object.kind === 'list') {
+			if (object.values.length === 0) continue;
+			const alone = new RegExp(`(?<![A-Za-z_])${object.name}(?![A-Za-z_0-9(])`, 'g');
+			result = result.replace(alone, object.values.join(' ; '));
+			continue;
+		}
 		const expression = expressionOf(session.atelier, object.name);
 		if (!expression.ok) continue;
 
@@ -651,8 +675,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `π` → `\pi` (la constante) pour une commande de CALCUL seulement : les
 	// commandes de données sont sorties plus haut (`SIMULATIONS`), où `π` est
 	// une modalité comme une autre — `.filtrer L = π` (revue #911)
+	// La virgule décimale (`0,5x`) lue avant tout : l'atelier l'affiche, l'élève
+	// la recopie. `12,15,9` ou `max(1,2)` : refusés, avec la forme corrigée
+	const commaRefused = commaRefusal(typedArgument, input, {
+		series: SERIES_COMMANDS.has(known.name)
+	});
+	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
 	const rawArgument =
-		space === -1 ? '' : withPiCommand(resolved.slice(space + 1).replace(/’/g, "'"));
+		space === -1
+			? ''
+			: withPiCommand(decimalCommaInput(resolved.slice(space + 1)).replace(/’/g, "'"));
 	const mixed = mixedNotationMessage(rawArgument);
 	if (mixed !== null) return { kind: 'refus', message: mixed };
 	const derived = derivedSequence(session, rawArgument);
@@ -972,6 +1004,71 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
+	return resultWithDecimalComma(computeInput(session, text, provenance));
+}
+
+/**
+ * Ce qu'affiche une ligne, décimaux écrits à la française (`0,5`, `0{,}5`).
+ *
+ * L'arbre (`ast`) et l'écho (`input`) ne sont pas convertis.
+ */
+function resultWithDecimalComma(result: CalcResult): CalcResult {
+	switch (result.kind) {
+		case 'calcul':
+			return {
+				...result,
+				output: decimalCommaText(result.output),
+				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) })
+			};
+		case 'commande':
+			return {
+				...result,
+				output: decimalCommaText(result.output),
+				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
+				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
+			};
+		// La commande que cite un refus se relit avec ses virgules
+		// (`decimalCommaInput`) : il les écrit, comme le reste de la ligne
+		case 'refus':
+			return {
+				...result,
+				message: decimalCommaProse(result.message),
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
+			};
+		default:
+			return result;
+	}
+}
+
+/** Une action, décimaux à la française — même règle que `resultWithDecimalComma`. */
+function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
+	if (!outcome.ok) return outcome;
+	return {
+		...outcome,
+		output: decimalCommaText(outcome.output),
+		...(outcome.latex !== undefined && { latex: decimalCommaLatex(outcome.latex) }),
+		...(outcome.steps !== undefined && { steps: outcome.steps.map(decimalCommaStep) }),
+		...(outcome.table !== undefined && { table: decimalCommaDeep(outcome.table) })
+	};
+}
+
+/**
+ * `u(1,5)` sur une suite EXPLICITE : la virgule est décimale, et un rang
+ * décimal n'existe pas. Le moteur, lui, rendait 3 pour `u(n) = 2n`. Même
+ * message que pour une récurrence (`recurrenceTermsIn`).
+ */
+function decimalRankMessage(atelier: Atelier, input: string): string | null {
+	for (const [, name, rank] of input.matchAll(TERM)) {
+		if (atelier.get(name)?.kind !== 'sequence') continue;
+		if (/^\s*[-−]?\d+[.,]\d+\s*$/.test(rank)) {
+			return `Le rang de ${name} doit être un entier positif : ${name}(5), pas ${name}(${rank.trim()}).`;
+		}
+	}
+	return null;
+}
+
+function computeInput(session: CalcSession, text: string, provenance: Provenance): CalcResult {
 	const input = text.trim();
 	if (input === '') return { kind: 'vide' };
 
@@ -1058,8 +1155,16 @@ export function runInput(
 	if (mixed !== null) return { kind: 'refus', message: mixed };
 
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
+	// La règle de la virgule (décision de David, 2026-10-09) : `12,15,9`,
+	// `max(1,2)` et le couple `(1 ; 2)` sont refusés en français, plutôt que de
+	// montrer la réponse du moteur (« x\cdot .3 », une ligne jamais tapée)
+	const commaRefused = commaRefusal(withTerms.text, input, { couples: true });
+	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
+	const rank = decimalRankMessage(session.atelier, withTerms.text);
+	if (rank !== null) return { kind: 'refus', message: rank };
+
 	const result = session.engine.execute(
-		expandInput(session.atelier, withPiCommand(withTerms.text))
+		expandInput(session.atelier, withPiCommand(decimalCommaInput(withTerms.text)))
 	);
 	const rendered = renderResult(result);
 	return {
@@ -1205,6 +1310,15 @@ function variationTableOf(
  * @param argument - Le nombre demandé, pour « image d'un nombre »
  */
 export function runAction(
+	session: CalcSession,
+	actionId: string,
+	name: string,
+	argument?: string
+): ActionOutcome {
+	return outcomeWithDecimalComma(computeAction(session, actionId, name, argument));
+}
+
+function computeAction(
 	session: CalcSession,
 	actionId: string,
 	name: string,

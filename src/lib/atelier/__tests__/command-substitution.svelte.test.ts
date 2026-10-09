@@ -85,6 +85,7 @@ describe('ce que la substitution ne doit pas casser', () => {
 	it('n’abîme pas une commande de statistiques', () => {
 		const s = session();
 
-		expect(outputOf(runInput(s, '.stats 12,15,9'))).toContain('Effectif : 3');
+		// « ; » sépare (décision de David, 2026-10-09) : `12,15,9` est refusé
+		expect(outputOf(runInput(s, '.stats 12 ; 15 ; 9'))).toContain('Effectif : 3');
 	});
 });
