@@ -836,7 +836,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Audit mis à jour avec Q1, Q2 et Q4 : 56 facettes archivées ; 230 modèles, 177 points et
     51 exercices changent de nœud ; simulation sans violation. Q4 change le point de D36
     (→ TSPE-371), D37 (→ TSPE-343) et D38 (→ TSPE-353).
-  - Q3 (« triple et tiers »), Q5 à Q7 et la section D ne sont pas tranchées : ne pas les appliquer.
+  - Tranché ensuite (David) :
+    - **Q3** : « triple et tiers » n'a qu'un nœud, sous la multiplication ;
+    - **noms de Q4** gardés : « Vecteurs », « Espace », « Orthogonalité et distances dans l'espace » ;
+    - **Q5** : les notions-activités sont gardées, et « Suites et modélisation » devient « Modèles d'évolution » ;
+    - **Q7** : on archive les sous-notions que le lot viderait.
+  - Restent non tranchées : Q6 et la section D. Ne pas les appliquer.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;

@@ -5,7 +5,11 @@
 > - **Tranché par David (2026-10-09)** : les sections A et B ; **Q1** oui (« optimisation » se fond dans « variations ») ;
 >   **Q2** oui (« Décimaux : calculs » garde ses opérations, les techniques y sont versées) ; **Q3 « double et moitié »** :
 >   deux nœuds, rien ne bouge ; **Q4** : les trois paires « avec / sans coordonnées » sont refondues maintenant.
-> - **Reste à trancher** : Q3 « triple et tiers », les noms de Q4, Q5, Q6, Q7, la section D (fin du document).
+> - **Tranché ensuite par David (2026-10-09)** : **Q3 « triple et tiers »** : un seul nœud, sous la multiplication ;
+>   **noms de Q4** gardés (« Vecteurs », « Espace », « Orthogonalité et distances dans l'espace », et les sous-notions
+>   proposées) ; **Q5** : les notions-activités sont gardées, « Suites et modélisation » devient « Modèles d'évolution » ;
+>   **Q7** : les sous-notions que le lot viderait s'archivent (selon les réponses à D51 et D69).
+> - **Reste à trancher** : Q6 (proportionnalité) et la section D (renommages).
 >
 > Principe (ADR 0020 § 3 précisé le 2026-10-09) : **une notion n'a qu'un découpage, par contenu mathématique** — un objet,
 > une propriété ou une technique de calcul —, jamais par activité, par registre ou par outil ; ce que l'élève fait, ce sont
