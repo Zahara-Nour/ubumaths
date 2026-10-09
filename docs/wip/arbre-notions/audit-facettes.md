@@ -1,6 +1,13 @@
 # Audit des facettes de l'arbre des notions
 
-> **PROPOSITION du 2026-10-09, à valider par David.** Rien n'est écrit en base. Principe décidé par David le 2026-10-09
+> **Sections A et B VALIDÉES par David le 2026-10-09** (« A et B validées »).
+>
+> - **Q1 = oui** : « optimisation » se fond dans « variations ».
+> - Q2 à Q7 et la section D (renommages) attendent encore sa réponse.
+>
+> Rien n'est écrit en base.
+>
+> Proposition initiale du 2026-10-09 : Principe décidé par David le 2026-10-09
 > (ADR 0020 § 3 précisé) : **une notion n'a qu'un découpage, par contenu mathématique** — un objet, une propriété ou une
 > technique de calcul —, jamais par activité (reconnaître, calculer, compléter), par registre (lecture graphique,
 > problèmes en contexte) ou par outil (algorithmique). Ce que l'élève fait, ce sont les points du programme qui le disent.

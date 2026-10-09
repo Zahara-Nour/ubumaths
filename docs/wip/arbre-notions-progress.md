@@ -826,3 +826,13 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Questions à trancher : Q1 à Q7 (optimisation, Décimaux : calculs, doubles et triples,
     « avec / sans coordonnées », notions-activités, proportionnalité, archivages).
   - Renommages facultatifs : section D.
+- **2026-10-09 — Sections A et B de l'audit VALIDÉES par David.**
+  - Cela couvre les 55 facettes archivées, les 2 « définition » créées, et les modèles, points et
+    exercices qui suivent.
+  - **Q1 = oui** (David) : « optimisation » se fond dans « variations ».
+  - Q2 à Q7 et la section D ne sont pas tranchées : ne pas les appliquer.
+  - David a validé l'ordre suivant :
+    1. l'audit ;
+    2. les questions restantes du lot ;
+    3. la question d'accès ;
+    4. la migration.
