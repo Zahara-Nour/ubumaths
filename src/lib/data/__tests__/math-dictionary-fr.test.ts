@@ -39,6 +39,20 @@ const LOT_0C: ValidatedDefinitions = JSON.parse(
 	readFileSync('tests/fixtures/lexique/definitions-lot0c.json', 'utf-8')
 );
 
+/** Mots ajoutés et validés par David (lot 0d-1, 2026-10-09) : copie figée de docs/wip/lexique/lot0d-mots.md. */
+interface AddedWords {
+	entrees: {
+		term: string;
+		sense: string | null;
+		grade: string;
+		definitions: { grade: string; content: string }[];
+	}[];
+	synonymes: { term: string; ajouts: string[] }[];
+}
+const LOT_0D: AddedWords = JSON.parse(
+	readFileSync('tests/fixtures/lexique/mots-lot0d.json', 'utf-8')
+);
+
 /** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
 function normalizeName(text: string): string {
 	return text
@@ -243,6 +257,49 @@ describe('math-dictionary-fr', () => {
 			for (const removed of expected.synonymesRetires) {
 				if (term.synonyms?.includes(removed))
 					wrong.push(`${expected.term} : synonyme « ${removed} »`);
+			}
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	// Mots que le programme officiel donne à apprendre, homonymes et notions des
+	// classes actuelles : chaque texte a été relu par David.
+	it('should contain the words added in lot 0d, word for word', () => {
+		expect(LOT_0D.entrees).toHaveLength(83);
+		expect(LOT_0D.synonymes).toHaveLength(5);
+		const wrong: string[] = [];
+		for (const expected of LOT_0D.entrees) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
+			);
+			if (!term) {
+				wrong.push(`${expected.term} : introuvable`);
+				continue;
+			}
+			if (term.grade !== expected.grade) {
+				wrong.push(`${expected.term} : niveau ${term.grade}, attendu ${expected.grade}`);
+			}
+			const actual = (term.definitions?.items ?? []).map((i) => `${i.grade} : ${i.content}`);
+			const wanted = expected.definitions.map((i) => `${i.grade} : ${i.content}`);
+			if (actual.join('\n') !== wanted.join('\n')) {
+				wrong.push(
+					`${expected.term} : « ${actual.join(' / ')} », attendu « ${wanted.join(' / ')} »`
+				);
+			}
+		}
+		for (const expected of LOT_0D.synonymes) {
+			// Les cinq termes n'ont pas de sens : un homonyme ajouté plus tard ne doit pas être visé
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && !t.sense && !t.derivedFrom
+			);
+			if (!term) {
+				wrong.push(`${expected.term} : introuvable`);
+				continue;
+			}
+			for (const synonym of expected.ajouts) {
+				if (!term.synonyms?.includes(synonym)) {
+					wrong.push(`${expected.term} : synonyme « ${synonym} » absent`);
+				}
 			}
 		}
 		expect(wrong).toEqual([]);

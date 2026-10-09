@@ -1366,7 +1366,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CE2'
+		grade: 'CE2',
+		synonyms: ['fractions équivalentes']
 	},
 	{
 		term: 'mise au même dénominateur',
@@ -3823,7 +3824,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5'
+		grade: '5',
+		synonyms: ['demi-tour']
 	},
 	{
 		term: 'translation',
@@ -4628,7 +4630,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: 'CP',
-		synonyms: ['parallélépipède rectangle']
+		synonyms: ['parallélépipède rectangle', 'pavé droit']
 	},
 	{
 		term: 'pentagone',
@@ -4689,7 +4691,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CM1'
+		grade: 'CM1',
+		synonyms: ['prisme droit']
 	},
 	{
 		term: 'pyramide',
@@ -4951,7 +4954,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '4'
+		grade: '4',
+		synonyms: ['réunion']
 	},
 	{
 		term: 'intersection',
@@ -5131,6 +5135,1152 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: 'CE1'
+	},
+
+	// =========================================================================
+	// AJOUTS DU LOT 0d (vocabulaire des programmes officiels, validé par David)
+	// =========================================================================
+	{
+		term: 'cube',
+		sense: 'solide',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{ grade: 'CP', content: 'Solide qui a $6$ faces carrées, toutes pareilles, comme un dé.' },
+				{
+					grade: 'CM1',
+					content:
+						'Pavé droit dont les $6$ faces sont des carrés de même taille ; il a $12$ arêtes et $8$ sommets.'
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'degré',
+		sense: 'angle',
+		tags: ['grandeurs', 'géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Unité de mesure des angles, notée $°$ : l'angle droit mesure $90°$, un demi-tour $180°$."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'base',
+		sense: 'solide',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Dans une pyramide, la face sur laquelle elle est posée, qui n'est pas forcément un triangle. Un prisme ou un cylindre a deux bases, parallèles et superposables."
+				}
+			]
+		},
+		grade: 'CE2'
+	},
+	{
+		term: 'base',
+		sense: 'vecteurs',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Une base du plan est formée de deux vecteurs non colinéaires $\\vec{i}$ et $\\vec{j}$ ; elle est orthonormée si ces vecteurs sont orthogonaux et de norme $1$.'
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Une base de l'espace est formée de trois vecteurs non coplanaires $\\vec{i}$, $\\vec{j}$, $\\vec{k}$ : tout vecteur s'écrit d'une seule façon $x\\vec{i} + y\\vec{j} + z\\vec{k}$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'racine',
+		sense: 'polynôme',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$. Ainsi, $2$ est une racine de $x^2 - 4$, car $2^2 - 4 = 0$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'échelle',
+		sense: 'axe gradué',
+		tags: ['statistiques', 'grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Sur un axe gradué ou un diagramme, ce que représente l'écart entre deux graduations : par exemple, $1$ carreau pour $10$ élèves."
+				}
+			]
+		},
+		grade: 'CE2'
+	},
+	{
+		term: 'image',
+		sense: 'transformation',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"L'image d'un point par une transformation (symétrie, translation…) est le point sur lequel elle l'envoie : par la symétrie de centre $O$, l'image de $M$ est le point $M'$ tel que $O$ soit le milieu de $[MM']$."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'complémentaire',
+		sense: 'ensemble',
+		tags: ['logique', 'probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Le complémentaire d'un ensemble $A$ est l'ensemble des éléments qui ne sont pas dans $A$ : pour un dé, le complémentaire de « obtenir un nombre pair » est « obtenir un nombre impair »."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'plan',
+		sense: 'lieu',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Dessin d'un lieu vu de dessus, qui aide à se repérer : le plan de la classe, le plan du quartier."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'série statistique',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Liste des valeurs relevées dans une enquête ou une expérience : les notes d'une classe, les tailles des élèves…"
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'fonction paire',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Une fonction $f$ est paire si, pour tout $x$ de son ensemble de définition, $-x$ en fait aussi partie et $f(-x) = f(x)$ : sa courbe est symétrique par rapport à l'axe des ordonnées. Ex : $x \\mapsto x^2$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'fonction impaire',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Une fonction $f$ est impaire si, pour tout $x$ de son ensemble de définition, $-x$ en fait aussi partie et $f(-x) = -f(x)$ : sa courbe est symétrique par rapport à l'origine. Ex : $x \\mapsto x^3$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'fonction réciproque',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Quand une fonction $f$ associe à chaque $x$ d'un intervalle un nombre $y$, et que chaque $y$ vient d'un seul $x$, la fonction réciproque fait le chemin inverse : elle associe $x$ à $y$. Ex : $\\ln$ est la réciproque de $\\exp$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'impossible',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Se dit d'un évènement qui ne peut jamais se produire : obtenir $7$ en lançant un dé à six faces."
+				},
+				{ grade: '6', content: 'Un évènement impossible a une probabilité égale à $0$.' }
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'possible',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Se dit d'un évènement qui peut se produire, sans que ce soit sûr : obtenir $6$ en lançant un dé."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'certain',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Se dit d'un évènement qui se produit à coup sûr : obtenir un nombre plus petit que $7$ en lançant un dé à six faces."
+				},
+				{ grade: '6', content: 'Un évènement certain a une probabilité égale à $1$.' }
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'probable',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Se dit d'un évènement qui a beaucoup de chances de se produire : en lançant un dé, obtenir un nombre plus grand que $1$ est probable."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'peu probable',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Se dit d'un évènement qui a peu de chances de se produire : tirer la seule boule rouge d'un sac qui contient aussi $20$ boules bleues."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'une chance sur deux',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						'Un évènement a une chance sur deux de se produire quand il a autant de chances de se produire que de ne pas se produire : obtenir pile en lançant une pièce.'
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'compris entre',
+		tags: ['entiers', 'transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Un nombre est compris entre deux nombres s'il est plus grand que le premier et plus petit que le second : $35$ est compris entre $30$ et $40$."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'en fonction de',
+		tags: ['fonctions', 'calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Une grandeur s'exprime en fonction d'une autre quand on peut la calculer à partir d'elle : le prix payé en fonction du nombre de places, le périmètre d'un carré en fonction de son côté."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'condition nécessaire',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						'« B est une condition nécessaire pour A » veut dire que A ne peut pas être vrai sans B : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être pair est une condition nécessaire pour être multiple de $4$.'
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'condition suffisante',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"« A est une condition suffisante pour B » veut dire qu'il suffit que A soit vrai pour que B le soit : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être multiple de $4$ est une condition suffisante pour être pair."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'disque',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{ grade: 'CP', content: 'Figure ronde et pleine, comme une pièce posée à plat.' },
+				{
+					grade: '6',
+					content:
+						'Ensemble des points situés à une distance du centre inférieure ou égale au rayon ; le cercle en est le bord.'
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'boule',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{ grade: 'CP', content: 'Solide tout rond, comme une balle.' },
+				{
+					grade: '3',
+					content:
+						"Ensemble des points de l'espace situés à une distance du centre inférieure ou égale au rayon ; la sphère en est la surface."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'corde',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Segment qui joint deux points d'un cercle. Une corde qui passe par le centre est un diamètre."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'angle nul',
+		tags: ['géométrie', 'grandeurs'],
+		definitions: {
+			items: [{ grade: '6', content: 'Angle dont les deux côtés sont confondus : il mesure $0°$.' }]
+		},
+		grade: '6'
+	},
+	{
+		term: 'angle plat',
+		tags: ['géométrie', 'grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Angle dont les deux côtés sont dans le prolongement l'un de l'autre : il mesure $180°$."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'angle plein',
+		tags: ['géométrie', 'grandeurs'],
+		definitions: {
+			items: [{ grade: '6', content: 'Angle qui fait un tour complet : il mesure $360°$.' }]
+		},
+		grade: '6'
+	},
+	{
+		term: 'angle saillant',
+		tags: ['géométrie', 'grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Angle dont la mesure est comprise entre $0°$ et $180°$ : c'est l'angle que l'on mesure d'habitude avec le rapporteur."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'angles supplémentaires',
+		tags: ['géométrie', 'grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Deux angles sont supplémentaires quand la somme de leurs mesures est égale à $180°$.'
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'grand cercle',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Sur une sphère, cercle qui a le même centre et le même rayon que la sphère : l'équateur est un grand cercle de la Terre."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'ensemble vide',
+		tags: ['logique', 'probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Ensemble qui ne contient aucun élément, noté $\\varnothing$ : un évènement impossible correspond à l'ensemble vide."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'contenance',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Quantité de liquide qu'un récipient peut contenir ; on la mesure en litres ($\\text{L}$), décilitres ($\\text{dL}$) ou centilitres ($\\text{cL}$)."
+				}
+			]
+		},
+		grade: 'CE2'
+	},
+	{
+		term: 'triangle rectangle',
+		tags: ['géométrie'],
+		definitions: { items: [{ grade: 'CE1', content: 'Triangle qui a un angle droit.' }] },
+		grade: 'CE1'
+	},
+	{
+		term: 'axe de symétrie',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						'Droite le long de laquelle on peut plier une figure pour que ses deux moitiés se superposent exactement.'
+				}
+			]
+		},
+		grade: 'CE2'
+	},
+	{
+		term: 'nombre ordinal',
+		tags: ['entiers', 'numération'],
+		definitions: {
+			items: [
+				{ grade: 'CP', content: 'Nombre qui indique un rang : premier, deuxième, troisième…' }
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'heure',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content: 'Unité de durée, notée $\\text{h}$ : une journée dure $24$ heures.'
+				},
+				{
+					grade: 'CE1',
+					content: 'Une heure dure $60$ minutes : $1\\,\\text{h} = 60\\,\\text{min}$.'
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'minute',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content: 'Unité de durée, notée $\\text{min}$ : il y a $60$ minutes dans une heure.'
+				},
+				{
+					grade: 'CM1',
+					content: 'Une minute dure $60$ secondes : $1\\,\\text{min} = 60\\,\\text{s}$.'
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'gramme',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						'Unité de masse, notée $\\text{g}$ : un trombone pèse environ $1$ g. Il faut $1\\,000$ grammes pour faire $1$ kilogramme.'
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'kilogramme',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Unité de masse, notée $\\text{kg}$ : $1\\,\\text{kg} = 1\\,000\\,\\text{g}$. Un litre d'eau pèse environ $1$ kg."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'litre',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Unité de contenance, notée $\\text{L}$ : une bouteille d'eau contient souvent $1$ L. $1\\,\\text{L} = 10\\,\\text{dL} = 100\\,\\text{cL}$."
+				}
+			]
+		},
+		grade: 'CE2'
+	},
+	{
+		term: 'retenue',
+		tags: ['operations', 'entiers'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Dans une opération posée, le chiffre que l'on reporte dans la colonne de gauche : $7 + 5 = 12$, on écrit $2$ et on retient $1$."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'demi',
+		tags: ['fractions'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Un demi, c'est une des $2$ parts égales d'un tout partagé en $2$ : $\\frac{1}{2}$. Deux demis font un tout."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'programme de calcul',
+		tags: ['calcul-littéral', 'operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Suite d'instructions de calcul à appliquer à un nombre : « choisis un nombre, multiplie-le par $3$, puis ajoute $5$ »."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'algorithme',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Suite d'instructions précises qui permet d'obtenir un résultat ou de résoudre un problème, comme une recette."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'boucle',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Partie d'un programme répétée plusieurs fois : un nombre de fois fixé (« répéter $10$ fois ») ou tant qu'une condition est vraie."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'instruction conditionnelle',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Instruction d'un programme exécutée seulement si une condition est vraie : « si … alors … sinon … »."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'million',
+		tags: ['entiers', 'numération'],
+		definitions: { items: [{ grade: 'CM2', content: 'Mille milliers : $1\\,000\\,000$.' }] },
+		grade: 'CM2'
+	},
+	{
+		term: 'milliard',
+		tags: ['entiers', 'numération'],
+		definitions: { items: [{ grade: '6', content: 'Mille millions : $1\\,000\\,000\\,000$.' }] },
+		grade: '6'
+	},
+	{
+		term: 'nombre mixte',
+		tags: ['fractions'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Écriture d'un nombre comme un entier plus une fraction plus petite que $1$ : $2 + \\frac{3}{4}$, qui vaut $\\frac{11}{4}$."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: "point d'intersection",
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{ grade: '6', content: 'Point commun à deux droites, ou à deux lignes, qui se coupent.' }
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'cercle circonscrit',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Cercle qui passe par les trois sommets d'un triangle ; son centre est le point de rencontre des médiatrices des côtés."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: "taux d'évolution",
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Variation d'une grandeur rapportée à sa valeur de départ, souvent en pourcentage : passer de $50$ à $60$, c'est un taux d'évolution de $\\frac{60 - 50}{50} = 20\\,\\%$."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'nombre réel',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Nombre qui repère un point sur une droite graduée : les entiers, les décimaux et les fractions, mais aussi $\\sqrt{2}$ ou $\\pi$. Leur ensemble se note $\\mathbb{R}$.'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'colinéaire',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Deux vecteurs sont colinéaires si l'un est égal à l'autre multiplié par un nombre : $\\vec{v} = k\\vec{u}$. Les points $A$, $B$, $C$ sont alignés quand $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'vecteur directeur',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Vecteur non nul qui donne la direction d'une droite : $\\overrightarrow{AB}$ est un vecteur directeur de la droite $(AB)$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'déterminant',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Le déterminant des vecteurs $\\vec{u}(x ; y)$ et $\\vec{v}(x' ; y')$ est le nombre $xy' - x'y$ ; il est nul si et seulement si les deux vecteurs sont colinéaires."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'équation réduite',
+		tags: ['fonctions', 'géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Une droite non parallèle à l'axe des ordonnées a une équation de la forme $y = mx + p$ : c'est son équation réduite ($m$ est le coefficient directeur, $p$ l'ordonnée à l'origine)."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'sens de variation',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Le sens de variation d'une fonction dit sur quels intervalles elle est croissante ou décroissante ; on le résume dans un tableau de variations."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'fonction de référence',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Fonction dont on connaît la courbe et les variations : $x \\mapsto x^2$, $x \\mapsto \\frac{1}{x}$, $x \\mapsto \\sqrt{x}$, $x \\mapsto x^3$, $x \\mapsto |x|$.'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'histogramme',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Diagramme qui représente des données regroupées en classes : pour chaque classe, un rectangle dont l'aire est proportionnelle à l'effectif."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'écart interquartile',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Différence $Q_3 - Q_1$ entre le troisième et le premier quartile : plus il est petit, plus les valeurs centrales de la série sont regroupées.'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'forme factorisée',
+		tags: ['calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Écriture d'une expression sous forme d'un produit : $(x - 1)(x + 3)$ est une forme factorisée de $x^2 + 2x - 3$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'probabilité conditionnelle',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Probabilité que l'évènement $B$ se réalise quand on sait que $A$ est réalisé ; on la note $P_A(B)$ et $P_A(B) = \\frac{P(A \\cap B)}{P(A)}$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'croissance linéaire',
+		tags: ['suites', 'fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						'Une grandeur a une croissance linéaire quand elle augmente de la même quantité à chaque étape : $100$, $110$, $120$, $130$… (on ajoute $10$).'
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{
+		term: 'croissance exponentielle',
+		tags: ['suites', 'fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						'Une grandeur a une croissance exponentielle quand elle est multipliée par le même nombre, plus grand que $1$, à chaque étape : $100$, $110$, $121$, $133{,}1$… (on multiplie par $1{,}1$).'
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{
+		term: 'discret',
+		tags: ['suites'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						"Se dit d'une grandeur qui évolue par étapes (chaque année, chaque mois…), par opposition à « continu » : une suite modélise une évolution discrète."
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{
+		term: 'discriminant',
+		tags: ['fonctions', 'équations'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Pour $ax^2 + bx + c$ ($a \\neq 0$), le nombre $\\Delta = b^2 - 4ac$ : son signe dit si l'équation $ax^2 + bx + c = 0$ a deux, une ou aucune solution réelle."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'forme canonique',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Écriture d'une fonction polynôme du second degré sous la forme $a(x - \\alpha)^2 + \\beta$ : le sommet de sa parabole est le point $(\\alpha ; \\beta)$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'évènements indépendants',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Deux évènements $A$ et $B$ sont indépendants si $P(A \\cap B) = P(A) \\times P(B)$ : savoir que l'un est réalisé ne change pas la probabilité de l'autre."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'épreuve de Bernoulli',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Expérience aléatoire à deux issues : le succès, de probabilité $p$, et l'échec, de probabilité $1 - p$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'schéma de Bernoulli',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content: 'Répétition de $n$ épreuves de Bernoulli identiques et indépendantes.'
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'loi binomiale',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						'Loi du nombre de succès dans un schéma de Bernoulli de $n$ épreuves de probabilité de succès $p$ : $P(X = k) = \\binom{n}{k} p^k (1 - p)^{n - k}$.'
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'coefficient binomial',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"$\\binom{n}{k}$ (« $k$ parmi $n$ ») : le nombre de façons de choisir $k$ éléments parmi $n$, sans tenir compte de l'ordre. Ex : $\\binom{4}{2} = 6$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'factorielle',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"$n! = 1 \\times 2 \\times \\cdots \\times n$ pour $n \\geq 1$, et $0! = 1$ : c'est le nombre de façons de ranger $n$ objets. Ex : $4! = 24$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'raisonnement par récurrence',
+		tags: ['logique', 'suites'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Pour démontrer qu'une propriété $P(n)$ est vraie pour tout entier $n \\geq n_0$ : on vérifie $P(n_0)$ (initialisation), puis on montre que si $P(n)$ est vraie, alors $P(n + 1)$ l'est aussi (hérédité)."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'asymptote',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Droite dont la courbe se rapproche autant qu'on veut : si $\\lim_{x \\to +\\infty} f(x) = 2$, la droite d'équation $y = 2$ est asymptote horizontale ; si $\\lim_{x \\to 1} f(x) = +\\infty$, la droite d'équation $x = 1$ est asymptote verticale."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'fonction composée',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						'La composée de $u$ suivie de $v$ est la fonction $x \\mapsto v(u(x))$ : on applique $u$, puis $v$ au résultat. Ex : $x \\mapsto \\sqrt{x^2 + 1}$.'
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'dérivée seconde',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Dérivée de la dérivée : $f'' = (f')'$. Son signe indique où $f$ est convexe ($f'' \\geq 0$) ou concave ($f'' \\leq 0$)."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: "point d'inflexion",
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Point où la courbe traverse sa tangente : la fonction y passe de convexe à concave, ou l'inverse ; $f''$ y change de signe."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'théorème des valeurs intermédiaires',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Si $f$ est continue sur $[a ; b]$, alors pour tout réel $k$ compris entre $f(a)$ et $f(b)$, l'équation $f(x) = k$ a au moins une solution dans $[a ; b]$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'équation différentielle',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Équation dont l'inconnue est une fonction, reliée à sa dérivée : $y' = 2y$ a pour solutions les fonctions $x \\mapsto Ce^{2x}$."
+				}
+			]
+		},
+		grade: 'T_SPE'
 	},
 
 	// =========================================================================

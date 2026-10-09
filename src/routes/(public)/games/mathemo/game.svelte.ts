@@ -48,9 +48,12 @@ const allWordsNormalized = new Set(
  * Returns normalized term strings (without accents) for the game.
  */
 function getWordsForLevel(level: GradeCode): string[] {
-	return getTermsForGrade(level)
+	// Un homonyme (« base » d'une puissance, d'un solide, de vecteurs) ne doit
+	// pas sortir plus souvent qu'un autre mot
+	const words = getTermsForGrade(level)
 		.filter((t) => !t.term.includes(' '))
 		.map((t) => normalizeString(t.term));
+	return [...new Set(words)];
 }
 
 /**
