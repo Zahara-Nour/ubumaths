@@ -4,12 +4,12 @@
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import {
+		isTermVisibleTo,
 		resolveGradedField,
 		type GradedField,
 		type MathTerm
 	} from '$lib/data/math-dictionary-fr';
 	import { resolve } from '$app/paths';
-	import { hasAccessToGrade } from '$lib/utils/grades';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
@@ -40,6 +40,7 @@
 				'2',
 				'1_GEN',
 				'1_SPE',
+				'1_TECHNO',
 				'T_SPE',
 				'T_EXP'
 			] as const
@@ -160,7 +161,7 @@
 		// Grade filter
 		if (selectedLevel !== 'all') {
 			const readerGrade = selectedLevel as GradeCode;
-			terms = terms.filter((t) => hasAccessToGrade(readerGrade, t.grade));
+			terms = terms.filter((t) => isTermVisibleTo(t, readerGrade));
 		}
 
 		// Tag filter

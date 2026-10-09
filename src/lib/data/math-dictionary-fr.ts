@@ -4,6 +4,8 @@
  *
  * Chaque définition est rangée à un niveau : la première au niveau du terme,
  * les suivantes à des niveaux plus avancés (tests de math-dictionary-fr.test.ts).
+ * Un lecteur voit ce qui est rangé à son niveau ou avant (hiérarchie des niveaux),
+ * plus ce que `sharedWith` partage avec sa filière (1re spé, générale, techno).
  * Relecture contre les programmes officiels : docs/wip/lexique/relecture-bo.md.
  */
 
@@ -18,6 +20,8 @@ import { hasAccessToGrade } from '$lib/utils/grades';
 export interface GradedContent {
 	grade: GradeCode;
 	content: string; // ubumark
+	/** Filières parallèles qui lisent aussi ce contenu (la 1re générale pour une définition de 1re spé). */
+	sharedWith?: GradeCode[];
 }
 
 /**
@@ -31,11 +35,27 @@ export interface GradedField {
 }
 
 /**
+ * Un lecteur lit ce qui est rangé à son niveau ou avant, et ce qui est partagé
+ * avec sa filière ou avec une filière qu'il a suivie (la Tle maths complémentaires
+ * suit la 1re générale).
+ */
+export function canRead(
+	readerGrade: GradeCode,
+	grade: GradeCode,
+	sharedWith: readonly GradeCode[] = []
+): boolean {
+	return (
+		hasAccessToGrade(readerGrade, grade) ||
+		sharedWith.some((other) => hasAccessToGrade(readerGrade, other))
+	);
+}
+
+/**
  * Resolve a graded field for a given reader grade.
  * Returns the content strings appropriate for the reader.
  */
 export function resolveGradedField(field: GradedField, readerGrade: GradeCode): string[] {
-	const eligible = field.items.filter((i) => hasAccessToGrade(readerGrade, i.grade));
+	const eligible = field.items.filter((i) => canRead(readerGrade, i.grade, i.sharedWith));
 
 	if (field.mode === 'discriminant') {
 		return eligible.length > 0 ? [eligible[eligible.length - 1].content] : [];
@@ -73,6 +93,11 @@ export interface MathTerm {
 	image?: string;
 	/** Grade at which the term is introduced. */
 	grade: GradeCode;
+	/**
+	 * Filières parallèles qui lisent aussi ce terme : « seuil », de 1re spé, est au
+	 * programme de 1re générale. Sa définition de son propre niveau porte le même `sharedWith`.
+	 */
+	sharedWith?: GradeCode[];
 	synonyms?: string[];
 	/** Formes conjuguées reconnues dans les énoncés (« résous », « résolvez » pour « résoudre »). */
 	forms?: string[];
@@ -1787,11 +1812,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Expression comme $ax^2 + bx + c$ ou $ax^3 + bx^2 + cx + d$ : une somme de termes « nombre × puissance de $x$ ». Le plus grand exposant de coefficient non nul est son degré : $2x^2 + 3x - 1$ est de degré $2$.'
+						'Expression comme $ax^2 + bx + c$ ou $ax^3 + bx^2 + cx + d$ : une somme de termes « nombre × puissance de $x$ ». Le plus grand exposant de coefficient non nul est son degré : $2x^2 + 3x - 1$ est de degré $2$.',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'degré',
@@ -1807,7 +1834,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Plus grand exposant de $x$ dont le coefficient n'est pas nul : $2x^3 + x$ est de degré $3$."
+						"Plus grand exposant de $x$ dont le coefficient n'est pas nul : $2x^3 + x$ est de degré $3$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
@@ -3022,11 +3050,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Fonction dérivée de $f$ : la fonction $f'$ qui, à chaque nombre $x$ où $f$ est dérivable, associe le nombre dérivé $f'(x)$."
+						"Fonction dérivée de $f$ : la fonction $f'$ qui, à chaque nombre $x$ où $f$ est dérivable, associe le nombre dérivé $f'(x)$.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'tangente',
@@ -3037,11 +3067,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Tangente à la courbe de $f$ au point d'abscisse $a$ : la droite qui passe par ce point et dont le coefficient directeur est le nombre dérivé $f'(a)$. C'est la position limite des sécantes qui passent par ce point."
+						"Tangente à la courbe de $f$ au point d'abscisse $a$ : la droite qui passe par ce point et dont le coefficient directeur est le nombre dérivé $f'(a)$. C'est la position limite des sécantes qui passent par ce point.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'nombre dérivé',
@@ -3051,11 +3083,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Nombre $f'(a)$ dont se rapproche le taux de variation $\\frac{f(a+h) - f(a)}{h}$ quand $h$ se rapproche de $0$. C'est le coefficient directeur de la tangente à la courbe au point d'abscisse $a$."
+						"Nombre $f'(a)$ dont se rapproche le taux de variation $\\frac{f(a+h) - f(a)}{h}$ quand $h$ se rapproche de $0$. C'est le coefficient directeur de la tangente à la courbe au point d'abscisse $a$.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'taux de variation',
@@ -3064,11 +3098,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '1_SPE',
-					content: '$\\frac{f(b) - f(a)}{b - a}$ : variation moyenne de $f$ entre $a$ et $b$.'
+					content: '$\\frac{f(b) - f(a)}{b - a}$ : variation moyenne de $f$ entre $a$ et $b$.',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
 		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO'],
 		synonyms: ["taux d'accroissement"]
 	},
 	{
@@ -3258,7 +3294,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Fonction de $\\mathbb{N}$ dans $\\mathbb{R}$. Liste ordonnée de nombres : $u_0, u_1, u_2, \\ldots$'
+						'Fonction de $\\mathbb{N}$ dans $\\mathbb{R}$. Liste ordonnée de nombres : $u_0, u_1, u_2, \\ldots$',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
@@ -3276,7 +3313,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 					content:
 						"Chacun des nombres d'une suite. Ex : dans la suite $3$, $6$, $9$, $12$…, le deuxième terme est $6$."
 				},
-				{ grade: '1_SPE', content: "Élément d'une suite. $u_n$ est le terme de rang $n$." }
+				{
+					grade: '1_SPE',
+					content: "Élément d'une suite. $u_n$ est le terme de rang $n$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
+				}
 			]
 		},
 		grade: 'CM1'
@@ -3298,7 +3339,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				},
 				{
 					grade: '1_SPE',
-					content: "Indice d'un terme dans une suite. Dans $u_5$, le rang est $5$."
+					content: "Indice d'un terme dans une suite. Dans $u_5$, le rang est $5$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
@@ -3312,11 +3354,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Constante $r$ telle que $u_{n+1} = u_n + r$ (arithmétique) ou $u_{n+1} = u_n \\times q$ (géométrique, notée $q$).'
+						'Constante $r$ telle que $u_{n+1} = u_n + r$ (arithmétique) ou $u_{n+1} = u_n \\times q$ (géométrique, notée $q$).',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'suite arithmétique',
@@ -3326,11 +3370,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Suite telle que $u_{n+1} = u_n + r$ (raison constante). Ex : $2, 5, 8, 11, \\ldots$ (raison $3$).'
+						'Suite telle que $u_{n+1} = u_n + r$ (raison constante). Ex : $2, 5, 8, 11, \\ldots$ (raison $3$).',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'suite géométrique',
@@ -3340,11 +3386,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Suite telle que $u_{n+1} = u_n \\times q$ ($q$ constante). Ex : $3, 6, 12, 24, \\ldots$ (raison $2$).'
+						'Suite telle que $u_{n+1} = u_n \\times q$ ($q$ constante). Ex : $3, 6, 12, 24, \\ldots$ (raison $2$).',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'suite croissante',
@@ -3406,11 +3454,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Relation définissant chaque terme à partir du (ou des) précédent(s). Ex : $u_{n+1} = 2u_n + 1$.'
+						'Relation définissant chaque terme à partir du (ou des) précédent(s). Ex : $u_{n+1} = 2u_n + 1$.',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
 		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO'],
 		synonyms: ['relation de récurrence']
 	},
 	{
@@ -3584,11 +3634,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '1_SPE',
-					content: "Fonction associant un nombre réel à chaque issue d'une expérience aléatoire."
+					content: "Fonction associant un nombre réel à chaque issue d'une expérience aléatoire.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'espérance',
@@ -3597,11 +3649,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [
 				{
 					grade: '1_SPE',
-					content: "Valeur moyenne d'une variable aléatoire. $E(X) = \\sum x_i \\cdot P(X = x_i)$."
+					content: "Valeur moyenne d'une variable aléatoire. $E(X) = \\sum x_i \\cdot P(X = x_i)$.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'combinaison',
@@ -4676,7 +4730,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Courbe représentative d'une fonction polynôme du second degré $x \\mapsto ax^2 + bx + c$ ($a \\neq 0$) : tournée vers le haut si $a > 0$, vers le bas si $a < 0$."
+						"Courbe représentative d'une fonction polynôme du second degré $x \\mapsto ax^2 + bx + c$ ($a \\neq 0$) : tournée vers le haut si $a > 0$, vers le bas si $a < 0$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
@@ -5292,11 +5347,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$. Ainsi, $2$ est une racine de $x^2 - 4$, car $2^2 - 4 = 0$."
+						"Une racine d'un polynôme $P$ est un nombre $a$ tel que $P(a) = 0$. Ainsi, $2$ est une racine de $x^2 - 4$, car $2^2 - 4 = 0$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'échelle',
@@ -5538,11 +5595,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'« B est une condition nécessaire pour A » veut dire que A ne peut pas être vrai sans B : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être pair est une condition nécessaire pour être multiple de $4$.'
+						'« B est une condition nécessaire pour A » veut dire que A ne peut pas être vrai sans B : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être pair est une condition nécessaire pour être multiple de $4$.',
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'condition suffisante',
@@ -5552,11 +5611,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"« A est une condition suffisante pour B » veut dire qu'il suffit que A soit vrai pour que B le soit : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être multiple de $4$ est une condition suffisante pour être pair."
+						"« A est une condition suffisante pour B » veut dire qu'il suffit que A soit vrai pour que B le soit : si A est vrai, alors B est vrai ($A \\Rightarrow B$). Être multiple de $4$ est une condition suffisante pour être pair.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'disque',
@@ -6125,11 +6186,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_GEN',
 					content:
-						'Une grandeur a une croissance linéaire quand elle augmente de la même quantité à chaque étape : $100$, $110$, $120$, $130$… (on ajoute $10$).'
+						'Une grandeur a une croissance linéaire quand elle augmente de la même quantité à chaque étape : $100$, $110$, $120$, $130$… (on ajoute $10$).',
+					sharedWith: ['1_SPE']
 				}
 			]
 		},
-		grade: '1_GEN'
+		grade: '1_GEN',
+		sharedWith: ['1_SPE']
 	},
 	{
 		term: 'croissance exponentielle',
@@ -6139,11 +6202,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_GEN',
 					content:
-						'Une grandeur a une croissance exponentielle quand elle est multipliée par le même nombre, plus grand que $1$, à chaque étape : $100$, $110$, $121$, $133{,}1$… (on multiplie par $1{,}1$).'
+						'Une grandeur a une croissance exponentielle quand elle est multipliée par le même nombre, plus grand que $1$, à chaque étape : $100$, $110$, $121$, $133{,}1$… (on multiplie par $1{,}1$).',
+					sharedWith: ['1_SPE']
 				}
 			]
 		},
-		grade: '1_GEN'
+		grade: '1_GEN',
+		sharedWith: ['1_SPE']
 	},
 	{
 		term: 'discret',
@@ -6153,11 +6218,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_GEN',
 					content:
-						"Se dit d'une grandeur qui évolue par étapes (chaque année, chaque mois…), par opposition à « continu » : une suite modélise une évolution discrète."
+						"Se dit d'une grandeur qui évolue par étapes (chaque année, chaque mois…), par opposition à « continu » : une suite modélise une évolution discrète.",
+					sharedWith: ['1_SPE', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_GEN'
+		grade: '1_GEN',
+		sharedWith: ['1_SPE', '1_TECHNO']
 	},
 	{
 		term: 'discriminant',
@@ -6195,11 +6262,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Deux évènements $A$ et $B$ sont indépendants si $P(A \\cap B) = P(A) \\times P(B)$ : savoir que l'un est réalisé ne change pas la probabilité de l'autre."
+						"Deux évènements $A$ et $B$ sont indépendants si $P(A \\cap B) = P(A) \\times P(B)$ : savoir que l'un est réalisé ne change pas la probabilité de l'autre.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'épreuve de Bernoulli',
@@ -6209,11 +6278,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Expérience aléatoire à deux issues : le succès, de probabilité $p$, et l'échec, de probabilité $1 - p$."
+						"Expérience aléatoire à deux issues : le succès, de probabilité $p$, et l'échec, de probabilité $1 - p$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'schéma de Bernoulli',
@@ -8062,7 +8133,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Liste des $n$ résultats obtenus en répétant $n$ fois, de façon indépendante, la même expérience aléatoire ; $n$ est la taille de l'échantillon. Ex : $50$ lancers d'un dé forment un échantillon de taille $50$, dont la moyenne permet d'estimer l'espérance du résultat d'un lancer."
+						"Liste des $n$ résultats obtenus en répétant $n$ fois, de façon indépendante, la même expérience aléatoire ; $n$ est la taille de l'échantillon. Ex : $50$ lancers d'un dé forment un échantillon de taille $50$, dont la moyenne permet d'estimer l'espérance du résultat d'un lancer.",
+					sharedWith: ['1_TECHNO']
 				},
 				{
 					grade: 'T_SPE',
@@ -8071,7 +8143,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'fonction polynôme du second degré',
@@ -8081,11 +8154,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						'Fonction définie sur $\\mathbb{R}$ par $f(x) = ax^2 + bx + c$, où $a$, $b$, $c$ sont des réels avec $a \\neq 0$ ; sa courbe est une parabole. Ex : $f(x) = 2x^2 - 3x + 1 = (2x - 1)(x - 1)$, dont les racines sont $\\frac{1}{2}$ et $1$.'
+						'Fonction définie sur $\\mathbb{R}$ par $f(x) = ax^2 + bx + c$, où $a$, $b$, $c$ sont des réels avec $a \\neq 0$ ; sa courbe est une parabole. Ex : $f(x) = 2x^2 - 3x + 1 = (2x - 1)(x - 1)$, dont les racines sont $\\frac{1}{2}$ et $1$.',
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: "formule d'Al-Kashi",
@@ -8109,11 +8184,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Si les évènements $A_1, \\ldots, A_n$ forment une partition de l'univers, alors pour tout évènement $B$ : $P(B) = P(A_1 \\cap B) + \\cdots + P(A_n \\cap B)$. Avec un évènement $A$ tel que $0 < P(A) < 1$ : $P(B) = P(A) \\times P_A(B) + P(\\bar{A}) \\times P_{\\bar{A}}(B)$."
+						"Si les évènements $A_1, \\ldots, A_n$ forment une partition de l'univers, alors pour tout évènement $B$ : $P(B) = P(A_1 \\cap B) + \\cdots + P(A_n \\cap B)$. Avec un évènement $A$ tel que $0 < P(A) < 1$ : $P(B) = P(A) \\times P_A(B) + P(\\bar{A}) \\times P_{\\bar{A}}(B)$.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'liste',
@@ -8129,7 +8206,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Chaque élément d'une liste est repéré par son indice, qui commence à $0$ : si « L = [12, 15, 9] », alors « L[0] » vaut $12$. On crée une liste en extension (« [1, 4, 9] »), par ajouts successifs (« L.append(16) ») ou en compréhension (« [k**2 for k in range(4)] » donne « [0, 1, 4, 9] »)."
+						"Chaque élément d'une liste est repéré par son indice, qui commence à $0$ : si « L = [12, 15, 9] », alors « L[0] » vaut $12$. On crée une liste en extension (« [1, 4, 9] »), par ajouts successifs (« L.append(16) ») ou en compréhension (« [k**2 for k in range(4)] » donne « [0, 1, 4, 9] »).",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
@@ -8177,7 +8255,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Lettre qui désigne un nombre fixé pendant l'étude d'un problème, mais que l'on peut faire varier d'un problème à l'autre ; ce n'est ni l'inconnue ni la variable. Ex : dans l'équation $x^2 = m$, d'inconnue $x$, le paramètre $m$ décide du nombre de solutions : deux si $m > 0$, une si $m = 0$, aucune si $m < 0$."
+						"Lettre qui désigne un nombre fixé pendant l'étude d'un problème, mais que l'on peut faire varier d'un problème à l'autre ; ce n'est ni l'inconnue ni la variable. Ex : dans l'équation $x^2 = m$, d'inconnue $x$, le paramètre $m$ décide du nombre de solutions : deux si $m > 0$, une si $m = 0$, aucune si $m < 0$.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
@@ -8225,11 +8304,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_SPE',
 					content:
-						"Valeur fixée à l'avance qu'une quantité doit atteindre ou dépasser ; un problème de seuil consiste à chercher à partir de quel rang (ou de quel moment) c'est le cas. Ex : pour $u_n = 1{,}05^n$, le plus petit entier $n$ tel que $u_n > 2$ est $15$ ; un algorithme de seuil le trouve en calculant les termes tant que $u_n \\leq 2$."
+						"Valeur fixée à l'avance qu'une quantité doit atteindre ou dépasser ; un problème de seuil consiste à chercher à partir de quel rang (ou de quel moment) c'est le cas. Ex : pour $u_n = 1{,}05^n$, le plus petit entier $n$ tel que $u_n > 2$ est $15$ ; un algorithme de seuil le trouve en calculant les termes tant que $u_n \\leq 2$.",
+					sharedWith: ['1_GEN', '1_TECHNO']
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		sharedWith: ['1_GEN', '1_TECHNO']
 	},
 	{
 		term: 'vecteur normal',
@@ -8568,11 +8649,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '1_GEN',
 					content:
-						"Estimation d'une valeur inconnue située entre des valeurs connues, à l'aide d'un modèle comme une droite d'ajustement ; si la valeur estimée est en dehors de la plage des données, on parle d'extrapolation, moins fiable. Ex : connaissant la population d'une ville en 2000 et en 2020, estimer celle de 2010 est une interpolation, celle de 2040 une extrapolation."
+						"Estimation d'une valeur inconnue située entre des valeurs connues, à l'aide d'un modèle comme une droite d'ajustement ; si la valeur estimée est en dehors de la plage des données, on parle d'extrapolation, moins fiable. Ex : connaissant la population d'une ville en 2000 et en 2020, estimer celle de 2010 est une interpolation, celle de 2040 une extrapolation.",
+					sharedWith: ['1_TECHNO']
 				}
 			]
 		},
-		grade: '1_GEN'
+		grade: '1_GEN',
+		sharedWith: ['1_TECHNO']
 	},
 	{
 		term: 'méthode des moindres carrés',
@@ -8604,7 +8687,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{ term: 'suite minorée', tags: ['suites'], grade: 'T_SPE', derivedFrom: 'suite majorée' },
 	{ term: 'suite bornée', tags: ['suites'], grade: 'T_SPE', derivedFrom: 'suite majorée' },
-	{ term: 'extrapolation', tags: ['statistiques'], grade: '1_GEN', derivedFrom: 'interpolation' },
+	{
+		term: 'extrapolation',
+		tags: ['statistiques'],
+		grade: '1_GEN',
+		sharedWith: ['1_TECHNO'],
+		derivedFrom: 'interpolation'
+	},
 
 	// =========================================================================
 	// CRYPTOGRAPHIE (Cabinet Noir)
@@ -8923,12 +9012,17 @@ const MATH_DICTIONARY: MathTerm[] = [
 // Utility functions
 // ---------------------------------------------------------------------------
 
+/** Le lecteur voit-il ce terme (son niveau, un niveau antérieur ou une filière partagée) ? */
+export function isTermVisibleTo(term: MathTerm, readerGrade: GradeCode): boolean {
+	return canRead(readerGrade, term.grade, term.sharedWith);
+}
+
 /**
- * Returns all terms introduced at the given grade or earlier.
- * Uses hasAccessToGrade for proper prerequisite-based filtering.
+ * Returns all terms visible at the given grade: introduced at this grade or
+ * earlier, or shared with this branch of 1re.
  */
 export function getTermsForGrade(grade: GradeCode): MathTerm[] {
-	return MATH_DICTIONARY.filter((t) => hasAccessToGrade(grade, t.grade));
+	return MATH_DICTIONARY.filter((t) => isTermVisibleTo(t, grade));
 }
 
 /**
@@ -8942,7 +9036,7 @@ export function getTermsByTag(tag: string): MathTerm[] {
  * Returns terms matching both a tag and a grade (introduced at or before).
  */
 export function getTermsByTagAndGrade(tag: string, grade: GradeCode): MathTerm[] {
-	return MATH_DICTIONARY.filter((t) => t.tags.includes(tag) && hasAccessToGrade(grade, t.grade));
+	return MATH_DICTIONARY.filter((t) => t.tags.includes(tag) && isTermVisibleTo(t, grade));
 }
 
 /**
