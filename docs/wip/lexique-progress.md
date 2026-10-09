@@ -146,7 +146,9 @@ suis ») :
   [lexique/lot0b-niveaux.md](lexique/lot0b-niveaux.md) — 221 termes, 56 nouvelles définitions
   simples, 8 cas tranchés par David (« Ok pour 1 », 2026-10-09 : ses recommandations suivies) ; décisions machine-lisibles dans `lexique/lot0b-decisions.json`
   (clés = rang de l'entrée dans le dictionnaire du 2026-10-09, avant le retrait de « shisma » et
-  « tangeant »). Reste : relecture des 56 nouvelles définitions par David.
+  « tangeant »). Reste : relecture des 56 nouvelles définitions par David, sur la page à cocher
+  https://claude.ai/artifact/YH7RFgXAWkohW6xBPhKSKx (réponses dans sa base, collection `avis`,
+  un document `t<rang>` par définition : `statut` ok | revoir, `correction`, `commentaire`).
 - **0c — définitions** : 14 fausses et 10 circulaires d'abord, puis homonymes (sens manquants,
   entrées séparées : cube, base, racine…) et définitions inadaptées ; relecture de David par
   lots.
