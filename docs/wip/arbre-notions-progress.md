@@ -833,6 +833,9 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - **Q2 = oui** (David) : « Décimaux : calculs » garde les opérations, les techniques y sont versées.
   - **Q3, « double et moitié » = deux nœuds** (David) : on garde ceux de l'addition et de la multiplication.
   - **Q4 = maintenant** (David) : refonte « avec / sans coordonnées » avec le nettoyage ; noms à confirmer.
+  - Audit mis à jour avec Q1, Q2 et Q4 : 56 facettes archivées ; 230 modèles, 177 points et
+    51 exercices changent de nœud ; simulation sans violation. Q4 change le point de D36
+    (→ TSPE-371), D37 (→ TSPE-343) et D38 (→ TSPE-353).
   - Q3 (« triple et tiers »), Q5 à Q7 et la section D ne sont pas tranchées : ne pas les appliquer.
   - David a validé l'ordre suivant :
     1. l'audit ;
