@@ -169,9 +169,19 @@ suis ») :
 ## Lot 0f — mots manquants, synonymes, homonymes (demandé par David le 2026-10-09)
 
 « On fait ce qui est en attente » : orthographe « évènement », étiquettes des anciens homonymes,
-mots manquants. ⏳ En relecture par David sur https://claude.ai/artifact/Ts1SdTAhUphzHjCqP6pqzy
-(base `avis`, documents `t<id>` ; 177 fiches). Décisions machine-lisibles :
-`lexique/lot0f-decisions.json` (proposition avant relecture).
+mots manquants. ✅ Validé par David le 2026-10-09 (177 fiches « OK », toutes enregistrées par la page,
+vérifiées une à une) et livré #995 (branche `feat/lexique-lot0f`) : section « AJOUTS DU LOT 0f » du
+dictionnaire, test « lot 0f au mot près » (182 écarts sur l'ancien dictionnaire), test « chaque entrée
+d'un mot à plusieurs sens porte une étiquette » (13 sur l'ancien), copie figée
+`tests/fixtures/lexique/mots-lot0f.json` ; les copies des lots 0b à 0e sont mises à jour là où le 0f
+renomme ou complète. Relecture sur https://claude.ai/artifact/Ts1SdTAhUphzHjCqP6pqzy (base `avis`,
+documents `t<id>`) ; proposition [lexique/lot0f-mots.md](lexique/lot0f-mots.md), décisions
+`lexique/lot0f-decisions.json`.
+
+- **Mathémo** (livré avec #995) : le clavier du jeu n'a que a–z ; les mots à trait d'union
+  (« demi-droite », déjà sur main, et 5 nouveaux) ne sont plus tirés au sort (`dictionary-words.ts`).
+  L'ancien `games/mathemo/words.ts` (liste codée en dur) n'est importé nulle part : code mort laissé
+  en place, à supprimer si David le veut.
 
 - **138 mots** rédigés par trois agents (primaire 34, collège 43, lycée 61) à partir du tri des 269
   restants, puis relus : niveaux vérifiés dans le BO, notes reprises. Mes ajustements : « caractère
