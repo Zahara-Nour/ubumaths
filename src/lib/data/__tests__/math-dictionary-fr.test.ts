@@ -53,6 +53,22 @@ const LOT_0D: AddedWords = JSON.parse(
 	readFileSync('tests/fixtures/lexique/mots-lot0d.json', 'utf-8')
 );
 
+/** Verbes de consigne et mots jamais soulignés (lot 0e, 2026-10-09) : copie figée de docs/wip/lexique/lot0e-consignes.md. */
+interface Consignes {
+	verbes: {
+		term: string;
+		grade: string;
+		definitions: { grade: string; content: string }[];
+		forms: string[];
+	}[];
+	formes: { term: string; forms: string[]; synonyms: string[] }[];
+	exclus: string[];
+	consignesEnProd: string[];
+}
+const LOT_0E: Consignes = JSON.parse(
+	readFileSync('tests/fixtures/lexique/consignes-lot0e.json', 'utf-8')
+);
+
 /** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
 function normalizeName(text: string): string {
 	return text
@@ -303,6 +319,75 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		expect(wrong).toEqual([]);
+	});
+
+	// « Calculer » donne un résultat numérique, « exprimer » une expression
+	// littérale : les verbes de consigne ont des définitions relues par David.
+	it('should carry the consigne verbs validated in lot 0e, word for word', () => {
+		expect(LOT_0E.verbes).toHaveLength(8);
+		expect(LOT_0E.formes).toHaveLength(13);
+		const wrong: string[] = [];
+		for (const expected of LOT_0E.verbes) {
+			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
+			if (!term || term.derivedFrom) {
+				wrong.push(`${expected.term} : ${term ? 'encore un renvoi' : 'introuvable'}`);
+				continue;
+			}
+			if (term.grade !== expected.grade) {
+				wrong.push(`${expected.term} : niveau ${term.grade}, attendu ${expected.grade}`);
+			}
+			const actual = (term.definitions?.items ?? []).map((i) => `${i.grade} : ${i.content}`);
+			const wanted = expected.definitions.map((i) => `${i.grade} : ${i.content}`);
+			if (actual.join('\n') !== wanted.join('\n')) wrong.push(`${expected.term} : définitions`);
+			if ((term.forms ?? []).join(', ') !== expected.forms.join(', ')) {
+				wrong.push(`${expected.term} : formes ${term.forms?.join(', ') ?? 'aucune'}`);
+			}
+		}
+		for (const expected of LOT_0E.formes) {
+			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
+			if ((term?.forms ?? []).join(', ') !== expected.forms.join(', ')) {
+				wrong.push(`${expected.term} : formes ${term?.forms?.join(', ') ?? 'aucune'}`);
+			}
+			for (const synonym of expected.synonyms) {
+				if (!term?.synonyms?.includes(synonym))
+					wrong.push(`${expected.term} : synonyme « ${synonym} »`);
+			}
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	// Une forme qui désignerait deux entrées, ou qui serait déjà le nom d'un
+	// terme, rendrait le repérage des mots ambigu.
+	it('should give each conjugated form to a single entry', () => {
+		const names = new Set(
+			MATH_DICTIONARY.flatMap((t) => [t.term, ...(t.synonyms ?? [])]).map(normalizeName)
+		);
+		const seen = new Map<string, string>();
+		const wrong: string[] = [];
+		for (const term of MATH_DICTIONARY) {
+			for (const form of term.forms ?? []) {
+				const key = normalizeName(form);
+				if (names.has(key)) wrong.push(`« ${form} » (${term.term}) est déjà un terme`);
+				const owner = seen.get(key);
+				if (owner) wrong.push(`« ${form} » : ${owner} et ${term.term}`);
+				seen.set(key, term.term);
+			}
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	it('should recognise the consignes measured in published questions on 2026-10-09', () => {
+		const forms = new Set(MATH_DICTIONARY.flatMap((t) => t.forms ?? []).map(normalizeName));
+		const missing = LOT_0E.consignesEnProd.filter((c) => !forms.has(normalizeName(c)));
+		expect(missing).toEqual([]);
+	});
+
+	// Liste fermée : un mot ne devient « jamais souligné » que par décision de David.
+	it('should never auto-link exactly the closed list of common words', () => {
+		const excluded = MATH_DICTIONARY.filter((t) => t.autoLink === false).map((t) =>
+			t.sense ? `${t.term} (${t.sense})` : t.term
+		);
+		expect(excluded.sort()).toEqual([...LOT_0E.exclus].sort());
 	});
 
 	// Sinon, dans le glossaire, la fiche d'un renvoi (« Voir : X ») n'a aucune

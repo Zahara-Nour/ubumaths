@@ -74,6 +74,10 @@ export interface MathTerm {
 	/** Grade at which the term is introduced. */
 	grade: GradeCode;
 	synonyms?: string[];
+	/** Formes conjuguées reconnues dans les énoncés (« résous », « résolvez » pour « résoudre »). */
+	forms?: string[];
+	/** `false` : mot trop courant, jamais souligné automatiquement dans un énoncé (liste fermée). */
+	autoLink?: false;
 	/** For derived terms (verbs, adjectives): points to the principal term (substantive). */
 	derivedFrom?: string;
 	/** Page du site où la notion se pratique (lien « Voir aussi » du glossaire) */
@@ -100,7 +104,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'chiffre',
@@ -114,7 +119,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'calcul',
@@ -124,13 +130,15 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: 'CP', content: "Opération ou suite d'opérations effectuées sur des nombres." }
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'résultat',
 		tags: ['transversal'],
 		definitions: { items: [{ grade: 'CP', content: "Valeur obtenue à l'issue d'un calcul." }] },
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'somme',
@@ -277,7 +285,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'ordre de grandeur',
@@ -342,9 +351,23 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'calculer',
-		tags: ['transversal'],
-		grade: 'CP',
-		derivedFrom: 'calcul'
+		tags: ['transversal', 'operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Trouver le résultat d'une ou de plusieurs opérations : calculer $7 + 5$, c'est trouver $12$."
+				},
+				{
+					grade: '5',
+					content:
+						"Calculer, c'est obtenir un résultat numérique. On calcule le périmètre d'un carré de $3$ cm de côté : $12$ cm ; on exprime le périmètre d'un carré de côté $c$ : $4c$."
+				}
+			]
+		},
+		grade: 'CE1',
+		forms: ['calcule', 'calculez']
 	},
 	{
 		term: 'compter',
@@ -381,7 +404,9 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'ordonner',
 		tags: ['transversal'],
-		grade: 'CM1',
+		grade: 'CP',
+		forms: ['ordonne', 'ordonnez', 'range', 'rangez'],
+		synonyms: ['ranger'],
 		derivedFrom: 'ordre'
 	},
 	{
@@ -500,7 +525,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'opération',
@@ -514,7 +540,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'ordre',
@@ -549,7 +576,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definitions: {
 			items: [{ grade: 'CP', content: "Symbole $+$ de l'addition ou du signe positif." }]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'problème',
@@ -567,7 +595,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'schéma',
@@ -609,7 +638,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: '5', content: 'Nombre attribué à une variable ou à une expression.' }
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 
 	// =========================================================================
@@ -1003,7 +1033,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 	{
 		term: 'décomposer',
 		tags: ['entiers', 'arithmétique'],
-		grade: '4',
+		grade: 'CP',
+		forms: ['décompose', 'décomposez'],
 		derivedFrom: 'décomposition'
 	},
 	{
@@ -1206,6 +1237,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'arrondir',
 		tags: ['décimaux'],
 		grade: 'CM1',
+		forms: ['arrondis', 'arrondissez'],
 		derivedFrom: 'arrondi'
 	},
 	{
@@ -1426,6 +1458,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'simplifier',
 		tags: ['fractions', 'arithmétique'],
 		grade: '5',
+		forms: ['simplifie', 'simplifiez'],
 		derivedFrom: 'simplification'
 	},
 
@@ -1658,7 +1691,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5'
+		grade: '5',
+		forms: ['développe', 'développez']
 	},
 	{
 		term: 'factoriser',
@@ -1672,7 +1706,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5'
+		grade: '5',
+		forms: ['factorise', 'factorisez']
 	},
 	{
 		term: 'réduire',
@@ -1685,7 +1720,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5'
+		grade: '5',
+		forms: ['réduis', 'réduisez']
 	},
 	{
 		term: 'distributivité',
@@ -1881,6 +1917,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'résoudre',
 		tags: ['calcul-littéral', 'équations'],
 		grade: '5',
+		forms: ['résous', 'résolvez'],
 		derivedFrom: 'solution'
 	},
 	{
@@ -2131,12 +2168,14 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'construire',
 		tags: ['géométrie'],
 		grade: 'CM1',
+		forms: ['construis', 'construisez'],
 		derivedFrom: 'construction'
 	},
 	{
 		term: 'convertir',
 		tags: ['grandeurs'],
 		grade: 'CE2',
+		forms: ['convertis', 'convertissez'],
 		derivedFrom: 'conversion'
 	},
 	{
@@ -2816,7 +2855,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CE1'
+		grade: 'CE1',
+		forms: ['représente', 'représentez']
 	},
 	{
 		term: 'abscisse',
@@ -3755,7 +3795,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'demi-droite',
@@ -4504,13 +4545,15 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definitions: {
 			items: [{ grade: 'CP', content: 'Dessin géométrique représentant des formes.' }]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'forme',
 		tags: ['géométrie'],
 		definitions: { items: [{ grade: 'CP', content: "Aspect extérieur d'un objet géométrique." }] },
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'hexagone',
@@ -4677,7 +4720,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		autoLink: false
 	},
 	{
 		term: 'prisme',
@@ -5043,6 +5087,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'démontrer',
 		tags: ['logique'],
 		grade: '5',
+		forms: ['démontre', 'démontrez'],
 		derivedFrom: 'démonstration'
 	},
 	{
@@ -6284,6 +6329,136 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 
 	// =========================================================================
+	// VERBES DE CONSIGNE (lot 0e, validé par David)
+	// =========================================================================
+	{
+		term: 'exprimer',
+		tags: ['calcul-littéral', 'grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Exprimer une mesure dans une unité, c'est l'écrire avec cette unité : $1$ m s'exprime aussi $100$ cm."
+				},
+				{
+					grade: '5',
+					content:
+						"Exprimer une grandeur en fonction d'une autre, c'est l'écrire avec une expression littérale : le périmètre d'un rectangle de largeur $L$ et de longueur $2L$ s'exprime par $6L$. À la différence de « calculer », le résultat contient une lettre."
+				}
+			]
+		},
+		grade: 'CE1',
+		forms: ['exprime', 'exprimez']
+	},
+	{
+		term: 'déterminer',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content: "Trouver ce qui est demandé : déterminer la moitié de $14$, c'est trouver $7$."
+				},
+				{
+					grade: '5',
+					content:
+						"Trouver ce qui est demandé (un nombre, une expression, un point…) en montrant comment on l'a obtenu : déterminer l'image de $3$ par une fonction, déterminer les solutions d'une équation."
+				}
+			]
+		},
+		grade: 'CP',
+		forms: ['détermine', 'déterminez']
+	},
+	{
+		term: 'justifier',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Donner les raisons qui montrent qu'une réponse est vraie : un calcul, une propriété, une mesure ou un contre-exemple."
+				}
+			]
+		},
+		grade: '5',
+		forms: ['justifie', 'justifiez']
+	},
+	{
+		term: 'vérifier',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"S'assurer qu'une réponse est juste : vérifier avec la règle que des points sont alignés, ou refaire un calcul autrement."
+				},
+				{
+					grade: '5',
+					content:
+						"Vérifier qu'un nombre est solution d'une équation, c'est le remplacer dans l'équation et constater que l'égalité est vraie."
+				}
+			]
+		},
+		grade: 'CP',
+		forms: ['vérifie', 'vérifiez']
+	},
+	{
+		term: 'tracer',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Dessiner une ligne ou une figure avec la règle, l'équerre ou le compas : tracer un segment de $5$ cm."
+				}
+			]
+		},
+		grade: 'CE2',
+		forms: ['trace', 'tracez']
+	},
+	{
+		term: 'estimer',
+		tags: ['transversal', 'grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						'Donner une valeur approchée sans calcul exact ni mesure précise : estimer la longueur de la classe, ou que $298 + 403$ fait environ $700$.'
+				}
+			]
+		},
+		grade: 'CE1',
+		forms: ['estime', 'estimez']
+	},
+	{
+		term: 'comparer',
+		tags: ['entiers', 'transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Dire lequel de deux nombres, de deux longueurs ou de deux collections est le plus grand, ou s'ils sont égaux ; on écrit $<$, $>$ ou $=$."
+				}
+			]
+		},
+		grade: 'CP',
+		forms: ['compare', 'comparez']
+	},
+	{
+		term: 'encadrer',
+		tags: ['entiers', 'décimaux'],
+		grade: 'CP',
+		forms: ['encadre', 'encadrez'],
+		derivedFrom: 'encadrement'
+	},
+
+	// =========================================================================
 	// CRYPTOGRAPHIE (Cabinet Noir)
 	// =========================================================================
 	{
@@ -6300,6 +6475,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			]
 		},
 		grade: '6',
+		autoLink: false,
 		seeAlso: { label: 'Le Cabinet Noir de Turingrad', path: '/chiffrement' }
 	},
 	{
