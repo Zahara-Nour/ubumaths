@@ -20,6 +20,14 @@ describe('Mathémo : mots tirés du dictionnaire', () => {
 		expect([...allWordsNormalized].filter((w) => !/^[a-z]+$/.test(w))).toEqual([]);
 	});
 
+	// La 1re générale et la 1re techno ne voient pas les mots de 1re spé, sauf ceux
+	// que leur programme nomme aussi
+	it('fait deviner aux autres filières de 1re les mots partagés avec elles', () => {
+		expect(getWordsForLevel('1_GEN')).toContain('seuil');
+		expect(getWordsForLevel('1_TECHNO')).toContain('derivee');
+		expect(getWordsForLevel('1_GEN')).not.toContain('derivee');
+	});
+
 	it('garde les mots d’un seul mot, sans accents, une seule fois', () => {
 		const words = getWordsForLevel('2');
 		expect(words).toContain('carre');

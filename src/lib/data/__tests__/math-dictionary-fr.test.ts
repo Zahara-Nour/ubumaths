@@ -4,11 +4,12 @@ import MATH_DICTIONARY, {
 	getTermsByTag,
 	getTermsByTagAndGrade,
 	getTermsForGrade,
+	isTermVisibleTo,
 	resolveGradedField,
 	type MathTerm
 } from '../math-dictionary-fr';
 import { readFileSync } from 'node:fs';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
 import { hasAccessToGrade } from '$lib/utils/grades';
 
 /**
@@ -91,6 +92,15 @@ interface MissingWords {
 }
 const LOT_0F: MissingWords = JSON.parse(
 	readFileSync('tests/fixtures/lexique/mots-lot0f.json', 'utf-8')
+);
+
+/** Mots partagés entre les filières de 1re (lot 0g, 2026-10-09) : copie figée de docs/wip/lexique/lot0g-filieres.md. */
+interface SharedWords {
+	termes: { term: string; sense: string | null; sharedWith: string[] }[];
+	definitions: { term: string; sense: string | null; grade: string; sharedWith: string[] }[];
+}
+const LOT_0G: SharedWords = JSON.parse(
+	readFileSync('tests/fixtures/lexique/filieres-lot0g.json', 'utf-8')
 );
 
 /** Minuscules, accents retirés : « Unité » et « unite » sont le même mot. */
@@ -181,7 +191,7 @@ describe('math-dictionary-fr', () => {
 		for (const term of MATH_DICTIONARY) {
 			if (term.derivedFrom || !term.definitions) continue;
 			for (const reader of GRADE_CODES) {
-				if (!hasAccessToGrade(reader, term.grade)) continue;
+				if (!isTermVisibleTo(term, reader)) continue;
 				if (resolveGradedField(term.definitions, reader).length === 0) {
 					hidden.push(`${term.term} (${term.grade}) caché en ${reader}`);
 				}
@@ -527,11 +537,114 @@ describe('math-dictionary-fr', () => {
 		for (const term of MATH_DICTIONARY) {
 			if (!term.derivedFrom) continue;
 			const target = MATH_DICTIONARY.find((t) => t.term === term.derivedFrom && !t.derivedFrom);
-			if (target && !hasAccessToGrade(term.grade, target.grade)) {
-				early.push(`${term.term} (${term.grade}) → ${target.term} (${target.grade})`);
+			if (!target) continue;
+			// Chaque lecteur du renvoi, filières parallèles comprises, doit pouvoir lire sa cible
+			for (const reader of GRADE_CODES) {
+				if (isTermVisibleTo(term, reader) && !isTermVisibleTo(target, reader)) {
+					early.push(`${term.term} → ${target.term} : cible cachée en ${reader}`);
+				}
 			}
 		}
 		expect(early).toEqual([]);
+	});
+
+	// La 1re spé, la 1re générale et la 1re techno ne se voient pas l'une l'autre :
+	// un mot de 1re spé que nomme aussi le programme de 1re générale lui était caché.
+	describe('mots partagés entre les filières de 1re (lot 0g)', () => {
+		const find = (term: string, sense: string | null = null) => {
+			const found = MATH_DICTIONARY.find(
+				(t) => t.term === term && (t.sense ?? null) === sense && !t.derivedFrom
+			);
+			if (!found) throw new Error(`${term} : introuvable`);
+			return found;
+		};
+		const label = (term: string, sense: string | null) => (sense ? `${term} (${sense})` : term);
+		const definitionsOf = (term: MathTerm) => term.definitions ?? { items: [] };
+
+		it('should share exactly the validated words, and nothing else', () => {
+			expect(LOT_0G.termes).toHaveLength(25);
+			expect(LOT_0G.definitions).toHaveLength(7);
+			const sharedTerms = MATH_DICTIONARY.filter((t) => t.sharedWith).map(
+				(t) => `${label(t.term, t.sense ?? null)} → ${t.sharedWith?.join(', ')}`
+			);
+			expect(sharedTerms.sort()).toEqual(
+				LOT_0G.termes.map((e) => `${label(e.term, e.sense)} → ${e.sharedWith.join(', ')}`).sort()
+			);
+			// Une entrée partagée partage aussi sa définition de son propre niveau
+			const expectedItems = [
+				...LOT_0G.termes.map((e) => ({ ...e, grade: null as string | null })),
+				...LOT_0G.definitions
+			].flatMap((e) => {
+				const term = MATH_DICTIONARY.find(
+					(t) => t.term === e.term && (t.sense ?? null) === e.sense
+				);
+				if (!term?.definitions) return [];
+				const grade = e.grade ?? term.grade;
+				return [`${label(e.term, e.sense)} [${grade}] → ${e.sharedWith.join(', ')}`];
+			});
+			const sharedItems = MATH_DICTIONARY.flatMap((t) =>
+				(t.definitions?.items ?? [])
+					.filter((i) => i.sharedWith)
+					.map(
+						(i) => `${label(t.term, t.sense ?? null)} [${i.grade}] → ${i.sharedWith?.join(', ')}`
+					)
+			);
+			expect(sharedItems.sort()).toEqual(expectedItems.sort());
+		});
+
+		it('should let a 1re générale student read « seuil » and its definition', () => {
+			const seuil = find('seuil');
+			expect(getTermsForGrade('1_GEN')).toContain(seuil);
+			expect(resolveGradedField(definitionsOf(seuil), '1_GEN')).toHaveLength(1);
+		});
+
+		it('should follow the grade hierarchy: Tle comp. reads what 1re générale reads', () => {
+			expect(getTermsForGrade('T_COMP')).toContain(find('seuil'));
+			expect(getTermsForGrade('T_TECHNO')).toContain(find('dérivée'));
+		});
+
+		it('should let a 1re spé student read « croissance linéaire »', () => {
+			const term = find('croissance linéaire');
+			expect(getTermsForGrade('1_SPE')).toContain(term);
+			expect(resolveGradedField(definitionsOf(term), '1_SPE')).toHaveLength(1);
+		});
+
+		it('should show both definitions of « terme (suite) » to a 1re générale student', () => {
+			const term = find('terme', 'suite');
+			expect(resolveGradedField(definitionsOf(term), '1_GEN')).toHaveLength(2);
+		});
+
+		it('should never show a Tle spé definition to another branch of 1re', () => {
+			const echantillon = find('échantillon');
+			expect(resolveGradedField(definitionsOf(echantillon), '1_TECHNO')).toEqual([
+				definitionsOf(echantillon).items[0].content
+			]);
+			expect(getTermsForGrade('1_GEN')).not.toContain(echantillon);
+		});
+
+		it('should still hide « seuil » from a 2de student', () => {
+			expect(getTermsForGrade('2')).not.toContain(find('seuil'));
+		});
+
+		// Ni un niveau qui voit déjà le contenu (inutile), ni un niveau antérieur
+		// (ce serait un changement de niveau déguisé) : seulement une filière parallèle
+		it('should only share with parallel branches', () => {
+			const wrong: string[] = [];
+			const check = (where: string, grade: GradeCode, sharedWith: GradeCode[] = []) => {
+				for (const other of sharedWith) {
+					if (hasAccessToGrade(other, grade) || hasAccessToGrade(grade, other)) {
+						wrong.push(`${where} [${grade}] partagé avec ${other}`);
+					}
+				}
+			};
+			for (const term of MATH_DICTIONARY) {
+				check(term.term, term.grade, term.sharedWith);
+				for (const item of term.definitions?.items ?? []) {
+					check(`${term.term}, définition`, item.grade, item.sharedWith);
+				}
+			}
+			expect(wrong).toEqual([]);
+		});
 	});
 
 	it('should have valid derivedFrom references', () => {

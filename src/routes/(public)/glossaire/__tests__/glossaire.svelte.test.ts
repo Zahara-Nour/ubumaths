@@ -92,4 +92,16 @@ describe('glossaire', () => {
 		await page.getByPlaceholder('Rechercher un terme...').fill('discret');
 		await expect.element(page.getByRole('button', { name: /^discret/ })).toBeInTheDocument();
 	});
+
+	// Un mot de 1re spé que nomme aussi le programme de 1re techno lui est partagé
+	it('le filtre propose la 1re techno, qui voit les mots partagés avec elle', async () => {
+		await render(Glossaire);
+		await page
+			.getByRole('button', { name: /niveau/i })
+			.first()
+			.click();
+		await page.getByRole('option', { name: '1ère technologique' }).click();
+		await page.getByPlaceholder('Rechercher un terme...').fill('nombre dérivé');
+		await expect.element(page.getByRole('button', { name: /^nombre dérivé/ })).toBeInTheDocument();
+	});
 });
