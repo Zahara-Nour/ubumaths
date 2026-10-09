@@ -44,14 +44,15 @@
 	const uid = $props.id();
 	let contentRef = $state<HTMLElement | null>(null);
 
+	// Fiche fermée en touchant le champ de réponse : le curseur y reste
+	const outsideFocus = keepOutsideFocus();
+
 	// À l'ouverture, le focus va sur la fiche (lue en entier), pas sur son lien
 	function focusCard(event: Event) {
+		outsideFocus.reset();
 		event.preventDefault();
 		contentRef?.focus();
 	}
-
-	// Fiche fermée en touchant le champ de réponse : le curseur y reste
-	const outsideFocus = keepOutsideFocus();
 </script>
 
 {#if card.length === 0}{@render children()}{:else}<Popover.Root

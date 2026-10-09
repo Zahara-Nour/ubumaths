@@ -55,6 +55,7 @@
 	 */
 	function handleOpenChange(open: boolean) {
 		isOpen = open;
+		if (open) outsideFocus.reset();
 		if (open && onHintOpen && hint) {
 			onHintOpen(hintId);
 		}

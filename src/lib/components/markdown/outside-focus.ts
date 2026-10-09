@@ -16,13 +16,22 @@
 const FOCUSABLE =
 	'input, textarea, select, math-field, button, a[href], [tabindex], [contenteditable]';
 
-/** Gestionnaires à passer à `Popover.Content` (`onInteractOutside`, `onCloseAutoFocus`). */
+/**
+ * Gestionnaires à passer à `Popover.Content` (`onInteractOutside`,
+ * `onCloseAutoFocus`), et `reset` à appeler à chaque ouverture : un clic
+ * retenu sans fermeture (bouton pressé puis glissé) ne doit pas compter pour
+ * la fermeture suivante.
+ */
 export function keepOutsideFocus(): {
 	onInteractOutside: (event: PointerEvent) => void;
 	onCloseAutoFocus: (event: Event) => void;
+	reset: () => void;
 } {
 	let outsideTarget: HTMLElement | null = null;
 	return {
+		reset() {
+			outsideTarget = null;
+		},
 		onInteractOutside(event) {
 			const target = event.target instanceof Element ? event.target : null;
 			outsideTarget = target?.closest<HTMLElement>(FOCUSABLE) ?? document.body;

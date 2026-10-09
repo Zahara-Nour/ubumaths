@@ -30,6 +30,10 @@ describe('indice en popover', () => {
 			await expect.element(page.getByText('Rappel').last()).toBeInTheDocument();
 			await userEvent.click(field);
 			await expect.poll(() => document.activeElement).toBe(field);
+			// La fiche s'est bien fermée
+			await expect
+				.poll(() => document.querySelectorAll('[data-slot="popover-content"]').length)
+				.toBe(0);
 		} finally {
 			field.remove();
 		}
