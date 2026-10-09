@@ -815,3 +815,14 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     2. validation par David ;
     3. migration de l'arbre, des seeds et des rangements ;
     4. recalcul du lot de l'étape 2 sur l'arbre propre, avec les verdicts du crible.
+- **2026-10-09 — Audit des facettes proposé** (`audit-facettes.md`), à valider par David.
+  - Les comptes :
+    - 55 facettes archivées, dont 42 dans les notions du symptôme et 13 trouvées par le
+      balayage ;
+    - 2 sous-notions « définition » créées (suites arithmétiques et géométriques) ;
+    - tout compris, 192 modèles, 84 points et 35 exercices changent de nœud ;
+    - aucun libellé de point ne change.
+  - Simulation (arbre → audit → lot → crible) : aucune violation de la règle.
+  - Questions à trancher : Q1 à Q7 (optimisation, Décimaux : calculs, doubles et triples,
+    « avec / sans coordonnées », notions-activités, proportionnalité, archivages).
+  - Renommages facultatifs : section D.
