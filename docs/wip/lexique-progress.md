@@ -139,7 +139,7 @@ suis ») :
 - **0a — mécanique, sans choix pédagogique** (branche `fix/lexique-niveaux-definitions`,
   worktree `../ubumaths-wt-lexique`) : niveau de chaque définition remis à celui de son terme
   (204), 25 accents + 3 majuscules de noms propres, « shisma » retiré ; tests 1 à 3 ci-dessus +
-  « exemple jamais avant son terme ». ⏳ en cours.
+  « exemple jamais avant son terme ». ✅ Livré #979 (2026-10-09), avec 10 synonymes accentués et « tangeant » retiré.
 - **0b — niveaux** : appliquer `niveauBO` de `relecture-bo.json` ; quand le BO emploie tôt un
   sens plus simple, ajouter une définition de niveau inférieur au lieu de déplacer le terme ;
   liste des cas disputés à David.
