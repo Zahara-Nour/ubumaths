@@ -80,6 +80,21 @@ describe('glossaire', () => {
 			.toBeInTheDocument();
 	});
 
+	// Ces élèves voient les mots partagés avec leur 1re : le filtre doit pouvoir le montrer
+	it('le filtre propose la Terminale maths complémentaires et la Terminale techno', async () => {
+		await render(Glossaire);
+		await page
+			.getByRole('button', { name: /niveau/i })
+			.first()
+			.click();
+		await expect
+			.element(page.getByRole('option', { name: 'Terminale maths complémentaires' }))
+			.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('option', { name: 'Terminale technologique' }))
+			.toBeInTheDocument();
+	});
+
 	// Les mots de la 1re générale (enseignement scientifique) ne se voyaient
 	// qu'en « Tous les niveaux » : aucun autre niveau n'y donne accès.
 	it('le filtre propose la 1re générale, qui montre ses mots', async () => {
@@ -103,10 +118,35 @@ describe('glossaire', () => {
 		await page.getByRole('option', { name: '1ère technologique' }).click();
 		await page.getByPlaceholder('Rechercher un terme...').fill('nombre dérivé');
 		await expect.element(page.getByRole('button', { name: /^nombre dérivé/ })).toBeInTheDocument();
+		// Le niveau affiché est celui où l'élève de 1re techno rencontre le mot
+		await expect
+			.element(page.getByRole('button', { name: /^nombre dérivé/ }))
+			.toHaveTextContent(/1ère technologique/);
+		await expect
+			.element(page.getByRole('button', { name: /^nombre dérivé/ }))
+			.not.toHaveTextContent(/spécialité/);
 		// « discriminant », de 1re spé, est exclu du programme de 1re techno
 		await page.getByPlaceholder('Rechercher un terme...').fill('discriminant');
 		await expect
 			.element(page.getByRole('button', { name: /^discriminant/ }))
 			.not.toBeInTheDocument();
+	});
+
+	it('le badge de la fiche suit le filtre de niveau', async () => {
+		await render(Glossaire);
+		await page
+			.getByRole('button', { name: /niveau/i })
+			.first()
+			.click();
+		await page.getByRole('option', { name: '1ère technologique' }).click();
+		await openTerm('nombre dérivé');
+		await expect.element(page.getByRole('dialog')).toHaveTextContent(/1ère technologique/);
+		await expect.element(page.getByRole('dialog')).not.toHaveTextContent(/spécialité/);
+	});
+
+	it('sans filtre, le badge montre le niveau d’origine du mot', async () => {
+		await render(Glossaire);
+		await openTerm('nombre dérivé');
+		await expect.element(page.getByRole('dialog')).toHaveTextContent(/spécialité/);
 	});
 });
