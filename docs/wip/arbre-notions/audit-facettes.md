@@ -14,7 +14,8 @@
 >   une sous-notion « coefficient de proportionnalité » reçoit 5-088 et les 2 modèles « Déterminer le coefficient de
 >   proportionnalité » (aujourd'hui sous « reconnaître »). **4-059 (partage proportionnel) va sous « ratio »** (David) :
 >   le BO le formule « partager selon un ratio ».
-> - **Reste à trancher** : la section D (renommages).
+> - **Section D validée par David (2026-10-09)** (« ok pour le renommage ») : tous les renommages proposés.
+> - **L'audit est entièrement tranché.** Suite : les questions restantes du lot, la question d'accès, puis la migration de l'arbre.
 >
 > Principe (ADR 0020 § 3 précisé le 2026-10-09) : **une notion n'a qu'un découpage, par contenu mathématique** — un objet,
 > une propriété ou une technique de calcul —, jamais par activité, par registre ou par outil ; ce que l'élève fait, ce sont
