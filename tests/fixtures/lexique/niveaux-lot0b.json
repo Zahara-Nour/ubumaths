@@ -1,5 +1,5 @@
 {
-	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09). Mise à jour par le lot 0c (2026-10-09) : niveaux des définitions reprises, « exponentielle » devenu un renvoi.",
+	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09). Mise à jour par le lot 0c (2026-10-09) : niveaux des définitions reprises, « exponentielle » devenu un renvoi. Mise à jour par le lot 0f (2026-10-09) : étiquettes de sens (base, carré, cube, degré, échelle, hauteur, médiane, plan, terme), orthographe « évènement », définitions de 1re et Tle spé de « cosinus ».",
 	"principaux": [
 		{
 			"term": "abscisse",
@@ -108,7 +108,7 @@
 		},
 		{
 			"term": "base",
-			"sense": null,
+			"sense": "puissance",
 			"grade": "4",
 			"decision": "H",
 			"niveauxDefinitions": ["4"]
@@ -129,7 +129,7 @@
 		},
 		{
 			"term": "carré",
-			"sense": null,
+			"sense": "puissance",
 			"grade": "5",
 			"decision": "R",
 			"niveauxDefinitions": ["5"]
@@ -279,7 +279,7 @@
 			"sense": null,
 			"grade": "3",
 			"decision": "R",
-			"niveauxDefinitions": ["3"]
+			"niveauxDefinitions": ["3", "1_SPE", "T_SPE"]
 		},
 		{
 			"term": "côté",
@@ -311,7 +311,7 @@
 		},
 		{
 			"term": "cube",
-			"sense": null,
+			"sense": "puissance",
 			"grade": "5",
 			"decision": "R",
 			"niveauxDefinitions": ["5"]
@@ -374,7 +374,7 @@
 		},
 		{
 			"term": "degré",
-			"sense": null,
+			"sense": "équation",
 			"grade": "4",
 			"decision": "A",
 			"niveauxDefinitions": ["4", "1_SPE"]
@@ -493,7 +493,7 @@
 		},
 		{
 			"term": "échelle",
-			"sense": null,
+			"sense": "carte",
 			"grade": "6",
 			"decision": "R",
 			"niveauxDefinitions": ["6"]
@@ -576,14 +576,14 @@
 			"niveauxDefinitions": ["5"]
 		},
 		{
-			"term": "événement",
+			"term": "évènement",
 			"sense": null,
 			"grade": "CM1",
 			"decision": "A",
 			"niveauxDefinitions": ["CM1", "4"]
 		},
 		{
-			"term": "événement contraire",
+			"term": "évènement contraire",
 			"sense": null,
 			"grade": "4",
 			"decision": "R",
@@ -731,7 +731,7 @@
 		},
 		{
 			"term": "hauteur",
-			"sense": null,
+			"sense": "dimension",
 			"grade": "CP",
 			"decision": "A0",
 			"niveauxDefinitions": ["CP"]
@@ -871,7 +871,7 @@
 		},
 		{
 			"term": "médiane",
-			"sense": null,
+			"sense": "statistique",
 			"grade": "4",
 			"decision": "R",
 			"niveauxDefinitions": ["4"]
@@ -1095,7 +1095,7 @@
 		},
 		{
 			"term": "plan",
-			"sense": null,
+			"sense": "géométrie",
 			"grade": "5",
 			"decision": "R",
 			"niveauxDefinitions": ["5"]
@@ -1445,7 +1445,7 @@
 		},
 		{
 			"term": "terme",
-			"sense": null,
+			"sense": "opération",
 			"grade": "CE2",
 			"decision": "R",
 			"niveauxDefinitions": ["CE2"]

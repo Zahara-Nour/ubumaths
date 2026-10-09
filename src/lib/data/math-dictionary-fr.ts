@@ -109,6 +109,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'chiffre',
+		sense: 'numération',
 		tags: ['transversal'],
 		definitions: {
 			items: [
@@ -317,6 +318,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'terme',
+		sense: 'opération',
 		tags: ['transversal'],
 		definitions: {
 			items: [
@@ -1038,14 +1040,6 @@ const MATH_DICTIONARY: MathTerm[] = [
 		derivedFrom: 'décomposition'
 	},
 	{
-		term: 'diviseur',
-		tags: ['entiers', 'arithmétique', 'divisibilité'],
-		definitions: {
-			items: [{ grade: 'CM1', content: 'Nombre qui divise exactement un autre nombre.' }]
-		},
-		grade: 'CM1'
-	},
-	{
 		term: 'entier',
 		tags: ['entiers'],
 		definitions: { items: [{ grade: 'CP', content: 'Nombre sans partie décimale.' }] },
@@ -1562,7 +1556,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '2'
+		grade: '2',
+		synonyms: ['nombre irrationnel']
 	},
 	{
 		term: 'rationnel',
@@ -1576,7 +1571,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '4'
+		grade: '4',
+		synonyms: ['nombre rationnel']
 	},
 	{
 		term: 'relatif',
@@ -1799,6 +1795,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'degré',
+		sense: 'équation',
 		tags: ['calcul-littéral'],
 		definitions: {
 			items: [
@@ -2217,7 +2214,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: 'CP', content: "Muni d'une graduation. Ex : droite graduée, règle graduée." }
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		synonyms: ['droite graduée']
 	},
 	{
 		term: 'graduer',
@@ -2227,6 +2225,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'hauteur',
+		sense: 'dimension',
 		tags: ['grandeurs', 'géométrie'],
 		definitions: {
 			items: [{ grade: 'CP', content: "Dimension verticale d'un objet ou d'une figure." }]
@@ -2381,6 +2380,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'échelle',
+		sense: 'carte',
 		tags: ['proportionnalité', 'grandeurs'],
 		definitions: {
 			items: [
@@ -2564,6 +2564,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'base',
+		sense: 'puissance',
 		tags: ['puissances'],
 		definitions: {
 			items: [{ grade: '4', content: 'Nombre élevé à une puissance. Dans $a^n$, $a$ est la base.' }]
@@ -2572,6 +2573,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'carré',
+		sense: 'puissance',
 		tags: ['puissances', 'entiers'],
 		definitions: {
 			items: [
@@ -2585,6 +2587,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'cube',
+		sense: 'puissance',
 		tags: ['puissances', 'entiers'],
 		definitions: {
 			items: [
@@ -2710,6 +2713,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'image',
+		sense: 'fonction',
 		tags: ['fonctions'],
 		definitions: {
 			items: [
@@ -2826,7 +2830,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '2'
+		grade: '2',
+		synonyms: ['représentation graphique']
 	},
 	{
 		term: 'courbe',
@@ -2933,8 +2938,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CM1',
-		synonyms: ['repère orthonormé']
+		grade: 'CM1'
 	},
 	{
 		term: 'tableau de valeurs',
@@ -3026,6 +3030,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'tangente',
+		sense: 'courbe',
 		tags: ['fonctions', 'géométrie'],
 		definitions: {
 			items: [
@@ -3063,7 +3068,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '1_SPE'
+		grade: '1_SPE',
+		synonyms: ["taux d'accroissement"]
 	},
 	{
 		term: 'extremum',
@@ -3475,7 +3481,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		synonyms: ['éventualité']
 	},
 	{
-		term: 'événement',
+		term: 'évènement',
 		tags: ['probabilités'],
 		definitions: {
 			items: [
@@ -3521,10 +3527,10 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: 'CM1'
 	},
 	{
-		term: 'événement contraire',
+		term: 'évènement contraire',
 		tags: ['probabilités'],
 		definitions: {
-			items: [{ grade: '4', content: "Complémentaire d'un événement. $P(\\bar{A}) = 1 - P(A)$." }]
+			items: [{ grade: '4', content: "Complémentaire d'un évènement. $P(\\bar{A}) = 1 - P(A)$." }]
 		},
 		grade: '4'
 	},
@@ -3540,7 +3546,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '2'
+		grade: '2',
+		synonyms: ['arbre pondéré']
 	},
 	{
 		term: 'fréquence',
@@ -3645,6 +3652,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'médiane',
+		sense: 'statistique',
 		tags: ['statistiques'],
 		definitions: {
 			items: [
@@ -3700,7 +3708,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		synonyms: ['diagramme en barres', 'diagramme en bâtons']
 	},
 	{
 		term: 'quartile',
@@ -3979,7 +3988,17 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						'$\\cos(\\alpha) = \\frac{\\text{adjacent}}{\\text{hypotenuse}}$ dans un triangle rectangle.'
+						'$\\cos(\\alpha) = \\frac{\\text{adjacent}}{\\text{hypoténuse}}$ dans un triangle rectangle.'
+				},
+				{
+					grade: '1_SPE',
+					content:
+						"Pour un nombre réel $x$, $\\cos(x)$ est l'abscisse du point du cercle trigonométrique associé à $x$ ; il est toujours compris entre $-1$ et $1$. Pour un angle aigu, on retrouve le cosinus du triangle rectangle. Ex : $\\cos(0) = 1$, $\\cos(\\pi) = -1$ et $\\cos\\left(\\frac{\\pi}{3}\\right) = \\frac{1}{2}$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						'La fonction cosinus, $x \\mapsto \\cos(x)$, est définie sur $\\mathbb{R}$ ; elle est paire, car $\\cos(-x) = \\cos(x)$, et périodique de période $2\\pi$.'
 				}
 			]
 		},
@@ -3993,7 +4012,17 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						'$\\sin(\\alpha) = \\frac{\\text{oppose}}{\\text{hypotenuse}}$ dans un triangle rectangle.'
+						'$\\sin(\\alpha) = \\frac{\\text{opposé}}{\\text{hypoténuse}}$ dans un triangle rectangle.'
+				},
+				{
+					grade: '1_SPE',
+					content:
+						"Pour un nombre réel $x$, $\\sin(x)$ est l'ordonnée du point du cercle trigonométrique associé à $x$ ; il est toujours compris entre $-1$ et $1$. Pour un angle aigu, on retrouve le sinus du triangle rectangle. Ex : $\\sin(0) = 0$, $\\sin\\left(\\frac{\\pi}{2}\\right) = 1$ et $\\sin\\left(\\frac{\\pi}{6}\\right) = \\frac{1}{2}$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						'La fonction sinus, $x \\mapsto \\sin(x)$, est définie sur $\\mathbb{R}$ ; elle est impaire, car $\\sin(-x) = -\\sin(x)$, et périodique de période $2\\pi$.'
 				}
 			]
 		},
@@ -4008,7 +4037,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{
 					grade: '3',
 					content:
-						'$\\tan(\\alpha) = \\frac{\\text{oppose}}{\\text{adjacent}}$ dans un triangle rectangle.'
+						'$\\tan(\\alpha) = \\frac{\\text{opposé}}{\\text{adjacent}}$ dans un triangle rectangle.'
 				}
 			]
 		},
@@ -4436,7 +4465,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: 'CM1', content: 'Solide ayant une base circulaire et un sommet pointu.' }
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		synonyms: ['cône de révolution']
 	},
 	{
 		term: 'cylindre',
@@ -4451,7 +4481,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: 'CM1', content: 'Solide ayant deux bases circulaires parallèles et égales.' }
 			]
 		},
-		grade: 'CP'
+		grade: 'CP',
+		synonyms: ['cylindre de révolution']
 	},
 	{
 		term: 'droit',
@@ -4705,6 +4736,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 	},
 	{
 		term: 'plan',
+		sense: 'géométrie',
 		tags: ['géométrie'],
 		definitions: { items: [{ grade: '5', content: 'Surface plane infinie à deux dimensions.' }] },
 		grade: '5'
@@ -5395,7 +5427,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: '6', content: 'Un évènement impossible a une probabilité égale à $0$.' }
 			]
 		},
-		grade: 'CM1'
+		grade: 'CM1',
+		synonyms: ['évènement impossible']
 	},
 	{
 		term: 'possible',
@@ -5424,7 +5457,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				{ grade: '6', content: 'Un évènement certain a une probabilité égale à $1$.' }
 			]
 		},
-		grade: 'CM1'
+		grade: 'CM1',
+		synonyms: ['évènement certain']
 	},
 	{
 		term: 'probable',
@@ -5725,7 +5759,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 					content: 'Unité de durée, notée $\\text{min}$ : il y a $60$ minutes dans une heure.'
 				},
 				{
-					grade: 'CM1',
+					grade: 'CM2',
 					content: 'Une minute dure $60$ secondes : $1\\,\\text{min} = 60\\,\\text{s}$.'
 				}
 			]
@@ -5839,6 +5873,11 @@ const MATH_DICTIONARY: MathTerm[] = [
 					grade: '5',
 					content:
 						"Partie d'un programme répétée plusieurs fois : un nombre de fois fixé (« répéter $10$ fois ») ou tant qu'une condition est vraie."
+				},
+				{
+					grade: '2',
+					content:
+						"En Python, une boucle bornée (« for ») répète des instructions un nombre de fois fixé à l'avance : « for k in range(5): » les répète $5$ fois, $k$ prenant les valeurs $0$ à $4$. Une boucle non bornée (« while ») les répète tant qu'une condition est vraie : « while u < 100: »."
 				}
 			]
 		},
@@ -5934,7 +5973,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '2'
+		grade: '2',
+		synonyms: ['réel']
 	},
 	{
 		term: 'colinéaire',
@@ -5948,7 +5988,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '2'
+		grade: '2',
+		synonyms: ['vecteurs colinéaires']
 	},
 	{
 		term: 'vecteur directeur',
@@ -6457,6 +6498,2113 @@ const MATH_DICTIONARY: MathTerm[] = [
 		forms: ['encadre', 'encadrez'],
 		derivedFrom: 'encadrement'
 	},
+
+	// =========================================================================
+	// AJOUTS DU LOT 0f (mots manquants du programme officiel, validés par David)
+	// =========================================================================
+	{
+		term: 'complément',
+		tags: ['entiers', 'operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Ce qu'il faut ajouter à un nombre pour atteindre un autre nombre. Ex : le complément de $7$ à $10$ est $3$, car $7 + 3 = 10$ ; le complément de $74$ à la dizaine supérieure est $6$, car $74 + 6 = 80$."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'étalon',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Objet que l'on choisit pour mesurer, en le reportant bout à bout autant de fois qu'il faut. Ex : la table mesure $8$ crayons : le crayon sert d'étalon."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'balance',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Instrument qui sert à comparer des objets pour savoir lequel est le plus lourd : sur une balance à deux plateaux, c'est le plateau de l'objet le plus lourd qui descend."
+				},
+				{
+					grade: 'CE1',
+					content:
+						"Une balance sert aussi à peser : certaines balances affichent directement la masse d'un objet, en grammes ou en kilogrammes."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'euro',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Monnaie utilisée en France et dans de nombreux pays d'Europe, notée € ; on paie avec des pièces et des billets. Ex : dix pièces de $1$ € ont la même valeur qu'un billet de $10$ €."
+				},
+				{
+					grade: 'CE1',
+					content:
+						"Un euro vaut $100$ centimes. Ex : $2$ € et $5$ centimes s'écrit $2{,}05$ €, alors que $2$ € et $50$ centimes s'écrit $2{,}50$ €."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'tableau à double entrée',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Tableau avec des lignes et des colonnes : chaque case se trouve au croisement d'une ligne et d'une colonne. Ex : pour savoir combien de garçons viennent à vélo, on lit la case où la ligne « vélo » croise la colonne « garçons »."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: "table d'addition",
+		tags: ['entiers', 'operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Ensemble des résultats des additions de deux nombres de $0$ à $10$, que l'on apprend par cœur : $6 + 7 = 13$, $8 + 5 = 13$… La savoir dans les deux sens, c'est aussi savoir compléter $6 + \\ldots = 13$."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'quart de tour',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Mouvement où l'on tourne sur place pour se retrouver tourné vers sa droite ou vers sa gauche. Ex : un robot qui pivote d'un quart de tour à droite regarde ensuite vers sa droite ; avec $4$ quarts de tour dans le même sens, il fait un tour complet."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'opération inverse',
+		tags: ['operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Opération qui défait ce qu'une autre opération a fait : la soustraction est l'opération inverse de l'addition. Ex : $32 + 15 = 47$, donc $47 - 15 = 32$."
+				},
+				{
+					grade: 'CE2',
+					content:
+						"La division est l'opération inverse de la multiplication : $4 \\times 5 = 20$, donc $20 \\div 5 = 4$."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'poser une opération',
+		tags: ['operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						'Écrire les nombres les uns sous les autres, les unités sous les unités et les dizaines sous les dizaines, puis calculer colonne par colonne en commençant par les unités. Ex : pour poser $45 + 37$, on écrit $37$ sous $45$, le $7$ sous le $5$ et le $3$ sous le $4$.'
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'données',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Informations dont on se sert pour répondre à une question : les nombres donnés dans l'énoncé d'un problème, ou les réponses recueillies lors d'une enquête, que l'on range dans un tableau ou un diagramme. Ex : le fruit préféré de chaque élève de la classe."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'dénombrer',
+		tags: ['entiers', 'numération'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Trouver combien il y a d'objets dans une collection, en les comptant ou en les groupant par dix. Ex : $3$ paquets de dix crayons et $4$ crayons seuls, cela fait $34$ crayons."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'demi-heure',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Moitié d'une heure : une demi-heure dure $30$ minutes, et deux demi-heures font une heure. Pendant une demi-heure, la grande aiguille de l'horloge fait un demi-tour."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'instant',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Moment précis, que l'on peut lire sur une horloge : la classe commence à l'instant $8\\,\\text{h}\\,30$. Le temps qui passe entre deux instants s'appelle une durée."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'parité',
+		tags: ['entiers', 'arithmétique'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"La parité d'un nombre entier, c'est le fait qu'il soit pair ou impair. Ex : $37$ est impair, car son chiffre des unités est $7$ ; $50$ est pair."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'arbre de dénombrement',
+		tags: ['operations', 'probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						"Dessin en forme d'arbre qui montre toutes les façons de combiner des choix, avec une branche pour chaque choix. Ex : avec $2$ chapeaux, $3$ tee-shirts et $2$ pantalons, l'arbre montre $12$ costumes différents, car $2 \\times 3 \\times 2 = 12$."
+				},
+				{
+					grade: 'CM2',
+					content:
+						"Il sert aussi à trouver toutes les issues d'une expérience aléatoire en deux étapes : en lançant deux fois une pièce, l'arbre montre $4$ issues (pile-pile, pile-face, face-pile, face-face)."
+				}
+			]
+		},
+		grade: 'CE2',
+		synonyms: ['arbre des possibles']
+	},
+	{
+		term: 'écart',
+		tags: ['operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"De combien un nombre est plus grand qu'un autre. Ex : Lucie a $12$ billes et Léo en a $8$ : l'écart est de $4$ billes, car $8 + 4 = 12$ ; Lucie a $4$ billes de plus que Léo."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'fois plus',
+		tags: ['operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"« Trois fois plus » veut dire qu'on multiplie par $3$. Ex : Léo a $4$ billes et Lucie trois fois plus : $4 \\times 3 = 12$ billes. À ne pas confondre avec « $3$ de plus » : $4 + 3 = 7$."
+				},
+				{
+					grade: 'CE2',
+					content:
+						"« Trois fois moins » veut dire qu'on divise par $3$ : si Lucie a $12$ billes et Léo trois fois moins, Léo en a $12 \\div 3 = 4$."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'caractère',
+		sense: 'statistique',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Ce que l'on observe chez chaque personne ou chaque objet lors d'une enquête. Ex : dans l'enquête « Quel est ton fruit préféré ? », le caractère étudié est le fruit préféré."
+				},
+				{
+					grade: 'CE2',
+					content:
+						"Un caractère peut être qualitatif, comme une couleur ou un moyen de transport, ou quantitatif, c'est-à-dire un nombre, comme l'âge ou le nombre de frères et sœurs."
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'cardinal',
+		tags: ['entiers', 'numération'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Nombre d'objets d'une collection. Ex : la collection des doigts d'une main a pour cardinal $5$."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'centimètre carré',
+		tags: ['grandeurs', 'géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Unité d'aire, notée $\\text{cm}^2$ : c'est l'aire d'un carré de $1$ cm de côté. Ex : une figure que l'on peut recouvrir exactement avec $6$ de ces carrés a une aire de $6\\,\\text{cm}^2$."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'mètre carré',
+		tags: ['grandeurs', 'géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Unité d'aire, notée $\\text{m}^2$ : c'est l'aire d'un carré de $1$ m de côté. Ex : le sol d'une salle de classe mesure environ $60\\,\\text{m}^2$."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'échelle de probabilités',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Ligne sur laquelle on range des évènements selon leurs chances de se produire, dans l'ordre : impossible, peu probable, une chance sur deux, probable, certain. Ex : « obtenir $7$ avec un dé à six faces » se place tout au bout, sur « impossible »."
+				},
+				{
+					grade: '6',
+					content:
+						"L'échelle est graduée de $0$ (impossible) à $1$ (certain) : on place chaque évènement à sa probabilité, par exemple « obtenir pile » à $\\frac{1}{2}$."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'égalité à trous',
+		tags: ['operations', 'équations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Égalité dans laquelle il manque un nombre, qu'il faut trouver. Ex : dans $4 + \\ldots = 12$, le nombre qui manque est $8$."
+				},
+				{
+					grade: '6',
+					content:
+						"Le nombre qui manque n'est pas toujours entier : dans $7 \\times \\ldots = 3$, c'est la fraction $\\frac{3}{7}$."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'hasard',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Ce qui décide d'un résultat que personne ne peut prévoir à l'avance : quand on lance un dé, c'est le hasard qui donne le nombre obtenu. Tirer une carte « au hasard », c'est la prendre sans pouvoir la choisir."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'tonne',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE2',
+					content:
+						'Unité de masse, notée $\\text{t}$, pour les objets très lourds : $1\\,\\text{t} = 1\\,000\\,\\text{kg}$. Ex : une petite voiture pèse environ $1$ tonne.'
+				}
+			]
+		},
+		grade: 'CE2'
+	},
+	{
+		term: 'seconde',
+		sense: 'durée',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						'Unité de durée très courte, notée $\\text{s}$ : il y a $60$ secondes dans une minute. Ex : les meilleurs coureurs font le $100$ mètres en moins de $10$ secondes.'
+				}
+			]
+		},
+		grade: 'CM2',
+		autoLink: false
+	},
+	{
+		term: 'instruction',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						"Ordre précis qui dit ce qu'il faut faire, à une personne, à un robot ou à un ordinateur. Ex : « avance d'une case » et « pivote d'un quart de tour à droite » sont des instructions pour un robot."
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'parenthèses',
+		tags: ['operations'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Signes $($ et $)$ qui entourent une partie d'un calcul : on effectue d'abord le calcul entre parenthèses. Ex : $(12 - 2) \\times 3 = 10 \\times 3 = 30$, mais $12 - (2 \\times 3) = 12 - 6 = 6$."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'programme de construction',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Liste d'instructions, à suivre dans l'ordre, pour tracer une figure. Ex : « Trace un carré de $4$ cm de côté. Trace le cercle de centre un sommet du carré et de rayon $4$ cm. »"
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'définition',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Phrase qui dit exactement ce qu'est un objet mathématique, pour pouvoir le reconnaître sans se tromper. Ex : la définition du rectangle est « un quadrilatère qui a quatre angles droits »."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'diviseur commun',
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Nombre qui est à la fois un diviseur de deux nombres : la division de chacun d'eux par ce nombre tombe juste. Ex : les diviseurs communs à $12$ et $18$ sont $1$, $2$, $3$ et $6$."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'multiple commun',
+		tags: ['entiers', 'arithmétique', 'divisibilité'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						'Nombre qui est à la fois un multiple de deux nombres. Ex : $12$ est un multiple commun à $4$ et $6$, car $4 \\times 3 = 12$ et $6 \\times 2 = 12$ ; $24$ et $36$ aussi.'
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'expériences indépendantes',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Deux expériences sont indépendantes quand le résultat de la première ne change pas les chances de la deuxième. Ex : un dé « ne se souvient pas » du lancer précédent : au deuxième lancer, on a toujours $1$ chance sur $6$ d'obtenir $6$."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'trapèze rectangle',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Trapèze qui a deux angles droits : un de ses côtés est perpendiculaire aux deux côtés parallèles. Ex : en coupant un carré par un trait qui va du milieu d'un côté à un sommet du côté opposé, on obtient un triangle rectangle et un trapèze rectangle."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'angles opposés par le sommet',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Deux angles sont opposés par le sommet quand ils ont le même sommet et que les côtés de l'un prolongent ceux de l'autre : deux droites qui se coupent forment deux paires d'angles qui se font face. Deux angles opposés par le sommet ont toujours la même mesure."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'siècle',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Durée de $100$ ans. Un millénaire dure $1\\,000$ ans, c'est-à-dire $10$ siècles. Ex : le XXIe siècle va de l'an $2001$ à l'an $2100$."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'année bissextile',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						'Année de $366$ jours au lieu de $365$ : le mois de février y compte $29$ jours au lieu de $28$. Elle revient en général tous les $4$ ans. Ex : $2024$ et $2028$ sont des années bissextiles.'
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'cas favorable',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Issue d'une expérience aléatoire qui réalise l'évènement étudié. Ex : avec un dé, pour « obtenir un nombre pair », les cas favorables sont $2$, $4$ et $6$ ; les issues étant équiprobables, la probabilité est le nombre de cas favorables divisé par le nombre total de cas : $\\frac{3}{6}$."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'centimètre cube',
+		tags: ['grandeurs'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Unité de volume, notée $\\text{cm}^3$ : c'est le volume d'un cube de $1\\,\\text{cm}$ d'arête. Ex : un pavé formé de $2 \\times 3 \\times 4 = 24$ cubes de $1\\,\\text{cm}$ d'arête a un volume de $24\\,\\text{cm}^3$."
+				},
+				{
+					grade: '5',
+					content:
+						'Lien avec les contenances : $1\\,\\text{cm}^3 = 1\\,\\text{mL}$ et $1\\,\\text{L} = 1\\,\\text{dm}^3 = 1\\,000\\,\\text{cm}^3$.'
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'concourantes',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Trois droites (ou plus) sont concourantes quand elles passent toutes par un même point. Ex : les trois médiatrices d'un triangle sont concourantes ; leur point commun est le centre du cercle circonscrit au triangle."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'enquête',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: 'CP',
+					content:
+						'On pose la même question à plusieurs personnes et on note leurs réponses pour pouvoir les compter. Ex : demander à chaque élève de la classe quel est son fruit préféré.'
+				},
+				{
+					grade: '6',
+					content:
+						'Une enquête statistique se fait en plusieurs étapes : choisir la question et les personnes (ou les objets) étudiés, recueillir les données, les ranger dans un tableau ou un diagramme, puis les interpréter.'
+				}
+			]
+		},
+		grade: 'CP'
+	},
+	{
+		term: 'nombre non décimal',
+		tags: ['décimaux', 'fractions'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Nombre qui ne peut pas s'écrire comme une fraction décimale : son écriture à virgule ne s'arrête jamais. Ex : $\\frac{1}{3} = 0{,}333\\ldots$, les $3$ continuent sans fin."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'propriété caractéristique',
+		tags: ['logique', 'géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Propriété qui suffit à reconnaître un objet : tous les objets de cette sorte la vérifient, et ils sont les seuls. Ex : la médiatrice d'un segment est formée de tous les points situés à la même distance des deux extrémités du segment, et seulement de ces points."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: "retour à l'unité",
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Méthode pour résoudre un problème de proportionnalité : on calcule d'abord ce qui correspond à une seule unité, puis on multiplie. Ex : si $4$ stylos coûtent $2$ €, $1$ stylo coûte $0{,}50$ €, donc $7$ stylos coûtent $3{,}50$ €."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'équiprobable',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Se dit d'issues qui ont toutes la même probabilité (les mêmes chances) de se produire. Ex : avec un dé équilibré, les six faces sont équiprobables."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'angles alternes internes',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Deux droites $(d)$ et $(d')$ coupées par une sécante forment des angles alternes internes : un à chaque point d'intersection, de part et d'autre de la sécante et entre les deux droites. Si $(d)$ et $(d')$ sont parallèles, ces angles ont la même mesure ; réciproquement, s'ils ont la même mesure, les droites sont parallèles."
+				}
+			]
+		},
+		grade: '5',
+		synonyms: ['angles alternes-internes']
+	},
+	{
+		term: 'angles correspondants',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Deux droites $(d)$ et $(d')$ coupées par une sécante forment des angles correspondants : un à chaque point d'intersection, placés de la même façon, du même côté de la sécante et chacun du même côté de sa droite. Si $(d)$ et $(d')$ sont parallèles, ces angles ont la même mesure ; réciproquement, s'ils ont la même mesure, les droites sont parallèles."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'contre-exemple',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Exemple qui montre qu'une affirmation générale est fausse ; un seul suffit. Ex : « tous les multiples de $3$ sont impairs » est faux, car $6$ est un multiple de $3$ qui est pair : $6$ est un contre-exemple."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'diagramme circulaire',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Diagramme en forme de disque partagé en parts : chaque part représente une catégorie, et plus il y a de personnes ou d'objets dans une catégorie, plus sa part est grande. Ex : si la moitié des élèves vient à pied, la part « à pied » occupe la moitié du disque."
+				},
+				{
+					grade: '5',
+					content:
+						"Chaque secteur a un angle proportionnel à l'effectif qu'il représente : le disque entier, soit $360°$, correspond à l'effectif total. Ex : une catégorie qui regroupe le quart des individus a un secteur de $90°$."
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'nuage de points',
+		tags: ['statistiques', 'proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Ensemble de points placés dans un repère pour représenter des données : chaque point a pour coordonnées deux valeurs liées, par exemple l'âge et la taille d'un enfant. Si les points sont alignés avec l'origine du repère, les deux grandeurs sont proportionnelles."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'perspective cavalière',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'CE1',
+					content:
+						"Façon de dessiner un solide sur une feuille pour qu'on le voie en relief : la face de devant est dessinée telle qu'elle est, les arêtes qui partent vers l'arrière sont tracées en biais, et les arêtes cachées sont en pointillés."
+				},
+				{
+					grade: '5',
+					content:
+						'Les faces de devant et de derrière sont dessinées en vraie grandeur ; les arêtes fuyantes (perpendiculaires à la face de devant) sont tracées en biais et raccourcies ; deux arêtes parallèles dans la réalité restent parallèles sur le dessin. Ex : un cube y est dessiné avec deux carrés et quatre parallélogrammes.'
+				}
+			]
+		},
+		grade: 'CE1'
+	},
+	{
+		term: 'priorités opératoires',
+		tags: ['operations'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Règles qui fixent l'ordre des calculs : d'abord ce qui est entre parenthèses, puis les puissances, puis les multiplications et divisions, enfin les additions et soustractions ; à priorité égale, on calcule de gauche à droite. Ex : $5 + 2 \\times 3 = 5 + 6 = 11$ (et non $7 \\times 3 = 21$)."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'programme',
+		sense: 'informatique',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM2',
+					content:
+						"Suite d'instructions écrite pour être exécutée par un robot ou un ordinateur. Ex : « avancer de $2$ cases, pivoter d'un quart de tour à droite, avancer de $3$ cases »."
+				},
+				{
+					grade: '5',
+					content:
+						'Algorithme écrit dans un langage de programmation (par blocs comme Scratch, ou Python) : il reçoit des données en entrée (par exemple un nombre saisi), les traite par des instructions, et produit des résultats en sortie (un nombre affiché, un dessin).'
+				}
+			]
+		},
+		grade: 'CM2'
+	},
+	{
+		term: 'propriété de linéarité',
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						"Propriété des situations de proportionnalité : si on multiplie une quantité par un nombre, la quantité qui lui correspond est multipliée par le même nombre. Ex : si $4$ pains coûtent $7$ €, $12$ pains, c'est-à-dire $3$ fois plus, coûtent $3$ fois plus : $21$ €."
+				},
+				{
+					grade: 'CM2',
+					content:
+						'Dans une situation de proportionnalité, on peut aussi additionner : à la somme de deux quantités correspond la somme des quantités qui leur correspondent. Ex : si $3$ cahiers coûtent $6$ € et $2$ cahiers coûtent $4$ €, alors $5$ cahiers coûtent $6 + 4 = 10$ €.'
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'strictement positif',
+		tags: ['relatifs'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						'Un nombre est strictement positif quand il est supérieur à $0$ sans être égal à $0$. Ex : $3$ et $0{,}5$ sont strictement positifs ; $0$ est positif, mais pas strictement positif. De même, un nombre strictement négatif est inférieur à $0$ sans être égal à $0$.'
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'successeur',
+		tags: ['entiers', 'calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Le successeur d'un nombre entier est l'entier qui vient juste après lui : on lui ajoute $1$. Ex : le successeur de $7$ est $8$ ; celui de $n$ est $n + 1$."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'prédécesseur',
+		tags: ['entiers', 'calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Le prédécesseur d'un nombre entier est l'entier qui vient juste avant lui : on lui retire $1$. Ex : le prédécesseur de $8$ est $7$ ; celui de $n$ est $n - 1$."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'tableur',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'CM1',
+					content:
+						'Logiciel qui affiche une grille de cases, appelées cellules, rangées en lignes et en colonnes. On y écrit des nombres ou des formules de calcul, et le logiciel fait les calculs tout seul. Ex : prolonger très loin une suite de nombres.'
+				},
+				{
+					grade: '5',
+					content:
+						"Chaque cellule est repérée par la lettre de sa colonne et le numéro de sa ligne, par exemple B3. Une formule commence par « = » et peut utiliser d'autres cellules : « =2*A1+3 » ; recopiée vers le bas, elle refait le calcul ligne par ligne."
+				}
+			]
+		},
+		grade: 'CM1'
+	},
+	{
+		term: 'demi-cercle',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Moitié d'un cercle, limitée par les deux extrémités d'un de ses diamètres. Ex : si $[AB]$ est un diamètre d'un cercle et $M$ un autre point de ce cercle, le triangle $ABM$ est rectangle en $M$."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'droite des milieux',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Dans un triangle, droite qui passe par les milieux de deux côtés : elle est parallèle au troisième côté, et le segment qui joint ces deux milieux mesure la moitié du troisième côté. De plus, la droite qui passe par le milieu d'un côté parallèlement à un deuxième côté coupe le troisième côté en son milieu. Ex : dans un triangle $ABC$, si $I$ et $J$ sont les milieux de $[AB]$ et $[AC]$, alors $(IJ)$ est parallèle à $(BC)$ et $IJ = \\frac{BC}{2}$."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'épreuve',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Chacune des étapes d'une expérience aléatoire qui se déroule en plusieurs temps. Ex : lancer une pièce, puis lancer un dé, c'est une expérience à deux épreuves."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'fluctuation',
+		tags: ['probabilités', 'statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Variation des fréquences observées d'une série d'essais à l'autre, même quand chaque série compte le même nombre d'essais. Ex : sur $50$ lancers d'une pièce, on obtient $23$ « pile », puis $28$ sur $50$ autres lancers : les fréquences $0{,}46$ et $0{,}56$ varient autour de la probabilité $0{,}5$."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'grandeur quotient',
+		tags: ['grandeurs', 'proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						'Grandeur obtenue en divisant une grandeur par une autre ; son unité combine les deux unités. Ex : une vitesse est une distance divisée par une durée, en $\\text{km/h}$ ; un débit est un volume divisé par une durée, en $\\text{L/min}$.'
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'partage proportionnel',
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Partage d'une quantité en parts proportionnelles à des nombres donnés. Ex : partager $600$ € proportionnellement à $2$ et $3$ : on fait $2 + 3 = 5$ parts égales de $120$ €, d'où $2 \\times 120 = 240$ € et $3 \\times 120 = 360$ €."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'quatrième proportionnelle',
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						'Nombre qui manque dans un tableau de proportionnalité de quatre cases quand on connaît les trois autres. Ex : si $3$ kg de pommes coûtent $12$ €, $5$ kg coûtent $\\frac{12 \\times 5}{3} = 20$ € : $20$ est la quatrième proportionnelle.'
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: "raisonnement par l'absurde",
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Raisonnement qui suppose le contraire de ce qu'on veut démontrer et montre que cela mène à une contradiction : la supposition est donc fausse. Ex : pour démontrer qu'il n'existe pas de plus grand nombre entier, on suppose qu'il en existe un, $N$ ; mais $N + 1$ est un entier plus grand, c'est absurde."
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'simulation',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '6',
+					content:
+						"Imitation d'une expérience aléatoire, souvent avec un logiciel, pour la répéter un grand nombre de fois et observer les fréquences des résultats. Ex : faire tourner $1\\,000$ fois une roue de loterie virtuelle."
+				},
+				{
+					grade: '3',
+					content:
+						"Pour simuler une expérience, on la remplace par un tirage au hasard qui a les mêmes probabilités, souvent fait par un programme. Ex : tirer au hasard un nombre entier entre $1$ et $6$ simule le lancer d'un dé équilibré."
+				}
+			]
+		},
+		grade: '6'
+	},
+	{
+		term: 'boîte à moustaches',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Diagramme qui résume une série statistique sur un axe gradué : une « boîte » va du premier quartile $Q_1$ au troisième quartile $Q_3$, coupée par un trait à la médiane, et deux « moustaches » la prolongent jusqu'au minimum et jusqu'au maximum. On dit aussi « diagramme en boîte »."
+				}
+			]
+		},
+		grade: '3',
+		synonyms: ['diagramme en boîte']
+	},
+	{
+		term: 'double distributivité',
+		tags: ['calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						'Règle pour développer le produit de deux sommes : on multiplie chaque terme de la première par chaque terme de la seconde, puis on ajoute les produits : $(a + b)(c + d) = ac + ad + bc + bd$. Ex : $(x + 2)(x + 3) = x^2 + 3x + 2x + 6 = x^2 + 5x + 6$.'
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'effectif cumulé',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"L'effectif cumulé croissant d'une valeur est le nombre d'individus dont la valeur est inférieure ou égale à celle-ci : on additionne les effectifs depuis la plus petite valeur. Ex : notes $8$ ($3$ élèves), $10$ ($5$ élèves), $12$ ($4$ élèves) ; l'effectif cumulé croissant de $10$ est $3 + 5 = 8$."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'équation produit nul',
+		tags: ['équations'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Équation de la forme $A \\times B = 0$, où $A$ et $B$ sont des expressions. Un produit est nul si et seulement si l'un au moins de ses facteurs est nul : on résout donc $A = 0$ ou $B = 0$. Ex : $(x - 2)(x + 5) = 0$ a pour solutions $2$ et $-5$."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'facteur commun',
+		tags: ['calcul-littéral'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Facteur qu'on retrouve dans chaque terme d'une somme, ou à la fois au numérateur et au dénominateur d'un quotient. Ex : dans $5x + 15 = 5 \\times x + 5 \\times 3$, le facteur commun est $5$, d'où $5x + 15 = 5(x + 3)$ ; il peut être une expression : $(x + 1) \\times 2 + (x + 1) \\times x = (x + 1)(2 + x)$."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'relation de Chasles',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						'Pour trois points $A$, $B$ et $C$ quelconques : $\\overrightarrow{AB} + \\overrightarrow{BC} = \\overrightarrow{AC}$. Enchaîner la translation qui transforme $A$ en $B$ puis celle qui transforme $B$ en $C$ revient à faire la translation qui transforme $A$ en $C$.'
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'section',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Figure plane obtenue en coupant un solide par un plan. Ex : la section d'un pavé droit par un plan parallèle à une face est un rectangle de mêmes dimensions que cette face ; la section d'une boule par un plan qui la coupe est un disque."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'somme de deux vecteurs',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						'La somme $\\vec{u} + \\vec{v}$ est le vecteur de la translation obtenue en enchaînant la translation de vecteur $\\vec{u}$ puis celle de vecteur $\\vec{v}$. Ex : $\\overrightarrow{AB} + \\overrightarrow{BC} = \\overrightarrow{AC}$ ; et si $ABCD$ est un parallélogramme, $\\overrightarrow{AB} + \\overrightarrow{AD} = \\overrightarrow{AC}$.'
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'vecteur nul',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						"Vecteur de la translation qui ne déplace aucun point, noté $\\vec{0}$ : $\\overrightarrow{AA} = \\overrightarrow{BB} = \\vec{0}$. C'est le seul vecteur de longueur nulle ; il n'a ni direction ni sens."
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'vecteurs égaux',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '3',
+					content:
+						'Deux vecteurs sont égaux quand ils définissent la même translation : même direction, même sens et même longueur. Ex : $\\overrightarrow{AB} = \\overrightarrow{DC}$ exactement quand $ABCD$ est un parallélogramme (éventuellement aplati).'
+				}
+			]
+		},
+		grade: '3'
+	},
+	{
+		term: 'affectation',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Instruction qui donne une valeur à une variable, en remplaçant celle qu'elle contenait. En langage naturel, on écrit $a \\leftarrow 5$ (en Python : « a = 5 », où le signe = n'est pas une égalité) ; ainsi $a \\leftarrow a + 1$ augmente de $1$ la valeur de $a$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'amplitude',
+		tags: ['décimaux', 'statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"L'amplitude d'un intervalle de bornes $a$ et $b$ (avec $a < b$) est la différence $b - a$. Ex : l'encadrement $1{,}41 \\leq \\sqrt{2} \\leq 1{,}42$ a pour amplitude $0{,}01$ ; en statistique, la classe $[150 ; 160[$ a pour amplitude $10$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'chiffres significatifs',
+		tags: ['décimaux', 'numération'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Chiffres de l'écriture décimale d'un nombre, comptés à partir du premier chiffre non nul (en lisant de gauche à droite) jusqu'au dernier chiffre écrit ; plus il y en a, plus la valeur donnée est précise. Ex : $0{,}0305$ a trois chiffres significatifs ($3$, $0$ et $5$) ; $3{,}1416$ arrondi à deux chiffres significatifs donne $3{,}1$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'classe',
+		sense: 'statistique',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Intervalle de valeurs dans lequel on regroupe les données d'une série statistique ; l'effectif de la classe est le nombre de données qui y tombent. Ex : pour des tailles en $\\text{cm}$, la classe $[150 ; 160[$ contient les tailles $t$ telles que $150 \\leq t < 160$, et son centre est $155$."
+				}
+			]
+		},
+		grade: '2',
+		autoLink: false
+	},
+	{
+		term: 'négation',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"La négation d'une proposition $P$ est la proposition « non $P$ » : elle est vraie quand $P$ est fausse, et fausse quand $P$ est vraie. Ex : pour un réel $x$ donné, la négation de « $x > 3$ » est « $x \\leq 3$ » ; celle de « $P$ et $Q$ » est « non $P$ ou non $Q$ »."
+				},
+				{
+					grade: '1_SPE',
+					content:
+						'Pour nier une proposition quantifiée, on échange « pour tout » et « il existe » et on nie la propriété. Ex : la négation de « pour tout réel $x$, $x^2 > 0$ » est « il existe un réel $x$ tel que $x^2 \\leq 0$ », qui est vraie ($x = 0$).'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'couple',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Deux objets pris dans un ordre précis, notés $(a ; b)$ : $a$ est le premier élément du couple, $b$ le second. Deux couples sont égaux s'ils ont le même premier élément et le même second élément ; ainsi $(1 ; 2) \\neq (2 ; 1)$. Ex : les coordonnées d'un point forment un couple."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'élément',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Chacun des objets qui composent un ensemble. On écrit $x \\in E$ (« $x$ appartient à $E$ ») si $x$ est un élément de $E$, et $x \\notin E$ sinon. Ex : $3 \\in \\{1, 2, 3\\}$, mais $5 \\notin \\{1, 2, 3\\}$.'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: "taux d'évolution réciproque",
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Taux $t'$ de l'évolution qui ramène à la valeur de départ : si un taux $t$ fait passer de $V_1$ à $V_2$, le taux réciproque fait passer de $V_2$ à $V_1$, et $1 + t' = \\frac{1}{1 + t}$. Ex : après une hausse de $25\\,\\%$ ($\\times 1{,}25$), il faut une baisse de $20\\,\\%$ ($\\times 0{,}8$) pour revenir à la valeur de départ."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'fonction cube',
+		tags: ['fonctions', 'puissances'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Fonction définie sur $\\mathbb{R}$ par $f(x) = x^3$. Elle est croissante sur $\\mathbb{R}$, $x^3$ a toujours le même signe que $x$, et sa courbe est symétrique par rapport à l'origine du repère. Ex : $f(2) = 8$ et $f(-2) = -8$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'fonction valeur absolue',
+		tags: ['fonctions', 'relatifs'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Fonction définie sur $\\mathbb{R}$ par $f(x) = |x|$, c'est-à-dire $f(x) = x$ si $x \\geq 0$ et $f(x) = -x$ si $x < 0$. Elle est décroissante sur $]-\\infty ; 0]$ et croissante sur $[0 ; +\\infty[$ ; sa courbe a la forme d'un V, formé de deux demi-droites issues de l'origine."
+				},
+				{
+					grade: '1_SPE',
+					content:
+						"Elle n'est pas dérivable en $0$ : le taux de variation $\\frac{|h| - |0|}{h}$ vaut $1$ si $h > 0$ et $-1$ si $h < 0$, il n'a donc pas de limite quand $h$ tend vers $0$ (la courbe forme un « coin » à l'origine)."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'fréquence conditionnelle',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Fréquence calculée à l'intérieur d'une sous-population : la fréquence de $B$ parmi les individus de $A$ est l'effectif des individus qui sont à la fois dans $A$ et dans $B$, divisé par l'effectif de $A$. Ex : si $10$ des $40$ internes d'un lycée font du latin, la fréquence des latinistes parmi les internes est $\\frac{10}{40} = 0{,}25$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'indicateur statistique',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '4',
+					content:
+						"Nombre qui résume une série statistique par une seule valeur. Ex : la moyenne, la médiane et l'étendue sont des indicateurs."
+				},
+				{
+					grade: '2',
+					content:
+						'On distingue les indicateurs de position (moyenne, médiane, quartiles), qui indiquent autour de quelles valeurs se situe la série, et les indicateurs de dispersion (étendue, écart interquartile, écart type), qui mesurent à quel point les valeurs sont étalées.'
+				}
+			]
+		},
+		grade: '4'
+	},
+	{
+		term: 'loi des grands nombres',
+		tags: ['probabilités', 'statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Quand on répète un grand nombre de fois la même expérience aléatoire, de façon indépendante, la fréquence observée d'un évènement est, sauf exception, proche de sa probabilité. Ex : sur $10\\,000$ lancers d'une pièce équilibrée, la fréquence de « pile » est presque toujours proche de $0{,}5$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Si $M_n$ est la moyenne d'un échantillon de taille $n$ d'une variable aléatoire d'espérance $\\mu$, alors pour tout réel $\\delta > 0$, la probabilité $P(|M_n - \\mu| \\geq \\delta)$ tend vers $0$ quand $n$ tend vers $+\\infty$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'monotone',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Une fonction est monotone sur un intervalle $I$ si elle est croissante sur tout $I$, ou décroissante sur tout $I$ ; elle est strictement monotone si elle est strictement croissante ou strictement décroissante sur $I$. Ex : $x \\mapsto x^2$ n'est pas monotone sur $\\mathbb{R}$, mais elle l'est sur $[0 ; +\\infty[$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'proposition',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Énoncé mathématique qui est soit vrai, soit faux. Ex : « $7$ est un nombre premier » est une proposition vraie, « $2 + 2 = 5$ » une proposition fausse ; une proposition peut contenir une variable : « $x > 2$ » est vraie pour $x = 3$ et fausse pour $x = 0$.'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'quantificateur',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Expression qui indique pour quels objets une propriété est affirmée : « pour tout » (ou « quel que soit ») affirme qu'elle est vraie pour tous, « il existe » qu'elle est vraie pour au moins un. Ex : « pour tout réel $x$, $x^2 \\geq 0$ » est vraie ; « il existe un réel $x$ tel que $x^2 = -1$ » est fausse."
+				},
+				{
+					grade: '1_SPE',
+					content:
+						'On note parfois $\\forall$ (« pour tout ») et $\\exists$ (« il existe »). Un quantificateur est souvent sous-entendu : « si $x > 2$, alors $x^2 > 4$ » veut dire « pour tout réel $x$, si $x > 2$ alors $x^2 > 4$ ».'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'disjonction des cas',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						'Raisonnement qui sépare un problème en plusieurs cas couvrant toutes les possibilités, puis traite chaque cas séparément. Ex : pour montrer que $n(n + 1)$ est pair pour tout entier $n$, on étudie le cas « $n$ pair » puis le cas « $n$ impair ».'
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'repère orthonormé',
+		tags: ['géométrie', 'fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Repère $(O ; I, J)$ du plan dont les axes $(OI)$ et $(OJ)$ sont perpendiculaires et ont la même unité de longueur : $OI = OJ = 1$. On le note aussi $(O ; \\vec{i}, \\vec{j})$, avec $(\\vec{i}, \\vec{j})$ base orthonormée ; c'est dans un tel repère que $AB = \\sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Dans l'espace, repère $(O ; \\vec{i}, \\vec{j}, \\vec{k})$ dont les trois vecteurs sont orthogonaux deux à deux et de norme $1$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'sous-ensemble',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Un ensemble $A$ est un sous-ensemble (ou une partie) d'un ensemble $E$ si tout élément de $A$ est aussi un élément de $E$ ; on écrit $A \\subset E$. Ex : $\\{2, 4\\}$ est un sous-ensemble de $\\{1, 2, 3, 4\\}$, $\\mathbb{N}$ est un sous-ensemble de $\\mathbb{R}$, et $\\varnothing$ comme $E$ lui-même sont des sous-ensembles de $E$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'tableau croisé',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Tableau à double entrée qui répartit une population selon deux caractères : chaque case donne l'effectif des individus qui ont à la fois la modalité de sa ligne et celle de sa colonne, et les totaux figurent en marge. Ex : les élèves d'un lycée répartis selon leur niveau (lignes) et selon qu'ils sont internes ou externes (colonnes)."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'variation absolue',
+		tags: ['proportionnalité'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Différence $V_2 - V_1$ entre la valeur d'arrivée $V_2$ et la valeur de départ $V_1$ ; elle s'exprime dans l'unité de la grandeur et elle est négative en cas de baisse. Ex : un prix qui passe de $80$ € à $92$ € a une variation absolue de $+12$ €, alors que sa variation relative (taux d'évolution) est $\\frac{12}{80} = 15\\,\\%$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'équation cartésienne',
+		tags: ['géométrie', 'équations'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Équation de la forme $ax + by + c = 0$, avec $a$ et $b$ non tous les deux nuls, vérifiée exactement par les coordonnées $(x ; y)$ des points d'une droite. Toute droite du plan en a une, et même une infinité, proportionnelles entre elles. Ex : $2x - y + 3 = 0$ est une équation cartésienne de la droite d'équation réduite $y = 2x + 3$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Dans l'espace muni d'un repère orthonormé, un plan a une équation cartésienne de la forme $ax + by + cz + d = 0$, avec $a$, $b$, $c$ non tous nuls ; le vecteur $\\vec{n}(a ; b ; c)$ est alors normal à ce plan."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'approximation linéaire',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Si $f$ est dérivable en $a$, alors pour $h$ proche de $0$, $f(a + h) \\approx f(a) + f'(a)h$ : près du point d'abscisse $a$, on remplace la courbe par sa tangente. Ex : avec $f(x) = \\sqrt{x}$ et $a = 1$, $\\sqrt{1{,}02} \\approx 1 + \\frac{1}{2} \\times 0{,}02 = 1{,}01$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'cercle trigonométrique',
+		tags: ['trigonométrie', 'géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Dans un repère orthonormé $(O ; I, J)$, cercle de centre $O$ et de rayon $1$, parcouru dans le sens inverse des aiguilles d'une montre (sens direct). En y enroulant la droite des réels à partir de $I$, on associe à chaque réel $x$ un point $M$ du cercle, de coordonnées $(\\cos x ; \\sin x)$. Ex : au réel $\\pi$ correspond le point $(-1 ; 0)$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'dérivable',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Une fonction $f$ est dérivable en $a$ si son taux de variation $\\frac{f(a + h) - f(a)}{h}$ a une limite finie quand $h$ tend vers $0$ ; cette limite est le nombre dérivé $f'(a)$. Elle est dérivable sur un intervalle si elle l'est en chaque nombre de cet intervalle. Ex : la fonction racine carrée n'est pas dérivable en $0$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'échantillon',
+		tags: ['probabilités', 'statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Liste des $n$ résultats obtenus en répétant $n$ fois, de façon indépendante, la même expérience aléatoire ; $n$ est la taille de l'échantillon. Ex : $50$ lancers d'un dé forment un échantillon de taille $50$, dont la moyenne permet d'estimer l'espérance du résultat d'un lancer."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Un échantillon de taille $n$ d'une loi de probabilité est une liste $(X_1, \\ldots, X_n)$ de variables aléatoires indépendantes qui suivent toutes cette loi ; sa moyenne est $M_n = \\frac{X_1 + \\cdots + X_n}{n}$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'fonction polynôme du second degré',
+		tags: ['fonctions', 'équations'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						'Fonction définie sur $\\mathbb{R}$ par $f(x) = ax^2 + bx + c$, où $a$, $b$, $c$ sont des réels avec $a \\neq 0$ ; sa courbe est une parabole. Ex : $f(x) = 2x^2 - 3x + 1 = (2x - 1)(x - 1)$, dont les racines sont $\\frac{1}{2}$ et $1$.'
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: "formule d'Al-Kashi",
+		tags: ['géométrie', 'trigonométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Dans tout triangle $ABC$ : $BC^2 = AB^2 + AC^2 - 2 \\times AB \\times AC \\times \\cos\\widehat{BAC}$. Elle généralise le théorème de Pythagore : si l'angle $\\widehat{BAC}$ est droit, son cosinus est nul. Ex : si $AB = 5$, $AC = 3$ et $\\widehat{BAC} = 60°$, alors $BC^2 = 25 + 9 - 15 = 19$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'formule des probabilités totales',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Si les évènements $A_1, \\ldots, A_n$ forment une partition de l'univers, alors pour tout évènement $B$ : $P(B) = P(A_1 \\cap B) + \\cdots + P(A_n \\cap B)$. Avec un évènement $A$ tel que $0 < P(A) < 1$ : $P(B) = P(A) \\times P_A(B) + P(\\bar{A}) \\times P_{\\bar{A}}(B)$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'liste',
+		sense: 'informatique',
+		tags: ['transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"En informatique, suite ordonnée de valeurs rangées sous un même nom ; une même valeur peut y apparaître plusieurs fois. En Python, on l'écrit entre crochets : « notes = [12, 15, 9, 15] »."
+				},
+				{
+					grade: '1_SPE',
+					content:
+						"Chaque élément d'une liste est repéré par son indice, qui commence à $0$ : si « L = [12, 15, 9] », alors « L[0] » vaut $12$. On crée une liste en extension (« [1, 4, 9] »), par ajouts successifs (« L.append(16) ») ou en compréhension (« [k**2 for k in range(4)] » donne « [0, 1, 4, 9] »)."
+				}
+			]
+		},
+		grade: '2',
+		autoLink: false
+	},
+	{
+		term: 'nombre e',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						'Image de $1$ par la fonction exponentielle : $e = \\exp(1) \\approx 2{,}718$. On note $e^x = \\exp(x)$ pour tout réel $x$, ce qui prolonge les puissances : $e^2 = e \\times e$.'
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'vecteurs orthogonaux',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						'Deux vecteurs non nuls sont orthogonaux si leurs directions sont perpendiculaires ; par convention, le vecteur nul est orthogonal à tout vecteur. Deux vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si $\\vec{u} \\cdot \\vec{v} = 0$. Ex : en base orthonormée, $\\vec{u}(2 ; 3)$ et $\\vec{v}(-3 ; 2)$ sont orthogonaux car $2 \\times (-3) + 3 \\times 2 = 0$.'
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'paramètre',
+		tags: ['calcul-littéral', 'transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '5',
+					content:
+						"Dans un programme, valeur que l'on peut changer pour modifier le résultat, sans toucher aux instructions. Ex : dans un programme qui trace un carré, la longueur du côté peut être un paramètre."
+				},
+				{
+					grade: '1_SPE',
+					content:
+						"Lettre qui désigne un nombre fixé pendant l'étude d'un problème, mais que l'on peut faire varier d'un problème à l'autre ; ce n'est ni l'inconnue ni la variable. Ex : dans l'équation $x^2 = m$, d'inconnue $x$, le paramètre $m$ décide du nombre de solutions : deux si $m > 0$, une si $m = 0$, aucune si $m < 0$."
+				}
+			]
+		},
+		grade: '5'
+	},
+	{
+		term: 'partition',
+		tags: ['probabilités', 'logique'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Des évènements $A_1, \\ldots, A_n$, non vides, forment une partition de l'univers $\\Omega$ s'ils sont deux à deux incompatibles (sans issue commune) et si leur réunion est $\\Omega$ : chaque issue appartient à un et un seul d'entre eux. Ex : pour un dé, $\\{1, 2\\}$, $\\{3\\}$ et $\\{4, 5, 6\\}$ forment une partition de $\\Omega = \\{1, 2, 3, 4, 5, 6\\}$."
+				}
+			]
+		},
+		grade: '1_SPE',
+		synonyms: ["système complet d'évènements"]
+	},
+	{
+		term: 'projeté orthogonal',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Le projeté orthogonal d'un point $M$ sur une droite $d$ est le point $H$ de $d$ tel que la droite $(MH)$ soit perpendiculaire à $d$ ($H = M$ si $M$ est sur $d$). C'est le point de $d$ le plus proche de $M$ : la distance de $M$ à la droite $d$ est $MH$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Dans l'espace, le projeté orthogonal d'un point $M$ sur un plan $\\mathcal{P}$ est le point $H$ de $\\mathcal{P}$ tel que $\\overrightarrow{MH}$ soit nul ou normal à $\\mathcal{P}$ ; c'est le point de $\\mathcal{P}$ le plus proche de $M$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'seuil',
+		tags: ['suites', 'transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Valeur fixée à l'avance qu'une quantité doit atteindre ou dépasser ; un problème de seuil consiste à chercher à partir de quel rang (ou de quel moment) c'est le cas. Ex : pour $u_n = 1{,}05^n$, le plus petit entier $n$ tel que $u_n > 2$ est $15$ ; un algorithme de seuil le trouve en calculant les termes tant que $u_n \\leq 2$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'vecteur normal',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '1_SPE',
+					content:
+						"Un vecteur normal à une droite $d$ est un vecteur non nul orthogonal à un vecteur directeur de $d$. En repère orthonormé, le vecteur $\\vec{n}(a ; b)$ est normal à la droite d'équation $ax + by + c = 0$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Un vecteur normal à un plan $\\mathcal{P}$ est un vecteur non nul orthogonal à deux vecteurs non colinéaires de la direction de $\\mathcal{P}$, donc à tout vecteur de cette direction. En repère orthonormé, $\\vec{n}(a ; b ; c)$ est normal au plan d'équation $ax + by + cz + d = 0$."
+				}
+			]
+		},
+		grade: '1_SPE'
+	},
+	{
+		term: 'combinaison linéaire',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Un vecteur $\\vec{w}$ est une combinaison linéaire de $\\vec{u}$ et $\\vec{v}$ s'il existe deux réels $a$ et $b$ tels que $\\vec{w} = a\\vec{u} + b\\vec{v}$. Si $\\vec{u}$ et $\\vec{v}$ ne sont pas colinéaires, tout vecteur du plan s'écrit ainsi, d'une seule façon. Ex : dans un parallélogramme $ABCD$, $\\overrightarrow{AC} = \\overrightarrow{AB} + \\overrightarrow{AD}$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Dans l'espace, une combinaison linéaire de $\\vec{u}$, $\\vec{v}$, $\\vec{w}$ est un vecteur $a\\vec{u} + b\\vec{v} + c\\vec{w}$, avec $a$, $b$, $c$ réels ; si ces trois vecteurs ne sont pas coplanaires, tout vecteur de l'espace s'écrit ainsi, d'une seule façon."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'croissance comparée',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Résultats qui comparent la vitesse à laquelle des fonctions tendent vers l'infini : en $+\\infty$, l'exponentielle l'emporte sur toute puissance $x^n$, qui l'emporte elle-même sur le logarithme. Pour tout entier $n \\geq 1$ : $\\lim_{x \\to +\\infty} \\frac{e^x}{x^n} = +\\infty$, $\\lim_{x \\to +\\infty} \\frac{\\ln(x)}{x^n} = 0$, et $x^n \\ln(x)$ tend vers $0$ quand $x$ tend vers $0$ par valeurs positives."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'dichotomie',
+		tags: ['fonctions', 'transversal'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Méthode qui encadre une valeur cherchée en coupant l'intervalle en deux à chaque étape et en gardant la moitié qui la contient : l'amplitude de l'encadrement est divisée par $2$ à chaque étape. Ex : pour approcher la solution positive de $x^2 = 2$, on part de $[1 ; 2]$ ; comme $1{,}5^2 > 2$, on garde $[1 ; 1{,}5]$, et ainsi de suite."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Si $f$ est continue et strictement monotone sur $[a ; b]$, avec $f(a)$ et $f(b)$ de signes contraires, l'équation $f(x) = 0$ a une unique solution dans $[a ; b]$ ; la dichotomie l'encadre en gardant à chaque étape la moitié de l'intervalle aux bornes de laquelle $f$ change de signe."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'disjoints',
+		tags: ['logique', 'probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Deux ensembles sont disjoints s'ils n'ont aucun élément commun : $A \\cap B = \\varnothing$. Plusieurs ensembles sont deux à deux disjoints si deux quelconques d'entre eux sont disjoints ; pour des évènements, on dit incompatibles. Ex : l'ensemble des entiers pairs et celui des entiers impairs sont disjoints."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'inégalité de Bienaymé-Tchebychev',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Pour une variable aléatoire $X$ d'espérance $\\mu$ et de variance $V$, et pour tout réel $\\delta > 0$ : $P(|X - \\mu| \\geq \\delta) \\leq \\frac{V}{\\delta^2}$. Elle dit qu'un grand écart à l'espérance est peu probable : avec l'écart type $\\sigma$ et $\\delta = 2\\sigma$, cette probabilité vaut au plus $\\frac{1}{4}$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'intégration par parties',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Si $u$ et $v$ sont dérivables sur $[a ; b]$, avec $u'$ et $v'$ continues : $\\int_a^b u(x)v'(x)\\,\\mathrm{d}x = \\big[u(x)v(x)\\big]_a^b - \\int_a^b u'(x)v(x)\\,\\mathrm{d}x$. Ex : avec $u(x) = x$ et $v(x) = e^x$, $\\int_0^1 xe^x\\,\\mathrm{d}x = e - \\int_0^1 e^x\\,\\mathrm{d}x = e - (e - 1) = 1$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'suite majorée',
+		tags: ['suites'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Une suite $(u_n)$ est majorée s'il existe un réel $M$ tel que, pour tout entier $n$, $u_n \\leq M$ ; elle est minorée s'il existe un réel $m$ tel que, pour tout $n$, $u_n \\geq m$ ; elle est bornée si elle est à la fois majorée et minorée. Ex : la suite $u_n = \\frac{1}{n + 1}$ est bornée, car $0 < u_n \\leq 1$ pour tout $n$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'k-uplet',
+		tags: ['logique', 'probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						'Liste ordonnée $(x_1, x_2, \\ldots, x_k)$ de $k$ éléments, pas forcément distincts ; on dit aussi $k$-liste. Un $2$-uplet est un couple, un $3$-uplet un triplet, et un ensemble à $n$ éléments donne $n^k$ $k$-uplets. Ex : il y a $10^4 = 10\\,000$ codes à $4$ chiffres.'
+				}
+			]
+		},
+		grade: 'T_SPE',
+		synonyms: ['n-uplet', 'k-liste']
+	},
+	{
+		term: 'droites orthogonales',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Deux droites de l'espace sont orthogonales si un vecteur directeur de l'une est orthogonal à un vecteur directeur de l'autre. Elles ne sont pas forcément sécantes ; orthogonales et sécantes, elles sont perpendiculaires. Ex : dans un cube $ABCDEFGH$, les droites $(AB)$ et $(FG)$ sont orthogonales, mais pas perpendiculaires."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'fonction périodique',
+		tags: ['fonctions', 'trigonométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Une fonction $f$ définie sur $\\mathbb{R}$ est périodique de période $T$ (avec $T > 0$) si, pour tout réel $x$, $f(x + T) = f(x)$ : sa courbe se reproduit à l'identique par translation de $T$ le long de l'axe des abscisses. Ex : $\\cos$ et $\\sin$ sont périodiques de période $2\\pi$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'principe multiplicatif',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Le nombre d'éléments d'un produit cartésien d'ensembles finis est le produit de leurs nombres d'éléments : $\\mathrm{Card}(A \\times B) = \\mathrm{Card}(A) \\times \\mathrm{Card}(B)$. Ex : avec $3$ entrées et $4$ plats, on peut composer $3 \\times 4 = 12$ menus « entrée + plat »."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'principe additif',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Le nombre d'éléments d'une réunion d'ensembles finis deux à deux disjoints est la somme de leurs nombres d'éléments : si $A \\cap B = \\varnothing$, alors $\\mathrm{Card}(A \\cup B) = \\mathrm{Card}(A) + \\mathrm{Card}(B)$. Ex : une classe de $14$ filles et $16$ garçons compte $30$ élèves."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'produit cartésien',
+		tags: ['logique'],
+		definitions: {
+			items: [
+				{
+					grade: '2',
+					content:
+						"Le produit cartésien $A \\times B$ de deux ensembles $A$ et $B$ est l'ensemble de tous les couples $(a ; b)$ tels que $a \\in A$ et $b \\in B$. Ex : si $A = \\{1, 2\\}$ et $B = \\{\\text{P}, \\text{F}\\}$, alors $A \\times B = \\{(1 ; \\text{P}), (1 ; \\text{F}), (2 ; \\text{P}), (2 ; \\text{F})\\}$ ; le plan repéré correspond à $\\mathbb{R} \\times \\mathbb{R}$, noté $\\mathbb{R}^2$."
+				},
+				{
+					grade: 'T_SPE',
+					content:
+						"Plus généralement, $A_1 \\times A_2 \\times \\cdots \\times A_k$ est l'ensemble des $k$-uplets $(a_1, a_2, \\ldots, a_k)$ tels que $a_1 \\in A_1$, …, $a_k \\in A_k$ ; si tous ces ensembles sont égaux à $A$, on le note $A^k$."
+				}
+			]
+		},
+		grade: '2'
+	},
+	{
+		term: 'représentation paramétrique',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"La droite de l'espace passant par $A(x_A ; y_A ; z_A)$ et de vecteur directeur $\\vec{u}(a ; b ; c)$ est l'ensemble des points $M(x ; y ; z)$ tels que $x = x_A + ta$, $y = y_A + tb$, $z = z_A + tc$, où $t$ décrit $\\mathbb{R}$ : ces trois égalités forment une représentation paramétrique de la droite, de paramètre $t$. Elles traduisent $\\overrightarrow{AM} = t\\vec{u}$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'symbole somme',
+		tags: ['suites', 'transversal'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Le symbole $\\sum$ (sigma majuscule) écrit une somme de façon concise : $\\sum_{k=1}^{n} u_k = u_1 + u_2 + \\cdots + u_n$, où l'indice $k$ prend toutes les valeurs entières de $1$ à $n$. Ex : $\\sum_{k=1}^{4} k^2 = 1 + 4 + 9 + 16 = 30$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'tétraèdre',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Solide formé de quatre faces triangulaires : c'est une pyramide à base triangulaire. Il a $4$ sommets, $6$ arêtes et $4$ faces ; il est régulier si ses quatre faces sont des triangles équilatéraux."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'théorème des gendarmes',
+		tags: ['suites', 'fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Si, à partir d'un certain rang, $v_n \\leq u_n \\leq w_n$, et si les suites $(v_n)$ et $(w_n)$ convergent vers un même réel $\\ell$, alors $(u_n)$ converge aussi vers $\\ell$ ; il existe un énoncé analogue pour les fonctions. Ex : pour $n \\geq 1$, $-\\frac{1}{n} \\leq \\frac{(-1)^n}{n} \\leq \\frac{1}{n}$, donc $\\frac{(-1)^n}{n}$ tend vers $0$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'triangle de Pascal',
+		tags: ['probabilités'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Tableau triangulaire des coefficients binomiaux : la ligne $n$ contient $\\binom{n}{0}, \\binom{n}{1}, \\ldots, \\binom{n}{n}$. Chaque nombre intérieur est la somme des deux nombres voisins de la ligne précédente, d'après la relation de Pascal $\\binom{n}{k} + \\binom{n}{k+1} = \\binom{n+1}{k+1}$ (pour $0 \\leq k \\leq n - 1$). Ex : la ligne $4$ est $1$, $4$, $6$, $4$, $1$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'valeur moyenne',
+		tags: ['fonctions'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"La valeur moyenne d'une fonction $f$ continue sur $[a ; b]$ (avec $a < b$) est le nombre $\\mu = \\frac{1}{b - a}\\int_a^b f(x)\\,\\mathrm{d}x$. Si $f$ est positive, le rectangle de base $[a ; b]$ et de hauteur $\\mu$ a la même aire que le domaine situé sous sa courbe. Ex : sur $[0 ; 2]$, la valeur moyenne de $x \\mapsto x$ est $1$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'vecteurs coplanaires',
+		tags: ['géométrie'],
+		definitions: {
+			items: [
+				{
+					grade: 'T_SPE',
+					content:
+						"Des vecteurs de l'espace sont coplanaires si, représentés à partir d'un même point $O$, ils ont leurs extrémités dans un même plan passant par $O$. Si $\\vec{u}$ et $\\vec{v}$ ne sont pas colinéaires, $\\vec{u}$, $\\vec{v}$, $\\vec{w}$ sont coplanaires si et seulement s'il existe deux réels $a$ et $b$ tels que $\\vec{w} = a\\vec{u} + b\\vec{v}$. Ex : dans un cube $ABCDEFGH$, $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AC}$ sont coplanaires, mais pas $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$."
+				}
+			]
+		},
+		grade: 'T_SPE'
+	},
+	{
+		term: 'droite de Mayer',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						"Droite d'ajustement d'un nuage de points : on range les points selon leurs abscisses, on les partage en deux groupes de même effectif (à un point près), puis on trace la droite qui passe par les points moyens $G_1$ et $G_2$ des deux groupes. Elle passe aussi par le point moyen $G$ du nuage entier."
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{
+		term: 'interpolation',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						"Estimation d'une valeur inconnue située entre des valeurs connues, à l'aide d'un modèle comme une droite d'ajustement ; si la valeur estimée est en dehors de la plage des données, on parle d'extrapolation, moins fiable. Ex : connaissant la population d'une ville en 2000 et en 2020, estimer celle de 2010 est une interpolation, celle de 2040 une extrapolation."
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{
+		term: 'méthode des moindres carrés',
+		tags: ['statistiques'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						"Méthode d'ajustement affine qui choisit, parmi les droites d'équation $y = ax + b$, celle qui rend la plus petite possible la somme des carrés des écarts verticaux $\\big(y_i - (ax_i + b)\\big)^2$ entre les points du nuage et la droite. Cette droite passe par le point moyen du nuage ; la calculatrice ou le tableur donne $a$ et $b$."
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{
+		term: "taux d'évolution moyen",
+		tags: ['proportionnalité', 'puissances'],
+		definitions: {
+			items: [
+				{
+					grade: '1_GEN',
+					content:
+						'Taux $t$ qui, appliqué $n$ fois de suite, produit la même évolution globale que $n$ évolutions successives : si le coefficient multiplicateur global est $C$, alors $(1 + t)^n = C$, donc $t = C^{1/n} - 1$. Ex : une population qui double en $5$ ans ($C = 2$) augmente en moyenne de $2^{1/5} - 1 \\approx 14{,}9\\,\\%$ par an.'
+				}
+			]
+		},
+		grade: '1_GEN'
+	},
+	{ term: 'suite minorée', tags: ['suites'], grade: 'T_SPE', derivedFrom: 'suite majorée' },
+	{ term: 'suite bornée', tags: ['suites'], grade: 'T_SPE', derivedFrom: 'suite majorée' },
+	{ term: 'extrapolation', tags: ['statistiques'], grade: '1_GEN', derivedFrom: 'interpolation' },
 
 	// =========================================================================
 	// CRYPTOGRAPHIE (Cabinet Noir)

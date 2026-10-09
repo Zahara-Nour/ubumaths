@@ -1,5 +1,5 @@
 {
-	"source": "Lot 0c du lexique, validé par David le 2026-10-09 (115 OK, « inconnue » corrigée par lui) : docs/wip/lexique/lot0c-definitions.md (copie figée).",
+	"source": "Lot 0c du lexique, validé par David le 2026-10-09 (115 OK, « inconnue » corrigée par lui) : docs/wip/lexique/lot0c-definitions.md (copie figée). Mise à jour par le lot 0f (2026-10-09) : étiquettes de sens (tangente, terme, degré).",
 	"entrees": [
 		{
 			"term": "nombre relatif",
@@ -304,7 +304,7 @@
 		},
 		{
 			"term": "tangente",
-			"sense": null,
+			"sense": "courbe",
 			"grade": "1_SPE",
 			"keepDefs": false,
 			"definitions": [
@@ -416,7 +416,7 @@
 		},
 		{
 			"term": "terme",
-			"sense": null,
+			"sense": "opération",
 			"grade": "CE2",
 			"keepDefs": false,
 			"definitions": [
@@ -588,7 +588,7 @@
 		},
 		{
 			"term": "degré",
-			"sense": null,
+			"sense": "équation",
 			"grade": "4",
 			"keepDefs": false,
 			"definitions": [
