@@ -853,6 +853,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     3. la phase 0 TDD ;
     4. la migration de l'arbre (PR 1) ;
     5. le lot recalculé sur l'arbre propre (PR 2).
+- **2026-10-09 — Lot : D16 et A78 tranchés** (David). Ils vont sous « Dérivation > variations »
+  avec 1SPE-283. Les décisions du lot sont tenues en tête de `c5-transfert-liens.md`.
   - David a validé l'ordre suivant :
     1. l'audit ;
     2. les questions restantes du lot ;
