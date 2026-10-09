@@ -20,8 +20,22 @@ import type { MathNode } from '../../types';
 import type { SolveResult, Solution } from '../../solve';
 import { isSolverFailure } from '../../solve/types';
 import type { Domain, IntervalSet } from '../../domain/types';
-import { isDivision, isInfinity, isMultiplication, isNumber, isPiConstant } from '../../guards';
+import {
+	isDivision,
+	isEulerConstant,
+	isFunction,
+	isInfinity,
+	isMultiplication,
+	isNumber,
+	isPiConstant,
+	isSuperscript,
+	isVariable
+} from '../../guards';
 import { toLatex } from '../../latex-generator';
+import { toCustom } from '../../custom-generator';
+import { findNodes, mapNode } from '../../transforms';
+import { getVariables } from '../../eval/substitute';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
 
@@ -36,6 +50,156 @@ function tidyValue(value: MathNode): MathNode {
 	} catch {
 		return value;
 	}
+}
+
+// =============================================================================
+// Solutions en ln : décimaux gardés, valeur approchée (décision de David,
+// 2026-10-09 — seuils des suites géométriques, 1re / Tle)
+// =============================================================================
+
+/** Les logarithmes dont l'argument décimal tapé par l'élève est gardé. */
+const LOGARITHMS = new Set(['ln', 'log']);
+
+/** Nombre de décimales de la valeur approchée. */
+const APPROXIMATION_PLACES = 2;
+
+/** Écart toléré pour reconnaître le décimal d'origine sous sa fraction. */
+const SAME_VALUE_TOLERANCE = 1e-12;
+
+/** La base e (constante ou lettre `e`). */
+function isEuler(node: MathNode): boolean {
+	return isEulerConstant(node) || (isVariable(node) && node.name === 'e');
+}
+
+/**
+ * Un ln (ou log) ou une exponentielle (`e^2`, `exp(…)`) quelque part dans la
+ * valeur : elle ne se lit pas sans sa valeur approchée. Le nombre e seul
+ * (`ln x = 1` → x = e) n'en reçoit pas.
+ */
+function hasLogarithm(node: MathNode): boolean {
+	return (
+		findNodes(
+			node,
+			(n) =>
+				(isFunction(n) && (LOGARITHMS.has(n.name) || n.name === 'exp')) ||
+				(isSuperscript(n) && isEuler(n.base))
+		).length > 0
+	);
+}
+
+/** Une valeur numérique, ou `null`. */
+function numericValue(node: MathNode): number | null {
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Remettre dans les ln les décimaux que `tidy` a changés en fractions :
+ * `\ln(\frac{4}{5})` redevient `\ln(0,8)` quand l'élève a tapé 0.8.
+ */
+function keepLogDecimals(original: MathNode, tidied: MathNode): MathNode {
+	const decimals = findNodes(
+		original,
+		(n) =>
+			isFunction(n) &&
+			LOGARITHMS.has(n.name) &&
+			n.args.length === 1 &&
+			isNumber(n.args[0]) &&
+			n.args[0].value.includes('.')
+	).flatMap((n) => (isFunction(n) ? [n.args[0]] : []));
+	if (decimals.length === 0) return tidied;
+	return mapNode(tidied, (node) => {
+		if (!isFunction(node) || !LOGARITHMS.has(node.name) || node.args.length !== 1) return node;
+		const [argument] = node.args;
+		if (getVariables(argument).size > 0) return node;
+		const value = numericValue(argument);
+		const decimal = decimals.find(
+			(d) =>
+				value !== null && isNumber(d) && Math.abs(Number(d.value) - value) < SAME_VALUE_TOLERANCE
+		);
+		return decimal === undefined ? node : { ...node, args: [decimal] };
+	});
+}
+
+/** Les décimaux d'une écriture LaTeX, à la française : `0.8` → `0{,}8`. */
+function frenchDecimals(latex: string): string {
+	return latex.replace(/(\d)\.(\d)/g, '$1{,}$2');
+}
+
+/** La valeur approchée à 2 décimales, point décimal (`10.32`). */
+function rounded(value: number): string {
+	const text = value.toFixed(APPROXIMATION_PLACES);
+	return /^-0\.0+$/.test(text) ? text.slice(1) : text;
+}
+
+/**
+ * Une valeur qui contient un ln, en LaTeX : décimaux gardés, à la française,
+ * suivie de sa valeur approchée — `\dfrac{\ln(0{,}1)}{\ln(0{,}8)} \approx 10{,}32`.
+ * `null` sans ln : l'appelant garde son écriture.
+ */
+export function logarithmicValueLatex(value: MathNode, approximate?: number): string | null {
+	const tidied = tidyValue(value);
+	if (!hasLogarithm(tidied)) return null;
+	const written = frenchDecimals(toLatex(keepLogDecimals(value, tidied)));
+	const approximation = approximate ?? numericValue(value);
+	return approximation === null
+		? written
+		: `${written} \\approx ${frenchDecimals(rounded(approximation))}`;
+}
+
+/**
+ * La même valeur en texte, pour dire la même chose que le LaTeX :
+ * `ln(0.1)/ln(0.8) ≈ 10.32`. `null` sans ln.
+ */
+export function logarithmicValueText(value: MathNode, approximate?: number): string | null {
+	if (!hasLogarithm(tidyValue(value))) return null;
+	const approximation = approximate ?? numericValue(value);
+	// Mis au propre comme le LaTeX : ln(3)/2, pas {1/2}ln(3)
+	const written = toCustom(keepLogDecimals(value, tidyValue(value)));
+	return approximation === null ? written : `${written} ≈ ${rounded(approximation)}`;
+}
+
+/**
+ * Un seuil : l'ensemble est UN intervalle infini d'un côté, sans point exclu,
+ * dont la borne finie contient un ln — `]\frac{\ln 0,1}{\ln 0,8} ; +∞[`.
+ * Il s'écrit alors `n > …`, valeur approchée comprise ; sinon `null`.
+ */
+function thresholdOf(
+	domain: Domain
+): { bound: MathNode; latexSign: string; textSign: string } | null {
+	if (domain.kind !== 'interval_set') return null;
+	if (domain.intervals.length !== 1 || domain.excludedPoints.length > 0) return null;
+	const [{ lower, upper }] = domain.intervals;
+	const lowerInfinite = isInfinity(lower.value);
+	const upperInfinite = isInfinity(upper.value);
+	if (lowerInfinite === upperInfinite) return null;
+	const end = lowerInfinite ? upper : lower;
+	if (!hasLogarithm(tidyValue(end.value))) return null;
+	const open = end.type === 'open';
+	if (lowerInfinite) {
+		return { bound: end.value, latexSign: open ? '<' : '\\leq', textSign: open ? '<' : '≤' };
+	}
+	return { bound: end.value, latexSign: open ? '>' : '\\geq', textSign: open ? '>' : '≥' };
+}
+
+/** Un seuil en LaTeX (`n > \dfrac{…}{…} \approx 10{,}32`), ou `null`. */
+function thresholdLatex(domain: Domain, variable: string): string | null {
+	const threshold = thresholdOf(domain);
+	if (threshold === null) return null;
+	const value = logarithmicValueLatex(threshold.bound);
+	return value === null ? null : `${variable} ${threshold.latexSign} ${value}`;
+}
+
+/** Le même seuil en texte (`n > ln(0.1)/ln(0.8) ≈ 10.32`), ou `null`. */
+export function inequalityThresholdText(domain: Domain, variable: string): string | null {
+	const threshold = thresholdOf(domain);
+	if (threshold === null) return null;
+	const value = logarithmicValueText(threshold.bound);
+	return value === null ? null : `${variable} ${threshold.textSign} ${value}`;
 }
 
 /** Un entier positif raisonnable, sinon `null`. */
@@ -110,7 +274,11 @@ export function solutionsLatex(result: SolveResult): string | null {
 			// un nombre fini de solutions
 			if (result.periodicSolutions !== undefined) return null;
 			const values = sorted(result.solutions).map((s) => toLatex(tidyValue(s.value)));
-			if (values.length === 1) return `${result.variable} = ${values[0]}`;
+			if (values.length === 1) {
+				const [only] = result.solutions;
+				const logarithmic = logarithmicValueLatex(only.value, only.approximate);
+				return `${result.variable} = ${logarithmic ?? values[0]}`;
+			}
 			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}`;
 		}
 		case 'infinite':
@@ -187,7 +355,9 @@ export function withRealLineWritten(domain: Domain): Domain {
  * points exclus s'écrivent `\setminus \left\{ … \right\}`. `null` pour un
  * domaine qui n'est pas une réunion d'intervalles (condition, périodique).
  */
-export function inequalitySolutionLatex(domain: Domain): string | null {
+export function inequalitySolutionLatex(domain: Domain, variable?: string): string | null {
+	const threshold = variable === undefined ? null : thresholdLatex(domain, variable);
+	if (threshold !== null) return threshold;
 	switch (domain.kind) {
 		case 'empty':
 			return 'S = \\emptyset';

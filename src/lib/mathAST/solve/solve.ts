@@ -80,7 +80,7 @@ import {
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { solveByPowerSubstitution } from './power-substitution';
-import { solveConstantBaseExponential } from './constant-base-exponential';
+import { containsDecimal, solveConstantBaseExponential } from './constant-base-exponential';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { compile } from '../eval/compile';
 import { findFirst } from '../transforms';
@@ -1874,7 +1874,8 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 
 	// aⁿ = b, base constante autre que e (suites géométriques : 2^n = 1024)
 	if (!result) {
-		result = solveConstantBaseExponential(expr, variable, solve, opts);
+		// Base e aussi quand l'élève a tapé un décimal : e^x = 0.5 → ln(0,5)
+		result = solveConstantBaseExponential(expr, variable, solve, opts, containsDecimal(expr));
 	}
 
 	// Try exp/log recursive decomposition for non-linear exp/log arguments
@@ -1931,6 +1932,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 				steps: recorder.getStepsFiltered(opts.verbosity)
 			};
 		}
+	}
+
+	// Dernier recours avant la classification : e^u = c, u affine, que le
+	// solveur transcendant ne sait pas faire (`e^(-x) = 0.5`, revue 2026-10-09)
+	if (!result) {
+		result = solveConstantBaseExponential(expr, variable, solve, opts, true);
 	}
 
 	// Classification-based solver path
