@@ -828,8 +828,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5',
-		synonyms: ['premier']
+		grade: '5'
 	},
 	{
 		term: 'décomposition en facteurs premiers',
@@ -1621,7 +1620,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 				}
 			]
 		},
-		grade: '5'
+		grade: '5',
+		autoLink: false
 	},
 	{
 		term: 'expression littérale',

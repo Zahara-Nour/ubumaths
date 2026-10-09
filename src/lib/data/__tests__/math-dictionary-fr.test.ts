@@ -95,6 +95,15 @@ const LOT_0F: MissingWords = JSON.parse(
 	readFileSync('tests/fixtures/lexique/mots-lot0f.json', 'utf-8')
 );
 
+/** Mots cliquables (lot 2, 2026-10-09) : copie figée des choix de contenu de docs/wip/lexique/lot2-mots-cliquables-spec.md. */
+interface ClickableWords {
+	exclus: string[];
+	synonymesRetires: { term: string; synonym: string }[];
+}
+const LOT_2: ClickableWords = JSON.parse(
+	readFileSync('tests/fixtures/lexique/mots-cliquables-lot2.json', 'utf-8')
+);
+
 /** Mots partagés entre les filières de 1re (lot 0g, 2026-10-09) : copie figée de docs/wip/lexique/lot0g-filieres.md. */
 interface SharedWords {
 	termes: { term: string; sense: string | null; sharedWith: string[] }[];
@@ -422,7 +431,16 @@ describe('math-dictionary-fr', () => {
 		const excluded = MATH_DICTIONARY.filter((t) => t.autoLink === false).map((t) =>
 			t.sense ? `${t.term} (${t.sense})` : t.term
 		);
-		expect(excluded.sort()).toEqual([...LOT_0E.exclus, ...LOT_0F.exclus].sort());
+		expect(excluded.sort()).toEqual([...LOT_0E.exclus, ...LOT_0F.exclus, ...LOT_2.exclus].sort());
+	});
+
+	// « le premier terme » ouvrait la fiche de « nombre premier » (mesuré le 2026-10-09)
+	it('should not keep the synonyms removed for clickable words (lot 2)', () => {
+		expect(LOT_2.synonymesRetires).toHaveLength(1);
+		for (const removed of LOT_2.synonymesRetires) {
+			const term = MATH_DICTIONARY.find((t) => t.term === removed.term);
+			expect(term?.synonyms ?? []).not.toContain(removed.synonym);
+		}
 	});
 
 	// Mots manquants du programme officiel, synonymes et étiquettes d'homonymes :

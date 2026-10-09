@@ -43,6 +43,31 @@ export interface TextNode extends BaseNode {
 	highlight?: boolean;
 	/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
 	detail?: DetailKind;
+	/** Marquage à la main d'un mot du lexique : `[mot]{.def}`, `{.def=…}`, `{.nodef}` */
+	lexicon?: LexiconMark;
+	/**
+	 * Mots du dictionnaire repérés dans ce texte (mots cliquables) : positions
+	 * dans `content`. Le texte n'est pas découpé : l'arbre garde sa forme, et les
+	 * champs de réponse voisins ne sont pas recréés quand le repérage arrive.
+	 */
+	terms?: TermRange[];
+}
+
+/** Marquage à la main d'un mot du lexique dans un texte. */
+export interface LexiconMark {
+	/** `force` : toujours cliquable ; `block` : jamais repéré automatiquement */
+	mode: 'force' | 'block';
+	/** Entrée visée par `{.def=carré (géométrie)}` */
+	target?: string;
+}
+
+/** Un mot cliquable dans un texte, et les entrées qu'il ouvre (plusieurs pour un homonyme). */
+export interface TermRange {
+	/** Début et fin (exclue) du mot dans le texte */
+	start: number;
+	end: number;
+	/** Nom de chaque entrée, suivi de son sens pour un homonyme : « carré (puissance) » */
+	ids: string[];
 }
 
 /**
