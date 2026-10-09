@@ -95,6 +95,23 @@ const LOT_0F: MissingWords = JSON.parse(
 	readFileSync('tests/fixtures/lexique/mots-lot0f.json', 'utf-8')
 );
 
+/** Mots manquants des énoncés publiés (lot 0h, 2026-10-09) : copie figée de docs/wip/lexique/lot0h-mots.md. */
+interface MeasuredWords {
+	entrees: {
+		term: string;
+		sense: string | null;
+		grade: string;
+		definitions: { grade: string; content: string }[];
+		synonyms: string[];
+		sharedWith: string[] | null;
+	}[];
+	synonymes: { term: string; ajouts: string[] }[];
+	etiquettes: { term: string; sense: string }[];
+}
+const LOT_0H: MeasuredWords = JSON.parse(
+	readFileSync('tests/fixtures/lexique/mots-lot0h.json', 'utf-8')
+);
+
 /** Mots cliquables (lot 2, 2026-10-09) : copie figée des choix de contenu de docs/wip/lexique/lot2-mots-cliquables-spec.md. */
 interface ClickableWords {
 	exclus: string[];
@@ -519,9 +536,11 @@ describe('math-dictionary-fr', () => {
 			if (names.includes(old)) wrong.push(`« ${old} » : ancienne orthographe`);
 		for (const now of LOT_0F.orthographe.apres)
 			if (!names.includes(now)) wrong.push(`« ${now} » : introuvable`);
-		// Nom, sens, synonymes, formes, définitions et exemples : partout
+		// Nom, sens, formes, définitions et exemples : partout, sauf les synonymes, qui
+		// gardent la graphie « événement » des énoncés publiés (lot 0h)
 		for (const term of MATH_DICTIONARY) {
-			if (JSON.stringify(term).includes('événement')) wrong.push(`${term.term} : « événement »`);
+			if (JSON.stringify({ ...term, synonyms: undefined }).includes('événement'))
+				wrong.push(`${term.term} : « événement »`);
 			for (const item of term.definitions?.items ?? []) {
 				for (const unaccented of LOT_0F.formulesSansAccent)
 					if (item.content.includes(unaccented)) wrong.push(`${term.term} : ${unaccented}`);
@@ -535,6 +554,52 @@ describe('math-dictionary-fr', () => {
 		const repere = MATH_DICTIONARY.find((t) => t.term === 'repère');
 		if (repere?.synonyms?.includes(LOT_0F.repereSynonymeRetire)) {
 			wrong.push(`repère : synonyme « ${LOT_0F.repereSynonymeRetire} »`);
+		}
+		expect(wrong).toEqual([]);
+	});
+
+	// Mots qui manquaient dans les énoncés publiés (mesure du 2026-10-09), graphie
+	// « événement » des énoncés, étiquette de la fonction exp : relus par David.
+	it('should contain the words validated in lot 0h, word for word', () => {
+		expect(LOT_0H.entrees).toHaveLength(25);
+		expect(LOT_0H.synonymes).toHaveLength(6);
+		expect(LOT_0H.etiquettes).toHaveLength(1);
+		const wrong: string[] = [];
+		const lines = (items: { grade: string; content: string }[]) =>
+			items.map((i) => `${i.grade} : ${i.content}`).join('\n');
+		for (const expected of LOT_0H.entrees) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
+			);
+			if (!term) {
+				wrong.push(`${expected.term} : introuvable`);
+				continue;
+			}
+			if (term.grade !== expected.grade) wrong.push(`${expected.term} : niveau ${term.grade}`);
+			if (lines(term.definitions?.items ?? []) !== lines(expected.definitions)) {
+				wrong.push(`${expected.term} : définitions`);
+			}
+			for (const synonym of expected.synonyms) {
+				if (!term.synonyms?.includes(synonym))
+					wrong.push(`${expected.term} : synonyme « ${synonym} »`);
+			}
+			if ((term.sharedWith ?? null)?.join() !== expected.sharedWith?.join()) {
+				wrong.push(`${expected.term} : partage ${term.sharedWith?.join() ?? 'aucun'}`);
+			}
+		}
+		for (const expected of LOT_0H.synonymes) {
+			const term = MATH_DICTIONARY.find(
+				(t) => t.term === expected.term && !t.sense && !t.derivedFrom
+			);
+			for (const synonym of expected.ajouts) {
+				if (!term?.synonyms?.includes(synonym))
+					wrong.push(`${expected.term} : synonyme « ${synonym} »`);
+			}
+		}
+		for (const expected of LOT_0H.etiquettes) {
+			if (!MATH_DICTIONARY.some((t) => t.term === expected.term && t.sense === expected.sense)) {
+				wrong.push(`${expected.term} (${expected.sense}) : introuvable`);
+			}
 		}
 		expect(wrong).toEqual([]);
 	});
@@ -586,12 +651,17 @@ describe('math-dictionary-fr', () => {
 			const sharedTerms = MATH_DICTIONARY.filter((t) => t.sharedWith).map(
 				(t) => `${label(t.term, t.sense ?? null)} → ${t.sharedWith?.join(', ')}`
 			);
+			// Le lot 0h a ajouté des mots partagés dès leur création
+			const shared0h = LOT_0H.entrees.flatMap((e) =>
+				e.sharedWith ? [{ term: e.term, sense: e.sense, sharedWith: e.sharedWith }] : []
+			);
+			const expectedTerms = [...LOT_0G.termes, ...shared0h];
 			expect(sharedTerms.sort()).toEqual(
-				LOT_0G.termes.map((e) => `${label(e.term, e.sense)} → ${e.sharedWith.join(', ')}`).sort()
+				expectedTerms.map((e) => `${label(e.term, e.sense)} → ${e.sharedWith.join(', ')}`).sort()
 			);
 			// Une entrée partagée partage aussi sa définition de son propre niveau
 			const expectedItems = [
-				...LOT_0G.termes.map((e) => ({ ...e, grade: null as string | null })),
+				...expectedTerms.map((e) => ({ ...e, grade: null as string | null })),
 				...LOT_0G.definitions
 			].flatMap((e) => {
 				const term = MATH_DICTIONARY.find(

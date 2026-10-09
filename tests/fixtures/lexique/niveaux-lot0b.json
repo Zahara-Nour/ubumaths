@@ -1,5 +1,5 @@
 {
-	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09). Mise à jour par le lot 0c (2026-10-09) : niveaux des définitions reprises, « exponentielle » devenu un renvoi. Mise à jour par le lot 0f (2026-10-09) : étiquettes de sens (base, carré, cube, degré, échelle, hauteur, médiane, plan, terme), orthographe « évènement », définitions de 1re et Tle spé de « cosinus ».",
+	"source": "Lot 0b du lexique, validé par David le 2026-10-09 : docs/wip/lexique/lot0b-niveaux.md (copie figée). « construire » suit « construction » (CM1) : un dérivé ne précède jamais son terme (revue du 2026-10-09). Mise à jour par le lot 0c (2026-10-09) : niveaux des définitions reprises, « exponentielle » devenu un renvoi. Mise à jour par le lot 0f (2026-10-09) : étiquettes de sens (base, carré, cube, degré, échelle, hauteur, médiane, plan, terme), orthographe « évènement », définitions de 1re et Tle spé de « cosinus ». Mise à jour par le lot 0h (2026-10-09) : étiquette « exp » de « fonction exponentielle ».",
 	"principaux": [
 		{
 			"term": "abscisse",
@@ -668,7 +668,7 @@
 		},
 		{
 			"term": "fonction exponentielle",
-			"sense": null,
+			"sense": "exp",
 			"grade": "1_SPE",
 			"decision": "A0",
 			"niveauxDefinitions": ["1_SPE"]
