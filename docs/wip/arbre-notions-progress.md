@@ -760,3 +760,21 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Les précisions sont inscrites dans l'ADR 0020 § 7.
   - Q3 (la passe « bornes ») est encore ouverte.
   - Suite : le lot de l'étape 2 de C5 sous ces règles, à présenter à David.
+- **2026-10-09 — QA = (a), la règle stricte.**
+  - David : « la structure la plus propre possible, même s'il y a beaucoup de travail ».
+  - Un modèle et son point pointent le même nœud. Seule exception : le point peut être sur la
+    notion qui contient ce nœud, quand la puce du BO couvre toute la notion (exemple : CP-014
+    « Comprendre le sens de l'addition et de la soustraction ») ; 265 points sont dans ce cas.
+  - Ma proposition (b), une contrainte seulement à la notion, est retirée : elle cachait les
+    défauts de catégorisation au lieu de les corriger.
+  - Les 97 désaccords deviennent un **audit de la catégorisation**, à corriger. Les corrections
+    possibles :
+    - déplacer le modèle ;
+    - fusionner une sous-notion « facette » avec la sous-notion de contenu qui la recouvre ;
+    - remonter à la notion un point qui couvre plusieurs sous-notions ;
+    - supprimer un doublon de l'arbre ;
+    - retirer un tag hors programme.
+  - Les mêmes défauts attendent le balisage des cycles 2 à 4 : 33 sous-notions portent
+    123 modèles mais aucun point (par exemple « somme » : 30 modèles, alors que les points du
+    CP sont sur « calcul astucieux », « tables » et « calcul posé »).
+  - Q3 (la passe « bornes ») : mon avis est donné, la décision de David est en attente.

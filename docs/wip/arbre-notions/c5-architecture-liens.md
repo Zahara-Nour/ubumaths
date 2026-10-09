@@ -6,6 +6,10 @@
 >   la ressource ou à sa notion. C'est l'ADR 0020 § 7, avec les précisions qui y sont
 >   inscrites.
 > - **Q2 = exactement un point par programme** pour un modèle.
+> - **QA = (a), la règle stricte (2026-10-09).** Un modèle et son point pointent le même nœud,
+>   ou bien le point est sur la notion qui contient ce nœud, quand sa puce couvre toute la
+>   notion. Un modèle et un point posés sur deux sous-notions sœurs signalent un défaut de
+>   catégorisation, qu'il faut corriger. La contrainte « à la notion seulement » a été écartée.
 > - Q3 (la passe « bornes », avant ou après C5) est encore ouverte.
 >
 > L'étape 2 de C5 reprend sous ces règles : [c5-transfert-liens.md](c5-transfert-liens.md).
