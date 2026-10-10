@@ -1,6 +1,6 @@
 # Agents UbuMaths — guide de sélection
 
-17 agents spécialisés, organisés en 5 familles. Cette page sert à **choisir vite** le bon agent. Pour le détail de chaque agent, ouvrir son `.md`.
+14 agents du projet, en 3 familles (plus les agents intégrés à Claude Code). Cette page sert à **choisir vite** le bon agent. Pour le détail de chaque agent, ouvrir son `.md`.
 
 ## Famille 1 — Modules métier UbuMaths (priorité haute pour ces zones)
 
@@ -33,14 +33,9 @@
 | `performance-optimizer` | Lenteur prouvée, avant deploy d'une grosse feature |
 | `accessibility-tester` | Audit a11y formulaires/navigation/modals (cf. dette SVG documentée — ne pas re-flagger les `svelte-ignore` existants) |
 
-## Famille 4 — Process
+## Agents intégrés
 
-| Agent | Quand |
-|---|---|
-
-## Famille 5 — Recherche
-
-`Explore` (built-in) — exploration de code multi-fichiers. Préférer `find`/`grep` direct si < 3 requêtes (CLAUDE.md).
+`Explore` — exploration de code multi-fichiers. Préférer `find`/`grep` direct si < 3 requêtes (CLAUDE.md).
 
 ---
 
@@ -48,7 +43,7 @@
 
 - **Lancer un agent pour un bug ciblé dans 1-2 fichiers connus** → travail direct (CLAUDE.md "Quand NE PAS utiliser d'agent")
 - **Lancer un agent pour < 20 lignes de code** → travail direct
-- **Faire tourner un agent pour exécuter `pnpm check`, `pnpm build`, `pnpm lint`** → INTERDIT : aucun verrou ne les protège, deux en parallèle saturent la RAM (CLAUDE.md)
+- **Faire tourner un agent pour exécuter `pnpm check`, `pnpm build`, `pnpm lint`** → réservés à la session principale : ils sont sous verrou depuis le 2026-10-10, mais longs, et un agent ne doit pas tenir le verrou à sa place (CLAUDE.md)
 - **Choisir `frontend-developer` pour un composant dans `geometry-core/`** → utiliser `geometry-expert` (connaît les invariants Canvas et le système réactif)
 - **Choisir un agent générique pour un fichier mathAST** → utiliser `mathast-expert` (invariants nodes immutables, no-negative-number-literal, pattern module obligatoire)
 
@@ -67,5 +62,5 @@ Tous les agents respectent :
 4. **CLAUDE.md règle #3** : Svelte 5 runes uniquement, `$effect` réservé aux side-effects
 5. **CLAUDE.md règle #5** : `pnpm svelte:autofix <fichier>` (ou `mcp__svelte__svelte-autofixer` si le MCP est configuré) obligatoire après chaque `.svelte`
 6. **CLAUDE.md règle #6** : types custom dans `database-helpers.ts`, jamais dans `database.ts` auto-généré
-7. **Commandes interdites** : `pnpm check`, `pnpm check:fast`, `svelte-check` sans `--incremental`, `pnpm build` pour vérifier, runs multiples de `pnpm check:incremental`
-8. **Pas de Co-Authored-By Claude** dans les commits ; pas d'auto-push, pas d'auto-release
+7. **Typecheck** : `pnpm check:incremental` (verrouillé, un 2ᵉ run sort en exit 2). Jamais `npx tsc --noEmit` ni `svelte-check` sans `--tsgo` ni `--incremental` (tas Node). `pnpm check` / `build` / `lint` : session principale seulement
+8. **Pas de Co-Authored-By Claude** dans les commits ; jamais de `deploy:prod` ni de `pnpm release` (la version naît dans `deploy:prod`, sur demande de David — ADR 0021)
