@@ -5,49 +5,50 @@
  * Tests for generating QuestionInstances for SRS flashcards.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
 	generateSRSInstance,
 	generateSRSPreviewInstances,
 	validateTemplateForSRS
 } from '../generator';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { GenerationResult, QuestionTemplate } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
 
-// Mock the instance generator
-vi.mock('$lib/questions/generator/instance-generator', () => ({
-	generateInstance: vi.fn((template, seed) => {
-		// Mock successful generation
-		if (template.status !== 'published') {
-			return {
-				success: false,
-				errors: ['Template must be published']
-			};
-		}
+const generateInstanceMock = vi.mocked(generateInstance);
 
-		if (!template.variations || template.variations.length === 0) {
-			return {
-				success: false,
-				errors: ['No variations available']
-			};
-		}
-
-		return {
-			success: true,
-			instance: {
-				id: `instance-${seed}`,
-				templateId: template.id,
-				seed,
-				variationIndex: 0,
-				parameterValues: {},
-				question: [{ type: 'text', content: 'Generated question' }],
-				solutionDisplay: [{ type: 'text', content: 'Generated solution' }],
-				solution: '42',
-				points: 5
+/**
+ * Le générateur réel est remplacé : ces tests visent `generateSRSInstance`
+ * (graine, transmission, échec) et non la génération elle-même. Le faux rend
+ * le VRAI type `GenerationResult`, imposé par l'annotation de retour.
+ */
+vi.mock('$lib/questions/generator/instance-generator', async () => {
+	const { resolvedMarkdown } = await import('$lib/ubumark');
+	return {
+		generateInstance: vi.fn((template: QuestionTemplate, seed?: number): GenerationResult => {
+			if (template.status !== 'published') {
+				return { success: false, errors: ['Template must be published'] };
 			}
-		};
-	})
-}));
+			if (!template.variations || template.variations.length === 0) {
+				return { success: false, errors: ['No variations available'] };
+			}
+			return {
+				success: true,
+				instance: {
+					templateId: template.id,
+					statement: resolvedMarkdown(`Question générée (graine ${seed})`),
+					grades: template.grades,
+					theme: template.theme,
+					domain: template.domain,
+					level: template.level,
+					generatedAt: new Date().toISOString(),
+					seed,
+					selectedVariationIndex: 0
+				}
+			};
+		})
+	};
+});
 
 const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): QuestionTemplate => ({
 	id: 'template-1',
@@ -196,29 +197,12 @@ describe('validateTemplateForSRS', () => {
 		expect(result.errors.some((e) => e.includes('published'))).toBe(true);
 	});
 
-	it('should reject draft template (alternative test)', () => {
-		const template = createMockTemplate({ status: 'draft' });
-		const result = validateTemplateForSRS(template);
-
-		expect(result.isValid).toBe(false);
-		expect(result.errors.some((e) => e.includes('published'))).toBe(true);
-	});
-
 	it('should reject template without variations', () => {
 		const template = createMockTemplate({ variations: [] });
 		const result = validateTemplateForSRS(template);
 
 		expect(result.isValid).toBe(false);
 		expect(result.errors.some((e) => e.includes('variation'))).toBe(true);
-	});
-
-	it('should reject template with null variations', () => {
-		const template = createMockTemplate({
-			variations: null as unknown as QuestionTemplate['variations']
-		});
-		const result = validateTemplateForSRS(template);
-
-		expect(result.isValid).toBe(false);
 	});
 
 	it('should accumulate multiple errors', () => {
@@ -302,48 +286,67 @@ describe('SRS Generator Edge Cases', () => {
 	});
 });
 
-describe('Integration with Question System', () => {
-	it('should generate valid question instance structure', () => {
+describe('generateSRSInstance : ce qui est transmis au générateur', () => {
+	beforeEach(() => {
+		generateInstanceMock.mockClear();
+	});
+
+	it('passes the same template and an integer seed in [0, 1000000)', () => {
 		const template = createMockTemplate();
-		const result = generateSRSInstance(template);
+		generateSRSInstance(template);
 
-		expect(result.success).toBe(true);
-		if (result.success) {
-			expect(result.instance).toMatchObject({
-				id: expect.any(String),
-				templateId: template.id,
-				seed: expect.any(Number),
-				variationIndex: expect.any(Number),
-				question: expect.any(Array),
-				solutionDisplay: expect.any(Array),
-				solution: expect.any(String),
-				points: expect.any(Number)
-			});
-		}
+		expect(generateInstanceMock).toHaveBeenCalledTimes(1);
+		const [passedTemplate, passedSeed] = generateInstanceMock.mock.calls[0];
+		expect(passedTemplate).toBe(template);
+		expect(Number.isInteger(passedSeed)).toBe(true);
+		expect(passedSeed).toBeGreaterThanOrEqual(0);
+		expect(passedSeed).toBeLessThan(1000000);
 	});
 
-	it('should preserve template metadata', () => {
-		const template = createMockTemplate({});
-
-		const result = generateSRSInstance(template);
-
-		if (result.success) {
-			expect(result.instance.templateId).toBe(template.id);
+	it('derives the seed from Math.random', () => {
+		const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.123456789);
+		try {
+			generateSRSInstance(createMockTemplate());
+		} finally {
+			randomSpy.mockRestore();
 		}
+		expect(generateInstanceMock.mock.calls[0][1]).toBe(123456);
 	});
 
-	it('should handle LaTeX in question content', () => {
-		const template = createMockTemplate({
-			variations: [
-				{
-					statement: templateMarkdown('Solve: $x^2 + 2x + 1 = 0$'),
-					blanks: [{ expectedAnswer: '-1' }],
-					correction: { steps: [templateMarkdown('$x = -1$')] }
-				}
-			]
+	it('returns the generator result unchanged', () => {
+		const result = generateSRSInstance(createMockTemplate());
+		expect(result).toBe(generateInstanceMock.mock.results[0].value);
+	});
+
+	it('returns the generator failure unchanged', () => {
+		const result = generateSRSInstance(createMockTemplate({ status: 'draft' }));
+		expect(result).toEqual({ success: false, errors: ['Template must be published'] });
+	});
+});
+
+describe('validateTemplateForSRS : échecs du générateur', () => {
+	it('reports the generator errors of a published template', () => {
+		generateInstanceMock.mockReturnValueOnce({
+			success: false,
+			errors: ['Variable a non résolue', 'Blanc vide']
 		});
+		const result = validateTemplateForSRS(createMockTemplate());
 
-		const result = validateTemplateForSRS(template);
-		expect(result.isValid).toBe(true);
+		expect(result).toEqual({
+			isValid: false,
+			errors: ['Instance generation failed: Variable a non résolue, Blanc vide']
+		});
+	});
+
+	it('reports an exception thrown by the generator', () => {
+		generateInstanceMock.mockImplementationOnce(() => {
+			throw new Error('boum');
+		});
+		const result = validateTemplateForSRS(createMockTemplate());
+
+		expect(result).toEqual({
+			isValid: false,
+			errors: ['Instance generation error: boum']
+		});
 	});
 });

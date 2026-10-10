@@ -1,287 +1,149 @@
 /**
- * Tests for PDF Import functionality
+ * Tests de l'import PDF du tableau blanc : validation du fichier, overlay PDF,
+ * création des pages, modes d'ajustement, sélection des pages.
  *
- * Tests PDF validation, page extraction, and background management
+ * Teste le vrai module `utils/pdf-loader`. Le rendu pdf.js (`loadPdfFile`,
+ * `renderPdfPage`, `importPdfFile`) demande un navigateur : il n'est pas couvert ici.
+ *
+ * Modèle de l'application : `Page.background` n'est qu'un fond uni ; un PDF
+ * importé vit dans `Page.overlay`.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import type { Page, PageBackground, BackgroundPdf } from '../types/document';
-import { createEmptyPage } from '../types/document';
-
-/**
- * Le modèle de page que ces tests manipulent : un fond quelconque, PDF compris.
- *
- * ⚠️ Ce n'est PAS le modèle de l'application : `Page.background` n'y est qu'un
- * fond uni, et un PDF importé vit dans `Page.overlay`. Ce fichier ne teste que
- * ses propres fonctions d'aide, définies ci-dessous.
- */
-type PageWithAnyBackground = Omit<Page, 'background'> & { readonly background: PageBackground };
-
-// =============================================================================
-// Constants
-// =============================================================================
-
-/** Maximum PDF file size in bytes (20MB) */
-const MAX_PDF_SIZE = 20 * 1024 * 1024;
-
-/** PDF MIME type */
-const PDF_MIME_TYPE = 'application/pdf';
+import type { Page, BackgroundPdf } from '../types/document';
+import { createEmptyPage, DEFAULT_BACKGROUND } from '../types/document';
+import {
+	MAX_PDF_SIZE,
+	PDF_MIME_TYPE,
+	validatePdfFile,
+	createPdfBackground,
+	setPageOverlay,
+	createPageWithPdfBackground,
+	calculateFitModeDimensions,
+	getPageRange
+} from '../utils/pdf-loader';
 
 // =============================================================================
-// Helper Types
+// Helpers
 // =============================================================================
 
-interface PdfValidationResult {
-	valid: boolean;
-	error?: string;
+/** Un vrai `File` dont la taille en octets est exactement `size`. */
+function makeFile(name: string, type: string, size: number): File {
+	return new File([new Uint8Array(size)], name, { type });
 }
 
-interface _PdfPageInfo {
-	pageIndex: number;
-	width: number;
-	height: number;
-}
-
-interface PdfImportOptions {
-	/** Pages to import (empty = all pages) */
-	pages?: number[];
-	/** Fit mode for the background */
-	fitMode: 'fit' | 'fill' | 'stretch';
-}
-
-// =============================================================================
-// Helper Functions (to be implemented in pdf-loader.ts)
-// =============================================================================
-
-/**
- * Validate a PDF file before import
- */
-function validatePdfFile(file: { type: string; size: number; name: string }): PdfValidationResult {
-	// Check file type
-	if (file.type !== PDF_MIME_TYPE) {
-		return {
-			valid: false,
-			error: `Type de fichier non supporté: ${file.type}. Seuls les fichiers PDF sont acceptés.`
-		};
-	}
-
-	// Check file size
-	if (file.size > MAX_PDF_SIZE) {
-		const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-		return {
-			valid: false,
-			error: `Fichier trop volumineux (${sizeMB}MB). Maximum: 20MB`
-		};
-	}
-
-	return { valid: true };
-}
-
-/**
- * Create a PDF background for a page
- */
-function createPdfBackground(
-	pdfData: string,
-	pageIndex: number,
-	totalPages: number,
-	width: number,
-	height: number
-): BackgroundPdf {
-	return {
-		type: 'pdf',
-		pdfData,
-		pageIndex,
-		totalPages,
-		width,
-		height
-	};
-}
-
-/**
- * Set background on a page
- */
-function setPageBackground(
-	page: Page | PageWithAnyBackground,
-	background: PageBackground
-): PageWithAnyBackground {
-	return {
-		...page,
-		background
-	};
-}
-
-/**
- * Create a page with PDF background
- */
-function createPageWithPdfBackground(
-	pdfData: string,
-	pageIndex: number,
-	totalPages: number,
-	pdfWidth: number,
-	pdfHeight: number
-): PageWithAnyBackground {
-	const page = createEmptyPage('A4');
-	const background = createPdfBackground(pdfData, pageIndex, totalPages, pdfWidth, pdfHeight);
-	return setPageBackground(page, background);
-}
-
-/**
- * Calculate dimensions based on fit mode
- */
-function calculateFitModeDimensions(
-	sourceWidth: number,
-	sourceHeight: number,
-	targetWidth: number,
-	targetHeight: number,
-	fitMode: 'fit' | 'fill' | 'stretch'
-): { width: number; height: number; x: number; y: number } {
-	switch (fitMode) {
-		case 'stretch':
-			// Stretch to fill exactly
-			return { width: targetWidth, height: targetHeight, x: 0, y: 0 };
-
-		case 'fill': {
-			// Fill container, may crop
-			const scale = Math.max(targetWidth / sourceWidth, targetHeight / sourceHeight);
-			const width = Math.round(sourceWidth * scale);
-			const height = Math.round(sourceHeight * scale);
-			const x = Math.round((targetWidth - width) / 2);
-			const y = Math.round((targetHeight - height) / 2);
-			return { width, height, x, y };
-		}
-
-		case 'fit':
-		default: {
-			// Fit inside container, may have margins
-			const scale = Math.min(targetWidth / sourceWidth, targetHeight / sourceHeight);
-			const width = Math.round(sourceWidth * scale);
-			const height = Math.round(sourceHeight * scale);
-			const x = Math.round((targetWidth - width) / 2);
-			const y = Math.round((targetHeight - height) / 2);
-			return { width, height, x, y };
-		}
-	}
-}
-
-/**
- * Get page range from options
- */
-function getPageRange(totalPages: number, options?: PdfImportOptions): number[] {
-	if (options?.pages && options.pages.length > 0) {
-		// Filter valid page indices
-		return options.pages.filter((p) => p >= 0 && p < totalPages);
-	}
-	// All pages
-	return Array.from({ length: totalPages }, (_, i) => i);
+/** L'overlay PDF d'une page, ou un échec explicite s'il manque. */
+function pdfOverlayOf(page: Page): BackgroundPdf {
+	const overlay = page.overlay;
+	if (overlay?.type !== 'pdf') throw new Error('overlay PDF attendu');
+	return overlay;
 }
 
 // =============================================================================
 // Tests
 // =============================================================================
 
+describe('Constantes du module', () => {
+	it('fixe la limite à 20 Mo et le type MIME PDF', () => {
+		expect(MAX_PDF_SIZE).toBe(20 * 1024 * 1024);
+		expect(PDF_MIME_TYPE).toBe('application/pdf');
+	});
+});
+
 describe('PDF File Validation', () => {
 	it('accepts valid PDF files', () => {
-		const result = validatePdfFile({
-			type: 'application/pdf',
-			size: 1024 * 1024,
-			name: 'document.pdf'
-		});
-		expect(result.valid).toBe(true);
+		const result = validatePdfFile(makeFile('document.pdf', 'application/pdf', 1024 * 1024));
+		expect(result).toEqual({ valid: true });
 	});
 
 	it('rejects non-PDF files', () => {
-		const result = validatePdfFile({
-			type: 'image/png',
-			size: 1024 * 1024,
-			name: 'image.png'
-		});
+		const result = validatePdfFile(makeFile('image.png', 'image/png', 1024));
+		expect(result.valid).toBe(false);
+		expect(result.error).toContain('Type de fichier non supporté');
+		expect(result.error).toContain('image/png');
+	});
+
+	it('rejects text files with pdf extension', () => {
+		const result = validatePdfFile(makeFile('fake.pdf', 'text/plain', 1024));
 		expect(result.valid).toBe(false);
 		expect(result.error).toContain('Type de fichier non supporté');
 	});
 
-	it('rejects text files with pdf extension', () => {
-		const result = validatePdfFile({
-			type: 'text/plain',
-			size: 1024,
-			name: 'fake.pdf'
-		});
+	it('rejects a file without MIME type, even named .pdf', () => {
+		const result = validatePdfFile(makeFile('sans-type.pdf', '', 1024));
 		expect(result.valid).toBe(false);
 	});
 
 	it('rejects files larger than 20MB', () => {
-		const result = validatePdfFile({
-			type: 'application/pdf',
-			size: 25 * 1024 * 1024,
-			name: 'large.pdf'
-		});
+		const result = validatePdfFile(makeFile('large.pdf', 'application/pdf', 25 * 1024 * 1024));
 		expect(result.valid).toBe(false);
-		expect(result.error).toContain('Fichier trop volumineux');
-		expect(result.error).toContain('20MB');
+		expect(result.error).toBe('Fichier trop volumineux (25.0MB). Maximum: 20MB');
 	});
 
 	it('accepts files exactly at 20MB limit', () => {
-		const result = validatePdfFile({
-			type: 'application/pdf',
-			size: 20 * 1024 * 1024,
-			name: 'exact.pdf'
-		});
+		const result = validatePdfFile(makeFile('exact.pdf', 'application/pdf', MAX_PDF_SIZE));
 		expect(result.valid).toBe(true);
 	});
 
+	it('rejects a file one byte over the limit', () => {
+		const result = validatePdfFile(makeFile('limite.pdf', 'application/pdf', MAX_PDF_SIZE + 1));
+		expect(result.valid).toBe(false);
+		expect(result.error).toContain('Fichier trop volumineux');
+	});
+
 	it('accepts small PDF files', () => {
-		const result = validatePdfFile({
-			type: 'application/pdf',
-			size: 10 * 1024,
-			name: 'small.pdf'
-		});
+		const result = validatePdfFile(makeFile('small.pdf', 'application/pdf', 10 * 1024));
 		expect(result.valid).toBe(true);
 	});
 });
 
 describe('PDF Background Creation', () => {
-	it('creates a PDF background with correct type', () => {
-		const background = createPdfBackground('base64-pdf-data', 0, 5, 612, 792);
-		expect(background.type).toBe('pdf');
+	it('builds the full PDF overlay', () => {
+		const background = createPdfBackground('JVBERi0xLjQK...', 3, 10, 595, 842);
+		expect(background).toEqual({
+			type: 'pdf',
+			pdfData: 'JVBERi0xLjQK...',
+			pageIndex: 3,
+			totalPages: 10,
+			width: 595,
+			height: 842
+		});
 	});
 
-	it('stores PDF data', () => {
-		const pdfData = 'JVBERi0xLjQK...';
-		const background = createPdfBackground(pdfData, 0, 1, 612, 792);
-		expect(background.pdfData).toBe(pdfData);
+	it('omits contentArea when not given', () => {
+		const background = createPdfBackground('data', 0, 1, 612, 792);
+		expect('contentArea' in background).toBe(false);
 	});
 
-	it('stores page index', () => {
-		const background = createPdfBackground('data', 3, 10, 612, 792);
-		expect(background.pageIndex).toBe(3);
-	});
-
-	it('stores total pages count', () => {
-		const background = createPdfBackground('data', 0, 15, 612, 792);
-		expect(background.totalPages).toBe(15);
-	});
-
-	it('stores PDF page dimensions', () => {
-		const background = createPdfBackground('data', 0, 1, 595, 842);
-		expect(background.width).toBe(595);
-		expect(background.height).toBe(842);
+	it('stores contentArea when given', () => {
+		const contentArea = { x: 20, y: 20, w: 776, h: 1016 };
+		const background = createPdfBackground('data', 0, 1, 612, 792, contentArea);
+		expect(background.contentArea).toEqual(contentArea);
 	});
 });
 
-describe('Page Background Setting', () => {
+describe('Page Overlay Setting', () => {
 	let page: Page;
 
 	beforeEach(() => {
 		page = createEmptyPage('A4');
 	});
 
-	it('can set PDF background on page', () => {
-		const background = createPdfBackground('pdf-data', 0, 1, 612, 792);
-		const updated = setPageBackground(page, background);
-		expect(updated.background.type).toBe('pdf');
+	it('puts the PDF in overlay and keeps the plain background', () => {
+		const overlay = createPdfBackground('pdf-data', 0, 1, 612, 792);
+		const updated = setPageOverlay(page, overlay);
+		expect(updated.overlay).toEqual(overlay);
+		expect(updated.background).toEqual(page.background);
+		expect(updated.background.type).toBe('plain');
 	});
 
-	it('preserves page elements when changing background', () => {
-		// Simulate page with elements
+	it('does not mutate the original page', () => {
+		const overlay = createPdfBackground('pdf-data', 0, 1, 612, 792);
+		setPageOverlay(page, overlay);
+		expect(page.overlay).toBeUndefined();
+	});
+
+	it('preserves page elements when setting overlay', () => {
 		const pageWithElements: Page = {
 			...page,
 			elements: [
@@ -293,44 +155,54 @@ describe('Page Background Setting', () => {
 					color: '#000',
 					width: 2,
 					opacity: 1
+				},
+				{
+					id: 'stroke-2',
+					type: 'stroke',
+					toolType: 'pen',
+					points: [{ x: 5, y: 5 }],
+					color: '#f00',
+					width: 3,
+					opacity: 1
 				}
 			]
 		};
 
-		const background = createPdfBackground('pdf-data', 0, 1, 612, 792);
-		const updated = setPageBackground(pageWithElements, background);
+		const updated = setPageOverlay(
+			pageWithElements,
+			createPdfBackground('pdf-data', 0, 1, 612, 792)
+		);
 
-		expect(updated.elements).toHaveLength(1);
-		expect(updated.elements[0].id).toBe('stroke-1');
+		expect(updated.elements.map((e) => e.id)).toEqual(['stroke-1', 'stroke-2']);
 	});
 
-	it('preserves page dimensions when changing background', () => {
-		const background = createPdfBackground('pdf-data', 0, 1, 612, 792);
-		const updated = setPageBackground(page, background);
-
+	it('preserves page id and dimensions when setting overlay', () => {
+		const updated = setPageOverlay(page, createPdfBackground('pdf-data', 0, 1, 612, 792));
+		expect(updated.id).toBe(page.id);
 		expect(updated.width).toBe(page.width);
 		expect(updated.height).toBe(page.height);
 	});
 
-	it('can replace PDF background with plain background', () => {
-		const pdfBackground = createPdfBackground('pdf-data', 0, 1, 612, 792);
-		const pageWithPdf = setPageBackground(page, pdfBackground);
-
-		const plainBackground: PageBackground = {
-			type: 'plain',
-			style: 'grid',
-			color: '#ffffff'
-		};
-		const updated = setPageBackground(pageWithPdf, plainBackground);
-
-		expect(updated.background.type).toBe('plain');
+	it('replaces an existing PDF overlay', () => {
+		const first = setPageOverlay(page, createPdfBackground('page-1', 0, 2, 612, 792));
+		const second = setPageOverlay(first, createPdfBackground('page-2', 1, 2, 612, 792));
+		expect(pdfOverlayOf(second).pdfData).toBe('page-2');
+		expect(pdfOverlayOf(second).pageIndex).toBe(1);
 	});
 });
 
 describe('Page Creation with PDF Background', () => {
-	it('creates page with PDF background', () => {
-		const page = createPageWithPdfBackground('pdf-data', 0, 5, 612, 792);
-		expect(page.background.type).toBe('pdf');
+	it('creates page with PDF overlay over the default plain background', () => {
+		const page = createPageWithPdfBackground('pdf-data', 2, 5, 612, 792);
+		expect(page.background).toEqual(DEFAULT_BACKGROUND);
+		expect(page.overlay).toEqual({
+			type: 'pdf',
+			pdfData: 'pdf-data',
+			pageIndex: 2,
+			totalPages: 5,
+			width: 612,
+			height: 792
+		});
 	});
 
 	it('new page has empty elements', () => {
@@ -343,6 +215,64 @@ describe('Page Creation with PDF Background', () => {
 		const page2 = createPageWithPdfBackground('pdf-data', 1, 2, 612, 792);
 		expect(page1.id).not.toBe(page2.id);
 	});
+
+	it('does not share the default background object', () => {
+		const page = createPageWithPdfBackground('pdf-data', 0, 1, 612, 792);
+		expect(page.background).not.toBe(DEFAULT_BACKGROUND);
+	});
+
+	describe('normal mode', () => {
+		it('sizes the page to the PDF, points converted to pixels (96/72)', () => {
+			// Lettre US : 612 × 792 pt → 816 × 1056 px
+			const page = createPageWithPdfBackground('pdf-data', 0, 1, 612, 792);
+			expect(page.width).toBe(816);
+			expect(page.height).toBe(1056);
+		});
+
+		it('rounds the converted dimensions', () => {
+			// A4 : 595 × 842 pt → 793,33… × 1122,66… px
+			const page = createPageWithPdfBackground('pdf-data', 0, 1, 595, 842);
+			expect(page.width).toBe(793);
+			expect(page.height).toBe(1123);
+		});
+
+		it('keeps the PDF dimensions in points in the overlay, without contentArea', () => {
+			const overlay = pdfOverlayOf(createPageWithPdfBackground('pdf-data', 0, 1, 595, 842));
+			expect(overlay.width).toBe(595);
+			expect(overlay.height).toBe(842);
+			expect(overlay.contentArea).toBeUndefined();
+		});
+
+		it('is the default mode', () => {
+			const implicit = createPageWithPdfBackground('pdf-data', 0, 1, 612, 792);
+			const explicit = createPageWithPdfBackground('pdf-data', 0, 1, 612, 792, 'normal');
+			expect(implicit.width).toBe(explicit.width);
+			expect(implicit.height).toBe(explicit.height);
+			expect(implicit.overlay).toEqual(explicit.overlay);
+		});
+	});
+
+	describe('extended mode', () => {
+		it('doubles the width of a portrait PDF, content in the left half with margin', () => {
+			const page = createPageWithPdfBackground('pdf-data', 0, 1, 612, 792, 'extended');
+			expect(page.width).toBe(816 * 2);
+			expect(page.height).toBe(1056);
+			expect(pdfOverlayOf(page).contentArea).toEqual({ x: 20, y: 20, w: 776, h: 1016 });
+		});
+
+		it('doubles the height of a landscape PDF, content in the top half with margin', () => {
+			const page = createPageWithPdfBackground('pdf-data', 0, 1, 792, 612, 'extended');
+			expect(page.width).toBe(1056);
+			expect(page.height).toBe(816 * 2);
+			expect(pdfOverlayOf(page).contentArea).toEqual({ x: 20, y: 20, w: 1016, h: 776 });
+		});
+
+		it('treats a square PDF as landscape (doubles the height)', () => {
+			const page = createPageWithPdfBackground('pdf-data', 0, 1, 600, 600, 'extended');
+			expect(page.width).toBe(800);
+			expect(page.height).toBe(1600);
+		});
+	});
 });
 
 describe('Fit Mode Calculations', () => {
@@ -350,93 +280,63 @@ describe('Fit Mode Calculations', () => {
 	const targetHeight = 1123;
 
 	describe('fit mode', () => {
-		it('fits landscape PDF in portrait page', () => {
+		it('fits landscape PDF in portrait page: full width, vertical margins', () => {
+			// échelle min(794/842, 1123/595) = 794/842
 			const result = calculateFitModeDimensions(842, 595, targetWidth, targetHeight, 'fit');
-			// Should fit width, leaving vertical margins
-			expect(result.width).toBeLessThanOrEqual(targetWidth);
-			expect(result.height).toBeLessThanOrEqual(targetHeight);
+			expect(result).toEqual({ width: 794, height: 561, x: 0, y: 281 });
 		});
 
 		it('fits portrait PDF in portrait page', () => {
 			const result = calculateFitModeDimensions(595, 842, targetWidth, targetHeight, 'fit');
 			expect(result.width).toBeLessThanOrEqual(targetWidth);
 			expect(result.height).toBeLessThanOrEqual(targetHeight);
+			expect(result.width === targetWidth || result.height === targetHeight).toBe(true);
 		});
 
 		it('centers the result', () => {
 			const result = calculateFitModeDimensions(400, 300, targetWidth, targetHeight, 'fit');
-			// Should be centered horizontally
-			expect(result.x).toBeGreaterThanOrEqual(0);
-			// Should be centered vertically
-			expect(result.y).toBeGreaterThanOrEqual(0);
+			expect(result.x).toBe(Math.round((targetWidth - result.width) / 2));
+			expect(result.y).toBe(Math.round((targetHeight - result.height) / 2));
+			expect(result.x).toBe(0);
+			expect(result.y).toBeGreaterThan(0);
 		});
 
 		it('maintains aspect ratio', () => {
-			const sourceWidth = 800;
-			const sourceHeight = 600;
-			const sourceRatio = sourceWidth / sourceHeight;
-
-			const result = calculateFitModeDimensions(
-				sourceWidth,
-				sourceHeight,
-				targetWidth,
-				targetHeight,
-				'fit'
-			);
-			const resultRatio = result.width / result.height;
-
-			expect(Math.abs(sourceRatio - resultRatio)).toBeLessThan(0.01);
+			const result = calculateFitModeDimensions(800, 600, targetWidth, targetHeight, 'fit');
+			expect(Math.abs(800 / 600 - result.width / result.height)).toBeLessThan(0.01);
 		});
 	});
 
 	describe('fill mode', () => {
 		it('fills page completely (may crop)', () => {
 			const result = calculateFitModeDimensions(400, 300, targetWidth, targetHeight, 'fill');
-			// Either width or height should match or exceed target
-			expect(result.width >= targetWidth || result.height >= targetHeight).toBe(true);
+			expect(result.width).toBeGreaterThanOrEqual(targetWidth);
+			expect(result.height).toBeGreaterThanOrEqual(targetHeight);
 		});
 
 		it('maintains aspect ratio', () => {
-			const sourceWidth = 800;
-			const sourceHeight = 600;
-			const sourceRatio = sourceWidth / sourceHeight;
-
-			const result = calculateFitModeDimensions(
-				sourceWidth,
-				sourceHeight,
-				targetWidth,
-				targetHeight,
-				'fill'
-			);
-			const resultRatio = result.width / result.height;
-
-			expect(Math.abs(sourceRatio - resultRatio)).toBeLessThan(0.01);
+			const result = calculateFitModeDimensions(800, 600, targetWidth, targetHeight, 'fill');
+			expect(Math.abs(800 / 600 - result.width / result.height)).toBeLessThan(0.01);
 		});
 
-		it('can have negative offset for cropping', () => {
+		it('has a negative offset on the cropped axis', () => {
 			const result = calculateFitModeDimensions(800, 600, targetWidth, targetHeight, 'fill');
-			// One of the offsets should be negative (or zero if perfect fit)
-			expect(result.x <= 0 || result.y <= 0).toBe(true);
+			// paysage dans portrait : la hauteur remplit, la largeur déborde
+			expect(result.height).toBe(targetHeight);
+			expect(result.x).toBeLessThan(0);
+			expect(result.y).toBe(0);
 		});
 	});
 
 	describe('stretch mode', () => {
-		it('fills page exactly', () => {
+		it('fills page exactly from the origin', () => {
 			const result = calculateFitModeDimensions(400, 300, targetWidth, targetHeight, 'stretch');
-			expect(result.width).toBe(targetWidth);
-			expect(result.height).toBe(targetHeight);
-		});
-
-		it('always starts at origin', () => {
-			const result = calculateFitModeDimensions(400, 300, targetWidth, targetHeight, 'stretch');
-			expect(result.x).toBe(0);
-			expect(result.y).toBe(0);
+			expect(result).toEqual({ width: targetWidth, height: targetHeight, x: 0, y: 0 });
 		});
 
 		it('ignores source aspect ratio', () => {
 			const result = calculateFitModeDimensions(100, 500, targetWidth, targetHeight, 'stretch');
-			expect(result.width).toBe(targetWidth);
-			expect(result.height).toBe(targetHeight);
+			expect(result).toEqual({ width: targetWidth, height: targetHeight, x: 0, y: 0 });
 		});
 	});
 });
@@ -445,142 +345,67 @@ describe('Page Range Selection', () => {
 	const totalPages = 10;
 
 	it('returns all pages when no options provided', () => {
-		const range = getPageRange(totalPages);
-		expect(range).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+		expect(getPageRange(totalPages)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 	});
 
 	it('returns all pages when pages array is empty', () => {
-		const range = getPageRange(totalPages, { pages: [], fitMode: 'fit' });
-		expect(range).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+		expect(getPageRange(totalPages, { pages: [], fitMode: 'fit' })).toEqual([
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+		]);
 	});
 
 	it('returns specific pages when specified', () => {
-		const range = getPageRange(totalPages, { pages: [0, 2, 5], fitMode: 'fit' });
-		expect(range).toEqual([0, 2, 5]);
+		expect(getPageRange(totalPages, { pages: [0, 2, 5], fitMode: 'fit' })).toEqual([0, 2, 5]);
 	});
 
 	it('filters out invalid negative indices', () => {
-		const range = getPageRange(totalPages, { pages: [-1, 0, 2], fitMode: 'fit' });
-		expect(range).toEqual([0, 2]);
+		expect(getPageRange(totalPages, { pages: [-1, 0, 2], fitMode: 'fit' })).toEqual([0, 2]);
 	});
 
 	it('filters out indices beyond total pages', () => {
-		const range = getPageRange(totalPages, { pages: [0, 5, 15, 20], fitMode: 'fit' });
-		expect(range).toEqual([0, 5]);
+		expect(getPageRange(totalPages, { pages: [0, 5, 10, 15, 20], fitMode: 'fit' })).toEqual([0, 5]);
+	});
+
+	it('returns an empty range when every requested page is out of bounds', () => {
+		expect(getPageRange(totalPages, { pages: [10, 11], fitMode: 'fit' })).toEqual([]);
 	});
 
 	it('handles single page selection', () => {
-		const range = getPageRange(totalPages, { pages: [3], fitMode: 'fit' });
-		expect(range).toEqual([3]);
+		expect(getPageRange(totalPages, { pages: [3], fitMode: 'fit' })).toEqual([3]);
 	});
 
 	it('handles single page PDF', () => {
-		const range = getPageRange(1);
-		expect(range).toEqual([0]);
+		expect(getPageRange(1)).toEqual([0]);
 	});
 });
 
 describe('PDF Background Serialization', () => {
 	it('can serialize PDF background to JSON', () => {
 		const background = createPdfBackground('base64-encoded-pdf-data', 2, 10, 612, 792);
-
-		const json = JSON.stringify(background);
-		const parsed = JSON.parse(json);
-
-		expect(parsed.type).toBe('pdf');
-		expect(parsed.pdfData).toBe('base64-encoded-pdf-data');
-		expect(parsed.pageIndex).toBe(2);
-		expect(parsed.totalPages).toBe(10);
-		expect(parsed.width).toBe(612);
-		expect(parsed.height).toBe(792);
+		expect(JSON.parse(JSON.stringify(background))).toEqual(background);
 	});
 
-	it('page with PDF background serializes correctly', () => {
-		const page = createPageWithPdfBackground('pdf-content', 0, 5, 595, 842);
-
-		const json = JSON.stringify(page);
-		const parsed = JSON.parse(json);
-
-		expect(parsed.background.type).toBe('pdf');
-		expect(parsed.background.pdfData).toBe('pdf-content');
+	it('page with PDF overlay serializes correctly', () => {
+		const page = createPageWithPdfBackground('pdf-content', 0, 5, 595, 842, 'extended');
+		expect(JSON.parse(JSON.stringify(page))).toEqual(page);
 	});
 });
 
 describe('Multi-page PDF Import', () => {
-	it('creates one whiteboard page per PDF page', () => {
+	it('creates one whiteboard page per PDF page, with its own index', () => {
 		const pdfPageCount = 5;
-		const pages: PageWithAnyBackground[] = [];
-
+		const pages: Page[] = [];
 		for (let i = 0; i < pdfPageCount; i++) {
 			pages.push(createPageWithPdfBackground(`pdf-data-page-${i}`, i, pdfPageCount, 612, 792));
 		}
 
 		expect(pages).toHaveLength(5);
 		pages.forEach((page, index) => {
-			const bg = page.background;
-			if (bg.type !== 'pdf') throw new Error('fond PDF attendu');
-			expect(bg.pageIndex).toBe(index);
-			expect(bg.totalPages).toBe(5);
+			const overlay = pdfOverlayOf(page);
+			expect(overlay.pageIndex).toBe(index);
+			expect(overlay.totalPages).toBe(5);
+			expect(overlay.pdfData).toBe(`pdf-data-page-${index}`);
 		});
-	});
-
-	it('each page has unique ID', () => {
-		const pages: PageWithAnyBackground[] = [];
-		for (let i = 0; i < 3; i++) {
-			pages.push(createPageWithPdfBackground('pdf-data', i, 3, 612, 792));
-		}
-
-		const ids = pages.map((p) => p.id);
-		const uniqueIds = new Set(ids);
-		expect(uniqueIds.size).toBe(3);
-	});
-
-	it('imported pages have empty elements', () => {
-		const pages: PageWithAnyBackground[] = [];
-		for (let i = 0; i < 3; i++) {
-			pages.push(createPageWithPdfBackground('pdf-data', i, 3, 612, 792));
-		}
-
-		pages.forEach((page) => {
-			expect(page.elements).toHaveLength(0);
-		});
-	});
-});
-
-describe('PDF Import Integration', () => {
-	it('validates then creates pages on successful import', () => {
-		const file = {
-			type: 'application/pdf',
-			size: 1024 * 1024,
-			name: 'document.pdf'
-		};
-
-		const validation = validatePdfFile(file);
-		expect(validation.valid).toBe(true);
-
-		if (validation.valid) {
-			// Simulate 3-page PDF import
-			const pages: PageWithAnyBackground[] = [];
-			for (let i = 0; i < 3; i++) {
-				pages.push(createPageWithPdfBackground('pdf-data', i, 3, 612, 792));
-			}
-
-			expect(pages).toHaveLength(3);
-			pages.forEach((page) => {
-				expect(page.background.type).toBe('pdf');
-			});
-		}
-	});
-
-	it('rejects invalid file and provides error', () => {
-		const file = {
-			type: 'text/plain',
-			size: 1024,
-			name: 'fake.pdf'
-		};
-
-		const validation = validatePdfFile(file);
-		expect(validation.valid).toBe(false);
-		expect(validation.error).toBeDefined();
+		expect(new Set(pages.map((p) => p.id)).size).toBe(5);
 	});
 });
