@@ -13,5 +13,5 @@ Branche `feat/simulation-loi-normale`, worktree `../ubumaths-wt-sim-normale`.
 - [x] `normalQuantile` (Acklam + un pas de Halley), `normalSampler`.
 - [x] Parseur (refus retiré), type `SimulatedNamedLaw`, scène (classes ±∞, mention des deux bords).
 - [x] Doc `statistiques.md`, `ubumark.md` ; D7 / K5 retirés de `ecarts-a-trier.md`.
-- [ ] check, revue, PR.
+- [x] Revue (bords écrits comme les classes, messages, Φ⁻¹ symétrique) ; PR #1068 mergée (2026-10-11).
 ```
