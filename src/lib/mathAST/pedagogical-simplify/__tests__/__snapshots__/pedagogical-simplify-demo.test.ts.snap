@@ -197,8 +197,8 @@ exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > e^(ln x) 
 "# e^(ln x) — intent=reduire — e^{\\ln(x)}
 
 ## lycee (verbosity=detailed)
-- [euler-identities] Propriétés de l'exponentielle : ln(e^a) = a, e^(ln a) = a, e^a × e^b = e^(a+b), (e^a)^n = e^(an)
-  \\begin{aligned} \\textcolor{blue}{e^{\\ln\\left( x \\right)}} & \\\\ = x \\end{aligned}
+- [exp-ln] ln et exp sont réciproques : exp(ln(x)) = x
+  \\begin{aligned} \\textcolor{blue}{\\exponentialE^{\\ln\\left( x \\right)}} & \\\\ = x \\end{aligned}
 => x"
 `;
 
@@ -216,10 +216,9 @@ exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > ln(eˣ) 1
 "# ln(eˣ) — intent=reduire — \\ln(e^x)
 
 ## lycee (verbosity=detailed)
-- [ln-pow] ln(aⁿ) = n·ln(a)
-  · Le logarithme d’une puissance : ln(aⁿ) = n·ln(a).
-  \\begin{aligned} \\textcolor{blue}{\\ln\\left( e^x \\right)} & \\\\ = x \\ln\\left( e \\right) \\end{aligned}
-=> x \\ln\\left( e \\right)"
+- [ln-exp] ln et exp sont réciproques : ln(eˣ) = x
+  \\begin{aligned} \\textcolor{blue}{\\ln\\left( \\exponentialE^x \\right)} & \\\\ = x \\end{aligned}
+=> x"
 `;
 
 exports[`pedagogical-simplify-demo — snapshots > identites-trig > sin(-x) 1`] = `

@@ -572,11 +572,8 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		return parseNumberToRational(node.value);
 	}
 
-	// VariableNode - handle 'e' as Euler's constant, throw on others
+	// VariableNode - throw (Euler's `e` is a MathConstantNode, handled below)
 	if (isVariable(node)) {
-		if (node.name === 'e') {
-			return floatToRational(Math.E);
-		}
 		throw new Error(`Cannot evaluate expression with unsubstituted variable: ${node.name}`);
 	}
 
@@ -1233,7 +1230,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 
 	// 2. Check for free variables (exclude known constants)
 	const variables = getVariables(processedNode);
-	const freeVars = [...variables].filter((v) => !['pi', 'e', 'i'].includes(v));
+	const freeVars = [...variables].filter((v) => !['pi', 'i'].includes(v));
 
 	if (freeVars.length > 0) {
 		return {

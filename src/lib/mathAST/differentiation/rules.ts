@@ -200,16 +200,12 @@ export function powerRuleConstantExp(
 }
 
 /**
- * La base d'Euler, sous ses deux formes : la constante `euler` (parseur
- * custom, atelier) et la variable `e` (parseur LaTeX). La variable `e` est
- * lue comme Euler, comme le font déjà `evaluate` et `compile`.
- *
- * ⚠️ Ne décide RIEN sur la dépendance à la variable de dérivation : l'appelant
- * vérifie que la base est constante (`d/de(e^2)` dérive la variable `e`).
+ * La base d'Euler, éventuellement entre parenthèses (`(e)^x`). Les deux
+ * parseurs lisent la lettre `e` comme la constante `euler`.
  */
 export function isEulerBase(node: MathNode): boolean {
 	if (isDelimiter(node)) return isEulerBase(node.content);
-	return isEulerConstant(node) || (isVariable(node) && node.name === 'e');
+	return isEulerConstant(node);
 }
 
 /**

@@ -32,7 +32,7 @@ function derive(latex: string) {
 
 describe('withTidyStep : la dernière ligne est la dérivée rangée', () => {
 	it.each([
-		['e^{3x}', 'e^{3 x} \\times 3 = 3 e^{3 x}', '3 e^{3 x}'],
+		['e^{3x}', '\\exponentialE^{3 x} \\times 3 = 3 \\exponentialE^{3 x}', '3 \\exponentialE^{3 x}'],
 		[
 			'\\sin(x) + \\cos(x)',
 			'\\cos\\left( x \\right) + \\left( -\\sin\\left( x \\right) \\right) = \\cos\\left( x \\right) - \\sin\\left( x \\right)',

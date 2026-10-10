@@ -44,7 +44,7 @@ describe('\\lim sans parenthèses : la limite porte sur toute l’expression', (
 	it.each([
 		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\sqrt{2}', 'exact 1 + \\sqrt{2}'],
 		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\ln 2', 'exact 1 + \\ln\\left( 2 \\right)'],
-		['\\lim_{x\\to0}\\frac{\\sin x}{x}+e', 'exact 1 + e'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+e', 'exact 1 + \\exponentialE'],
 		['\\lim_{x\\to0}\\pi+\\sqrt{2}+\\frac{\\sin x}{x}', 'exact \\pi + \\sqrt{2} + 1'],
 		['\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}+\\sqrt2', 'exact 1 + \\sqrt{2}']
 	])(

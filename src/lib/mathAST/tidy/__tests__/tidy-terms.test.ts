@@ -23,7 +23,7 @@ function derivativeLatex(latex: string): string {
 describe('tidyTerms : un terme négatif devient une soustraction', () => {
 	it.each([
 		['\\sin(x) + \\cos(x)', '\\cos\\left( x \\right) - \\sin\\left( x \\right)'],
-		['x e^{-2x}', 'e^{-2 x} - 2 x e^{-2 x}'],
+		['x e^{-2x}', '\\exponentialE^{-2 x} - 2 x \\exponentialE^{-2 x}'],
 		// a − (−b) : la soustraction d'un négatif devient une addition
 		['x - \\cos(x)', '1 + \\sin\\left( x \\right)']
 	])('(%s)′ = %s', (input, expected) => {
@@ -35,13 +35,13 @@ describe('tidyTerms : témoins inchangés', () => {
 	it.each([
 		// L'ordre de la règle du produit (u′v + uv′) est gardé
 		['x\\sin(x)', '\\sin\\left( x \\right) + x \\cos\\left( x \\right)'],
-		['x^2 e^x', '2 x e^x + x^2 e^x'],
+		['x^2 e^x', '2 x \\exponentialE^x + x^2 \\exponentialE^x'],
 		['x^2', '2 x'],
 		['3x^2 - x + 1', '6 x - 1'],
 		// Degré 1 : le négatif passe derrière (décision du 2026-10-06)
 		['-3x^2 + 2x', '2 - 6 x'],
-		['2e^{-x}', '-2 e^{-x}'],
-		['e^{3x}', '3 e^{3 x}'],
+		['2e^{-x}', '-2 \\exponentialE^{-x}'],
+		['e^{3x}', '3 \\exponentialE^{3 x}'],
 		['\\frac{x}{x+1}', '\\dfrac{1}{\\left( x + 1 \\right)^2}']
 	])('(%s)′ = %s', (input, expected) => {
 		expect(derivativeLatex(input)).toBe(expected);

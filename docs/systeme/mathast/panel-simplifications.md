@@ -6,7 +6,8 @@ couvre:
 
 # Panel de référence des simplifications
 
-> **Mesuré le 2026-09-21** sur `main` à `006873aad`, et **pinné** par
+> **Mesuré le 2026-09-21** sur `main` à `006873aad`, remis à jour le 2026-10-10 (lettre `e`
+> = constante d'Euler), et **pinné** par
 > `src/lib/mathAST/__tests__/panel-simplifications.test.ts`. Si vous modifiez le
 > moteur, le test rougit : mettez les deux à jour **ensemble**, sinon ce
 > document pourrit en silence comme l'a fait le §1 de
@@ -14,13 +15,13 @@ couvre:
 
 ## Ce que chaque colonne veut dire
 
-| colonne      | ce qui est appelé                                                                           |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`        |
-| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique |
-| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                           |
-| `developper` | règles de développement + identités, puis `normalize`                                       |
-| `factoriser` | factorisation + identités, puis extraction du contenu, puis `tidy`. **Pas** de `normalize`  |
+| colonne      | ce qui est appelé                                                                                                                                                           |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                        |
+| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                 |
+| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                           |
+| `developper` | règles de développement + identités, puis `normalize`                                                                                                                       |
+| `factoriser` | factorisation + identités, puis extraction du contenu, puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
 
 ⚠️ **Les quatre intentions sont mesurées à `schoolLevel: 'lycee'`.** Les
 identités trigonométriques et exponentielles sont coupées en dessous — c'est un
@@ -76,16 +77,16 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 ## Factorisation
 
-| entrée         | `simplify`               | `auto`            | `reduire`         | `developper`      | `factoriser`                                |
-| -------------- | ------------------------ | ----------------- | ----------------- | ----------------- | ------------------------------------------- |
-| `x^2-1`        | `x^2 - 1`                | `x^2 - 1`         | `x^2 - 1`         | `x^2 - 1`         | `\left( x + 1 \right) \left( x - 1 \right)` |
-| `x^2+2x+1`     | `\left( x + 1 \right)^2` | `x^2 + 2 x + 1`   | `x^2 + 2 x + 1`   | `x^2 + 2 x + 1`   | `\left( x + 1 \right)^2`                    |
-| `2x+4`         | `2 x + 4`                | `2 x + 4`         | `2 x + 4`         | `2 x + 4`         | `2 \left( x + 2 \right)`                    |
-| `x^2+2x`       | `x^2 + 2 x`              | `x^2 + 2 x`       | `x^2 + 2 x`       | `x^2 + 2 x`       | `x \left( x + 2 \right)`                    |
-| `3x^2+6x+3`    | `3 x^2 + 6 x + 3`        | `3 x^2 + 6 x + 3` | `3 x^2 + 6 x + 3` | `3 x^2 + 6 x + 3` | `3 \left( x + 1 \right)^2`                  |
-| `e^{x}+xe^{x}` | `x e^x + e^x`            | `x e^x + e^x`     | `x e^x + e^x`     | `x e^x + e^x`     | `\left( x + 1 \right) e^x`                  |
-| `-2x-4`        | `-2 x - 4`               | `-2 x - 4`        | `-2 x - 4`        | `-2 x - 4`        | `-2 \left( x + 2 \right)`                   |
-| `x^2y+xy`      | `x^2 y + x y`            | `x^2 y + x y`     | `x^2 y + x y`     | `x^2 y + x y`     | `x \left( x + 1 \right) y`                  |
+| entrée         | `simplify`                            | `auto`                                | `reduire`                             | `developper`                          | `factoriser`                                |
+| -------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------------- |
+| `x^2-1`        | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `\left( x + 1 \right) \left( x - 1 \right)` |
+| `x^2+2x+1`     | `\left( x + 1 \right)^2`              | `x^2 + 2 x + 1`                       | `x^2 + 2 x + 1`                       | `x^2 + 2 x + 1`                       | `\left( x + 1 \right)^2`                    |
+| `2x+4`         | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 \left( x + 2 \right)`                    |
+| `x^2+2x`       | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x \left( x + 2 \right)`                    |
+| `3x^2+6x+3`    | `3 x^2 + 6 x + 3`                     | `3 x^2 + 6 x + 3`                     | `3 x^2 + 6 x + 3`                     | `3 x^2 + 6 x + 3`                     | `3 \left( x + 1 \right)^2`                  |
+| `e^{x}+xe^{x}` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `\left( x + 1 \right) \exponentialE^x`      |
+| `-2x-4`        | `-2 x - 4`                            | `-2 x - 4`                            | `-2 x - 4`                            | `-2 x - 4`                            | `-2 \left( x + 2 \right)`                   |
+| `x^2y+xy`      | `x^2 y + x y`                         | `x^2 y + x y`                         | `x^2 y + x y`                         | `x^2 y + x y`                         | `x \left( x + 1 \right) y`                  |
 
 ## Fractions rationnelles
 
@@ -99,22 +100,22 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 ## Puissances
 
-| entrée        | `simplify`             | `auto`      | `reduire`   | `developper` | `factoriser`           |
-| ------------- | ---------------------- | ----------- | ----------- | ------------ | ---------------------- |
-| `x^{2}x^{3}`  | `x^5`                  | `x^5`       | `x^5`       | `x^5`        | `x^2 x^3`              |
-| `(x^{2})^{3}` | `x^6`                  | `x^6`       | `x^6`       | `x^6`        | `x^6`                  |
-| `e^{x}e^{2x}` | `e^{3 x}`              | `e^{3 x}`   | `e^{3 x}`   | `e^{3 x}`    | `e^x e^{2 x}`          |
-| `(e^{x})^{3}` | `\left( e^x \right)^3` | `e^{3 x}`   | `e^{3 x}`   | `e^{3 x}`    | `\left( e^x \right)^3` |
-| `x^{a}x^{b}`  | `x^a x^b`              | `x^{a + b}` | `x^{a + b}` | `x^a x^b`    | `x^a x^b`              |
+| entrée        | `simplify`                         | `auto`                | `reduire`             | `developper`          | `factoriser`                          |
+| ------------- | ---------------------------------- | --------------------- | --------------------- | --------------------- | ------------------------------------- |
+| `x^{2}x^{3}`  | `x^5`                              | `x^5`                 | `x^5`                 | `x^5`                 | `x^2 x^3`                             |
+| `(x^{2})^{3}` | `x^6`                              | `x^6`                 | `x^6`                 | `x^6`                 | `x^6`                                 |
+| `e^{x}e^{2x}` | `\exponentialE^{3 x}`              | `\exponentialE^{3 x}` | `\exponentialE^{3 x}` | `\exponentialE^{3 x}` | `\exponentialE^x \exponentialE^{2 x}` |
+| `(e^{x})^{3}` | `\left( \exponentialE^x \right)^3` | `\exponentialE^{3 x}` | `\exponentialE^{3 x}` | `\exponentialE^{3 x}` | `\left( \exponentialE^x \right)^3`    |
+| `x^{a}x^{b}`  | `x^a x^b`                          | `x^{a + b}`           | `x^{a + b}`           | `x^a x^b`             | `x^a x^b`                             |
 
 ## Exponentielle et logarithme
 
-| entrée                 | `simplify`             | `auto`                  | `reduire`               | `developper`            | `factoriser`            |
-| ---------------------- | ---------------------- | ----------------------- | ----------------------- | ----------------------- | ----------------------- |
-| `e^{x}`                | `e^x`                  | `e^x`                   | `e^x`                   | `e^x`                   | `e^x`                   |
-| `\ln(e^{x})`           | `x`                    | `x \ln\left( e \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` | `x \ln\left( e \right)` |
-| `\frac{e^{2x}}{e^{x}}` | `\dfrac{e^{2 x}}{e^x}` | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  | `\dfrac{e^{2 x}}{e^x}`  |
-| `e^{0}`                | `1`                    | `1`                     | `1`                     | `1`                     | `1`                     |
+| entrée                 | `simplify`                                     | `auto`                                         | `reduire`                                      | `developper`                                   | `factoriser`                                   |
+| ---------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| `e^{x}`                | `\exponentialE^x`                              | `\exponentialE^x`                              | `\exponentialE^x`                              | `\exponentialE^x`                              | `\exponentialE^x`                              |
+| `\ln(e^{x})`           | `x`                                            | `x`                                            | `x`                                            | `x`                                            | `x`                                            |
+| `\frac{e^{2x}}{e^{x}}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` |
+| `e^{0}`                | `1`                                            | `1`                                            | `1`                                            | `1`                                            | `1`                                            |
 
 ## Trigonométrie
 
@@ -144,7 +145,7 @@ Hors panel (2026-10-05) : `normalize` calcule `factorial` / `binom` à arguments
 
 ## Où `simplify` et `auto` divergent
 
-Mesuré sur le panel ci-dessus : **12 lignes sur 51** (mis à jour par `fix/normalize-ln-exp`, 2026-10-05).
+Mesuré sur le panel ci-dessus : **11 lignes sur 49** (mis à jour le 2026-10-10 : la lettre `e` est la constante d'Euler, `ln(e^x)` ne diverge plus).
 
 | entrée                   | `simplify`                                    | `auto`                               | nature                                                                                                                  |
 | ------------------------ | --------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------ |
@@ -156,9 +157,8 @@ Mesuré sur le panel ci-dessus : **12 lignes sur 51** (mis à jour par `fix/norm
 | `(2x-3)(x+4)`            | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12`                   | **décision** — même barrière de coût                                                                                    |
 | `x^2+2x+1`               | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision opposée** — l'un factorise, l'autre développe                                                                |
 | `\frac{(x+y)^2}{x+2y}`   | `\dfrac{\left( x + y \right)^2}{x + 2 y}`     | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur                                                                           |
-| `(e^{x})^{3}`            | `\left( e^x \right)^3`                        | `e^{3 x}`                            | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
+| `(e^{x})^{3}`            | `\left( \exponentialE^x \right)^3`            | `\exponentialE^{3 x}`                | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
 | `x^{a}x^{b}`             | `x^a x^b`                                     | `x^{a + b}`                          | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non                                                         |
-| `\ln(e^{x})`             | `x`                                           | `x \ln\left( e \right)`              | ⚠️ **capacité** — `simplify` réduit depuis `fix/normalize-ln-exp` ; `auto` s'arrête à `x ln(e)` (lettre `e`)            |
 | `-(x+1)`                 | `-\left( x + 1 \right)`                       | `-x - 1`                             | écriture — `simplify` garde le signe devant                                                                             |
 
 **Écriture** : les deux sont justes, la forme diffère.
@@ -176,12 +176,14 @@ travail, et le panel le rend visible.
    non réduit.
 2. ~~`simplify` ne combine pas `e^x · e^{2x}`~~ : comblé par
    `fix/normalize-ln-exp` (2026-10-05) — `normalize` applique les identités de
-   `e^{…}` (ln(eᵃ) = a, e^{ln a} = a, eᵃ·eᵇ, (eᵃ)ⁿ) en gardant l'écriture
-   `e^{…}` ; `simplify` et `developper` rendent `e^{3 x}`, et `e^{\ln x}` se
+   `e^{…}` (ln(eᵃ) = a, e^{ln a} = a, eᵃ·eᵇ, (eᵃ)ⁿ) en gardant la puissance
+   `e^{…}` (écrite `\exponentialE^{…}`) ; `simplify` et `developper` rendent `e^{3 x}`, et `e^{\ln x}` se
    réduit à `x`. Reste : `x^a · x^b`, que `auto` sait faire et `simplify` non.
-3. `ln(e^x)` : `simplify` rend `x` depuis `fix/normalize-ln-exp`. ⚠️ Reste :
-   `auto`, `reduire` et `developper` s'arrêtent à `x ln(e)` — `ln(e)` avec la
-   **lettre** `e` n'est pas réduit (seule la constante `\exponentialE` l'est).
+3. ~~`ln(e^x)` : `auto`, `reduire`, `developper` et `factoriser` s'arrêtaient à
+   `x ln(e)`~~ : la lettre `e` était lue comme une variable. Depuis le 2026-10-10,
+   les parseurs la lisent comme la constante d'Euler : les cinq colonnes rendent
+   `x`, et `ln(e)` vaut `1` (test `pedagogical-simplify/__tests__/ln-exp-lettre-e.test.ts`).
+   Les sorties écrivent la constante `\exponentialE` (`toLatex(euler())`).
 4. ⚠️ Restent aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
    (barrière de coût), et le **quotient** `e^{2x}/e^x` n'est réduit par aucune
    colonne.

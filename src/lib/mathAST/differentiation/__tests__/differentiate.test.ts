@@ -753,27 +753,25 @@ describe('containsVariable', () => {
  * `e^x ln(e)`. La base `e` passait par la règle de l'exponentielle
  * généralisée (a^u)' = a^u·ln(a)·u', juste mais jamais simplifiée.
  *
- * `parseLatex('e^x')` produit une VARIABLE `e` ; le parseur custom, la
- * constante `euler`. Les deux sont la base d'Euler : `evaluate` et `compile`
- * lisent déjà la variable `e` comme Euler (convention du module).
+ * Les deux parseurs lisent la lettre `e` comme la constante `euler`.
  */
 describe('base e (Euler) : (e^u) = u·e^u sans ln(e)', () => {
 	const d = (latex: string) => toLatex(differentiate(parseLatex(latex)));
 
 	it("(e^x)' = e^x", () => {
-		expect(d('e^x')).toBe('e^x');
+		expect(d('e^x')).toBe('\\exponentialE^x');
 	});
 
 	it("(e^{3x})' = e^{3x}·3", () => {
-		expect(d('e^{3x}')).toBe('e^{3 x} 3');
+		expect(d('e^{3x}')).toBe('\\exponentialE^{3 x} 3');
 	});
 
 	it("(e^{x^2})' = e^{x^2}·2x", () => {
-		expect(d('e^{x^2}')).toBe('e^{x^2} 2 x');
+		expect(d('e^{x^2}')).toBe('\\exponentialE^{x^2} 2 x');
 	});
 
 	it("(x e^x)' = e^x + x e^x", () => {
-		expect(d('xe^x')).toBe('e^x + x e^x');
+		expect(d('xe^x')).toBe('\\exponentialE^x + x \\exponentialE^x');
 	});
 
 	it("(2e^{-x})' ne contient pas ln(e) et vaut -2e^{-x}", () => {
@@ -804,7 +802,7 @@ describe('base e (Euler) : (e^u) = u·e^u sans ln(e)', () => {
 		expect(d('a^x')).toBe('a^x \\ln\\left( a \\right)');
 	});
 
-	it("d/de(e^2) = 2e : e variable de dérivation n'est pas Euler", () => {
-		expect(toLatex(differentiate(parseLatex('e^2'), { variable: 'e' }))).toBe('2 e');
+	it("(3e^2)' = 0 : e est une constante, jamais une variable", () => {
+		expect(toLatex(differentiate(parseLatex('3e^2')))).toBe('0');
 	});
 });

@@ -28,10 +28,10 @@ import {
 	isSubtraction,
 	isMultiplication,
 	isDelimiter,
-	isVariable,
 	isSuperscript,
 	isFunction
 } from '../guards';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import { mapNode, findNodes, getChildren } from '../transforms';
 import {
 	AbortError,
@@ -140,6 +140,7 @@ function exceedsNodeCount(root: MathNode, max: number): boolean {
 	return false;
 }
 
+/** Un refus `unsupported` (taille, budget, variable `e`), sans primitive. */
 function oversizedResult(variable: string, error: string): IntegrateResult {
 	return {
 		variable,
@@ -238,22 +239,6 @@ function normalizeAntiderivative(rawExpr: MathNode, variable?: string): MathNode
 		// If normalization fails, return the original expression
 		return expr;
 	}
-}
-
-/**
- * La lettre `e` → constante d'Euler, sauf si l'on intègre en `e`.
- *
- * Bornes ET intégrande : `parseLatex('e^{x}')` garde `e` en variable (usage
- * physique), mais pour une primitive la convention est celle de `evaluate`,
- * `compile` et `isEulerBase` — `e` est Euler. Sans cette promotion, `e^x`
- * tapé avec la lettre était refusé (« non supporté »), dans le LaTeX comme
- * dans l'atelier ; seuls `\exponentialE` et `\exp` passaient. Quand on
- * intègre PAR RAPPORT à `e`, elle reste la variable (même règle que
- * `promoteStandaloneEulerInRelation` pour une inconnue `e`).
- */
-function promoteEulerLetter(node: MathNode, variable: string | undefined): MathNode {
-	if (variable === 'e') return node;
-	return mapNode(node, (n) => (isVariable(n) && n.name === 'e' ? euler() : n));
 }
 
 /** L'arbre contient-il une valeur absolue `|…|` ? */
@@ -740,6 +725,10 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
+	// `e` est la constante d'Euler : intégrer « par rapport à e » est refusé
+	if (refusesEulerVariable(options?.variable, rawExpr)) {
+		return oversizedResult('e', EULER_NOT_A_VARIABLE);
+	}
 	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
 	// calcul — mise en forme finale comprise — est placé sous le signal ambiant
 	if (activeIntegrations === 0) {
@@ -801,13 +790,10 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 		...options
 	};
 
-	// La lettre `e` tapée est la constante d'Euler (sauf si l'on intègre en `e`)
-	const eulerExpr = promoteEulerLetter(expandedExpr, opts.variable);
-
 	// ⁿ√u (n impair ≥ 3) → u^{1/n} : le moteur calcule en puissances ; la
 	// primitive est réécrite en racines à la sortie (définie sur ℝ, comme ⁿ√)
-	const hasOddRoot = containsOddRoot(eulerExpr);
-	const expr = hasOddRoot ? oddRootsAsPowers(eulerExpr) : eulerExpr;
+	const hasOddRoot = containsOddRoot(expandedExpr);
+	const expr = hasOddRoot ? oddRootsAsPowers(expandedExpr) : expandedExpr;
 
 	// Detect variable if not specified
 	const variable = opts.variable ?? detectVariable(expr);
@@ -965,14 +951,17 @@ export function integrateDefinite(
 	// First, find the indefinite integral
 	const indefiniteResult = integrate(expr, options);
 
+	// Refus sans repli numérique : `e` n'est pas une variable
+	if (refusesEulerVariable(options?.variable, expr)) {
+		return { ...indefiniteResult, lowerBound: lower, upperBound: upper, value: null };
+	}
+
 	if (indefiniteResult.status === 'unsupported' || !indefiniteResult.antiderivative) {
 		// Repli numérique : bornes numériques (−1, π, e compris), f contrôlée
 		// comme F l'est plus bas — jamais une valeur à travers un pôle de f
 		const variable = indefiniteResult.variable;
-		const lowerBound = promoteEulerLetter(lower, variable);
-		const upperBound = promoteEulerLetter(upper, variable);
-		const a = numericBound(lowerBound);
-		const b = numericBound(upperBound);
+		const a = numericBound(lower);
+		const b = numericBound(upper);
 		if (opts.allowNumeric && Number.isFinite(a) && Number.isFinite(b)) {
 			const integrand = numericIntegrand(expr, variable, a, b);
 			const refused = (error: string): DefiniteIntegrateResult => ({
@@ -991,13 +980,13 @@ export function integrateDefinite(
 			}
 			if (integrand.kind === 'singular') {
 				return refused(
-					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}] : ${integrand.reason}`
+					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}] : ${integrand.reason}`
 				);
 			}
 			const value = adaptiveSimpson(integrand.f, a, b, NUMERIC_TOLERANCE, NUMERIC_MAX_DEPTH);
 			if (!Number.isFinite(value)) {
 				return refused(
-					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}]`
+					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}]`
 				);
 			}
 
@@ -1037,18 +1026,14 @@ export function integrateDefinite(
 	// Apply fundamental theorem: F(b) - F(a)
 	const recorder = createStepRecorder();
 	const variable = indefiniteResult.variable;
-	// Une borne `e` (parseLatex : variable) est la constante d'Euler, comme
-	// pour `evaluate` et `compile` — sinon ∫₁ᵉ dx/x restait `ln(e)`
-	const lowerBound = promoteEulerLetter(lower, variable);
-	const upperBound = promoteEulerLetter(upper, variable);
 
 	// F(b) − F(a) n'a de sens que si F est continue sur [a ; b] : à travers un
 	// pôle, refus explicite — jamais une valeur (revue de #947)
 	const discontinuity = antiderivativeDiscontinuity(
 		indefiniteResult.antiderivative,
 		variable,
-		numericBound(lowerBound),
-		numericBound(upperBound)
+		numericBound(lower),
+		numericBound(upper)
 	);
 	if (discontinuity !== null) {
 		return {
@@ -1059,7 +1044,7 @@ export function integrateDefinite(
 			value: null,
 			approximate: undefined,
 			steps: [],
-			error: `L'intégrale diverge ou n'est pas définie sur [${toCustom(lowerBound)} ; ${toCustom(upperBound)}] : ${discontinuity}`
+			error: `L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}] : ${discontinuity}`
 		};
 	}
 
@@ -1076,13 +1061,13 @@ export function integrateDefinite(
 	try {
 		// Evaluate F(upper)
 		const upperSubstituted = substitute(indefiniteResult.antiderivative, {
-			[variable]: upperBound
+			[variable]: upper
 		});
 		const upperEval = evaluate(upperSubstituted, { mode: 'exact' });
 
 		// Evaluate F(lower)
 		const lowerSubstituted = substitute(indefiniteResult.antiderivative, {
-			[variable]: lowerBound
+			[variable]: lower
 		});
 		const lowerEval = evaluate(lowerSubstituted, { mode: 'exact' });
 
@@ -1099,7 +1084,7 @@ export function integrateDefinite(
 				symbolic,
 				'summarized',
 				undefined,
-				`F(${toCustom(upperBound)}) - F(${toCustom(lowerBound)})`
+				`F(${toCustom(upper)}) - F(${toCustom(lower)})`
 			);
 			return {
 				...indefiniteResult,

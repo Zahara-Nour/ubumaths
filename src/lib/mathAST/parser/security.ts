@@ -119,6 +119,28 @@ export function checkInputLength(input: string, maxLength: number): void {
 }
 
 /**
+ * Exécute une analyse en convertissant un débordement de pile en `SecurityError`.
+ *
+ * Le plafond `maxASTDepth` se mesure sur l'AST, donc après l'analyse : une
+ * imbrication de quelques milliers de niveaux (parenthèses, signes `-`, `\sqrt`,
+ * `\sin`, valeurs absolues…) faisait déborder la pile du parseur récursif
+ * (`RangeError`) avant qu'il soit consulté. Compter les délimiteurs avant
+ * l'analyse ne couvrait que `(`, `[`, `{`, et refusait à tort les unions
+ * d'intervalles à la française (`[0;1[`). On laisse donc l'analyse échouer, et
+ * on rend le même refus que le plafond de profondeur.
+ */
+export function guardStackDepth<T>(parse: () => T): T {
+	try {
+		return parse();
+	} catch (error) {
+		if (error instanceof RangeError && /call stack/i.test(error.message)) {
+			throw new SecurityError('Expression trop profondément imbriquée', 'AST_TOO_DEEP');
+		}
+		throw error;
+	}
+}
+
+/**
  * Security context for tracking during parsing.
  */
 export interface SecurityContext {

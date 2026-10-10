@@ -60,6 +60,7 @@ import {
 } from '../factory';
 import { isDerivativeFunction, isInverseFunction, isZero } from '../guards';
 import { rewriteFunctionPower } from '../common/function-power';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 
 // =============================================================================
 // Main Differentiation Function
@@ -101,6 +102,15 @@ export function differentiate(node: MathNode, options?: DifferentiationOptions):
 	const variable = options?.variable ?? DEFAULT_DIFFERENTIATION_OPTIONS.variable;
 	const simplify = options?.simplify ?? DEFAULT_DIFFERENTIATION_OPTIONS.simplify;
 	const functions = options?.functions;
+
+	if (refusesEulerVariable(variable, node)) {
+		throw new DifferentiationError(
+			EULER_NOT_A_VARIABLE,
+			'variable',
+			'variable: e',
+			EULER_NOT_A_VARIABLE
+		);
+	}
 
 	return differentiateNode(node, variable, simplify, functions);
 }

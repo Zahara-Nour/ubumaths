@@ -196,11 +196,11 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			],
 			[
 				'e^{x}+xe^{x}',
-				'x e^x + e^x',
-				'x e^x + e^x',
-				'x e^x + e^x',
-				'x e^x + e^x',
-				'\\left( x + 1 \\right) e^x'
+				'x \\exponentialE^x + \\exponentialE^x',
+				'x \\exponentialE^x + \\exponentialE^x',
+				'x \\exponentialE^x + \\exponentialE^x',
+				'x \\exponentialE^x + \\exponentialE^x',
+				'\\left( x + 1 \\right) \\exponentialE^x'
 			],
 			['-2x-4', '-2 x - 4', '-2 x - 4', '-2 x - 4', '-2 x - 4', '-2 \\left( x + 2 \\right)'],
 			[
@@ -256,16 +256,23 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			['(x^{2})^{3}', 'x^6', 'x^6', 'x^6', 'x^6', 'x^6'],
 			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
 			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
-			['e^{x}e^{2x}', 'e^{3 x}', 'e^{3 x}', 'e^{3 x}', 'e^{3 x}', 'e^x e^{2 x}'],
+			[
+				'e^{x}e^{2x}',
+				'\\exponentialE^{3 x}',
+				'\\exponentialE^{3 x}',
+				'\\exponentialE^{3 x}',
+				'\\exponentialE^{3 x}',
+				'\\exponentialE^x \\exponentialE^{2 x}'
+			],
 			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
 			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
 			[
 				'(e^{x})^{3}',
-				'\\left( e^x \\right)^3',
-				'e^{3 x}',
-				'e^{3 x}',
-				'e^{3 x}',
-				'\\left( e^x \\right)^3'
+				'\\left( \\exponentialE^x \\right)^3',
+				'\\exponentialE^{3 x}',
+				'\\exponentialE^{3 x}',
+				'\\exponentialE^{3 x}',
+				'\\left( \\exponentialE^x \\right)^3'
 			],
 			['x^{a}x^{b}', 'x^a x^b', 'x^{a + b}', 'x^{a + b}', 'x^a x^b', 'x^a x^b']
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
@@ -279,25 +286,26 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 
 	describe('Exponentielle et logarithme', () => {
 		it.each([
-			['e^{x}', 'e^x', 'e^x', 'e^x', 'e^x', 'e^x'],
+			[
+				'e^{x}',
+				'\\exponentialE^x',
+				'\\exponentialE^x',
+				'\\exponentialE^x',
+				'\\exponentialE^x',
+				'\\exponentialE^x'
+			],
 			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
 			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
-			// ⚠️ Reste : `ln(e)` (lettre e) non réduit en auto/reduire/developper.
-			[
-				'\\ln(e^{x})',
-				'x',
-				'x \\ln\\left( e \\right)',
-				'x \\ln\\left( e \\right)',
-				'x \\ln\\left( e \\right)',
-				'x \\ln\\left( e \\right)'
-			],
+			// La lettre e est la constante d'Euler (2026-10-10) : les quatre intentions
+			// réduisent `ln(e^x)`. Avant, elles rendaient `x ln(e)` (e lue comme une variable).
+			['\\ln(e^{x})', 'x', 'x', 'x', 'x', 'x'],
 			[
 				'\\frac{e^{2x}}{e^{x}}',
-				'\\dfrac{e^{2 x}}{e^x}',
-				'\\dfrac{e^{2 x}}{e^x}',
-				'\\dfrac{e^{2 x}}{e^x}',
-				'\\dfrac{e^{2 x}}{e^x}',
-				'\\dfrac{e^{2 x}}{e^x}'
+				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
+				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
+				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
+				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
+				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}'
 			],
 			['e^{0}', '1', '1', '1', '1', '1']
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {

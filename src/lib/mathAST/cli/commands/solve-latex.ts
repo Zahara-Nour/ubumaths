@@ -28,8 +28,7 @@ import {
 	isInfinity,
 	isNumber,
 	isPiConstant,
-	isSuperscript,
-	isVariable
+	isSuperscript
 } from '../../guards';
 import { toLatex } from '../../latex-generator';
 import { toCustom } from '../../custom-generator';
@@ -66,11 +65,6 @@ const APPROXIMATION_PLACES = 2;
 /** Écart toléré pour reconnaître le décimal d'origine sous sa fraction. */
 const SAME_VALUE_TOLERANCE = 1e-12;
 
-/** La base e (constante ou lettre `e`). */
-function isEuler(node: MathNode): boolean {
-	return isEulerConstant(node) || (isVariable(node) && node.name === 'e');
-}
-
 /**
  * Un ln (ou log) ou une exponentielle (`e^2`, `exp(…)`) quelque part dans la
  * valeur : elle ne se lit pas sans sa valeur approchée. Le nombre e seul
@@ -82,7 +76,7 @@ function hasLogarithm(node: MathNode): boolean {
 			node,
 			(n) =>
 				(isFunction(n) && (LOGARITHMS.has(n.name) || n.name === 'exp')) ||
-				(isSuperscript(n) && isEuler(n.base))
+				(isSuperscript(n) && isEulerConstant(n.base))
 		).length > 0
 	);
 }

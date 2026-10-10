@@ -992,20 +992,20 @@ describe("Base d'Euler — (e^u)' = u' e^u", () => {
 	it("(e^x)' = e^x, règle exp", () => {
 		const result = steps(parseLatex('e^x'));
 		expect(result.steps[0].rule).toBe('exp');
-		expect(toLatex(result.derivative)).toBe('e^x');
+		expect(toLatex(result.derivative)).toBe('\\exponentialE^x');
 	});
 
 	it("(e^{3x})' = e^{3x}·3, u = 3x", () => {
 		const result = steps(parseLatex('e^{3x}'));
 		expect(result.steps[0].rule).toBe('exp');
 		expect(toLatex(result.steps[0].bindings?.u as MathNode)).toBe('3 x');
-		expect(toLatex(result.derivative)).toBe('e^{3 x} 3');
+		expect(toLatex(result.derivative)).toBe('\\exponentialE^{3 x} 3');
 	});
 
 	it("(e^{x^2})' = e^{x^2}·2x", () => {
 		const result = steps(parseLatex('e^{x^2}'));
 		expect(result.steps[0].rule).toBe('exp');
-		expect(toLatex(result.derivative)).toBe('e^{x^2} 2 x');
+		expect(toLatex(result.derivative)).toBe('\\exponentialE^{x^2} 2 x');
 	});
 
 	it("(2e^{-x})' : coefficient sorti, puis règle exp, sans ln", () => {
@@ -1019,7 +1019,7 @@ describe("Base d'Euler — (e^u)' = u' e^u", () => {
 		const result = steps(parseLatex('xe^x'));
 		expect(result.steps[0].rule).toBe('product');
 		expect(result.steps[0].subSteps?.map((s) => s.rule)).toContain('exp');
-		expect(toLatex(result.derivative)).toBe('e^x + x e^x');
+		expect(toLatex(result.derivative)).toBe('\\exponentialE^x + x \\exponentialE^x');
 	});
 
 	it('la constante euler (parseur custom) suit la même règle', () => {

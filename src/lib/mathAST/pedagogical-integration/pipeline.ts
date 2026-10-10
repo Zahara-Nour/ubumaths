@@ -36,7 +36,7 @@
  */
 
 import type { MathNode } from '../types';
-import { cos, number, opposite, sin, subtract, variable as variableNode } from '../factory';
+import { cos, func, number, opposite, sin, subtract, variable as variableNode } from '../factory';
 import { detectVariable } from '../integration/classify';
 import { cosRule, expRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/rules';
 import { differentiate } from '../differentiation';
@@ -134,19 +134,16 @@ export function generatePedagogicalIntegrationSteps(
 
 /**
  * Resolve the integration variable from the integrand. Wraps the algorithmic
- * `detectVariable` and adds a workaround for the « `e^x` parses as
- * `superscript(variable('e'), variable('x'))` » quirk : when detectVariable
- * throws « multiple variables » and one of them is the conventional Euler
- * constant `e`, treat `e` as a constant and pick the other variable.
+ * `detectVariable` ; when it throws, a single letter in the integrand is still
+ * taken as the variable (`e` is never one : both parsers read it as Euler).
  */
 function resolveIntegrationVariable(integrand: MathNode): string {
 	try {
 		return detectVariable(integrand) ?? 'x';
 	} catch {
 		const names = collectVariableNames(integrand);
-		const nonEuler = names.filter((n) => n !== 'e');
-		if (nonEuler.length === 1) return nonEuler[0];
-		if (nonEuler.length === 0) return 'x';
+		if (names.length === 1) return names[0];
+		if (names.length === 0) return 'x';
 		throw new PedagogicalIntegrationNotImplemented(
 			integrand,
 			`Multiple integration variables (${names.join(', ')}) — please specify via options.variable`
@@ -618,7 +615,9 @@ function integrateComposite(
 
 	switch (match.kind) {
 		case 'composite-exp':
-			baseAntiderivative = expRule(u);
+			// e^u, pas `expRule(u)` : celui-ci calcule ∫ e^{ax} dx = e^{ax}/a, et
+			// `constantFactor` rééquilibre déjà par 1/u' (`∫ e^{2x} dx` rendait e^{2x}/4)
+			baseAntiderivative = func('exp', [u]);
 			rule = 'apply-composite-exp';
 			break;
 		case 'composite-ln':

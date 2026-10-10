@@ -53,6 +53,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -821,8 +822,9 @@ class CustomRDParser {
 		const letter = token.value;
 
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
+		// `e_1`, `e_n` : variable indicée (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
-			return this.applyColor(euler());
+			return this.applyColor(this.check('UNDERSCORE') ? MathAST.variable('e') : euler());
 		}
 		if (letter === 'i' && this.subscriptDepth === 0) {
 			return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
@@ -1562,6 +1564,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseCustomRD(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomRDUnguarded(input, options));
+}
+
+function parseCustomRDUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -1605,6 +1612,11 @@ export function parseCustomRD(input: string, options?: Partial<ParserOptions>): 
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseCustomRDSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomRDSafeUnguarded(input, options));
+}
+
+function parseCustomRDSafeUnguarded(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options

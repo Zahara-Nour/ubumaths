@@ -19,14 +19,7 @@
 
 import type { MathNode, RelationNode } from '../types';
 import type { SolveOptions, SolveResult } from './types';
-import {
-	isDelimiter,
-	isDivision,
-	isEulerConstant,
-	isNumber,
-	isOpposite,
-	isVariable
-} from '../guards';
+import { isDelimiter, isDivision, isEulerConstant, isNumber, isOpposite } from '../guards';
 import { divide, equals, func, number, opposite, subtract } from '../factory';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { denormalize, normalize } from '../normal';
@@ -59,14 +52,9 @@ function numericValue(node: MathNode): number | null {
 	}
 }
 
-/** La base e (constante ou lettre `e`) : laissée au solveur transcendant. */
-function isEulerBase(node: MathNode): boolean {
-	return isEulerConstant(node) || (isVariable(node) && node.name === 'e');
-}
-
 /** Une base utilisable : sans lettre, > 0, ≠ 1 ; e seulement si `euler`. */
 function isConstantBase(node: MathNode, euler: boolean): boolean {
-	if (isEulerBase(node)) return euler;
+	if (isEulerConstant(node)) return euler;
 	if (getVariables(node).size > 0) return false;
 	const value = numericValue(node);
 	return value !== null && value > 0 && Math.abs(value - 1) > EXACT_TOLERANCE;
@@ -127,7 +115,7 @@ function logarithmInBase(base: MathNode, target: MathNode, value: number): MathN
 			);
 		}
 	}
-	if (isEulerBase(base)) return func('ln', [target]);
+	if (isEulerConstant(base)) return func('ln', [target]);
 	return divide(func('ln', [target]), func('ln', [base]), 'fraction');
 }
 

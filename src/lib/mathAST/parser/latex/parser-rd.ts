@@ -32,7 +32,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST } from '../../factory';
+import { MathAST, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
@@ -47,6 +47,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -853,11 +854,19 @@ class RDParser {
 	}
 
 	/**
-	 * Parse a variable (single letter)
+	 * La lettre déjà consommée : `e` est la constante d'Euler, sauf suivie d'un
+	 * indice (`e_1`, `e_n` : variable indicée), comme dans `parser-pratt`.
+	 */
+	private eulerOrVariable(letter: string): MathNode {
+		return letter === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(letter);
+	}
+
+	/**
+	 * Parse a variable (single letter).
 	 */
 	private parseVariable(): MathNode {
 		const token = this.advance();
-		return this.applyColor(MathAST.variable(token.value));
+		return this.applyColor(this.eulerOrVariable(token.value));
 	}
 
 	/**
@@ -1438,7 +1447,7 @@ class RDParser {
 				// A lone letter is just that letter: `\sqrt f(x)` means
 				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
 				this.advance();
-				return this.applyColor(MathAST.variable(token.value));
+				return this.applyColor(this.eulerOrVariable(token.value));
 
 			case 'COMMAND':
 				return this.parseCommand();
@@ -1888,6 +1897,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseRD(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseRDUnguarded(input, options));
+}
+
+function parseRDUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -1931,6 +1945,11 @@ export function parseRD(input: string, options?: Partial<ParserOptions>): MathNo
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseRDSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseRDSafeUnguarded(input, options));
+}
+
+function parseRDSafeUnguarded(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options

@@ -901,9 +901,8 @@
 				{#if data.curriculumTree.length === 0}
 					<p class="text-sm text-muted-foreground">
 						Aucun programme défini pour le niveau de cette classe.
-						<a class="underline" href={resolve('/dashboard/teacher/programme')}
-							>Le créer dans Programme</a
-						>.
+						<a class="underline" href={resolve('/dashboard/teacher/programme')}>Voir le programme</a
+						>
 					</p>
 				{:else}
 					<div class="space-y-1">

@@ -690,7 +690,7 @@ describe('WebReplEngine - .diff : facteur de droite négatif', () => {
 		expect(result.success).toBe(true);
 		expect(result.output).toBe(
 			// Sans ln(e) depuis #837 : (e^u)' = u'·e^u
-			'd/dx(2e^{(-x)}) = -2e^{-x}\n' + 'LaTeX: -2 e^{-x}'
+			'd/dx(2e^{(-x)}) = -2e^{-x}\n' + 'LaTeX: -2 \\exponentialE^{-x}'
 		);
 	});
 });
