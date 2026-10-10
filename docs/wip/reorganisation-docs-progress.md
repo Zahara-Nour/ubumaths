@@ -28,8 +28,8 @@ Fin de chantier = versement dans `systeme/` (Definition of Done), puis archivage
 - [x] `pratiques/commandes.md` réécrit d'après package.json ; README racine (a592da7e9)
 - [x] Docs de tests fusionnées dans `pratiques/tests.md`, vérifiée contre le code (79c0ef2a9)
 - [x] Rapports 2025 de `.claude/` et `scripts/` archivés (62dab9eab) ; `.claude/README.md` et `scripts/README.md` gardés (index)
-- [ ] Gardes `docs:check-links` (bloquante, CI + pre-push) et `docs:check-refs` (avertissement) — PR #1021
-- [ ] `data/` : corrections + relecture hors de docs/, garde « aucun test ne lit docs/ » élargie (10 lecteurs invisibles) — PR #1022
+- [x] Gardes `docs:check-links` (bloquante, CI + pre-push) et `docs:check-refs` (avertissement) — PR #1021
+- [x] `data/` : corrections + relecture hors de docs/, garde « aucun test ne lit docs/ » élargie (10 lecteurs invisibles) — PR #1022
 - ⏭️ Glossaires auth/mathast : **reportés en P2**. Ils sont techniques (PKCE, nœud AST…), pas du vocabulaire du domaine : les verser dans CONTEXT.md le gonflerait hors de son rôle. Leurs termes du domaine iront dans CONTEXT.md, le reste dans la doc système refaite (auth.md, mathast/).
 
 Points relevés en route (pour P2) :
@@ -40,6 +40,20 @@ Points relevés en route (pour P2) :
 - `docs:check-refs` : 95 renvois morts, tous dans des docs ⚠️ (jeux-et-economie, conformite, srs, auth, python…).
 - `scripts/README.md` date de 2025-12 : à vérifier.
 
-## P2 — rafraîchir : base-de-donnees (générée), srs, mathast, auth, conformité
+## P2 — rafraîchir
+
+- [x] Base de données : liste **générée** (`pnpm db:doc`, aussi lancé par `db:types` ; test : chaque table a un domaine) + `base-de-donnees.md` réécrit en français (PR #1026)
+- [x] SRS : 7 fichiers → `systeme/srs.md` (écarts connus en fin de doc) ; auth : 11 fichiers → `systeme/auth.md` ; anciens dossiers → `docs/archive/systeme-2026-06/` (706680a04) ; renvois du code : PR #1027
+- [ ] mathAST : vue d'ensemble unique + pattern-matching + README de src/ réduits à des pointeurs (agent en cours)
+- [ ] Géométrie : vue d'ensemble unique + dsl-builtins à jour + `geometry-core/CLAUDE.md` réduit (agent en cours)
+- [ ] Conformité (RGPD) : chemins morts à corriger — documents à valeur légale, retouches minimales
+- [ ] jeux-et-economie, python, analytique-prof (famille A), export-competences
+- [ ] Glossaires auth/mathast (repris dans les docs refaites ; termes du domaine → CONTEXT.md)
+
+Constats remontés à David (non corrigés, décisions à prendre) :
+
+- Sécurité auth : élévation admin qui survit au logout (vérifié), élévation peut-être cassée (policy profils), comptes pending sur les API, handle_new_user approuve tout e-mail hors domaine.
+- RLS : `minesweeper_games` terminées lisibles par anon (student_id) ; `exercises`/`constructions` is_public ouvertes à anon.
+- SRS : anti-triche cassé (colonnes famille A), rétention sans effet, DELETE sans `.select()`.
 
 ## P3 — trous : questions, ubumark, atelier, grapheur, statistiques, fiches/PDF, …
