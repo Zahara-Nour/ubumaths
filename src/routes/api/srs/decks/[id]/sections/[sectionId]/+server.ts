@@ -12,6 +12,10 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { updateSectionSchema } from '$lib/server/validation/srs';
+import { z } from 'zod';
+
+/** Paramètres de la route : deux uuid. */
+const sectionParamsSchema = z.object({ id: z.string().uuid(), sectionId: z.string().uuid() });
 import type { TablesUpdate } from '$lib/types/database';
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
@@ -86,6 +90,11 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 
+	const paramsValidation = sectionParamsSchema.safeParse(params);
+	if (!paramsValidation.success) {
+		return json({ error: 'Identifiant invalide' }, { status: 400 });
+	}
+
 	// P2 defense in depth : vérif ownership explicite
 	const { data: deck, error: deckError } = await locals.supabase
 		.from('srs_decks')
@@ -104,11 +113,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		return json({ error: 'Deck not found or access denied' }, { status: 404 });
 	}
 
-	const { error: deleteErr } = await locals.supabase
+	const { data: deletedSections, error: deleteErr } = await locals.supabase
 		.from('srs_deck_sections')
 		.delete()
 		.eq('id', params.sectionId)
-		.eq('deck_id', params.id);
+		.eq('deck_id', params.id)
+		.select('id');
 
 	if (deleteErr) {
 		if (deleteErr.code === '42501') {
@@ -116,6 +126,13 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 		console.error('[sections/DELETE] failed:', deleteErr);
 		return json({ error: deleteErr.message }, { status: 500 });
+	}
+
+	// La RLS refuse EN SILENCE (0 ligne, aucune erreur) : paquet assigné ou géré
+	// automatiquement, ou section inexistante. Sans ce contrôle, la route annonçait un
+	// succès (constat E20, 2026-10-10).
+	if (!deletedSections || deletedSections.length === 0) {
+		return json({ error: 'Cette section ne peut pas être supprimée.' }, { status: 403 });
 	}
 
 	return json({ success: true });

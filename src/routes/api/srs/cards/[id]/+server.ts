@@ -264,11 +264,22 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Delete card
-		const { error: deleteError } = await supabase.from('srs_cards').delete().eq('id', id);
+		const { data: deletedCards, error: deleteError } = await supabase
+			.from('srs_cards')
+			.delete()
+			.eq('id', id)
+			.select('id');
 
 		if (deleteError) {
 			console.error('Error deleting card:', deleteError);
 			return json({ error: 'Failed to delete card' }, { status: 500 });
+		}
+
+		// La RLS refuse EN SILENCE (0 ligne, aucune erreur) : paquet assigné ou géré
+		// automatiquement (paquet de chapitre). Sans ce contrôle, la route annonçait
+		// « supprimé » (constat E20, 2026-10-10).
+		if (!deletedCards || deletedCards.length === 0) {
+			return json({ error: 'Cette carte ne peut pas être supprimée.' }, { status: 403 });
 		}
 
 		return json({ success: true, message: 'Card deleted successfully' });
