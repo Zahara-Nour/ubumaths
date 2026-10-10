@@ -72,6 +72,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          # Historique complet : la garde « doc à jour » compare la PR à sa base.
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -128,6 +131,17 @@ jobs:
       # qui renomme ou supprime un fichier cité met la doc à jour dans la même PR.
       - name: Guard doc refs
         run: pnpm docs:check-refs --strict
+
+      # Chaque fichier de code est couvert par une doc (`couvre:`/`indexe:`), exclu,
+      # ou listé comme trou connu (scripts/doc-a-jour.config.ts) : bloquant.
+      - name: Guard doc coverage
+        run: pnpm docs:check-a-jour --couverture
+
+      # Code modifié ⇒ doc modifiée (ou `Doc-inchangée: <raison>` dans un commit).
+      # Avertissement d'abord (2026-10-10), bloquant ensuite : retirer `--avertir`.
+      - name: Guard doc à jour (avertissement)
+        if: github.event_name == 'pull_request'
+        run: pnpm docs:check-a-jour --depuis origin/${{ github.base_ref }} --avertir
 
       - name: Guard awaited render (vitest-browser-svelte 3)
         run: npx tsx scripts/check-await-render.ts

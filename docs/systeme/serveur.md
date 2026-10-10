@@ -1,13 +1,15 @@
 ---
 couvre:
   - src/hooks.server.ts
-  - 'src/lib/server/*.ts'
+  - 'src/lib/server/{serviceRoleClient,rateLimiter,csp,csrfProtection,sanitization,validateRedirectUrl,env,supabase}.ts'
   - 'src/lib/server/middleware/**'
   - 'src/lib/server/utils/**'
   - 'src/lib/server/validation/{index,common,params,response-utils,cron}.ts'
   - 'src/lib/utils/{form-action,logger}.ts'
   - 'src/routes/(protected)/dashboard/admin/cron/**'
   - 'src/routes/api/admin/cron/**'
+indexe:
+  - 'src/lib/server/*.ts'
 ---
 
 # Le serveur : conventions et index de `src/lib/server/`
