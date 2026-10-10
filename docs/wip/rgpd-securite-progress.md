@@ -42,3 +42,25 @@
 - [ ] Migration
 - [ ] security-auditor
 - [ ] Docs : `docs/systeme/conformite/`, `auth.md`, `base-de-donnees.md`
+
+### Décisions de David (2026-10-10, question d'accès)
+
+1. Économie (gidouilles, bonus, cartes VIP) : **tout supprimer** (cascade), plus d'anonymisation.
+2. Messages de l'élève : **supprimés pour tous**, texte et aperçu compris (les signalements de ces
+   messages partent avec eux, `message_reports` en cascade).
+3. **Élèves seulement** : prof/admin refusés (403 route, refus dans la fonction, bouton masqué).
+
+### Fait
+
+- Migration `20261014100000_suppression_compte_art17.sql` ; test d'intégration rouge sans elle
+  (`23502` élève actif, `42P01` élève vierge), vert avec (5/5). Tests voisins verts (655).
+- Route : 403 prof/admin avant limite de débit et audit (test unitaire rouge → vert).
+- Docs : `rgpd.md` §5.2 et §7.2 réécrits, README conformité §2, AIPD.
+
+## A2 — mesures en prod (2026-10-10)
+
+- 11 élèves en lecture seule (consentement requis, ni accordé ni en grâce), 70 non soumis, 0 consenti.
+- Depuis la fin de leur grâce : 0 message, 0 annonce du marché, 0 message de marché, 0 partie de
+  démineur → **contournement non exploité à ce jour** (reste à prouver par un test qu'il est possible).
+- **Mais 56 versements de gidouilles `weekly_no_warning`** (tâche hebdomadaire, sans auteur) à ces
+  élèves, alors que `earn_rewards` est une action fermée en lecture seule → question à David.
