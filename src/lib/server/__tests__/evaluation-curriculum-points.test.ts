@@ -15,6 +15,14 @@ function rangeOf(calls: Call[]): [number, number] | null {
 	return range ? (range.args as [number, number]) : null;
 }
 
+/** Tag d'un point d'ancienne génération (il porte un objectif) : le seul que la couverture compte. */
+function legacyTag(pointId: string) {
+	return {
+		point_id: pointId,
+		curriculum_points: { objective_id: 'objectif-1', curriculum_objectives: null }
+	};
+}
+
 describe('evaluationCurriculumPoints', () => {
 	it('ancien id d’assessment cité : trouvé par legacy_assessment_id', async () => {
 		const fake = createFakeSupabase((table, calls) => {
@@ -30,7 +38,7 @@ describe('evaluationCurriculumPoints', () => {
 			if (table === 'question_templates') {
 				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: 't1', ...CATEGORY }] : [] };
 			}
-			return { data: [{ point_id: 'p1' }] };
+			return { data: [legacyTag('p1')] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [LEGACY])).toEqual(['p1']);
@@ -53,7 +61,7 @@ describe('evaluationCurriculumPoints', () => {
 				return { data: [] };
 			}
 			const ids = calls.find((c) => c.method === 'in')?.args[1] as string[];
-			return { data: ids.includes('t-loin') ? [{ point_id: 'p-loin' }] : [] };
+			return { data: ids.includes('t-loin') ? [legacyTag('p-loin')] : [] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual([
@@ -76,7 +84,7 @@ describe('evaluationCurriculumPoints', () => {
 			if (table === 'question_templates') {
 				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: 't1', ...CATEGORY }] : [] };
 			}
-			return { data: [{ point_id: 'p1' }] };
+			return { data: [legacyTag('p1')] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual(['p1']);
