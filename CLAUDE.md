@@ -7,7 +7,7 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 ## Contexte (toujours en tête)
 
 - Application éducative de mathématiques, élèves francophones. **UI en français. Identifiants et noms de symboles en anglais ; commentaires en français** — `const targetClasses`, mais le commentaire au-dessus reste en français. (Tranché le 2026-09-12 : le dépôt compte ~4700 lignes de commentaires français dans 713 fichiers.)
-- ⚠️ **PRODUCTION LIVE** : `main` est déployé en prod (Vercel). Vraies données d'**élèves mineurs** → **RGPD, prudence maximale** sur tout ce qui touche données / auth / social.
+- ⚠️ **PRODUCTION LIVE** : la branche `production` est déployée en prod (Vercel), avancée à la main par `pnpm deploy:prod` ([ADR 0021](docs/adr/0021-branche-production-mise-en-prod-manuelle.md)). Vraies données d'**élèves mineurs** → **RGPD, prudence maximale** sur tout ce qui touche données / auth / social.
 - **Modèle mono-professeur** : un seul prof (+ admin), des élèves dans ses classes ou hors-classe. L'**école = frontière sociale / safeguarding** ; la classe = sous-groupe d'organisation.
 - **Vocabulaire du domaine : [CONTEXT.md](CONTEXT.md)** (un terme, un sens ; termes bannis). **Décisions figées : [docs/adr/](docs/adr/)** — les lire avant de proposer une architecture ; une décision listée ne se re-propose pas sans le dire.
 - **Stack** : Svelte 5 (runes) · TypeScript (strict) · Tailwind 4 · Shadcn-svelte · MathLive · Supabase (Postgres + Auth + RLS, **EU / eu-west-3**) · Vercel · pnpm.
@@ -54,7 +54,7 @@ pnpm release                        # tag de version + CHANGELOG (sur main ; fea
 
 > **Process complet** : [docs/claude/git-workflow.md](docs/claude/git-workflow.md)
 
-`main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
+`main` = **branche de travail** ; la prod suit la branche `production`. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
 
 **Changement 100 % documentaire : commit DIRECT sur `main`, sans branche ni PR — quel que soit le nombre de fichiers.** Ce n'est pas une permission, c'est une obligation : sur `pull_request` la CI n'a pas de `paths-ignore`, donc une PR pour du markdown relance les 12 jobs pour rien ; sur `push`, `paths-ignore` couvre `**/*.md` et `docs/**`.
 
@@ -70,7 +70,8 @@ Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un
 
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
-- **Migrations** : additive → `db:migrate` avant/avec le deploy ; destructive → après. Uniquement depuis la branche mergée.
+- **Migrations** : additive → `db:migrate` au merge (la base peut précéder le code en prod) ; destructive → seulement après le `deploy:prod` qui livre le code qui n'en dépend plus. Uniquement depuis la branche mergée.
+- ⛔ **Mise en prod = `pnpm deploy:prod`, UNIQUEMENT sur demande explicite de David** (ADR 0021). Un merge ne déploie plus rien : ne jamais lancer `deploy:prod` de sa propre initiative, même CI verte. `pnpm deploy:prod --essai` montre ce qui partirait.
 - **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
 - ⚠️ **La CI passe au vert → tu merges, immédiatement.** C'est un automatisme, pas une décision à réévaluer. Aucune exception inventée : ni « je préfère te laisser trancher », ni « je viens d'annoncer que je ne le ferais pas », ni « la PR est grosse ». Surveille la CI **dès l'ouverture de la PR** (tâche de fond). Annoncer la commande de merge à ma place au lieu de l'exécuter, c'est ne pas respecter la consigne.
 
