@@ -130,12 +130,12 @@ describe('compile — arithmetic', () => {
 	});
 
 	it('compiles multiplication', () => {
-		const f = compile(multiply(variable('x'), number('3')));
+		const f = compile(multiply(variable('x'), number('3'), 'dot'));
 		expect(f({ x: 4 })).toBe(12);
 	});
 
 	it('compiles division', () => {
-		const f = compile(divide(variable('x'), number('2')));
+		const f = compile(divide(variable('x'), number('2'), 'fraction'));
 		expect(f({ x: 6 })).toBe(3);
 	});
 
@@ -161,7 +161,7 @@ describe('compile — powers', () => {
 	});
 
 	it('compiles x^(1/2) as square root', () => {
-		const f = compile(power(variable('x'), divide(number('1'), number('2'))));
+		const f = compile(power(variable('x'), divide(number('1'), number('2'), 'fraction')));
 		expect(f({ x: 4 })).toBeCloseTo(2);
 	});
 
@@ -171,7 +171,7 @@ describe('compile — powers', () => {
 	});
 
 	it('compiles fractional exponents', () => {
-		const f = compile(power(number('8'), divide(number('1'), number('3'))));
+		const f = compile(power(number('8'), divide(number('1'), number('3'), 'fraction')));
 		expect(f({})).toBeCloseTo(2);
 	});
 });
@@ -358,7 +358,10 @@ describe('compile — nth root', () => {
 
 describe('compile — composed expressions', () => {
 	it('compiles x^2 + 2*sin(x)', () => {
-		const expr = add(power(variable('x'), number('2')), multiply(number('2'), sin(variable('x'))));
+		const expr = add(
+			power(variable('x'), number('2')),
+			multiply(number('2'), sin(variable('x')), 'implicit')
+		);
 		const f = compile(expr);
 		const x = 1.5;
 		expect(f({ x })).toBeCloseTo(x * x + 2 * Math.sin(x));
@@ -367,7 +370,8 @@ describe('compile — composed expressions', () => {
 	it('compiles (x+1)/(x-1) — delimiter pass-through', () => {
 		const expr = divide(
 			parentheses(add(variable('x'), number('1'))),
-			parentheses(subtract(variable('x'), number('1')))
+			parentheses(subtract(variable('x'), number('1'))),
+			'inline'
 		);
 		const f = compile(expr);
 		expect(f({ x: 3 })).toBe(2); // (3+1)/(3-1) = 4/2 = 2
@@ -421,17 +425,17 @@ describe('compile — infinity and signed zero nodes', () => {
 
 describe('compile — IEEE 754 edge cases', () => {
 	it('division by zero returns Infinity', () => {
-		const f = compile(divide(number('1'), variable('x')));
+		const f = compile(divide(number('1'), variable('x'), 'fraction'));
 		expect(f({ x: 0 })).toBe(Infinity);
 	});
 
 	it('negative division by zero returns -Infinity', () => {
-		const f = compile(divide(opposite(number('1')), variable('x')));
+		const f = compile(divide(opposite(number('1')), variable('x'), 'fraction'));
 		expect(f({ x: 0 })).toBe(-Infinity);
 	});
 
 	it('0/0 returns NaN', () => {
-		const f = compile(divide(variable('x'), variable('x')));
+		const f = compile(divide(variable('x'), variable('x'), 'fraction'));
 		expect(f({ x: 0 })).toBeNaN();
 	});
 

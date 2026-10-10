@@ -12,6 +12,21 @@ import { describe, it, expect } from 'vitest';
 import { evaluate } from '../evaluate';
 import { parsePratt } from '../../parser/latex/parser-pratt';
 import { toLatex } from '../../latex-generator';
+import type { EvalResult } from '../types';
+
+/** Résultat d'évaluation rétréci au cas « valeur ». */
+type EvalValueResult = Extract<EvalResult, { status: 'value' }>;
+
+/**
+ * Affirme que l'évaluation a abouti à une valeur, puis rétrécit le résultat.
+ */
+function expectValue(result: EvalResult): EvalValueResult {
+	expect(result.status).toBe('value');
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
+	return result;
+}
 
 // =============================================================================
 // Helper Functions
@@ -22,7 +37,7 @@ import { toLatex } from '../../latex-generator';
  */
 function expectFunction(latex: string, name: string) {
 	const ast = parsePratt(latex);
-	const result = evaluate(ast, { mode: 'exact' });
+	const result = expectValue(evaluate(ast, { mode: 'exact' }));
 	expect(result.node.type).toBe('function');
 	if (result.node.type === 'function') {
 		expect(result.node.name).toBe(name);
@@ -34,7 +49,7 @@ function expectFunction(latex: string, name: string) {
  */
 function expectLatex(latex: string, expected: string | RegExp) {
 	const ast = parsePratt(latex);
-	const result = evaluate(ast, { mode: 'exact' });
+	const result = expectValue(evaluate(ast, { mode: 'exact' }));
 	const outputLatex = toLatex(result.node);
 	if (typeof expected === 'string') {
 		expect(outputLatex).toBe(expected);
@@ -48,7 +63,7 @@ function expectLatex(latex: string, expected: string | RegExp) {
  */
 function expectNumber(latex: string, expected: number | string) {
 	const ast = parsePratt(latex);
-	const result = evaluate(ast, { mode: 'exact' });
+	const result = expectValue(evaluate(ast, { mode: 'exact' }));
 	expect(result.node.type).toBe('number');
 	if (result.node.type === 'number') {
 		expect(result.node.value).toBe(String(expected));
@@ -69,7 +84,7 @@ describe('exp() in exact mode', () => {
 	describe('exp with complex arguments', () => {
 		it('exp(i) simplifies (may return constant or expression)', () => {
 			const ast = parsePratt('\\exp(\\imaginaryI)');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			// exp(i) = cos(1) + i*sin(1) - but without special rules, stays as expression
 			expect(['constant', 'function', 'addition']).toContain(result.node.type);
 		});
@@ -86,7 +101,7 @@ describe('exp() in exact mode', () => {
 	describe('exp with real argument', () => {
 		it('exp(1) simplifies to e (constant)', () => {
 			const ast = parsePratt('\\exp(1)');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			// exp(1) = e is represented as MathConstantNode('euler')
 			expect(result.node.type).toBe('constant');
 		});
@@ -119,7 +134,7 @@ describe('ln() in exact mode', () => {
 
 		it('ln(i) evaluates (may produce various forms)', () => {
 			const ast = parsePratt('\\ln(\\imaginaryI)');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			// ln(i) = i*pi/2 - may produce various node types depending on simplification
 			// Could be function, multiplication, division, or other
 			expect(result.node).toBeDefined();
@@ -180,14 +195,14 @@ describe('Complex power z^w in exact mode', () => {
 	describe('non-integer powers stay as power nodes', () => {
 		it('i^{1/2} stays symbolic', () => {
 			const ast = parsePratt('\\imaginaryI^{\\frac{1}{2}}');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			// Should stay as a power expression
 			expect(result.node.type).toBe('superscript');
 		});
 
 		it('(1+i)^{1/3} stays symbolic', () => {
 			const ast = parsePratt('(1 + \\imaginaryI)^{\\frac{1}{3}}');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			expect(result.node.type).toBe('superscript');
 		});
 	});
@@ -195,13 +210,13 @@ describe('Complex power z^w in exact mode', () => {
 	describe('complex exponent stays as power node', () => {
 		it('2^i stays as power', () => {
 			const ast = parsePratt('2^{\\imaginaryI}');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			expect(result.node.type).toBe('superscript');
 		});
 
 		it('e^{i*pi} stays as power (Euler identity needs special simplification)', () => {
 			const ast = parsePratt('\\exp(1)^{\\imaginaryI \\cdot \\pi}');
-			const result = evaluate(ast, { mode: 'exact' });
+			const result = expectValue(evaluate(ast, { mode: 'exact' }));
 			expect(result.node.type).toBe('superscript');
 		});
 	});
@@ -214,7 +229,7 @@ describe('Complex power z^w in exact mode', () => {
 describe('Mathematical identities in exact mode', () => {
 	it('exp(ln(2)) simplifies to 2', () => {
 		const ast = parsePratt('\\exp(\\ln(2))');
-		const result = evaluate(ast, { mode: 'exact' });
+		const result = expectValue(evaluate(ast, { mode: 'exact' }));
 		// exp(ln(2)) = 2 (simplification applies)
 		expect(result.node.type).toBe('number');
 		if (result.node.type === 'number') {
@@ -224,7 +239,7 @@ describe('Mathematical identities in exact mode', () => {
 
 	it('ln(exp(1)) simplifies to 1', () => {
 		const ast = parsePratt('\\ln(\\exp(1))');
-		const result = evaluate(ast, { mode: 'exact' });
+		const result = expectValue(evaluate(ast, { mode: 'exact' }));
 		// ln(exp(1)) = 1 (simplification applies)
 		expect(result.node.type).toBe('number');
 		if (result.node.type === 'number') {
