@@ -33,27 +33,28 @@ Termes ([CONTEXT.md](../../CONTEXT.md)) : **Série statistique** — toujours av
 19 modules, 12 fichiers de tests. Aucun point d'entrée unique (pas de `index.ts`) : on importe
 le module voulu.
 
-| Fichier                                 | Rôle                                                                                       |
-| --------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `src/lib/statistics/describe.ts`        | Série brute / à effectifs : `Summary`, tableau d'effectifs, fréquences de catégories       |
-| `src/lib/statistics/classes.ts`         | Série en classes `[a ; b[` : moyenne aux centres, médiane et quantiles interpolés          |
-| `src/lib/statistics/cumulative.ts`      | `reaches` / `isExactly` : comparer un cumul à un seuil (tolérance relative 1e-12)          |
-| `src/lib/statistics/cross-table.ts`     | Tableau croisé : totaux, fréquences, fréquences conditionnelles                            |
-| `src/lib/statistics/fit.ts`             | `fitAffine` : moindres carrés en flottants, paires complètes (atelier, `.linreg`)          |
-| `src/lib/statistics/bivariate.ts`       | Deux variables en fractions EXACTES : point moyen, droite, r, prévisions, arrondi unique   |
-| `src/lib/statistics/variable-change.ts` | `z = ln(y)`, `t = x²`… : lecture, domaine, ajustement décimal, relation retrouvée          |
-| `src/lib/statistics/fraction.ts`        | Classe `Fraction` (bigint, irréductible) : lecture d'auteur, `fromNumber`, `sqrt` exacte   |
-| `src/lib/statistics/random-variable.ts` | Variable aléatoire finie : contrôle de la loi, E, V (König-Huygens), σ                     |
-| `src/lib/statistics/binomial.ts`        | B(n ; p) exacte, intervalle de fluctuation, seuil ; `roundExact` (arrondi en entiers)      |
-| `src/lib/statistics/geometric.ts`       | G(p) exacte : P(a ⩽ X ⩽ b), conditionnelle sans mémoire, moments, seuil                    |
-| `src/lib/statistics/uniform.ts`         | U(a ; b) discrète, exacte                                                                  |
-| `src/lib/statistics/density.ts`         | Lois à densité : uniforme U([a ; b]) exacte, exponentielle E(λ) et normale N(μ ; σ²)       |
-| `src/lib/statistics/threshold.ts`       | `findThreshold` : recherche dichotomique du seuil k, commune binomiale / géométrique       |
-| `src/lib/statistics/simulation.ts`      | Échantillonneurs (`LawSampler`) et simulations à graine                                    |
-| `src/lib/statistics/format.ts`          | Mise en forme française : `= 15,75` / `≈ 14,44`, lignes d'indicateurs, E/V/σ               |
-| `src/lib/statistics/read-value.ts`      | Lire `12,5`, `1/6`, `−3` (virgule décimale, vrai signe moins)                              |
-| `src/lib/statistics/outcome.ts`         | `Outcome<T>` : une valeur ou un message français situé — jamais d'exception sur une saisie |
-| `src/lib/statistics/limits.ts`          | `STATISTICS_LIMITS.maxValues` = 10 000 (plafond commun)                                    |
+| Fichier                                 | Rôle                                                                                                           |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `src/lib/statistics/describe.ts`        | Série brute / à effectifs : `Summary`, tableau d'effectifs, fréquences de catégories                           |
+| `src/lib/statistics/classes.ts`         | Série en classes `[a ; b[` : moyenne aux centres, médiane et quantiles interpolés                              |
+| `src/lib/statistics/cumulative.ts`      | `reaches` / `isExactly` : comparer un cumul à un seuil (tolérance relative 1e-12)                              |
+| `src/lib/statistics/cross-table.ts`     | Tableau croisé : totaux, fréquences, fréquences conditionnelles                                                |
+| `src/lib/statistics/fit.ts`             | `fitAffine` : moindres carrés en flottants, paires complètes (atelier, `.linreg`)                              |
+| `src/lib/statistics/bivariate.ts`       | Deux variables en fractions EXACTES : point moyen, droite, r, prévisions                                       |
+| `src/lib/statistics/variable-change.ts` | `z = ln(y)`, `t = x²`… : lecture, domaine, ajustement décimal, relation retrouvée                              |
+| `src/lib/statistics/fraction.ts`        | Classe `Fraction` (bigint, irréductible) : lecture d'auteur, `fromNumber`, `sqrt` exacte                       |
+| `src/lib/statistics/random-variable.ts` | Variable aléatoire finie : contrôle de la loi, E, V (König-Huygens), σ                                         |
+| `src/lib/statistics/binomial.ts`        | B(n ; p) exacte, intervalle de fluctuation, seuil                                                              |
+| `src/lib/statistics/geometric.ts`       | G(p) exacte : P(a ⩽ X ⩽ b), conditionnelle sans mémoire, moments, seuil                                        |
+| `src/lib/statistics/uniform.ts`         | U(a ; b) discrète, exacte                                                                                      |
+| `src/lib/statistics/density.ts`         | Lois à densité : uniforme U([a ; b]) exacte, exponentielle E(λ) et normale N(μ ; σ²)                           |
+| `src/lib/statistics/threshold.ts`       | `findThreshold` : recherche dichotomique du seuil k, commune binomiale / géométrique                           |
+| `src/lib/statistics/simulation.ts`      | Échantillonneurs (`LawSampler`) et simulations à graine                                                        |
+| `src/lib/statistics/format.ts`          | Mise en forme française : `= 15,75` / `≈ 14,44`, lignes d'indicateurs, E/V/σ                                   |
+| `src/lib/statistics/rounding.ts`        | **L'arrondi d'affichage, une seule règle** : `roundExact`, `roundFraction` (exacts), `roundNumber` (flottants) |
+| `src/lib/statistics/read-value.ts`      | Lire `12,5`, `1/6`, `−3` (virgule décimale, vrai signe moins)                                                  |
+| `src/lib/statistics/outcome.ts`         | `Outcome<T>` : une valeur ou un message français situé — jamais d'exception sur une saisie                     |
+| `src/lib/statistics/limits.ts`          | `STATISTICS_LIMITS.maxValues` = 10 000 (plafond commun)                                                        |
 
 Seul import hors du module : `RandomSource` de `src/lib/utils/random.ts` (chemin relatif).
 
@@ -171,10 +172,13 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
 7. **Exact d'abord, arrondi une seule fois** : probabilités et moments en `Fraction` / `bigint`
    (E(X) = 7/2, pas 3,5000000000000004). r est irrationnel en général : décimal, mais r² exact
    dit si r = ±1. Exponentielle, normale, changement de variable : flottants.
-8. **Arrondis d'affichage** : `formatApproxValue` écrit `=` si la valeur est exacte à
-   2 décimales, `≈` sinon (et nettoie le bruit flottant à 12 chiffres) ; `roundExact` et
-   `roundFraction` arrondissent **en entiers**, demi vers le haut sur la valeur absolue
-   (−0,125 → −0,13), sans « −0,00 ».
+8. **Arrondis d'affichage : une seule règle** (`rounding.ts`, écart V6 corrigé le 2026-10-11) :
+   demi vers le haut sur la valeur absolue (−0,125 → −0,13), calculé **en entiers**, sans
+   « −0,00 ». `roundExact` / `roundFraction` pour les fractions exactes ; `roundNumber` pour les
+   flottants, lus d'abord comme le décimal qu'ils écrivent (12 chiffres : 1,005 → 1,01, là où
+   `Math.round(1,005 × 100)` donnait 1). `formatApproxValue` (`=` si exact à 2 décimales, `≈`
+   sinon), `formatLawApproxValue`, E et V d'une loi et les moyennes simulées au millième passent
+   par elle. Test : `src/lib/statistics/__tests__/arrondi-unique.test.ts`.
 9. **Loi normale** : Φ par série puis fraction continue de Laplace (pas de table), précision
    relative des queues (Φ(−8) ≈ 6,2 × 10⁻¹⁶) ; une seule borne → la queue directement.
 10. **Intervalle de fluctuation binomial** (`binomialInterval`) : le plus petit [a ; b] tel que
@@ -265,12 +269,10 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
 
 ## Écarts connus
 
-- **Deux règles d'arrondi** : `formatApproxValue` arrondit en flottant (`Math.round`, demi
-  vers +∞) — −0,125 s'écrit `≈ −0,12` ; `roundFraction` / `roundExact` donnent −0,13. Les
-  indicateurs de série et les blocs de lois peuvent donc diverger sur un demi négatif.
 - **Trois ajustements affines** (`fitAffine`, `bivariateFit`, `decimalFit`) : la formule des
   moindres carrés est écrite trois fois ; `fitAffine` rend R², `bivariateFit` rend r.
-- `roundExact` vit dans `binomial.ts` alors qu'il sert aussi la géométrique et le bivarié.
+- Graduations et fréquences (`formatRounded`, `formatTick`, pourcentages) arrondissent encore
+  en flottant : valeurs positives ou de grille, sans demi négatif à départager.
 - `exponentialProbability` et `normalProbability` prennent des `number`, leurs moments des
   `Fraction` : l'appelant convertit.
 - Pas d'échantillonneur de loi normale. La binomiale n'a pas d'échantillonneur propre : la
