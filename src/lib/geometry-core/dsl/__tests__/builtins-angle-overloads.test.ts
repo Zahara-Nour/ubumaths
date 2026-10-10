@@ -424,10 +424,11 @@ describe('angle(seg1, seg2) — 2 segments overload (semantic)', () => {
 		expect(scalarValue(r, 'm')).toBeCloseTo(Math.PI / 2, 6);
 		// Move A from (1,0) to (1,1) → angle goes from π/2 to π/4
 		const aId = sym(r, 'A')!.figureId!;
-		r.figure.movePoint(aId, {
-			x: { type: 'num', value: 1 },
-			y: { type: 'num', value: 1 }
-		} as never);
+		// Déplacement avec la vraie signature movePoint(id, x, y), comme les autres
+		// tests de ce fichier ; le test vérifie maintenant la réactivité annoncée.
+		r.figure.movePoint(aId, numeric(1), numeric(1));
+		r.figure.recompute();
+		expect(scalarValue(r, 'm')).toBeCloseTo(Math.PI / 4, 6);
 	});
 
 	it('mesure(angle(s1, s2)) accepts unite="deg" via mesure() named arg', () => {

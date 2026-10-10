@@ -7,7 +7,7 @@
  * Red-first TDD. Tests must fail before the case 'aire_entre' is added to builtins.ts.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
 import { runDsl } from '..';
 import { DslRuntimeError } from '../errors';
 
@@ -258,7 +258,7 @@ A = aire_entre(f, g, 0, P)`
 // =============================================================================
 
 describe('aire_entre() — singularity warn (2 calls on f and g)', () => {
-	let warnSpy: ReturnType<typeof vi.spyOn>;
+	let warnSpy: MockInstance<typeof console.warn>;
 
 	beforeEach(() => {
 		warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -292,7 +292,7 @@ A = aire_entre(f, g, -1, 1)`
 		const aireEntreMessages = messages.filter((m) => /aire_entre ligne \d+:/.test(m));
 		expect(aireEntreMessages.length).toBeGreaterThan(0);
 		// Pas de warn préfixé "integrale ligne X" (Phase 2 utilise un préfixe distinct)
-		expect(messages.some((m) => /^integrale ligne/.test(m))).toBe(false);
+		expect(messages.some((m) => m.startsWith('integrale ligne'))).toBe(false);
 	});
 
 	it('E5: emits warn when g (not f) has a pole in [a, b]', () => {

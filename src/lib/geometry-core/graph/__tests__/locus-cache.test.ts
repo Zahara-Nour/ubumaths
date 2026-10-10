@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../../dsl/parser';
 import { interpret } from '../../dsl/interpreter';
+import type { SymbolTable } from '../../dsl/symbol-table';
 import { numeric } from '../../types/geo-value';
 import type { Viewport } from '../../viewport/types';
 
@@ -24,7 +25,7 @@ function run(script: string) {
 	return interpret(parse(script));
 }
 
-function getLocusId(symbols: Map<string, { figureId?: string }>, name: string): string {
+function getLocusId(symbols: SymbolTable, name: string): string {
 	const sym = symbols.get(name);
 	if (!sym?.figureId) throw new Error(`Symbol "${name}" not found`);
 	return sym.figureId;

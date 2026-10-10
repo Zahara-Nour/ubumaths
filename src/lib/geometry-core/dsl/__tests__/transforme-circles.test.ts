@@ -1,6 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../index';
 import { geoToNumber } from '../../compute/to-number';
+import {
+	isScalarRef,
+	isInfinityParam,
+	type GeoValue,
+	type ScalarParam
+} from '../../types/geo-value';
+
+// Paramètre littéral (ni référence à un curseur, ni infini) : on l'affirme, puis
+// on rétrécit ScalarParam en GeoValue pour pouvoir le convertir en nombre.
+function fixedValue(param: ScalarParam): GeoValue {
+	expect(isScalarRef(param)).toBe(false);
+	expect(isInfinityParam(param)).toBe(false);
+	if (isScalarRef(param) || isInfinityParam(param)) throw new Error('paramètre non littéral');
+	return param;
+}
 
 describe('transforme() — circleByRadius', () => {
 	it('rotates a circle (center moves, radius unchanged)', () => {
@@ -20,7 +35,7 @@ describe('transforme() — circleByRadius', () => {
 			const center = figure.getPosition(el.centerId)!;
 			expect(geoToNumber(center.x)).toBeCloseTo(0);
 			expect(geoToNumber(center.y)).toBeCloseTo(2);
-			expect(geoToNumber(el.radius)).toBeCloseTo(3);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(3);
 		}
 	});
 
@@ -40,7 +55,7 @@ describe('transforme() — circleByRadius', () => {
 			const center = figure.getPosition(el.centerId)!;
 			expect(geoToNumber(center.x)).toBeCloseTo(4);
 			expect(geoToNumber(center.y)).toBeCloseTo(5);
-			expect(geoToNumber(el.radius)).toBeCloseTo(2);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(2);
 		}
 	});
 
@@ -58,7 +73,7 @@ describe('transforme() — circleByRadius', () => {
 		if (el!.type === 'circleByRadius') {
 			const center = figure.getPosition(el.centerId)!;
 			expect(geoToNumber(center.x)).toBeCloseTo(4);
-			expect(geoToNumber(el.radius)).toBeCloseTo(6);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(6);
 		}
 	});
 
@@ -76,7 +91,7 @@ describe('transforme() — circleByRadius', () => {
 		if (el!.type === 'circleByRadius') {
 			const center = figure.getPosition(el.centerId)!;
 			expect(geoToNumber(center.x)).toBeCloseTo(-3);
-			expect(geoToNumber(el.radius)).toBeCloseTo(1);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(1);
 		}
 	});
 });
@@ -154,10 +169,10 @@ describe('transforme() — arcByAngles', () => {
 			expect(geoToNumber(center.x)).toBeCloseTo(0);
 			expect(geoToNumber(center.y)).toBeCloseTo(2);
 			// start angle was 0, now offset by 90° = pi/2
-			expect(geoToNumber(el.startAngle)).toBeCloseTo(Math.PI / 2);
+			expect(geoToNumber(fixedValue(el.startAngle))).toBeCloseTo(Math.PI / 2);
 			// end angle was pi/2, now offset by pi/2 = pi
-			expect(geoToNumber(el.endAngle)).toBeCloseTo(Math.PI);
-			expect(geoToNumber(el.radius)).toBeCloseTo(1);
+			expect(geoToNumber(fixedValue(el.endAngle))).toBeCloseTo(Math.PI);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(1);
 		}
 	});
 
@@ -173,7 +188,7 @@ describe('transforme() — arcByAngles', () => {
 		);
 		const el = figure.getElementById(symbols.get('a2')!.figureId!);
 		if (el!.type === 'arcByAngles') {
-			expect(geoToNumber(el.radius)).toBeCloseTo(6);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(6);
 			const center = figure.getPosition(el.centerId)!;
 			expect(geoToNumber(center.x)).toBeCloseTo(3);
 		}
@@ -192,9 +207,9 @@ describe('transforme() — arcByAngles', () => {
 		);
 		const el = figure.getElementById(symbols.get('a2')!.figureId!);
 		if (el!.type === 'arcByAngles') {
-			expect(geoToNumber(el.radius)).toBeCloseTo(2);
-			expect(geoToNumber(el.startAngle)).toBeCloseTo((30 * Math.PI) / 180);
-			expect(geoToNumber(el.endAngle)).toBeCloseTo((120 * Math.PI) / 180);
+			expect(geoToNumber(fixedValue(el.radius))).toBeCloseTo(2);
+			expect(geoToNumber(fixedValue(el.startAngle))).toBeCloseTo((30 * Math.PI) / 180);
+			expect(geoToNumber(fixedValue(el.endAngle))).toBeCloseTo((120 * Math.PI) / 180);
 		}
 	});
 });
