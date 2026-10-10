@@ -274,10 +274,20 @@ jobs:
   # The real-Pyodide integration tests (*-real.svelte.test.ts) are excluded
   # here — they download and run Python in headless Chromium (slow + flaky in
   # CI) and stay runnable locally.
+  # Deux navigateurs en parallèle au lieu d'un : « Browser connection was closed »
+  # a fait rougir la CI 3 fois du 6 au 8/10, chaque fois sur un fichier
+  # DIFFÉRENT (serialize, ExerciseList-modifier, liens-dangereux) et sans test
+  # qui navigue : c'est Chromium qui tombait sous 234 fichiers. Deux fois moins de
+  # charge par navigateur, et le job raccourcit. Checks exigés par la protection
+  # de main : « Client Tests (browser, shard 1/2) » et « … 2/2 ».
   test-client:
-    name: Client Tests (browser)
+    name: Client Tests (browser, shard ${{ matrix.shard }}/2)
     needs: version
     if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -319,7 +329,7 @@ jobs:
       # (gated on CI=true), since the CLI --exclude flag does not propagate to
       # project configs in vitest's projects mode.
       - name: Run client tests
-        run: pnpm exec vitest run --project client
+        run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
 
   # Security gate for production dependencies (incl. transitive vulns Dependabot
   # can't auto-PR for pnpm — those need `pnpm.overrides`). Tuned to avoid locking
