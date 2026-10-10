@@ -10,4 +10,5 @@ Branche `fix/publication-unitaire-checktemplate`, worktree `../ubumaths-wt-publi
 - [x] Mesure prod : 640 modèles publiés, 0 refusé par le contrôle (aucun bloqué à la modification).
 - [x] Revue : POST de création (publié par défaut) branché aussi ; éditeur : raisons du refus
       affichées, statut remis si la publication échoue ; test du corps complet publié.
+- [x] 2ᵉ revue : page de création rend son verdict ; test client du retour du statut (rouge prouvé).
 - [ ] PR.
