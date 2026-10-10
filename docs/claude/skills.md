@@ -1,7 +1,7 @@
 # Skills et commandes — mode d'emploi
 
 Ce que tu peux taper dans Claude Code sur ce projet, et quand. Les fichiers eux-mêmes sont des
-consignes pour l'agent : `.claude/skills/<nom>/SKILL.md` et `.claude/commands/<nom>.md`.
+consignes pour l'agent : `.claude/skills/<nom>/SKILL.md`.
 
 ---
 
@@ -59,33 +59,13 @@ parce que… ») ; c'est toi qui rouvres ou non.
 
 ---
 
-## Les commandes du projet
+## Les commandes du projet : retirées le 2026-10-10
 
-À taper avec leur argument, ex. `/fix le bouton publier ne répond plus`.
+Les quatorze commandes de `.claude/commands/` (`/feature`, `/fix`, `/pr`, `/check`…) ont été retirées.
+Aucune n'avait été lancée en 60 jours, et plusieurs prescrivaient des gestes devenus faux : `/pr`
+lançait `pnpm check:fast`, qui meurt sur le tas V8, et `/check` enchaînait `check`, `lint` et `build`.
+Le déroulé de référence est dans [CLAUDE.md](../../CLAUDE.md) et
+[git-workflow.md](git-workflow.md) ; il suffit de dire ce qu'on veut (« corrige ce bug », « ouvre la PR »).
 
-| Commande                    | Quand                                                     |
-| --------------------------- | --------------------------------------------------------- |
-| `/feature <nom>`            | Nouvelle fonctionnalité, workflow TDD complet             |
-| `/fix <bug>`                | Corriger un bug : analyse, test de régression, validation |
-| `/test <fichier>`           | Générer des tests pour un fichier ou composant            |
-| `/new-component <Nom>`      | Nouveau composant Svelte 5 aux standards du projet        |
-| `/new-api <chemin> <verbe>` | Nouvel endpoint avec validation Zod et tests              |
-| `/migration <description>`  | Nouvelle migration Supabase                               |
-| `/db-sync`                  | Réaligner schéma, `database.ts` et documentation          |
-| `/doc-ref <thème>`          | Documentation de référence d'un module dans `docs/ref/`   |
-| `/security [cible]`         | Audit sécurité rapide des fichiers modifiés               |
-| `/commit`                   | Préparer un commit conventionnel                          |
-| `/pr`                       | Ouvrir une PR avec checks et description                  |
-
-### ⛔ À ne pas lancer tels quels
-
-Ces commandes lancent `pnpm check`, `pnpm lint` ou `pnpm build` sur tout le projet, interdits par le
-`CLAUDE.md` (la machine manque de RAM et crashe) :
-
-| Commande   | Ce qui pose problème                          |
-| ---------- | --------------------------------------------- |
-| `/check`   | `pnpm lint --fix`, `pnpm check`, `pnpm build` |
-| `/cleanup` | `pnpm lint`, `pnpm check`                     |
-| `/perf`    | `pnpm build`                                  |
-
-À la place : `pnpm check:incremental` (types) et `pnpm lint:fast` (lint).
+Elles restent dans l'historique git (`git log --diff-filter=D -- .claude/commands`) si l'une
+devait revenir.
