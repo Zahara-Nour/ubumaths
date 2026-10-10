@@ -96,7 +96,8 @@ const mockTeacherProfile: Profile = {
 	consent_granted_at: null,
 	consent_grace_period_ends: null,
 	age_declaration: null,
-	age_declared_at: null
+	age_declared_at: null,
+	consent_rule_pending: false
 };
 
 const mockAdminProfile: Profile = {

@@ -714,16 +714,12 @@ class MultiplayerStore {
 			// Unsubscribe from channel
 			this.unsubscribeChannel();
 
-			// Enhanced toast notification
-			if (data.speed_bonus > 0) {
-				toaster.success(
-					`🏆 Victoire ! +${data.gidouilles} gidouilles (dont ${data.speed_bonus} bonus de vitesse)`,
-					{ duration: 5000 }
-				);
+			// Le multijoueur ne rapporte aucune gidouille (décision de David, 2026-10-10 :
+			// pas d'anti-triche) — la base renvoie 0 ; on n'annonce un gain que s'il existe.
+			if (data.gidouilles > 0) {
+				toaster.success(`🏆 Victoire ! +${data.gidouilles} gidouilles`, { duration: 5000 });
 			} else {
-				toaster.success(`🏆 Victoire ! +${data.gidouilles} gidouilles`, {
-					duration: 5000
-				});
+				toaster.success('🏆 Victoire !', { duration: 5000 });
 			}
 
 			if (data.elo_change > 0) {
