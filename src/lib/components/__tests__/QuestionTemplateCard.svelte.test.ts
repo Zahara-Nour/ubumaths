@@ -10,7 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import QuestionTemplateCard from '../QuestionTemplateCard.svelte';
 import type { QuestionTemplate } from '$lib/questions/types';
 // Modèle réel relu (Entiers #139)
-import fixture from '../../../../docs/relecture/entiers/139.json';
+import fixture from '../../../../data/relecture/entiers/139.json';
 
 const BASE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
 

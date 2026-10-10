@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     # `paths` (et non `paths-ignore`) pour pouvoir RÉINCLURE : le dernier motif
-    # qui correspond l'emporte. docs/corrections est validé par un test
+    # qui correspond l'emporte. data/corrections est validé par un test
     # (scripts/corrections : pas d'identifiant d'utilisateur, RGPD) : un commit
     # de doc qui le touche doit déclencher la CI. Tout autre fichier lu par un
     # test vit sous tests/ (garde : src/lib/__tests__/tests-sans-lecture-de-docs).
@@ -13,7 +13,7 @@ on:
       - '!**/*.md'
       - '!docs/**'
       - '!.github/dependabot.yml'
-      - 'docs/corrections/**'
+      - 'data/**'
       # Le code et le contenu servi, `.md` compris : les articles du Shtam
       # (src/lib/server/shtam/articles/*.md) sont importés au build, Vercel les
       # construit (scripts/vercel-ignore-build.sh), la CI doit donc tourner.

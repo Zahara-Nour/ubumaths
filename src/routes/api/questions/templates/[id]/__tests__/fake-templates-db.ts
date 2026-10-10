@@ -4,7 +4,7 @@
  *
  * Constructeur de requête minimal à la manière de PostgREST, en mémoire.
  * Ligne de la forme réelle : question TinyMath #139 relue
- * (`docs/relecture/entiers/139.json`), variable tirée `a` dans `shared`.
+ * (`data/relecture/entiers/139.json`), variable tirée `a` dans `shared`.
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -22,7 +22,7 @@ export const USER_ID = '11111111-1111-4111-8111-111111111111';
 export const ID = '22222222-2222-4222-8222-222222222222';
 
 export const FIXTURE = (
-	JSON.parse(readFileSync(resolve(process.cwd(), 'docs/relecture/entiers/139.json'), 'utf-8')) as {
+	JSON.parse(readFileSync(resolve(process.cwd(), 'data/relecture/entiers/139.json'), 'utf-8')) as {
 		template: Row & { variations: unknown[] };
 	}
 ).template;

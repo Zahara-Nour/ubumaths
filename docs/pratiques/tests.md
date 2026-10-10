@@ -215,7 +215,7 @@ par `createAuthenticatedClient`.
   `tests/fixtures/` (lexique, relecture) ou `tests/integration/fixtures/` (seeds), mise à jour avec la
   migration ou le code qui la justifie. Garde : `src/lib/__tests__/tests-sans-lecture-de-docs.test.ts`
   (seule exception : `scripts/corrections/__tests__/corrections.test.ts`, qui valide
-  `docs/corrections/**` — d'où le déclenchement de la CI sur ce dossier).
+  `data/corrections/**` — d'où le déclenchement de la CI sur ce dossier).
 - **Tests ciblés > suite complète** en local (`pnpm test:server <chemin>`), la CI fait le reste.
 
 ### Pièges vitest 4 / vitest-browser-svelte 3
