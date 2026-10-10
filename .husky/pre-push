@@ -25,3 +25,9 @@ echo "pre-push : liens de la doc…"
 if ! pnpm docs:check-links; then
 	exit 1
 fi
+
+# Renvois de la doc vers le code (fichiers, scripts pnpm) : même raison.
+echo "pre-push : renvois de la doc vers le code…"
+if ! pnpm docs:check-refs --strict; then
+	exit 1
+fi

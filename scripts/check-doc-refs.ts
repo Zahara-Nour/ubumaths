@@ -14,7 +14,7 @@
  *
  * Usage : pnpm docs:check-refs            liste, exit 0 (avertissement)
  *         pnpm docs:check-refs --strict   exit 1 s'il reste un renvoi mort
- * Avertissement pendant la remise à jour de la doc (P2), bloquante ensuite.
+ * Bloquante en CI et au pre-push depuis le 2026-10-10 (0 renvoi mort à la fin de P2).
  */
 
 import { execFileSync } from 'node:child_process';
