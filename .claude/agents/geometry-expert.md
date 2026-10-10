@@ -64,7 +64,7 @@ You are the resident expert on UbuMaths' geometry stack: `geometry-core` (DSL + 
 
 ## Known gotchas
 
-- **Parser unary minus**: `-3y` → `opposite(3) * y`, not `opposite(3*y)` — same quirk as mathAST. Documented in `docs/ref/geometry/parser-unary-minus-inconsistency.md`.
+- **Parser unary minus**: `-3y` → `opposite(3) * y`, not `opposite(3*y)` — same quirk as mathAST. Documented in `docs/systeme/geometrie/parser-unary-minus-inconsistency.md`.
 - **Builtins dispatcher**: `dsl/builtins.ts:345–2389` is a 2000-line switch. **New builtins must NOT be added to the switch** — extract to a dedicated handler + dispatch map.
 - **`GeoOsculatingCircle`** is in the type union but absent from SVG/TikZ/Typst renderers — renders only in canvas.
 - **No 2nd-derivative caching** in `parametric-calculus.ts` (known V1 limit). Recomputes on every tick.

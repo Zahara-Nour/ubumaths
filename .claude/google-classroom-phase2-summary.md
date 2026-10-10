@@ -131,7 +131,7 @@ Complete usage guide with:
 - Security notes
 - Testing instructions
 
-#### `docs/architecture/google-classroom-schema.md` (updated)
+#### `docs/systeme/google-classroom-schema.md` (updated)
 Added comprehensive sections:
 - **OAuth Flow** (6 detailed steps with code examples)
 - **Security: PKCE** (explanation and benefits)
@@ -157,7 +157,7 @@ Added comprehensive sections:
 **Modified Files**:
 - `.env.example` (+18 lines)
 - `src/lib/server/env.ts` (+8 lines)
-- `docs/architecture/google-classroom-schema.md` (+207 lines)
+- `docs/systeme/google-classroom-schema.md` (+207 lines)
 
 **Total Changes**: +1,252 lines
 
@@ -521,7 +521,7 @@ vercel env add GOOGLE_TOKEN_ENCRYPTION_KEY
 
 **Questions?** See documentation:
 - [OAuth Implementation](../src/lib/server/google/README.md)
-- [Database Schema](../docs/architecture/google-classroom-schema.md)
+- [Database Schema](../docs/systeme/google-classroom-schema.md)
 - [CLAUDE.md](../CLAUDE.md) for development guidelines
 
 **Found a bug?** Check existing issues or create new one.

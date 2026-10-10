@@ -79,7 +79,7 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 Les policies testent `published_at <= now()`, jamais `is not null` (une date programmée ne publie pas
 en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de-la-classe.md) ·
-`docs/architecture/database-schema.md` §`published_at`
+`docs/systeme/base-de-donnees.md` §`published_at`
 
 ## Les questions
 
@@ -115,7 +115,7 @@ Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_round
 | **Flash-cards**        | Forme d'une série en autonomie : carte retournable, l'élève dit s'il avait trouvé (auto-évaluation), sans chrono ; jamais une évaluation.                                                                           | `TestMode` `flash`                                                                                                                |
 | **Entraînement**       | Forme d'une série en autonomie : l'élève répond question par question, correction et score à la fin.                                                                                                                | `TestMode` `interactive`                                                                                                          |
 | **Course aux nombres** | Forme d'une série : toutes les questions à la fois, temps global, score.                                                                                                                                            | `TestMode` `course`                                                                                                               |
-| **SRS / révision**     | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                                                                                                                              | `srs_*`, `docs/ref/srs/`                                                                                                          |
+| **SRS / révision**     | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                                                                                                                              | `srs_*`, `docs/systeme/srs/`                                                                                                      |
 | **Deck**               | Paquet de cartes de révision (un chapitre peut en porter). ≠ `Deck` d'UbuSlides (diaporama).                                                                                                                        | `srs_decks`, `chapter_decks`                                                                                                      |
 | **Quiz de chapitre**   | Quiz d'un chapitre, sur le moteur de questions. Supprimé le 2026-09-15 (jamais servi).                                                                                                                              | migration `20260915340000_drop_ancien_quiz_de_chapitre`                                                                           |
 | **Tentative**          | Une réponse d'élève enregistrée.                                                                                                                                                                                    | `skill_attempts`                                                                                                                  |
@@ -139,11 +139,11 @@ une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
 | **Empreinte**              | Forme comparée par le décideur (réduite **pour comparer**, jamais affichée).                                                                   | → [ADR 0006](docs/adr/0006-reduire-pour-comparer-pas-pour-ecrire.md)                                                                        |
 | **Hypothèse de l'énoncé**  | Condition sur une variable libre de la réponse (« x > 0 », « n entier »), déclarée par le modèle ; le décideur ne compare que là où elle vaut. | `answerAssumptions` (à créer) → `TypeContext.assumptions` → [ADR 0012](docs/adr/0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) |
 | **Palier**                 | Famille de problèmes du moteur d'inéquations (1 linéaire, 2a, 2b second degré, 3 rationnel). **Pas** un niveau de détail.                      | `pedagogical-*`                                                                                                                             |
-| **Grandeur**               | Nombre muni d'une unité (`~3[m.s^-1]~`) ; `12000 m ≡ 12 km`.                                                                                   | `units/`, `docs/ref/notation-unites.md`                                                                                                     |
+| **Grandeur**               | Nombre muni d'une unité (`~3[m.s^-1]~`) ; `12000 m ≡ 12 km`.                                                                                   | `units/`, `docs/pratiques/notation-unites.md`                                                                                               |
 | **ubumark**                | Notation texte des énoncés (maths entre `~…~`).                                                                                                | `src/lib/ubumark/`                                                                                                                          |
-| **Panel**                  | Tableau de référence de ce que rendent `simplify` et les 4 intentions.                                                                         | `docs/ref/panel-simplifications.md`                                                                                                         |
+| **Panel**                  | Tableau de référence de ce que rendent `simplify` et les 4 intentions.                                                                         | `docs/systeme/mathast/panel-simplifications.md`                                                                                             |
 
-Sens précis de l'équivalence par domaine : `docs/ref/convention-equivalence.md`.
+Sens précis de l'équivalence par domaine : `docs/systeme/mathast/convention-equivalence.md`.
 
 ⚠️ Dans une expression évaluée, les variables `e` et `i` sont lues comme la constante d'Euler et
 l'unité imaginaire.

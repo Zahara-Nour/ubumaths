@@ -300,7 +300,7 @@ grep -r "{#:" src/lib/questions/ --exclude="*.test.ts"
 
 ## 📚 Related Documentation
 
-- **Migration Strategy**: `docs/claude/syntax-migration-strategy.md`
+- **Migration Strategy**: `docs/pratiques/syntax-migration-strategy.md`
 - **Syntax Adapter Code**: `src/lib/questions/generator/syntax-adapter.ts`
 - **Old Syntax Tests**: `src/lib/questions/generator/instance-generator.test.ts`
 - **New Syntax Tests**: `src/lib/questions/generator/instance-generator-markdown.test.ts`

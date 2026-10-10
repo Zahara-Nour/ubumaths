@@ -2,7 +2,7 @@
 
 **Reference compacte chargee automatiquement quand je touche ce module.**
 
-Documentation complete : [`docs/ref/geometry/`](../../../docs/ref/geometry/) (README + 5 audits architecture/qualite/tests/perf/securite).
+Documentation complete : [`docs/systeme/geometrie/`](../../../docs/systeme/geometrie) (README + 5 audits architecture/qualite/tests/perf/securite).
 
 ---
 
@@ -42,7 +42,7 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 
 ## Gotchas non visibles dans le code
 
-- **Parser unary minus inconsistency** : `-3y` parse comme `opposite(3)*y` au lieu de `opposite(3*y)`. Affecte l'analyse structurelle. Voir `docs/ref/geometry/parser-unary-minus-inconsistency.md`.
+- **Parser unary minus inconsistency** : `-3y` parse comme `opposite(3)*y` au lieu de `opposite(3*y)`. Affecte l'analyse structurelle. Voir `docs/systeme/geometrie/parser-unary-minus-inconsistency.md`.
 - **`PARSE_CACHE` plafonne a 5 000** (`dsl/interpreter.ts:158-164`) : depuis 2026-05-18. Si tu modifies la logique de cache, conserve les `if (size >= PARSE_CACHE_MAX) .clear()` aux 2 sites d'insertion.
 - **Derivees secondes pre-compilees** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`) : depuis 2026-05-18. `getSecondDerivatives()` dans `parametric-calculus.ts` lit le cache. Si tu ajoutes un nouveau site de construction de `GeoParametricCurve` hors `Figure.createParametricCurve`, n'oublie pas de pre-compiler ces 2 champs (sinon `cercle_osculateur` et `courbure` retournent silencieusement `null`).
 - **Pattern mutable-env obligatoire pour les hot paths parametriques** : tout sampler/closure qui appelle `compiledX(env)` dans une boucle doit utiliser un seul `env: Record<string, number>` partage et muter `env[param] = t` avant chaque eval. **JAMAIS** `{ ...scalarBindings, [param]: t }` dans une boucle. Voir `parametric-newton.ts:69`, `computeParametricCurveSampling` et `createTangentToParametric` dans `figure.ts` pour les references.
@@ -144,7 +144,7 @@ pnpm test:server src/lib/geometry-core/graph/__tests__/parametric-newton.test.ts
 
 ## Action items prioritaires (si refactor demande)
 
-Voir `docs/ref/geometry/README.md` section "Action items prioritaires" pour la liste cross-cutting. Top 3 (impact/effort) :
+Voir `docs/systeme/geometrie/README.md` section "Action items prioritaires" pour la liste cross-cutting. Top 3 (impact/effort) :
 
 1. **[SECURITE HIGH hors module]** `src/lib/utils/game/challenge-variables.ts:68-76` → `new Function()` a remplacer par `compile()`.
 2. **[PERF HIGH / EFFORT FAIBLE]** Cacher derivees secondes (`parametric-calculus.ts`).
@@ -154,11 +154,11 @@ Voir `docs/ref/geometry/README.md` section "Action items prioritaires" pour la l
 
 ## Quand approfondir
 
-| Besoin                               | Document                                                                          |
-| ------------------------------------ | --------------------------------------------------------------------------------- |
-| Vue globale, modele de donnees, flux | [`docs/ref/geometry/architecture.md`](../../../docs/ref/geometry/architecture.md) |
-| Refactor / dette                     | [`docs/ref/geometry/code-quality.md`](../../../docs/ref/geometry/code-quality.md) |
-| Tests / couverture                   | [`docs/ref/geometry/tests.md`](../../../docs/ref/geometry/tests.md)               |
-| Perf / hotspots                      | [`docs/ref/geometry/performance.md`](../../../docs/ref/geometry/performance.md)   |
-| Securite                             | [`docs/ref/geometry/security.md`](../../../docs/ref/geometry/security.md)         |
-| Progress docs (livraisons recentes)  | [`docs/wip/geometry/`](../../../docs/wip/geometry/)                               |
+| Besoin                               | Document                                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Vue globale, modele de donnees, flux | [`docs/systeme/geometrie/architecture.md`](../../../docs/systeme/geometrie/architecture.md) |
+| Refactor / dette                     | [`docs/systeme/geometrie/code-quality.md`](../../../docs/systeme/geometrie/code-quality.md) |
+| Tests / couverture                   | [`docs/systeme/geometrie/tests.md`](../../../docs/systeme/geometrie/tests.md)               |
+| Perf / hotspots                      | [`docs/systeme/geometrie/performance.md`](../../../docs/systeme/geometrie/performance.md)   |
+| Securite                             | [`docs/systeme/geometrie/security.md`](../../../docs/systeme/geometrie/security.md)         |
+| Progress docs (livraisons recentes)  | [`docs/wip/geometry/`](../../../docs/wip/geometry/)                                         |

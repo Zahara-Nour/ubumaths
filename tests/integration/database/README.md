@@ -5,7 +5,7 @@ Comprehensive integration tests for PostgreSQL database triggers in UbuMaths.
 > **Emplacement** : ces tests vivent dans `tests/integration/database/` et tournent
 > via le runner d'intégration (`pnpm test:integration`, Supabase local) — il n'y a
 > plus de config Docker dédiée `test:triggers`. Voir
-> [docs/ref/tests/architecture.md](../../../docs/ref/tests/architecture.md).
+> [docs/pratiques/tests.md](../../../docs/pratiques/tests.md).
 > Les helpers partagés sont dans `tests/helpers/database/`.
 
 ## Overview
@@ -501,7 +501,7 @@ const student = await TestData.profile().withRole('student').create();
 
 ## Resources
 
-- [Supabase CLI Docs](https://supabase.com/docs/guides/cli)
+- [Supabase CLI Docs](https://supabase.com/docs/systeme/cli)
 - [Vitest Documentation](https://vitest.dev/)
 - [PostgreSQL Trigger Docs](https://www.postgresql.org/docs/current/sql-createtrigger.html)
 - [UbuMaths Migration Files](../../supabase/migrations/)

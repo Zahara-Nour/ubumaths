@@ -293,7 +293,7 @@ After migrating images:
 
 ## References
 
-- [Supabase Storage Docs](https://supabase.com/docs/guides/storage)
+- [Supabase Storage Docs](https://supabase.com/docs/systeme/storage)
 - [Sharp Documentation](https://sharp.pixelplumbing.com/)
 - [WebP Format](https://developers.google.com/speed/webp)
 - Analysis: `docs/wip/question-migration-analysis.md` (Section 22)

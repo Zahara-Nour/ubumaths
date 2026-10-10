@@ -2315,7 +2315,7 @@ All notable changes to this project will be documented in this file. See [standa
 - **claude:** rewrite 6 synthetic reference docs (grounded in current code) ([018e780](https://github.com/Zahara-Nour/ubumaths/commit/018e7802db7037dd46a2475ff55baf428ade94aa))
 - **comments:** fix remaining class-cluster ownership comments (mono-teacher) ([4282944](https://github.com/Zahara-Nour/ubumaths/commit/42829448301956ecc458a5e343b547933add75d2))
 - **comments:** fix stale "teacher owns/of the class" code comments (mono-teacher) ([fd7e05d](https://github.com/Zahara-Nour/ubumaths/commit/fd7e05d19c252e31ef7c3e2f9e9882a6bb9a1fbe))
-- **conformite:** assemble la doc RGPD dans docs/ref/conformite + confronte au code ([726d42e](https://github.com/Zahara-Nour/ubumaths/commit/726d42e43e7c35ab213c71e53ebdc0a1a2dce564))
+- **conformite:** assemble la doc RGPD dans docs/systeme/conformite + confronte au code ([726d42e](https://github.com/Zahara-Nour/ubumaths/commit/726d42e43e7c35ab213c71e53ebdc0a1a2dce564))
 - **conformite:** contenu réel — README confrontation + 4 docs récupérés + corrections ([72fb48b](https://github.com/Zahara-Nour/ubumaths/commit/72fb48bbc3079cbc22b574bc914fcb10e2730f91))
 - **db:** chantier baseline migrations local (session séparée) — diagnostic replay cassé ([a4da18d](https://github.com/Zahara-Nour/ubumaths/commit/a4da18d25f47223193067b359143f4264dd179ee))
 - **db:** document the mono-teacher RLS model (admin-inclusive helpers) ([c545206](https://github.com/Zahara-Nour/ubumaths/commit/c5452063ddae7c8b74f578707fce39040f7f3b2f))
@@ -2332,7 +2332,7 @@ All notable changes to this project will be documented in this file. See [standa
 - **lore:** doc de progression Sprint 1 lexique (crash-recovery) ([4693c2c](https://github.com/Zahara-Nour/ubumaths/commit/4693c2cefaad8f9d951ae6b7355cacd2fd65cdfc))
 - **lore:** Lexique — entrée rôle-prof → Capitaine (cohérence Compendium) ([9af0e25](https://github.com/Zahara-Nour/ubumaths/commit/9af0e25e028620ddf4efc73ebc169af63043450d))
 - **lore:** maj roadmap rebranding — Sprint 1 lexique 🟡 en cours (+ lien doc détaillé) ([f5324f5](https://github.com/Zahara-Nour/ubumaths/commit/f5324f5d1cb9198268c2b7f03f13ff272a27a485)), closes [#65](https://github.com/Zahara-Nour/ubumaths/issues/65)
-- **mathast:** add docs/ref/mathast reference (generated via /doc-ref) ([38d7e93](https://github.com/Zahara-Nour/ubumaths/commit/38d7e934005a8da26c58d1772a18091b90ab4ff7))
+- **mathast:** add docs/systeme/mathast reference (generated via /doc-ref) ([38d7e93](https://github.com/Zahara-Nour/ubumaths/commit/38d7e934005a8da26c58d1772a18091b90ab4ff7))
 - pre-commit is now light (oxlint+prettier), drop --no-verify guidance ([ec4da87](https://github.com/Zahara-Nour/ubumaths/commit/ec4da8719e03aabb57ce3009b092eeb62d63a6ef))
 - **ref:** align docs with the mono-teacher refactor ([e3edf74](https://github.com/Zahara-Nour/ubumaths/commit/e3edf742c65809e3523c89672e93d55ccec2661a))
 - **single-teacher:** AIPD rev 0.3 + finding tests/seed (Lot 7 closing) ([a986f46](https://github.com/Zahara-Nour/ubumaths/commit/a986f46620b1c44c81134bfaad69999e5be2de3d))
@@ -2521,7 +2521,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 - **chiphres:** ajustement phrase-cle lore pataphysique ([629fe33](https://github.com/Zahara-Nour/ubumaths/commit/629fe332a416a49b906b19370d4bb5ecafa1b0e1))
 - **srs-fsrs:** supprime l archive design initial ([f766ab9](https://github.com/Zahara-Nour/ubumaths/commit/f766ab9c674bfe6490130655ab2f2f7439d33767))
-- **srs:** structure docs/ref/srs/ sur le modele geometry ([ef9f13f](https://github.com/Zahara-Nour/ubumaths/commit/ef9f13fd3fbebdd0ee381d34916a928bf491fe51))
+- **srs:** structure docs/systeme/srs/ sur le modele geometry ([ef9f13f](https://github.com/Zahara-Nour/ubumaths/commit/ef9f13fd3fbebdd0ee381d34916a928bf491fe51))
 - **teacher-analytics:** reference doc phase 4 ([e22f41c](https://github.com/Zahara-Nour/ubumaths/commit/e22f41c607bfa6c18fe6fe10e2d410e23497bdf5))
 
 ### [0.9.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.8...v0.9.9) (2026-06-10)
@@ -2654,8 +2654,8 @@ All notable changes to this project will be documented in this file. See [standa
 - **notebook:** pin the Jupyter-like UI benchmark + backlog UX ([60ae293](https://github.com/Zahara-Nour/ubumaths/commit/60ae29338c2e32d9110ae567d805cb26af7c087a))
 - **pomodoro:** add Tier 1 (v1.5) section to progress doc ([7a903e3](https://github.com/Zahara-Nour/ubumaths/commit/7a903e3e55669e48222cad79e8aa5bb483177964))
 - **pomodoro:** finalise progress doc ([f161108](https://github.com/Zahara-Nour/ubumaths/commit/f1611081d9bf033b6604c83ec150c36df36b09ec))
-- **python:** bring docs/ref/python up to date with the 2026-06 notebook V2 sprint ([2f53ad7](https://github.com/Zahara-Nour/ubumaths/commit/2f53ad7c1727985744cf70f38e2300587deaafe2))
-- **python:** document the attempts dashboard feature in docs/ref/python ([78cd876](https://github.com/Zahara-Nour/ubumaths/commit/78cd8762ba4c5b38ec31902e42005a9726c11d7b))
+- **python:** bring docs/systeme/python up to date with the 2026-06 notebook V2 sprint ([2f53ad7](https://github.com/Zahara-Nour/ubumaths/commit/2f53ad7c1727985744cf70f38e2300587deaafe2))
+- **python:** document the attempts dashboard feature in docs/systeme/python ([78cd876](https://github.com/Zahara-Nour/ubumaths/commit/78cd8762ba4c5b38ec31902e42005a9726c11d7b))
 - **python:** extract executor-pattern.md from worker.md ([e3de1e2](https://github.com/Zahara-Nour/ubumaths/commit/e3de1e2c58eabfef9831766a57010885f67663a8))
 - **python:** fix README migration table + complete architecture.md ([4fad300](https://github.com/Zahara-Nour/ubumaths/commit/4fad300ba6b68bb01a7a0d49593ede30a98fad0a))
 - **python:** rewrite worker.md, store.md, components.md to match current code ([11882c0](https://github.com/Zahara-Nour/ubumaths/commit/11882c0e260c24a2325181dbf7e1f183afab2604))
@@ -6712,7 +6712,7 @@ Changes:
 - Update formatHMSLatex() to output \hms{2h30min} format
 - Remove ~100 lines of unnecessary fallback code
 - Update all test files to use new syntax (767 tests passing)
-- Update docs/claude/units.md with new LaTeX macros section
+- Update docs/pratiques/units.md with new LaTeX macros section
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -7772,8 +7772,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### 📚 Documentation
 
 - **cache**: add comprehensive Redis cache documentation (28KB, 1,270 lines) ([651f3b4](https://github.com/Zahara-Nour/ubumaths/commit/651f3b4))
-  - Created `docs/architecture/redis-caching.md`: architecture, cache strategy, performance metrics
-  - Created `docs/guides/redis-cache-setup.md`: setup guide, Upstash configuration, testing
+  - Created `docs/systeme/redis-caching.md`: architecture, cache strategy, performance metrics
+  - Created `docs/systeme/redis-cache-setup.md`: setup guide, Upstash configuration, testing
   - Created `docs/troubleshooting/env-loading-fix.md`: environment loading deep-dive (17KB)
   - Created `docs/troubleshooting/README.md`: troubleshooting index with common issues
   - Updated `docs/README.md`: added Redis cache and troubleshooting sections
@@ -7820,8 +7820,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - **troubleshooting**: add comprehensive environment loading troubleshooting guide ([3a9112f](https://github.com/Zahara-Nour/ubumaths/commit/3a9112f))
   - Created `docs/troubleshooting/env-loading-fix.md` (17KB technical deep-dive explaining the issue and solution)
   - Created `docs/troubleshooting/README.md` (troubleshooting section index with common issues)
-  - Updated `docs/architecture/redis-caching.md` with lazy initialization architecture section
-  - Updated `docs/guides/redis-cache-setup.md` with env loading mechanism explanation
+  - Updated `docs/systeme/redis-caching.md` with lazy initialization architecture section
+  - Updated `docs/systeme/redis-cache-setup.md` with env loading mechanism explanation
   - Updated `docs/README.md` with troubleshooting section link
   - Enhanced code comments in `cache.ts` and `vite.config.ts` with WHY explanations and timing diagrams
   - Total documentation: 28KB, 1,270 lines, production-ready

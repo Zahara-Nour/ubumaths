@@ -216,7 +216,7 @@ Coursework now matches materials in **ALL** capabilities:
 - `tests/unit/api/google-coursework-bulk-share.test.ts` (NEW - 610 lines)
 
 ### Documentation (6)
-- `docs/architecture/database-schema.md` (ENHANCED)
+- `docs/systeme/base-de-donnees.md` (ENHANCED)
 - `.claude/topic-support-implementation-summary.md` (NEW)
 - `.claude/shared-coursework-denormalization-summary.md` (NEW)
 - `.claude/bulk-coursework-sharing-implementation.md` (NEW)
@@ -376,4 +376,4 @@ This work represents a **complete enhancement** of Google Classroom integration:
 
 ---
 
-**Detailed Documentation**: `/docs/architecture/google-classroom-integration-improvements.md`
+**Detailed Documentation**: `/docs/systeme/google-classroom-integration-improvements.md`

@@ -13,7 +13,7 @@ Integration tests verify that multiple parts of the application work correctly t
 
 Unlike unit tests (isolated functions) and E2E tests (full browser flows), integration tests validate server-side logic and data flows without UI overhead.
 
-> **Architecture & règles** : [docs/ref/tests/architecture.md](../../docs/ref/tests/architecture.md).
+> **Architecture & règles** : [docs/pratiques/tests.md](../../docs/pratiques/tests.md).
 > Ces tests nécessitent **Supabase local** et tournent via `pnpm test:integration`
 > (+ job nightly CI). Le sous-dossier `database/` contient les tests de triggers / RLS,
 > les helpers partagés sont dans `tests/helpers/database/`.

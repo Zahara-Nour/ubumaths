@@ -3,7 +3,7 @@
 Tests qui **ne peuvent pas être co-localisés** dans `src/` : ils ont besoin d'une
 vraie base Supabase, ou ils fournissent de l'infra partagée à d'autres tests.
 
-> **Architecture complète & règles** : [docs/ref/tests/architecture.md](../docs/ref/tests/architecture.md)
+> **Architecture complète & règles** : [docs/pratiques/tests.md](../docs/pratiques/tests.md)
 >
 > Les tests **unitaires** vivent à côté de leur code dans `src/**/__tests__/`
 > (et `scripts/**/__tests__/`), pas ici.

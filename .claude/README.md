@@ -49,7 +49,7 @@ Ce répertoire garantit que **tous les agents Claude Code** respectent les même
 ### Pour moi (Claude Code - session actuelle)
 
 1. Je lis `CLAUDE.md` automatiquement (via contexte `claudeMd`)
-2. `CLAUDE.md` pointe vers `docs/claude/` et `.claude/config.md`
+2. `CLAUDE.md` pointe vers `docs/pratiques/` et `.claude/config.md`
 3. Je suis automatiquement les standards
 
 ### Pour les agents (documentation-writer, etc.)
@@ -84,9 +84,9 @@ Lire `.claude/config.md` pour comprendre :
 - Standards de qualité modifiés
 
 **❌ Ne PAS mettre à jour pour:**
-- Détails d'implémentation spécifiques → `docs/claude/`
+- Détails d'implémentation spécifiques → `docs/pratiques/`
 - Documentation de feature → `docs/features/`
-- Guides utilisateur → `docs/guides/`
+- Guides utilisateur → `docs/systeme/`
 - Changements temporaires ou expérimentaux
 
 ---
@@ -94,7 +94,7 @@ Lire `.claude/config.md` pour comprendre :
 ## 🔗 Related Documentation
 
 - **Quick-start** : [/CLAUDE.md](../CLAUDE.md)
-- **Detailed docs** : [/docs/claude/](../docs/claude/README.md)
+- **Detailed docs** : [/docs/pratiques/](../docs/pratiques/README.md)
 - **Documentation guide** : [/docs/contributing/documentation-guide.md](../docs/contributing/documentation-guide.md)
 
 ---
