@@ -13,7 +13,7 @@ import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type LawScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
 import { geometricMoments, geometricProbability } from '$lib/statistics/geometric';
-import { roundExact } from '$lib/statistics/binomial';
+import { roundExact } from '$lib/statistics/rounding';
 import { Fraction } from '$lib/statistics/fraction';
 
 // =============================================================================

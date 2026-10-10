@@ -142,6 +142,17 @@ describe('données — indicateurs calculés sur la série brute', () => {
 		]);
 	});
 
+	// Écart V6 (2026-10-11) : vérifié sur le RENDU, pas contre `formatApproxValue`
+	// lui-même — une moyenne de −0,125 s'affiche −0,13 (demi sur la valeur absolue)
+	it('moyenne −0,125 affichée « ≈ −0,13 » ; 1,005 affichée « ≈ 1,01 »', () => {
+		const negative = buildStatChartScene(
+			specOf('données: −0,25 ; −0,25 ; 0 ; 0\nindicateurs: moyenne')
+		);
+		expect(negative.indicators).toEqual(['Moyenne ≈ −0,13']);
+		const positive = buildStatChartScene(specOf('données: 1,005\nindicateurs: moyenne'));
+		expect(positive.indicators).toEqual(['Moyenne ≈ 1,01']);
+	});
+
 	it('décimaux, signe moins, série paire, fractions : ceux du module statistique', () => {
 		const raw = [12.5, -3, 12.5, 2, 10, 0.25];
 		const scene = buildStatChartScene(

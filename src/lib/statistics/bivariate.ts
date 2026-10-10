@@ -14,7 +14,6 @@
  * @module statistics/bivariate
  */
 
-import { roundExact } from './binomial';
 import { Fraction } from './fraction';
 
 // =============================================================================
@@ -178,17 +177,4 @@ export function predictX(fit: BivariateFit, y: Fraction): Fraction | null {
 /** Interpolation : x dans l'étendue des abscisses observées, bornes comprises. */
 export function isInterpolation(fit: BivariateFit, x: Fraction): boolean {
 	return !fit.minX.greaterThan(x) && !x.greaterThan(fit.maxX);
-}
-
-/**
- * Arrondi unique à `places` décimales, demi vers le haut sur la valeur absolue
- * (−0,125 → −0,13). `digits` s'écrit avec un point, zéros finals gardés
- * (`4.630`) ; `exact` : la valeur tombe juste à cette précision.
- */
-export function roundFraction(value: Fraction, places: number): { digits: string; exact: boolean } {
-	const negative = value.isNegative();
-	const { digits, exact } = roundExact(negative ? -value.num : value.num, value.den, places);
-	// Pas de « −0,00 » : un arrondi nul n'a pas de signe
-	const zero = /^[0.]+$/.test(digits);
-	return { digits: negative && !zero ? `-${digits}` : digits, exact };
 }

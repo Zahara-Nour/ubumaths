@@ -100,9 +100,9 @@ import {
 	binomialMoments,
 	binomialProbability,
 	binomialThreshold,
-	roundExact,
 	type BinomialDistribution
 } from '$lib/statistics/binomial';
+import { roundExact, roundNumber } from '$lib/statistics/rounding';
 import {
 	geometricConditional,
 	geometricMoments,
@@ -1838,7 +1838,7 @@ function namedMomentLines(
 			const small = Math.abs(value.toNumber()) < 0.01 && !value.equals(Fraction.ZERO);
 			const shown = small
 				? formatLawApproxValue(value.toNumber(), locale).slice(2)
-				: formatStatNumber(Math.round(value.toNumber() * 100) / 100, locale);
+				: formatStatNumber(roundNumber(value.toNumber(), 2), locale);
 			return `${name}(${law.variable}) ≈ ${shown}`;
 		}
 		return `${name}(${law.variable}) = ${exactDecimal(value, locale)}`;
@@ -2582,8 +2582,8 @@ function groupedCount(value: number, locale: ContentLocale): string {
 
 /** Un réel au millième, écrit selon la langue (moyennes, σ, marge) */
 function thousandth(value: number, locale: ContentLocale): string {
-	// `Math.round`, pas `toFixed` : 287/80 = 3,5875 donnait 3,587 (revue)
-	return formatStatNumber(Math.round(value * 1000) / 1000, locale);
+	// Règle unique (`roundNumber`) : 287/80 = 3,5875 → 3,588 ; −3,5875 → −3,588
+	return formatStatNumber(roundNumber(value, 3), locale);
 }
 
 /**
