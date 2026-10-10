@@ -150,3 +150,27 @@ Reste : **2e PR** après `db:migrate` + `db:types` — la route `api/marketplace
 - **À trancher par David** : `process_weekly_rewards` et `purchase_shop_item` écrivent aussi dans
   `gidouilles_history`, sans AUCUN appelant (ni code, ni cron) → les supprimer ? (destructif).
 - Migration à pousser APRÈS celle de A2 (elle appelle `has_full_access`).
+
+## Point d'étape — 2026-10-10, fin de soirée
+
+| Constat                               | PR    | Mergée | En prod (base) | Reste                                                                                     |
+| ------------------------------------- | ----- | ------ | -------------- | ----------------------------------------------------------------------------------------- |
+| A1 suppression de compte              | #1034 | ✅     | ✅ migrée      | —                                                                                         |
+| B4 élévation admin                    | #1035 | ✅     | (code seul)    | `deploy:prod` par David — les cookies d'élévation en cours seront refusés (se ré-élever)  |
+| A2 lecture seule                      | #1042 | ✅     | ⏳             | migrer ; puis `db:types` et 2e PR (masquage des annonces dans la route)                   |
+| E19 récompenses tournoi / multijoueur | #1048 | ✅     | ⏳             | migrer après A2 ; décider `process_weekly_rewards` / `purchase_shop_item` (sans appelant) |
+| A3 règle de consentement              | #1050 | ✅     | ⏳             | migrer après E19                                                                          |
+
+**Blocage des migrations** : `20261013120000_tags_modeles_points` (session tags) est mergée mais pas
+migrée, et datée avant A1 (déjà en prod) → `db push` exige `--include-all`. Décision de David :
+attendre que la session tags migre la sienne. Ordre ensuite : `20261014110000` (A2) →
+`20261014120000` (E19) → `20261015090100` (A3).
+
+### Ordre proposé pour la suite (à valider par David)
+
+1. **Nouveau constat** : soft-delete d'un message par la modération refusé par la RLS (policy SELECT
+   `deleted_at IS NULL`) — safeguarding. En prod, 2 suppressions le 30/12/2025, aucune depuis.
+2. **D16** démineur lisible par `anon` avec `student_id` ; **D18** frontière d'école absente.
+3. **B6 / B7** comptes `pending`/`rejected` et inscription GoTrue directe.
+4. **E20** (SRS, DELETE sans `.select()`), **B5** (à mesurer), **B8**, **D17** (question : voulu ?).
+5. **C9 → C15** : point par point avec David (aligner le code ou les documents).
