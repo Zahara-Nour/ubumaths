@@ -19,6 +19,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { present } from '../helpers/present';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -38,24 +39,23 @@ async function insert(table: string, row: Record<string, unknown>): Promise<stri
 	return (data as { id: string }).id;
 }
 
-async function rangDe(table: string, id: string): Promise<number | null> {
+/** Les tables dont une ligne se range dans une section du chapitre. */
+type SectionedTable = 'chapter_checklist_items' | 'chapter_documents' | 'chapter_exercises';
+
+async function rangDe(table: SectionedTable, id: string): Promise<number | null> {
 	const { data, error } = await service
-		.from(table as never)
+		.from(table)
 		.select('section_id, section_order')
 		.eq('id', id)
 		.single();
 	expect(error).toBeNull();
-	return (data as { section_order: number | null }).section_order;
+	return present(data, `${table} ${id}`).section_order;
 }
 
-async function sectionDe(table: string, id: string): Promise<string | null> {
-	const { data, error } = await service
-		.from(table as never)
-		.select('section_id')
-		.eq('id', id)
-		.single();
+async function sectionDe(table: SectionedTable, id: string): Promise<string | null> {
+	const { data, error } = await service.from(table).select('section_id').eq('id', id).single();
 	expect(error).toBeNull();
-	return (data as { section_id: string | null }).section_id;
+	return present(data, `${table} ${id}`).section_id;
 }
 
 describe('placer une ressource créée dans une section', () => {

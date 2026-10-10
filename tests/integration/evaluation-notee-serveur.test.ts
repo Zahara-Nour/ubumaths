@@ -232,7 +232,7 @@ function rightAnswer(instance: QuestionInstance): SubmittedAnswer {
 		return { choices };
 	}
 	const values = (instance.blanks ?? []).map((b) => b.expectedAnswer);
-	return { values, latex: values };
+	return { values };
 }
 
 function wrongAnswer(instance: QuestionInstance): SubmittedAnswer {
@@ -243,7 +243,7 @@ function wrongAnswer(instance: QuestionInstance): SubmittedAnswer {
 		return { choices: [position] };
 	}
 	const values = (instance.blanks ?? []).map(() => '987654');
-	return { values, latex: values };
+	return { values };
 }
 
 /**

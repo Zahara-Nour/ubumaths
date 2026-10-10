@@ -18,8 +18,9 @@
  *
  * @vitest-environment node
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
+import type { Tables } from '$lib/types/database';
 
 const db = createServiceRoleClient();
 
@@ -60,12 +61,12 @@ describe('question_templates — le modèle plat n’existe pas', () => {
 	});
 
 	it('`topic` / `subtopic` sont bien refusés', async () => {
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'question_templates'>>().not.toHaveProperty('topic');
+		expectTypeOf<Tables<'question_templates'>>().not.toHaveProperty('subtopic');
 		for (const colonne of ['topic', 'subtopic']) {
-			const { error } = await db
-				.from('question_templates')
-				// @ts-expect-error - colonne volontairement inexistante
-				.select(`id, ${colonne}`)
-				.limit(1);
+			const { error } = await db.from('question_templates').select(`id, ${colonne}`).limit(1);
 
 			expect(error, colonne).not.toBeNull();
 		}
@@ -98,11 +99,10 @@ describe('messages.content est du jsonb', () => {
  */
 describe('class_students — la table n’existe pas', () => {
 	it('la requête de génération par lot est bien refusée', async () => {
-		const { error } = await db
-			// @ts-expect-error - table volontairement inexistante
-			.from('class_students')
-			.select('student_id')
-			.limit(1);
+		// Sur une seule ligne : la directive couvre aussi l'instanciation de type
+		// que la table inconnue rend sans fond.
+		// @ts-expect-error - table volontairement inexistante
+		const { error } = await db.from('class_students').select('student_id').limit(1);
 
 		expect(error).not.toBeNull();
 	});
@@ -136,11 +136,10 @@ describe('class_students — la table n’existe pas', () => {
  */
 describe('tables jamais créées', () => {
 	it('ai_chat_usage n’existe pas — la journalisation IA n’a rien écrit', async () => {
-		const { error } = await db
-			// @ts-expect-error - table volontairement inexistante
-			.from('ai_chat_usage')
-			.select('user_id')
-			.limit(1);
+		// Sur une seule ligne : la directive couvre aussi l'instanciation de type
+		// que la table inconnue rend sans fond.
+		// @ts-expect-error - table volontairement inexistante
+		const { error } = await db.from('ai_chat_usage').select('user_id').limit(1);
 
 		expect(error).not.toBeNull();
 	});

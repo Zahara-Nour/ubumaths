@@ -17,6 +17,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import { present } from '../helpers/present';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -660,7 +661,7 @@ describe('Références dans le contenu de la séance', () => {
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 
 		const { data: travail } = await service
-			.from('journal_entry_homework' as never)
+			.from('journal_entry_homework')
 			.insert({
 				entry_id: ctx.entryId,
 				content: `<p>[[exercise:${exercise}|Fractions]]</p>`,
@@ -674,7 +675,7 @@ describe('Références dans le contenu de la séance', () => {
 		await service
 			.from('journal_entry_homework' as never)
 			.delete()
-			.eq('id', (travail as { id: string }).id);
+			.eq('id', present(travail, 'devoir inséré').id);
 		await reconcileAutoCoverage(service, ctx.entryId);
 
 		expect((await coverageMap(ctx)).has(point)).toBe(false);

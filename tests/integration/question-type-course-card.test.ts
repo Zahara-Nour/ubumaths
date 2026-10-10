@@ -46,7 +46,6 @@ describe('question_templates.type — carte de cours', () => {
 		await service.from('question_templates').delete().eq('id', CARD_ID);
 		const { error } = await service
 			.from('question_templates')
-			// @ts-expect-error - fixture minimale ; `course_card` pas encore dans les types générés
 			.insert(template(CARD_ID, 'course_card'));
 		expect(error).toBeNull();
 
@@ -61,7 +60,7 @@ describe('question_templates.type — carte de cours', () => {
 	it('un type inconnu reste refusé par la contrainte', async () => {
 		const { error } = await service
 			.from('question_templates')
-			// @ts-expect-error - type volontairement invalide
+			// type volontairement invalide (`type` est un simple `string` dans les types générés)
 			.insert(template(UNKNOWN_ID, 'flash'));
 		expect(error?.message ?? '').toMatch(/question_templates_type_check/);
 	});

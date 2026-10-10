@@ -106,9 +106,8 @@ describe('Security — anon reachability', () => {
 			p_recipient_ids: [crypto.randomUUID()],
 			p_subject: 'spoof',
 			p_content: { type: 'doc', content: [] },
-			p_is_group_message: false,
-			p_class_id: null,
-			p_parent_message_id: null
+			p_is_group_message: false
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 		});
 		expect(error).not.toBeNull();
 	});
@@ -118,7 +117,7 @@ describe('Security — anon reachability', () => {
 		const { error } = await anonClient().rpc('get_user_inbox', {
 			p_user_id: crypto.randomUUID(),
 			p_status: 'inbox',
-			p_folder_id: null,
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 			p_limit: 20,
 			p_offset: 0
 		});

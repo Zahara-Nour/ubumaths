@@ -11,6 +11,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { present } from '../helpers/present';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
@@ -74,28 +75,28 @@ describe('questions de cours : filtre et lecture élève', () => {
 
 		// Un point du programme, auquel on rattache un modèle publié et un brouillon
 		const { data: theme, error: errTheme } = await service
-			.from('curriculum_themes' as never)
+			.from('curriculum_themes')
 			.insert({ grade: '1_SPE', name: `T ${THEME}` } as never)
 			.select('id')
 			.single();
 		expect(errTheme).toBeNull();
 		const { data: objective, error: errObj } = await service
-			.from('curriculum_objectives' as never)
-			.insert({ theme_id: (theme as { id: string }).id, name: `O ${THEME}` } as never)
+			.from('curriculum_objectives')
+			.insert({ theme_id: present(theme, 'theme').id, name: `O ${THEME}` } as never)
 			.select('id')
 			.single();
 		expect(errObj).toBeNull();
 		const { data: point, error: errPoint } = await service
-			.from('curriculum_points' as never)
+			.from('curriculum_points')
 			.insert({
-				objective_id: (objective as { id: string }).id,
+				objective_id: present(objective, 'objective').id,
 				name: `P ${THEME}`,
 				kind: 'connaissance'
 			} as never)
 			.select('id')
 			.single();
 		expect(errPoint).toBeNull();
-		pointId = (point as { id: string }).id;
+		pointId = present(point, 'point').id;
 		const { error: errTag } = await service.from('question_template_points' as never).insert([
 			{ template_id: IDS.ordinaire, point_id: pointId },
 			{ template_id: IDS.brouillon, point_id: pointId }

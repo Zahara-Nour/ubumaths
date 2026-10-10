@@ -77,9 +77,8 @@ describe('Security — authenticated authorization guards', () => {
 			p_recipient_ids: [student.id],
 			p_subject: 'spoof',
 			p_content: { type: 'doc', content: [] },
-			p_is_group_message: false,
-			p_class_id: null,
-			p_parent_message_id: null
+			p_is_group_message: false
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 		});
 		expect(error).not.toBeNull();
 	});
@@ -90,7 +89,7 @@ describe('Security — authenticated authorization guards', () => {
 		const { error } = await client.rpc('get_user_inbox', {
 			p_user_id: victim.id,
 			p_status: 'inbox',
-			p_folder_id: null,
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 			p_limit: 20,
 			p_offset: 0
 		});
@@ -105,7 +104,7 @@ describe('Security — authenticated authorization guards', () => {
 		const { error } = await client.rpc('get_user_inbox', {
 			p_user_id: student.id,
 			p_status: 'inbox',
-			p_folder_id: null,
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 			p_limit: 20,
 			p_offset: 0
 		});
@@ -179,10 +178,8 @@ describe('Security — authenticated authorization guards', () => {
 			p_count: 1,
 			p_payment_method: 'gidouilles',
 			p_gidouilles_cost: 3,
-			p_vip_card_instance_id: null,
 			p_force_rarity: 'legendary',
-			p_min_rarity: null,
-			p_exclude_card_ids: null,
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 			p_only_cards_with_actions: false
 		});
 		// Guard runs before any balance/pool logic → a reverted guard would yield a
@@ -198,10 +195,7 @@ describe('Security — authenticated authorization guards', () => {
 			p_count: 10,
 			p_payment_method: 'gidouilles',
 			p_gidouilles_cost: 1,
-			p_vip_card_instance_id: null,
-			p_force_rarity: null,
-			p_min_rarity: null,
-			p_exclude_card_ids: null,
+			// Paramètres à null omis : leur DEFAULT SQL est NULL, l'appel est identique.
 			p_only_cards_with_actions: false
 		});
 		expect(error?.code).toBe('22023');

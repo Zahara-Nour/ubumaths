@@ -21,8 +21,9 @@
  *
  * @vitest-environment node
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
+import type { Tables } from '$lib/types/database';
 
 const db = createServiceRoleClient();
 
@@ -61,7 +62,9 @@ describe('riddle_of_the_day — la colonne est `date`', () => {
 	});
 
 	it('`assignment_date` est bien refusée', async () => {
-		// @ts-expect-error - colonne volontairement inexistante
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'riddle_of_the_day'>>().not.toHaveProperty('assignment_date');
 		const { error } = await db.from('riddle_of_the_day').select('id, assignment_date').limit(1);
 
 		expect(error).not.toBeNull();
@@ -82,10 +85,16 @@ describe('riddle_student_history — colonnes agrégées', () => {
 		// La vue agrège `riddle_attempts` : pas de `is_correct`, pas de
 		// `gidouilles_awarded`, et « nombre de tentatives pour réussir » n'existe
 		// que sous la forme `total_attempts`.
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'riddle_student_history'>>().not.toHaveProperty('is_correct');
+		expectTypeOf<Tables<'riddle_student_history'>>().not.toHaveProperty('gidouilles_awarded');
+		expectTypeOf<Tables<'riddle_student_history'>>().not.toHaveProperty(
+			'total_attempts_for_success'
+		);
 		for (const colonne of ['is_correct', 'gidouilles_awarded', 'total_attempts_for_success']) {
 			const { error } = await db
 				.from('riddle_student_history')
-				// @ts-expect-error - colonne volontairement inexistante
 				.select(`riddle_id, ${colonne}`)
 				.limit(1);
 
@@ -105,9 +114,11 @@ describe('riddle_progress — colonne du classement', () => {
 	});
 
 	it('`total_gidouilles_from_riddles` est bien refusée', async () => {
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'riddle_progress'>>().not.toHaveProperty('total_gidouilles_from_riddles');
 		const { error } = await db
 			.from('riddle_progress')
-			// @ts-expect-error - colonne volontairement inexistante
 			.select('student_id, total_gidouilles_from_riddles')
 			.limit(1);
 

@@ -19,6 +19,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { present } from '../helpers/present';
 import type { User } from '@supabase/supabase-js';
 
 import { GET as listWorksheets } from '../../src/routes/api/worksheets/+server';
@@ -137,7 +138,9 @@ describe('API des fiches après la suppression de la colonne `tags`', () => {
 		expect(response.status).toBe(200);
 
 		const payload = await response.json();
-		const fiche = payload.worksheets.find((w: { id: string }) => w.id === nue.id);
+		const fiche = payload.worksheets.find(
+			(w: { id: string }) => w.id === present(nue, 'fiche nue').id
+		);
 		expect(fiche.tags).toEqual([]);
 	});
 

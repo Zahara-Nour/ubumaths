@@ -12,6 +12,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import { present } from '../helpers/present';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -57,25 +58,25 @@ async function cleanup() {
 /** Un point de programme neuf, avec son thème et son item. */
 async function makePoint(): Promise<string> {
 	const { data: theme } = await service
-		.from('curriculum_themes' as never)
+		.from('curriculum_themes')
 		.insert({ grade: TEST_GRADE, name: `T ${crypto.randomUUID().slice(0, 8)}` } as never)
 		.select('id')
 		.single();
 	const { data: item } = await service
-		.from('curriculum_objectives' as never)
-		.insert({ theme_id: (theme as { id: string }).id, name: 'Item' } as never)
+		.from('curriculum_objectives')
+		.insert({ theme_id: present(theme, 'theme').id, name: 'Item' } as never)
 		.select('id')
 		.single();
 	const { data: point } = await service
-		.from('curriculum_points' as never)
+		.from('curriculum_points')
 		.insert({
-			objective_id: (item as { id: string }).id,
+			objective_id: present(item, 'item').id,
 			name: `P ${crypto.randomUUID().slice(0, 8)}`,
 			kind: 'savoir_faire'
 		} as never)
 		.select('id')
 		.single();
-	return (point as { id: string }).id;
+	return present(point, 'point').id;
 }
 
 /** Une question publiée, taguée sur les points donnés. */

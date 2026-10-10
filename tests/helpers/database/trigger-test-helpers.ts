@@ -32,13 +32,16 @@ export function createTestSupabaseClient(): SupabaseClient<Database> {
  * Creates a service role client for operations requiring elevated permissions
  * (e.g., inserting into auth.users, bypassing RLS)
  */
-export function createServiceRoleClient(): SupabaseClient<Database> {
-	const url = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
-	const serviceRoleKey =
-		process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+/** URL de la base de test (Supabase local par défaut). */
+export const TEST_SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 
-	return createClient<Database>(url, serviceRoleKey, {
+/** Clé service-role de la base de test (clé de démo du Supabase local par défaut). */
+export const TEST_SERVICE_ROLE_KEY =
+	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+
+export function createServiceRoleClient(): SupabaseClient<Database> {
+	return createClient<Database>(TEST_SUPABASE_URL, TEST_SERVICE_ROLE_KEY, {
 		auth: {
 			persistSession: false,
 			autoRefreshToken: false
@@ -322,8 +325,9 @@ export async function insertTestExercise(params: {
 		id: generateTestId('exercise'),
 		created_by: params.createdBy,
 		category: 'automatisme',
-		statement_md: 'Test question?',
-		solution_md: '42',
+		// L'énoncé et la solution vivent dans `variations` : `statement_md` /
+		// `solution_md` ne sont pas des colonnes d'`exercises`.
+		variations: [{ label: 'default', statement_md: 'Test question?', solution_md: '42' }],
 		created_at: new Date().toISOString()
 	};
 

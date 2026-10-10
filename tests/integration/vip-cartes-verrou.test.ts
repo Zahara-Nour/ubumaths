@@ -723,7 +723,8 @@ describe('(e) témoins', () => {
 		expect(cartes[action].usedAt).toBeTruthy();
 		expect(cartes[d1].usedAt).toBeTruthy();
 		expect(cartes[d2].usedAt).toBeTruthy();
-		const recues = Object.entries(cartes).filter(([id]) => ![action, d1, d2].includes(id));
+		const consommees: string[] = [action, d1, d2];
+		const recues = Object.entries(cartes).filter(([id]) => !consommees.includes(id));
 		expect(recues.map(([, c]) => c.cardId)).toEqual([T_CIBLE]);
 	});
 

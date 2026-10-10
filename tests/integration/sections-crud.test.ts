@@ -27,6 +27,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import { present } from '../helpers/present';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { User } from '@supabase/supabase-js';
@@ -84,7 +85,7 @@ async function createDeck(
 	overrides: { is_assigned?: boolean; is_auto_managed?: boolean; name?: string } = {}
 ): Promise<DeckFixture> {
 	const { data, error } = await service
-		.from('srs_decks' as never)
+		.from('srs_decks')
 		.insert({
 			owner_id: ownerId,
 			name: overrides.name ?? `Test deck ${crypto.randomUUID().slice(0, 8)}`,
@@ -96,7 +97,7 @@ async function createDeck(
 		.single();
 
 	if (error) throw error;
-	return data as DeckFixture;
+	return present(data, 'deck');
 }
 
 async function createSection(
@@ -104,7 +105,7 @@ async function createSection(
 	overrides: { name?: string; description?: string | null; display_order?: number } = {}
 ): Promise<{ id: string; name: string }> {
 	const { data, error } = await service
-		.from('srs_deck_sections' as never)
+		.from('srs_deck_sections')
 		.insert({
 			deck_id: deckId,
 			name: overrides.name ?? `Section ${crypto.randomUUID().slice(0, 8)}`,
@@ -115,7 +116,7 @@ async function createSection(
 		.single();
 
 	if (error) throw error;
-	return data as { id: string; name: string };
+	return present(data, 'section');
 }
 
 // ---------------------------------------------------------------------------
@@ -513,7 +514,7 @@ describe('DELETE /api/srs/decks/[id]/sections/[sectionId]', () => {
 
 		// Crée une carte custom assignée à la section
 		const { data: card, error: cardErr } = await service
-			.from('srs_cards' as never)
+			.from('srs_cards')
 			.insert({
 				deck_id: deck.id,
 				card_type: 'custom',
@@ -524,7 +525,7 @@ describe('DELETE /api/srs/decks/[id]/sections/[sectionId]', () => {
 			.select('id, section_id')
 			.single();
 		expect(cardErr).toBeNull();
-		expect((card as { section_id: string }).section_id).toBe(section.id);
+		expect(present(card, 'carte').section_id).toBe(section.id);
 
 		const locals = buildLocals(service, { id: student.id } as User);
 		const response = await DELETE({
@@ -535,12 +536,12 @@ describe('DELETE /api/srs/decks/[id]/sections/[sectionId]', () => {
 
 		// La carte existe encore mais section_id = NULL (ON DELETE SET NULL)
 		const { data: cardAfter } = await service
-			.from('srs_cards' as never)
+			.from('srs_cards')
 			.select('id, section_id')
-			.eq('id', (card as { id: string }).id)
+			.eq('id', present(card, 'carte').id)
 			.single();
 		expect(cardAfter).not.toBeNull();
-		expect((cardAfter as { section_id: string | null }).section_id).toBeNull();
+		expect(present(cardAfter, 'carte après suppression').section_id).toBeNull();
 	});
 
 	it('returns 404 when deck not owned (defense in depth)', async () => {

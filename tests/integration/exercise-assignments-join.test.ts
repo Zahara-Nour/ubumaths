@@ -53,7 +53,7 @@ describe("Affectations d'exercices — la jointure résout", () => {
 		// répond PGRST201. C'est le piège principal de cette jointure.
 		const { error } = await db
 			.from('exercise_assignments')
-			// @ts-expect-error - embed volontairement ambigu
+			// embed volontairement ambigu (postgrest-js ne le refuse pas à la compilation)
 			.select('id, profiles ( full_name )')
 			.limit(1);
 

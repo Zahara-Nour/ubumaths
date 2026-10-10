@@ -35,10 +35,7 @@ const ANON_KEY =
 
 const service = createServiceRoleClient();
 
-/** Pas encore dans `database.ts` : générée après la mise en production. */
-const PARTICIPANTS = 'resolve_marketplace_participants' as never;
-
-type LigneParticipant = { id: string; display_name: string; avatar_url: string | null };
+const PARTICIPANTS = 'resolve_marketplace_participants';
 
 async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
@@ -117,7 +114,7 @@ describe('participants du marché', () => {
 		const { data, error } = await acheteur.rpc(PARTICIPANTS, { p_user_ids: [vendeurId] });
 		expect(error).toBeNull();
 
-		const lignes = (data ?? []) as LigneParticipant[];
+		const lignes = data ?? [];
 		expect(lignes, 'le vendeur est introuvable').toHaveLength(1);
 		expect(lignes[0].id).toBe(vendeurId);
 	});
@@ -125,7 +122,7 @@ describe('participants du marché', () => {
 	/** Le nom est PSEUDONYMISÉ : prénom et initiale, jamais l'état civil complet. */
 	it('le nom rendu est pseudonymisé', async () => {
 		const { data } = await acheteur.rpc(PARTICIPANTS, { p_user_ids: [vendeurId] });
-		const ligne = ((data ?? []) as LigneParticipant[])[0];
+		const ligne = (data ?? [])[0];
 
 		expect(ligne.display_name).toBe('Marie D.');
 		expect(ligne.display_name, 'le nom de famille complet est rendu').not.toContain('Dupont');
@@ -148,7 +145,7 @@ describe('participants du marché', () => {
 	 */
 	it('elle ne rend AUCUNE autre colonne', async () => {
 		const { data } = await acheteur.rpc(PARTICIPANTS, { p_user_ids: [vendeurId] });
-		const ligne = ((data ?? []) as LigneParticipant[])[0];
+		const ligne = (data ?? [])[0];
 
 		expect(
 			Object.keys(ligne).sort(),
@@ -157,7 +154,7 @@ describe('participants du marché', () => {
 	});
 
 	it('au-delà du plafond, elle ne rend rien', async () => {
-		const trop = Array.from({ length: 201 }, () => crypto.randomUUID());
+		const trop: string[] = Array.from({ length: 201 }, () => crypto.randomUUID());
 		trop[0] = vendeurId;
 
 		const { data, error } = await acheteur.rpc(PARTICIPANTS, { p_user_ids: trop });
