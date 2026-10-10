@@ -7,7 +7,7 @@
  * - `tirages`, U discrète : une ligne par valeur, au plus 30 ;
  * - `tirages`, lois à densité : histogramme EN DENSITÉ, 10 classes (`classes: N`),
  *   courbe de densité superposée, résumé « n tirages ; moyenne observée ≈ … » ;
- * - `moyenne`, `échantillons` : les quatre lois.
+ * - `moyenne`, `échantillons` : les quatre lois (la normale : bloc dédié plus bas).
  */
 
 import { describe, it, expect } from 'vitest';

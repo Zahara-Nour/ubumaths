@@ -209,7 +209,9 @@ Danse = 7            ```                                     ```
   `ajustement: affine`, `indicateurs: point moyen ; équation ; r`, `prévoir: x = 4,5`
   (`src/lib/ubumark/__tests__/stat-chart/scatter.test.ts`).
 - ` ```simulation ` : `X = 1 ; 2 ; 3 ; 4 ; 5 ; 6`, `P = 1/6 ; …`, `tirages: 50`
-  (`src/lib/ubumark/__tests__/stat-chart/simulation-block.test.ts`).
+  (`src/lib/ubumark/__tests__/stat-chart/simulation-block.test.ts`) ; ou une loi nommée,
+  `X ~ G(0,2)`, `U(1 ; 6)`, `U([0 ; 10])`, `E(0,5)`, `N(10 ; 4)` (σ² en 2ᵉ paramètre ; histogramme
+  sur μ ± 3σ) — `src/lib/ubumark/__tests__/stat-chart/simulation-laws.test.ts`.
 
 ### Cases à compléter
 
