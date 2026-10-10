@@ -76,9 +76,9 @@ for brut in segments:
             refuser("le « -- » de `pnpm dev -- --port` fait ignorer le port : le serveur démarre sur 5173, celui de David. Écrire `pnpm dev --port 5175 --strictPort`.")
         port = re.search(r"--port[ =](\d+)", s)
         if not port or "--strictPort" not in s:
-            refuser("`pnpm dev` sans `--port 5175 --strictPort` dérive en silence vers un autre port (5177 dans un worktree).")
+            refuser("`pnpm dev` sans `--port 5175 --strictPort` dérive en silence vers un autre port. Dépôt principal : 5175 ; worktree : un port libre à partir de 5176.")
         if port.group(1) == "5173":
-            refuser("5173 est le port de David. Prendre 5175 (5177 dans un worktree).")
+            refuser("5173 est le port de David. Prendre 5175 (dépôt principal) ou un port libre à partir de 5176 (worktree).")
 
     if re.match(r"pnpm\s+(?:run\s+)?kill:servers\b", s) and "ubumaths-wt-" in dossier:
         refuser("`pnpm kill:servers` depuis un worktree tue le serveur de David (5173) et Supabase. Tuer seulement son propre port.")
