@@ -42,12 +42,19 @@
 -- pas un exercice privé du prof, et un re-parentage ou un re-rattachement passait sans le vérifier,
 -- ou le refusait à tort. Aucun accès gagné : ces fonctions ne font que vérifier — elles n'écrivent
 -- rien et ne renvoient aucune donnée, seulement un refus.
--- Garde d'appelant, en tête de chacune : un utilisateur connecté qui n'est ni prof ni admin (ou un
--- anonyme) n'est PAS évalué ; la RLS et les droits refusent son écriture comme avant, et aucun
--- message de règle ne lui parvient — rien ne lui révèle un modèle ou un exercice qu'il ne voit
--- pas. Les règles s'appliquent au prof, à l'admin et aux contextes sans JWT (migrations, postgres,
--- service_role) : les tags de cette migration sont validés ligne à ligne. Aucun message ne nomme
--- l'exercice d'un autre : « un tag d'exercice deviendrait hors règle ».
+-- Garde d'appelant, en tête de chacune, avant toute lecture : un utilisateur connecté qui n'est ni
+-- prof ni admin (ou un anonyme) est REFUSÉ, par un 42501 neutre (« Écriture refusée : droits
+-- insuffisants. ») — rien des règles, et le même refus qu'un modèle ou un exercice existe ou non.
+-- Pour un INSERT d'élève, c'est le refus d'accès qu'il aurait reçu de la RLS. Pour un UPDATE, un
+-- DELETE ou un trigger AFTER, la ligne a déjà passé la RLS : la garde n'y est atteinte que si
+-- l'écriture l'a contournée (une fonction SECURITY DEFINER appelable par un élève, par exemple) ;
+-- elle refuse alors, au lieu d'éteindre les règles en silence. Aucun chemin légitime ne l'atteint
+-- (relu le 2026-10-10 : l'exercice supprimé par son prof cascade sous le rôle du prof ;
+-- delete_user_account et la suppression d'un compte passent par service_role ou sans JWT ; aucune
+-- fonction n'écrit ces tables pour un élève). Les règles s'appliquent au prof, à l'admin et aux
+-- contextes sans JWT (migrations, postgres, service_role) : les tags de cette migration sont
+-- validés ligne à ligne. Aucun message ne nomme l'exercice d'un autre : « un tag d'exercice
+-- deviendrait hors règle ».
 -- Effets acceptés par David :
 --   * les états d'acquisition des élèves sur les points neufs se calculent aux PROCHAINES
 --     tentatives (trigger d'acquisition existant), sur tout leur historique ; aucune page ne les
@@ -1175,9 +1182,9 @@ declare
 	v_template_notion uuid;
 	v_other text;
 begin
-	-- Garde d'appelant : ni prof ni admin (ou anonyme) → pas évalué ; la RLS refuse, sans message.
+	-- Garde d'appelant, avant toute lecture : ni prof ni admin (ou anonyme) → refus neutre (42501).
 	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
-		return new;
+		raise exception 'Écriture refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
 	end if;
 	-- Le point est lu VERROUILLÉ (for share) : un re-rattachement ou un changement de programme
 	-- simultané (3c) attend cette transaction, ou cette transaction l'attend et lit l'état validé.
@@ -1263,9 +1270,9 @@ declare
 	v_node_name text;
 	v_code text;
 begin
-	-- Garde d'appelant : ni prof ni admin (ou anonyme) → pas évalué ; la RLS refuse, sans message.
+	-- Garde d'appelant, avant toute lecture : ni prof ni admin (ou anonyme) → refus neutre (42501).
 	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
-		return null;
+		raise exception 'Écriture refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
 	end if;
 	if new.classification_node_id is not distinct from old.classification_node_id then
 		return null;
@@ -1323,9 +1330,9 @@ as $fn$
 declare
 	v_id uuid;
 begin
-	-- Garde d'appelant : ni prof ni admin (ou anonyme) → pas évalué ; la RLS refuse, sans message.
+	-- Garde d'appelant, avant toute lecture : ni prof ni admin (ou anonyme) → refus neutre (42501).
 	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
-		return null;
+		raise exception 'Écriture refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
 	end if;
 	if new.node_id is not distinct from old.node_id and new.grade is not distinct from old.grade then
 		return null;
@@ -1442,9 +1449,9 @@ declare
 	v_id uuid;
 	v_code text;
 begin
-	-- Garde d'appelant : ni prof ni admin (ou anonyme) → pas évalué ; la RLS refuse, sans message.
+	-- Garde d'appelant, avant toute lecture : ni prof ni admin (ou anonyme) → refus neutre (42501).
 	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
-		return null;
+		raise exception 'Écriture refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
 	end if;
 	-- Le genre ne change pas : seule une sous-notion qui change de parent change de notion.
 	if new.kind <> 'subnotion' or new.parent_id is not distinct from old.parent_id then
@@ -1503,9 +1510,9 @@ declare
 	v_point_node uuid;
 	v_point_node_name text;
 begin
-	-- Garde d'appelant : ni prof ni admin (ou anonyme) → pas évalué ; la RLS refuse, sans message.
+	-- Garde d'appelant, avant toute lecture : ni prof ni admin (ou anonyme) → refus neutre (42501).
 	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
-		return new;
+		raise exception 'Écriture refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
 	end if;
 	-- Le point est lu VERROUILLÉ (for share), comme en 3a.
 	select p.code, p.node_id into v_code, v_point_node
@@ -1566,9 +1573,9 @@ as $fn$
 declare
 	v_code text;
 begin
-	-- Garde d'appelant : ni prof ni admin (ou anonyme) → pas évalué ; la RLS refuse, sans message.
+	-- Garde d'appelant, avant toute lecture : ni prof ni admin (ou anonyme) → refus neutre (42501).
 	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
-		return null;
+		raise exception 'Écriture refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
 	end if;
 	if tg_op = 'UPDATE' and new.node_id is not distinct from old.node_id
 	   and new.exercise_id is not distinct from old.exercise_id then

@@ -171,8 +171,8 @@ const POINT_ON_UNRANGED_TEMPLATE =
 const POINT_MOVED_EXERCISE =
 	/un tag d'exercice deviendrait hors règle \(l'exercice n'est rangé ni sur le nœud du point/;
 const ONE_GENERATION = new RegExp(ONE_GENERATION_CONSTRAINT);
-/** Le refus d'accès habituel (RLS), sans rien de la règle. */
-const RLS_REFUSAL = /row-level security policy/;
+/** Le refus neutre de la garde d'appelant. */
+const GUARD_REFUSAL = /^Écriture refusée : droits insuffisants\.$/;
 /** Tout message des règles de tag. */
 const ANY_RULE_MESSAGE = /point|modèle|exercice|nœud|notion|programme/i;
 const POINT_UNRANGED = /il ne peut pas perdre son nœud/;
@@ -1458,28 +1458,112 @@ describe('Rôles réels : prof, admin, élève (la règle juge sur une vue compl
 		);
 	});
 
-	it('l’élève : son tag est refusé par l’accès habituel (RLS), sans message de règle, que le modèle existe ou non', async () => {
-		const refusal = async (templateId: () => Promise<string>) => {
-			try {
-				await trial(db(), async () => {
-					const t = await templateId();
-					await asUser(db(), studentId);
-					return db().query(TAG_TEMPLATE, [t, d.points.onOther]);
-				});
-			} catch (e) {
-				return e as { code?: string; message: string };
-			}
-			throw new Error('le tag de l’élève a été accepté');
-		};
-		const existing = await refusal(() => insertTemplate(db(), d.sub1));
-		const missing = await refusal(async () => crypto.randomUUID());
+	/** Le refus reçu par `asRole` en écrivant `write(cible)`, dans un essai annulé. */
+	async function refusal(
+		asRole: () => Promise<void>,
+		target: () => Promise<string>,
+		write: (id: string) => Promise<QueryResult>
+	): Promise<{ code?: string; message: string }> {
+		try {
+			await trial(db(), async () => {
+				const id = await target();
+				await asRole();
+				return write(id);
+			});
+		} catch (e) {
+			return e as { code?: string; message: string };
+		}
+		throw new Error('l’écriture a été acceptée');
+	}
+
+	/** 42501, rien des règles, et la même réponse que la cible existe ou non. */
+	function expectNeutralRefusal(
+		existing: { code?: string; message: string },
+		missing: { code?: string; message: string }
+	) {
 		expect(existing.code).toBe('42501');
-		expect(existing.message).toMatch(RLS_REFUSAL);
-		expect(existing.message.replace(/"[^"]*"/g, '')).not.toMatch(ANY_RULE_MESSAGE);
+		// Le nom de la table refusée (droit d'accès) n'est pas un message de règle
+		expect(existing.message.replace(/"[^"]*"/g, '').replace(/\btable \S+/g, '')).not.toMatch(
+			ANY_RULE_MESSAGE
+		);
 		expect({ code: missing.code, message: missing.message }).toEqual({
 			code: existing.code,
 			message: existing.message
 		});
+	}
+
+	const asStudent = () => asUser(db(), studentId);
+	const asAnon = async () => {
+		await db().query("select set_config('request.jwt.claims', $1, true)", [
+			JSON.stringify({ role: 'anon' })
+		]);
+		await db().query('set local role anon');
+	};
+	const tagTemplateWith = (id: string) => db().query(TAG_TEMPLATE, [id, d.points.onOther]);
+	const tagExerciseWith = (id: string) => db().query(TAG_EXERCISE, [id, d.points.onOther]);
+
+	it('l’élève qui tague un modèle (3a) : 42501 neutre, sans rien des règles, que le modèle existe ou non', async () => {
+		const existing = await refusal(asStudent, () => insertTemplate(db(), d.sub1), tagTemplateWith);
+		const missing = await refusal(asStudent, async () => crypto.randomUUID(), tagTemplateWith);
+		expectNeutralRefusal(existing, missing);
+		expect(existing.message).toMatch(GUARD_REFUSAL);
+	});
+
+	it('l’élève qui tague un exercice (3e) : 42501 neutre, sans rien des règles, que l’exercice existe ou non', async () => {
+		const existing = await refusal(asStudent, () => exercise([d.sub1]), tagExerciseWith);
+		const missing = await refusal(asStudent, async () => crypto.randomUUID(), tagExerciseWith);
+		expectNeutralRefusal(existing, missing);
+		expect(existing.message).toMatch(GUARD_REFUSAL);
+	});
+
+	it('un anonyme qui tague un modèle ou un exercice : 42501, sans rien des règles, que la cible existe ou non', async () => {
+		expectNeutralRefusal(
+			await refusal(asAnon, () => insertTemplate(db(), d.sub1), tagTemplateWith),
+			await refusal(asAnon, async () => crypto.randomUUID(), tagTemplateWith)
+		);
+		expectNeutralRefusal(
+			await refusal(asAnon, () => exercise([d.sub1]), tagExerciseWith),
+			await refusal(asAnon, async () => crypto.randomUUID(), tagExerciseWith)
+		);
+	});
+
+	describe('un non-prof qui écrit par un chemin qui contourne la RLS est refusé, les règles ne s’éteignent pas', () => {
+		// Une fonction SECURITY DEFINER appelable par un élève, créée dans la transaction du test
+		// (annulée) : elle écrit en contournant la RLS, comme le ferait une future fonction fautive.
+		async function bypass(sql: string): Promise<void> {
+			await db().query(`create function public.itest_tags_contournement(a uuid, b uuid) returns void
+				language sql security definer set search_path = public, pg_temp as $$ ${sql} $$`);
+			await db().query(
+				'grant execute on function public.itest_tags_contournement(uuid, uuid) to authenticated'
+			);
+		}
+
+		it('UPDATE contournant la RLS (re-parentage, trigger AFTER 3d) : 42501 neutre', async () => {
+			await expectRefusedAccess(async () => {
+				await db().query(TAG_TEMPLATE, [await insertTemplate(db(), d.sub1), d.points.onNotion]);
+				await bypass('update public.classification_nodes set parent_id = b where id = a');
+				await asStudent();
+				return db().query('select public.itest_tags_contournement($1, $2)', [d.sub1, d.other]);
+			});
+		});
+
+		it('INSERT contournant la RLS (tag hors règle, trigger BEFORE 3a) : 42501 neutre', async () => {
+			await expectRefusedAccess(async () => {
+				const t = await insertTemplate(db(), d.sub1);
+				await bypass(
+					'insert into public.question_template_points (template_id, point_id) values (a, b)'
+				);
+				await asStudent();
+				return db().query('select public.itest_tags_contournement($1, $2)', [t, d.points.onOther]);
+			});
+		});
+
+		async function expectRefusedAccess(steps: Step): Promise<void> {
+			await expect(trial(db(), steps)).rejects.toMatchObject({
+				code: '42501',
+				message: expect.stringMatching(GUARD_REFUSAL)
+			});
+		}
 	});
 });
 

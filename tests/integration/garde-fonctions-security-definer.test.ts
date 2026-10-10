@@ -193,44 +193,74 @@ describe('Garde-fou Q145 : search_path des fonctions SECURITY DEFINER', () => {
 	});
 });
 
+/**
+ * Corps d'une fonction sans ses commentaires (de ligne et de bloc) : une garde écrite en
+ * commentaire ne garde rien.
+ */
+function sansCommentaires(corps: string): string {
+	return corps.replace(/\/\*[\s\S]*?\*\//g, '').replace(/--[^\n]*/g, '');
+}
+
+/** Ce qui manque à la garde d'appelant : présente, qui REFUSE, et avant la première lecture. */
+function defautsDeGarde(corps: string): string[] {
+	const code = sansCommentaires(corps);
+	const garde = code.search(/auth\.role\(\)/);
+	const prof = code.search(/public\.is_teacher_or_admin\(\)/);
+	const refus = code.search(/errcode\s*=\s*'insufficient_privilege'/);
+	const lecture = code.search(/\b(?:from|join|update|into)\s+public\.\w+/i);
+	return [
+		(garde < 0 || prof < 0) && 'garde d’appelant absente du code',
+		refus < 0 && 'la garde ne refuse pas (insufficient_privilege)',
+		garde >= 0 && lecture >= 0 && lecture < garde && 'une table est lue avant la garde'
+	].filter((d): d is string => typeof d === 'string');
+}
+
 describe('Garde-fou Q145 : fonctions de trigger SECURITY DEFINER déclarées', () => {
-	it('(d) chacune existe, est un trigger DEFINER de postgres, sans EXECUTE public, avec sa garde d’appelant', async () => {
+	it('(d) chacune est un trigger DEFINER de postgres, search_path fixé, sans EXECUTE public, gardée avant toute lecture', async () => {
 		const pg = await getPostgresClient();
 		const { rows } = await pg.query<{
 			signature: string;
 			trigger: boolean;
 			definer: boolean;
 			owner: string;
+			search_path: string | null;
 			executable: boolean;
-			garde: boolean;
+			corps: string;
 		}>(
 			`select p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')' as signature,
 			        p.prorettype = 'trigger'::regtype as trigger,
 			        p.prosecdef as definer,
 			        p.proowner::regrole::text as owner,
+			        (select substr(c, length('search_path=') + 1)
+			           from unnest(p.proconfig) c where c like 'search_path=%') as search_path,
 			        has_function_privilege('anon', p.oid, 'EXECUTE')
 			          or has_function_privilege('authenticated', p.oid, 'EXECUTE')
 			          or exists (select 1 from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
 			                      where a.grantee = 0 and a.privilege_type = 'EXECUTE') as executable,
-			        p.prosrc like '%auth.role()%' and p.prosrc like '%public.is_teacher_or_admin()%' as garde
+			        p.prosrc as corps
 			   from pg_proc p
 			   join pg_namespace n on n.oid = p.pronamespace
 			  where n.nspname = 'public'`
 		);
 		const parSignature = new Map(rows.map((r) => [r.signature, r]));
-		const fautives = Object.keys(DECLENCHEURS_DEFINER_VERIFIES).flatMap((sig) => {
+		const declarees = Object.keys(DECLENCHEURS_DEFINER_VERIFIES).sort();
+		const fautives = declarees.flatMap((sig) => {
 			const f = parSignature.get(sig);
 			if (!f) return [`${sig} : n'existe pas`];
 			const ecarts = [
 				!f.trigger && 'pas une fonction de trigger',
 				!f.definer && 'pas SECURITY DEFINER',
 				f.owner !== 'postgres' && `propriétaire ${f.owner}`,
+				(f.search_path === null || dernierSchema(f.search_path) !== 'pg_temp') &&
+					`search_path non fixé ou sans pg_temp final (${f.search_path ?? 'non fixé'})`,
 				f.executable && 'EXECUTE accordé à PUBLIC, anon ou authenticated',
-				!f.garde && 'garde d’appelant absente'
+				...defautsDeGarde(f.corps)
 			].filter(Boolean);
 			return ecarts.length > 0 ? [`${sig} : ${ecarts.join(', ')}`] : [];
 		});
 		expect(fautives).toEqual([]);
-		expect(Object.keys(DECLENCHEURS_DEFINER_VERIFIES)).toHaveLength(6);
+		// Toutes les déclarées, et rien qu'elles, sont vérifiées ici
+		const verifiees = declarees.filter((sig) => parSignature.has(sig));
+		expect(verifiees).toEqual(declarees);
 	});
 });
