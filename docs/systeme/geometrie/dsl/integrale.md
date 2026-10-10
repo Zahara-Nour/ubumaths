@@ -195,10 +195,10 @@ les aires absolues des sous-régions.
 ## Voir aussi
 
 - [`aire(f, a, b)`](aire.md) — aire géométrique (toujours positive).
-- [`courbe(...)`](./courbe.md) — création de la fonction `f`.
-- [`derivee(f)`](./derivee.md) — fonction dérivée.
-- [`mesure(A)`](./mesure.md) — affichage du scalaire sur la figure.
-- [`slider(...)`](./slider.md) — création d'un curseur pour les bornes
+- `courbe(...)` — création de la fonction `f`.
+- `derivee(f)` — fonction dérivée.
+- `mesure(A)` — affichage du scalaire sur la figure.
+- `slider(...)` — création d'un curseur pour les bornes
   dynamiques.
 
 ## Référence interne

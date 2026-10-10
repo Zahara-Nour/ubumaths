@@ -227,10 +227,10 @@ et l'axe des x), avec une couleur orange par défaut.
 
 - [`integrale(f, a, b)`](integrale.md) — intégrale signée (peut être
   négative).
-- [`courbe(...)`](./courbe.md) — création de la fonction `f`.
-- [`derivee(f)`](./derivee.md) — fonction dérivée.
-- [`mesure(A)`](./mesure.md) — affichage du scalaire sur la figure.
-- [`slider(...)`](./slider.md) — création d'un curseur pour les bornes
+- `courbe(...)` — création de la fonction `f`.
+- `derivee(f)` — fonction dérivée.
+- `mesure(A)` — affichage du scalaire sur la figure.
+- `slider(...)` — création d'un curseur pour les bornes
   dynamiques.
 
 ## Référence interne
@@ -238,5 +238,5 @@ et l'axe des x), avec une couleur orange par défaut.
 - Étude de conception : `docs/wip/geometry/aire-study.md`.
 - Document de progression : `docs/wip/geometry/aire-progress.md`.
 - Page de démo :
-  [`/geometry-demo/sliders/aire`](/geometry-demo/sliders/aire) — visualise
+  `/geometry-demo/sliders/aire` — visualise
   la différence entre `integrale` et `aire` sur la même courbe.

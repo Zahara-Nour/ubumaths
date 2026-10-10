@@ -267,7 +267,7 @@ Surfacage des erreurs runtime DSL dans `/construction-demo` et `ScriptEditor`. A
 | `e0e4db674` | feat(geometry-core/dsl) : calculus + coniques (10 builtins)                 |
 | `0ca030d10` | feat(geometry-core/dsl) : trace + courbe + texte (finition)                 |
 
-Voir [`docs/wip/dsl-structured-errors-progress.md`](../../wip/dsl-structured-errors-progress.md) pour le detail technique. ~50 builtins migres sur ~60, retro-compatibilite preservee (string flat encore accepte).
+Voir [`docs/wip/dsl-structured-errors-progress.md`](../../archive/wip/dsl-structured-errors-progress.md) pour le detail technique. ~50 builtins migres sur ~60, retro-compatibilite preservee (string flat encore accepte).
 
 ### Phase 6 — Migration complète stdlib → builtins (6 commits, journee +3)
 
@@ -284,7 +284,7 @@ Voir [`docs/wip/dsl-structured-errors-progress.md`](../../wip/dsl-structured-err
 
 Le mécanisme `macro foo(...): ...` du DSL reste intact, désormais réservé aux constructions définies par l'utilisateur (paradigme Cabri / CarMetal / GeoGebra Custom Tools). `dsl/stdlib.ts` se réduit à `export const STDLIB_MACROS = "";`.
 
-Voir [`docs/wip/dsl-stdlib-to-builtins-progress.md`](../../wip/dsl-stdlib-to-builtins-progress.md). 1799/1799 tests pass.
+Voir [`docs/wip/dsl-stdlib-to-builtins-progress.md`](../../archive/wip/dsl-stdlib-to-builtins-progress.md). 1799/1799 tests pass.
 
 ### Phase 5 — Refonte sémantique du DSL : un builtin = un objet (5 commits, journee +2)
 
@@ -298,7 +298,7 @@ Voir [`docs/wip/dsl-stdlib-to-builtins-progress.md`](../../wip/dsl-stdlib-to-bui
 | `75e827e1a` | refactor(stdlib)! : 14 macros migrées vers retour unique (BREAKING)                         |
 | ce commit   | docs : CLAUDE.md + ref docs + progress                                                      |
 
-Voir [`docs/wip/dsl-tuple-elimination-progress.md`](../../wip/dsl-tuple-elimination-progress.md) pour le detail. 1781/1781 tests pass.
+Voir [`docs/wip/dsl-tuple-elimination-progress.md`](../../archive/wip/dsl-tuple-elimination-progress.md) pour le detail. 1781/1781 tests pass.
 
 ### Bilan chiffre
 
@@ -332,12 +332,12 @@ Items restants non resolus, documentes mais non urgents :
 
 - [`docs/systeme/geometrie/dsl/`](dsl) — Documentation utilisateur du
   DSL (aire, aire_entre, integrale).
-- [`docs/wip/geometry/`](../../wip/geometry/) — Progress documents des
+- [`docs/archive/wip/geometry/`](../../archive/wip/geometry/) — Progress documents (archivés) des
   features livrees (parametric curves, polar, tangente, point_sur, calculus,
   intersections).
 - [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md)
   — Schema DB (le module geometry-core n'y touche pas directement).
 - [`CLAUDE.md`](../../../CLAUDE.md) — Instructions projet pour Claude Code.
-- [`MEMORY.md`](../../../../.claude/projects/-Users-david-Coding-js-ubumaths/memory/MEMORY.md)
+- `MEMORY.md`
   — Memoire persistante (entrees `geometry-core-status`, `parametric-*`,
   `tangente-*`, etc.).

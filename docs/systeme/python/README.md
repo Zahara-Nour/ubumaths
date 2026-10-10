@@ -293,12 +293,12 @@ Notebooks marqués `is_template = true` — réutilisables via clonage.
 
 **V2 (2026-06)** :
 
-- [../../wip/notebook-checkpoints-progress.md](../../wip/notebook-checkpoints-progress.md) — checkpoints V1 (3 modes) + hint feature
-- [../../wip/notebook-pdf-export-progress.md](../../wip/notebook-pdf-export-progress.md) — pipeline Typst
-- [../../wip/notebook-presentation-progress.md](../../wip/notebook-presentation-progress.md) — mode présentation UbuSlides
-- [../../wip/notebook-templates-progress.md](../../wip/notebook-templates-progress.md) — templates V1
+- [../../wip/notebook-checkpoints-progress.md](../../archive/wip/notebook-checkpoints-progress.md) — checkpoints V1 (3 modes) + hint feature
+- [../../wip/notebook-pdf-export-progress.md](../../archive/wip/notebook-pdf-export-progress.md) — pipeline Typst
+- [../../wip/notebook-presentation-progress.md](../../archive/wip/notebook-presentation-progress.md) — mode présentation UbuSlides
+- [../../wip/notebook-templates-progress.md](../../archive/wip/notebook-templates-progress.md) — templates V1
 - [../../wip/notebook-ui-references.md](../../wip/notebook-ui-references.md) — benchmark Colab/Deepnote/Marimo + backlog UX
-- [../../wip/checkform-unified-progress.md](../../wip/checkform-unified-progress.md) — cosmetic AST transformers (réutilisé par les checkpoints)
+- [../../wip/checkform-unified-progress.md](../../archive/wip/checkform-unified-progress.md) — cosmetic AST transformers (réutilisé par les checkpoints)
 
 ---
 
@@ -398,9 +398,9 @@ Système d'exercices Python complet : création teacher, soumission élève (ass
 | Anti-bypass                      | UI uniquement (free-tier Vercel : pas de validation serveur). Acceptable car aucun résultat n'a de poids académique.    |
 | Compatibilité                    | Orthogonal aux 5 stratégies. Exo sans marqueurs = `PythonEditor` classique (rétro-compat).                              |
 
-→ Voir [../../wip/python-locked-zones-progress.md](../../wip/python-locked-zones-progress.md)
+→ Voir [../../wip/python-locked-zones-progress.md](../../archive/wip/python-locked-zones-progress.md)
 
-→ Voir [../../wip/python-validation-refactor-spec.md](../../wip/python-validation-refactor-spec.md) et [../../wip/python-validation-refactor-progress.md](../../wip/python-validation-refactor-progress.md)
+→ Voir ../../wip/python-validation-refactor-spec.md et [../../wip/python-validation-refactor-progress.md](../../archive/wip/python-validation-refactor-progress.md)
 
 ### Tests cachés
 
@@ -510,16 +510,16 @@ Une diff vide garantit qu'éditer-puis-sauvegarder-sans-changement ne mute pas l
 - [progress/python-exercises-api-progress.md](../../archive/python-progress/python-exercises-api-progress.md) — endpoints initiaux + sécurité
 - [progress/python-validation-implementation.md](../../archive/python-progress/python-validation-implementation.md) — runner client
 - [progress/python-shared-types.md](../../archive/python-progress/python-shared-types.md) — types partagés
-- [../../wip/python-exercises-executor-progress.md](../../wip/python-exercises-executor-progress.md) — exposition `validateExercise`
-- [../../wip/python-exercises-namespace-isolation-progress.md](../../wip/python-exercises-namespace-isolation-progress.md) — fix isolation
-- [../../wip/output-comparison-v2-progress.md](../../wip/output-comparison-v2-progress.md) — refonte API output (presets + tolérance numérique)
-- [../../wip/hidden-tests-progress.md](../../wip/hidden-tests-progress.md) — tests cachés
-- [../../wip/free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md) — bouton Soumettre + soumissions libres + historique
-- [../../wip/custom-comparator-progress.md](../../wip/custom-comparator-progress.md) — comparateur Python custom (special-judge)
-- [../../wip/tags-normalization-progress.md](../../wip/tags-normalization-progress.md) — colonnes `tags TEXT[]` → tables de jonction (math + Python)
-- [../../wip/python-exercises-results-page-progress.md](../../wip/python-exercises-results-page-progress.md) — page résultats prof (Bloc C)
-- [../../wip/python-exercises-drill-down-progress.md](../../wip/python-exercises-drill-down-progress.md) — drill-down soumissions par élève
-- [../../wip/python-exercises-per-student-progress.md](../../wip/python-exercises-per-student-progress.md) — vue par élève cross-exos
+- [../../wip/python-exercises-executor-progress.md](../../archive/wip/python-exercises-executor-progress.md) — exposition `validateExercise`
+- [../../wip/python-exercises-namespace-isolation-progress.md](../../archive/wip/python-exercises-namespace-isolation-progress.md) — fix isolation
+- [../../wip/output-comparison-v2-progress.md](../../archive/wip/output-comparison-v2-progress.md) — refonte API output (presets + tolérance numérique)
+- [../../wip/hidden-tests-progress.md](../../archive/wip/hidden-tests-progress.md) — tests cachés
+- [../../wip/free-practice-submissions-progress.md](../../archive/wip/free-practice-submissions-progress.md) — bouton Soumettre + soumissions libres + historique
+- [../../wip/custom-comparator-progress.md](../../archive/wip/custom-comparator-progress.md) — comparateur Python custom (special-judge)
+- [../../wip/tags-normalization-progress.md](../../archive/wip/tags-normalization-progress.md) — colonnes `tags TEXT[]` → tables de jonction (math + Python)
+- [../../wip/python-exercises-results-page-progress.md](../../archive/wip/python-exercises-results-page-progress.md) — page résultats prof (Bloc C)
+- [../../wip/python-exercises-drill-down-progress.md](../../archive/wip/python-exercises-drill-down-progress.md) — drill-down soumissions par élève
+- [../../wip/python-exercises-per-student-progress.md](../../archive/wip/python-exercises-per-student-progress.md) — vue par élève cross-exos
 
 ### Backlog (low priority — attendre feedback prof)
 

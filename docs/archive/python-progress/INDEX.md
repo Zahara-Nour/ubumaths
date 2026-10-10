@@ -207,8 +207,8 @@ Mise en place des routes utilisateur pour les exos Python : création teacher, c
 | `832075eee` | feat : table dédiée `python_tags` (séparée des math tags)             |
 | `ca737a540` | chore : 5 exercices seedés (1 par stratégie)                          |
 
-→ [python-exercises-executor-progress.md](../../wip/python-exercises-executor-progress.md)
-→ [python-exercises-namespace-isolation-progress.md](../../wip/python-exercises-namespace-isolation-progress.md)
+→ [python-exercises-executor-progress.md](../wip/python-exercises-executor-progress.md)
+→ [python-exercises-namespace-isolation-progress.md](../wip/python-exercises-namespace-isolation-progress.md)
 
 ---
 
@@ -226,7 +226,7 @@ Refonte de la stratégie `output` : remplacement du booléen `ignore_whitespace`
 | `7c488cd1e` | chore : migration UPDATE des seeds                                 |
 | `1b6a1f08e` | docs : doc de progression                                          |
 
-→ [output-comparison-v2-progress.md](../../wip/output-comparison-v2-progress.md)
+→ [output-comparison-v2-progress.md](../wip/output-comparison-v2-progress.md)
 
 ---
 
@@ -242,7 +242,7 @@ Champ `hidden?: boolean` sur `OutputTestCase` et `UnitTestCase`. Quand `true`, l
 | `4a8ed3f68` | feat : rendu opaque (cadenas + label) côté résultat   |
 | `a3dee1b7a` | docs : doc de progression                             |
 
-→ [hidden-tests-progress.md](../../wip/hidden-tests-progress.md)
+→ [hidden-tests-progress.md](../wip/hidden-tests-progress.md)
 
 ---
 
@@ -256,7 +256,7 @@ Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** lib
 | `bf6479131` | feat : bouton Soumettre + panneau historique côté élève                |
 | `f47577619` | docs : doc de progression                                              |
 
-→ [free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md)
+→ [free-practice-submissions-progress.md](../wip/free-practice-submissions-progress.md)
 
 ---
 
@@ -271,7 +271,7 @@ Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** lib
 | `abf112c8b` | feat : 9e preset "Comparateur Python (avancé)" dans l'éditeur     |
 | `e06428c21` | docs : doc de progression                                         |
 
-→ [custom-comparator-progress.md](../../wip/custom-comparator-progress.md)
+→ [custom-comparator-progress.md](../wip/custom-comparator-progress.md)
 
 ---
 
@@ -326,7 +326,7 @@ Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.t
 | `40c4cdbcb` | fix : propage les échecs de sync junction (rollback INSERT, 500 sur PUT)    |
 | `c84c99b1c` | test : 19 tests sur `tags-resolution.ts`                                    |
 
-→ [tags-normalization-progress.md](../../wip/tags-normalization-progress.md)
+→ [tags-normalization-progress.md](../wip/tags-normalization-progress.md)
 
 ---
 
@@ -356,7 +356,7 @@ Route `/python-exercises/my-progress` : pendant côté élève des vues prof. L'
 | `d55358fe6` | feat : route + server load (7 tests TDD) + UI cards + table sortable |
 | `3becb938a` | feat : bouton "Ma progression" sur la page consultation              |
 
-→ [python-exercises-my-progress-progress.md](../../wip/python-exercises-my-progress-progress.md)
+→ [python-exercises-my-progress-progress.md](../wip/python-exercises-my-progress-progress.md)
 
 ---
 
@@ -379,7 +379,7 @@ Route `/python-exercises/students/[student_id]` : vue d'ensemble pour un prof su
 | `3633a2072` | feat : route + server load (8 tests TDD) + UI cards + table sortable |
 | `1a6e7b6d5` | feat : bouton "Voir tous ses exos" sur drill-down                    |
 
-→ [python-exercises-per-student-progress.md](../../wip/python-exercises-per-student-progress.md)
+→ [python-exercises-per-student-progress.md](../wip/python-exercises-per-student-progress.md)
 
 ---
 
@@ -392,7 +392,7 @@ Route `/python-exercises/[id]/results/[student_id]` : le prof clique sur un nom 
 | `a1b6970b0` | feat : route + server load (9 tests TDD) + UI cards expandables          |
 | `633c1f5bd` | feat : nom de l'élève dans la table résultats devient un lien drill-down |
 
-→ [python-exercises-drill-down-progress.md](../../wip/python-exercises-drill-down-progress.md)
+→ [python-exercises-drill-down-progress.md](../wip/python-exercises-drill-down-progress.md)
 
 ---
 
@@ -409,7 +409,7 @@ Mapping mastery applicatif à 3 valeurs (`mastered` / `in_progress` / `not_start
 | `e6820ea64` | feat : bouton "Voir les résultats" sur la page consultation             |
 | `57fdadf1e` | docs : doc de progression                                               |
 
-→ [python-exercises-results-page-progress.md](../../wip/python-exercises-results-page-progress.md)
+→ [python-exercises-results-page-progress.md](../wip/python-exercises-results-page-progress.md)
 
 ---
 
@@ -433,13 +433,13 @@ Sprint d'intensification du notebook : ajout de cellules de vérification (3 mod
 | `b636e4df0` | feat: teacher dashboard surfaces attempt count + hint reveal per checkpoint          |
 | `bacd14e22` | chore(types): regenerate database.ts after notebook checkpoint attempts migration    |
 
-→ [../../wip/notebook-checkpoints-progress.md](../../wip/notebook-checkpoints-progress.md) — checkpoints V1 (3 modes + hint feature)
-→ [../../wip/notebook-pdf-export-progress.md](../../wip/notebook-pdf-export-progress.md) — pipeline Typst + sécurité injection
-→ [../../wip/notebook-presentation-progress.md](../../wip/notebook-presentation-progress.md) — mode présentation UbuSlides
-→ [../../wip/notebook-templates-progress.md](../../wip/notebook-templates-progress.md) — templates V1 (gallery + clone + save-as)
-→ [../../wip/notebook-attempts-dashboard-progress.md](../../wip/notebook-attempts-dashboard-progress.md) — tentatives élève + hint flag sur dashboard
+→ [../../wip/notebook-checkpoints-progress.md](../wip/notebook-checkpoints-progress.md) — checkpoints V1 (3 modes + hint feature)
+→ [../../wip/notebook-pdf-export-progress.md](../wip/notebook-pdf-export-progress.md) — pipeline Typst + sécurité injection
+→ [../../wip/notebook-presentation-progress.md](../wip/notebook-presentation-progress.md) — mode présentation UbuSlides
+→ [../../wip/notebook-templates-progress.md](../wip/notebook-templates-progress.md) — templates V1 (gallery + clone + save-as)
+→ [../../wip/notebook-attempts-dashboard-progress.md](../wip/notebook-attempts-dashboard-progress.md) — tentatives élève + hint flag sur dashboard
 → [../../wip/notebook-ui-references.md](../../wip/notebook-ui-references.md) — benchmark Colab/Deepnote/Marimo + backlog UX
-→ [../../wip/checkform-unified-progress.md](../../wip/checkform-unified-progress.md) — cosmetic AST transformers (réutilisés par les checkpoints)
+→ [../../wip/checkform-unified-progress.md](../wip/checkform-unified-progress.md) — cosmetic AST transformers (réutilisés par les checkpoints)
 
 ---
 

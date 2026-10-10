@@ -1,6 +1,6 @@
 # Migration architecture des tests — progression
 
-> Cible : [docs/pratiques/tests.md](../ref/tests/architecture.md). Démarré 2026-06-14.
+> Cible : [docs/pratiques/tests.md](../../pratiques/tests.md). Démarré 2026-06-14.
 
 ## Décisions actées (validées PO)
 

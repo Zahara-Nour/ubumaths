@@ -385,4 +385,4 @@ Modal pour packager le notebook courant en template. Inputs (titre / description
 - Worker → [`worker.md`](worker.md)
 - Architecture transversale → [`architecture.md`](architecture.md)
 - Vue fonctionnelle → [`README.md`](README.md)
-- Locked zones (utilitaire) → `src/lib/utils/locked-zones.ts` + [`progress/python-locked-zones-progress.md`](../../wip/python-locked-zones-progress.md)
+- Locked zones (utilitaire) → `src/lib/utils/locked-zones.ts` + [`progress/python-locked-zones-progress.md`](../../archive/wip/python-locked-zones-progress.md)

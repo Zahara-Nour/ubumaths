@@ -32,9 +32,9 @@ Ajout fonctionnel léger :
 ## Documents sources
 
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
-- Étude v2 (finale) : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
+- Étude v2 (finale) : `docs/wip/geometry/study-angle-object-v2.md`
 - Progress V1 : [`docs/wip/geometry/angle-v1-progress.md`](./angle-v1-progress.md)
-- Reference DSL : [`docs/systeme/geometrie/dsl-builtins.md`](../../ref/geometry/dsl-builtins.md)
+- Reference DSL : [`docs/systeme/geometrie/dsl-builtins.md`](../../../systeme/geometrie/dsl-builtins.md)
 
 ## Statut des phases
 

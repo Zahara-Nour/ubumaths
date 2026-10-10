@@ -283,4 +283,4 @@ Vérifié dans `20260610100000_refonte_skill_attempts_per_template.sql`. Respect
 
 - [`tests.md`](tests.md) — Plan détaillé des tests à ajouter.
 - [`README.md`](README.md) — Action items cross-cutting + chiffres clés.
-- [`docs/wip/srs-fsrs-progress.md`](../../wip/srs-fsrs-progress.md) — Historique exécution chantier.
+- [`docs/wip/srs-fsrs-progress.md`](../../archive/wip/srs-fsrs-progress.md) — Historique exécution chantier.

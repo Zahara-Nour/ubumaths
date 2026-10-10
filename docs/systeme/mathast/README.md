@@ -126,7 +126,7 @@ securite parser, approche paliers pedagogiques, convention nombre signe.
 
 ## Dossier `progress/`
 
-[`progress/`](./progress/) regroupe les documents de progression des chantiers livres
+`progress/` regroupe les documents de progression des chantiers livres
 dans ce module (migrations, refactors, nouvelles features). Consulter avant de toucher
 une zone connue pour avoir ete refactoree recemment.
 

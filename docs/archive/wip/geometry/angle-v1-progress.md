@@ -6,10 +6,10 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 
 ## Documents sources
 
-- Étude v1 : [`docs/wip/geometry/study-angle-object.md`](./study-angle-object.md)
-- Étude v2 (finale) : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
+- Étude v1 : `docs/wip/geometry/study-angle-object.md`
+- Étude v2 (finale) : `docs/wip/geometry/study-angle-object-v2.md`
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
-- Prompt source : [`docs/wip/geometry/prompt-angle-object.md`](./prompt-angle-object.md)
+- Prompt source : `docs/wip/geometry/prompt-angle-object.md`
 
 ## Statut des phases
 
@@ -214,9 +214,9 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 
 ## Liens
 
-- Prompt source : [`docs/wip/geometry/prompt-angle-object.md`](./prompt-angle-object.md)
-- Étude v1 : [`docs/wip/geometry/study-angle-object.md`](./study-angle-object.md) (sections 5, 7, 8, 9 réutilisables)
-- Étude v2 finale : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
+- Prompt source : `docs/wip/geometry/prompt-angle-object.md`
+- Étude v1 : `docs/wip/geometry/study-angle-object.md` (sections 5, 7, 8, 9 réutilisables)
+- Étude v2 finale : `docs/wip/geometry/study-angle-object-v2.md`
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
 - MEMORY : `geometry-core-status.md`, `transformation-objects.md`, `vector-implementation.md`
 

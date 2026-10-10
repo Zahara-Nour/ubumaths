@@ -30,7 +30,7 @@ constructeurs + dette tech) avec **3 features pédagogiques** :
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
 - Progress V2 (référence pour structure et style) : [`docs/wip/geometry/angle-v2-progress.md`](./angle-v2-progress.md)
 - Progress V1 : [`docs/wip/geometry/angle-v1-progress.md`](./angle-v1-progress.md)
-- Reference DSL : [`docs/systeme/geometrie/dsl-builtins.md`](../../ref/geometry/dsl-builtins.md)
+- Reference DSL : [`docs/systeme/geometrie/dsl-builtins.md`](../../../systeme/geometrie/dsl-builtins.md)
 
 ## Statut des phases
 

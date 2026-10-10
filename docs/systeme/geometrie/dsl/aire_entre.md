@@ -265,9 +265,9 @@ sur les fonctions et inspecter les coordonnées.
 - [`aire(f, a, b)`](aire.md) — aire entre une courbe et l'axe des x.
 - [`integrale(f, a, b)`](integrale.md) — intégrale signée
   (peut être négative).
-- [`courbe(...)`](./courbe.md) — création de la fonction `f` ou `g`.
-- [`mesure(A)`](./mesure.md) — affichage du scalaire sur la figure.
-- [`slider(...)`](./slider.md) — création d'un curseur pour les bornes
+- `courbe(...)` — création de la fonction `f` ou `g`.
+- `mesure(A)` — affichage du scalaire sur la figure.
+- `slider(...)` — création d'un curseur pour les bornes
   dynamiques.
 
 ## Référence interne
@@ -275,5 +275,5 @@ sur les fonctions et inspecter les coordonnées.
 - Étude de conception : `docs/wip/geometry/aire-entre-study.md`.
 - Document de progression : `docs/wip/geometry/aire-entre-progress.md`.
 - Page de démo :
-  [`/geometry-demo/sliders/aire-entre`](/geometry-demo/sliders/aire-entre)
+  `/geometry-demo/sliders/aire-entre`
   — visualise le cas `sin(x) vs cos(x)` sur `[π/4, 5π/4]` = 2√2.
