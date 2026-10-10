@@ -68,5 +68,5 @@ Constats remontés à David (non corrigés, décisions à prendre) :
 - Vocabulaire à trancher avec David (skill domain-modeling) : « carte » (atelier) vs « carte de cours » ; module `lexicon/` alors que « lexique » = lore ; CONTEXT.md dit encore « table à créer » (dictionnaire) et liste des types TinyMath disparus.
 - `docs/wip/atelier-progress.md` (chapeau) périmé : garanties /grapheur livrées ; en-tête « Proposition » de `systeme/atelier-syntaxe.md` à requalifier.
 - `docs/wip/chiffrement-progress.md` : chantier clos ? → archiver.
-- Docs non revues contre le code : `analytique-prof.md` (famille A), `export-competences.md`, `realtime.md`, `architecture-generale.md` (comptages périmés), et les `pratiques/*` (seuls leurs chemins sont gardés).
+- [x] Relues contre le code (1762d1114) : analytique-prof, export-competences, realtime, architecture-generale et les 20 `pratiques/*` (~30 affirmations corrigées). Toute la doc porte désormais « Vérifié contre le code le 2026-10-10 » (sauf mesures-mac-mini, historique).
 - Écarts « code » relevés dans chaque doc (section « écarts connus ») : à trier en chantiers (ex. tirage des variations dans les fiches, deux règles d'arrondi en stats, tableur 403 pour le prof).
