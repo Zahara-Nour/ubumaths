@@ -166,7 +166,7 @@ describe('POST /api/evaluations/assignments/[id]/start', () => {
 		const statuses: number[] = [];
 		for (let i = 0; i < 21; i++) {
 			statuses.push(
-				await call()
+				await Promise.resolve(call())
 					.then((r) => r.status)
 					.catch((e: { status?: number }) => e.status ?? 0)
 			);

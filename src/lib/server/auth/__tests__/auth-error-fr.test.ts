@@ -18,9 +18,9 @@ describe('authErrorToFrench', () => {
 	it('ne laisse jamais passer le message anglais de Supabase', () => {
 		const error = { code: 'unexpected_failure', message: 'Something went wrong on our side' };
 		expect(authErrorToFrench(error)).toBe(AUTH_ERROR_FALLBACK);
-		expect(authErrorToFrench({ message: 'New password should be different' })).toBe(
-			AUTH_ERROR_FALLBACK
-		);
+		// Une AuthError sans code : seul le message anglais est présent.
+		const withoutCode = { code: undefined, message: 'New password should be different' };
+		expect(authErrorToFrench(withoutCode)).toBe(AUTH_ERROR_FALLBACK);
 	});
 
 	it('accepte un message de repli propre à la page', () => {

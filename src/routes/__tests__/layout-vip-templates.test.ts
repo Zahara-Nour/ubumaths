@@ -8,13 +8,16 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { load } from '../+layout.server';
+import type { LayoutServerData } from '../$types';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 type LoadEvent = Parameters<typeof load>[0];
-type LoadResult = Exclude<Awaited<ReturnType<typeof load>>, void>;
+// Ce que rend VRAIMENT le load : SvelteKit l'infère via un proxy sans l'annotation
+// `LayoutServerLoad`, dont le type de retour lâche (`Record<string, any>`) ne dit rien.
+type LoadResult = LayoutServerData;
 
 // ============================================================================
 // CONSTANTS

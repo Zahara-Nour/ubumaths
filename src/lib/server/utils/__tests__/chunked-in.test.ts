@@ -70,11 +70,9 @@ describe('fetchInChunks', () => {
 		const ids = Array.from({ length: 250 }, (_, i) => `id-${i}`);
 		// Chaque lot rend une ligne par identifiant demandé : un découpage qui
 		// perdrait un lot en route se verrait tout de suite.
-		const runBatch = vi
-			.fn()
-			.mockImplementation((batch: string[]) =>
-				Promise.resolve({ data: batch.map((id) => ({ id })), error: null })
-			);
+		const runBatch = vi.fn((batch: string[]) =>
+			Promise.resolve({ data: batch.map((id) => ({ id })), error: null })
+		);
 
 		const result = await fetchInChunks(ids, runBatch);
 

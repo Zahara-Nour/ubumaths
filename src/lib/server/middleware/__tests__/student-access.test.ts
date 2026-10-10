@@ -94,7 +94,9 @@ const mockTeacherProfile: Profile = {
 	// Consent fields (RGPD Article 8)
 	consent_required: false,
 	consent_granted_at: null,
-	consent_grace_period_ends: null
+	consent_grace_period_ends: null,
+	age_declaration: null,
+	age_declared_at: null
 };
 
 const mockAdminProfile: Profile = {

@@ -24,7 +24,10 @@ const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
-const addBuddyXpFromTest = vi.hoisted(() => vi.fn(async () => null));
+// Typé avec la vraie signature : les tests lisent ses arguments (les réponses).
+const addBuddyXpFromTest = vi.hoisted(() =>
+	vi.fn<typeof import('$lib/server/buddy-xp-service').addBuddyXpFromTest>(async () => null)
+);
 vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
 // Le serveur lit la nature des modèles avec ses propres droits (brouillons
 // compris) ; `lectureModeles` compte ses lectures.
@@ -359,7 +362,7 @@ describe('enregistrement d’une évaluation', () => {
 	it('carte : pas d’XP du compagnon', async () => {
 		cartesDeCours = [MODELE_B];
 		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
-		const answers = addBuddyXpFromTest.mock.calls[0][2] as unknown[];
+		const answers = addBuddyXpFromTest.mock.calls[0][2];
 		expect(answers).toHaveLength(1);
 	});
 

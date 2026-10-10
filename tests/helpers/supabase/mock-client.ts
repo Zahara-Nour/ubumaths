@@ -39,7 +39,7 @@
  * mockResolvedValueOnce() doesn't properly implement the thenable protocol and will timeout.
  */
 
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import type { SupabaseClient, User, Session } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -99,6 +99,15 @@ export interface MockChain {
 }
 
 /**
+ * Le rpc simulé. L'appel est typé d'après l'implémentation PAR DÉFAUT de
+ * createMockSupabase, qui résout toujours `{ data, error }` (jamais d'exception).
+ * Un test qui la remplace (`mockReturnValueOnce({ single: … })` pour imiter
+ * `.rpc(…).single()`) peut rendre autre chose : d'où le `Mock<… => unknown>`.
+ */
+export type MockRpc = ((name: string, params?: unknown) => Promise<SupabaseResponse<unknown>>) &
+	Mock<(name: string, params?: unknown) => unknown>;
+
+/**
  * RPC mock function type - can be a static value or a function that receives params
  */
 export type RpcMockValue = unknown | ((params: unknown) => unknown | Promise<unknown>);
@@ -128,7 +137,7 @@ export interface MockSupabaseClient extends Omit<SupabaseClient<Database>, 'auth
 	auth: MockAuth;
 
 	/** RPC function mock */
-	rpc: MockFn;
+	rpc: MockRpc;
 
 	/** From function mock */
 	from: MockFn;

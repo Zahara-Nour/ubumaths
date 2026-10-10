@@ -24,7 +24,8 @@ vi.mock('$lib/server/middleware/auth', () => ({
  * which is `undefined` here, so it cannot be used. This helper asserts the handler
  * rejected with an HttpError carrying the expected message.
  */
-async function expectHttpError(promise: Promise<unknown>, expectedMessage: string) {
+// Un handler SvelteKit rend un MaybePromise<Response>.
+async function expectHttpError(promise: Response | Promise<Response>, expectedMessage: string) {
 	let thrown: unknown;
 	try {
 		await promise;
