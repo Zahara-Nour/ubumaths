@@ -63,7 +63,7 @@ parce que… ») ; c'est toi qui rouvres ou non.
 
 Les quatorze commandes de `.claude/commands/` (`/feature`, `/fix`, `/pr`, `/check`…) ont été retirées.
 Aucune n'avait été lancée en 60 jours, et plusieurs prescrivaient des gestes devenus faux : `/pr`
-lançait `pnpm check:fast`, qui meurt sur le tas V8, et `/check` enchaînait `check`, `lint` et `build`.
+lançait l'ancien `check:fast`, qui meurt sur le tas V8, et `/check` enchaînait `check`, `lint` et `build`.
 Le déroulé de référence est dans [CLAUDE.md](../../CLAUDE.md) et
 [git-workflow.md](git-workflow.md) ; il suffit de dire ce qu'on veut (« corrige ce bug », « ouvre la PR »).
 

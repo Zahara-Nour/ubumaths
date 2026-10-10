@@ -117,7 +117,7 @@ semaines n'affiche que ses sept derniers jours.
    **agrégée** (7 jours). Mesuré le 2026-09-15 sur le message exact
    « Enrichissement illisible » : trouvé par le MCP, introuvable par le CLI.
 
-   ⚠️ Un script `pnpm errors:prod` bâti sur le CLI annoncerait donc « aucune
+   ⚠️ Un script `errors:prod` (hypothétique) bâti sur le CLI annoncerait donc « aucune
    erreur » alors qu'il y en a. Pire que rien : ça institutionnalise le piège du
    journal vide. **Ne pas le faire.**
 

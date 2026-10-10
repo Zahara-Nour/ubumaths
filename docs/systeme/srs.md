@@ -290,7 +290,7 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 - **Suppressions sans `.select()`** : `DELETE` de `api/srs/cards/[id]`, `api/srs/decks/[id]` et
   `…/sections/[sectionId]` ne vérifient pas les lignes supprimées. Sur le Programme, la RLS
   refuse en silence (0 ligne) et la route répond quand même « supprimé ».
-- Des en-têtes de code renvoient encore à `docs/systeme/srs/architecture.md` et parlent de
+- Des en-têtes de code (renvois corrigés par la PR #1027) parlent encore de
   « famille A » (`capacity-badge.ts`, `programme-deck.ts`, `decks/programme/+page.server.ts`,
   `api/skill-attempts`).
 

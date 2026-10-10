@@ -228,7 +228,7 @@ Le dashboard `/python-notebook/[id]/results` distingue maintenant « réussi du 
 - Par cellule : `N essais` inline + 💡 Lightbulb si `hint_revealed` + tooltip timing
 - Placeholder `attempt_count === 0` → `CircleDashed` + « Indice révélé sans essai »
 
-→ Voir `docs/wip/notebook-attempts-dashboard-progress.md`.
+→ Voir `docs/archive/wip/notebook-attempts-dashboard-progress.md` (archivé).
 
 ### V2 — Templates (2026-06)
 
