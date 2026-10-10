@@ -24,7 +24,10 @@ describe('compareCounts — le cliquet par fichier', () => {
 	const ratchet = { 'a.test.ts': 3, 'b.test.ts': 2 };
 
 	it('rien ne bouge : ni hausse ni baisse', () => {
-		expect(compareCounts(ratchet, { 'a.test.ts': 3, 'b.test.ts': 2 })).toEqual({ increases: [], decreases: [] });
+		expect(compareCounts(ratchet, { 'a.test.ts': 3, 'b.test.ts': 2 })).toEqual({
+			increases: [],
+			decreases: []
+		});
 	});
 
 	it('un nouveau fichier avec une erreur est une hausse : les nouveaux tests naissent typés', () => {

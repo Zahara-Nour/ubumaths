@@ -493,7 +493,8 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [version, lint, typecheck, types-tests, build, test-server, test-client, audit, definer-guard]
+    needs:
+      [version, lint, typecheck, types-tests, build, test-server, test-client, audit, definer-guard]
     if: always()
 
     steps:

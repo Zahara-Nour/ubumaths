@@ -77,7 +77,16 @@ function writeRatchet(counts: ErrorCounts): void {
 function runCheck(): string {
 	const r = spawnSync(
 		'npx',
-		['svelte-check', '--tsconfig', './tsconfig.json', '--tsgo', '--threshold', 'error', '--output', 'machine'],
+		[
+			'svelte-check',
+			'--tsconfig',
+			'./tsconfig.json',
+			'--tsgo',
+			'--threshold',
+			'error',
+			'--output',
+			'machine'
+		],
 		{
 			encoding: 'utf-8',
 			maxBuffer: 256 * 1024 * 1024,
@@ -101,7 +110,9 @@ function main(): void {
 
 	if (process.argv.includes('--maj')) {
 		writeRatchet(current);
-		console.log(`✓ Cliquet réécrit : ${total(current)} erreurs dans ${Object.keys(current).length} fichiers.`);
+		console.log(
+			`✓ Cliquet réécrit : ${total(current)} erreurs dans ${Object.keys(current).length} fichiers.`
+		);
 		return;
 	}
 
@@ -113,20 +124,27 @@ function main(): void {
 		for (const c of increases) {
 			console.error(`\n  ${c.file} : ${c.before} → ${c.after}`);
 			for (const line of output.split('\n')) {
-				if (ERROR_LINE.exec(line)?.[1] === c.file) console.error(`    ${line.replace(/^\d+ ERROR "[^"]+" /, '')}`);
+				if (ERROR_LINE.exec(line)?.[1] === c.file)
+					console.error(`    ${line.replace(/^\d+ ERROR "[^"]+" /, '')}`);
 			}
 		}
 	}
 	if (decreases.length > 0) {
 		console.error(
-			increases.length > 0 ? '\nEn baisse :' : '⛔ Erreurs de types en BAISSE — il reste à abaisser le cliquet :'
+			increases.length > 0
+				? '\nEn baisse :'
+				: '⛔ Erreurs de types en BAISSE — il reste à abaisser le cliquet :'
 		);
 		for (const c of decreases) console.error(`  ${c.file} : ${c.before} → ${c.after}`);
-		console.error('\nLancer `pnpm types:cliquet --maj` et commiter tests/cliquet-types-tests.json.');
+		console.error(
+			'\nLancer `pnpm types:cliquet --maj` et commiter tests/cliquet-types-tests.json.'
+		);
 	}
 	if (increases.length > 0 || decreases.length > 0) process.exit(1);
 
-	console.log(`✓ Cliquet tenu : ${total(current)} erreurs de types dans ${Object.keys(current).length} fichiers de tests.`);
+	console.log(
+		`✓ Cliquet tenu : ${total(current)} erreurs de types dans ${Object.keys(current).length} fichiers de tests.`
+	);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) main();
