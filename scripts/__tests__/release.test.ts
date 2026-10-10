@@ -4,7 +4,7 @@
  *
  * Ce qui est gardé ici : **une fonctionnalité vaut un numéro mineur**, même en
  * 0.x. La v0.14.2 est sortie avec dix `feat:` dedans, annoncée comme un simple
- * correctif — standard-version force `preMajor` en dessous de 1.0.0 et
+ * correctif — commit-and-tag-version (ex-standard-version) force `preMajor` en dessous de 1.0.0 et
  * rétrograde chaque niveau d'un cran.
  *
  * Un mauvais numéro de version est un échec silencieux de plus : rien ne
