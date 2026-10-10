@@ -3,10 +3,16 @@
  * la question, l'indice et les phrases d'essai soulignent bien leurs mots, et
  * le niveau choisi est celui de la question réelle.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
+
+// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, les entrées du fichier
+vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+	const { default: entries } = await import('$lib/data/math-dictionary-fr');
+	return { fetchDictionary: async () => entries };
+});
 
 function lexiconButtons(container: HTMLElement): string[] {
 	return [...container.querySelectorAll('button.lexicon-term')].map((b) => b.textContent ?? '');

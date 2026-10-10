@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import {
@@ -10,7 +9,7 @@
 		resolveGradedField,
 		type GradedField,
 		type MathTerm
-	} from '$lib/data/math-dictionary-fr';
+	} from '$lib/dictionary/model';
 	import { resolve } from '$app/paths';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -20,6 +19,9 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 
 	// ===== Constants =====
 
@@ -133,8 +135,8 @@
 	/** Terme principal de ce nom : un renvoi peut porter le même nom que sa cible (« solution »). */
 	function findPrincipal(name: string): MathTerm | undefined {
 		return (
-			MATH_DICTIONARY.find((t) => t.term === name && !t.derivedFrom) ??
-			MATH_DICTIONARY.find((t) => t.term === name)
+			data.entries.find((t) => t.term === name && !t.derivedFrom) ??
+			data.entries.find((t) => t.term === name)
 		);
 	}
 
@@ -160,7 +162,7 @@
 
 	/** All unique tags sorted */
 	let allTags = $derived(
-		[...new Set(MATH_DICTIONARY.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b, 'fr'))
+		[...new Set(data.entries.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b, 'fr'))
 	);
 
 	/** Whether any filter is active */
@@ -170,7 +172,7 @@
 
 	/** Filtered and sorted terms */
 	let filteredTerms = $derived.by(() => {
-		let terms = [...MATH_DICTIONARY];
+		let terms = [...data.entries];
 
 		// Search filter (uses debounced query for performance)
 		if (debouncedQuery.length > 0) {

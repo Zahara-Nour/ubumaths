@@ -10,11 +10,12 @@
  * Une passe pure sur l'AST d'ubumark : chaque nœud texte reçoit les positions
  * de ses mots repérés (`terms`), sans être découpé, pour que l'arbre garde sa
  * forme. L'AST reçu n'est jamais modifié (il peut venir du cache des rendus).
+ * Les entrées viennent de la base (`createLinker`, ADR 0022).
  *
  * @module lexicon/linker
  */
 
-import MATH_DICTIONARY, { isTermVisibleTo, type MathTerm } from '$lib/data/math-dictionary-fr';
+import { isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
 import type { GradeCode } from '$lib/types/grades';
 import type { DocumentNode, LexiconMark, TermRange, TextNode } from '$lib/ubumark';
 
@@ -25,13 +26,6 @@ import type { DocumentNode, LexiconMark, TermRange, TextNode } from '$lib/ubumar
 /** Identifiant d'une entrée : son nom, suivi de son sens pour un homonyme (« carré (puissance) »). */
 export function termId(term: MathTerm): string {
 	return term.sense ? `${term.term} (${term.sense})` : term.term;
-}
-
-const TERMS_BY_ID = new Map(MATH_DICTIONARY.map((term) => [termId(term), term]));
-
-/** Entrée du dictionnaire par son identifiant. */
-export function getTermById(id: string): MathTerm | undefined {
-	return TERMS_BY_ID.get(id);
 }
 
 // ---------------------------------------------------------------------------
@@ -68,8 +62,6 @@ interface LexiconIndex {
 	byName: Map<string, MathTerm[]>;
 }
 
-const indexes = new Map<GradeCode, LexiconIndex>();
-
 /** Motif d'un nom : accents exacts, casse ignorée (drapeau `i`), pluriel admis sur chaque mot. */
 function namePattern(name: string): string {
 	return name
@@ -102,12 +94,10 @@ function byLength(a: string, b: string): number {
 	return b.length - a.length || a.localeCompare(b);
 }
 
-function getIndex(grade: GradeCode): LexiconIndex {
-	const cached = indexes.get(grade);
-	if (cached) return cached;
+function buildIndex(entries: readonly MathTerm[], grade: GradeCode): LexiconIndex {
 	const byName = new Map<string, MathTerm[]>();
 	const auto = new Set<string>();
-	for (const term of MATH_DICTIONARY) {
+	for (const term of entries) {
 		if (!isTermVisibleTo(term, grade)) continue;
 		for (const name of [term.term, ...(term.synonyms ?? []), ...(term.forms ?? [])]) {
 			const key = name.toLowerCase();
@@ -119,15 +109,13 @@ function getIndex(grade: GradeCode): LexiconIndex {
 	}
 	const autoNames = [...auto].sort(byLength);
 	const allNames = [...byName.keys()].sort(byLength);
-	const index: LexiconIndex = {
+	return {
 		autoNames,
 		auto: namesRegex(autoNames),
 		allNames,
 		allExact: exactRegex(allNames),
 		byName
 	};
-	indexes.set(grade, index);
-	return index;
 }
 
 /** Nom reconnu par une correspondance : le groupe capturant qui a répondu. */
@@ -152,7 +140,8 @@ function markedEntries(
 	content: string,
 	mark: LexiconMark,
 	index: LexiconIndex,
-	grade: GradeCode
+	grade: GradeCode,
+	getTermById: (id: string) => MathTerm | undefined
 ): MathTerm[] {
 	if (mark.target) {
 		const exact = getTermById(mark.target);
@@ -173,11 +162,12 @@ function linkText(
 	node: TextNode,
 	index: LexiconIndex,
 	grade: GradeCode,
-	seen: Set<string>
+	seen: Set<string>,
+	getTermById: (id: string) => MathTerm | undefined
 ): TextNode {
 	if (node.code || node.lexicon?.mode === 'block') return node;
 	if (node.lexicon?.mode === 'force') {
-		const entries = markedEntries(node.content, node.lexicon, index, grade);
+		const entries = markedEntries(node.content, node.lexicon, index, grade, getTermById);
 		if (entries.length === 0) return node;
 		seen.add(idsKey(entries));
 		return { ...node, terms: [{ start: 0, end: node.content.length, ids: entries.map(termId) }] };
@@ -229,15 +219,19 @@ function isText(node: unknown): node is TextNode {
  * qu'une fois par document. Les tableaux, liens, formules et blocs spéciaux
  * ne sont pas touchés.
  */
-export function linkDocument(doc: DocumentNode, grade: GradeCode): DocumentNode {
-	const index = getIndex(grade);
+function linkWith(
+	doc: DocumentNode,
+	grade: GradeCode,
+	index: LexiconIndex,
+	getTermById: (id: string) => MathTerm | undefined
+): DocumentNode {
 	const seen = new Set<string>();
 
 	function visit(node: unknown): unknown {
 		if (!isContainer(node)) return node;
 		if (Array.isArray(node.children)) {
 			const children = node.children.map((child) =>
-				isText(child) ? linkText(child, index, grade, seen) : visit(child)
+				isText(child) ? linkText(child, index, grade, seen, getTermById) : visit(child)
 			);
 			return { ...node, children };
 		}
@@ -249,4 +243,36 @@ export function linkDocument(doc: DocumentNode, grade: GradeCode): DocumentNode 
 
 	// Même forme que le document reçu : seuls des champs `terms` s'ajoutent
 	return visit(doc) as DocumentNode;
+}
+
+// ---------------------------------------------------------------------------
+// Repérage sur un dictionnaire donné
+// ---------------------------------------------------------------------------
+
+export interface Linker {
+	/** Entrée du dictionnaire par son identifiant. */
+	getTermById(id: string): MathTerm | undefined;
+	/** Le document, avec les mots repérés au niveau `grade` (voir `linkWith`). */
+	linkDocument(doc: DocumentNode, grade: GradeCode): DocumentNode;
+}
+
+/** Repérage des mots de `entries` ; l'index d'un niveau est construit une fois (~19 ms). */
+export function createLinker(entries: readonly MathTerm[]): Linker {
+	const byId = new Map(entries.map((term) => [termId(term), term]));
+	const indexes = new Map<GradeCode, LexiconIndex>();
+	const getTermById = (id: string) => byId.get(id);
+
+	function getIndex(grade: GradeCode): LexiconIndex {
+		let index = indexes.get(grade);
+		if (!index) {
+			index = buildIndex(entries, grade);
+			indexes.set(grade, index);
+		}
+		return index;
+	}
+
+	return {
+		getTermById,
+		linkDocument: (doc, grade) => linkWith(doc, grade, getIndex(grade), getTermById)
+	};
 }

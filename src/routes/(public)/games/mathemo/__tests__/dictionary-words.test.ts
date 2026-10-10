@@ -1,8 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 import { GRADE_CODES } from '$lib/types/grades';
-import { allWordsNormalized, getWordsForLevel } from '../dictionary-words';
+import {
+	allPlayableWords,
+	getWordsForLevel as wordsAmong,
+	playableTerms
+} from '../dictionary-words';
 import { GRADE_LABELS, MATHEMO_GRADES } from '../types';
+
+// Ce que le serveur envoie au jeu (ici, depuis les entrées du fichier)
+const terms = playableTerms(MATH_DICTIONARY);
+const getWordsForLevel = (level: Parameters<typeof wordsAmong>[1]) => wordsAmong(terms, level);
+const allWordsNormalized = allPlayableWords(terms);
 
 describe('Mathémo : mots tirés du dictionnaire', () => {
 	// Le clavier du jeu n'a que les lettres de a à z : « demi-droite » était
@@ -40,5 +49,13 @@ describe('Mathémo : mots tirés du dictionnaire', () => {
 		expect(words).toContain('evenement');
 		// « base » a trois sens (puissance, solide, vecteurs) mais ne sort qu'une fois
 		expect(words.filter((w) => w === 'base')).toHaveLength(1);
+	});
+
+	it('n’envoie au navigateur que le nom, le niveau et les filières partagées', () => {
+		const seuil = terms.find((t) => t.term === 'seuil');
+		expect(seuil).toEqual({ term: 'seuil', grade: '1_SPE', sharedWith: ['1_GEN', '1_TECHNO'] });
+		expect(
+			terms.every((t) => Object.keys(t).every((k) => ['term', 'grade', 'sharedWith'].includes(k)))
+		).toBe(true);
 	});
 });
