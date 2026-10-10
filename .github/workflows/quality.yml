@@ -2,7 +2,7 @@ name: Code Quality
 
 on:
   push:
-    branches: [main, feature/**]
+    branches: [main]
     # `paths` (et non `paths-ignore`) pour pouvoir RÉINCLURE : le dernier motif
     # qui correspond l'emporte. docs/corrections est validé par un test
     # (scripts/corrections : pas d'identifiant d'utilisateur, RGPD) : un commit
@@ -14,6 +14,11 @@ on:
       - '!docs/**'
       - '!.github/dependabot.yml'
       - 'docs/corrections/**'
+      # Le code et le contenu servi, `.md` compris : les articles du Shtam
+      # (src/lib/server/shtam/articles/*.md) sont importés au build, Vercel les
+      # construit (scripts/vercel-ignore-build.sh), la CI doit donc tourner.
+      - 'src/**'
+      - 'static/**'
   pull_request:
     branches: [main]
     # No paths-ignore here: with required status checks on `main`, EVERY PR must
@@ -21,11 +26,14 @@ on:
     # "expected" required checks that never run → it could never be merged.
   workflow_dispatch: # Allow manual trigger
 
-# Cancel an in-progress run when a newer commit is pushed to the same ref —
-# saves Actions minutes (free tier) instead of running stale + fresh in parallel.
+# Sur une branche, un run périmé est annulé par le suivant. Sur main, JAMAIS :
+# chaque commit de main part en prod, son run doit aller au bout. Annulé, il
+# laissait passer en prod un commit jamais testé, et un rouge ne se rattachait
+# plus au bon merge (5 runs de main annulés du 8 au 9/10). Dépôt public : les
+# minutes Actions sont gratuites, l'économie ne valait rien.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   lint:
@@ -49,8 +57,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Cache prettier, stratégie `content` (un checkout réécrit les dates) : seuls
+      # les fichiers modifiés sont revérifiés. Sans cache : 162 s sur les 220 s du
+      # job (run du 2026-10-09). Même schéma de clés que le cache ESLint plus bas.
+      - name: Restore Prettier cache
+        uses: actions/cache@v6
+        with:
+          path: .prettier-cache
+          key: prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-${{ github.sha }}
+          restore-keys: |
+            prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-
+
       - name: Run Prettier check
-        run: pnpm prettier --check .
+        run: pnpm prettier --check . --cache --cache-strategy content --cache-location .prettier-cache
 
       # Tailwind 4 exposes complete colours as --color-* ; the bare --border,
       # --foreground, … tokens that `hsl(var(--x))` expects do not exist, so
