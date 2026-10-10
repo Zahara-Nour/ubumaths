@@ -242,13 +242,10 @@ export const questionTemplateDetailResponseSchema = z.object({
 
 /**
  * Create question template response schema (POST /api/questions/templates)
- * Note: Includes level adjustment metadata
  */
 export const createQuestionTemplateResponseSchema = z.object({
 	success: z.literal(true),
-	template: questionTemplateResponseSchema,
-	levelAdjusted: z.boolean(),
-	adjustedLevel: z.number().int().positive().optional()
+	template: questionTemplateResponseSchema
 });
 
 /**
