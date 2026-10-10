@@ -1,7 +1,7 @@
 # Rédiger une correction (mode A) — style maison et couleurs
 
 Une correction en mode A est une liste `correction.steps` de chaînes markdown, rendues dans l'ordre.
-Style relevé sur les 176 corrections relues (`docs/relecture/**/*.json`) :
+Style relevé sur les 176 corrections relues (`data/relecture/**/*.json`) :
 
 - **le calcul** dans un bloc aligné, une égalité par ligne, alignement sur `&=` :
   `$$\begin{align} A &= B \\ &= C \\ &= {{solution}} \end{align}$$` ;
@@ -56,7 +56,7 @@ $$\begin{align} \left( \textcolor{…0}{-}3 \right) \times 2 &= \textcolor{…2}
 ```
 
 (`…0` abrège `{{color:primary.0}}`.) Rendus réels, sur 3 tirages par modèle :
-[docs/corrections/pilote/APERCU.md](../corrections/pilote/APERCU.md).
+[data/corrections/pilote/APERCU.md](../../data/corrections/pilote/APERCU.md).
 
 ## Outil : `scripts/corrections/`
 
@@ -64,7 +64,7 @@ Mode « 2b » : l'outil écrit **une fois** un texte à variables dans le modèl
 ensuite dans l'éditeur. Aucun mécanisme nouveau à l'exécution.
 
 ```bash
-pnpm corrections:generate pilote                  # lit les modèles en prod (lecture seule) → docs/corrections/pilote/
+pnpm corrections:generate pilote                  # lit les modèles en prod (lecture seule) → data/corrections/pilote/
 pnpm corrections:generate pilote --source x.json  # ou depuis un JSON local ; --source snapshot = instantané présent
 pnpm corrections:check pilote                     # 50 tirages par variation, rapport par modèle
 pnpm corrections:preview pilote                   # APERCU.md, 3 tirages rendus par modèle
@@ -74,7 +74,7 @@ pnpm corrections:import pilote                    # SIMULATION ; --publier écri
 - Un **lot** (`scripts/corrections/lots/<lot>.ts`) liste les modèles, leur classe et leur code.
   Stratégie **R** : générée depuis la variable d'expression (`lib/r-pass.ts`) ; règle **N** : rédigée
   dans le lot, au même format.
-- Sortie : `docs/corrections/<lot>/_modeles.json` (instantané), une proposition `<id>.json` par
+- Sortie : `data/corrections/<lot>/_modeles.json` (instantané), une proposition `<id>.json` par
   modèle (`{ templateId, title, classe, code, source, steps: { shared } | { byVariation }, notes }`),
   `APERCU.md`.
 - `corrections:check` tire chaque variation sur **tout son domaine** quand il compte au plus 20 000

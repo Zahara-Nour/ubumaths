@@ -9,7 +9,10 @@ import { parseMarkdown } from '$lib/ubumark';
 import type { DocumentNode, TextNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
 import { lexiconGrade } from '../grade';
-import { linkDocument } from '../linker';
+import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { createLinker } from '../linker';
+
+const { linkDocument } = createLinker(MATH_DICTIONARY);
 
 /** Texte de chaque nœud texte, avec les entrées ouvertes par les mots repérés. */
 function texts(doc: DocumentNode): TextNode[] {

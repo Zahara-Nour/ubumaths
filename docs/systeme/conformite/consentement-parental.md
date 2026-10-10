@@ -4,6 +4,9 @@
 > non 30 jours) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
+> Migrations citées : antérieures au baseline, archivées sous `supabase/migrations_archive/` ; le
+> schéma courant est dans `supabase/migrations/20260616220000_baseline_schema.sql`.
+
 > **Feature**: RGPD Article 8 compliance for minors under 15
 > **Started**: 2026-01-15
 > **Status**: COMPLETED
@@ -29,19 +32,19 @@
 
 ### Files Created
 
-1. `supabase/migrations/20260115140000_add_consent_fields_to_profiles.sql`
+1. `supabase/migrations_archive/20260115140000_add_consent_fields_to_profiles.sql`
 
    - Added `consent_required`, `consent_granted_at`, `consent_grace_period_ends`
    - Added indexes for filtering
 
-2. `supabase/migrations/20260115140001_create_parental_consents_table.sql`
+2. `supabase/migrations_archive/20260115140001_create_parental_consents_table.sql`
 
    - Created `consent_status` enum
    - Created `parental_consents` table with RLS policies
    - Teachers can manage consents for their students
    - Admins have full access
 
-3. `supabase/migrations/20260115140002_add_parent_email_to_pending_students.sql`
+3. `supabase/migrations_archive/20260115140002_add_parent_email_to_pending_students.sql`
 
    - Added `parent_email` column with email format constraint
 
@@ -98,7 +101,7 @@ pending_students (modified)
    - `requireConsent(profile, action)` - throw 403 if unauthorized
    - `hasConsentFields(profile)` - type guard
 
-3. `src/lib/utils/consent.test.ts`
+3. `src/lib/utils/__tests__/consent.test.ts`
    - 73 comprehensive unit tests
    - All edge cases covered
    - Integration scenarios validated
@@ -150,7 +153,7 @@ pending_students (modified)
    - `getConsentEmailHtml()` - styled HTML version
    - `getConsentLink()` - builds consent URL with token
 
-2. `supabase/migrations/20260115141821_add_consent_verification_function.sql`
+2. `supabase/migrations_archive/20260115141821_add_consent_verification_function.sql`
 
    - `grant_parental_consent(token, ip, user_agent)` - SECURITY DEFINER function
    - `get_consent_info(token)` - returns student info for consent page
@@ -277,7 +280,7 @@ pending_students (modified)
 
 ### Files Created
 
-1. `supabase/migrations/20260115144849_retroactive_consent_grace_period.sql`
+1. `supabase/migrations_archive/20260115144849_retroactive_consent_grace_period.sql`
    - Sets `consent_required = TRUE` for existing students in grades 6-2
    - Grants 30-day grace period for consent collection
    - One-time migration for existing students
@@ -288,7 +291,7 @@ pending_students (modified)
 
 ### Checks Performed
 
-1. **TypeScript Check** (`pnpm check:fast`)
+1. **TypeScript Check** (pnpm check:fast, supprimé le 2026-10-10 — aujourd'hui `pnpm check:incremental`)
 
    - Fixed `gracePeriodEnds` type to `string | null` (SvelteKit serialization)
    - Fixed consent tests to expect ISO strings
@@ -309,14 +312,14 @@ pending_students (modified)
 
 | File                                                         | Action   |
 | ------------------------------------------------------------ | -------- |
-| `supabase/migrations/20260115140000_*.sql`                   | Created  |
-| `supabase/migrations/20260115140001_*.sql`                   | Created  |
-| `supabase/migrations/20260115140002_*.sql`                   | Created  |
-| `supabase/migrations/20260115141821_*.sql`                   | Created  |
+| `supabase/migrations_archive/20260115140000_*.sql`           | Created  |
+| `supabase/migrations_archive/20260115140001_*.sql`           | Created  |
+| `supabase/migrations_archive/20260115140002_*.sql`           | Created  |
+| `supabase/migrations_archive/20260115141821_*.sql`           | Created  |
 | `src/lib/types/database.ts`                                  | Modified |
 | `src/lib/utils/consent.ts`                                   | Created  |
 | `src/lib/server/middleware/consent.ts`                       | Created  |
-| `src/lib/utils/consent.test.ts`                              | Created  |
+| `src/lib/utils/__tests__/consent.test.ts`                    | Created  |
 | `src/routes/(protected)/+layout.server.ts`                   | Modified |
 | `src/routes/api/.../+server.ts` (15+ files)                  | Modified |
 | `src/lib/email-templates/parental-consent.ts`                | Created  |
@@ -334,7 +337,7 @@ pending_students (modified)
 | `src/lib/components/student/worksheets/ExerciseModal.svelte` | Modified |
 | `src/routes/(protected)/dashboard/student/exercises/[id]/*`  | Modified |
 | `src/routes/(protected)/dashboard/student/marketplace/*`     | Modified |
-| `supabase/migrations/20260115144849_*.sql`                   | Created  |
+| `supabase/migrations_archive/20260115144849_*.sql`           | Created  |
 
 ---
 
@@ -358,4 +361,4 @@ pending_students (modified)
 1. Run `pnpm db:migrate` to apply new migrations
 2. Teachers need to collect parent emails
 3. Monitor grace period expirations (30 days from migration)
-4. Update RGPD documentation (`docs/RGPD.md`)
+4. Update RGPD documentation (`docs/systeme/conformite/rgpd.md`)

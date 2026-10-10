@@ -35,11 +35,11 @@ etat_ci() {
 		echo "inconnu"
 }
 
-# Même filtre que quality.yml : rien que de la doc, hors docs/corrections, src/ et static/.
+# Même filtre que quality.yml : rien que de la doc, hors data/corrections, src/ et static/.
 sans_ci() {
 	git diff-tree --no-commit-id --name-only -r -m --first-parent "$1" | while IFS= read -r f; do
 		case "$f" in
-		docs/corrections/* | src/* | static/*) exit 1 ;;
+		data/* | src/* | static/*) exit 1 ;;
 		docs/* | *.md | .github/dependabot.yml) ;;
 		*) exit 1 ;;
 		esac

@@ -38,11 +38,21 @@ const passe = (command: string, cwd?: string) => {
 	expect(r.stdout).toBe('');
 };
 
+describe('garde-commandes — svelte-check : seule une exécution sans moteur sûr est refusée', () => {
+	it('--tsgo et --incremental passent ; lire la version ou greper le nom aussi', () => {
+		passe('npx svelte-check --tsconfig ./tsconfig.check.json --tsgo');
+		passe('npx svelte-check --tsconfig ./tsconfig.check.json --incremental');
+		passe('npm view svelte-check version');
+		passe('grep -n "svelte-check" package.json');
+	});
+});
+
 describe('garde-commandes — refusé, avec la raison', () => {
 	it('typecheck qui meurt sur le tas V8', () => {
 		refuse('pnpm check:fast', /check:incremental/);
 		refuse('cd src && npx tsc --noEmit', /check:incremental/);
 		refuse('npx svelte-check --tsconfig ./tsconfig.check.json', /--incremental/);
+		refuse('NODE_OPTIONS=x /usr/bin/time -l npx svelte-check --output machine', /--tsgo/);
 	});
 
 	it('pnpm dev sans port fixe, sur le port de David, ou avec un « -- » qui perd le port', () => {

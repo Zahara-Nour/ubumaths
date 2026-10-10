@@ -6,6 +6,13 @@ import { numeric } from '../../types/geo-value';
 import { createTransformer } from '../../viewport/viewport';
 import { imageToSVG } from '../../rendering/svg-primitives';
 
+// Identifiant de figure d'un symbole : il doit exister, sinon le test échoue ici.
+function idOf(symbols: ReturnType<typeof runDsl>['symbols'], name: string): string {
+	const entry = symbols.get(name);
+	if (!entry?.figureId) throw new Error(`Symbol "${name}" not found or has no figureId`);
+	return entry.figureId;
+}
+
 // =============================================================================
 // A. DSL parsing — image()
 // =============================================================================
@@ -601,8 +608,8 @@ describe('DSL image() — reactive 2-point symmetry (axis movement)', () => {
 		);
 		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
 		// Should reference the original image's points (A and B)
-		expect(img2._srcPoint1Id).toBe(symbols.get('A')!.figureId);
-		expect(img2._srcPoint2Id).toBe(symbols.get('B')!.figureId);
+		expect(img2._srcPoint1Id).toBe(idOf(symbols, 'A'));
+		expect(img2._srcPoint2Id).toBe(idOf(symbols, 'B'));
 	});
 
 	it('imageToSVG returns correct dimensions after axis is moved to diagonal', () => {
@@ -622,25 +629,25 @@ describe('DSL image() — reactive 2-point symmetry (axis movement)', () => {
 		const viewport = { xMin: -6, xMax: 6, yMin: -5, yMax: 5 };
 		const transformer = createTransformer(viewport, 600, 500);
 
-		const img2Entry = symbols.get('img2')!;
+		const img2Id = idOf(symbols, 'img2');
 
 		// Initial render with vertical axis: should be 3×2
-		const svg1 = imageToSVG(img2Entry.figureId, figure, transformer);
+		const svg1 = imageToSVG(img2Id, figure, transformer);
 		expect(svg1).not.toBeNull();
 		expect(svg1!.width).toBeCloseTo(3 * 50); // 3 math units × 50 px/unit
 		expect(svg1!.height).toBeCloseTo(2 * 50);
 
 		// Now move axis to diagonal (45°): P1→(0,0), P2→(3,3)
-		const p1Entry = symbols.get('P1')!;
-		const p2Entry = symbols.get('P2')!;
+		const p1Id = idOf(symbols, 'P1');
+		const p2Id = idOf(symbols, 'P2');
 		figure.beginTransaction();
-		figure.movePoint(p1Entry.figureId, numeric(0), numeric(0));
-		figure.movePoint(p2Entry.figureId, numeric(3), numeric(3));
+		figure.movePoint(p1Id, numeric(0), numeric(0));
+		figure.movePoint(p2Id, numeric(3), numeric(3));
 		figure.recompute();
 		figure.commit();
 
 		// Dimensions should still be 3×2 (original image dimensions don't change)
-		const svg2 = imageToSVG(img2Entry.figureId, figure, transformer);
+		const svg2 = imageToSVG(img2Id, figure, transformer);
 		expect(svg2).not.toBeNull();
 		expect(svg2!.width).toBeCloseTo(3 * 50);
 		expect(svg2!.height).toBeCloseTo(2 * 50);
@@ -664,20 +671,20 @@ describe('DSL image() — reactive 2-point symmetry (axis movement)', () => {
 		const transformer = createTransformer(viewport, 800, 600);
 		const ppu = 50; // 800 / 16 = 50 px/unit
 
-		const img2Entry = symbols.get('img2')!;
+		const img2Id = idOf(symbols, 'img2');
 
 		// Initial: A(-4,-1) B(-1,1) → w=3, h=2
-		const svg1 = imageToSVG(img2Entry.figureId, figure, transformer);
+		const svg1 = imageToSVG(img2Id, figure, transformer);
 		expect(svg1!.width).toBeCloseTo(3 * ppu);
 		expect(svg1!.height).toBeCloseTo(2 * ppu);
 
 		// Drag B to (-1, 3) → w=3, h=4
 		figure.beginTransaction();
-		figure.movePoint(symbols.get('B')!.figureId, numeric(-1), numeric(3));
+		figure.movePoint(idOf(symbols, 'B'), numeric(-1), numeric(3));
 		figure.recompute();
 		figure.commit();
 
-		const svg2 = imageToSVG(img2Entry.figureId, figure, transformer);
+		const svg2 = imageToSVG(img2Id, figure, transformer);
 		expect(svg2!.width).toBeCloseTo(3 * ppu);
 		expect(svg2!.height).toBeCloseTo(4 * ppu);
 	});
@@ -699,8 +706,8 @@ describe('DSL image() — reactive 2-point symmetry (axis movement)', () => {
 			].join('\n')
 		);
 		const images = figure.getAllElements().filter((e) => e.type === 'image') as GeoImage[];
-		const aId = symbols.get('A')!.figureId;
-		const bId = symbols.get('B')!.figureId;
+		const aId = idOf(symbols, 'A');
+		const bId = idOf(symbols, 'B');
 		// img2 (rotation) should reference original A, B
 		expect(images[1]._srcPoint1Id).toBe(aId);
 		expect(images[1]._srcPoint2Id).toBe(bId);
@@ -726,15 +733,15 @@ describe('DSL image() — reactive free-position transforms', () => {
 				'img2 = transforme(t, img)'
 			].join('\n')
 		);
-		const img2Entry = symbols.get('img2')!;
-		const img2El = figure.getElementById(img2Entry.figureId) as GeoImage;
+		const img2Id = idOf(symbols, 'img2');
+		const img2El = figure.getElementById(img2Id) as GeoImage;
 		const anchorBefore = figure.getPosition(img2El.anchorId!);
 		expect(anchorBefore).toBeDefined();
 		const xBefore = geoToNumber(anchorBefore!.x);
 
 		// Drag the source image
-		const imgEntry = symbols.get('img')!;
-		figure.moveImage(imgEntry.figureId, 5, 0);
+		const imgId = idOf(symbols, 'img');
+		figure.moveImage(imgId, 5, 0);
 		figure.recompute();
 
 		const anchorAfter = figure.getPosition(img2El.anchorId!);
@@ -755,7 +762,7 @@ describe('DSL image() — reactive free-position transforms', () => {
 				'img3 = transforme(s, img)'
 			].join('\n')
 		);
-		const imgEl = figure.getElementById(symbols.get('img')!.figureId) as GeoImage;
+		const imgEl = figure.getElementById(idOf(symbols, 'img')) as GeoImage;
 		expect(imgEl._centerPointId).toBeDefined();
 		// Both transforms should depend on the same hidden center point
 		// Count free points — only one hidden center should exist for 'img'
@@ -770,9 +777,9 @@ describe('DSL image() — reactive free-position transforms', () => {
 		const { figure, symbols } = runDsl(
 			['img = image("https://example.com/r.png", 2, 0, largeur=3)'].join('\n')
 		);
-		const imgEntry = symbols.get('img')!;
-		figure.moveImage(imgEntry.figureId, 5, 7);
-		const imgEl = figure.getElementById(imgEntry.figureId) as GeoImage;
+		const imgId = idOf(symbols, 'img');
+		figure.moveImage(imgId, 5, 7);
+		const imgEl = figure.getElementById(imgId) as GeoImage;
 		expect(imgEl.position).toEqual({ x: 5, y: 7 });
 		expect(imgEl._centerPointId).toBeUndefined();
 	});

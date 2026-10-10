@@ -32,6 +32,7 @@ function futurePayload(overrides: Partial<ElevationCookiePayload> = {}): Elevati
 		adminUserId: ADMIN_ID,
 		accessToken: ACCESS_TOKEN,
 		expiresAt: Date.now() + 3600_000,
+		elevatedBy: '550e8400-e29b-41d4-a716-446655440001',
 		...overrides
 	};
 }
@@ -91,6 +92,20 @@ describe('decodeElevationCookie — malformed input → null', () => {
 			'utf8'
 		).toString('base64url');
 		expect(decodeElevationCookie(wrongTypes)).toBeNull();
+	});
+});
+
+describe('decodeElevationCookie — cookie posé avant elevatedBy', () => {
+	it('returns null when elevatedBy is missing (pre-B4 cookie → re-elevate)', () => {
+		const legacy = Buffer.from(
+			JSON.stringify({
+				adminUserId: ADMIN_ID,
+				accessToken: ACCESS_TOKEN,
+				expiresAt: Date.now() + 3600_000
+			}),
+			'utf8'
+		).toString('base64url');
+		expect(decodeElevationCookie(legacy)).toBeNull();
 	});
 });
 

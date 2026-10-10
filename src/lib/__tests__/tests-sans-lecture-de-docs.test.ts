@@ -26,18 +26,19 @@ import { join, relative } from 'node:path';
 const ROOTS = ['src', 'tests', 'scripts'];
 
 /**
- * Exceptions voulues : ces tests VALIDENT le contenu de docs/ lui-même.
- * - corrections.test.ts : aucun identifiant d'utilisateur dans les instantanés
- *   commités de docs/corrections (RGPD).
- * - ce fichier : ses propres exemples.
+ * Exception voulue : ce fichier, pour ses propres exemples. Les données de
+ * travail lues par des tests (corrections, relecture) vivent sous data/, pas
+ * sous docs/ (2026-10-10).
  */
-const ALLOWED = new Set([
-	'scripts/corrections/__tests__/corrections.test.ts',
-	'src/lib/__tests__/tests-sans-lecture-de-docs.test.ts'
-]);
+const ALLOWED = new Set(['src/lib/__tests__/tests-sans-lecture-de-docs.test.ts']);
 
-/** Lecture de fichier dont le chemin, littéral, commence par docs/ (ou ../docs/). */
-const READS_DOCS = /(?:readFileSync|readFile|createReadStream|new URL)\(\s*[`'"](?:\.\.\/)*docs\//;
+/**
+ * Lecture d'un fichier dont le chemin, littéral, commence par docs/ (ou ../docs/) :
+ * `readFileSync('docs/…')`, `join(process.cwd(), 'docs/…')`, `import x from '../../docs/…'`.
+ * Les deux dernières formes ont laissé passer dix tests qui lisaient docs/relecture.
+ */
+const READS_DOCS =
+	/(?:(?:readFileSync|readFile|createReadStream|new URL)\(\s*[`'"]|(?:join|resolve)\(\s*process\.cwd\(\),\s*[`'"]|\bfrom\s+['"])(?:\.\.\/)*docs\//;
 
 // ============================================================================
 // FONCTIONS
@@ -66,6 +67,13 @@ describe('aucun test ni module ne lit docs/', () => {
 	it('la règle détecte bien une lecture de docs/', () => {
 		expect(READS_DOCS.test("readFileSync('docs/wip/x.json', 'utf-8')")).toBe(true);
 		expect(READS_DOCS.test('readFileSync(`docs/relecture/${p}.json`)')).toBe(true);
+		expect(READS_DOCS.test("join(process.cwd(), 'docs/relecture')")).toBe(true);
+		expect(READS_DOCS.test("resolve(process.cwd(), 'docs/a.json')")).toBe(true);
+		expect(
+			READS_DOCS.test("import fixture from '../../../../docs/relecture/entiers/139.json';")
+		).toBe(true);
+		expect(READS_DOCS.test("join(process.cwd(), 'data/relecture')")).toBe(false);
+		expect(READS_DOCS.test('// la matrice tirée from `docs/wip/spec.md`')).toBe(false);
 		expect(READS_DOCS.test("new URL('../../docs/a.json', import.meta.url)")).toBe(true);
 		expect(READS_DOCS.test("readFileSync('tests/integration/fixtures/a.json')")).toBe(false);
 	});

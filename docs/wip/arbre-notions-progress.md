@@ -928,3 +928,23 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
       seulement dans l'export RGPD) ;
     - un point neuf tagué ne se supprime plus.
   - Ordre : fusion, puis déploiement Vercel des filtres, PUIS `db:migrate` (lancé par David).
+- **2026-10-10 — À revoir PLUS TARD (David)** : les 21 couples (modèle, programme) sans point du lot (liste dans
+  `c5-transfert-liens.csv`, colonne point vide). Ce sont :
+  - 8 contenus de Tle tagués en 1re spé (trigonométrie, escalier) ;
+  - 4 tags de 1re spé remplacés par un point de 2de ;
+  - 4 sans point du BO (reconnaître un raisonnement, contre-exemple en 1re spé, suite majorée) ;
+  - 3 contenus de Tle comp. tagués en Tle spé ;
+  - 2 hors bornes (angles associés pour tout x).
+  - 12 modèles n'ont plus aucun point ; 420 en gardent.
+- **2026-10-10 — PR 2 : décision (A) de David (« oui »).** Les fonctions de trigger des règles de tag passent en
+  SECURITY DEFINER, pour lire avec une vue complète.
+  - Raison : en lecture INVOKER, l'admin ne voit pas les exercices privés du prof. La règle laissait donc casser un tag
+    d'exercice privé sans erreur (re-parentage), ou refusait à tort (tag, re-rattachement).
+  - Garde-fous :
+    - un utilisateur connecté qui n'est ni prof ni admin n'est pas évalué ; la RLS refuse son écriture comme avant ;
+    - les migrations et le service évaluent les règles ;
+    - aucun message ne nomme un contenu invisible de l'auteur ;
+    - EXECUTE révoqué, `search_path` fixé ;
+    - déclaration dans le garde-fou CI des fonctions SECURITY DEFINER.
+  - Les tests tournent avec les vrais rôles (prof, admin, élève). Le re-parentage concurrent est fermé par un verrou sur
+    les nœuds.

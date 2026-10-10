@@ -1,516 +1,333 @@
-# DSL Builtins — geometry-core
+# DSL de géométrie — référence des builtins
 
-Reference for the geometry-core DSL built-in functions.
-All function names use French identifiers (pedagogical language of the application).
+Référence de ce qu'on peut écrire dans un script de figure (éditeur `GeometryCanvas`, bloc
+ubumark ` ```figure `, constructions animées). Vue d'ensemble du système : [README.md](README.md).
 
----
-
-## Bloc ubumark `figure` — repère : `axes`, `grille`, `graduations` (2026-10-03)
-
-Clés d'EN-TÊTE du bloc (avant `---`), pas des fonctions du DSL. Mêmes mots que le bloc `courbe`.
-
-````
-```figure
-fenetre: -2 ; 7 ; -2 ; 6
-axes: oui
-grille: oui
----
-A = point(0, 1)
-B = point(4, 3)
-d = droite(A, B)
-```
-````
-
-| Clé           | Valeurs                                       | Défaut                    |
-| ------------- | --------------------------------------------- | ------------------------- |
-| `axes`        | `oui`, `non`                                  | `non`                     |
-| `grille`      | `oui` (pas 1), `non`, un pas, `pas x ; pas y` | `non`                     |
-| `graduations` | un pas, `pas x ; pas y`, `oui`, `non`         | pas de la grille, sinon 1 |
-
-- `axes: oui` : axes fléchés (en 0, sinon au bord le plus proche de la fenêtre), « O » à
-  l'origine (pas écrit si un point nommé y est déjà, `O = point(0, 0)`), graduations en petit SOUS l'axe des abscisses et À GAUCHE de celui des ordonnées
-  (vrai signe −, virgule décimale en français, point en anglais).
-- Une étiquette de graduation qui chevaucherait le nom d'un point (à l'écran OU au PDF) est
-  omise ; la graduation reste tracée. Graduations trop serrées : une étiquette sur 2 (sur 3…).
-- Grille et axes sont dessinés SOUS les objets. Sans ces clés : rendu strictement inchangé.
-- Erreurs situées (`Ligne N : …`) : valeur inconnue, pas ≤ 0, `graduations:` sans
-  `axes: oui`, plus de 200 lignes de grille ou de graduations par axe.
-- Écran : marge de 26 px autour de la fenêtre pour les flèches et graduations (comme `courbe`),
-  objets découpés à la fenêtre. PDF : lignes cetz passées à `exportToTypst({ underlay })`.
-- Code : `ubumark/parser/figure-parser.ts` (clés), `utils/figure-scene.ts` (`buildFigureFrame`),
-  `utils/figure-svg.ts` (`frame`), `generators/figure-typst.ts` (`frameToTypst`).
-
-## Noms en lettres grecques, formes de point, flèche combinante (2026-10-03)
-
-- **Noms** : un identifiant peut contenir des lettres grecques Unicode (`Α`…`Ω`, `α`…`ω`, `ς`),
-  seules ou mêlées aux lettres latines et aux chiffres : `Ω = point(0, 1)`, `cercle(Ω, rayon=2)`,
-  `α = 30`. Le nom affiché est celui écrit (« Ω », en italique). `α` et `alpha` / `\alpha` sont
-  deux noms DIFFÉRENTS ; `π` est un nom ordinaire (la constante s'écrit `\pi`, une erreur
-  « variable inconnue » sur `π` le rappelle). Code : `dsl/tokenizer.ts` (`isGreekLetter`).
-- **`forme=`** (`point`, `montre`, `style`) : `point` (rond plein, défaut), `cercle` (vide),
-  `croix`, `carre` (`carré`, et les noms anglais `dot` / `circle` / `cross` / `square`, acceptés).
-  Une valeur inconnue est une erreur qui liste les valeurs (avant : rond à l'écran, rien au PDF).
-  Bloc ```figure : même forme à l'écran (`figure-svg.ts`, champ `shape`) qu'au PDF.
-- **Flèche combinante** dans `texte(…)` : `"n⃗"` (n + U+20D7 ; aussi U+20D6 ←, U+20E1 ↔,
-  U+20D1 ⇀) = lettre en italique surmontée de la flèche, à l'écran (`<tspan>` posés par
-  `accentTspans`) comme au PDF (mode math `arrow(n)`). Code : `rendering/combining-accents.ts`.
-  `texte` n'accepte pas de LaTeX (`mtexte` existe, hors liste blanche du bloc ```figure).
-- **Bloc ```figure, PDF découpé à la fenêtre** : `exportToTypst({ clipToViewport: true })` met
-  les traits et remplissages dans une boîte `clip: true` (2ᵉ toile cetz recalée sur la fenêtre :
-  cetz 0.3.0 n'a pas de découpe) ; repère, noms et textes au-dessus, jamais coupés ; nom d'un
-  point ou texte posé hors de la fenêtre omis (l'écran le découpe).
-
-## Nom d'un point — `etiquette=` (2026-10-02)
-
-Côté où s'écrit le nom d'un point. Accepté par tout appel qui crée un point nommé (`point`,
-`milieu`, `intersection`, `projection`, `symetrie`…), et par `style(A, …)` / `montre(A, …)`.
-
-```dsl
-A = point(0, 0, etiquette="bas-gauche")
-I = milieu(A, B, etiquette="bas")
-style(C, etiquette="haut")
-O = point(3, 3, etiquette="aucune")      # point dessiné, nom masqué
-```
-
-| Valeur                                                   | Effet                                     |
-| -------------------------------------------------------- | ----------------------------------------- |
-| `haut`, `bas`, `gauche`, `droite`                        | nom centré au-dessus, en dessous, à côté  |
-| `haut-gauche`, `haut-droite`, `bas-gauche`, `bas-droite` | nom dans le coin indiqué                  |
-| `aucune`                                                 | nom masqué (`labelHidden`), point visible |
-
-- Défaut : `haut-droite` (inchangé). Champ `labelPosition` (`top`, `bottom-left`…) sur l'élément.
-- Valeur inconnue → erreur qui liste les valeurs ; sur un objet qui n'est pas un point → erreur.
-- Rendu : bloc ```figure (écran `figure-svg.ts`) et export Typst, par la même table
-(`rendering/label-placement.ts`). L'éditeur `GeometryCanvas` et les exports SVG/TikZ ne le
-  lisent pas encore (toujours en haut à droite).
-
-## `texte(…, ancre=)` (2026-10-02)
-
-Point de la boîte du texte posé sur la position (comme l'`anchor` de cetz / TikZ) : `centre`
-(défaut), `haut`, `bas`, `gauche`, `droite`, `haut-gauche`, `haut-droite`, `bas-gauche`,
-`bas-droite`.
-
-```dsl
-texte(2, 3, "5 cm")                       # centré sur (2, 3)
-texte(2, 3, "5 cm", ancre="bas-gauche")   # coin bas-gauche sur (2, 3) : s'écrit vers le haut-droite
-texte(A, "x", dx=0, dy=0, ancre="haut")   # ancré à un point
-```
-
-Boîte = de la ligne de base à la hauteur des capitales (boîte Typst par défaut). Bloc ```figure :
-centré à l'écran comme au PDF. `GeometryCanvas` garde son ancrage historique (début du texte,
-ligne de base).
-
-## Arguments communs (rappels)
-
-- `visible=faux` à la création : objet masqué (comme `masque(A)`), utilisable dans les
-  constructions. (Avant le 2026-10-02 l'argument était ignoré en silence.)
-- `trait="continu" | "tirets" | "pointilles"` (`"pointille"` accepté) ; alias `style=` avec les
-  mêmes valeurs — un `style=` inconnu est une erreur qui cite `trait=`.
+> **Source de vérité** : `BUILTIN_NAMES` (92 noms) et la table `HANDLERS` (92 entrées, mêmes
+> noms) dans `src/lib/geometry-core/dsl/builtins.ts`. Les formes acceptées par chaque builtin sont
+> aussi celles que liste son message d'erreur (`DslRuntimeError` → champ `forms`) : en cas de
+> doute, lire le handler `handleXxx`.
+>
+> Vérifié contre le code le 2026-10-10.
 
 ---
 
-## angle()
+## 1. Le langage en bref
 
-Creates a `GeoAngle` object — a first-class, **visible** geometric angle. The 3-points form is the primary constructor; V2 adds three overloads for vectors, segments and lines (all returning the same `GeoAngle` type and reusing the same rendering / accessors / surcharges).
+| Construction              | Exemple                                                     | Code                                |
+| ------------------------- | ----------------------------------------------------------- | ----------------------------------- |
+| Affectation, commentaire  | `A = point(0, 0)  # origine`                                | `parser.ts`                         |
+| Arguments nommés          | `cercle(O, rayon=2, couleur="rouge")`                       |                                     |
+| Tuple, déstructuration    | `(M, N) = extremites(s)`                                    | `destructuring`                     |
+| Nom indexé                | `P[i] = point(i, 0)`                                        | `indexedAssignment`                 |
+| Boucles (1000 tours max)  | `pour i de 0 a n - 1:` · `pour x dans liste:`               | `forRange`, `forIn`                 |
+| Condition                 | `si … :` / `sinon:`                                         | `if`                                |
+| Macro utilisateur         | `macro creer(x, y):` … `retourne P` (profondeur ≤ 10)       | `macro-registry.ts`                 |
+| Coordonnée réactive       | `A.x`, `A.y` (seules propriétés acceptées)                  | `interpreter.ts` (`propertyAccess`) |
+| Fonctions mathématiques   | `sqrt abs sin cos tan asin acos atan`                       | `MATH_FUNCTIONS`                    |
+| Constantes                | `\pi`, `inf` / `+inf` / `-inf`                              | `interpreter.ts`                    |
+| Unité d'angle             | `unite_angle("degres")` (défaut) / `unite_angle("radians")` | appel spécial, hors `BUILTIN_NAMES` |
+| Calcul sur vecteurs       | `u + v`, `3*u`, `-u`                                        | `interpreter.ts` (`isVectorValue`)  |
+| Directive (animation)     | `@pause(500)`, `@instrument("regle")`                       | `DslDirective` → `onDirective`      |
+| Décorateur (chorégraphie) | `d = mediatrice(A, B) @euclide @complet -arcs`              | `parseTrailingDecorators`           |
 
-### Signature
+- Mots réservés : `KEYWORDS` (`dsl/keywords.ts`). Identifiants : lettres latines, chiffres,
+  lettres grecques Unicode (`Ω = point(0, 1)`) ; `α` et `alpha` sont deux noms différents, `π`
+  est un nom ordinaire (la constante s'écrit `\pi`).
+- Une expression « mathématique pure » (nombres, identifiants, opérateurs, fonctions non-builtins)
+  est confiée à mathAST et reste **exacte** (`math-pure-expr.ts`) ; dès qu'un opérande est un
+  curseur ou un scalaire, le résultat devient un scalaire réactif.
+- Une macro utilisateur du même nom qu'un builtin le remplace. `dsl/stdlib.ts` est vide :
+  toutes les anciennes macros sont devenues des builtins TypeScript.
+- Limites : script ≤ 100 000 caractères (`MAX_DSL_SOURCE_LENGTH`), 1 000 tours par boucle, budget
+  `maxSteps` optionnel (`InterpretOptions`, utilisé par le bloc ` ```figure `).
 
-```
-α = angle(A, V, B)                                  # 3 points (primary)
-α = angle(u, v)                                     # 2 vecteurs       (V2)
-α = angle(seg1, seg2)                               # 2 segments       (V2)
-α = angle(d1, d2)                                   # 2 droites (acute) (V2)
-α = angle(..., marque="arc"|"arcs2"|"arcs3"|"carre"|"aucune")
-α = angle(..., orientation="auto"|"direct"|"indirect")
-α = angle(..., kind="saillant"|"rentrant")
-α = angle(..., showLabel="aucun"|"nom"|"mesure"|"mesure+nom")
-α = angle(..., unite="rad"|"deg")
-α = angle(..., arcRadiusPx=25)
-α = angle(..., arcSpacingPx=6)                      # (V2) spacing between multi-arcs
-```
+## 2. Arguments communs (style)
 
-All named arguments are optional, combinable, and accepted on every overload.
+Acceptés par tout builtin qui crée un objet visible (`STYLE_ARGS`, appliqués par `applyInlineStyle`)
+et par `style(X, …)` / `montre(X, …)` :
 
-- **A** — first side point (p1)
-- **V** — vertex (sommit, second argument)
-- **B** — second side point (p2)
+| Argument                                                 | Valeurs                                                                                                                 |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `couleur`                                                | nom (`bleu rouge vert orange violet jaune cyan marron rose gris noir blanc`, synonymes anglais acceptés) ou hexadécimal |
+| `trait` (alias `style`)                                  | `"continu"`, `"tirets"`, `"pointilles"` (`"pointille"` accepté) ; valeur inconnue = erreur                              |
+| `epaisseur`                                              | nombre                                                                                                                  |
+| `remplissage`, `opacite_fond`                            | couleur de fond ; opacité 0..1 (défaut de rendu 0,3)                                                                    |
+| `forme` (points)                                         | `point` (défaut), `cercle`, `croix`, `carre`/`carré` (+ `dot circle cross square`)                                      |
+| `etiquette` (points)                                     | `haut bas gauche droite haut-gauche haut-droite bas-gauche bas-droite aucune`                                           |
+| `visible`                                                | `faux` : objet créé masqué (comme `masque(X)`)                                                                          |
+| `rendu`, `rugosite`, `courbure`, `motif`, `sommets_nets` | mode main levée (rough.js) : `rendu="croquis"`, `motif="hachure"\|"plein"\|"zigzag"\|"croise"\|"points"\|"tirets"`      |
 
-The angle is measured from the A-side to the B-side going through the interior (saillant) sector by default.
+Une couleur NOMMÉE suit le thème (variable `--color-fig-<nom>` à l'écran, variante claire au PDF) ;
+un hexadécimal reste fixe. Code : `src/lib/theme/named-colors.ts` (`resolveNamedColor`).
 
-### Default values
+`etiquette=` est lue par le bloc ` ```figure ` (écran et PDF, table `rendering/label-placement.ts`) ;
+`GeometryCanvas` et les exports SVG/TikZ écrivent toujours le nom en haut à droite.
 
-| Field          | Default      | Meaning                                                 |
-| -------------- | ------------ | ------------------------------------------------------- |
-| `marque`       | `'arc'`      | Render a single arc                                     |
-| `kind`         | `'saillant'` | Interior sector (<π)                                    |
-| `orientation`  | `'auto'`     | Auto-detect CCW vs CW from point positions              |
-| `showLabel`    | `'aucun'`    | No label rendered                                       |
-| `unite`        | `'rad'`      | Unit for label display when `showLabel='mesure'`        |
-| `arcRadiusPx`  | `25`         | Radius of the arc in screen pixels                      |
-| `arcSpacingPx` | `6`          | Spacing in px between concentric arcs (`arcs2`/`arcs3`) |
+## 3. Les 92 builtins par famille
 
-### Examples
+Retour : **point**, **ligne** (droite/segment/demi-droite), **objet**, **scalaire** (valeur réactive,
+invisible sauf `mesure`), **transf.** (objet transformation), **réf.** (référence à un objet
+existant, rien n'est créé), **—** (effet seul).
 
-```dsl
-A = point(3, 0)
-O = point(0, 0)
-B = point(0, 3)
-alpha = angle(A, O, B)
-```
+### Points
 
-```dsl
-# Right angle marker
-A = point(1, 0)
-V = point(0, 0)
-B = point(0, 1)
-angle(A, V, B, marque="carre")
-```
+| Builtin          | Formes                                                                                                                                                                                                         | Retour           |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `point`          | `point(x, y)` (libre, déplaçable) · `point(A, longueur=L, angle=θ \| direction=B \| vecteur=u)`                                                                                                                | point            |
+| `milieu`         | `milieu(A, B)` · `milieu(s)`                                                                                                                                                                                   | point            |
+| `point_sur`      | `point_sur(s)` (t = 0,5) · `point_sur(s, t)` · `point_sur(d, t)` · `point_sur(c, θ)` · `point_sur(f, x0)` · `point_sur(courbe_param, t0)`                                                                      | point (glissant) |
+| `intersection`   | `intersection(d1, d2)` · `(d, c, k)` · `(c1, c2, k)` · `(d, q, k)` · `(q1, q2, k)` (k = 1..4) · `(d, f, k)` · `(f1, f2, k)` · courbes paramétriques × {param., droite, cercle, fonction, segment, demi-droite} | point            |
+| `centre_gravite` | `centre_gravite(A, B, C)`                                                                                                                                                                                      | point            |
+| `orthocentre`    | `orthocentre(A, B, C)`                                                                                                                                                                                         | point            |
+| `zeros`          | `zeros(f)` (fonction ; aussi conique)                                                                                                                                                                          | points           |
+| `extrema`        | `extrema(f)`                                                                                                                                                                                                   | points           |
+| `inflections`    | `inflections(f)`                                                                                                                                                                                               | points           |
+| `foyers`         | `foyers(c)` (conique) : crée des points libres (`createFreePoint`)                                                                                                                                             | points           |
 
-```dsl
-# Double arc (marks two equal angles)
-angle(A, V, B, marque="arcs2")
+`zeros`/`extrema`/`inflections` cherchent sur `[-10 ; 10]` (`FUNCTION_SEARCH_XMIN/XMAX`).
+`point_sur` d'une courbe paramétrique se déplace par Newton (`findClosestParameterOnCurve`).
 
-# Exterior (reflex) angle
-angle(A, V, B, kind="rentrant")
+### Lignes
 
-# Show measure in degrees
-angle(A, V, B, showLabel="mesure", unite="deg")
-```
+| Builtin           | Formes                                                                                  | Retour   |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- |
+| `segment`         | `segment(A, B)` · `segment(A, longueur=L, angle=θ \| direction=B \| vecteur=u)`         | ligne    |
+| `droite`          | `droite(A, B)`                                                                          | ligne    |
+| `demidroite`      | `demidroite(O, A)`                                                                      | ligne    |
+| `mediatrice`      | `mediatrice(A, B)`                                                                      | ligne    |
+| `perpendiculaire` | `perpendiculaire(P, A, B)` : par `P`, ⟂ `(AB)`                                          | ligne    |
+| `parallele`       | `parallele(P, A, B)` : par `P`, ∥ `(AB)`                                                | ligne    |
+| `mediane`         | `mediane(A, B, C)` : issue de `A`                                                       | ligne    |
+| `hauteur`         | `hauteur(A, B, C)` : issue de `A`                                                       | ligne    |
+| `bissectrice`     | `bissectrice(A, V, B)` · `bissectrice(α)`                                               | ligne    |
+| `droite_euler`    | `droite_euler(A, B, C)` (erreur si équilatéral)                                         | ligne    |
+| `corde`           | `corde(c, d)` : segment entre les 2 intersections                                       | ligne    |
+| `tangente`        | `tangente(f, x0)` · `tangente(f, P)` · `tangente(courbe_param, t0)` (+ vecteur tangent) | ligne    |
+| `asymptotes`      | `asymptotes(h)` (hyperbole)                                                             | 2 lignes |
+| `axes`            | `axes(c)` (conique)                                                                     | lignes   |
+| `directrice`      | `directrice(p)` (parabole)                                                              | ligne    |
+| `polaire`         | `polaire(M, c)`                                                                         | ligne    |
 
-### Marquages (marque values)
+### Cercles, arcs, polygones
 
-| Value    | Rendered as                             | Replaces (V0)               |
-| -------- | --------------------------------------- | --------------------------- |
-| `arc`    | 1 concentric arc (default)              | `marque_angle(...)`         |
-| `arcs2`  | 2 concentric arcs (equal angles marker) | `marque_angle(..., arcs=2)` |
-| `arcs3`  | 3 concentric arcs                       | `marque_angle(..., arcs=3)` |
-| `carre`  | Square corner (right angle indicator)   | `angle_droit(...)`          |
-| `aucune` | No arc drawn (useful with `showLabel`)  | —                           |
+| Builtin                | Formes                                                                     |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `cercle`               | `cercle(O, rayon=r)` · `cercle(O, passant=P)` · `cercle(A, B, C)`          |
+| `arc`                  | `arc(A, O, B)` (sens trigonométrique) · `arc(O, rayon=r, debut=0, fin=90)` |
+| `secteur`              | `secteur(O, A, B)` · `secteur(O, rayon=r, debut=0, fin=90)`                |
+| `couronne`             | `couronne(O, r1=2, r2=3)`                                                  |
+| `cercle_circonscrit`   | `cercle_circonscrit(A, B, C)`                                              |
+| `cercle_inscrit`       | `cercle_inscrit(A, B, C)`                                                  |
+| `cercle_euler`         | `cercle_euler(A, B, C)` (cercle des neuf points)                           |
+| `cercle_osculateur`    | `cercle_osculateur(courbe_param, t0)`                                      |
+| `polygone`             | `polygone(A, B, C, …)`                                                     |
+| `triangle`             | `triangle(A, B, C)`                                                        |
+| `triangle_equilateral` | `triangle_equilateral(A, B)`                                               |
+| `triangle_isocele`     | `triangle_isocele(A, B, angle=40)` (défaut 40)                             |
+| `triangle_rectangle`   | `triangle_rectangle(A, B, angle=45)` : rectangle en `A`                    |
+| `parallelogramme`      | `parallelogramme(A, B, C)` : `D` calculé                                   |
+| `rectangle`            | `rectangle(A, B, largeur=2)`                                               |
+| `carre`                | `carre(A, B)`                                                              |
+| `losange`              | `losange(A, B, angle=60)`                                                  |
+| `polygone_regulier`    | `polygone_regulier(O, r, n)`                                               |
+| `etoile`               | `etoile(O, r, n, saut=2)`                                                  |
 
-### Surfaces
+Convention « un builtin = un objet principal » : les points intermédiaires sont créés masqués ;
+on les récupère par les accesseurs (`centre(c)`, `sommet(p, i)`…) et on les montre par `montre()`.
+`polygone_regulier` et `etoile` rendent un polygone (plus un tableau de points).
 
-Rendered on canvas (interactive), SVG export, TikZ export, and Typst export.
+### Courbes
 
-### V2 — overloads
+| Builtin   | Formes                                                                                                                                                                                                                               | Retour |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| `courbe`  | `courbe("x^2 - 1")` (y = f(x)) · `courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*pi)` · `courbe("r = 1 + cos(theta)", theta_min=0, theta_max=2*pi)` · `courbe("x^2 + y^2 = 1")` (droite, conique ou implicite selon l'équation) | courbe |
+| `derivee` | `derivee(f)`                                                                                                                                                                                                                         | courbe |
+| `lieu`    | `lieu(M, P)` : trace de `M` quand `P` (un `point_sur`) parcourt son support                                                                                                                                                          | courbe |
+| `trace`   | `trace(M)` : trace dynamique qui s'allonge quand `M` bouge                                                                                                                                                                           | objet  |
 
-Three new constructors share the same `GeoAngle` output as `angle(A, V, B)`. Internally each builds a 3-points triplet (vertex + p1 + p2), with synthetic invisible points created on demand. Named arguments (`marque`, `arcRadiusPx`, `arcSpacingPx`, ...) work on every overload.
+Domaine et morceaux (cartésien) : `courbe("y = x^2 sur ]-1 ; 2]")`, `… avec 0 < x <= 2`
+(`dsl/domain-parser.ts`) ; `courbe("y = { -x si x < 0, x^2 si x >= 0 }")` ou forme `sur` — on
+ne mélange pas `si` et `sur` (`dsl/piecewise-parser.ts`). Bornes : nombres, curseurs, `±infini`.
+Les formes polaires sont réécrites en paramétriques.
 
-#### `angle(u, v)` — 2 vecteurs
+### Vecteurs
 
-Returns the **unoriented** angle between vectors `u` and `v` in `[0, π]`. When both vectors are bound and share the same origin, that point is reused as the vertex (no synthetic points). Otherwise synthetic invisible `freePoint`s are created at `vertex`, `vertex + u`, `vertex + v`.
+| Builtin            | Formes                                                                              | Retour   |
+| ------------------ | ----------------------------------------------------------------------------------- | -------- |
+| `vecteur`          | `vecteur(A, B)` (lié) · `vecteur(dx, dy)` · `vecteur(dx, dy, ancre=(x, y))` (libre) | objet    |
+| `norme`            | `norme(u)`                                                                          | scalaire |
+| `produit_scalaire` | `produit_scalaire(u, v)`                                                            | scalaire |
 
-```dsl
-O = point(0, 0)
-A = point(1, 0)
-B = point(0, 1)
-u = vecteur(O, A)
-v = vecteur(O, B)
-α = angle(u, v)        # vertex = O (réutilisé), mesure = π/2
-```
+### Transformations
 
-> **Réactivité au drag (A2 + A2.x)** : **pleinement réactif** pour les 4 combinaisons (bound+bound, bound+free, free+bound, free+free). Implémenté via `createTranslatedPointByVector` (V1) et `createFreeVectorPoint` (A2.x, nouveau type `GeoFreeVectorPoint` qui dépend de `vectorId` et lit `vec.anchorX/Y` ou `+dx/dy`). Le drag d'un point bound OU de l'anchor d'un free vector propage à α via le dependency graph.
+Sans objet en 1ᵉʳ argument, le builtin rend un **objet transformation** réutilisable ; avec un
+objet, il rend son image (`dsl/transform-apply.ts`, toutes familles d'objets et de courbes).
 
-#### `angle(seg1, seg2)` — 2 segments
+| Builtin       | Formes                                                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `symetrie`    | `symetrie(centre=O)` · `symetrie(axe=d)` · `symetrie(M, centre=O \| axe=d)`                                                |
+| `rotation`    | `rotation(centre=O, angle=θ)` · `rotation(M, centre=O, angle=θ)` ; `angle=` accepte un nombre, un scalaire ou un angle `α` |
+| `translation` | `translation(vecteur=u)` · `translation(vecteur=(A, B))` · `translation(M, vecteur=u)`                                     |
+| `homothetie`  | `homothetie(centre=O, rapport=k)` · `homothetie(M, centre=O, rapport=k)`                                                   |
+| `similitude`  | `similitude(M, centre=O, angle=θ, rapport=k)` (sans `M` : transf.)                                                         |
+| `projection`  | `projection(axe=d)` · `projection(M, axe=d)`                                                                               |
+| `affinite`    | `affinite(axe=d, rapport=k)` · `affinite(M, axe=d, rapport=k)`                                                             |
+| `inversion`   | `inversion(centre=O, rayon=r)` · `inversion(M, centre=O, rayon=r)`                                                         |
+| `transforme`  | `transforme(t, M)` : applique la transformation `t`                                                                        |
+| `compose`     | `compose(t1, t2, …)`                                                                                                       |
 
-Vertex = **shared endpoint** if any, sinon **intersection** des droites support (calculée via `intersectLL`). Les segments parallèles non confondus lèvent `DslRuntimeError` (hint : utiliser `angle(d1, d2)`).
+### Mesures et calculs (scalaires)
 
-```dsl
-V = point(0, 0)
-A = point(1, 0)
-B = point(0, 1)
-s1 = segment(V, A)
-s2 = segment(V, B)
-α = angle(s1, s2)       # vertex = V (réutilisé)
-```
+| Builtin         | Formes                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `distance`      | `distance(A, B)` · `distance(A, d)` (d droite, segment ou demi-droite)                                              |
+| `longueur`      | `longueur(c)` · `longueur(c, t1, t2)` : longueur d'arc d'une courbe paramétrique (Simpson)                          |
+| `courbure`      | `courbure(c, t0)` : courbure signée                                                                                 |
+| `perimetre`     | `perimetre(A, B, C, …)`                                                                                             |
+| `aire`          | `aire(A, B, C, …)` (polygone) · `aire(f, a, b)` (voir §5)                                                           |
+| `aire_entre`    | `aire_entre(f, g, a, b)` (voir §5)                                                                                  |
+| `integrale`     | `integrale(f, a, b)` (voir §5)                                                                                      |
+| `pente`         | `pente(d)`                                                                                                          |
+| `rayon`         | `rayon(c)`                                                                                                          |
+| `puissance`     | `puissance(M, c)`                                                                                                   |
+| `excentricite`  | `excentricite(c)`                                                                                                   |
+| `angle_polaire` | `angle_polaire(O, P)` : angle de `OP` avec l'axe des abscisses, en radians dans `[-π ; π]`                          |
+| `mesure`        | `mesure(α)` · `mesure(α, unite="deg")` · `mesure(A, V, B)` · `mesure(u, v)` : angles seulement (radians par défaut) |
+| `slider`        | `slider(min=0, max=10, valeur=…, pas=…)` (défauts : 0, 10, milieu) : curseur                                        |
 
-> Pour 2 segments sécants sans extrémité commune, l'intersection est matérialisée via `createIntersectionLL` (réactif au drag des 4 endpoints des segments depuis A2 / v0.9.5). Les segments parallèles lèvent une erreur structurée listant les 4 formes acceptées.
+### Angles et repères
 
-#### `angle(d1, d2)` — 2 droites (convention angle aigu)
+| Builtin          | Formes (détail §4)                                                         | Retour |
+| ---------------- | -------------------------------------------------------------------------- | ------ |
+| `angle`          | `angle(A, V, B)` · `angle(u, v)` · `angle(s1, s2)` · `angle(d1, d2)`       | objet  |
+| `transporte`     | `transporte(α, V')` · `(α, V', P)` · `(α, V', vec=v)` · `(α, V', angle=θ)` | objet  |
+| `marque_segment` | `marque_segment(A, B)` · `marque_segment(A, B, traits=2)`                  | objet  |
 
-Vertex = intersection des 2 droites (via `createIntersectionLL`, réactif au drag des points témoins des droites depuis A2 / v0.9.5). La mesure retournée par `mesure(α)` est dans `[0, π/2]` (convention « plus petit angle »). Les droites parallèles ou confondues lèvent `DslRuntimeError`. Note : le choix p1/p2 pour la convention angle aigu est figé à la construction — la mesure suit le drag mais peut traverser π/2 sans re-swap dynamique.
+### Accesseurs (réf. : rien n'est créé)
 
-```dsl
-A = point(0, 0)
-B = point(1, 0)
-C = point(0, 0)
-D = point(1, 1)
-d1 = droite(A, B)
-d2 = droite(C, D)
-α = angle(d1, d2)       # mesure = π/4 (acute)
-```
+| Builtin      | Formes                                                                    |
+| ------------ | ------------------------------------------------------------------------- |
+| `centre`     | `centre(c)` (cercle, arc, secteur, conique) · `centre(quad)` (diagonales) |
+| `extremite`  | `extremite(s, 1)` · `extremite(s, 2)`                                     |
+| `extremites` | `extremites(s)` (tuple)                                                   |
+| `sommet`     | `sommet(α)` · `sommet(p, i)` (i à partir de 1)                            |
+| `sommets`    | `sommets(p)` (tuple)                                                      |
+| `cote`       | `cote(α, 1)` · `cote(α, 2)`                                               |
 
-> Pour un angle géométrique de 120°, l'overload renvoie **60°** par swap interne sur p2 (`I - unit(d2)` au lieu de `I + unit(d2)`). La représentation reste un triplet de points classique, donc rendu/accesseurs V1 marchent tels quels.
+Un tuple n'est rendu que si le résultat est intrinsèquement pluriel (`sommets`, `extremites`, `foyers`).
 
-### Notes de réactivité / sérialisation
+### Textes, images, visibilité
 
-- **Cache `mesure(A, V, B)` (B2, V2)** — un appel `m = mesure(A, V, B)` réutilise l'angle caché créé pour le même triplet ordonné `(p1, vertex, p2)`. Deux `mesure(A, V, B)` successifs sur le même triplet renvoient donc le **même** `scalarId` (et la même `GeoAngle` interne).
-- **Sérialiseur `α → mesure(α)` (B5, V2)** — si tu écris `α = angle(A, V, B); m = mesure(α)`, le sérialiseur émet bien `m = mesure(α)` (et pas `m = mesure(A, V, B)`), préservant le lien explicite sur roundtrip. Pour `mesure(A, V, B)` direct, le fallback 3-points reste émis (l'angle caché auto-généré n'a pas de nom utilisateur).
-- **`arcSpacingPx`** — valeur strictement positive requise (`0`, valeurs négatives ou `NaN` lèvent `DslRuntimeError`). Lue par les 3 renderers (SVG, TikZ, Typst).
-- **`remplissage` du secteur (V3a)** — quand `marque ∈ {'arc', 'arcs2', 'arcs3'}` et `remplissage="couleur"` (avec optionnel `opacite_fond=N`) sont passés, le secteur angulaire est rempli (path fermé `M V L p1_arc A … p2_arc Z`). `marque='carre'` et `marque='aucune'` ignorent silencieusement `remplissage`. La couleur de remplissage est lue depuis `style.fillColor` standard — pas de champ dédié sur `GeoAngle`.
-
----
-
-## transporte() — report d'angle au compas
-
-Construit un nouveau `GeoAngle` au sommet `V'` de **même mesure** que `α` (sens conservé), orienté dans la direction spécifiée.
-
-### Signatures
-
-```
-β = transporte(α, V')                # direction défaut : axe Ox (1, 0)
-β = transporte(α, V', P)             # direction = unit(P − V')
-β = transporte(α, V', vec=v)         # direction = unit(v)
-β = transporte(α, V', angle=θ)       # direction = (cos θ, sin θ) en mode courant
-```
-
-Les 3 modes de direction (3ᵉ arg point, `vec=`, `angle=`) sont **mutuellement exclusifs** — en passer plus d'un lève `DslRuntimeError` listant les sources en conflit.
-
-### Héritage de style
-
-Le nouvel angle hérite de `marque`, `kind`, `orientation`, `showLabel`, `unite`, `arcRadiusPx`, `arcSpacingPx`, couleur et `fillColor`/`fillOpacity` depuis `α`. Tout named arg passé au `transporte()` override l'héritage.
-
-### Exemple
-
-```dsl
-A = point(1, 0)
-V = point(0, 0)
-B = point(0, 1)              # angle AVB = 90°
-a = angle(A, V, B, marque="arc", remplissage="rouge")
-
-W = point(5, 0)
-T = point(6, 1)              # direction 45° (NE)
-b = transporte(a, W, T)      # nouvel angle 90° au sommet W, dans direction WT, marque et fill hérités
-```
-
-### Cas dégénérés
-
-- `V'` confondu avec sommet de `α` → `DslRuntimeError` (hint : choisir un autre sommet).
-- Direction nulle (vecteur nul, ou `P == V'`) → `DslRuntimeError`.
-- `α` plat (mesure = π) ou nul (mesure = 0) : la mesure est préservée telle quelle.
-
-### Chorégraphie `@euclide` (A1, construction Euclide I.23)
-
-Le décorateur `@euclide` anime le report d'angle au compas, comme un prof le ferait au tableau. **6 sub-steps** :
-
-1. **Compass à V** (sommet de α), ouverture `r = 1`. Trace l'arc qui coupe les côtés de α en **A'** et **B'**.
-2. **Compass à V'** (même `r`). Trace l'arc qui coupe le rayon de direction en **A''**.
-3. **Apparition** de A', B', A'' simultanément.
-4. **Compass à A''**, ouverture `|A'B'|` (la corde mesurée à l'étape 1). Trace l'arc.
-5. **Apparition** de B'' (intersection des 2 arcs).
-6. **Règle** trace (V', B'') — le 2ᵉ côté de β.
-
-```dsl
-α = angle(A, V, B)
-V' = point(5, 0)
-β = transporte(α, V', P) @euclide
-```
-
-Implémenté dans `src/lib/constructions-v2/core/choreographies/transporte.ts` (voie unique `compas_report`, défaut). Réutilise les helpers de `bissectrice.ts` (chorégraphie sœur). Pattern d'intersection arc-arc résolu via les points témoins déjà créés par `handleTransporte` (β.p1 et β.p2).
-
----
-
-## angle_polaire()
-
-Returns a `GeoScalar` — the polar angle of vector **OP** relative to the positive x-axis.
-
-### Signature
-
-```
-θ = angle_polaire(O, P)
-```
-
-- **O** — origin point
-- **P** — target point
-
-Result is in radians, in `[-π, π]`. This replaces the old `angle(O, P)` two-argument form removed in V1.
-
-### Example
-
-```dsl
-O = point(0, 0)
-P = point(1, 1)
-theta = angle_polaire(O, P)  # ≈ π/4 ≈ 0.785 rad
-```
+| Builtin  | Formes                                                                                                  |
+| -------- | ------------------------------------------------------------------------------------------------------- |
+| `texte`  | `texte(x, y, "…")` · `texte(P, "…", dx=0.2, dy=-0.1)` · `ancre=` (§6) ; `{A:.2f}` interpole un scalaire |
+| `mtexte` | `mtexte(x, y, "\\frac{a}{b}")` · `mtexte(P, "…")` : LaTeX (MathLive)                                    |
+| `rtexte` | `rtexte(x, y, "**gras** _italique_")` · `rtexte(P, "…", dx=…, dy=…)`                                    |
+| `image`  | `image("url", x, y, largeur=w)` · `image("url", A, largeur=w)` · `image("url", A, B, largeur=w)`        |
+| `style`  | `style(X, …args de style)` : modifie un objet existant                                                  |
+| `montre` | `montre(X, …args de style)` : rend visible et stylise                                                   |
+| `masque` | `masque(X)`                                                                                             |
 
 ---
 
-## mesure() — angle overloads
-
-`mesure()` is polymorphic. For angles, it provides three overloads.
-
-### mesure(α) — measure of an existing GeoAngle
+## 4. Angles (`GeoAngle`)
 
 ```
-m = mesure(α)
-m = mesure(α, unite="deg")
-m = mesure(α, unite="rad")
+α = angle(A, V, B)            # 3 points : côté A, sommet V, côté B
+α = angle(u, v)               # 2 vecteurs : angle non orienté dans [0 ; π]
+α = angle(s1, s2)             # 2 segments : sommet = extrémité commune, sinon intersection
+α = angle(d1, d2)             # 2 droites : convention angle aigu, [0 ; π/2]
 ```
 
-Returns a reactive `GeoScalar` (invisible). The result is cached on `α.measureScalarId` — two calls with the same `unite` return the same scalar.
+Arguments nommés, sur toutes les formes : `marque` (`arc` défaut, `arcs2`, `arcs3`, `carre`,
+`aucune`), `kind` (`saillant` défaut, `rentrant`), `orientation` (`auto`, `direct`, `indirect`),
+`showLabel` (`aucun`, `nom`, `mesure`, `mesure+nom`), `unite` (`rad`, `deg`), `arcRadiusPx` (25),
+`arcSpacingPx` (6, strictement positif), `remplissage=` (secteur rempli pour les marques en arc).
 
-```dsl
-A = point(3, 0)
-O = point(0, 0)
-B = point(0, 3)
-alpha = angle(A, O, B)
-m = mesure(alpha, unite="deg")   # reactive scalar ≈ 90 deg
-```
+- Segments ou droites parallèles : erreur structurée. Pour `angle(d1, d2)`, le choix du côté est
+  figé à la construction : la mesure suit le déplacement mais peut franchir π/2 sans permutation.
+- Réactif au déplacement dans toutes les combinaisons (vecteurs liés ou libres, via
+  `createTranslatedPointByVector` / `createFreeVectorPoint`).
+- `mesure(α)` met le scalaire en cache sur l'angle (`measureScalarIds`) ; `mesure(A, V, B)` crée un
+  angle masqué ; `mesure()` de tout autre objet (vecteur seul, segment, scalaire…) est une erreur.
+  Pour afficher une valeur : `texte(P, "AB = {d:.2f}")` ou `mtexte(…)`.
+- `rotation(M, centre=O, angle=α)` accepte un angle : la rotation suit ses points.
+- `transporte(α, V', …)` : nouvel angle de même mesure au sommet `V'` ; les trois modes de direction
+  (3ᵉ point, `vec=`, `angle=`) s'excluent ; le style de `α` est hérité. Avec `@euclide`, report
+  au compas animé (chorégraphie `core/choreographies/transporte.ts`, voie `compas_report`).
+- Builtins retirés (lèvent une erreur) : `marque_angle(P1, V, P2[, arcs=n])` → `angle(…, marque=
+"arcs2")`, `angle_droit(…)` → `angle(…, marque="carre")`, `angle_vecteurs(u, v)` →
+  `mesure(u, v)`, `angle(O, P)` → `angle_polaire(O, P)`. Scripts : `scripts/lint-angle-builtins.ts`
+  (vérifie le code) et `scripts/migrate-angle-builtins-supabase.ts` (colonne
+  `constructions.dsl_script`, à blanc par défaut, `--apply` pour écrire).
 
-### mesure(A, V, B) — angle between three points
+## 5. Intégrales et aires : `integrale`, `aire`, `aire_entre`
 
-```
-m = mesure(A, V, B)
-m = mesure(A, V, B, unite="deg")
-```
+Trois builtins, une même mécanique (`dsl/area-builtin-helper.ts`, `interpretAreaBuiltin`) : ils
+rendent un **scalaire** réactif ET dessinent une zone liée (les arguments de style vont à la zone,
+`styleTargetId`). `f` et `g` doivent être des courbes cartésiennes `courbe("…")`.
 
-Creates an internal `GeoAngle` with `visible=false` and returns its scalar measure. Equivalent to `mesure(angle(A, V, B))` but without creating a visible arc.
+| Builtin                  | Valeur            | Zone fermée par     | Couleur par défaut       |
+| ------------------------ | ----------------- | ------------------- | ------------------------ | ------------------- | ---------------- |
+| `integrale(f, a, b)`     | ∫ₐᵇ f, **signée** | l'axe des abscisses | bleu (défaut de la zone) |
+| `aire(f, a, b)`          | ∫                 | f                   | , toujours ≥ 0           | l'axe des abscisses | vert `#22c55e`   |
+| `aire_entre(f, g, a, b)` | ∫                 | f − g               | , toujours ≥ 0           | la courbe `g`       | orange `#fb923c` |
 
-```dsl
-A = point(3, 0)
-O = point(0, 0)
-B = point(0, 3)
-m = mesure(A, O, B)  # ≈ 1.5708 rad
-```
-
-### mesure(u, v) — angle between two vectors
-
-```
-m = mesure(u, v)
-```
-
-Returns the unsigned angle between vectors `u` and `v`, in `[0, π]`. Uses `acos((u·v) / (|u||v|))`.
-
-```dsl
-u = vecteur(3, 1, couleur="rouge")
-v = vecteur(1, 0, couleur="bleu")
-a = mesure(u, v)
-```
-
-### Refused overloads (throw DslRuntimeError)
-
-```dsl
-mesure(u)        # Error: hint "utilise norme(u) pour la longueur d'un vecteur"
-mesure(s)        # Error: hint "utilise longueur(s) pour la longueur d'un segment"
-```
-
----
-
-## sommet()
-
-Accessor (pure reference — no element created). Returns the vertex point of a `GeoAngle`.
-
-### Signature
-
-```
-V = sommet(α)
-```
-
-- **α** — a `GeoAngle` object
-
-```dsl
-A = point(3, 0)
-O = point(0, 0)
-B = point(0, 3)
-alpha = angle(A, O, B)
-V = sommet(alpha)   # V is O
-```
-
----
-
-## cote()
-
-Accessor (pure reference — no element created). Returns side point p1 or p2 of a `GeoAngle`.
-
-### Signature
+- **Vocabulaire** : l'intégrale peut être négative ; l'aire est une grandeur géométrique. Elles ne
+  coïncident que si f ≥ 0 sur [a ; b]. `integrale(x^3 - x, -1, 1)` = 0, `aire(…)` = 0,5.
+- **Bornes** : nombres, curseurs ou scalaires (`distance(O, P)`…) ; elles suivent le mouvement.
+  `integrale(f, b, a) = −integrale(f, a, b)` ; `aire` et `aire_entre` ignorent l'ordre. Bornes
+  égales → 0 ; `aire_entre(f, f, a, b)` → 0, rien n'est dessiné.
+- **Bornes infinies** (intégrales impropres) : `inf`, `+inf`, `-inf`. Exemples testés :
+  `integrale(exp(-x), 0, +inf)` ≈ 1, `integrale(exp(-x^2), -inf, +inf)` ≈ √π ; une intégrale
+  divergente rend `NaN` (`figure.createImproperIntegralArea`).
+- **Calcul** : primitive symbolique compilée et mise en cache si elle existe, sinon Simpson
+  adaptatif (≈ 10⁻⁶). `aire`/`aire_entre` découpent sur les zéros de f (ou f − g) dans l'intervalle.
+- **Singularités** : les discontinuités de l'intégrande sont analysées à la création ; un pôle ou une
+  discontinuité essentielle DANS [a ; b] donne `NaN` (réactif : une borne qui franchit le pôle
+  passe à `NaN` puis revient) ; une discontinuité éliminable ne gêne pas (`sin(x)/x` sur [-1 ; 1]).
+  Un avertissement console est émis quand une singularité est soupçonnée.
+- **Rendu** : la zone passe sous la courbe ; opacité de fond 0,3 par défaut. `integrale` éclaircit
+  les sous-régions où f < 0 ; `aire` et `aire_entre` gardent une teinte uniforme.
+- Hors périmètre : plus de deux courbes, détection automatique des intersections (donner [a ; b]).
+- Démos : `/geometry-demo/sliders/integrale`, `…/aire`, `…/aire-entre`, `…/integrale-improper`.
+  Tests : `dsl/__tests__/interpreter-integrale.test.ts`, `interpreter-aire-undercurve.test.ts`,
+  `interpreter-aire-entre.test.ts`, `interpreter-improper.test.ts`,
+  `interpreter-singularity-nan.test.ts`.
 
 ```
-P = cote(α, 1)    # first side (A in angle(A, V, B))
-P = cote(α, 2)    # second side (B in angle(A, V, B))
+f = courbe("y = sin(x)")
+a = slider(min=-3, max=0, valeur=-2)
+b = slider(min=0, max=4, valeur=3)
+A = aire(f, a, b, couleur="rouge", opacite_fond=0.4)
+mtexte(2, 1.5, "\\int_{a}^{b} |\\sin(x)|\\, dx = {A:.3f}")
 ```
 
-Throws `DslRuntimeError` if index is not 1 or 2.
+## 6. Textes : `ancre=`, flèche combinante
 
-```dsl
-A = point(3, 0)
-O = point(0, 0)
-B = point(0, 3)
-alpha = angle(A, O, B)
-P1 = cote(alpha, 1)   # P1 is A
-P2 = cote(alpha, 2)   # P2 is B
-```
+- `texte(x, y, "5 cm", ancre="bas-gauche")` : point de la boîte du texte posé sur la position
+  (`centre` défaut, `haut`, `bas`, `gauche`, `droite`, et les 4 coins). Boîte = de la ligne de base
+  à la hauteur des capitales. Bloc ` ```figure ` : identique à l'écran et au PDF ;
+  `GeometryCanvas` garde son ancrage historique (début du texte, ligne de base).
+- Flèche combinante dans `texte` : `"n⃗"` (n + U+20D7 ; aussi U+20D6, U+20E1, U+20D1) = lettre en
+  italique surmontée de la flèche, à l'écran comme au PDF (`rendering/combining-accents.ts`).
+  `texte` n'accepte pas de LaTeX : c'est le rôle de `mtexte`.
 
----
+## 7. Bloc ubumark ` ```figure ` : ce qui change
 
-## bissectrice() — angle overload
+Le bloc interprète le même DSL, sans interactivité (`ubumark/utils/figure-scene.ts`) :
 
-In addition to the three-point form `bissectrice(A, V, B)`, `bissectrice` accepts a `GeoAngle` directly.
-
-### Signatures
-
-```
-d = bissectrice(A, V, B)   # existing form
-d = bissectrice(α)          # new overload — reads vertex and sides from α
-```
-
-Throws `DslRuntimeError` on a flat angle (180°) in both forms.
-
-```dsl
-alpha = angle(A, O, B)
-d = bissectrice(alpha)
-```
-
----
-
-## rotation() — angle overload
-
-`rotation` accepts a `GeoAngle` as the rotation amount. The rotation reacts to drag of the angle's defining points.
-
-### Signatures
-
-```
-P2 = rotation(P, θ, centre=O)      # θ is a scalar or number
-P2 = rotation(P, α, centre=O)      # α is a GeoAngle (new overload)
-```
-
-```dsl
-alpha = angle(A, O, B)
-P2 = rotation(P, alpha, centre=O)
-```
-
----
-
-## Migration from V0 builtins
-
-The following builtins were **removed in V1**. Attempting to call them raises `DslRuntimeError`.
-
-| V0 (removed)                      | V1 replacement                     |
-| --------------------------------- | ---------------------------------- |
-| `marque_angle(P1, V, P2)`         | `angle(P1, V, P2)`                 |
-| `marque_angle(P1, V, P2, arcs=2)` | `angle(P1, V, P2, marque="arcs2")` |
-| `marque_angle(P1, V, P2, arcs=3)` | `angle(P1, V, P2, marque="arcs3")` |
-| `angle_droit(P1, V, P2)`          | `angle(P1, V, P2, marque="carre")` |
-| `angle_vecteurs(u, v)`            | `mesure(u, v)`                     |
-| `angle(O, P)` (2 args)            | `angle_polaire(O, P)`              |
-
-### Migration script (Supabase)
-
-To migrate existing DSL scripts stored in the `constructions.dsl_script` column:
-
-```bash
-# Dry-run (default — shows changes, writes nothing)
-npx tsx scripts/migrate-angle-builtins-supabase.ts
-
-# Apply to production
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... \
-  npx tsx scripts/migrate-angle-builtins-supabase.ts --apply
-```
-
-### Lint check
-
-To verify no source file uses the removed builtins:
-
-```bash
-npx tsx scripts/lint-angle-builtins.ts
-```
-
-Exit 0 = clean. Exit 1 = occurrences found with file/line details.
+- **En-tête** avant `---` : `fenetre: xmin ; xmax ; ymin ; ymax`, `axes: oui|non`,
+  `grille: oui|non|pas|pas x ; pas y`, `graduations: pas|pas x ; pas y|oui|non` (exige `axes: oui`).
+  Erreurs situées (`Ligne N : …`) ; plus de 200 lignes de grille ou de graduations refusé. Code :
+  `ubumark/parser/figure-parser.ts`, `buildFigureFrame`, `figure-svg.ts`, `frameToTypst`.
+- **Refusés avant exécution** (`REFUSED_CALLS`) : courbes et analyse (`courbe tangente derivee
+integrale zeros extrema inflections asymptotes courbure cercle_osculateur axes directrice foyers
+excentricite polaire`), `aire`, `aire_entre`, `lieu`, `trace`, `image`, `slider`, `secteur`,
+  `couronne`, `mtexte`, `rtexte`, et les directives d'animation. Le message renvoie au bloc
+  ` ```courbe ` pour les fonctions.
+- `;` séparateur et virgule décimale française sont normalisés (`normalizeFigureScript`).
+- Budget : taille du script, nombre d'objets (`Figure.setElementLimit`), `maxSteps`.
+- PDF : `exportToTypst({ clipToViewport: true, underlay })` — traits et remplissages découpés à la
+  fenêtre, noms et textes jamais coupés.

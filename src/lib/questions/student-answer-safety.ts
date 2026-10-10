@@ -29,7 +29,7 @@
  * Mesurée (lot 2, 2026-10-02) sur :
  * - les réponses attendues réelles (`expectedAnswer` des modèles,
  *   `expectedAnswer`/`expectedAnswerLatex` des instances générées) et les
- *   réponses des specs : `docs/relecture`, `scripts/questions`, fixtures de prod
+ *   réponses des specs : `data/relecture`, `scripts/questions`, fixtures de prod
  *   (test « corpus » de `student-answer-safety.render.test.ts`) ;
  * - les sorties de `toLatex` et de `unitWritingToLatex` (unités) ;
  * - ce que l'élève produit au clavier MathLive 0.110 : clavier virtuel par

@@ -36,6 +36,11 @@
 	// ===== Server Data =====
 	let { data }: { data: PageData } = $props();
 
+	// Les mots viennent du dictionnaire en base : donnés une fois, avant toute
+	// lecture du jeu (`selectedGrade` ci-dessous lit déjà la partie en cours)
+	// svelte-ignore state_referenced_locally
+	game.init(data.words);
+
 	/** Whether scores can be saved (authenticated student) */
 	let canSaveScore = $derived(data.canSaveScore);
 

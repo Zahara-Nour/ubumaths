@@ -628,7 +628,7 @@ Uint8Array PDF → Blob + download
 
 **Math** : `markdownToTypst` gère les 4 syntaxes UbuMark (`$..$`, `$$..$$`, `~..~`, `~~..~~`) via la branche `node.syntax === 'custom' ? expressionToLatex(...) : toFrenchDecimal(...)` puis `convertLatexToTypstMath` — partagé avec le pipeline worksheet, **0 duplication**.
 
-→ Voir `src/lib/typst/notebook-pdf.ts` (wrapper) + `src/lib/typst/generators/notebook-generator.ts` (générateur) + `docs/wip/notebook-pdf-export-progress.md`.
+→ Voir `src/lib/typst/notebook-pdf.ts` (wrapper) + `src/lib/typst/generators/notebook-generator.ts` (générateur) + `docs/archive/wip/notebook-pdf-export-progress.md`.
 
 ### Mode présentation (UbuSlides)
 
@@ -651,7 +651,7 @@ Route `/python-notebook/[id]/present` → mount d'une nouvelle `NotebookStore` (
 
 Navigation : `Deck` route ←/→ via `actions/keyboard.ts`, hash URL `#/N` via `navigation/hash.ts` (avec `replaceState` depuis `$app/navigation` pour ne pas faire warner SvelteKit), Esc remonté au `<svelte:window>` de la page (avec `e.defaultPrevented` guard pour ne pas conflicter avec le Deck overview).
 
-→ Voir `docs/wip/notebook-presentation-progress.md`.
+→ Voir `docs/archive/wip/notebook-presentation-progress.md`.
 
 ### Templates (clone + save-as)
 
@@ -673,7 +673,7 @@ Défense en profondeur :
 - `/api/python-notebooks/[id]/share` refuse `is_template = true` (cloner d'abord)
 - `GET /api/python-notebooks` filtre `is_template = false` (templates n'apparaissent pas dans la liste classique)
 
-→ Voir `docs/wip/notebook-templates-progress.md`.
+→ Voir `docs/archive/wip/notebook-templates-progress.md`.
 
 ### Checkpoint cells
 
@@ -685,7 +685,7 @@ Persistance via `python_notebook_checkpoint_runs` (PK `(notebook_id, user_id, ce
 
 **Bug postMessage important** : `cell.checkpoint.test_cases` / `expected_vars` sont des proxies `$state` Svelte 5. Le structured clone du Worker refuse les Proxy → `$state.snapshot(...)` est appliqué dans `checkpointConfigToValidationConfig` avant le post au worker. Toucher les deux endpoints (clone notebook + save-as-template) sans ce fix produit `[object Array] could not be cloned`.
 
-→ Voir `docs/wip/notebook-checkpoints-progress.md`.
+→ Voir `docs/archive/wip/notebook-checkpoints-progress.md`.
 
 ### Pipeline tentatives élève dashboard
 
@@ -726,7 +726,7 @@ INSERT INTO ... ON CONFLICT DO UPDATE SET
 - **% Indices révélés** sur l'ensemble des runs
 - Filtre **« Voir uniquement ceux qui ont galéré » > 5 essais**
 
-→ Voir `docs/wip/notebook-attempts-dashboard-progress.md`.
+→ Voir `docs/archive/wip/notebook-attempts-dashboard-progress.md`.
 
 ---
 

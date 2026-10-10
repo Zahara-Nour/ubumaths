@@ -20,10 +20,9 @@ import {
 	lessThanOrEqualInterval,
 	nonZeroReals
 } from '../factory';
-import { number } from '$lib/mathAST/factory';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import type { MathNode } from '../../types';
-import type { Domain } from '../types';
+import type { Domain, RangeResult } from '../types';
 
 // =============================================================================
 // Helper functions for creating test nodes
@@ -65,6 +64,14 @@ function opposite(operand: MathNode): MathNode {
 	return { type: 'opposite', operand };
 }
 
+// Affirme que l'image a été déterminée (non nulle) puis la rétrécit en Domain :
+// un range null fait échouer le test au lieu d'être lu comme un domaine.
+function rangeOf(result: RangeResult): Domain {
+	expect(result.range).not.toBeNull();
+	if (result.range === null) throw new Error('image attendue, reçu null');
+	return result.range;
+}
+
 // Helper to create a closed interval domain [a, b]
 function closedIntervalDomain(a: number, b: number): Domain {
 	return intervalDomain([closedInterval(numericNode(a), numericNode(b))]);
@@ -87,41 +94,41 @@ describe('computeRange()', () => {
 	describe('constants', () => {
 		it('constant 5 has range {5}', () => {
 			const result = computeRange(number('5'), 'x');
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 4)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 4)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('constant 0 has range {0}', () => {
 			const result = computeRange(number('0'), 'x');
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('negative constant -3 has range {-3}', () => {
 			const result = computeRange(opposite(number('3')), 'x');
-			expect(containsValue(result.range, -3)).toBe(true);
-			expect(containsValue(result.range, 3)).toBe(false);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), -3)).toBe(true);
+			expect(containsValue(rangeOf(result), 3)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 
 		it('decimal constant 2.5 has range {2.5}', () => {
 			const result = computeRange(number('2.5'), 'x');
-			expect(containsValue(result.range, 2.5)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(false);
-			expect(containsValue(result.range, 3)).toBe(false);
+			expect(containsValue(rangeOf(result), 2.5)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(false);
 		});
 
 		it('very large constant 1000000 has range {1000000}', () => {
 			const result = computeRange(number('1000000'), 'x');
-			expect(containsValue(result.range, 1000000)).toBe(true);
-			expect(containsValue(result.range, 999999)).toBe(false);
+			expect(containsValue(rangeOf(result), 1000000)).toBe(true);
+			expect(containsValue(rangeOf(result), 999999)).toBe(false);
 		});
 
 		it('very small constant 0.0001 has range {0.0001}', () => {
 			const result = computeRange(number('0.0001'), 'x');
-			expect(containsValue(result.range, 0.0001)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 0.0001)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 	});
 
@@ -132,68 +139,68 @@ describe('computeRange()', () => {
 	describe('variable', () => {
 		it('variable x on universal domain has universal range', () => {
 			const result = computeRange(variable('x'), 'x');
-			expect(result.range.kind).toBe('universal');
+			expect(rangeOf(result).kind).toBe('universal');
 		});
 
 		it('variable x on [0, +infinity[ has range [0, +infinity[', () => {
 			const result = computeRange(variable('x'), 'x', { domain: nonNegativeReals() });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
 		});
 
 		it('variable x on [-1, 1] has range [-1, 1]', () => {
 			const result = computeRange(variable('x'), 'x', { domain: unitInterval() });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
 		});
 
 		it('variable x on empty domain has empty range', () => {
 			const result = computeRange(variable('x'), 'x', { domain: emptyDomain() });
-			expect(result.range.kind).toBe('empty');
+			expect(rangeOf(result).kind).toBe('empty');
 		});
 
 		it('variable x on ]0, +infinity[ (open at 0) preserves openness', () => {
 			const result = computeRange(variable('x'), 'x', { domain: positiveReals() });
-			expect(containsValue(result.range, 0)).toBe(false); // 0 excluded
-			expect(containsValue(result.range, 0.001)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false); // 0 excluded
+			expect(containsValue(rangeOf(result), 0.001)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
 		});
 
 		it('variable y (different from target x) is treated as constant', () => {
 			const result = computeRange(variable('y'), 'x');
 			// y is not x, so it's treated as universal (unknown constant)
-			expect(result.range.kind).toBe('universal');
+			expect(rangeOf(result).kind).toBe('universal');
 		});
 
 		it('variable x on single point domain {5} has range {5}', () => {
 			const result = computeRange(variable('x'), 'x', {
 				domain: closedIntervalDomain(5, 5)
 			});
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 4)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 4)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('variable x on ]-infinity, 0] has range ]-infinity, 0]', () => {
 			const result = computeRange(variable('x'), 'x', {
-				domain: intervalDomain([lessThanOrEqualInterval(number(0))])
+				domain: intervalDomain([lessThanOrEqualInterval(number('0'))])
 			});
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, -100)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), -100)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('variable x on open interval ]2, 5[ excludes endpoints', () => {
 			const result = computeRange(variable('x'), 'x', {
 				domain: openIntervalDomain(2, 5)
 			});
-			expect(containsValue(result.range, 2)).toBe(false);
-			expect(containsValue(result.range, 5)).toBe(false);
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 4)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 5)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 4)).toBe(true);
 		});
 	});
 
@@ -205,17 +212,17 @@ describe('computeRange()', () => {
 		describe('square root', () => {
 			it('sqrt(x) has range [0, +infinity[', () => {
 				const result = computeRange(func('sqrt', [variable('x')]), 'x');
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 10)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 10)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 
 			it('sqrt(constant 4) evaluates to {2}', () => {
 				const result = computeRange(func('sqrt', [number('4')]), 'x');
 				// With composition propagation, sqrt(4) = 2 (single point)
-				expect(containsValue(result.range, 2)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(false);
-				expect(containsValue(result.range, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 2)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(false);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 		});
 
@@ -241,10 +248,10 @@ describe('computeRange()', () => {
 			it('exp(x) has range ]0, +infinity[', () => {
 				const result = computeRange(func('exp', [variable('x')]), 'x');
 				expect(result.range).not.toBeNull();
-				expect(containsValue(result.range!, 0)).toBe(false); // open at 0
-				expect(containsValue(result.range!, 1)).toBe(true);
-				expect(containsValue(result.range!, 100)).toBe(true);
-				expect(containsValue(result.range!, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(false); // open at 0
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 100)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 
 			it('ln(x) on ℝ⁺ returns null (exact range not computable)', () => {
@@ -268,17 +275,17 @@ describe('computeRange()', () => {
 		describe('inverse trigonometric functions', () => {
 			it('arcsin(x) has range [-π/2, π/2]', () => {
 				const result = computeRange(func('arcsin', [variable('x')]), 'x');
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, Math.PI / 2)).toBe(true);
-				expect(containsValue(result.range, -Math.PI / 2)).toBe(true);
-				expect(containsValue(result.range, 2)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), Math.PI / 2)).toBe(true);
+				expect(containsValue(rangeOf(result), -Math.PI / 2)).toBe(true);
+				expect(containsValue(rangeOf(result), 2)).toBe(false);
 			});
 
 			it('arccos(x) has range [0, π]', () => {
 				const result = computeRange(func('arccos', [variable('x')]), 'x');
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, Math.PI)).toBe(true);
-				expect(containsValue(result.range, -0.1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), Math.PI)).toBe(true);
+				expect(containsValue(rangeOf(result), -0.1)).toBe(false);
 			});
 
 			it('arctan(x) on ℝ returns null (exact range not computable)', () => {
@@ -327,14 +334,14 @@ describe('computeRange()', () => {
 				const result = computeRange(func('sqrt', [variable('x')]), 'x', {
 					domain: emptyDomain()
 				});
-				expect(result.range.kind).toBe('empty');
+				expect(rangeOf(result).kind).toBe('empty');
 			});
 
 			it('sin(x) on empty domain has empty range', () => {
 				const result = computeRange(func('sin', [variable('x')]), 'x', {
 					domain: emptyDomain()
 				});
-				expect(result.range.kind).toBe('empty');
+				expect(rangeOf(result).kind).toBe('empty');
 			});
 		});
 	});
@@ -349,9 +356,9 @@ describe('computeRange()', () => {
 			const result = computeRange(expr, 'x');
 			// Domain is [0, +∞), critical point method with limits succeeds
 			expect(result.range).not.toBeNull();
-			expect(containsValue(result.range!, 0)).toBe(true);
-			expect(containsValue(result.range!, 10)).toBe(true);
-			expect(containsValue(result.range!, -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
 		});
 
 		it('sin(cos(x)) on ℝ returns null (composition with periodic)', () => {
@@ -371,7 +378,7 @@ describe('computeRange()', () => {
 			const result = computeRange(expr, 'x');
 			// ln(exp(x)) = x, critical point method computes lim(-∞)=-∞, lim(+∞)=+∞
 			expect(result.range).not.toBeNull();
-			expect(result.range!.kind).toBe('universal');
+			expect(rangeOf(result).kind).toBe('universal');
 		});
 
 		it('sqrt(abs(x)) on ℝ returns null (composition with non-differentiable)', () => {
@@ -395,34 +402,34 @@ describe('computeRange()', () => {
 		it('x + 1 on [0, 10] has range [1, 11]', () => {
 			const expr = add(variable('x'), number('1'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 11)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
-			expect(containsValue(result.range, 12)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 11)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 12)).toBe(false);
 		});
 
 		it('x + (-5) on [0, 10] has range [-5, 5]', () => {
 			const expr = add(variable('x'), opposite(number('5')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			expect(containsValue(result.range, -5)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, -6)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), -5)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), -6)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('x + 0 on [2, 5] has range [2, 5]', () => {
 			const expr = add(variable('x'), number('0'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('1 + 2 (two constants) has range {3}', () => {
 			const expr = add(number('1'), number('2'));
 			const result = computeRange(expr, 'x');
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
 		});
 
 		it('x + y where y is unknown returns null (not computable exactly)', () => {
@@ -435,16 +442,16 @@ describe('computeRange()', () => {
 		it('x + x on [0, 5] has range [0, 10]', () => {
 			const expr = add(variable('x'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
-			expect(containsValue(result.range, 11)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 11)).toBe(false);
 		});
 
 		it('addition with empty domain gives empty range', () => {
 			const expr = add(variable('x'), number('1'));
 			const result = computeRange(expr, 'x', { domain: emptyDomain() });
-			expect(result.range.kind).toBe('empty');
+			expect(rangeOf(result).kind).toBe('empty');
 		});
 
 		it('addition with universal domain gives universal range', () => {
@@ -453,7 +460,7 @@ describe('computeRange()', () => {
 			// x+1 is linear, quadratic detector returns a=0 but extractQuadratic handles it
 			// Linear range on universal = universal
 			expect(result.range).not.toBeNull();
-			expect(result.range!.kind).toBe('universal');
+			expect(rangeOf(result).kind).toBe('universal');
 		});
 	});
 
@@ -465,50 +472,50 @@ describe('computeRange()', () => {
 		it('x - 1 on [0, 10] has range [-1, 9]', () => {
 			const expr = subtract(variable('x'), number('1'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			expect(containsValue(result.range, -1)).toBe(true);
-			expect(containsValue(result.range, 9)).toBe(true);
-			expect(containsValue(result.range, -2)).toBe(false);
-			expect(containsValue(result.range, 10)).toBe(false);
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
+			expect(containsValue(rangeOf(result), 9)).toBe(true);
+			expect(containsValue(rangeOf(result), -2)).toBe(false);
+			expect(containsValue(rangeOf(result), 10)).toBe(false);
 		});
 
 		it('1 - x on [0, 10] has range [-9, 1]', () => {
 			const expr = subtract(number('1'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			expect(containsValue(result.range, -9)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, -10)).toBe(false);
-			expect(containsValue(result.range, 2)).toBe(false);
+			expect(containsValue(rangeOf(result), -9)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), -10)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
 		});
 
 		it('x - x on [0, 10] has range {0}', () => {
 			const expr = subtract(variable('x'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
 			// Exact method correctly computes x - x = 0 (not Minkowski [-10, 10])
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(false);
-			expect(containsValue(result.range, -10)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(false);
+			expect(containsValue(rangeOf(result), -10)).toBe(false);
 		});
 
 		it('5 - 3 (two constants) has range {2}', () => {
 			const expr = subtract(number('5'), number('3'));
 			const result = computeRange(expr, 'x');
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 3)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 3)).toBe(false);
 		});
 
 		it('x - 0 on [2, 5] has range [2, 5]', () => {
 			const expr = subtract(variable('x'), number('0'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
 		});
 
 		it('0 - x on [2, 5] has range [-5, -2]', () => {
 			const expr = subtract(number('0'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
-			expect(containsValue(result.range, -5)).toBe(true);
-			expect(containsValue(result.range, -2)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), -5)).toBe(true);
+			expect(containsValue(rangeOf(result), -2)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 	});
 
@@ -520,41 +527,41 @@ describe('computeRange()', () => {
 		it('2 * x on [0, 5] has range [0, 10]', () => {
 			const expr = multiply(number('2'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
-			expect(containsValue(result.range, 11)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 11)).toBe(false);
 		});
 
 		it('(-2) * x on [0, 5] has range [-10, 0]', () => {
 			const expr = multiply(opposite(number('2')), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, -10)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), -10)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('0 * x has range {0}', () => {
 			const expr = multiply(number('0'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-10, 10) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('1 * x on [2, 5] has range [2, 5]', () => {
 			const expr = multiply(number('1'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
 		});
 
 		it('x * x on [2, 3] has range [4, 9]', () => {
 			const expr = multiply(variable('x'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 3) });
-			expect(containsValue(result.range, 4)).toBe(true);
-			expect(containsValue(result.range, 9)).toBe(true);
-			expect(containsValue(result.range, 3)).toBe(false);
-			expect(containsValue(result.range, 10)).toBe(false);
+			expect(containsValue(rangeOf(result), 4)).toBe(true);
+			expect(containsValue(rangeOf(result), 9)).toBe(true);
+			expect(containsValue(rangeOf(result), 3)).toBe(false);
+			expect(containsValue(rangeOf(result), 10)).toBe(false);
 		});
 
 		it('x * x on [-2, 3] is x² so range is [0, 9]', () => {
@@ -562,9 +569,9 @@ describe('computeRange()', () => {
 			const expr = multiply(variable('x'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 3) });
 			// x² on [-2, 3]: minimum at x=0 → 0, maximum at x=3 → 9
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 9)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false); // x² is never negative
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 9)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false); // x² is never negative
 		});
 
 		it('positive * positive range on [1, 2] * [3, 4] = [3, 8]', () => {
@@ -572,30 +579,30 @@ describe('computeRange()', () => {
 			// x on [1, 2], constant 3 on [3, 4] -> approximate with x * 3.5
 			const expr = multiply(variable('x'), number('3'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 2) });
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 6)).toBe(true);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 6)).toBe(true);
 		});
 
 		it('negative * negative range on [-3, -1] * [-4, -2] gives positive', () => {
 			const expr = multiply(variable('x'), opposite(number('3')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, -1) });
 			// [-2, -1] * -3 = [3, 6]
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 6)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 6)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 
 		it('2 * 3 (two constants) has range {6}', () => {
 			const expr = multiply(number('2'), number('3'));
 			const result = computeRange(expr, 'x');
-			expect(containsValue(result.range, 6)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(false);
 		});
 
 		it('multiplication with empty domain gives empty range', () => {
 			const expr = multiply(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: emptyDomain() });
-			expect(result.range.kind).toBe('empty');
+			expect(rangeOf(result).kind).toBe('empty');
 		});
 	});
 
@@ -607,20 +614,20 @@ describe('computeRange()', () => {
 		it('x / 2 on [0, 10] has range [0, 5]', () => {
 			const expr = divide(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('10 / x on [2, 5] has range [2, 5]', () => {
 			const expr = divide(number('10'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
 			// 10 / [2, 5] = [2, 5]
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('division by range containing 0 returns null', () => {
@@ -633,36 +640,36 @@ describe('computeRange()', () => {
 		it('0 / x on [1, 10] has range {0}', () => {
 			const expr = divide(number('0'), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 10) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('6 / 2 (two constants) has range {3}', () => {
 			const expr = divide(number('6'), number('2'));
 			const result = computeRange(expr, 'x');
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
 		});
 
 		it('x / 1 on [2, 5] has range [2, 5]', () => {
 			const expr = divide(variable('x'), number('1'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
 		});
 
 		it('x / (-2) on [4, 10] has range [-5, -2]', () => {
 			const expr = divide(variable('x'), opposite(number('2')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(4, 10) });
-			expect(containsValue(result.range, -5)).toBe(true);
-			expect(containsValue(result.range, -2)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), -5)).toBe(true);
+			expect(containsValue(rangeOf(result), -2)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 
 		it('division with empty domain gives empty range', () => {
 			const expr = divide(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: emptyDomain() });
-			expect(result.range.kind).toBe('empty');
+			expect(rangeOf(result).kind).toBe('empty');
 		});
 
 		it('1/x on ]0, +infinity[ returns null (limit computation not supported)', () => {
@@ -681,53 +688,53 @@ describe('computeRange()', () => {
 		it('-x on [0, 10] has range [-10, 0]', () => {
 			const expr = opposite(variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			expect(containsValue(result.range, -10)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
-			expect(containsValue(result.range, -11)).toBe(false);
+			expect(containsValue(rangeOf(result), -10)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
+			expect(containsValue(rangeOf(result), -11)).toBe(false);
 		});
 
 		it('-x on [-5, -2] has range [2, 5]', () => {
 			const expr = opposite(variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, -2) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('-x on [-3, 3] has range [-3, 3]', () => {
 			const expr = opposite(variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-3, 3) });
-			expect(containsValue(result.range, -3)).toBe(true);
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(true);
+			expect(containsValue(rangeOf(result), -3)).toBe(true);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
 		});
 
 		it('-x on universal domain has universal range', () => {
 			const expr = opposite(variable('x'));
 			const result = computeRange(expr, 'x', { domain: universalDomain() });
-			expect(result.range.kind).toBe('universal');
+			expect(rangeOf(result).kind).toBe('universal');
 		});
 
 		it('-x on empty domain has empty range', () => {
 			const expr = opposite(variable('x'));
 			const result = computeRange(expr, 'x', { domain: emptyDomain() });
-			expect(result.range.kind).toBe('empty');
+			expect(rangeOf(result).kind).toBe('empty');
 		});
 
 		it('-(5) has range {-5}', () => {
 			const expr = opposite(number('5'));
 			const result = computeRange(expr, 'x');
-			expect(containsValue(result.range, -5)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(false);
+			expect(containsValue(rangeOf(result), -5)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(false);
 		});
 
 		it('-(-x) on [2, 5] has range [2, 5]', () => {
 			const expr = opposite(opposite(variable('x')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(2, 5) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
 		});
 	});
 
@@ -751,7 +758,7 @@ describe('computeRange()', () => {
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-10, -1) });
 				// On a bounded domain, the critical point method evaluates f(-10)=1, f(-1)=1
 				expect(result.range).not.toBeNull();
-				expect(containsValue(result.range!, 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
 			});
 		});
 
@@ -759,10 +766,10 @@ describe('computeRange()', () => {
 			it('x^1 has same range as x', () => {
 				const expr = power(variable('x'), number('1'));
 				const result = computeRange(expr, 'x', { domain: unitInterval() });
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 1)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(true);
-				expect(containsValue(result.range, 2)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(true);
+				expect(containsValue(rangeOf(result), 2)).toBe(false);
 			});
 		});
 
@@ -770,49 +777,49 @@ describe('computeRange()', () => {
 			it('x^2 on ℝ has range [0, +infinity[', () => {
 				const expr = power(variable('x'), number('2'));
 				const result = computeRange(expr, 'x');
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 4)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 4)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 
 			it('x^2 on [1, 3] has range [1, 9]', () => {
 				const expr = power(variable('x'), number('2'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 3) });
-				expect(containsValue(result.range, 1)).toBe(true);
-				expect(containsValue(result.range, 9)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(false);
-				expect(containsValue(result.range, 10)).toBe(false);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 9)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(false);
+				expect(containsValue(rangeOf(result), 10)).toBe(false);
 			});
 
 			it('x^2 on [-3, -1] has range [1, 9]', () => {
 				const expr = power(variable('x'), number('2'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-3, -1) });
-				expect(containsValue(result.range, 1)).toBe(true);
-				expect(containsValue(result.range, 9)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(false);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 9)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(false);
 			});
 
 			it('x^2 on [-2, 3] has range [0, 9] (contains 0)', () => {
 				const expr = power(variable('x'), number('2'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 3) });
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 9)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 9)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 
 			it('x^2 on [-3, 2] has range [0, 9] (|-3| > |2|)', () => {
 				const expr = power(variable('x'), number('2'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-3, 2) });
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 9)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 9)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 
 			it('x^2 on [0, 0] has range {0}', () => {
 				const expr = power(variable('x'), number('2'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 0) });
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 1)).toBe(false);
 			});
 		});
 
@@ -820,32 +827,32 @@ describe('computeRange()', () => {
 			it('x^3 on [1, 2] has range [1, 8]', () => {
 				const expr = power(variable('x'), number('3'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 2) });
-				expect(containsValue(result.range, 1)).toBe(true);
-				expect(containsValue(result.range, 8)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(false);
-				expect(containsValue(result.range, 9)).toBe(false);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 8)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(false);
+				expect(containsValue(rangeOf(result), 9)).toBe(false);
 			});
 
 			it('x^3 on [-2, -1] has range [-8, -1]', () => {
 				const expr = power(variable('x'), number('3'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, -1) });
-				expect(containsValue(result.range, -8)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(false);
+				expect(containsValue(rangeOf(result), -8)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(false);
 			});
 
 			it('x^3 on [-1, 2] has range [-1, 8]', () => {
 				const expr = power(variable('x'), number('3'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-1, 2) });
-				expect(containsValue(result.range, -1)).toBe(true);
-				expect(containsValue(result.range, 8)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(true);
+				expect(containsValue(rangeOf(result), 8)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
 			});
 
 			it('x^3 on universal domain has universal range', () => {
 				const expr = power(variable('x'), number('3'));
 				const result = computeRange(expr, 'x');
-				expect(result.range.kind).toBe('universal');
+				expect(rangeOf(result).kind).toBe('universal');
 			});
 		});
 
@@ -853,17 +860,17 @@ describe('computeRange()', () => {
 			it('x^4 on [1, 2] has range [1, 16]', () => {
 				const expr = power(variable('x'), number('4'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 2) });
-				expect(containsValue(result.range, 1)).toBe(true);
-				expect(containsValue(result.range, 16)).toBe(true);
-				expect(containsValue(result.range, 0)).toBe(false);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 16)).toBe(true);
+				expect(containsValue(rangeOf(result), 0)).toBe(false);
 			});
 
 			it('x^4 on [-2, 1] has range [0, 16] (contains 0)', () => {
 				const expr = power(variable('x'), number('4'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 1) });
-				expect(containsValue(result.range, 0)).toBe(true);
-				expect(containsValue(result.range, 16)).toBe(true);
-				expect(containsValue(result.range, -1)).toBe(false);
+				expect(containsValue(rangeOf(result), 0)).toBe(true);
+				expect(containsValue(rangeOf(result), 16)).toBe(true);
+				expect(containsValue(rangeOf(result), -1)).toBe(false);
 			});
 		});
 
@@ -871,15 +878,15 @@ describe('computeRange()', () => {
 			it('x^5 on [1, 2] has range [1, 32]', () => {
 				const expr = power(variable('x'), number('5'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 2) });
-				expect(containsValue(result.range, 1)).toBe(true);
-				expect(containsValue(result.range, 32)).toBe(true);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
+				expect(containsValue(rangeOf(result), 32)).toBe(true);
 			});
 
 			it('x^5 on [-2, 1] has range [-32, 1]', () => {
 				const expr = power(variable('x'), number('5'));
 				const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 1) });
-				expect(containsValue(result.range, -32)).toBe(true);
-				expect(containsValue(result.range, 1)).toBe(true);
+				expect(containsValue(rangeOf(result), -32)).toBe(true);
+				expect(containsValue(rangeOf(result), 1)).toBe(true);
 			});
 		});
 	});
@@ -892,28 +899,28 @@ describe('computeRange()', () => {
 		it('2x + 1 on [0, 5] has range [1, 11]', () => {
 			const expr = add(multiply(number('2'), variable('x')), number('1'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 11)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
-			expect(containsValue(result.range, 12)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 11)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 12)).toBe(false);
 		});
 
 		it('-x + 5 on [0, 3] has range [2, 5]', () => {
 			const expr = add(opposite(variable('x')), number('5'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 3) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('x^2 + 1 on [-2, 2] has range [1, 5]', () => {
 			const expr = add(power(variable('x'), number('2')), number('1'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 
 		it('sin(x)^2 on ℝ returns null (periodic composition)', () => {
@@ -927,9 +934,9 @@ describe('computeRange()', () => {
 			const expr = add(func('sqrt', [variable('x')]), number('1'));
 			const result = computeRange(expr, 'x');
 			// sqrt(x) ∈ [0, +∞[, adding 1 gives [1, +∞[
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 	});
 
@@ -940,32 +947,32 @@ describe('computeRange()', () => {
 	describe('special domain types', () => {
 		it('empty domain gives empty range', () => {
 			const result = computeRange(variable('x'), 'x', { domain: { kind: 'empty' } });
-			expect(result.range.kind).toBe('empty');
+			expect(rangeOf(result).kind).toBe('empty');
 		});
 
 		it('universal domain on variable gives universal range', () => {
 			const result = computeRange(variable('x'), 'x', { domain: universalDomain() });
-			expect(result.range.kind).toBe('universal');
+			expect(rangeOf(result).kind).toBe('universal');
 		});
 
 		it('ℝ \\ {0} domain (nonZeroReals) on x gives non-zero range', () => {
 			const result = computeRange(variable('x'), 'x', { domain: nonZeroReals() });
 			// The range should contain values except 0
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
 			// Note: containsValue might still return true for 0 depending on implementation
 		});
 
 		it('multi-interval domain ]-∞, -1] ∪ [1, +∞[', () => {
 			const domain = intervalDomain([
 				lessThanOrEqualInterval(opposite(number('1'))),
-				greaterThanOrEqualInterval(number(1))
+				greaterThanOrEqualInterval(number('1'))
 			]);
 			const result = computeRange(variable('x'), 'x', { domain });
-			expect(containsValue(result.range, -1)).toBe(true);
-			expect(containsValue(result.range, -10)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 10)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
+			expect(containsValue(rangeOf(result), -10)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 10)).toBe(true);
 		});
 	});
 
@@ -1011,35 +1018,35 @@ describe('computeRange()', () => {
 			const result = computeRange(variable('x'), 'x', {
 				domain: closedIntervalDomain(0.001, 0.002)
 			});
-			expect(containsValue(result.range, 0.001)).toBe(true);
-			expect(containsValue(result.range, 0.002)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
-			expect(containsValue(result.range, 0.003)).toBe(false);
+			expect(containsValue(rangeOf(result), 0.001)).toBe(true);
+			expect(containsValue(rangeOf(result), 0.002)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 0.003)).toBe(false);
 		});
 
 		it('handles very large interval [1000000, 2000000]', () => {
 			const result = computeRange(variable('x'), 'x', {
 				domain: closedIntervalDomain(1000000, 2000000)
 			});
-			expect(containsValue(result.range, 1000000)).toBe(true);
-			expect(containsValue(result.range, 2000000)).toBe(true);
-			expect(containsValue(result.range, 999999)).toBe(false);
+			expect(containsValue(rangeOf(result), 1000000)).toBe(true);
+			expect(containsValue(rangeOf(result), 2000000)).toBe(true);
+			expect(containsValue(rangeOf(result), 999999)).toBe(false);
 		});
 
 		it('handles interval crossing zero [-0.5, 0.5]', () => {
 			const expr = power(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-0.5, 0.5) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 0.25)).toBe(true);
-			expect(containsValue(result.range, 0.26)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 0.25)).toBe(true);
+			expect(containsValue(rangeOf(result), 0.26)).toBe(false);
 		});
 
 		it('handles symmetric interval [-5, 5]', () => {
 			const expr = power(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, 5) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 25)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 25)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
 		});
 	});
 
@@ -1051,37 +1058,37 @@ describe('computeRange()', () => {
 		it('((x + 1) + 2) on [0, 5] has range [3, 8]', () => {
 			const expr = add(add(variable('x'), number('1')), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 8)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(false);
-			expect(containsValue(result.range, 9)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 8)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 9)).toBe(false);
 		});
 
 		it('(x * 2) * 3 on [0, 5] has range [0, 30]', () => {
 			const expr = multiply(multiply(variable('x'), number('2')), number('3'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 30)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
-			expect(containsValue(result.range, 31)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 30)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 31)).toBe(false);
 		});
 
 		it('(x^2)^2 = x^4 on [1, 2] has range [1, 16]', () => {
 			const expr = power(power(variable('x'), number('2')), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 2) });
 			// x^2 on [1,2] = [1,4], then squared = [1, 16]
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 16)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 16)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 
 		it('-(-(x)) on [1, 5] has range [1, 5]', () => {
 			const expr = opposite(opposite(variable('x')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 5) });
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 5)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
-			expect(containsValue(result.range, 6)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 5)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 6)).toBe(false);
 		});
 	});
 
@@ -1161,10 +1168,10 @@ describe('computeRange()', () => {
 		it('x² on [-2, 2] has range [0, 4] (vertex at 0)', () => {
 			const expr = power(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 4)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
-			expect(containsValue(result.range, 5)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 4)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 5)).toBe(false);
 		});
 
 		it('x² - 4x + 3 on [0, 5] has range [-1, 8] (vertex at x=2)', () => {
@@ -1175,35 +1182,35 @@ describe('computeRange()', () => {
 				number('3')
 			);
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
-			expect(containsValue(result.range, -1)).toBe(true);
-			expect(containsValue(result.range, 8)).toBe(true);
-			expect(containsValue(result.range, -2)).toBe(false);
-			expect(containsValue(result.range, 9)).toBe(false);
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
+			expect(containsValue(rangeOf(result), 8)).toBe(true);
+			expect(containsValue(rangeOf(result), -2)).toBe(false);
+			expect(containsValue(rangeOf(result), 9)).toBe(false);
 		});
 
 		it('-x² on [-2, 2] has range [-4, 0] (downward parabola)', () => {
 			const expr = opposite(power(variable('x'), number('2')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, -4)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), -4)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
 		});
 
 		it('x² on [1, 3] has range [1, 9] (vertex outside domain)', () => {
 			const expr = power(variable('x'), number('2'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 3) });
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 9)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(false);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 9)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(false);
 		});
 
 		it('2x² + 3 on [-1, 2] has range [3, 11]', () => {
 			// f(x) = 2x² + 3, vertex at x=0, f(0)=3, f(-1)=5, f(2)=11
 			const expr = add(multiply(number('2'), power(variable('x'), number('2'))), number('3'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-1, 2) });
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 11)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(false);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 11)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(false);
 		});
 	});
 
@@ -1215,37 +1222,37 @@ describe('computeRange()', () => {
 		it('x^(1/2) = sqrt(x) on [4, 9] has range [2, 3]', () => {
 			const expr = power(variable('x'), divide(number('1'), number('2')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(4, 9) });
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, 3)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(false);
-			expect(containsValue(result.range, 4)).toBe(false);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), 3)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(false);
+			expect(containsValue(rangeOf(result), 4)).toBe(false);
 		});
 
 		it('x^(1/3) (cube root) on [-8, 8] has range [-2, 2] (défini sur ℝ, 2026-10-08)', () => {
 			const expr = power(variable('x'), divide(number('1'), number('3')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-8, 8) });
-			expect(containsValue(result.range, -2)).toBe(true);
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 2)).toBe(true);
-			expect(containsValue(result.range, -2.1)).toBe(false);
-			expect(containsValue(result.range, 2.1)).toBe(false);
+			expect(containsValue(rangeOf(result), -2)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 2)).toBe(true);
+			expect(containsValue(rangeOf(result), -2.1)).toBe(false);
+			expect(containsValue(rangeOf(result), 2.1)).toBe(false);
 		});
 
 		it('x^(2/3) on [0, 8] has range [0, 4]', () => {
 			const expr = power(variable('x'), divide(number('2'), number('3')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 8) });
-			expect(containsValue(result.range, 0)).toBe(true);
-			expect(containsValue(result.range, 4)).toBe(true);
-			expect(containsValue(result.range, -1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 4)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
 		});
 
 		it('x^(-1/2) on [1, 4] has range [0.5, 1]', () => {
 			const expr = power(variable('x'), divide(opposite(number('1')), number('2')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(1, 4) });
-			expect(containsValue(result.range, 0.5)).toBe(true);
-			expect(containsValue(result.range, 1)).toBe(true);
-			expect(containsValue(result.range, 0.4)).toBe(false);
-			expect(containsValue(result.range, 1.1)).toBe(false);
+			expect(containsValue(rangeOf(result), 0.5)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 0.4)).toBe(false);
+			expect(containsValue(rangeOf(result), 1.1)).toBe(false);
 		});
 	});
 
@@ -1266,17 +1273,17 @@ describe('computeRange()', () => {
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-5, 5) });
 			// Critical point method finds enough critical points for cos on [-5, 5]
 			expect(result.range).not.toBeNull();
-			expect(containsValue(result.range!, -1)).toBe(true);
-			expect(containsValue(result.range!, 1)).toBe(true);
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
 		});
 
 		it('sin(x) on [0, π/2] returns [0, 1] (less than full period)', () => {
 			const expr = func('sin', [variable('x')]);
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, Math.PI / 2) });
 			expect(result.range).not.toBeNull();
-			expect(containsValue(result.range!, 0)).toBe(true);
+			expect(containsValue(rangeOf(result), 0)).toBe(true);
 			// sin(π/2) should be close to 1
-			expect(containsValue(result.range!, -1)).toBe(false);
+			expect(containsValue(rangeOf(result), -1)).toBe(false);
 		});
 
 		it('tan(x) on [0, 5] returns null (discontinuity in domain)', () => {

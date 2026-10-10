@@ -30,6 +30,7 @@ contourner en silence.
 | 0019 | [Classement des contenus : branche > notion > sous-notion](0019-classement-branche-notion-sous-notion.md)            | 2026-10-06 |
 | 0020 | [L'arbre des notions est central ; les programmes pointent l'arbre](0020-arbre-central-programmes-pointeurs.md)      | 2026-10-07 |
 | 0021 | [La prod se met à jour à la main, par la branche `production`](0021-branche-production-mise-en-prod-manuelle.md)     | 2026-10-10 |
+| 0022 | [Le dictionnaire vit en base, l'admin le modifie](0022-dictionnaire-en-base-admin.md)                                | 2026-10-10 |
 
 ## Écrire un ADR
 

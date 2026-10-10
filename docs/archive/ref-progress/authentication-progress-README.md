@@ -6,4 +6,4 @@ l'authentification et à l'autorisation Google, déplacés ici au fil des sessio
 **Vide pour l'instant** : aucun progress doc auth/google n'existait dans
 `docs/wip/` à la création de la documentation de référence (2026-06-12).
 
-> Voir le [README du thème](../../systeme/auth/README.md) pour la vue d'ensemble.
+> Voir le [README du thème](../../systeme/auth.md) pour la vue d'ensemble.

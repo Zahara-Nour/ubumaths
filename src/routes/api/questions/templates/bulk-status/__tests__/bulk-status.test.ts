@@ -8,7 +8,7 @@
  * catégorie est refusée (pas de décalage automatique du niveau).
  *
  * La base est simulée en mémoire, avec des lignes de la forme réelle : le modèle
- * est la question TinyMath #139 relue (`docs/relecture/entiers/139.json`).
+ * est la question TinyMath #139 relue (`data/relecture/entiers/139.json`).
  * La RLS échoue en silence : une mise à jour refusée rend zéro ligne, sans
  * erreur — le faux client sait reproduire ce cas (`blockUpdates`).
  */
@@ -56,7 +56,7 @@ const ID_B = '33333333-3333-4333-8333-333333333333';
 const ID_PUBLISHED = '44444444-4444-4444-8444-444444444444';
 
 const FIXTURE = (
-	JSON.parse(readFileSync(resolve(process.cwd(), 'docs/relecture/entiers/139.json'), 'utf-8')) as {
+	JSON.parse(readFileSync(resolve(process.cwd(), 'data/relecture/entiers/139.json'), 'utf-8')) as {
 		template: FixtureTemplate;
 	}
 ).template;

@@ -10,7 +10,7 @@
  *
  * Structures relues en prod (lecture seule) le 2026-09-29 ; les 36 modèles sont
  * `draft` → lot `vague3-brouillons`. Aucun n'est `published` : le lot
- * `vague3-publies` est vide (docs/corrections/vague3-publies/RESUME.md).
+ * `vague3-publies` est vide (data/corrections/vague3-publies/RESUME.md).
  *
  * Écartés (voir SKIPPED) : modèles que le vérificateur ne peut pas contrôler ou
  * que le format de proposition ne peut pas porter.

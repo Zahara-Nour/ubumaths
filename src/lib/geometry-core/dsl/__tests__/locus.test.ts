@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
+import type { SymbolTable } from '../symbol-table';
 import { runDsl, serializeDsl } from '../index';
 import { numeric } from '../../types/geo-value';
 
@@ -22,7 +23,7 @@ function getLocusCurve(figure: ReturnType<typeof run>['figure'], locusId: string
 	return figure.computeLocusCurveForElement(locusId, defaultViewport);
 }
 
-function getLocusId(symbols: Map<string, { figureId?: string }>, name: string): string {
+function getLocusId(symbols: SymbolTable, name: string): string {
 	const sym = symbols.get(name);
 	if (!sym?.figureId) throw new Error(`Symbol "${name}" not found`);
 	return sym.figureId;

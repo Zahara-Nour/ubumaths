@@ -5,7 +5,19 @@
 import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 import Glossaire from '../+page.svelte';
+import type { PageData } from '../$types';
+
+/** Le glossaire, avec les entrées que lui donne le serveur (ici, celles du fichier).
+ *  La page ne lit que `entries` : le reste de PageData (session, profil, venus du
+ *  layout) n'est pas fabriqué, mais `entries` reste vérifié par `satisfies`. */
+async function renderGlossaire() {
+	const data = { entries: MATH_DICTIONARY } satisfies Pick<PageData, 'entries'>;
+	return await render(Glossaire, {
+		props: { params: {}, data: data as PageData, form: undefined }
+	});
+}
 
 async function openTerm(name: string) {
 	await page.getByPlaceholder('Rechercher un terme...').fill(name);
@@ -20,13 +32,13 @@ describe('glossaire', () => {
 	// Avant : « Tous les niveaux » lisait comme un élève de Terminale spécialité,
 	// qui n'a pas accès aux contenus de maths expertes : définition vide.
 	it('« Tous les niveaux » : la définition d’un terme de maths expertes s’affiche', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await openTerm('inverse modulaire');
 		await expect.element(page.getByRole('dialog')).toHaveTextContent(/si et seulement si/);
 	});
 
 	it('un terme du Cabinet Noir renvoie vers sa page', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await openTerm('décrypter');
 		const link = page.getByRole('dialog').getByRole('link', { name: 'Les Dépêches du Czar' });
 		await expect.element(link).toHaveAttribute('href', '/chiffrement/depeches');
@@ -35,7 +47,7 @@ describe('glossaire', () => {
 	// Avant : la fiche d'un renvoi n'affichait que « Forme dérivée de X », faux
 	// pour un raccourci ou un nom propre, et il fallait cliquer encore pour lire.
 	it('un renvoi affiche la définition du terme cité, sans clic de plus', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await openTerm('multiplier');
 		const dialog = page.getByRole('dialog');
 		await expect.element(dialog).toHaveTextContent(/Voir : multiplication/);
@@ -44,7 +56,7 @@ describe('glossaire', () => {
 	});
 
 	it('la définition du terme cité suit le niveau choisi', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await page
 			.getByRole('button', { name: /niveau/i })
 			.first()
@@ -58,7 +70,7 @@ describe('glossaire', () => {
 	});
 
 	it('un renvoi qui a sa propre définition garde la sienne', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await openTerm('Thalès');
 		const dialog = page.getByRole('dialog');
 		await expect.element(dialog).toHaveTextContent(/Mathématicien grec/);
@@ -70,7 +82,7 @@ describe('glossaire', () => {
 	});
 
 	it('le filtre propose la Terminale maths expertes', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await page
 			.getByRole('button', { name: /niveau/i })
 			.first()
@@ -82,7 +94,7 @@ describe('glossaire', () => {
 
 	// Ces élèves voient les mots partagés avec leur 1re : le filtre doit pouvoir le montrer
 	it('le filtre propose la Terminale maths complémentaires et la Terminale techno', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await page
 			.getByRole('button', { name: /niveau/i })
 			.first()
@@ -98,7 +110,7 @@ describe('glossaire', () => {
 	// Les mots de la 1re générale (enseignement scientifique) ne se voyaient
 	// qu'en « Tous les niveaux » : aucun autre niveau n'y donne accès.
 	it('le filtre propose la 1re générale, qui montre ses mots', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await page
 			.getByRole('button', { name: /niveau/i })
 			.first()
@@ -110,7 +122,7 @@ describe('glossaire', () => {
 
 	// Un mot de 1re spé que nomme aussi le programme de 1re techno lui est partagé
 	it('le filtre propose la 1re techno, qui voit les mots partagés avec elle', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await page
 			.getByRole('button', { name: /niveau/i })
 			.first()
@@ -133,7 +145,7 @@ describe('glossaire', () => {
 	});
 
 	it('le badge de la fiche suit le filtre de niveau', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await page
 			.getByRole('button', { name: /niveau/i })
 			.first()
@@ -145,7 +157,7 @@ describe('glossaire', () => {
 	});
 
 	it('sans filtre, le badge montre le niveau d’origine du mot', async () => {
-		await render(Glossaire);
+		await renderGlossaire();
 		await openTerm('nombre dérivé');
 		await expect.element(page.getByRole('dialog')).toHaveTextContent(/spécialité/);
 	});

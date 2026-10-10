@@ -1,5 +1,7 @@
 {
 	// CI type-check scope: source files only, test files excluded.
+	// Tests' types are held by a per-file ratchet instead (pnpm types:cliquet,
+	// scripts/cliquet-types-tests.ts, CI job « Types des tests (cliquet) »).
 	// Test files (*.test.ts, __tests__/**, tests/**) are validated by running
 	// them via vitest (esbuild, no type-check); svelte-check is the type GATE
 	// for product source. Excluding them keeps the gate honest (real bugs) and

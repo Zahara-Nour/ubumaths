@@ -139,7 +139,7 @@ Mémoire de Claude **du Mac mini** à revoir (section « Machine 8 Go » de
   | M2  | `pnpm build`                                        | éteint   | 64 s  | 5,7 Go            | 18,6 Go (12,9)    | OK                                    |
   | M3  | `pnpm lint`                                         | éteint   | 530 s | 4,1 Go            | 17,8 Go (12,8)    | 0 erreur, 190 avertissements          |
   | M4  | `FORCE=1 check:incremental`                         | éteint   | 44 s  | 2,9 Go            | 17,2 Go (14,1)    | 0 erreur                              |
-  | M7  | `pnpm check:fast`                                   | éteint   | 47 s  | 4,2 Go            | 18,4 Go (14,2)    | **exit 134 : tas Node par défaut**    |
+  | M7  | `check:fast` (retiré)                               | éteint   | 47 s  | 4,2 Go            | 18,4 Go (14,2)    | **exit 134 : tas Node par défaut**    |
   | M8  | `npx svelte-check --tsconfig ./tsconfig.check.json` | éteint   | 44 s  | 4,2 Go            | 18,3 Go (14,1)    | **exit 134 : tas Node par défaut**    |
   | M9  | `FRESH=1 check:incremental` (cache froid)           | éteint   | 82 s  | 4,0 Go            | 18,3 Go (14,2)    | 0 erreur                              |
 

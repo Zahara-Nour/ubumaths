@@ -13,7 +13,7 @@ import { previewCartItem } from '$lib/questions/cart-preview';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { CartItem } from '$lib/stores/questionCart.svelte';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
-import fixture from '../../../../docs/relecture/entiers/139.json';
+import fixture from '../../../../data/relecture/entiers/139.json';
 
 const TEMPLATE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
 const ITEM: CartItem = {

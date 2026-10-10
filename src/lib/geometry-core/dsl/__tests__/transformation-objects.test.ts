@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../index';
 import { geoToNumber } from '../../compute/to-number';
+import {
+	isScalarRef,
+	isInfinityParam,
+	type GeoValue,
+	type ScalarParam
+} from '../../types/geo-value';
 import type {
 	GeoRotation,
 	GeoReflection,
@@ -8,6 +14,15 @@ import type {
 	GeoTranslation,
 	GeoHomothety
 } from '../../types/elements';
+
+// Paramètre littéral (ni référence à un curseur, ni infini) : on l'affirme, puis
+// on rétrécit ScalarParam en GeoValue pour pouvoir le convertir en nombre.
+function fixedValue(param: ScalarParam): GeoValue {
+	expect(isScalarRef(param)).toBe(false);
+	expect(isInfinityParam(param)).toBe(false);
+	if (isScalarRef(param) || isInfinityParam(param)) throw new Error('paramètre non littéral');
+	return param;
+}
 
 describe('Transformation objects — DSL creation (0 positional args)', () => {
 	it('rotation(angle=40, centre=O) creates a rotation transformation object', () => {
@@ -21,7 +36,7 @@ describe('Transformation objects — DSL creation (0 positional args)', () => {
 		expect(el.type).toBe('rotation');
 		expect(el.visible).toBe(false);
 		// angle stored in radians
-		expect(geoToNumber(el.angle)).toBeCloseTo((40 * Math.PI) / 180);
+		expect(geoToNumber(fixedValue(el.angle))).toBeCloseTo((40 * Math.PI) / 180);
 	});
 
 	it('symetrie(centre=O) creates a reflection transformation object', () => {
@@ -97,7 +112,7 @@ describe('Transformation objects — DSL creation (0 positional args)', () => {
 		const el = figure.getElementById(entry!.figureId!) as GeoHomothety;
 		expect(el.type).toBe('homothety');
 		expect(el.visible).toBe(false);
-		expect(geoToNumber(el.factor)).toBe(2);
+		expect(geoToNumber(fixedValue(el.factor))).toBe(2);
 	});
 });
 

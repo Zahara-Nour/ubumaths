@@ -71,7 +71,10 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 | Table d'audit | `account_deletion_requests`      | **`account_deletion_audit`**         | nom différent |
 | Rate limit    | —                                | 1 / 24 h                             | ✓ (ajouté)    |
 
-→ Fonctionnel ; seuls les **noms** ont changé (doc à corriger, pas le code).
+> 🔴 **Ce tableau disait « fonctionnel » : c'était faux.** Mesuré en prod le 2026-10-10 : la
+> fonction écrivait dans des tables disparues → 500 pour tout le monde, aucune suppression jamais
+> aboutie. ✅ **Réparée** (migration `20261014100000_suppression_compte_art17`, élèves seulement,
+> messages et économie supprimés) : détail dans [rgpd.md §7.2](rgpd.md#72-droit-a-loubli).
 
 ### 3. Portabilité (Art. 20)
 
@@ -165,7 +168,7 @@ anonymise les emails avant insertion.
 
 Confrontation menée le 2026-06-15 via lecture du code et des migrations (4 axes : rétention/effacement/
 export, consentement, audit/error-logs, sous-traitants). Sources vérifiées :
-`supabase/migrations/20260524015516_*`, `20260524020331_*`, `20260115100000_*`, `20260116100000_*`,
+`supabase/migrations_archive/20260524015516_*`, `20260524020331_*`, `20260115100000_*`, `20260116100000_*`,
 `20260215184116_*` ; `src/routes/api/account/{delete,export}/`, `src/routes/api/consent/`,
 `src/lib/utils/consent.ts`, `src/lib/server/{errorMonitoring,email/brevo,google/oauth}.ts`,
 `src/routes/+layout.svelte`.

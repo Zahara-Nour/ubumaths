@@ -1,5 +1,5 @@
 /**
- * Aperçu humain d'un lot : `docs/corrections/<lot>/APERCU.md`
+ * Aperçu humain d'un lot : `data/corrections/<lot>/APERCU.md`
  * ===========================================================
  *
  * Pour chaque modèle : titre, id, code, puis 3 tirages rendus (énoncé, réponse

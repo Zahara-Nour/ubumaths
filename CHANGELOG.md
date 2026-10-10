@@ -2521,7 +2521,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 - **chiphres:** ajustement phrase-cle lore pataphysique ([629fe33](https://github.com/Zahara-Nour/ubumaths/commit/629fe332a416a49b906b19370d4bb5ecafa1b0e1))
 - **srs-fsrs:** supprime l archive design initial ([f766ab9](https://github.com/Zahara-Nour/ubumaths/commit/f766ab9c674bfe6490130655ab2f2f7439d33767))
-- **srs:** structure docs/systeme/srs/ sur le modele geometry ([ef9f13f](https://github.com/Zahara-Nour/ubumaths/commit/ef9f13fd3fbebdd0ee381d34916a928bf491fe51))
+- **srs:** structure docs/systeme/srs.md sur le modele geometry ([ef9f13f](https://github.com/Zahara-Nour/ubumaths/commit/ef9f13fd3fbebdd0ee381d34916a928bf491fe51))
 - **teacher-analytics:** reference doc phase 4 ([e22f41c](https://github.com/Zahara-Nour/ubumaths/commit/e22f41c607bfa6c18fe6fe10e2d410e23497bdf5))
 
 ### [0.9.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.8...v0.9.9) (2026-06-10)

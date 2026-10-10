@@ -23,7 +23,7 @@ builtin + branche dispatcher Svelte pour `fillOpacity` uniforme quand
 
 **Phase 4 terminée** ✅ — Page démo `/geometry-demo/sliders/aire`
 montrant la différence pédagogique integrale/aire sur `f = x³ − x` ;
-doc utilisateur DSL `docs/systeme/geometrie/dsl/aire.md` ; mise à jour de
+doc utilisateur DSL `docs/systeme/geometrie/dsl-builtins.md` ; mise à jour de
 `integrale.md` pour pointer vers `aire.md`. Commit `e501a9b7` + fix
 LaTeX/positionnement `mtexte` dans la démo (commit `1ea24060`).
 
@@ -363,8 +363,8 @@ Suggestions optionnelles déclinées :
   du brief). Suggestion : `f = courbe("y = x^3 - x")` avec deux sliders
   pour les bornes, et afficher `I = integrale(f, a, b)` (bleu) et
   `A = aire(f, a, b)` (vert) côte à côte avec `mtexte`.
-- La doc utilisateur `docs/systeme/geometrie/dsl/aire.md` peut largement se
-  calquer sur `docs/systeme/geometrie/dsl/integrale.md` (vocabulaire,
+- La doc utilisateur `docs/systeme/geometrie/dsl-builtins.md` peut largement se
+  calquer sur `docs/systeme/geometrie/dsl-builtins.md` (vocabulaire,
   syntaxe, exemples), en mettant en avant la sémantique non-signée et
   la couleur verte par défaut.
 
@@ -386,7 +386,7 @@ Suggestions optionnelles déclinées :
     `I = 0, A = 0.5` (différence pédagogique maximale).
 - `src/routes/(public)/geometry-demo/sliders/aire/+page.ts` :
   `export const ssr = false;` (cohérent avec les autres démos).
-- `docs/systeme/geometrie/dsl/aire.md` : doc utilisateur complète
+- `docs/systeme/geometrie/dsl-builtins.md` : doc utilisateur complète
   (vocabulaire intégrale vs aire, syntaxe avec note sur la surcharge
   polygon, args nommés avec couleur verte par défaut documentée,
   6 exemples — positive, différence pédagogique, sliders, bornes
@@ -398,7 +398,7 @@ Suggestions optionnelles déclinées :
 - `src/routes/(public)/geometry-demo/sliders/+page.svelte` : ajout
   d'une carte « Aire geometrique vs integrale » entre la carte
   Integrale et la fin.
-- `docs/systeme/geometrie/dsl/integrale.md` :
+- `docs/systeme/geometrie/dsl-builtins.md` :
   - § « Aire géométrique (positive) » : remplace « V2 prévu » par un
     lien vers `aire.md`.
   - § « Voir aussi » : ajout du lien `aire(f, a, b)`.
@@ -503,7 +503,7 @@ Identiques à celles d'`integrale` V1 (cf. `integrale-progress.md`) :
   (5 décisions clés enregistrées).
 - `docs/wip/geometry/aire-progress.md` — ce document, journal de reprise
   (5 phases complètes).
-- `docs/systeme/geometrie/dsl/aire.md` — doc utilisateur DSL.
+- `docs/systeme/geometrie/dsl-builtins.md` — doc utilisateur DSL.
 
 ## Code livré
 

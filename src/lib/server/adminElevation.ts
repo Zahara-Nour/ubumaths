@@ -53,11 +53,15 @@ export const ADMIN_ELEVATION_COOKIE = 'ubu-admin-elevation';
  * - `accessToken`: the admin's Supabase access token (a signed JWT).
  * - `adminUserId`: the admin's `auth.users.id` (for cheap pre-checks).
  * - `expiresAt`: Unix epoch in **milliseconds** (token expiry).
+ * - `elevatedBy`: the `auth.users.id` of the session that elevated. The elevation
+ *   only holds for THAT session: on a shared computer, another account signing in
+ *   on the same browser does not inherit it.
  */
 export interface ElevationCookiePayload {
 	adminUserId: string;
 	accessToken: string;
 	expiresAt: number;
+	elevatedBy: string;
 }
 
 // ============================================================================
@@ -98,9 +102,10 @@ export function decodeElevationCookie(value: string): ElevationCookiePayload | n
 	if (typeof parsed !== 'object' || parsed === null) return null;
 	const candidate = parsed as Record<string, unknown>;
 
-	const { adminUserId, accessToken, expiresAt } = candidate;
+	const { adminUserId, accessToken, expiresAt, elevatedBy } = candidate;
 	if (
 		typeof adminUserId !== 'string' ||
+		typeof elevatedBy !== 'string' ||
 		typeof accessToken !== 'string' ||
 		typeof expiresAt !== 'number' ||
 		!Number.isFinite(expiresAt)
@@ -111,7 +116,7 @@ export function decodeElevationCookie(value: string): ElevationCookiePayload | n
 	// Expired → not elevated.
 	if (expiresAt < Date.now()) return null;
 
-	return { adminUserId, accessToken, expiresAt };
+	return { adminUserId, accessToken, expiresAt, elevatedBy };
 }
 
 // ============================================================================
@@ -167,6 +172,9 @@ export function createEphemeralAuthClient(): SupabaseClient<Database> {
  * `userProfileHandle` and BEFORE `csrfHandle`.
  *
  * Behaviour:
+ * 0. No session (`locals.user` null), or a session other than the one that
+ *    elevated (`elevatedBy`) → never elevated; the cookie is deleted (shared
+ *    classroom computer: logout, expired session, another account signing in).
  * 1. Read the `ubu-admin-elevation` cookie. Absent / malformed / expired →
  *    leave `locals` untouched (not elevated) and continue.
  * 2. Verify the access token with Supabase (`getUser(token)`). Invalid → ignore.
@@ -215,9 +223,18 @@ export function createAdminElevationHandle(
 
 		const raw = event.cookies.get(ADMIN_ELEVATION_COOKIE);
 
-		if (raw) {
-			const payload = decodeElevationCookie(raw);
+		const payload = raw ? decodeElevationCookie(raw) : null;
 
+		// Une élévation n'existe que pour la session qui l'a obtenue : sur un poste
+		// partagé, le cookie laissé par un prof (logout, session expirée, autre compte
+		// connecté ensuite) ne doit rien ouvrir à l'élève suivant.
+		if (raw && (!event.locals.user || payload?.elevatedBy !== event.locals.user.id)) {
+			event.cookies.delete(ADMIN_ELEVATION_COOKIE, { path: '/', sameSite: 'strict' });
+			event.locals.adminElevation = null;
+			return resolve(event);
+		}
+
+		if (raw) {
 			if (payload) {
 				try {
 					const { userId, client } = await verifyToken(payload.accessToken);

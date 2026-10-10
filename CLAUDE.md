@@ -20,8 +20,8 @@ Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout
 
 - **`pnpm check`, `pnpm build`, `pnpm lint` : autorisés, UN SEUL gros process à la fois.** Ils passent sous le **même verrou** que `check:incremental` (`scripts/gros-process.sh`, depuis le 2026-10-10) : un second gros process sort en **exit 2** en nommant le détenteur, ça s'attend. Pas de verrou en CI ni sur Vercel.
 - **eslint complet autorisé en local, en arrière-plan** (`pnpm lint`, 530 s à froid : trop près de la coupure à 10 min du premier plan ; avec son cache ESLint, les passages suivants ne relisent que les fichiers changés).
-- **Déconseillés — limite de Node, pas de la RAM** : `npx tsc --noEmit` (et l'ancien `pnpm check:fast`, retiré le 2026-10-10) et `svelte-check` sans `--incremental` meurent sur le **tas par défaut de Node (~4 Go)** : `JavaScript heap out of memory`, exit 134, en 44-47 s, swap +0 (mesuré le 2026-09-29). Plus de RAM n'y change rien. `tsc --noEmit` donne en plus des faux positifs `$lib`.
-- **Le check du quotidien : `pnpm check:incremental`** (TS + Svelte, **0 erreur exigée**) : ~45 s à chaud, ~80 s à cache froid (`FRESH=1`), une édition sous `src/routes` comprise (47 s). Verrou : un 2ᵉ run concurrent sort en **exit 2** ; si rien n'a changé, le résultat précédent est rejoué (`FORCE=1` pour passer outre).
+- **Déconseillés — limite de Node, pas de la RAM** : `npx tsc --noEmit` (et l'ancien script `check:fast`, retiré le 2026-10-10) et `svelte-check` sans `--tsgo` ni `--incremental` meurent sur le **tas par défaut de Node (~4 Go)** : `JavaScript heap out of memory`, exit 134, en 44-47 s, swap +0 (mesuré le 2026-09-29). Plus de RAM n'y change rien. `tsc --noEmit` donne en plus des faux positifs `$lib`.
+- **Le check du quotidien : `pnpm check:incremental`** (TS + Svelte, **0 erreur exigée**) : moteur **tsgo** (TypeScript 7) depuis le 2026-10-10, **~18 s, ~20 s à froid** (`FRESH=1`), plus gros process 6 Go. La CI garde le moteur classique (`pnpm check`), qui **fait foi** en cas de désaccord : tsgo a un angle mort mesuré (type des fonctions exposées d'un composant Svelte). Verrou : un 2ᵉ run concurrent sort en **exit 2** ; si rien n'a changé, le résultat précédent est rejoué (`FORCE=1` pour passer outre).
 - **`pnpm lint:fast`** (~2,5 s, contre 530 s pour eslint complet — le motif est la **durée**) rejoue toutes les règles de niveau **erreur** de la config complète, sans `projectService` (`eslint.fast.config.js` en dérive : la liste ne peut plus diverger de la CI ; seule `svelte/no-unused-props`, qui exige les types, reste vue par la CI seule). Élargi le 2026-10-07, après un échec CI sur `no-fallthrough` invisible à l'ancien `lint:fast`. Lancé au `pre-push`.
 - **Hook pre-commit léger** (`oxlint` + `prettier` sur les fichiers staged, ~2 s — motif : la **durée**, un eslint complet prend 530 s) → **`--no-verify` n'est plus nécessaire**. oxlint ne bloque que sur les _erreurs_. eslint complet et les tests restent **en CI** ; le typecheck reste hors hook → `check:incremental` avant de pousser.
 - ⚠️ Si un hook crashe, il peut **stasher** le travail non commité (→ perdu) : commiter tôt, et après un crash vérifier `git stash list`.
@@ -32,7 +32,8 @@ Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout
 
 ```bash
 pnpm dev --port 5175 --strictPort   # dev (TOUJOURS 5175 ; 5173 = user, NE PAS utiliser)
-pnpm check:incremental              # TS + Svelte (~45 s, 0 erreur exigée)
+pnpm check:incremental              # TS + Svelte (tsgo, ~18 s, 0 erreur exigée)
+pnpm types:cliquet                  # types des tests : cliquet par fichier (--maj après corrections)
 pnpm lint:fast                      # lint des fichiers modifiés (~2,5 s ; évite l'aller-retour CI)
 pnpm format "src/**/*.{ts,svelte}"  # prettier --write
 
@@ -67,7 +68,7 @@ git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs
 
 Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un `.sql`) → **branche + PR**. (Plafond de 2 fichiers levé le 2026-09-14 : le raisonnement est le même à 2 qu'à 20.)
 
-⚠️ **Aucun test ne lit `docs/`** (2026-10-08 : un commit de doc a passé `docs/wip/arbre-notions/arbre-notions.json` en .15 sans CI, et le test du seed a cassé sur toutes les PR suivantes). Un fichier dont dépend un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` (copie figée, mise à jour avec la migration ou le code qui la justifie) ; garde : `src/lib/__tests__/tests-sans-lecture-de-docs.test.ts`. Seule exception : `docs/corrections/**`, validé par un test (RGPD) — un push qui le touche déclenche la CI.
+⚠️ **Aucun test ne lit `docs/`** (2026-10-08 : un commit de doc a passé `docs/wip/arbre-notions/arbre-notions.json` en .15 sans CI, et le test du seed a cassé sur toutes les PR suivantes). Un fichier dont dépend un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` (copie figée, mise à jour avec la migration ou le code qui la justifie) ; garde : `src/lib/__tests__/tests-sans-lecture-de-docs.test.ts`. Les **données de travail** lues par des scripts et des tests (`data/corrections/`, `data/relecture/`) vivent sous `data/`, hors `docs/` : tout push qui touche `data/` déclenche la CI.
 
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
@@ -208,6 +209,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 - [ ] Code fonctionnel + tests passent (intégration locale si DB/RLS)
 - [ ] `pnpm svelte:autofix` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
+- [ ] Tests ajoutés ou touchés : `pnpm types:cliquet` tenu (un nouveau test naît typé ; une erreur corrigée → `--maj`)
 - [ ] `code-reviewer` (+ `security-auditor` si applicable)
 - [ ] Zod sur les entrées · pas de `any` · MySelect/MyCheckbox · runes only
 

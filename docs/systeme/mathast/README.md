@@ -1,176 +1,360 @@
----
-title: Module mathAST — Documentation de reference
-date: 2026-06-18
-version: 1.0
-status: vivant
-audience: developpeurs UbuMaths (nouveaux et mainteneurs)
-scope: src/lib/mathAST/
----
+# mathAST — le moteur de calcul symbolique
 
-# Module `mathAST` — Documentation de reference
+> Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
+> Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
+> (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
+> **Vérifié contre le code le 2026-10-10.**
 
-Moteur de calcul symbolique (CAS) d'UbuMaths : parsing LaTeX et Pratt custom,
-representation AST immutable, forme normale, simplification par regles, differentiation,
-integration, limites, variations, resolution d'equations, analyse de signe, pattern
-matching, et generation d'etapes pedagogiques pas-a-pas (paliers eleves).
+## À quoi ça sert
 
----
+C'est le moteur mathématique de Chiphre : il **lit** une expression (LaTeX de MathLive ou
+syntaxe maison des gabarits), la **représente** en arbre immuable (`MathNode`), **calcule**
+dessus (mise au propre, simplification, équivalence, dérivée, primitive, limite, signe,
+variations, résolution, domaine, unités) et **écrit** le résultat (LaTeX, syntaxe maison),
+avec au besoin les **étapes pédagogiques** en français, adaptées au niveau scolaire.
 
-## Chiffres cles (2026-06-18)
+Deux usages portent tout le reste :
 
-| Indicateur                      | Valeur                       |
-| ------------------------------- | ---------------------------- |
-| Fichiers `.ts` total            | 712                          |
-| Fichiers source (hors tests)    | **430**                      |
-| Fichiers de test (`.test.ts`)   | **282**                      |
-| Cas de test (`it(` / `test(`)   | **12 614**                   |
-| Lignes de source (hors tests)   | **152 430**                  |
-| Exports publics dans `index.ts` | 71 (≈29 modules re-exportes) |
-| Sous-familles fonctionnelles    | 5                            |
+- **la correction des réponses d'élèves** : `areEquivalent` (la valeur est-elle juste ?)
+  puis `checkForm` (l'écriture est-elle acceptable ?). Elle tourne **dans le navigateur**
+  (ADR 0001) ;
+- **la génération et l'affichage** : gabarits de questions, corrections détaillées,
+  atelier, grapheur et géométrie.
 
-> Chiffres verifies via :
->
-> - src : `find src/lib/mathAST -name '*.ts' ! -name '*.test.ts' | wc -l`
-> - tests : `find src/lib/mathAST -name '*.test.ts' | wc -l`
-> - cas : `grep -rhE '^[[:space:]]*(it|test)\(' src/lib/mathAST --include='*.test.ts' | wc -l`
+Bibliothèque pure : ni base de données, ni réseau, ni `eval` JavaScript. Consommateurs
+principaux (imports de `$lib/mathAST` hors du module) : `src/lib/atelier/`,
+`src/lib/questions/`, `src/lib/geometry-core/`, `src/lib/math/`,
+`src/lib/components/markdown/`, `src/lib/components/cas/`, `src/lib/ubumark/`,
+`src/lib/grapheur/`.
 
----
+Taille au 2026-10-10 : 502 fichiers `.ts` hors tests (~188 000 lignes), 445 fichiers de
+test, ~14 000 cas (`it(`/`test(`).
 
-## Les documents de cette section
+## Carte du code
 
-### 1. [architecture.md](architecture.md) — Vue d'ensemble
+### Fichiers racine
 
-> **Audience** : nouveaux developpeurs, onboarding
-> **A lire en premier** si tu decouvres le module.
+| Fichier                                 | Rôle                                                                                                                                                                   |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `types.ts`                              | l'union `MathNode` (29 variantes), `NodeMetadata`, styles d'affichage                                                                                                  |
+| `factory.ts`                            | constructeurs de nœuds, regroupés dans l'espace de noms `MathAST`                                                                                                      |
+| `guards.ts`                             | prédicats de type (`isAddition`, `isDelimiter`, `isFraction`, `isMinusOne`…)                                                                                           |
+| `transforms.ts`                         | `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `withMetadata`, `getChildren`, `cloneNode`, `countNodes`, `getDepth`, `stripUnnecessaryBrackets` |
+| `visitor.ts`                            | `visitAST`, `transformAST`                                                                                                                                             |
+| `flatten.ts`                            | `flattenSumShallow/Deep`, `flattenProductShallow/Deep`, `unflattenSum`, `unflattenProduct`, `unflattenRelationChain`, `flipSign`                                       |
+| `exp.ts`                                | `Exp` : enveloppe chaînable (`Exp.parse(…)`, `.latex`, `.matches`, `.simplifyWith`…)                                                                                   |
+| `equivalence.ts`, `equivalence-core.ts` | `areEquivalent` : le **décideur** de la correction                                                                                                                     |
+| `assumptions.ts`                        | hypothèses de l'énoncé (« x > 0 », « n entier », ADR 0012) traduites pour le décideur                                                                                  |
+| `cosmetic-transforms.ts`                | `checkForm` et ses transformations (contraintes de forme de la correction)                                                                                             |
+| `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                |
+| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`)                                                                                                |
+| `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                         |
+| `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                               |
+| `index.ts`                              | point d'entrée `$lib/mathAST`                                                                                                                                          |
 
-Cartographie complete : role du module, frontieres avec `geometry-core` et la couche
-pedagogique, les 5 familles de sous-modules (Representation, Parsing, Calcul CAS,
-Pedagogique/paliers, Pattern matching), flux parse → AST → NormalForm → AST simplifie,
-modele de nœuds (`types.ts` — union discriminee, 28 variantes), invariants structurels
-cles (flatten, sign, delimiter), guide d'ajout d'une nouvelle primitive.
+### Sous-dossiers
 
-### 2. [code-quality.md](code-quality.md) — Qualite & dette technique
+| Dossier                                                                                                                             | Rôle                                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Lire et écrire**                                                                                                                  |                                                                                                                                                                                                                 |
+| `parser/`                                                                                                                           | `parseLatex`/`parseLatexSafe` (`latex/` : Pratt par défaut, `rd` en option) ; `custom/` : syntaxe maison (`parseCustom`), motifs (`parsePattern`), règles (`parseRule`), contraintes ; `security.ts` (plafonds) |
+| `cache/`                                                                                                                            | `ParseCache`, LRU exporté mais **branché nulle part**                                                                                                                                                           |
+| **Mettre au propre, comparer**                                                                                                      |                                                                                                                                                                                                                 |
+| `tidy/`                                                                                                                             | `tidy` : mise au propre **sans jamais développer** ; raconte ses gestes (`TidyStepRecorder`) ; grandeurs (`unitChoice`)                                                                                         |
+| `simplify/`                                                                                                                         | `simplify` : `tidy` + règles + « développer seulement si moins cher » (`computeCost`, `costFunction` injectable)                                                                                                |
+| `normal/`                                                                                                                           | `normalize` → `NormalForm` (forme normale rationnelle), `denormalize`, `equivalenceForm`, `hashMathNode`, `nodesEqual`                                                                                          |
+| `pattern/`                                                                                                                          | motifs (`P`, `tryMatch`), règles, jeux de règles, `verifyForm` — voir [pattern-matching.md](pattern-matching.md)                                                                                                |
+| `transform/`                                                                                                                        | identités algébriques/trigo/hyperboliques en fonctions (`factorAlgebraic`…) — **aucun import hors de ses tests**                                                                                                |
+| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`)                                       |
+| `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                         |
+| **Calculer**                                                                                                                        |                                                                                                                                                                                                                 |
+| `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateWithUnits`, `compile`/`createSafeEvaluator` (seule génération de code)                                                                                                       |
+| `differentiation/`                                                                                                                  | `differentiate`                                                                                                                                                                                                 |
+| `integration/`                                                                                                                      | `integrate` (primitives, intégrales définies, numérique)                                                                                                                                                        |
+| `limits/`                                                                                                                           | limites (dont `analyzeSign` unilatéral de `limits/one-sided.ts`)                                                                                                                                                |
+| `solve/`                                                                                                                            | `solve`, `solveEquation`                                                                                                                                                                                        |
+| `domain/`                                                                                                                           | `computeDomain`, `findZeros`, intervalles                                                                                                                                                                       |
+| `sign/`                                                                                                                             | `analyzeSign` (tableaux de signes)                                                                                                                                                                              |
+| `variations/`                                                                                                                       | `computeVariations`                                                                                                                                                                                             |
+| `taylor/`                                                                                                                           | développements de Taylor                                                                                                                                                                                        |
+| `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, polynômes, classification                                                                                                                              |
+| `piecewise/`                                                                                                                        | `extractPiecewiseBoundaries` : ruptures d'une fonction par morceaux (consommé par `geometry-core`)                                                                                                              |
+| `matrix/`                                                                                                                           | opérations matricielles                                                                                                                                                                                         |
+| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md)                                              |
+| `dimensional/`                                                                                                                      | analyse dimensionnelle                                                                                                                                                                                          |
+| **Raconter**                                                                                                                        |                                                                                                                                                                                                                 |
+| `pedagogical-simplify/`                                                                                                             | `generatePedagogicalSimplifySteps` : quatre intentions (`SimplifyIntent`)                                                                                                                                       |
+| `pedagogical-solve/`                                                                                                                | `generateEquationSteps`, `generateInequalitySteps` ; paliers par tables `STRATEGIES*`                                                                                                                           |
+| `pedagogical-arithmetic/`, `pedagogical-differentiation/`, `pedagogical-integration/`, `pedagogical-limits/`, `pedagogical-domain/` | `generatePedagogical…Steps` du domaine                                                                                                                                                                          |
+| `pedagogical-evaluate/`                                                                                                             | types seuls, aucune logique                                                                                                                                                                                     |
+| `step-generator/`                                                                                                                   | `generateSteps`, `canGenerateSteps`, `suggestLevel` (calcul arithmétique)                                                                                                                                       |
+| **Outils**                                                                                                                          |                                                                                                                                                                                                                 |
+| `cli/`                                                                                                                              | `pnpm math` (`cli/cli.ts`) : REPL et complétion — doc : `cli/README.md`, `cli/web/README.md`                                                                                                                    |
+| `__tests__/`                                                                                                                        | tests transverses (garde-fous, panel)                                                                                                                                                                           |
 
-> **Audience** : mainteneurs, avant refactor
-
-Top issues :
-
-- **Drift factory** : ~91 litteraux `{ type: '...' }` bruts hors factory
-  (`solve/solvers/transcendental.ts:177`, `analysis/structures.ts:599,621,695`, `limits/`)
-  — contournent le sign-guard de `number()`, fuite d'invariant. Severite : Medium.
-- **Taille** : `normal/normalize.ts` = 4 210 LOC / 137 Ko (candidat a decoupe) ;
-  `parser/latex/parser-pratt.ts` 2 365 L ; `factory.ts` 2 025 L.
-- **Collision d'export** : `index.ts` re-exporte `isZero`/`isOne` depuis `guards.ts` ET
-  `normal/` (semantiques differentes : node-level vs rational-level).
-- **Immutabilite convention** : nœuds `readonly` au type mais `Object.freeze` absent —
-  garantie runtime par convention, pas enforcement.
-- **Known issues parser** : (1) `-3y` → `multiplication(opposite(3), y)` au lieu de
-  `opposite(multiplication(3, y))` — numeriquement identique, structure differente ;
-  (2) `x^2/4` → erreur Pratt custom (workaround : `{x^2}/4`).
-
-### 3. [tests.md](tests.md) — Couverture & robustesse des tests
-
-> **Audience** : contributors, agent `test-automator` > **Couverture globale** : haute mais inegale
-
-12 614 cas sur 282 fichiers. Bien couverts (ratio ≈ 1:1 fichier source/test) :
-`normal/` (19:19), `parser/` (18:18), `eval/` (11:16), `solve/` (18:15), `domain/` (25:15).
-Angles fins : `sign/` (14:3), `variations/` (8:2), `taylor/` (3:1), couches
-`pedagogical-*`.
-
-### 4. [performance.md](performance.md) — Analyse de performance
-
-> **Audience** : optimisation, appels critiques (question generation, correction temps reel)
-
-Hotspots principaux :
-
-- **Pattern matching combinatoire** (`pattern/match.ts:666-811`) : C(n,k)×k! essais, pas de memoisation.
-- **`mapNode` sans short-circuit** (`transforms.ts:278-487`) : reconstruit chaque nœud meme inchange.
-- **Hash double par comparaison** (`normal/hash.ts:165`) : 2 strings hashees par `nodesEqual`, appele 3×/iteration.
-- **Cache parse** (`cache/parse-cache.ts`) : LRU bien fait mais non cable aux parsers — opt-in uniquement.
-- **Tableau de regles reconstruit** a chaque `simplify()` (`simplify/simplify.ts:51`).
-
-### 5. [security.md](security.md) — Audit securite
-
-> **Audience** : security review, ops
-> **Posture globale** : Acceptable — surface limitee, bien defendue
-
-Surface genuinement limitee (pas de DB, pas d'auth, pas de reseau).
-`parser/security.ts` : caps `maxInputLength=10000`, `maxASTDepth=100`, `maxNodeCount=10000`.
-Finding principal [MED] : caps profondeur/nodes verifies POST-parse — imbrication ~5000
-profond peut stack-overflow avant le check. Voir `security.md` pour le detail complet.
-
----
-
-## Documents de domaine
-
-### [pattern-matching.md](pattern-matching.md) — Reference du module `pattern`
-
-Reference riche (~28 Ko) du module `pattern/` : API `P`, `tryMatch`, `parsePattern`,
-syntaxe des wildcards, rule sets, exemples. A lire avant d'ajouter ou de modifier
-des regles de simplification.
-
-### [mathAST-vs-poincare.md](mathAST-vs-poincare.md) — Analyse comparative
-
-Analyse (~30 Ko) des divergences et convergences avec le moteur CAS Poincare (NumWorks /
-Upsilon, C++). Base documentaire de `decisions.md`. Couvre : forme binaire vs N-aire,
-representation des negatifs, pipeline de simplification, tokenizer/parser, ordre canonique,
-securite parser, bugs alignes et corriges.
-
-### [decisions.md](decisions.md) — Decisions d'architecture (ADR)
-
-Decisions structurantes enregistrees sous forme ADR : choix d'un AST custom TypeScript,
-modele de nœud union discriminee, forme normale NormalForm separee, sign-guard `number()`,
-securite parser, approche paliers pedagogiques, convention nombre signe.
-
----
-
-## Dossier `progress/`
-
-`progress/` regroupe les documents de progression des chantiers livres
-dans ce module (migrations, refactors, nouvelles features). Consulter avant de toucher
-une zone connue pour avoir ete refactoree recemment.
-
----
-
-## Index thematique par famille
-
-| Famille                                                   | Architecture | Qualite | Tests | Perf | Securite |
-| --------------------------------------------------------- | :----------: | :-----: | :---: | :--: | :------: |
-| Representation (`types`, `factory`, `flatten`)            |     §2-3     |  §3-5   |  §2   |  —   |    —     |
-| Parsing (`parser/`, `latex-generator`)                    |      §4      |   §6    |  §3   |  §5  |    §2    |
-| Calcul CAS (`normal/`, `simplify/`, `solve/`, `eval/`, …) |      §5      |   §4    |  §4   | §2-4 |    §3    |
-| Pedagogique (`pedagogical-*/`, `step-generator/`)         |      §6      |   §7    |  §5   |  —   |    —     |
-| Pattern matching (`pattern/`)                             |      §7      |   §5    |  §4   |  §2  |    —     |
-
----
-
-## Voir aussi
-
-- Agent metier : `mathast-expert` (`.claude/agents/`) — a utiliser pour toute
-  modification dans `src/lib/mathAST/**`.
-- [`CLAUDE.md`](../../../CLAUDE.md) — contraintes projet (OOM, commits, workflow git).
-- [`docs/systeme/geometrie/README.md`](../geometrie/README.md) — module geometry-core
-  (consommateur de mathAST).
-- [`docs/pratiques/tests.md`](../../pratiques/tests.md) — architecture des tests et guide TDD.
-
----
-
-## Convention d'organisation
-
-Ce repertoire suit la structure standard de la documentation de modules UbuMaths :
+## Le pipeline
 
 ```
-docs/ref/<module-name>/
-├── README.md          # Index (ce fichier) — chiffres cles, pointeurs
-├── architecture.md    # Vue d'ensemble, sous-dossiers, types, flux
-├── code-quality.md    # Dette technique, code smells, top refactors
-├── tests.md           # Couverture, angles morts, tests prioritaires
-├── performance.md     # Hotspots, optimisations prioritaires
-├── security.md        # Surface d'attaque, findings, mitigations
-├── decisions.md       # ADR — decisions structurantes
-├── glossaire.md       # Vocabulaire du module
-└── api.md             # Reference publique (index.ts)
+LaTeX (MathLive) ── parseLatex ──┐
+syntaxe maison ──── parseCustom ─┤
+                                 ▼
+                          MathNode (immuable)
+     ┌───────────────┬───────────┼──────────────────┬───────────────────────┐
+     ▼               ▼           ▼                  ▼                       ▼
+   tidy          simplify    areEquivalent      checkForm          differentiate / solve /
+ (au propre,   (tidy+règles  (equivalenceForm   (forme de la       limits / sign / …
+ sans dévelop.) +coût+tidy)   + repli numérique) réponse)          + pedagogical-*
+     └───────────────┴───────────┴──────────────────┴───────────────────────┘
+                                 ▼
+                     toLatex / toCustom / prettyPrint
 ```
 
-Voir [`docs/systeme/geometrie/README.md`](../geometrie/README.md) §Convention pour les regles
-de style (header YAML, chemins avec lignes, severite explicite, top N en fin de doc).
+**Trois formes, trois rôles** (ne pas les confondre) :
+
+| Fonction          | Rend         | Développe ? | Sert à                                                                                     |
+| ----------------- | ------------ | ----------- | ------------------------------------------------------------------------------------------ |
+| `tidy`            | `MathNode`   | jamais      | écrire proprement : `2x+3x−x → 4x`, `(x+1)²` reste. Spec : [tidy-spec.md](tidy-spec.md) §A |
+| `normalize`       | `NormalForm` | toujours    | calcul exact, forme canonique (`denormalize` pour revenir à un arbre)                      |
+| `equivalenceForm` | `NormalForm` | toujours    | **comparer seulement** : y vivent les réductions trigonométriques (ADR 0006)               |
+
+**`simplify(node, options)`** (`simplify/simplify.ts`) tourne sur le moteur `rewrite`
+(`common/rewriting-engine.ts`), stratégie `cost-fixpoint`. Par itération : `tidy` →
+règles de motif (`absSimplifyRules`, `trigSimplifyRules`, `hypSimplifyRules`,
+`algebraicSimplifyRules`, coupables par `enableAbs`/`enableTrig`/`enableHyperbolic`/
+`enableAlgebraic`) → `tidy`, puis le candidat `tidy(normalize(…))` ne remplace la forme que
+s'il est **strictement moins cher**. C'est la seule place de `normalize` dans `simplify`.
+Mesuré : `simplify((x+1)²)` garde `(x+1)²`, `simplify((x+1)²−x²)` rend `2x+1`.
+
+**`areEquivalent(a, b, options?)`** : `equivalenceForms` puis `normalFormsEquivalent` ;
+repli numérique (`evaluate` en mode décimal) si la normalisation échoue. Sens exact
+(domaines, intervalles, équations, vecteurs…) : [convention-equivalence.md](convention-equivalence.md).
+Ni `simplify` ni `pedagogical-simplify` ne sont sur ce chemin.
+
+**`checkForm(réponse, attendu, contraintes, options?)`** (`cosmetic-transforms.ts`) :
+
+1. chaîne : `removeZeros` (contrainte `zeros`), `checkSpacesViolation` (`spaces`),
+   `removeSpaces`, `normalizeDecimalComma` ;
+2. `parseLatexSafe` ;
+3. arbre, dans cet ordre (`buildASTPipeline`) : unifications de notation sans contrainte
+   (`e`, `∞`, angles en π, complexes, fractions de monômes, `|x|` sous hypothèse) →
+   `reduceRadicalsAST` (`reducedRadicals`) → `reduceFractionsAST` (`reducedFractions`) →
+   `simplifyNullProductsAST` (`factorZero`) → `removeNullTermsAST` (`nullTerms`) →
+   `stripUnnecessaryBrackets` (`brackets`) → `removeSignsAST` (`signs`) →
+   `removeFactorsOneAST` (`factorOne`) → `removeMultOperatorAST` (`products`) →
+   notations log/exponentielle → `sortTermsAndFactorsAST` ;
+4. comparaison des `toLatex` (le signe `*` et `×` sont confondus) ; cas du pourcentage.
+
+Chaque étape qui modifie la réponse lève sa contrainte (`strict`, `warn` ou `off`, défaut
+`warn`). L'ordre est testé par `__tests__/cosmetic-transforms.test.ts` : ne pas le changer
+sans relancer ce fichier.
+
+### Deux moteurs de simplification, et leur fusion (ADR 0007)
+
+Il y a aujourd'hui **deux moteurs** qui ne partagent pas leurs règles :
+
+- `simplify` — `tidy` + quelques jeux de règles + `normalize` sous barrière de coût.
+  Il a **le juge** (la fonction de coût).
+- `generatePedagogicalSimplifySteps` (`pedagogical-simplify/pipeline.ts`) — une boucle de
+  règles de motifs choisies par intention (`selectRulesForIntent`), puis une passe
+  `normalize` enregistrée (`runNormalizePass`), sauf pour `factoriser` qui finit par la mise
+  en facteur du contenu et `tidy`. Il a **le vocabulaire** (les étapes nommées).
+
+L'ADR 0007 (acceptée le 2026-09-21) décide **un seul moteur, quatre politiques sur
+« faut-il développer ? »** : `réduire` jamais (= `tidy`), `développer` toujours, `auto`
+seulement si moins cher, `factoriser` jamais et factoriser. Nom envisagé en dernier :
+`rewrite(node, { toward: … })`.
+
+**État au 2026-10-10 : décidé, pas fait.** Seule l'étape « donner une voix à `tidy` » est
+livrée (#396, #397). Dans le code, `auto` passe toujours par `runNormalizePass`
+(inconditionnel) et inclut les factorisations symboliques. Mesuré :
+`auto` et `reduire` rendent `x²+2x+1` pour `(x+1)²`, là où `simplify` garde `(x+1)²`.
+Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
+Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
+
+## Les nœuds
+
+29 variantes dans `types.ts`, discriminées par `type` :
+
+| Famille    | `type`                                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------------------- |
+| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice)             |
+| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                           |
+| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                       |
+| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                           |
+| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise` |
+
+- `multiplication.displayStyle` : `'implicit' | 'dot' | 'cross' | 'star'` ;
+  `division.displayStyle` : `'fraction' | 'inline' | 'ratio'`. Le style ne change pas la
+  valeur, il change l'écriture (et donc `checkForm`).
+- `NodeMetadata` (couleur, style, annotation) : indications de rendu, jamais de sens
+  mathématique ; rendues par `LatexGenerator` avec `renderMetadata: true`.
+- `function` porte `name`, `args`, et en option `power` (`\sin^2 x`) et `base`
+  (indice de racine `\sqrt[3]{x}`, base de logarithme).
+
+## Invariants structurels non évidents
+
+1. **Pas de nombre négatif littéral.** `number('-5')` **lève une exception** (`factory.ts`) ;
+   écrire `opposite(number('5'))`, ou `numericNode(-5)` (`common/numeric.ts`) quand la
+   valeur vient d'un calcul. `isMinusOne` ne reconnaît que `opposite(number('1'))`. Garde :
+   `__tests__/no-negative-number-node.test.ts`. Dans `NormalForm`, en revanche, le signe
+   vit dans le numérateur rationnel.
+2. **Les nombres sont des chaînes** (`NumberNode.value: string`) : l'écriture de l'élève
+   est conservée, pas de dérive flottante. `number(3)` accepte un nombre et le convertit.
+3. **Nœuds immuables, par convention.** Champs `readonly`, aucun `Object.freeze` :
+   toute transformation rend un nouvel arbre (`mapNode`, constructeurs). Des littéraux
+   `{ type: … }` construits à la main existent hors de `factory.ts` : ils contournent la
+   garde de `number()`, ne pas en ajouter.
+4. **Les parenthèses sont une frontière.** `flattenSumShallow`/`flattenProductShallow`
+   s'arrêtent aux `delimiter` : `a+(b+c)` a deux termes. Donc les motifs `P.sum`/`P.prod`
+   ne voient pas à travers une parenthèse, et `P.add` ne filtre pas `(a+b)`.
+5. **Arbres binaires, aplatis à la demande.** `unflattenSum` reconstruit à gauche
+   (`((a−b)+c)`) ; dans un produit aplati, chaque facteur garde le style de son `×`.
+   Une chaîne `a < b < c` est une `relation` imbriquée à gauche.
+6. **Une valeur, plusieurs représentations** — la source n° 1 des règles mortes :
+   - `-3y` se lit `opposite(3)·y`, **pas** `opposite(3·y)`. Ne pas « corriger » le parseur
+     sans étude d'impact large : concevoir l'analyse pour les deux formes ;
+   - `e` et `i` se lisent comme des **variables** (`parseLatex('e^x')` : `superscript` de
+     variable `e`), alors que `\pi` donne un nœud `constant` ;
+   - `\sin^2 x` est une `function` avec `power`, `(\sin x)^2` un `superscript` ;
+   - la virgule : MathLive écrit `3{,}14` (lu `3.14`) ; la virgule nue passe par
+     `decimal-comma.ts`.
+     Toujours tester une règle ou une analyse **sur une entrée parsée**.
+7. **Plafonds du parseur** (`parser/security.ts`) : 10 000 caractères (avant), profondeur
+   100 et 10 000 nœuds (**après** l'analyse, `SecurityError`). Une imbrication très
+   profonde (4 000 parenthèses, mesuré) fait déborder la pile avant le contrôle :
+   `RangeError`, pas `SecurityError`.
+8. **`compile()` est la seule génération de code** (`eval/compile.ts`) : jamais `eval`
+   ni `new Function`.
+9. **Ne pas ré-exporter `rewriting-engine.ts` ni `technical-renderer.ts` depuis
+   `common/index.ts`** : un ordre de chargement casse des dizaines de tests de continuité.
+   Les importer par leur chemin (commentaire en tête de `common/index.ts`).
+
+## Le moteur de réécriture et les étapes
+
+- `rewrite(node, config)` (`common/rewriting-engine.ts`) : boucle jusqu'au point fixe
+  (`nodesEqual`) avec `preProcess`, règles, `postProcess`, `maxIterations`, interruption
+  (`signal`, `timeoutMs`) et `onStep`. Stratégies : `cost-fixpoint` (garde la forme la
+  moins chère rencontrée) ou `deterministic`.
+- **Un enregistreur, deux rendus.** Un calcul enregistre ses pas une fois
+  (`<Domaine>StepRecorder` qui étend `StepRecorderBase`) ; `GenericTechnicalRenderer`
+  les montre au développeur, un rendu pédagogique les montre à l'élève selon
+  `SchoolLevel` (`'primaire' | 'college' | 'lycee' | 'superieur'`). Référence :
+  `pedagogical-solve/linear-renderer.ts` (titres par niveau, repli sur `lycee` puis sur la
+  description du pas).
+- La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
+  suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
+  1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation
+  rationnelle) ; granularité par les tables `STRATEGIES`, `STRATEGIES_QUADRATIC`,
+  `STRATEGIES_RATIONAL`. `generateEquationSteps` relève le niveau insuffisant
+  (`primaire` → `college` pour le 1er degré, jusqu'à `lycee` pour le 2nd).
+- ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
+  pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
+  retirer du chemin élève).
+
+## Comment étendre
+
+**Un nouveau nœud.** Modèle à suivre : le commit `2c6398faf` (nœud `percentage`).
+Ajouter la variante à `types.ts`, son constructeur à `factory.ts` (et à `MathAST`), son
+prédicat à `guards.ts`, puis compiler : les `switch` exhaustifs (`const _exhaustive:
+never`) désignent les oublis. Fichiers touchés par `percentage` : `transforms.ts`,
+`visitor.ts`, `latex-generator.ts`, `custom-generator.ts`, `pretty-print.ts`,
+`normal/hash.ts`, `normal/normalize.ts`, `eval/evaluate.ts`, `eval/compile.ts`,
+`numtype/infer.ts`, `simplify/cost.ts`, les tokeniseurs et parseurs Pratt, et quelques
+analyses (`dimensional/`, `integration/`, `limits/`). Écrire les tests de lecture,
+d'écriture et d'aller-retour.
+
+**Une nouvelle règle.** L'écrire avec `createRule`/`P.rule` dans le fichier de
+`pattern/rule-sets/` de sa famille, avec un `name` unique ; l'ajouter au jeu exporté.
+Décider qui la verra : `simplify` (`buildSimplifyRules`) et/ou une intention de
+`pedagogical-simplify` (`selectRulesForIntent`), et donner sa catégorie
+(`categorizeRule`, `RULE_CATEGORY_MAP`) et sa phrase française. La tester sur une entrée
+**parsée** (invariant 6), avec un coefficient ≠ 1.
+
+**Un nouveau motif d'analyse.** Utiliser `P.sum`/`P.prod` + `tryMatch` plutôt qu'un
+parcours écrit à la main ; vérifier après coup que les imports `P`/`tryMatch` sont bien
+là. Référence : [pattern-matching.md](pattern-matching.md).
+
+**Une nouvelle équivalence de comparaison** : dans `equivalenceForm`, pas dans
+`normalize` (ADR 0006), avec son cas dans [convention-equivalence.md](convention-equivalence.md).
+
+**Un nouveau palier pédagogique.** TDD collaboratif : proposer les comportements en
+français, attendre la validation, tests rouges, puis code ; une entrée de table
+`STRATEGIES*` par niveau.
+
+## Tests
+
+- À côté du code : `src/lib/mathAST/<dossier>/__tests__/` ; transverses dans
+  `src/lib/mathAST/__tests__/`.
+- Lancer un fichier ou un dossier : `pnpm test:server src/lib/mathAST/<chemin>` — jamais
+  toute la suite pour comprendre un bug.
+- **Panels pinnés** (un écart rougit, le document se met à jour dans le même commit) :
+  `__tests__/panel-simplifications.test.ts` ↔ [panel-simplifications.md](panel-simplifications.md).
+- Garde-fous : `__tests__/no-negative-number-node.test.ts` (invariant 1),
+  `__tests__/cosmetic-transforms.test.ts` (ordre de `checkForm`), `tidy/__tests__/`
+  (contrat de `tidy`).
+- Cas de démonstration de `pedagogical-simplify` par catégorie :
+  `pedagogical-simplify/demo-cases/`.
+- Méthode générale (TDD, intégration) : [docs/pratiques/tests.md](../../pratiques/tests.md).
+
+## Points ouverts connus (mesurés le 2026-10-10)
+
+- Fusion des deux moteurs : voir plus haut ; `auto ≡ reduire` sur `(x+1)²`.
+- Règles `ln-exp`, `exp-ln`, `ln-e` mortes sur entrée parsée (`e` variable contre
+  `P.lit(euler())`) : `\ln(e^x)` → `x\ln(e)` par `logExpRules`. (`normalize` réduit
+  `ln(e^a)` depuis `3b17c240d`.)
+- Débordement de pile avant le plafond de profondeur (invariant 7).
+- `ParseCache` exporté, jamais branché ; `transform/` sans consommateur ;
+  `pedagogical-evaluate/` réduit à des types.
+- Le commentaire de `pattern/rule-sets/index.ts` dit que `simplify` utilise
+  `simplifyRules` : il assemble en fait ses jeux dans `buildSimplifyRules`.
+
+## Décisions
+
+| Décision                                                   | Où                                                                               |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Correction côté client                                     | [ADR 0001](../../adr/0001-correction-cote-client.md)                             |
+| Réduire pour comparer (`equivalenceForm`), pas pour écrire | [ADR 0006](../../adr/0006-reduire-pour-comparer-pas-pour-ecrire.md)              |
+| Un moteur, quatre intentions                               | [ADR 0007](../../adr/0007-un-moteur-quatre-intentions.md)                        |
+| Les hypothèses de l'énoncé restreignent la comparaison     | [ADR 0012](../../adr/0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) |
+
+Décisions de module, toujours en vigueur (ex-`decisions.md` de juin, revérifiées) :
+
+- **AST maison en TypeScript**, union discriminée, nœuds binaires aplatis à la demande,
+  plutôt que mathjs (mutable, sans forme normale) ou un portage de Poincaré (C++).
+- **Forme normale séparée** (`NormalForm` : polynômes de termes à coefficients
+  algébriques) pour le calcul exact et l'égalité par hachage.
+- **Pas de nœud `Undefined`** : `simplify(1/0)` rend `1/0`, `normalize(1/0)` lève
+  `normalize: division by zero` ; `0^0` se simplifie en `1`. Le domaine relève de
+  `domain/`.
+- **Immuabilité par convention** (`readonly`, pas de `Object.freeze`, pour le coût).
+- **Négatifs = `opposite(positif)`**, garde dans `number()` (invariant 1).
+
+## Documents liés
+
+- [tidy-spec.md](tidy-spec.md) — contrat de `tidy` (§A), `simplify` avec `tidy` (§B),
+  attendus case par case d'`auto` (§C).
+- [panel-simplifications.md](panel-simplifications.md) — ce que rendent `simplify` et les
+  quatre intentions, pinné par un test.
+- [convention-equivalence.md](convention-equivalence.md) — ce que `areEquivalent` veut dire.
+- [pattern-matching.md](pattern-matching.md) — le module `pattern`.
+- [notation-unites.md](../../pratiques/notation-unites.md) — écrire une grandeur.
+
+## Glossaire technique
+
+- **AST / `MathNode`** — l'arbre d'une expression ; union de 29 variantes (`types.ts`).
+- **constructeur (factory)** — fonction de `factory.ts` qui fabrique un nœud ; seule voie
+  sûre (gardes).
+- **`delimiter`** — nœud de parenthèses ; frontière d'aplatissement et de motif.
+- **aplatir** — passer d'un arbre binaire à une liste de termes signés (`FlatSum`,
+  `SignedTerm`) ou de facteurs (`FlatProduct`, `StyledFactor`).
+- **`tidy` / mise au propre** — réécriture sans développer ni factoriser.
+- **`NormalForm` / forme normale** — représentation canonique développée de `normalize`.
+- **décideur** — `areEquivalent`, qui dit si une réponse a la bonne valeur.
+- **contrainte de forme** — exigence d'écriture vérifiée par `checkForm` (`strict`/`warn`/`off`).
+- **motif (`Pattern`)** — description d'une forme ; **joker** — partie du motif qui capture
+  (`P._`) ; **règle** — motif + remplacement.
+- **intention** — `reduire`, `developper`, `factoriser`, `auto` (`SimplifyIntent`).
+- **palier** — niveau de détail d'une résolution pédagogique (1, 2a, 2b, 3).
+- **`SchoolLevel`** — `'primaire' | 'college' | 'lycee' | 'superieur'`.
+- **enregistreur (recorder)** — collecte les pas d'un calcul pour les rendre en étapes.
+- **coût** — mesure de la complexité d'une écriture (`computeCost`), juge de `simplify`.

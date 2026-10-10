@@ -1,5 +1,5 @@
 /**
- * Fichiers d'un lot : `docs/corrections/<lot>/`
+ * Fichiers d'un lot : `data/corrections/<lot>/`
  * =============================================
  *
  * - `_modeles.json` : instantané des lignes `question_templates` du lot, lues en
@@ -24,7 +24,7 @@ import { parseProposal, type Proposal } from './proposal';
 // CONSTANTS
 // ============================================================================
 
-export const CORRECTIONS_ROOT = 'docs/corrections';
+export const CORRECTIONS_ROOT = 'data/corrections';
 const SNAPSHOT_FILE = '_modeles.json';
 
 /** Ligne `question_templates` relue d'un fichier : les champs utiles sont contrôlés */

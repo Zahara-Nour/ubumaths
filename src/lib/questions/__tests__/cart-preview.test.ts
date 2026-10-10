@@ -10,7 +10,7 @@ import type { QuestionCategory } from '$lib/stores/questionCart.svelte';
 
 // Modèle réel relu (Entiers #139), forme de la base
 const FIXTURE = (
-	JSON.parse(readFileSync(resolve(process.cwd(), 'docs/relecture/entiers/139.json'), 'utf-8')) as {
+	JSON.parse(readFileSync(resolve(process.cwd(), 'data/relecture/entiers/139.json'), 'utf-8')) as {
 		template: QuestionTemplate;
 	}
 ).template;

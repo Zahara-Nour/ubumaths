@@ -4,6 +4,9 @@
 > **`student_exercise_mastery`** (et non student_attempts/progress) ; rétention `audit_logs` réelle =
 > **60 j** via le cron `run_cleanup_expired_data()` (et non 730 j). Voir [`README.md`](README.md) §5.
 
+> Migrations citées : antérieures au baseline, archivées sous `supabase/migrations_archive/` ; le
+> schéma courant est dans `supabase/migrations/20260616220000_baseline_schema.sql`.
+
 > Complete schema documentation for all audit trail tables.
 
 ## Table of Contents
@@ -30,7 +33,7 @@
 
 ### reward_events
 
-**Migration**: `supabase/migrations/20251121115959_create_reward_events_table.sql`
+**Migration**: `supabase/migrations_archive/20251121115959_create_reward_events_table.sql`
 
 The central audit table that aggregates all reward-related events from source tables via database triggers.
 
@@ -79,7 +82,7 @@ LIMIT 20;
 
 ### gidouilles_history
 
-**Migration**: `supabase/migrations/20251113140344_create_gidouilles_history_table.sql`
+**Migration**: `supabase/migrations_archive/20251113140344_create_gidouilles_history_table.sql`
 
 Tracks all changes to student gidouilles (virtual currency).
 
@@ -118,7 +121,7 @@ Tracks all changes to student gidouilles (virtual currency).
 
 ### bonus_history
 
-**Migration**: `supabase/migrations/20251113140345_create_bonus_history_table.sql`
+**Migration**: `supabase/migrations_archive/20251113140345_create_bonus_history_table.sql`
 
 Tracks all changes to student bonus points. Structure identical to `gidouilles_history`.
 
@@ -137,7 +140,7 @@ Same as `gidouilles_history`.
 
 ### vip_cards_activity
 
-**Migration**: `supabase/migrations/20251113140346_create_vip_cards_activity_table.sql`
+**Migration**: `supabase/migrations_archive/20251113140346_create_vip_cards_activity_table.sql`
 
 Tracks VIP card lifecycle events (gained, used, removed).
 
@@ -170,7 +173,7 @@ Tracks VIP card lifecycle events (gained, used, removed).
 
 ### shop_purchase_history
 
-**Migration**: `supabase/migrations/20251121080310_create_shop_system.sql` (lines 159-186)
+**Migration**: `supabase/migrations_archive/20251121080310_create_shop_system.sql` (lines 159-186)
 
 Complete purchase audit trail with refund support.
 
@@ -197,7 +200,7 @@ Complete purchase audit trail with refund support.
 
 ### item_usage_log
 
-**Migration**: `supabase/migrations/20251121080310_create_shop_system.sql` (lines 195-216)
+**Migration**: `supabase/migrations_archive/20251121080310_create_shop_system.sql` (lines 195-216)
 
 Tracks when students use purchased items and their effects.
 
@@ -224,7 +227,7 @@ Tracks when students use purchased items and their effects.
 
 ### template_audit_log
 
-**Migration**: `supabase/migrations/098_enhance_message_templates.sql` (lines 167-194)
+**Migration**: `supabase/migrations_archive/098_enhance_message_templates.sql` (lines 167-194)
 
 Comprehensive audit trail for message template lifecycle.
 
@@ -265,7 +268,7 @@ CHECK (action IN (
 
 ### moderation_logs
 
-**Migration**: `supabase/migrations/20251110120001_create_moderation_logs_and_update_rls.sql` (lines 17-45)
+**Migration**: `supabase/migrations_archive/20251110120001_create_moderation_logs_and_update_rls.sql` (lines 17-45)
 
 Audit trail for chat moderation actions.
 
@@ -314,7 +317,7 @@ CHECK (target_type IN ('message', 'user', 'conversation', 'report'))
 
 ### error_logs
 
-**Migration**: `supabase/migrations/100_create_error_monitoring_system.sql` (lines 24-97)
+**Migration**: `supabase/migrations_archive/100_create_error_monitoring_system.sql` (lines 24-97)
 
 Comprehensive error monitoring and tracking system.
 
@@ -377,7 +380,7 @@ CHECK (severity IN ('info', 'warning', 'error', 'critical'))
 
 ### audit_logs
 
-**Migration**: `supabase/migrations/20260116100000_create_audit_trail.sql`
+**Migration**: `supabase/migrations_archive/20260116100000_create_audit_trail.sql`
 
 Generic audit trail for RGPD compliance (Art. 5(2) accountability). Tracks all modifications to sensitive tables via database triggers. Enables answering "who accessed my child's data?" requests.
 

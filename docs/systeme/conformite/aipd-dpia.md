@@ -94,15 +94,15 @@ Collecte (navigateur / import enseignant / Google OAuth)
 
 ## 4. Mesures protectrices des droits des personnes
 
-| Droit / mesure                       | Mise en œuvre                                                                                                                                              | Statut                                |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Information                          | Politique de confidentialité accessible                                                                                                                    | ✅                                    |
-| **Consentement parental (< 15 ans)** | Système Art. 8 **implémenté** : table `parental_consents`, détection auto (grades 6→2), mode lecture seule, dashboard enseignant, email Brevo, audit IP/UA | ✅ — ⏰ grâce jusqu'au **2026-06-30** |
-| Accès, rectification, **effacement** | `/api/account/delete` (RPC `delete_user_account`, table d'audit, rate-limit 1/24h) **implémenté**                                                          | ✅                                    |
-| **Portabilité**                      | Endpoint `/api/account/export` (JSON) **implémenté + corrigé** (2026-06-15, README §3)                                                                     | ✅                                    |
-| Opposition / retrait                 | contact@ubumaths.fr                                                                                                                                        | ✅                                    |
-| Sous-traitance (art. 28)             | DPA Supabase / Vercel / Google / Brevo                                                                                                                     | 🟠 **copies signées à archiver**      |
-| Transferts hors UE                   | Google & Vercel via **CCT** (+ DPF Google)                                                                                                                 | ✅ documenté                          |
+| Droit / mesure                       | Mise en œuvre                                                                                                                                                                             | Statut                                |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| Information                          | Politique de confidentialité accessible                                                                                                                                                   | ✅                                    |
+| **Consentement parental (< 15 ans)** | Système Art. 8 **implémenté** : table `parental_consents`, détection auto (grades 6→2), mode lecture seule, dashboard enseignant, email Brevo, audit IP/UA                                | ✅ — ⏰ grâce jusqu'au **2026-06-30** |
+| Accès, rectification, **effacement** | `/api/account/delete` (RPC `delete_user_account`, table d'audit, rate-limit 1/24h) — **cassé jusqu'au 2026-10-10**, réparé (élèves seulement ; [rgpd.md §7.2](rgpd.md#72-droit-a-loubli)) | ✅                                    |
+| **Portabilité**                      | Endpoint `/api/account/export` (JSON) **implémenté + corrigé** (2026-06-15, README §3)                                                                                                    | ✅                                    |
+| Opposition / retrait                 | contact@ubumaths.fr                                                                                                                                                                       | ✅                                    |
+| Sous-traitance (art. 28)             | DPA Supabase / Vercel / Google / Brevo                                                                                                                                                    | 🟠 **copies signées à archiver**      |
+| Transferts hors UE                   | Google & Vercel via **CCT** (+ DPF Google)                                                                                                                                                | ✅ documenté                          |
 
 ---
 

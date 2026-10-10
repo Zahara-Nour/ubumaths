@@ -1,343 +1,328 @@
----
-title: Module geometry-core — Documentation de reference
-date: 2026-05-18
-version: 1.0
-status: vivant
-audience: developpeurs UbuMaths (nouveaux et mainteneurs)
-scope: src/lib/geometry-core/
----
+# Géométrie : `geometry-core` et `constructions-v2`
 
-# Module `geometry-core` — Documentation de reference
+Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
+[dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
+[`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-Moteur de geometrie 2D pedagogique pour UbuMaths : DSL francophone, reactivite
-Svelte 5, rendu canvas/SVG/TikZ/Typst, solveurs numeriques (Newton, Simpson),
-courbes cartesiennes/parametriques/polaires, transformations, intersections.
-
-> **Ce repertoire sert de modele** pour structurer la documentation des autres
-> modules du site. Voir [Convention d'organisation](#convention-dorganisation)
-> en bas de page.
+> Vérifié contre le code le 2026-10-10. Chaque fichier, fonction et builtin cité existe à cette
+> date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
+> `dsl-builtins.md` n'est pas garanti : lire le code.
 
 ---
 
-## Chiffres cles (2026-05-18)
+## 1. À quoi ça sert
 
-| Indicateur                   | Valeur                        |
-| ---------------------------- | ----------------------------- |
-| Fichiers TS total            | 208                           |
-| Fichiers source (hors tests) | 65                            |
-| Fichiers de test             | 143                           |
-| Tests Vitest                 | 2 988                         |
-| Sous-dossiers fonctionnels   | 9                             |
-| Lignes source (estimation)   | ~67 000                       |
-| Lignes test (estimation)     | ~38 700                       |
-| Posture securite globale     | **Acceptable**                |
-| Severite dette critique      | **Resolved** (3/3 corriges)   |
-| Hot paths principaux         | **Memoises** (6/6 quick wins) |
-
-> Chiffres verifies via `find src/lib/geometry-core -name "*.ts"` et
-> `grep -rE "^\s*(it\|test)\(" --include="*.test.ts"`.
-> Le delta vs l'audit initial (209 TS / 69 src / 140 test / 2 986 tests) s'explique par : `singularity-warn.ts` + 2 tests deplaces vers `$lib/mathAST/analysis/` ; +5 nouveaux fichiers de test livres en session (parametric-newton, marching-squares-cache, locus-cache, parametric-sampling-cache, osculating-circle-export).
-
----
-
-## Les 5 documents de reference
-
-### 1. [architecture.md](architecture.md) — Vue d'ensemble
-
-> **Audience** : nouveaux developpeurs, onboarding
-> **Longueur** : 909 lignes, ~4100 mots
-
-Cartographie complete : role du module, frontieres, les 9 sous-dossiers
-(`dsl/`, `graph/`, `compute/`, `geometry/`, `rendering/`, `interaction/`,
-`types/`, `validation/`, `viewport/`), flux de donnees parse-DSL → pixel,
-modele de donnees (40+ types `Geo*`), reactivite Svelte 5, conventions de
-nommage, guide d'ajout d'une nouvelle primitive.
-
-**A lire en premier** si tu decouvres le module.
-
-### 2. [code-quality.md](code-quality.md) — Qualite & dette technique
-
-> **Audience** : mainteneurs, avant refactor
-> **Severite globale** : Major
-
-Top issues identifiees :
-
-- **Critique** : cycle de dependance `graph` ↔ `dsl` (`figure.ts:142`),
-  `GeoOsculatingCircle` absent des renderers SVG/TikZ/Typst,
-  `_executeBuiltinInner` = switch de 2 045 lignes (`dsl/builtins.ts:345-2389`).
-- **Major** : `computeElementPosition` = 735 lignes de `if (isXxx)`,
-  duplication triple de `extendLineToViewport`, 3 interfaces `NewtonConfig`
-  divergentes, `dsl/transform-apply.ts` (1 087 lignes) sans test direct,
-  25 casts `as GeoXxx` bypassant les type guards.
-
-### 3. [tests.md](tests.md) — Couverture & robustesse des tests
-
-> **Audience** : contributors, test-automator
-> **Couverture globale** : haute mais inegale
-
-Repartition : `dsl/` 1 649 tests (55 %), `graph/` 472, `rendering/` 326.
-
-Angles morts critiques :
-
-- `graph/parametric-newton.ts` (149 L) — zero test unitaire direct, exerce
-  seulement par 4 tests indirects (H4-H7).
-- `graph/compute-position.ts` (1 308 L) — couvert uniquement par integration
-  DSL, jamais en isolation.
-- `rendering/bezier.ts` (414 L) — Catmull-Rom complet sans tests.
-- `parametric-intersection-1d.ts` — clipping `s ∈ [-ε, 1+ε]` non teste aux
-  valeurs limites.
-
-### 4. [performance.md](performance.md) — Analyse de performance
-
-> **Audience** : optimisation rendu temps reel
-> **Analyse** : lecture statique (pas de benchmarks reels)
-
-**Session 2026-05-18 : 6 quick wins livrees** (cache derivees secondes, mutable-env spreads, warm-start Newton drag, cache marchingSquares, cache computeLocusCurve, cache computeParametricCurveSampling). Tous les hot paths principaux sont maintenant memoises.
-
-Restants — **non rentables seuls** (analyses dans `performance.md` section 9) :
-
-- ⏳ **Warm-start `intersection-1d`** — refonte API multi-intersections, ROI marginal post-cache
-- ⏳ **Cache SVG path final** (#3) — gain ~10× plus petit que les caches deja en place
-- ⏳ **Version granulaire par element** (#6) — refonte structurelle, ROI cassee par les caches qu'on vient d'ajouter
-- ⏳ **Newton 2D 8×8 starts** — rare en pratique, gain mesurable seulement sur animations slider × intersection parametrique × parametrique
-
-**Recommandation** : profiler une figure stress (slider animant locus + parametrique + intersections) avant toute autre optim.
-
-### 5. [security.md](security.md) — Audit securite
-
-> **Audience** : security review, ops
-> **Posture globale** : **Acceptable**
-
-Le module lui-meme est sain (zero `eval()`/`Function()` dans le pipeline DSL,
-bornes sur la recursion macros = 10, iterations boucle = 1 000, Newton = 20).
-
-**Findings exterieurs au module mais a corriger** :
-
-- **HIGH** — `src/lib/utils/game/challenge-variables.ts:68-76` :
-  `new Function('return ' + expr)` sur du contenu DB non sanitise. Remplacer
-  par `compile()` de `$lib/mathAST/eval/compile`.
-- **INFO** — `unsafe-eval` site-wide dans la CSP (`src/hooks.server.ts:432`)
-  pour Typst.js — annule la protection navigateur contre l'eval-injection.
-
-**Findings dans le module** :
-
-- **MEDIUM** — `PARSE_CACHE` non borne dans `dsl/interpreter.ts:158-160`.
-  Ajouter un cap (5 000 entrees) pour eviter l'epuisement memoire.
-- **LOW** — Pas de garde de longueur d'input cote client avant tokenisation.
-
----
-
-## Index thematique par sous-dossier
-
-Pour chaque sous-dossier du module, les documents qui en parlent :
-
-| Sous-dossier   | Architecture | Qualite | Tests |  Perf  | Securite |
-| -------------- | :----------: | :-----: | :---: | :----: | :------: |
-| `dsl/`         |     §2.2     | §3, §4  |  §2   |  §1.1  |  §1, §2  |
-| `graph/`       |     §2.3     | §3, §4  |  §2   |  §3-7  |    —     |
-| `compute/`     |     §2.4     |   §6    |  §2   |   §1   |    —     |
-| `geometry/`    |     §2.5     |   §6    |  §2   |   —    |    —     |
-| `rendering/`   |     §2.6     | §3, §5  |  §3   | §3, §6 |    §6    |
-| `interaction/` |     §2.7     |    —    |  §3   |   —    |    —     |
-| `types/`       |   §2.1, §4   | §5, §8  |   —   |   —    |    —     |
-| `validation/`  |     §2.8     |    —    |   —   |   —    |    —     |
-| `viewport/`    |     §2.9     |    —    |   —   |   —    |    —     |
-
----
-
-## Action items prioritaires (cross-cutting)
-
-> **Session 2026-05-18 close — bilan final.**
->
-> **12 commits livres.** Tous les items critiques de l'audit (3/3) sont resolus, et 6/6 quick wins perf sont livrees. Le module est dans un etat tres sain — le seul item HIGH restant est hors scope geometry-core (`new Function()` dans `src/lib/utils/game/challenge-variables.ts:68-76`).
->
-> **Critiques (3/3)** : cycle `graph`↔`dsl` brise (`singularity-warn` deplace vers `$lib/mathAST/analysis/`) · `GeoOsculatingCircle` rendu dans les 3 exporters · `_executeBuiltinInner` switch de 2 045 lignes → dispatcher Map de 27 lignes (62 handlers extraits).
->
-> **Quick wins perf (6/6)** : cache derivees secondes · mutable-env spreads · warm-start Newton drag · cache `marchingSquares` (40 000 evals/render evites) · cache `computeLocusCurve` · cache `computeParametricCurveSampling`.
->
-> **Securite** : posture **Acceptable** confirmee. 2 fixes MEDIUM/LOW livres (cap `PARSE_CACHE`, garde longueur DSL). 1 HIGH hors module documente.
->
-> **Reste en queue** : 1 SECURITE HIGH hors module (challenge-variables.ts) · 1 TESTS (bezier.ts unit tests) · 1 PERF partiel jugé non rentable seul (warm-start intersection-1d) · items perf #3 #6 differes (ROI marginal post-caching, recommandation : profiling reel avant tout autre travail).
-
-1. **[SECURITE HIGH]** Remplacer `new Function()` par `compile()` dans
-   `src/lib/utils/game/challenge-variables.ts:68-76`.
-   _Hors module mais critique._
-2. ~~**[PERF HIGH / EFFORT FAIBLE]** Cache des derivees secondes pour
-   `cercle_osculateur`/`courbure` (`parametric-calculus.ts:75-95`).~~ **FAIT 2026-05-18** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`).
-3. ~~**[PERF HIGH / EFFORT FAIBLE]** Eliminer les spreads dans
-   `computeParametricCurveSampling` (`figure.ts:4399-4418`).~~ **FAIT 2026-05-18** (pattern mutable-env applique aux 3 sites de figure.ts).
-4. ~~**[QUALITE CRITIQUE]** Casser `_executeBuiltinInner` (`dsl/builtins.ts:345-2389`)
-   en handlers par builtin.~~ **FAIT 2026-05-18** (2 commits : infra + 62 handlers extraits, dispatcher Map de 27 lignes).
-5. ~~**[QUALITE CRITIQUE]** Ajouter le rendu de `GeoOsculatingCircle` dans
-   `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`.~~ **FAIT 2026-05-18** (helper `osculatingCircleToSVG` + branches dans les 3 exporters).
-6. **[TESTS]** Ajouter des tests unitaires directs pour `bezier.ts` (`parametric-newton.ts` couvert depuis 2026-05-18).
-7. ~~**[SECURITE MEDIUM]** Borner `PARSE_CACHE` dans `dsl/interpreter.ts`.~~ **FAIT 2026-05-18** (plafond 5 000 entrees).
-8. ~~**[SECURITE LOW]** Garde de longueur DSL dans `parse()`.~~ **FAIT 2026-05-18** (100 000 caracteres max).
-9. **[PERF MEDIUM]** ✅ Warm-start Newton drag closest-point — FAIT 2026-05-18 (`findClosestParameterOnCurve` accepte `warmStartT`). Partie `intersection-1d` differee (refonte API multi-intersections, ROI marginal post-cache).
-10. ~~**[PERF HIGH]** Cache `marchingSquares` (40k evals/render)~~ **FAIT 2026-05-18** (WeakMap par CompiledFn).
-11. ~~**[PERF HIGH]** Cache `computeLocusCurve`~~ **FAIT 2026-05-18** (WeakMap par GeoLocus + snapshot dependsOn).
-12. ~~**[PERF MEDIUM]** Cache `computeParametricCurveSampling`~~ **FAIT 2026-05-18** (WeakMap par GeoParametricCurve + snapshot bounds/scalars/viewport).
-
----
-
-## Convention d'organisation
-
-Ce repertoire suit la structure suivante, **a reproduire pour tout autre
-module documente** :
+Un **langage de figures en français** (le « DSL ») et son moteur :
 
 ```
-docs/ref/<module-name>/
-├── README.md          # Index (ce fichier) — synthese, chiffres cles, action items
-├── architecture.md    # Vue d'ensemble, sous-dossiers, types, flux
-├── code-quality.md    # Dette technique, code smells, top refactors
-├── tests.md           # Couverture, angles morts, tests prioritaires
-├── performance.md     # Hotspots, optimisations prioritaires
-└── security.md        # Surface d'attaque, findings, mitigations
+A = point(0, 0)
+B = point(4, 1)
+c = cercle(A, passant=B)
+d = mediatrice(A, B) @euclide
+f = courbe("y = sin(x)")
+I = integrale(f, 0, \pi)
 ```
 
-### Regles pour les documents enfants
+Le même script sert à quatre usages :
 
-- **Header YAML** obligatoire : `title`, `date`, `audience`, optionnellement
-  `severity_globale` / `posture` / `version`.
-- **Chemins de fichiers avec lignes precises** (ex: `path/to/file.ts:142-150`).
-- **Severite explicite** pour chaque finding : `Critical` / `Major` / `Minor`
-  pour la qualite ; `High` / `Medium` / `Low` pour perf et securite.
-- **Recommandations concretes** : pas "ameliorer X" mais "extraire la fonction
-  Y des lignes 100-150 vers un nouveau fichier Z".
-- **Top N prioritaires** en fin de chaque document (top 5 ou top 10).
+| Usage                                         | Où                                                                | Interactif ? |
+| --------------------------------------------- | ----------------------------------------------------------------- | ------------ |
+| Figure dans un contenu (énoncé, cours, chat)  | bloc ubumark ` ```figure ` → écran (SVG) + PDF (Typst)            | non          |
+| Figure dynamique (démos, éditeur)             | `GeometryCanvas.svelte` : glisser les points, curseurs            | oui          |
+| Construction animée (règle, compas, équerre…) | `constructions-v2` : lecteur pas à pas, routes `/constructions/*` | lecture      |
+| Pages de démonstration                        | `/geometry-demo/*` (30 pages), `/construction-demo`               | oui          |
 
-### Regles pour le README maitre
+Le moteur calcule en **exact** quand il peut (coordonnées `MathNode` de mathAST) et en flottant
+sinon (déplacement à la souris, transcendantes, échantillonnage), avec des solveurs numériques
+(Newton, Simpson, marching squares) pour les courbes.
 
-- Reste un **index**, pas de contenu duplique des documents enfants.
-- **Chiffres cles** en tete pour aperçu immediat.
-- **Action items cross-cutting** synthetisant les 5 audits.
-- **Index thematique** (matrice sous-dossiers × documents) pour navigation
-  rapide.
+## 2. Carte du code
 
-### Rythme de mise a jour
+### `src/lib/geometry-core/` (~36 000 lignes hors tests)
 
-- **README maitre** : a chaque livraison de feature significative dans le
-  module documente.
-- **architecture.md** : a chaque ajout/suppression de sous-dossier ou de type
-  fondamental.
-- **code-quality.md / tests.md / performance.md / security.md** : audit
-  complet recommande **tous les 3-6 mois** ou avant une release majeure.
+| Dossier        | Rôle                                                          | Fichiers clés                                                                                                                                                                                 |
+| -------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dsl/`         | Lire et exécuter un script                                    | `tokenizer.ts`, `parser.ts`, `interpreter.ts`, `builtins.ts` (7 400 lignes, les 92 builtins), `transform-apply.ts`, `serializer.ts`, `errors.ts`                                              |
+| `graph/`       | La figure : objets, dépendances, recalcul, solveurs           | `figure.ts` (classe `Figure`, ~5 000 lignes), `dependency-graph.ts`, `compute-position.ts`, `compute-locus.ts`, `parametric-*.ts`, `undo-redo.ts`                                             |
+| `types/`       | Les ~90 types `Geo*` et leurs gardes `isXxx`                  | `elements.ts`, `geo-value.ts` (`GeoValue` exact/numérique), `primitives.ts`, `schemas.ts` (Zod)                                                                                               |
+| `compute/`     | Arithmétique sur `GeoValue`                                   | `geo-arithmetic.ts`, `to-number.ts` (`geoToNumber`), `compare.ts`                                                                                                                             |
+| `geometry/`    | Formules analytiques                                          | `intersections.ts`, `transformations.ts`, `affine-transform.ts`, `conic-classify.ts`, `conic-properties.ts`, `circumcircle.ts`                                                                |
+| `rendering/`   | Dessin et exports                                             | `svg-primitives.ts`, `export-svg.ts`, `export-typst.ts`, `export-tikz.ts`, `marching-squares.ts`, `bezier.ts`, `rough-geometry.ts`, `colors.ts`, `label-placement.ts`, `viewport-clipping.ts` |
+| `viewport/`    | Repère écran ↔ maths, grille, échantillonnage                | `viewport.ts` (`panViewport`, `zoomViewport`), `grid.ts` (`computeGridStep`), `sampler.ts`                                                                                                    |
+| `interaction/` | Souris                                                        | `hit-testing.ts` (`findPointNear`, `findElementNear`), `snap.ts` (`snapToGrid`)                                                                                                               |
+| `validation/`  | Prédicats de vérification (`checkParallel`, `checkDistance`…) | `checks.ts` — **aucun appelant hors du module** aujourd'hui                                                                                                                                   |
 
----
+Point d'entrée : `index.ts` (barrel). API du DSL : `dsl/index.ts` → `parseDsl`, `interpretDsl`,
+`runDsl`, `serializeDsl`, `createStepper`.
 
-## Journal de session 2026-05-18
+### `src/lib/constructions-v2/` (animation de constructions)
 
-Audit complet du module + corrections en 12 commits (~1 jour de travail), du plus impactant au plus structurel.
+| Partie                                       | Rôle                                                                                                   |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `core/executor.ts`                           | `ConstructionExecutor` : exécute le script pas à pas (`createStepper`), gère directives et instruments |
+| `core/timeline.svelte.ts`                    | `Timeline` : lecture, pause, vitesse (runes)                                                           |
+| `core/choreographies/`                       | Chorégraphies `@euclide` / `@equerre` : `registry.ts`, `resolve.ts`, une par builtin                   |
+| `core/animator.ts`, `core/render-helpers.ts` | Tracé partiel (`partialSegment`, `partialArc`, `partialSegmentSVG`…)                                   |
+| `instruments/`                               | `Ruler`, `Compass`, `CompassRaised`, `Protractor`, `SetSquare`, `Pencil` (.svelte) + `positioning.ts`  |
+| `components/`                                | `ConstructionPlayer`, `ConstructionCanvas` (sur `GeometryCanvas`), `ScriptEditor`, contrôles           |
+| `converter.ts`                               | `convertXmlToDsl` : import des fichiers XML InstrumenPoche                                             |
+| `constants.ts`                               | Durées (`MS_PER_PIXEL`, `MS_PER_DEGREE`, `DEFAULT_PAUSE_DURATION`…)                                    |
 
-### Phase 1 — Audit (1 commit)
+Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
+`src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`) et
+`src/routes/(public)/construction-demo/`.
 
-| Hash        | Sujet                                                                                                     |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| `3f78f8597` | Suite d'audit (5 docs + README + `CLAUDE.md`) ; +2 fixes securite (`PARSE_CACHE` cap, garde longueur DSL) |
+⚠️ L'ancien module `src/lib/constructions/` (XML, avant le DSL) vit encore : utilisé par
+`whiteboard/components/InstrumentLayer.svelte`, `QuestionTemplateForm.svelte` et
+`routes/api/constructions/convert`. Il ne fait pas partie de ce système.
 
-### Phase 2 — Perf (7 commits)
+### Composants et consommateurs
 
-| Hash        | Sujet                                                                |
-| ----------- | -------------------------------------------------------------------- |
-| `91a17e4b9` | Cache derivees secondes (QW #1) — recompilation evitee a chaque tick |
-| `f081c179f` | Mutable env spreads (QW #2) — ~1 200 allocations/render evitees      |
-| `b4ec15cfa` | Warm-start Newton drag closest-point (QW #3) — 8:1 reduction         |
-| `dff2cf706` | Memoize `marchingSquares` (QW #4) — 40 000 evals/render evites       |
-| `7c2e9fea0` | Memoize `computeLocusCurve` (QW #5)                                  |
-| `e6b6f7d89` | Memoize `computeParametricCurveSampling` (QW #6)                     |
-| `cd5ea137b` | Close perf session — doc des items differes comme marginaux          |
+| Fichier                                                                     | Rôle                                                                                |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs |
+| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                         |
+| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget  |
+| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`  |
+| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst`                                         |
+| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                        |
 
-### Phase 3 — Dette technique critique (4 commits)
+### Frontière avec le grapheur
 
-| Hash        | Sujet                                                                      |
-| ----------- | -------------------------------------------------------------------------- |
-| `1fe34c9c2` | Cycle `graph`↔`dsl` brise (`singularity-warn` → `$lib/mathAST/analysis/`) |
-| `d7bb2a1e1` | `GeoOsculatingCircle` rendu dans SVG / TikZ / Typst (bug export muet)      |
-| `871f53be9` | Builtin handlers commit 1/2 — infra + 10 plus gros cases extraits          |
-| `016bc86e1` | Builtin handlers commit 2/2 — 49 cases restants, switch supprime           |
+Le **grapheur** (`src/lib/grapheur/`, `components/grapheur/`) et le bloc ` ```courbe `
+(`ubumark/utils/courbe-scene.ts`) n'utilisent **ni le DSL ni `Figure`**. Ils empruntent seulement
+des briques de `geometry-core` : `viewport/` (repère, grille, `sampler.ts`), `rendering/bezier.ts`,
+`rendering/colors.ts` (`CURVE_COLORS`, 4 couleurs × 2 styles de trait) et
+`graph/parametric-calculus.ts`. Toucher à ces fichiers, c'est toucher au grapheur : lancer aussi
+`src/lib/grapheur/__tests__/`.
 
-### Phase 4 — Feedback runtime errors (4 commits, journee +1)
+## 3. Le DSL
 
-Surfacage des erreurs runtime DSL dans `/construction-demo` et `ScriptEditor`. Avant : silence en cas d'echec d'execution, l'apercu restait fige sur l'etat precedent. Apres : panneau d'erreur riche (titre, ligne source, summary + hint + liste de formes acceptees), badge sur le canvas, figure partielle preservee.
+Chaîne : `tokenizer.ts` → `parser.ts` (AST `DslProgram`, types dans `dsl/types.ts`) →
+`interpreter.ts` (classe `Interpreter`) → appels à `executeBuiltin` (`builtins.ts`) → méthodes
+`figure.createXxx(...)`.
 
-| Hash        | Sujet                                                                       |
-| ----------- | --------------------------------------------------------------------------- |
-| `b157885f2` | feat(constructions-v2) : UX runtime errors + executor resilient + `details` |
-| `8bcff578b` | feat(geometry-core/dsl) : 30 builtins de base migrés vers details           |
-| `e0e4db674` | feat(geometry-core/dsl) : calculus + coniques (10 builtins)                 |
-| `0ca030d10` | feat(geometry-core/dsl) : trace + courbe + texte (finition)                 |
+- **Dispatch** : `interpreter.ts` (`evaluateCall`) traite d'abord `unite_angle`, puis les fonctions
+  mathématiques (`MATH_FUNCTIONS`), puis les macros utilisateur (prioritaires), puis les builtins
+  (`BUILTIN_NAMES.has(name)` → `executeBuiltin` → `HANDLERS.get(name)`). Plus de grand `switch` :
+  une fonction `handleXxx(ctx: BuiltinCtx)` par builtin, enregistrée par `HANDLERS.set`.
+- **Retours** : `BuiltinResult` (un objet), `BuiltinMultiResult` (plusieurs), `BuiltinScalarResult`
+  (nombre) ; `styleTargetId` envoie les arguments de style vers un objet compagnon (zone d'une
+  intégrale).
+- **Exact d'abord** : une expression mathématique pure va à mathAST (`math-pure-expr.ts`) et donne
+  une valeur exacte ; mêlée à un curseur, elle devient un scalaire réactif.
+- **Erreurs** : `DslParseError` (syntaxe, ligne et colonne), `DslRuntimeError` (exécution). La forme
+  structurée `new DslRuntimeError({ summary, hint?, forms? }, line)` alimente le panneau d'erreur
+  (liste des formes acceptées) ; la forme chaîne existe encore sur des sites anciens.
+- **Directives et décorateurs** : `@pause(500)` est une instruction (`DslDirective`, transmise au
+  `onDirective` de l'appelant) ; `@euclide` après une affectation est un décorateur
+  (`parseTrailingDecorators`), lu par `constructions-v2`. Hors construction, ils sont ignorés
+  (et refusés par le bloc ` ```figure `).
+- **Aller-retour** : `serializeDsl(figure, symbols, { angleMode })` régénère un script.
+- **Limites** : 100 000 caractères, 1 000 tours par boucle, macros imbriquées ≤ 10,
+  `InterpretOptions.maxSteps`, `Figure.setElementLimit` (bloc ` ```figure `).
 
-Voir [`docs/wip/dsl-structured-errors-progress.md`](../../archive/wip/dsl-structured-errors-progress.md) pour le detail technique. ~50 builtins migres sur ~60, retro-compatibilite preservee (string flat encore accepte).
+Liste complète des builtins, arguments communs, angles, intégrales : [dsl-builtins.md](dsl-builtins.md).
 
-### Phase 6 — Migration complète stdlib → builtins (6 commits, journee +3)
+## 4. Le runtime réactif
 
-23 macros de `dsl/stdlib.ts` converties en builtins TypeScript dans `dsl/builtins.ts`. Chaque builtin produit 1 objet principal ; les sous-produits (points intermédiaires) sont créés directement invisibles. Calculs directs (formules de Cramer pour les circumcircles, Euler pour l'orthocenter, Héron pour l'inradius). Plus de cascade de macros via le DSL.
+`Figure` (`graph/figure.ts`) est une classe TypeScript **sans runes** : elle tient les objets
+(`elements`), leurs positions calculées et un `DependencyGraph`.
 
-| Hash        | Sujet                                                                               |
-| ----------- | ----------------------------------------------------------------------------------- |
-| `2f85f5677` | feat(dsl) : 5 lignes (mediatrice, perpendiculaire, parallele, mediane, bissectrice) |
-| `d4deb76ae` | feat(dsl) : 4 triangles (triangle, triangle_equilateral/isocele/rectangle)          |
-| `137cfafc7` | feat(dsl) : 4 quadrilatères (parallelogramme, rectangle, carre, losange)            |
-| `f6779041d` | feat(dsl)! : 2 polygones itératifs (polygone_regulier, etoile) — BREAKING           |
-| `7c9248c6d` | feat(dsl) : corde + 3 cercles dérivés (circonscrit, inscrit, Euler)                 |
-| ce commit   | feat(dsl) : 4 points remarquables + cleanup `stdlib.ts` + docs                      |
+1. Chaque `createXxx` ajoute un objet et ses parents au graphe (`addNode` : parent inconnu,
+   auto-référence ou doublon = erreur ; un nouvel objet n'a pas d'enfant, donc pas de cycle).
+2. Déplacer un point (`movePoint`) ou un curseur marque ses descendants « sales » (`markDirty`).
+3. `recompute()` recalcule les objets sales dans l'ordre topologique (Kahn) ; la formule de chaque
+   type est dans `compute-position.ts` (`computeElementPosition`, une branche par type).
+4. Supprimer un objet supprime ses descendants.
+5. Annuler / rétablir : `beginTransaction` / `commit` / `undo` / `redo` (deltas, `undo-redo.ts`).
 
-Le mécanisme `macro foo(...): ...` du DSL reste intact, désormais réservé aux constructions définies par l'utilisateur (paradigme Cabri / CarMetal / GeoGebra Custom Tools). `dsl/stdlib.ts` se réduit à `export const STDLIB_MACROS = "";`.
+**Côté Svelte**, la réactivité est un compteur : `GeometryCanvas` incrémente `version = $state(0)`
+après chaque mutation, et ses `{#each}` sont indexés par `${el.id}_${version}` — tout est redessiné.
+Grossier mais suffisant : les calculs coûteux sont mis en cache en amont (§ invariants).
 
-Voir [`docs/wip/dsl-stdlib-to-builtins-progress.md`](../../archive/wip/dsl-stdlib-to-builtins-progress.md). 1799/1799 tests pass.
+**Valeurs** : `GeoValue = GeoExact (MathNode) | GeoNumeric (number)` ; un paramètre peut aussi
+être une référence à un scalaire (`ScalarRef`) ou un infini (`InfinityParam`). Opérer sur des
+`GeoValue` : `compute/geo-arithmetic.ts` ; convertir pour dessiner : `geoToNumber`, le plus tard
+possible.
 
-### Phase 5 — Refonte sémantique du DSL : un builtin = un objet (5 commits, journee +2)
+**Solveurs** (`graph/`) :
 
-Élimination des retours tuples des macros stdlib au profit d'un design **un builtin = un objet principal + accesseurs explicites**. Plus de `(M, d) = mediatrice(A, B)` — désormais `d = mediatrice(A, B)` puis `M = milieu(A, B)`. Les sous-produits internes des macros (centres dérivés, points intermédiaires) sont `masque()`-d par défaut ; l'utilisateur révèle via `montre()`.
+| Besoin                                                        | Fonction                                                                                                              |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Point glissant sur une courbe paramétrique                    | `findClosestParameterOnCurve` (Newton multi-départs, `warmStartT` en drag) via `movePointOnParametricCurveFromCursor` |
+| Paramétrique × paramétrique                                   | `findParametricIntersections` (Newton 2D)                                                                             |
+| Paramétrique × droite, cercle, segment, demi-droite, fonction | `findParametric{Line,Circle,Segment,Ray,Function}Intersections` (Newton 1D)                                           |
+| Longueur, courbure, cercle osculateur                         | `computeArcLength` (Simpson), `computeCurvature`, `computeOsculatingCircle`                                           |
+| Lieu                                                          | `computeLocusCurve`                                                                                                   |
+| Courbe implicite                                              | `marchingSquares` (`rendering/`)                                                                                      |
 
-| Hash        | Sujet                                                                                       |
-| ----------- | ------------------------------------------------------------------------------------------- |
-| `c8f0f3693` | feat(dsl) : accessors `centre`, `extremite`, `extremites`, `milieu(s)`, `sommet`, `sommets` |
-| `9f1a59fbb` | feat(dsl) : verbes `montre` / `masque` + `style(elem, visible=...)`                         |
-| `6e81a1cc4` | feat(dsl) : `point(A, longueur=L, ...)` + `segment(A, longueur=L, ...)`                     |
-| `75e827e1a` | refactor(stdlib)! : 14 macros migrées vers retour unique (BREAKING)                         |
-| ce commit   | docs : CLAUDE.md + ref docs + progress                                                      |
+### Invariants (à ne pas casser)
 
-Voir [`docs/wip/dsl-tuple-elimination-progress.md`](../../archive/wip/dsl-tuple-elimination-progress.md) pour le detail. 1781/1781 tests pass.
+- **Pas d'`eval` ni de `new Function`** dans le pipeline : les expressions passent par `compile()`
+  de `$lib/mathAST/eval/compile`.
+- **`graph/` n'importe jamais `dsl/` en valeur** (aucune occurrence aujourd'hui). Un helper partagé
+  va dans `$lib/mathAST/analysis/` ou un dossier commun.
+- **Gardes de type** : `types/elements.ts` exporte 86 fonctions `isXxx` ; tout code nouveau les
+  utilise au lieu de `as GeoXxx` (42 casts historiques subsistent, ne pas en ajouter).
+- **Caches — ne jamais muter un résultat** : `PARSE_CACHE` et `PARSE_FAILURE_CACHE` plafonnés à
+  5 000 entrées (`clear()` aux sites d'insertion, `interpreter.ts`) ; `marchingSquares` (WeakMap
+  par fonction compilée) ; `computeLocusCurve` (WeakMap par lieu, clé = valeurs de
+  `locus.dependsOn` — `createLocus` doit y mettre TOUTE la fermeture transitive) ;
+  `computeParametricCurveSampling` (clé `buildParametricSamplingKey` : tout nouveau paramètre
+  d'échantillonnage doit y entrer) ; dérivées secondes pré-compilées `compiledXSecond` /
+  `compiledYSecond` sur `GeoParametricCurve` (sinon `courbure` et `cercle_osculateur` rendent
+  `null` en silence).
+- **Boucles chaudes : un seul `env` mutable** (`env[param] = t`), jamais `{ ...bindings, [param]: t }`
+  dans une boucle (`parametric-newton.ts`, `computeParametricCurveSampling`).
+- **Un type visible = quatre surfaces** : `GeometryCanvas.svelte`, `svg-primitives.ts` (+
+  `export-svg.ts`), `export-tikz.ts`, `export-typst.ts`. Aucun contrôle de type ne le rappelle.
+- **Prolonger une droite à la fenêtre** : `extendLineToViewport` / `extendRayToViewport`
+  (`rendering/viewport-clipping.ts`, coordonnées maths, pour TikZ et Typst) ; la variante pixels de
+  `svg-primitives.ts` (`extendLineToBounds`) reste séparée.
 
-### Bilan chiffre
+## 5. Le rendu
 
-| Avant                                           | Apres                                                                         |
-| ----------------------------------------------- | ----------------------------------------------------------------------------- |
-| Severite dette critique : Major (3 items)       | Resolved (0 item)                                                             |
-| `_executeBuiltinInner` : 2 045 lignes, 62 cases | 27 lignes, dispatcher Map                                                     |
-| `marchingSquares` : 40 000 evals/render         | Cache hit en drag commun                                                      |
-| Newton drag : 8 starts × 20 iter                | 1 start (warm) + 2 bornes                                                     |
-| Cycle `graph` → `dsl`                           | Plus aucune fleche source-level                                               |
-| `GeoOsculatingCircle` exports                   | Muets → corrects en SVG/TikZ/Typst                                            |
-| `DslRuntimeError` : string flat                 | `{ summary, hint, forms }` typé (50 builtins migres)                          |
-| Erreurs runtime dans `/construction-demo`       | Silencieuses → panneau riche + figure partielle                               |
-| Retours tuples macros stdlib                    | Un objet principal + accesseurs (`centre`, `sommet`, `extremite`, ...)        |
-| Visibilité côté DSL                             | Plus de `style(.., visible=...)` workarounds — verbes `montre()` / `masque()` |
-| Tests                                           | 2 986 → 3 035 (+47 accessors/visibility/polar net)                            |
+| Surface            | Code                                                     | Utilisé par                                   |
+| ------------------ | -------------------------------------------------------- | --------------------------------------------- |
+| Toile interactive  | `GeometryCanvas.svelte` + `svg-primitives.ts` + rough.js | démos, éditeur, `ConstructionCanvas`          |
+| SVG statique       | `figure-svg.ts` (bloc), `exportToSVG` (`export-svg.ts`)  | bloc ` ```figure ` à l'écran                  |
+| PDF (Typst / cetz) | `exportToTypst` (`export-typst.ts`)                      | bloc ` ```figure ` au PDF (`figure-typst.ts`) |
+| TikZ               | `exportToTikZ` (`export-tikz.ts`)                        | **aucun appelant dans l'application** (tests) |
 
-### Recommandation prochaine session
+- **Courbes** : échantillonnage (`viewport/sampler.ts`, `computeParametricCurveSampling`) puis
+  lissage (`bezier.ts`) ; courbes implicites par `marchingSquares`.
+- **PDF découpé** : `exportToTypst({ clipToViewport: true, underlay })` met traits et remplissages
+  dans une boîte découpée à la fenêtre ; noms et textes restent au-dessus, jamais coupés.
+- **Noms de points** : `etiquette=` → `rendering/label-placement.ts` (bloc ` ```figure `, écran et
+  PDF) ; `GeometryCanvas` et les exports SVG/TikZ écrivent toujours en haut à droite.
 
-**Pas de travail aveugle.** Le module est tres sain. Les prochaines optims devraient etre guidees par un profiling reel (Chrome DevTools sur une figure stress : slider animant locus + parametric + intersection parametrique × parametrique). Voir `performance.md` section 9 "Stop sur la perf en aveugle".
+### Thème clair / sombre
 
-Items restants non resolus, documentes mais non urgents :
+- **Couleurs d'auteur** : un NOM (`couleur="rouge"`, 12 noms, synonymes anglais) est gardé tel quel
+  jusqu'au rendu (`resolveColorName` → `$lib/theme/named-colors`), puis devient
+  `var(--color-fig-<nom>)` à l'écran (défini en `light-dark()` dans `src/app.css`) et sa variante
+  claire au PDF (`NAMED_COLOR_PRINT`, `colorForPrint`). Un hexadécimal reste fixe.
+- **Habillage** de `GeometryCanvas` (fond, grille, halos, survol) : tokens `var(--color-*)`
+  (`docs/pratiques/css-color-tokens.md`). Couverture :
+  `components/geometry/__tests__/GeometryCanvas.theme.svelte.test.ts` (y compris les traits noirs
+  des instruments).
+- **Grapheur** : couleurs par identité (`curve-1`…`curve-4`, `rendering/colors.ts`), pas par nom.
 
-- `[SECURITE HIGH]` `new Function()` dans `src/lib/utils/game/challenge-variables.ts:68-76` — **hors scope geometry-core**, mais critique pour la securite du site.
-- `[TESTS]` unit tests pour `rendering/bezier.ts` (Catmull-Rom, 414 lignes sans test direct).
-- `[PERF marginal]` warm-start `parametric-intersection-1d.ts` (refonte API multi-roots), cache SVG path final, version granulaire par element — tous ROI insuffisant sans evidence de bottleneck.
+## 6. Instruments et animations de construction
 
----
+```
+@instrument("regle")
+@instruction("Trace la médiatrice de [AB]")
+d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
+@pause(800)
+```
 
-## Voir aussi
+- **Directives** (`ConstructionExecutor.handleDirective`) : `@instrument(nom, x=, y=, rotation=)`,
+  `@montrer(nom)`, `@cacher([nom])`, `@instruction("texte")`, `@vitesse(facteur)`, `@pause([ms])`.
+  Noms d'instruments : `regle`, `compas`, `rapporteur`, `equerre`, `crayon`.
+- **Sans décorateur** (mode `direct`), l'exécuteur déduit l'animation des objets créés : règle pour
+  un segment, compas pour un cercle ou un arc, durées proportionnelles
+  (`MS_PER_PIXEL`, `MS_PER_DEGREE`, bornées par `MIN_STEP_DURATION` / `MAX_STEP_DURATION`).
+- **Chorégraphies** : un décorateur choisit `contrainte` (`direct`, `euclide`, `equerre`, `mesure`),
+  `methode` (une « voie » du registre) et `visibilite` (`epure`, `squelette` par défaut, `complet`) ;
+  `+arcs` / `-arcs`, `traces`, `marqueurs`, `points_aux` ajustent ce qui reste visible (le dernier
+  l'emporte). Validation stricte : `resolveDecorators` lève `DecoratorResolveError` avec indice.
+- **Registre** (`core/choreographies/registry.ts`) :
 
-- [`docs/systeme/geometrie/dsl/`](dsl) — Documentation utilisateur du
-  DSL (aire, aire_entre, integrale).
-- [`docs/archive/wip/geometry/`](../../archive/wip/geometry/) — Progress documents (archivés) des
-  features livrees (parametric curves, polar, tangente, point_sur, calculus,
-  intersections).
-- [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md)
-  — Schema DB (le module geometry-core n'y touche pas directement).
-- [`CLAUDE.md`](../../../CLAUDE.md) — Instructions projet pour Claude Code.
-- `MEMORY.md`
-  — Memoire persistante (entrees `geometry-core-status`, `parametric-*`,
-  `tangente-*`, etc.).
+| Builtin              | `@euclide`                                  | `@equerre`     |
+| -------------------- | ------------------------------------------- | -------------- |
+| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —              |
+| `bissectrice`        | `arcs_egaux`, `arc_milieu`                  | —              |
+| `perpendiculaire`    | `rayon_libre`, `arcs_egaux`                 | `pose_equerre` |
+| `parallele`          | `parallelogramme`, `double_perpendiculaire` | `pose_equerre` |
+| `cercle_circonscrit` | `mediatrices`                               | —              |
+| `transporte`         | `compas_report`                             | —              |
+
+- **Erreurs** : `ConstructionExecutor.load()` ne lève que les erreurs de syntaxe ; une erreur
+  d'exécution est rangée dans `executor.loadError` (le lecteur garde la figure partielle et affiche
+  le panneau). `ConstructionPlayer` lit `loadError` après `load()`.
+- **Rendu animé** : `ConstructionCanvas` masque dans `GeometryCanvas` les objets en cours de tracé et
+  les dessine partiellement (`render-helpers.ts`) sous l'instrument.
+
+## 7. Comment étendre
+
+### Nouveau builtin
+
+1. Écrire les comportements attendus en français (TDD collaboratif, CLAUDE.md § Planning) ; regarder
+   d'abord le handler le plus proche.
+2. `function handleX(ctx: BuiltinCtx)` dans `dsl/builtins.ts`, puis `HANDLERS.set('x', handleX)`.
+3. **Ajouter `'x'` à `BUILTIN_NAMES`** : sans lui, l'interpréteur ne l'appelle jamais.
+4. La création passe par une méthode `figure.createXxx` (`graph/figure.ts`).
+5. Erreurs structurées `{ summary, hint, forms }` ; une direction se lit par `resolveDirection`,
+   un nombre de points par `requireNPoints`.
+6. Un objet principal retourné ; les intermédiaires créés `{ visible: false }`, accessibles par un
+   accesseur.
+7. Tests dans `dsl/__tests__/`, une ligne dans [dsl-builtins.md](dsl-builtins.md).
+8. Bloc ` ```figure ` : si le PDF ne sait pas le dessiner ou si le calcul est coûteux, l'ajouter à
+   `REFUSED_CALLS` (`ubumark/utils/figure-scene.ts`).
+9. Animation : nouvelle voie dans `core/choreographies/` + une ligne dans `registry.ts`.
+
+### Nouveau type d'objet `Geo*`
+
+Interface + garde `isXxx` + union `GeoElement` dans `types/elements.ts` · branche dans
+`compute-position.ts` · les quatre surfaces de rendu (§ invariants) · `serializer.ts` si le script
+doit faire l'aller-retour · `interaction/` s'il se manipule · `DRAWABLE_TYPES` de `figure-scene.ts`
+s'il doit passer au bloc ` ```figure `.
+
+## 8. Tests
+
+| Où                                        | Fichiers                                               | Cas (`it`/`test`)  |
+| ----------------------------------------- | ------------------------------------------------------ | ------------------ |
+| `src/lib/geometry-core/**/__tests__/`     | 168                                                    | ~3 480             |
+| `src/lib/constructions-v2/**/__tests__/`  | 10                                                     | ~200               |
+| `components/geometry/__tests__/` (client) | 1 + harnais `InstrumentHarness.svelte`                 | thème, instruments |
+| `ubumark/__tests__/figure/`               | bloc ` ```figure ` (parseur, scène, Typst, étiquettes) |                    |
+
+`dsl/__tests__/` porte plus de la moitié des fichiers (95). Lancer un fichier ciblé :
+
+```bash
+pnpm test:server src/lib/geometry-core/graph/__tests__/parametric-newton.test.ts
+pnpm test:client src/lib/components/geometry/__tests__/GeometryCanvas.theme.svelte.test.ts
+```
+
+Angles morts connus : `compute-position.ts` n'est testé qu'à travers le DSL ; `rendering/bezier.ts`
+n'a qu'un test (`bezier-monotone.test.ts`) ; `validation/checks.ts` n'a pas d'appelant.
+
+## 9. Décisions
+
+Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-typst-et-jspdf.md)
+(Typst). Décisions de conception encore vraies (avril–mai 2026) :
+
+- **SVG plutôt que Canvas** : < 500 objets en contexte scolaire, export et texte LaTeX simples,
+  inspection au DOM.
+- **Cœur fonctionnel + graphe de dépendances + Svelte en surface** : formules pures, recalcul
+  topologique des seuls objets sales, pas de machine à états XState ni de classes profondes.
+- **Deux régimes de calcul** : exact (`MathNode`) pour ce qui est défini par le script, flottant
+  pendant le drag et pour l'échantillonnage ; pour comparer, préférer les égalités polynomiales
+  (AB² = 25 plutôt que AB = 5).
+- **Annuler par deltas**, pas par instantanés.
+- **Repère partagé avec le grapheur** : `viewport/`, `bezier.ts`, `colors.ts` vivent dans
+  `geometry-core`.
+- **Un builtin = un objet** (2026-05) : plus de tuples sauf pluriel intrinsèque ; `montre` /
+  `masque` pour la visibilité ; anciennes macros de `stdlib.ts` devenues builtins (le mot-clé
+  `macro` reste aux auteurs). `polygone_regulier` et `etoile` rendent un polygone.
+- **Animation séparée du moteur** : `geometry-core` ignore le temps ; `constructions-v2` pilote un
+  stepper et des directives. (La décision d'avril de laisser l'ancien `constructions/` hors du
+  moteur a été dépassée : `constructions-v2` est construit SUR le DSL.)
+
+Abandonné ou jamais fait : machine à états d'outils (création d'objets à la souris), index spatial
+RBush, `validation/` branché sur des exercices.
+
+## 10. Points ouverts
+
+- `src/lib/utils/game/challenge-variables.ts` évalue encore une chaîne venue de la base par
+  `new Function` (hors module ; à remplacer par `compile()`).
+- La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`).
+- `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
+- Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,
+  `IntersectionConfig1D`.
+- Messages d'erreur périmés : la forme `point(s.value, 0)` (seuls `.x` / `.y` existent) et
+  l'exemple `style(P, couleur="red", taille=4)` (`taille` n'est pas un argument de style).
+
+Historique (audits de mai 2026, journaux de chantier) : `docs/archive/` — ne décrit pas le code actuel.

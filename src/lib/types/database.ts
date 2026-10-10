@@ -2389,6 +2389,107 @@ export type Database = {
           },
         ]
       }
+      dictionary_entries: {
+        Row: {
+          auto_link: boolean
+          created_at: string
+          definitions: Json | null
+          derived_from: string | null
+          exemples: Json | null
+          forms: string[]
+          grade: string
+          hidden: boolean
+          history: string | null
+          id: string
+          image: string | null
+          position: number
+          see_also: Json | null
+          sense: string | null
+          shared_with: string[]
+          synonyms: string[]
+          tags: string[]
+          term: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_link?: boolean
+          created_at?: string
+          definitions?: Json | null
+          derived_from?: string | null
+          exemples?: Json | null
+          forms?: string[]
+          grade: string
+          hidden?: boolean
+          history?: string | null
+          id?: string
+          image?: string | null
+          position: number
+          see_also?: Json | null
+          sense?: string | null
+          shared_with?: string[]
+          synonyms?: string[]
+          tags?: string[]
+          term: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_link?: boolean
+          created_at?: string
+          definitions?: Json | null
+          derived_from?: string | null
+          exemples?: Json | null
+          forms?: string[]
+          grade?: string
+          hidden?: boolean
+          history?: string | null
+          id?: string
+          image?: string | null
+          position?: number
+          see_also?: Json | null
+          sense?: string | null
+          shared_with?: string[]
+          synonyms?: string[]
+          tags?: string[]
+          term?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      dictionary_entry_versions: {
+        Row: {
+          entry: Json
+          entry_id: string
+          id: string
+          saved_at: string
+          saved_by: string | null
+        }
+        Insert: {
+          entry: Json
+          entry_id: string
+          id?: string
+          saved_at?: string
+          saved_by?: string | null
+        }
+        Update: {
+          entry?: Json
+          entry_id?: string
+          id?: string
+          saved_at?: string
+          saved_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictionary_entry_versions_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "dictionary_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       error_logs: {
         Row: {
           browser_name: string | null

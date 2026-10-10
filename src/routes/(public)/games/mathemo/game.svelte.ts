@@ -8,12 +8,18 @@
  * - localStorage persistence
  * - Adjustable grade and attempts
  *
- * Uses the math dictionary as word source instead of a hardcoded word list.
+ * Uses the math dictionary as word source instead of a hardcoded word list:
+ * the page hands the playable words over (`init`) before the first game.
  */
 import { browser } from '$app/environment';
 import { isGradeCode, type GradeCode } from '$lib/types/grades';
 import type { GameState, FeedbackType } from './types';
-import { allWordsNormalized, getWordsForLevel, normalizeString } from './dictionary-words';
+import {
+	allPlayableWords,
+	getWordsForLevel,
+	normalizeString,
+	type MathemoTerm
+} from './dictionary-words';
 
 /** localStorage key for game state persistence */
 const STORAGE_KEY = 'mathemo_state';
@@ -26,14 +32,6 @@ const MAX_ATTEMPTS = 10;
 
 /** Default starting attempts (classic Wordle has 6) */
 const DEFAULT_ATTEMPTS = 6;
-
-/**
- * Get a random word for a given grade level.
- */
-function getRandomWord(level: GradeCode): string {
-	const words = getWordsForLevel(level);
-	return words[Math.floor(Math.random() * words.length)];
-}
 
 /**
  * Main game class using Svelte 5 runes for reactivity
@@ -63,9 +61,30 @@ class MathemoGame {
 	/** Current row being edited (0-indexed) */
 	currentRow = $state(0);
 
-	// ===== Constructor =====
+	/**
+	 * Mots jouables, lus en base par la page (`init`). Côté serveur, l'instance
+	 * est partagée par toutes les requêtes : sans fuite tant que tout le monde
+	 * reçoit les mêmes mots (loadDictionary ne dépend pas du lecteur).
+	 */
+	private terms: MathemoTerm[] = [];
 
-	constructor() {
+	/** Tous les mots jouables, normalisés : une proposition doit en être un */
+	private allWords = new Set<string>();
+
+	private started = false;
+
+	// ===== Initialisation =====
+
+	/**
+	 * Donner au jeu les mots du dictionnaire ; la première fois, reprendre la
+	 * partie enregistrée, ou en commencer une.
+	 */
+	init(terms: MathemoTerm[]) {
+		this.terms = terms;
+		this.allWords = allPlayableWords(terms);
+		if (this.started) return;
+		this.started = true;
+
 		// Try to restore saved game from localStorage
 		if (browser) {
 			this.loadFromLocalStorage();
@@ -75,6 +94,13 @@ class MathemoGame {
 		if (!this.answer) {
 			this.startNewGame('6', DEFAULT_ATTEMPTS);
 		}
+	}
+
+	/** Un mot au hasard parmi ceux du niveau ; parmi tous si le niveau n'en a aucun (entrées masquées). */
+	private getRandomWord(level: GradeCode): string {
+		const ofLevel = getWordsForLevel(this.terms, level);
+		const words = ofLevel.length > 0 ? ofLevel : [...this.allWords];
+		return words[Math.floor(Math.random() * words.length)] ?? '';
 	}
 
 	// ===== Game Control Methods =====
@@ -87,7 +113,7 @@ class MathemoGame {
 	startNewGame(grade: GradeCode, maxAttempts: number = DEFAULT_ATTEMPTS) {
 		this.grade = grade;
 		this.maxAttempts = Math.max(MIN_ATTEMPTS, Math.min(MAX_ATTEMPTS, maxAttempts));
-		this.answer = getRandomWord(grade);
+		this.answer = this.getRandomWord(grade);
 		this.guesses = Array(this.maxAttempts).fill('');
 		this.answers = [];
 		this.correctLetters = Array(this.answer.length).fill('');
@@ -131,7 +157,7 @@ class MathemoGame {
 
 		// Validate with accent normalization against entire dictionary
 		const normalizedGuess = normalizeString(guess);
-		if (!allWordsNormalized.has(normalizedGuess)) return false;
+		if (!this.allWords.has(normalizedGuess)) return false;
 
 		// Pad shorter words with empty strings for feedback calculation
 		const paddedLetters = [...letters];

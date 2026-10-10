@@ -3,13 +3,19 @@
  * validés par David le 2026-10-09) : au niveau de l'élève connecté, sinon au
  * plus petit niveau de la question ; jamais en évaluation notée.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import ReaderGradeHarness from './ReaderGradeHarness.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
+
+// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, les entrées du fichier
+vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+	const { default: entries } = await import('$lib/data/math-dictionary-fr');
+	return { fetchDictionary: async () => entries };
+});
 
 function instanceOf(
 	statement: string,

@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../../dsl/parser';
 import { interpret } from '../../dsl/interpreter';
+import type { SymbolTable } from '../../dsl/symbol-table';
 import type { Viewport } from '../../viewport/types';
 
 const viewportA: Viewport = { xMin: -5, xMax: 5, yMin: -5, yMax: 5 };
@@ -23,7 +24,7 @@ function run(script: string) {
 	return interpret(parse(script));
 }
 
-function curveId(symbols: Map<string, { figureId?: string }>, name: string): string {
+function curveId(symbols: SymbolTable, name: string): string {
 	const sym = symbols.get(name);
 	if (!sym?.figureId) throw new Error(`Symbol "${name}" not found`);
 	return sym.figureId;
