@@ -31,3 +31,11 @@ echo "pre-push : renvois de la doc vers le code…"
 if ! pnpm docs:check-refs --strict; then
 	exit 1
 fi
+
+# Couverture du code par la doc (chaque fichier a sa doc, ou est un trou connu),
+# et rappel des docs que la branche devrait mettre à jour (avertissement).
+echo "pre-push : doc à jour…"
+if ! pnpm docs:check-a-jour --couverture; then
+	exit 1
+fi
+pnpm docs:check-a-jour --depuis origin/main --avertir

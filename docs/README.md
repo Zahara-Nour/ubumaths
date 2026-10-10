@@ -14,6 +14,16 @@ Vocabulaire du domaine : [CONTEXT.md](../CONTEXT.md) (glossaire unique). Règles
 
 Les **données de travail** lues par des scripts et des tests (corrections, relecture) vivent hors de docs/, sous [`data/`](../data/). [Chiphres/](Chiphres/) est le lore de l'univers (contenu éditorial).
 
+## Doc à jour : `couvre:` et `indexe:`
+
+Chaque doc déclare dans son en-tête YAML le code qu'elle **décrit** (`couvre:`) et, pour un index, le
+code qu'elle **recense** seulement (`indexe:`). La garde `pnpm docs:check-a-jour` exige :
+
+- **sur chaque PR** : toute doc dont le `couvre:` touche un fichier modifié est modifiée aussi, sinon
+  une ligne `Doc-inchangée: <raison>` dans un commit (skill `doc-a-jour`) ;
+- **partout** : chaque fichier de code est couvert ou indexé par une doc, ou listé comme trou connu
+  dans `scripts/doc-a-jour.config.ts` (les zones sans doc, à documenter).
+
 ## Gabarit d'une doc système
 
 À quoi ça sert (termes → CONTEXT.md) · carte du code (fichiers clés, points d'entrée) · invariants · comment étendre · tests · décisions (ADR) · « vérifié contre le code le … ».
