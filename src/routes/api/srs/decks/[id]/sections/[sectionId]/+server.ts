@@ -129,11 +129,23 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		return json({ error: deleteErr.message }, { status: 500 });
 	}
 
-	// La RLS refuse EN SILENCE (0 ligne, aucune erreur) : paquet assigné ou géré
-	// automatiquement, ou section inexistante. Sans ce contrôle, la route annonçait un
-	// succès (constat E20, 2026-10-10).
+	// 0 ligne : soit la section n'existe pas (suppression idempotente, 200 comme avant),
+	// soit la RLS a refusé EN SILENCE (paquet assigné ou géré automatiquement) — la route
+	// annonçait alors un succès (constat E20, 2026-10-10). On distingue par une lecture.
 	if (!deletedSections || deletedSections.length === 0) {
-		return json({ error: 'Cette section ne peut pas être supprimée.' }, { status: 403 });
+		const { data: encore, error: lectureErr } = await locals.supabase
+			.from('srs_deck_sections')
+			.select('id')
+			.eq('id', sectionId)
+			.eq('deck_id', deckId)
+			.maybeSingle();
+		if (lectureErr) {
+			console.error('[sections/DELETE] contrôle impossible :', lectureErr);
+			return json({ error: 'Impossible de vérifier la suppression' }, { status: 500 });
+		}
+		if (encore) {
+			return json({ error: 'Cette section ne peut pas être supprimée.' }, { status: 403 });
+		}
 	}
 
 	return json({ success: true });

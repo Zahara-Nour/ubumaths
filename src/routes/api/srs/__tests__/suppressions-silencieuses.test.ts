@@ -6,7 +6,8 @@
  * paquets ASSIGNÉS ou GÉRÉS AUTOMATIQUEMENT (paquets de chapitre). Les routes ne
  * vérifiaient que « assigné » (cartes, paquets) ou rien (sections), puis supprimaient sans
  * `.select()` : la RLS refuse en silence (0 ligne, aucune erreur), la route répondait
- * « supprimé ». Désormais : `.select('id')`, et 0 ligne → 403.
+ * « supprimé ». Désormais : `.select('id')`, et 0 ligne → 403 — sauf une section qui
+ * n'existe pas : suppression idempotente, 200, contrat de `tests/integration/sections-crud`.
  */
 import { describe, it, expect, vi } from 'vitest';
 
@@ -34,7 +35,7 @@ const SECTION = '550e8400-e29b-41d4-a716-446655440030';
  * Faux client : les lectures rendent un paquet du propriétaire (non assigné) et la carte ;
  * l'écriture DELETE … select rend `supprimees` — ce que la RLS laisse réellement passer.
  */
-function fauxClient(supprimees: { id: string }[]) {
+function fauxClient(supprimees: { id: string }[], sectionExiste = true) {
 	const paquet = { id: PAQUET, owner_id: 'proprietaire', is_assigned: false };
 	const carte = { id: CARTE, deck_id: PAQUET };
 	return {
@@ -46,15 +47,23 @@ function fauxClient(supprimees: { id: string }[]) {
 				eq: () => chaine,
 				single: () =>
 					Promise.resolve({ data: table === 'srs_cards' ? carte : paquet, error: null }),
-				maybeSingle: () => Promise.resolve({ data: paquet, error: null })
+				maybeSingle: () =>
+					Promise.resolve({
+						data: table === 'srs_deck_sections' ? (sectionExiste ? { id: SECTION } : null) : paquet,
+						error: null
+					})
 			};
 			return chaine;
 		}
 	};
 }
 
-function evenement(params: Record<string, string>, supprimees: { id: string }[]) {
-	return { params, locals: { supabase: fauxClient(supprimees) } } as never;
+function evenement(
+	params: Record<string, string>,
+	supprimees: { id: string }[],
+	sectionExiste = true
+) {
+	return { params, locals: { supabase: fauxClient(supprimees, sectionExiste) } } as never;
 }
 
 // ============================================================================
@@ -80,6 +89,13 @@ describe('suppressions SRS : refus silencieux de la RLS', () => {
 		]
 	])('%s : une ligne supprimée → 200', async (_nom, appel) => {
 		const reponse = await appel();
+		expect(reponse.status).toBe(200);
+	});
+
+	it('section inexistante : suppression idempotente, 200 (contrat de sections-crud)', async () => {
+		const reponse = await supprimerSection(
+			evenement({ id: PAQUET, sectionId: SECTION }, [], false)
+		);
 		expect(reponse.status).toBe(200);
 	});
 
