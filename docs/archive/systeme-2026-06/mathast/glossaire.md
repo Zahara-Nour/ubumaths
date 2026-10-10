@@ -88,7 +88,7 @@ numeriques (`numtype/`), pas du signe syntaxique.
 constructeurs de `Pattern` : `P.wildcard('x')`, `P.num()`, `P.add(p1, p2)`,
 `P.mul(...)`, `P.func('sin', [P.wildcard('x')])`, etc. Les patterns sont des
 objets distincts des `MathNode` — ils decrivent ce qu'on cherche, pas une
-expression mathematique. Voir [`pattern-matching.md`](pattern-matching.md).
+expression mathematique. Voir [`pattern-matching.md`](../../../systeme/mathast/pattern-matching.md).
 
 **palier** (1 / 2a / 2b / 3) — Niveau de correction affiche a l'eleve dans le
 systeme de questions UbuMaths. Pilote la granularite des etapes generees par
@@ -108,7 +108,7 @@ Ne s'evalue jamais numeriquement.
 
 **`parsePattern`** — Variante du parser LaTeX qui produit un `Pattern` plutot
 qu'un `MathNode`. Permet d'ecrire des patterns sous forme de chaine LaTeX avec
-une syntaxe de wildcard dediee. Voir [`pattern-matching.md`](pattern-matching.md).
+une syntaxe de wildcard dediee. Voir [`pattern-matching.md`](../../../systeme/mathast/pattern-matching.md).
 
 **`SchoolLevel`** — `'primaire' | 'college' | 'lycee' | 'superieur'` (source :
 `common/step-renderer-base.ts:38`). Adapte le vocabulaire et la granularite

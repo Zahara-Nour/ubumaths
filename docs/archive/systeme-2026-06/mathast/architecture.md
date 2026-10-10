@@ -139,7 +139,7 @@ Ils generent des **sequences d'etapes numerotees** (type `CalculationStep` /
 
 `pattern/` (18 src + 12 tests) — moteur de remplacement symbolique : `P` (builder),
 `tryMatch`, `parsePattern`, regles (`arithmeticRules`, `simplifyRules`...).
-**Reference complete** : [`docs/systeme/mathast/pattern-matching.md`](pattern-matching.md).
+**Reference complete** : [`docs/systeme/mathast/pattern-matching.md`](../../../systeme/mathast/pattern-matching.md).
 
 ### CLI
 
@@ -274,7 +274,7 @@ Surface reelle limitee (pas de DB, pas de reseau, pas de `eval` JS).
 > imbriquee ~5 000 niveaux (sous le cap de 10 000 chars) peut provoquer un
 > `RangeError` (stack overflow) avant le check. Impact : crash synchrone du
 > parse, pas d'execution de code arbitraire. Voir
-> [`docs/systeme/mathast/code-quality.md`](code-quality.md) pour les details.
+> [`docs/archive/systeme-2026-06/mathast/code-quality.md`](code-quality.md) pour les details.
 
 ---
 
@@ -296,10 +296,10 @@ src/lib/mathAST/
 
 ## Pour aller plus loin
 
-- **Surface publique complete** : [`docs/systeme/mathast/api.md`](api.md)
-- **Pattern matching** : [`docs/systeme/mathast/pattern-matching.md`](pattern-matching.md) (reference riche existante)
-- **Vocabulaire CAS** : [`docs/systeme/mathast/glossaire.md`](glossaire.md)
-- **Decisions de design** : [`docs/systeme/mathast/mathAST-vs-poincare.md`](mathAST-vs-poincare.md)
+- **Surface publique complete** : [`docs/archive/systeme-2026-06/mathast/api.md`](api.md)
+- **Pattern matching** : [`docs/systeme/mathast/pattern-matching.md`](../../../systeme/mathast/pattern-matching.md) (reference riche existante)
+- **Vocabulaire CAS** : [`docs/archive/systeme-2026-06/mathast/glossaire.md`](glossaire.md)
+- **Decisions de design** : [`docs/archive/systeme-2026-06/mathast/mathAST-vs-poincare.md`](mathAST-vs-poincare.md)
 - **Agent metier** : `mathast-expert` (voir `.claude/agents/README.md`)
 
 ---

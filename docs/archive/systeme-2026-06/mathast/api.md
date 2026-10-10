@@ -12,7 +12,7 @@ re-exportes). Le code et les commentaires sont en anglais ; les descriptions
 pedagogiques et messages d'erreur destines a l'UI sont en francais.
 
 Voir [`architecture.md`](architecture.md) pour la vue d'ensemble du module
-et [`pattern-matching.md`](pattern-matching.md) pour le detail du module `pattern/`.
+et [`pattern-matching.md`](../../../systeme/mathast/pattern-matching.md) pour le detail du module `pattern/`.
 
 ---
 
@@ -191,7 +191,7 @@ class SecurityError extends Error {
 
 ## 3. Pattern matching (`pattern/`)
 
-Reference complete dans [`pattern-matching.md`](pattern-matching.md). Resume :
+Reference complete dans [`pattern-matching.md`](../../../systeme/mathast/pattern-matching.md). Resume :
 
 ```typescript
 // Builder de patterns
@@ -534,7 +534,7 @@ const cache = new ParseCache({ maxSize: 200 });
 ## Pour aller plus loin
 
 - **Architecture & invariants** : [`architecture.md`](architecture.md)
-- **Pattern matching (reference complete)** : [`pattern-matching.md`](pattern-matching.md)
+- **Pattern matching (reference complete)** : [`pattern-matching.md`](../../../systeme/mathast/pattern-matching.md)
 - **Vocabulaire** : [`glossaire.md`](glossaire.md)
 - **Agent metier** : `mathast-expert` — a privilegier pour toute modification dans `src/lib/mathAST/`
 
