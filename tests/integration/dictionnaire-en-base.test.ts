@@ -348,6 +348,24 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 		expect(forged.error?.code).toBe('42501');
 	});
 
+	// Audit du 2026-10-10 (PR #1036) : seul le trigger écrit l'historique, même pour l'admin
+	it('l’admin ne fabrique pas de version à son nom ; le trigger, si', async () => {
+		const entry = await seedEntry('version à son nom');
+		const forged = await adminClient
+			.from('dictionary_entry_versions')
+			.insert({ entry_id: entry.id, entry: { term: 'faux' }, saved_by: adminId });
+		expect(forged.error?.code).toBe('42501');
+
+		await adminClient.from('dictionary_entries').update({ history: 'vraie' }).eq('id', entry.id);
+		const { data } = await service
+			.from('dictionary_entry_versions')
+			.select('saved_by, entry')
+			.eq('entry_id', entry.id);
+		expect(data).toHaveLength(1);
+		expect(data?.[0].saved_by).toBe(adminId);
+		expect((data?.[0].entry as { term: string }).term).toBe(`${TAG} version à son nom`);
+	});
+
 	it('l’auteur d’une modification est toujours l’admin réel', async () => {
 		const entry = await seedEntry('auteur');
 		const { data } = await adminClient
