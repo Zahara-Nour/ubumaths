@@ -56,14 +56,17 @@
 
 	/**
 	 * Parse cell content for inline math expressions.
-	 * Returns an array of segments: { type: 'text' | 'math', content: string }
+	 * Returns an array of segments: texte, ou formule avec sa syntaxe
 	 */
-	type CellSegment = { type: 'text'; content: string } | { type: 'math'; content: string };
+	type CellSegment =
+		| { type: 'text'; content: string }
+		| { type: 'math'; content: string; syntax: 'latex' | 'custom' };
 
 	function parseCellContent(content: string): CellSegment[] {
 		const segments: CellSegment[] = [];
-		// Match $...$ (inline math) but not $$...$$
-		const mathRegex = /(?<!\$)\$(?!\$)([^$]+)\$(?!\$)/g;
+		// `$…$` (pas `$$…$$`) ou `~…~` (V10, 2026-10-10), lus de gauche à droite :
+		// le `~` d'espace insécable dans un `$…$` n'ouvre pas de formule ; `\~` reste du texte
+		const mathRegex = /(?<!\$)\$(?!\$)([^$]+)\$(?!\$)|(?<!\\)~([^~\n]+)~/g;
 
 		let lastIndex = 0;
 		let match;
@@ -73,8 +76,12 @@
 			if (match.index > lastIndex) {
 				segments.push({ type: 'text', content: content.slice(lastIndex, match.index) });
 			}
-			// Add the math expression (without the $ delimiters)
-			segments.push({ type: 'math', content: match[1] });
+			// Add the math expression (without its delimiters)
+			segments.push(
+				match[2] !== undefined
+					? { type: 'math', content: match[2], syntax: 'custom' }
+					: { type: 'math', content: match[1], syntax: 'latex' }
+			);
 			lastIndex = mathRegex.lastIndex;
 		}
 
@@ -134,7 +141,7 @@
 {#snippet cellContent(content: string)}
 	{#each parseCellContent(content) as segment, i (i)}
 		{#if segment.type === 'math'}
-			<MathInline expression={segment.content} syntax="latex" {genericFunctions} />
+			<MathInline expression={segment.content} syntax={segment.syntax} {genericFunctions} />
 		{:else}
 			{@html escapeHtml(segment.content)}
 		{/if}
