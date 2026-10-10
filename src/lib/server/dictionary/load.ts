@@ -27,6 +27,9 @@ import { DICTIONARY_COLUMNS, rowToTerm } from '$lib/dictionary/entry-schema';
 /** Durée pendant laquelle une lecture sert à toutes les requêtes de l'instance. */
 export const DICTIONARY_MEMO_MS = 2 * 60 * 1000;
 
+/** Base injoignable : la dernière lecture sert encore, mais pas indéfiniment (entrée masquée entre-temps). */
+export const DICTIONARY_FALLBACK_MS = 15 * 60 * 1000;
+
 /** Cache de `/api/dictionnaire` : navigateur 1 min, CDN 2 min. */
 export const DICTIONARY_PUBLIC_CACHE = 'public, max-age=60, s-maxage=120';
 export const DICTIONARY_ADMIN_CACHE = 'private, no-store';
@@ -40,10 +43,20 @@ const PAGE_SIZE = 1000;
 
 let memo: { entries: MathTerm[]; at: number } | null = null;
 
+/** Lecture en cours, partagée par les requêtes qui arrivent en même temps. */
+let inflight: Promise<MathTerm[]> | null = null;
+
 // ---------------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------------
 
+/**
+ * ⚠️ Invariant : le résultat ne dépend pas de l'appelant. La lecture se fait
+ * avec le client de la première requête venue (visiteur, élève, admin), puis
+ * sert à tous : seul le filtre `hidden` décide, et aucune policy de lecture ne
+ * varie selon le lecteur. Une policy par niveau ou par école casserait cette
+ * mémoire : lire alors avec un client anonyme dédié.
+ */
 async function queryDictionary(supabase: SupabaseClient<Database>): Promise<MathTerm[]> {
 	const entries: MathTerm[] = [];
 	for (let from = 0; ; from += PAGE_SIZE) {
@@ -66,10 +79,18 @@ async function queryDictionary(supabase: SupabaseClient<Database>): Promise<Math
 	}
 }
 
+/** Une seule lecture à la fois quand la mémoire expire sous plusieurs requêtes. */
+function readOnce(supabase: SupabaseClient<Database>): Promise<MathTerm[]> {
+	inflight ??= queryDictionary(supabase).finally(() => {
+		inflight = null;
+	});
+	return inflight;
+}
+
 /**
  * Les entrées visibles du dictionnaire. `fresh` relit la base (admin qui vient
  * d'enregistrer) ; sinon une lecture de moins de 2 minutes est réutilisée.
- * Base injoignable : la dernière lecture réussie, s'il y en a une.
+ * Base injoignable : la dernière lecture réussie, si elle a moins de 15 minutes.
  */
 export async function loadDictionary(
 	supabase: SupabaseClient<Database>,
@@ -77,11 +98,11 @@ export async function loadDictionary(
 ): Promise<MathTerm[]> {
 	if (!fresh && memo && now - memo.at < DICTIONARY_MEMO_MS) return memo.entries;
 	try {
-		const entries = await queryDictionary(supabase);
+		const entries = fresh ? await queryDictionary(supabase) : await readOnce(supabase);
 		memo = { entries, at: now };
 		return entries;
 	} catch (error) {
-		if (memo) {
+		if (memo && now - memo.at < DICTIONARY_FALLBACK_MS) {
 			console.error('[dictionnaire] base injoignable, dernière lecture servie', error);
 			return memo.entries;
 		}
