@@ -135,7 +135,6 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | Tournoi                                           | `src/routes/api/games/minesweeper/tournaments/[id]/standings/+server.ts`                                                                                        | classes du tournoi                                                    |
 | Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (vue `riddle_progress`)                                                          | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
-| 2048 (ancien)                                     | `src/routes/api/games/2048/leaderboard/+server.ts`                                                                                                              | voir Doutes                                                           |
 
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
 
