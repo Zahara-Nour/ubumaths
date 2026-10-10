@@ -892,7 +892,7 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
  * sort de la liste ci-dessus. Celles qui sont déclarées ici sont vérifiées une à une par le
  * garde-fou (d) : SECURITY DEFINER, propriétaire postgres, EXECUTE retiré à PUBLIC, anon et
  * authenticated, garde d'appelant lue dans le corps (`auth.role()` et
- * `public.is_teacher_or_admin()`).
+ * `public.is_teacher_or_admin()`, ou `public.is_admin()`, plus stricte).
  */
 export interface DeclencheurDefinerVerifie {
 	/** Une ligne, en français : ce que fait la fonction, et pourquoi DEFINER. */
@@ -909,5 +909,9 @@ export const DECLENCHEURS_DEFINER_VERIFIES: Record<string, DeclencheurDefinerVer
 	'curriculum_points_guard_tags()': { justification: REGLES_DE_TAG },
 	'classification_nodes_guard_point_tags()': { justification: REGLES_DE_TAG },
 	'exercise_curriculum_points_check_rules()': { justification: REGLES_DE_TAG },
-	'exercise_classifications_guard_point_tags()': { justification: REGLES_DE_TAG }
+	'exercise_classifications_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'dictionary_entries_keep_version()': {
+		justification:
+			'historique du dictionnaire : seule voie d’écriture des versions (plus d’INSERT direct) ; garde d’appelant admin ; auteur = auth.uid()'
+	}
 };

@@ -86,3 +86,44 @@ Reste à trancher (ajouté au lot C) :
   démineur → **contournement non exploité à ce jour** (reste à prouver par un test qu'il est possible).
 - **Mais 56 versements de gidouilles `weekly_no_warning`** (tâche hebdomadaire, sans auteur) à ces
   élèves, alors que `earn_rewards` est une action fermée en lecture seule → question à David.
+
+### Livré
+
+- **A1** : #1034 mergée, migration `20261014100000` en prod le 2026-10-10 (vérifié : nouvelle
+  fonction, EXECUTE `service_role` seul ; aucun des 81 élèves bloqué par une référence non traitée ;
+  `db:types` sans changement).
+
+## B4 — élévation admin (fait, #1035 mergée)
+
+- Logout : révoque + efface le cookie. `requireAdmin` : 401 sans session. Le cookie porte
+  `elevatedBy` : l'élévation ne vaut que pour la session qui l'a obtenue (security-auditor : un élève
+  connecté ensuite sur le même navigateur la récupérait). Cookies antérieurs refusés (se ré-élever).
+
+## A2 — mode lecture seule (branche `fix/rgpd-lecture-seule`)
+
+Décisions de David (2026-10-10) :
+
+1. Garde **dans la base**, triggers sur l'auteur (`has_full_access` = copie de `hasValidConsent`).
+2. Récompenses : seules les **tâches automatiques** sautent ces élèves (filtre dans la tâche, avec
+   E19) ; le prof peut toujours en donner à la main. Les 11 élèves concernés sont tous archivés
+   (6e et 2nde de l'an dernier, grâce finie le 30/06, aucune demande envoyée). Les 56 versements
+   (03/07 → 21/08) faisaient partie de 146 versements à 73 élèves archivés, arrêtés depuis le 21/08.
+3. « **Retirer oui, agir non** » pour ce qui a été commencé avant.
+4. Annonces d'un auteur en lecture seule **masquées** du marché.
+
+Fait : migration `20261014110000_lecture_seule_garde_base` (23 triggers, file du démineur filtrée),
+test 24/24 (9 cas rouges avec la 1re version, 7 contournements prouvés avant toute migration).
+
+Reste : **2e PR** après `db:migrate` + `db:types` — la route `api/marketplace/listings` GET filtre
+`marketplace_hidden_creators()`.
+
+## Nouveau constat (hors A2, à prouver)
+
+- **Suppression de message par modération probablement cassée** : `api/moderation/messages/[id]`
+  fait `update({ deleted_at })` avec le client de l'appelant ; la policy SELECT de `messages` exige
+  `deleted_at IS NULL` → Postgres refuse la nouvelle ligne (« new row violates row-level security
+  policy »). Reproduit en local pour l'élève ET pour le prof (via l'API PostgREST). À mesurer en prod
+  (logs) et à corriger.
+- Suite d'intégration complète en local : 18 échecs **identiques avec et sans** la migration A2
+  (arbre des notions, presques-évaluations, succès du démineur) → état de la base locale partagée ;
+  la CI tranchera.

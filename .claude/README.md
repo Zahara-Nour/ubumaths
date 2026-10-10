@@ -7,7 +7,7 @@ Configuration de Claude Code pour ce dépôt. Les consignes de travail sont dans
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`settings.json`](settings.json)                       | **Source unique des commandes qui perdent du travail** (liste `ask` : confirmation de David) et branchement du hook ci-dessous.                                            |
 | [`hooks/garde-commandes.py`](hooks/garde-commandes.py) | Hook `PreToolUse` sur Bash : refuse les interdits de CLAUDE.md qui dépendent des arguments ou du dossier (port 5173, `kill:servers` depuis un worktree, CLI Supabase directe, `--no-verify`, `pnpm release` seul, `tsc --noEmit`, `git -C ""`) et demande confirmation pour les variantes que `ask` ne voit pas (`--force` ou `-D` placés n'importe où). |
-| [`skills/`](skills/)                                   | Skills du projet — aujourd'hui `domain-modeling`. Mode d'emploi : [skills-claude.md](../docs/pratiques/skills-claude.md).                                                  |
+| [`skills/`](skills/)                                   | Skills du projet : `domain-modeling`, `shtam`. Mode d'emploi : [skills-claude.md](../docs/pratiques/skills-claude.md).                                                  |
 | [`agents/`](agents/)                                   | Sous-agents spécialisés. Guide de sélection : [agents/README.md](agents/README.md).                                                                                       |
 
 ## Où vit quelle règle

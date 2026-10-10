@@ -166,7 +166,8 @@ inscriptions (`toggleRegistration`).
 ### Consentement parental
 
 `(protected)/+layout.server.ts` calcule `consentStatus` (`getConsentStatus`, `src/lib/utils/consent.ts`)
-et les API sensibles appellent `requireConsent`. Tout le reste (niveaux concernés, période de
+et les API sensibles appellent `requireConsent` ; **la base garde aussi** messages, marché et
+démineur par un trigger sur l'auteur (`has_full_access`, 2026-10-10). Tout le reste (niveaux concernés, période de
 grâce, jeton `/consent/[token]`, déclaration d'âge) : **[conformite/](conformite/)**.
 
 ### Ce que la base garantit sur `profiles`
