@@ -14,16 +14,19 @@
 ### What Went Wrong
 
 **Initial Audit** (INCORRECT):
+
 - Used `SUPABASE_ANON_KEY` (anonymous key)
 - Result: **0 questions found** ❌
 - Conclusion: "Production database empty" ❌
 
 **Root Cause**:
+
 - Row Level Security (RLS) policies blocked visibility with anonymous key
 - The audit script needs `SUPABASE_SERVICE_ROLE_KEY` to bypass RLS
 - Authentication issue, NOT a missing data issue
 
 **Corrected Audit** (CORRECT):
+
 - Used `SUPABASE_SERVICE_ROLE_KEY` (service role key)
 - Result: **485 questions found** ✅
 - Conclusion: "Phase 1 migration successful" ✅
@@ -61,20 +64,24 @@ Total Questions:        485
 ### Syntax Distribution Analysis
 
 **New Syntax (318 questions, 65.6%)**:
+
 - Includes 472 TinyMath migrated questions (Phase 1)
 - Recent questions created via Admin UI
 - All use Markdown syntax: `{{variable}}`, `{{random:spec}}`
 
 **No Variables (156 questions, 32.2%)**:
+
 - Static questions without dynamic content
 - No syntax conversion needed
 
 **Old Syntax (5 questions, 1.0%)**:
+
 - Pre-migration questions using `{@:var}`, `{#:random}`
 - Small enough for manual conversion
 - Updated: 2025-10-26
 
 **Mixed Syntax (6 questions, 1.2%)**:
+
 - Contains both old and new syntax in same template
 - Requires attention and standardization
 - Should be converted to pure Markdown
@@ -110,7 +117,7 @@ pnpm tsx scripts/audit-question-syntax.ts
 
 ### Phase 1 Migration (2025-11-17)
 
-**File**: `.claude/migration-phase1-report.md`
+**File**: `docs/archive/racine/claude-2025/migration-phase1-report.md`
 **Date**: 2025-11-17 12:45:16
 
 ```
@@ -139,14 +146,14 @@ Statistics:
 
 ### Current State
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| **Total Questions** | 485 | ✅ Operational |
-| **Phase 1 Migrated** | 472 | ✅ Complete |
-| **Markdown Syntax** | 318 (65.6%) | ✅ Majority |
-| **Old Syntax** | 5 (1.0%) | ⚠️ Minimal |
-| **Mixed Syntax** | 6 (1.2%) | ⚠️ Needs cleanup |
-| **No Variables** | 156 (32.2%) | ℹ️ Static |
+| Metric               | Value       | Status           |
+| -------------------- | ----------- | ---------------- |
+| **Total Questions**  | 485         | ✅ Operational   |
+| **Phase 1 Migrated** | 472         | ✅ Complete      |
+| **Markdown Syntax**  | 318 (65.6%) | ✅ Majority      |
+| **Old Syntax**       | 5 (1.0%)    | ⚠️ Minimal       |
+| **Mixed Syntax**     | 6 (1.2%)    | ⚠️ Needs cleanup |
+| **No Variables**     | 156 (32.2%) | ℹ️ Static        |
 
 ---
 
@@ -155,11 +162,13 @@ Statistics:
 ### Immediate Actions (Week 1)
 
 1. **✅ Verify Migration Success** (COMPLETED)
+
    - Audit confirmed 472 questions in production
    - All questions using Markdown syntax
    - System operational
 
 2. **Fix Mixed Syntax Questions** ⚠️
+
    ```bash
    # 6 questions need standardization
    # IDs listed in "Mixed Syntax Questions" section below
@@ -176,26 +185,28 @@ Statistics:
 ### Short Term (Week 2-3)
 
 4. **Update Audit Script** ✅ (RECOMMENDED)
+
    ```typescript
    // scripts/audit-question-syntax.ts
    // Always use SERVICE_ROLE_KEY for audits
    const SUPABASE_KEY =
-     process.env.SUPABASE_SERVICE_ROLE_KEY || // Try service role first
-     process.env.SUPABASE_ANON_KEY ||         // Fallback to anon (may fail)
-     'default-local-key';
+   	process.env.SUPABASE_SERVICE_ROLE_KEY || // Try service role first
+   	process.env.SUPABASE_ANON_KEY || // Fallback to anon (may fail)
+   	'default-local-key';
    ```
 
 5. **Add Post-Migration Verification** (Future)
+
    ```typescript
    // In migration script
    async function verifyMigration() {
-     const { count } = await supabase
-       .from('question_templates')
-       .select('*', { count: 'exact', head: true });
+   	const { count } = await supabase
+   		.from('question_templates')
+   		.select('*', { count: 'exact', head: true });
 
-     if (count !== expectedCount) {
-       throw new Error(`Migration verification failed!`);
-     }
+   	if (count !== expectedCount) {
+   		throw new Error(`Migration verification failed!`);
+   	}
    }
    ```
 
@@ -207,6 +218,7 @@ Statistics:
 ### Medium Term (Month 1-2)
 
 7. **Phase 2, 3, 4 Migration** (READY TO PROCEED)
+
    - System validated and stable
    - Dual-syntax support working
    - Migration pipeline tested and proven
@@ -224,26 +236,31 @@ Statistics:
 These 6 questions use both old and new syntax and should be standardized:
 
 1. **Table d'addition par 1**
+
    - ID: `862360e2-b0de-4b4c-9552-e27ea17250a9`
    - Theme: Entiers / Additionner
    - Status: published
 
 2. **Question numérique (exact) - Arithmétique/Opérations**
+
    - ID: `62d45557-3989-4e24-a449-7c6b5478ea7b`
    - Theme: Arithmétique / Opérations
    - Status: published
 
 3. **Question numérique (exact) - Arithmétique/Pourcentages**
+
    - ID: `0fcd0e1d-5d4a-42da-9230-04a1b93c432e`
    - Theme: Arithmétique / Pourcentages
    - Status: published
 
 4. **Question numérique (décimal) - Arithmétique/Décimaux**
+
    - ID: `9181a2e8-8283-4d7e-9d84-3723a3b3c1d4`
    - Theme: Arithmétique / Décimaux
    - Status: published
 
 5. **Question algébrique - Algèbre/Factorisation**
+
    - ID: `7d88c69e-a48d-41d0-9284-0afd6ca71600`
    - Theme: Algèbre / Factorisation
    - Status: published
@@ -262,26 +279,31 @@ These 6 questions use both old and new syntax and should be standardized:
 ### What EXISTS ✅
 
 - **Converter**: `src/lib/migration/syntax-converter.ts` (438 lines)
+
   - Status: Complete ✅
   - Converts TinyCAS → Markdown
   - 126/126 tests passing (100%)
 
 - **Questions in Production**: 485 templates ✅
+
   - Status: Operational
   - 472 from Phase 1 migration
   - 13 pre-existing questions
 
 - **Migration Script**: `scripts/migrate-questions-phase1.ts` (25KB)
+
   - Status: Proven and tested ✅
   - Successfully migrated 472 questions
   - Tracking reconciliation complete
 
 - **Admin UI**: Generates Markdown syntax natively
+
   - Status: Active ✅
   - Compatible with migration output
   - All new questions use Markdown
 
 - **Syntax Adapter**: Runtime conversion old→new
+
   - Status: Active ✅
   - Enables dual-syntax support
   - Transparent to users
@@ -425,15 +447,15 @@ Total Questions:        485
 
 ## 📈 Phase 1 Timeline
 
-| Date | Event | Result |
-|------|-------|--------|
-| 2025-11-16 | Migration script created | ✅ Ready |
-| 2025-11-17 12:45 | Phase 1 migration run | ✅ 472/473 (99.8%) |
-| 2025-11-17 15:06 | Orphan reconciliation | ✅ 113/113 (100%) |
-| 2025-11-17 | Phase 1 completion report | ✅ Documented |
-| 2025-11-19 (initial) | Audit run (ANON_KEY) | ❌ 0 found (RLS block) |
-| 2025-11-20 | Audit run (SERVICE_ROLE_KEY) | ✅ 485 found |
-| 2025-11-20 | Report correction | ✅ This document |
+| Date                 | Event                        | Result                 |
+| -------------------- | ---------------------------- | ---------------------- |
+| 2025-11-16           | Migration script created     | ✅ Ready               |
+| 2025-11-17 12:45     | Phase 1 migration run        | ✅ 472/473 (99.8%)     |
+| 2025-11-17 15:06     | Orphan reconciliation        | ✅ 113/113 (100%)      |
+| 2025-11-17           | Phase 1 completion report    | ✅ Documented          |
+| 2025-11-19 (initial) | Audit run (ANON_KEY)         | ❌ 0 found (RLS block) |
+| 2025-11-20           | Audit run (SERVICE_ROLE_KEY) | ✅ 485 found           |
+| 2025-11-20           | Report correction            | ✅ This document       |
 
 ---
 

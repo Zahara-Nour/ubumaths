@@ -128,10 +128,10 @@ Reports are generated in `.claude/`:
 
 ```bash
 # View latest migration report
-cat .claude/migration-phase1-report.md
+cat docs/archive/racine/claude-2025/migration-phase1-report.md
 
 # View progress report
-cat .claude/migration-progress.md
+cat docs/archive/racine/claude-2025/migration-progress.md
 ```
 
 ## Troubleshooting
@@ -326,5 +326,5 @@ After successful Phase 1 migration:
 For issues or questions:
 
 1. Check existing documentation in `.claude/`
-2. Review migration analysis in `.claude/question-migration-analysis.md`
+2. Review migration analysis in `docs/archive/racine/claude-2025/question-migration-analysis.md`
 3. Contact the development team

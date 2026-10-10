@@ -110,7 +110,7 @@ Liste exhaustive vérifiée (grep `aqtijumsgfufoztohdua`, hors `node_modules`, 2
 
 - `src/lib/server/validation/vip-card-admin.ts` (exemple en commentaire),
   `vip-card-admin.test.ts`,
-  `.claude/syntax-audit-2025-11-19.md`, `docs/archive/wip/question-migration-status.md`,
+  `docs/archive/racine/claude-2025/syntax-audit-2025-11-19.md`, `docs/archive/wip/question-migration-status.md`,
   migration `…_fix_2048_vip_card_image_paths.sql` (historique — ne pas réécrire).
 
 → Remplacer le ref partout (Phase 5), **sauf** les migrations historiques.

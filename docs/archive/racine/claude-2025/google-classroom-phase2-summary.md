@@ -17,6 +17,7 @@ Phase 2 of the Google Classroom integration has been successfully implemented. T
 ### 1. **Environment Configuration**
 
 #### `.env.example` (updated)
+
 - Added 4 new Google Classroom environment variables
 - Added encryption key configuration
 - Added setup instructions and examples
@@ -29,6 +30,7 @@ GOOGLE_TOKEN_ENCRYPTION_KEY=your-32-character-encryption-key-here
 ```
 
 #### `src/lib/server/env.ts` (updated)
+
 - Added Zod validation for all Google Classroom variables
 - Validates client ID, client secret, redirect URI format
 - Validates encryption key minimum length (32 characters)
@@ -37,7 +39,9 @@ GOOGLE_TOKEN_ENCRYPTION_KEY=your-32-character-encryption-key-here
 ### 2. **TypeScript Types**
 
 #### `src/lib/types/google.ts` (new, 296 lines)
+
 Complete TypeScript types for Google Classroom API:
+
 - `GoogleOAuthTokenResponse` - OAuth token response
 - `GoogleTokenInfo` - Token validation info
 - `GoogleCourse` - Classroom course data
@@ -49,13 +53,16 @@ Complete TypeScript types for Google Classroom API:
 ### 3. **Encryption Service**
 
 #### `src/lib/server/google/encryption.ts` (new, 220 lines)
+
 AES-256-GCM encryption for OAuth tokens:
+
 - **Algorithm**: AES-256-GCM (authenticated encryption)
 - **Key derivation**: SHA-256 hash of environment variable
 - **IV**: Random 16 bytes per encryption
 - **Auth tag**: 16 bytes for integrity verification
 
 **Functions**:
+
 - `encryptToken(token)` - Encrypt token for database storage
 - `decryptToken(encrypted)` - Decrypt token for API use
 - `hashToken(token)` - One-way hash for comparison
@@ -63,6 +70,7 @@ AES-256-GCM encryption for OAuth tokens:
 - `testEncryption()` - Test encryption roundtrip
 
 **Security Features**:
+
 - Random IV per encryption (prevents pattern analysis)
 - Authenticated encryption (prevents tampering)
 - Proper error handling (no sensitive data leaks)
@@ -71,42 +79,52 @@ AES-256-GCM encryption for OAuth tokens:
 ### 4. **OAuth Service**
 
 #### `src/lib/server/google/oauth.ts` (new, 480 lines)
+
 Complete OAuth 2.0 implementation with PKCE:
 
 **Functions**:
+
 1. `getAuthUrl(state?)` - Generate authorization URL with PKCE
+
    - Creates code verifier and challenge (SHA-256)
    - Includes required scopes (courses, coursework, drive)
    - Returns URL and verifier (store in session)
 
 2. `exchangeCodeForTokens(code, verifier)` - Exchange auth code for tokens
+
    - Validates response with Zod
    - Returns access_token, refresh_token, expires_in
    - Handles Google API errors
 
 3. `refreshAccessToken(refreshToken)` - Refresh expired token
+
    - Automatic refresh 5 minutes before expiry
    - Handles `INVALID_GRANT` errors
    - Returns new access_token and expires_in
 
 4. `revokeAccess(token)` - Revoke OAuth access
+
    - Invalidates access and refresh tokens
    - Safe to call multiple times
 
 5. `validateToken(accessToken)` - Validate token
+
    - Checks token validity
    - Returns metadata (email, scopes, expiry)
 
 6. `shouldRefreshToken(expiry)` - Check if refresh needed
+
    - Returns true if expires in <5 minutes
 
 7. `parseGoogleAPIError(error)` - Parse error responses
    - User-friendly error messages
 
 **Constants**:
+
 - `GOOGLE_CLASSROOM_SCOPES` - Required OAuth scopes array
 
 **Security Features**:
+
 - PKCE (Proof Key for Code Exchange) - RFC 7636
 - State parameter for CSRF protection
 - Zod validation for all API responses
@@ -115,7 +133,9 @@ Complete OAuth 2.0 implementation with PKCE:
 ### 5. **Module Exports**
 
 #### `src/lib/server/google/index.ts` (new, 23 lines)
+
 Barrel export for convenient imports:
+
 ```typescript
 import { getAuthUrl, encryptToken } from '$lib/server/google';
 ```
@@ -123,7 +143,9 @@ import { getAuthUrl, encryptToken } from '$lib/server/google';
 ### 6. **Documentation**
 
 #### `src/lib/server/google/README.md` (new, 7.1KB)
+
 Complete usage guide with:
+
 - Environment setup instructions
 - Step-by-step OAuth flow examples
 - Token management patterns
@@ -132,7 +154,9 @@ Complete usage guide with:
 - Testing instructions
 
 #### `docs/systeme/google-classroom-schema.md` (updated)
+
 Added comprehensive sections:
+
 - **OAuth Flow** (6 detailed steps with code examples)
 - **Security: PKCE** (explanation and benefits)
 - **Environment Setup** (Google Cloud Console configuration)
@@ -145,16 +169,17 @@ Added comprehensive sections:
 
 ## Code Statistics
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `src/lib/types/google.ts` | 296 | TypeScript types |
-| `src/lib/server/google/oauth.ts` | 480 | OAuth 2.0 utilities |
-| `src/lib/server/google/encryption.ts` | 220 | AES-256-GCM encryption |
-| `src/lib/server/google/index.ts` | 23 | Module exports |
-| `src/lib/server/google/README.md` | - | Usage documentation |
-| **Total** | **1,019** | **New TypeScript code** |
+| File                                  | Lines     | Purpose                 |
+| ------------------------------------- | --------- | ----------------------- |
+| `src/lib/types/google.ts`             | 296       | TypeScript types        |
+| `src/lib/server/google/oauth.ts`      | 480       | OAuth 2.0 utilities     |
+| `src/lib/server/google/encryption.ts` | 220       | AES-256-GCM encryption  |
+| `src/lib/server/google/index.ts`      | 23        | Module exports          |
+| `src/lib/server/google/README.md`     | -         | Usage documentation     |
+| **Total**                             | **1,019** | **New TypeScript code** |
 
 **Modified Files**:
+
 - `.env.example` (+18 lines)
 - `src/lib/server/env.ts` (+8 lines)
 - `docs/systeme/google-classroom-schema.md` (+207 lines)
@@ -166,6 +191,7 @@ Added comprehensive sections:
 ## Security Features
 
 ### OAuth Security (PKCE)
+
 - ✅ Authorization Code Flow with PKCE
 - ✅ Code verifier (random 64-character string)
 - ✅ Code challenge (SHA-256 hash)
@@ -174,6 +200,7 @@ Added comprehensive sections:
 - ✅ 10-minute expiry on code verifier
 
 ### Token Encryption
+
 - ✅ AES-256-GCM authenticated encryption
 - ✅ Random IV per encryption (16 bytes)
 - ✅ Authentication tag (16 bytes)
@@ -182,6 +209,7 @@ Added comprehensive sections:
 - ✅ Proper error handling (no data leaks)
 
 ### Token Management
+
 - ✅ Automatic refresh (5 minutes before expiry)
 - ✅ Refresh token validation
 - ✅ Graceful error handling (INVALID_GRANT)
@@ -189,6 +217,7 @@ Added comprehensive sections:
 - ✅ Encrypted storage in database
 
 ### Input Validation
+
 - ✅ Zod validation for all API responses
 - ✅ Environment variable validation
 - ✅ Token format validation
@@ -234,75 +263,86 @@ openssl rand -base64 32
 ## OAuth Flow (Complete Example)
 
 ### Step 1: Initiate OAuth
+
 ```typescript
 // src/routes/api/google/auth/+server.ts
 import { getAuthUrl } from '$lib/server/google';
 
 export async function GET({ cookies }) {
-  const { url, codeVerifier } = await getAuthUrl('csrf-token-123');
+	const { url, codeVerifier } = await getAuthUrl('csrf-token-123');
 
-  cookies.set('google_code_verifier', codeVerifier, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    maxAge: 600
-  });
+	cookies.set('google_code_verifier', codeVerifier, {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'lax',
+		maxAge: 600
+	});
 
-  return new Response(null, {
-    status: 302,
-    headers: { Location: url }
-  });
+	return new Response(null, {
+		status: 302,
+		headers: { Location: url }
+	});
 }
 ```
 
 ### Step 2: Handle Callback
+
 ```typescript
 // src/routes/api/google/auth/callback/+server.ts
 import { exchangeCodeForTokens, encryptToken } from '$lib/server/google';
 
 export async function GET({ url, cookies, locals }) {
-  const code = url.searchParams.get('code');
-  const codeVerifier = cookies.get('google_code_verifier');
+	const code = url.searchParams.get('code');
+	const codeVerifier = cookies.get('google_code_verifier');
 
-  const tokens = await exchangeCodeForTokens(code, codeVerifier);
+	const tokens = await exchangeCodeForTokens(code, codeVerifier);
 
-  await locals.supabase.from('google_integrations').insert({
-    teacher_id: locals.user.id,
-    access_token: encryptToken(tokens.access_token),
-    refresh_token: encryptToken(tokens.refresh_token),
-    token_expiry: new Date(Date.now() + tokens.expires_in * 1000),
-    scopes: tokens.scope.split(' ')
-  });
+	await locals.supabase.from('google_integrations').insert({
+		teacher_id: locals.user.id,
+		access_token: encryptToken(tokens.access_token),
+		refresh_token: encryptToken(tokens.refresh_token),
+		token_expiry: new Date(Date.now() + tokens.expires_in * 1000),
+		scopes: tokens.scope.split(' ')
+	});
 
-  cookies.delete('google_code_verifier', { path: '/' });
-  return redirect(302, '/dashboard/teacher/google-classroom');
+	cookies.delete('google_code_verifier', { path: '/' });
+	return redirect(302, '/dashboard/teacher/google-classroom');
 }
 ```
 
 ### Step 3: Use Token with Auto-Refresh
+
 ```typescript
-import { shouldRefreshToken, refreshAccessToken, decryptToken, encryptToken } from '$lib/server/google';
+import {
+	shouldRefreshToken,
+	refreshAccessToken,
+	decryptToken,
+	encryptToken
+} from '$lib/server/google';
 
 async function getValidAccessToken(supabase, teacherId) {
-  const { data } = await supabase
-    .from('google_integrations')
-    .select('access_token, refresh_token, token_expiry')
-    .eq('teacher_id', teacherId)
-    .single();
+	const { data } = await supabase
+		.from('google_integrations')
+		.select('access_token, refresh_token, token_expiry')
+		.eq('teacher_id', teacherId)
+		.single();
 
-  if (shouldRefreshToken(data.token_expiry)) {
-    const refreshToken = decryptToken(data.refresh_token);
-    const { access_token, expires_in } = await refreshAccessToken(refreshToken);
+	if (shouldRefreshToken(data.token_expiry)) {
+		const refreshToken = decryptToken(data.refresh_token);
+		const { access_token, expires_in } = await refreshAccessToken(refreshToken);
 
-    await supabase.from('google_integrations').update({
-      access_token: encryptToken(access_token),
-      token_expiry: new Date(Date.now() + expires_in * 1000)
-    }).eq('teacher_id', teacherId);
+		await supabase
+			.from('google_integrations')
+			.update({
+				access_token: encryptToken(access_token),
+				token_expiry: new Date(Date.now() + expires_in * 1000)
+			})
+			.eq('teacher_id', teacherId);
 
-    return access_token;
-  }
+		return access_token;
+	}
 
-  return decryptToken(data.access_token);
+	return decryptToken(data.access_token);
 }
 ```
 
@@ -311,6 +351,7 @@ async function getValidAccessToken(supabase, teacherId) {
 ## Testing Checklist
 
 ### Unit Tests (TODO - Phase 2.5)
+
 - [ ] `encryptToken()` / `decryptToken()` roundtrip
 - [ ] Token encryption with invalid key
 - [ ] Code verifier generation (length, characters)
@@ -319,12 +360,14 @@ async function getValidAccessToken(supabase, teacherId) {
 - [ ] Error parsing for Google API responses
 
 ### Integration Tests (TODO - Phase 3)
+
 - [ ] Full OAuth flow (requires Google credentials)
 - [ ] Token refresh flow
 - [ ] Token revocation
 - [ ] Error handling (invalid code, expired token)
 
 ### Manual Testing (Now Available)
+
 - [ ] Generate encryption key and add to `.env`
 - [ ] Test `testEncryption()` function
 - [ ] Validate environment variables with `getEnv()`
@@ -347,6 +390,7 @@ All Phase 2 requirements completed:
 - ✅ Documentation updated with OAuth flow and security
 
 **Bonus**:
+
 - ✅ Index file for convenient imports
 - ✅ README with complete usage examples
 - ✅ Helper functions for material handling
@@ -358,6 +402,7 @@ All Phase 2 requirements completed:
 ## Next Steps (Phase 3)
 
 ### Google Classroom API Client
+
 - [ ] Create API client wrapper (`src/lib/server/google/api.ts`)
 - [ ] Implement course fetching (`fetchCourses()`)
 - [ ] Implement coursework fetching (`fetchCoursework()`)
@@ -366,6 +411,7 @@ All Phase 2 requirements completed:
 - [ ] Add incremental sync (based on `last_synced_at`)
 
 ### Database Integration
+
 - [ ] Create sync service (`src/lib/server/google/sync.ts`)
 - [ ] Implement course sync to `google_classroom_courses`
 - [ ] Implement coursework sync to `google_classroom_coursework`
@@ -374,6 +420,7 @@ All Phase 2 requirements completed:
 - [ ] Implement sync error handling and logging
 
 ### Teacher UI (Phase 4)
+
 - [ ] Create Google Classroom settings page
 - [ ] Add "Connect Google Classroom" button
 - [ ] Display connected account info
@@ -387,18 +434,21 @@ All Phase 2 requirements completed:
 ## Code Quality
 
 ### TypeScript Strictness
+
 - ✅ No `any` types used
 - ✅ All functions properly typed
 - ✅ Return types explicitly defined
 - ✅ Error types handled with type guards
 
 ### Error Handling
+
 - ✅ Try-catch blocks on all async operations
 - ✅ User-friendly error messages
 - ✅ No sensitive data in error messages
 - ✅ Proper error propagation
 
 ### Security Best Practices
+
 - ✅ No hardcoded credentials
 - ✅ Environment variable validation
 - ✅ Secure token storage (encrypted)
@@ -407,6 +457,7 @@ All Phase 2 requirements completed:
 - ✅ CSRF protection (state parameter)
 
 ### Documentation
+
 - ✅ JSDoc comments on all public functions
 - ✅ Usage examples in README
 - ✅ Security notes documented
@@ -417,16 +468,19 @@ All Phase 2 requirements completed:
 ## Performance Considerations
 
 ### Token Refresh
+
 - Token refreshed 5 minutes before expiry (not on every request)
 - Refresh token stored encrypted (single decryption per API call)
 - Consider implementing token refresh middleware
 
 ### Encryption
+
 - AES-256-GCM is fast (hardware acceleration on modern CPUs)
 - Key derivation done once per process (cached)
 - Minimal overhead (~1ms per encryption/decryption)
 
 ### Memory
+
 - No token caching (security-first approach)
 - Each API call fetches fresh token from database
 - Consider implementing in-memory cache with short TTL (30 seconds)
@@ -436,10 +490,12 @@ All Phase 2 requirements completed:
 ## Known Limitations
 
 1. **Token Refresh Race Condition**: Multiple concurrent requests might trigger parallel refreshes
+
    - **Solution**: Implement distributed lock (Redis) in Phase 3
    - **Workaround**: Low probability, refresh window is 5 minutes
 
 2. **Encryption Key Rotation**: No automated key rotation implemented
+
    - **Solution**: Manual rotation following documented strategy
    - **Future**: Implement dual-key rotation in Phase 4
 
@@ -452,20 +508,25 @@ All Phase 2 requirements completed:
 ## Migration Notes
 
 ### Database Schema
+
 Phase 1 migration (`20251114120000_google_classroom_integration.sql`) must be applied before using Phase 2 code.
 
 **Apply Migration**:
+
 ```bash
 pnpm db:migrate
 ```
 
 **Update TypeScript Types**:
+
 ```bash
 pnpm db:types
 ```
 
 ### Environment Variables
+
 Add new variables to production `.env` (Vercel):
+
 ```bash
 vercel env add GOOGLE_CLASSROOM_CLIENT_ID
 vercel env add GOOGLE_CLASSROOM_CLIENT_SECRET
@@ -503,6 +564,7 @@ vercel env add GOOGLE_TOKEN_ENCRYPTION_KEY
 ## Changelog
 
 ### Phase 2 (2025-11-14)
+
 - ✅ OAuth 2.0 with PKCE implementation
 - ✅ AES-256-GCM token encryption
 - ✅ Environment configuration and validation
@@ -510,6 +572,7 @@ vercel env add GOOGLE_TOKEN_ENCRYPTION_KEY
 - ✅ Comprehensive documentation
 
 ### Phase 1 (2025-11-14)
+
 - ✅ Database schema (8 tables)
 - ✅ RLS policies
 - ✅ Helper functions
@@ -520,9 +583,10 @@ vercel env add GOOGLE_TOKEN_ENCRYPTION_KEY
 ## Contact
 
 **Questions?** See documentation:
-- [OAuth Implementation](../src/lib/server/google/README.md)
-- [Database Schema](../docs/systeme/google-classroom-schema.md)
-- [CLAUDE.md](../CLAUDE.md) for development guidelines
+
+- [OAuth Implementation](../../../../src/lib/server/google/README.md)
+- Database Schema (`docs/architecture/google-classroom-schema.md`, disparu)
+- [CLAUDE.md](../../../../CLAUDE.md) for development guidelines
 
 **Found a bug?** Check existing issues or create new one.
 

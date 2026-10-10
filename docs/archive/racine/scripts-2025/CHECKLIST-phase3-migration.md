@@ -18,7 +18,7 @@
 
 ### Documentation Review
 
-- [ ] Read `scripts/README-sanitize-notifications.md` completely
+- [ ] Read `docs/archive/racine/scripts-2025/README-sanitize-notifications.md` completely
 - [ ] Understand what gets sanitized (allowed/removed tags)
 - [ ] Review troubleshooting section
 - [ ] Understand rollback plan

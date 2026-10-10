@@ -438,8 +438,8 @@ SELECT rollback_template_syntax_migration();
 - ✅ `scripts/test-template-migration.sql` - 13 unit tests
 - ✅ `scripts/run-all-migration-tests.sh` - Automated test runner
 - ✅ `scripts/test-question-generation.ts` - Question generation tests
-- ✅ `scripts/comprehensive-migration-test.md` - Detailed test plan
-- ✅ `scripts/MIGRATION-TEST-REPORT.md` - This report
+- ✅ `docs/archive/racine/scripts-2025/comprehensive-migration-test.md` - Detailed test plan
+- ✅ `docs/archive/racine/scripts-2025/MIGRATION-TEST-REPORT.md` - This report
 
 ### Migration Files
 
@@ -487,7 +487,7 @@ For issues:
 1. Review test output above
 2. Check migration logs: `SELECT * FROM migration_metadata`
 3. Inspect backup: `SELECT * FROM question_templates_backup_20251117`
-4. Consult comprehensive test plan: `scripts/comprehensive-migration-test.md`
+4. Consult comprehensive test plan: `docs/archive/racine/scripts-2025/comprehensive-migration-test.md`
 
 ---
 

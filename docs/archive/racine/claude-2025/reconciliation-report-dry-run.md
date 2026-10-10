@@ -8,14 +8,13 @@
 - Total orphan questions: 113
 - Successfully matched: 14 (12.4%)
 
-
 ## Match Breakdown
 
 | Confidence | Count |
-|-----------|-------|
-| High      | 0 |
-| Medium    | 14 |
-| Low       | 0 |
+| ---------- | ----- |
+| High       | 0     |
+| Medium     | 14    |
+| Low        | 0     |
 
 ## Matches
 
@@ -117,13 +116,10 @@
 - Reason: Description prefix match
 - Description: "Calculer un terme à partir d'un autre..."
 
-
-
-
 ## Next Steps
 
 🔍 This was a dry run. To apply changes:
+
 ```bash
 pnpm tsx scripts/reconcile-orphan-questions.ts
 ```
-

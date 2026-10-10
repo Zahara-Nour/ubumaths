@@ -18,43 +18,51 @@ Fixed two backend logic issues in the Google Classroom integration:
 ## Issue 1: Topic Deduplication Bug
 
 ### File
+
 `src/routes/api/google/topics/+server.ts`
 
 ### Problem
+
 Topics were being deduplicated by `name`, which incorrectly removed topics with the same name from different courses.
 
 **Example**:
+
 - Course "Math 101" has topic "Homework"
 - Course "Physics 201" has topic "Homework"
 - **OLD**: Only one "Homework" returned (wrong - teacher loses topics)
 - **NEW**: Both "Homework" topics returned (correct)
 
 ### Root Cause
+
 ```typescript
 // ❌ OLD (WRONG)
 if (!acc.find((t) => t.name === topic.name)) {
-    acc.push(topic);
+	acc.push(topic);
 }
 ```
 
 Topics are **course-specific** (foreign key: `google_classroom_topics.google_course_id`). Different courses can legitimately have topics with identical names. Deduplicating by name loses important data.
 
 ### Solution
+
 ```typescript
 // ✅ NEW (CORRECT)
 if (!acc.find((t) => t.id === topic.id)) {
-    acc.push(topic);
+	acc.push(topic);
 }
 ```
 
 Deduplicate by database `id` instead. Each unique topic in the database gets its own UUID. Same topic appearing multiple times in query results (due to RLS JOIN) gets deduplicated, but different topics with same names are preserved.
 
 ### Impact
+
 - **Before**: Teachers with multiple courses using same topic names would only see one topic in dropdowns
 - **After**: All topics from all courses are available for material organization
 
 ### Tests Updated
+
 `tests/unit/api/google-topics.test.ts`:
+
 - Updated 6 deduplication tests to expect ID-based deduplication
 - All 24 tests now pass
 
@@ -63,16 +71,21 @@ Deduplicate by database `id` instead. Each unique topic in the database gets its
 ## Issue 2: Test Account Filtering Clarification
 
 ### File
+
 `src/routes/api/student/shared-materials/+server.ts`
 
 ### Problem
+
 Comment suggested uncertainty about whether test account filtering was needed:
+
 ```typescript
 // Note: We don't filter by is_test here because the student user is already authenticated
 ```
 
 ### Analysis
+
 After reviewing:
+
 - `src/lib/server/students.ts` (teacher-side helpers with test mode filtering)
 - `/api/student/shared-coursework/+server.ts` (matching pattern)
 - Database schema (`class_members` table)
@@ -93,6 +106,7 @@ After reviewing:
 4. **Consistency**: Matches `/api/student/shared-coursework/+server.ts` behavior
 
 ### Solution
+
 Updated comment to be more explicit:
 
 ```typescript
@@ -107,12 +121,15 @@ Updated comment to be more explicit:
 ```
 
 ### Impact
+
 - **No logic change** - only clarified documentation
 - Prevents future confusion or incorrect "fixes"
 - Documents the correct architecture pattern
 
 ### Tests Updated
+
 `tests/unit/api/student-shared-materials.test.ts`:
+
 - Changed test from expecting `is_test` filter to expecting NO filter
 - Test now correctly verifies student endpoints don't filter by test status
 
@@ -121,19 +138,23 @@ Updated comment to be more explicit:
 ## Testing Results
 
 ### Topics Endpoint
+
 ```bash
 pnpm test:unit tests/unit/api/google-topics.test.ts
 ✅ 24 tests passed
 ```
 
 All tests pass, including:
+
 - Deduplication by ID (keeps topics with same name)
 - Error handling
 - Edge cases
 - Authorization
 
 ### Shared Materials Endpoint
+
 **Note**: Test file had 22 pre-existing failures due to mock chain issues unrelated to this change.
+
 - My comment-only change introduced no new logic issues
 - The endpoint logic is correct and unchanged
 
@@ -142,15 +163,19 @@ All tests pass, including:
 ## Code Quality
 
 ### Zod Validation
+
 ✅ All existing Zod validation intact (no changes)
 
 ### Error Handling
+
 ✅ Proper try-catch and error responses maintained
 
 ### Comments
+
 ✅ Added comprehensive documentation for complex logic
 
 ### TypeScript
+
 ✅ No type errors introduced
 
 ---
@@ -177,10 +202,12 @@ All tests pass, including:
 This work revealed a key pattern in the codebase:
 
 **Test Mode Filtering is Asymmetric**:
+
 - **Teacher-Side**: Filters data by test mode (via `getTeacherTestMode()` helper)
 - **Student-Side**: No test mode filtering (students see all shared content)
 
 This makes sense because:
+
 - Teachers need to toggle between test and production data
 - Students should see materials regardless of their test account status
 - Sharing is controlled at class level, not student level

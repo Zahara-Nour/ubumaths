@@ -13,6 +13,7 @@
 The Universal Achievements System demonstrates solid database fundamentals with appropriate indexes and efficient query patterns. However, **the current implementation cannot handle the target load of 100 events/second** (currently 2.5-5 events/second). With the recommended HIGH PRIORITY optimizations, the system can achieve 8-16 events/second, and with ALL optimizations, 50-100 events/second.
 
 **Key Findings:**
+
 - 70% performance improvement possible with index optimization
 - 80% faster prerequisite checking with batch queries
 - 10x throughput increase with batch event processing
@@ -25,6 +26,7 @@ The Universal Achievements System demonstrates solid database fundamentals with 
 ### Current Coverage: 85/100
 
 **STRENGTHS:**
+
 - All foreign keys properly indexed
 - Excellent use of partial indexes for filtered queries
 - GIN indexes on JSONB columns
@@ -39,6 +41,7 @@ The Universal Achievements System demonstrates solid database fundamentals with 
 **Impact:** ~50-100ms per query at scale (1000+ achievements)
 
 **Fix:**
+
 ```sql
 CREATE INDEX idx_student_achievements_unlocked_by
 ON public.student_achievements(unlocked_by)
@@ -49,6 +52,7 @@ WHERE unlocked_by IS NOT NULL;
 
 **Location:** Lines 246, 252
 **Problem:**
+
 - Full GIN indexes on entire JSONB columns are expensive to maintain
 - Most queries only need specific JSONB keys
 - Event processing queries `metadata->'unlock_conditions'->>'type'` can't efficiently use full GIN index
@@ -56,6 +60,7 @@ WHERE unlocked_by IS NOT NULL;
 **Impact:** ~200-500ms slower event processing, higher write overhead
 
 **Fix:**
+
 ```sql
 -- Replace full GIN with targeted expression indexes
 DROP INDEX idx_achievements_metadata_gin;
@@ -89,6 +94,7 @@ WHERE context_data->>'subject' IS NOT NULL;
 **Impact:** ~100-300ms per event processing call
 
 **Fix:**
+
 ```sql
 CREATE INDEX idx_achievements_processing
 ON public.achievements(context, unlock_type, display_order)
@@ -108,6 +114,7 @@ WHERE is_active = true;
 **Location:** Lines 512-525
 
 **Current Query:**
+
 ```sql
 FOR v_achievement IN
   SELECT *
@@ -124,6 +131,7 @@ LOOP
 ```
 
 **Problems:**
+
 1. `SELECT *` fetches unnecessary JSONB data
 2. Complex OR condition prevents index usage
 3. `split_part()` function prevents context index usage
@@ -132,6 +140,7 @@ LOOP
 **Impact:** ~200-400ms per event at scale (50+ achievements)
 
 **Optimized Query:**
+
 ```sql
 -- Pre-filter by context first (uses index)
 v_event_context := split_part(p_event_type, '_', 1);
@@ -167,6 +176,7 @@ LOOP
 **Location:** Lines 366-375
 
 **Current Code:**
+
 ```sql
 FOREACH v_prerequisite IN ARRAY v_prerequisites
 LOOP
@@ -184,6 +194,7 @@ END LOOP;
 **Impact:** ~5-10ms per prerequisite (50ms for 5 prerequisites)
 
 **Optimized Code:**
+
 ```sql
 -- Single query to check all prerequisites at once
 SELECT COUNT(DISTINCT achievement_id)
@@ -224,6 +235,7 @@ Lines 414-435 use `RETURNING` efficiently - no optimization needed.
 **Location:** Throughout `process_achievement_event` function (lines 526-670)
 
 **Problem:** Repeated JSONB extraction in hot path:
+
 - Line 527: `v_unlock_conditions := v_achievement.metadata->'unlock_conditions';`
 - Lines 548-563: Multiple `v_unlock_conditions->'params'->>'...'` calls per event
 - Line 540: Repeated `v_achievement.metadata->>'difficulty_specific'` access
@@ -231,6 +243,7 @@ Lines 414-435 use `RETURNING` efficiently - no optimization needed.
 **Impact:** ~10-20ms per event (JSONB parsing is CPU-intensive)
 
 **Optimization:**
+
 ```sql
 -- Extract JSONB values ONCE at start of loop
 v_unlock_conditions := v_achievement.metadata->'unlock_conditions';
@@ -271,12 +284,14 @@ WHERE is_active = true;
 ### Load Scenarios
 
 #### Scenario 1: Student Unlocks Achievement
+
 - **Query:** INSERT into student_achievements
 - **Current:** ~50-100ms
 - **Optimized:** ~30-50ms
 - **Bottleneck:** None - simple INSERT with proper indexes
 
 #### Scenario 2: Student Views Achievement List
+
 - **Query Pattern:**
   ```sql
   SELECT a.*, sa.unlocked_at, sa.points_awarded
@@ -291,6 +306,7 @@ WHERE is_active = true;
 - **Bottleneck:** JSONB deserialization
 
 #### Scenario 3: Check Achievement Progress
+
 - **Query Pattern:**
   ```sql
   SELECT * FROM achievement_progress
@@ -301,6 +317,7 @@ WHERE is_active = true;
 - **Bottleneck:** None - properly indexed
 
 #### Scenario 4: Process 100 Events/Second (CRITICAL FAILURE)
+
 - **Current:** 200-400ms per event = **2.5-5 events/second MAX**
 - **With HIGH PRIORITY optimizations:** 60-120ms = **8-16 events/second**
 - **With ALL optimizations:** 40-80ms = **12-25 events/second**
@@ -309,6 +326,7 @@ WHERE is_active = true;
 **CRITICAL FINDING:** Current schema **CANNOT handle 100 events/second** without batch processing.
 
 **Solution: Batch Event Processing Function**
+
 ```sql
 CREATE OR REPLACE FUNCTION public.process_achievement_events_batch(
   p_events JSONB  -- Array of {event_type, student_id, event_data}
@@ -320,6 +338,7 @@ See `/Users/david/Coding/js/ubumaths/.claude/performance-optimization-examples.s
 **Expected Improvement:** 10x throughput (50-100 events/second)
 
 #### Scenario 5: Leaderboard Query
+
 - **Query Pattern:**
   ```sql
   SELECT
@@ -336,6 +355,7 @@ See `/Users/david/Coding/js/ubumaths/.claude/performance-optimization-examples.s
 - **With materialized view:** ~10-20ms
 
 **Solution: Materialized View**
+
 ```sql
 CREATE MATERIALIZED VIEW student_achievement_stats AS
 SELECT
@@ -359,6 +379,7 @@ GROUP BY student_id;
 Estimated total impact: **70% performance improvement**
 
 1. **Add Missing Indexes** (15 minutes implementation)
+
    ```sql
    -- Teacher-awarded achievements lookup
    CREATE INDEX idx_student_achievements_unlocked_by
@@ -372,6 +393,7 @@ Estimated total impact: **70% performance improvement**
    ```
 
 2. **Optimize JSONB Indexes** (30 minutes implementation)
+
    - Replace full GIN with targeted expression indexes
    - 60-70% faster queries, 40% smaller index size
 
@@ -387,11 +409,13 @@ Estimated total impact: **70% performance improvement**
 Estimated additional impact: **5-10x throughput increase**
 
 4. **Batch Event Processing Function** (2-3 hours implementation)
+
    - Required for 100 events/second target
    - Implement `process_achievement_events_batch()`
    - **10x throughput improvement**
 
 5. **Optimize Prerequisite Checking** (30 minutes implementation)
+
    - Replace loop with single batch query
    - **80% faster prerequisite checks**
 
@@ -405,6 +429,7 @@ Estimated additional impact: **5-10x throughput increase**
 Estimated additional impact: **95% faster leaderboards**
 
 7. **Materialized View for Leaderboards** (2-3 hours implementation)
+
    - Create `student_achievement_stats` materialized view
    - Refresh on achievement unlock or scheduled
    - **95% faster leaderboard queries**
@@ -419,42 +444,47 @@ Estimated additional impact: **95% faster leaderboards**
 ## 6. Performance Metrics Summary
 
 ### Before Optimization
-| Metric | Current Performance |
-|--------|-------------------|
-| Single event processing | 200-400ms |
-| Throughput | 2.5-5 events/second |
-| Achievement list load | 80-120ms |
-| Leaderboard query | 200-500ms |
-| Prerequisite check (5 prereqs) | 50ms |
+
+| Metric                         | Current Performance |
+| ------------------------------ | ------------------- |
+| Single event processing        | 200-400ms           |
+| Throughput                     | 2.5-5 events/second |
+| Achievement list load          | 80-120ms            |
+| Leaderboard query              | 200-500ms           |
+| Prerequisite check (5 prereqs) | 50ms                |
 
 ### After HIGH PRIORITY Optimizations
-| Metric | Optimized Performance | Improvement |
-|--------|---------------------|-------------|
-| Single event processing | 60-120ms | 70% faster |
-| Throughput | 8-16 events/second | 3-5x increase |
-| Achievement list load | 40-60ms | 50% faster |
-| Leaderboard query | 200-500ms | No change yet |
-| Prerequisite check | 10ms | 80% faster |
+
+| Metric                  | Optimized Performance | Improvement   |
+| ----------------------- | --------------------- | ------------- |
+| Single event processing | 60-120ms              | 70% faster    |
+| Throughput              | 8-16 events/second    | 3-5x increase |
+| Achievement list load   | 40-60ms               | 50% faster    |
+| Leaderboard query       | 200-500ms             | No change yet |
+| Prerequisite check      | 10ms                  | 80% faster    |
 
 ### After ALL Optimizations
-| Metric | Final Performance | Total Improvement |
-|--------|------------------|-------------------|
-| Single event processing | 40-80ms | 80% faster |
-| Throughput | 50-100 events/second | 20x increase |
-| Achievement list load | 30-50ms | 63% faster |
-| Leaderboard query | 10-20ms | 95% faster |
-| Prerequisite check | 10ms | 80% faster |
+
+| Metric                  | Final Performance    | Total Improvement |
+| ----------------------- | -------------------- | ----------------- |
+| Single event processing | 40-80ms              | 80% faster        |
+| Throughput              | 50-100 events/second | 20x increase      |
+| Achievement list load   | 30-50ms              | 63% faster        |
+| Leaderboard query       | 10-20ms              | 95% faster        |
+| Prerequisite check      | 10ms                 | 80% faster        |
 
 ---
 
 ## 7. Scalability Projection
 
 ### Current System
+
 - **1,000 students, 100 achievements**: Acceptable (100-200ms avg)
 - **1,000 students, 500 achievements**: Degraded (300-500ms avg)
 - **5,000 students, 500 achievements**: Poor (500-1000ms avg)
 
 ### Optimized System
+
 - **1,000 students, 100 achievements**: Excellent (30-60ms avg)
 - **1,000 students, 500 achievements**: Good (60-120ms avg)
 - **5,000 students, 500 achievements**: Acceptable (100-200ms avg)
@@ -465,6 +495,7 @@ Estimated additional impact: **95% faster leaderboards**
 ## 8. Implementation Priority
 
 ### Phase 1: Quick Wins (1-2 hours)
+
 1. Add missing indexes (15 min)
 2. Optimize JSONB indexes (30 min)
 3. Optimize prerequisite checking function (30 min)
@@ -472,6 +503,7 @@ Estimated additional impact: **95% faster leaderboards**
 **Expected Result:** 70% performance improvement, 3-5x throughput
 
 ### Phase 2: Core Optimizations (3-4 hours)
+
 1. Optimize `process_achievement_event` function (1 hour)
 2. Reduce JSONB parsing overhead (1 hour)
 3. Batch event processing function (2-3 hours)
@@ -479,6 +511,7 @@ Estimated additional impact: **95% faster leaderboards**
 **Expected Result:** 10x throughput, handles 50-100 events/second
 
 ### Phase 3: Polish (3-4 hours)
+
 1. Materialized view for leaderboards (2-3 hours)
 2. Materialized columns for hot paths (1 hour)
 
@@ -492,6 +525,7 @@ All optimization examples are available in:
 `/Users/david/Coding/js/ubumaths/.claude/performance-optimization-examples.sql`
 
 Includes:
+
 - Optimized index definitions
 - Optimized `check_achievement_prerequisites` function
 - Optimized `process_achievement_event` function
@@ -507,16 +541,19 @@ Includes:
 Before deploying optimizations:
 
 1. **Benchmark Current Performance**
+
    ```sql
    EXPLAIN ANALYZE SELECT * FROM process_achievement_event(...);
    ```
 
 2. **Test with Production-Like Data**
+
    - 1,000+ students
    - 100+ achievements
    - 10,000+ student_achievements records
 
 3. **Load Testing**
+
    - Simulate 100 events/second
    - Monitor query times
    - Check for lock contention
@@ -539,15 +576,18 @@ Before deploying optimizations:
 Track these metrics post-optimization:
 
 1. **Event Processing Time**
+
    - p50: Should be < 80ms
    - p95: Should be < 150ms
    - p99: Should be < 300ms
 
 2. **Throughput**
+
    - Target: 50-100 events/second
    - Monitor queue depth in `achievement_events` table
 
 3. **Index Hit Ratio**
+
    ```sql
    SELECT
      schemaname,
@@ -571,14 +611,17 @@ Track these metrics post-optimization:
 ## 12. Risk Assessment
 
 ### LOW RISK
+
 - Adding new indexes (HIGH PRIORITY items 1-2)
 - Optimizing prerequisite checking function
 
 ### MEDIUM RISK
+
 - Optimizing `process_achievement_event` (test thoroughly)
 - Batch processing function (new code path)
 
 ### HIGH RISK
+
 - Dropping and recreating JSONB indexes (ensure no downtime)
 - Materialized views (refresh strategy needed)
 
@@ -591,6 +634,7 @@ The Universal Achievements System has a solid foundation but requires optimizati
 The current system **cannot handle 100 events/second** without batch processing. With all optimizations, the system can comfortably handle 50-100 events/second and scale to 10,000+ students with 1000+ achievements.
 
 **Next Steps:**
+
 1. Implement HIGH PRIORITY optimizations (Phase 1)
 2. Test with production-like data
 3. Implement batch processing (Phase 2) if throughput requirements demand it
@@ -600,6 +644,7 @@ The current system **cannot handle 100 events/second** without batch processing.
 ---
 
 **Files:**
+
 - Migration: `/Users/david/Coding/js/ubumaths/supabase/migrations/20251121000000_create_universal_achievements_system.sql`
 - Optimization Examples: `/Users/david/Coding/js/ubumaths/.claude/performance-optimization-examples.sql`
-- This Report: `/Users/david/Coding/js/ubumaths/.claude/achievements-performance-analysis.md`
+- This Report: `/Users/david/Coding/js/ubumaths/docs/archive/racine/claude-2025/achievements-performance-analysis.md`

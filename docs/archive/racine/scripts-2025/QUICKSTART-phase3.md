@@ -126,15 +126,15 @@ Then test UI:
 
 - **Main script**: `scripts/sanitize-existing-notifications.ts`
 - **Test script**: `scripts/test-sanitize-migration.ts`
-- **Documentation**: `scripts/README-sanitize-notifications.md`
-- **Summary**: `scripts/MIGRATION-PHASE3-SUMMARY.md`
-- **Checklist**: `scripts/CHECKLIST-phase3-migration.md`
+- **Documentation**: `docs/archive/racine/scripts-2025/README-sanitize-notifications.md`
+- **Summary**: `docs/archive/racine/scripts-2025/MIGRATION-PHASE3-SUMMARY.md`
+- **Checklist**: `docs/archive/racine/scripts-2025/CHECKLIST-phase3-migration.md`
 
 ## Need Help?
 
-1. Read `scripts/README-sanitize-notifications.md` (comprehensive guide)
-2. Review `scripts/MIGRATION-PHASE3-SUMMARY.md` (technical details)
-3. Use `scripts/CHECKLIST-phase3-migration.md` (step-by-step)
+1. Read `docs/archive/racine/scripts-2025/README-sanitize-notifications.md` (comprehensive guide)
+2. Review `docs/archive/racine/scripts-2025/MIGRATION-PHASE3-SUMMARY.md` (technical details)
+3. Use `docs/archive/racine/scripts-2025/CHECKLIST-phase3-migration.md` (step-by-step)
 
 ## Critical Reminders
 

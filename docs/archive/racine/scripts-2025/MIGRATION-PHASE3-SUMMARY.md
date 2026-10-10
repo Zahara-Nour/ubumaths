@@ -49,7 +49,7 @@ pnpm migrate:sanitize
 
 ### 3. Comprehensive Documentation
 
-**File**: `scripts/README-sanitize-notifications.md`
+**File**: `docs/archive/racine/scripts-2025/README-sanitize-notifications.md`
 
 Complete documentation including:
 
@@ -429,9 +429,9 @@ Server-side sanitization (Phase 1) is still active:
 ## Files Created
 
 1. `scripts/sanitize-existing-notifications.ts` - Main migration script
-2. `scripts/README-sanitize-notifications.md` - Comprehensive documentation
+2. `docs/archive/racine/scripts-2025/README-sanitize-notifications.md` - Comprehensive documentation
 3. `scripts/test-sanitize-migration.ts` - Logic validation test
-4. `scripts/MIGRATION-PHASE3-SUMMARY.md` - This summary document
+4. `docs/archive/racine/scripts-2025/MIGRATION-PHASE3-SUMMARY.md` - This summary document
 
 ## Files Modified
 

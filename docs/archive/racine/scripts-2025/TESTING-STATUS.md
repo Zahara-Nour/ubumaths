@@ -23,7 +23,7 @@
 
 2. **Comprehensive Test Plan Created**
 
-   - File: `scripts/comprehensive-migration-test.md`
+   - File: `docs/archive/racine/scripts-2025/comprehensive-migration-test.md`
    - 80+ pages of detailed testing strategy
    - 10 test suites covering all scenarios
 
@@ -331,10 +331,10 @@ WHERE statement::TEXT LIKE '%{@:%';
 
 ### Documentation
 
-✅ `scripts/README-MIGRATION-TESTING.md` - Quick start guide
-✅ `scripts/comprehensive-migration-test.md` - Detailed test plan
-✅ `scripts/MIGRATION-TEST-REPORT.md` - Results template
-✅ `scripts/TESTING-STATUS.md` - This file
+✅ `docs/archive/racine/scripts-2025/README-MIGRATION-TESTING.md` - Quick start guide
+✅ `docs/archive/racine/scripts-2025/comprehensive-migration-test.md` - Detailed test plan
+✅ `docs/archive/racine/scripts-2025/MIGRATION-TEST-REPORT.md` - Results template
+✅ `docs/archive/racine/scripts-2025/TESTING-STATUS.md` - This file
 
 ### Migration
 
@@ -390,9 +390,9 @@ WHERE statement::TEXT LIKE '%{@:%';
 
 **For Help**:
 
-1. Read `scripts/README-MIGRATION-TESTING.md` (quick start)
-2. Review `scripts/comprehensive-migration-test.md` (detailed plan)
-3. Check `scripts/MIGRATION-TEST-REPORT.md` (results)
+1. Read `docs/archive/racine/scripts-2025/README-MIGRATION-TESTING.md` (quick start)
+2. Review `docs/archive/racine/scripts-2025/comprehensive-migration-test.md` (detailed plan)
+3. Check `docs/archive/racine/scripts-2025/MIGRATION-TEST-REPORT.md` (results)
 4. Consult `docs/migrations/phase2-template-syntax-unification.md` (full docs)
 
 ---

@@ -60,7 +60,7 @@ brouillon peut porter `"status":"published"` dans une version corrigée (cas de 
 `POST /api/migration/questions/[globalIndex]/approve | edit | reject`. Bogues connus :
 l'affichage lit encore `migration_status` (une approbation actuelle « disparaît » après
 rechargement) ; `approve` passe un `editedJson` que `recordQuestionProcessed` ignore. Les endpoints
-réécrivent aussi `.claude/migration-state.json` et `.claude/migration-progress.md`.
+réécrivent aussi `.claude/migration-state.json` et `docs/archive/racine/claude-2025/migration-progress.md`.
 
 **Vérification automatique** : `src/lib/questions/test-spec-runner.ts` (`runTestSpec`,
 `runAllTestSpecs`) — instance à variables fixées (`generateInstanceWithFixedVariables`) puis

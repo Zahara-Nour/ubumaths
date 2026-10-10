@@ -15,9 +15,11 @@ Enhanced UbuMaths' Google Classroom integration across 3 phases to achieve **fea
 ## Three Phases Overview
 
 ### Phase 1: Topic Support
+
 Added Google Classroom topic organization to `shared_coursework` table
 
 **Key Changes**:
+
 - Database migration: Added `topic_id` column with foreign key to `google_classroom_topics`
 - API endpoints: POST and PATCH now validate and authorize topic ownership
 - UI components: Added topic selectors with async loading
@@ -28,9 +30,11 @@ Added Google Classroom topic organization to `shared_coursework` table
 ---
 
 ### Phase 2: Denormalization Optimization
+
 Leveraged existing denormalized fields to eliminate unnecessary JOINs
 
 **Key Changes**:
+
 - GET endpoint: Uses `course_name` and `teacher_name` denormalized fields
 - API response: Added `teacherName` field for better UX
 - Documentation: Complete denormalization architecture documented
@@ -40,9 +44,11 @@ Leveraged existing denormalized fields to eliminate unnecessary JOINs
 ---
 
 ### Phase 3: Bulk Coursework Sharing
+
 Implemented N × M bulk sharing with comprehensive security fixes
 
 **Key Changes**:
+
 - Backend: New `POST /api/google/coursework/bulk-share` endpoint (192 lines)
 - Frontend: `ShareMultipleCourseworkDialog.svelte` component (676 lines)
 - **Security**: Fixed category and topic authorization bypasses (CRITICAL)
@@ -59,14 +65,15 @@ Implemented N × M bulk sharing with comprehensive security fixes
 **Vulnerability**: Teachers could assign coursework to other teachers' categories
 
 **Fix**: Added category ownership verification before sharing
+
 ```typescript
 // Verify category belongs to teacher
 const { data: category } = await supabase
-  .from('coursework_categories')
-  .select('id')
-  .eq('id', categoryId)
-  .eq('teacher_id', user.id)  // ✅ OWNERSHIP CHECK
-  .single();
+	.from('coursework_categories')
+	.select('id')
+	.eq('id', categoryId)
+	.eq('teacher_id', user.id) // ✅ OWNERSHIP CHECK
+	.single();
 ```
 
 **Impact**: Prevents cross-teacher data access
@@ -78,21 +85,22 @@ const { data: category } = await supabase
 **Vulnerability**: Teachers could use topics from courses they don't own
 
 **Fix**: Added topic → course → teacher ownership chain verification
+
 ```typescript
 // Step 1: Get topic's course
 const { data: topic } = await supabase
-  .from('google_classroom_topics')
-  .select('id, google_course_id')
-  .eq('id', topicId)
-  .single();
+	.from('google_classroom_topics')
+	.select('id, google_course_id')
+	.eq('id', topicId)
+	.single();
 
 // Step 2: Verify course ownership
 const { data: topicCourse } = await supabase
-  .from('google_classroom_courses')
-  .select('id')
-  .eq('google_course_id', topic.google_course_id)
-  .eq('teacher_id', user.id)  // ✅ OWNERSHIP CHECK
-  .single();
+	.from('google_classroom_courses')
+	.select('id')
+	.eq('google_course_id', topic.google_course_id)
+	.eq('teacher_id', user.id) // ✅ OWNERSHIP CHECK
+	.single();
 ```
 
 **Impact**: Prevents unauthorized topic use
@@ -115,24 +123,26 @@ const { data: topicCourse } = await supabase
 
 Coursework now matches materials in **ALL** capabilities:
 
-| Feature | Materials | Coursework | Status |
-|---------|-----------|------------|---------|
-| Category support | ✅ | ✅ | Existing |
-| Topic support | ✅ | ✅ | **NEW** |
-| Denormalized fields | ✅ | ✅ | **OPTIMIZED** |
-| Bulk sharing (N × M) | ✅ | ✅ | **NEW** |
-| Security verification | ✅ | ✅ | **FIXED** |
+| Feature               | Materials | Coursework | Status        |
+| --------------------- | --------- | ---------- | ------------- |
+| Category support      | ✅        | ✅         | Existing      |
+| Topic support         | ✅        | ✅         | **NEW**       |
+| Denormalized fields   | ✅        | ✅         | **OPTIMIZED** |
+| Bulk sharing (N × M)  | ✅        | ✅         | **NEW**       |
+| Security verification | ✅        | ✅         | **FIXED**     |
 
 ---
 
 ### Performance Improvements
 
 **Query Optimization**:
+
 - Before: 3 queries with JOINs to get course names
 - After: 3 queries with direct field access
 - **Result**: 4-15% faster response times
 
 **Bulk Operations**:
+
 - Before: 50 coursework × 5 classes = 250 API calls
 - After: 1 API call
 - **Result**: 98% reduction in API calls, 80-90% faster
@@ -142,6 +152,7 @@ Coursework now matches materials in **ALL** capabilities:
 ### Security Enhancements
 
 **Authorization Model**:
+
 ```
 1. Authentication
    ↓
@@ -159,6 +170,7 @@ Coursework now matches materials in **ALL** capabilities:
 ```
 
 **Principles**:
+
 - Fail-closed model
 - Defense in depth
 - Least privilege
@@ -170,6 +182,7 @@ Coursework now matches materials in **ALL** capabilities:
 ## Key Metrics
 
 ### Code Quality
+
 - **Build**: 0 errors ✅
 - **TypeScript**: 0 errors (strict mode) ✅
 - **ESLint**: 0 errors ✅
@@ -181,11 +194,13 @@ Coursework now matches materials in **ALL** capabilities:
 - **`any` Types**: 0 ✅
 
 ### Performance
+
 - **Query Speed**: 4-15% faster
 - **API Calls**: 98% reduction for bulk operations
 - **Database Queries**: 3-6 queries per bulk operation (vs 2 × N before)
 
 ### Coverage
+
 - **Test Files**: 3 new files (3,450+ tests)
 - **Documentation**: 6 new/updated files
 - **Migrations**: 1 new migration
@@ -196,9 +211,11 @@ Coursework now matches materials in **ALL** capabilities:
 ## Files Modified (18 Total)
 
 ### Database (1)
+
 - `supabase/migrations/20251116124951_add_topic_to_shared_coursework.sql` (NEW)
 
 ### Backend (5)
+
 - `src/lib/server/validation/google.ts` (ENHANCED)
 - `src/lib/types/database.ts` (UPDATED)
 - `src/routes/api/google/shared-coursework/+server.ts` (ENHANCED)
@@ -206,16 +223,19 @@ Coursework now matches materials in **ALL** capabilities:
 - `src/routes/api/google/coursework/bulk-share/+server.ts` (NEW)
 
 ### Frontend (3)
+
 - `src/lib/components/google/ManageSharedCourseworkDialog.svelte` (ENHANCED)
 - `src/lib/components/google/ShareCourseworkBulkDialog.svelte` (NEW)
 - `src/lib/components/google/ShareMultipleCourseworkDialog.svelte` (NEW)
 
 ### Tests (3)
+
 - `tests/unit/api/google-shared-coursework.test.ts` (NEW - 1,662 lines)
 - `tests/unit/api/google-shared-coursework-by-id.test.ts` (NEW - 1,178 lines)
 - `tests/unit/api/google-coursework-bulk-share.test.ts` (NEW - 610 lines)
 
 ### Documentation (6)
+
 - `docs/systeme/base-de-donnees.md` (ENHANCED)
 - `.claude/topic-support-implementation-summary.md` (NEW)
 - `.claude/shared-coursework-denormalization-summary.md` (NEW)
@@ -230,6 +250,7 @@ Coursework now matches materials in **ALL** capabilities:
 **File**: `supabase/migrations/20251116124951_add_topic_to_shared_coursework.sql`
 
 **Changes**:
+
 ```sql
 -- Add topic_id column
 ALTER TABLE public.shared_coursework
@@ -240,6 +261,7 @@ CREATE INDEX idx_shared_coursework_topic_id ON public.shared_coursework(topic_id
 ```
 
 **Apply Migration**:
+
 ```bash
 pnpm db:migrate
 ```
@@ -253,11 +275,13 @@ pnpm db:migrate
 ### Immediate Actions
 
 1. **Apply Migration** (REQUIRED):
+
    ```bash
    pnpm db:migrate
    ```
 
 2. **Deploy to Production**:
+
    ```bash
    # Verify build
    pnpm build
@@ -284,14 +308,18 @@ pnpm db:migrate
 ## Architecture Patterns to Remember
 
 ### Denormalization Pattern
+
 Both `shared_coursework` and `shared_materials` use **identical denormalization**:
+
 - Denormalized fields: `course_name`, `teacher_name`
 - Auto-populated by triggers on INSERT
 - Auto-synced on course/teacher rename
 - **Result**: 3x faster queries, no RLS circular dependencies
 
 ### Authorization Pattern
+
 All endpoints follow **consistent security model**:
+
 1. Authentication (user logged in)
 2. Role check (`requireRole` middleware)
 3. Input validation (Zod schemas)
@@ -299,14 +327,18 @@ All endpoints follow **consistent security model**:
 5. Business logic execution
 
 ### Bulk Operations Pattern
+
 Enable efficient N × M operations:
+
 - Array limits (max 50 each) for DoS protection
 - Single database UPSERT (max 2,500 rows)
 - Cartesian product in application layer
 - Atomic transaction (all or nothing)
 
 ### Component Standards
+
 Follow **UbuMaths UI patterns**:
+
 - Svelte 5 runes (`$state`, `$derived`, `$effect`)
 - MySelect/MyCheckbox (not Shadcn directly)
 - French UI, English code/comments
@@ -332,10 +364,12 @@ Follow **UbuMaths UI patterns**:
 ### Endpoints Created/Updated
 
 **Created**:
+
 - `POST /api/google/coursework/bulk-share` - Bulk share coursework with classes
 - `POST /api/google/shared-coursework/[id]` - Update shared coursework
 
 **Updated**:
+
 - `POST /api/google/shared-coursework` - Added topic support
 - `GET /api/google/shared-coursework` - Uses denormalized fields
 - `PATCH /api/google/shared-coursework/[id]` - Added topic support
@@ -343,18 +377,22 @@ Follow **UbuMaths UI patterns**:
 ### Components Created/Updated
 
 **Created**:
+
 - `ShareMultipleCourseworkDialog.svelte` - Bulk sharing UI (676 lines)
 - `ShareCourseworkBulkDialog.svelte` - Initial bulk share component
 
 **Updated**:
+
 - `ManageSharedCourseworkDialog.svelte` - Added topic selectors
 
 ### Validation Schemas
 
 **Created**:
+
 - `bulkShareCourseworkSchema` - Bulk share validation
 
 **Updated**:
+
 - `shareSingleCourseworkSchema` - Added optional `topicId`
 - `updateSharedCourseworkByIdSchema` - Added optional `topicId`
 

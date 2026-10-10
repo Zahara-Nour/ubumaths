@@ -7,6 +7,7 @@
 **Completion**: 2025-11-17
 
 ### What Was Accomplished
+
 - ✅ Phase 3.1-3.6: All complete (converter fixed, tested, reviewed, documented, committed)
 - ✅ Phase 4: Cleanup complete (removed abandoned files, formatted code, updated docs)
 - ✅ Converter outputs correct `{{variable}}` syntax (108 lines changed)
@@ -14,7 +15,9 @@
 - ✅ Code review approved for production
 
 ## Ready to Resume
+
 **Project 1: TinyMath Migration** - Phase 2 ⏳ READY
+
 - Converter now outputs correct `{{variable}}` syntax ✅ DONE
 - Migration can proceed with clean data ✅ READY
 - All 2,238 questions will have correct syntax from day 1 ✅ GUARANTEED
@@ -29,13 +32,13 @@
 
 ## Overall Progress Tracking
 
-| Phase | Status | Target | Components | Tests | Commits |
-|-------|--------|--------|------------|-------|---------|
-| 1 | Infrastructure Complete | 560 | 8 components + Color System | 180+ tests | 3 commits |
-| 2 | Pending | 895 | - | - | - |
-| 3 | Pending | 560 | - | - | - |
-| 4 | Pending | 223 | - | - | - |
-| **Total** | **Infrastructure Ready** | **2,238** | **Complete** | **180+** | **3** |
+| Phase     | Status                   | Target    | Components                  | Tests      | Commits   |
+| --------- | ------------------------ | --------- | --------------------------- | ---------- | --------- |
+| 1         | Infrastructure Complete  | 560       | 8 components + Color System | 180+ tests | 3 commits |
+| 2         | Pending                  | 895       | -                           | -          | -         |
+| 3         | Pending                  | 560       | -                           | -          | -         |
+| 4         | Pending                  | 223       | -                           | -          | -         |
+| **Total** | **Infrastructure Ready** | **2,238** | **Complete**                | **180+**   | **3**     |
 
 ---
 
@@ -64,22 +67,29 @@ Implemented runtime conversion layer that bridges the two syntaxes:
 ### What Was Fixed
 
 **Before** (Broken):
+
 ```typescript
 // Database template
-{ statement: "Calculate {@:a} + {@:b}" }
+{
+	statement: 'Calculate {@:a} + {@:b}';
+}
 // Result: "Calculate {@:a} + {@:b}"  ❌ Unresolved
 ```
 
 **After** (Working):
+
 ```typescript
 // Database template (same)
-{ statement: "Calculate {@:a} + {@:b}" }
+{
+	statement: 'Calculate {@:a} + {@:b}';
+}
 // Result: "Calculate 7 + 3"  ✅ Resolved
 ```
 
 ### Files Modified
 
 1. **New Files**:
+
    - `src/lib/questions/generator/syntax-adapter.ts` (298 lines)
    - `src/lib/questions/generator/syntax-adapter.test.ts` (462 lines)
    - `BUG_REPORT_SYNTAX_MISMATCH.md` (331 lines)
@@ -102,6 +112,7 @@ Implemented runtime conversion layer that bridges the two syntaxes:
 ### Next Steps
 
 See `.claude/template-system-status.md` for:
+
 - Complete implementation details
 - Recovery instructions if session crashes
 - Phase 2 planning (template unification strategy)
@@ -124,6 +135,7 @@ Phase 2 migration is fully prepared but awaiting execution. Will convert all 70+
 #### What Was Completed
 
 1. **Database Migration SQL** (567 lines)
+
    - File: `supabase/migrations/20251117120527_unify_template_syntax_to_markdown.sql`
    - PL/pgSQL conversion functions
    - Automatic backup: `question_templates_backup_20251117`
@@ -132,6 +144,7 @@ Phase 2 migration is fully prepared but awaiting execution. Will convert all 70+
    - GIN indexes for performance
 
 2. **Test Infrastructure** (283 lines)
+
    - File: `scripts/test-question-generation.ts`
    - Tests all 6 question types
    - Validates variable resolution
@@ -139,6 +152,7 @@ Phase 2 migration is fully prepared but awaiting execution. Will convert all 70+
    - Runs against local Supabase (Docker)
 
 3. **Critical Bug Fixed** 🐛
+
    - **Issue**: PL/pgSQL functions used `=` instead of `:=` for variable assignment
    - **Impact**: Migration would have failed with syntax error in PostgreSQL
    - **Discovery**: Code review after initial creation
@@ -146,6 +160,7 @@ Phase 2 migration is fully prepared but awaiting execution. Will convert all 70+
    - **Status**: Re-reviewed and approved after fix
 
 4. **Comprehensive Documentation** (257 lines)
+
    - File: `.claude/migration-progress-phase2.md`
    - Step-by-step execution instructions
    - Pre-execution checklist
@@ -231,6 +246,7 @@ WHERE statement::TEXT LIKE '%{@:%' OR statement::TEXT LIKE '%{#:%';
 #### Rollback Plan
 
 If issues occur:
+
 ```sql
 -- One-command rollback
 SELECT rollback_template_syntax_migration();
@@ -244,11 +260,13 @@ WHERE statement::TEXT LIKE '%{@:%';
 #### Performance Impact
 
 **During Migration**:
+
 - Duration: ~2-5 seconds
 - Locks: Row-level only (no table lock)
 - Impact: Minimal
 
 **After Migration**:
+
 - Eliminates: 5ms runtime conversion per question
 - Removes: 600+ lines of adapter code (Phase 3)
 - Improves: Direct template processing
@@ -256,6 +274,7 @@ WHERE statement::TEXT LIKE '%{@:%';
 #### Risk Assessment
 
 **Low Risk** ✅:
+
 - Tested conversion logic
 - Full backup created automatically
 - Quick rollback available
@@ -263,6 +282,7 @@ WHERE statement::TEXT LIKE '%{@:%';
 - Code reviewed and approved
 
 **Mitigation**:
+
 - Run during low-traffic period
 - Monitor error logs after execution
 - Keep backup for 1 week minimum
@@ -271,17 +291,20 @@ WHERE statement::TEXT LIKE '%{@:%';
 #### Success Criteria
 
 **Immediate** (within 1 hour):
+
 - [ ] Migration status = 'completed'
 - [ ] Zero old syntax in database
 - [ ] Test script passes
 - [ ] No application errors
 
 **Day 1** (24h monitoring):
+
 - [ ] Question generation 100% success rate
 - [ ] No template-related errors
 - [ ] Performance stable or improved
 
 **Week 1** (validation period):
+
 - [ ] Stable operation confirmed
 - [ ] Ready for Phase 3 (adapter removal)
 
@@ -290,6 +313,7 @@ WHERE statement::TEXT LIKE '%{@:%';
 **PostgreSQL Variable Syntax Bug**:
 
 **Problem**:
+
 ```sql
 -- ❌ WRONG (JavaScript/TypeScript syntax)
 DECLARE
@@ -300,6 +324,7 @@ END;
 ```
 
 **Solution**:
+
 ```sql
 -- ✅ CORRECT (PostgreSQL PL/pgSQL syntax)
 DECLARE
@@ -310,6 +335,7 @@ END;
 ```
 
 **Why Critical**:
+
 - PostgreSQL uses `:=` for assignment, `=` for comparison
 - Using `=` in DECLARE block causes syntax error
 - Would have failed entire migration
@@ -333,6 +359,7 @@ Fixed the TinyMath migration converter to output Markdown syntax (`{{...}}`) ins
 ### What Was Accomplished
 
 #### Phase 3.1: Seed Question Deletion ✅
+
 - **Deleted**: 10 seed questions from local database
 - **Reason**: Test data only, TinyMath will provide real content
 - **Backup**: Created in `.claude/BACKUP-SEED-QUESTIONS-2025-11-17.md`
@@ -340,6 +367,7 @@ Fixed the TinyMath migration converter to output Markdown syntax (`{{...}}`) ins
 - **Impact**: Clean slate for migration with correct syntax
 
 #### Phase 3.2: Converter Syntax Fix ✅
+
 - **File**: `src/lib/migration/syntax-converter.ts`
 - **Changes**: 108 lines modified
 - **Old Output**: `{@:variable}`, `{#:1-10}`, `{eval:expr}`
@@ -348,6 +376,7 @@ Fixed the TinyMath migration converter to output Markdown syntax (`{{...}}`) ins
 - **Compatibility**: Now outputs Markdown syntax compatible with Shared library
 
 #### Phase 3.3: Integration Testing ✅
+
 - **New Tests**: 34 integration tests added
 - **File**: `src/lib/migration/syntax-converter-integration.test.ts`
 - **Coverage**: All conversion patterns, nested scenarios, edge cases
@@ -355,6 +384,7 @@ Fixed the TinyMath migration converter to output Markdown syntax (`{{...}}`) ins
 - **Performance**: <100ms for 100 questions (meets requirements)
 
 #### Phase 3.4: Code Review ✅
+
 - **Status**: APPROVED for production
 - **Verdict**: GO with conditions
 - **Minor Issues Noted**:
@@ -366,10 +396,12 @@ Fixed the TinyMath migration converter to output Markdown syntax (`{{...}}`) ins
 ### Files Modified
 
 1. **Core Converter** (108 lines changed):
+
    - `src/lib/migration/syntax-converter.ts`
    - Changed all output patterns from Questions syntax to Markdown syntax
 
 2. **Integration Tests** (new file):
+
    - `src/lib/migration/syntax-converter-integration.test.ts` (34 tests)
    - Comprehensive test coverage for all patterns
 
@@ -380,6 +412,7 @@ Fixed the TinyMath migration converter to output Markdown syntax (`{{...}}`) ins
 ### Syntax Conversions
 
 **Before** (Questions syntax - old converter output):
+
 ```
 $e[1;10]                    → {@:1-10}      ❌
 $e[1;10]\{0}                → {#:1-10!0}    ❌
@@ -389,6 +422,7 @@ ${get(couleur1)}            → {#color:primary.0} ❌
 ```
 
 **After** (Markdown syntax - new converter output):
+
 ```
 $e[1;10]                    → {{1-10}}      ✅
 $e[1;10]\{0}                → {{1-10!0}}    ✅
@@ -400,6 +434,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Test Results
 
 **Unit Tests**: 126/126 passing (100%)
+
 - ✅ Basic variable patterns
 - ✅ Random number ranges
 - ✅ Exclusion lists
@@ -409,12 +444,14 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 - ✅ Edge cases
 
 **Integration Tests**: 34/34 passing (100%)
+
 - ✅ Full question conversion pipeline
 - ✅ All TinyMath patterns
 - ✅ Complex nested scenarios
 - ✅ Performance benchmarks
 
 **Performance**: <100ms for 100 questions
+
 - Average: ~0.8ms per question
 - Well within acceptable limits
 - No performance concerns
@@ -424,6 +461,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 **Approved for Production** with these notes:
 
 **TypeScript Strict Mode** (42 errors):
+
 - Location: Test files only
 - Impact: Non-blocking
 - Reason: Property initialization patterns
@@ -431,12 +469,14 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 - Status: Does not block production use
 
 **Formatting** (3 files):
+
 - Files need prettier formatting
 - Cosmetic only
 - Can run `pnpm format` before commit
 - Not critical for functionality
 
 **Edge Cases Documented**:
+
 - Multiple nested patterns
 - Malformed input handling
 - Unicode in variables
@@ -445,11 +485,13 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Impact
 
 **Immediate**:
+
 - Converter now outputs correct syntax
 - All future migrations will use Markdown syntax
 - No runtime conversion overhead needed
 
 **Long-term**:
+
 - Single syntax throughout application
 - Cleaner codebase
 - Easier maintenance
@@ -458,35 +500,39 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Next Steps
 
 **Phase 4: Cleanup & Final Validation**
+
 1. Remove any old test code
 2. Run full prettier formatting
 3. Final documentation updates
 4. Ready to resume Project 1 Phase 2
 
 **Then**: Resume TinyMath Migration
+
 - All 2,238 questions will have correct `{{...}}` syntax
 - No adapter needed
 - Clean migration pipeline
 
 ### Success Metrics
 
-| Metric | Target | Achieved | Status |
-|--------|--------|----------|--------|
-| Converter Fixed | Yes | Yes | ✅ |
-| Tests Passing | 95%+ | 100% | ✅ |
-| Performance | <100ms/100q | <80ms | ✅ |
-| Code Review | Approved | Approved | ✅ |
-| Backup Created | Yes | Yes | ✅ |
+| Metric          | Target      | Achieved | Status |
+| --------------- | ----------- | -------- | ------ |
+| Converter Fixed | Yes         | Yes      | ✅     |
+| Tests Passing   | 95%+        | 100%     | ✅     |
+| Performance     | <100ms/100q | <80ms    | ✅     |
+| Code Review     | Approved    | Approved | ✅     |
+| Backup Created  | Yes         | Yes      | ✅     |
 
 ### Lessons Learned
 
 **What Worked Well**:
+
 - Deleting seed questions before fixing converter
 - Comprehensive integration test suite
 - Code review caught minor issues early
 - Performance testing validated approach
 
 **Key Decisions**:
+
 - Output Markdown syntax instead of creating runtime adapter
 - Simpler solution, cleaner codebase
 - All migrated questions correct from day 1
@@ -506,7 +552,9 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Components Created
 
 #### 1. Database Tables ✅
+
 - **Migration Tracking** (`migration_tracking`)
+
   - Tracks each question through the pipeline
   - Status: pending → converted → imported → validated
   - Links old questions to new templates
@@ -516,6 +564,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
   - Checksums for integrity verification
 
 #### 2. Syntax Converter ✅
+
 - **File**: `src/lib/migration/syntax-converter.ts`
 - **Features**:
   - Converts all TinyMath patterns to new syntax
@@ -528,6 +577,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
   - `[_expr_]` → `{eval:expr}`
 
 #### 3. Question Transformer ✅
+
 - **File**: `src/lib/migration/question-transformer.ts`
 - **Features**:
   - Maps question types
@@ -536,6 +586,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
   - Converts validation options
 
 #### 4. State Manager ✅
+
 - **File**: `src/lib/migration/state-manager.ts`
 - **Features**:
   - Checkpoint saving/loading
@@ -544,8 +595,10 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
   - File locking for safety
 
 #### 5. Migration Scripts ✅
+
 - **Main**: `scripts/migrate-questions-phase1.ts`
 - **Features**:
+
   - Test mode with sample data
   - Dry-run capability
   - Resume from checkpoint
@@ -557,6 +610,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
   - Performance metrics
 
 #### 6. Migration Loader ✅
+
 - **File**: `scripts/load-old-questions.ts`
 - **Features**:
   - Safe JSON loading (no eval)
@@ -564,23 +618,28 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
   - Error recovery
 
 #### 7. Documentation ✅
-- `.claude/question-migration-analysis.md` - Complete system analysis
-- `.claude/migration-progress.md` - This document
-- `scripts/README.migration.md` - Usage instructions
+
+- `docs/archive/racine/claude-2025/question-migration-analysis.md` - Complete system analysis
+- `docs/archive/racine/claude-2025/migration-progress.md` - This document
+- `docs/archive/racine/scripts-2025/README.migration.md` - Usage instructions
 - `.claude/migration-state.json` - State tracking
 
 #### 8. Color Template System ✅
+
 - **Color Palettes** (`src/lib/questions/colors.ts`)
+
   - 5 specialized palettes: primary, shapes, text, contrast, rainbow
   - 39 predefined colors total
   - Smart color resolution with seed support
 
 - **Color Parser** (`src/lib/questions/parser/color-parser.ts`)
+
   - Parses `{#color:...}` syntax
   - Multiple formats: random, indexed, contrast pairs
   - Seeded randomization for reproducibility
 
 - **Syntax Converter** (updated)
+
   - Converts `${get(color1)}` → `{#color:primary.0}`
   - Handles French names (couleur1, couleur2, etc.)
   - Intelligent index mapping
@@ -597,10 +656,12 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Commits Created
 
 1. **Initial Infrastructure** (`b383a22`)
+
    - Database tables, core logic, scripts, documentation
    - 21 files, 8,830 insertions
 
 2. **Pipeline Validation Fixes** (`b93f2f8`)
+
    - Fixed 3 critical bugs discovered during testing
    - 13 files, test documentation
 
@@ -612,6 +673,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Testing Results
 
 **Pipeline Validation**: ✅ SUCCESS
+
 - Sample questions: 2/2 (100% success)
 - Syntax conversion: Working
 - Variable extraction: Working
@@ -622,6 +684,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Known Issues
 
 **Blocker**: Old questions need extraction from TinyMath
+
 - TinyMath uses runtime JavaScript (`${get()}`, Svelte stores)
 - Solution: Add export endpoint to TinyMath (~30 min)
 - Alternative: Manual extraction to JSON
@@ -629,12 +692,14 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 ### Lessons Learned
 
 #### Challenges Overcome
+
 - Security issues with eval() - solved with JSON parsing
 - Race conditions in state management - solved with file locking
 - Complex syntax patterns - comprehensive regex patterns
 - **Color extraction blocker** - solved with color template system
 
 #### What Worked Well
+
 - Test-driven development approach
 - Incremental validation with sample data
 - Comprehensive error handling
@@ -645,6 +710,7 @@ ${get(couleur1)}            → {{color:primary.0}} ✅
 Phase 1 infrastructure is complete. To continue:
 
 1. **Extract Questions from TinyMath**:
+
    ```bash
    # Add export endpoint to TinyMath
    # Export questions to JSON
@@ -666,17 +732,21 @@ Phase 1 infrastructure is complete. To continue:
 **Questions Target**: 895 (40% of total)
 
 ### Prerequisites
+
 - [ ] Complete Phase 1 execution
 - [ ] Test validation extensions
 - [ ] Implement random-from-list
 
 ### Components to Build
+
 1. **Extended MathLive Wrapper**
+
    - Additional validation options
    - Fraction handling
    - Algebraic comparison
 
 2. **Random From List**
+
    - `{list:...}` syntax
    - Numeric and string lists
    - Weighted selection
@@ -686,6 +756,7 @@ Phase 1 infrastructure is complete. To continue:
    - Uniform distribution
 
 ### Resume Commands
+
 ```bash
 # When ready to start Phase 2
 pnpm tsx scripts/migrate-questions-phase2.ts --dry-run
@@ -700,12 +771,15 @@ pnpm tsx scripts/migrate-questions-phase2.ts
 **Questions Target**: 560 (25% of total)
 
 ### Prerequisites
+
 - [ ] Complete Phase 2
 - [ ] Test image migration
 - [ ] Verify bucket permissions
 
 ### Components to Build
+
 1. **Image Migration Tool**
+
    - Bucket-to-bucket transfer
    - Reference updating
    - Verification system
@@ -723,12 +797,15 @@ pnpm tsx scripts/migrate-questions-phase2.ts
 **Questions Target**: 223 (10% of total) + deferred
 
 ### Prerequisites
+
 - [ ] Complete Phase 3
 - [ ] Build review UI
 - [ ] Implement custom validators
 
 ### Components to Build
+
 1. **Hybrid Review UI**
+
    - Side-by-side comparison
    - Manual override
    - Approval workflow
@@ -741,31 +818,34 @@ pnpm tsx scripts/migrate-questions-phase2.ts
 
 ## Statistics Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Questions | 2,238 |
-| Infrastructure | Complete |
-| Components Built | 8 + Color System |
-| Tests Written | 180+ |
-| Tests Passing | 100% |
-| Code Written | 10,060+ lines |
-| Commits | 3 |
-| TypeScript Errors | 0 |
-| ESLint Errors | 0 |
+| Metric            | Value            |
+| ----------------- | ---------------- |
+| Total Questions   | 2,238            |
+| Infrastructure    | Complete         |
+| Components Built  | 8 + Color System |
+| Tests Written     | 180+             |
+| Tests Passing     | 100%             |
+| Code Written      | 10,060+ lines    |
+| Commits           | 3                |
+| TypeScript Errors | 0                |
+| ESLint Errors     | 0                |
 
 ## Next Actions
 
 ### Option A: Complete Phase 1 Execution
+
 1. Extract questions from TinyMath (add export endpoint)
 2. Run Phase 1 migration (~560 questions)
 3. Validate results
 
 ### Option B: Continue to Phase 2
+
 1. Extend validation system
 2. Add random-from-list support
 3. Migrate intermediate questions
 
 ### Option C: Enhance Current System
+
 1. Add more color palettes
 2. Build migration review UI
 3. Performance optimizations
@@ -774,6 +854,6 @@ pnpm tsx scripts/migrate-questions-phase2.ts
 
 **End of Report**
 
-*Infrastructure Status: ✅ READY FOR PRODUCTION*
-*Migration Pipeline: ✅ 100% VALIDATED*
-*Code Quality: ✅ 0 ERRORS*
+_Infrastructure Status: ✅ READY FOR PRODUCTION_
+_Migration Pipeline: ✅ 100% VALIDATED_
+_Code Quality: ✅ 0 ERRORS_

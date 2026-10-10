@@ -313,7 +313,7 @@ Should return same count as step 2.
 
 1. **Review Results**
 
-   - Check `scripts/MIGRATION-TEST-REPORT.md`
+   - Check `docs/archive/racine/scripts-2025/MIGRATION-TEST-REPORT.md`
    - Verify all test suites passed
 
 2. **Production Readiness**
