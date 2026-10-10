@@ -2,8 +2,9 @@
 """Garde-fou PreToolUse (Bash) : les interdits de CLAUDE.md, appliqués avant la commande.
 
 Sortie 2 + explication sur stderr : Claude Code refuse la commande et renvoie
-l'explication au modèle. (`demander` rend la main à David pour confirmer ;
-aucune règle ne s'en sert aujourd'hui.)
+l'explication au modèle. `demander` rend la main à David pour confirmer : il
+complète la liste `ask` de .claude/settings.json, qui fait foi pour les commandes
+qui perdent du travail mais ne reconnaît qu'un début de commande.
 Tout le reste (sortie 0, rien sur stdout) passe sans bruit. Une entrée illisible
 ne bloque jamais : le garde-fou ne doit pas casser la session.
 
@@ -90,6 +91,19 @@ for brut in segments:
 
     if re.match(r"pnpm\s+(?:run\s+)?release(?::\w+)?\b", s) and "--dry-run" not in s:
         refuser("la version se crée avec la mise en prod : `pnpm deploy:prod`, sur demande explicite de David (ADR 0021).")
+
+    # Commandes qui perdent du travail : la liste `ask` de .claude/settings.json fait
+    # foi, mais elle ne voit qu'un début de commande (`git push origin main --force`
+    # lui échappe). Ici, l'option est cherchée n'importe où dans la commande git.
+    commande_git = re.match(r"git\s+(?:-C\s+\S+\s+)?(\w[\w-]*)\b(.*)", s)
+    if commande_git:
+        verbe, reste = commande_git.group(1), " " + commande_git.group(2) + " "
+        if verbe == "push" and re.search(r"\s(?:--force(?:-with-lease)?(?:=\S*)?|-f)\s", reste):
+            demander("push forcé : il réécrit l'historique distant (liste `ask` de .claude/settings.json).")
+        if verbe == "branch" and (
+            re.search(r"\s-D\s", reste) or (re.search(r"\s--delete\s", reste) and re.search(r"\s--force\s", reste))
+        ):
+            demander("suppression forcée de branche (`-D`) : elle perd les commits non mergés. Préférer `git branch -d`.")
 
     # `pnpm deploy:prod` n'est plus soumis à confirmation (décision de David,
     # 2026-10-10) : la règle « seulement sur sa demande explicite » reste dans
