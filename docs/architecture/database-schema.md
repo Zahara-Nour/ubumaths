@@ -1031,7 +1031,7 @@ recevoir) et `chat_realtime_participants_send` (INSERT = diffuser). Condition : 
 `'chat-' || conversation_id::text = realtime.topic()` (comparaison texte : un topic mal formé est
 refusé, jamais d'erreur de cast). Ne s'appliquent qu'aux canaux **privés**
 (`config: { private: true }`) ; le client passe en privé dans une PR séparée, après application de
-la migration. Suivi : `docs/wip/realtime-chat-prive-progress.md`. Tests :
+la migration. Suivi : `docs/archive/wip/realtime-chat-prive-progress.md`. Tests :
 `tests/integration/realtime-chat-prive.test.ts`.
 
 ## Échanges de cartes — canal temps réel privé (2026-10-04)
@@ -1046,7 +1046,7 @@ SECURITY DEFINER : `marketplace_trades_select_participants` laisse chaque élèv
 Les policies `chat-*` et `trade:*` se combinent en OU sans se croiser (préfixes disjoints,
 prouvé par test sur une conversation et un échange de même uuid). Ne s'appliquent qu'aux canaux
 **privés** ; le client (`src/lib/stores/tradeRealtime.svelte.ts`) passe en privé dans une PR
-séparée. Suivi : `docs/wip/realtime-trade-prive-progress.md`. Tests :
+séparée. Suivi : `docs/archive/wip/realtime-trade-prive-progress.md`. Tests :
 `tests/integration/realtime-trade-prive.test.ts`.
 
 ## Échanges de cartes — la base garde l'échange (2026-10-04)
@@ -1099,7 +1099,7 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
 
 Tests : `tests/integration/marketplace-trades-garde.test.ts`,
 `tests/integration/echanges-delai-confirmation.test.ts`. Suivi :
-`docs/wip/echanges-garde-base-progress.md`, `docs/archive/wip/srs-stats-echanges-delai-progress.md`.
+`docs/archive/wip/echanges-garde-base-progress.md`, `docs/archive/wip/srs-stats-echanges-delai-progress.md`.
 
 ## Carnets Python et paquets SRS — écritures réservées (2026-10-04)
 

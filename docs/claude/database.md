@@ -70,7 +70,7 @@ import type { Profile, FriendProfile } from '$lib/types/database-helpers';
 
 ## RLS — modèle mono-professeur (Option B)
 
-> Refactor « professeur unique » : mergé (PR #11). Doc : `docs/wip/single-teacher-refactor.md`.
+> Refactor « professeur unique » : mergé (PR #11). Doc : `docs/archive/wip/single-teacher-refactor.md`.
 
 - **Un seul prof (+ admin)** : la **classe n'est plus une frontière d'accès**. Le prof unique voit les données pédagogiques de **TOUS les élèves**, y compris ceux **hors classe**.
 - **L'école (`profiles.school_id`) = frontière sociale / safeguarding** ; la classe = sous-groupe d'organisation. Les classements de jeux, le social, etc. sont **bornés par l'école** (défense en profondeur — `p.school_id = public.my_school()`).

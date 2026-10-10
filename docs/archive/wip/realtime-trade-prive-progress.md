@@ -1,7 +1,7 @@
 # Canal temps réel privé des échanges de cartes — progression
 
 Branches `feat/realtime-trade-prive` (PR 1) et `feat/realtime-trade-client-prive` (PR 2), worktree `../ubumaths-wt-trade`. Même chantier que le chat
-(`docs/wip/realtime-chat-prive-progress.md`).
+(`docs/archive/wip/realtime-chat-prive-progress.md`).
 
 ## Décision de David (2026-10-04)
 

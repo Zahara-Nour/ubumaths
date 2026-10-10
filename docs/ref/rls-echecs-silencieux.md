@@ -111,7 +111,7 @@ lui survivent (cf. `worksheets.tags`, 2026-09-09 — 500 sur trois routes).
 
 **Quand tu changes le sens d'une donnée** : inventorier ses lecteurs le jour
 même. Le tri de `class_members` est dans
-[docs/wip/tri-adhesions-archivees.md](../wip/tri-adhesions-archivees.md).
+[docs/archive/wip/tri-adhesions-archivees.md](../archive/wip/tri-adhesions-archivees.md).
 
 ## Retirer une policy : la checklist
 

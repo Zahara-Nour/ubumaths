@@ -14,7 +14,7 @@ Pour **chaque jeu**, exposer un classement à **3 portées** :
 
 Et **retirer le classement public global** actuel (mineurs exposés inter-écoles → RGPD/safeguarding),
 cohérent avec le modèle « école = frontière sociale » du refactor mono-prof
-(cf. `docs/wip/single-teacher-refactor.md`, helpers `my_school()`/`same_school()`).
+(cf. `docs/archive/wip/single-teacher-refactor.md`, helpers `my_school()`/`same_school()`).
 
 ## 2. Décisions verrouillées (David, 2026-06-16)
 

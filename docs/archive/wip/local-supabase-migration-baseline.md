@@ -37,7 +37,7 @@ Cycle de vie de `public.exercises` :
 ### Pourquoi la prod EU n'a jamais vu ça
 
 EU a été construite par **clonage de données + `supabase migration repair --status applied`** (historique
-marqué appliqué, **jamais rejoué** séquentiellement — cf. `docs/wip/supabase-eu-migration-plan.md`).
+marqué appliqué, **jamais rejoué** séquentiellement — cf. `docs/archive/wip/supabase-eu-migration-plan.md`).
 L'US (origine) a été bâtie au fil de l'eau, où l'ordre réel d'application ≠ l'ordre des noms de fichiers.
 Donc l'incohérence n'existe que dans un **replay propre** (= ce que fait le local).
 
@@ -178,5 +178,5 @@ Historique granulaire des 619 préservé dans `supabase/migrations_archive/` (gi
 - `supabase/migrations_archive/` (619 migrations historiques, git mv)
 - `tests/helpers/database/trigger-test-helpers.ts` (cleanup schools)
 - `tests/integration/game-leaderboards.test.ts` (insert minesweeper conforme)
-- `docs/wip/local-supabase-migration-baseline.md` (ce journal)
+- `docs/archive/wip/local-supabase-migration-baseline.md` (ce journal)
 - Commit : `240dd91dd` (chantier) ; commit docs de finalisation à suivre. Branche `chore/local-supabase-baseline`, **non pushée**.

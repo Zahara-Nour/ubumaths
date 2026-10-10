@@ -2,7 +2,7 @@
 
 > **Contexte** : le retrait de `teacher_id` du **cluster classes** (Cluster 1) est **livré + en prod** (2026-06-20, PR #42 + correctif #44 ; nettoyage refs ancien projet #45). Décision au démarrage : **« Cluster 1 uniquement »** → tout le `teacher_id` « tampon propriétaire d'une ressource » (Cluster 2) et les params `p_teacher_id` associés ont été **délibérément mis de côté**. Ce doc trace ce qui reste.
 >
-> Détail du chantier livré : `docs/wip/drop-class-teacher-id-progress.md`. Migration : `supabase/migrations/20260620090000_drop_class_teacher_id_mono_teacher.sql`.
+> Détail du chantier livré : `docs/archive/wip/drop-class-teacher-id-progress.md`. Migration : `supabase/migrations/20260620090000_drop_class_teacher_id_mono_teacher.sql`.
 
 **Légende** : 🟢 gardé légitimement (pas vraiment « à faire ») · 🟡 candidat à finir si on veut · 📝 doc à écrire.
 
