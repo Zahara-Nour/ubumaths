@@ -31,7 +31,7 @@ Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout
 ## Commandes
 
 ```bash
-pnpm dev --port 5175 --strictPort   # dev (TOUJOURS 5175 ; 5173 = user, NE PAS utiliser)
+pnpm dev --port 5175 --strictPort   # dev : 5175 dans le dépôt principal, un autre port libre (5176+) dans un worktree ; 5173 = David, JAMAIS
 pnpm check:incremental              # TS + Svelte (tsgo, ~18 s, 0 erreur exigée)
 pnpm types:cliquet                  # types des tests : cliquet par fichier (--maj après corrections)
 pnpm lint:fast                      # lint des fichiers modifiés (~2,5 s ; évite l'aller-retour CI)

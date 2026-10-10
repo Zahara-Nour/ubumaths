@@ -2,7 +2,7 @@
 
 Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié contre `package.json` le 2026-10-10.
 
-> Ports : **5175** (Claude), **5173** (David — ne jamais l'utiliser), **54321** (Supabase local).
+> Ports : **5175** (Claude, dépôt principal), **5176 et suivants** (Claude, un par worktree : si `--strictPort` échoue, prendre le suivant), **5173** (David — jamais), **54321** (Supabase local).
 > pnpm 12 : pas d'option `-s` (« unexpected argument »).
 
 ## Verrous (Mac mini, 24 Go)
