@@ -42,6 +42,12 @@
    ouvertes ; `api/google/auth/*` sans test de `GOOGLE_CLASSROOM_ENABLED` ; `/auth/register` hors
    `ALLOWED_SERVICE_ROLE_PATHS`.
 
+9bis. **Route d'écriture peut-être ouverte à tous** : `api/riddles/auto-select-daily` n'exige une clé
+que si `VITE_RIDDLE_AUTO_SELECT_API_KEY` est définie ; sinon tout POST passe, et la route écrit
+avec le client service role. Valeur de la variable en prod non lue (secret) : à vérifier. Rien ne
+planifie cette route ; le bouton admin envoie `CRON_SECRET`, pas cette clé (→ 401 si elle est définie).
+(Relevé le 2026-10-10, docs/systeme/serveur.md.)
+
 ## C. Promesses RGPD sans code (aligner le code OU les documents — décision de David)
 
 9. « Qui a accédé aux données de mon enfant ? » : seules les écritures sont tracées, pas de rôle
