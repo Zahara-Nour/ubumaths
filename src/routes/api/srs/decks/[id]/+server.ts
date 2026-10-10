@@ -213,15 +213,23 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Delete deck (cascade deletes cards)
-		const { error: deleteError } = await supabase
+		const { data: deletedDecks, error: deleteError } = await supabase
 			.from('srs_decks')
 			.delete()
 			.eq('id', id)
-			.eq('owner_id', user.id);
+			.eq('owner_id', user.id)
+			.select('id');
 
 		if (deleteError) {
 			console.error('Error deleting deck:', deleteError);
 			return json({ error: 'Failed to delete deck' }, { status: 500 });
+		}
+
+		// La RLS refuse EN SILENCE (0 ligne, aucune erreur) : paquet assigné ou géré
+		// automatiquement (paquet de chapitre). Sans ce contrôle, la route annonçait
+		// « supprimé » (constat E20, 2026-10-10).
+		if (!deletedDecks || deletedDecks.length === 0) {
+			return json({ error: 'Ce paquet ne peut pas être supprimé.' }, { status: 403 });
 		}
 
 		return json({ success: true, message: 'Deck deleted successfully' });
