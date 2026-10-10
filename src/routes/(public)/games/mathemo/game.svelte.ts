@@ -61,7 +61,11 @@ class MathemoGame {
 	/** Current row being edited (0-indexed) */
 	currentRow = $state(0);
 
-	/** Mots jouables, lus en base par la page (`init`) */
+	/**
+	 * Mots jouables, lus en base par la page (`init`). Côté serveur, l'instance
+	 * est partagée par toutes les requêtes : sans fuite tant que tout le monde
+	 * reçoit les mêmes mots (loadDictionary ne dépend pas du lecteur).
+	 */
 	private terms: MathemoTerm[] = [];
 
 	/** Tous les mots jouables, normalisés : une proposition doit en être un */
@@ -92,9 +96,10 @@ class MathemoGame {
 		}
 	}
 
-	/** Un mot au hasard parmi ceux du niveau. */
+	/** Un mot au hasard parmi ceux du niveau ; parmi tous si le niveau n'en a aucun (entrées masquées). */
 	private getRandomWord(level: GradeCode): string {
-		const words = getWordsForLevel(this.terms, level);
+		const ofLevel = getWordsForLevel(this.terms, level);
+		const words = ofLevel.length > 0 ? ofLevel : [...this.allWords];
 		return words[Math.floor(Math.random() * words.length)] ?? '';
 	}
 

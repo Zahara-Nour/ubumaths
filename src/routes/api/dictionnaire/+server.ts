@@ -3,7 +3,7 @@
  *
  * Public, comme l'était le fichier du dictionnaire envoyé au navigateur. La
  * réponse est la même pour tous : mise en cache par le navigateur (1 min) et
- * par le CDN (2 min), au plus 5 minutes de retard en tout avec la mémoire du
+ * par le CDN (90 s), au plus 4 minutes de retard en tout avec la mémoire du
  * serveur. `?frais` : relecture de la base, pour l'admin seulement (sinon
  * ignoré : n'importe qui ne doit pas pouvoir faire relire la base à volonté).
  */

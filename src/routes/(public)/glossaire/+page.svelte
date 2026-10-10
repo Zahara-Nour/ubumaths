@@ -19,6 +19,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
+	import { findPrincipal } from '$lib/lexicon/card';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -132,16 +133,8 @@
 		showTermDialog = true;
 	}
 
-	/** Terme principal de ce nom : un renvoi peut porter le même nom que sa cible (« solution »). */
-	function findPrincipal(name: string): MathTerm | undefined {
-		return (
-			data.entries.find((t) => t.term === name && !t.derivedFrom) ??
-			data.entries.find((t) => t.term === name)
-		);
-	}
-
 	function openTermByName(name: string) {
-		const term = findPrincipal(name);
+		const term = findPrincipal(data.entries, name);
 		if (term) openTerm(term);
 	}
 
@@ -365,7 +358,7 @@
 
 			{@const derivedFrom = selectedTerm.derivedFrom}
 			<!-- Un renvoi sans définition propre montre celle du terme cité : l'élève lit tout de suite -->
-			{@const target = derivedFrom ? findPrincipal(derivedFrom) : undefined}
+			{@const target = derivedFrom ? findPrincipal(data.entries, derivedFrom) : undefined}
 			{@const shownDefinitions =
 				definitions.length === 0 && target?.definitions
 					? resolveForLevel(target.definitions, selectedLevel)

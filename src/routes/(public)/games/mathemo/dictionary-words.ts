@@ -14,7 +14,10 @@ const PLAYABLE_WORD = /^[a-z]+$/;
 
 /** Minuscules, accents retirés : le joueur tape sans accents. */
 export function normalizeString(str: string): string {
-	return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+	return str
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase();
 }
 
 /** Les entrées jouables du dictionnaire, réduites à ce que le jeu lit (envoyées au navigateur). */

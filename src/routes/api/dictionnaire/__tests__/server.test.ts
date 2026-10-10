@@ -50,10 +50,10 @@ describe('GET /api/dictionnaire', () => {
 		loadDictionary.mockResolvedValue(ENTRIES);
 	});
 
-	it('rend les entrées, en cache public (1 min au navigateur, 2 min au CDN)', async () => {
+	it('rend les entrées, en cache public (1 min au navigateur, 90 s au CDN)', async () => {
 		const { response, headers } = call('visiteur');
 		expect(await (await response).json()).toEqual(ENTRIES);
-		expect(headers['cache-control']).toBe('public, max-age=60, s-maxage=120');
+		expect(headers['cache-control']).toBe('public, max-age=60, s-maxage=90');
 		expect(loadDictionary).toHaveBeenCalledWith({}, { fresh: false });
 	});
 
@@ -73,7 +73,7 @@ describe('GET /api/dictionnaire', () => {
 			const { response, headers } = call(who, '?frais=1');
 			await response;
 			expect(loadDictionary).toHaveBeenCalledWith({}, { fresh: false });
-			expect(headers['cache-control']).toBe('public, max-age=60, s-maxage=120');
+			expect(headers['cache-control']).toBe('public, max-age=60, s-maxage=90');
 		}
 	);
 

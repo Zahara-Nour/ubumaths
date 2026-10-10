@@ -6,7 +6,7 @@
  * `/api/dictionnaire`, le glossaire et Mathémo. Comportements de
  * docs/wip/dictionnaire-en-base-spec.md :
  *   1. le site lit exactement les entrées du fichier d'origine ;
- *   3. une lecture est gardée 2 minutes, l'admin relit tout de suite ;
+ *   3. une lecture est gardée 90 secondes, l'admin relit tout de suite ;
  *   4. une entrée masquée disparaît, y compris pour l'admin (à qui la RLS la
  *      montre) : le résultat est partagé par tous les visiteurs.
  * Et la contrainte `dictionary_entries_image_same_site` (20261013090000).
@@ -126,11 +126,11 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 		expect(seeded(await loadDictionary(adminClient, { fresh: true }))).toEqual([`${TAG} visible`]);
 	});
 
-	it('3. une lecture est réutilisée pendant 2 minutes ; une lecture fraîche voit le changement', async () => {
+	it('3. une lecture est réutilisée pendant 90 s ; une lecture fraîche voit le changement', async () => {
 		const now = Date.now();
 		const first = await loadDictionary(anon, { now });
 		const id = await seedEntry('ajoutée', false);
-		// Moins de 2 minutes : même lecture, sans l'ajout
+		// Moins de 90 s : même lecture, sans l'ajout
 		const memo = await loadDictionary(anon, { now: now + 60_000 });
 		expect(memo).toBe(first);
 		expect(seeded(memo)).not.toContain(`${TAG} ajoutée`);
@@ -138,7 +138,7 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 		expect(seeded(await loadDictionary(anon, { fresh: true, now: now + 60_000 }))).toContain(
 			`${TAG} ajoutée`
 		);
-		// Au-delà de 2 minutes : relue
+		// Au-delà de 90 s : relue
 		await service.from('dictionary_entries').update({ hidden: true }).eq('id', id);
 		expect(seeded(await loadDictionary(anon, { now: now + 3 * 60_000 }))).not.toContain(
 			`${TAG} ajoutée`

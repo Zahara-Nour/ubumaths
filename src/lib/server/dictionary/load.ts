@@ -9,8 +9,9 @@
  * élèves, et le résultat peut être gardé en mémoire pour tous.
  *
  * Une modification est visible au plus tard 5 minutes après (spécification,
- * comportement 3) : 2 min ici, 2 min au CDN, 1 min au navigateur
- * (`/api/dictionnaire`). L'admin demande une lecture fraîche.
+ * comportement 3) : 90 s ici, 90 s au CDN, 1 min au navigateur, soit 4 min
+ * (`/api/dictionnaire`). L'admin demande une lecture fraîche. Base
+ * injoignable : la dernière lecture sert encore 15 minutes au plus.
  *
  * @module server/dictionary/load
  */
@@ -25,13 +26,13 @@ import { DICTIONARY_COLUMNS, rowToTerm } from '$lib/dictionary/entry-schema';
 // ---------------------------------------------------------------------------
 
 /** Durée pendant laquelle une lecture sert à toutes les requêtes de l'instance. */
-export const DICTIONARY_MEMO_MS = 2 * 60 * 1000;
+export const DICTIONARY_MEMO_MS = 90 * 1000;
 
 /** Base injoignable : la dernière lecture sert encore, mais pas indéfiniment (entrée masquée entre-temps). */
 export const DICTIONARY_FALLBACK_MS = 15 * 60 * 1000;
 
-/** Cache de `/api/dictionnaire` : navigateur 1 min, CDN 2 min. */
-export const DICTIONARY_PUBLIC_CACHE = 'public, max-age=60, s-maxage=120';
+/** Cache de `/api/dictionnaire` : navigateur 1 min, CDN 90 s. */
+export const DICTIONARY_PUBLIC_CACHE = 'public, max-age=60, s-maxage=90';
 export const DICTIONARY_ADMIN_CACHE = 'private, no-store';
 
 /** PostgREST ne rend pas plus de lignes par requête (`max_rows`). */
@@ -89,7 +90,7 @@ function readOnce(supabase: SupabaseClient<Database>): Promise<MathTerm[]> {
 
 /**
  * Les entrées visibles du dictionnaire. `fresh` relit la base (admin qui vient
- * d'enregistrer) ; sinon une lecture de moins de 2 minutes est réutilisée.
+ * d'enregistrer) ; sinon une lecture de moins de 90 secondes est réutilisée.
  * Base injoignable : la dernière lecture réussie, si elle a moins de 15 minutes.
  */
 export async function loadDictionary(

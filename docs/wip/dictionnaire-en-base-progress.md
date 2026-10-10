@@ -32,6 +32,16 @@ PR 1 : #1024 (fusionnée). PR 2 : worktree `../ubumaths-wt-dico-admin`, branche 
   en prod (vérifié).
 - Tests : 20 intégration verts (4 nouveaux ; filtre `hidden` et image prouvés rouges), route
   (garde admin de `?frais` prouvée rouge), schéma (671 entrées relues à l'identique).
+- Revues 2a (2026-10-10) : security-auditor sans bloquant ; code-reviewer sans bloquant. Corrigé :
+  réponse qui pose un cookie toujours `private, no-store` (`server/private-response.ts`, appelé par
+  `securityHeadersHandle` : une session rafraîchie sur `/api/dictionnaire` partait en cache public) ;
+  marge des 5 min (mémoire 90 s + CDN 90 s + navigateur 60 s) ; repli base injoignable borné à
+  15 min ; une seule lecture pour des requêtes simultanées ; mots cliquables relus après 5 min dans
+  un onglet ouvert + `refreshLexiconRuntime()` ; Mathémo : niveau sans mot → tous les mots ;
+  `findPrincipal` partagé avec le glossaire.
+- Pour 2b : appeler `forgetDictionary()` (serveur) puis `markDictionaryEdited()` +
+  `refreshLexiconRuntime()` (navigateur) après un enregistrement. Hors diff, signalé :
+  `HintReference.svelte` met `href={hint.url}` sans `sanitizeUrl`.
 - Ancien « à faire » : règles de cohérence partagées (refus 10–16), Zod (`see_also`, `image`), lecture en base
   avec cache 5 min (immédiat pour l'admin) dans le glossaire, Mathémo et le runtime des mots
   cliquables, page `/dashboard/admin/dictionnaire` (comportements 5–9), revues.
