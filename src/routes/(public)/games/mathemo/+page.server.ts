@@ -3,11 +3,15 @@
  * ===========================
  * Loads the user's game stats, VIP cards, and gidouilles from the database.
  * Determines if the user can earn rewards (must be a student).
+ * Les mots à deviner viennent du dictionnaire en base (ADR 0022).
  */
 
 import type { PageServerLoad } from './$types';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
+import { error } from '@sveltejs/kit';
+import { isDictionaryAdmin, loadDictionary } from '$lib/server/dictionary/load';
+import { playableTerms } from './dictionary-words';
 
 const LETTER_CARD_IDS = ['mathemo-letter'];
 const UNDO_CARD_IDS = ['mathemo-undo'];
@@ -17,7 +21,16 @@ const MULTIPLIER_CARD_IDS = ['mathemo-multiplier'];
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
+	let words;
+	try {
+		words = playableTerms(await loadDictionary(supabase, { fresh: isDictionaryAdmin(locals) }));
+	} catch (cause) {
+		console.error('[mathémo] dictionnaire illisible', cause);
+		throw error(503, 'Mathémo est momentanément indisponible.');
+	}
+
 	const defaults = {
+		words,
 		canSaveScore: false,
 		gamesPlayed: 0,
 		gamesWon: 0,
@@ -47,6 +60,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const gidouilles = (profileResult.data?.gidouilles as number) ?? 0;
 
 	return {
+		words,
 		canSaveScore,
 		gamesPlayed: scoreResult.data?.games_played ?? 0,
 		gamesWon: scoreResult.data?.games_won ?? 0,

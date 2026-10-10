@@ -7,11 +7,17 @@
  * Fichier à part, un seul test : le dictionnaire n'y est pas encore chargé au
  * premier affichage (chaque fichier de test a ses propres modules).
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import type { QuestionInstance } from '$lib/questions/types';
 import { resolvedMarkdown } from '$lib/ubumark';
+
+// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, les entrées du fichier
+vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+	const { default: entries } = await import('$lib/data/math-dictionary-fr');
+	return { fetchDictionary: async () => entries };
+});
 
 const WITH_PROMPT = {
 	templateId: 'b03',

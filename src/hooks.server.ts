@@ -10,6 +10,7 @@ import { dev } from '$app/environment';
 import { error, redirect } from '@sveltejs/kit';
 import { initEnv } from '$lib/server/env';
 import { getUserProfile } from '$lib/server/auth';
+import { mustStayPrivate, PRIVATE_NO_STORE } from '$lib/server/private-response';
 
 // ====================================================================
 // Environment Variable Validation
@@ -505,12 +506,11 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		);
 	}
 
-	// SECURITY (finding H2): the SSR HTML embeds the Supabase session cookies
-	// (access + refresh token) in the SvelteKit data payload. Prevent shared/proxy
-	// caches from storing an authenticated, token-bearing page.
-	const contentType = response.headers.get('content-type') ?? '';
-	if (event.locals.user && contentType.includes('text/html')) {
-		response.headers.set('Cache-Control', 'private, no-store');
+	// SECURITY (finding H2) : une page d'utilisateur connecté, ou toute réponse qui
+	// pose un cookie (session rafraîchie), porte des jetons : aucun cache partagé
+	// ne doit la garder, même si la route l'a déclarée publique.
+	if (mustStayPrivate(response.headers, Boolean(event.locals.user))) {
+		response.headers.set('Cache-Control', PRIVATE_NO_STORE);
 	}
 
 	return response;

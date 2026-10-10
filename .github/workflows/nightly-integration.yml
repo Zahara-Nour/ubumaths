@@ -47,6 +47,7 @@ on:
       - 'pnpm-workspace.yaml'
       # src/lib : dossiers atteints par la suite
       - 'src/lib/data/math-dictionary-fr.ts'
+      - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
       - 'src/lib/mathAST/**'
       - 'src/lib/migration/**'
