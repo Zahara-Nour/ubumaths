@@ -205,7 +205,8 @@ function sansCommentaires(corps: string): string {
 function defautsDeGarde(corps: string): string[] {
 	const code = sansCommentaires(corps);
 	const garde = code.search(/auth\.role\(\)/);
-	const prof = code.search(/public\.is_teacher_or_admin\(\)/);
+	// `is_admin()` est plus stricte que `is_teacher_or_admin()` : elle garde aussi
+	const prof = code.search(/public\.(?:is_teacher_or_admin|is_admin)\(\)/);
 	const refus = code.search(/errcode\s*=\s*'insufficient_privilege'/);
 	const lecture = code.search(/\b(?:from|join|update|into)\s+public\.\w+/i);
 	return [
