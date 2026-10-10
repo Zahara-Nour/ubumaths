@@ -31,6 +31,7 @@ import {
 	isSuperscript,
 	isFunction
 } from '../guards';
+import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../common/euler-variable';
 import { mapNode, findNodes, getChildren } from '../transforms';
 import {
 	AbortError,
@@ -139,6 +140,7 @@ function exceedsNodeCount(root: MathNode, max: number): boolean {
 	return false;
 }
 
+/** Un refus `unsupported` (taille, budget, variable `e`), sans primitive. */
 function oversizedResult(variable: string, error: string): IntegrateResult {
 	return {
 		variable,
@@ -723,6 +725,10 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
+	// `e` est la constante d'Euler : intégrer « par rapport à e » est refusé
+	if (isEulerVariableName(options?.variable)) {
+		return oversizedResult('e', EULER_NOT_A_VARIABLE);
+	}
 	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
 	// calcul — mise en forme finale comprise — est placé sous le signal ambiant
 	if (activeIntegrations === 0) {
@@ -944,6 +950,11 @@ export function integrateDefinite(
 
 	// First, find the indefinite integral
 	const indefiniteResult = integrate(expr, options);
+
+	// Refus sans repli numérique : `e` n'est pas une variable
+	if (isEulerVariableName(options?.variable)) {
+		return { ...indefiniteResult, lowerBound: lower, upperBound: upper, value: null };
+	}
 
 	if (indefiniteResult.status === 'unsupported' || !indefiniteResult.antiderivative) {
 		// Repli numérique : bornes numériques (−1, π, e compris), f contrôlée

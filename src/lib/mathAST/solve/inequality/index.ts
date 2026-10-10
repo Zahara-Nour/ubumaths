@@ -14,6 +14,7 @@
  * @module mathAST/solve/inequality
  */
 
+import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../../common/euler-variable';
 import type { MathNode, RelationNode } from '../../types';
 import type { Domain } from '../../domain/types';
 import type { SignAnalysisResult, SignedInterval } from '../../sign/types';
@@ -76,6 +77,10 @@ export function solveInequality(
 		);
 	}
 	const inequalityOp = op as InequalityOp;
+
+	if (isEulerVariableName(options.variable)) {
+		throw new SolveInequalityError(EULER_NOT_A_VARIABLE, 'variable: e');
+	}
 
 	const expression = canon(subtract(relation.left, relation.right));
 

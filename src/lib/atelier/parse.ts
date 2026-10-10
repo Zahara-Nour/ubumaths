@@ -13,7 +13,6 @@ import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { transformAST } from '$lib/mathAST/visitor';
 import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
 import {
@@ -510,22 +509,6 @@ function calledFunctions(node: MathNode): string[] {
 	};
 	visit(node);
 	return out;
-}
-
-/**
- * Le nombre d'Euler écrit `e`, et non `\euler`.
- *
- * ⚠️ `toCustom` écrit `\euler`, que ni le parseur du grapheur ni le moteur de
- * Calcul ne lisent (« Unknown command: \euler ») : `f(x) = e^x` ne se traçait
- * pas, `.deriver f` rendait une ligne vide (retour de David, 2026-10-05). `e`
- * est un nom réservé de l'atelier : l'écrire `e` ne peut désigner rien d'autre,
- * et les deux le lisent comme Euler.
- */
-export function withPlainEuler(ast: MathNode): MathNode {
-	return transformAST(ast, {
-		enterConstant: (node) =>
-			node.constant === 'euler' ? { type: 'variable', name: 'e' } : undefined
-	});
 }
 
 /**

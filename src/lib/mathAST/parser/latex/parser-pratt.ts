@@ -689,6 +689,15 @@ class PrattParser {
 	// =========================================================================
 
 	/**
+	 * La lettre déjà consommée : `e` est la constante d'Euler, sauf suivie d'un
+	 * indice (`e_1`, `e_n` : variable indicée). Mêmes règles dans les quatre
+	 * parseurs (LaTeX et custom, pratt et rd).
+	 */
+	private eulerOrVariable(letter: string): MathNode {
+		return letter === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(letter);
+	}
+
+	/**
 	 * Parse a number literal
 	 */
 	private parseNumber(): MathNode {
@@ -713,7 +722,7 @@ class PrattParser {
 
 		// Regular variable
 		this.advance();
-		return this.applyColor(letter === 'e' ? euler() : MathAST.variable(letter));
+		return this.applyColor(this.eulerOrVariable(letter));
 	}
 
 	/**
@@ -808,7 +817,7 @@ class PrattParser {
 		}
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
-		return this.applyColor(name === 'e' ? euler() : MathAST.variable(name));
+		return this.applyColor(this.eulerOrVariable(name));
 	}
 
 	/**
@@ -2170,7 +2179,7 @@ class PrattParser {
 				// A lone letter is just that letter: `\sqrt f(x)` means
 				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
 				this.advance();
-				return this.applyColor(token.value === 'e' ? euler() : MathAST.variable(token.value));
+				return this.applyColor(this.eulerOrVariable(token.value));
 
 			case 'COMMAND':
 				return this.parseCommand();

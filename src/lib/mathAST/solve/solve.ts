@@ -121,7 +121,8 @@ import {
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
-import { applyRules } from '../pattern/rule';
+import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../common/euler-variable';
+import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode } from '../pattern/types';
@@ -542,7 +543,8 @@ function tryCommonFactorDecomposition(
 	if (sum === null) return null;
 
 	// 1. La somme telle qu'elle est écrite (comportement de #852, inchangé).
-	const direct = applyRules(commonFactorRules, sum);
+	const direct = factorCommon(sum);
+	if (direct === null) return null;
 	const fromWrittenSum = nodesEqual(direct, sum)
 		? null
 		: solveFactoredProduct(expr, tidySumFactors(direct), variable, opts);
@@ -553,9 +555,24 @@ function tryCommonFactorDecomposition(
 	//    factorisent.
 	const exposed = sumWithExposedCommonFactor(expr, variable);
 	if (exposed === null) return null;
-	const factored = applyRules(commonFactorRules, exposed.sum);
+	const factored = factorCommon(exposed.sum);
+	if (factored === null) return null;
 	if (!isMultiplication(factored) || !nodesEqual(factored.right, exposed.factor)) return null;
 	return solveFactoredProduct(expr, tidySumFactors(factored), variable, opts);
+}
+
+/**
+ * La mise en facteur commun, ou `null` si les règles ne trouvent pas de point
+ * fixe (`RuleIterationLimitError`) : la tentative est abandonnée et le solveur
+ * passe aux autres stratégies, au lieu de faire échouer toute la résolution.
+ */
+function factorCommon(sum: MathNode): MathNode | null {
+	try {
+		return applyRules(commonFactorRules, sum);
+	} catch (error) {
+		if (error instanceof RuleIterationLimitError) return null;
+		throw error;
+	}
 }
 
 /**
@@ -1743,6 +1760,10 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			'unknown',
 			`Relation recue: ${equation.relation}`
 		);
+	}
+
+	if (isEulerVariableName(opts.variable)) {
+		throw new SolveError(EULER_NOT_A_VARIABLE, 'unknown', 'variable: e');
 	}
 
 	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`

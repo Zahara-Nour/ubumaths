@@ -854,12 +854,19 @@ class RDParser {
 	}
 
 	/**
-	 * Parse a variable (single letter). La lettre `e` est la constante d'Euler,
-	 * comme dans `parser-pratt`.
+	 * La lettre déjà consommée : `e` est la constante d'Euler, sauf suivie d'un
+	 * indice (`e_1`, `e_n` : variable indicée), comme dans `parser-pratt`.
+	 */
+	private eulerOrVariable(letter: string): MathNode {
+		return letter === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(letter);
+	}
+
+	/**
+	 * Parse a variable (single letter).
 	 */
 	private parseVariable(): MathNode {
 		const token = this.advance();
-		return this.applyColor(token.value === 'e' ? euler() : MathAST.variable(token.value));
+		return this.applyColor(this.eulerOrVariable(token.value));
 	}
 
 	/**
@@ -1440,7 +1447,7 @@ class RDParser {
 				// A lone letter is just that letter: `\sqrt f(x)` means
 				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
 				this.advance();
-				return this.applyColor(token.value === 'e' ? euler() : MathAST.variable(token.value));
+				return this.applyColor(this.eulerOrVariable(token.value));
 
 			case 'COMMAND':
 				return this.parseCommand();

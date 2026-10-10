@@ -722,9 +722,10 @@ class CustomPrattParser {
 		const letter = token.value;
 
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
+		// `e_1`, `e_n` : variable indicée (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
 			this.advance();
-			return this.applyColor(euler());
+			return this.applyColor(this.check('UNDERSCORE') ? MathAST.variable('e') : euler());
 		}
 		if (letter === 'i' && this.subscriptDepth === 0) {
 			this.advance();
@@ -828,7 +829,9 @@ class CustomPrattParser {
 		}
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
-		return this.applyColor(name === 'e' ? euler() : MathAST.variable(name));
+		return this.applyColor(
+			name === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(name)
+		);
 	}
 
 	/**

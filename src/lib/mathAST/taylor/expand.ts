@@ -13,6 +13,7 @@
  * @module mathAST/taylor
  */
 
+import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../common/euler-variable';
 import type { MathNode } from '../types';
 import type { TaylorOptions } from './types';
 import type { FunctionBindings } from '../eval/function-bindings';
@@ -395,6 +396,10 @@ export function taylorExpand(
 	const varName = options?.variable ?? DEFAULT_TAYLOR_OPTIONS.variable;
 	const center = options?.center ?? DEFAULT_TAYLOR_OPTIONS.center;
 	const order = options?.order ?? DEFAULT_TAYLOR_OPTIONS.order;
+
+	if (isEulerVariableName(varName)) {
+		throw new TaylorError(EULER_NOT_A_VARIABLE, undefined, 'variable: e');
+	}
 
 	// L'ordre est le degré maximal : 0 rend la constante f(a)
 	if (!Number.isInteger(order) || order < 0) {

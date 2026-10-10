@@ -244,21 +244,17 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
 	}
 }
 
-/** La constante e telle que l'écrit `toCustom` (`\\euler`), commande suivante exclue */
-const CUSTOM_EULER = /\\euler(?![A-Za-z])/g;
-
 /**
  * Formule nettoyée réécrite en syntaxe maison, lisible aussi par le parseur LaTeX du
- * validateur (qui lit la réponse attendue) : `toCustom` écrit la constante e `\\euler`,
- * illisible en LaTeX — `1e^{2x}` nettoyé devenait `\\euler^{2x}` et la bonne réponse
- * de l'élève était jugée fausse. On écrit `e`, comme l'auteur. Garde : le texte doit se
- * relire en la MÊME formule (`1\\pi x` donnait `\\pix`) ; sinon `null`.
+ * validateur (qui lit la réponse attendue) ; `toCustom` écrit la constante e `e`, comme
+ * l'auteur. Garde : le texte doit se relire en la MÊME formule (`1\\pi x` donnait
+ * `\\pix`) ; sinon `null`.
  */
 function readableCustom(
 	cleaned: MathNode,
 	genericFunctions?: GenericFunctionConfig
 ): string | null {
-	const text = toCustom(cleaned).replace(CUSTOM_EULER, 'e');
+	const text = toCustom(cleaned);
 	const reread = parseCustomSafe(text, { genericFunctions });
 	return reread.ast && toLatex(reread.ast) === toLatex(cleaned) ? text : null;
 }

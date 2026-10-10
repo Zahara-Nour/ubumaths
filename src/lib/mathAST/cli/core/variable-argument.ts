@@ -29,7 +29,8 @@
 import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
 import { variable } from '../../factory';
-import { isGreek, isSubscript, isVariable } from '../../guards';
+import { isEulerConstant, isGreek, isSubscript, isVariable } from '../../guards';
+import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../../common/euler-variable';
 import { toLatex } from '../../latex-generator';
 import { mapNode } from '../../transforms';
 import { parse, type PipelineOptions } from './pipeline';
@@ -48,8 +49,8 @@ const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9+-
 
 /**
  * Noms que l'expression contient mais qu'on ne propose pas comme autre
- * variable : `e` (Euler), `i` (imaginaire), `pi`. On peut toujours calculer
- * par rapport à eux en les nommant.
+ * variable : `e` (Euler), `i` (imaginaire), `pi`. Nommer `e` après `;` est refusé :
+ * `e` est la constante d'Euler, jamais une variable de calcul.
  */
 const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
@@ -358,6 +359,9 @@ export function chosenVariable(
 			: guessedVariable(guess.node, guess.bound, guess.label);
 	}
 	const parsed = parse(typed, parserOptions).ast;
+	if (parsed !== undefined && isEulerConstant(parsed)) {
+		return { ok: false, message: EULER_NOT_A_VARIABLE };
+	}
 	const name = parsed === undefined ? null : variableNameOf(parsed);
 	if (name === null) return { ok: false, message: `« ${typed} » n'est pas une variable.` };
 	return { ok: true, variable: name };
@@ -622,6 +626,7 @@ function applyKeyword(
 	}
 	switch (keyword) {
 		case 'pour':
+			if (isEulerVariableName(value)) return EULER_NOT_A_VARIABLE;
 			if (!VARIABLE_NAME.test(value)) return `« ${value} » n'est pas une variable.`;
 			if (result.variable !== null) return 'La variable est donnée deux fois.';
 			result.variable = value;

@@ -42,3 +42,18 @@ describe('ln / exp avec la lettre e (constante d’Euler)', () => {
 		});
 	});
 });
+
+// Décision de David (2026-10-10) : `factoriser` calcule un produit de deux
+// nombres (aucune de ses règles ne décompose un entier, rien n'est défait).
+describe('factoriser calcule nombre × nombre', () => {
+	it.each([
+		['2\\times 3', '6'],
+		['3\\ln(e^{2})', '6']
+	])('%s → %s', (input, expected) => {
+		const r = generatePedagogicalSimplifySteps(parseLatex(input), {
+			intent: 'factoriser',
+			schoolLevel: 'lycee'
+		});
+		expect(toLatex(r.result)).toBe(expected);
+	});
+});

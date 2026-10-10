@@ -216,6 +216,7 @@ export {
 	applyRule,
 	applyRuleDeep,
 	applyRules,
+	RuleIterationLimitError,
 	applyRulesDeepOnce,
 	applyRulesDeepOnceTracked,
 	applyRulesWithSteps
