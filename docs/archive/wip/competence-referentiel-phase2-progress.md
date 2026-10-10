@@ -2,7 +2,7 @@
 
 > **Démarré** : 2026-06-09
 > **Statut** : en cours
-> **Spec** : `docs/wip/skills-referentiel-design.md` (décision 59 — tagging template ; §5 — branchement validation auto)
+> **Spec** : `docs/archive/wip/skills-referentiel-design.md` (décision 59 — tagging template ; §5 — branchement validation auto)
 > **Phase 1 livrée** : 3 commits + 3 migrations push sur Ubumaths2 (cf. `competence-referentiel-phase1-progress.md`)
 
 ## Constat critique du pool existant

@@ -326,4 +326,4 @@ Avant de re-optimiser, **mesurer**. Le code chantier est livrable mais sans prof
 
 - [`code-quality.md`](./code-quality.md) — Refactor structure (factorisation FSRS + isTemplateTaggedFamilyA).
 - [`README.md`](./README.md) — Action items cross-cutting.
-- `docs/wip/srs-fsrs-security-audit-findings.md` — Audit sécu qui mentionne aussi des risques perf indirects.
+- `docs/archive/wip/srs-fsrs-security-audit-findings.md` — Audit sécu qui mentionne aussi des risques perf indirects.

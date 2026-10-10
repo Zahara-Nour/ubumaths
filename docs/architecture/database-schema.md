@@ -207,8 +207,8 @@ Migrations : `20260829100000_refonte_referentiel_fusion.sql` ·
 `20260831090000_curriculum_point_code_auto.sql` ·
 `20260831093000_curriculum_point_delete_guard.sql`.
 
-Spec : `docs/wip/refonte-referentiel-progress.md` (décisions 1-14). Historique
-famille A : `docs/wip/skills-referentiel-design.md` (décisions 57-72), dont la
+Spec : `docs/archive/wip/refonte-referentiel-progress.md` (décisions 1-14). Historique
+famille A : `docs/archive/wip/skills-referentiel-design.md` (décisions 57-72), dont la
 décision 57 (« exactement 4 capacités par objectif ») est la cause racine du
 dédoublement — c'est elle que `rang` nullable dissout.
 
@@ -719,7 +719,7 @@ RLS : SELECT tout authenticated, écriture admin uniquement.
 
 ### Audits
 
-- `docs/wip/srs-fsrs-security-audit-findings.md` — audit sécurité security-auditor (5 findings, 3 P2 traités, 2 P1 documentés pour V2 dont la spec anti-fraud).
+- `docs/archive/wip/srs-fsrs-security-audit-findings.md` — audit sécurité security-auditor (5 findings, 3 P2 traités, 2 P1 documentés pour V2 dont la spec anti-fraud).
 - Perf : 3 findings traités (cf. commit `9389de4bc`), 2 reportés V2 (refonte PL/pgSQL `update_student_skill_state_a`, devenue `update_student_point_state` à la fusion 2026-08-29 + RPC ensureProgrammeDeck).
 
 ---
@@ -1099,7 +1099,7 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
 
 Tests : `tests/integration/marketplace-trades-garde.test.ts`,
 `tests/integration/echanges-delai-confirmation.test.ts`. Suivi :
-`docs/wip/echanges-garde-base-progress.md`, `docs/wip/srs-stats-echanges-delai-progress.md`.
+`docs/wip/echanges-garde-base-progress.md`, `docs/archive/wip/srs-stats-echanges-delai-progress.md`.
 
 ## Carnets Python et paquets SRS — écritures réservées (2026-10-04)
 
@@ -1127,4 +1127,4 @@ sont pas visés.
 
 ⚠️ Ordre : le code de `ensureProgrammeDeck` (client service) doit être en prod **avant** cette
 migration, sinon plus aucun paquet Programme n'est créé, en silence. Tests :
-`tests/integration/carnets-srs-acces.test.ts`. Suivi : `docs/wip/carnets-srs-acces-progress.md`.
+`tests/integration/carnets-srs-acces.test.ts`. Suivi : `docs/archive/wip/carnets-srs-acces-progress.md`.

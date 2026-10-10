@@ -1,7 +1,7 @@
 # Étude — Export compétences vers Pronote / Sacoche / EcoleDirecte
 
 > **Mode** : étude/audit uniquement. **Pas d'implémentation, pas de migration, pas de commit.**
-> Livrable attendu : un document d'analyse markdown dans `docs/wip/export-competences-study.md`.
+> Livrable attendu : un document d'analyse markdown dans `docs/archive/wip/export-competences-study.md`.
 
 ---
 
@@ -166,7 +166,7 @@ Aucune table `socle_components`, aucune colonne `socle_mapping`, aucun seed socl
 
 ## Livrable
 
-Document `docs/wip/export-competences-study.md` structuré comme suit :
+Document `docs/archive/wip/export-competences-study.md` structuré comme suit :
 
 ```markdown
 # Étude — Export compétences vers Pronote / Sacoche / EcoleDirecte
@@ -255,7 +255,7 @@ Document `docs/wip/export-competences-study.md` structuré comme suit :
 - `src/lib/types/database.ts` — chercher `profiles`, `schools`, `academic_periods`, `class_members`
 - `src/routes/(protected)/dashboard/teacher/evaluation-tasks/` — UI prof existante (pattern à réutiliser)
 - `docs/architecture/database-schema.md` — section "Compétences"
-- `docs/wip/skills-referentiel-design.md` — spec architecturale famille B
+- `docs/archive/wip/skills-referentiel-design.md` — spec architecturale famille B
 
 ---
 

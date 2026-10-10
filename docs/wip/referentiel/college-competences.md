@@ -4,7 +4,7 @@
 > **Famille** : B (les 6 compétences mathématiques transversales). La famille A est dans `6e-savoirs.md`.
 > **Source canonique** : `docs/wip/referentiel/cadre_evaluation_six_competences_mathematiques.md`. Ce fichier-ci est la **transcription opérationnelle** du cadre — observables par compétence, codes, règles de validation. La justification pédagogique de chaque choix est dans la source canonique.
 >
-> **Modèle d'évaluation** : codage ternaire `+/–/∅` par tâche, consolidation par observable, règle conjonctive par compétence avec cœur d'excellence. Niveaux du socle : Insuffisante / Fragile / Satisfaisante / Très bonne maîtrise. Détails techniques dans `docs/wip/skills-referentiel-design.md` sections 3 et 6.
+> **Modèle d'évaluation** : codage ternaire `+/–/∅` par tâche, consolidation par observable, règle conjonctive par compétence avec cœur d'excellence. Niveaux du socle : Insuffisante / Fragile / Satisfaisante / Très bonne maîtrise. Détails techniques dans `docs/archive/wip/skills-referentiel-design.md` sections 3 et 6.
 
 ---
 
@@ -476,7 +476,7 @@ L'IGÉSR assume explicitement que « des cas de chevauchement entre compétences
 ## Pour aller plus loin
 
 - Pour les **justifications pédagogiques** détaillées de chaque observable, les **notes d'arbitrage** sur les choix de fusion / séparation, et les **frontières** entre compétences : voir le cadre canonique `cadre_evaluation_six_competences_mathematiques.md`.
-- Pour le **modèle de données**, l'algorithme de consolidation et les caches : voir `docs/wip/skills-referentiel-design.md` (sections 3, 6, 7).
+- Pour le **modèle de données**, l'algorithme de consolidation et les caches : voir `docs/archive/wip/skills-referentiel-design.md` (sections 3, 6, 7).
 - Pour le **vocabulaire fixé** (sous-dimensions, observables, codes, périmètre) : voir le design doc section 1.
 
 ## Récapitulatif

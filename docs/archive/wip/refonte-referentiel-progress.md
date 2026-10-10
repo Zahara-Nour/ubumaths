@@ -327,7 +327,7 @@ juste.
 
 La page utilisait le `confirm()` natif. Remplacé par `ConfirmDialog`, le
 composant du projet. **35 autres fichiers** l'utilisent encore : chantier à part,
-inventorié dans [`confirm-dialog-uniformisation.md`](confirm-dialog-uniformisation.md).
+inventorié dans [`confirm-dialog-uniformisation.md`](../../wip/confirm-dialog-uniformisation.md).
 
 ### Environnement de développement local
 

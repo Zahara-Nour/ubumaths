@@ -3,7 +3,7 @@
 Chantier B + C (anti-fraud pattern detection + UI prof "Élèves à surveiller").
 
 Plan complet : `/Users/david/.claude/plans/immutable-painting-cake.md`
-Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
+Spec TDD : `docs/archive/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
@@ -11,7 +11,7 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ### Livré
 
-- `docs/wip/srs-anti-fraud-spec-tdd.md` (NEW) — 12 comportements (B1..B12) + cas limites + cas d'erreur + vérif e2e + métriques validation.
+- `docs/archive/wip/srs-anti-fraud-spec-tdd.md` (NEW) — 12 comportements (B1..B12) + cas limites + cas d'erreur + vérif e2e + métriques validation.
 
 ### Commit Phase 0
 
@@ -253,7 +253,7 @@ Migrations pushées en prod, `pnpm db:types` exécuté. Les types `Tables<'srs_a
 
 ## Documents produits
 
-- `docs/wip/srs-anti-fraud-spec-tdd.md` (Phase 0)
+- `docs/archive/wip/srs-anti-fraud-spec-tdd.md` (Phase 0)
 - `docs/wip/srs-anti-fraud-progress.md` (ce doc)
 - `docs/ref/srs/anti-fraud.md` (référence finale)
 - Mises à jour : `docs/ref/srs/README.md`, `docs/ref/srs/security.md`, `docs/architecture/database-schema.md`.

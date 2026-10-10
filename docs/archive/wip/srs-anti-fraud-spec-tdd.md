@@ -1,7 +1,7 @@
 # Spec TDD — Anti-Cheat SRS (chantier B + C)
 
 > Date : 2026-06-10
-> Source : `docs/wip/srs-fsrs-security-audit-findings.md` §V2 + plan `/Users/david/.claude/plans/immutable-painting-cake.md`
+> Source : `docs/archive/wip/srs-fsrs-security-audit-findings.md` §V2 + plan `/Users/david/.claude/plans/immutable-painting-cake.md`
 > Phase 0 du plan : verrouille les comportements attendus AVANT le code.
 
 ---

@@ -213,8 +213,8 @@ Quand le tagging dépassera 20 templates ET que le système sera actif depuis �
 
 ## 9. Références
 
-- Spec TDD complète : `docs/wip/srs-anti-fraud-spec-tdd.md`
+- Spec TDD complète : `docs/archive/wip/srs-anti-fraud-spec-tdd.md`
 - Plan d'exécution : `~/.claude/plans/immutable-painting-cake.md`
-- Audit sécurité initial : `docs/wip/srs-fsrs-security-audit-findings.md`
+- Audit sécurité initial : `docs/archive/wip/srs-fsrs-security-audit-findings.md`
 - Progress : `docs/wip/srs-anti-fraud-progress.md`
 - Modèle d'architecture : page analytics existante (`docs/ref/teacher-analytics.md`)

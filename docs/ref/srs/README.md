@@ -141,7 +141,7 @@ Restants — **documentés V2** (non rentables sans tests d'intégration PG) :
 - **Grade abuse** sur review SRS du deck Programme — analogue au modèle Anki self-graded. Verdict BO `is_acquired` protégé par règle `distinct_template_successes >= 2` tant que peu de capacités multi-templates.
 - **`srs_card_stats` writable directement par l'élève** (préexistant migration 080) — amplifié par chantier via `templateToBadge`. Fix V2 = REVOKE + RPC `SECURITY DEFINER`.
 
-**Spec V2 anti-fraud pattern detection** détaillée dans `docs/wip/srs-fsrs-security-audit-findings.md` (6 signaux + score composite + table `srs_anti_fraud_flags`).
+**Spec V2 anti-fraud pattern detection** détaillée dans `docs/archive/wip/srs-fsrs-security-audit-findings.md` (6 signaux + score composite + table `srs_anti_fraud_flags`).
 
 ---
 
@@ -319,9 +319,9 @@ Puis suite logique : **étendre le tagging des templates 6ᵉ** (chantier pédag
 ## Voir aussi
 
 - [`anti-fraud.md`](./anti-fraud.md) — système anti-cheat livré 2026-06-10, désactivé par défaut.
-- [`docs/wip/srs-fsrs-spec-tdd.md`](../../wip/srs-fsrs-spec-tdd.md) — spec TDD originale (comportements attendus).
+- [`docs/archive/wip/srs-fsrs-spec-tdd.md`](../../archive/wip/srs-fsrs-spec-tdd.md) — spec TDD originale (comportements attendus).
 - [`docs/archive/wip/srs-fsrs-progress.md`](../../archive/wip/srs-fsrs-progress.md) — historique d'exécution du chantier (archivé).
-- [`docs/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — audit sécurité + spec V2 anti-fraud + backlog V2.
+- [`docs/archive/wip/srs-fsrs-security-audit-findings.md`](../../archive/wip/srs-fsrs-security-audit-findings.md) — audit sécurité + spec V2 anti-fraud + backlog V2.
 - [`docs/architecture/database-schema.md`](../../architecture/database-schema.md) — schéma DB global (sections « Compétences » + « SRS / FSRS »).
 - [`CLAUDE.md`](../../../CLAUDE.md) — instructions projet pour Claude Code.
 - `MEMORY.md` — mémoire persistante de Claude Code (hors dépôt, machine locale).

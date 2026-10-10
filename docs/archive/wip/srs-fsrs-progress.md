@@ -1,7 +1,7 @@
 # Progress — Refonte SRS / FSRS / Référentiel famille A
 
 > Plan : `~/.claude/plans/immutable-painting-cake.md`
-> Spec TDD : `docs/wip/srs-fsrs-spec-tdd.md`
+> Spec TDD : `docs/archive/wip/srs-fsrs-spec-tdd.md`
 > Architecture cible : `docs/wip/srs-fsrs-architecture-cible.md`
 > Démarrage : 2026-06-10
 
@@ -26,7 +26,7 @@
 
 **Livrables** :
 
-- `docs/wip/srs-fsrs-spec-tdd.md` — comportements attendus pour chaque API, trigger, helper, UI.
+- `docs/archive/wip/srs-fsrs-spec-tdd.md` — comportements attendus pour chaque API, trigger, helper, UI.
 - Décisions par défaut actées (8 questions résolues, cf. §0).
 
 **Décisions clés validées** :
@@ -89,9 +89,9 @@
 
 **WIP (chantier — peuvent être nettoyés ultérieurement)** :
 
-- `docs/wip/srs-fsrs-spec-tdd.md` (Phase 0, spec TDD originale).
+- `docs/archive/wip/srs-fsrs-spec-tdd.md` (Phase 0, spec TDD originale).
 - `docs/wip/srs-fsrs-progress.md` (ce document — historique d'exécution).
-- `docs/wip/srs-fsrs-security-audit-findings.md` (audit sécurité + spec V2 anti-fraud + risques préexistants).
+- `docs/archive/wip/srs-fsrs-security-audit-findings.md` (audit sécurité + spec V2 anti-fraud + risques préexistants).
 
 **Plan d'exécution** :
 

@@ -337,4 +337,4 @@ Comme `pnpm test:triggers` est indisponible, valider les triggers via :
 
 - [`code-quality.md`](./code-quality.md) — Dette technique liée aux tests.
 - [`README.md`](./README.md) — Action items cross-cutting.
-- [`docs/wip/srs-fsrs-spec-tdd.md`](../../wip/srs-fsrs-spec-tdd.md) — Comportements attendus (utile pour écrire les assertions).
+- [`docs/archive/wip/srs-fsrs-spec-tdd.md`](../../archive/wip/srs-fsrs-spec-tdd.md) — Comportements attendus (utile pour écrire les assertions).

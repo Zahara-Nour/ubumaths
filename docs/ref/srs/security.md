@@ -10,7 +10,7 @@ posture: acceptable
 
 Audit security-auditor 2026-06-10 sur la surface du chantier SRS / FSRS / Référentiel famille A. **3 findings P2 corrigés**, **2 findings P1 documentés pour V2** (analogues Anki self-graded et risque préexistant amplifié).
 
-> Audit complet détaillé dans `docs/wip/srs-fsrs-security-audit-findings.md` (avec spec V2 anti-fraud).
+> Audit complet détaillé dans `docs/archive/wip/srs-fsrs-security-audit-findings.md` (avec spec V2 anti-fraud).
 
 ---
 
@@ -113,7 +113,7 @@ Fallback `DEFAULT_FSRS_PARAMS` si invalide.
 - Le verdict BO `is_acquired` exige `distinct_template_successes >= 2` : pour tricher, l'élève doit avoir DEUX templates différents tagués sur la capacité. **3 templates 6ᵉ tagués actuellement**, peu de capacités multi-templates.
 - Le prof voit AUSSI les résultats Monde 1 (interactif, non trichables). La triche SRS est détectable par contraste.
 
-**Mitigations V2** (spec complète dans `docs/wip/srs-fsrs-security-audit-findings.md`) :
+**Mitigations V2** (spec complète dans `docs/archive/wip/srs-fsrs-security-audit-findings.md`) :
 
 - Anti-fraud pattern detection (6 signaux, score composite, table `srs_anti_fraud_flags`).
 - À activer dès **≥ 20 templates 6ᵉ tagués + ≥ 5 capacités multi-templates**.
@@ -219,6 +219,6 @@ L'audit a explicitement vérifié et trouvé **sains** :
 ## 7. Voir aussi
 
 - [`anti-fraud.md`](./anti-fraud.md) — Système anti-cheat livré 2026-06-10 (5 signaux + composite + UI prof).
-- [`docs/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — Audit détaillé + spec V2 anti-fraud (6 signaux + table + UI prof).
+- [`docs/archive/wip/srs-fsrs-security-audit-findings.md`](../../archive/wip/srs-fsrs-security-audit-findings.md) — Audit détaillé + spec V2 anti-fraud (6 signaux + table + UI prof).
 - [`code-quality.md`](./code-quality.md) — Refactor structure (ne pas confondre avec audit sécu).
 - [`README.md`](./README.md) — Action items cross-cutting prioritaires.

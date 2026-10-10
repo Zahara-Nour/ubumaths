@@ -494,7 +494,7 @@ date_structure_validee: 2026-06-08
 
 ## Documents liés
 
-- **Design doc** : `docs/wip/skills-referentiel-design.md` — architecture du système de compétences (modèle B = décision 57)
+- **Design doc** : `docs/archive/wip/skills-referentiel-design.md` — architecture du système de compétences (modèle B = décision 57)
 - **Progress doc** : `docs/wip/referentiel/6e-savoirs-progress.md` — points en discussion par item, justifications détaillées des choix vs PDF 2016
 - **Famille B** : `docs/wip/referentiel/college-competences.md` — référentiel des 6 compétences mathématiques transversales (cadre canonique)
 - **Cadre famille B** : `docs/wip/referentiel/cadre_evaluation_six_competences_mathematiques.md`

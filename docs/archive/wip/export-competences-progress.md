@@ -1,6 +1,6 @@
 # Progression — Vue + Export compétences (Chantier 1 MVP)
 
-> Feature livrée le 2026-06-11. Étude source : `docs/wip/export-competences-study.md`.
+> Feature livrée le 2026-06-11. Étude source : `docs/archive/wip/export-competences-study.md`.
 > Plan : `~/.claude/plans/luminous-snuggling-puzzle.md`.
 
 ## État : ✅ Implémentation complète (avant commit)

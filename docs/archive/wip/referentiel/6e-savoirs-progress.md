@@ -480,7 +480,7 @@ _(Renommage validé depuis « Représenter et lire des données » → aligné s
 
 - `docs/wip/referentiel/6e-savoirs-progress.md` (ce document) — progression session par session, à jour
 - `docs/wip/referentiel/6e-savoirs.md` (à réécrire) — référentiel final modèle B, à produire après ce point de validation
-- `docs/wip/skills-referentiel-design.md` (patché 2026-06-07) — design doc à jour avec décision 57 et historique suite 18
+- `docs/archive/wip/skills-referentiel-design.md` (patché 2026-06-07) — design doc à jour avec décision 57 et historique suite 18
 
 ## Étapes suivantes proposées
 

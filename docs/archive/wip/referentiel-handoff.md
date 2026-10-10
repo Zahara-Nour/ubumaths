@@ -48,7 +48,7 @@ Deux modèles en compétition. **Aucun n'est validé.**
 ## Documents de référence à relire avant de redémarrer
 
 1. **`~/Google Drive/Réorganisation/Evaluations/echelles descriptives connaissance 6 2016.pdf`** — référentiel personnel de David (2016), modèle visuel/pédagogique du modèle B. **Tableau 4 colonnes × ~15 items**, intitulés très simples (« Comparer deux nombres décimaux »).
-2. **`docs/wip/skills-referentiel-design.md`** — design doc actuel. Sections clés :
+2. **`docs/archive/wip/skills-referentiel-design.md`** — design doc actuel. Sections clés :
    - **§1** : hiérarchies, vocabulaire fixé, **cible 15-25 objectifs / 3-6 capacités par objectif** (cible actée, contraignante).
    - **§3** : régimes d'évaluation famille A (échelle 1-4 sur capacité) et famille B (cadre canonique).
    - **§6.1, §6.3** : algorithmes de calcul du niveau atteint et de l'état d'un objectif.

@@ -292,7 +292,7 @@ curriculum_points ......... 453    exercise_curriculum_points  0
 Le référentiel est semé, mais **aucun exercice n'est rattaché à un point** et
 **aucune séance ne cite de point**. La couverture par classe et la heatmap
 d'avancement calculent donc sur du vide. Voir
-[suivi-programme-progress.md](suivi-programme-progress.md).
+[suivi-programme-progress.md](../archive/wip/suivi-programme-progress.md).
 
 **Ce n'est ni un chantier ni un abandon : c'est de la saisie.** Tranché le
 2026-09-13 — David taguera lui-même, rien à coder.
