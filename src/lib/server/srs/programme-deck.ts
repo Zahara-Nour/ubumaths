@@ -9,7 +9,7 @@
  * `resource-tags.ts` (`syncResourceTags`).
  *
  * Spec : `docs/archive/wip/srs-fsrs-spec-tdd.md` §4.
- * Architecture : `docs/systeme/srs/architecture.md` §3.4 + §4.1.
+ * Architecture : `docs/systeme/srs.md` §3.4 + §4.1.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
