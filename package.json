@@ -66,6 +66,7 @@
 		"db:start": "bash scripts/with-db-lock.sh supabase start",
 		"db:stop": "bash scripts/with-db-lock.sh supabase stop",
 		"db:reset": "bash scripts/with-db-lock.sh supabase db reset",
+		"db:seed-riche": "bash scripts/with-db-lock.sh tsx scripts/db-seed-riche/index.ts",
 		"db:dev-accounts": "bash scripts/with-db-lock.sh docker exec -i supabase_db_ubumaths psql -U postgres -d postgres -q -v ON_ERROR_STOP=1 < supabase/seed/dev_accounts.sql && echo \"✓ comptes de dev restaurés\"",
 		"db:status": "supabase db execute --sql \"SELECT COUNT(CASE WHEN p.id IS NULL THEN 1 END) as missing_profiles, COUNT(CASE WHEN p.id IS NOT NULL THEN 1 END) as users_with_profiles, COUNT(*) as total_users FROM auth.users u LEFT JOIN public.profiles p ON u.id = p.id;\"",
 		"db:link": "supabase link",

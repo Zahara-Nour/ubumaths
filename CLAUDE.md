@@ -42,6 +42,7 @@ pnpm test:integration               # intégration + DB (Supabase local)
 
 pnpm db:start / db:reset            # Supabase local (reset = recrée depuis le baseline)
 pnpm db:migrate / db:types          # push migrations → EU / régénère database.ts (cf. §Migrations)
+pnpm db:reset && pnpm db:seed-riche # base locale remplie : contenu de la prod + 30 élèves fictifs (eleveNN@local.test / local-eleve)
 pnpm maintenance:on / :off          # mode maintenance prod (releases à risque)
 pnpm deploy:prod                    # mise en prod : version (CHANGELOG, tag) + branche production (sur demande de David)
 ```
