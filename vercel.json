@@ -6,7 +6,7 @@
 		}
 	},
 	"crons": [],
-	"ignoreCommand": "if [ \"$VERCEL_ENV\" != \"production\" ]; then exit 0; else git diff --quiet HEAD^ HEAD -- ':(exclude)docs/**' ':(exclude)**/*.md'; fi",
+	"ignoreCommand": "bash scripts/vercel-ignore-build.sh",
 	"headers": [
 		{
 			"source": "/upsilon-simulator/(.*)",
