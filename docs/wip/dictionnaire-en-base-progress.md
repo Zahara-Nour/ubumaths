@@ -1,7 +1,7 @@
 # Dictionnaire en base — progression
 
 ADR 0022 et spécification validées par David le 2026-10-10 ([spec](dictionnaire-en-base-spec.md)).
-PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : worktree `../ubumaths-wt-dictionnaire-admin`, branche `feat/dictionnaire-admin`.
+PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : #1036 (fusionnée). Historique fermé : #1043 (fusionnée, migration en prod).
 
 ## PR 1 — tables, droits, reprise (FAITE, #1024)
 
@@ -46,7 +46,7 @@ PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : worktree `../ubum
   avec cache 5 min (immédiat pour l'admin) dans le glossaire, Mathémo et le runtime des mots
   cliquables, page `/dashboard/admin/dictionnaire` (comportements 5–9), revues.
 
-## PR 2b — page d'admin et règles de cohérence (en cours)
+## PR 2b — page d'admin et règles de cohérence (FAITE, #1036)
 
 - Migration `20261013090000` appliquée en prod le 2026-10-10 (question d'accès tranchée par David :
   « oui » ; contrainte vérifiée en lecture seule). Images futures : stockées comme nom de fichier
@@ -82,5 +82,15 @@ PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : worktree `../ubum
   problème déjà présent dont le message est identique masque le même problème ajouté ailleurs
   (deux fois le même message) ; un problème existant dont le message change (libellé du mot
   modifié) compte comme nouveau.
+
+## Historique écrit par le trigger seul (FAIT, #1043)
+
+- Finding de l'audit 2b : l'admin pouvait insérer une version fabriquée (policy + `grant insert`).
+  Question d'accès tranchée par David (2026-10-10) : personne ne lit rien de nouveau ; l'admin ne
+  peut plus écrire directement dans l'historique. `DROP POLICY` confirmé par David.
+- Migration `20261015090000` : trigger SECURITY DEFINER gardé (`is_admin()`), policy et INSERT
+  retirés. Garde-fou SECURITY DEFINER : déclaré, `is_admin()` accepté comme garde.
+- Appliquée en prod par David ; vérifié en lecture seule : DEFINER, `search_path=public, pg_temp`,
+  garde présente, plus d'INSERT ni d'EXECUTE pour authenticated, seule la policy de lecture reste.
 
 ## PR 3 — suppression du fichier (après un `deploy:prod` lancé par David)
