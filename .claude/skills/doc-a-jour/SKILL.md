@@ -46,8 +46,16 @@ Doc-inchangée: <raison précise>
 
 C'est un choix assumé et visible dans l'historique. « Pas le temps » n'est pas une raison.
 
-## 5. Le code n'a pas encore de doc
+## 5. Le code n'a pas encore de doc : la doc d'abord
 
-Le fichier est dans `trous` de `scripts/doc-a-jour.config.ts` : rien à faire pour cette PR, mais le
-signaler à David si le changement est important. Fichier hors de toute doc et hors `trous` : la garde
-`--couverture` échoue → l'ajouter au `couvre:` de la doc qui le décrit, ou à `trous` avec une note.
+Règle de David (2026-10-10) : **une PR qui modifie un fichier d'une zone listée dans `trous`
+(`scripts/doc-a-jour.config.ts`) écrit d'abord la doc de cette zone**, puis la retire de `trous`.
+Les docs naissent là où le code bouge, au moment où quelqu'un le connaît.
+
+- Une doc par zone (la `note` de l'entrée), au gabarit de [docs/README.md](../../../docs/README.md),
+  avec son `couvre:`, écrite **à partir du code** et vérifiée comme au §3 ; ajouter sa ligne à la carte.
+- Retirer de `trous` toutes les entrées de la zone ; `pnpm docs:check-a-jour --couverture` doit rester à 0.
+- Zone très grosse au regard d'un petit correctif : le dire à David avant d'écrire, il tranche.
+
+Fichier hors de toute doc **et** hors `trous` : la garde `--couverture` échoue → l'ajouter au
+`couvre:` de la doc qui le décrit (ou, s'il ouvre une zone nouvelle, écrire sa doc).
