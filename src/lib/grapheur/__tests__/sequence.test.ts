@@ -1,7 +1,7 @@
 /**
  * Tests for the numeric sequence engine (grapheur/sequence).
  *
- * Covers the Phase 0 spec in docs/wip/suites-grapheur-progress.md:
+ * Covers the Phase 0 spec in docs/archive/wip/suites-grapheur-progress.md:
  * nominal cases N1-N5, edge cases L1-L6, error cases E1-E5.
  */
 

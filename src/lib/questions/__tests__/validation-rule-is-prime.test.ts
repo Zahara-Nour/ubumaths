@@ -1,7 +1,7 @@
 /**
  * `isPrime(…)` dans une règle `custom` : 1 si l'argument est un entier premier,
  * 0 sinon ; borne de sécurité 10^12. Comportements :
- * docs/wip/reponse-vecteur-premier-progress.md (P1 à P3).
+ * docs/archive/wip/reponse-vecteur-premier-progress.md (P1 à P3).
  */
 
 import { describe, it, expect } from 'vitest';

@@ -1,7 +1,7 @@
 /**
  * Palette des courbes : 4 couleurs × 2 styles de trait, couleurs thémables.
  *
- * Spécification : docs/wip/grapheur-couleurs-theme-progress.md (points 1-3, 8, 9, 11).
+ * Spécification : docs/archive/wip/grapheur-couleurs-theme-progress.md (points 1-3, 8, 9, 11).
  */
 
 import { readFileSync } from 'node:fs';

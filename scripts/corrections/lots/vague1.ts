@@ -2,7 +2,7 @@
  * Lots « vague1-brouillons » et « vague1-publies » : calcul réfléchi (35 modèles)
  * ==============================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, codes R-COMPL,
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, codes R-COMPL,
  * R-RANGPARRANG, R-RANG, R-DISTRIB, R-DIV-DIZ, R-QUAD, R-DOUBLE, R-XDIZ,
  * R-PETIT-DIV, R-ECART, R-POSE (42 modèles). Corrections GÉNÉRÉES
  * (lib/r-mental.ts). Découpe selon le statut relu en prod (lecture seule,

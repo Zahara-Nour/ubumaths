@@ -2,7 +2,7 @@
  * Questions de cours : filtre du catalogue et lecture élève, contre la vraie base
  * ===============================================================================
  *
- * Étape 1 du chantier « questions de cours » (docs/wip/questions-de-cours-progress.md) :
+ * Étape 1 du chantier « questions de cours » (docs/archive/wip/questions-de-cours-progress.md) :
  *   1. le filtre PostgREST `COURSE_QUESTION_FILTER` retrouve une carte de cours ET un
  *      modèle marqué `options.courseQuestion`, et pas un modèle ordinaire ;
  *   2. un élève lit les `options` d'un modèle publié par la jointure utilisée pour le

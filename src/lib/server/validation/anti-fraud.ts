@@ -1,7 +1,7 @@
 /**
  * Anti-fraud SRS validation schemas (chantier 2026-06-10).
  *
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md
  */
 
 import { z } from 'zod';

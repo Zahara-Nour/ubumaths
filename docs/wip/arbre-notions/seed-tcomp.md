@@ -6,7 +6,7 @@
 > refusions, entretien, A1, discutables, P1 = oui, D1 = (a)). Livraison en cours.** ⚠️ Soin maximal.
 > Source : « Programme de l'enseignement optionnel de mathématiques complémentaires de la
 > classe terminale de la voie générale » (12 p., refourni par David le 2026-10-07), relu
-> **puce par puce**. Ancien découpage (`docs/wip/referentiel/terminale-comp-programme.md`,
+> **puce par puce**. Ancien découpage (`docs/ref/programmes/terminale-comp-programme.md`,
 > `TCOMP-001`…`TCOMP-139`, en prod, relu par David le 2026-10-04) : repris pour les
 > libellés et la **traçabilité « ex- »** (il porte **140 liens de modèles sur 94
 > points**). Mapping : [programmes-ecarts-tle-comp.md](programmes-ecarts-tle-comp.md)

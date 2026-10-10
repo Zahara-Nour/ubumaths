@@ -7,7 +7,7 @@
  * ⚠️ **Les deux vont ensemble.** Quand une valeur change ici, elle doit changer
  * là-bas dans le même commit. Sans ce test, le document pourrit en silence :
  * c'est exactement ce qui est arrivé au §1 de
- * `docs/wip/simplify-reecriture-releve.md`, mesuré le 2026-09-20 et périmé
+ * `docs/archive/wip/simplify-reecriture-releve.md`, mesuré le 2026-09-20 et périmé
  * neuf PR plus tard sans que rien ne le signale.
  *
  * Les quatre intentions sont mesurées à `schoolLevel: 'lycee'` : les identités

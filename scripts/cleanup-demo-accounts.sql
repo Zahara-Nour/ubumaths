@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Cleanup : suppression des comptes de démonstration
 -- Lot 1 du refactor « professeur unique » (branche refactor/single-teacher)
--- Doc : docs/wip/single-teacher-refactor.md
+-- Doc : docs/archive/wip/single-teacher-refactor.md
 -- ============================================================================
 --
 -- Supprime :

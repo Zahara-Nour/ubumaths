@@ -1,7 +1,7 @@
 /**
  * Atelier — la résolution pas à pas
  *
- * Spécification : `docs/wip/atelier-resolution-etapes-phase0.md`.
+ * Spécification : `docs/archive/wip/atelier-resolution-etapes-phase0.md`.
  *
  * ⚠️ Ce que ces tests gardent avant tout : **le repli**. Quand `pedagogical-solve`
  * ne sait pas traiter l'équation, l'élève doit garder la réponse qu'il avait,

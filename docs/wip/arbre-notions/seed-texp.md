@@ -7,7 +7,7 @@
 > **dernier seed** du référentiel.
 > Source : « Programme d'enseignement optionnel de mathématiques expertes de terminale
 > générale » (11 p., fourni par David le 2026-10-07 ; texte en vigueur reconduit), relu
-> **puce par puce**. Ancien découpage (`docs/wip/referentiel/terminale-exp-programme.md`,
+> **puce par puce**. Ancien découpage (`docs/ref/programmes/terminale-exp-programme.md`,
 > `TEXP-001`…`TEXP-153`, en prod, relu par David le 2026-10-04) : repris pour les libellés
 > et la **traçabilité « ex- »** (il porte **173 liens de modèles sur 110 points**).
 > Mapping : [programmes-ecarts-expertes.md](programmes-ecarts-expertes.md) (AA1-AA3

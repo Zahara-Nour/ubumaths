@@ -2,7 +2,7 @@
 
 > **Niveau scolaire** : collège (6ᵉ + cycle 4 — référentiel partagé pour V1, distinction à introduire ultérieurement).
 > **Famille** : B (les 6 compétences mathématiques transversales). La famille A est dans `6e-savoirs.md`.
-> **Source canonique** : `docs/wip/referentiel/cadre_evaluation_six_competences_mathematiques.md`. Ce fichier-ci est la **transcription opérationnelle** du cadre — observables par compétence, codes, règles de validation. La justification pédagogique de chaque choix est dans la source canonique.
+> **Source canonique** : `docs/ref/programmes/cadre_evaluation_six_competences_mathematiques.md`. Ce fichier-ci est la **transcription opérationnelle** du cadre — observables par compétence, codes, règles de validation. La justification pédagogique de chaque choix est dans la source canonique.
 >
 > **Modèle d'évaluation** : codage ternaire `+/–/∅` par tâche, consolidation par observable, règle conjonctive par compétence avec cœur d'excellence. Niveaux du socle : Insuffisante / Fragile / Satisfaisante / Très bonne maîtrise. Détails techniques dans `docs/archive/wip/skills-referentiel-design.md` sections 3 et 6.
 
@@ -16,7 +16,7 @@ famille: B
 math_competences_count: 6
 observables_total: 56 # Chercher 13 + Calculer 13 + Raisonner 8 + Communiquer 6 + Modéliser 8 + Représenter 8
 evaluation_model: ternaire_consolidation_regle_conjonctive
-source_canonique: docs/wip/referentiel/cadre_evaluation_six_competences_mathematiques.md
+source_canonique: docs/ref/programmes/cadre_evaluation_six_competences_mathematiques.md
 date_generation: 2026-06-06
 ```
 

@@ -238,7 +238,7 @@ export function evaluateAtCriticalPoint(
  *
  * Mesuré avant : le minimum de x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`, celui
  * de x² ln x `ln(e^{−1/2})(e^{−1/2})²`. `tidy` n'applique aucune identité
- * (ln(eᵃ) = a est exclu, docs/wip/tidy-phase0.md §A) : c'est `normalize` qui
+ * (ln(eᵃ) = a est exclu, docs/ref/mathast/tidy-spec.md §A) : c'est `normalize` qui
  * réduit (décision de David, option A, 2026-10-05).
  *
  * `normalize` écrit `1/e` sous la forme `exp(-1)`, que `tidy` ne touche pas :

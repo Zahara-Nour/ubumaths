@@ -171,7 +171,7 @@ export interface BaseUnitDef {
 	 *
 	 * `coefficient` est un flottant : `5/9` s'y écrit `0,5555…` et `π/180`
 	 * `0,01745…`. Les formes normales exigent l'exactitude (§D.1 de
-	 * `docs/wip/tidy-phase0.md`) : quand ce champ est présent il prime, et
+	 * `docs/ref/mathast/tidy-spec.md`) : quand ce champ est présent il prime, et
 	 * `coefficient` ne sert plus qu'à l'évaluation numérique.
 	 *
 	 * `piPower` porte π en **facteur symbolique** : le degré vaut `1/180` avec

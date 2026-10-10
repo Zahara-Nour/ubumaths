@@ -2,7 +2,7 @@
  * Pure CSV builder for the competence export (Chantier 1 MVP).
  *
  * Produces a UTF-8 (BOM) CSV string from already-loaded class data. Two
- * dispositions (cf. docs/wip/export-competences-study.md §2.2):
+ * dispositions (cf. docs/archive/wip/export-competences-study.md §2.2):
  *  - `large`  : 1 row per student, one column per competence (values 1-4) —
  *               default, matches the Pronote clipboard-paste model.
  *  - `longue` : 1 row per (student × competence) — for archival / Excel pivot,

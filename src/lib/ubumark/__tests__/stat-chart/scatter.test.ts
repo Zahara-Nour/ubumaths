@@ -3,7 +3,7 @@
  * droite des moindres carrés, r, prévisions.
  *
  * Valeurs de référence calculées en Python (fractions) :
- * `docs/wip/bloc-nuage-progress.md`.
+ * `docs/archive/wip/bloc-nuage-progress.md`.
  */
 
 import { describe, it, expect } from 'vitest';

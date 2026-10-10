@@ -2,7 +2,7 @@
  * Lot « n-fracdec » : fraction décimale ↔ écriture décimale (20 modèles)
  * ======================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, tous les modèles
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, tous les modèles
  * `N-FRACDEC`. Règle : le dénominateur 10 / 100 / 1000 donne le rang du dernier
  * chiffre du numérateur ; simplifier si demandé.
  *

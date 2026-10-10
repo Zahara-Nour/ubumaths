@@ -9,7 +9,7 @@
  * Ce module branche l'atelier sur `pedagogical-solve`, le module pédagogique
  * que les corrections de questions emploient déjà en production.
  *
- * Spécification : `docs/wip/atelier-resolution-etapes-phase0.md`.
+ * Spécification : `docs/archive/wip/atelier-resolution-etapes-phase0.md`.
  *
  * @module atelier/solve-steps
  */

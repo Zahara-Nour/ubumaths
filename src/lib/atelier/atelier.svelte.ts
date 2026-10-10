@@ -10,7 +10,7 @@
  * ⚠️ `structuredClone` jette sur un proxy `$state` : toute sérialisation
  * (URL, stockage local) doit passer par `$state.snapshot()`.
  *
- * Spécification : `docs/wip/atelier-recherche-eleve-phase0.md` §2.
+ * Spécification : `docs/archive/wip/atelier-recherche-eleve-phase0.md` §2.
  *
  * @module atelier/atelier
  */

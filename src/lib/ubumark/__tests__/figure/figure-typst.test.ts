@@ -5,7 +5,7 @@
  * (`figureToSvg`) et le PDF (`exportToTypst`, repères `// element <id>`)
  * dessinent EXACTEMENT les mêmes objets. La compilation en conditions de
  * production est prouvée hors test (typst.ts 0.6.1-rc5 + cetz téléchargé) :
- * voir `docs/wip/bloc-figure-progress.md`.
+ * voir `docs/archive/wip/bloc-figure-progress.md`.
  */
 import { describe, it, expect } from 'vitest';
 import { parseFigureContent } from '../../parser/figure-parser';

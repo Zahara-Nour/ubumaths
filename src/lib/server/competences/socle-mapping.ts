@@ -6,7 +6,7 @@
  *
  * This mapping is fixed by the national programme and never edited at runtime,
  * so it lives in TypeScript rather than in a database table
- * (cf. docs/wip/export-competences-study.md §1.4, Option C).
+ * (cf. docs/archive/wip/export-competences-study.md §1.4, Option C).
  *
  * It is a CONVENIENCE column in the export: no target ENT (Pronote /
  * EcoleDirecte / Sacoche) requires a socle code to import results (study §1.2).

@@ -5,7 +5,7 @@
  * recours, le développement par `normalize` — arbitré par une fonction de
  * coût — pour rendre l'écriture la plus propre d'une expression.
  *
- * Spécification : docs/wip/tidy-phase0.md §B. Par itération du moteur :
+ * Spécification : docs/ref/mathast/tidy-spec.md §B. Par itération du moteur :
  * 1. preProcess — `tidy` : aplatir, regrouper, ordonner, SANS développer
  * 2. règles de motif (abs + trig + hyp + algébriques, une passe ascendante)
  * 3. contrôle de coût intermédiaire (strict `<`)

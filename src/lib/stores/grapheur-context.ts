@@ -5,7 +5,7 @@
  * en dur, ce qui rendait une seconde instance impossible : `/calc` et
  * `/grapheur` partageaient donc le même état sans l'avoir décidé, et l'atelier
  * de recherche ne pouvait pas posséder le sien (décision figée n° 1 du cadrage,
- * `docs/wip/atelier-recherche-eleve.md`).
+ * `docs/archive/wip/atelier-recherche-eleve.md`).
  *
  * @module stores/grapheur-context
  */

@@ -8,7 +8,7 @@
  *   couleur inconnue (L3-a), hex peu lisible sur le fond SOMBRE (D2 : contraste
  *   WCAG < 3:1, ou opacité < 50 %), avec le nom de la palette le plus proche (ΔE OKLab).
  *
- * Décisions : docs/wip/couleurs-lot3-progress.md.
+ * Décisions : docs/archive/wip/couleurs-lot3-progress.md.
  *
  * @module theme/author-color
  */

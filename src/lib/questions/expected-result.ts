@@ -6,7 +6,7 @@
  * DESCRIPTION en données de ce que l'élève voit d'abord : la comparaison
  * `3 + 5 ≠ 9` puis `= 8`, l'énoncé rempli par les solutions, « Ta réponse », les
  * choix d'un QCM, les remarques de forme. Spécification R1-R10 :
- * `docs/wip/resultat-attendu-progress.md`.
+ * `docs/archive/wip/resultat-attendu-progress.md`.
  *
  * Aucune couleur ici : chaque valeur porte un statut sémantique (`correct`,
  * `unoptimal`, `incorrect`, `empty`, `solution`, `neutral`) que l'écran ou le PDF

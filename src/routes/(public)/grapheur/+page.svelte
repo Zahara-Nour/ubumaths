@@ -3,7 +3,7 @@
 	/**
 	 * `/grapheur` — l'atelier, ouvert sur le graphique.
 	 *
-	 * Décisions de David (phase 0 `docs/wip/atelier-grapheur-phase0.md`, G1/G2) :
+	 * Décisions de David (phase 0 `docs/archive/wip/atelier-grapheur-phase0.md`, G1/G2) :
 	 * l'atelier est l'entrée unique, et cette adresse continue de marcher (favoris,
 	 * liens notés). Elle ouvre l'atelier PERSONNEL sur la vue Graphe, « Mes objets »
 	 * visible ; un atelier vide reçoit une carte `f` prête à taper (B3).

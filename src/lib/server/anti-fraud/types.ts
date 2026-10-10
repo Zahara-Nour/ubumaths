@@ -1,7 +1,7 @@
 /**
  * Types partagés du module anti-fraud SRS.
  *
- * Spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md
+ * Spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md
  */
 
 import type { AntiFraudFlagType, AntiFraudSeverity } from '$lib/types/database-helpers';

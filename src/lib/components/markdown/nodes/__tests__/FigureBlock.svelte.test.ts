@@ -250,7 +250,7 @@ texte(2, 4, "centre")`;
 	});
 });
 
-// Palette commune des figures (docs/wip/palette-figures-progress.md) : la
+// Palette commune des figures (docs/archive/wip/palette-figures-progress.md) : la
 // couleur RENDUE dans les deux modes ; un hexadécimal d'auteur reste fixe.
 describe('FigureBlock — couleurs et thème', () => {
 	const COLORED = `fenetre: -1 ; 8 ; -1 ; 6

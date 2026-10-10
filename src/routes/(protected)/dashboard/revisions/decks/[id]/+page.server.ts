@@ -5,7 +5,7 @@
  * Pour les decks auto-managés (Programme), la page redirige vers la vue dédiée.
  * Pour les decks assignés (RO), affiche les cartes mais désactive les actions.
  *
- * Cf. docs/wip/srs-fsrs-spec-tdd.md §6 + §8
+ * Cf. docs/archive/wip/srs-fsrs-spec-tdd.md §6 + §8
  */
 
 import type { PageServerLoad } from './$types';

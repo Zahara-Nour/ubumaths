@@ -33,7 +33,7 @@ Plus un troisième jeu d'étiquettes libres (`question_templates.theme/domain/su
 4. **Taguer l'atomique, dériver les conteneurs** — exercice / template / exo Python / document tagués ; fiche, chapitre, évaluation = union **calculée**.
 5. **Jonctions distinctes par type de ressource** (cohérent décision 71, pas de polymorphisme manuel).
 6. **Pas de collège en 2026-27** → premier niveau rempli = **`1_SPE`**.
-7. **Contenu 6ᵉ famille A non migré** — reste dans `docs/wip/referentiel/6e-savoirs.md`.
+7. **Contenu 6ᵉ famille A non migré** — reste dans `docs/archive/wip/referentiel/6e-savoirs.md`.
 8. `curriculum_items` → `curriculum_objectives` (+ `item_id` → `objective_id`).
 9. **`kind` à 3 valeurs** : `connaissance` · `savoir_faire` · `demonstration` — les trois rubriques du BO lycée.
 10. **`exigence`** : `attendu` · `approfondissement`.
@@ -140,7 +140,7 @@ Le seed passe donc de **7 thèmes / 19 objectifs / 170 points** à **6 / 14 / 15
 
 **Source** : PDF fourni par David le 2026-08-29. ⚠️ **Ce n'est PAS l'arrêté du 17 janvier 2019** — c'est le programme en vigueur, avec une partie transversale « Automatismes ».
 
-**Source de vérité** : `docs/wip/referentiel/1re-spe-programme.md` (170 points à l'origine, 153 après retrait des automatismes).
+**Source de vérité** : `docs/ref/programmes/1re-spe-programme.md` (170 points à l'origine, 153 après retrait des automatismes).
 **Générateur** : `scripts/generate-curriculum-1re-spe-seed.ts` → `supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql`.
 Corriger le markdown, relancer `pnpm tsx scripts/generate-curriculum-1re-spe-seed.ts`, le seed est régénéré. Le script refuse d'écrire s'il détecte un doublon violant l'une des trois contraintes UNIQUE.
 
@@ -380,7 +380,7 @@ avant le correctif).
 
 Question ouverte, sans urgence : que faire de l'arbre 6ᵉ. Ses 95 points ont un
 `kind` hérité du seed d'origine, et les 72 capacités famille A n'ont pas été
-réintégrées — leur contenu reste dans `docs/wip/referentiel/6e-savoirs.md`.
+réintégrées — leur contenu reste dans `docs/archive/wip/referentiel/6e-savoirs.md`.
 
 ---
 
