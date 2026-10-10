@@ -49,6 +49,10 @@ function toNumber(value: EvalValue): number {
 	if (isMathNode(value)) {
 		return evaluateNodeToApproximatedNumber(value);
 	}
+	// Un booléen (relation évaluée) n'a pas de valeur numérique
+	if (typeof value === 'boolean') {
+		throw new Error('Cannot convert boolean to scalar');
+	}
 	return value;
 }
 
