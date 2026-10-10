@@ -160,7 +160,7 @@ const QUANTILE_C = [
 const QUANTILE_D = [
 	7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416
 ];
-/** En deçà (et au-delà de 1 − P_LOW) : l'approximation des queues */
+/** En deçà : l'approximation de la queue (au-delà de 0,5, par symétrie) */
 const QUANTILE_P_LOW = 0.02425;
 
 /** Polynôme de coefficients `coefficients` (degré décroissant) en x */
@@ -175,17 +175,17 @@ function horner(coefficients: readonly number[], x: number): number {
  * queues extrêmes (|z| > 37), où la densité sous-déborde.
  */
 export function normalQuantile(p: number): number {
+	// Symétrie exacte : 1 − p est exact pour p > 0,5, et la queue basse est la
+	// plus précise (le pas de Halley y travaille sur une petite probabilité)
+	if (p > 0.5) return -normalQuantile(1 - p);
 	let z: number;
 	if (p < QUANTILE_P_LOW) {
 		const q = Math.sqrt(-2 * Math.log(p));
 		z = horner(QUANTILE_C, q) / (horner(QUANTILE_D, q) * q + 1);
-	} else if (p <= 1 - QUANTILE_P_LOW) {
+	} else {
 		const q = p - 0.5;
 		const r = q * q;
 		z = (horner(QUANTILE_A, r) * q) / (horner(QUANTILE_B, r) * r + 1);
-	} else {
-		const q = Math.sqrt(-2 * Math.log1p(-p));
-		z = -horner(QUANTILE_C, q) / (horner(QUANTILE_D, q) * q + 1);
 	}
 	if (Math.abs(z) > 37) return z;
 	const u = (normalCdf(z) - p) * Math.sqrt(2 * Math.PI) * Math.exp((z * z) / 2);

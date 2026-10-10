@@ -385,6 +385,15 @@ describe('simulation de N(μ ; σ²), mode tirages : histogramme sur μ ± 3σ',
 		);
 	});
 
+	it('σ irrationnel (σ² = 2) : mention des bords écrite comme les étiquettes des classes', () => {
+		const scene = sceneOf<HistogramScene>('Y ~ N(0 ; 2)\ntirages: 500');
+		// ±3√2 ≈ ±4,243 : trois décimales, comme « ]−∞ ; −3,394[ »
+		expect(scene.rects[0].label).toBe(']−∞ ; −3,394[');
+		expect(scene.indicators[1]).toMatch(
+			/^la première classe compte aussi les tirages en deçà de −4,243 \(ici \d+\), la dernière ceux au-delà de 4,243 \(ici \d+\)$/
+		);
+	});
+
 	it('`classes: 6` ; N(0 ; 1) : bornes négatives', () => {
 		const scene = sceneOf<HistogramScene>('Y ~ N(0 ; 1)\nclasses: 6\ntirages: 500');
 		expect(scene.rects.map((r) => r.lower)).toEqual([-3, -2, -1, 0, 1, 2]);

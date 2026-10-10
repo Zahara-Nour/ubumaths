@@ -357,7 +357,7 @@ const EXPONENTIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*(?:E|Exp)\s*\(\s*(.+?)\s*\)$/
  */
 const NORMAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*N\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
 
-const DENSITY_CDF_ONLY = 'seulement avec une loi à densité (X ~ U([a ; b]) ou E(λ))';
+const DENSITY_CDF_ONLY = 'seulement avec une loi à densité (X ~ U([a ; b]), E(λ) ou N(μ ; σ²))';
 
 /** Tableau d'une loi géométrique : k = 1 à 10 par défaut, puis « … » */
 const GEOMETRIC_TABLE_VALUES = 10;
@@ -3255,7 +3255,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		const line = optionLines.classes ?? 0;
 		if (!isDensity || options.simulationMode !== 'tirages') {
 			errors.push({
-				message: `Ligne ${line} : classes : seulement pour une loi à densité (U([a ; b]) ou E(λ)) en mode tirages`,
+				message: `Ligne ${line} : classes : seulement pour une loi à densité (U([a ; b]), E(λ) ou N(μ ; σ²)) en mode tirages`,
 				line
 			});
 		}

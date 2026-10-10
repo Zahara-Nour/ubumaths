@@ -378,7 +378,7 @@ describe('lois à densité — erreurs situées', () => {
 			'Ligne 3 : aire : écrire P(X ⩽ 2), P(1 ⩽ X ⩽ 3) ou P(X > a | X > b)'
 		);
 		expect(errorOf('X ~ G(0,2)\nrépartition: oui')).toBe(
-			'Ligne 2 : répartition : seulement avec une loi à densité (X ~ U([a ; b]) ou E(λ))'
+			'Ligne 2 : répartition : seulement avec une loi à densité (X ~ U([a ; b]), E(λ) ou N(μ ; σ²))'
 		);
 	});
 });

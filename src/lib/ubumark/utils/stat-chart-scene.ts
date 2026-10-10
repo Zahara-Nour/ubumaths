@@ -2793,7 +2793,7 @@ function namedDiscreteTable(
 }
 
 /**
- * U([a ; b]) et E(λ) en mode `tirages` (manche 14) : l'histogramme des tirages
+ * U([a ; b]), E(λ) (manche 14) et N(μ ; σ²) (2026-10-11) en mode `tirages` : l'histogramme des tirages
  * EN DENSITÉ (fréquence / amplitude, aire totale 1), en classes égales — U : de
  * a à b ; E : de 0 à la borne de l'axe de la courbe, la dernière classe prenant
  * tout ce qui dépasse — et la courbe de densité du bloc ```loi par-dessus.
@@ -2894,10 +2894,12 @@ function buildDensityDrawsScene(
 		? []
 		: normal
 			? [
+					// `shownReal`, comme les étiquettes des classes : μ ± 3σ peut être
+					// irrationnel (σ² = 2), `formatTick` en écrirait 12 chiffres
 					text.simulation.overflowBoth(
-						formatTick(low, locale),
+						shownReal(low, locale),
 						String(below),
-						formatTick(high, locale),
+						shownReal(high, locale),
 						String(beyond)
 					)
 				]
