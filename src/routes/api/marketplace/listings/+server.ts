@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { createListingSchema, listingsQuerySchema } from '$lib/server/marketplace/validation';
+import { getHiddenMarketplaceCreators } from '$lib/server/marketplace/hidden-creators';
 import { recordListingViewsSchema } from '$lib/server/validation/marketplace-rpc';
 import {
 	validateCardOwnership,
@@ -98,6 +99,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Only filter by active status when browsing (not when viewing own listings)
 	if (!creatorId) {
 		query = query.eq('status', 'active').neq('creator_id', userId);
+
+		// Annonces d'un auteur en lecture seule (consentement parental) : masquées.
+		const hiddenCreators = await getHiddenMarketplaceCreators(schoolId);
+		if (hiddenCreators.length > 0) {
+			query = query.not('creator_id', 'in', `(${hiddenCreators.join(',')})`);
+		}
 	}
 
 	// Apply filters
