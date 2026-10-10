@@ -899,7 +899,7 @@ export interface DeclencheurDefinerVerifie {
 	justification: string;
 }
 
-/** Règles de tag (migration 20261012160000_tags_modeles_points, choix (A) de David, 2026-10-10). */
+/** Règles de tag (migration 20261013120000_tags_modeles_points, choix (A) de David, 2026-10-10). */
 const REGLES_DE_TAG =
 	'validation des règles de tag sur une vue complète ; garde d’appelant (ni prof ni admin : non évalué) ; aucune écriture, aucune donnée renvoyée';
 

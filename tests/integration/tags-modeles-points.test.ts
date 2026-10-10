@@ -2,7 +2,7 @@
  * Tags modèles → points neufs, et les règles de tag en base — (Supabase local requis)
  * ==================================================================================
  *
- * Migration `20261012160000_tags_modeles_points` (étape 2 de C5) : les 473 tags modèle → point
+ * Migration `20261013120000_tags_modeles_points` (étape 2 de C5) : les 473 tags modèle → point
  * NEUF de l'état final consolidé (lot, crible et audit validés par David le 2026-10-09), et les
  * règles de tag posées en base (phase 0 et décision (a) validées le 2026-10-10). Copie figée des
  * tags : tests/integration/fixtures/tags-modeles-points.json.
@@ -109,7 +109,7 @@ type Step = () => Promise<QueryResult>;
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261012160000_tags_modeles_points.sql';
+const MIGRATION = 'supabase/migrations/20261013120000_tags_modeles_points.sql';
 const fixture: TagsFixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/tags-modeles-points.json', 'utf-8')
 );

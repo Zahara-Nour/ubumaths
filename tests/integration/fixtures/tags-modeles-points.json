@@ -1,7 +1,7 @@
 {
 	"source": "opérations « taguer » de l'état final consolidé de l'étape 2 de C5 (docs/wip/arbre-notions/c5-transfert-liens.md et .csv)",
 	"decisions": "lot, crible et audit validés par David le 2026-10-09 ; phase 0 et (a) validés le 2026-10-10",
-	"migration": "supabase/migrations/20261012160000_tags_modeles_points.sql",
+	"migration": "supabase/migrations/20261013120000_tags_modeles_points.sql",
 	"comptes": {
 		"tags": 473,
 		"modeles": 420,
