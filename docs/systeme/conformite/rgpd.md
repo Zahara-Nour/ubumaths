@@ -301,6 +301,12 @@ CRON_SECRET                   # Secret taches planifiees
 
 > **Amelioration 2026-01-15** : Implementation complete de la suppression de compte conforme RGPD Art. 17. Comprend : API avec rate limiting (1/24h), table d'audit, fonction SQL d'anonymisation, et interface utilisateur avec confirmation en deux etapes. Accessible via le menu utilisateur dans le dashboard.
 
+> ⚠️ **Correction 2026-10-10** : la suppression **échouait pour tout le monde** depuis la refonte
+> des tables (la fonction écrivait dans des tables disparues et passait à NULL des colonnes
+> obligatoires ; mesuré en prod, aucune tentative jamais enregistrée). Réparée par la migration
+> `20261014100000_suppression_compte_art17`, prouvée par
+> `tests/integration/suppression-compte-art17.test.ts`. Ce qui part, ce qui reste : §7.2.
+
 ---
 
 ### 5.3 ~~CRITIQUE - Pas de consentement parental pour mineurs~~ **CORRIGE** (2026-01-16)
@@ -534,37 +540,44 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 
 ### 7.2 Droit a l'oubli
 
-**Implementation** : `src/routes/api/account/delete/+server.ts`
+> Réécrit le 2026-10-10 contre le code (migration `20261014100000_suppression_compte_art17`).
 
-Fonctionnalites implementees :
+**Implementation** : `src/routes/api/account/delete/+server.ts` → RPC `delete_user_account(p_user_id)`
+(service_role seul) → `auth.admin.deleteUser`, dont la cascade sur `profiles` emporte le reste.
 
-- **Rate limiting** : 1 demande par 24h par utilisateur
-- **Audit table** : `account_deletion_requests` pour tracabilite
-- **Fonction SQL** : `delete_user_account_rgpd(uuid)` pour anonymisation complete
-- **UI** : Confirmation en 2 etapes (dialogue + saisie "SUPPRIMER")
+- **Comptes élèves seulement** : un prof ou un admin reçoit 403 (le bouton n'est affiché qu'aux
+  élèves, page profil). En mono-prof, la cascade d'un prof emporterait classes et travaux de tous
+  les élèves ; ces comptes se ferment à la main. La fonction refuse aussi tout rôle non élève.
+- **Confirmation** : saisie de `SUPPRIMER MON COMPTE` (`src/lib/server/validation/account.ts`).
+- **Limite** : 1 demande / 24 h (limiteur en mémoire, par instance).
+- **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut) ;
+  `user_id` passé à NULL une fois la suppression terminée.
 
-```typescript
-// Points cles de l'implementation
-const deleteSchema = z.object({
-	confirmation: z.literal('SUPPRIMER') // Confirmation explicite FR
-});
+**Ce qui part** (décisions de David, 2026-10-10) :
 
-// Rate limiting: 1 per 24h
-rateLimit(`account_delete:${userId}`, 1, 24 * 60 * 60 * 1000);
+- les **messages** écrits par l'élève, pour tous les participants, et l'aperçu de conversation qui
+  recopiait son texte ; les **signalements** de ces messages partent avec eux (`message_reports`
+  en cascade) ;
+- toute l'**économie** (gidouilles, bonus, cartes VIP) : supprimée, plus anonymisée ;
+- tout ce qui pointe vers le profil en cascade (jeux, SRS, progression, consentements…) ;
+- les fichiers de `chat-attachments`, `message-attachments`, `bug-report-screenshots` : la fonction
+  rend leurs chemins exacts, collectés avant la cascade, et la route les retire (au mieux : un échec
+  est journalisé en erreur, il n'interrompt pas la suppression).
 
-// Audit trail avant suppression
-await supabase.from('account_deletion_requests').insert({
-	user_id: userId,
-	email: user.email,
-	requested_at: new Date().toISOString(),
-	status: 'completed'
-});
+**Atomicité** : en fin de fonction, si une clé étrangère sans `ON DELETE` vise encore le compte
+(quelle que soit la table, future comprise), la fonction lève une exception et la transaction est
+annulée — rien n'a été effacé à moitié, la route rend 500 et l'audit garde la cause.
 
-// Suppression via fonction SQL (anonymise messages, supprime donnees)
-await supabase.rpc('delete_user_account_rgpd', { p_user_id: userId });
-```
+**Ce qui reste** (relevé par `security-auditor` le 2026-10-10, à trancher — voir
+`docs/wip/rgpd-securite-progress.md`) :
 
-**UI** : Menu utilisateur > "Supprimer mon compte"
+- sans identifiant, les lignes dont la clé étrangère est en `SET NULL` (`error_logs.user_id`,
+  `audit_logs.user_id`, `message_moderation_logs.student_id`…) — mais `error_logs.request_body`,
+  `message_moderation_logs.reason` gardent leur texte ;
+- **`audit_logs` garde des copies du profil** (`new_values` des INSERT/UPDATE sur `profiles` : e-mail,
+  nom, prénom) sous `record_id` = l'identifiant de l'élève, sans clé étrangère, jusqu'à la purge ;
+- `account_deletion_audit` : hash SHA-256 **sans sel** de l'e-mail, IP, navigateur, sans durée de
+  conservation.
 
 ### 7.3 Export de donnees
 

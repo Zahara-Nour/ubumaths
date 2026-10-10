@@ -179,7 +179,7 @@
 	"tests/integration/security-authz-guards.test.ts": 11,
 	"tests/integration/skill-attempts-endpoint.test.ts": 2,
 	"tests/integration/template-tags.test.ts": 2,
-	"tests/integration/vip-card-draw-global-flag.test.ts": 3,
+	"tests/integration/vip-card-draw-global-flag.test.ts": 2,
 	"tests/integration/vip-card-enabled-filtering.test.ts": 1,
 	"tests/integration/vip-cartes-verrou.test.ts": 1,
 	"tests/integration/worksheets-api-tags.test.ts": 1

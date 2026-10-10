@@ -179,14 +179,17 @@
 				Se déconnecter
 			</Button>
 
-			<Button
-				variant="outline"
-				class="text-destructive hover:bg-destructive/10 hover:text-destructive"
-				onclick={() => (accountDeletionDialogOpen = true)}
-			>
-				<Trash2 class="mr-2 h-4 w-4" aria-hidden="true" />
-				Supprimer mon compte
-			</Button>
+			<!-- Libre-service réservé aux élèves : la route refuse prof et admin (403). -->
+			{#if role === 'student'}
+				<Button
+					variant="outline"
+					class="text-destructive hover:bg-destructive/10 hover:text-destructive"
+					onclick={() => (accountDeletionDialogOpen = true)}
+				>
+					<Trash2 class="mr-2 h-4 w-4" aria-hidden="true" />
+					Supprimer mon compte
+				</Button>
+			{/if}
 		</div>
 	</section>
 </div>
