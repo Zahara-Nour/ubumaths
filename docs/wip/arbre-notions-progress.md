@@ -909,3 +909,22 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Docs `seed-*.md` : 491 colonnes de nœud mises à jour. Les 1 951 lignes de point ont été vérifiées par script
     contre leur fixture .16, sans aucun écart.
   - LISEZMOI à jour : la base fait foi, le JSON en est la copie de doc.
+- **2026-10-10 — PR 2 (les tags), phase 0 VALIDÉE par David** (« comportements validés ; a) »).
+  - Elle écrit les 473 tags neufs du lot ; les 1 026 anciens restent jusqu'à l'étape 4.
+  - Elle pose deux règles en base :
+    - **règle 1** : un point neuf est sur le nœud du modèle ou sur la notion de ce nœud ; pour un exercice, sur l'un de ses
+      nœuds ou leur notion ;
+    - **règle 2** : au plus un point neuf par programme sur un modèle, même en écritures simultanées.
+  - Toute écriture qui casserait un tag est refusée : déplacer un modèle, re-rattacher un point, déplacer une
+    sous-notion, retirer le rangement d'un exercice.
+  - **Décision (a)** : un tag de point neuf sur un modèle sans nœud, ou sur un exercice sans rangement, est REFUSÉ. On
+    range d'abord ; le formulaire pré-remplira le nœud avec celui du point.
+  - Filtres provisoires « ancienne génération » (objective_id non nul) jusqu'à la bascule du code :
+    - la couverture du cahier de texte (`templatePointIds`) ;
+    - le compteur « N tagués » du formulaire d'admin ;
+    - le script `readLinks`, pour que `--remplacer-points` n'efface pas les tags neufs.
+  - Effets acceptés :
+    - les états d'acquisition des élèves sur les points neufs se calculent à chaque nouvelle tentative (visibles
+      seulement dans l'export RGPD) ;
+    - un point neuf tagué ne se supprime plus.
+  - Ordre : fusion, puis déploiement Vercel des filtres, PUIS `db:migrate` (lancé par David).
