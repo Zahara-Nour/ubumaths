@@ -936,3 +936,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - 3 contenus de Tle comp. tagués en Tle spé ;
   - 2 hors bornes (angles associés pour tout x).
   - 12 modèles n'ont plus aucun point ; 420 en gardent.
+- **2026-10-10 — PR 2 : décision (A) de David (« oui »).** Les fonctions de trigger des règles de tag passent en
+  SECURITY DEFINER, pour lire avec une vue complète.
+  - Raison : en lecture INVOKER, l'admin ne voit pas les exercices privés du prof. La règle laissait donc casser un tag
+    d'exercice privé sans erreur (re-parentage), ou refusait à tort (tag, re-rattachement).
+  - Garde-fous :
+    - un utilisateur connecté qui n'est ni prof ni admin n'est pas évalué ; la RLS refuse son écriture comme avant ;
+    - les migrations et le service évaluent les règles ;
+    - aucun message ne nomme un contenu invisible de l'auteur ;
+    - EXECUTE révoqué, `search_path` fixé ;
+    - déclaration dans le garde-fou CI des fonctions SECURITY DEFINER.
+  - Les tests tournent avec les vrais rôles (prof, admin, élève). Le re-parentage concurrent est fermé par un verrou sur
+    les nœuds.
