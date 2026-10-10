@@ -31,7 +31,7 @@ import {
 	isSuperscript,
 	isFunction
 } from '../guards';
-import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../common/euler-variable';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import { mapNode, findNodes, getChildren } from '../transforms';
 import {
 	AbortError,
@@ -726,7 +726,7 @@ function integrateInternal(
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
 	// `e` est la constante d'Euler : intégrer « par rapport à e » est refusé
-	if (isEulerVariableName(options?.variable)) {
+	if (refusesEulerVariable(options?.variable, rawExpr)) {
 		return oversizedResult('e', EULER_NOT_A_VARIABLE);
 	}
 	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
@@ -952,7 +952,7 @@ export function integrateDefinite(
 	const indefiniteResult = integrate(expr, options);
 
 	// Refus sans repli numérique : `e` n'est pas une variable
-	if (isEulerVariableName(options?.variable)) {
+	if (refusesEulerVariable(options?.variable, expr)) {
 		return { ...indefiniteResult, lowerBound: lower, upperBound: upper, value: null };
 	}
 

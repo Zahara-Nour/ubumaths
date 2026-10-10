@@ -121,7 +121,7 @@ import {
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
-import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../common/euler-variable';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
@@ -1762,7 +1762,7 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	if (isEulerVariableName(opts.variable)) {
+	if (refusesEulerVariable(opts.variable, equation)) {
 		throw new SolveError(EULER_NOT_A_VARIABLE, 'unknown', 'variable: e');
 	}
 

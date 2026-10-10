@@ -110,9 +110,8 @@ function withSignModifiers(latex: string, modifiers: EvalModifiers): string {
 export function evalResultToCustom(value: string): string {
 	if (!value.includes('\\')) return value;
 	try {
-		// `toCustom` écrit e `\euler`, que la syntaxe maison ne relit pas : en syntaxe maison,
-		// e s'écrit `e` (groupé, pour que `2{e}` ne se colle à rien)
-		const custom = toCustom(parseLatex(value)).replace(/\\euler(?![A-Za-z])/g, '{e}');
+		// `toCustom` écrit la constante d'Euler `e`, relue par `parseCustom`
+		const custom = toCustom(parseLatex(value));
 		// Aller-retour vérifié : sinon la valeur reste en LaTeX, comme avant
 		parseCustom(custom);
 		return custom;

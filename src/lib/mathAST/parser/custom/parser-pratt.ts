@@ -52,7 +52,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
-	checkNestingDepth,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -2024,6 +2024,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseCustomPratt(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomPrattUnguarded(input, options));
+}
+
+function parseCustomPrattUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -2034,7 +2039,6 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
 
 	// Check input length BEFORE parsing (fail fast)
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomPrattParser(input, fullOptions);
 	const result = parser.parse();
@@ -2068,6 +2072,14 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseCustomPrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomPrattSafeUnguarded(input, options));
+}
+
+function parseCustomPrattSafeUnguarded(
+	input: string,
+	options?: Partial<ParserOptions>
+): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options
@@ -2079,7 +2091,6 @@ export function parseCustomPrattSafe(input: string, options?: Partial<ParserOpti
 	// Check input length BEFORE parsing (fail fast)
 	// SecurityError is NOT caught - it propagates up
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomPrattParser(input, fullOptions);
 

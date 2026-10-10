@@ -40,7 +40,7 @@ import { numberAfterFactorMessage } from '../number-after-factor';
 import {
 	SecurityError,
 	checkInputLength,
-	checkNestingDepth,
+	guardStackDepth,
 	getEffectiveSecurityOptions
 } from '../security';
 import type { ParserSecurityOptions } from '../security';
@@ -2707,6 +2707,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parsePratt(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parsePrattUnguarded(input, options));
+}
+
+function parsePrattUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -2715,7 +2720,6 @@ export function parsePratt(input: string, options?: Partial<ParserOptions>): Mat
 	// Security checks
 	const security = getEffectiveSecurityOptions(fullOptions.security);
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new PrattParser(input, fullOptions);
 	const result = parser.parse();
@@ -2749,6 +2753,11 @@ export function parsePratt(input: string, options?: Partial<ParserOptions>): Mat
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parsePrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parsePrattSafeUnguarded(input, options));
+}
+
+function parsePrattSafeUnguarded(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options
@@ -2757,7 +2766,6 @@ export function parsePrattSafe(input: string, options?: Partial<ParserOptions>):
 	// Security checks - rethrow SecurityError (not a parse error)
 	const security = getEffectiveSecurityOptions(fullOptions.security);
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new PrattParser(input, fullOptions);
 

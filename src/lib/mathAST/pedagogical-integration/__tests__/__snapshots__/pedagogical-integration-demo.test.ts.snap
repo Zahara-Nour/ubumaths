@@ -306,10 +306,10 @@ Expression: e^{2x}
 - [identify-integrand] Identification de la primitive à calculer
   \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
-  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
-  \\textcolor{blue}{0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} + C}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\textcolor{blue}{0.5 \\exp\\left( 2 x \\right) + C}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
@@ -317,22 +317,22 @@ Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
   \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
   · On reconnaît la forme u'·e^u avec u = 2 x, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
-  \\textcolor{blue}{0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} + C}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\textcolor{blue}{0.5 \\exp\\left( 2 x \\right) + C}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
-  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
   · On reconnaît la forme u'·e^u avec u = 2 x, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 "
 `;
 

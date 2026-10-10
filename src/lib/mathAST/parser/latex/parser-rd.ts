@@ -47,7 +47,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
-	checkNestingDepth,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -1897,6 +1897,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseRD(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseRDUnguarded(input, options));
+}
+
+function parseRDUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -1907,7 +1912,6 @@ export function parseRD(input: string, options?: Partial<ParserOptions>): MathNo
 
 	// Check input length BEFORE parsing (fail fast)
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new RDParser(input, fullOptions);
 	const result = parser.parse();
@@ -1941,6 +1945,11 @@ export function parseRD(input: string, options?: Partial<ParserOptions>): MathNo
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseRDSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseRDSafeUnguarded(input, options));
+}
+
+function parseRDSafeUnguarded(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options
@@ -1952,7 +1961,6 @@ export function parseRDSafe(input: string, options?: Partial<ParserOptions>): Pa
 	// Check input length BEFORE parsing (fail fast)
 	// SecurityError is NOT caught - it propagates up
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new RDParser(input, fullOptions);
 

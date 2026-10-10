@@ -13,7 +13,7 @@
  * @module mathAST/taylor
  */
 
-import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../common/euler-variable';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import type { MathNode } from '../types';
 import type { TaylorOptions } from './types';
 import type { FunctionBindings } from '../eval/function-bindings';
@@ -397,7 +397,7 @@ export function taylorExpand(
 	const center = options?.center ?? DEFAULT_TAYLOR_OPTIONS.center;
 	const order = options?.order ?? DEFAULT_TAYLOR_OPTIONS.order;
 
-	if (isEulerVariableName(varName)) {
+	if (refusesEulerVariable(varName, expr)) {
 		throw new TaylorError(EULER_NOT_A_VARIABLE, undefined, 'variable: e');
 	}
 

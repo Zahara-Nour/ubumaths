@@ -36,7 +36,7 @@
  */
 
 import type { MathNode } from '../types';
-import { cos, number, opposite, sin, subtract, variable as variableNode } from '../factory';
+import { cos, func, number, opposite, sin, subtract, variable as variableNode } from '../factory';
 import { detectVariable } from '../integration/classify';
 import { cosRule, expRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/rules';
 import { differentiate } from '../differentiation';
@@ -615,7 +615,9 @@ function integrateComposite(
 
 	switch (match.kind) {
 		case 'composite-exp':
-			baseAntiderivative = expRule(u);
+			// e^u, pas `expRule(u)` : celui-ci calcule ∫ e^{ax} dx = e^{ax}/a, et
+			// `constantFactor` rééquilibre déjà par 1/u' (`∫ e^{2x} dx` rendait e^{2x}/4)
+			baseAntiderivative = func('exp', [u]);
 			rule = 'apply-composite-exp';
 			break;
 		case 'composite-ln':

@@ -30,7 +30,7 @@ import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
 import { variable } from '../../factory';
 import { isEulerConstant, isGreek, isSubscript, isVariable } from '../../guards';
-import { EULER_NOT_A_VARIABLE, isEulerVariableName } from '../../common/euler-variable';
+import { EULER_NOT_A_VARIABLE } from '../../common/euler-variable';
 import { toLatex } from '../../latex-generator';
 import { mapNode } from '../../transforms';
 import { parse, type PipelineOptions } from './pipeline';
@@ -626,7 +626,7 @@ function applyKeyword(
 	}
 	switch (keyword) {
 		case 'pour':
-			if (isEulerVariableName(value)) return EULER_NOT_A_VARIABLE;
+			if (value === 'e') return EULER_NOT_A_VARIABLE;
 			if (!VARIABLE_NAME.test(value)) return `« ${value} » n'est pas une variable.`;
 			if (result.variable !== null) return 'La variable est donnée deux fois.';
 			result.variable = value;

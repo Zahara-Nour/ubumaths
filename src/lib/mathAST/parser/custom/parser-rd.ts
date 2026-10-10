@@ -53,7 +53,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
-	checkNestingDepth,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -1564,6 +1564,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseCustomRD(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomRDUnguarded(input, options));
+}
+
+function parseCustomRDUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -1574,7 +1579,6 @@ export function parseCustomRD(input: string, options?: Partial<ParserOptions>): 
 
 	// Check input length BEFORE parsing (fail fast)
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomRDParser(input, fullOptions);
 	const result = parser.parse();
@@ -1608,6 +1612,11 @@ export function parseCustomRD(input: string, options?: Partial<ParserOptions>): 
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseCustomRDSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomRDSafeUnguarded(input, options));
+}
+
+function parseCustomRDSafeUnguarded(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options
@@ -1619,7 +1628,6 @@ export function parseCustomRDSafe(input: string, options?: Partial<ParserOptions
 	// Check input length BEFORE parsing (fail fast)
 	// SecurityError is NOT caught - it propagates up
 	checkInputLength(input, security.maxInputLength);
-	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomRDParser(input, fullOptions);
 

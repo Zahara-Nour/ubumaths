@@ -21,6 +21,7 @@ import { computeVariations } from '../variations/compute';
 import { VariationError } from '../variations/types';
 import { number } from '../factory';
 import { WebReplEngine } from '../cli/web/web-repl-engine';
+import { generatePedagogicalIntegrationSteps } from '../pedagogical-integration/pipeline';
 import { isRelation } from '../guards';
 import type { RelationNode } from '../types';
 
@@ -96,5 +97,33 @@ describe('calcul par rapport à e : refus explicite', () => {
 
 	it('par rapport à x, rien ne change : ∫ 3e^2 dx existe', () => {
 		expect(integrate(parseLatex('3e^{2}'), { variable: 'x' }).status).toBe('exact');
+	});
+});
+
+/**
+ * Revue du 2026-10-10 : `getVariables` nomme une variable indicée par sa base,
+ * donc `e_1` donnait la variable détectée `e`, et le refus tombait sur une
+ * entrée légitime. Le refus ne vise que `e` DEMANDÉ quand l'arbre ne contient
+ * aucune variable `e` (seule une base indicée en produit).
+ */
+describe('e indicé (e_1) : pas de refus, comportement d’avant', () => {
+	it('solve(e_1 + 2 = 5) sans inconnue imposée : pas d’exception', () => {
+		expect(() => solve(relation('e_1+2=5'))).not.toThrow();
+		expect(solve(relation('e_1+2=5')).status).toBe('no-solution');
+	});
+
+	it('integrate(e_1) : pas de refus « constante d’Euler »', () => {
+		const result = integrate(parseLatex('e_1'));
+		expect(result.error ?? '').not.toMatch(MESSAGE);
+	});
+
+	it('pedagogical-integration(e_1) : pas d’exception « constante d’Euler »', () => {
+		let message = '';
+		try {
+			generatePedagogicalIntegrationSteps(parseLatex('e_1'), { level: 'lycee' });
+		} catch (e) {
+			message = (e as Error).message;
+		}
+		expect(message).not.toMatch(MESSAGE);
 	});
 });

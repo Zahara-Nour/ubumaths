@@ -360,14 +360,14 @@ function gluesCommandToLetter(left: string, right: string): boolean {
 }
 
 /**
- * Whether `left`, a term ending in a number juxtaposed with Euler's `e`, would
- * read as scientific notation once followed by `+`/`-` and `right`: `2e-3`
- * (2·e − 3) is read back `0.002`. A space before the sign keeps them apart
- * (`2e -3`) : the tokenizer only reads `e` as an exponent when the sign or the
- * digit follows it immediately.
+ * Whether `left`, a term ending in a number juxtaposed with Euler's `e` (or the
+ * variable `E`), would read as scientific notation once followed by `+`/`-` and
+ * `right`: `2e-3` (2·e − 3) and `2E-3` (2·E − 3) are read back `0.002`. A space
+ * before the sign keeps them apart (`2e -3`) : the tokenizer only reads `e`/`E`
+ * as an exponent when the sign or the digit follows it immediately.
  */
 function gluesEulerToExponent(left: string, right: string): boolean {
-	return /[0-9.,]e$/.test(left) && /^[0-9.,]/.test(right);
+	return /[0-9.,][eE]$/.test(left) && /^[0-9.,]/.test(right);
 }
 
 /**

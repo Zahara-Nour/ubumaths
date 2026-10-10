@@ -223,17 +223,20 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
      restent des variables indicées. `toLatex(euler())` écrit `\exponentialE` (MathLive et le
      parseur le relisent), `toCustom` écrit `e`. Calculer « par rapport à `e` » (intégrer,
      dériver, résoudre, limite, Taylor, variations, `; e` en CLI) est **refusé** : « e est la
-     constante d'Euler, pas une variable » (`common/euler-variable.ts`) ;
+     constante d'Euler, pas une variable » (`refusesEulerVariable`, `common/euler-variable.ts`),
+     sauf si l'arbre contient une variable `e` (base indicée `e_1`) ;
    - `i` reste une **variable** en LaTeX (`\imaginaryI` donne `complex(0, 1)`) ;
    - `\sin^2 x` est une `function` avec `power`, `(\sin x)^2` un `superscript` ;
    - la virgule : MathLive écrit `3{,}14` (lu `3.14`) ; la virgule nue passe par
      `decimal-comma.ts`.
      Toujours tester une règle ou une analyse **sur une entrée parsée**.
-7. **Plafonds du parseur** (`parser/security.ts`) : 10 000 caractères et profondeur
-   d'imbrication des délimiteurs `(`, `[`, `{` (`checkNestingDepth`) **avant** l'analyse,
-   aux huit entrées des parseurs ; profondeur d'AST 100 et 10 000 nœuds **après**. Tous lèvent
-   `SecurityError` : une imbrication très profonde ne fait plus déborder la pile
-   (`RangeError`).
+7. **Plafonds du parseur** (`parser/security.ts`) : 10 000 caractères **avant** l'analyse ;
+   profondeur d'AST 100 et 10 000 nœuds **après**. Une imbrication de quelques milliers de
+   niveaux (parenthèses, `-` répétés, `\sqrt`, `\sin`, valeurs absolues) fait déborder la pile
+   du parseur récursif avant le contrôle d'AST : aux huit entrées des quatre parseurs,
+   `guardStackDepth` convertit ce `RangeError` (« call stack ») en
+   `SecurityError('…', 'AST_TOO_DEEP')`. Compter les délimiteurs avant l'analyse ne couvrait
+   que `( [ {` et refusait à tort les unions d'intervalles à la française (`[0;1[`).
 8. **`compile()` est la seule génération de code** (`eval/compile.ts`) : jamais `eval`
    ni `new Function`.
 9. **Ne pas ré-exporter `rewriting-engine.ts` ni `technical-renderer.ts` depuis
@@ -318,7 +321,9 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
   panel). La boucle s'arrête sans le signaler ; `applyRules`, lui, lève
   `RuleIterationLimitError`.
 - `solve` ne gère pas les inconnues indicées : `x_1+1=3` répond « pas de solution »
-  (`getVariables` rend la base `x`) ; `e_1+1=3` rend le refus « constante d'Euler ».
+  (`getVariables` rend la base `x`) ; `e_1+1=3` aussi (le refus « constante d'Euler » ne
+  s'applique pas quand l'arbre contient une variable `e`, base d'une variable indicée :
+  `refusesEulerVariable`).
 
 ## Décisions
 

@@ -25,3 +25,15 @@ describe('toCustom : la constante d’Euler s’écrit e', () => {
 		expect(nodesEqual(parseCustom(toCustom(node)), node)).toBe(true);
 	});
 });
+
+// Revue du 2026-10-10 : la variable `E` a le même piège (`2E-3` relu 0,002)
+describe('toCustom : la variable E suivie d’un signe', () => {
+	it.each([
+		['2E - 3', '2E -3'],
+		['4.5E + 1', '4.5E +1']
+	])('%s s’écrit %s et se relit à l’identique', (latex, custom) => {
+		const node = parseLatex(latex);
+		expect(toCustom(node)).toBe(custom);
+		expect(nodesEqual(parseCustom(toCustom(node)), node)).toBe(true);
+	});
+});
