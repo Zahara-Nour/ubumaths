@@ -34,7 +34,7 @@ SRS self-graded, Référentiel BO). Refonte 2026-06-10 (livrée v0.9.9).
 > gardent les anciens noms : ce sont des instantanés, pas de la référence — lire
 > ce tableau avant de chasser un identifiant qui n'existe plus.
 >
-> Schéma à jour : [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md#programme-et-suivi-par-compétences).
+> Schéma à jour : [`docs/systeme/base-de-donnees.md`](../../../systeme/base-de-donnees.md#référentiel--contenus-et-compétences-fusion-2026-08-29).
 
 ---
 
@@ -179,7 +179,7 @@ Pour chaque cluster du module, les documents qui en parlent :
 1. **[QUALITÉ CRITIQUE]** Réécrire `tests/integration/skill-attempts-endpoint.test.ts` pour l'API per-template (assertions `inserted: 1` au lieu de `inserted: 0`). Sans ça, le test crash en CI dès qu'il sera relancé.
 2. **[TESTS CRITIQUE]** Ajouter tests unitaires `capacity-badge.test.ts` : `templateToBadge`, `worstBadge`, `aggregateBadge` sont pures et idéales pour le testing. ~30 tests minimum (4 états × 2 due/notDue + special cases).
 3. **[TESTS CRITIQUE]** Ajouter tests intégration sections : POST/GET/PATCH/DELETE + ownership + interdiction sur deck `is_auto_managed`.
-4. **[QUALITÉ MAJEURE]** Mettre à jour les 5 références à `docs/wip/srs-fsrs-architecture-cible.md` (supprimé) dans les en-têtes de fichiers vers `docs/systeme/srs/architecture.md`.
+4. **[QUALITÉ MAJEURE]** Mettre à jour les 5 références à `docs/wip/srs-fsrs-architecture-cible.md` (supprimé) dans les en-têtes de fichiers vers `docs/archive/systeme-2026-06/srs/architecture.md`.
 
 ### Suite logique V1.x
 
@@ -319,9 +319,9 @@ Puis suite logique : **étendre le tagging des templates 6ᵉ** (chantier pédag
 ## Voir aussi
 
 - [`anti-fraud.md`](anti-fraud.md) — système anti-cheat livré 2026-06-10, désactivé par défaut.
-- [`docs/archive/wip/srs-fsrs-spec-tdd.md`](../../archive/wip/srs-fsrs-spec-tdd.md) — spec TDD originale (comportements attendus).
-- [`docs/archive/wip/srs-fsrs-progress.md`](../../archive/wip/srs-fsrs-progress.md) — historique d'exécution du chantier (archivé).
-- [`docs/archive/wip/srs-fsrs-security-audit-findings.md`](../../archive/wip/srs-fsrs-security-audit-findings.md) — audit sécurité + spec V2 anti-fraud + backlog V2.
-- [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md) — schéma DB global (sections « Compétences » + « SRS / FSRS »).
-- [`CLAUDE.md`](../../../CLAUDE.md) — instructions projet pour Claude Code.
+- [`docs/archive/wip/srs-fsrs-spec-tdd.md`](../../wip/srs-fsrs-spec-tdd.md) — spec TDD originale (comportements attendus).
+- [`docs/archive/wip/srs-fsrs-progress.md`](../../wip/srs-fsrs-progress.md) — historique d'exécution du chantier (archivé).
+- [`docs/archive/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — audit sécurité + spec V2 anti-fraud + backlog V2.
+- [`docs/systeme/base-de-donnees.md`](../../../systeme/base-de-donnees.md) — schéma DB global (sections « Compétences » + « SRS / FSRS »).
+- [`CLAUDE.md`](../../../../CLAUDE.md) — instructions projet pour Claude Code.
 - `MEMORY.md` — mémoire persistante de Claude Code (hors dépôt, machine locale).

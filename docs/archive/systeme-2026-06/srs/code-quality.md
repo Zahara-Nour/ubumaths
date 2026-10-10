@@ -101,7 +101,7 @@ src/routes/(protected)/dashboard/revisions/decks/programme/+page.svelte:8
 
 Le doc `docs/wip/srs-fsrs-architecture-cible.md` a été renommé puis supprimé dans le commit `f766ab9c6`. Les 5 fichiers gardent des références pointant vers le document supprimé. Pour un nouveau développeur qui ouvre `capacity-badge.ts` et lit l'en-tête, le lien ne marche pas.
 
-**Fix appliqué en session** : sed sur les 5 fichiers, remplacement par `docs/systeme/srs/architecture.md`. Vérifié `grep -rn` retourne 0 occurrence après patch.
+**Fix appliqué en session** : sed sur les 5 fichiers, remplacement par `docs/archive/systeme-2026-06/srs/architecture.md`. Vérifié `grep -rn` retourne 0 occurrence après patch.
 
 ### 2.2 ~~Duplication code init FSRS entre 2 endpoints~~ ✅ RÉSOLU
 
@@ -283,4 +283,4 @@ Vérifié dans `20260610100000_refonte_skill_attempts_per_template.sql`. Respect
 
 - [`tests.md`](tests.md) — Plan détaillé des tests à ajouter.
 - [`README.md`](README.md) — Action items cross-cutting + chiffres clés.
-- [`docs/wip/srs-fsrs-progress.md`](../../archive/wip/srs-fsrs-progress.md) — Historique exécution chantier.
+- [`docs/wip/srs-fsrs-progress.md`](../../wip/srs-fsrs-progress.md) — Historique exécution chantier.

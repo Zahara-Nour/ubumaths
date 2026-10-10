@@ -188,6 +188,6 @@ Analyse critique des items reportés (revue 2026-06-10) : sur 7 candidats, **1 s
 ## 8. Références
 
 - Progress : `docs/wip/teacher-analytics-progress.md`
-- SRS / FSRS architecture : `docs/systeme/srs/architecture.md`
+- SRS / FSRS architecture : `docs/systeme/srs.md`
 - Famille B saisie : `src/routes/(protected)/dashboard/teacher/evaluation-tasks/[id]/saisie/`
 - Pattern badge FSRS : `src/lib/server/srs/capacity-badge.ts`

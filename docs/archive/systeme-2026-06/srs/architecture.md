@@ -361,5 +361,5 @@ UI affiche les deux côte à côte (composant `CapacityFsrsBadge.svelte` pour le
 - [`tests.md`](tests.md) — Couverture des tests + angles morts.
 - [`performance.md`](performance.md) — Hot paths, optimisations.
 - [`security.md`](security.md) — Audit sécurité, findings V2.
-- [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md) — Schéma DB global.
-- [`docs/archive/wip/srs-fsrs-spec-tdd.md`](../../archive/wip/srs-fsrs-spec-tdd.md) — Spec TDD avec comportements attendus détaillés.
+- [`docs/systeme/base-de-donnees.md`](../../../systeme/base-de-donnees.md) — Schéma DB global.
+- [`docs/archive/wip/srs-fsrs-spec-tdd.md`](../../wip/srs-fsrs-spec-tdd.md) — Spec TDD avec comportements attendus détaillés.

@@ -128,7 +128,7 @@ dans `+layout.ts` : `const { createBrowserClient, createServerClient, isBrowser 
 **Raison.** L'import dynamique sort la dependance lourde de la chaine statique du
 module d'entree : l'objet `universal` est cree immediatement, les libs ne sont
 chargees qu'a l'appel de `load`. Le chunk passe de 231KB a 49KB. Detail complet
-dans [safari-webkit-tdz.md](../../pratiques/safari-webkit-tdz.md) (bug WebKit #242740) ; rappel
+dans [safari-webkit-tdz.md](../../../pratiques/safari-webkit-tdz.md) (bug WebKit #242740) ; rappel
 dans MEMORY.md (« Safari/WebKit TDZ Bug — CRITICAL »).
 
 **Consequences.**
@@ -317,7 +317,7 @@ l'import.
 ## References internes
 
 - [glossaire.md](glossaire.md) — termes et processus.
-- [safari-webkit-tdz.md](../../pratiques/safari-webkit-tdz.md) — bug TDZ (decision 4).
+- [safari-webkit-tdz.md](../../../pratiques/safari-webkit-tdz.md) — bug TDZ (decision 4).
 - Notes d'implementation (non normatives, dans `.claude/`) :
   `google-integration-complete-summary.md`,
   `google-classroom-phase2-summary.md`,

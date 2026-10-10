@@ -392,7 +392,7 @@ Le role est l'enum PostgreSQL `user_role` (`'student' | 'teacher' | 'admin'`) et
 - **Modele de donnees** : voir [`./data-model.md`](data-model.md) (`profiles`, `google_integrations`, enums `user_role`/`user_status`).
 - **Consommateurs Google** : futur `docs/ref/google-classroom/` (Classroom, Drive, Gmail, sync).
 - **Bug TDZ Safari** : `docs/pratiques/safari-webkit-tdz.md`.
-- **Module geometrie** (modele de cette doc) : [`../geometry/`](../geometrie).
+- **Module geometrie** (modele de cette doc) : [`../geometry/`](../../../systeme/geometrie).
 
 ---
 

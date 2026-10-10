@@ -113,7 +113,7 @@ directement dans `class_members`.
 
 Code : `src/lib/server/students.ts`, `src/lib/server/auth.ts`, `src/lib/server/middleware/auth.ts`,
 `src/routes/(protected)/dashboard/admin/import-students`, `src/routes/api/consent`. Auth et
-consentement : [auth/](auth/README.md), [conformite/](conformite/README.md).
+consentement : [auth.md](auth.md), [conformite/](conformite/README.md).
 
 ### Programme et suivi par compétences
 
@@ -269,12 +269,12 @@ cliquables (`src/lib/lexicon/`).
 
 ### Révisions (SRS)
 
-Répétition espacée FSRS greffée sur les modèles de questions. Détail : [srs/architecture.md](srs/architecture.md).
+Répétition espacée FSRS greffée sur les modèles de questions. Détail : [srs.md](srs.md).
 
 - `srs_decks` (paquet ; `is_auto_managed` = le paquet « Programme », un par élève ; `is_assigned` +
   `source_deck_id` = copie assignée par le professeur) → `srs_deck_sections`, `srs_cards`.
 - `srs_card_stats` : état FSRS par élève et carte, calculé en TypeScript (`src/lib/srs/fsrs.ts`).
-- `srs_deck_assignments`, `srs_review_sessions`, `srs_anti_fraud_flags` ([srs/anti-fraud.md](srs/anti-fraud.md)).
+- `srs_deck_assignments`, `srs_review_sessions`, `srs_anti_fraud_flags` ([srs.md](srs.md), § anti-triche).
 
 Accès : l'élève gère ses paquets **non assignés et non automatiques** ; il ne crée ni ne transforme un
 paquet assigné, automatique ou copié (policies RESTRICTIVE `srs_decks_paquets_serveur_*`) — ces

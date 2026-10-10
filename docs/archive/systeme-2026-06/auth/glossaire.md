@@ -151,5 +151,5 @@ dynamiquement** dans `+layout.ts` pour respecter l'invariant TDZ Safari/WebKit
 **invariant TDZ Safari/WebKit** (P1) — Contrainte interdisant tout import statique
 de librairie lourde (dont `@supabase/ssr`) dans `+layout.ts`, sous peine d'une
 erreur « Cannot access 'universal' before initialization » sur iOS. Le chunk du
-node racine doit rester < 100KB. Voir [safari-webkit-tdz.md](../../pratiques/safari-webkit-tdz.md)
+node racine doit rester < 100KB. Voir [safari-webkit-tdz.md](../../../pratiques/safari-webkit-tdz.md)
 et decision 4.

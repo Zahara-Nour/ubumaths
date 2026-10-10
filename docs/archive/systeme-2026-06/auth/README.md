@@ -14,7 +14,7 @@ Système d'authentification et d'autorisation d'UbuMaths (SvelteKit 5 + Supabase
 - Vercel). Couvre la connexion des utilisateurs (session, rôles, garde des
   routes) **et** l'autorisation des API Google (Classroom / Drive / Gmail).
 
-> **Ce répertoire suit le modèle** de [`docs/systeme/geometrie/`](../geometrie). Doc
+> **Ce répertoire suit le modèle** de [`docs/systeme/geometrie/`](../../../systeme/geometrie). Doc
 > en français, code et commentaires en anglais.
 
 ---
@@ -143,7 +143,7 @@ rate-limit fail-open, et le **doublon RBAC** (décision ouverte).
 
 ---
 
-## [progress/](../../archive/ref-progress/authentication-progress-README.md) — Documents de travail
+## [progress/](../../ref-progress/authentication-progress-README.md) — Documents de travail
 
 Les progress docs (`docs/wip/`) liés à ce thème seront regroupés ici. **Vide
 pour l'instant** : aucun wip auth/google n'existait dans `docs/wip/` à la
@@ -153,11 +153,11 @@ création de cette doc.
 
 ## Voir aussi
 
-- [`docs/systeme/geometrie/`](../geometrie) — Répertoire modèle pour cette structure.
-- [`docs/pratiques/safari-webkit-tdz.md`](../../pratiques/safari-webkit-tdz.md) — Détail de
+- [`docs/systeme/geometrie/`](../../../systeme/geometrie) — Répertoire modèle pour cette structure.
+- [`docs/pratiques/safari-webkit-tdz.md`](../../../pratiques/safari-webkit-tdz.md) — Détail de
   l'invariant TDZ (import dynamique `@supabase/ssr` dans le root layout).
-- [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md)
+- [`docs/systeme/base-de-donnees.md`](../../../systeme/base-de-donnees.md)
   — Schéma DB complet (tables `profiles`, `google_integrations`…).
-- [`CLAUDE.md`](../../../CLAUDE.md) — Instructions projet pour Claude Code.
+- [`CLAUDE.md`](../../../../CLAUDE.md) — Instructions projet pour Claude Code.
 - Futur `docs/ref/google-classroom/` — Consommateurs des API Google (Classroom /
   Drive / Gmail), hors périmètre du thème authentication.

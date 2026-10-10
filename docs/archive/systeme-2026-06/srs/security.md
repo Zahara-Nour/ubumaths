@@ -219,6 +219,6 @@ L'audit a explicitement vérifié et trouvé **sains** :
 ## 7. Voir aussi
 
 - [`anti-fraud.md`](anti-fraud.md) — Système anti-cheat livré 2026-06-10 (5 signaux + composite + UI prof).
-- [`docs/archive/wip/srs-fsrs-security-audit-findings.md`](../../archive/wip/srs-fsrs-security-audit-findings.md) — Audit détaillé + spec V2 anti-fraud (6 signaux + table + UI prof).
+- [`docs/archive/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — Audit détaillé + spec V2 anti-fraud (6 signaux + table + UI prof).
 - [`code-quality.md`](code-quality.md) — Refactor structure (ne pas confondre avec audit sécu).
 - [`README.md`](README.md) — Action items cross-cutting prioritaires.
