@@ -7,24 +7,28 @@
  * règles de tag posées en base (phase 0 et décision (a) validées le 2026-10-10). Copie figée des
  * tags : tests/integration/fixtures/tags-modeles-points.json.
  *
- * Un point NEUF porte un nœud de l'arbre (`node_id`) ; un ANCIEN point n'en a pas, et les règles
- * l'exemptent.
+ * Un point NEUF porte un nœud de l'arbre (`node_id`) ; un ANCIEN point porte un objectif, et les
+ * règles l'exemptent.
  *
+ * 0. Les deux générations s'excluent : un objectif OU un nœud, jamais les deux, jamais aucun.
  * 1. Règle 1 : un modèle se tague avec un point neuf de son nœud, ou de la notion de son nœud.
  * 2. (a) : un modèle sans nœud, un exercice sans rangement, ne reçoit pas de point neuf.
  * 3. Règle 2 : au plus un point neuf par programme et par modèle.
- * 4. Règle 2 en écritures simultanées : A tague et garde sa transaction, B attend, A valide, B est
- *    refusé.
+ * 4. Écritures simultanées, à deux sessions : la règle 2 (A tague et garde sa transaction, B
+ *    attend, A valide, B est refusé), un modèle déplacé pendant que son point est re-rattaché
+ *    (dans les deux ordres), le verrou des exercices.
  * 5. Exercices : règle 1 sur l'un de leurs nœuds ou sur leur notion, (a), et pas de règle 2.
  * 6. Les écritures qui casseraient un tag existant sont refusées : déplacer un modèle (ou lui
- *    retirer son nœud), re-rattacher un point (ou changer son programme), changer de notion une
- *    sous-notion, retirer ou déplacer le rangement d'un exercice. Supprimer un exercice reste
- *    possible.
+ *    retirer son nœud), re-rattacher un point (ou changer son programme, ou donner un nœud à un
+ *    ancien point), changer de notion une sous-notion, retirer ou déplacer le rangement d'un
+ *    exercice (y compris vers un autre exercice). Supprimer un exercice reste possible, et un
+ *    UPDATE à valeur égale passe toujours, même sur un état hors règle.
  * 7. Rejeu sur une copie de la prod (les modèles n'existent qu'en production) : EXACTEMENT les
  *    473 tags, les anciens intacts ; chaque garde refuse avec son message.
  * 8. Le rollback écrit dans la migration ramène exactement l'état d'avant, et refuse un état
  *    inattendu.
- * Plus la structure du fichier : aucun contrôle de transaction, gardes avant toute écriture.
+ * Plus la structure du fichier : marqueurs du rollback, aucun contrôle de transaction, gardes
+ * avant toute écriture.
  *
  * @vitest-environment node
  */
@@ -67,7 +71,25 @@ interface Decor {
 	points: Record<PointLabel, string>;
 	/** Deux anciens points (sans nœud) */
 	legacy: [string, string];
+	/** L'objectif du premier ancien point */
+	objectiveId: string;
 	authorId: string;
+}
+
+/** Décor VALIDÉ, vu par deux sessions : une notion, deux de ses sous-notions, un modèle, un exercice. */
+interface SharedDecor {
+	branch: string;
+	notion: string;
+	sub1: string;
+	sub2: string;
+	/** Modèle rangé sur la sous-notion 1, tagué avec `templatePoint` (point neuf de la notion) */
+	template: string;
+	templatePoint: string;
+	/** Exercice rangé sur les deux sous-notions, tagué avec `exercisePoint` (point neuf de la notion) */
+	exercise: string;
+	exercisePoint: string;
+	/** Point neuf de la sous-notion 1, qu'un test pose sur l'exercice */
+	pointOnSub1: string;
 }
 
 interface TagState {
@@ -123,6 +145,12 @@ const TAG_TEMPLATE =
 	'insert into public.question_template_points (template_id, point_id) values ($1, $2)';
 const TAG_EXERCISE =
 	'insert into public.exercise_curriculum_points (exercise_id, point_id) values ($1, $2)';
+const MOVE_TEMPLATE =
+	'update public.question_templates set classification_node_id = $2 where id = $1';
+const MOVE_POINT = 'update public.curriculum_points set node_id = $2 where id = $1';
+/** Attentes sur une ligne verrouillée par une autre transaction. */
+const ROW_LOCK = ['transactionid', 'tuple'];
+const ONE_GENERATION_CONSTRAINT = 'curriculum_points_one_generation';
 
 // Messages des règles (extraits)
 const RULE1 = /ni sur le nœud du modèle \(« .* »\) ni sur sa notion/;
@@ -132,8 +160,12 @@ const EXERCISE_RULE1 = /hors des nœuds de l'exercice .* et de leurs notions/;
 const EXERCISE_WITHOUT_NODE = /L'exercice .* n'est rangé dans aucun nœud de l'arbre : rangez-le/;
 const TEMPLATE_MOVED = /qui ne serait ni sur « .* » ni sur sa notion : retirez d'abord ce tag/;
 const TEMPLATE_UNRANGED = /il ne peut pas perdre son rangement/;
-const POINT_MOVED_TEMPLATE = /est tagué sur le modèle .*, dont il ne serait plus sur le nœud/;
-const POINT_MOVED_EXERCISE = /est tagué sur l'exercice .*, qui n'est rangé ni sur son nouveau nœud/;
+const POINT_MOVED_TEMPLATE =
+	/est tagué sur le modèle .*, et ne serait ni sur le nœud de ce modèle ni sur sa notion/;
+const POINT_ON_UNRANGED_TEMPLATE =
+	/serait sur un nœud, mais le modèle .* qui le porte n'est rangé dans aucun nœud/;
+const POINT_MOVED_EXERCISE = /est tagué sur l'exercice .*, qui n'est rangé ni sur le nœud du point/;
+const ONE_GENERATION = new RegExp(ONE_GENERATION_CONSTRAINT);
 const POINT_UNRANGED = /il ne peut pas perdre son nœud/;
 const POINT_REGRADED = /passerait au programme 2, dont le modèle .* porte déjà un point/;
 const SUBNOTION_TEMPLATE = /changerait de notion alors que le modèle .*, rangé sur elle/;
@@ -207,8 +239,8 @@ async function createDecor(pg: Client, authorId: string): Promise<Decor> {
 	const sub1 = await insertNode(pg, 'subnotion', 'sous-notion 1', notion);
 	const sub2 = await insertNode(pg, 'subnotion', 'sous-notion 2', notion);
 	const other = await insertNode(pg, 'notion', 'autre notion', branch);
-	const legacy = await pg.query<{ id: string }>(
-		`select id from public.curriculum_points
+	const legacy = await pg.query<{ id: string; objective_id: string }>(
+		`select id, objective_id from public.curriculum_points
 		  where objective_id is not null and node_id is null and archived_at is null
 		  order by code limit 2`
 	);
@@ -227,8 +259,102 @@ async function createDecor(pg: Client, authorId: string): Promise<Decor> {
 			onOther: await insertPoint(pg, 'autre-notion', '2', other)
 		},
 		legacy: [legacy.rows[0].id, legacy.rows[1].id],
+		objectiveId: legacy.rows[0].objective_id,
 		authorId
 	};
+}
+
+/**
+ * Pose un état HORS RÈGLE, déclencheurs suspendus le temps des étapes (dans la transaction de
+ * l'appelant) : ce qu'une écriture à valeur égale ne doit jamais se mettre à bloquer.
+ */
+async function outsideRules(pg: Client, steps: () => Promise<unknown>): Promise<void> {
+	await pg.query('set local session_replication_role = replica');
+	await steps();
+	await pg.query('set local session_replication_role = origin');
+}
+
+/** Décor validé (hors transaction), vu par deux sessions ; `dropSharedDecor` le retire. */
+async function createSharedDecor(pg: Client, authorId: string): Promise<SharedDecor> {
+	const branch = await insertNode(pg, 'branch', 'branche (deux sessions)', null);
+	const notion = await insertNode(pg, 'notion', 'notion (deux sessions)', branch);
+	const sub1 = await insertNode(pg, 'subnotion', 'sous-notion 1 (deux sessions)', notion);
+	const sub2 = await insertNode(pg, 'subnotion', 'sous-notion 2 (deux sessions)', notion);
+	const templatePoint = await insertPoint(pg, 'deux-sessions-modele', '2', notion);
+	const exercisePoint = await insertPoint(pg, 'deux-sessions-exercice', '2', notion);
+	const pointOnSub1 = await insertPoint(pg, 'deux-sessions-sous-notion-1', '2', sub1);
+	const template = await insertTemplate(pg, sub1);
+	await pg.query(TAG_TEMPLATE, [template, templatePoint]);
+	const exercise = await insertExercise(pg, authorId, [sub1, sub2]);
+	await pg.query(TAG_EXERCISE, [exercise, exercisePoint]);
+	return {
+		branch,
+		notion,
+		sub1,
+		sub2,
+		template,
+		templatePoint,
+		exercise,
+		exercisePoint,
+		pointOnSub1
+	};
+}
+
+/** Ramène le décor partagé à son état de départ (chaque écriture passe les règles). */
+async function resetSharedDecor(pg: Client, s: SharedDecor): Promise<void> {
+	await pg.query(
+		'delete from public.exercise_curriculum_points where exercise_id = $1 and point_id = $2',
+		[s.exercise, s.pointOnSub1]
+	);
+	await pg.query(
+		`insert into public.exercise_classifications (exercise_id, node_id, is_primary, position)
+		 values ($1, $2, false, 1) on conflict do nothing`,
+		[s.exercise, s.sub2]
+	);
+	await pg.query(MOVE_POINT, [s.exercisePoint, s.notion]);
+	await pg.query(MOVE_TEMPLATE, [s.template, s.sub1]);
+	await pg.query(MOVE_POINT, [s.templatePoint, s.notion]);
+}
+
+async function dropSharedDecor(pg: Client, s: SharedDecor): Promise<void> {
+	await pg.query('delete from public.exercise_curriculum_points where exercise_id = $1', [
+		s.exercise
+	]);
+	await pg.query('delete from public.exercises where id = $1', [s.exercise]);
+	await pg.query('delete from public.question_template_points where template_id = $1', [
+		s.template
+	]);
+	await pg.query('delete from public.question_templates where id = $1', [s.template]);
+	await pg.query('delete from public.curriculum_points where id = any($1::uuid[])', [
+		[s.templatePoint, s.exercisePoint, s.pointOnSub1]
+	]);
+	for (const node of [s.sub1, s.sub2, s.notion, s.branch]) {
+		await pg.query('delete from public.classification_nodes where id = $1', [node]);
+	}
+}
+
+async function nodeOf(pg: Client, table: 'question_templates' | 'curriculum_points', id: string) {
+	const column = table === 'question_templates' ? 'classification_node_id' : 'node_id';
+	const r = await pg.query<{ node: string | null }>(
+		`select ${column} as node from public.${table} where id = $1`,
+		[id]
+	);
+	return r.rows[0]?.node ?? null;
+}
+
+async function backendPid(pg: Client): Promise<number> {
+	const r = await pg.query<{ pid: number }>('select pg_backend_pid() as pid');
+	return r.rows[0].pid;
+}
+
+/** La contrainte des deux générations : « définition§validée », ou rien si elle est absente. */
+async function oneGeneration(pg: Client): Promise<string[]> {
+	const r = await pg.query<{ def: string; convalidated: boolean }>(
+		`select pg_get_constraintdef(oid) as def, convalidated from pg_constraint
+		  where conname = $1 and conrelid = 'public.curriculum_points'::regclass`,
+		[ONE_GENERATION_CONSTRAINT]
+	);
+	return r.rows.map((row) => `${row.def}§${row.convalidated}`);
 }
 
 /**
@@ -347,26 +473,40 @@ async function ruleFunctions(pg: Client): Promise<string[]> {
 	return r.rows.map((row) => row.proname);
 }
 
-/** Le corps exécutable de la migration : tout ce qui suit le bloc de rollback, sans commentaires. */
+/**
+ * Le corps exécutable de la migration : tout ce qui suit le bloc de rollback, sans commentaires.
+ * Sans le marqueur de fin, il n'y aurait rien à examiner : l'absence échoue, elle ne passe pas.
+ */
 function executableLines(): string[] {
 	const sql = readFileSync(MIGRATION, 'utf-8');
+	const end = sql.indexOf('-- ROLLBACK:END');
+	if (end < 0) throw new Error(`marqueur -- ROLLBACK:END introuvable dans ${MIGRATION}`);
 	return sql
-		.slice(sql.indexOf('-- ROLLBACK:END'))
+		.slice(end)
 		.split('\n')
 		.filter((line) => !line.trim().startsWith('--'));
 }
 
-/** Attend que la session `pid` soit bloquée sur un verrou consultatif (5 s au plus). */
-async function waitForAdvisoryLock(observer: Client, pid: number): Promise<void> {
+/**
+ * Attend que la session `pid` soit bloquée sur un verrou (5 s au plus) : `advisory` pour un
+ * verrou consultatif, `transactionid` ou `tuple` pour une ligne qu'une autre transaction tient.
+ */
+async function waitForLock(
+	observer: Client,
+	pid: number,
+	waitEvents: string[],
+	what: string
+): Promise<void> {
 	for (let attempt = 0; attempt < 100; attempt += 1) {
 		const r = await observer.query<{ wait_event_type: string | null; wait_event: string | null }>(
 			'select wait_event_type, wait_event from pg_stat_activity where pid = $1',
 			[pid]
 		);
-		if (r.rows[0]?.wait_event_type === 'Lock' && r.rows[0]?.wait_event === 'advisory') return;
+		const row = r.rows[0];
+		if (row?.wait_event_type === 'Lock' && waitEvents.includes(row.wait_event ?? '')) return;
 		await new Promise((resolve) => setTimeout(resolve, 50));
 	}
-	throw new Error(`la session ${pid} n'attend pas le verrou du modèle`);
+	throw new Error(`la session ${pid} n'attend pas ${what}`);
 }
 
 function escapeRegExp(text: string): string {
@@ -390,6 +530,17 @@ describe('Tags modèles → points neufs : la fixture, le fichier, l’état app
 		expect(new Set(fixture.tags.map((t) => `${t.modele}§${t.programme}`)).size).toBe(473);
 		// Chaque modèle a son nœud de production dans la copie figée du nettoyage
 		expect(TEMPLATE_IDS.filter((id) => !cleanupFixture.attendu_modeles[id])).toEqual([]);
+	});
+
+	it('le bloc de rollback est délimité : -- ROLLBACK:BEGIN puis -- ROLLBACK:END, chacun une fois', () => {
+		const lines = readFileSync(MIGRATION, 'utf-8').split('\n');
+		const begin = lines.indexOf('-- ROLLBACK:BEGIN');
+		const end = lines.indexOf('-- ROLLBACK:END');
+		expect(begin).toBeGreaterThan(-1);
+		expect(end).toBeGreaterThan(begin);
+		expect(lines.filter((l) => l === '-- ROLLBACK:BEGIN' || l === '-- ROLLBACK:END')).toHaveLength(
+			2
+		);
 	});
 
 	it('aucun contrôle de transaction hors commentaires : la migration se joue dans la transaction appelante', () => {
@@ -423,6 +574,12 @@ describe('Tags modèles → points neufs : la fixture, le fichier, l’état app
 			.map(([name, table]) => `${name}§${table}§O`)
 			.sort();
 		expect(await ruleTriggers(await getPostgresClient())).toEqual(expected);
+	});
+
+	it('la contrainte des deux générations est posée et validée', async () => {
+		expect(await oneGeneration(await getPostgresClient())).toEqual([
+			'CHECK (((objective_id IS NULL) <> (node_id IS NULL)))§true'
+		]);
 	});
 
 	it('les six fonctions : ni SECURITY DEFINER, search_path fixé, exécutables ni par anon, ni par authenticated, ni par PUBLIC', async () => {
@@ -473,12 +630,15 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 	const tagExercise = (exerciseId: string, pointId: string) =>
 		db().query(TAG_EXERCISE, [exerciseId, pointId]);
 	const moveTemplate = (templateId: string, nodeId: string | null) =>
-		db().query('update public.question_templates set classification_node_id = $2 where id = $1', [
-			templateId,
-			nodeId
-		]);
+		db().query(MOVE_TEMPLATE, [templateId, nodeId]);
 	const movePoint = (pointId: string, nodeId: string | null) =>
-		db().query('update public.curriculum_points set node_id = $2 where id = $1', [pointId, nodeId]);
+		db().query(MOVE_POINT, [pointId, nodeId]);
+	/** Un ancien point devient neuf : il reçoit un nœud et perd son objectif. */
+	const giveNode = (pointId: string, nodeId: string) =>
+		db().query(
+			'update public.curriculum_points set node_id = $2, objective_id = null where id = $1',
+			[pointId, nodeId]
+		);
 	const reparent = (nodeId: string, parentId: string) =>
 		db().query('update public.classification_nodes set parent_id = $2 where id = $1', [
 			nodeId,
@@ -498,6 +658,36 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 	afterAll(async () => {
 		await pg?.query('rollback');
 		await cleanupAllTestData();
+	});
+
+	describe('0. Les deux générations s’excluent : un objectif OU un nœud', () => {
+		it('un point avec un objectif ET un nœud est refusé', async () => {
+			await refused(
+				() =>
+					db().query(
+						`insert into public.curriculum_points (code, name, kind, grade, node_id, objective_id)
+						 values ($1, $1, 'savoir_faire', '2', $2, $3)`,
+						[`${TAG}-les-deux`, d.notion, d.objectiveId]
+					),
+				ONE_GENERATION
+			);
+		});
+
+		it('un point sans objectif ni nœud est refusé', async () => {
+			await refused(
+				() =>
+					db().query(
+						`insert into public.curriculum_points (code, name, kind, grade)
+						 values ($1, $1, 'savoir_faire', '2')`,
+						[`${TAG}-aucun`]
+					),
+				ONE_GENERATION
+			);
+		});
+
+		it('un ancien point qui reçoit un nœud sans perdre son objectif est refusé', async () => {
+			await refused(() => movePoint(d.legacy[0], d.notion), ONE_GENERATION);
+		});
 	});
 
 	describe('1. Règle 1 : un point du nœud du modèle, ou de la notion de ce nœud', () => {
@@ -769,6 +959,83 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 				return db().query('delete from public.exercises where id = $1', [e]);
 			});
 		});
+
+		it('déplacer vers un autre exercice (exercise_id) le seul rangement qui couvre un point : refusé', async () => {
+			await refused(async () => {
+				const e = await exercise([d.other, d.sub1]);
+				const target = await exercise([d.sub2]);
+				await tagExercise(e, d.points.onNotion);
+				return db().query(
+					`update public.exercise_classifications set exercise_id = $3
+					  where exercise_id = $1 and node_id = $2`,
+					[e, d.sub1, target]
+				);
+			}, EXERCISE_UNCOVERED);
+		});
+
+		it('un ancien point qui reçoit un nœud hors du nœud d’un modèle qui le porte (et de sa notion) : refusé', async () => {
+			await refused(async () => {
+				await tagTemplate(await template(d.sub1), d.legacy[0]);
+				return giveNode(d.legacy[0], d.other);
+			}, POINT_MOVED_TEMPLATE);
+		});
+
+		it('un ancien point qui reçoit le nœud de la notion d’un modèle qui le porte : accepté', async () => {
+			await accepted(async () => {
+				await tagTemplate(await template(d.sub1), d.legacy[0]);
+				return giveNode(d.legacy[0], d.notion);
+			});
+		});
+
+		it('un ancien point porté par un modèle sans nœud ne reçoit pas de nœud : refusé', async () => {
+			await refused(async () => {
+				await tagTemplate(await template(null), d.legacy[0]);
+				return giveNode(d.legacy[0], d.notion);
+			}, POINT_ON_UNRANGED_TEMPLATE);
+		});
+	});
+
+	describe('6 bis. Un UPDATE à valeur égale passe, même sur un état hors règle', () => {
+		// L'écran d'un modèle renvoie la ligne entière : `update of …` se déclenche même à valeur
+		// égale. Un état hors règle (posé ici déclencheurs suspendus) ne doit pas bloquer ce geste.
+		it('modèle : même nœud', async () => {
+			await accepted(async () => {
+				const t = await template(d.sub1);
+				await outsideRules(db(), () => tagTemplate(t, d.points.onOther));
+				return moveTemplate(t, d.sub1);
+			});
+		});
+
+		it('point : même nœud, même programme', async () => {
+			await accepted(async () => {
+				const t = await template(d.sub1);
+				await outsideRules(db(), () => tagTemplate(t, d.points.onOther));
+				return db().query(
+					'update public.curriculum_points set node_id = $2, grade = $3 where id = $1',
+					[d.points.onOther, d.other, '2']
+				);
+			});
+		});
+
+		it('sous-notion : même notion', async () => {
+			await accepted(async () => {
+				const t = await template(d.sub1);
+				await outsideRules(db(), () => tagTemplate(t, d.points.onOther));
+				return reparent(d.sub1, d.notion);
+			});
+		});
+
+		it('rangement d’exercice : même nœud, même exercice', async () => {
+			await accepted(async () => {
+				const e = await exercise([d.sub1]);
+				await outsideRules(db(), () => tagExercise(e, d.points.onOther));
+				return db().query(
+					`update public.exercise_classifications set node_id = $2, exercise_id = $1
+					  where exercise_id = $1 and node_id = $2`,
+					[e, d.sub1]
+				);
+			});
+		});
 	});
 });
 
@@ -826,7 +1093,7 @@ describe('4. Règle 2 en écritures simultanées : B attend A, puis est refusé'
 			(e: unknown) => e
 		);
 		// B attend, sans avoir échoué ni abouti
-		await waitForAdvisoryLock(observer, rows[0].pid);
+		await waitForLock(observer, rows[0].pid, ['advisory'], 'le verrou du modèle');
 
 		await a.query('commit');
 		expect(await outcome).toMatchObject({
@@ -843,10 +1110,140 @@ describe('4. Règle 2 en écritures simultanées : B attend A, puis est refusé'
 	}, 30_000);
 });
 
+describe('4 bis. Écritures simultanées entre tables : l’une attend l’autre, puis voit son résultat', () => {
+	let observer: Client | undefined;
+	let t1: Client | undefined;
+	let t2: Client | undefined;
+	let s: SharedDecor | undefined;
+
+	function sessions(): { observer: Client; t1: Client; t2: Client; s: SharedDecor } {
+		if (!observer || !t1 || !t2 || !s) throw new Error('décor à deux sessions non initialisé');
+		return { observer, t1, t2, s };
+	}
+
+	/** Lance une écriture qui va attendre : son issue, erreur comprise, est rendue plus tard. */
+	function pending(client: Client, sql: string, params: unknown[]): Promise<unknown> {
+		return client.query(sql, params).then(
+			() => null,
+			(e: unknown) => e
+		);
+	}
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		const author = await TestData.profile().withRole('teacher').create();
+		observer = await connectPostgresClient();
+		t1 = await connectPostgresClient();
+		t2 = await connectPostgresClient();
+		s = await createSharedDecor(observer, author.id);
+	});
+
+	afterAll(async () => {
+		await t1?.query('rollback').catch(() => undefined);
+		await t2?.query('rollback').catch(() => undefined);
+		if (observer && s) await dropSharedDecor(observer, s);
+		await Promise.all([observer?.end(), t1?.end(), t2?.end()]);
+		await cleanupAllTestData();
+	});
+
+	it('3b × 3c : T1 déplace le modèle et garde sa transaction ; T2, qui re-rattache son point, attend ; T1 valide ; T2 est refusé', async () => {
+		const { observer, t1, t2, s } = sessions();
+		await resetSharedDecor(observer, s);
+		await t1.query('begin');
+		// Valide seul : le point est sur la notion, commune aux deux sous-notions
+		await t1.query(MOVE_TEMPLATE, [s.template, s.sub2]);
+
+		await t2.query('begin');
+		const pid = await backendPid(t2);
+		// Valide pour le modèle sur la sous-notion 1, hors règle pour le modèle déplacé
+		const outcome = pending(t2, MOVE_POINT, [s.templatePoint, s.sub1]);
+		await waitForLock(observer, pid, ROW_LOCK, 'la ligne du point, verrouillée par T1');
+
+		await t1.query('commit');
+		expect(await outcome).toMatchObject({
+			code: CHECK_VIOLATION,
+			message: expect.stringMatching(POINT_MOVED_TEMPLATE)
+		});
+		await t2.query('rollback');
+		expect(await nodeOf(observer, 'question_templates', s.template)).toBe(s.sub2);
+		expect(await nodeOf(observer, 'curriculum_points', s.templatePoint)).toBe(s.notion);
+	}, 30_000);
+
+	it('3c × 3b : T2 re-rattache le point et garde sa transaction ; T1, qui déplace le modèle, attend ; T2 valide ; T1 est refusé', async () => {
+		const { observer, t1, t2, s } = sessions();
+		await resetSharedDecor(observer, s);
+		await t2.query('begin');
+		// Valide seul : le modèle est sur la sous-notion 1
+		await t2.query(MOVE_POINT, [s.templatePoint, s.sub1]);
+
+		await t1.query('begin');
+		const pid = await backendPid(t1);
+		const outcome = pending(t1, MOVE_TEMPLATE, [s.template, s.sub2]);
+		await waitForLock(observer, pid, ROW_LOCK, 'la ligne du modèle, verrouillée par T2');
+
+		await t2.query('commit');
+		expect(await outcome).toMatchObject({
+			code: CHECK_VIOLATION,
+			message: expect.stringMatching(TEMPLATE_MOVED)
+		});
+		await t1.query('rollback');
+		expect(await nodeOf(observer, 'question_templates', s.template)).toBe(s.sub1);
+		expect(await nodeOf(observer, 'curriculum_points', s.templatePoint)).toBe(s.sub1);
+	}, 30_000);
+
+	it('verrou des exercices (3e × 3f) : T1 tague l’exercice ; T2, qui retire le rangement couvrant ce point, attend ; T1 valide ; T2 est refusé', async () => {
+		const { observer, t1, t2, s } = sessions();
+		await resetSharedDecor(observer, s);
+		await t1.query('begin');
+		await t1.query(TAG_EXERCISE, [s.exercise, s.pointOnSub1]);
+
+		await t2.query('begin');
+		const pid = await backendPid(t2);
+		const outcome = pending(
+			t2,
+			'delete from public.exercise_classifications where exercise_id = $1 and node_id = $2',
+			[s.exercise, s.sub1]
+		);
+		await waitForLock(observer, pid, ['advisory'], 'le verrou de l’exercice');
+
+		await t1.query('commit');
+		expect(await outcome).toMatchObject({
+			code: CHECK_VIOLATION,
+			message: expect.stringMatching(EXERCISE_UNCOVERED)
+		});
+		await t2.query('rollback');
+	}, 30_000);
+
+	it('verrou des exercices (3c × 3f) : T1 retire un rangement ; T2, qui re-rattache le point de l’exercice hors de ce qui reste, attend ; T1 valide ; T2 est refusé', async () => {
+		const { observer, t1, t2, s } = sessions();
+		await resetSharedDecor(observer, s);
+		await t1.query('begin');
+		// Valide seul : le point de l'exercice, sur la notion, reste couvert par la sous-notion 1
+		await t1.query(
+			'delete from public.exercise_classifications where exercise_id = $1 and node_id = $2',
+			[s.exercise, s.sub2]
+		);
+
+		await t2.query('begin');
+		const pid = await backendPid(t2);
+		// Valide pour l'exercice encore rangé sur la sous-notion 2, hors règle sans elle
+		const outcome = pending(t2, MOVE_POINT, [s.exercisePoint, s.sub2]);
+		await waitForLock(observer, pid, ['advisory'], 'le verrou de l’exercice');
+
+		await t1.query('commit');
+		expect(await outcome).toMatchObject({
+			code: CHECK_VIOLATION,
+			message: expect.stringMatching(POINT_MOVED_EXERCISE)
+		});
+		await t2.query('rollback');
+	}, 30_000);
+});
+
 describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', () => {
 	let pg: Client | undefined;
 	let before: TagState;
 	let triggersBefore: string[];
+	let constraintBefore: string[];
 	let after: TagState;
 
 	function db(): Client {
@@ -863,6 +1260,7 @@ describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', 
 		await prepareProdCopy(pg, teacher.id);
 		before = await readTags(pg);
 		triggersBefore = await ruleTriggers(pg);
+		constraintBefore = await oneGeneration(pg);
 		await pg.query(readFileSync(MIGRATION, 'utf-8'));
 		after = await readTags(pg);
 	}, 120_000);
@@ -876,6 +1274,7 @@ describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', 
 		expect(before.fresh).toEqual([]);
 		expect(before.legacy).toHaveLength(TEMPLATE_IDS.length * LEGACY_PER_TEMPLATE);
 		expect(triggersBefore).toEqual([]);
+		expect(constraintBefore).toEqual([]);
 	});
 
 	it('après : EXACTEMENT les 473 tags de la fixture, chacun sur le point neuf de son programme', () => {
@@ -929,6 +1328,12 @@ describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', 
 		expect([...perProgramme.entries()].filter(([, n]) => n > 1)).toEqual([]);
 	});
 
+	it('après : la contrainte des deux générations est posée et validée', async () => {
+		expect(await oneGeneration(db())).toEqual([
+			'CHECK (((objective_id IS NULL) <> (node_id IS NULL)))§true'
+		]);
+	});
+
 	it('après : les six triggers de règle sont posés et actifs', async () => {
 		const expected = Object.entries(TRIGGERS)
 			.map(([name, table]) => `${name}§${table}§O`)
@@ -941,6 +1346,7 @@ describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', 
 		expect(await readTags(db())).toEqual(before);
 		expect(await ruleTriggers(db())).toEqual([]);
 		expect(await ruleFunctions(db())).toEqual([]);
+		expect(await oneGeneration(db())).toEqual([]);
 	});
 });
 
@@ -1020,6 +1426,15 @@ describe('7 et 8. Rejeu : chaque garde refuse avec son message, le rollback auss
 					`${first.point} (${first.programme})`
 				)}`
 			)
+		);
+	}, 60_000);
+
+	it('un point d’aucune génération : la garde refuse avant de poser la contrainte', async () => {
+		await replayAfter(
+			`insert into public.curriculum_points (code, name, kind, grade)
+			 values ($1, $1, 'savoir_faire', '2')`,
+			async () => [`${TAG}-sans-generation`],
+			/points des deux générations, ou d'aucune : 1 — contrainte curriculum_points_one_generation impossible/
 		);
 	}, 60_000);
 

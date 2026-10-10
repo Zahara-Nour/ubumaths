@@ -9,6 +9,8 @@
 --
 --   * 473 tags modèle → point NEUF, sur 420 modèles (1_SPE : 177, 2 : 52, T_COMP : 65, T_EXP : 57, T_SPE : 122) ;
 --   * les anciens tags (points sans nœud) restent tels quels jusqu'à l'étape 4 de C5 ;
+--   * les deux générations de points s'excluent (contrainte curriculum_points_one_generation) : un point
+--     porte un objectif (ancien) OU un nœud de l'arbre (neuf), jamais les deux, jamais aucun ;
 --   * deux RÈGLES posées en base, par triggers, pour tout point NEUF (`node_id` non nul ; un
 --     ancien point, sans nœud, est exempté) :
 --       règle 1 — le point est sur le nœud du modèle, ou sur la notion de ce nœud ; pour un
@@ -16,16 +18,36 @@
 --       (a)     — un modèle sans nœud, un exercice sans rangement, ne reçoit pas de point neuf :
 --                 on le range d'abord ;
 --       règle 2 — un modèle a au plus UN point neuf par programme, même en écritures simultanées
---                 (verrou consultatif de transaction, un par modèle) ; pas de règle 2 pour un
---                 exercice, qui porte plusieurs points ;
+--                 (verrou consultatif de transaction, un par modèle), en READ COMMITTED — le mode
+--                 de PostgREST, de supabase-js et de pg ; pas de règle 2 pour un exercice, qui
+--                 porte plusieurs points ;
 --     et toute écriture qui casserait un tag neuf existant est refusée : déplacer un modèle (ou
---     lui retirer son nœud), re-rattacher un point (ou changer son programme), changer de notion
---     une sous-notion, retirer ou déplacer le rangement d'un exercice.
+--     lui retirer son nœud), re-rattacher un point (ou changer son programme, ou donner un nœud
+--     à un ancien point), changer de notion une sous-notion, retirer ou déplacer le rangement
+--     d'un exercice.
+--   * Écritures simultanées entre tables : le point d'un tag est lu verrouillé (3a, 3e) ; un
+--     modèle déplacé verrouille les points qu'il porte (3b) ; un point re-rattaché verrouille
+--     les modèles qui le portent, et prend le verrou consultatif des exercices qui le portent
+--     (3c, celui de 3e et 3f). L'une des deux écritures attend l'autre, puis voit son résultat.
+--     Si les deux se croisent exactement, Postgres détecte l'interblocage et annule l'une d'elles
+--     (un refus : la règle tient). Reste ouverte : une sous-notion re-parentée (3d) en même
+--     temps qu'un tag ou qu'un rangement sur elle.
 --
 -- Accès : AUCUN changement (question posée à David et tranchée le 2026-10-10) — les nouveaux
--- tags se lisent comme les anciens, par les mêmes personnes. Les fonctions de trigger ne sont pas
--- SECURITY DEFINER : elles lisent avec les droits de l'appelant (prof ou admin, seuls à pouvoir
--- taguer), et ce qu'elles ne voient pas, elles le refusent.
+-- tags se lisent comme les anciens, par les mêmes personnes.
+-- Fonctions de trigger SECURITY INVOKER (le choix INVOKER / SECURITY DEFINER reste à trancher par
+-- David) : elles lisent avec les droits de l'appelant, et une ligne que la RLS lui masque ne lève
+-- pas d'erreur. Selon la requête, elle fait refuser ou elle passe sans être vérifiée :
+--   * le point d'un tag (3a, 3e) est lu verrouillé ; masqué, le tag est refusé ;
+--   * les gardes 3b, 3c, 3d et 3f ne vérifient pas un modèle, un tag ou un rangement masqué.
+-- Pour les modèles, pas de trou : le prof et l'admin (seuls à taguer et à re-rattacher un point)
+-- et l'admin (seul à déplacer un modèle) voient tous les modèles et tous les tags. Pour les
+-- exercices, un trou : un exercice privé du prof est invisible de l'admin. Une sous-notion
+-- re-parentée par l'admin (3d) ne vérifie donc pas les exercices privés rangés sur elle ; un point
+-- re-rattaché par l'admin (3c) les voit sans rangement, et refuse.
+-- Un verrou FOR SHARE exige en outre le droit de MODIFIER la ligne : masquée par la RLS de
+-- modification, elle n'est pas verrouillée (sans erreur) ; la vérification reste juste, mais la
+-- course n'est fermée que pour un appelant qui peut modifier (pour les modèles : l'admin).
 -- Effets acceptés par David :
 --   * les états d'acquisition des élèves sur les points neufs se calculent aux PROCHAINES
 --     tentatives (trigger d'acquisition existant), sur tout leur historique ; aucune page ne les
@@ -40,12 +62,17 @@
 -- ⚠️ Ne JAMAIS jouer ce fichier hors d'une transaction : `pnpm db:migrate` (supabase db push)
 -- l'exécute en une seule transaction ; en autocommit, l'atomicité ne tient plus.
 --
--- Rollback — ⚠️ DESTRUCTIF : il retire les 473 tags de cette migration (TOUT ou RIEN : il
--- refuse si l'un d'eux a été retiré ou ressaisi à la main depuis), puis les triggers et les
--- fonctions des règles, et vérifie ses comptes. Un tag neuf posé depuis, hors des 473, reste
--- en place — sans règle pour le garder. Avant de l'exécuter : appliquer la règle CLAUDE.md des
--- migrations destructives (arrêt, explication en français, décision de David). À jouer dans une
--- transaction (begin; … commit;), en retirant les « -- » du bloc :
+-- Rollback — ⚠️ DESTRUCTIF : il retire les 473 tags de cette migration, la contrainte des deux
+-- générations, puis les triggers et les fonctions des règles, et vérifie ses comptes. TOUT ou
+-- RIEN : il refuse si une partie seulement des 473 tags est encore présente (un tag retiré
+-- depuis) ; un tag retiré puis reposé à l'identique ne se distingue pas des autres et part avec
+-- eux. Un tag neuf posé depuis, hors des 473, reste en place — sans règle pour le garder.
+-- Les états d'acquisition des élèves (`student_point_state`) calculés entre-temps sur les points
+-- neufs RESTENT : ce sont des données d'élèves, et les purger serait une décision destructive à
+-- part, soumise à David.
+-- Avant de l'exécuter : appliquer la règle CLAUDE.md des migrations destructives (arrêt,
+-- explication en français, décision de David). À jouer dans une transaction (begin; … commit;),
+-- en retirant les « -- » du bloc :
 -- ROLLBACK:BEGIN
 -- set local lock_timeout = '5s';
 -- create temporary table _tgr_tags (template_id uuid not null, code text not null, grade text not null, primary key (template_id, code));
@@ -530,8 +557,8 @@
 -- 	  join _tgr_tags t on t.template_id = q.template_id and t.code = p.code and t.grade = p.grade;
 -- do $tgr_garde$
 -- begin
--- 	-- Tout ou rien : les 473 tags (production) ou aucun (base sans les modèles). Sinon, un
--- 	-- tag a été retiré ou ressaisi à la main depuis la migration : à examiner avant de rejouer.
+-- 	-- Tout ou rien : les 473 tags (production) ou aucun (base sans les modèles). Sinon, une
+-- 	-- partie des 473 a été retirée depuis la migration : à examiner avant de rejouer.
 -- 	if (select n from _tgr_avant) not in (0, 473) then
 -- 		raise exception 'rollback : % tag(s) de la migration présent(s) sur 473 (tout ou rien) : à examiner avant de rejouer', (select n from _tgr_avant);
 -- 	end if;
@@ -539,6 +566,7 @@
 -- delete from public.question_template_points q
 --  using public.curriculum_points p, _tgr_tags t
 --  where p.id = q.point_id and q.template_id = t.template_id and p.code = t.code and p.grade = t.grade;
+-- alter table public.curriculum_points drop constraint if exists curriculum_points_one_generation;
 -- drop trigger if exists question_template_points_rules on public.question_template_points;
 -- drop trigger if exists question_templates_guard_point_tags on public.question_templates;
 -- drop trigger if exists curriculum_points_guard_tags on public.curriculum_points;
@@ -561,6 +589,10 @@
 -- 	  join _tgr_tags t on t.template_id = q.template_id and t.code = p.code and t.grade = p.grade;
 -- 	if v_n <> 0 then
 -- 		raise exception 'rollback : % tag(s) de la migration encore présent(s)', v_n;
+-- 	end if;
+-- 	select count(*) into v_n from pg_constraint where conname = 'curriculum_points_one_generation';
+-- 	if v_n <> 0 then
+-- 		raise exception 'rollback : contrainte des deux générations encore présente';
 -- 	end if;
 -- 	select count(*) into v_n from pg_trigger
 -- 	 where not tgisinternal and tgname in ('question_template_points_rules', 'question_templates_guard_point_tags', 'curriculum_points_guard_tags', 'classification_nodes_guard_point_tags', 'exercise_curriculum_points_rules', 'exercise_classifications_guard_point_tags');
@@ -1103,9 +1135,25 @@ begin
 	if v_n not in (0, 420) then
 		raise exception 'identifiants partiellement présents : % modèle(s) sur 420', v_n;
 	end if;
+
+	-- 2d. chaque point est d'une génération, et d'une seule (contrainte posée en 3.0)
+	select count(*) into v_n
+	  from public.curriculum_points
+	 where (objective_id is null) = (node_id is null);
+	if v_n <> 0 then
+		raise exception 'points des deux générations, ou d''aucune : % — contrainte curriculum_points_one_generation impossible', v_n;
+	end if;
 end $garde$;
 
--- ---- 3. Les règles, par fonctions de trigger -------------------------------------------------
+-- ---- 3. Les règles ---------------------------------------------------------------------------
+-- 3.0 Les deux générations s'excluent.
+-- Un point d'ancienne génération porte un objectif ; un point neuf, un nœud de l'arbre. Jamais
+-- les deux, jamais aucun : c'est ce qui permet aux règles de reconnaître un point neuf à son nœud.
+alter table public.curriculum_points
+	add constraint curriculum_points_one_generation
+	check ((objective_id is null) <> (node_id is null));
+
+-- Les règles, par fonctions de trigger.
 -- « Point neuf » : `node_id` non nul ; un ancien point (sans nœud) est exempté.
 -- « Notion d'un nœud » : la notion elle-même, ou le parent d'une sous-notion (le genre d'un
 -- nœud ne change pas : classification_nodes_validate).
@@ -1126,19 +1174,30 @@ declare
 	v_template_notion uuid;
 	v_other text;
 begin
-	select p.code, p.grade, p.node_id, n.name
-	  into v_code, v_grade, v_point_node, v_point_node_name
+	-- Le point est lu VERROUILLÉ (for share) : un re-rattachement ou un changement de programme
+	-- simultané (3c) attend cette transaction, ou cette transaction l'attend et lit l'état validé.
+	select p.code, p.grade, p.node_id
+	  into v_code, v_grade, v_point_node
 	  from public.curriculum_points p
-	  left join public.classification_nodes n on n.id = p.node_id
-	 where p.id = new.point_id;
-	-- Ancien point (sans nœud) : exempté. Point inexistant : la clé étrangère le refusera.
+	 where p.id = new.point_id
+	   for share;
+	-- Introuvable, ou masqué par la RLS de modification (qu'exige le verrou) : refus.
+	if not found then
+		raise exception 'Point % introuvable ou illisible : tag refusé.', new.point_id
+			using errcode = 'check_violation';
+	end if;
+	-- Ancien point (sans nœud) : exempté.
 	if v_point_node is null then
 		return new;
 	end if;
+	select n.name into v_point_node_name from public.classification_nodes n where n.id = v_point_node;
 
-	-- Un verrou par modèle, pris AVANT de lire : deux tags simultanés d'un même modèle passent
-	-- l'un après l'autre, et le second voit le premier (règle 2). Le déplacement d'un modèle
-	-- prend le même verrou.
+	-- Un verrou par modèle, pris APRÈS la lecture (verrouillée) du point et AVANT celle du modèle
+	-- et de ses tags : deux tags simultanés d'un même modèle passent l'un après l'autre, et le
+	-- second voit le premier (règle 2) ; un déplacement du modèle (3b) prend le même verrou.
+	-- Cela ne tient qu'en READ COMMITTED, où chaque requête voit ce qui a été validé avant elle :
+	-- c'est le mode de PostgREST, de supabase-js et de pg. En REPEATABLE READ, le second tag ne
+	-- verrait pas le premier.
 	perform pg_advisory_xact_lock(hashtextextended('question_template_points:' || new.template_id::text, 0));
 
 	select q.classification_node_id, n.name, case when n.kind = 'subnotion' then n.parent_id else n.id end
@@ -1199,6 +1258,13 @@ begin
 	-- Même verrou que le tag : un tag et un déplacement simultanés du même modèle passent l'un
 	-- après l'autre, et le second voit le premier.
 	perform pg_advisory_xact_lock(hashtextextended('question_template_points:' || new.id::text, 0));
+	-- Les points tagués sur ce modèle sont verrouillés (for share), anciens compris (un ancien
+	-- point peut recevoir un nœud, 3c) : un re-rattachement simultané attend cette transaction,
+	-- ou cette transaction l'attend, et la vérification lit l'état validé.
+	perform 1
+	  from public.curriculum_points p
+	 where p.id in (select q.point_id from public.question_template_points q where q.template_id = new.id)
+	   for share;
 
 	select case when n.kind = 'subnotion' then n.parent_id else n.id end, n.name
 	  into v_notion, v_node_name
@@ -1228,8 +1294,9 @@ create trigger question_templates_guard_point_tags
 	after update of classification_node_id on public.question_templates
 	for each row execute function public.question_templates_guard_point_tags();
 
--- 3c. Re-rattacher un point (ou changer son programme) ne doit casser aucun tag : règle 1 pour
--- les modèles et les exercices qui le portent, règle 2 pour les modèles.
+-- 3c. Re-rattacher un point, changer son programme, ou donner un nœud à un ancien point, ne doit
+-- casser aucun tag : règle 1 pour les modèles et les exercices qui le portent, règle 2 pour les
+-- modèles.
 create function public.curriculum_points_guard_tags()
 returns trigger
 language plpgsql
@@ -1252,17 +1319,41 @@ begin
 		return null;
 	end if;
 
+	-- Les modèles qui portent le point sont verrouillés (for share) : un déplacement simultané
+	-- (3b) attend cette transaction, ou cette transaction l'attend. Pour les exercices, le verrou
+	-- est celui de 3e et 3f (consultatif, par exercice) : retirer ou déplacer un rangement ne
+	-- touche pas la ligne de l'exercice, qu'un for share n'aurait pas protégée.
+	perform 1
+	  from public.question_templates t
+	 where t.id in (select q.template_id from public.question_template_points q where q.point_id = new.id)
+	   for share;
+	perform pg_advisory_xact_lock(hashtextextended('exercise_curriculum_points:' || x.exercise_id::text, 0))
+	  from (select distinct e.exercise_id from public.exercise_curriculum_points e where e.point_id = new.id) x
+	 order by x.exercise_id;
+
+	-- Un modèle sans nœud ne porte que des anciens points (règle (a)) : c'est l'un d'eux qui
+	-- recevrait un nœud.
 	select q.template_id into v_id
 	  from public.question_template_points q
 	  join public.question_templates t on t.id = q.template_id
-	  left join public.classification_nodes n on n.id = t.classification_node_id
 	 where q.point_id = new.id
-	   and (t.classification_node_id is null
-	        or (new.node_id <> t.classification_node_id
-	            and new.node_id is distinct from (case when n.kind = 'subnotion' then n.parent_id else n.id end)))
+	   and t.classification_node_id is null
 	 limit 1;
 	if v_id is not null then
-		raise exception 'Le point % est tagué sur le modèle %, dont il ne serait plus sur le nœud ni sur la notion : retirez d''abord ce tag.', new.code, v_id
+		raise exception 'Le point % serait sur un nœud, mais le modèle % qui le porte n''est rangé dans aucun nœud : rangez d''abord le modèle, ou retirez ce tag.', new.code, v_id
+			using errcode = 'check_violation';
+	end if;
+
+	select q.template_id into v_id
+	  from public.question_template_points q
+	  join public.question_templates t on t.id = q.template_id
+	  join public.classification_nodes n on n.id = t.classification_node_id
+	 where q.point_id = new.id
+	   and new.node_id <> t.classification_node_id
+	   and new.node_id is distinct from (case when n.kind = 'subnotion' then n.parent_id else n.id end)
+	 limit 1;
+	if v_id is not null then
+		raise exception 'Le point % est tagué sur le modèle %, et ne serait ni sur le nœud de ce modèle ni sur sa notion : retirez d''abord ce tag.', new.code, v_id
 			using errcode = 'check_violation';
 	end if;
 
@@ -1277,7 +1368,7 @@ begin
 		        or new.node_id = (case when n.kind = 'subnotion' then n.parent_id else n.id end)))
 	 limit 1;
 	if v_id is not null then
-		raise exception 'Le point % est tagué sur l''exercice %, qui n''est rangé ni sur son nouveau nœud ni sur sa notion : retirez d''abord ce tag.', new.code, v_id
+		raise exception 'Le point % est tagué sur l''exercice %, qui n''est rangé ni sur le nœud du point ni sur sa notion : retirez d''abord ce tag.', new.code, v_id
 			using errcode = 'check_violation';
 	end if;
 
@@ -1371,16 +1462,24 @@ declare
 	v_point_node uuid;
 	v_point_node_name text;
 begin
-	select p.code, p.node_id, n.name into v_code, v_point_node, v_point_node_name
+	-- Le point est lu VERROUILLÉ (for share), comme en 3a.
+	select p.code, p.node_id into v_code, v_point_node
 	  from public.curriculum_points p
-	  left join public.classification_nodes n on n.id = p.node_id
-	 where p.id = new.point_id;
-	-- Ancien point (sans nœud) : exempté. Point inexistant : la clé étrangère le refusera.
+	 where p.id = new.point_id
+	   for share;
+	-- Introuvable, ou masqué par la RLS de modification (qu'exige le verrou) : refus.
+	if not found then
+		raise exception 'Point % introuvable ou illisible : tag refusé.', new.point_id
+			using errcode = 'check_violation';
+	end if;
+	-- Ancien point (sans nœud) : exempté.
 	if v_point_node is null then
 		return new;
 	end if;
+	select n.name into v_point_node_name from public.classification_nodes n where n.id = v_point_node;
 
-	-- Un verrou par exercice, partagé avec le retrait d'un rangement : pas de course entre les deux.
+	-- Un verrou par exercice, partagé avec le retrait d'un rangement (3f) et le re-rattachement
+	-- d'un point (3c) : pas de course entre eux.
 	perform pg_advisory_xact_lock(hashtextextended('exercise_curriculum_points:' || new.exercise_id::text, 0));
 
 	if not exists (select 1 from public.exercise_classifications c where c.exercise_id = new.exercise_id) then
@@ -1405,8 +1504,9 @@ create trigger exercise_curriculum_points_rules
 	before insert or update on public.exercise_curriculum_points
 	for each row execute function public.exercise_curriculum_points_check_rules();
 
--- 3f. Retirer ou déplacer le rangement d'un exercice ne doit laisser aucun de ses tags neufs hors
--- règle. La suppression d'un exercice (cascade) n'est pas concernée : il n'existe plus.
+-- 3f. Retirer ou déplacer le rangement d'un exercice (y compris vers un autre exercice) ne doit
+-- laisser aucun de ses tags neufs hors règle. La suppression d'un exercice (cascade) n'est pas
+-- concernée : il n'existe plus.
 create function public.exercise_classifications_guard_point_tags()
 returns trigger
 language plpgsql
@@ -1521,6 +1621,12 @@ begin
 		        or p.node_id = (case when n.kind = 'subnotion' then n.parent_id else n.id end)));
 	if v_n <> 0 then
 		raise exception 'règle 1 (exercices) : % tag(s) hors règle', v_n;
+	end if;
+
+	-- La contrainte des deux générations est posée et validée
+	select count(*) into v_n from pg_constraint where conname = 'curriculum_points_one_generation' and convalidated;
+	if v_n <> 1 then
+		raise exception 'contrainte curriculum_points_one_generation absente ou non validée';
 	end if;
 
 	-- Les anciens tags sont intacts

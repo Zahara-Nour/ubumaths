@@ -108,16 +108,6 @@ async function reconciledPoints(classGrade: string | null): Promise<string[]> {
 }
 
 describe('reconcileAutoCoverage — points neufs (étape 2 de C5)', () => {
-	it('filtre provisoire : aucun point neuf dans la couverture, quel que soit le niveau', async () => {
-		for (const grade of ['T_SPE', 'T_COMP', null]) {
-			const points = await reconciledPoints(grade);
-			expect(
-				points.filter((p) => p.startsWith('p-neuf')),
-				String(grade)
-			).toEqual([]);
-		}
-	});
-
 	it('la requête lit `objective_id` du point : sans lui, tout tag serait écarté', async () => {
 		const fake = await reconcile(null);
 		const select = fake
@@ -128,6 +118,8 @@ describe('reconcileAutoCoverage — points neufs (étape 2 de C5)', () => {
 	});
 });
 
+// Comparaisons INTÉGRALES : chaque carte porte aussi un point neuf (TAGS), que le filtre
+// provisoire de la C5 écarte. Sans lui, « T_SPE » et « sans niveau » gagnent leurs points neufs.
 describe('reconcileAutoCoverage — niveau de la classe', () => {
 	it('classe de T_SPE : la carte partagée ne couvre que son point T_SPE', async () => {
 		expect(await reconciledPoints('T_SPE')).toEqual(['p-comp-seul', 'p-spe']);
