@@ -59,6 +59,23 @@ parce que… ») ; c'est toi qui rouvres ou non.
 
 ---
 
+## `shtam` — écrire et relire les articles du Shtam
+
+Se déclenche **tout seul** dès qu'on parle d'un article du Shtam (titre, chapô, chute, vrai du faux,
+illustration) ; `/shtam` le force. Il renvoie à la charte (Compendium §IX) et au format
+([shtam-articles.md](shtam-articles.md)), et garde ce qu'ils ne disent pas :
+
+- **tes goûts** : le mot à deux sens proposé en tête de chaque lot, les titres en deux propositions
+  qui se répondent, les chapôs compréhensibles sans l'article ;
+- **tes refus** : absurde sans logique, personnification, sujet trop abstrait, Czar rattaché à la
+  Russie ;
+- **la relecture** : pas de commit pendant les allers-retours ; à ta validation, journal + commit +
+  vérifs locales + push direct sur `main` (ta dérogation, pour le Shtam seulement).
+
+Un goût nouveau ou un refus qui se répète → le dire (« note-le dans le skill »).
+
+---
+
 ## Les commandes du projet : retirées le 2026-10-10
 
 Les quatorze commandes de `.claude/commands/` (`/feature`, `/fix`, `/pr`, `/check`…) ont été retirées.
