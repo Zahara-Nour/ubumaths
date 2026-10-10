@@ -8,4 +8,4 @@ Branche `feat/case-primitive-ed`, worktree `ubumaths-wt-casepr`. Comportements v
 - [x] Câblage comme la case vecteur : validateur, barème, orderIndependent, générateur,
       Zod, specs de test, verdicts par case
 - [x] Éditeur admin (valeurs par défaut des cases : `questions/calculus/calculus-editor.ts`)
-- [x] Docs : `docs/ref/fiches-exercices.md`, `docs/ref/convention-equivalence.md`
+- [x] Docs : `docs/pratiques/fiches-exercices.md`, `docs/systeme/mathast/convention-equivalence.md`

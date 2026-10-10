@@ -32,7 +32,7 @@ Branche `fix/regle-negatif-inegalite`, worktree `ubumaths-wt-gen-ineg`.
 - [x] Simulation `cleanCoefficients` (logique + géométrie repérée, 30 tirages) : 0 différence
       (les modèles excluent ±1 et 0) ; décor forcé (variables à 1, −1, 0) : seules des inégalités
       LaTeX changent (`x^2\geqslant1x` → `x^2 \geqslant x`), aucune autre formule.
-- [x] Doc `docs/ref/fiches-exercices.md`, `check:incremental` 0 erreur, `lint:fast` OK.
+- [x] Doc `docs/pratiques/fiches-exercices.md`, `check:incremental` 0 erreur, `lint:fast` OK.
 
 ## Points ouverts
 

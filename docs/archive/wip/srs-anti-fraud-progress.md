@@ -208,10 +208,10 @@ Migrations pushées en prod, `pnpm db:types` exécuté. Les types `Tables<'srs_a
 
 ### Livré
 
-- **`docs/ref/srs/anti-fraud.md`** (NEW) — référence complète : 5 signaux, score composite, schéma DB, modules TS, endpoints, UI, cycle de vie flag, cross-class, procédure d'activation, tests (71), roadmap V2.1/V3.
-- **`docs/ref/srs/README.md`** : entrée "Voir aussi" + ligne #10 backlog passée de "À documenter" à "livré 2026-06-10".
-- **`docs/ref/srs/security.md`** : item #1 top 5 actions passé à ✅ livré + lien anti-fraud.md.
-- **`docs/architecture/database-schema.md`** : sections `srs_anti_fraud_flags` + `app_config` + 2 migrations ajoutées au listing.
+- **`docs/systeme/srs/anti-fraud.md`** (NEW) — référence complète : 5 signaux, score composite, schéma DB, modules TS, endpoints, UI, cycle de vie flag, cross-class, procédure d'activation, tests (71), roadmap V2.1/V3.
+- **`docs/systeme/srs/README.md`** : entrée "Voir aussi" + ligne #10 backlog passée de "À documenter" à "livré 2026-06-10".
+- **`docs/systeme/srs/security.md`** : item #1 top 5 actions passé à ✅ livré + lien anti-fraud.md.
+- **`docs/systeme/base-de-donnees.md`** : sections `srs_anti_fraud_flags` + `app_config` + 2 migrations ajoutées au listing.
 
 ### Audits
 
@@ -255,8 +255,8 @@ Migrations pushées en prod, `pnpm db:types` exécuté. Les types `Tables<'srs_a
 
 - `docs/archive/wip/srs-anti-fraud-spec-tdd.md` (Phase 0)
 - `docs/wip/srs-anti-fraud-progress.md` (ce doc)
-- `docs/ref/srs/anti-fraud.md` (référence finale)
-- Mises à jour : `docs/ref/srs/README.md`, `docs/ref/srs/security.md`, `docs/architecture/database-schema.md`.
+- `docs/systeme/srs/anti-fraud.md` (référence finale)
+- Mises à jour : `docs/systeme/srs/README.md`, `docs/systeme/srs/security.md`, `docs/systeme/base-de-donnees.md`.
 
 ---
 

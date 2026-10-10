@@ -57,8 +57,8 @@ figures contournaient l'absence de réglage du nom des points par `masque(A)` + 
   `H` nommé par `projection(…, etiquette="bas")`, textes `centre` / `bas-gauche` / `haut-droite`)
   via `rendu-fiche.ts` + `compile-prod.mjs` : **4/4 OK**, PNG relu ; même figure à l'écran
   (`figureToSvg` → SVG → capture Chromium) : placements identiques.
-- 2026-10-02 lot 3 : `docs/ref/geometry/dsl-builtins.md` (sections `etiquette=`, `ancre=`,
-  arguments communs), piège corrigé dans `docs/ref/fiches-exercices.md`.
+- 2026-10-02 lot 3 : `docs/systeme/geometrie/dsl-builtins.md` (sections `etiquette=`, `ancre=`,
+  arguments communs), piège corrigé dans `docs/pratiques/fiches-exercices.md`.
 - 2026-10-02 lot 4 : 4 modèles à figures (A-03, A-05, C-02, C-03 ; les 9 autres n'en ont pas),
   16 blocs : `masque` + `texte` des noms → `etiquette=` ; points sans nom qui redessinaient un
   point masqué retirés ; milieux porteurs de longueur → `visible=faux` ; longueurs de A-05 →

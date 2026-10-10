@@ -23,7 +23,7 @@
 | `src/routes/(protected)/dashboard/admin/schools/+page.server.ts` | modifié  | Actions `create`/`update` valident l'UAI via `optionalUaiSchema`.                                                                                          |
 | `src/routes/(protected)/dashboard/admin/schools/+page.svelte`    | modifié  | Autocomplete Annuaire (debounce 300 ms) + champ UAI + colonne tableau.                                                                                     |
 
-> `docs/architecture/database-schema.md` **non touché** : ce doc ne couvre que des schémas par feature (Kanban, Compétences, SRS…), la table `schools` n'y figure pas. La colonne est documentée par le `COMMENT ON COLUMN` de la migration + ce doc de progression.
+> `docs/systeme/base-de-donnees.md` **non touché** : ce doc ne couvre que des schémas par feature (Kanban, Compétences, SRS…), la table `schools` n'y figure pas. La colonne est documentée par le `COMMENT ON COLUMN` de la migration + ce doc de progression.
 
 ## API Annuaire — référence
 

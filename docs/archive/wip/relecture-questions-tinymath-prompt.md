@@ -139,7 +139,7 @@ compteurs par verdict, questions « à arbitrer », décisions de David, pièges
    que les contraintes de forme (`requiredForm`, précision, unités, zéros superflus) se comportent
    comme annoncé. Toutes doivent passer.
 5. **Rendu** : aucune erreur rouge ni lettre découpée à l'écran (voir `pnpm check:ubumark` et
-   `docs/ref/fiches-exercices.md` § 4 pour la notation) ; correction lisible.
+   `docs/pratiques/fiches-exercices.md` § 4 pour la notation) ; correction lisible.
 6. **Métadonnées** : niveau (`grades`), thème/domaine/sous-domaine, `level` cohérents.
 7. **Pédagogie** : énoncé clair et correct en français, vocabulaire du programme
    (`feedback_pedagogical-terminology` en mémoire). En cas de doute de fond → « à arbitrer ».

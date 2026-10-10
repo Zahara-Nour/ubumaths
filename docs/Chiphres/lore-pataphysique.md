@@ -1457,7 +1457,7 @@ Les Chiphre parlent avec **cinq voix superposables**, jamais en concurrence. Cha
 - **Le vrai du faux** : chaque article se termine **obligatoirement** par un encadré séparé, **voix de l'Académie**, qui rétablit le fait mathématique réel (« π est transcendant tous les jours. Cela veut dire… »). Le lecteur a de 11 à 18 ans : un faux fait énoncé avec aplomb peut rester. L'encadré fait de chaque blague un mini-cours. Deux voix, deux blocs : la règle stricte des voix est respectée.
 - **Qui peut-on parodier** : les personnages du Royaume et les **mathématiciens morts** (Pythagore, Euler, Fermat…). **Jamais une personne vivante, jamais une institution réelle nommée** (diffamation, site pour mineurs).
 - **Rien du Collège de 'Pataphysique** : ni ses fêtes, ni son calendrier, ni ses publications.
-- **Écrire un article** : format du fichier, formules, vérifications → `docs/ref/shtam-articles.md`.
+- **Écrire un article** : format du fichier, formules, vérifications → `docs/pratiques/shtam-articles.md`.
 
 **Exemples de titres** (ton de référence) :
 

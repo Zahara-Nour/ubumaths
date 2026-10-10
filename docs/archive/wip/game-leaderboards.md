@@ -225,7 +225,7 @@ moi sans Supabase local).
 
 **Tâches** :
 
-- _Agent : `documentation-writer`_ — AIPD `docs/ref/conformite/aipd-dpia.md` : acter (a) **retrait du classement
+- _Agent : `documentation-writer`_ — AIPD `docs/systeme/conformite/aipd-dpia.md` : acter (a) **retrait du classement
   public inter-écoles**, (b) classements **école-scopés**, identité **prénom + avatar** seulement (mineurs).
 - **Migration B (destructive)** `supabase/migrations/<ts>_drop_public_minesweeper_leaderboard.sql` :
   `DROP VIEW IF EXISTS public.minesweeper_leaderboard_public;` + `REVOKE` éventuels sur `anon`.

@@ -11,7 +11,7 @@
 > technologique » (13 p., lues ligne à ligne), rubriques Contenus / Capacités
 > attendues / Démonstrations / Exemples d'algorithme / Approfondissements possibles +
 > la partie **Automatismes** (→ références). Base de travail : le découpage en
-> **185 points relus** de l'ancien référentiel (`docs/ref/programmes/2de-programme.md`,
+> **185 points relus** de l'ancien référentiel (`docs/systeme/programmes/2de-programme.md`,
 > convention « deux gestes réussissables séparément = deux points », établie à la
 > relecture 1re spé du 2026-08-30) — repris tel quel, **scindé en plus là où une puce
 > traverse plusieurs notions de l'arbre** (section dédiée ci-dessous). La colonne

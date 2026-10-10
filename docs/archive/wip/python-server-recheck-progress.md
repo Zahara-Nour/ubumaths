@@ -192,7 +192,7 @@ nécessite des **privilèges colonne** (REVOKE au rôle `authenticated`) **ou** 
 - **2026-08-27 — ❌ NO-GO (décision David).** ROI jugé insuffisant vs le coût/incertitude de la
   productionisation Vercel. Phase 1b abandonnée (draft #83 laissée en l'état, CI verte). Phase 1a
   reste en prod = valeur conservée. **À trancher** : (1) migration `20260827120000` en prod
-  **inutilisée** → laisser inerte ou rollback ; (2) `docs/architecture/database-schema.md` documente
+  **inutilisée** → laisser inerte ou rollback ; (2) `docs/systeme/base-de-donnees.md` documente
   la table verdict → annoter « parquée » ou retirer selon (1). ⚠️ **Dette doc indépendante du no-go** :
-  `docs/ref/python/worker.md` **périmé depuis 1a** (décrit `validateExercise`/runners « ligne 2056 »
+  `docs/systeme/python/worker.md` **périmé depuis 1a** (décrit `validateExercise`/runners « ligne 2056 »
   dans le worker alors qu'ils sont dans `validation-core/` ; cite `_ubumaths_compare` pré-rebrand).

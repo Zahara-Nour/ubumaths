@@ -1,10 +1,10 @@
-# Réécriture des références `docs/claude/` — progress
+# Réécriture des références `docs/pratiques/` — progress
 
 > Branche `docs/rewrite-claude-references`. Crash-recovery.
 
 ## Contexte
 
-Les 6 docs de référence Claude (`docs/claude/*.md`) avaient été retirés par `5de2c6116 "docs: clean docs"` (2025-12-23), mais `CLAUDE.md` (réécrit juin 2026) les référence toujours → **liens morts**. Décision David : **réécrire** ces docs comme **références synthétiques à jour** (pas restaurer le périmé). Les anciennes versions (`git show 5de2c6116^:docs/claude/<f>.md`) servent de **squelette de sujets uniquement** — tout vérifié sur le code actuel.
+Les 6 docs de référence Claude (`docs/pratiques/*.md`) avaient été retirés par `5de2c6116 "docs: clean docs"` (2025-12-23), mais `CLAUDE.md` (réécrit juin 2026) les référence toujours → **liens morts**. Décision David : **réécrire** ces docs comme **références synthétiques à jour** (pas restaurer le périmé). Les anciennes versions (`git show 5de2c6116^:docs/pratiques/<f>.md`) servent de **squelette de sujets uniquement** — tout vérifié sur le code actuel.
 
 ## Contraintes
 
@@ -27,7 +27,7 @@ Les 6 docs de référence Claude (`docs/claude/*.md`) avaient été retirés par
 
 1. Relecture cohérence + **vérif ancres** (`#svelte-5-runes`, `#input-validation-with-zod`).
 2. `pnpm check:incremental` (les .md ne sont pas typés, mais sanity) + liens internes.
-3. Vérifier que les liens `CLAUDE.md` → `docs/claude/*.md` résolvent tous.
+3. Vérifier que les liens `CLAUDE.md` → `docs/pratiques/*.md` résolvent tous.
 4. Commit + PR (6 fichiers → branche obligatoire) + CI + merge.
 
 ## Definition of Done

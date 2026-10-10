@@ -1,6 +1,6 @@
 # Pièges de la génération, 2e série — progression
 
-Branche `fix/pieges-generation-2`, worktree `ubumaths-wt-gen`. Source : `docs/ref/fiches-exercices.md`,
+Branche `fix/pieges-generation-2`, worktree `ubumaths-wt-gen`. Source : `docs/pratiques/fiches-exercices.md`,
 section « Pièges de l'écriture d'un modèle ».
 
 ## Défauts

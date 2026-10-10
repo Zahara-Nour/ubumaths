@@ -3,7 +3,7 @@
 > ✅ **CHANTIER TERMINÉ le 2026-09-24** (#410 → #414). Reste hors chantier : bug des zéros `1\,000\,000` (journal).
 
 > Spécification validée par David le 2026-09-24. Worktree `../ubumaths-wt-saisie-unites`, branche `feat/saisie-unites` (une PR par phase).
-> Notation de référence : `docs/ref/notation-unites.md`.
+> Notation de référence : `docs/pratiques/notation-unites.md`.
 
 ## Constat de départ (mesuré le 2026-09-24)
 

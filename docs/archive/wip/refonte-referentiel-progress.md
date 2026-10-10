@@ -140,7 +140,7 @@ Le seed passe donc de **7 thèmes / 19 objectifs / 170 points** à **6 / 14 / 15
 
 **Source** : PDF fourni par David le 2026-08-29. ⚠️ **Ce n'est PAS l'arrêté du 17 janvier 2019** — c'est le programme en vigueur, avec une partie transversale « Automatismes ».
 
-**Source de vérité** : `docs/ref/programmes/1re-spe-programme.md` (170 points à l'origine, 153 après retrait des automatismes).
+**Source de vérité** : `docs/systeme/programmes/1re-spe-programme.md` (170 points à l'origine, 153 après retrait des automatismes).
 **Générateur** : `scripts/generate-curriculum-1re-spe-seed.ts` → `supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql`.
 Corriger le markdown, relancer `pnpm tsx scripts/generate-curriculum-1re-spe-seed.ts`, le seed est régénéré. Le script refuse d'écrire s'il détecte un doublon violant l'une des trois contraintes UNIQUE.
 
@@ -398,7 +398,7 @@ Dimensionnement : la convention « 1 template = 1 variation canonique, 2-3 par p
 
 ## 11. Pièges de vérification (appris à la dure)
 
-- **Tests ciblés pendant l'itération, suite complète une seule fois avant de commiter.** Déjà écrit dans `docs/claude/quality-standards.md`, oublié le 2026-08-29 : une dizaine de suites complètes (~180 s) dans une seule session, dont trois ou quatre uniquement pour relire un message d'erreur non capturé. Rediriger la sortie vers un fichier, puis la filtrer.
+- **Tests ciblés pendant l'itération, suite complète une seule fois avant de commiter.** Déjà écrit dans `docs/pratiques/qualite.md`, oublié le 2026-08-29 : une dizaine de suites complètes (~180 s) dans une seule session, dont trois ou quatre uniquement pour relire un message d'erreur non capturé. Rediriger la sortie vers un fichier, puis la filtrer.
 - **Lire la configuration avant de théoriser sur un échec.** `singleFork: true` dans `vitest.base.config.ts` invalidait à lui seul deux hypothèses (parallélisme, rejeu du fichier) poursuivies plusieurs minutes chacune.
 - **Un test vert ne prouve pas que l'UI marche.** Les tests d'intégration importent les handlers par leur chemin de fichier : ils ne traversent ni l'URL construite par le client, ni le rendu. Trois actions de la page Programme étaient mortes avec une suite entièrement verte.
 

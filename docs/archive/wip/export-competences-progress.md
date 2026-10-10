@@ -36,7 +36,7 @@ collage / EcoleDirecte recopie / Sacoche saisie).
 | `src/routes/api/teacher/competences/export/+server.ts`                        | endpoint GET → CSV                                                            |
 | `src/routes/(protected)/dashboard/teacher/competences/export/+page.server.ts` | load (vue)                                                                    |
 | `src/routes/(protected)/dashboard/teacher/competences/export/+page.svelte`    | vue tableau large + UI export                                                 |
-| `docs/guides/export-competences-prof.md`                                      | guide d'usage prof (Pronote/ED/Sacoche)                                       |
+| `docs/systeme/export-competences.md`                                          | guide d'usage prof (Pronote/ED/Sacoche)                                       |
 
 ## Réutilisation (pas de duplication)
 

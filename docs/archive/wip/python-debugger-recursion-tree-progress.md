@@ -42,4 +42,4 @@ teintés, scrube → le nœud actif se surligne.
 
 - [x] Tests (4 réels + 11 pur + 3 layout) · check:incremental 0 erreur · autofixer 0 issue
 - [x] Vérif visuelle sur `/python` (construction progressive OK, nom stable)
-- [x] MAJ roadmap (#4 → livré) + `docs/ref/python/`
+- [x] MAJ roadmap (#4 → livré) + `docs/systeme/python/`

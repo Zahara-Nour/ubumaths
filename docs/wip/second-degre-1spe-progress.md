@@ -1,6 +1,6 @@
 # Second degré (1re SPE) — point de reprise
 
-> Démarche : [`docs/ref/fiches-exercices.md`](../ref/fiches-exercices.md) § 2 bis, comme le pilote
+> Démarche : [`docs/pratiques/fiches-exercices.md`](../pratiques/fiches-exercices.md) § 2 bis, comme le pilote
 > « évolutions » ([automatismes-1spe-progress.md](automatismes-1spe-progress.md)).
 
 ## Commande de David (2026-10-01)

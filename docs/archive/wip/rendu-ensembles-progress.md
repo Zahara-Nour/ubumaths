@@ -1,7 +1,7 @@
 # Rendu des ensembles et de la logique — progression
 
 Branche `fix/rendu-ensembles`, worktree `../ubumaths-wt-rendu-ens`. Défauts relevés en rédigeant
-`scripts/questions/logique-1spe/` (voir `docs/ref/fiches-exercices.md`, piège « PDF, ensembles »).
+`scripts/questions/logique-1spe/` (voir `docs/pratiques/fiches-exercices.md`, piège « PDF, ensembles »).
 
 ## Diagnostic (2026-10-03)
 

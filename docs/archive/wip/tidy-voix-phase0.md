@@ -3,7 +3,7 @@
 > Branche `refactor/tidy-voix`, worktree `../ubumaths-wt-tidy-voix`.
 > Étape 1 du bilan du 2026-09-21. **Rien n'est codé.** Chaque ligne validée
 > deviendra un test rouge.
-> Contrat de `tidy` : [tidy-phase0.md](../../ref/mathast/tidy-spec.md) §A (validé le 2026-09-20).
+> Contrat de `tidy` : [tidy-phase0.md](../../systeme/mathast/tidy-spec.md) §A (validé le 2026-09-20).
 
 ## Le constat
 

@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-28. Pour reprendre dans une nouvelle session : lire ce fichier, puis
 > [ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md) et
-> [`docs/ref/fiches-exercices.md`](../ref/fiches-exercices.md) § 2 bis.
+> [`docs/pratiques/fiches-exercices.md`](../pratiques/fiches-exercices.md) § 2 bis.
 
 ## Décisions de David (figées)
 

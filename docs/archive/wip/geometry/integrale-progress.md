@@ -22,7 +22,7 @@ la cible 16 ms / frame).
 - `integralAreaToSVG`), dispatcher Svelte branché dans `GeometryCanvas`.
 
 **Phase 5 terminée** ✅ — Page démo `/geometry-demo/sliders/integrale` +
-doc utilisateur `docs/ref/geometry-dsl/integrale.md`.
+doc utilisateur `docs/systeme/geometrie/dsl/integrale.md`.
 
 **Phase 6 terminée** ✅ — Quality checks finaux : `pnpm check:incremental`
 clean (0 erreur sur les fichiers modifiés), `npx eslint` clean
@@ -358,7 +358,7 @@ Issues corrigées suite au passage du `code-reviewer` :
   visibles avec teintes différentes).
 - `src/routes/(public)/geometry-demo/sliders/integrale/+page.ts` :
   `export const ssr = false;` (cohérent avec les autres démos).
-- `docs/ref/geometry-dsl/integrale.md` : doc utilisateur complète
+- `docs/systeme/geometrie/dsl/integrale.md` : doc utilisateur complète
   (vocabulaire intégrale vs aire, syntaxe, args nommés, exemples,
   visuel, sémantique, cas limites V1).
 
@@ -432,7 +432,7 @@ Issues corrigées suite au passage du `code-reviewer` :
   l'utilisateur (5 décisions clés enregistrées).
 - `docs/wip/geometry/integrale-progress.md` — ce document, journal de
   reprise pour les 6 phases.
-- `docs/ref/geometry-dsl/integrale.md` — doc utilisateur DSL (vocabulaire,
+- `docs/systeme/geometrie/dsl/integrale.md` — doc utilisateur DSL (vocabulaire,
   syntaxe, exemples, sémantique, cas limites V1).
 
 ## Code livré

@@ -74,7 +74,7 @@ branche. Elle ne vient pas d'ici et n'est pas aggravée.
 
 ## La convention
 
-`docs/ref/convention-equivalence.md`, référencée depuis `CLAUDE.md`.
+`docs/systeme/mathast/convention-equivalence.md`, référencée depuis `CLAUDE.md`.
 
 La même question s'est reposée quatre fois aujourd'hui sous quatre déguisements
 — quotients multivariés, division exacte, pgcd, racines — et a été retranchée à

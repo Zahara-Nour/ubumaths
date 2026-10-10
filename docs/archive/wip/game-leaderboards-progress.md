@@ -104,7 +104,7 @@ prénom + avatar uniquement. D'où la **Migration A2** (`minesweeper_scoped_lead
 
 ## Reste à faire (Phase 5)
 
-- AIPD `docs/ref/conformite/aipd-dpia.md` : acter retrait classement public + leaderboards école-scopés (mineurs).
+- AIPD `docs/systeme/conformite/aipd-dpia.md` : acter retrait classement public + leaderboards école-scopés (mineurs).
 - **Migration B destructive** `DROP minesweeper_leaderboard_public` — **au release uniquement** (lockstep code).
 - Checks finaux : David relance `pnpm test:integration` + (si besoin) eslint. `check:incremental` déjà à 0.
 - Hors-scope signalé : `dashboard/student/minesweeper/stats` utilise encore l'ancienne `LeaderboardTable`

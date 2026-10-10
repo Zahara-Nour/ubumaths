@@ -296,7 +296,7 @@ Pertinence vs CSV : **le PDF n'est PAS le bon premier livrable**, mais reste un 
 2. `src/routes/(protected)/dashboard/teacher/competences/export/+page.{svelte,server.ts}` — vue tableau large coloré (réutilise le load `evaluation-tasks/[id]/saisie/+page.server.ts`), filtres classe/période/élèves (MySelect/MyCheckbox), toggles disposition + format niveau, bouton download.
 3. `src/routes/api/teacher/competences/export/+server.ts` — génération CSV + `Content-Disposition`, Zod sur les query params (classe, période, disposition, format niveau, colonnes), RLS via `locals.supabase`.
 4. Tests serveur : génération CSV (escaping, BOM, large/longue, mapping niveaux, RLS refus pour non-prof).
-5. `docs/guides/export-competences-prof.md` — guide d'usage par ENT (collage Pronote large 1-4 / attention macOS, ressaisie ED, 6 items Sacoche).
+5. `docs/systeme/export-competences.md` — guide d'usage par ENT (collage Pronote large 1-4 / attention macOS, ressaisie ED, 6 items Sacoche).
 
 **Effort** : **2,5-4 j** (dont vue écran, tests, doc). Pas de migration.
 

@@ -69,7 +69,7 @@ Nuancier : https://claude.ai/artifact/5DsP7r5b1CSm1naMdeuc8B
 
 - **`@theme` élague les variables non utilisées par une classe** : `var(--color-curve-N)`,
   construit en TypeScript, disparaissait du CSS → courbes peintes en noir, sans erreur.
-  Corrigé par `@theme static` ; documenté dans `docs/ref/css-color-tokens.md`. Les tests
+  Corrigé par `@theme static` ; documenté dans `docs/pratiques/css-color-tokens.md`. Les tests
   navigateur lisent la couleur RENDUE (`getComputedStyle`), ce qui l'attrape.
 - Preuves rouges vues : store (6/6 échecs avec l'ancien store), `FunctionCurve` (2 échecs avec
   l'ancien composant), `ScatterPlot` (noir sans `static`), export (3 échecs), migration.

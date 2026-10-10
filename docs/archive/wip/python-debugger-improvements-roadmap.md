@@ -52,9 +52,9 @@ reste.** Vérifié Pyodide réel (`debug-record-real.svelte.test.ts`).
 - **Perf** : record-then-replay pilote ~1000 aller-retours `postMessage` (drive `step`) — optimisable en un seul message `debug-record` synchrone plus tard.
 - **Code mort** : ✅ retiré (PR #88 — ancien interpréteur AST inatteignable + specs placeholder périmées).
 - **a11y** : flèches SVG du diagramme `aria-hidden` (dette existante).
-- **Doc de référence** : `docs/ref/python/` maintenue à jour (settrace, scrubber, mode live, gouttière, elkjs, arbre d'appels) ; recherches #6/#7 dans [le doc compagnon](python-debugger-future-improvements-research.md).
+- **Doc de référence** : `docs/systeme/python/` maintenue à jour (settrace, scrubber, mode live, gouttière, elkjs, arbre d'appels) ; recherches #6/#7 dans [le doc compagnon](python-debugger-future-improvements-research.md).
 
 ## Maintenance de ce document
 
 Mettre à jour la colonne **Statut** à chaque avancée. Au merge de la branche, reporter l'état final
-dans `docs/ref/python/` et archiver ce roadmap + le progress doc.
+dans `docs/systeme/python/` et archiver ce roadmap + le progress doc.

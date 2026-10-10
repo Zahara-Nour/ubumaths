@@ -63,7 +63,7 @@ sept fichiers de tests y montent les composants seuls.
 
 Un `svelte-ignore state_referenced_locally` sur `view` : elle donne la vue **de
 départ** — celle qu'une URL demande — et l'élève change d'onglet librement
-ensuite. Pattern documenté dans `docs/ref/warning-svelte.md` §1.
+ensuite. Pattern documenté dans `docs/pratiques/warning-svelte.md` §1.
 
 ## ⚠️ Revue #336 — deux pertes du travail de l'élève
 

@@ -230,8 +230,8 @@ en amont.
 | `src/routes/(public)/geometry-demo/sliders/aire-entre/+page.svelte` | Nouveau — page démo `sin(x)` vs `cos(x)` sur `[π/4, 5π/4] = 2√2` |
 | `src/routes/(public)/geometry-demo/sliders/aire-entre/+page.ts`     | Nouveau — `export const ssr = false;`                            |
 | `src/routes/(public)/geometry-demo/sliders/+page.svelte`            | + carte de navigation vers la nouvelle démo                      |
-| `docs/ref/geometry-dsl/aire_entre.md`                               | Nouveau — doc utilisateur complète                               |
-| `docs/ref/geometry-dsl/aire.md`                                     | Note "Prévu en V3" remplacée par lien vers `aire_entre`          |
+| `docs/systeme/geometrie/dsl/aire_entre.md`                          | Nouveau — doc utilisateur complète                               |
+| `docs/systeme/geometrie/dsl/aire.md`                                | Note "Prévu en V3" remplacée par lien vers `aire_entre`          |
 
 ### Démo
 
@@ -312,8 +312,8 @@ URL : `/geometry-demo/sliders/aire-entre`
    décisions tranchées 2026-05-01.
 2. **`docs/wip/geometry/aire-entre-progress.md`** — journal détaillé phase par phase
    (ce document).
-3. **`docs/ref/geometry-dsl/aire_entre.md`** — doc utilisateur publique.
-4. **`docs/ref/geometry-dsl/aire.md`** (modifié) — note "Prévu en V3" remplacée
+3. **`docs/systeme/geometrie/dsl/aire_entre.md`** — doc utilisateur publique.
+4. **`docs/systeme/geometrie/dsl/aire.md`** (modifié) — note "Prévu en V3" remplacée
    par lien vers le nouveau builtin.
 
 ### Effort réel vs estimé

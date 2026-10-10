@@ -30,5 +30,5 @@ Branche `feat/serie-fonctions-avertissement` (worktree `ubumaths-wt-serie`). Dé
 - [x] Tests rouges écrits puis verts (série à deux modèles ; 27 cas d'avertissement)
 - [x] Implémentation points 1 et 2
 - [x] Mesures (JSON du dépôt, prod, séries existantes : main = branche à l'octet)
-- [x] Doc `docs/ref/fiches-exercices.md`
+- [x] Doc `docs/pratiques/fiches-exercices.md`
 - [x] Suites worksheets/questions/ubumark/migration (9799 verts), `check:incremental` 0, `lint:fast`

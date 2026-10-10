@@ -56,4 +56,4 @@ Limite V1 : les flèches ne suivent pas le glissement (se replacent d'un coup) �
 - [x] Tests graphe + layout verts (10) · `check:incremental` 0 erreur · `svelte-autofixer` 0 issue
 - [x] Vérif visuelle sur `/python` (arêtes orthogonales, ELK actif ; #2 : glissement + fondu)
 - [x] MAJ roadmap (#5 → livré, #2 → livré)
-- [ ] MAJ `docs/ref/python/` (au merge)
+- [ ] MAJ `docs/systeme/python/` (au merge)

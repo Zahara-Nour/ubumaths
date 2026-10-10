@@ -51,7 +51,7 @@ modèle est lue avec les droits du serveur (lecture seule) dans `/api/tests/save
 pas dans le paquet Programme. La policy permissive « Users can create cards in decks » (`srs_cards`),
 qui rend inopérante l'exclusion `is_auto_managed`, est PORTEUSE (ajout au paquet Programme avec le
 client de l'élève, assignation par le prof) : gardée en l'état, décision de David (2026-09-28) —
-documenté dans `docs/ref/rls-echecs-silencieux.md`.
+documenté dans `docs/pratiques/rls-echecs-silencieux.md`.
 
 ## Spécification (phase 0 validée)
 

@@ -12,7 +12,7 @@
 
 ## Contexte
 
-Une migration d'architecture des tests a été faite (cf. `docs/ref/tests/architecture.md`) :
+Une migration d'architecture des tests a été faite (cf. `docs/pratiques/tests.md`) :
 tests unitaires co-localisés dans `src/**/__tests__/`, tests d'intégration dans
 `tests/integration/` (dont `tests/integration/database/` pour les triggers/RLS),
 helpers partagés dans `tests/helpers/` (`supabase/`, `fixtures/`, `database/`).

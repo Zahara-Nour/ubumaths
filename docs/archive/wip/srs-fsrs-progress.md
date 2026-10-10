@@ -18,7 +18,7 @@
 | 4 — UI decks personnels + sections | ✅ Code écrit     | 2026-06-10 | CRUD sections API + page deck detail + extension PUT card pour section_id.                                           |
 | 5 — Migration données rétro        | ✅ Pushée en prod | 2026-06-10 | 101 decks Programme créés, 0 cartes (aucun skill_attempts éligible pré-existant — attendu).                          |
 | 6 — Quality checks                 | ✅ Terminée       | 2026-06-10 | Svelte autofixer OK, ESLint 0 erreur, check:incremental baseline stable 9/46, perf P0#2 + P1 appliqués.              |
-| 7 — Documentation + commit         | ✅ Terminée       | 2026-06-10 | `docs/architecture/database-schema.md` MAJ + nouveau `docs/ref/srs/architecture.md` + archive de la doc cible.       |
+| 7 — Documentation + commit         | ✅ Terminée       | 2026-06-10 | `docs/systeme/base-de-donnees.md` MAJ + nouveau `docs/systeme/srs/architecture.md` + archive de la doc cible.        |
 
 ---
 
@@ -80,12 +80,12 @@
 
 **Référence canonique (post-livraison)** :
 
-- `docs/ref/srs/architecture.md` — doc de référence stable (Phase 7).
-- `docs/architecture/database-schema.md` — section "SRS / FSRS" ajoutée + `Compétences` mise à jour (Phase 7).
+- `docs/systeme/srs/architecture.md` — doc de référence stable (Phase 7).
+- `docs/systeme/base-de-donnees.md` — section "SRS / FSRS" ajoutée + `Compétences` mise à jour (Phase 7).
 
 **Archive de la doc de design** :
 
-- ~~`docs/ref/srs/architecture-cible-2026-06.md`~~ — supprimée (historique via `git log --follow`).
+- ~~`docs/systeme/srs/architecture-cible-2026-06.md`~~ — supprimée (historique via `git log --follow`).
 
 **WIP (chantier — peuvent être nettoyés ultérieurement)** :
 

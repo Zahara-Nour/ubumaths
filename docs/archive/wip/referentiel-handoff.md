@@ -55,7 +55,7 @@ Deux modèles en compétition. **Aucun n'est validé.**
    - **§7** : schéma DB (avec champ `rubrique` ajouté).
    - **§8** : UI élève actée (dashboard 2 sections, vue détail objectif).
    - **§10 décision 56** + **§14 historique 2026-06-07** : adoption BO 2026 + rubrique.
-3. **`docs/ref/programmes/cadre_evaluation_six_competences_mathematiques.md`** — cadre canonique famille B (à ne pas toucher).
+3. **`docs/systeme/programmes/cadre_evaluation_six_competences_mathematiques.md`** — cadre canonique famille B (à ne pas toucher).
 4. **`docs/archive/wip/referentiel/6e-savoirs.md`** — état actuel = trame BO 2020 (commit `0de2860c0`). **Ancienne version BO 2020 — à refondre selon modèle choisi.**
 
 ## Impact sur le design doc si modèle B retenu

@@ -228,7 +228,7 @@ journal_entry_points              -- signal de couverture (manuel + auto matéri
 **Phase 1 = données + API + tests : COMPLÈTE (53 tests verts).** Revue code+sécurité passée (aucun bloquant). Migration en prod, `database.ts` régénéré, types nettoyés. Restent, hors Phase 1 :
 
 - **Merge de la branche + déploiement du code** (la migration additive est déjà en prod, aucun code `main` ne s'en sert → pas de casse en attendant).
-- **Phase 2 (seed 6ᵉ) : ✅ FAIT & VÉRIFIÉ** — migration `20260621160000_seed_curriculum_6e.sql` : 6 thèmes · 20 items · **95 points** (BO cycle 3, « Connaissances et capacités attendues » 6ᵉ), tag `kind` connaissance/savoir-faire. Source de vérité : `docs/ref/programmes/6e-programme-curriculum.md`. Appliquée en local (`db:reset`), comptes vérifiés (42/14/23/7/5/4), 53 tests verts. **Non poussée en prod.**
+- **Phase 2 (seed 6ᵉ) : ✅ FAIT & VÉRIFIÉ** — migration `20260621160000_seed_curriculum_6e.sql` : 6 thèmes · 20 items · **95 points** (BO cycle 3, « Connaissances et capacités attendues » 6ᵉ), tag `kind` connaissance/savoir-faire. Source de vérité : `docs/systeme/programmes/6e-programme-curriculum.md`. Appliquée en local (`db:reset`), comptes vérifiés (42/14/23/7/5/4), 53 tests verts. **Non poussée en prod.**
 - Phases 3-5 (UI édition / heatmap / intégration cahier de texte).
 
 ---

@@ -1,6 +1,6 @@
 # Les grandeurs — progression (PR 3 de 3)
 
-> Spécification : [tidy-phase0.md](../../ref/mathast/tidy-spec.md) §D (décisions 2 et 3, David, 2026-09-20),
+> Spécification : [tidy-phase0.md](../../systeme/mathast/tidy-spec.md) §D (décisions 2 et 3, David, 2026-09-20),
 > avec l'erratum du §D.1 sur l'exactitude des coefficients.
 > Worktree `../ubumaths-wt-units`, branche `feat/units-normal-form`.
 > PR 1 `tidy` : #378. PR 2 `simplify` recâblé : #379.

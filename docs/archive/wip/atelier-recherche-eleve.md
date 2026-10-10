@@ -379,7 +379,7 @@ Aucun code avant validation de cette Phase 0.
 ## 13. Ce que ce document n'a pas fait
 
 - Aucune mesure de performance, aucun budget de bundle. Le chunk du root layout
-  reste sous garde CI (`docs/ref/safari-webkit-tdz.md`) — l'atelier devra charger
+  reste sous garde CI (`docs/pratiques/safari-webkit-tdz.md`) — l'atelier devra charger
   ses moteurs en import dynamique.
 - Aucune maquette. La forme du §6 est un principe, pas un écran.
 - Aucune décision sur le sort de `/calc`, `/cas`, `/calculatrice` (NumWorks) et

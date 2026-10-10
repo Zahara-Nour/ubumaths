@@ -284,13 +284,13 @@ Reporter tout problème détecté.
 
 ### Documentation
 
-- `docs/ref/python/progress/python-debugger-progress.md` : Phase 6 marquée Terminée, résumé complet ajouté en bas du document.
+- `docs/archive/python-progress/python-debugger-progress.md` : Phase 6 marquée Terminée, résumé complet ajouté en bas du document.
 
 ## Documents produits (à la fin du plan)
 
 - `~/.claude/plans/virtual-soaring-fountain.md` — plan original (5 phases + spécification TDD).
 - `docs/wip/heap-visualization-progress.md` — ce document de progression (recovery-friendly, mis à jour à chaque phase).
-- `docs/ref/python/progress/python-debugger-progress.md` — section Phase 6 ajoutée pour pérenniser la livraison dans la doc de référence.
+- `docs/archive/python-progress/python-debugger-progress.md` — section Phase 6 ajoutée pour pérenniser la livraison dans la doc de référence.
 
 ## Statut final
 

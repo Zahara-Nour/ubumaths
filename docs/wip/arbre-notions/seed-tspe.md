@@ -7,7 +7,7 @@
 > réelles). Source : « Programme de l'enseignement de spécialité de mathématiques de la
 > classe terminale de la voie générale » (14 p., refourni par David le 2026-10-07), relu
 > **puce par puce** — le texte fait foi. Ancien découpage
-> (`docs/ref/programmes/terminale-spe-programme.md`, `TSPE-001`…`TSPE-262`, en prod,
+> (`docs/systeme/programmes/terminale-spe-programme.md`, `TSPE-001`…`TSPE-262`, en prod,
 > relu par David le 2026-10-03) : repris pour les libellés et la **traçabilité « ex- »**
 > (il porte **308 liens de modèles sur 162 points**). Mapping des nœuds :
 > [programmes-ecarts-tle-spe.md](programmes-ecarts-tle-spe.md) (V1-V5 tranchées le

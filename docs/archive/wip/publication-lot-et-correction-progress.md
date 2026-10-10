@@ -35,5 +35,5 @@ d'abord par un test).
       toléré en case texte (`3cm`, `oui.`, `1.5`), message d'arrondi pour une autre unité trop précise,
       tolérance `numbersAreClose` relative 1e-12 / plancher 1e-14 (écriture scientifique distinguée).
       Restent ouverts : virgule nue `3,14` refusée par `isSimpleNumberLatex` (antérieur) ; conversion avec
-      décalage (°C → K) ne garde pas l'arrondi ; `docs/ref/convention-equivalence.md` ne parle ni de `e`
+      décalage (°C → K) ne garde pas l'arrondi ; `docs/systeme/mathast/convention-equivalence.md` ne parle ni de `e`
       ni de la tolérance.

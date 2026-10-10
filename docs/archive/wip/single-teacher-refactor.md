@@ -138,7 +138,7 @@ traitées au Lot 6 ou laissées class-scopées.
   à rattacher. Amitiés inter-écoles historiques : moot (1 école). **Appliqué EU ✓ (2026-06-16, vérifié MCP).**
   **DÉCISION David 2026-06-16** : classement hebdo par école + jeu navadra + autres ajustements
   **DIFFÉRÉS** jusqu'au multi-école (registre UAI/RNE). David teste en local avant push/release.
-- [~] Lot 7 — closing **en cours** : (a) ✅ **AIPD mise à jour** (`docs/ref/conformite/aipd-dpia.md`
+- [~] Lot 7 — closing **en cours** : (a) ✅ **AIPD mise à jour** (`docs/systeme/conformite/aipd-dpia.md`
   rév. 0.3 : accès lecture prof à toutes données élèves, sensibles incluses). (b) ⚠️ **Finding tests/seed**
   (voir note ci-dessous) — décision David requise. (c) checks finaux : `check:incremental` 0 erreur,
   pre-commit eslint+tests verts à chaque commit.

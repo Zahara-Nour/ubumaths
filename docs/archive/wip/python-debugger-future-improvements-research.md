@@ -167,4 +167,4 @@ Aucune n'est un bug ; aucune n'est importante maintenant.
 ## Maintenance
 
 Ce doc est le **compagnon recherche** de la roadmap. Le mettre à jour quand une décision de
-périmètre change ou qu'une inconnue est levée (ex. POC #7). Reporter dans `docs/ref/python/` au merge.
+périmètre change ou qu'une inconnue est levée (ex. POC #7). Reporter dans `docs/systeme/python/` au merge.

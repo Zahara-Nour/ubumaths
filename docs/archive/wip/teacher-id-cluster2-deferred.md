@@ -47,7 +47,7 @@ Vestige multi-prof : `ClassMembership` (cache élève) portait `teacher_id` + `t
 
 ## 5. ✅ FAIT — Notes « Low » de l'audit documentées
 
-Les 2 notes ont été **vérifiées en prod** (read-only) puis consignées dans `docs/architecture/database-schema.md` → nouvelle section **« Mono-teacher RLS model »** (les greffer en one-liners isolés n'avait pas de sens : le doc est curé par domaine, sans section `student_warnings`/VIP).
+Les 2 notes ont été **vérifiées en prod** (read-only) puis consignées dans `docs/systeme/base-de-donnees.md` → nouvelle section **« Mono-teacher RLS model »** (les greffer en one-liners isolés n'avait pas de sens : le doc est curé par domaine, sans section `student_warnings`/VIP).
 
 - ✅ Insert/delete `student_warnings` **admin-inclusif** — confirmé : policies `teachers_insert_own_class_warnings`/`_delete_own_warnings` = `is_class_teacher(class_id) AND created_by=auth.uid()` ; `is_class_teacher(p_class_id)` retourne juste `is_teacher_or_admin()` (param ignoré) ; `is_teacher_or_admin()` = `role IN ('teacher','admin')`.
 - ✅ RPC élève sans filtre `status='active'` — confirmé : `draw_multiple_vip_cards` autorise via `EXISTS(class_members WHERE student_id=p_student_id)` (toute adhésion, pas seulement active).

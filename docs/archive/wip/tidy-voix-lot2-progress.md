@@ -200,6 +200,6 @@ et il rend A inutile.
   ne pas travailler sur les souvenirs du 2026-09-21.
 - Le reste du chantier de fusion n'a pas bougé : **étape 2**, `auto` cesse de
   développer inconditionnellement (`runNormalizePass` est inconditionnel dans
-  `pedagogical-simplify/pipeline.ts`). Le panel `docs/ref/panel-simplifications.md`
+  `pedagogical-simplify/pipeline.ts`). Le panel `docs/systeme/mathast/panel-simplifications.md`
   qualifie toujours quatre de ses lignes de « décision — voulu » alors que ce sont
   des bugs mesurés contre `tidy-phase0.md §C`.

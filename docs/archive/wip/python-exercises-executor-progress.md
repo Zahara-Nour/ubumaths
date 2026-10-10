@@ -6,7 +6,7 @@ Première étape de l'intégration du système d'exercices Python : ajouter une 
 
 ## Contexte
 
-Avant cette étape, le worker `pyodide.worker.ts` recevait déjà des messages `validate-exercise` et émettait `validation-exercise-result`, mais **aucun executor ne relayait ce flux** — l'API `/api/python-exercises/[id]/submit` attendait un `validation_result` que personne ne savait générer côté client. Cf. [presentation détaillée du système](../docs/ref/python/progress/python-exercises-api-progress.md) §6.
+Avant cette étape, le worker `pyodide.worker.ts` recevait déjà des messages `validate-exercise` et émettait `validation-exercise-result`, mais **aucun executor ne relayait ce flux** — l'API `/api/python-exercises/[id]/submit` attendait un `validation_result` que personne ne savait générer côté client. Cf. [presentation détaillée du système](../../archive/python-progress/python-exercises-api-progress.md) §6.
 
 ## Comportements implémentés
 

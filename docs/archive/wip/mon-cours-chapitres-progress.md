@@ -358,7 +358,7 @@ modèle retire le patron, les chapitres restent — simplement détachés.
 - **Documents de chapitre** : plafond à 25 Mo et téléversement direct
   navigateur → storage (PR #266, #267, #268). Le détail, et le piège des deux
   gardes de taille, sont dans
-  [database-schema.md](../../architecture/database-schema.md).
+  [database-schema.md](../../systeme/base-de-donnees.md).
 
 ## Ce qui rapporterait le plus, dans l'ordre
 

@@ -254,7 +254,7 @@ Document `docs/archive/wip/export-competences-study.md` structuré comme suit :
 - `supabase/migrations/20260609120002_competence_referentiel_seeds.sql` — données 6 compétences math
 - `src/lib/types/database.ts` — chercher `profiles`, `schools`, `academic_periods`, `class_members`
 - `src/routes/(protected)/dashboard/teacher/evaluation-tasks/` — UI prof existante (pattern à réutiliser)
-- `docs/architecture/database-schema.md` — section "Compétences"
+- `docs/systeme/base-de-donnees.md` — section "Compétences"
 - `docs/archive/wip/skills-referentiel-design.md` — spec architecturale famille B
 
 ---

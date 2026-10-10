@@ -1,6 +1,6 @@
 # CLAUDE.md — UbuMaths
 
-Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/).
+Guide essentiel pour Claude Code. Doc détaillée : [docs/README.md](docs/README.md) — `docs/systeme/` (ce que fait le code) · `docs/pratiques/` (comment travailler).
 
 ---
 
@@ -16,7 +16,7 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 
 ## ⚠️ Gros process : un seul à la fois — LIRE
 
-Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout** (détail : [étape 5](docs/ref/mesures-mac-mini.md)) : `pnpm check` 82 s (plus gros process 5,3 Go) · `pnpm build` 64 s (5,7 Go) · `pnpm lint` 530 s (4,1 Go) · `check:incremental` 44 s à chaud, 82 s à cache froid · `test:integration` 180 s.
+Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout** (détail : [étape 5](docs/pratiques/mesures-mac-mini.md)) : `pnpm check` 82 s (plus gros process 5,3 Go) · `pnpm build` 64 s (5,7 Go) · `pnpm lint` 530 s (4,1 Go) · `check:incremental` 44 s à chaud, 82 s à cache froid · `test:integration` 180 s.
 
 - **`pnpm check`, `pnpm build`, `pnpm lint` : autorisés, UN SEUL gros process à la fois.** Ils passent sous le **même verrou** que `check:incremental` (`scripts/gros-process.sh`, depuis le 2026-10-10) : un second gros process sort en **exit 2** en nommant le détenteur, ça s'attend. Pas de verrou en CI ni sur Vercel.
 - **eslint complet autorisé en local, en arrière-plan** (`pnpm lint`, 530 s à froid : trop près de la coupure à 10 min du premier plan ; avec son cache ESLint, les passages suivants ne relisent que les fichiers changés).
@@ -53,7 +53,7 @@ pnpm deploy:prod                    # mise en prod : version (CHANGELOG, tag) + 
 
 ## Git Workflow (OBLIGATOIRE)
 
-> **Process complet** : [docs/claude/git-workflow.md](docs/claude/git-workflow.md)
+> **Process complet** : [docs/pratiques/git-workflow.md](docs/pratiques/git-workflow.md)
 
 `main` = **branche de travail** ; la prod suit la branche `production`. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
 
@@ -106,7 +106,7 @@ Je peux demander « explique-moi cette migration » à tout moment : tu me dis q
 
 ## Worktrees
 
-> Règles complètes : [docs/claude/worktrees.md](docs/claude/worktrees.md)
+> Règles complètes : [docs/pratiques/worktrees.md](docs/pratiques/worktrees.md)
 
 Un chantier = un worktree **frère** du dépôt :
 
@@ -141,16 +141,16 @@ const v = schema.safeParse(await request.json());
 if (!v.success) throw error(400, v.error.issues[0].message);
 ```
 
-→ [quality-standards.md](docs/claude/quality-standards.md#input-validation-with-zod)
+→ [qualite.md](docs/pratiques/qualite.md#input-validation-with-zod)
 
-**2. MySelect & MyCheckbox** — jamais Shadcn Select/Checkbox direct ni `<select>`/`<input type="checkbox">` natifs. → [ui-components.md](docs/claude/ui-components.md)
+**2. MySelect & MyCheckbox** — jamais Shadcn Select/Checkbox direct ni `<select>`/`<input type="checkbox">` natifs. → [composants-ui.md](docs/pratiques/composants-ui.md)
 
 ```svelte
 <MySelect type="single" bind:value={selected} {items} />
 <MyCheckbox bind:checked={isEnabled} label="Enable" />
 ```
 
-**3. Svelte 5 runes uniquement** — `$state` / `$derived` / `$props`, jamais `export let` ni `$:`. Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` réservé aux side-effects. → [best-practices.md](docs/claude/best-practices.md#svelte-5-runes)
+**3. Svelte 5 runes uniquement** — `$state` / `$derived` / `$props`, jamais `export let` ni `$:`. Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` réservé aux side-effects. → [svelte-typescript.md](docs/pratiques/svelte-typescript.md#svelte-5-runes)
 
 **4. Jamais `any`** — types propres, `unknown` + type guards, ou types de `$lib/types/database`.
 
@@ -162,7 +162,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 ## Base de données
 
-> **Détails** : [database.md](docs/claude/database.md) · schéma : [database-schema.md](docs/architecture/database-schema.md) (à maj après changement de schéma)
+> **Détails** : [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md) · schéma : [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md) (à maj après changement de schéma)
 
 - Migration `.sql` dans `supabase/migrations/` (`<timestamp>_<description>.sql`). **Jamais** modifier le schéma via le Dashboard Supabase.
 - **CLI Supabase = devDependency du projet** (version exacte dans `package.json`), aucune CLI globale : les scripts `pnpm db:*` la trouvent seuls ; à la main, `pnpm exec supabase …` (jamais `supabase …` ni `npx supabase`).
@@ -170,7 +170,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 - Après push : `pnpm db:types` (+ commit). **Interroger la prod** : MCP Supabase **read-only** (EU).
 - ⚠️ **`db:types` génère depuis la PRODUCTION** : une RPC pas encore en prod n'existe pas dans `database.ts`. Livrer une fonction SQL + le code qui l'appelle demande donc **deux PR** — la migration d'abord, `db:migrate`, `db:types`, puis le code.
 
-### ⚠️ La RLS échoue en SILENCE — lire [rls-echecs-silencieux.md](docs/ref/rls-echecs-silencieux.md)
+### ⚠️ La RLS échoue en SILENCE — lire [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)
 
 **Une opération refusée par la RLS ne rend pas d'erreur : elle rend zéro ligne.** Donc `if (error) throw` ne peut PAS se déclencher sur un refus, et une absence ressemble à un vide légitime. Quatre conséquences, toutes payées le 2026-09-15 :
 
@@ -195,7 +195,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 ## Planning (plans multi-phases)
 
-> **Architecture des tests** : [docs/ref/tests/architecture.md](docs/ref/tests/architecture.md) — le workflow TDD collaboratif est décrit ci-dessous (points 1 à 3).
+> **Architecture des tests** : [docs/pratiques/tests.md](docs/pratiques/tests.md) — le workflow TDD collaboratif est décrit ci-dessous (points 1 à 3).
 
 1. **Phase 0 — Spécification TDD** : proposer les comportements en français (cas nominal / limite / erreur), **attendre validation** avant de coder.
 2. **Agents ET modèles spécifiés** par tâche (Opus sans hésiter).
@@ -223,35 +223,38 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 - **Ordre dans un fichier** : Imports → Types → Constantes → Variables → Functions → Components.
 - Toasts : `import { toaster } from '$lib/stores/toaster.svelte'` puis `toaster.success('Message')` (`.error` / `.warning` / `.info`).
 - Handlers en minuscule (Svelte 5) : `<Button onclick={handleClick}>`.
-- Optimistic UI · Debouncing · Realtime → [architecture.md](docs/claude/architecture.md) · [realtime.md](docs/claude/realtime.md)
+- Optimistic UI · Debouncing · Realtime → [architecture-generale.md](docs/systeme/architecture-generale.md) · [realtime.md](docs/systeme/realtime.md)
 
 ---
 
 ## Documentation
 
-| Doc                                                                     | Contenu                                            |
-| ----------------------------------------------------------------------- | -------------------------------------------------- |
-| [CONTEXT.md](CONTEXT.md)                                                | **Glossaire du domaine**                           |
-| [docs/adr/](docs/adr/)                                                  | **Décisions d'architecture figées**                |
-| [skills.md](docs/claude/skills.md)                                      | **Mode d'emploi** des skills et commandes          |
-| [git-workflow.md](docs/claude/git-workflow.md)                          | **Workflow git OBLIGATOIRE**                       |
-| [worktrees.md](docs/claude/worktrees.md)                                | **Worktrees** : règles + verrous partagés          |
-| [architecture.md](docs/claude/architecture.md)                          | Structure, routing, perf                           |
-| [best-practices.md](docs/claude/best-practices.md)                      | Svelte 5, TypeScript                               |
-| [ui-components.md](docs/claude/ui-components.md)                        | Shadcn, MySelect, Tailwind                         |
-| [database.md](docs/claude/database.md)                                  | Supabase, migrations                               |
-| [quality-standards.md](docs/claude/quality-standards.md)                | Tests, linting, Zod                                |
-| [panel-simplifications.md](docs/ref/panel-simplifications.md)           | **Ce que `simplify` et les 4 intentions rendent**  |
-| [convention-equivalence.md](docs/ref/convention-equivalence.md)         | **Ce que `areEquivalent` veut dire** (domaines)    |
-| [notation-unites.md](docs/ref/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
-| [fiches-exercices.md](docs/ref/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF |
-| [observabilite-erreurs-prod.md](docs/ref/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
-| [warning-svelte.md](docs/ref/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
-| [css-color-tokens.md](docs/ref/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
-| [realtime.md](docs/claude/realtime.md)                                  | Realtime, chat, présence                           |
-| [docs/ref/tests/](docs/ref/tests/)                                      | Architecture des tests + TDD                       |
+> **Carte complète : [docs/README.md](docs/README.md)** — chaque module de `src/lib` → sa doc. `docs/systeme/` décrit ce que fait le code ; `docs/pratiques/` décrit comment travailler ; `docs/wip/` = chantiers vivants seulement ; `docs/archive/` = le reste.
+> **Fin de chantier = versement** : ce qui est durable passe dans `docs/systeme/`, puis le journal wip est archivé.
 
-Toute la doc : [docs/](docs/).
+| Doc                                                                           | Contenu                                            |
+| ----------------------------------------------------------------------------- | -------------------------------------------------- |
+| [CONTEXT.md](CONTEXT.md)                                                      | **Glossaire du domaine** (unique)                  |
+| [docs/adr/](docs/adr/)                                                        | **Décisions d'architecture figées**                |
+| [git-workflow.md](docs/pratiques/git-workflow.md)                             | **Workflow git OBLIGATOIRE**                       |
+| [worktrees.md](docs/pratiques/worktrees.md)                                   | **Worktrees** : règles + verrous partagés          |
+| [skills-claude.md](docs/pratiques/skills-claude.md)                           | **Mode d'emploi** des skills et commandes          |
+| [commandes.md](docs/pratiques/commandes.md)                                   | Scripts pnpm                                       |
+| [svelte-typescript.md](docs/pratiques/svelte-typescript.md)                   | Svelte 5, TypeScript                               |
+| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, Tailwind                         |
+| [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md)             | Supabase, migrations                               |
+| [qualite.md](docs/pratiques/qualite.md) · [tests.md](docs/pratiques/tests.md) | Linting, Zod · architecture des tests + TDD        |
+| [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)           | **La RLS échoue en silence**                       |
+| [notation-unites.md](docs/pratiques/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
+| [fiches-exercices.md](docs/pratiques/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF |
+| [observabilite-erreurs-prod.md](docs/pratiques/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
+| [warning-svelte.md](docs/pratiques/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
+| [css-color-tokens.md](docs/pratiques/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
+| [architecture-generale.md](docs/systeme/architecture-generale.md)             | Structure, routing, perf                           |
+| [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)                 | Schéma de la base                                  |
+| [panel-simplifications.md](docs/systeme/mathast/panel-simplifications.md)     | **Ce que `simplify` et les 4 intentions rendent**  |
+| [convention-equivalence.md](docs/systeme/mathast/convention-equivalence.md)   | **Ce que `areEquivalent` veut dire** (domaines)    |
+| [realtime.md](docs/systeme/realtime.md)                                       | Realtime, chat, présence                           |
 
 ---
 

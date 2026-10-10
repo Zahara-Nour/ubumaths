@@ -4,7 +4,7 @@ Branche `feat/corrections-strategies`, worktree `ubumaths-wt-corrections`.
 
 ## Fait (2026-09-29) — lot pilote
 
-- Convention de couleurs (3 rôles) + style maison : `docs/ref/corrections-redaction.md`.
+- Convention de couleurs (3 rôles) + style maison : `docs/pratiques/corrections-redaction.md`.
 - Outil `scripts/corrections/` : `corrections:generate | check | preview | import` (import en
   simulation par défaut, `--publier` JAMAIS lancé).
 - Lot `pilote` = R-PASS (4) + N-SIGNES (11, dont les trous × et : 0b6d749f, a5d4c3ee) :

@@ -59,7 +59,7 @@ reçoit les actions, le singleton reste vide, et deux instances ne se voient pas
 changer `store` après le montage n'aurait de toute façon aucun effet. Pour
 piloter une autre instance, il faut remonter le conteneur — `{#key}` suffit.
 
-Cas documenté comme légitime par [`warning-svelte.md`](../../ref/warning-svelte.md)
+Cas documenté comme légitime par [`warning-svelte.md`](../../pratiques/warning-svelte.md)
 §1 (pattern snapshot). Le projet est à 0 warning, et le reste.
 
 ## Deux pièges fermés, signalés par la revue
