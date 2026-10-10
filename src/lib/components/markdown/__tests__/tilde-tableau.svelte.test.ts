@@ -36,6 +36,13 @@ describe('TableNode — formule ~…~ en cellule', () => {
 		}
 	);
 
+	it('`\\~` échappé : tilde de texte affiché `~`, pas de formule', async () => {
+		const el = await cellules('| a |\n| --- |\n| entre \\~2 et \\~3 |');
+		const cell = el.querySelector('td');
+		expect(cell?.querySelectorAll('math-span').length).toBe(0);
+		expect(cell?.textContent?.trim()).toBe('entre ~2 et ~3');
+	});
+
 	it('cellule `$…$` : inchangée (une formule)', async () => {
 		const el = await cellules('| a |\n| --- |\n| $x+1$ |');
 		const cell = el.querySelector('td');

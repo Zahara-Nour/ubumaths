@@ -2422,15 +2422,26 @@ function processTableCellContent(
 		...table,
 		header: table.header.map((cell) => ({
 			...cell,
-			content: restorePlaceholdersToMarkdown(cell.content, placeholders)
+			content: restoreCellContent(cell.content, placeholders)
 		})),
 		rows: table.rows.map((row) =>
 			row.map((cell) => ({
 				...cell,
-				content: restorePlaceholdersToMarkdown(cell.content, placeholders)
+				content: restoreCellContent(cell.content, placeholders)
 			}))
 		)
 	};
+}
+
+/**
+ * Contenu d'une cellule, relu ensuite à l'affichage (`$…$` et `~…~`). Les
+ * formules ont déjà été extraites : tout `~` restant est un `~` LITTÉRAL (un
+ * `\~` de l'auteur, dés-échappé par l'extraction). On le ré-échappe en `\~`
+ * avant de restituer les formules, sinon l'affichage le prendrait pour un
+ * délimiteur de formule.
+ */
+function restoreCellContent(content: string, placeholders: MathPlaceholder[]): string {
+	return restorePlaceholdersToMarkdown(content.replace(/~/g, '\\~'), placeholders);
 }
 
 // ============================================================================

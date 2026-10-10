@@ -66,7 +66,7 @@
 		const segments: CellSegment[] = [];
 		// `$…$` (pas `$$…$$`) ou `~…~` (V10, 2026-10-10), lus de gauche à droite :
 		// le `~` d'espace insécable dans un `$…$` n'ouvre pas de formule ; `\~` reste du texte
-		const mathRegex = /(?<!\$)\$(?!\$)([^$]+)\$(?!\$)|(?<!\\)~([^~\n]+)~/g;
+		const mathRegex = /(?<!\$)\$(?!\$)([^$]+)\$(?!\$)|(?<![\\~])~(?!~)([^~\n]+)~(?!~)/g;
 
 		let lastIndex = 0;
 		let match;
@@ -143,7 +143,8 @@
 		{#if segment.type === 'math'}
 			<MathInline expression={segment.content} syntax={segment.syntax} {genericFunctions} />
 		{:else}
-			{@html escapeHtml(segment.content)}
+			<!-- `\~` : tilde littéral (ré-échappé par le parseur), affiché `~` -->
+			{@html escapeHtml(segment.content.replaceAll('\\~', '~'))}
 		{/if}
 	{/each}
 {/snippet}

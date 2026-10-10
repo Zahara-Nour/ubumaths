@@ -259,7 +259,8 @@ Points à retenir :
   avant décalerait sinon les indices.
 - **Cellule de tableau** : une chaîne (`TableCellNode.content`), relue à l'affichage. `$…$` et
   `~…~` y sont des formules, lues de gauche à droite (`$…$` d'abord : le `~` d'espace insécable
-  d'un `$…$` n'ouvre rien ; `\~` reste du texte) — écran : `parseCellContent` de
+  d'un `$…$` n'ouvre rien ; `~~…~~` non plus). Un `\~` d'auteur, dés-échappé par l'extraction,
+  est ré-échappé par le parseur (`restoreCellContent`) et affiché `~` — écran : `parseCellContent` de
   `TableNode.svelte` ; PDF : `processTableCellContent` (`typst-generator.ts`), qui convertit
   `~…~` comme un paragraphe (`customInlineMathToTypst`). Tests :
   `src/lib/ubumark/generators/__tests__/tilde-tableau-typst.test.ts`,

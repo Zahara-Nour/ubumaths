@@ -2992,6 +2992,14 @@ function escapeTableCellText(text: string): string {
 }
 
 /**
+ * Texte d'une cellule : `\~` (tilde littéral, cf. `restoreCellContent` du parseur)
+ * s'écrit `\~` en Typst, où un `~` nu serait une espace insécable.
+ */
+function cellText(text: string): string {
+	return text.split('\\~').map(escapeTableCellText).join('\\~');
+}
+
+/**
  * Formule en ligne `~…~` (syntaxe maison) → maths Typst. Partagée par le
  * paragraphe et la cellule de tableau : une formule sort pareil aux deux endroits.
  */
@@ -3030,13 +3038,13 @@ export function processTableCellContent(
 	// `$…$` ou `~…~` (sans retour à la ligne)
 	const parts: string[] = [];
 	let lastIndex = 0;
-	const mathRegex = /\$([^$\n]+)\$|(?<!\\)~([^~\n]+)~/g;
+	const mathRegex = /\$([^$\n]+)\$|(?<![\\~])~(?!~)([^~\n]+)~(?!~)/g;
 	let match;
 
 	while ((match = mathRegex.exec(content)) !== null) {
 		// Add text before this math segment (escaped)
 		if (match.index > lastIndex) {
-			parts.push(escapeTableCellText(content.slice(lastIndex, match.index)));
+			parts.push(cellText(content.slice(lastIndex, match.index)));
 		}
 
 		if (match[2] !== undefined) {
@@ -3067,7 +3075,7 @@ export function processTableCellContent(
 
 	// Add remaining text after last math segment (escaped)
 	if (lastIndex < content.length) {
-		parts.push(escapeTableCellText(content.slice(lastIndex)));
+		parts.push(cellText(content.slice(lastIndex)));
 	}
 
 	return parts.join('');

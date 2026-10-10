@@ -4,7 +4,8 @@
  * Défaut : une cellule ne reconnaissait que `$…$` ; `~x^2+1~` s'imprimait en
  * clair. Une formule `~…~` en cellule doit sortir comme dans un paragraphe.
  * Les `~` d'espace insécable À L'INTÉRIEUR de `$…$` (durées : `1~\unit{h}`,
- * contenu réel publié) ne sont pas des formules : sortie inchangée.
+ * contenu réel publié) ne sont pas des formules : sortie inchangée. Un `\~`
+ * d'auteur reste un tilde de texte.
  */
 import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
@@ -46,7 +47,16 @@ describe('formule ~…~ dans une cellule de tableau (PDF)', () => {
 		);
 	});
 
-	it('`\\~` échappé : reste du texte', () => {
-		expect(processTableCellContent('a \\~ b')).toBe('a \\\\~ b');
+	// Par le PARSEUR, comme en prod : l'extraction dés-échappe `\~` avant que la
+	// cellule ne soit relue (revue du 2026-10-10)
+	it('`\\~` échappé : tilde de texte, imprimé `~` (Typst `\\~`), pas une formule', () => {
+		const sortie = body('| a |\n| --- |\n| entre \\~2 et \\~3 |');
+		expect(sortie).toContain('[entre \\~2 et \\~3]');
+		expect(sortie).not.toContain('$');
+	});
+
+	it('`~~x~~` en cellule : pas une formule en ligne (comme avant)', () => {
+		const sortie = body('| a |\n| --- |\n| ~~x~~ |');
+		expect(sortie).not.toContain('$x$');
 	});
 });
