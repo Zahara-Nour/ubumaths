@@ -509,6 +509,12 @@ async function waitForLock(
 	throw new Error(`la session ${pid} n'attend pas ${what}`);
 }
 
+/** Annule les deux transactions d'un scénario à deux sessions, qu'il ait réussi ou échoué :
+ * un scénario rouge ne doit pas laisser de verrou au suivant. */
+async function rollbackBoth(first: Client, second: Client): Promise<void> {
+	await Promise.all([first.query('rollback'), second.query('rollback')]).catch(() => undefined);
+}
+
 function escapeRegExp(text: string): string {
 	return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -781,6 +787,24 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 		});
 	});
 
+	describe('Accès : le point d’un tag se lit verrouillé ; sans droit de modifier les points, pas de tag', () => {
+		it('un utilisateur sans rôle de prof (RLS) qui tague avec un point existant : droits insuffisants (42501), refusé par la règle', async () => {
+			await expect(
+				trial(db(), async () => {
+					const e = await exercise([d.sub1]);
+					await db().query("select set_config('request.jwt.claims', $1, true)", [
+						JSON.stringify({ sub: crypto.randomUUID(), role: 'authenticated' })
+					]);
+					await db().query('set local role authenticated');
+					return tagExercise(e, d.points.onNotion);
+				})
+			).rejects.toMatchObject({
+				code: '42501',
+				message: expect.stringMatching(/Droits insuffisants pour taguer avec le point/)
+			});
+		});
+	});
+
 	describe('5. Exercices : un point de l’un de leurs nœuds ou de leur notion, et pas de règle 2', () => {
 		it('exercice rangé sur une sous-notion et une autre notion : un point de la notion de la sous-notion est accepté', async () => {
 			await accepted(async () => tagExercise(await exercise([d.sub1, d.other]), d.points.onNotion));
@@ -872,10 +896,20 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 			});
 		});
 
-		it('retirer son nœud à un point tagué : refusé', async () => {
+		it('retirer son nœud à un point tagué, sans lui donner d’objectif : refusé par la contrainte', async () => {
 			await refused(async () => {
 				await tagTemplate(await template(d.sub1), d.points.onSub1);
 				return movePoint(d.points.onSub1, null);
+			}, ONE_GENERATION);
+		});
+
+		it('faire redevenir ancien un point tagué (un objectif, plus de nœud) : refusé', async () => {
+			await refused(async () => {
+				await tagTemplate(await template(d.sub1), d.points.onSub1);
+				return db().query(
+					'update public.curriculum_points set node_id = null, objective_id = $2 where id = $1',
+					[d.points.onSub1, d.objectiveId]
+				);
 			}, POINT_UNRANGED);
 		});
 
@@ -1083,30 +1117,34 @@ describe('4. Règle 2 en écritures simultanées : B attend A, puis est refusé'
 
 	it('A tague et garde sa transaction ; B attend le verrou du modèle ; A valide ; B est refusé', async () => {
 		if (!observer || !a || !b) throw new Error('connexions non initialisées');
-		await a.query('begin');
-		await a.query(TAG_TEMPLATE, [templateId, firstPoint]);
+		try {
+			await a.query('begin');
+			await a.query(TAG_TEMPLATE, [templateId, firstPoint]);
 
-		await b.query('begin');
-		const { rows } = await b.query<{ pid: number }>('select pg_backend_pid() as pid');
-		const outcome = b.query(TAG_TEMPLATE, [templateId, secondPoint]).then(
-			() => null,
-			(e: unknown) => e
-		);
-		// B attend, sans avoir échoué ni abouti
-		await waitForLock(observer, rows[0].pid, ['advisory'], 'le verrou du modèle');
+			await b.query('begin');
+			const { rows } = await b.query<{ pid: number }>('select pg_backend_pid() as pid');
+			const outcome = b.query(TAG_TEMPLATE, [templateId, secondPoint]).then(
+				() => null,
+				(e: unknown) => e
+			);
+			// B attend, sans avoir échoué ni abouti
+			await waitForLock(observer, rows[0].pid, ['advisory'], 'le verrou du modèle');
 
-		await a.query('commit');
-		expect(await outcome).toMatchObject({
-			code: CHECK_VIOLATION,
-			message: expect.stringMatching(/un modèle a au plus un point par programme/)
-		});
-		await b.query('rollback');
+			await a.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(/un modèle a au plus un point par programme/)
+			});
+			await b.query('rollback');
 
-		const tags = await observer.query<{ point_id: string }>(
-			'select point_id from public.question_template_points where template_id = $1',
-			[templateId]
-		);
-		expect(tags.rows.map((r) => r.point_id)).toEqual([firstPoint]);
+			const tags = await observer.query<{ point_id: string }>(
+				'select point_id from public.question_template_points where template_id = $1',
+				[templateId]
+			);
+			expect(tags.rows.map((r) => r.point_id)).toEqual([firstPoint]);
+		} finally {
+			await rollbackBoth(a, b);
+		}
 	}, 30_000);
 });
 
@@ -1148,94 +1186,110 @@ describe('4 bis. Écritures simultanées entre tables : l’une attend l’autre
 
 	it('3b × 3c : T1 déplace le modèle et garde sa transaction ; T2, qui re-rattache son point, attend ; T1 valide ; T2 est refusé', async () => {
 		const { observer, t1, t2, s } = sessions();
-		await resetSharedDecor(observer, s);
-		await t1.query('begin');
-		// Valide seul : le point est sur la notion, commune aux deux sous-notions
-		await t1.query(MOVE_TEMPLATE, [s.template, s.sub2]);
+		try {
+			await resetSharedDecor(observer, s);
+			await t1.query('begin');
+			// Valide seul : le point est sur la notion, commune aux deux sous-notions
+			await t1.query(MOVE_TEMPLATE, [s.template, s.sub2]);
 
-		await t2.query('begin');
-		const pid = await backendPid(t2);
-		// Valide pour le modèle sur la sous-notion 1, hors règle pour le modèle déplacé
-		const outcome = pending(t2, MOVE_POINT, [s.templatePoint, s.sub1]);
-		await waitForLock(observer, pid, ROW_LOCK, 'la ligne du point, verrouillée par T1');
+			await t2.query('begin');
+			const pid = await backendPid(t2);
+			// Valide pour le modèle sur la sous-notion 1, hors règle pour le modèle déplacé
+			const outcome = pending(t2, MOVE_POINT, [s.templatePoint, s.sub1]);
+			await waitForLock(observer, pid, ROW_LOCK, 'la ligne du point, verrouillée par T1');
 
-		await t1.query('commit');
-		expect(await outcome).toMatchObject({
-			code: CHECK_VIOLATION,
-			message: expect.stringMatching(POINT_MOVED_TEMPLATE)
-		});
-		await t2.query('rollback');
-		expect(await nodeOf(observer, 'question_templates', s.template)).toBe(s.sub2);
-		expect(await nodeOf(observer, 'curriculum_points', s.templatePoint)).toBe(s.notion);
+			await t1.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(POINT_MOVED_TEMPLATE)
+			});
+			await t2.query('rollback');
+			expect(await nodeOf(observer, 'question_templates', s.template)).toBe(s.sub2);
+			expect(await nodeOf(observer, 'curriculum_points', s.templatePoint)).toBe(s.notion);
+		} finally {
+			await rollbackBoth(t1, t2);
+		}
 	}, 30_000);
 
 	it('3c × 3b : T2 re-rattache le point et garde sa transaction ; T1, qui déplace le modèle, attend ; T2 valide ; T1 est refusé', async () => {
 		const { observer, t1, t2, s } = sessions();
-		await resetSharedDecor(observer, s);
-		await t2.query('begin');
-		// Valide seul : le modèle est sur la sous-notion 1
-		await t2.query(MOVE_POINT, [s.templatePoint, s.sub1]);
+		try {
+			await resetSharedDecor(observer, s);
+			await t2.query('begin');
+			// Valide seul : le modèle est sur la sous-notion 1
+			await t2.query(MOVE_POINT, [s.templatePoint, s.sub1]);
 
-		await t1.query('begin');
-		const pid = await backendPid(t1);
-		const outcome = pending(t1, MOVE_TEMPLATE, [s.template, s.sub2]);
-		await waitForLock(observer, pid, ROW_LOCK, 'la ligne du modèle, verrouillée par T2');
+			await t1.query('begin');
+			const pid = await backendPid(t1);
+			const outcome = pending(t1, MOVE_TEMPLATE, [s.template, s.sub2]);
+			await waitForLock(observer, pid, ROW_LOCK, 'la ligne du modèle, verrouillée par T2');
 
-		await t2.query('commit');
-		expect(await outcome).toMatchObject({
-			code: CHECK_VIOLATION,
-			message: expect.stringMatching(TEMPLATE_MOVED)
-		});
-		await t1.query('rollback');
-		expect(await nodeOf(observer, 'question_templates', s.template)).toBe(s.sub1);
-		expect(await nodeOf(observer, 'curriculum_points', s.templatePoint)).toBe(s.sub1);
+			await t2.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(TEMPLATE_MOVED)
+			});
+			await t1.query('rollback');
+			expect(await nodeOf(observer, 'question_templates', s.template)).toBe(s.sub1);
+			expect(await nodeOf(observer, 'curriculum_points', s.templatePoint)).toBe(s.sub1);
+		} finally {
+			await rollbackBoth(t1, t2);
+		}
 	}, 30_000);
 
 	it('verrou des exercices (3e × 3f) : T1 tague l’exercice ; T2, qui retire le rangement couvrant ce point, attend ; T1 valide ; T2 est refusé', async () => {
 		const { observer, t1, t2, s } = sessions();
-		await resetSharedDecor(observer, s);
-		await t1.query('begin');
-		await t1.query(TAG_EXERCISE, [s.exercise, s.pointOnSub1]);
+		try {
+			await resetSharedDecor(observer, s);
+			await t1.query('begin');
+			await t1.query(TAG_EXERCISE, [s.exercise, s.pointOnSub1]);
 
-		await t2.query('begin');
-		const pid = await backendPid(t2);
-		const outcome = pending(
-			t2,
-			'delete from public.exercise_classifications where exercise_id = $1 and node_id = $2',
-			[s.exercise, s.sub1]
-		);
-		await waitForLock(observer, pid, ['advisory'], 'le verrou de l’exercice');
+			await t2.query('begin');
+			const pid = await backendPid(t2);
+			const outcome = pending(
+				t2,
+				'delete from public.exercise_classifications where exercise_id = $1 and node_id = $2',
+				[s.exercise, s.sub1]
+			);
+			await waitForLock(observer, pid, ['advisory'], 'le verrou de l’exercice');
 
-		await t1.query('commit');
-		expect(await outcome).toMatchObject({
-			code: CHECK_VIOLATION,
-			message: expect.stringMatching(EXERCISE_UNCOVERED)
-		});
-		await t2.query('rollback');
+			await t1.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(EXERCISE_UNCOVERED)
+			});
+			await t2.query('rollback');
+		} finally {
+			await rollbackBoth(t1, t2);
+		}
 	}, 30_000);
 
 	it('verrou des exercices (3c × 3f) : T1 retire un rangement ; T2, qui re-rattache le point de l’exercice hors de ce qui reste, attend ; T1 valide ; T2 est refusé', async () => {
 		const { observer, t1, t2, s } = sessions();
-		await resetSharedDecor(observer, s);
-		await t1.query('begin');
-		// Valide seul : le point de l'exercice, sur la notion, reste couvert par la sous-notion 1
-		await t1.query(
-			'delete from public.exercise_classifications where exercise_id = $1 and node_id = $2',
-			[s.exercise, s.sub2]
-		);
+		try {
+			await resetSharedDecor(observer, s);
+			await t1.query('begin');
+			// Valide seul : le point de l'exercice, sur la notion, reste couvert par la sous-notion 1
+			await t1.query(
+				'delete from public.exercise_classifications where exercise_id = $1 and node_id = $2',
+				[s.exercise, s.sub2]
+			);
 
-		await t2.query('begin');
-		const pid = await backendPid(t2);
-		// Valide pour l'exercice encore rangé sur la sous-notion 2, hors règle sans elle
-		const outcome = pending(t2, MOVE_POINT, [s.exercisePoint, s.sub2]);
-		await waitForLock(observer, pid, ['advisory'], 'le verrou de l’exercice');
+			await t2.query('begin');
+			const pid = await backendPid(t2);
+			// Valide pour l'exercice encore rangé sur la sous-notion 2, hors règle sans elle
+			const outcome = pending(t2, MOVE_POINT, [s.exercisePoint, s.sub2]);
+			await waitForLock(observer, pid, ['advisory'], 'le verrou de l’exercice');
 
-		await t1.query('commit');
-		expect(await outcome).toMatchObject({
-			code: CHECK_VIOLATION,
-			message: expect.stringMatching(POINT_MOVED_EXERCISE)
-		});
-		await t2.query('rollback');
+			await t1.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(POINT_MOVED_EXERCISE)
+			});
+			await t2.query('rollback');
+		} finally {
+			await rollbackBoth(t1, t2);
+		}
 	}, 30_000);
 });
 

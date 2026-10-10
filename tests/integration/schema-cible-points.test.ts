@@ -48,6 +48,7 @@ interface PointInput {
 	kind?: string;
 	grade?: string | null;
 	node_id?: string | null;
+	objective_id?: string | null;
 	rubrique?: string | null;
 	regime_acquisition?: string;
 }
@@ -412,8 +413,21 @@ describe('Schéma cible (points → nœuds, références, parcours)', () => {
 				grade: 'T_TECHNO',
 				node_id: subnotionId
 			});
-			// Point « ancienne génération » : sans grade, sans nœud, sans objectif.
-			await seedPoint('ancien', { name: name('point ancien'), code: nextCode() });
+			// Point « ancienne génération » : un objectif, ni grade ni nœud. Jamais ni l'un ni
+			// l'autre : la contrainte curriculum_points_one_generation (étape 2 de C5) l'interdit.
+			const objective = await service
+				.from('curriculum_objectives')
+				.select('id')
+				.limit(1)
+				.single<{ id: string }>();
+			if (objective.error || !objective.data) {
+				throw new Error(`décor : objectif : ${objective.error?.message}`);
+			}
+			await seedPoint('ancien', {
+				name: name('point ancien'),
+				code: nextCode(),
+				objective_id: objective.data.id
+			});
 		});
 
 		it('C12 — un point de 2de référencé par les trois 1res : trois lignes acceptées', async () => {

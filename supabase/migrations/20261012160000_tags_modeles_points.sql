@@ -38,7 +38,8 @@
 -- Fonctions de trigger SECURITY INVOKER (le choix INVOKER / SECURITY DEFINER reste à trancher par
 -- David) : elles lisent avec les droits de l'appelant, et une ligne que la RLS lui masque ne lève
 -- pas d'erreur. Selon la requête, elle fait refuser ou elle passe sans être vérifiée :
---   * le point d'un tag (3a, 3e) est lu verrouillé ; masqué, le tag est refusé ;
+--   * le point d'un tag (3a, 3e) est lu verrouillé ; s'il existe mais que la RLS de
+--     modification le masque, le tag est refusé (droits insuffisants, 42501) ;
 --   * les gardes 3b, 3c, 3d et 3f ne vérifient pas un modèle, un tag ou un rangement masqué.
 -- Pour les modèles, pas de trou : le prof et l'admin (seuls à taguer et à re-rattacher un point)
 -- et l'admin (seul à déplacer un modèle) voient tous les modèles et tous les tags. Pour les
@@ -1181,10 +1182,15 @@ begin
 	  from public.curriculum_points p
 	 where p.id = new.point_id
 	   for share;
-	-- Introuvable, ou masqué par la RLS de modification (qu'exige le verrou) : refus.
 	if not found then
-		raise exception 'Point % introuvable ou illisible : tag refusé.', new.point_id
-			using errcode = 'check_violation';
+		-- Visible mais pas verrouillable : la RLS de modification le masque, l'appelant n'a pas le
+		-- droit de modifier les points du programme, donc pas celui de taguer (même refus que la RLS).
+		if exists (select 1 from public.curriculum_points p where p.id = new.point_id) then
+			raise exception 'Droits insuffisants pour taguer avec le point %.', new.point_id
+				using errcode = 'insufficient_privilege';
+		end if;
+		-- Point inexistant : la clé étrangère (ou la RLS de la table de tags) refusera.
+		return new;
 	end if;
 	-- Ancien point (sans nœud) : exempté.
 	if v_point_node is null then
@@ -1467,10 +1473,15 @@ begin
 	  from public.curriculum_points p
 	 where p.id = new.point_id
 	   for share;
-	-- Introuvable, ou masqué par la RLS de modification (qu'exige le verrou) : refus.
 	if not found then
-		raise exception 'Point % introuvable ou illisible : tag refusé.', new.point_id
-			using errcode = 'check_violation';
+		-- Visible mais pas verrouillable : la RLS de modification le masque, l'appelant n'a pas le
+		-- droit de modifier les points du programme, donc pas celui de taguer (même refus que la RLS).
+		if exists (select 1 from public.curriculum_points p where p.id = new.point_id) then
+			raise exception 'Droits insuffisants pour taguer avec le point %.', new.point_id
+				using errcode = 'insufficient_privilege';
+		end if;
+		-- Point inexistant : la clé étrangère (ou la RLS de la table de tags) refusera.
+		return new;
 	end if;
 	-- Ancien point (sans nœud) : exempté.
 	if v_point_node is null then
