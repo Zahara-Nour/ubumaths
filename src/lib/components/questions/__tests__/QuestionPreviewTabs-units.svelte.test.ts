@@ -91,7 +91,13 @@ async function unitKeysOffered(root: HTMLElement): Promise<string[]> {
 				typeof layout !== 'string' && 'id' in layout && layout.id === UNITS_LAYOUT_ID
 		);
 	await expect.poll(unitsLayout).toBeDefined();
-	const rows = 'rows' in unitsLayout()! ? unitsLayout()!.rows : [];
+	const layout = unitsLayout();
+	// Le clavier des unités est déclaré par `rows` (une seule couche) : on l'affirme
+	// au lieu de retomber sur une liste vide qui ferait passer « aucune touche »
+	if (layout === undefined || !('rows' in layout)) {
+		throw new Error('clavier des unités attendu, déclaré par `rows`');
+	}
+	const rows = layout.rows;
 	const keys = rows
 		.flat()
 		.filter(

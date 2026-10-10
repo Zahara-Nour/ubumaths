@@ -51,7 +51,6 @@ vi.mock('$lib/questions/generator/instance-generator', () => ({
 
 const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): QuestionTemplate => ({
 	id: 'template-1',
-	type: 'numerical_exact',
 	title: 'Test Template',
 	description: 'Test description',
 	grades: ['6'],
@@ -62,7 +61,7 @@ const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): Question
 	variations: [
 		{
 			statement: templateMarkdown('Question'),
-			solution: '42',
+			blanks: [{ expectedAnswer: '42' }],
 			correction: {
 				steps: [templateMarkdown('Solution')]
 			}
@@ -248,12 +247,12 @@ describe('SRS Generator Edge Cases', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Q1'),
-					solution: '1',
+					blanks: [{ expectedAnswer: '1' }],
 					correction: { steps: [templateMarkdown('S1')] }
 				},
 				{
 					statement: templateMarkdown('Q2'),
-					solution: '2',
+					blanks: [{ expectedAnswer: '2' }],
 					correction: { steps: [templateMarkdown('S2')] }
 				}
 			]
@@ -272,7 +271,7 @@ describe('SRS Generator Edge Cases', () => {
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
 					],
-					solution: '{eval:{{a}} + {{b}}}',
+					blanks: [{ expectedAnswer: '{eval:{{a}} + {{b}}}' }],
 					correction: { steps: [templateMarkdown('Solution')] }
 				}
 			]
@@ -338,7 +337,7 @@ describe('Integration with Question System', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Solve: $x^2 + 2x + 1 = 0$'),
-					solution: '-1',
+					blanks: [{ expectedAnswer: '-1' }],
 					correction: { steps: [templateMarkdown('$x = -1$')] }
 				}
 			]

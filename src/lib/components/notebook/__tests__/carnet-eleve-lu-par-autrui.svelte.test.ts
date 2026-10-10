@@ -136,7 +136,7 @@ describe('Sorties de cellule, vues par le prof (restreint)', () => {
 	it('text/plain avec \\htmlStyle : pas de formule MathLive, du texte', async () => {
 		const latex = `\\htmlStyle{position:fixed;inset:0;background:red}{x}`;
 		const el = await shownOutputs(
-			[{ output_type: 'display_data', data: { 'text/plain': latex }, metadata: {} }],
+			[{ output_type: 'display_data', data: { 'text/plain': latex } }],
 			true
 		);
 		await expect.poll(() => el.querySelector('pre')).not.toBeNull();
@@ -146,7 +146,7 @@ describe('Sorties de cellule, vues par le prof (restreint)', () => {
 
 	it('text/plain sans commande dangereuse : la formule reste rendue', async () => {
 		const el = await shownOutputs(
-			[{ output_type: 'display_data', data: { 'text/plain': '\\frac{1}{2}' }, metadata: {} }],
+			[{ output_type: 'display_data', data: { 'text/plain': '\\frac{1}{2}' } }],
 			true
 		);
 		await expect.poll(() => el.querySelector('math-span')).not.toBeNull();
@@ -155,7 +155,7 @@ describe('Sorties de cellule, vues par le prof (restreint)', () => {
 	it('text/html avec style= et <img src=https://…> : neutralisé', async () => {
 		const html = `<div style="position:fixed;inset:0;background:red">Recouvrement</div><img src="https://${HOTE}/d.png">`;
 		const el = await shownOutputs(
-			[{ output_type: 'display_data', data: { 'text/html': html }, metadata: {} }],
+			[{ output_type: 'display_data', data: { 'text/html': html } }],
 			true
 		);
 		await expect.poll(() => el.textContent).toContain('Recouvrement');
@@ -169,11 +169,10 @@ describe('Sorties de cellule vues par l’auteur (rendu complet, non-régression
 	it('text/plain rendu en formule, text/html assaini mais avec son image', async () => {
 		const el = await shownOutputs(
 			[
-				{ output_type: 'display_data', data: { 'text/plain': '\\frac{1}{2}' }, metadata: {} },
+				{ output_type: 'display_data', data: { 'text/plain': '\\frac{1}{2}' } },
 				{
 					output_type: 'display_data',
-					data: { 'text/html': `<p>Tableau</p><img src="https://${HOTE}/e.png">` },
-					metadata: {}
+					data: { 'text/html': `<p>Tableau</p><img src="https://${HOTE}/e.png">` }
 				}
 			],
 			false

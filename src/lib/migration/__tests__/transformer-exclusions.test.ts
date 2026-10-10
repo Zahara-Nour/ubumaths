@@ -28,7 +28,9 @@ function draws(index: number, seeds = 40): Record<string, string>[] {
 	return Array.from({ length: seeds }, (_, seed) => {
 		const generated = generateInstance(single, seed + 1);
 		if (!generated.success) throw new Error(generated.errors.join(' ; '));
-		return Object.fromEntries(generated.instance.resolvedVariables.map((v) => [v.name, v.value]));
+		const variables = generated.instance.resolvedVariables;
+		if (!variables) throw new Error('variables résolues attendues');
+		return Object.fromEntries(variables.map((v) => [v.name, v.value]));
 	});
 }
 

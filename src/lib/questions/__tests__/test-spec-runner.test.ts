@@ -166,9 +166,9 @@ describe('runTestSpec with QCM', () => {
 					statement: templateMarkdown('$2 + 3 = $ ?'),
 					correctChoiceIndex: '1',
 					choices: [
-						{ content: '4', isCorrect: false },
-						{ content: '5', isCorrect: true },
-						{ content: '6', isCorrect: false }
+						{ content: templateMarkdown('4'), isCorrect: false },
+						{ content: templateMarkdown('5'), isCorrect: true },
+						{ content: templateMarkdown('6'), isCorrect: false }
 					]
 				}
 			],
@@ -201,8 +201,8 @@ describe('runTestSpec with QCM', () => {
 				{
 					statement: templateMarkdown('$2 + 3 = ?$'),
 					choices: [
-						{ content: '5', isCorrect: true },
-						{ content: '6', isCorrect: false }
+						{ content: templateMarkdown('5'), isCorrect: true },
+						{ content: templateMarkdown('6'), isCorrect: false }
 					]
 				}
 			],

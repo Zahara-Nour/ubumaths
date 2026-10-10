@@ -92,8 +92,10 @@ describe('.variations : f′ affichée comme `.dériver` l’écrit', () => {
 		// Même expression ; `.variations` l'écrit en texte lisible (`4x^{1/3}/3`),
 		// sans les accolades de fraction de `.dériver` (`{4x^{1/3}}/3`)
 		const parsed = parseCustomSafe(derive).ast;
-		expect(parsed).toBeDefined();
-		if (parsed !== undefined) expect(variations).toBe(readableText(parsed));
+		// `ast` vaut null quand la relecture échoue : `toBeDefined` laissait passer null
+		expect(parsed).not.toBeNull();
+		if (parsed === null) throw new Error(`relecture impossible : ${derive}`);
+		expect(variations).toBe(readableText(parsed));
 	});
 });
 

@@ -84,7 +84,7 @@ describe('règle custom isPrime dans une case rulesSuffice', () => {
 		templateId: 'euler',
 		statement: 'Trouve n tel que n²+n+41 ne soit pas premier : $?$' as ResolvedMarkdown,
 		blanks: [blank],
-		grades: ['2NDE'],
+		grades: ['2'],
 		theme: 'Arithmétique',
 		domain: 'Arithmétique',
 		level: 2,

@@ -26,7 +26,9 @@ function drawn(index: number, name: string, seeds = 40): string[] {
 	return Array.from({ length: seeds }, (_, seed) => {
 		const generated = generateInstance(single, seed + 1);
 		if (!generated.success) throw new Error(generated.errors.join(' ; '));
-		return generated.instance.resolvedVariables.find((v) => v.name === name)!.value;
+		const variables = generated.instance.resolvedVariables;
+		if (!variables) throw new Error('variables résolues attendues');
+		return variables.find((v) => v.name === name)!.value;
 	});
 }
 

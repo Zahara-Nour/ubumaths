@@ -38,7 +38,8 @@ function simpleInstance(expectedAnswer: string, form?: ConstraintMode): Question
 	return {
 		templateId: 'form-constraint',
 		statement: 'Test' as ResolvedMarkdown,
-		blanks: [{ expectedAnswer }],
+		// Case de maths : le type que le générateur donne à une case `$…$`
+		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',

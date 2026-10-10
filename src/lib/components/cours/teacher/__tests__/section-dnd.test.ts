@@ -31,7 +31,11 @@ const C = { id: 'worksheet:c' };
 
 /** La copie que la bibliothèque promène pendant le geste. */
 function ombre(item: DndItem): DndItem {
-	return { ...item, [SHADOW_ITEM_MARKER_PROPERTY_NAME]: true };
+	const shadow: DndItem & { [SHADOW_ITEM_MARKER_PROPERTY_NAME]: boolean } = {
+		...item,
+		[SHADOW_ITEM_MARKER_PROPERTY_NAME]: true
+	};
+	return shadow;
 }
 
 describe('origineDuGlisser — le point de départ, pris à la prise', () => {

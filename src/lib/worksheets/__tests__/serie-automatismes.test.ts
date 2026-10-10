@@ -342,7 +342,10 @@ describe('buildSerie — chaque question garde ses fonctions déclarées', () =>
 			{ templateId: 'derivee', seed: 1 },
 			{ templateId: 'prix', seed: 1 }
 		]);
-		const formules = rendu(serie.statement, serie.genericFunctions);
+		// La série ne porte aucune liste de fonctions : le figé est déjà en LaTeX, lu
+		// comme l'écran et le PDF le lisent, sans liste (`serie.genericFunctions`
+		// n'existe pas, l'appel passait déjà `undefined`)
+		const formules = rendu(serie.statement, undefined);
 		// Question 1 : P' se lit comme la dérivée de la fonction P
 		expect(formules).toContain("P'\\left( 2 \\right)");
 		// Question 2 : P(1+t) reste un produit (espace de produit, pas d'appel)

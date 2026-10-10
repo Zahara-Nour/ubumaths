@@ -476,7 +476,7 @@ describe('R10 — jamais d’exception', () => {
 
 describe('fillMarkdown', () => {
 	it('case sans valeur : pointillés (jamais de marqueur brut)', () => {
-		expect(fillMarkdown('$\\placeholder[0]{}$ et {{blank:1}}', [], (f) => f.value)).toBe(
+		expect(fillMarkdown('$\\placeholder[0]{}$ et {{blank:1}}', [], (f) => f.value ?? '')).toBe(
 			'$\\text{……}$ et ……'
 		);
 	});
