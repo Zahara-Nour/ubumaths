@@ -238,12 +238,12 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 
 ## Point d'étape — 2026-10-11
 
-| Constat | PR | En prod |
-| ------- | -- | ------- |
-| B6 comptes non approuvés (garde du hook) | #1065 | code : au `deploy:prod` |
-| B7 inscription sans code → en attente | #1065 | ✅ migration `20261015090400` |
-| E20 suppressions SRS silencieuses | #1066 | code : au `deploy:prod` |
-| B5 élévation admin cassée (500) | #1067 | code : au `deploy:prod` |
+| Constat                                  | PR    | En prod                       |
+| ---------------------------------------- | ----- | ----------------------------- |
+| B6 comptes non approuvés (garde du hook) | #1065 | code : au `deploy:prod`       |
+| B7 inscription sans code → en attente    | #1065 | ✅ migration `20261015090400` |
+| E20 suppressions SRS silencieuses        | #1066 | code : au `deploy:prod`       |
+| B5 élévation admin cassée (500)          | #1067 | code : au `deploy:prod`       |
 
 - E20 : une section inexistante reste une suppression idempotente (200, contrat de
   `sections-crud`) ; 0 ligne sur une section existante → 403.
@@ -261,3 +261,15 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 - **Classement des énigmes faux** (autres élèves à 0) ; **`get_2048_user_rank`** sans appelant,
   rang toutes écoles ; **fonctions mortes** `process_weekly_rewards`, `purchase_shop_item`.
 - **C9 → C15** : point par point (aligner le code ou les documents).
+
+## C — promesses RGPD sans code (décisions de David, 2026-10-11)
+
+| Point                           | Décision                                               | État                                                     |
+| ------------------------------- | ------------------------------------------------------ | -------------------------------------------------------- |
+| C9 « qui a accédé ? »           | aligner les documents                                  | ✅ rgpd.md, audit-trail.md (60 j, pas de lecture tracée) |
+| C10 Groq                        | aligner les documents (+ avertissement dans le tuteur) | ✅ registre ; avertissement : PR à venir                 |
+| C11 conservation                | aligner le code (purge)                                | à faire — question destructive avant migration           |
+| C12 export                      | aligner le code (tuteur, déclaration d'âge)            | à faire                                                  |
+| C13 page de confidentialité     | compléter (Brevo, Groq, HuggingFace ; 30 j)            | à faire — texte montré à David avant livraison           |
+| C14 messages après suppression  | —                                                      | ✅ réglé par A1 (messages supprimés avec le compte)      |
+| C15 registre (rôle parent, âge) | aligner les documents                                  | ✅ registre-traitements.md                               |

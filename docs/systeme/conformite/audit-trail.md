@@ -457,7 +457,9 @@ ORDER BY created_at DESC;
 
 #### Retention
 
-Default retention: 2 years. Use `cleanup_old_audit_logs(retention_days)` function for cleanup:
+Rétention réelle : **60 jours** — purge par `run_cleanup_expired_data` (job `rgpd-retention-cleanup`,
+hebdomadaire). Les **lectures** ne sont pas tracées (constat C9, 2026-10-11). Ancienne mention
+« 2 years » périmée. `cleanup_old_audit_logs(retention_days)` permet une purge ponctuelle :
 
 ```sql
 -- Cleanup logs older than 2 years (730 days)
