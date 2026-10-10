@@ -50,7 +50,7 @@ describe('helpers — evaluateAtPoint', () => {
 	it('returns the value of a polynomial at a point', () => {
 		// f(x) = x² + 2x + 1 ; f(3) = 9 + 6 + 1 = 16
 		const expr = add(
-			add(power(variable('x'), number('2')), multiply(number('2'), variable('x'))),
+			add(power(variable('x'), number('2')), multiply(number('2'), variable('x'), 'implicit')),
 			number('1')
 		);
 		expect(evaluateAtPoint(expr, 'x', 3)).toBeCloseTo(16);
@@ -63,7 +63,7 @@ describe('helpers — evaluateAtPoint', () => {
 
 	it('returns null on division by zero', () => {
 		// 1/(x-2) at x=2
-		const expr = divide(number('1'), subtract(variable('x'), number('2')));
+		const expr = divide(number('1'), subtract(variable('x'), number('2')), 'fraction');
 		expect(evaluateAtPoint(expr, 'x', 2)).toBeNull();
 	});
 
@@ -153,7 +153,7 @@ describe('helpers — asPolynomial', () => {
 	});
 
 	it('refuses x^(1/2) (non-integer exponent)', () => {
-		const expr = power(variable('x'), divide(number('1'), number('2')));
+		const expr = power(variable('x'), divide(number('1'), number('2'), 'fraction'));
 		expect(asPolynomial(expr, 'x')).toBeNull();
 	});
 });

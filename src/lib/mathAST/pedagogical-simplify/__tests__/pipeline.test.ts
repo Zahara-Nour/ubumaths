@@ -9,6 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
+import { logical, matrix } from '../../factory';
 import { generatePedagogicalSimplifySteps } from '../pipeline';
 import { PedagogicalSimplifyNotImplemented } from '../types';
 
@@ -340,10 +341,7 @@ describe('pipeline — PedagogicalSimplifyNotImplemented', () => {
 	});
 
 	it('throws on matrix node', () => {
-		const node: import('../../types').MathNode = {
-			type: 'matrix',
-			rows: [[parseLatex('1'), parseLatex('2')]]
-		};
+		const node = matrix([[parseLatex('1'), parseLatex('2')]]);
 		expect(() =>
 			generatePedagogicalSimplifySteps(node, {
 				intent: 'reduire',
@@ -367,12 +365,7 @@ describe('pipeline — PedagogicalSimplifyNotImplemented', () => {
 	});
 
 	it('throws on logical (and/or) node', () => {
-		const node: import('../../types').MathNode = {
-			type: 'logical',
-			op: 'and',
-			left: parseLatex('x = 1'),
-			right: parseLatex('y = 2')
-		};
+		const node = logical('and', parseLatex('x = 1'), parseLatex('y = 2'));
 		expect(() =>
 			generatePedagogicalSimplifySteps(node, {
 				intent: 'reduire',

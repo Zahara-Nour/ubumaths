@@ -17,6 +17,7 @@ import {
 	lessThanInterval,
 	lessThanOrEqualInterval,
 	closedInterval,
+	leftClosedInterval,
 	openInterval,
 	universalDomain
 } from '../../domain/factory';
@@ -210,12 +211,7 @@ describe('Domain filtering in solve()', () => {
 					domain: intervalDomain([closedInterval(number(0), number(3))])
 				});
 				const open = solve(parseEquation('x^2 - 9 = 0'), {
-					domain: intervalDomain([
-						{
-							lower: { type: 'closed', value: number(0) },
-							upper: { type: 'open', value: number(3) }
-						}
-					])
+					domain: intervalDomain([leftClosedInterval(number(0), number(3))])
 				});
 
 				expect(closed.solutions).toHaveLength(1);

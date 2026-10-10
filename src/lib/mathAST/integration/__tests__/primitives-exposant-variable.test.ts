@@ -58,7 +58,7 @@ describe('dérivée : exposant variable sur base variable (non-régression)', ()
 		],
 		['x^{x^2}', (x: number) => x ** (x * x) * (2 * x * Math.log(x) + x)]
 	] as const)('%s : valeur juste', (latex, reference) => {
-		const derivative = compile(differentiate(parseLatex(latex), 'x'));
+		const derivative = compile(differentiate(parseLatex(latex), { variable: 'x' }));
 		for (const x of POSITIVE_POINTS) {
 			expect(derivative({ x })).toBeCloseTo(reference(x), 6);
 		}

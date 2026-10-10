@@ -33,8 +33,14 @@ import { toLatex } from '../../index';
 import { parseLatex } from '../../parser';
 import { generatePedagogicalSimplifySteps } from '../pipeline';
 
+// Lycée : le seul niveau où se rencontrent tous les cas ci-dessous, eˣ compris
 const factoriser = (source: string) =>
-	toLatex(generatePedagogicalSimplifySteps(parseLatex(source), { intent: 'factoriser' }).result);
+	toLatex(
+		generatePedagogicalSimplifySteps(parseLatex(source), {
+			intent: 'factoriser',
+			schoolLevel: 'lycee'
+		}).result
+	);
 
 describe('le facteur numérique sort', () => {
 	it.each([

@@ -179,7 +179,7 @@ describe('abs of linear expressions with bounds', () => {
 	});
 
 	it('|2x + 1| -> 2x + 1 when x > 0', () => {
-		const expr = abs(add(multiply(number('2'), x), number('1')));
+		const expr = abs(add(multiply(number('2'), x, 'implicit'), number('1')));
 		expectNoAbs(simplifyLatex(expr, ctxBounds('x', gtBounds(0))));
 	});
 });
@@ -266,7 +266,7 @@ describe('abs of products with sign assumptions', () => {
 				['y', { sign: 'positive' as const }]
 			])
 		};
-		expectNoAbs(simplifyLatex(abs(multiply(x, y)), ctx));
+		expectNoAbs(simplifyLatex(abs(multiply(x, y, 'implicit')), ctx));
 	});
 
 	it('|x * y| removed when x > 0, y < 0 (negative product)', () => {
@@ -276,11 +276,11 @@ describe('abs of products with sign assumptions', () => {
 				['y', { sign: 'negative' as const }]
 			])
 		};
-		expectNoAbs(simplifyLatex(abs(multiply(x, y)), ctx));
+		expectNoAbs(simplifyLatex(abs(multiply(x, y, 'implicit')), ctx));
 	});
 
 	it('|x * y| unchanged when x > 0, y unknown', () => {
-		expectAbs(simplifyLatex(abs(multiply(x, y)), ctxSign('x', 'positive')));
+		expectAbs(simplifyLatex(abs(multiply(x, y, 'implicit')), ctxSign('x', 'positive')));
 	});
 });
 
@@ -296,7 +296,7 @@ describe('abs of quotients with sign assumptions', () => {
 				['y', { sign: 'positive' as const }]
 			])
 		};
-		expectNoAbs(simplifyLatex(abs(divide(x, y)), ctx));
+		expectNoAbs(simplifyLatex(abs(divide(x, y, 'fraction')), ctx));
 	});
 
 	it('|x / y| removed when x > 0, y < 0', () => {
@@ -306,7 +306,7 @@ describe('abs of quotients with sign assumptions', () => {
 				['y', { sign: 'negative' as const }]
 			])
 		};
-		expectNoAbs(simplifyLatex(abs(divide(x, y)), ctx));
+		expectNoAbs(simplifyLatex(abs(divide(x, y, 'fraction')), ctx));
 	});
 });
 
@@ -346,15 +346,21 @@ describe('inferType bounds propagation for sign deduction', () => {
 	});
 
 	it('2x is positive when x > 0', () => {
-		expect(inferType(multiply(number('2'), x), ctxBounds('x', gtBounds(0))).sign).toBe('positive');
+		expect(inferType(multiply(number('2'), x, 'implicit'), ctxBounds('x', gtBounds(0))).sign).toBe(
+			'positive'
+		);
 	});
 
 	it('2x is negative when x < 0', () => {
-		expect(inferType(multiply(number('2'), x), ctxBounds('x', ltBounds(0))).sign).toBe('negative');
+		expect(inferType(multiply(number('2'), x, 'implicit'), ctxBounds('x', ltBounds(0))).sign).toBe(
+			'negative'
+		);
 	});
 
 	it('x/2 is positive when x > 0', () => {
-		expect(inferType(divide(x, number('2')), ctxBounds('x', gtBounds(0))).sign).toBe('positive');
+		expect(inferType(divide(x, number('2'), 'fraction'), ctxBounds('x', gtBounds(0))).sign).toBe(
+			'positive'
+		);
 	});
 
 	it('exp(x) is always positive', () => {

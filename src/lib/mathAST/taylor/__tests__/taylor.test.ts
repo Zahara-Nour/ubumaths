@@ -43,6 +43,9 @@ function isRational(value: unknown): value is { n: bigint; d: bigint } {
  */
 function _evaluateTaylor(taylor: MathNode, _x: number): number {
 	const result = evaluate(taylor, { mode: 'decimal' });
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
 	if (typeof result.value === 'number') {
 		return result.value;
 	}
@@ -60,6 +63,9 @@ function _evaluateTaylor(taylor: MathNode, _x: number): number {
 function evalAt(expr: MathNode, varName: string, value: number): number {
 	const substituted = substitute(expr, { [varName]: value });
 	const result = evaluate(substituted, { mode: 'decimal' });
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
 	if (typeof result.value === 'number') {
 		return result.value;
 	}

@@ -185,13 +185,21 @@ describe('addition de fractions — le pipeline ne doit pas cycler', () => {
 	const cas: [string, () => MathNode, string, number][] = [
 		[
 			'2/3 + 3/4',
-			() => add(divide(number('2'), number('3')), divide(number('3'), number('4'))),
+			() =>
+				add(
+					divide(number('2'), number('3'), 'fraction'),
+					divide(number('3'), number('4'), 'fraction')
+				),
 			'\\dfrac{17}{12}',
 			4
 		],
 		[
 			'1/2 + 1/4',
-			() => add(divide(number('1'), number('2')), divide(number('1'), number('4'))),
+			() =>
+				add(
+					divide(number('1'), number('2'), 'fraction'),
+					divide(number('1'), number('4'), 'fraction')
+				),
 			'\\dfrac{3}{4}',
 			4
 		],
@@ -199,8 +207,11 @@ describe('addition de fractions — le pipeline ne doit pas cycler', () => {
 			'1/2 + 1/3 + 1/6',
 			() =>
 				add(
-					add(divide(number('1'), number('2')), divide(number('1'), number('3'))),
-					divide(number('1'), number('6'))
+					add(
+						divide(number('1'), number('2'), 'fraction'),
+						divide(number('1'), number('3'), 'fraction')
+					),
+					divide(number('1'), number('6'), 'fraction')
 				),
 			'1',
 			7
@@ -250,7 +261,10 @@ describe('addition de fractions — le pipeline ne doit pas cycler', () => {
 	});
 
 	it('ne tape jamais le plafond d itérations', () => {
-		const expr = add(divide(number('2'), number('3')), divide(number('3'), number('4')));
+		const expr = add(
+			divide(number('2'), number('3'), 'fraction'),
+			divide(number('3'), number('4'), 'fraction')
+		);
 		const result = generatePedagogicalArithmeticSteps(expr, { schoolLevel: 'college' });
 		// 50 = DEFAULT_MAX_ITERATIONS ; l'atteindre signifie que la boucle ne
 		// s'est pas arrêtée d'elle-même.
@@ -272,9 +286,14 @@ describe('produit de racines — un pas à la fois', () => {
 	//  - sinon -> multiplier (seul chemin possible)
 
 	const sequence = (expr: MathNode): string[] =>
-		generatePedagogicalArithmeticSteps(expr, { schoolLevel: 'college' }).steps.map(
-			(s) => `${toLatex(s.globalBefore)} = ${toLatex(s.globalAfter)}`
-		);
+		generatePedagogicalArithmeticSteps(expr, { schoolLevel: 'college' }).steps.map((s) => {
+			// Chaque étape d'arithmétique porte l'expression entière, avant et après
+			const { globalBefore, globalAfter } = s;
+			if (globalBefore === undefined || globalAfter === undefined) {
+				throw new Error(`étape ${s.rule} sans expression globale`);
+			}
+			return `${toLatex(globalBefore)} = ${toLatex(globalAfter)}`;
+		});
 
 	const racines = (a: string, b: string) => multiply(sqrt(number(a)), sqrt(number(b)), 'cross');
 

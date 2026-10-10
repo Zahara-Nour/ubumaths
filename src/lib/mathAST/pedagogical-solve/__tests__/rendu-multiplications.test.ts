@@ -9,9 +9,16 @@
 import { describe, it, expect } from 'vitest';
 import { generateEquationSteps, QuadraticEquationRenderer } from '../index';
 import { parseCustomSafe } from '../../parser/custom';
+import { isRelation } from '../../guards';
+import type { RelationNode } from '../../types';
 import type { RenderedStep } from '../../common/step-renderer-base';
 
-const ast = (s: string) => (parseCustomSafe(s) as { ast: never }).ast;
+/** Parse une relation, en affirmant que le parseur rend bien une relation. */
+function ast(source: string): RelationNode {
+	const node = parseCustomSafe(source).ast;
+	if (node === null || !isRelation(node)) throw new Error(`pas une relation : ${source}`);
+	return node;
+}
 
 function renderedSteps(source: string): readonly RenderedStep[] {
 	const steps = generateEquationSteps(ast(source), { level: 'lycee' });

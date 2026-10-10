@@ -251,7 +251,7 @@ describe('Known Limits Database', () => {
 			});
 
 			it('matches x×ln(x) as x → 0⁺ (explicit multiplication)', () => {
-				const expr = multiply(variable('x'), func('ln', [variable('x')]), 'explicit');
+				const expr = multiply(variable('x'), func('ln', [variable('x')]), 'cross');
 				const match = matchKnownLimit(expr, number('0'), 'x', 'right');
 				expect(match).not.toBeNull();
 				// Both implicit and explicit patterns return 0, so either match is valid
@@ -459,7 +459,7 @@ describe('Known Limits Database', () => {
 			});
 
 			it('matches x×e^x as x → -∞ (explicit)', () => {
-				const expr = multiply(variable('x'), func('exp', [variable('x')]), 'explicit');
+				const expr = multiply(variable('x'), func('exp', [variable('x')]), 'cross');
 				const match = matchKnownLimit(expr, negativeInfinity(), 'x');
 				expect(match).not.toBeNull();
 				// Both implicit and explicit patterns return 0, so either match is valid

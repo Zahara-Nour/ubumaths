@@ -18,6 +18,7 @@ import {
 } from '../../factory';
 import type { MathNode } from '../../types';
 import type { MatchBindings } from '../types';
+import { getBindingNode } from '../types';
 
 describe('Rule System', () => {
 	// ===========================================================================
@@ -40,8 +41,8 @@ describe('Rule System', () => {
 		});
 
 		it('creates a rule with condition', () => {
-			const condition = (bindings: ReadonlyMap<string, MathNode>) => {
-				const x = bindings.get('x');
+			const condition = (bindings: MatchBindings) => {
+				const x = getBindingNode(bindings, 'x');
 				return x?.type === 'number' && x.value !== '0';
 			};
 
@@ -57,8 +58,10 @@ describe('Rule System', () => {
 		});
 
 		it('creates a rule with function replacement', () => {
-			const replacement = (bindings: ReadonlyMap<string, MathNode>) => {
-				return bindings.get('x')!;
+			const replacement = (bindings: MatchBindings): MathNode => {
+				const x = getBindingNode(bindings, 'x');
+				if (x === null) throw new Error('capture « x » : attendu un nœud');
+				return x;
 			};
 
 			const rule = createRule(P._('x'), replacement);
@@ -313,7 +316,7 @@ describe('Rule System', () => {
 				const rule = createRule(P.pow(P._('x'), P.num(0)), P.num(1), {
 					name: 'pow-zero',
 					condition: (bindings) => {
-						const x = bindings.get('x');
+						const x = getBindingNode(bindings, 'x');
 						// x must not be zero
 						return !(x?.type === 'number' && x.value === '0');
 					}
@@ -340,7 +343,7 @@ describe('Rule System', () => {
 				const rule = createRule(P.div(P._('x'), P._('x')), P.num(1), {
 					name: 'div-self',
 					condition: (bindings) => {
-						const x = bindings.get('x');
+						const x = getBindingNode(bindings, 'x');
 						return !(x?.type === 'number' && x.value === '0');
 					}
 				});
@@ -368,7 +371,8 @@ describe('Rule System', () => {
 				const rule = createRule(
 					P.add(P._('x'), P._('x')),
 					(bindings) => {
-						const x = bindings.get('x')!;
+						const x = getBindingNode(bindings, 'x');
+						if (x === null) throw new Error('capture « x » : attendu un nœud');
 						return multiply(number('2'), x, 'implicit');
 					},
 					{ name: 'double' }
@@ -476,7 +480,7 @@ describe('Rule System', () => {
 				name: 'pow-zero',
 				priority: 1,
 				condition: (b) => {
-					const x = b.get('x');
+					const x = getBindingNode(b, 'x');
 					return !(x?.type === 'number' && x.value === '0');
 				}
 			})
@@ -583,7 +587,7 @@ describe('Rule System', () => {
 			createRule(P.pow(P._('x'), P.num(0)), P.num(1), {
 				name: 'pow-zero',
 				condition: (b) => {
-					const x = b.get('x');
+					const x = getBindingNode(b, 'x');
 					return !(x?.type === 'number' && x.value === '0');
 				}
 			}),
@@ -593,7 +597,7 @@ describe('Rule System', () => {
 			createRule(P.div(P._('x'), P._('x')), P.num(1), {
 				name: 'div-self',
 				condition: (b) => {
-					const x = b.get('x');
+					const x = getBindingNode(b, 'x');
 					return !(x?.type === 'number' && x.value === '0');
 				}
 			}),

@@ -27,6 +27,9 @@ function createMatrix(values: number[][]): MatrixNode {
  */
 function toNum(node: MathNode): number {
 	const result = evaluate(node, { mode: 'decimal' });
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
 	if (typeof result.value !== 'number') {
 		throw new Error(`Expected numeric result, got ${typeof result.value}`);
 	}

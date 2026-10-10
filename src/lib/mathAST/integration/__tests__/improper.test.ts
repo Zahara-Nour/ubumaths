@@ -39,21 +39,21 @@ describe('improperIntegrate — convergent cases', () => {
 
 	it('case 3: ∫₋∞^+∞ 1/(1+x²) dx = π', () => {
 		// expr = 1 / (1 + x²)
-		const expr = divide(number('1'), add(number('1'), power(x(), number('2'))));
+		const expr = divide(number('1'), add(number('1'), power(x(), number('2'))), 'fraction');
 		const r = improperIntegrate(expr, 'x', -Infinity, Infinity);
 		expect(r.status).toBe('convergent');
 		expect(r.value).toBeCloseTo(Math.PI, 4);
 	});
 
 	it('case 4: ∫₁^+∞ 1/x² dx = 1', () => {
-		const expr = divide(number('1'), power(x(), number('2')));
+		const expr = divide(number('1'), power(x(), number('2')), 'fraction');
 		const r = improperIntegrate(expr, 'x', 1, Infinity);
 		expect(r.status).toBe('convergent');
 		expect(r.value).toBeCloseTo(1, 4);
 	});
 
 	it('case 7: ∫₁^+∞ |1/x²| dx = 1', () => {
-		const expr = abs(divide(number('1'), power(x(), number('2'))));
+		const expr = abs(divide(number('1'), power(x(), number('2')), 'fraction'));
 		const r = improperIntegrate(expr, 'x', 1, Infinity);
 		expect(r.status).toBe('convergent');
 		expect(r.value).toBeCloseTo(1, 4);
@@ -69,7 +69,7 @@ describe('improperIntegrate — convergent cases', () => {
 
 describe('improperIntegrate — divergent cases', () => {
 	it('case 5: ∫₁^+∞ 1/x dx → divergent', () => {
-		const expr = divide(number('1'), x());
+		const expr = divide(number('1'), x(), 'fraction');
 		const r = improperIntegrate(expr, 'x', 1, Infinity);
 		expect(r.status).toBe('divergent');
 		expect(Number.isNaN(r.value)).toBe(true);
@@ -107,7 +107,7 @@ describe('improperIntegrate — left-infinite branch', () => {
 	});
 
 	it('∫_-∞^-1 1/x² dx = 1 (mirror of case 4)', () => {
-		const expr = divide(number('1'), power(x(), number('2')));
+		const expr = divide(number('1'), power(x(), number('2')), 'fraction');
 		const r = improperIntegrate(expr, 'x', -Infinity, -1);
 		expect(r.status).toBe('convergent');
 		expect(r.value).toBeCloseTo(1, 4);
@@ -157,16 +157,21 @@ describe('improperIntegrate — performance', () => {
 			},
 			{
 				name: '3: 1/(1+x²)',
-				expr: divide(number('1'), add(number('1'), power(x(), number('2')))),
+				expr: divide(number('1'), add(number('1'), power(x(), number('2'))), 'fraction'),
 				a: -Infinity,
 				b: Infinity
 			},
-			{ name: '4: 1/x²', expr: divide(number('1'), power(x(), number('2'))), a: 1, b: Infinity },
-			{ name: '5: 1/x', expr: divide(number('1'), x()), a: 1, b: Infinity },
+			{
+				name: '4: 1/x²',
+				expr: divide(number('1'), power(x(), number('2')), 'fraction'),
+				a: 1,
+				b: Infinity
+			},
+			{ name: '5: 1/x', expr: divide(number('1'), x(), 'fraction'), a: 1, b: Infinity },
 			{ name: '6: sin(x)', expr: sin(x()), a: 0, b: Infinity },
 			{
 				name: '7: |1/x²|',
-				expr: abs(divide(number('1'), power(x(), number('2')))),
+				expr: abs(divide(number('1'), power(x(), number('2')), 'fraction')),
 				a: 1,
 				b: Infinity
 			},
