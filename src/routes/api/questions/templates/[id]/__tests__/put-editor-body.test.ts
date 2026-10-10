@@ -103,3 +103,35 @@ describe("PUT depuis l'éditeur : question de cours", () => {
 		expect(db.question_templates[0].options).toEqual({ courseQuestion: true });
 	});
 });
+
+// Publication depuis l'éditeur : le corps complet (champs vidables à null) passe
+// le schéma strict du contrôle de publication (`templatePublicationErrors`)
+describe("PUT depuis l'éditeur : publication", () => {
+	it('corps complet, statut published → 200, publié', async () => {
+		const db = fakeDb();
+		const response = await callPut(
+			db,
+			JSON.parse(
+				JSON.stringify(
+					toTemplatePutBody({
+						title: FIXTURE.title as string,
+						description: FIXTURE.description as string,
+						shared: FIXTURE.shared as never,
+						variations: FIXTURE.variations as never,
+						grades: FIXTURE.grades as never,
+						theme: FIXTURE.theme as string,
+						domain: FIXTURE.domain as string,
+						subdomain: FIXTURE.subdomain as string,
+						level: FIXTURE.level as number,
+						delay: FIXTURE.delay as number,
+						testSpecs: FIXTURE.testSpecs as never,
+						status: 'published'
+					})
+				)
+			)
+		);
+
+		expect(response.status).toBe(200);
+		expect(db.question_templates[0].status).toBe('published');
+	});
+});

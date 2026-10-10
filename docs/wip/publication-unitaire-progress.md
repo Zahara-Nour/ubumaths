@@ -7,4 +7,7 @@ Branche `fix/publication-unitaire-checktemplate`, worktree `../ubumaths-wt-publi
       modèle publié modifié). Fixture du PUT : `test_specs` = specs réelles de #139.
 - [x] Point de contrôle partagé : `templatePublicationErrors` (`src/lib/server/template-publication.ts`).
 - [x] Doc `questions.md` + retrait L3 / K6 de `ecarts-a-trier.md`.
-- [ ] check:incremental, types:cliquet, code-reviewer, PR.
+- [x] Mesure prod : 640 modèles publiés, 0 refusé par le contrôle (aucun bloqué à la modification).
+- [x] Revue : POST de création (publié par défaut) branché aussi ; éditeur : raisons du refus
+      affichées, statut remis si la publication échoue ; test du corps complet publié.
+- [ ] PR.

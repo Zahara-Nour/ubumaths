@@ -70,8 +70,11 @@
 				}
 				goto('/dashboard/admin/questions').then(() => {});
 			} else {
-				toaster.error('Erreur lors de la création');
-				console.error('Validation errors:', result.errors);
+				// Raisons du refus (contrôle de publication : spec rouge, tirage en échec…)
+				const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+				toaster.error('Erreur lors de la création', {
+					description: errors.slice(0, 5).join('\n') || undefined
+				});
 			}
 		} catch (error) {
 			toaster.error('Erreur serveur');

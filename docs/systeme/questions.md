@@ -280,11 +280,16 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 - **Un seul contrôle de publication** : `templatePublicationErrors`
   (`src/lib/server/template-publication.ts`) = `checkTemplate` (structure, schéma strict, specs
   vertes, une spec `correct` par variation, 50 tirages par variation) + dépendances circulaires.
-  Le `PUT` d'un modèle et la publication par lot l'appellent tous les deux.
+  Les trois chemins qui publient l'appellent : création (`POST`), `PUT` d'un modèle, lot.
+- `POST /api/questions/templates` (statut `published` **par défaut**) : `templatePublicationErrors`,
+  puis, en cas de collision de catégorie, **décalage automatique du niveau** (`getNextAvailableLevel`),
+  contrairement au `PUT` et au lot qui refusent.
 - `PUT` d'un modèle dont le statut fusionné est `published` (publication, **ou toute modification
   d'un modèle déjà publié**) : `templatePublicationErrors`, puis **unicité de la catégorie**
   (thème, domaine, sous-domaine, niveau). Un modèle publié qui échoue ne se modifie plus qu'en
-  le repassant en brouillon. Refus 400 : messages détaillés, puis raisons résumées.
+  le repassant en brouillon. Refus 400 : messages détaillés, puis raisons résumées ; l'éditeur
+  (`questions/[id]/edit`, `questions/create`) les affiche dans le toast d'erreur (5 au plus) et,
+  si la publication est refusée, `QuestionTemplateForm` remet le statut d'avant.
 - **Publication par lot** (`POST /api/questions/templates/bulk-status`, 1 à 100 modèles par envoi, `MAX_BULK_TEMPLATE_IDS` ; l’en-tête de la route dit encore 700) : chaque
   modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison ; collision
   de catégorie = refus, jamais de décalage automatique du niveau. Seules les lignes **rendues** par

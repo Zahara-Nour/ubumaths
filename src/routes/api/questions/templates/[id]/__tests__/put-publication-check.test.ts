@@ -12,7 +12,7 @@
  * les specs (a = 40, 100, 13) restent vertes.
  */
 import { describe, it, expect } from 'vitest';
-import { callPut, fakeDb, type FakeDb } from './fake-templates-db';
+import { callPost, callPut, fakeDb, FIXTURE, type FakeDb } from './fake-templates-db';
 
 const BROKEN_ANSWER = '{{eval:2*a+sqrt(a-8)-sqrt(a-8)}}';
 
@@ -81,5 +81,47 @@ describe('PUT : publication contrôlée par checkTemplate', () => {
 
 		expect(response.status).toBe(200);
 		expect(db.updates).toHaveLength(1);
+	});
+});
+
+/** Corps de création : le #139 complet, tel que l'éditeur l'envoie (camelCase) */
+function createBody(status: 'draft' | 'published') {
+	const { status: _status, ...template } = structuredClone(FIXTURE);
+	return { ...template, status };
+}
+
+describe('POST : créer directement publié passe le même contrôle', () => {
+	it('modèle complet créé publié → 201', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		const response = await callPost(db, createBody('published'));
+
+		expect(response.status).toBe(201);
+		expect(db.inserts).toHaveLength(1);
+	});
+
+	it('modèle dont des tirages cassent, créé publié → 400, rien inséré', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		const body = createBody('published');
+		(body.variations[0] as { blanks: Array<{ expectedAnswer: string }> }).blanks[0].expectedAnswer =
+			BROKEN_ANSWER;
+		const response = await callPost(db, body);
+
+		expect(response.status).toBe(400);
+		const json = await response.json();
+		expect(json.errors.join(' ')).toMatch(/tirage\(s\) en échec sur 100/);
+		expect(db.inserts).toEqual([]);
+	});
+
+	it('le même modèle cassé reste créable en brouillon', async () => {
+		const db = fakeDb();
+		db.question_templates = [];
+		const body = createBody('draft');
+		(body.variations[0] as { blanks: Array<{ expectedAnswer: string }> }).blanks[0].expectedAnswer =
+			BROKEN_ANSWER;
+		const response = await callPost(db, body);
+
+		expect(response.status).toBe(201);
 	});
 });
