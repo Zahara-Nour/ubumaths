@@ -1,66 +1,51 @@
-# Agents UbuMaths — guide de sélection
+# Agents Chiphre — guide de sélection
 
-14 agents du projet, en 3 familles (plus les agents intégrés à Claude Code). Cette page sert à **choisir vite** le bon agent. Pour le détail de chaque agent, ouvrir son `.md`.
+14 agents du projet, en 3 familles (plus les agents intégrés à Claude Code). Cette page sert à **choisir vite** le bon agent ; le détail est dans chaque `.md`. Les règles communes ne sont **pas** recopiées dans les agents : elles vivent dans [CLAUDE.md](../../CLAUDE.md) et [docs/pratiques/](../../docs/pratiques/) ; chaque agent n'y renvoie qu'avec ses 3 à 5 règles critiques.
 
-## Famille 1 — Modules métier UbuMaths (priorité haute pour ces zones)
+## Famille 1 — Modules métier (priorité haute pour ces zones)
 
-| Agent | Zone | Quand l'utiliser |
-|---|---|---|
-| `mathast-expert` | `src/lib/mathAST/**` | Parser LaTeX, pattern matching (`P`, `tryMatch`), normalize, differentiate, solve, pedagogical-solve, cosmetic-transforms |
-| `geometry-expert` | `src/lib/geometry-core/**`, `src/lib/constructions-v2/**` | DSL géométrie (`courbe`, `tangente`, `point_sur`, `intersection`, `lieu`, vecteurs, transformations), GeometryCanvas, constructions, instruments |
-| `pedagogy-expert` | `src/lib/questions/**`, `src/lib/exercises/**`, `src/lib/ubumark/**`, `mathAST/pedagogical-*` | Templates, variations, blanks, QCM, validation pipeline, paliers, rendu pédagogique |
+| Agent             | Zone                                                                                 | Doc système à lire d'abord                                                     |
+| ----------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `mathast-expert`  | `src/lib/mathAST/**`                                                                 | [mathast/README.md](../../docs/systeme/mathast/README.md) (+ pattern-matching, panel-simplifications, convention-equivalence, tidy-spec) |
+| `geometry-expert` | `src/lib/geometry-core/**`, `src/lib/constructions-v2/**`                            | [geometrie/README.md](../../docs/systeme/geometrie/README.md), [dsl-builtins.md](../../docs/systeme/geometrie/dsl-builtins.md) |
+| `pedagogy-expert` | `src/lib/questions/**`, `src/lib/exercises/**`, `src/lib/ubumark/**`, `mathAST/pedagogical-*` | [questions.md](../../docs/systeme/questions.md), [ubumark.md](../../docs/systeme/ubumark.md) |
 
-**Règle d'or** : pour ces trois zones, l'agent dédié bat tous les agents génériques (frontend/backend/typescript) — il connaît les invariants non-évidents.
+**Règle d'or** : pour ces trois zones, l'agent dédié bat tous les agents génériques — il connaît les invariants non évidents.
 
 ## Famille 2 — Implémentation par couche
 
-| Agent | Quand |
-|---|---|
-| `fullstack-developer` | Feature end-to-end DB + API + UI en une fois |
-| `backend-developer` | `+server.ts`, `+page.server.ts`, form actions, query optimization |
-| `frontend-developer` | Composants UI, layouts, Shadcn-svelte, Tailwind, UX |
-| `svelte-expert` | Question sémantique runes (`$derived` vs `$effect`, `$bindable`, snippets, untrack, migration Svelte 4→5) |
-| `supabase-expert` | Schéma DB, migrations, RLS, Supabase Auth (Opus) |
+| Agent                 | Quand                                                                        | Doc                                                                                                       |
+| --------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `fullstack-developer` | Feature de bout en bout (DB + API + UI)                                      | [architecture-generale.md](../../docs/systeme/architecture-generale.md)                                   |
+| `backend-developer`   | `+server.ts`, `+page.server.ts`, form actions, requêtes                      | [serveur.md](../../docs/systeme/serveur.md), [auth.md](../../docs/systeme/auth.md)                        |
+| `frontend-developer`  | Composants UI, layouts, Shadcn-svelte, Tailwind, UX                          | [composants-ui.md](../../docs/pratiques/composants-ui.md)                                                 |
+| `svelte-expert`       | Sémantique des runes (`$derived` vs `$effect`, `$bindable`, snippets, `untrack`) | [svelte-typescript.md](../../docs/pratiques/svelte-typescript.md)                                     |
+| `supabase-expert`     | Schéma, migrations, RLS, Supabase Auth                                       | [base-de-donnees.md](../../docs/pratiques/base-de-donnees.md), [systeme/base-de-donnees.md](../../docs/systeme/base-de-donnees.md) |
 
 ## Famille 3 — Qualité (proactif après code)
 
-| Agent | Quand | Modèle |
-|---|---|---|
-| `code-reviewer` | **Proactif** après chaque morceau de code écrit | Opus |
-| `security-auditor` | **Proactif** après auth, API sensible, file upload, dépendance nouvelle | Opus |
-| `debugger` | Erreur runtime, TS, build, test fail — diagnostic root-cause | Opus |
-| `test-automator` | Créer/réparer tests Vitest, Playwright |
-| `performance-optimizer` | Lenteur prouvée, avant deploy d'une grosse feature |
-| `accessibility-tester` | Audit a11y formulaires/navigation/modals (cf. dette SVG documentée — ne pas re-flagger les `svelte-ignore` existants) |
+| Agent                  | Quand                                                              |
+| ---------------------- | ------------------------------------------------------------------ |
+| `code-reviewer`        | **Proactif** après chaque morceau de code écrit (fin de phase)      |
+| `security-auditor`     | **Proactif** après auth, RLS, API sensible, upload, dépendance ; condition 3 de `db:migrate` |
+| `debugger`             | Erreur runtime, TS, build, test rouge — cause racine               |
+| `test-automator`       | Créer / réparer des tests vitest, intégration, Playwright          |
+| `performance-optimizer`| Lenteur prouvée, requêtes lourdes                                  |
+| `accessibility-tester` | Audit a11y formulaires / navigation / modales (dette SVG : ne pas re-signaler les `svelte-ignore` de [warning-svelte.md](../../docs/pratiques/warning-svelte.md)) |
+
+Modèles : Opus pour `code-reviewer`, `security-auditor`, `debugger`, `supabase-expert`, `mathast-expert`, `geometry-expert`, `pedagogy-expert` ; Sonnet pour les autres.
 
 ## Agents intégrés
 
-`Explore` — exploration de code multi-fichiers. Préférer `find`/`grep` direct si < 3 requêtes (CLAUDE.md).
+`Explore` — exploration multi-fichiers ; préférer `grep` direct si < 3 requêtes. `Plan` — plan d'implémentation.
 
----
+## Anti-patterns
 
-## Anti-patterns à éviter
+- Agent pour un bug ciblé dans 1-2 fichiers connus, ou < 20 lignes → travail direct (CLAUDE.md §Quand utiliser un agent).
+- Agent qui lance `pnpm check`, `pnpm build`, `pnpm lint` complets → réservés à la session principale (CLAUDE.md).
+- `frontend-developer` pour un composant de `geometry-core/` → `geometry-expert`.
+- Agent générique pour un fichier `mathAST` → `mathast-expert`.
 
-- **Lancer un agent pour un bug ciblé dans 1-2 fichiers connus** → travail direct (CLAUDE.md "Quand NE PAS utiliser d'agent")
-- **Lancer un agent pour < 20 lignes de code** → travail direct
-- **Faire tourner un agent pour exécuter `pnpm check`, `pnpm build`, `pnpm lint`** → réservés à la session principale : ils sont sous verrou depuis le 2026-10-10, mais longs, et un agent ne doit pas tenir le verrou à sa place (CLAUDE.md)
-- **Choisir `frontend-developer` pour un composant dans `geometry-core/`** → utiliser `geometry-expert` (connaît les invariants Canvas et le système réactif)
-- **Choisir un agent générique pour un fichier mathAST** → utiliser `mathast-expert` (invariants nodes immutables, no-negative-number-literal, pattern module obligatoire)
+## Socle commun (renvois, pas de copie)
 
-## Modèles
-
-Opus : `code-reviewer`, `security-auditor`, `debugger`, `supabase-expert`, `mathast-expert`, `geometry-expert`, `pedagogy-expert`.
-Sonnet : tous les autres.
-
-## Conventions partagées (toutes familles)
-
-Tous les agents respectent :
-
-1. **CLAUDE.md règle #0** : ne JAMAIS supprimer de fichiers non-trackés sans demander
-2. **CLAUDE.md règle #1** : Zod sur tout `request.json()` / query param
-3. **CLAUDE.md règle #2** : `MySelect`/`MyCheckbox` (jamais Shadcn Select/Checkbox ni `<select>` natif)
-4. **CLAUDE.md règle #3** : Svelte 5 runes uniquement, `$effect` réservé aux side-effects
-5. **CLAUDE.md règle #5** : `pnpm svelte:autofix <fichier>` (ou `mcp__svelte__svelte-autofixer` si le MCP est configuré) obligatoire après chaque `.svelte`
-6. **CLAUDE.md règle #6** : types custom dans `database-helpers.ts`, jamais dans `database.ts` auto-généré
-7. **Typecheck** : `pnpm check:incremental` (verrouillé, un 2ᵉ run sort en exit 2). Jamais `npx tsc --noEmit` ni `svelte-check` sans `--tsgo` ni `--incremental` (tas Node). `pnpm check` / `build` / `lint` : session principale seulement
-8. **Pas de Co-Authored-By Claude** dans les commits ; jamais de `deploy:prod` ni de `pnpm release` (la version naît dans `deploy:prod`, sur demande de David — ADR 0021)
+Tous les agents suivent **CLAUDE.md §Règles de code** (règles 0 à 6 : fichiers non suivis, Zod, MySelect/MyCheckbox, runes, pas d'`any`, `pnpm svelte:autofix`, types dérivés dans `database-helpers.ts`) et **§Gros process** (typecheck = `pnpm check:incremental`, 0 erreur ; tests ciblés). Git, commits et mise en prod : CLAUDE.md §Git Workflow et [git-workflow.md](../../docs/pratiques/git-workflow.md). Commandes : [commandes.md](../../docs/pratiques/commandes.md).
