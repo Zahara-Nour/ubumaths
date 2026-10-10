@@ -167,6 +167,8 @@ export function createEphemeralAuthClient(): SupabaseClient<Database> {
  * `userProfileHandle` and BEFORE `csrfHandle`.
  *
  * Behaviour:
+ * 0. No session (`locals.user` null) → never elevated; a leftover cookie is
+ *    deleted (shared classroom computer after logout).
  * 1. Read the `ubu-admin-elevation` cookie. Absent / malformed / expired →
  *    leave `locals` untouched (not elevated) and continue.
  * 2. Verify the access token with Supabase (`getUser(token)`). Invalid → ignore.
@@ -214,6 +216,14 @@ export function createAdminElevationHandle(
 		}
 
 		const raw = event.cookies.get(ADMIN_ELEVATION_COOKIE);
+
+		// Une élévation n'existe pas sans session : sur un poste partagé, le cookie
+		// laissé par un prof déconnecté ne doit rien ouvrir à l'élève suivant.
+		if (!event.locals.user) {
+			if (raw) event.cookies.delete(ADMIN_ELEVATION_COOKIE, { path: '/', sameSite: 'strict' });
+			event.locals.adminElevation = null;
+			return resolve(event);
+		}
 
 		if (raw) {
 			const payload = decodeElevationCookie(raw);

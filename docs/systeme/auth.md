@@ -63,7 +63,7 @@ Routes :
 | `(public)/auth/callback`                                 | Retour de la connexion Google (refusé tant que `GOOGLE_LOGIN_ENABLED` est `false`).           |
 | `(public)/auth/reset-password`, `update-password`        | Mot de passe oublié / nouveau mot de passe.                                                   |
 | `(public)/auth/pending-approval`                         | Écran d'attente d'un compte `pending`.                                                        |
-| `(public)/auth/logout`                                   | `POST` → `signOut()` → `/`.                                                                   |
+| `(public)/auth/logout`                                   | `POST` → `signOut()`, révoque et efface l'élévation admin → `/`.                              |
 | `(protected)/+layout.server.ts`                          | Garde de groupe des **pages** protégées (session, profil, statut, consentement).              |
 | `(protected)/dashboard/admin/+layout.server.ts`          | Garde de la section admin (élévation ou vrai admin ; deux préfixes ouverts au prof).          |
 | `(protected)/dashboard/elevate`                          | Écran de saisie du mot de passe admin.                                                        |
@@ -198,15 +198,19 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    **sans** jeton de rafraîchissement). Pas de chiffrement : l'intégrité vient de la signature
    du JWT, revérifiée à chaque requête. Le nom ne commence pas par `sb-` : `@supabase/ssr`
    l'ignore et la racine ne le transmet pas au client.
-3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*` et `/api/admin*` : décode,
+3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*` et `/api/admin*`.
+   **Sans session (`locals.user` nul), jamais d'élévation** : le cookie est effacé, le jeton
+   n'est pas vérifié (poste partagé après un logout ; constat B4, 2026-10-10). Sinon : décode,
    `getUser(token)`, compare l'identifiant, relit `role = 'admin'`, puis pose
    `locals.adminSupabase` (client dont la RLS s'exécute en tant qu'admin) et
    `locals.adminElevation = { active, adminUserId, expiresAt }`.
 4. `requireAdmin(locals)` rend `{ supabase, adminUserId }` : le client d'élévation s'il est
-   actif, sinon `locals.supabase` pour un vrai login admin ; sinon 401 / 403
+   actif, sinon `locals.supabase` pour un vrai login admin ; 401 sans session (même élevé),
+   sinon 403
    « Admin elevation required ». **Les écritures privilégiées utilisent le `supabase` rendu.**
-5. `POST /api/admin/elevate/revoke` : `signOut()` best-effort du jeton admin, puis effacement
-   du cookie. Sinon, expiration naturelle (≤ 1 h) puis nouvelle saisie.
+5. `POST /api/admin/elevate/revoke` **et `POST /auth/logout`** : `signOut()` best-effort du
+   jeton admin, puis effacement du cookie. Sinon, expiration naturelle (≤ 1 h) puis nouvelle
+   saisie.
 
 La section `/dashboard/admin` redirige un prof non élevé vers `/dashboard/elevate?redirect=…`
 (redirection bornée à `/dashboard/admin/*`), sauf `friendships` et `users`, ouverts au prof.
@@ -280,20 +284,21 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 
 ## Tests
 
-| Où                                                                                                                                                                                      | Quoi                                                   |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `src/lib/server/__tests__/adminElevation.test.ts`                                                                                                                                       | Cookie (encode/décode/expiration), handle d'élévation. |
-| `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                             | Endpoints d'élévation.                                 |
-| `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                            |
-| `src/lib/server/__tests__/csrfProtection.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                     | Défenses transverses.                                  |
-| `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                        |
-| `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                   |
-| `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                              |
-| `tests/integration/admin-elevation.test.ts`                                                                                                                                             | Le client admin agit bien en tant qu'admin sous RLS.   |
-| `tests/integration/student-self-registration.test.ts`, `security-signup-anchor.test.ts`                                                                                                 | `handle_new_user`, code de classe.                     |
-| `tests/integration/profile-insert-role-guard.test.ts`, `role-guard-functions.test.ts`, `security-authz-guards.test.ts`, `profiles-columns.test.ts`, `database/profile-triggers.test.ts` | RLS et triggers de `profiles`.                         |
-| `tests/integration/consentement-*.test.ts`                                                                                                                                              | Consentement (voir conformite/).                       |
-| `e2e/auth/` (`login`, `logout`, `protected-routes`)                                                                                                                                     | Parcours navigateur.                                   |
+| Où                                                                                                                                                                                      | Quoi                                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `src/lib/server/__tests__/adminElevation.test.ts`, `adminElevationHandle.test.ts`                                                                                                       | Cookie (encode/décode/expiration) ; handle : pas d'élévation sans session. |
+| `src/routes/(public)/auth/logout/__tests__/logout.test.ts`                                                                                                                              | Le logout efface et révoque l'élévation.                                   |
+| `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                             | Endpoints d'élévation.                                                     |
+| `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                                                |
+| `src/lib/server/__tests__/csrfProtection.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                     | Défenses transverses.                                                      |
+| `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                            |
+| `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                                       |
+| `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                  |
+| `tests/integration/admin-elevation.test.ts`                                                                                                                                             | Le client admin agit bien en tant qu'admin sous RLS.                       |
+| `tests/integration/student-self-registration.test.ts`, `security-signup-anchor.test.ts`                                                                                                 | `handle_new_user`, code de classe.                                         |
+| `tests/integration/profile-insert-role-guard.test.ts`, `role-guard-functions.test.ts`, `security-authz-guards.test.ts`, `profiles-columns.test.ts`, `database/profile-triggers.test.ts` | RLS et triggers de `profiles`.                                             |
+| `tests/integration/consentement-*.test.ts`                                                                                                                                              | Consentement (voir conformite/).                                           |
+| `e2e/auth/` (`login`, `logout`, `protected-routes`)                                                                                                                                     | Parcours navigateur.                                                       |
 
 Commandes : `pnpm test:server <fichier>`, `pnpm test:integration` (Supabase local). Aucun
 test unitaire ne couvre `(protected)/+layout.server.ts` ni `userProfileHandle`.
