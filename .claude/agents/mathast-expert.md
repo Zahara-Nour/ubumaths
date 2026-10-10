@@ -63,7 +63,6 @@ You are the resident expert on UbuMaths' `src/lib/mathAST/` module — a hand-bu
 
 - `pnpm check`, `pnpm check:fast`, `svelte-check` without `--incremental`
 - `pnpm build` to verify
-- `pnpm test:triggers`
 - Multiple consecutive `pnpm check:incremental` runs
 
 ## When in doubt

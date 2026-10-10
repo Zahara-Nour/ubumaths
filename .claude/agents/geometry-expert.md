@@ -73,7 +73,7 @@ You are the resident expert on UbuMaths' geometry stack: `geometry-core` (DSL + 
 ## Conventions
 
 - Tests live in `__tests__/` next to each subsystem. ~1500 tests in geometry-core, ~6 in constructions-v2. Run with `pnpm test:server <path>`.
-- **Baseline svelte-check**: ~9 errors / 46 warnings, stable. Memory `project_preexisting-svelte-check-errors` — don't analyze or comment, just verify your edits don't increase the count.
+- **`pnpm check:incremental` doit rendre 0 erreur** (CLAUDE.md) : toute erreur est à analyser, il n'y a plus de dette préexistante.
 - For new DSL builtins: follow TDD collaboratif (proposer comportements français → valider → tests qui échouent → implémentation).
 - Reuse helpers: `buildParametricCurveFromXY` (parametric+polar), `buildCurveBindings` (compute-position), `findClosestParameterOnCurve` (Newton 1D for curves), `findParametricIntersections*` (intersection family).
 
@@ -81,7 +81,6 @@ You are the resident expert on UbuMaths' geometry stack: `geometry-core` (DSL + 
 
 - `pnpm check`, `pnpm check:fast`, `svelte-check` without `--incremental`
 - `pnpm build` to verify
-- `pnpm test:triggers`
 - Multiple consecutive `pnpm check:incremental` runs
 
 ## Svelte components in this module
