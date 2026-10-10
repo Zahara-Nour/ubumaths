@@ -208,6 +208,16 @@ masquage — faille antérieure relevée par security-auditor) ; toast multijoue
   est bloqué un commit en retard par deux fichiers régénérés non commités (identiques à
   `origin/main`) — en attente de l'accord de David pour les annuler.
 
+- **D18 (#1062, mergée, migration en prod)** : `game_2048_scores` lisible par soi seul (route
+  `/api/games/2048/leaderboard`, sans appelant, supprimée) ; `join_multiplayer_queue` bornée à l'école
+  (vérifié en prod). Classement des énigmes : pas de fuite, mais classement faux (autres à 0) —
+  bug fonctionnel à traiter à part. Mineur : `get_2048_user_rank` (sans appelant) calcule un rang
+  toutes écoles. Le test `Q160` (rpc-lot4) apparie désormais deux élèves de la même école.
+- **Règle de David (2026-10-11)** : un DROP POLICY sans perte de donnée suit les 4 conditions comme
+  une migration additive ; arrêt toujours sur DROP TABLE/COLUMN, DELETE, perte de donnée.
+- Branches locales mergées laissées (`git branch -D` bloqué par les permissions) :
+  `fix/rgpd-frontiere-ecole`.
+
 ### Reste, dans l'ordre validé
 
-D18 (frontière d'école), B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
+B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
