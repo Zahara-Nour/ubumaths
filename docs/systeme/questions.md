@@ -8,7 +8,7 @@ couvre:
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/migration/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,grading-budget,corrected-detail}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,grading-budget,corrected-detail}.ts'
   - src/lib/server/validation/questions.ts
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
@@ -83,6 +83,7 @@ le SRS ([srs.md](srs.md)).
 | `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                        |
 | `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                     |
 | `src/lib/migration/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation).                                                         |
+| `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                  |
 | `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                       |
 | `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                   |
 
@@ -276,11 +277,16 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 - Enregistrement (`POST` / `PUT /api/questions/templates`, admin ; lecture prof et admin) : Zod
   (`createQuestionTemplateSchema` / `updateQuestionTemplateSchema`) + collisions d'hypothèses ;
   en brouillon, un QCM sans « plusieurs réponses » ne peut pas avoir deux bonnes réponses.
-- Passage à `published` d'un modèle : `validateTemplate`, dépendances circulaires, et **unicité de
-  la catégorie** (thème, domaine, sous-domaine, niveau).
+- **Un seul contrôle de publication** : `templatePublicationErrors`
+  (`src/lib/server/template-publication.ts`) = `checkTemplate` (structure, schéma strict, specs
+  vertes, une spec `correct` par variation, 50 tirages par variation) + dépendances circulaires.
+  Le `PUT` d'un modèle et la publication par lot l'appellent tous les deux.
+- `PUT` d'un modèle dont le statut fusionné est `published` (publication, **ou toute modification
+  d'un modèle déjà publié**) : `templatePublicationErrors`, puis **unicité de la catégorie**
+  (thème, domaine, sous-domaine, niveau). Un modèle publié qui échoue ne se modifie plus qu'en
+  le repassant en brouillon. Refus 400 : messages détaillés, puis raisons résumées.
 - **Publication par lot** (`POST /api/questions/templates/bulk-status`, 1 à 100 modèles par envoi, `MAX_BULK_TEMPLATE_IDS` ; l’en-tête de la route dit encore 700) : chaque
-  modèle repasse `checkTemplate` (structure, schéma strict, specs vertes, une spec `correct` par
-  variation, 50 tirages par variation) ; un échec le laisse en brouillon avec sa raison ; collision
+  modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison ; collision
   de catégorie = refus, jamais de décalage automatique du niveau. Seules les lignes **rendues** par
   `.update().select()` comptent (RLS silencieuse).
 - Un modèle publié devient lisible par tous et, sauf question de cours, entre au paquet SRS Programme (`entersProgrammeDeck`, [srs.md](srs.md)).
@@ -360,8 +366,8 @@ détection dans `cosmetic-transforms.ts` (coordonner avec l'agent mathast) — *
   `src/lib/utils/__tests__/answer-validator-*.test.ts` (le juge), `src/lib/exercises/` (15).
   Lancer : `pnpm test:server <chemin>`.
 - **Specs de modèle** (`testSpecs`) : variables fixées, réponses, statut attendu ;
-  `runAllTestSpecs`, `pnpm question:specs`. Une spec `correct` par variation est exigée pour la
-  publication par lot.
+  `runAllTestSpecs`, `pnpm question:specs`. Une spec `correct` par variation est exigée pour publier
+  (par lot comme modèle seul).
 - **Corpus de la relecture** : `data/relecture/` (633 modèles TinyMath relus, 13 lots), rejoué à
   chaque PR par `src/lib/migration/review/__tests__/corpus-relecture.test.ts` (`checkTemplate`
   complet) ; il borne aussi la garde de complexité (`answer-complexity-corpus.test.ts`) et le rendu
@@ -395,8 +401,6 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **`constraint-validators.ts` est presque mort** : `checkSpaces`, `checkProducts`, `checkBrackets`,
   `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`
   ne sont appelés que par leurs tests ; le jugement passe par `cosmetic-transforms.ts`.
-- **Publication unitaire moins exigeante que par lot** : le `PUT` ne lance ni les specs ni les
-  50 tirages de `checkTemplate`.
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
   par aucun composant.
