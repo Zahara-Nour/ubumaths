@@ -11,7 +11,6 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
-import { validateTemplate, detectCircularDependencies } from '$lib/questions';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
@@ -21,6 +20,7 @@ import { toJson } from '$lib/types/database-helpers';
 import type { Database } from '$lib/types/database';
 import { toQuestionTemplate } from '$lib/types/question-template';
 import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
+import { templatePublicationErrors } from '$lib/server/template-publication';
 import {
 	assumptionCollisionMessage,
 	findAssumptionCollisions
@@ -124,23 +124,6 @@ function buildTemplateUpdate(
 	return update;
 }
 
-/** Contrôles de publication sur le modèle fusionné : messages d'erreur (vide = OK) */
-function publicationErrors(merged: QuestionTemplate): string[] {
-	const validationErrors = validateTemplate(merged);
-	if (validationErrors.length > 0) return validationErrors;
-
-	const circularErrors: string[] = [];
-	(merged.variations ?? []).forEach((variation, index) => {
-		const circularResult = detectCircularDependencies(variation.variables || []);
-		if (!circularResult.valid) {
-			circularErrors.push(
-				...circularResult.errors.map((err) => `Variation ${index + 1}: ${err.message}`)
-			);
-		}
-	});
-	return circularErrors;
-}
-
 /**
  * PUT /api/questions/templates/[id]
  *
@@ -221,8 +204,10 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			}
 		}
 
+		// Même contrôle que la publication par lot, y compris pour toute
+		// modification d'un modèle déjà publié
 		if (merged.status === 'published') {
-			const errors = publicationErrors(merged);
+			const errors = templatePublicationErrors(merged);
 			if (errors.length > 0) {
 				return json({ success: false, errors }, { status: 400 });
 			}
