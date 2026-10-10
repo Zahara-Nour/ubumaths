@@ -7,7 +7,7 @@
 > maximal (classes réelles de lycée). Source : « Programme d'enseignement de spécialité
 > de mathématiques de la classe de première de la voie générale » (11 p., refourni par
 > David le 2026-10-07), relu **puce par puce** — c'est le texte qui fait foi, pas
-> l'ancien seed. Ancien découpage (`docs/wip/referentiel/1re-spe-programme.md`,
+> l'ancien seed. Ancien découpage (`docs/ref/programmes/1re-spe-programme.md`,
 > `1SPE-001`…`1SPE-173`, en prod) : repris pour les libellés et la **traçabilité
 > « ex- »**, car il porte **342 liens de modèles de questions sur 109 points**
 > (transfert C5). Mapping des nœuds : [programmes-ecarts-1re-spe.md](programmes-ecarts-1re-spe.md)

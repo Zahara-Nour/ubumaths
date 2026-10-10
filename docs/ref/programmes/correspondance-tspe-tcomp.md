@@ -1,7 +1,7 @@
 # Correspondance Terminale maths complémentaires ↔ Terminale spécialité — cartes partageables
 
 - **Date** : 2026-10-04
-- **Source** : référentiels en production — `T_COMP` (139 points, `TCOMP-001` → `TCOMP-139`) et `T_SPE` (262 points, `TSPE-001` → `TSPE-262`) ; référentiel de 1re spé (`docs/wip/referentiel/1re-spe-programme.md`) pour les acquis antérieurs.
+- **Source** : référentiels en production — `T_COMP` (139 points, `TCOMP-001` → `TCOMP-139`) et `T_SPE` (262 points, `TSPE-001` → `TSPE-262`) ; référentiel de 1re spé (`docs/ref/programmes/1re-spe-programme.md`) pour les acquis antérieurs.
 - **Statut** : **relu par David le 2026-10-04** — les 8 recommandations sont retenues (voir la fin du document).
 - **But** : décider quelles cartes de révision espacée porteront `grades: ["T_SPE","T_COMP"]`, rattachées au point TCOMP et au(x) point(s) TSPE de la colonne « TSPE ».
 
