@@ -128,21 +128,15 @@ function tryTranscendentalPatterns(
 		}
 	}
 
-	// Pattern 2: exponential — e^u. Two AST flavours :
-	//   - base = `euler()` constant (manual AST or `\exponentialE^u` LaTeX)
-	//   - base = variable `e` (parser default for `e^u` LaTeX)
-	// The variable-named-`e` form is the common path because `parseLatex('e^x')`
-	// keeps `e` as a regular variable. See `isEulerSuperscript` in
-	// `analysis/expression-classify.ts` for the matching classifier rule.
+	// Pattern 2: exponential — e^u :
+	//   - base = `euler()` constant (`e^u` and `\exponentialE^u` in both parsers).
+	//     See `isEulerSuperscript` in `analysis/expression-classify.ts` for the
+	//     matching classifier rule.
 	//   - la FONCTION `exp(u)` (`.variations exp(x)`, dérivée `exp(x)`) : sans
 	//     elle, `exp(x) = 0` revenait « non supporte » alors que `e^x = 0` a
 	//     sa réponse — et `.variations` doit distinguer ce refus d'une vraie
 	//     absence de zéro.
-	const expPatterns = [
-		P.pow(P.lit(euler()), P._('u')),
-		P.pow(P.var('e'), P._('u')),
-		P.func('exp', [P._('u')])
-	] as const;
+	const expPatterns = [P.pow(P.lit(euler()), P._('u')), P.func('exp', [P._('u')])] as const;
 	for (const target of expPatterns) {
 		const expPattern = P.prod(target, P.___('coeff', freeOfVar));
 		const bindings = tryMatch(expPattern, term);

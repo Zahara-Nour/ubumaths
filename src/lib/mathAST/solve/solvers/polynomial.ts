@@ -142,7 +142,7 @@ export function extractPowerEquation(
 			// cela, 2√2·x³ = 1 partait chez Cardano et rendait ∛0 + ∛(√2/4).
 			if (!isPurePower(signedTerm, variable)) {
 				const coefficient = extractCoefficient([signedTerm], variable, degree);
-				if (!isConstantCoefficient(coefficient, variable) || isZeroNode(coefficient)) return null;
+				if (!isConstantCoefficient(coefficient) || isZeroNode(coefficient)) return null;
 				powerCoefficient = coefficient;
 			}
 			powerTerm = signedTerm;
@@ -174,14 +174,12 @@ export function extractPowerEquation(
 }
 
 /**
- * Coefficient constant de a·x^n : aucune lettre, sinon la seule lettre `e`,
- * lue comme la constante d'Euler (convention de `evaluate` et `compile`) —
- * e·x³ = 1 suit le chemin de π·x³ = 1. Sauf si l'inconnue est `e` elle-même.
+ * Coefficient constant de a·x^n : aucune lettre. `e` n'en est pas une (les
+ * parseurs la lisent comme la constante d'Euler) : e·x³ = 1 suit le chemin de
+ * π·x³ = 1.
  */
-function isConstantCoefficient(coefficient: MathNode, variable: string): boolean {
-	const names = getVariables(coefficient);
-	if (names.size === 0) return true;
-	return variable !== 'e' && names.size === 1 && names.has('e');
+function isConstantCoefficient(coefficient: MathNode): boolean {
+	return getVariables(coefficient).size === 0;
 }
 
 /** Le terme en x^n est-il un opposé (−x^n, −(x^n)) ? Compte les `opposite` imbriqués. */

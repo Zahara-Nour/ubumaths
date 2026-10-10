@@ -16,6 +16,7 @@
  * @module mathAST/variations/compute
  */
 
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import type { MathNode } from '../types';
 import type { Domain } from '../domain/types';
 import type {
@@ -98,6 +99,9 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	const expr = expandOddRootPowers(rawExpr);
 	const opts = resolveOptions(options);
 	const variable = opts.variable;
+	if (refusesEulerVariable(variable, rawExpr)) {
+		throw new VariationError(EULER_NOT_A_VARIABLE, rawExpr);
+	}
 	const steps: VariationStep[] = [];
 	const warnings: string[] = [];
 	let stepId = 0;

@@ -52,6 +52,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -721,9 +722,10 @@ class CustomPrattParser {
 		const letter = token.value;
 
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
+		// `e_1`, `e_n` : variable indicée (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
 			this.advance();
-			return this.applyColor(euler());
+			return this.applyColor(this.check('UNDERSCORE') ? MathAST.variable('e') : euler());
 		}
 		if (letter === 'i' && this.subscriptDepth === 0) {
 			this.advance();
@@ -827,7 +829,9 @@ class CustomPrattParser {
 		}
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
-		return this.applyColor(MathAST.variable(name));
+		return this.applyColor(
+			name === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(name)
+		);
 	}
 
 	/**
@@ -2020,6 +2024,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseCustomPratt(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomPrattUnguarded(input, options));
+}
+
+function parseCustomPrattUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -2063,6 +2072,14 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseCustomPrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomPrattSafeUnguarded(input, options));
+}
+
+function parseCustomPrattSafeUnguarded(
+	input: string,
+	options?: Partial<ParserOptions>
+): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options

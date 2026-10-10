@@ -18,11 +18,13 @@ describe('.diff (moteur)', () => {
 	const diff = (input: string) => new WebReplEngine().execute(`.diff ${input}`).output;
 
 	it('e^x', () => {
-		expect(diff('e^x')).toBe('d/dx(e^x) = e^x\nLaTeX: e^x');
+		expect(diff('e^x')).toBe('d/dx(e^x) = e^x\nLaTeX: \\exponentialE^x');
 	});
 
 	it('x*e^x', () => {
-		expect(diff('x*e^x')).toBe('d/dx(x*e^x) = e^x+xe^x\nLaTeX: e^x + x e^x');
+		expect(diff('x*e^x')).toBe(
+			'd/dx(x*e^x) = e^x+xe^x\nLaTeX: \\exponentialE^x + x \\exponentialE^x'
+		);
 	});
 
 	// Rangé par `tidyTerms` (comme `g = f'` dans l'atelier) : ln(a)·aˣ, la

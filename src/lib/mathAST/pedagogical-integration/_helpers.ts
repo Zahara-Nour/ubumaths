@@ -253,10 +253,7 @@ export function matchKnownPrimitive(
 	// e^x via superscript : base must be Euler's constant `e`, exponent must be x.
 	if (node.type === 'superscript') {
 		const base = node.base;
-		if (
-			(base.type === 'constant' && base.constant === 'euler') ||
-			(base.type === 'variable' && base.name === 'e')
-		) {
+		if (base.type === 'constant' && base.constant === 'euler') {
 			if (isExactVariable(node.superscript, variable)) {
 				return 'exp';
 			}
@@ -485,10 +482,7 @@ function extractExpInner(node: MathNode, variable: string): MathNode | null {
 		u = node.args[0];
 	} else if (node.type === 'superscript') {
 		const base = node.base;
-		if (
-			(base.type === 'constant' && base.constant === 'euler') ||
-			(base.type === 'variable' && base.name === 'e')
-		) {
+		if (base.type === 'constant' && base.constant === 'euler') {
 			u = node.superscript;
 		}
 	}
@@ -793,9 +787,7 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 	}
 	if (node.type === 'superscript') {
 		const base = node.base;
-		const isE =
-			(base.type === 'constant' && base.constant === 'euler') ||
-			(base.type === 'variable' && base.name === 'e');
+		const isE = base.type === 'constant' && base.constant === 'euler';
 		if (isE && isExactVariable(node.superscript, variable)) {
 			return true;
 		}
@@ -1006,10 +998,7 @@ function isExpOfVariableExpr(node: MathNode, variable: string): boolean {
 	}
 	if (node.type === 'superscript') {
 		const base = node.base;
-		if (
-			(base.type === 'constant' && base.constant === 'euler') ||
-			(base.type === 'variable' && base.name === 'e')
-		) {
+		if (base.type === 'constant' && base.constant === 'euler') {
 			return true;
 		}
 	}

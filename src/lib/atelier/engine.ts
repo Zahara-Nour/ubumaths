@@ -30,7 +30,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
 import { derivativeOf } from './names';
-import { astOf, readNumber, withPlainEuler } from './parse';
+import { astOf, readNumber } from './parse';
 import { constantOf } from './constant';
 import { transformAST } from '$lib/mathAST/visitor';
 import {
@@ -285,7 +285,7 @@ export function expandInput(atelier: Atelier, text: string): string {
 	// s'évalue pas mais se dérive, et `k'` doit valoir `b`.
 	const { derivableFunctions } = bindingsOf(atelier, '');
 	const expanded = expandDerivatives(ast, derivableFunctions);
-	return toCustom(withPlainEuler(expanded));
+	return toCustom(expanded);
 }
 
 /**
@@ -311,15 +311,14 @@ export function expandCommandArgument(atelier: Atelier, text: string): string | 
 	const substituted = substituteAll(expanded, variables, substituteFunction, {
 		functions: functions satisfies FunctionBindings
 	});
-	return toCustom(withPlainEuler(substituted));
+	return toCustom(substituted);
 }
 
 /**
  * L'ARBRE d'un objet, tous les noms qu'il cite remplacés — voir `expressionOf`.
  *
  * ⚠️ Les suites s'en servent directement : repasser par le texte (`toCustom`
- * puis relecture) perdait des constantes — `e^(-n)` devenait `\\euler^{-n}`,
- * illisible au retour (revue du lot 5b).
+ * puis relecture) perdait des constantes (revue du lot 5b) ; l'arbre ne perd rien.
  */
 export function substitutedAstOf(
 	atelier: Atelier,
@@ -415,7 +414,7 @@ export function expressionOf(
 	options?: { readonly forDerivation?: boolean }
 ): Substituted {
 	const result = substitutedAstOf(atelier, name, options);
-	return result.ok ? { ok: true, expression: toCustom(withPlainEuler(result.ast)) } : result;
+	return result.ok ? { ok: true, expression: toCustom(result.ast) } : result;
 }
 
 /** `v_n` → `v(n)` pour chaque autre suite explicite liée. */

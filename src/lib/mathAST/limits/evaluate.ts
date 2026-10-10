@@ -13,6 +13,7 @@
  * @module mathAST/limits/evaluate
  */
 
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import type { MathNode, LimitNode, GreekLetterNode } from '../types';
 import type {
 	LimitResult,
@@ -341,6 +342,10 @@ export function evaluateLimit(
 	direction: LimitDirection = 'both',
 	options: LimitOptions = {}
 ): LimitResult {
+	const requestedVariable = isLimit(expr) ? expr.variable : variable;
+	if (refusesEulerVariable(requestedVariable, expr)) {
+		throw new LimitError(EULER_NOT_A_VARIABLE, 'INVALID_VARIABLE');
+	}
 	const greekResult = evaluateGreekVariableLimit(expr, variable, approach, direction, options);
 	if (greekResult !== null) return greekResult;
 	const result = rejectUnreducedInfinity(
@@ -1116,12 +1121,12 @@ function evaluateLimitExactForm(
 
 	// Stratégie 7 : `e^u` relu comme `exp(u)`. Les règles du moteur — limites
 	// de référence, croissances comparées, composition — ne connaissent que la
-	// fonction `exp` ; la puissance de la base d'Euler (constante du parseur
-	// custom, lettre `e` du parseur LaTeX) passait à côté : `x e^x` en −∞
+	// fonction `exp` ; la puissance de la base d'Euler (la lettre `e`, lue
+	// `euler` par les deux parseurs) passait à côté : `x e^x` en −∞
 	// sortait « non supportée ». On ne relit qu'EN DERNIER RECOURS, pour ne
 	// rien changer à ce qui aboutissait déjà (une valeur `e` ne devient pas
 	// `exp(1)`). Pas de boucle : la relecture ne contient plus de `e^u`.
-	if (varName !== 'e' && containsEulerPower(expression)) {
+	if (containsEulerPower(expression)) {
 		return evaluateLimit(expandEulerPowers(expression), varName, approachPoint, dir, options);
 	}
 

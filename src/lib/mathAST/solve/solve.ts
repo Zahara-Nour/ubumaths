@@ -111,7 +111,6 @@ import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
-import { promoteEulerInRelation, promoteStandaloneEulerInRelation } from './promote-euler';
 import { tryRationalDecomposition, createRationalDepthState } from './rational';
 import type { Domain } from '../domain/types';
 import {
@@ -122,7 +121,8 @@ import {
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
-import { applyRules } from '../pattern/rule';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode } from '../pattern/types';
@@ -543,7 +543,8 @@ function tryCommonFactorDecomposition(
 	if (sum === null) return null;
 
 	// 1. La somme telle qu'elle est écrite (comportement de #852, inchangé).
-	const direct = applyRules(commonFactorRules, sum);
+	const direct = factorCommon(sum);
+	if (direct === null) return null;
 	const fromWrittenSum = nodesEqual(direct, sum)
 		? null
 		: solveFactoredProduct(expr, tidySumFactors(direct), variable, opts);
@@ -554,9 +555,24 @@ function tryCommonFactorDecomposition(
 	//    factorisent.
 	const exposed = sumWithExposedCommonFactor(expr, variable);
 	if (exposed === null) return null;
-	const factored = applyRules(commonFactorRules, exposed.sum);
+	const factored = factorCommon(exposed.sum);
+	if (factored === null) return null;
 	if (!isMultiplication(factored) || !nodesEqual(factored.right, exposed.factor)) return null;
 	return solveFactoredProduct(expr, tidySumFactors(factored), variable, opts);
+}
+
+/**
+ * La mise en facteur commun, ou `null` si les règles ne trouvent pas de point
+ * fixe (`RuleIterationLimitError`) : la tentative est abandonnée et le solveur
+ * passe aux autres stratégies, au lieu de faire échouer toute la résolution.
+ */
+function factorCommon(sum: MathNode): MathNode | null {
+	try {
+		return applyRules(commonFactorRules, sum);
+	} catch (error) {
+		if (error instanceof RuleIterationLimitError) return null;
+		throw error;
+	}
 }
 
 /**
@@ -1746,22 +1762,16 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	// Promote bare `e` (parsed as variable) to `euler()` in superscript bases.
-	// Without this, `detectVariable(e^x - 1 = 0)` would see `{e, x}` and return
-	// null, falling into the constant-equation path even though x is the obvious
-	// unknown. See `solve/promote-euler.ts` for the rationale.
-	//
+	if (refusesEulerVariable(opts.variable, equation)) {
+		throw new SolveError(EULER_NOT_A_VARIABLE, 'unknown', 'variable: e');
+	}
+
 	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`
 	// est `2x-3 = 0`. Sinon `flattenSumShallow`, qui s'arrête aux délimiteurs,
 	// voit un seul terme et chaque solveur se trompe à sa façon (linéaire :
 	// x = 0 ; exponentiel, logarithmique, trigonométrique, quartique : aucune
 	// solution). L'atelier envoie ces entrées : `f(x)` y devient `(expression)`.
-	//
-	// Le `e` SEUL (`e^x = e`) est lui aussi la constante dès qu'il ne peut pas
-	// être l'inconnue — sinon « contradictoire », réponse fausse et assurée.
-	const unwrapped = unwrapGroupingMembers(
-		promoteStandaloneEulerInRelation(promoteEulerInRelation(equation), opts.variable)
-	);
+	const unwrapped = unwrapGroupingMembers(equation);
 	// x^{p/q}, q impair : définie pour x < 0 (décision du 2026-10-08), résolue
 	// sous la forme ᵠ√(x^p) — x^{2/3} = 4 rendait {8}, ∛(x²) = 4 rend {±8}
 	const promotedEq: RelationNode = {

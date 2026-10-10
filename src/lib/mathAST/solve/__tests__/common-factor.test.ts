@@ -68,10 +68,11 @@ describe('Mise en facteur commun puis produit nul', () => {
 		expectExactSolutions(result, ['-1']);
 	});
 
-	it('x ln(x) + x = 0 → x = e^{-1} seulement : x = 0 sort du domaine x > 0', () => {
+	it('x ln(x) + x = 0 → x = 1/e seulement : x = 0 sort du domaine x > 0', () => {
 		const result = solve(parseEquation('x ln(x) + x = 0'));
 		expect(result.status).toBe('unique');
-		expectExactSolutions(result, ['exp(-1)']);
+		// `1/e`, plus `exp(-1)` : la constante seule n'est plus promue en exponentielle
+		expectExactSolutions(result, ['1/e']);
 	});
 
 	it('dit la mise en facteur dans les étapes', () => {

@@ -13,6 +13,7 @@
  * @module mathAST/taylor
  */
 
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
 import type { MathNode } from '../types';
 import type { TaylorOptions } from './types';
 import type { FunctionBindings } from '../eval/function-bindings';
@@ -345,7 +346,7 @@ const PARAMETER_PROBES = [0.7319, -0.7319, 2.31, -2.31] as const;
  * paramètres. `i` surtout : le prendre pour un paramètre réel donnerait un
  * développement faux d'une fonction à valeurs complexes.
  */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi', 'e', 'i']);
+const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi', 'i']);
 
 // =============================================================================
 // Main Taylor Expansion Function
@@ -395,6 +396,10 @@ export function taylorExpand(
 	const varName = options?.variable ?? DEFAULT_TAYLOR_OPTIONS.variable;
 	const center = options?.center ?? DEFAULT_TAYLOR_OPTIONS.center;
 	const order = options?.order ?? DEFAULT_TAYLOR_OPTIONS.order;
+
+	if (refusesEulerVariable(varName, expr)) {
+		throw new TaylorError(EULER_NOT_A_VARIABLE, undefined, 'variable: e');
+	}
 
 	// L'ordre est le degré maximal : 0 rend la constante f(a)
 	if (!Number.isInteger(order) || order < 0) {

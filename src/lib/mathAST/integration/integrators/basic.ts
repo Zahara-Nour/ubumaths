@@ -170,9 +170,9 @@ function isConstantBaseExponential(expr: MathNode, variable: string): { base: Ma
 	return { base };
 }
 
-/** Paramètre littéral (a, b, α…) ; `e` seule est la constante d'Euler */
+/** Paramètre littéral (a, b, α…) ; `e` est la constante d'Euler, pas une lettre */
 function hasParameter(node: MathNode): boolean {
-	return [...getVariables(node)].some((name) => name !== 'e');
+	return getVariables(node).size > 0;
 }
 
 /** Base sans paramètre : valeur finie, > 0 et ≠ 1 (à BASE_TOLERANCE près) */

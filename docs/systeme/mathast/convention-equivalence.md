@@ -314,7 +314,8 @@ contraintes comme la règle des logarithmes) : `\frac{1}{e^2}` ≡ `e^{-2}`, `\f
 `3e^{-2}`, `-\frac{3}{e^2}` ≡ `-3e^{-2}`, `\frac{1}{e}` ≡ `e^{-1}`, `\frac{1}{e^{2x}}` ≡ `e^{-2x}`,
 `\frac{1}{e^{\frac{1}{2}}}` ≡ `e^{-\frac{1}{2}}`, y compris dans une expression (`2-\frac{1}{e^3}`,
 `\frac{\frac{1}{e^2}-1}{3}`). Numérateur : un nombre ; exposant : entier, fraction de nombres,
-lettre ou monôme. `\exp(-2)` était déjà `e^{-2}` (`unifyEulerNotationAST`). Exclus, jugés comme
+lettre ou monôme. `\exp(-2)` était déjà `e^{-2}` (`unifyEulerNotationAST`, qui ramène `\exp(u)` à la puissance de
+la constante `euler()`). Exclus, jugés comme
 avant : écriture développée / combinée (`\frac{e^3}{2}-\frac{1}{2}` / `\frac{e^3-1}{2}`), quotient
 d'exponentielles (`\frac{e^3}{e^5}` / `e^{-2}` : un calcul non fait, deux formes), dénominateur
 produit (`\frac{1}{2e^3}`), exposant somme (`\frac{1}{e^{x+1}}` / `e^{-x-1}`) ou déjà négatif ;
@@ -332,8 +333,8 @@ La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Sondes sur les
 expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
 
 - **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i), lu
-  `complex(0, 1)` par le parseur, est la même notation que `i` (`unifyEulerNotationAST`,
-  comme `\exponentialE` → `e`) : `2-3\imaginaryI` pour `2-3i` est juste (avant : « pas sous la
+  `complex(0, 1)` par le parseur, est la même notation que `i` (`unifyEulerNotationAST`, qui
+  ramène aussi `e`, `\exponentialE` et `\exp(u)` à une forme unique, la constante `euler()`) : `2-3\imaginaryI` pour `2-3i` est juste (avant : « pas sous la
   forme demandée ») ; `\mathrm{i}` l'était déjà. Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
   de prod en lecture + synthétiques) : 37 973 verdicts, 330 changés, tous des réponses contenant
   `\imaginaryI` (dont l'attendue recopiée du corrigé, qui l'écrit ainsi), mauvaise forme → juste,
@@ -368,6 +369,9 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   argument LIBRE (`2e^{i\frac{7\pi}{3}}` juste pour `2e^{i\frac{\pi}{3}}`) ; refusées :
   `-2e^{i\frac{4\pi}{3}}`, forme trigonométrique ou algébrique. `algebrique` = `a+ib`
   (`\frac{1-i}{2}` compris) ; refusées : exponentielle, trigonométrique, `\frac{1}{1+i}`.
+  La base `e` de `re^{iθ}` est la constante `euler()` (`isUnitExponential`) ; un `e` ailleurs
+  (module ou partie réelle : `e\,e^{i\pi}`, `e+2i`) n'est pas un réel « simple »
+  (`isPlainRealConstant` l'exclut, comme avant le 2026-10-10 où il était lu comme une lettre).
   Mesure (même corpus) : 37 973 verdicts, 46 changés, tous des réponses exponentielles de valeur
   juste : 42 synthétiques et 2 specs de la carte D-05 (copie de prod comprise ; faux → mauvaise
   forme, spec mise à jour) ; 2 lignes de description renommée (A-02) ; aucun modèle publié.
@@ -443,11 +447,13 @@ constante d'Euler, et `\exp(u)` s'y lit `e^{u}` (`withEulerConstant` dans
 `mathAST/domain/validation/parse-student-domain.ts`). La comparaison reste **exacte**
 (`compareNumericNodes`) : `\frac{1}{e}` = `e^{-1}` = `\exp(-1)`, `\frac{1}{e^2}` = `e^{-2}`,
 `\sqrt{e}` = `e^{\frac12}`, `\frac{e}{2}` = `e/2`, `\exp(2)` = `e^{2}` ; `\pi` et `\ln 2`
-(`\ln 4` = `2\ln 2`) se comparent de même. Le corrigé affiché écrit `e`, pas `\exponentialE`.
+(`\ln 4` = `2\ln 2`) se comparent de même. Le corrigé affiché d'un intervalle écrit `e`, pas
+`\exponentialE` (`boundLatex`, `questions/intervals/interval-answer.ts`).
 
-Défaut de la sonde du 2026-10-04 : le parseur LaTeX lisait `e` comme une variable
-(`\frac{1}{e}`), le parseur maison (borne sans `\`, `e^{-1}`) comme la constante, et
-`\exp(2) - e^{2}` n'était nul qu'au flottant près : `[\frac{1}{e};+\infty[` pour
+Défaut de la sonde du 2026-10-04 (corrigé ; depuis le 2026-10-10 les deux parseurs lisent `e`
+comme la constante, et `withEulerConstant` ne fait plus que lire `\exp(u)` en `e^{u}`) : le parseur
+LaTeX lisait alors `e` comme une variable (`\frac{1}{e}`), le parseur maison (borne sans `\`,
+`e^{-1}`) comme la constante, et `\exp(2) - e^{2}` n'était nul qu'au flottant près : `[\frac{1}{e};+\infty[` pour
 `[e^{-1};+\infty[` était **faux**. Mesure (dépôt + `REAL_TEMPLATES` + 880 modèles de prod en
 lecture, 1 778 modèles, 29 002 verdicts dont 608 sur une borne en e) : 0 verdict changé sur les
 specs et les réponses attendues ; 57 réponses « autre écriture de e » passées de faux à juste
@@ -564,7 +570,8 @@ Comparer `x^3+C` à l'attendue `x^3` avec `areEquivalent` dirait « faux ». Ces
 mathAST (`parseLatexSafe`, `differentiate`, `areEquivalent` sous budget de 300 ms par
 comparaison, `computeNumericValue`) — aucun calcul formel propre :
 
-- toute lettre libre autre que la variable (défaut `x`), sauf `e`, `i`, `π`, est une CONSTANTE ;
+- toute lettre libre autre que la variable (défaut `x`), sauf `i`, est une CONSTANTE (`e` et `π`
+  sont lus comme des constantes par le parseur ; `e` reste exclu par `RESERVED_NAMES`) ;
 - **primitive** : juste ⇔ `areEquivalent(d(réponse)/dx, integrand)` ; avec `interval`, la réponse
   doit en plus avoir une valeur réelle finie en 5 points de chaque intervalle (constantes à 0,7) ;
 - **solution-ed** : `y` ← réponse, `y'` ← sa dérivée, puis `areEquivalent(membre gauche, membre

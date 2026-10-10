@@ -125,13 +125,8 @@ function isTranscendentalFunction(name: string): boolean {
  * function-only check would otherwise classify `e^x − 1 = 0` as
  * `'unknown'` and bypass `solveExponential`.
  *
- * Two base AST flavours accepted :
- * - `{ type: 'constant', constant: 'euler' }` — produced by
- *   `\exponentialE^u` LaTeX or by manual AST construction.
- * - `{ type: 'variable', name: 'e' }` — produced by `parseLatex('e^u')`.
- *   The parser keeps `e` as a regular variable (so users can use `e` for
- *   physics quantities), but the `e^x` superscript shape is overwhelmingly
- *   Euler in practice.
+ * The base is the `euler` constant: both parsers read the letter `e` (and
+ * `\exponentialE`) as Euler's number.
  *
  * The `getVariables(u).size > 0` guard is essential : `e^2` (constant
  * exponent) is just a number ≈ 7.389, not transcendental. Misclassifying
@@ -142,10 +137,7 @@ function isTranscendentalFunction(name: string): boolean {
 function isEulerSuperscript(node: MathNode): boolean {
 	if (node.type !== 'superscript') return false;
 	const base = node.base;
-	const isEulerBase =
-		(base.type === 'constant' && base.constant === 'euler') ||
-		(base.type === 'variable' && base.name === 'e');
-	if (!isEulerBase) return false;
+	if (base.type !== 'constant' || base.constant !== 'euler') return false;
 	// Only transcendental when the exponent depends on at least one variable.
 	return getVariables(node.superscript).size > 0;
 }

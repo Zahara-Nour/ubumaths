@@ -19,7 +19,7 @@
 
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
-import { astOf, readingMode, renameInDefinition, withPlainEuler, type Provenance } from './parse';
+import { astOf, readingMode, renameInDefinition, type Provenance } from './parse';
 import { RESERVED_NAMES, derivativeOf } from './names';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { nodesEqual } from '$lib/mathAST/normal/hash';
@@ -114,7 +114,7 @@ export function renameVariable(
 	const reread = astOf(wordForWord, provenance, functionNames);
 	if (reread !== null && nodesEqual(reread, target)) return wordForWord;
 
-	return readingMode(provenance) === 'latex' ? toLatex(target) : toCustom(withPlainEuler(target));
+	return readingMode(provenance) === 'latex' ? toLatex(target) : toCustom(target);
 }
 
 /** La définition telle que l'élève la lit : rangée en x, rendue dans sa lettre. */

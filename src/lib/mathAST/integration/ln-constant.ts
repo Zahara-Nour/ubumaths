@@ -56,7 +56,7 @@ type SplitTerm = {
 // =============================================================================
 
 function constantValue(node: MathNode): number | null {
-	if ([...getVariables(node)].some((name) => name !== 'e')) return null;
+	if (getVariables(node).size > 0) return null;
 	try {
 		const value = compile(node)({});
 		return Number.isFinite(value) && value !== 0 ? value : null;

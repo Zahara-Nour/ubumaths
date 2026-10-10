@@ -43,8 +43,7 @@ import {
 	isEulerConstant,
 	isFunction,
 	isMultiplication,
-	isSuperscript,
-	isVariable
+	isSuperscript
 } from '../../guards';
 import { findFirst, mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
@@ -64,13 +63,9 @@ function unwrapDelimiters(node: MathNode): MathNode {
 	return current;
 }
 
-/**
- * La base d'Euler : la constante `\exponentialE` ou la lettre `e` seule (même
- * contrepartie assumée que `euler-power.ts` : `e` y est le nombre d'Euler).
- */
+/** La base d'Euler (lettre `e` ou `\exponentialE`), sous ses éventuelles parenthèses. */
 function isEulerBase(node: MathNode): boolean {
-	const inner = unwrapDelimiters(node);
-	return isEulerConstant(inner) || (isVariable(inner) && inner.name === 'e');
+	return isEulerConstant(unwrapDelimiters(node));
 }
 
 /** Une puissance de la base d'Euler, sous ses éventuelles parenthèses. */
