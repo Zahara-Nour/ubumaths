@@ -18,7 +18,14 @@ import { validateUuidParam } from '$lib/server/validation/params';
 import { mapDbTemplateToForm } from '$lib/questions/types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
+import { isLegacyPoint, type PointGeneration } from '$lib/server/curriculum-generation';
 import { getGradesAtOrAbove } from '$lib/types/grades';
+
+/** Tag lu pour l'écran : le point, et de quoi connaître sa génération. */
+interface TagRow {
+	point_id: string;
+	curriculum_points: PointGeneration | null;
+}
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	// Check admin (real admin login OR step-up elevation)
@@ -61,7 +68,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { data: tagRows, error: tagRowsError } = await supabase
 		.from('question_template_points')
-		.select('point_id')
+		.select('point_id, curriculum_points(objective_id)')
 		.eq('template_id', id);
 
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
@@ -74,6 +81,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>),
 		templateId: id,
 		curriculumByGrade,
-		taggedPointIds: (tagRows ?? []).map((r) => r.point_id)
+		// Filtre provisoire jusqu'à la bascule du code (étape 3 de C5) : l'écran coche les
+		// points de l'ancien référentiel ; un tag de point neuf compterait sans case où
+		// s'afficher. Chaque case s'écrit seule (POST/DELETE) : les tags neufs restent intacts.
+		// (client admin non typé : la jointure plusieurs-à-un rend un objet, pas un tableau)
+		taggedPointIds: ((tagRows ?? []) as unknown as TagRow[])
+			.filter((r) => isLegacyPoint(r.curriculum_points))
+			.map((r) => r.point_id)
 	};
 };
