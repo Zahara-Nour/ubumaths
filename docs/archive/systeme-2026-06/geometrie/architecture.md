@@ -927,10 +927,10 @@ Le module est **agnostique au framework** au coeur mais concu pour l'integration
 
 Ce document couvre l'**architecture haut niveau**. Pour des plongees plus profondes :
 
-- **Qualite du code & patterns** : voir `docs/systeme/geometrie/code-quality.md` (standards, linting, reviews)
-- **Strategie de tests** : voir `docs/systeme/geometrie/tests.md` (organisation des tests, fixtures, cas limites)
-- **Tuning de performance** : voir `docs/systeme/geometrie/performance.md` (profiling, caching, opportunites d'optimisation)
-- **Considerations de securite** : voir `docs/systeme/geometrie/security.md` (validation d'entree, injection, limites de ressources)
+- **Qualite du code & patterns** : voir `docs/archive/systeme-2026-06/geometrie/code-quality.md` (standards, linting, reviews)
+- **Strategie de tests** : voir `docs/archive/systeme-2026-06/geometrie/tests.md` (organisation des tests, fixtures, cas limites)
+- **Tuning de performance** : voir `docs/archive/systeme-2026-06/geometrie/performance.md` (profiling, caching, opportunites d'optimisation)
+- **Considerations de securite** : voir `docs/archive/systeme-2026-06/geometrie/security.md` (validation d'entree, injection, limites de ressources)
 
 **Contexte historique** : voir `docs/wip/geometry/dsl-mathast-routing-progress.md` et `docs/wip/geometry/parametric-curves-v1-progress.md` pour l'evolution du DSL et de la gestion des courbes parametriques.
 

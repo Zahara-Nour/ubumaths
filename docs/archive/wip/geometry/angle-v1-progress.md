@@ -690,8 +690,8 @@ Oui. P7 couvre : démos (4 routes), converters (3 fichiers), outillage migration
 
 - `docs/systeme/geometrie/dsl-builtins.md` créé (~190 LoC) : `angle()`, `angle_polaire()`, `mesure()` (3 overloads), `sommet()`, `cote()`, `bissectrice()` overload, `rotation()` overload, table marquages, table migration.
 - `CHANGELOG.md` : section `[Unreleased]` ajoutée avec les 5 breaking changes + liens outils.
-- `docs/systeme/geometrie/architecture.md` : `GeoAngleMark` → `GeoAngle` dans la liste des types.
-- `docs/systeme/geometrie/code-quality.md` : `angle_vecteurs` → `mesure` dans la suggestion de modules.
+- `docs/systeme/geometrie/README.md` : `GeoAngleMark` → `GeoAngle` dans la liste des types.
+- `docs/systeme/geometrie/README.md` : `angle_vecteurs` → `mesure` dans la suggestion de modules.
 
 ### Bloc E — Nettoyage
 
@@ -750,8 +750,8 @@ Pas de code-reviewer lancé (travail direct sur les migrations mécaniques, tous
 - `src/lib/geometry-core/rendering/__tests__/test-helpers.ts`
 - `src/lib/geometry-core/graph/__tests__/figure-angle.test.ts`
 - `src/lib/geometry-core/graph/__tests__/figure-scalar.test.ts`
-- `docs/systeme/geometrie/architecture.md`
-- `docs/systeme/geometrie/code-quality.md`
+- `docs/systeme/geometrie/README.md`
+- `docs/systeme/geometrie/README.md`
 - `CHANGELOG.md`
 
 **Supprimé :**

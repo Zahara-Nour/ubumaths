@@ -1,164 +1,53 @@
-# CLAUDE.md — Module `geometry-core`
+# CLAUDE.md — `geometry-core` (et `constructions-v2`)
 
-**Reference compacte chargee automatiquement quand je touche ce module.**
+Règles indispensables pour coder ici. Tout le reste est dans la doc, à lire avant un changement
+non trivial :
 
-Documentation complete : [`docs/systeme/geometrie/`](../../../docs/systeme/geometrie) (README + 5 audits architecture/qualite/tests/perf/securite).
+- Vue d'ensemble (carte du code, runtime, rendu, constructions, décisions) :
+  [`docs/systeme/geometrie/README.md`](../../../docs/systeme/geometrie/README.md)
+- Référence du DSL (les 92 builtins, arguments communs) :
+  [`docs/systeme/geometrie/dsl-builtins.md`](../../../docs/systeme/geometrie/dsl-builtins.md)
 
----
+## Règles dures
 
-## En 1 phrase
+1. **Pas d'`eval` ni de `new Function`** : les expressions passent par `compile()` de
+   `$lib/mathAST/eval/compile`.
+2. **`graph/` n'importe jamais `dsl/` en valeur** (`import type` seulement). Un helper partagé va
+   dans `$lib/mathAST/analysis/` ou un dossier commun.
+3. **Gardes de type** (`isXxx` de `types/elements.ts`) au lieu de `as GeoXxx`. Pas d'`any`.
+4. **Nouveau builtin** : `function handleX(ctx: BuiltinCtx)` + `HANDLERS.set('x', handleX)` dans
+   `dsl/builtins.ts`, **et** `'x'` dans `BUILTIN_NAMES` (sinon l'interpréteur ne l'appelle pas).
+   Pas de `switch`. Erreurs structurées : `new DslRuntimeError({ summary, hint, forms }, line)`.
+   Un objet principal retourné, intermédiaires `{ visible: false }`. Réutiliser `resolveDirection`,
+   `requireNPoints`. Ajouter la ligne dans `dsl-builtins.md` ; décider s'il entre dans
+   `REFUSED_CALLS` du bloc ` ```figure ` (`ubumark/utils/figure-scene.ts`).
+5. **Nouveau type `Geo*` visible = quatre surfaces** : `components/geometry/GeometryCanvas.svelte`,
+   `rendering/svg-primitives.ts` (+ `export-svg.ts`), `rendering/export-tikz.ts`,
+   `rendering/export-typst.ts` ; plus la branche de `graph/compute-position.ts`. Aucun contrôle de
+   type ne le rappelle.
+6. **Ne jamais muter un résultat mis en cache** : `marchingSquares`, `computeLocusCurve`,
+   `computeParametricCurveSampling` rendent des références partagées. Tout nouveau paramètre
+   d'échantillonnage entre dans `buildParametricSamplingKey` ; `createLocus` met toute la
+   fermeture transitive dans `dependsOn`.
+7. **`GeoParametricCurve` construite hors de `Figure`** : pré-compiler `compiledXSecond` /
+   `compiledYSecond`, sinon `courbure` et `cercle_osculateur` rendent `null` en silence.
+8. **Boucles chaudes** : un seul `env` mutable (`env[param] = t`), jamais de spread par itération.
+   En drag continu, passer le `t` précédent à `findClosestParameterOnCurve` (`warmStartT`).
+9. **`PARSE_CACHE` / `PARSE_FAILURE_CACHE`** (`dsl/interpreter.ts`) : garder le plafond de 5 000
+   et le `clear()` aux sites d'insertion.
+10. **Exact d'abord** : opérer sur `GeoValue` avec `compute/geo-arithmetic.ts` ; `geoToNumber` le
+    plus tard possible.
+11. **Solveurs** : réutiliser les Newton existants (`parametric-newton.ts`,
+    `parametric-intersection.ts`, `parametric-intersection-1d.ts`), ne pas en écrire un autre.
+12. **Fichiers partagés avec le grapheur** (`viewport/`, `rendering/bezier.ts`,
+    `rendering/colors.ts`, `graph/parametric-calculus.ts`) : lancer aussi
+    `src/lib/grapheur/__tests__/`.
 
-Moteur de geometrie 2D pedagogique : DSL francophone (`point(2;3)`, `cercle(O;r)`, `courbe("x^2")`) → graphe reactif Svelte 5 → rendu canvas/SVG/TikZ/Typst, avec solveurs numeriques (Newton, Simpson) pour courbes parametriques/polaires.
+## Travail courant
 
-## File map (ce qui vit ou)
-
-| Sous-dossier   | Role                                        | Fichiers cles                                                                                                                                                               |
-| -------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dsl/`         | Parse + interprete DSL francais             | `tokenizer.ts`, `parser.ts`, `interpreter.ts` (1 120L), `builtins.ts` (3 425L dont switch `_executeBuiltinInner` 2 130L), `stdlib.ts` (197L), `transform-apply.ts` (1 087L) |
-| `graph/`       | API Figure + reactivite + solveurs          | `figure.ts` (4 585L), `dependency-graph.ts`, `compute-position.ts` (1 308L), `parametric-newton.ts`, `parametric-intersection*.ts`, `parametric-calculus.ts`                |
-| `compute/`     | Operations numeriques de base               | `compute-locus.ts`, samplers, helpers                                                                                                                                       |
-| `geometry/`    | Intersections analytiques + transformations | conic-conic, line-circle, sym/rot/trans                                                                                                                                     |
-| `rendering/`   | Exports visuels                             | `svg-primitives.ts`, `bezier.ts` (Catmull-Rom), `rough-geometry.ts`, `export-tikz.ts`, `export-typst.ts`, `marching-squares.ts`                                             |
-| `interaction/` | Hit-testing, snapping                       | drag handlers, proximity                                                                                                                                                    |
-| `types/`       | Type system                                 | `elements.ts` (90 types `Geo*`), `geo-value.ts`, `primitives.ts`, `schemas.ts`                                                                                              |
-| `validation/`  | Verifications geometriques                  | predicates                                                                                                                                                                  |
-| `viewport/`    | Coordonnees ecran ↔ math                   | transforms, scaling                                                                                                                                                         |
-
-Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sous-dossiers).
-
----
-
-## REGLES DURES (ne PAS faire)
-
-1. **Pas d'`eval()` / `new Function()`** dans le pipeline DSL. Utiliser `compile()` depuis `$lib/mathAST/eval/compile`. Le module est verifie clean — ne pas regresser.
-2. **Ajouter un builtin DSL** : creer une `function handleX(ctx: BuiltinCtx)` au niveau module dans `dsl/builtins.ts`, puis `HANDLERS.set('x', handleX)`. **Ne PAS ajouter au switch** — il n'existe plus depuis 2026-05-18 (refactor switch geant → Map dispatcher de 27 lignes). 62 handlers en place, pattern coherent.
-3. **Pas de cast `as GeoXxx`**. 84 type guards sont definis dans `types/elements.ts` (`isFreePoint`, `isCircle`, `isParametricCurve`, etc.) — les utiliser.
-4. **Pas d'`any`**. Si necessaire, `unknown` + type guard.
-5. **Pas modifier `database.ts`** (auto-genere). Pour les types reutilisables : `$lib/types/database-helpers.ts`.
-6. **Pas relancer `pnpm check` ou `svelte-check` plusieurs fois** (sature la memoire). Une fois suffit, en fin de session.
-7. **Apres edit `.svelte`**, TOUJOURS appeler `mcp__svelte__svelte-autofixer`.
-
----
-
-## Gotchas non visibles dans le code
-
-- **Parser unary minus inconsistency** : `-3y` parse comme `opposite(3)*y` au lieu de `opposite(3*y)`. Affecte l'analyse structurelle. Voir `docs/systeme/geometrie/parser-unary-minus-inconsistency.md`.
-- **`PARSE_CACHE` plafonne a 5 000** (`dsl/interpreter.ts:158-164`) : depuis 2026-05-18. Si tu modifies la logique de cache, conserve les `if (size >= PARSE_CACHE_MAX) .clear()` aux 2 sites d'insertion.
-- **Derivees secondes pre-compilees** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`) : depuis 2026-05-18. `getSecondDerivatives()` dans `parametric-calculus.ts` lit le cache. Si tu ajoutes un nouveau site de construction de `GeoParametricCurve` hors `Figure.createParametricCurve`, n'oublie pas de pre-compiler ces 2 champs (sinon `cercle_osculateur` et `courbure` retournent silencieusement `null`).
-- **Pattern mutable-env obligatoire pour les hot paths parametriques** : tout sampler/closure qui appelle `compiledX(env)` dans une boucle doit utiliser un seul `env: Record<string, number>` partage et muter `env[param] = t` avant chaque eval. **JAMAIS** `{ ...scalarBindings, [param]: t }` dans une boucle. Voir `parametric-newton.ts:69`, `computeParametricCurveSampling` et `createTangentToParametric` dans `figure.ts` pour les references.
-- **`findClosestParameterOnCurve` accepte un `warmStartT?` (8e param)** depuis 2026-05-18. Si tu appelles cette fonction dans un contexte de drag continu, **toujours** passer le `t` precedent en hint (skip ~7 des 8 multi-starts). Le warm-start integre un garde-fou : si Newton converge sur un MAX local de distance (e.g. cursor inaccessible), comparaison avec les bornes pour retomber sur la bonne reponse. Voir `movePointOnParametricCurveFromCursor` pour le pattern. **Pas encore disponible** dans `parametric-intersection-1d.ts` (API a revoir : retourne multiples roots).
-- **`marchingSquares` est memoize** (depuis 2026-05-18) — WeakMap module-level keyed par `CompiledFn` identity. Cache hit quand viewport et gridSize sont identiques. **Le caller NE DOIT PAS muter** le `SampledCurve[]` retourne (reference partagee a travers les frames). Cache auto-invalide quand le `GeoImplicitCurve` est remplace (WeakMap GC). Si tu ajoutes une nouvelle entree dans `rendering/` qui appelle `compiledFn` en boucle, considere un pattern de cache similaire.
-- **`computeLocusCurve` est memoize** (depuis 2026-05-18) — WeakMap keyed par `GeoLocus`, sous-cle = snapshot des positions/scalaires de `locus.dependsOn` + viewport. Si tu modifies la facon dont le locus expose ses dependances (`createLocus` dans `figure.ts`), **la cle de cache doit rester complete** : tout element manquant de `dependsOn` produirait des cache hits errones. La regle pratique : `dependsOn` = closure transitive de driver + tracer. Si tu ajoutes un nouveau type de driver ou un nouveau type d'element interne au sous-graphe, verifier que `createLocus` les inclut bien.
-- **`Figure.computeParametricCurveSampling` est memoize** (depuis 2026-05-18) — WeakMap keyed par `GeoParametricCurve`, sous-cle = `(tMin, tMax, scalar bindings, viewport)`. Le sampler retourne le meme `ParametricSampleResult` quand les inputs sont identiques — **ne pas muter** le resultat. Si tu ajoutes un nouveau parametre qui influence le sampling (ex: nouveau `gridSize`), il doit etre integre dans la cle de cache (`buildParametricSamplingKey` au top de `figure.ts`).
-- **`version: $state(0)`** dans `GeometryCanvas.svelte:207-212` : declenche le recalcul de TOUTES les courbes a chaque mutation, meme triviale.
-- **`extendLineToViewport`** (math coords) extrait dans `rendering/viewport-clipping.ts` depuis 2026-05-20 (refactor A3). Une seule source de vérité, utilisée par `export-tikz.ts` et `export-typst.ts`. La variante SVG-pixels-coords (`extendLineToBounds` / `extendRayToBounds` dans `svg-primitives.ts`) reste séparée — signature différente (`transformer + dims` au lieu de `Viewport`). Pour un nouvel exporter en math coords, importer depuis `viewport-clipping.ts`.
-- **3 interfaces `NewtonConfig` distinctes** dans `parametric-newton.ts`, `parametric-intersection.ts`, `parametric-intersection-1d.ts` avec noms de champs differents (`tolerance` vs `convergenceTolerance`, `numStarts` vs `numStartsPerAxis`).
-- **`GeoOsculatingCircle`** rendu dans les 4 surfaces (canvas + SVG + TikZ + Typst) depuis 2026-05-18 via helper `osculatingCircleToSVG` et branches dedies. Si tu ajoutes un nouveau type `Geo*` qui produit un visuel, **verifier les 3 exporters** (`svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`) en plus du canvas — pas de garde TypeScript ne te le rappellera.
-- **`graph` ↔ `dsl`** : plus de cycle depuis 2026-05-18. `singularity-warn` a ete deplace vers `$lib/mathAST/analysis/`. **Regle a maintenir** : `graph/` ne doit JAMAIS importer en valeur depuis `dsl/`. Si tu en as besoin, le helper appartient probablement a `$lib/mathAST/analysis/` ou a un nouveau dossier partage `geometry-core/analysis/`.
-- **`DslRuntimeError` accepte un objet `details` structure** depuis 2026-05-18 : `new DslRuntimeError({ summary, hint?, forms? }, line)`. Le constructeur a 2 overloads (string OU objet) → backward compatible avec ~150 sites legacy. Le champ `details: DslRuntimeErrorDetails | null` est exposé sur l'instance pour le rendu UI riche (voir `dsl/errors.ts`). **Pour un nouveau builtin, toujours utiliser la forme structuree** : elle alimente le panneau d'erreur du player `constructions-v2` qui rend `summary` + `hint` + liste de `forms` avec inline-code styling. La forme plate ne fait que tomber sur un `<pre>` brut.
-- **`ConstructionExecutor.load()` ne throw PLUS pour les erreurs runtime** depuis 2026-05-18. Il capture l'erreur dans `_loadError` et retourne normalement, avec `_stepDurations` ne contenant que les durations des steps valides. Le caller doit lire `executor.loadError` apres `load()` et propager. Pattern dans `ConstructionPlayer.svelte:loadScript`. Seules les `DslParseError` (syntaxe) sont encore propagees par `load()`.
-- **Convention de retour DSL : un builtin = un objet principal** (depuis 2026-05-18). Les macros stdlib retournent l'objet sémantique (cercle, droite, polygone, segment). Les sous-parties s'obtiennent via accesseurs purs : `centre(c)`, `extremite(s, i)`, `extremites(s)`, `milieu(s)`, `sommet(p, i)`, `sommets(p)`, `rayon(c)`. **Tuples acceptés seulement quand le résultat est intrinsèquement pluriel** (`sommets`, `extremites`, `foyers`). Pour un nouveau macro qui crée plusieurs objets, `masque()` les byproducts et retourner l'objet principal — l'utilisateur révélera ce qui l'intéresse via `montre()` ou un accesseur.
-- **Verbes `montre` / `masque` pour la visibilité** (depuis 2026-05-18). `montre(elem, ...styleArgs)` rend visible + applique le style en un coup. `masque(elem)` cache. `style(elem, visible=vrai/faux)` est aussi accepté (style() est le mutateur pur). Pour un nouveau builtin qui crée un sous-produit invisible, ne pas forcer la visibilité par option — laisser l'utilisateur appeler `montre()` explicitement.
-- **Pattern `point(A, longueur=L, ...)` et `segment(A, longueur=L, ...)`** (depuis 2026-05-18). Trois modes de direction : `angle=θ` (mode actif), `direction=B` (vers un point), `vecteur=u` (le long d'un vecteur). Helper centralisé `resolveDirection(ctx, Apos)` dans `dsl/builtins.ts`. Si tu ajoutes un nouveau builtin avec un concept de direction, réutilise ce helper.
-- **`dsl/stdlib.ts` est maintenant vide** (depuis 2026-05-19). Toutes les anciennes macros stdlib (mediatrice, triangle\_\*, cercle_circonscrit, polygone_regulier, etc., 23 au total) sont devenues des builtins TypeScript dans `dsl/builtins.ts` avec calculs directs (formule de Cramer pour les circumcircles, etc.) et sous-produits créés directement invisibles (`{ visible: false }`). Le mécanisme `macro foo(...): ... retourne ...` du DSL est conservé et **réservé aux utilisateurs** qui veulent enregistrer leurs propres constructions (paradigme Cabri/CarMetal/GeoGebra Custom Tools). Ne pas réintroduire des macros dans stdlib — c'est ce qu'on vient d'éliminer. Helper de migration : `requireNPoints(ctx, n, names, macroName, syntaxForm)` pour la validation d'arity, `createHiddenPoint(figure, x, y)` pour créer un FreePoint invisible, `computeCircumcenter(A, B, C)` pour les formules d'Euler. Polygone_regulier et etoile : **breaking change** depuis 2026-05-19 — retournent maintenant un polygone (au lieu d'un array de points). Sommets via `sommet(p, i)` / `sommets(p)`.
-- **9 erreurs preexistantes svelte-check** (~46 warnings). Baseline stable, ne pas commenter, juste verifier que mes modifs n'augmentent pas le compteur.
-
----
-
-## Patterns "ou regarder"
-
-### Ajouter un builtin DSL (`point`, `cercle`, ...)
-
-1. **Handler top-level** dans `dsl/builtins.ts` : `function handleX(ctx: BuiltinCtx) { ... }` qui destructure `ctx` et retourne `BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null`
-2. **Registration** : `HANDLERS.set('x', handleX);` juste apres la fonction
-3. **Factory method** dans `graph/figure.ts`
-4. **Tests** : `dsl/__tests__/builtins-<xxx>.test.ts` ou un fichier theme
-5. **Mise a jour `BUILTIN_NAMES`** (Set en bas de `dsl/builtins.ts`) ET `dsl/stdlib.ts` si exposition stdlib
-6. **Erreurs structurees obligatoires** : utiliser `new DslRuntimeError({ summary, hint?, forms? }, line)` plutot que la string flat. Voir `handleCercle` comme reference (`dsl/builtins.ts:1820`). Pattern :
-   ```ts
-   throw new DslRuntimeError(
-   	{
-   		summary: `\`nom()\` : ${problemeConcret}.`,
-   		hint: "Suggestion d'action concrete.",
-   		forms: [{ syntax: 'nom(A, B)', description: 'description en `inline code` quand utile' }]
-   	},
-   	line
-   );
-   ```
-   Le panneau d'erreur dans `/construction-demo` rend ces champs avec inline-code styling et liste a puces. La string flat fonctionne toujours (backward compat) mais s'affiche brute dans un `<pre>`.
-7. **Si le builtin crée plusieurs éléments**, retourner UN seul (le principal sémantique), et `masque()` les byproducts. Documenter les accesseurs nécessaires pour récupérer les autres (ex : `centre(c)`, `sommet(p, i)`). Ne jamais retourner un tuple sauf si le résultat est intrinsèquement pluriel (collection de N items).
-8. **Si le builtin accepte une direction** (pour un offset polaire ou angulaire), réutiliser le helper `resolveDirection(ctx, anchorPos)` qui gère uniformément `angle=`, `direction=`, `vecteur=`. Pas de duplication.
-
-### Ajouter un accesseur (pattern pur, depuis 2026-05-18)
-
-Un accesseur retourne une référence à un élément existant, sans effet visuel. Exemple type : `centre(c)`, `extremite(s, i)`, `sommet(p, i)`.
-
-1. Handler top-level dans `dsl/builtins.ts` qui ne fait QUE :
-   - Type-check l'argument principal (`isCircle(el)`, `isPolygon(el)`, etc.)
-   - Lit la sous-partie demandée (`el.centerId`, `el.dependsOn[i-1]`, etc.)
-   - Retourne `{ figureId: ..., symbolType: 'point' }` sans créer d'élément
-2. Pour les cas inattendus, throw `DslRuntimeError` avec `hint` qui pointe vers le bon builtin (ex : `centre(s)` → hint « utilise `milieu(s)` à la place »).
-3. Versions plurielles : retourner `BuiltinMultiResult` (tuple). Voir `handleExtremites`, `handleSommets`.
-
-### Ajouter un type `Geo*` (`GeoNewElement`)
-
-1. Interface dans `types/elements.ts` (extends `GeoElementBase`)
-2. Type guard `isNewElement` dans le meme fichier
-3. Ajouter au union `GeoElement`
-4. Branche dans `graph/compute-position.ts` (sinon position jamais calculee)
-5. **Les 4 surfaces de rendu** (piege documente — `GeoOsculatingCircle` etait omis des exports avant 2026-05-18) :
-   - `GeometryCanvas.svelte` (canvas interactif)
-   - `rendering/svg-primitives.ts` + branche dans `rendering/export-svg.ts`
-   - `rendering/export-tikz.ts`
-   - `rendering/export-typst.ts`
-6. Si interactif : handler dans `interaction/`
-
-### Ajouter une intersection
-
-1. Si analytique : `geometry/intersect-*.ts`
-2. Si numerique (parametrique) : `graph/parametric-intersection.ts` (2D-2D) ou `parametric-intersection-1d.ts` (mixte)
-3. Type `GeoIntersection*` dans `types/elements.ts`
-
-### Drag d'un point
-
-Chemin : `onPointerMove` → `figure.movePoint()` → `compute-position.ts` → `dependency-graph` recalcul topologique → mutation `$state` → render.
-
-Pour drag sur courbe parametrique : `movePointOnParametricCurveFromCursor` → Newton multi-start dans `parametric-newton.ts:findClosestParameterOnCurve`.
-
----
-
-## Commandes utiles (specifiques module)
-
-```bash
-# Compter tests par sous-dossier
-find src/lib/geometry-core -name "*.test.ts" | awk -F'/' '{print $4}' | sort | uniq -c
-
-# Lister tous les types Geo*
-grep -E "^export (interface|type) Geo" src/lib/geometry-core/types/elements.ts
-
-# Tests cibles (eviter tests:unit en masse)
-pnpm test:server src/lib/geometry-core/graph/__tests__/parametric-newton.test.ts
-```
-
----
-
-## Action items prioritaires (si refactor demande)
-
-Voir `docs/systeme/geometrie/README.md` section "Action items prioritaires" pour la liste cross-cutting. Top 3 (impact/effort) :
-
-1. **[SECURITE HIGH hors module]** `src/lib/utils/game/challenge-variables.ts:68-76` → `new Function()` a remplacer par `compile()`.
-2. **[PERF HIGH / EFFORT FAIBLE]** Cacher derivees secondes (`parametric-calculus.ts`).
-3. **[PERF HIGH / EFFORT FAIBLE]** Eliminer les spreads dans `figure.ts:4399-4418`.
-
----
-
-## Quand approfondir
-
-| Besoin                               | Document                                                                                    |
-| ------------------------------------ | ------------------------------------------------------------------------------------------- |
-| Vue globale, modele de donnees, flux | [`docs/systeme/geometrie/architecture.md`](../../../docs/systeme/geometrie/architecture.md) |
-| Refactor / dette                     | [`docs/systeme/geometrie/code-quality.md`](../../../docs/systeme/geometrie/code-quality.md) |
-| Tests / couverture                   | [`docs/systeme/geometrie/tests.md`](../../../docs/systeme/geometrie/tests.md)               |
-| Perf / hotspots                      | [`docs/systeme/geometrie/performance.md`](../../../docs/systeme/geometrie/performance.md)   |
-| Securite                             | [`docs/systeme/geometrie/security.md`](../../../docs/systeme/geometrie/security.md)         |
-| Progress docs (livraisons recentes)  | [`docs/wip/geometry/`](../../../docs/wip/geometry/)                                         |
+- Tests ciblés : `pnpm test:server src/lib/geometry-core/<dossier>/__tests__/<fichier>.test.ts`
+  (jamais la suite entière) ; `pnpm test:client` pour les `*.svelte.test.ts`.
+- Après un `.svelte` modifié : `pnpm svelte:autofix <fichier>` (runes Svelte 5 uniquement).
+- `pnpm check:incremental` = 0 erreur, une fois par lot (pas de `pnpm check` en boucle).
+- `constructions-v2` : `ConstructionExecutor.load()` ne lève que la syntaxe ; une erreur
+  d'exécution est dans `executor.loadError`, à lire après `load()`.
