@@ -22,7 +22,7 @@ export interface NewTournamentPageData {
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/auth/signin');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Verify user is a teacher

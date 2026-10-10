@@ -92,7 +92,13 @@ const FORBIDDEN_KEYS = [
 	'templateId',
 	'template_id',
 	'resolvedVariables',
-	'originalIndex'
+	'originalIndex',
+	'answers',
+	'correct',
+	'template',
+	'instance',
+	'shuffledChoices',
+	'validationRules'
 ];
 
 // Variables
@@ -129,7 +135,8 @@ function actors(who: Person, extra: Partial<AttemptActors> = {}): AttemptActors 
 }
 
 function fixture(path: string) {
-	return JSON.parse(readFileSync(`docs/relecture/${path}.json`, 'utf-8')).template;
+	// Copie figée sous tests/ : docs/ se modifie sans CI (commit direct sur main)
+	return JSON.parse(readFileSync(`tests/fixtures/relecture/${path}.json`, 'utf-8')).template;
 }
 
 /** Évaluation publiée (ou non) sur la série du test, assignée à la classe */
@@ -237,6 +244,20 @@ function wrongAnswer(instance: QuestionInstance): SubmittedAnswer {
 	}
 	const values = (instance.blanks ?? []).map(() => '987654');
 	return { values, latex: values };
+}
+
+/**
+ * Surface de fuite d'une question publique : tout SAUF les champs d'affichage où la
+ * valeur de la réponse peut apparaître légitimement (l'énoncé « le double de 6 »,
+ * le niveau `grades: ['6']`). Exclusion par liste : un champ ajouté demain reste
+ * inspecté par défaut.
+ */
+const DISPLAY_ONLY_FIELDS = new Set(['statement', 'exerciseInstruction', 'grades']);
+
+function leakSurface(question: object): string {
+	return JSON.stringify(
+		Object.fromEntries(Object.entries(question).filter(([key]) => !DISPLAY_ONLY_FIELDS.has(key)))
+	);
 }
 
 function allKeys(value: unknown, keys: Set<string> = new Set()): Set<string> {
@@ -375,13 +396,15 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				expect(text).not.toMatch(new RegExp(`[^0-9]${row.seed}[^0-9]`));
 			}
 			const instances = await oracle(first.attemptId);
+			// Garde anti-vacuité : sans trou, la boucle ci-dessous ne prouverait rien
+			expect(instances.flatMap((instance) => instance.blanks ?? []).length).toBeGreaterThan(0);
 			for (const [i, instance] of instances.entries()) {
-				const pub = JSON.stringify(first.questions[i]);
+				// La réponse n'apparaît ni dans les trous, ni dans les choix, ni dans aucun
+				// champ hors affichage. Pas dans l'énoncé (la moitié de 2a est a : l'énoncé
+				// contient 2a) ni dans `grades` (niveau « 6 » ≠ réponse « 6 », vu en CI).
+				const surface = leakSurface(first.questions[i]);
 				for (const blank of instance.blanks ?? []) {
-					// La réponse n'apparaît pas en dehors de l'énoncé (la moitié de 2a est a :
-					// l'énoncé contient 2a, jamais a seul entre délimiteurs de réponse)
-					expect(first.questions[i].blanks?.some((b) => 'expectedAnswer' in b)).toBe(false);
-					expect(pub).not.toContain(`"${blank.expectedAnswer}"`);
+					expect(surface, `question ${i}`).not.toContain(`"${blank.expectedAnswer}"`);
 				}
 			}
 		});

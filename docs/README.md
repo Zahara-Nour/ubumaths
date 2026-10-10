@@ -1,0 +1,49 @@
+# Documentation de Chiphre — carte
+
+Quatre dossiers, un rôle chacun :
+
+| Dossier                  | Rôle                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| [systeme/](systeme/)     | **Ce que fait le code** : une doc par système en service, vérifiée contre le code.          |
+| [pratiques/](pratiques/) | **Comment travailler** : git, tests, commandes, conventions, pièges connus.                 |
+| [adr/](adr/)             | **Décisions figées** : on ne les re-propose pas sans le dire.                               |
+| [wip/](wip/)             | **Chantiers vivants** seulement. Fin de chantier → versement dans `systeme/`, puis archive. |
+| [archive/](archive/)     | Journaux et specs de chantiers terminés. **Historique : ne décrit pas le code actuel.**     |
+
+Vocabulaire du domaine : [CONTEXT.md](../CONTEXT.md) (glossaire unique). Règles pour Claude : [CLAUDE.md](../CLAUDE.md).
+
+Les **données de travail** lues par des scripts et des tests (corrections, relecture) vivent hors de docs/, sous [`data/`](../data/). [Chiphres/](Chiphres/) est le lore de l'univers (contenu éditorial).
+
+## Gabarit d'une doc système
+
+À quoi ça sert (termes → CONTEXT.md) · carte du code (fichiers clés, points d'entrée) · invariants · comment étendre · tests · décisions (ADR) · « vérifié contre le code le … ».
+
+## Module de `src/lib` → sa doc
+
+⚠️ = doc à rafraîchir (P2 de la [réorganisation](wip/reorganisation-docs-progress.md)) · ❌ = aucune doc de référence (P3).
+
+| Module                                                   | Doc                                                                                                                                                                                                                                                                        |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vue d'ensemble (routes, structure)                       | [architecture-generale.md](systeme/architecture-generale.md)                                                                                                                                                                                                               |
+| Base de données (`types/database.ts`, migrations)        | [base-de-donnees.md](systeme/base-de-donnees.md) (accès, domaines, pièges) · liste générée : [base-de-donnees-tables.md](systeme/base-de-donnees-tables.md)                                                                                                                |
+| Auth, profils, élévation admin (`server/`, hooks)        | [auth.md](systeme/auth.md)                                                                                                                                                                                                                                                 |
+| RGPD, consentement, registres                            | [conformite/](systeme/conformite/) ⚠️ (migrations citées d'avant le baseline)                                                                                                                                                                                              |
+| `mathAST`                                                | [mathast/](systeme/mathast/) ⚠️ (avant `tidy` et la réécriture de `simplify`) · à jour : [panel-simplifications](systeme/mathast/panel-simplifications.md), [convention-equivalence](systeme/mathast/convention-equivalence.md), [tidy-spec](systeme/mathast/tidy-spec.md) |
+| `geometry-core`, `constructions-v2`                      | [geometrie/](systeme/geometrie/) ⚠️ (doublons avec `geometrie/dsl/` et `src/lib/geometry-core/CLAUDE.md`)                                                                                                                                                                  |
+| `srs`, révisions, anti-triche                            | [srs.md](systeme/srs.md) — écarts connus en fin de doc (anti-triche éteint)                                                                                                                                                                                                |
+| Python (Pyodide, notebooks)                              | [python/](systeme/python/)                                                                                                                                                                                                                                                 |
+| Programmes officiels (`curriculum_*`)                    | [programmes/](systeme/programmes/)                                                                                                                                                                                                                                         |
+| `competences` (export prof)                              | [export-competences.md](systeme/export-competences.md)                                                                                                                                                                                                                     |
+| Analytique prof                                          | [analytique-prof.md](systeme/analytique-prof.md) ⚠️ (famille A)                                                                                                                                                                                                            |
+| Realtime, chat, présence                                 | [realtime.md](systeme/realtime.md)                                                                                                                                                                                                                                         |
+| `games`, VIP, gidouilles                                 | [jeux-et-economie.md](systeme/jeux-et-economie.md) ⚠️ (base seulement, pas le code)                                                                                                                                                                                        |
+| Buddy (Palotins)                                         | [buddy-palotins.md](systeme/buddy-palotins.md)                                                                                                                                                                                                                             |
+| `atelier`                                                | ❌ — seulement [atelier-syntaxe.md](systeme/atelier-syntaxe.md)                                                                                                                                                                                                            |
+| `questions`, `exercises`, `validation`                   | ❌                                                                                                                                                                                                                                                                         |
+| `ubumark`                                                | ❌ — notation : [notation-unites](pratiques/notation-unites.md), [fiches-exercices](pratiques/fiches-exercices.md)                                                                                                                                                         |
+| `grapheur`                                               | ❌                                                                                                                                                                                                                                                                         |
+| `statistics`                                             | ❌                                                                                                                                                                                                                                                                         |
+| `worksheets`, `typst` (fiches, PDF)                      | ❌ — démarche : [fiches-exercices](pratiques/fiches-exercices.md) ; choix : ADR 0004                                                                                                                                                                                       |
+| `lexicon`, `ciphers`, `almanach`, Shtam                  | ❌ — rédaction : [shtam-articles](pratiques/shtam-articles.md)                                                                                                                                                                                                             |
+| `whiteboard`, `slides`, `spreadsheet`, `constructions`   | ❌                                                                                                                                                                                                                                                                         |
+| `server/` (≈ 60 modules : chapters, evaluations, tutor…) | ❌                                                                                                                                                                                                                                                                         |

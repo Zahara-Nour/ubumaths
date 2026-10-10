@@ -44,7 +44,7 @@ This is CLAUDE.md règle #5. Re-run after corrections until clean. Use `mcp__sve
 
 ### Critical Constraints
 
-1. **ALWAYS use `MySelect` and `MyCheckbox`** from `$lib/components/MySelect.svelte` and `$lib/components/MyCheckbox.svelte`. NEVER use Shadcn-svelte Select/Checkbox or native HTML `<select>`/`<input type="checkbox">`. (CLAUDE.md règle #2 — voir `docs/claude/ui-components.md`)
+1. **ALWAYS use `MySelect` and `MyCheckbox`** from `$lib/components/MySelect.svelte` and `$lib/components/MyCheckbox.svelte`. NEVER use Shadcn-svelte Select/Checkbox or native HTML `<select>`/`<input type="checkbox">`. (CLAUDE.md règle #2 — voir `docs/pratiques/composants-ui.md`)
 2. **Always use lowercase event handlers** (onclick, NOT on:click)
 3. **Use Svelte 5 runes exclusively** - no legacy $: or export let patterns
 4. **Port 5175 for testing** - never use port 5173

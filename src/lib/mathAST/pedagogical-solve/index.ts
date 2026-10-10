@@ -270,6 +270,7 @@ export {
 	InequalityNotSolvable
 };
 
+export { UndevelopedLinearForm } from './_helpers';
 export { LinearEquationRenderer, formatTransformationLines } from './linear-renderer';
 export { QuadraticEquationRenderer } from './quadratic-renderer';
 

@@ -37,6 +37,8 @@ import {
 	isPiecewise
 } from '../guards';
 import { flattenRelationChain } from '../flatten';
+import { inverseNotationAsFunction } from '../common/function-power';
+import { oddDenominatorExponent, realRationalPower } from './real-root';
 
 export type CompiledFn = (vars: Record<string, number>) => number;
 
@@ -139,6 +141,14 @@ export function compile(node: MathNode): CompiledFn {
 
 	if (isSuperscript(node)) {
 		const base = compile(node.base);
+		// Exposant p/q irréductible, q impair : (ᵠ√x)^p, défini pour x < 0
+		// (décision du 2026-10-08, comme ∛x) ; 0 sous un exposant négatif : ∞.
+		const odd = oddDenominatorExponent(node.superscript);
+		if (odd !== null) {
+			const p = Number(odd.n);
+			const q = Number(odd.d);
+			return (v) => realRationalPower(base(v), p, q) ?? Infinity;
+		}
 		const exponent = compile(node.superscript);
 		return (v) => Math.pow(base(v), exponent(v));
 	}
@@ -258,13 +268,28 @@ const INVERSE_FUNCTIONS: Record<string, (...args: number[]) => number> = {
 };
 
 function compileFunction(node: FunctionNode): CompiledFn {
+	// `\cos^{-1}(x)` : réciproque (arccos), pas 1/cos — `wrapPower` l'aurait
+	// compilée en `Math.pow(cos(x), -1)`. `\ln^{-1}` devient un nœud `isInverse`,
+	// refusé plus bas faute de réciproque connue.
+	const reciprocal = inverseNotationAsFunction(node);
+	if (reciprocal) return compile(reciprocal);
+
 	const { name, args } = node;
 
 	// Nth root: sqrt with base property → x^(1/n)
 	if (name === 'sqrt' && node.base) {
 		const arg = compile(args[0]);
 		const base = compile(node.base);
-		return wrapPower(node, (v) => Math.pow(arg(v), 1 / base(v)));
+		// Indice entier impair : racine définie sur ℝ, ⁿ√a = −ⁿ√|a| pour a < 0
+		// (décision du 2026-10-07). Indice pair ou non entier : NaN pour a < 0.
+		return wrapPower(node, (v) => {
+			const radicand = arg(v);
+			const index = base(v);
+			if (radicand < 0 && Number.isInteger(index) && index % 2 !== 0) {
+				return -Math.pow(-radicand, 1 / index);
+			}
+			return Math.pow(radicand, 1 / index);
+		});
 	}
 
 	// log with base property → log_n(x) = ln(x) / ln(n)

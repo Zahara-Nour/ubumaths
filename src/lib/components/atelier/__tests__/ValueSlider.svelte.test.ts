@@ -1,6 +1,6 @@
 /**
  * Le curseur d'une valeur, dans sa carte — lot 4 du passage de `/grapheur`
- * par l'atelier (phase 0 `docs/wip/atelier-grapheur-phase0.md` §4).
+ * par l'atelier (phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §4).
  */
 
 import { describe, it, expect, vi } from 'vitest';

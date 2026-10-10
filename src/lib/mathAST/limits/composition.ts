@@ -30,8 +30,12 @@ import {
 import { P } from '../pattern/builder';
 import { match } from '../pattern/match';
 import type { Pattern } from '../pattern/types';
-import { number, positiveInfinity } from '../factory';
-import { getNumericValue } from '../common/numeric';
+import { number, positiveInfinity, negativeInfinity, func, opposite } from '../factory';
+import { structuralBounds, hasStrictSign, type Bounds } from './bounded';
+import { rewriteReciprocalTrig } from './reciprocal-trig';
+import { getNumericValue, numericNode } from '../common/numeric';
+import { rootIndexOf } from '../differentiation/rules';
+import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation';
 import { substitute } from '../eval/substitute';
 import { evaluate } from '../eval/evaluate';
@@ -53,6 +57,9 @@ import {
 	isIndeterminate,
 	type SignedLimitValue
 } from './sign-tracking';
+
+/** Fonctions trigonométriques à pôles (tan, cot, sec, csc). */
+const TRIG_POLE_FUNCTIONS = new Set(['tan', 'cot', 'sec', 'csc']);
 
 // =============================================================================
 // Types
@@ -92,6 +99,13 @@ export function tryCompositionLimit(
 	// Strategy 2: Function composition (ln, exp, sqrt of expression)
 	if (isFunction(expr) && expr.args.length === 1) {
 		const result = tryFunctionComposition(expr, varName, approach, direction, recorder);
+		if (result.success) return result;
+	}
+
+	// Stratégie 2.5 : un opérande BORNÉ (sin x, 2 + sin x) sans limite propre,
+	// combiné à un opérande infini ou nul (x + sin x → +∞, sin x / √x → 0)
+	{
+		const result = tryBoundedOperand(expr, varName, approach, direction, recorder);
 		if (result.success) return result;
 	}
 
@@ -137,6 +151,106 @@ export function tryCompositionLimit(
 		if (result.success) return result;
 	}
 
+	return { success: false };
+}
+
+// =============================================================================
+// Opérande borné
+// =============================================================================
+
+/** Description d'un intervalle de bornes, pour l'étape : [−1 ; 1]. */
+function formatBounds(bounds: Bounds): string {
+	const show = (v: number) => String(Number(v.toPrecision(6))).replace('-', '−');
+	return `[${show(bounds.min)} ; ${show(bounds.max)}]`;
+}
+
+/** +∞ ou −∞ selon le signe de `sign` appliqué à un infini signé. */
+function signedInfinity(infinity: SignedLimitValue, sign: number): MathNode {
+	const positive = (infinity.type === 'pos-infinity') === sign > 0;
+	return positive ? positiveInfinity() : negativeInfinity();
+}
+
+/**
+ * Bornes structurelles d'un opérande, seulement s'il dépend de la variable
+ * (une constante est déjà traitée par l'algèbre des limites).
+ */
+function boundsOfOperand(operand: MathNode, varName: string): Bounds | null {
+	return containsVariable(operand, varName) ? structuralBounds(operand, varName) : null;
+}
+
+/**
+ * Règles du borné B (m ≤ B ≤ M) :
+ * ±∞ ± B → ±∞ ; B / (→ ±∞) → 0 ; B × (→ 0) → 0 ;
+ * ±∞ × B et ±∞ / B → ±∞ si B garde un signe strict (m > 0 ou M < 0).
+ * B × ±∞ sans signe strict (x·sin x) : aucune conclusion.
+ */
+function tryBoundedOperand(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	recorder: LimitStepRecorder
+): CompositionResult {
+	if (!isAddition(expr) && !isSubtraction(expr) && !isMultiplication(expr) && !isDivision(expr)) {
+		return { success: false };
+	}
+	const [first, second] = isDivision(expr)
+		? [expr.numerator, expr.denominator]
+		: [expr.left, expr.right];
+
+	const conclude = (value: MathNode, bounds: Bounds, rule: string): CompositionResult => {
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`Fonction bornée dans ${formatBounds(bounds)} : ${rule}`
+		);
+		return { success: true, value, technique: 'composition' };
+	};
+
+	for (const [bounded, other, boundedFirst] of [
+		[first, second, true],
+		[second, first, false]
+	] as const) {
+		const bounds = boundsOfOperand(bounded, varName);
+		if (bounds === null) continue;
+		const otherLimit = classifyWithSign(other, varName, approach, direction);
+		const otherInfinite = isSignedInfinity(otherLimit);
+
+		if (isAddition(expr) && otherInfinite) {
+			return conclude(signedInfinity(otherLimit, 1), bounds, '∞ + borné = ∞');
+		}
+		if (isSubtraction(expr) && otherInfinite) {
+			// ∞ − B → ∞ ; B − ∞ → −∞
+			const value = signedInfinity(otherLimit, boundedFirst ? -1 : 1);
+			return conclude(value, bounds, '∞ − borné = ∞');
+		}
+		if (isMultiplication(expr)) {
+			// En un point fini, x·sin(1/x) → 0 relève des gendarmes (squeeze), présentés ensuite
+			if (isSignedZero(otherLimit) && isInfinity(approach)) {
+				return conclude(number('0'), bounds, 'borné × 0 = 0');
+			}
+			if (otherInfinite && hasStrictSign(bounds)) {
+				return conclude(
+					signedInfinity(otherLimit, bounds.min > 0 ? 1 : -1),
+					bounds,
+					'∞ × borné de signe constant = ∞'
+				);
+			}
+		}
+		if (isDivision(expr) && otherInfinite) {
+			if (boundedFirst) return conclude(number('0'), bounds, 'borné / ∞ = 0');
+			if (hasStrictSign(bounds)) {
+				return conclude(
+					signedInfinity(otherLimit, bounds.min > 0 ? 1 : -1),
+					bounds,
+					'∞ / borné de signe constant = ∞'
+				);
+			}
+		}
+	}
 	return { success: false };
 }
 
@@ -288,17 +402,38 @@ function tryDominantTermAtInfinity(
 	const positive = approach.sign === 'positive';
 
 	// Extract terms from the expression
-	const terms = extractTerms(expr, varName);
+	const { terms, others } = extractTerms(expr, varName);
 	if (terms.length === 0) return { success: false };
 
-	// Find the term with the highest degree
+	// Un terme non polynomial (e^x, ln x, (x+1)², …) n'est négligeable devant
+	// le monôme dominant que s'il reste borné. Autrefois ignoré en silence :
+	// e^x − x rendait −∞ (« dominant » −x), (x+1)² − x² rendait −∞.
+	for (const other of others) {
+		if (!containsVariable(other, varName)) continue;
+		const otherLimit = classifyWithSign(other, varName, approach, 'both');
+		if (otherLimit.type === 'pos-infinity' || otherLimit.type === 'neg-infinity') {
+			return { success: false };
+		}
+		if (otherLimit.type === 'unknown') return { success: false };
+	}
+
+	// Coefficients cumulés par degré : x − 2x a pour terme dominant −x, pas x
+	// (seul le premier monôme du degré maximal était lu).
+	const coefficientByDegree = new Map<number, number>();
+	for (const term of terms) {
+		coefficientByDegree.set(
+			term.degree,
+			(coefficientByDegree.get(term.degree) ?? 0) + term.coefficient
+		);
+	}
+
+	// Degré le plus haut dont le coefficient ne s'annule pas
 	let maxDegree = -Infinity;
 	let dominantTerm: { coefficient: number; degree: number } | null = null;
-
-	for (const term of terms) {
-		if (term.degree > maxDegree) {
-			maxDegree = term.degree;
-			dominantTerm = term;
+	for (const [degree, coefficient] of coefficientByDegree) {
+		if (coefficient !== 0 && degree > maxDegree) {
+			maxDegree = degree;
+			dominantTerm = { coefficient, degree };
 		}
 	}
 
@@ -332,51 +467,55 @@ function tryDominantTermAtInfinity(
 
 /**
  * Extract polynomial terms from an expression.
+ *
+ * Les termes qui ne sont pas des monômes `a·x^n` sont rendus à part
+ * (`others`) : à l'appelant de vérifier qu'ils sont négligeables.
  */
 function extractTerms(
 	expr: MathNode,
 	varName: string
-): Array<{ coefficient: number; degree: number }> {
+): { terms: Array<{ coefficient: number; degree: number }>; others: MathNode[] } {
 	const terms: Array<{ coefficient: number; degree: number }> = [];
+	const others: MathNode[] = [];
+
+	/** Degré entier de `x` ou `x^n`, sinon null. */
+	function monomialDegree(node: MathNode): number | null {
+		if (isVariable(node) && node.name === varName) return 1;
+		if (isSuperscript(node) && isVariable(node.base) && node.base.name === varName) {
+			const exp = getNumericValue(node.superscript);
+			if (exp !== null && Number.isInteger(exp)) return exp;
+		}
+		return null;
+	}
 
 	function extractFromNode(node: MathNode, sign: number): void {
-		if (isVariable(node) && node.name === varName) {
-			terms.push({ coefficient: sign, degree: 1 });
-		} else if (isSuperscript(node) && isVariable(node.base) && node.base.name === varName) {
-			const exp = getNumericValue(node.superscript);
-			if (exp !== null && Number.isInteger(exp)) {
-				terms.push({ coefficient: sign, degree: exp });
-			}
+		const degree = monomialDegree(node);
+		if (degree !== null) {
+			terms.push({ coefficient: sign, degree });
 		} else if (isOpposite(node)) {
 			extractFromNode(node.operand, -sign);
-		} else if (isMultiplication(node)) {
-			// a * x^n
-			const coeff = getNumericValue(node.left);
-			if (coeff !== null) {
-				if (isVariable(node.right) && node.right.name === varName) {
-					terms.push({ coefficient: sign * coeff, degree: 1 });
-				} else if (
-					isSuperscript(node.right) &&
-					isVariable(node.right.base) &&
-					node.right.base.name === varName
-				) {
-					const exp = getNumericValue(node.right.superscript);
-					if (exp !== null && Number.isInteger(exp)) {
-						terms.push({ coefficient: sign * coeff, degree: exp });
-					}
-				}
-			}
 		} else if (isAddition(node)) {
 			extractFromNode(node.left, sign);
 			extractFromNode(node.right, sign);
 		} else if (isSubtraction(node)) {
 			extractFromNode(node.left, sign);
 			extractFromNode(node.right, -sign);
+		} else if (isMultiplication(node)) {
+			// a * x^n
+			const coeff = getNumericValue(node.left);
+			const rightDegree = monomialDegree(node.right);
+			if (coeff !== null && rightDegree !== null) {
+				terms.push({ coefficient: sign * coeff, degree: rightDegree });
+			} else {
+				others.push(node);
+			}
+		} else {
+			others.push(node);
 		}
 	}
 
 	extractFromNode(expr, 1);
-	return terms;
+	return { terms, others };
 }
 
 // =============================================================================
@@ -386,6 +525,45 @@ function extractTerms(
 /**
  * Handle function composition f(g(x)) where g(x) → boundary.
  */
+/**
+ * Limite de ⁿ√g connaissant celle de g (indice entier littéral n ≥ 3) — ou
+ * `null` si on ne conclut pas (indice symbolique, g → réel < 0 avec n pair…).
+ *
+ * n impair : ⁿ√ est définie et croissante sur ℝ, elle GARDE le signe
+ * (∛(−∞) = −∞, ∛(0⁻) = 0⁻ → 1/∛x en 0⁻ = −∞). n pair : comme √.
+ * Une valeur finie donne ⁿ√v exact (∛8 = 2) ou laissé sous radical (∛9).
+ */
+function nthRootLimit(expr: MathNode, inner: SignedLimitValue): MathNode | null {
+	const index = rootIndexOf(expr);
+	if (index === null || !isNumber(index)) return null;
+	const n = Number(index.value);
+	if (!Number.isInteger(n) || n < 2) return null;
+	const odd = n % 2 === 1;
+	switch (inner.type) {
+		case 'pos-infinity':
+			return positiveInfinity();
+		case 'neg-infinity':
+			return odd ? negativeInfinity() : null;
+		case 'zero':
+		case 'zero-plus':
+			return number('0');
+		case 'zero-minus':
+			return odd ? number('0') : null;
+		case 'finite': {
+			if (inner.value < 0 && !odd) return null;
+			const magnitude = Math.abs(inner.value);
+			const root = Math.round(magnitude ** (1 / n));
+			const exact = root ** n === magnitude;
+			const positive = exact
+				? number(String(root))
+				: func('sqrt', [numericNode(magnitude)], { base: index });
+			return inner.value < 0 ? opposite(positive) : positive;
+		}
+		default:
+			return null;
+	}
+}
+
 function tryFunctionComposition(
 	expr: MathNode,
 	varName: string,
@@ -439,6 +617,21 @@ function tryFunctionComposition(
 		}
 	}
 
+	// Racine n-ième (indice dans `base`) : ∛ n'est pas √
+	if (funcName === 'sqrt' && rootIndexOf(expr) !== null) {
+		const value = nthRootLimit(expr, innerLimit);
+		if (value === null) return { success: false };
+		recorder.recordStepByRule(
+			'composition',
+			expr,
+			value,
+			'summarized',
+			approach,
+			`Limite de la racine n-ième par composition`
+		);
+		return { success: true, value, technique: 'composition' };
+	}
+
 	// Handle sqrt(g(x))
 	if (funcName === 'sqrt') {
 		const result = sqrtSign(innerLimit);
@@ -451,6 +644,25 @@ function tryFunctionComposition(
 				'summarized',
 				approach,
 				`Limite de sqrt par composition`
+			);
+			return { success: true, value, technique: 'composition' };
+		}
+	}
+
+	// Pôle de tan, cot, sec, csc à gauche ou à droite d'un point (tan x en
+	// π/2⁻ → +∞, cot x en 0⁺ → +∞) : la substitution directe, hors domaine,
+	// ne conclut plus. cot, sec, csc sont suivies en quotients de sin et cos.
+	if (TRIG_POLE_FUNCTIONS.has(funcName) && direction !== 'both' && !isInfinity(approach)) {
+		const whole = classifyWithSign(rewriteReciprocalTrig(expr), varName, approach, direction);
+		const value = isSignedInfinity(whole) ? signedValueToInfinity(whole) : null;
+		if (value) {
+			recorder.recordStepByRule(
+				'composition',
+				expr,
+				value,
+				'summarized',
+				approach,
+				`Pôle de ${funcName} : limite ${formatSignedValue(whole)}`
 			);
 			return { success: true, value, technique: 'composition' };
 		}
@@ -815,8 +1027,14 @@ function tryMultiplicationLimit(
 	if (!isMultiplication(expr)) return { success: false };
 
 	// First, check for algebraic cancellation pattern: x * (1/x) or x * (a/x)
+	// Le reste `a` n'est rendu comme limite que s'il est constant : (|x|/x)·x
+	// rendait « |x| », une expression en x, au lieu de 0.
 	const cancellation = tryAlgebraicCancellation(expr, varName);
-	if (cancellation.success && cancellation.simplified) {
+	if (
+		cancellation.success &&
+		cancellation.simplified &&
+		!containsVariable(cancellation.simplified, varName)
+	) {
 		recorder.recordStepByRule(
 			'algebraic-simplification',
 			expr,
@@ -1293,6 +1511,14 @@ function getCompositionLimitPatterns(): readonly CompositionLimitPattern[] {
 				uApproach: 'neg-infinity',
 				value: number('0'),
 				descriptionFr: 'Croissance comparée : u²·e^u → 0 quand u → -∞'
+			},
+			// u·e^{ku} → 0 quand u → −∞, k > 0 : c'est (1/k)·(ku)·e^{ku}. Sans
+			// elle, x e^{2x} en −∞ restait « non supportée » (mesuré).
+			{
+				pattern: P.mul(P._('u'), P.func('exp', [P.mul(P._('k', P.isPositive()), P._('u'))])),
+				uApproach: 'neg-infinity',
+				value: number('0'),
+				descriptionFr: 'Croissance comparée : u·e^{ku} → 0 quand u → -∞ (k > 0)'
 			},
 			// u/e^u → 0 when u → +∞
 			{

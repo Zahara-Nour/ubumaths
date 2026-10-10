@@ -53,12 +53,17 @@
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
+		/** Argument : une réponse juste à un multiple de 2π près est juste */
+		sharedBlankAngleModulo: boolean;
+		/** Case : `\binom{32}{5}`, `6!` justes (notation combinatoire non calculée) */
+		sharedBlankAcceptCombinatorial: boolean;
 		sharedBlankIntervals: boolean;
 		/** Case intervalles : une borne fermée attendue peut être ouverte */
 		sharedBlankOpenableBounds: boolean;
 		sharedBlankEquation: boolean;
 		sharedBlankVector: boolean;
 		sharedBlankVectorCollinear: boolean;
+		sharedBlankMatrix: boolean;
 		/** Case « primitive » ou « solution-ed » et ses champs */
 		sharedBlankCalculus: CalculusEditorState;
 		sharedValidationRulesJson: string;
@@ -89,11 +94,14 @@
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
+		sharedBlankAngleModulo = $bindable(),
+		sharedBlankAcceptCombinatorial = $bindable(),
 		sharedBlankIntervals = $bindable(),
 		sharedBlankOpenableBounds = $bindable(),
 		sharedBlankEquation = $bindable(),
 		sharedBlankVector = $bindable(),
 		sharedBlankVectorCollinear = $bindable(),
+		sharedBlankMatrix = $bindable(),
 		sharedBlankCalculus = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
@@ -336,6 +344,16 @@
 								bind:checked={sharedBlankAcceptDecimal}
 								label="Accepter le décimal exact"
 							/>
+							<!-- « Donne un argument de z » : -7π/4 juste pour π/4 (à 2π près) -->
+							<MyCheckbox
+								bind:checked={sharedBlankAngleModulo}
+								label="Angle juste à 2π près (un argument)"
+							/>
+							<!-- Dénombrement : \binom{32}{5}, 6!, 10!/7! justes sans calcul (bac) -->
+							<MyCheckbox
+								bind:checked={sharedBlankAcceptCombinatorial}
+								label="Accepter la notation combinatoire (n!, coefficient binomial)"
+							/>
 							<!-- Ensemble de solutions : ]-∞;-2[∪]3;+∞[ (clavier « Intervalles ») -->
 							<MyCheckbox
 								bind:checked={sharedBlankIntervals}
@@ -365,6 +383,8 @@
 									label="Vecteur : tout vecteur colinéaire non nul est juste"
 								/>
 							{/if}
+							<!-- Matrice dans une case : coefficients comparés par valeur (clavier « Matrice ») -->
+							<MyCheckbox bind:checked={sharedBlankMatrix} label="Réponse : matrice" />
 							<!-- Primitive de f : x^3+C juste pour 3x^2 (dérivée de la réponse comparée à f) -->
 							<MyCheckbox
 								bind:checked={sharedBlankCalculus.primitive}

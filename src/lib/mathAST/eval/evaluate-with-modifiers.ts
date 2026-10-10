@@ -26,7 +26,7 @@ import { divide, number, opposite, withUnit } from '../factory';
 import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
-import { decimalString } from '../tidy/decimal';
+import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units';
@@ -101,16 +101,6 @@ function withSignModifiers(latex: string, modifiers: EvalModifiers): string {
 	if (modifiers.addPositive && !negative) return `+${latex}`;
 	if (modifiers.bracketNegative && negative) return `(${latex})`;
 	return latex;
-}
-
-/** Un nombre non entier écrit dans le calcul (`0.5`) : TinyMath rendait alors un décimal */
-function hasDecimalLiteral(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (n.type === 'number' && !/^-?\d+$/.test(n.value)) found = true;
-		return n;
-	});
-	return found;
 }
 
 /**
@@ -212,8 +202,32 @@ function tidyKeepingValue(exact: MathNode): MathNode {
 	}
 }
 
+/** Nombre rationnel écrit : `5`, `\dfrac{5}{6}`, `-\dfrac{2}{3}` */
+function isWrittenRational(node: MathNode): boolean {
+	if (node.type === 'opposite') return isWrittenRational(node.operand);
+	if (node.type === 'division') return isNumber(node.numerator) && isNumber(node.denominator);
+	return isNumber(node);
+}
+
+/**
+ * Multiple rationnel de π, et rien d'autre : `\dfrac{5}{6} \pi`, `-\dfrac{2}{3} \pi`, `2 \pi`.
+ * Écrit comme au tableau (`\dfrac{5 \pi}{6}`), convention des cartes de trigonométrie
+ * (décision de David, 2026-10-05). Une somme (`\dfrac{3}{2} \pi + 1`) ou `π²` ne bougent pas.
+ */
+function isRationalMultipleOfPi(node: MathNode): boolean {
+	if (node.type === 'opposite') return isRationalMultipleOfPi(node.operand);
+	if (node.type === 'constant') return node.constant === 'pi';
+	return (
+		node.type === 'multiplication' &&
+		isWrittenRational(node.left) &&
+		node.right.type === 'constant' &&
+		node.right.constant === 'pi'
+	);
+}
+
 /**
  * Forme exacte écrite comme au tableau, mise au propre par `tidy` :
+ * - multiple rationnel de π : `\dfrac{1}{6} \pi` devient `\dfrac{\pi}{6}` ;
  * - valeur remarquable d'un calcul trigonométrique (`cos(5pi/6)`) : `-\dfrac{1}{2} \sqrt{3}`
  *   devient `-\dfrac{\sqrt{3}}{2}`, seulement quand plus aucune fonction trigonométrique ne
  *   reste (un angle non remarquable, `\cos\left( \dfrac{1}{5} \pi \right)`, garde son écriture) ;
@@ -224,6 +238,7 @@ function tidyKeepingValue(exact: MathNode): MathNode {
  * Les autres résultats (`2 \sqrt{2}`, `\dfrac{1}{3} \ln(2)`, `12 \pi`) gardent leur écriture.
  */
 function schoolExactWriting(source: MathNode, exact: MathNode): MathNode {
+	if (isRationalMultipleOfPi(exact)) return tidyKeepingValue(exact);
 	if (hasTrigonometricFunction(exact)) return exact;
 	if (hasTrigonometricFunction(source)) return tidyKeepingValue(exact);
 	return mapNode(exact, (n) =>

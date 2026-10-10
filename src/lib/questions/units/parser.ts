@@ -182,7 +182,7 @@ function extractValue(latex: string): number | string | null {
  * Parse a unit expression string into a Unit type
  *
  * Une seule règle pour toute l'application : la lecture est déléguée à
- * `mathAST/units/parser.ts` (référence : `docs/ref/notation-unites.md`). Seuls
+ * `mathAST/units/parser.ts` (référence : `docs/pratiques/notation-unites.md`). Seuls
  * les exposants Unicode (`m²`, `s⁻¹`), que MathLive ou un clavier peuvent
  * produire, sont d'abord convertis en `^n`, ainsi que `·` et `×` en `*`.
  *

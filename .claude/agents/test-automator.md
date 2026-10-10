@@ -27,7 +27,6 @@ This agent owns *creating, improving, and debugging automated tests*: Vitest uni
 
 ## FORBIDDEN — Memory rules
 
-- **`pnpm test:triggers`** and `tests/database/triggers/` don't work locally (Docker required, broken setup). Never include in plans. Memory `feedback_no-trigger-tests`.
 - **Don't relaunch `npx svelte-check` multiple times** even with `--incremental` — saturates memory. Memory `feedback_no-svelte-check-loops`.
 - **Don't run `pnpm test:unit`/full test suites "to understand a bug"** — use targeted file runs (`pnpm test:server <path>` or `pnpm test:client <path>`). CLAUDE.md ("Quand NE PAS utiliser d'agent").
 

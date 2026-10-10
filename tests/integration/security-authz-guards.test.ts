@@ -2,7 +2,7 @@
  * Security — authenticated authorization guards (needs a running DB)
  * ==================================================================
  *
- * Vague-0 incident regression guard (docs/wip/security-audit-2026-08.md).
+ * Vague-0 incident regression guard (docs/archive/wip/security-audit-2026-08.md).
  *
  * Anon lockdown is not enough: a logged-in STUDENT (the largest population, and
  * the one holding minors' data) must not be able to escalate or act as someone

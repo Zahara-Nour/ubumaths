@@ -302,6 +302,16 @@ export interface VariationResult {
 
 	/** Warnings encountered during analysis */
 	readonly warnings?: readonly string[];
+
+	/**
+	 * `true` quand le solveur n'a pas su résoudre f'(x) = 0.
+	 *
+	 * Les points critiques, le sens de variation et les extrema ne sont alors
+	 * PAS déterminés — et non « aucun » : `criticalPoints`,
+	 * `monotonicIntervals` et `extrema` sont vides, et l'affichage doit le
+	 * dire au lieu de conclure.
+	 */
+	readonly derivativeZerosUnresolved?: boolean;
 }
 
 // =============================================================================

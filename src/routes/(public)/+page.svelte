@@ -1,42 +1,47 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
-	import { formatMedium } from '$lib/almanach/calendar';
-	import { MONTH_PALETTES, ambianceMonthIndex } from '$lib/almanach/palettes';
+	import { MONTH_PALETTES } from '$lib/almanach/palettes';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import JsonLd from '$lib/seo/JsonLd.svelte';
+	import { SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
 	import type { PageProps } from './$types';
+
+	// Constantes
+
+	/** Le site et son éditeur, décrits aux moteurs (schema.org) */
+	const HOME_JSON_LD = {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{ '@type': 'WebSite', name: SITE_NAME, url: SITE_URL, inLanguage: 'fr' },
+			{
+				'@type': 'Organization',
+				name: SITE_NAME,
+				url: SITE_URL,
+				logo: absoluteUrl('/apple-touch-icon.png')
+			}
+		]
+	};
 
 	let { data }: PageProps = $props();
 
-	const todayLabel = $derived(formatMedium(data.almanach));
-	// Un jour hors-mois prend l'ambiance du mois qui le précède (cf. palettes.ts)
-	const ambiance = $derived(MONTH_PALETTES[ambianceMonthIndex(data.almanach)]);
+	// Le serveur choisit le mois (un jour hors-mois prend celui qui le précède, cf. palettes.ts)
+	const ambiance = $derived(MONTH_PALETTES[data.ambianceMonth]);
 </script>
 
-<svelte:head>
-	<title>Chiphre - Les maths de la chandelle verte</title>
-	<meta
-		name="description"
-		content="Chiphre est une application educative de mathematiques pour eleves francophones. {lore
-			.learning.exercise}s interactifs, jeux et outils pour apprendre les maths."
-	/>
-</svelte:head>
+<SeoHead
+	title="Chiphre - Les maths de la chandelle verte"
+	description="Chiphre, les maths de la chandelle verte : exercices interactifs, automatismes, jeux et outils de mathématiques pour les élèves, de la 6ᵉ à la Terminale."
+/>
+<JsonLd data={HOME_JSON_LD} />
 
+<!-- Grille 1fr / auto / 1fr : Père Ubu occupe la rangée du milieu, donc le centre exact de la zone.
+     Le titre se cale en haut de la première rangée, le Shtam en bas de la dernière. -->
 <div
-	class="container mx-auto flex h-full flex-col items-center justify-center space-y-20 p-4 text-center"
+	class="zone relative container mx-auto grid h-full grid-rows-[1fr_auto_1fr] justify-items-center overflow-hidden px-4 py-3 text-center"
 >
-	<div class="mb-8 flex flex-col items-center gap-3">
-		<h1 class="text-4xl font-bold">
-			Les maths de la chandelle <span class="text-primary">verte</span>
-		</h1>
-		<p class="text-lg">
-			<a
-				href={resolve('/almanach')}
-				class="rounded-sm text-muted-foreground italic underline-offset-4 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-			>
-				{todayLabel}<span class="sr-only"> : ouvrir l’Almanach des Chiphres</span>
-			</a>
-		</p>
-	</div>
+	<h1 class="titre self-start text-3xl font-bold sm:text-4xl">
+		Les maths de la chandelle <span class="text-primary">verte</span>
+	</h1>
 
 	<figure
 		style:--halo-1-light={ambiance.light.h1}
@@ -212,6 +217,18 @@
 			</svg>
 		</a>
 	</figure>
+
+	{#if data.shtam}
+		<!-- Dépêche discrète : tout en bas, juste au-dessus du bouton « Infos et confidentialité » -->
+		<a
+			href={resolve('/(public)/shtam/[slug]', { slug: data.shtam.slug })}
+			class="depeche"
+			data-testid="home-shtam"
+		>
+			<span class="depeche-label"><span class="dot" aria-hidden="true"></span>Le Shtam</span>
+			<span class="depeche-text">{data.shtam.title}</span>
+		</a>
+	{/if}
 </div>
 
 <style lang="postcss">
@@ -223,9 +240,17 @@
 	figure a {
 		@apply relative z-10 inline-block;
 	}
+	/* La zone est un conteneur de taille : Ubu rétrécit selon la hauteur disponible
+	   (240 px quand il y a la place), pour que tout tienne sans défiler sur petit écran. */
+	.zone {
+		container-type: size;
+	}
 	figure svg,
 	.img-bg {
-		@apply h-60 w-60;
+		/* Chaque rangée 1fr doit garder la place du titre (2 lignes) ou du Shtam */
+		--ubu: clamp(5rem, calc(100cqh - 13rem), 15rem);
+		width: var(--ubu);
+		height: var(--ubu);
 	}
 	/* Halo et traits prennent l'ambiance du mois de l'Almanach. Pas de light-dark()
 	   ici : il serait relu dans les @keyframes, ce que Safari ne gère pas avant 17.5.
@@ -269,8 +294,38 @@
 			transform: scale(1.5);
 		}
 	}
-	@media (prefers-reduced-motion: reduce) {
+	.depeche {
+		@apply flex max-w-xs items-baseline gap-2 self-end rounded-md px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none dark:text-foreground;
+	}
+	.depeche-label {
+		@apply flex shrink-0 items-center gap-1.5 text-[0.65rem] font-bold tracking-wider text-destructive uppercase;
+	}
+	.dot {
+		@apply inline-block h-1.5 w-1.5 rounded-full bg-destructive;
+		animation: clignote 1.2s ease-in-out infinite;
+	}
+	@keyframes clignote {
+		50% {
+			opacity: 0.2;
+		}
+	}
+	.depeche-text {
+		@apply line-clamp-2 leading-snug;
+	}
+	/* Zone basse (petit téléphone) : titre resserré. Après les règles de base,
+	   pour les remplacer à spécificité égale. */
+	@container (max-height: 560px) {
+		.titre {
+			@apply text-2xl;
+		}
+		figure svg,
 		.img-bg {
+			--ubu: clamp(5rem, calc(100cqh - 11rem), 15rem);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.img-bg,
+		.dot {
 			animation: none;
 		}
 	}

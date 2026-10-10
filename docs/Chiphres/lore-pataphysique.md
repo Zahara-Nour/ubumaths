@@ -201,6 +201,13 @@ Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines
 
 **Six provinces, six suffixes différents, six registres distincts** : -ie noble, -stan oriental, -lande nordique, -métrie scientifique, -istan post-soviétique, -ovie slave. La carte sonne comme une vraie Europe imaginaire à six royaumes.
 
+#### Sandomir, capitale du Royaume 🟢🟡
+
+- **Nom** 🟢 : canon Jarry. Dans _Ubu Roi_ (acte I), le roi Venceslas récompense Ubu : « je te fais aujourd'hui comte de Sandomir ». Chez Jarry, c'est un titre, pas un lieu de bataille : la défaite face au Czar a lieu ailleurs (acte IV).
+- **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces. Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
+- **Ce qu'on n'en reprend pas** : Sandomierz est aussi une vraie ville de Pologne ; on n'en garde que le nom. Le fondateur du Collège de 'Pataphysique a pris « Sandomir » pour pseudonyme (1948) : le nom vient de Jarry et reste libre, mais rien du Collège n'est repris.
+- **Usage** : « À Sandomir, au Trône Royal… » dans les articles du Shtam et les cinématiques d'Ubu. Pendant de l'Empire du Czar, gouverné depuis son palais d'Hiver.
+
 #### Logique sonore et anatomique du Royaume
 
 Cinq des six provinces s'appuient sur **un trait corporel** du Père Ubu (nombril, bedaine,pommadam, pif, phlatulence, TODO: trouver quelquechose pour la Patatovie, les fesses de Père Ubu=2 grosses patates ou alors les poches remplies d'argent qui font presque parties intégrantes de son corps ?). Le Royaume **est littéralement le corps d'Ubu déployé en géographie**. Les Galopins qui voyagent dans le programme scolaire parcourent en réalité l'anatomie de leur souverain.
@@ -386,6 +393,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Devise** : « **La route est droite, mais la courbe est forte** »
 - **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
 - **Paysage canon** : steppes orientales parsemées de polyèdres en pierre, élevés par les soins d'Achras. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
+- **Relief de Lobatchevsk** 🟡 (décision de David, 2026-10-08) : la ville est bâtie sur un col en forme de **selle de cheval**, une surface à courbure négative. Comme dans la géométrie de Lobatchevski, la somme des angles d'un triangle tracé dans ses rues est **inférieure à 180°**. Achras en tire une fierté locale : « À Lobatchevsk, un triangle bien élevé a moins de 180 degrés. » Pendant, en géométrie, de la sphère (somme supérieure à 180°).
 
 #### Yoyolande — _Fonctions_
 
@@ -514,14 +522,14 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 #### 🐻 Le Czar Alexis — _L'Antagoniste suprême_ 🟢
 
-- **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_. **Siège** : le **palais de Moscou** (canon Jarry).
+- **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Chez Jarry, le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_. **À Chiphre (décision de David, 2026-10-06) : le Czar n'est rattaché à aucun pays ni aucune ville réels.** Il règne sur **l'Empire du Czar**, depuis son **palais d'Hiver**. On n'écrit jamais Russie, Moscou ni « russe » à son sujet : Chiphre ne présente aucun pays réel en ennemi.
 - **Rôle UI dans Chiphre** : Boss des défis majeurs, brevet, bac, examens blancs, tournois, contrôles trimestriels. Le Galopin **affronte le Czar Alexis** lors du Grand Décervelage — exactement comme Ubu l'affronte dans la pièce.
 - **Tempérament** : Glacial, méthodique, redoutable. Voix grave, autorité naturelle. Représente l'évaluation officielle, la sanction, le programme institutionnel. **Adversaire respecté** plus qu'haï — son rôle est nécessaire à la progression.
-- **Apparence** : Grand barbu, chapka, manteau de fourrure d'ours, regard d'aigle. Iconographie XIXᵉ siècle russe impériale.
-- **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque russe. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
+- **Apparence** : Grand barbu, chapka, manteau de fourrure d'ours, regard d'aigle. Iconographie impériale XIXᵉ siècle, d'un Empire du Nord imaginaire.
+- **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
 - **Motivation** : Imposer l'ordre mathématique officiel. Il **n'est pas l'antagoniste philosophique** d'Ubu (Ubu et Alexis se respectent mutuellement comme deux souverains) — il est l'adversaire institutionnel.
 - **Quand il intervient** : annonce d'examens, défis hebdomadaires majeurs, tournois inter-classes, événements compétitifs. Il ouvre les sessions d'évaluation et clôt les épreuves.
-- **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet à Chiphre de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis, comme à Sandomir ! Mais Notre Majesté reviendra ! »_
+- **Bonus narratif canon** : dans _Ubu Roi_, le Czar Alexis **gagne la bataille** contre Ubu (acte IV). Cette défaite ubuesque canonique permet à Chiphre de **dédramatiser les mauvais résultats** : _« Cornegidouille ! Nous avons été déconfits par le Czar Alexis ! Mais Notre Majesté reviendra ! »_
 
 #### 🎩 Monsieur Prudhomme — _La Voix des Édits Royaux_ 🟢 (via Henri Monnier)
 
@@ -560,12 +568,16 @@ Le **casting tutoral** des Chiphre est désormais **stratifié sur trois registr
 
 Les Palotins sont les sbires d'Ubu dans la pièce. **Dans Chiphre, ce sont les amis du Galopin**.
 
-| Palotin       | Personnalité           | Rôle                                    |
-| ------------- | ---------------------- | --------------------------------------- |
-| **Giron**     | Costaud, simple, loyal | Le pote qui aide aux exercices basiques |
-| **Pile**      | Fourbe, opportuniste   | Celui qui propose des trades douteux    |
-| **Cotice**    | Lettré, bavard         | Celui qui explique trop                 |
-| **Merdanpot** | Stupide mais brave     | Celui qui rate tout avec panache        |
+| Palotin             | Personnalité           | Rôle                                    | Source (vérifiée 2026-10-05)                                                                                                |
+| ------------------- | ---------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Giron**           | Costaud, simple, loyal | Le pote qui aide aux exercices basiques | 🟢 _Ubu Roi_ — liste des personnages : « Giron, Pile, Cotice… Palotins »                                                    |
+| **Pile**            | Fourbe, opportuniste   | Celui qui propose des trades douteux    | 🟢 _Ubu Roi_ — idem                                                                                                         |
+| **Cotice**          | Lettré, bavard         | Celui qui explique trop                 | 🟢 _Ubu Roi_ — idem                                                                                                         |
+| **Merdranpo**       | Stupide mais brave     | Celui qui rate tout avec panache        | 🟠 _Ubu Cocu_ « Merdanpo » (éd. 1944) + le R de _merdre_ — forme Chiphre décidée par David                                  |
+| **Mousched-Gogh**   | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — orthographe de l'édition de 1944                                                                            |
+| **Quatrezoneilles** | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — les Palotins disent « Hon, Monsieuye ! » ; « Monsieuye des Phynances » (Lexique) non trouvé dans l'éd. 1944 |
+
+Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_Ubu Roi_ (leurs noms sont des termes d'héraldique : le giron, la pile et la cotice sont des pièces d'un blason) ; Merdanpo (Merdranpo à Chiphre), Mousched-Gogh et Quatrezoneilles sont « les trois Palotins » d'_Ubu Cocu_, qui chantent ensemble leur chanson (« Dans de grandes boît's en fer-blanc / Empilés la semaine entière… »). Personnalités et rôles sont des extensions Chiphre 🟠.
 
 ### Personnages mineurs et figurants
 
@@ -632,6 +644,7 @@ Chiphre revendique une **généalogie pataphysique** explicite : les patanautes 
 | `/games/2048`                    | La Roulette Ubuesque           | —                                         |
 | `/tuteur`                        | L'Antre du Décervelage         | Père Ubu                                  |
 | `/pere-ubu`                      | Le Trône Royal                 | Père Ubu (en majesté)                     |
+| `/shtam`                         | La Gazette du Royaume (Shtam)  | **Rédaction du Shtam**                    |
 | `/leaderboards`                  | Le Tableau des Honneurs Royaux | Bougrelas                                 |
 | `/dashboard/student/riddles`     | La Crypte des Énigmes          | Conscience                                |
 | `/dashboard/bug-reports`         | Le Bureau des Doléances        | Madame la Financière                      |
@@ -688,6 +701,7 @@ Chiphre revendique une **généalogie pataphysique** explicite : les patanautes 
 | Abonnement                   | Pacte Phynancier              | « Souscrire un Pacte Phynancier ».                                                                                                      |
 | Erreur, faute                | Pataphysique                  | « Vous avez fait de la pataphysique ! » au lieu de « Faux ».                                                                            |
 | Bonne réponse                | Coup de Maître                | Ou « bien empoché ».                                                                                                                    |
+| Actualités, news             | Le Shtam                      | Gazette parodique (_maths_ à l'envers). Exception assumée à la règle 3. Voir Section IX, « Le Shtam ».                                  |
 | Indice                       | Coup de pouce de Conscience   |                                                                                                                                         |
 | Aide / tutoriel              | Décervelage Pédagogique       |                                                                                                                                         |
 | Niveau / chapitre            | Province                      | « Vous explorez la Province de Nombrilie. »                                                                                             |
@@ -775,9 +789,9 @@ Chaque juron canonique a un **contexte d'utilisation préférentiel**. Cela perm
 
 #### Juron du Czar Alexis 🟢
 
-| Juron                   | Locuteur                  | Contexte                                                                                                                                                     |
-| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Par Saint Georges !** | Czar Alexis exclusivement | Canon Jarry, _Ubu Roi_. Patron du combat chevaleresque russe. À utiliser dans les cinématiques où le Czar Alexis intervient (annonce d'examen, défi majeur). |
+| Juron                   | Locuteur                  | Contexte                                                                                                                                               |
+| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Par Saint Georges !** | Czar Alexis exclusivement | Canon Jarry, _Ubu Roi_. Patron du combat chevaleresque. À utiliser dans les cinématiques où le Czar Alexis intervient (annonce d'examen, défi majeur). |
 
 ### Néologismes orthographiques canon Jarry 🟢
 
@@ -811,6 +825,7 @@ Cette citation est le **manifeste linguistique** de Chiphre. Elle justifie patap
 | **Quatr'esme** | apostrophe + _-esme_                                            | Niveau 4ᵉ                                 |
 | **Troyz'esme** | apostrophe + *i*→*y* + *s*→*z* + _-esme_                        | Niveau 3ᵉ                                 |
 | **Secondre**   | R potache canon                                                 | Niveau Seconde                            |
+| **Merdranpo**  | R potache canon ajouté au Palotin _Merdanpo_ d'_Ubu Cocu_       | Palotin, reporter du Shtam                |
 | **Primalle**   | racine _Primal_ + _L_ doublé                                    | Niveau Première                           |
 | **Phinalle**   | *t*→*ph* + _L_ doublé                                           | Niveau Terminale (abréviation : **φᵃˡᵉ**) |
 
@@ -1429,6 +1444,28 @@ Les Chiphre parlent avec **cinq voix superposables**, jamais en concurrence. Cha
 | CGU, mentions légales, RGPD, paramètres | Monsieur Prudhomme     |
 | Récapitulatifs, méditation, doute       | Tristan Bernard        |
 | Examens, défis majeurs, tournois        | Père Ubu + Czar Alexis |
+| Articles du Shtam                       | Rédaction du Shtam     |
+
+### Le Shtam — la gazette du Royaume 🟡
+
+**Le Shtam** (masculin, comme un titre de journal) est la gazette parodique du Royaume : de fausses nouvelles mathresques, à la manière d'une presse satirique pince-sans-rire. Le nom est _maths_ à l'envers : c'est la seule **exception assumée à la règle 3** (« Mathres, jamais maths »), parce que le retournement est la blague. On n'écrit ni « Serhtam » ni « Shtamres ».
+
+- **Lieu** : page publique `/shtam` (la une) et `/shtam/<slug>` (un article). Lecture seule : **ni commentaires, ni réactions**.
+- **Voix — la Rédaction du Shtam** : sixième voix, réservée aux articles. Registre **journalistique imperturbable** : on rapporte l'absurde avec le sérieux d'une dépêche. Jamais de clin d'œil au lecteur, jamais de « lol », jamais de juron dans le corps de l'article. Père Ubu peut y paraître, mais **cité** (interview, déclaration, communiqué), jamais comme narrateur.
+- **Rédaction** 🟡 (validée par David, 2026-10-05) : **Cotice** (Palotin lettré et bavard) rédacteur en chef ; **Giron**, **Pile** et **Merdranpo** reporters. Chaque article est signé.
+- **Datation** : chaque article porte sa **date de l'Almanach** (« 14 Auroral »), calculée depuis sa date réelle de publication.
+- **Le vrai du faux** : chaque article se termine **obligatoirement** par un encadré séparé, **voix de l'Académie**, qui rétablit le fait mathématique réel (« π est transcendant tous les jours. Cela veut dire… »). Le lecteur a de 11 à 18 ans : un faux fait énoncé avec aplomb peut rester. L'encadré fait de chaque blague un mini-cours. Deux voix, deux blocs : la règle stricte des voix est respectée.
+- **Qui peut-on parodier** : les personnages du Royaume et les **mathématiciens morts** (Pythagore, Euler, Fermat…). **Jamais une personne vivante, jamais une institution réelle nommée** (diffamation, site pour mineurs).
+- **Rien du Collège de 'Pataphysique** : ni ses fêtes, ni son calendrier, ni ses publications.
+- **Écrire un article** : format du fichier, formules, vérifications → `docs/pratiques/shtam-articles.md`.
+
+**Exemples de titres** (ton de référence) :
+
+- _« J'ai enfin trouvé à quoi pouvait servir le théorème de Pythagore dans la vie courante ! »_
+- _« Un mathématicien a prouvé que π n'était transcendant que le mardi »_
+- _« Nombrilie : un Galopin divise par zéro, la Province évacuée par précaution »_
+- _« Exclusif — Le Czar Alexis accusé d'avoir arrondi π à 3 pour faire des économies »_
+- _« Bedonstan : un triangle rectangle porte plainte, il dit ne pas avoir été consulté au sujet de l'hypoténuse »_
 
 ### Templates de phrases — voix de Père Ubu
 
@@ -1582,7 +1619,7 @@ const bernardQuotes = [
 >
 > Da, Galopinski. Le moment approche. Dans **{n_jours} jours**, vous m'affronterez lors du **{type_decervelage}**. Préparez-vous, ou disparaissez.
 >
-> _— Le Czar Alexis, depuis Moscou_
+> _— Le Czar Alexis, depuis son palais d'Hiver_
 
 #### Cinématique de défi majeur
 
@@ -1592,7 +1629,7 @@ const bernardQuotes = [
 
 #### Défaite du Galopin face au Czar (rare, dédramatisation)
 
-> _Da, Galopinski. Vous avez perdu, comme Ubu à Sandomir._ Mais le Père Ubu reviendra, et vous avec lui. Notre prochaine rencontre vous trouvera plus aguerri.
+> _Da, Galopinski. Vous avez perdu, comme Ubu face à l'armée du Czar._ Mais le Père Ubu reviendra, et vous avec lui. Notre prochaine rencontre vous trouvera plus aguerri.
 
 ### Ce qu'il NE faut JAMAIS écrire
 
@@ -2003,7 +2040,7 @@ Tu es le PÈRE UBU. Tu es sur le Trône Royal de l'Académie Pataphysique des Ch
 
 DIFFÉRENCE AVEC LE MODE TUTEUR :
 - Tu peux être plus drôle, plus libre, plus digressif.
-- Tu peux raconter des histoires polonaises absurdes, te plaindre de Mère Ubu, dénigrer le Czar Alexis ("par Saint Georges, ce barbu de Moscou !"), te vanter de tes phynances.
+- Tu peux raconter des histoires polonaises absurdes, te plaindre de Mère Ubu, te moquer du Czar Alexis ("par Saint Georges, ce barbu du palais d'Hiver !"), te vanter de tes phynances.
 - Si on te pose une question de Mathres, tu rediriges vers le mode tuteur : "Cornegidouille ! Pour les Phynances Sérieuses, allez voir mon Antre du Décervelage. Ici, on jase."
 - Si on te demande qui tu es, tu réponds avec emphase royale.
 
@@ -2210,7 +2247,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 21. Personnage Bougrelas : pop-up de progression majeure.
 22. Personnage **Monsieur Prudhomme** : illustration calligraphe XIXᵉ + écrans administratifs.
 23. Personnage **Tristan Bernard** : illustration Belle Époque + citations rotatives sur splash screen.
-24. Personnage **Czar Alexis** (canon Jarry) : illustration russe impériale + cinématiques d'examens majeurs.
+24. Personnage **Czar Alexis** (canon Jarry) : illustration impériale (Empire du Czar, imaginaire) + cinématiques d'examens majeurs.
 
 ### 🟠 Sprint 5 — Easter eggs et secrets (1-2 semaines)
 
@@ -2396,15 +2433,15 @@ Pour le détail complet des jurons (registre, fréquence recommandée, locuteur)
 
 ### Lieux et événements canon Jarry / patanautes yllustres 🟢
 
-| Élément                      | Source                                                                                  | Note                                                                                                |
-| ---------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Pologne** comme royaume    | _Ubu Roi_ — lieu officiel de l'action                                                   | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
-| **Théâtre des Phynances**    | Origine 1888, marionnettes du grenier des frères Morin                                  | Ancêtre historique direct du projet Chiphre                                                         |
-| **Roi Venceslas**            | _Ubu Roi_ — assassiné par Ubu                                                           | Disponible pour usage narratif                                                                      |
-| **L'Aigle Rouge de Pologne** | _Ubu Roi_ — décoration officielle d'Ubu                                                 | Disponible pour badge ou récompense                                                                 |
-| **Moscou (palais du Czar)**  | _Ubu Roi_ — siège du Czar Alexis                                                        | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
-| **Sandomir**                 | _Ubu Roi_, acte IV — bataille perdue par Ubu                                            | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
-| **Calendrier pataphysique**  | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948 | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
+| Élément                      | Source                                                                                                | Note                                                                                                |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Pologne** comme royaume    | _Ubu Roi_ — lieu officiel de l'action                                                                 | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
+| **Théâtre des Phynances**    | Origine 1888, marionnettes du grenier des frères Morin                                                | Ancêtre historique direct du projet Chiphre                                                         |
+| **Roi Venceslas**            | _Ubu Roi_ — assassiné par Ubu                                                                         | Disponible pour usage narratif                                                                      |
+| **L'Aigle Rouge de Pologne** | _Ubu Roi_ — décoration officielle d'Ubu                                                               | Disponible pour badge ou récompense                                                                 |
+| **Palais d'Hiver du Czar**   | _Ubu Roi_ (Moscou chez Jarry) — siège du Czar Alexis ; à Chiphre, lieu imaginaire de l'Empire du Czar | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
+| **Sandomir**                 | _Ubu Roi_, acte I — le roi Venceslas fait Ubu « comte de Sandomir »                                   | Capitale du Royaume, siège du Trône Royal (voir Section II, « Sandomir, capitale du Royaume »)      |
+| **Calendrier pataphysique**  | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948               | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
 
 ### Inventions Chiphre assumées (NON canon Jarry)
 

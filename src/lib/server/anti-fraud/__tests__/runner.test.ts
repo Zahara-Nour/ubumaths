@@ -8,7 +8,7 @@
  *   - Dédoublonnage (skip si flag identique non-résolu < 7j)
  *   - dry_run (pas d'INSERT, juste comptage)
  *
- * Source : `docs/wip/srs-anti-fraud-spec-tdd.md` §B7..B8
+ * Source : `docs/archive/wip/srs-anti-fraud-spec-tdd.md` §B7..B8
  */
 
 import { describe, expect, it, vi } from 'vitest';

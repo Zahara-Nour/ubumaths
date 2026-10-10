@@ -1,0 +1,1677 @@
+{
+	"source": "Lot 0c du lexique, validé par David le 2026-10-09 (115 OK, « inconnue » corrigée par lui) : docs/wip/lexique/lot0c-definitions.md (copie figée). Mise à jour par le lot 0f (2026-10-09) : étiquettes de sens (tangente, terme, degré).",
+	"entrees": [
+		{
+			"term": "nombre relatif",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Nombre positif (comme $3$ ou $+2{,}5$), négatif (comme $-4$ ou $-0{,}7$) ou nul ($0$). Avec eux, toutes les soustractions sont possibles : $3 - 5 = -2$."
+				}
+			],
+			"synonymesRetires": ["entier relatif"]
+		},
+		{
+			"term": "inconnue",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Nombre qu'on ne connaît pas encore et qu'on cherche. On peut le représenter par un symbole ($\\square$, $?$) ou par une lettre."
+				},
+				{
+					"grade": "5",
+					"content": "Nombre que l'on cherche dans une équation, désigné par une lettre : dans $5x + 3 = 13$, l'inconnue est $x$ ; $2$ est la solution car $5 \\times 2 + 3 = 13$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "surface",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Partie du plan délimitée par une figure, ou bord extérieur d'un solide. Son aire est la mesure de son étendue : on compare des surfaces selon leur aire."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "proportion",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Part que représente une partie dans le tout : $3$ élèves sur $12$, c'est une proportion de $\\frac{3}{12} = \\frac{1}{4}$, soit $25\\,\\%$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "exposant",
+			"sense": null,
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Dans $a^n$, l'exposant $n$ est le nombre de facteurs égaux à $a$ : $2^3 = 2 \\times 2 \\times 2$ a trois facteurs."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "ordonnée à l'origine",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Pour une fonction affine $x \\mapsto ax + b$, c'est le nombre $b = f(0)$ : la droite qui la représente coupe l'axe des ordonnées au point d'ordonnée $b$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "extremum",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Le plus grand (maximum) ou le plus petit (minimum) des nombres $f(x)$ quand $x$ parcourt un intervalle."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "exponentielle",
+			"sense": null,
+			"grade": "1_SPE",
+			"derivedFrom": "fonction exponentielle",
+			"keepDefs": false,
+			"definitions": [],
+			"synonymesRetires": []
+		},
+		{
+			"term": "combinaison",
+			"sense": null,
+			"grade": "T_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Une combinaison de $k$ éléments d'un ensemble $E$ à $n$ éléments est une partie de $E$ à $k$ éléments (l'ordre ne compte pas). Il y en a $\\binom{n}{k}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "norme",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Longueur d'un vecteur : la norme de $\\overrightarrow{AB}$ est la distance $AB$. Dans une base orthonormée, si $\\vec{u}$ a pour coordonnées $(x ; y)$, sa norme est $\\sqrt{x^2 + y^2}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "concave",
+			"sense": null,
+			"grade": "T_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Une fonction $f$ est concave sur un intervalle $I$ si sa courbe y est située au-dessus de chacune de ses sécantes, entre les deux points d'intersection : c'est le cas de $x \\mapsto -x^2$, dont la courbe a la forme d'un dôme."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "convexe",
+			"sense": null,
+			"grade": "T_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Une fonction $f$ est convexe sur un intervalle $I$ si sa courbe y est située en dessous de chacune de ses sécantes, entre les deux points d'intersection : c'est le cas de $x \\mapsto x^2$, dont la courbe a la forme d'un creux."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "propriété",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Ce qui est toujours vrai pour une figure ou un nombre. Ex : un carré a toujours ses $4$ côtés de même longueur."
+				},
+				{
+					"grade": "6",
+					"content": "Énoncé vrai pour tous les objets d'une même sorte, démontré ou admis : « la somme des angles d'un triangle vaut $180°$ » est une propriété des triangles."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "compter",
+			"sense": null,
+			"grade": "CP",
+			"derivedFrom": null,
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Dire les nombres dans l'ordre : un, deux, trois… Compter des objets, c'est trouver combien il y en a."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "rationnel",
+			"sense": null,
+			"grade": "4",
+			"derivedFrom": null,
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Nombre égal au quotient de deux nombres entiers relatifs : $\\frac{-3}{4}$, $0{,}5 = \\frac{1}{2}$ ou $7 = \\frac{7}{1}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "irrationnel",
+			"sense": null,
+			"grade": "2",
+			"derivedFrom": null,
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Nombre réel qui ne peut pas s'écrire comme quotient de deux entiers : $\\sqrt{2}$ et $\\pi$ sont irrationnels."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "soustraction",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Opération qui sert à enlever, à retirer ou à trouver ce qui manque : $56 - 14 = 42$. C'est l'opération inverse de l'addition."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "multiplication",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Calcul qui permet de compter vite des paquets identiques. Ex : $3$ paquets de $4$ billes, c'est $3$ fois $4$ billes : $4 + 4 + 4 = 12$."
+				},
+				{
+					"grade": "CE1",
+					"content": "Opération qui remplace une addition répétée : $3 \\times 20$, c'est $20 + 20 + 20$. Son résultat s'appelle le produit."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "division",
+			"sense": null,
+			"grade": "CE2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Opération qui sert à partager en parts égales, ou à chercher combien de fois un nombre est contenu dans un autre. C'est l'opération inverse de la multiplication : $7 \\times 13 = 91$, donc $91 \\div 7 = 13$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "simplification",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Simplifier une fraction, c'est diviser son numérateur et son dénominateur par un même nombre entier pour obtenir une fraction égale plus simple : $\\frac{6}{8} = \\frac{3}{4}$."
+				},
+				{
+					"grade": "5",
+					"content": "Plus généralement, simplifier une écriture, c'est la remplacer par une écriture égale plus simple : $3x + 2x$ devient $5x$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "distance à zéro",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Écart entre un nombre et $0$ sur une droite graduée, sans tenir compte du signe : la distance à zéro de $-3$ est $3$, comme celle de $3$. On l'appelle aussi valeur absolue."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "coefficient directeur",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Pour une fonction affine $x \\mapsto ax + b$, c'est le nombre $a$ : quand $x$ augmente de $1$, $f(x)$ augmente de $a$. On l'appelle aussi la pente de la droite."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "tangente",
+			"sense": "courbe",
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Tangente à la courbe de $f$ au point d'abscisse $a$ : la droite qui passe par ce point et dont le coefficient directeur est le nombre dérivé $f'(a)$. C'est la position limite des sécantes qui passent par ce point."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "nombre dérivé",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Nombre $f'(a)$ dont se rapproche le taux de variation $\\frac{f(a+h) - f(a)}{h}$ quand $h$ se rapproche de $0$. C'est le coefficient directeur de la tangente à la courbe au point d'abscisse $a$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "dérivée",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Fonction dérivée de $f$ : la fonction $f'$ qui, à chaque nombre $x$ où $f$ est dérivable, associe le nombre dérivé $f'(x)$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "symétrie axiale",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Le symétrique d'un point $A$ par rapport à une droite $(d)$ est le point $A'$ tel que $(d)$ soit la médiatrice du segment $[AA']$ (ou $A$ lui-même si $A$ est sur $(d)$). La symétrie axiale transforme une figure comme un pliage le long de $(d)$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "symétrie centrale",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Demi-tour autour d'un point $O$ : l'image d'un point $M$ est le point $M'$ tel que $O$ soit le milieu du segment $[MM']$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "somme",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Une somme d'argent, c'est ce que valent ensemble des pièces et des billets : un billet de $10$ € et une pièce de $2$ € font une somme de $12$ €."
+				},
+				{
+					"grade": "CE2",
+					"content": "Résultat d'une addition. Ex : la somme de $3$ et $5$ est $8$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "quotient",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Résultat exact d'une division : le quotient de $3$ par $4$ est $\\frac{3}{4} = 0{,}75$. Dans une division euclidienne, le quotient est le nombre entier trouvé : $15 = 4 \\times 3 + 3$ (quotient $3$, reste $3$)."
+				},
+				{
+					"grade": "5",
+					"content": "Le quotient de $a$ par $b$ ($b \\neq 0$) est le nombre qui, multiplié par $b$, donne $a$ ; on l'écrit $a \\div b$ ou $\\frac{a}{b}$ : $3 \\times \\frac{7}{3} = 7$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "opérateur",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Ce qui agit sur un nombre pour le transformer : « prendre les $\\frac{3}{4}$ de » est un opérateur ; les $\\frac{3}{4}$ de $20$, c'est $15$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "terme",
+			"sense": "opération",
+			"grade": "CE2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Chacun des nombres d'une addition ou d'une soustraction : $12$ et $25$ sont les termes de l'addition $12 + 25$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "égalité",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Écriture avec le signe $=$ qui dit que deux calculs ou deux nombres valent la même chose : $3 + 2 = 5$."
+				},
+				{
+					"grade": "5",
+					"content": "Écriture $A = B$ qui affirme que deux expressions ont la même valeur ; elle peut être vraie ou fausse : $2x + 1 = 7$ est vraie pour $x = 3$, fausse pour $x = 4$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "fraction",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Nombre qui sert à parler de parts égales d'un tout. Ex : $\\frac{1}{2}$ (un demi) : on partage en $2$ parts égales et on en prend $1$ ; $\\frac{3}{4}$ : on partage en $4$ et on en prend $3$."
+				},
+				{
+					"grade": "6",
+					"content": "Quotient de deux nombres entiers : $\\frac{3}{7}$ est le nombre qui, multiplié par $7$, donne $3$. Une fraction est à la fois ce nombre et son écriture ($3$ est le numérateur, $7$ le dénominateur)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "simplifier une fraction",
+			"sense": null,
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Diviser le numérateur et le dénominateur par un même nombre entier, diviseur des deux : $\\frac{6}{8} = \\frac{3}{4}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "expression",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Écriture qui combine des nombres, parfois des lettres, avec des signes d'opérations et des parenthèses : $3 \\times (5 + 2)$ ou $3x + 2$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "variable",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Lettre qui peut prendre différentes valeurs : dans $2x + 3$, on peut remplacer $x$ par n'importe quel nombre."
+				},
+				{
+					"grade": "4",
+					"content": "En informatique, une variable est une case de la mémoire qui porte un nom et contient une valeur, qui peut changer pendant le programme."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "factoriser",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Écrire sous forme d'un produit : une somme, $3x + 6 = 3(x + 2)$, ou un nombre entier, $21 = 3 \\times 7$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "factorisation",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Écriture sous forme d'un produit : $3x + 6 = 3(x + 2)$ ou $21 = 3 \\times 7$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "identité remarquable",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Chacune des trois égalités vraies pour tous nombres $a$ et $b$ : $(a+b)^2 = a^2 + 2ab + b^2$, $(a-b)^2 = a^2 - 2ab + b^2$ et $(a-b)(a+b) = a^2 - b^2$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "coefficient",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Nombre qui multiplie : dans $5x$, le coefficient de $x$ est $5$."
+				},
+				{
+					"grade": "3",
+					"content": "Les coefficients de la fonction affine $x \\mapsto ax + b$ sont les nombres $a$ et $b$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "monôme",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Produit d'un nombre par une puissance d'une lettre, comme $3x^2$ ou $-5x$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "polynôme",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Expression comme $ax^2 + bx + c$ ou $ax^3 + bx^2 + cx + d$ : une somme de termes « nombre × puissance de $x$ ». Le plus grand exposant de coefficient non nul est son degré : $2x^2 + 3x - 1$ est de degré $2$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "degré",
+			"sense": "équation",
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Une équation du premier degré est une équation où l'inconnue n'est jamais élevée au carré ni à une autre puissance. Ex : $3x + 2 = 8$."
+				},
+				{
+					"grade": "1_SPE",
+					"content": "Plus grand exposant de $x$ dont le coefficient n'est pas nul : $2x^3 + x$ est de degré $3$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "ratio",
+			"sense": null,
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Façon de comparer des quantités par leurs parts : un ratio de $2 : 3$ veut dire $2$ parts pour $3$ parts. On peut comparer plus de deux quantités, comme $2 : 3 : 5$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "puissance",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Le carré d'un nombre est ce nombre multiplié par lui-même : $5^2 = 5 \\times 5 = 25$ ; son cube : $2^3 = 2 \\times 2 \\times 2 = 8$. Ce sont des puissances."
+				},
+				{
+					"grade": "4",
+					"content": "Pour un entier $n \\geq 1$, $a^n$ est le produit de $n$ facteurs égaux à $a$ : $2^3 = 2 \\times 2 \\times 2 = 8$. Par convention, $a^0 = 1$ pour $a \\neq 0$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "exposant négatif",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Pour $a \\neq 0$ et $n$ entier positif, $a^{-n} = \\frac{1}{a^n}$, l'inverse de $a^n$ : $2^{-3} = \\frac{1}{8}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "carré parfait",
+			"sense": null,
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Entier qui est le carré d'un entier : $0$, $1$, $4$, $9$, $16$, $25$…"
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "croissante",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "$f$ est croissante sur un intervalle $I$ si, pour tous réels $a$ et $b$ de $I$ tels que $a \\leq b$, on a $f(a) \\leq f(b)$ : quand $x$ augmente, $f(x)$ augmente ou reste égal."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "décroissante",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "$f$ est décroissante sur un intervalle $I$ si, pour tous réels $a$ et $b$ de $I$ tels que $a \\leq b$, on a $f(a) \\geq f(b)$ : quand $x$ augmente, $f(x)$ diminue ou reste égal."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "croissant",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": true,
+			"synonymesRetires": []
+		},
+		{
+			"term": "décroissant",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": true,
+			"synonymesRetires": []
+		},
+		{
+			"term": "représenter",
+			"sense": null,
+			"grade": "CE1",
+			"derivedFrom": null,
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Montrer une situation, des données ou un nombre par un dessin, un schéma, un tableau ou un graphique : représenter une fraction, représenter des données par un diagramme."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "intervalle",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Ensemble des réels $x$ qui vérifient une ou deux inégalités : $[2 ; 5]$ contient les $x$ tels que $2 \\leq x \\leq 5$ ; $]-\\infty ; 3[$ contient les $x$ tels que $x < 3$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "continu",
+			"sense": null,
+			"grade": "T_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Une fonction $f$ est continue en $a$ si $f(x)$ se rapproche de $f(a)$ quand $x$ se rapproche de $a$ : $\\lim_{x \\to a} f(x) = f(a)$. Continue sur un intervalle, sa courbe s'y trace sans lever le crayon."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "continuité",
+			"sense": null,
+			"grade": "T_SPE",
+			"derivedFrom": "continu",
+			"keepDefs": false,
+			"definitions": [],
+			"synonymesRetires": []
+		},
+		{
+			"term": "intégrale",
+			"sense": null,
+			"grade": "T_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "T_SPE",
+					"content": "Pour $f$ continue et positive sur $[a ; b]$, $\\int_a^b f(x)\\,\\mathrm{d}x$ est l'aire du domaine compris entre la courbe de $f$, l'axe des abscisses et les droites d'équations $x = a$ et $x = b$. Pour $f$ continue de signe quelconque, c'est $F(b) - F(a)$, où $F$ est une primitive de $f$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "limite",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Une suite a pour limite le réel $\\ell$ si ses termes deviennent aussi proches de $\\ell$ que l'on veut quand $n$ est assez grand ; elle a pour limite $+\\infty$ si ses termes deviennent aussi grands que l'on veut."
+				},
+				{
+					"grade": "T_SPE",
+					"content": "Le réel $\\ell$ est la limite de $(u_n)$ si tout intervalle ouvert contenant $\\ell$ contient tous les termes $u_n$ à partir d'un certain rang ; même idée pour $f(x)$ quand $x$ tend vers $a$ ou vers $+\\infty$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "rang",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Place occupée dans une file ou une liste : premier, deuxième, troisième… Ex : Léa est au troisième rang de la file."
+				},
+				{
+					"grade": "6",
+					"content": "Le rang d'un chiffre est sa place dans l'écriture d'un nombre : dans $3{,}52$, le chiffre $5$ est au rang des dixièmes."
+				},
+				{
+					"grade": "1_SPE",
+					"content": "Indice d'un terme dans une suite. Dans $u_5$, le rang est $5$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "variance",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Moyenne des carrés des écarts à la moyenne ; pour une variable aléatoire $X$ : $V(X) = E\\big((X - E(X))^2\\big)$. L'écart type est $\\sqrt{V}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "quartile",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Le premier quartile $Q_1$ est la plus petite valeur de la série telle qu'au moins un quart des valeurs lui sont inférieures ou égales ; le troisième quartile $Q_3$, la plus petite telle qu'au moins trois quarts le sont."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "moyenne",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Nombre obtenu en additionnant toutes les valeurs puis en divisant par le nombre de valeurs : la moyenne de $8$, $12$ et $13$ est $(8 + 12 + 13) \\div 3 = 11$."
+				},
+				{
+					"grade": "4",
+					"content": "Moyenne pondérée : chaque valeur compte autant de fois que son effectif (ou son coefficient)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "probabilité",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "La probabilité d'un évènement dit s'il a beaucoup ou peu de chances de se produire. Ex : avec une pièce, on a une chance sur deux d'obtenir pile."
+				},
+				{
+					"grade": "6",
+					"content": "Nombre compris entre $0$ et $1$ qui mesure la chance qu'un évènement se produise : $0$ s'il est impossible, $1$ s'il est certain."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "ensemble",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Groupe d'objets ou de points réunis parce qu'ils ont quelque chose en commun. Ex : le cercle est l'ensemble des points situés à la même distance du centre."
+				},
+				{
+					"grade": "4",
+					"content": "Collection d'objets bien déterminés, ses éléments : l'ensemble des issues d'un lancer de dé est $\\{1, 2, 3, 4, 5, 6\\}$."
+				},
+				{
+					"grade": "2",
+					"content": "Collection d'éléments. Ex : $\\mathbb{N}$ (entiers naturels), $\\mathbb{R}$ (réels)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "rayon",
+			"sense": null,
+			"grade": "CE2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Segment qui va du centre d'un cercle à un point du cercle ; c'est aussi sa longueur : un cercle de rayon $4$ cm."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "diamètre",
+			"sense": null,
+			"grade": "CE2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Segment qui joint deux points du cercle en passant par son centre ; il est deux fois plus long que le rayon."
+				},
+				{
+					"grade": "3",
+					"content": "Segment qui joint deux points d'un cercle ou d'une sphère en passant par le centre ; sa longueur est le double du rayon : $d = 2r$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "translation",
+			"sense": null,
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Transformation qui déplace chaque point dans la même direction, dans le même sens et de la même distance."
+				},
+				{
+					"grade": "3",
+					"content": "La translation qui transforme $A$ en $B$ associe à tout point $M$ le point $M'$ tel que $ABM'M$ soit un parallélogramme (éventuellement aplati)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "théorème de Thalès",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Si deux droites sécantes en $A$ sont coupées par deux droites parallèles $(BC)$ et $(MN)$, avec $B$ et $M$ sur l'une, $C$ et $N$ sur l'autre, alors $\\frac{AM}{AB} = \\frac{AN}{AC} = \\frac{MN}{BC}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "parallélogramme",
+			"sense": null,
+			"grade": "5",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "5",
+					"content": "Quadrilatère dont les côtés opposés sont parallèles deux à deux."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "trapèze",
+			"sense": null,
+			"grade": "CM2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM2",
+					"content": "Quadrilatère qui a deux côtés opposés parallèles."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "pyramide",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Solide qui a une base et des faces en forme de triangles qui se rejoignent en un sommet. Ex : les pyramides d'Égypte."
+				},
+				{
+					"grade": "CM1",
+					"content": "Solide dont la base est un polygone et dont les autres faces sont des triangles qui ont un sommet commun, le sommet de la pyramide."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "prisme",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Un prisme droit est un solide qui a deux faces superposables et parallèles, ses bases (des polygones) ; toutes ses autres faces sont des rectangles."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "vecteur",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Le vecteur $\\overrightarrow{AB}$ décrit la translation qui transforme $A$ en $B$ : une direction (celle de la droite $(AB)$), un sens (de $A$ vers $B$) et une longueur ($AB$)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "scalaire",
+			"sense": null,
+			"grade": "1_SPE",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "1_SPE",
+					"content": "Produit scalaire de deux vecteurs non nuls $\\vec{u}$ et $\\vec{v}$ : le nombre $\\vec{u} \\cdot \\vec{v} = \\|\\vec{u}\\| \\times \\|\\vec{v}\\| \\times \\cos(\\vec{u}, \\vec{v})$ ; il vaut $0$ si l'un des vecteurs est nul. En base orthonormée, c'est $xx' + yy'$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "adjacent",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Deux angles adjacents ont le même sommet, un côté commun, et sont situés de part et d'autre de ce côté."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "angle aigu",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Angle plus petit qu'un angle droit."
+				},
+				{
+					"grade": "6",
+					"content": "Angle dont la mesure est comprise entre $0°$ et $90°$ (ni nul, ni droit)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "aigu",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Se dit d'un angle plus petit qu'un angle droit."
+				},
+				{
+					"grade": "6",
+					"content": "Se dit d'un angle dont la mesure est comprise entre $0°$ et $90°$ (ni nul, ni droit)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "barycentre",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Barycentre de $A$ et $B$ affectés des coefficients $a$ et $b$ ($a + b \\neq 0$) : le point $G$ tel que $a\\overrightarrow{GA} + b\\overrightarrow{GB} = \\vec{0}$. Si $a = b$, c'est le milieu de $[AB]$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "hyperbole",
+			"sense": null,
+			"grade": "2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "2",
+					"content": "Courbe représentative de la fonction inverse $x \\mapsto \\frac{1}{x}$ : deux branches, l'une pour $x < 0$, l'autre pour $x > 0$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "parabole",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Courbe en forme de U, comme celle de la fonction carré $x \\mapsto x^2$."
+				},
+				{
+					"grade": "1_SPE",
+					"content": "Courbe représentative d'une fonction polynôme du second degré $x \\mapsto ax^2 + bx + c$ ($a \\neq 0$) : tournée vers le haut si $a > 0$, vers le bas si $a < 0$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "synthèse",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Dans un raisonnement par analyse-synthèse, étape où l'on vérifie que les valeurs trouvées pendant l'analyse sont vraiment des solutions."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "symétrie",
+			"sense": null,
+			"grade": "CE2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Une figure présente une symétrie quand elle a un axe de symétrie : en la pliant le long de cette droite, les deux moitiés se superposent exactement."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "nombre",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Ce qui sert à dire combien il y a d'objets (trente-quatre cubes), à quelle place on est (le quatrième) ou combien mesure une longueur."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "inférieur",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "« Inférieur à » veut dire « plus petit que » ; on écrit le signe $<$ : $49 < 53$."
+				},
+				{
+					"grade": "3",
+					"content": "« Inférieur ou égal à » s'écrit $\\leq$ : $x \\leq 3$ veut dire que $x$ est plus petit que $3$ ou égal à $3$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "supérieur",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "« Supérieur à » veut dire « plus grand que » ; on écrit le signe $>$ : $53 > 49$."
+				},
+				{
+					"grade": "3",
+					"content": "« Supérieur ou égal à » s'écrit $\\geq$ : $x \\geq 3$ veut dire que $x$ est plus grand que $3$ ou égal à $3$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "moins",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Mot qu'on lit pour le signe $-$ : $56 - 14$ se lit « 56 moins 14 ». « Moins que » sert aussi à comparer : $3$, c'est moins que $5$."
+				},
+				{
+					"grade": "5",
+					"content": "Le signe $-$ indique aussi un nombre négatif : $-4$ se lit « moins 4 »."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "opération",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Calcul comme l'addition ($+$) ou la soustraction ($-$) ; plus tard viennent la multiplication ($\\times$) et la division ($\\div$)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "ordre",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Façon de ranger des nombres : dans l'ordre croissant, du plus petit au plus grand ; dans l'ordre décroissant, du plus grand au plus petit."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "problème",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Petite histoire avec des nombres et une question : pour répondre, on cherche quel calcul faire."
+				},
+				{
+					"grade": "6",
+					"content": "Situation qui demande de chercher et de raisonner pour répondre à une question."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "pair",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Un nombre pair est le double d'un nombre : $0$, $2$, $4$, $6$, $8$, $10$… Son chiffre des unités est $0$, $2$, $4$, $6$ ou $8$."
+				},
+				{
+					"grade": "CM1",
+					"content": "Nombre entier divisible par $2$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "impair",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Nombre qui n'est pas pair : $1$, $3$, $5$, $7$, $9$, $11$… Son chiffre des unités est $1$, $3$, $5$, $7$ ou $9$."
+				},
+				{
+					"grade": "CM1",
+					"content": "Nombre entier qui n'est pas divisible par $2$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "diviseur",
+			"sense": "arithmétique",
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "$3$ est un diviseur de $12$ car la division de $12$ par $3$ tombe juste : $12 = 3 \\times 4$."
+				},
+				{
+					"grade": "5",
+					"content": "$b$ est un diviseur de $a$ si $a$ est un multiple de $b$ : $a = b \\times k$ avec $k$ entier."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "critère de divisibilité",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Règle qui permet de savoir, sans poser la division, si un nombre est divisible par un autre : un nombre est divisible par $2$ si son chiffre des unités est $0$, $2$, $4$, $6$ ou $8$."
+				},
+				{
+					"grade": "5",
+					"content": "Un nombre est divisible par $3$ (ou par $9$) si la somme de ses chiffres est divisible par $3$ (ou par $9$)."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "moitié",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "La moitié d'un nombre, c'est le nombre dont il est le double : la moitié de $14$ est $7$, car $7 + 7 = 14$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "quart",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Un quart, c'est une des $4$ parts égales d'un tout partagé en $4$. Un quart d'heure, c'est $15$ minutes."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "tiers",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Le tiers d'un tout, c'est une part quand ce tout est partagé en $3$ parts égales."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "partie décimale",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Ce qui reste d'un nombre décimal quand on enlève sa partie entière : la partie décimale de $3{,}14$ est $0{,}14$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "dixième",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Une part d'un tout partagé en dix parts égales."
+				},
+				{
+					"grade": "CM1",
+					"content": "Un dixième, c'est une unité partagée en $10$ parts égales : $\\frac{1}{10} = 0{,}1$. Dix dixièmes font une unité ; le chiffre des dixièmes est le premier après la virgule."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "centième",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Un centième, c'est une unité partagée en $100$ parts égales : $\\frac{1}{100} = 0{,}01$. Dix centièmes font un dixième ; le chiffre des centièmes est le deuxième après la virgule."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "millième",
+			"sense": null,
+			"grade": "CM2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM2",
+					"content": "Un millième, c'est une unité partagée en $1\\,000$ parts égales : $\\frac{1}{1\\,000} = 0{,}001$. Dix millièmes font un centième."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "fraction décimale",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Fraction dont le dénominateur est $10$, $100$ ou $1\\,000$ : $\\frac{7}{10}$, $\\frac{35}{100}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "arrondi",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "L'arrondi à l'unité d'un nombre est l'entier le plus proche de ce nombre : l'arrondi de $7{,}8$ est $8$, celui de $7{,}3$ est $7$."
+				},
+				{
+					"grade": "6",
+					"content": "On arrondit aussi au dixième ou au centième : $3{,}14$ arrondi au dixième est $3{,}1$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "intercaler",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Intercaler un nombre entre deux nombres, c'est trouver un nombre plus grand que le premier et plus petit que le second : $25$ est entre $20$ et $30$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "périmètre",
+			"sense": null,
+			"grade": "CE2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE2",
+					"content": "Longueur du contour d'une figure : on l'obtient en ajoutant les longueurs de tous ses côtés."
+				},
+				{
+					"grade": "5",
+					"content": "Le périmètre d'un rectangle de longueur $L$ et de largeur $l$ est $2 \\times (L + l)$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "aire",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "L'aire d'une figure mesure l'étendue de sa surface ; on peut la trouver en comptant des carrés-unités, par exemple des carrés de $1$ cm de côté ($\\text{cm}^2$)."
+				},
+				{
+					"grade": "6",
+					"content": "L'aire d'un rectangle est le produit de sa longueur par sa largeur : $4\\,\\text{cm} \\times 3\\,\\text{cm} = 12\\,\\text{cm}^2$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "volume",
+			"sense": null,
+			"grade": "CM2",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM2",
+					"content": "Le volume d'un solide mesure la place qu'il occupe ; on peut le trouver en comptant des cubes-unités, par exemple des cubes de $1$ cm de côté ($\\text{cm}^3$)."
+				},
+				{
+					"grade": "5",
+					"content": "Le volume d'un pavé droit est le produit de sa longueur, de sa largeur et de sa hauteur."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "masse",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Ce qui permet de dire si un objet est lourd ou léger. On compare des masses avec une balance."
+				},
+				{
+					"grade": "CE1",
+					"content": "On mesure une masse en grammes ($\\text{g}$) et en kilogrammes ($\\text{kg}$) : $1\\,\\text{kg} = 1\\,000\\,\\text{g}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "durée",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Temps qui passe entre deux instants, par exemple entre le début et la fin de la récréation ; on la mesure en heures et en minutes."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "mesure",
+			"sense": null,
+			"grade": "CE1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CE1",
+					"content": "Nombre trouvé en mesurant, avec son unité : la table mesure $120$ cm."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "proportionnalité",
+			"sense": null,
+			"grade": "CM1",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CM1",
+					"content": "Deux grandeurs sont proportionnelles quand, si l'une est multipliée par $2$, $3$, $10$…, l'autre l'est aussi. Ex : $1$ cahier coûte $2$ €, $3$ cahiers coûtent $6$ €."
+				},
+				{
+					"grade": "6",
+					"content": "Deux grandeurs sont proportionnelles si l'on obtient les valeurs de l'une en multipliant celles de l'autre par un même nombre non nul."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "rapport",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "Le rapport d'une partie au tout est la fraction qui indique quelle part elle représente : $3$ filles sur $12$ élèves, c'est un rapport de $\\frac{3}{12}$, soit $\\frac{1}{4}$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "puissance de dix",
+			"sense": null,
+			"grade": "4",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "4",
+					"content": "Nombre de la forme $10^n$, comme $10^3 = 1\\,000$."
+				},
+				{
+					"grade": "3",
+					"content": "Avec les exposants négatifs : $10^{-2} = \\frac{1}{100} = 0{,}01$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "fonction",
+			"sense": null,
+			"grade": "3",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "3",
+					"content": "Procédé qui, à chaque nombre $x$, associe un seul nombre, noté $f(x)$ : la fonction $f : x \\mapsto 2x + 1$ associe $7$ à $3$."
+				},
+				{
+					"grade": "2",
+					"content": "Une fonction $f$ définie sur un ensemble $D$ associe à chaque réel $x$ de $D$ un unique réel $f(x)$, son image."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "fréquence",
+			"sense": null,
+			"grade": "6",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "6",
+					"content": "La fréquence d'un résultat est le nombre de fois où il est obtenu divisé par le nombre total d'essais : $5$ « pile » sur $20$ lancers donne $\\frac{5}{20} = 0{,}25$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "droite",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Ligne bien droite, tracée à la règle, qui ne s'arrête pas : on n'en dessine qu'un morceau."
+				},
+				{
+					"grade": "6",
+					"content": "Ligne droite illimitée des deux côtés ; la droite qui passe par $A$ et $B$ se note $(AB)$."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "rectangle",
+			"sense": null,
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Figure qui a $4$ côtés et $4$ coins comme ceux d'une feuille ; ses côtés opposés ont la même longueur."
+				},
+				{
+					"grade": "CE2",
+					"content": "Quadrilatère qui a quatre angles droits."
+				}
+			],
+			"synonymesRetires": []
+		},
+		{
+			"term": "carré",
+			"sense": "géométrie",
+			"grade": "CP",
+			"keepDefs": false,
+			"definitions": [
+				{
+					"grade": "CP",
+					"content": "Figure qui a $4$ côtés de même longueur et $4$ coins comme ceux d'une feuille."
+				},
+				{
+					"grade": "CE2",
+					"content": "Quadrilatère qui a quatre angles droits et quatre côtés de même longueur."
+				}
+			],
+			"synonymesRetires": []
+		}
+	]
+}

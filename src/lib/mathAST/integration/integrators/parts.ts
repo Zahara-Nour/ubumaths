@@ -472,8 +472,9 @@ function applyPartsFormula(
 
 	// Step 2: Compute v = ∫dv dx
 	const vResult: IntegrateResult = integrate(dv, {
-		variable,
 		...options,
+		// la variable d'intégration COURANTE prime sur celle des options
+		variable,
 		verbosity: 'result', // Don't pollute steps with sub-integration
 		_depth: depth + 1 // Track recursion depth
 	});
@@ -513,8 +514,9 @@ function applyPartsFormula(
 	const vduSimplified = simplifyProductWithCancellation(vduRaw, variable);
 	const vdu = options.simplify ? preprocess(vduSimplified) : vduSimplified;
 	const vduResult: IntegrateResult = integrate(vdu, {
-		variable,
 		...options,
+		// la variable d'intégration COURANTE prime sur celle des options
+		variable,
 		verbosity: 'result',
 		_depth: depth + 1 // Track recursion depth
 	});
@@ -887,8 +889,9 @@ function solveCyclicCase(
 	// Compute ∫v du recursively once more to get the full expression
 	const vdu = multiply(v, du, 'implicit');
 	const vduResult: IntegrateResult = integrate(vdu, {
-		variable,
 		...options,
+		// la variable d'intégration COURANTE prime sur celle des options
+		variable,
 		verbosity: 'result',
 		_depth: depth + 1 // Track recursion depth
 	});

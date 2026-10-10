@@ -29,9 +29,13 @@ import type {
 } from './types';
 import { DEFAULT_VARIATION_OPTIONS, VariationError } from './types';
 import { differentiate } from '../differentiation';
+import { expandOddRootPowers } from '../common/odd-root-power';
+import { tidyTerms } from '../tidy/terms';
 import { computeDomain } from '../domain/compute';
+import { containsValue, excludePoints } from '../domain/algebra';
+import { assertDomainResolved, DomainUnresolvedError } from '../domain/errors';
 import { analyzeSign } from '../sign';
-import { findCriticalPoints, sortCriticalPoints } from './critical-points';
+import { findCriticalPointsWithStatus, sortCriticalPoints } from './critical-points';
 import { buildMonotonicIntervals, mergeMonotonicIntervals } from './monotonicity';
 import { findExtrema, classifyGlobalExtrema } from './extrema';
 import { computeBoundaryLimits } from './boundary-limits';
@@ -88,7 +92,10 @@ interface ResolvedOptions {
  * // Analyze with respect to a different variable
  * const result = computeVariations(parseLatex('t^3 - 3t'), { variable: 't' });
  */
-export function computeVariations(expr: MathNode, options?: VariationOptions): VariationResult {
+export function computeVariations(rawExpr: MathNode, options?: VariationOptions): VariationResult {
+	// x^{p/q}, q impair : analysée en radical ᵠ√(x^p), que dérivée, zéros et
+	// signe savent traiter ; l'expression rendue reste celle de l'appelant.
+	const expr = expandOddRootPowers(rawExpr);
 	const opts = resolveOptions(options);
 	const variable = opts.variable;
 	const steps: VariationStep[] = [];
@@ -111,6 +118,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	} else {
 		try {
 			const domainResult = computeDomain(expr, variable);
+			// Contrainte non résolue : on refuse (pas de tableau sur un domaine faux)
+			assertDomainResolved(domainResult);
 			domain = domainResult.domain;
 			stepId = recordStep(
 				steps,
@@ -122,6 +131,7 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 				opts.verbosity
 			);
 		} catch (err) {
+			if (err instanceof DomainUnresolvedError) throw err;
 			throw new VariationError(
 				'Cannot compute domain',
 				expr,
@@ -143,14 +153,22 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 
 	// Step 2: Compute derivative
 	let derivative: MathNode;
+	// f′ AFFICHÉE : dérivée de l'expression de l'élève, écrite comme `.dériver`
+	// l'écrit ((4/3)x^{1/3}), jamais celle de la forme d'analyse ᵠ√(x^p)
+	// ({4x³}/{3∛((x⁴)²)}), qui ne sert qu'aux zéros et au signe de f′.
+	let shownDerivative: MathNode;
 	try {
 		derivative = differentiate(expr, { variable, simplify: true });
+		shownDerivative =
+			expr === rawExpr
+				? derivative
+				: tidyTerms(differentiate(rawExpr, { variable, simplify: true }));
 		stepId = recordStep(
 			steps,
 			stepId,
 			'derivative',
-			`Derivee: f'(${variable}) = ${toCustom(derivative)}`,
-			`Calcul de la derivee de f(${variable}) = ${toCustom(expr)}`,
+			`Derivee: f'(${variable}) = ${toCustom(shownDerivative)}`,
+			`Calcul de la derivee de f(${variable}) = ${toCustom(rawExpr)}`,
 			'summarized',
 			opts.verbosity
 		);
@@ -164,7 +182,19 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 3: Find critical points
-	const criticalPoints = findCriticalPoints(derivative, variable, domain, expr);
+	// f évaluée sous sa forme d'analyse : ∛(0²) − 4 se calcule (−4), alors
+	// que 0^{(2/3)} − 4 restait tel quel
+	const { points: criticalPoints, derivativeZerosResolved } = findCriticalPointsWithStatus(
+		derivative,
+		variable,
+		domain,
+		expr
+	);
+	// ⚠️ Un échec de résolution n'est pas « aucun point critique ». En déduire
+	// un signe constant de f' faisait annoncer « f croissante » sur ℝ pour
+	// x·eˣ. Sans les zéros de f', on ne conclut ni sens ni extremum.
+	// Les affichages le disent à partir de `derivativeZerosUnresolved`.
+	const unresolved = !derivativeZerosResolved;
 	const sortedCriticalPoints = sortCriticalPoints(criticalPoints);
 	stepId = recordStep(
 		steps,
@@ -179,9 +209,14 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	// Step 4: Analyze sign of derivative
 	let derivativeSign;
 	try {
+		// f′ non définie en un point où f l'est (∛(x²) en 0) : le signe de f′
+		// s'étudie de part et d'autre, pas sur ℝ d'un seul tenant
+		const undefinedAt = sortedCriticalPoints
+			.filter((p) => p.nature === 'derivative_undefined')
+			.map((p) => p.x);
 		derivativeSign = analyzeSign(derivative, {
 			variable,
-			domain,
+			domain: undefinedAt.length > 0 ? excludePoints(domain, undefinedAt) : domain,
 			numericFallback: opts.numericFallback,
 			verbosity: opts.verbosity
 		});
@@ -219,8 +254,13 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 5: Build monotonic intervals
-	const rawMonotonicIntervals = buildMonotonicIntervals(derivativeSign);
-	const monotonicIntervals = mergeMonotonicIntervals(rawMonotonicIntervals);
+	// f'(x) = 0 non résolue : aucun intervalle — un signe tiré d'un ensemble de
+	// zéros incomplet serait une conclusion fausse.
+	const monotonicIntervals = unresolved
+		? []
+		: mergeMonotonicIntervals(buildMonotonicIntervals(derivativeSign), (value) =>
+				isExcludedFrom(domain, value)
+			);
 	stepId = recordStep(
 		steps,
 		stepId,
@@ -232,13 +272,9 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	);
 
 	// Step 6: Find extrema
-	const localExtrema = findExtrema(
-		expr,
-		variable,
-		sortedCriticalPoints,
-		monotonicIntervals,
-		domain
-	);
+	const localExtrema = unresolved
+		? []
+		: findExtrema(expr, variable, sortedCriticalPoints, monotonicIntervals, domain);
 	stepId = recordStep(
 		steps,
 		stepId,
@@ -277,7 +313,9 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	}
 
 	// Step 8: Classify global extrema
-	const extrema = classifyGlobalExtrema(localExtrema, expr, variable, domain, boundaryLimits);
+	const extrema = unresolved
+		? []
+		: classifyGlobalExtrema(localExtrema, expr, variable, domain, boundaryLimits);
 	recordStep(
 		steps,
 		stepId,
@@ -289,8 +327,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 	);
 
 	return {
-		expression: expr,
-		derivative,
+		expression: rawExpr,
+		derivative: shownDerivative,
 		variable,
 		domain,
 		derivativeSign,
@@ -299,7 +337,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
 		extrema,
 		boundaryLimits,
 		steps: opts.verbosity !== 'result' ? steps : undefined,
-		warnings: warnings.length > 0 ? warnings : undefined
+		warnings: warnings.length > 0 ? warnings : undefined,
+		...(unresolved && { derivativeZerosUnresolved: true })
 	};
 }
 
@@ -411,6 +450,17 @@ function resolveOptions(options?: VariationOptions): ResolvedOptions {
 		tolerance: options?.tolerance ?? DEFAULT_VARIATION_OPTIONS.tolerance,
 		strictMode: options?.strictMode ?? DEFAULT_VARIATION_OPTIONS.strictMode
 	};
+}
+
+/**
+ * La valeur est-elle INTERDITE (hors du domaine de f) ?
+ *
+ * Un domaine conditionnel ne se teste pas en un point (`containsValue` y
+ * répond `false` par prudence) : on ne coupe alors rien, comme avant.
+ */
+function isExcludedFrom(domain: Domain, value: number): boolean {
+	if (!Number.isFinite(value) || domain.kind === 'condition_domain') return false;
+	return !containsValue(domain, value);
 }
 
 /**

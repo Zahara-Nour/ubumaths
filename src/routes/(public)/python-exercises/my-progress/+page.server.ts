@@ -4,7 +4,7 @@
  * one of my classes).
  *
  * Auth: students only — teachers are redirected to /python-exercises/mine
- * (their own toolset). Anonymous callers are sent to /auth/signin.
+ * (their own toolset). Anonymous callers are sent to /auth/login.
  *
  * RLS does most of the heavy lifting: each query is filtered by `student_id
  * = me` (or the public catalog for the final exo-details lookup), and
@@ -32,7 +32,7 @@ export interface ExerciseRow {
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
-	if (!user) throw redirect(303, '/auth/signin');
+	if (!user) throw redirect(303, '/auth/login');
 
 	const supabase = locals.supabase;
 

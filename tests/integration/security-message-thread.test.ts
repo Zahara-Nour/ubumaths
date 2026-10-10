@@ -1,7 +1,7 @@
 /**
  * Security — message thread visibility (needs a running DB)
  * =========================================================
- * Vague-1 finding H12 (docs/wip/security-audit-2026-08.md).
+ * Vague-1 finding H12 (docs/archive/wip/security-audit-2026-08.md).
  *
  * A group message root goes to A and B; A replies privately to the sender O.
  * B (a recipient of the root) must NOT see A's private reply — get_message_thread

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import PythonPlayground from '$lib/components/python/PythonPlayground.svelte';
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import { onMount } from 'svelte';
@@ -48,13 +49,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Python Playground - Chiphre</title>
-	<meta
-		name="description"
-		content="Environnement Python interactif avec NumPy et Matplotlib pour les mathématiques"
-	/>
-</svelte:head>
+<SeoHead
+	title="Python Playground - Chiphre"
+	description="Environnement Python interactif avec NumPy et Matplotlib pour les mathématiques"
+/>
 
 <main class="container mx-auto p-4">
 	<div class="mb-6 overflow-hidden rounded-xl">

@@ -16,15 +16,10 @@ import type {
 } from '../types';
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
+import { computeNumericValue } from '../numeric-value';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { number, fraction, opposite, equals, variable as varNode } from '../../factory';
-import {
-	preprocess,
-	denormalize,
-	normalize,
-	normalFormsEquivalent,
-	ZERO_NORMAL_FORM
-} from '../../normal';
+import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';
 import { toLatex } from '../../latex-generator';
 import { describeSolution, describeCoefficients } from '../descriptions-fr';
 
@@ -95,6 +90,13 @@ function extractLinearCoefficients(
 	const coeffExpr = fraction(variableSum, varNode(variable));
 	const coeffSimplified = denormalize(normalize(coeffExpr));
 
+	// Un coefficient de ax + b ne dépend pas de x. Un terme non développé
+	// passe pourtant le tri ci-dessus : dans `2(x-1)` ou `(2x-3)+1`, la
+	// constante est cachée DANS le terme en x, et la division par x rendait
+	// `(2x-2)/x` — d'où `2(x-1)=4` résolue en x = 2x/(x-1). On refuse : le
+	// solveur relit alors la forme développée (même garde que le quadratique).
+	if (getVariables(coeffSimplified).has(variable)) return null;
+
 	return { a: coeffSimplified, b };
 }
 
@@ -148,8 +150,11 @@ export const linearSolver: EquationSolver = {
 			);
 		}
 
-		// Extract coefficients
-		const coeffs = extractLinearCoefficients(simplified, variable);
+		// Extract coefficients — sur la forme développée si l'expression ne se
+		// lit pas directement comme ax + b (terme non développé : `2(x-1)`).
+		const coeffs =
+			extractLinearCoefficients(simplified, variable) ??
+			extractLinearCoefficients(denormalize(normalize(simplified)), variable);
 
 		if (!coeffs) {
 			return {
@@ -233,49 +238,14 @@ export const linearSolver: EquationSolver = {
 			'summarized'
 		);
 
-		// Compute numeric approximation if the solution contains variables
-		const solutionVars = getVariables(solutionSimplified);
-		let approximate: number | undefined;
-
-		if (solutionVars.size === 0) {
-			// Try to evaluate numerically
-			try {
-				const norm = normalize(solutionSimplified);
-				// Zéro : le numérateur normalisé est VIDE, pas de longueur 1 — la
-				// branche rationnelle ci-dessous ne le voyait donc pas et
-				// `approximate` restait indéfini. Or un zéro sans `approximate`
-				// est écarté comme point de découpe par l'analyse de signe
-				// (`sign/analyze.ts`), si bien que toute fonction dont la dérivée
-				// s'annule en 0 perdait son tableau de variations.
-				if (norm.numerator.length === 0 || normalFormsEquivalent(norm, ZERO_NORMAL_FORM)) {
-					approximate = 0;
-				} else if (norm.numerator.length === 1 && norm.denominator.length === 1) {
-					const numTerm = norm.numerator[0];
-					const denTerm = norm.denominator[0];
-
-					// Simple case: just a rational number
-					if (numTerm.monomial.length === 0 && denTerm.monomial.length === 0) {
-						const numCoeff = numTerm.coefficient;
-						const denCoeff = denTerm.coefficient;
-
-						// If both are simple rationals, compute the value
-						if (numCoeff.terms.length === 1 && denCoeff.terms.length === 1) {
-							const numRat = numCoeff.terms[0].rational;
-							const denRat = denCoeff.terms[0].rational;
-
-							const numValue = Number(numRat.n) / Number(numRat.d);
-							const denValue = Number(denRat.n) / Number(denRat.d);
-
-							if (denValue !== 0) {
-								approximate = numValue / denValue;
-							}
-						}
-					}
-				}
-			} catch {
-				// Ignore errors in numeric approximation
-			}
-		}
+		// Valeur numérique de la solution, lue sur le nœud entier. L'ancien calcul
+		// ne lisait que la partie RATIONNELLE des coefficients normalisés :
+		// x = √2 portait `approximate: 1`, et la déduplication fusionnait alors
+		// √2 avec 1 dans (x − √2)(x − 1) = 0.
+		const approximate =
+			getVariables(solutionSimplified).size === 0
+				? (computeNumericValue(solutionSimplified) ?? undefined)
+				: undefined;
 
 		const solutionObj: Solution = {
 			value: solutionSimplified,

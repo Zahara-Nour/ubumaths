@@ -4,7 +4,7 @@
 #   2. compilation par le compilateur EXACT de la production (typst.ts 0.6.1-rc5) ;
 #   3. débords de colonne (texte ET tracés) ;
 #   4. pages en images, à RELIRE (les détecteurs ne voient pas tout).
-# Guide : docs/ref/fiches-exercices.md
+# Guide : docs/pratiques/fiches-exercices.md
 #
 # Usage : pnpm fiche:verifier <dossier> [titre de la fiche]
 set -u
@@ -18,7 +18,7 @@ if ! "$PY" -c 'import fitz' 2>/dev/null; then
 fi
 ECHEC=0
 echo "== 1. Typst (générateur de l'application)"
-pnpm -s tsx scripts/fiches/rendu-fiche.ts "$DOSSIER" "$TITRE" || ECHEC=1
+pnpm exec tsx scripts/fiches/rendu-fiche.ts "$DOSSIER" "$TITRE" || ECHEC=1
 echo "== 2. Compilation prod"
 node scripts/fiches/compile-prod.mjs "$DOSSIER"/{fiche,corrige,fiche-en,corrige-en}.typ || ECHEC=1
 echo "== 3. Débords de colonne"

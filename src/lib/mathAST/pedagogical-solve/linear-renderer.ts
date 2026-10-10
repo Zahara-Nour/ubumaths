@@ -183,6 +183,11 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 	}
 };
 
+/** L'inconnue que porte l'étape d'identification, `x` par défaut. */
+function unknownOf(op: EquationOperation): string {
+	return op.kind === 'identify-equation' && op.variable !== undefined ? op.variable : 'x';
+}
+
 /** Best-effort detection of the unknown variable name in an EquationStep. */
 function variableOf(step: EquationStep): string {
 	const find = (n: { type: string } & object): string | null => {
@@ -244,10 +249,11 @@ const EXPLANATIONS: Record<
 	Partial<Record<EquationOperation['kind'], ExplanationFn>>
 > = {
 	college: {
-		'identify-equation': (_op, step) =>
+		// L'inconnue de la résolution (`.résoudre 3 = 2t ; t` isole t, pas x)
+		'identify-equation': (op, step) =>
 			isInequalityStep(step)
-				? "Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ {<, >, ≤, ≥, ≠}). On isole x étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur."
-				: "Une équation du premier degré s'écrit ax + b = 0. On va isoler x étape par étape.",
+				? `Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ {<, >, ≤, ≥, ≠}). On isole ${unknownOf(op)} étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur.`
+				: `Une équation du premier degré s'écrit ax + b = 0. On va isoler ${unknownOf(op)} étape par étape.`,
 		'add-both-sides': (op, step) =>
 			`On ajoute ${operandStr(op)} aux deux membres : ${preservedNoun(step)} est préservée car on ajoute la même quantité de chaque côté.`,
 		'subtract-both-sides': (op, step) =>

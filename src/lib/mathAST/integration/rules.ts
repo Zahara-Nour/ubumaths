@@ -8,9 +8,15 @@
  */
 
 import type { MathNode } from '../types';
-import { add, opposite, func, ln, cos, sin, variable } from '../factory';
+import { add, opposite, func, ln, cos, sin, variable, divide, power } from '../factory';
 import { isNumber, isVariable, isZero, isOne } from '../guards';
-import { getNumericValue, numericNode } from '../common/numeric';
+import {
+	getNumericValue,
+	numericNode,
+	extractExactRational,
+	rationalToNode
+} from '../common/numeric';
+import { addRational, ONE } from '../normal/rational';
 import {
 	zero,
 	one,
@@ -47,27 +53,43 @@ export {
  * @returns The antiderivative x^(n+1)/(n+1)
  */
 export function powerRule(base: MathNode, exp: MathNode, varName: string): MathNode {
-	// Get numeric value of exponent
-	const n = getNumericValue(exp);
+	// Exposant rationnel EXACT (entier, décimal ou fraction : `\frac{1}{2}`)
+	const n = extractExactRational(exp);
 
 	// Special case: x^0 = 1 integrates to x
-	if (n === 0) {
+	if (n !== null && n.n === 0n) {
 		return variable(varName);
 	}
 
-	// Compute n + 1
-	let newExp: MathNode;
-	if (n !== null) {
-		newExp = numericNode(n + 1);
-	} else {
-		newExp = add(exp, one());
+	// ∫ x^(-1) dx = ln|x| (sinon n+1 = 0 et la primitive s'annulait)
+	if (n !== null && n.n === -n.d) {
+		return lnAbsRule(base);
 	}
+
+	// Compute n + 1 (calculé, jamais laissé `n + 1` dans l'exposant ; un
+	// exposant écrit en décimal reste décimal : x^{0.5} → x^{1.5}/1.5)
+	const newExp: MathNode =
+		n === null ? add(exp, one()) : (decimalSuccessor(exp) ?? rationalToNode(addRational(n, ONE)));
 
 	// Compute x^(n+1)
 	const numerator = simplifiedPower(base, newExp);
 
 	// Result: x^(n+1) / (n+1)
 	return simplifiedDivide(numerator, newExp);
+}
+
+/** `d + 1` pour un littéral décimal `d` (exact, même nombre de décimales) ; sinon null */
+function decimalSuccessor(exp: MathNode): MathNode | null {
+	const negative = exp.type === 'opposite';
+	const literal = negative ? exp.operand : exp;
+	if (!isNumber(literal) || !/^\d*\.\d+$/.test(literal.value)) return null;
+	const decimals = literal.value.split('.')[1].length;
+	const scale = 10n ** BigInt(decimals);
+	const digits = BigInt(literal.value.replace('.', ''));
+	const scaled = (negative ? -digits : digits) + scale;
+	const magnitude = (scaled < 0n ? -scaled : scaled).toString().padStart(decimals + 1, '0');
+	const text = `${magnitude.slice(0, -decimals)}.${magnitude.slice(-decimals)}`;
+	return numericNode(scaled < 0n ? `-${text}` : text);
 }
 
 /**
@@ -130,6 +152,17 @@ export function expRule(exponent: MathNode): MathNode {
 
 	// General case: assume coefficient is 1
 	return func('exp', [exponent]);
+}
+
+/**
+ * Exponentielle de base a : ∫ aˣ dx = aˣ / ln a (a > 0, a ≠ 1).
+ *
+ * @param base - La base a, telle qu'écrite (parenthèses gardées dans aˣ)
+ * @param varNode - La variable x
+ */
+export function exponentialBaseRule(base: MathNode, varNode: MathNode): MathNode {
+	const lnArgument = base.type === 'delimiter' ? base.content : base;
+	return divide(power(base, varNode), ln(lnArgument), 'fraction');
 }
 
 /**

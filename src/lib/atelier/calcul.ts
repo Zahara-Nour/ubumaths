@@ -5,7 +5,7 @@
  * (elle crée ou met à jour un objet), un **calcul** (il produit une ligne
  * d'historique), ou une **commande** (elle commence par un point).
  *
- * Spécification : `docs/wip/atelier-vue-calcul-phase0.md` §2 et §4.
+ * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md` §2 et §4.
  *
  * @module atelier/calcul
  */
@@ -17,29 +17,78 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
-import { astOf, readNumber } from './parse';
-import { syncEngine, expressionOf, expandInput, termsOf } from './engine';
+import {
+	astOf,
+	readNumber,
+	readListValue,
+	individualEntries,
+	withPiCommand,
+	mixedNotationMessage
+} from './parse';
+import {
+	INTERNAL_LETTER,
+	internalDefinition,
+	letterRejection,
+	renameVariable,
+	typedLetterOf
+} from './letter';
+import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
+import {
+	resolveCommand,
+	suggestFor,
+	commandCatalog,
+	ATELIER_ONLY_COMMANDS,
+	plain
+} from './commands';
 import { renderResult } from './render';
+import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
-import { exponentialCommand, geometricCommand, uniformCommand } from './law-commands';
+import {
+	exponentialCommand,
+	geometricCommand,
+	lawEvent,
+	normalCommand,
+	uniformCommand
+} from './law-commands';
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
+import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
+import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { tidyTerms } from './tidy-terms';
-import { variationTableNode } from '$lib/ubumark/builders/variation-table';
+import {
+	guessedVariable,
+	isKeywordCommand,
+	readCommandArguments,
+	writeCommandArguments,
+	type CommandArguments
+} from '$lib/mathAST/cli/core/variable-argument';
+import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
+import {
+	findUnknownFunctionCall,
+	unknownFunctionMessage
+} from '$lib/mathAST/parser/custom/tokenizer';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import {
+	decimalCommaDeep,
+	decimalCommaInput,
+	decimalCommaLatex,
+	decimalCommaProse,
+	decimalCommaStep,
+	decimalCommaText,
+	commaRefusal,
+	coupleOrSetRefusal
+} from './decimal-comma';
+import { listCitedMessage } from './list-cited';
 
 // =============================================================================
 // Types
@@ -85,8 +134,21 @@ export type CalcResult =
 			readonly steps?: readonly RenderedStep[];
 			/** Le graphique d'une simulation, dessiné sous la ligne (Q80) */
 			readonly chart?: StatChartScene;
+			/** Le tableau de variations de `.variations`, quand il se dessine */
+			readonly table?: VariationTableNode;
+			/**
+			 * Une indication affichée AVEC la réponse, qu'elle soit en
+			 * mathématiques ou en texte : `.dériver t^2` calcule en x et le dit
+			 * (« Calcul par rapport à x… », décision de David, 2026-10-06).
+			 */
+			readonly note?: string;
 	  }
-	| { readonly kind: 'refus'; readonly message: string };
+	| {
+			readonly kind: 'refus';
+			readonly message: string;
+			/** Une indication montrée avec le refus (`.résoudre 2t+1<5` : « écris « ; t » ») */
+			readonly note?: string;
+	  };
 
 /** Ce qu'une action attachée à un objet a produit. */
 export type ActionOutcome =
@@ -119,17 +181,93 @@ export type ActionOutcome =
  * Le membre gauche doit avoir la forme d'un nom d'objet : sinon c'est un test
  * d'égalité, que le moteur sait déjà traiter (§2 L1).
  */
+/**
+ * Les commandes qui lisent des SÉRIES (`.stats 12 ; 15 ; 9`) : les seules où
+ * proposer `12 ; 15 ; 9` à la place de `12,15,9` donne une saisie qui passe.
+ */
+const SERIES_COMMANDS: ReadonlySet<string> = new Set(['stats', 'linreg']);
+
+/** Ce qu'on répond quand le moteur n'a pas su lire une commande, et ne l'a pas dit. */
+const UNREADABLE_COMMAND =
+	'Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.';
+
+/** Codes d'erreur du moteur dont le message s'adresse à l'élève, en français. */
+const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
+	'AMBIGUOUS_VARIABLE',
+	'BARE_FUNCTION',
+	'TAYLOR_ORDER',
+	'NOT_DIFFERENTIABLE',
+	// `.intégrer 1/x -1 1` : « L'intégrale diverge ou n'est pas définie… »
+	'INTEGRAL_UNDEFINED',
+	// Les mots-clés (`de … à`, `en`, `ordre`…) mal écrits : la forme attendue
+	'COMMAND_SYNTAX',
+	// `.domaine sqrt(sin(x))` : le domaine n'a pas pu être établi (#963)
+	'DOMAIN_UNRESOLVED'
+]);
+
+/**
+ * `pi` écrit en lettres, comme un mot : `2pi`, `sin(pi x)`, `cos(x)=pi`.
+ *
+ * ⚠️ Décision de David (2026-10-06) : on le REFUSE. La notation custom le lit
+ * p·i (i : l'imaginaire) — `f(x) = pi*x` restait « en attente de p »,
+ * `.resoudre cos(x)=pi` répondait faux. `\pi` et `π` restent acceptés, ainsi
+ * que `p*i` et les mots qui contiennent « pi » (`pile ; face`, `épi`) : avant
+ * et après, aucune lettre ni antislash.
+ */
+const PI_IN_LETTERS = /(?<![\p{L}\\])pi(?!\p{L})/u;
+
+/** Ce qu'on répond à `pi` écrit en lettres. */
+const PI_IN_LETTERS_MESSAGE = 'Écris π avec \\pi ou le symbole π.';
+
+/** Un comparateur d'événement : `⩽ ⩾ ≤ ≥ < > =`, `<=`, `>=`, `\leqslant`, `\leq`… */
+const EVENT_COMPARATOR = String.raw`(?:<=|>=|[⩽⩾≤≥<>=]|\\(?:leqslant|geqslant|leq|geq|le|ge|lt|gt))`;
+
+/**
+ * La probabilité d'un événement tapée seule : `P(X ⩽ 3)`, `P(2 ⩽ X ⩽ 5)`,
+ * `P(X\leqslant 3)`, `P(|Y| ⩽ 1,96)` — et aussi `P(x ⩽ 3)` ou `P(2X ⩽ 3)`,
+ * que `lawEvent` refuse en français (avant : « … écrit après un facteur »).
+ * Une comparaison DANS les parenthèses de `P(…)` : `P(x)<3` n'en est pas une.
+ */
+const EVENT_PROBABILITY = new RegExp(
+	String.raw`^P\s*(?:\\left)?\((?=[^()]*${EVENT_COMPARATOR})[^()]*\)\s*$`
+);
+
+/**
+ * L'atelier RETIENT la loi d'une variable aléatoire (décision de David,
+ * 2026-10-09) : `P(X ⩽ 3)` tapé seul se calcule sur la loi posée par
+ * `.binomiale X 10 0,3` (`lawEvent`). Avant, un refus renvoyait à la ligne de
+ * la loi ; sans lui, `P(X ⩽ 3)` répondait « Nombre « 3 » écrit après un
+ * facteur… » et `P(X\leqslant 3)` se recopiait tel quel.
+ */
+function eventProbability(atelier: Atelier, input: string): CalcResult {
+	const outcome = lawEvent(atelier, input);
+	return outcome.ok
+		? { kind: 'commande', input, output: outcome.text }
+		: { kind: 'refus', message: outcome.message };
+}
+
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
 /**
- * Ce que la ligne de Calcul ajoute après « Dériver » : rien si la carte `f′`
- * vient d'être créée, « existe déjà » (§2 L1), ou pourquoi elle ne l'a pas été
- * (E3). Partagé par le bouton et `.dériver`, qui doivent dire la même chose.
+ * Ce que la ligne de Calcul ajoute après « Dériver » : rien (`null`) si la
+ * carte `f′` vient d'être créée, « existe déjà » (§2 L1), ou pourquoi elle ne
+ * l'a pas été (E3). Partagé par le bouton et `.dériver`, qui doivent dire la
+ * même chose.
+ *
+ * ⚠️ Elle va dans la `note` de la ligne, jamais au bout de son texte : la vue
+ * n'affiche pas le texte d'une ligne dont la réponse se compose en
+ * mathématiques — collée au texte, elle était invisible.
  */
-export function derivativeNote(result: Created | Refused | null): string {
-	if (result === null) return '';
-	if (!result.ok) return ` — ${result.message}`;
-	return result.existed ? ` — ${displayName(result.object.name)} existe déjà` : '';
+export function derivativeNote(result: Created | Refused | null): string | null {
+	if (result === null) return null;
+	if (!result.ok) return result.message;
+	return result.existed ? `${displayName(result.object.name)} existe déjà` : null;
+}
+
+/** Les notes d'une ligne réunies en une, ou `{}` s'il n'y en a aucune. */
+function notesOf(...notes: readonly (string | null)[]): { note?: string } {
+	const present = notes.filter((note): note is string => note !== null);
+	return present.length === 0 ? {} : { note: present.join(' ') };
 }
 
 /** `u(n+1) = …` : la définition d'une suite récurrente (décision S3). */
@@ -205,6 +343,7 @@ const DERIVATIVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?'+)\s*(?:\(\s*[A-Za-z]\s*\)
 function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	if (parameter === 'n') return 'sequence';
 	if (parameter !== undefined) return 'function';
+	if (isNumberList(body)) return 'list';
 
 	const ast = astOf(body);
 	if (ast === null) return 'value';
@@ -214,6 +353,78 @@ function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	// nœud lui-même qui le dit (`derivativeOrder`).
 	if (/[A-Za-z](?:_\d+)?['’]/.test(body)) return 'function';
 	return 'value';
+}
+
+/**
+ * `L = 1,5 ; 2 ; 3,5` : au moins deux nombres (ou fractions d'entiers), et
+ * RIEN d'autre, séparés par « ; » (règle de #983 : la virgule entre deux
+ * chiffres est décimale). Une seule valeur reste un nombre (`a = 1,5`), et un
+ * membre de droite qui contient autre chose qu'un nombre n'est jamais une liste.
+ */
+function isNumberList(body: string): boolean {
+	// Le découpage de la carte (`individualEntries`) : un « ; » final ne compte
+	// pas, un trou (`1 ; ; 2`) ou un mot fait que ce n'est pas une liste
+	const read = individualEntries(body, false);
+	return 'entries' in read && read.entries.length >= 2;
+}
+
+/** Ce qu'on dit d'un objet existant, pour refuser d'en faire une liste. */
+const KIND_WORDS: Readonly<Record<Exclude<ObjectKind, 'list'>, string>> = {
+	value: 'un nombre : supprime-le',
+	function: 'une fonction : supprime-la',
+	sequence: 'une suite : supprime-la'
+};
+
+/**
+ * `M = L`, `2L + 1` : une liste lue comme un nombre — la règle des cartes
+ * (`listCitedMessage`, la même détection).
+ */
+function listCitedAsNumber(atelier: Atelier, text: string): string | null {
+	const ast = astOf(text, 'text', atelier.functionNames);
+	if (ast === null) return null;
+	return listCitedMessage(atelier.objects, getVariables(ast));
+}
+
+/**
+ * `L = 1,2,3` ou `L = 12, 15, 9` : l'ancienne écriture d'une liste, refusée en
+ * montrant la forme à retaper (règle de #983) — jamais 1,2 et 3 devinés.
+ *
+ * Même test que la carte (`commaUsedAsSeparator`) : un segment n'est fautif que
+ * s'il ne se lit pas comme un nombre et que ses morceaux sont tous des nombres,
+ * ou tous des fractions (`1,5/2` ne se corrige pas en « 1 ; 5/2 »).
+ */
+function commaListRefusal(name: string, body: string): string | null {
+	if (/\p{L}/u.test(body) || !body.includes(',')) return null;
+	const entries: string[] = [];
+	let corrected = false;
+	for (const segment of body.split(';').map((part) => part.trim())) {
+		if (readListValue(segment) !== null) {
+			entries.push(segment);
+			continue;
+		}
+		const pieces = segment.split(',').map((piece) => piece.trim());
+		const readable = (piece: string) => piece !== '' && readListValue(piece) !== null;
+		const allNumbers = pieces.every((piece) => !piece.includes('/') && readable(piece));
+		const allFractions = pieces.every((piece) => piece.includes('/') && readable(piece));
+		if (pieces.length < 2 || !(allNumbers || allFractions)) return null;
+		entries.push(...pieces);
+		corrected = true;
+	}
+	return corrected
+		? `Pour séparer des valeurs, utilise « ; » : ${name} = ${entries.join(' ; ')}`
+		: null;
+}
+
+/**
+ * `L = (1 ; 2 ; 3)` : trois valeurs ou plus entre parenthèses, c'est une liste
+ * mal écrite, pas un couple — on montre la forme qui la crée.
+ */
+function bracketedListRefusal(name: string, body: string): string | null {
+	const inner = /^\s*\((.*)\)\s*$/s.exec(body);
+	if (inner === null) return null;
+	const read = individualEntries(inner[1], false);
+	if (!('entries' in read) || read.entries.length < 3) return null;
+	return `Pour créer une liste, écris les valeurs sans parenthèses : ${name} = ${read.entries.join(' ; ')}`;
 }
 
 /**
@@ -232,13 +443,47 @@ function defineObject(
 	const { atelier } = session;
 	const existing = atelier.get(name);
 
+	// Le type rangé ne change pas (règle de l'atelier) : une liste tapée sur le
+	// nom d'un autre objet le laissait en erreur, sans un mot (revue)
+	if (existing !== undefined && existing.kind !== 'list' && kindOf(parameter, body) === 'list') {
+		return {
+			kind: 'refus',
+			message: `« ${name} » est déjà ${KIND_WORDS[existing.kind]} ou choisis un autre nom pour créer une liste.`
+		};
+	}
+	const citedList = listCitedAsNumber(atelier, body);
+	if (citedList !== null) return { kind: 'refus', message: citedList };
+
+	// `f(t) = t^2` : la carte garde t, l'atelier range en x (`letter.ts`). La
+	// lettre est jugée AVANT le renommage : `f(a)` avec un objet `a`, ou x dans
+	// une définition en t, changeraient le sens en silence.
+	// Sans `(lettre)`, `f = …` redéfinit la fonction dans SA lettre : `f = t + 1`
+	// après `f(t)` se range x + 1, et `f = x + 1` est refusé comme `f(t) = t + x`
+	// (revue de #905 : x tapé était montré t, et t restait « en attente »).
+	const inherited =
+		parameter === undefined && existing?.kind === 'function' ? existing.letter : undefined;
+	const explicit = parameter !== undefined && parameter !== 'n' ? parameter : undefined;
+	const letter = explicit ?? inherited;
+	let stored = body.trim();
+	if (letter !== undefined && letter !== INTERNAL_LETTER) {
+		const refused = letterRejection(
+			letter,
+			name,
+			atelier.names.filter((n) => n !== name)
+		);
+		if (refused !== null) return { kind: 'refus', message: refused };
+		const internal = internalDefinition(stored, letter, name, provenance, atelier.functionNames);
+		if (!internal.ok) return { kind: 'refus', message: internal.message };
+		stored = internal.definition;
+	}
+
 	if (existing === undefined) {
 		const rejection = validateName(name, atelier.names);
 		if (rejection !== null) {
 			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
 		}
 		const created = atelier.create(
-			{ kind: kindOf(parameter, body), name, definition: body.trim() },
+			{ kind: kindOf(parameter, body), name, definition: stored, ...(letter && { letter }) },
 			provenance
 		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
@@ -250,7 +495,13 @@ function defineObject(
 		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
 	}
 
-	const updated = atelier.update(name, body.trim(), provenance);
+	// Seule une fonction a une lettre : `u(n) = …` ne la touche pas
+	const updated = atelier.update(
+		name,
+		stored,
+		provenance,
+		existing.kind === 'function' ? letter : undefined
+	);
 	if (!updated.ok) return { kind: 'refus', message: updated.message };
 	return { kind: 'definition', name, object: updated.object };
 }
@@ -268,20 +519,82 @@ function defineObject(
  * On ne remplace qu'un nom **isolé** ou **appelé** (`f` ou `f(x)`) : sans ça,
  * le `f` de `\frac` ou d'un mot quelconque serait réécrit.
  */
-function substituteNames(session: CalcSession, argument: string): string {
+/** Le nom d'une SUITE citée avec un prime (`u'(n)`), s'il y en a une. */
+function derivedSequence(session: CalcSession, argument: string): string | null {
+	for (const match of argument.matchAll(/(?<![A-Za-z_])([A-Za-z](?:_\d+)?)'+/g)) {
+		if (session.atelier.get(match[1])?.kind === 'sequence') return match[1];
+	}
+	return null;
+}
+
+/**
+ * Remplacer chaque appel `name(…)` (ou `name'(…)`) par son expression COMPOSÉE.
+ *
+ * ⚠️ Dans l'ARBRE, appel par appel : `f(2x)` doit devenir sin(2x), et non
+ * l'expression de f collée devant son argument. Seul l'appel est relu — le
+ * reste de l'argument d'une commande (`; x`, l'ordre de
+ * `.taylor`) n'est pas une expression et ne passerait pas le parseur.
+ *
+ * `null` si un appel est repéré mais ne se compose pas : retomber sur le nom
+ * seul recollerait l'expression devant l'argument, et `f_1(2x)` se lirait de
+ * nouveau comme un PRODUIT, sans rien dire (revue de #901).
+ */
+function replaceCalls(session: CalcSession, text: string, name: string): string | null {
+	const start = new RegExp(`(?<![A-Za-z_])${name}'*\\s*\\(`, 'g');
+	let result = '';
+	let cursor = 0;
+	for (let match = start.exec(text); match !== null; match = start.exec(text)) {
+		// La parenthèse fermante qui répond à celle de l'appel
+		let depth = 0;
+		let end = -1;
+		for (let i = match.index + match[0].length - 1; i < text.length; i++) {
+			if (text[i] === '(') depth++;
+			else if (text[i] === ')' && --depth === 0) {
+				end = i;
+				break;
+			}
+		}
+		if (end === -1) break;
+		const call = text.slice(match.index, end + 1);
+		// Le parseur doit y lire un APPEL : `f_1(2x)` se lit f₁·(2x), et sa
+		// « composition » rendait encore le produit (x^2)(2x)
+		if (astOf(call, 'url', session.atelier.functionNames)?.type !== 'function') return null;
+		const composed = expandCommandArgument(session.atelier, call);
+		if (composed === null) return null;
+		result += `${text.slice(cursor, match.index)}(${composed})`;
+		cursor = end + 1;
+		start.lastIndex = cursor;
+	}
+	return result + text.slice(cursor);
+}
+
+function substituteNames(session: CalcSession, argument: string): string | null {
 	if (argument.trim() === '') return argument;
 
 	let result = argument;
 	for (const object of session.atelier.objects) {
 		if (object.status !== 'ok') continue;
+		// Une liste n'a pas d'expression : ce sont ses VALEURS que lit une
+		// commande de séries (`.stats L` répondait « certaines valeurs ne sont
+		// pas des nombres valides »)
+		if (object.kind === 'list') {
+			if (object.values.length === 0) continue;
+			const alone = new RegExp(`(?<![A-Za-z_])${object.name}(?![A-Za-z_0-9(])`, 'g');
+			result = result.replace(alone, object.values.join(' ; '));
+			continue;
+		}
 		const expression = expressionOf(session.atelier, object.name);
 		if (!expression.ok) continue;
 
-		// `f(x)` d'abord : sinon le `f` seul de `f(x)` serait remplacé, et il
-		// resterait un `(x)` orphelin.
-		const called = new RegExp(`\\b${object.name}\\s*\\(\\s*[xn]\\s*\\)`, 'g');
+		// Les APPELS d'abord : sinon le `f` seul de `f(2x)` serait remplacé, et
+		// `(sin(x))(2x)` se lirait comme un PRODUIT — `.taylor f(2x) 4` rendait
+		// 2x² (2026-10-06).
+		if (object.kind === 'function' || object.kind === 'sequence') {
+			const replaced = replaceCalls(session, result, object.name);
+			if (replaced === null) return null;
+			result = replaced;
+		}
 		const alone = new RegExp(`(?<![A-Za-z_])${object.name}(?![A-Za-z_0-9])`, 'g');
-		result = result.replace(called, `(${expression.expression})`);
 		result = result.replace(alone, `(${expression.expression})`);
 	}
 	return result;
@@ -337,7 +650,81 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	// Lois de maths complémentaires (manche 13, PR c) : même chemin que `.binomiale`
 	geometric: (atelier, argument) => geometricCommand(atelier, argument),
 	uniform: (atelier, argument) => uniformCommand(atelier, argument),
-	exponential: (atelier, argument) => exponentialCommand(atelier, argument)
+	exponential: (atelier, argument) => exponentialCommand(atelier, argument),
+	// Loi normale (2026-10-09) : `gaussian`, `normal` est la forme normale du moteur
+	gaussian: (atelier, argument) => normalCommand(atelier, argument)
+};
+
+/**
+ * Remplacer les noms de l'atelier dans chaque PARTIE d'un argument à
+ * mots-clés : l'expression, les bornes, la valeur, l'intervalle, la seconde
+ * expression — jamais la variable ni le nom remplacé (`en x=3`).
+ * `null` si une partie ne se compose pas.
+ */
+function substituteArguments(
+	args: CommandArguments,
+	substitute: (text: string) => string | null
+): CommandArguments | null {
+	const expression = substitute(args.expression);
+	const lower = args.bounds === null ? null : substitute(args.bounds.lower);
+	const upper = args.bounds === null ? null : substitute(args.bounds.upper);
+	const value = args.assignment === null ? null : substitute(args.assignment.value);
+	const interval = args.interval === null ? null : substitute(args.interval);
+	const other = args.other === null ? null : substitute(args.other);
+	if (expression === null) return null;
+	if (args.bounds !== null && (lower === null || upper === null)) return null;
+	if (
+		[args.assignment, args.interval, args.other].some(
+			(part, i) => part !== null && [value, interval, other][i] === null
+		)
+	) {
+		return null;
+	}
+	return {
+		...args,
+		expression,
+		bounds: lower === null || upper === null ? null : { lower, upper },
+		assignment: args.assignment === null || value === null ? null : { ...args.assignment, value },
+		interval,
+		other
+	};
+}
+
+/**
+ * La lettre des fonctions de l'atelier citées SEULES (`f`, `f'`, pas `f(2t)`,
+ * dont l'appel porte déjà son argument) dans une saisie : `single` si toutes
+ * ont la même lettre autre que x et que x n'est pas tapé à côté ; `mixed` si
+ * les lettres se mêlent ; `null` sinon (rien à récrire).
+ */
+function functionLetterOf(
+	session: CalcSession,
+	typed: string
+): { kind: 'single'; letter: string } | { kind: 'mixed' } | null {
+	const letters = new Set<string>();
+	let rest = typed;
+	for (const object of session.atelier.objects) {
+		if (object.kind !== 'function') continue;
+		const escaped = object.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const bare = new RegExp(`(?<![A-Za-z_])${escaped}'*(?![A-Za-z_0-9'(])`, 'g');
+		if (!bare.test(typed)) continue;
+		letters.add(typedLetterOf(session.atelier, object));
+		rest = rest.replace(bare, ' ');
+	}
+	if (letters.size === 0) return null;
+	// x tapé à côté (hors appels `f(x)`) : il se mêle à la lettre de la fonction
+	const typedX = /(?<![A-Za-z\\_])x(?![A-Za-z_])/.test(
+		rest.replace(/[A-Za-z_]\w*'*\([^()]*\)/g, ' ')
+	);
+	if (typedX) letters.add(INTERNAL_LETTER);
+	if (letters.size > 1) return { kind: 'mixed' };
+	const [letter] = letters;
+	return letter === INTERNAL_LETTER ? null : { kind: 'single', letter };
+}
+
+/** Ce que répond `.mode`, en français. */
+const MODE_MESSAGES: Readonly<Record<'exact' | 'decimal', string>> = {
+	exact: 'Mode exact : les résultats restent exacts (fractions, racines).',
+	decimal: 'Mode décimal : les résultats sont donnés en valeur approchée.'
 };
 
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
@@ -389,6 +776,51 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 */
 	const name = known.name.toLowerCase();
 
+	// `.aide` : l'aide de l'ÉLÈVE, en français (décision de David, 2026-10-09).
+	// L'aide du moteur — anglaise, pour le développeur — reste derrière
+	// `.aide dev`. Aucune aide par commande n'existe : `.aide intégrer` montre
+	// l'aide générale plutôt qu'un refus.
+	if (name === 'help') {
+		const helpArgument =
+			space === -1
+				? ''
+				: resolved
+						.slice(space + 1)
+						.trim()
+						.toLowerCase();
+		if (helpArgument !== DEV_HELP_ARGUMENT) {
+			return { kind: 'commande', input, output: studentHelpText(engine) };
+		}
+		const developer = engine.execute('.help');
+		return { kind: 'commande', input, output: renderResult(developer, { fromCommand: true }).text };
+	}
+
+	// `.mode`, `.exact`, `.décimal` : le moteur répond en anglais (« Mode set
+	// to: exact ») et ne lit pas `décimal` avec son accent. L'atelier change le
+	// mode lui-même et répond en français (décision de David, 2026-10-09).
+	if (name === 'mode' || name === 'exact' || name === 'decimal') {
+		const modeArgument =
+			name !== 'mode'
+				? name
+				: space === -1
+					? ''
+					: plain(resolved.slice(space + 1).trim()).toLowerCase();
+		if (modeArgument === 'exact' || modeArgument === 'decimal') {
+			engine.execute(`.${modeArgument}`);
+			return { kind: 'commande', input, output: MODE_MESSAGES[modeArgument] };
+		}
+		if (modeArgument === '') {
+			const current = engine.getEvalState().mode === 'decimal' ? 'decimal' : 'exact';
+			const other = current === 'exact' ? '.mode décimal' : '.mode exact';
+			return {
+				kind: 'commande',
+				input,
+				output: `Mode actuel : ${current === 'exact' ? 'exact' : 'décimal'}. ${MODE_MESSAGES[current]} Pour changer : ${other}.`
+			};
+		}
+		return { kind: 'refus', message: 'Écris « .mode exact » ou « .mode décimal ».' };
+	}
+
 	// Les simulations lisent des NOMS de listes : elles passent avant la substitution
 	// des noms par leurs expressions, qui en ferait des listes de nombres
 	// C6 : une commande traite une expression ; une récurrence n'en est pas une
@@ -423,7 +855,39 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
 	// appliquée à la commande tapée à la main.
-	const argument = space === -1 ? '' : substituteNames(session, resolved.slice(space + 1));
+	// ⚠️ Les dérivées d'abord (`f'(x)` → son expression), puis les noms : sans
+	// ça, `f'(x)` perdait son `f` et devenait `(x^2-3x)'(x)`, illisible —
+	// `.resoudre f'(x)=0` répondait « Je n'ai pas su lire » (2026-10-05)
+	// `π` → `\pi` (la constante) pour une commande de CALCUL seulement : les
+	// commandes de données sont sorties plus haut (`SIMULATIONS`), où `π` est
+	// une modalité comme une autre — `.filtrer L = π` (revue #911)
+	// La virgule décimale (`0,5x`) lue avant tout : l'atelier l'affiche, l'élève
+	// la recopie. `12,15,9` ou `max(1,2)` : refusés, avec la forme corrigée
+	const commaRefused = commaRefusal(typedArgument, input, {
+		series: SERIES_COMMANDS.has(known.name)
+	});
+	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
+	const rawArgument =
+		space === -1
+			? ''
+			: withPiCommand(decimalCommaInput(resolved.slice(space + 1)).replace(/’/g, "'"));
+	const mixed = mixedNotationMessage(rawArgument);
+	if (mixed !== null) return { kind: 'refus', message: mixed };
+	const derived = derivedSequence(session, rawArgument);
+	if (derived !== null) {
+		return {
+			kind: 'refus',
+			message: `« ${derived} » est une suite : elle ne se dérive pas.`
+		};
+	}
+	// `f'(x)` → son expression d'abord, puis les noms (voir plus haut)
+	const substitute = (text: string): string | null =>
+		!text.includes("'")
+			? substituteNames(session, text)
+			: (expandCommandArgument(session.atelier, text) ??
+				substituteNames(session, expandInput(session.atelier, text)));
+	const argument = substitute(rawArgument);
+	if (argument === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
 	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
 	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que
@@ -432,12 +896,98 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return runAtelierCommand(known.name, input, argument);
 	}
 
-	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${argument}`;
+	const unknown = findUnknownFunctionCall(rawArgument);
+	if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
+
+	// Les commandes à mots-clés (`de … à`, `pour`, `en`, `ordre`, `dans`, `et` —
+	// décisions de David, 2026-10-08) : lues sur la saisie TAPÉE, avant que les
+	// noms soient remplacés (`a` est aussi le mot-clé `à`), puis remplacées
+	// partie par partie et récrites pour le moteur
+	const keyworded = isKeywordCommand(name) && space !== -1 ? name : null;
+	const reading = keyworded === null ? null : readCommandArguments(keyworded, rawArgument);
+	if (reading !== null && !reading.ok) return { kind: 'refus', message: reading.message };
+	const typedArgs = reading?.args ?? null;
+	if (
+		name === 'equiv' &&
+		typedArgs !== null &&
+		typedArgs.other === null &&
+		!rawArgument.includes('===')
+	) {
+		return {
+			kind: 'refus',
+			message: 'Écris « et » entre les deux expressions : .équivalent (x+1)^2 et x^2+2x+1'
+		};
+	}
+	const args = typedArgs === null ? null : substituteArguments(typedArgs, substitute);
+	if (typedArgs !== null && args === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
+
+	// `.dériver f` : la cible tapée, sans sa variable ni son `(x)`. Une
+	// fonction de l'atelier est rangée en x (#905), même quand son expression
+	// n'en contient pas : `f(x) = k` se dériverait sinon en k, et répondrait 1.
+	const typedTarget = typedArgs?.expression ?? typedArgument;
+	const diffTarget = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typedTarget)?.[1] ?? typedTarget;
+	const derivesFunction = name === 'diff' && session.atelier.get(diffTarget)?.kind === 'function';
+
+	// La variable : tapée, sinon x pour une fonction de l'atelier, sinon devinée
+	// (x présent → x ; une seule lettre → elle ; plusieurs sans x → refus)
+	// Une fonction de l'atelier se traite dans SA lettre (#905, décision de
+	// David 2026-10-08) : rangée en x, son expression est récrite en t, et le
+	// calcul se fait en t. Plusieurs lettres mêlées : en x, et on le dit.
+	// ⚠️ Seulement si la variable n'est pas tapée, ou si c'est SA lettre : avec
+	// f(t) = t³, `.dériver f pour x` lit f en x (comme sur main, f est rangée
+	// en x) au lieu de dériver t³ par rapport à x (revue #962).
+	const letter =
+		typedArgs === null || name === 'equiv' ? null : functionLetterOf(session, typedArgs.expression);
+	const typedVariable = typedArgs?.variable ?? typedArgs?.assignment?.name ?? null;
+	const rewrites =
+		letter?.kind === 'single' && (typedVariable === null || typedVariable === letter.letter);
+	let finalArgs =
+		args === null || !rewrites || letter?.kind !== 'single'
+			? args
+			: {
+					...args,
+					expression: renameVariable(
+						args.expression,
+						INTERNAL_LETTER,
+						letter.letter,
+						'url',
+						session.atelier.functionNames
+					),
+					variable: name === 'eval' ? args.variable : (args.variable ?? letter.letter)
+				};
+	const letterNote =
+		letter?.kind === 'mixed' && typedVariable === null
+			? 'Fonctions écrites avec des lettres différentes : calcul en x.'
+			: null;
+	if (finalArgs !== null && finalArgs.variable === null && name !== 'eval' && name !== 'equiv') {
+		const parsed = parseCommandExpression(finalArgs.expression).ast;
+		if (derivesFunction) finalArgs = { ...finalArgs, variable: INTERNAL_LETTER };
+		else if (parsed !== undefined) {
+			const guessed = guessedVariable(
+				parsed,
+				engine.getEvalState().bindings.keys(),
+				`.${known.french}`
+			);
+			if (!guessed.ok) return { kind: 'refus', message: guessed.message };
+			if (guessed.variable !== 'x') finalArgs = { ...finalArgs, variable: guessed.variable };
+		}
+	}
+	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
+	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
 	const result = engine.execute(executed);
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
+	const noted = notesOf(letterNote);
+
+	// Un refus que le moteur adresse à l'élève, en français (`.dériver x^2 ; ab`
+	// : « « ab » n'est pas une variable. », `.dériver sin x` : « Écris sin(x)… ») :
+	// montré tel quel, AVANT les étapes — qui, elles, liraient `sin x` autrement —
+	// et pas noyé dans « Je n’ai pas su lire » (revue #880)
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND, ...noted };
+	}
 
 	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
 	// `solveSteps` rend `null` dès qu'il ne sait pas faire (degré ≥ 3, non
@@ -455,23 +1005,38 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		// `.dériver f` sur une fonction de l'atelier crée la carte `f′`, comme le
 		// bouton, et le DIT comme lui (phase 0 `/grapheur` §2 D3 ; revue 3a, C2).
 		// Sur une expression, rien à créer (L4).
-		const typed = space === -1 ? '' : resolved.slice(space + 1).trim();
-		const target = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typed)?.[1] ?? typed;
-		const note =
-			session.atelier.get(target)?.kind === 'function'
-				? derivativeNote(session.atelier.createDerivative(target))
-				: '';
-		const derived = deriveSteps(argument);
+		const note = derivesFunction
+			? derivativeNote(session.atelier.createDerivative(diffTarget))
+			: null;
+		const notes = notesOf(letterNote, note);
+		// Les étapes dérivent la même chose que le moteur, variable comprise
+		const derived = deriveSteps(
+			finalArgs?.expression ?? argument,
+			undefined,
+			finalArgs?.variable ?? undefined
+		);
 		if (derived !== null) {
 			return {
 				kind: 'commande',
 				input,
-				output: rendered.text + note,
+				output: rendered.text,
 				latex: derived.answer,
-				steps: derived.steps
+				steps: derived.steps,
+				...notes
 			};
 		}
-		if (note !== '') return { kind: 'commande', input, output: rendered.text + note };
+		// Pas d'étapes (`sec(3x)`) : la dérivée du moteur, en LaTeX — son `ast`
+		// est la DÉRIVÉE (`diff.command`), pas l'entrée
+		if (result.success && result.ast !== undefined) {
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: toLatex(result.ast),
+				...notes
+			};
+		}
+		if (note !== null) return { kind: 'commande', input, output: rendered.text, ...notes };
 	}
 
 	// ⚠️ Même forme que `.dériver`, pour la même raison : le moteur ne SAIT pas
@@ -491,14 +1056,97 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		}
 	}
 
-	const solved = name === 'solve' ? solveSteps(argument) : null;
+	// ⚠️ `.variations` rendait le bloc d'un terminal (`{-2}/{(2x-1)^2}`, `-inf`,
+	// « decroissante ») : la dérivée en LaTeX, le tableau quand il se dessine,
+	// le détail à déplier — comme le bouton « Variations » (2026-10-09)
+	if (name === 'variations' && result.success) {
+		const studied = variationsRendering(
+			finalArgs?.expression ?? argument,
+			'f',
+			finalArgs?.variable ?? undefined
+		);
+		if (studied !== null) {
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: studied.answer,
+				steps: studied.steps,
+				...(studied.table !== undefined && { table: studied.table }),
+				...noted
+			};
+		}
+	}
+
+	// `dans [a ; b]` : les étapes ne savent pas restreindre, le moteur si
+	const solved =
+		name === 'solve' && finalArgs !== null && finalArgs.interval === null
+			? solveSteps(
+					finalArgs.variable === null
+						? finalArgs.expression
+						: `${finalArgs.expression} ; ${finalArgs.variable}`
+				)
+			: null;
 	if (solved !== null) {
 		return {
 			kind: 'commande',
 			input,
 			output: rendered.text,
 			latex: solved.answer,
-			steps: solved.steps
+			steps: solved.steps,
+			...noted
+		};
+	}
+
+	// Une inéquation que le moteur a LUE sans savoir la résoudre : on le dit, et
+	// pas « Je n'ai pas su lire » — APRÈS les étapes, qui savent parfois faire
+	// Même chose pour une équation qu'aucun solveur ne traite (`x^5+x+1=0`,
+	// un paramètre : `u_0*q^n=10 pour n`) : refus en français (revue, 2026-10-09)
+	if (
+		name === 'solve' &&
+		!result.success &&
+		(result.error?.code === INEQUALITY_UNSOLVED || result.error?.code === EQUATION_UNSOLVED)
+	) {
+		return { kind: 'refus', message: result.error.message, ...noted };
+	}
+
+	// Pas d'étapes (degré ≥ 3, transcendante, trigonométrique) : les solutions
+	// du moteur, en LaTeX — bâties sur son résultat STRUCTURÉ (`solve-latex.ts`).
+	// Sans lui, la ligne montrait le texte du terminal,
+	// « x = 0 ou x = {1/2}sqrt(2) ou x = -{1/2}sqrt(2) » (2026-10-08).
+	if (name === 'solve' && result.success && result.latex !== undefined) {
+		return { kind: 'commande', input, output: rendered.text, latex: result.latex, ...noted };
+	}
+
+	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
+	// dit rien à l'élève — mesuré, `.deriver )(` et `.resoudre )` (2026-10-05)
+	if (!result.success && rendered.text.trim() === '') {
+		return { kind: 'refus', message: UNREADABLE_COMMAND, ...noted };
+	}
+
+	// `.taylor` : l'exception à `fromCommand` — son `result.ast` est le
+	// POLYNÔME rendu, pas l'entrée (voir `taylor.command.ts`). Sans lui, la
+	// ligne montrait le texte du terminal, « 1+x+{1/2}x^2 » (2026-10-06).
+	if (name === 'taylor' && result.success && result.ast !== undefined) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: toLatex(result.ast),
+			...noted
+		};
+	}
+
+	// `.intégrer` : même exception — son `result.ast` est la PRIMITIVE, ou la
+	// VALEUR d'une intégrale définie (voir `integrate.command.ts`). Sans lui, la
+	// ligne montrait le texte du terminal, « ∫ x^2 dx = {1/3}x^3 + C » (2026-10-08).
+	if (name === 'integrate' && result.success && result.ast !== undefined) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: integralLatex(result.ast, rendered.text),
+			...noted
 		};
 	}
 
@@ -506,8 +1154,21 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		kind: 'commande',
 		input,
 		output: rendered.text,
-		...(rendered.latex && { latex: rendered.latex })
+		...(rendered.latex && { latex: rendered.latex }),
+		...noted
 	};
+}
+
+/**
+ * Le LaTeX du résultat de `.intégrer`, lu sur la première ligne du moteur :
+ * `∫[a→b] … = v` (valeur exacte), `∫[a→b] … ≈ v` (approchée), sinon une
+ * primitive, `∫ … = F + C` — la constante y reste, comme dans le texte.
+ */
+function integralLatex(ast: MathNode, text: string): string {
+	const firstLine = text.split('\n')[0] ?? '';
+	const latex = toLatex(ast);
+	if (!firstLine.startsWith('∫[')) return `${latex} + C`;
+	return / ≈ /.test(firstLine) ? `\\approx ${latex}` : latex;
 }
 
 /**
@@ -551,11 +1212,92 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
+	return resultWithDecimalComma(computeInput(session, text, provenance));
+}
+
+/**
+ * Ce qu'affiche une ligne, décimaux écrits à la française (`0,5`, `0{,}5`).
+ *
+ * L'arbre (`ast`) et l'écho (`input`) ne sont pas convertis.
+ */
+function resultWithDecimalComma(result: CalcResult): CalcResult {
+	switch (result.kind) {
+		case 'calcul':
+			return {
+				...result,
+				output: decimalCommaText(result.output),
+				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) })
+			};
+		case 'commande':
+			return {
+				...result,
+				output: decimalCommaText(result.output),
+				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
+				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
+				...(result.table !== undefined && { table: decimalCommaDeep(result.table) }),
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
+			};
+		// La commande que cite un refus se relit avec ses virgules
+		// (`decimalCommaInput`) : il les écrit, comme le reste de la ligne
+		case 'refus':
+			return {
+				...result,
+				message: decimalCommaProse(result.message),
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
+			};
+		default:
+			return result;
+	}
+}
+
+/** Une action, décimaux à la française — même règle que `resultWithDecimalComma`. */
+function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
+	if (!outcome.ok) return outcome;
+	return {
+		...outcome,
+		output: decimalCommaText(outcome.output),
+		...(outcome.latex !== undefined && { latex: decimalCommaLatex(outcome.latex) }),
+		...(outcome.steps !== undefined && { steps: outcome.steps.map(decimalCommaStep) }),
+		...(outcome.table !== undefined && { table: decimalCommaDeep(outcome.table) })
+	};
+}
+
+/**
+ * `u(1,5)` sur une suite EXPLICITE : la virgule est décimale, et un rang
+ * décimal n'existe pas. Le moteur, lui, rendait 3 pour `u(n) = 2n`. Même
+ * message que pour une récurrence (`recurrenceTermsIn`).
+ */
+function decimalRankMessage(atelier: Atelier, input: string): string | null {
+	for (const [, name, rank] of input.matchAll(TERM)) {
+		if (atelier.get(name)?.kind !== 'sequence') continue;
+		if (/^\s*[-−]?\d+[.,]\d+\s*$/.test(rank)) {
+			return `Le rang de ${name} doit être un entier positif : ${name}(5), pas ${name}(${rank.trim()}).`;
+		}
+	}
+	return null;
+}
+
+function computeInput(session: CalcSession, text: string, provenance: Provenance): CalcResult {
 	const input = text.trim();
 	if (input === '') return { kind: 'vide' };
 
+	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
+	if (PI_IN_LETTERS.test(input)) return { kind: 'refus', message: PI_IN_LETTERS_MESSAGE };
+
+	// Avant tout chemin aussi : `racine(x)`, `acoss(x)` se lisaient en produits
+	// de lettres, sans erreur. Une commande le vérifie sur son argument de
+	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
+	if (!input.startsWith('.')) {
+		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
+		const unknown = findUnknownFunctionCall(input);
+		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
+	}
+
 	syncEngine(session.atelier, session.engine);
 
+	// Entrée BRUTE : `runCommand` ne réécrit `π` qu'en argument d'une commande
+	// de calcul (`.filtrer L = π` lit une modalité), et l'écho reste ce qui a
+	// été tapé (revue #911)
 	if (input.startsWith('.')) return runCommand(session, input);
 
 	// La forme du membre gauche est garantie par la regex — `3 = 3` n'y entre
@@ -590,6 +1332,13 @@ export function runInput(
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, body] = definition;
+		const commaList = parameter === undefined ? commaListRefusal(name, body) : null;
+		if (commaList !== null) return { kind: 'refus', message: commaList };
+		const bracketed = parameter === undefined ? bracketedListRefusal(name, body) : null;
+		if (bracketed !== null) return { kind: 'refus', message: bracketed };
+		// `A = (1 ; 2)` : le refus d'une saisie (#983), pas un objet en erreur
+		const typed = coupleOrSetRefusal(body);
+		if (typed !== null) return { kind: 'refus', message: typed };
 		const result = defineObject(session, name, parameter, body, provenance);
 		// `u(n) = …` dit « explicite » (S3) : le mode d'une suite étant gardé à la
 		// modification, c'est ici qu'une récurrence retapée en explicite le devient
@@ -618,8 +1367,25 @@ export function runInput(
 	const withTerms = recurrenceTermsIn(session.atelier, input);
 	if (!withTerms.ok) return { kind: 'refus', message: withTerms.message };
 
+	const citedList = listCitedAsNumber(session.atelier, input);
+	if (citedList !== null) return { kind: 'refus', message: citedList };
+
+	// Le moteur répondrait « Invalid backslash sequence », en anglais (revue #911)
+	const mixed = mixedNotationMessage(input);
+	if (mixed !== null) return { kind: 'refus', message: mixed };
+
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
-	const result = session.engine.execute(expandInput(session.atelier, withTerms.text));
+	// La règle de la virgule (décision de David, 2026-10-09) : `12,15,9`,
+	// `max(1,2)` et le couple `(1 ; 2)` sont refusés en français, plutôt que de
+	// montrer la réponse du moteur (« x\cdot .3 », une ligne jamais tapée)
+	const commaRefused = commaRefusal(withTerms.text, input, { couples: true });
+	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
+	const rank = decimalRankMessage(session.atelier, withTerms.text);
+	if (rank !== null) return { kind: 'refus', message: rank };
+
+	const result = session.engine.execute(
+		expandInput(session.atelier, withPiCommand(decimalCommaInput(withTerms.text)))
+	);
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',
@@ -707,60 +1473,35 @@ function tracedOnCreation(kind: ObjectKind): boolean {
 
 /** Ce que chaque action demande au moteur, à partir de l'expression substituée. */
 const ACTION_COMMANDS: Readonly<Record<string, (expression: string) => string>> = {
-	derive: (e) => `.diff ${e}`,
+	// Une fonction de l'atelier est en x : la variable est dite, pas devinée
+	derive: (e) => `.diff ${e} ; x`,
 	solve: (e) => `.solve ${e}=0`,
 	variations: (e) => `.variations ${e}`
 };
 
 /**
- * Le tableau de variations d'une expression, et la dérivée qui l'accompagne —
- * ou `null`.
- *
- * ⚠️ Rien n'est recalculé ici : `computeVariations` trouve les sens, les points
- * critiques et les limites, et le pont les traduit. Aucun chemin ne jette : une
- * exception remonterait jusqu'à `desk.runFromPanel`, qui n'afficherait alors
- * AUCUNE ligne.
- *
- * ⚠️ **La dérivée voyage avec le tableau parce qu'elle est la seule chose qu'il
- * ne dit PAS.** Le tableau montre le SIGNE de f', jamais f' elle-même — et
- * c'est ce qu'on écrit au-dessus d'un tableau de variations. Tout le reste du
- * bloc texte du moteur (domaine, points critiques, signe, extremum, limites) y
- * figure déjà, en moins lisible. Relevé par David sur capture.
- *
- * @param expression - L'expression SUBSTITUÉE (§6 bis)
- * @param name - Le nom de l'objet, pour étiqueter les lignes `f'(x)` et `f(x)`
- */
-function variationTableOf(
-	expression: string,
-	name: string
-): { readonly table: VariationTableNode; readonly derivative: string } | null {
-	try {
-		const node = astOf(expression, 'text');
-		if (node === null) return null;
-
-		const variations = computeVariations(node, { variable: 'x' });
-		const table = variationTableNode(variations, name);
-		if (table === null) return null;
-
-		// `tidy` : comme la carte f′ et « Dériver » (retour de David, `3 3 x^2`)
-		return { table, derivative: `${name}'(x) = ${toLatex(tidyTerms(variations.derivative))}` };
-	} catch {
-		return null;
-	}
-}
-
-/**
  * Lancer une action du panneau sur un objet.
  *
  * ⚠️ **L'expression est substituée avant l'appel** (§6 bis) : passer `f(x)` au
- * moteur rend un résultat faux SANS erreur — `.variations f(x)` annonce
- * « Points critiques : aucun » pour une parabole qui en a un.
+ * moteur rendait un résultat faux SANS erreur — `.variations f(x)` annonçait
+ * « Points critiques : aucun » pour une parabole qui en a un. Depuis
+ * fix/solve-facteur-commun, le moteur dit « non déterminés » quand il ne sait
+ * pas résoudre f'(x) = 0 : la substitution reste nécessaire pour qu'il sache.
  *
  * @param actionId - L'identifiant de `actionsFor`, pas un libellé
  * @param name - L'objet sur lequel l'élève a cliqué
  * @param argument - Le nombre demandé, pour « image d'un nombre »
  */
 export function runAction(
+	session: CalcSession,
+	actionId: string,
+	name: string,
+	argument?: string
+): ActionOutcome {
+	return outcomeWithDecimalComma(computeAction(session, actionId, name, argument));
+}
+
+function computeAction(
 	session: CalcSession,
 	actionId: string,
 	name: string,
@@ -811,6 +1552,10 @@ export function runAction(
 		if (solved !== null) {
 			return { ok: true, output: rendered.text, latex: solved.answer, steps: solved.steps };
 		}
+		// Pas d'étapes : les solutions du moteur en LaTeX, comme `.résoudre`
+		if (result.success && result.latex !== undefined) {
+			return { ok: true, output: rendered.text, latex: result.latex };
+		}
 	}
 
 	// ⚠️ Même histoire pour les variations : le moteur rendait « Derivee »,
@@ -825,18 +1570,25 @@ export function runAction(
 		}
 	}
 
+	// Le même rendu que `.variations` tapé : dérivée, détail, tableau
 	if (actionId === 'variations') {
-		const variations = variationTableOf(substituted.expression, name);
-		if (variations !== null) {
+		const studied = variationsRendering(substituted.expression, name);
+		if (studied !== null) {
 			return {
 				ok: true,
 				output: rendered.text,
-				latex: variations.derivative,
-				table: variations.table
+				latex: studied.answer,
+				steps: studied.steps,
+				...(studied.table !== undefined && { table: studied.table })
 			};
 		}
 	}
 
+	// Un refus que le moteur adresse à l'élève (`floor` : « la partie entière
+	// n'est pas dérivable partout ») : le même que celui de `.dériver`
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		return { ok: false, message: result.error?.message ?? 'Le calcul n’a pas abouti.' };
+	}
 	if (!result.success) {
 		return { ok: false, message: rendered.text || 'Le calcul n’a pas abouti.' };
 	}

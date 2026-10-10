@@ -1,7 +1,7 @@
 # Progress — Refonte SRS / FSRS / Référentiel famille A
 
 > Plan : `~/.claude/plans/immutable-painting-cake.md`
-> Spec TDD : `docs/wip/srs-fsrs-spec-tdd.md`
+> Spec TDD : `docs/archive/wip/srs-fsrs-spec-tdd.md`
 > Architecture cible : `docs/wip/srs-fsrs-architecture-cible.md`
 > Démarrage : 2026-06-10
 
@@ -18,7 +18,7 @@
 | 4 — UI decks personnels + sections | ✅ Code écrit     | 2026-06-10 | CRUD sections API + page deck detail + extension PUT card pour section_id.                                           |
 | 5 — Migration données rétro        | ✅ Pushée en prod | 2026-06-10 | 101 decks Programme créés, 0 cartes (aucun skill_attempts éligible pré-existant — attendu).                          |
 | 6 — Quality checks                 | ✅ Terminée       | 2026-06-10 | Svelte autofixer OK, ESLint 0 erreur, check:incremental baseline stable 9/46, perf P0#2 + P1 appliqués.              |
-| 7 — Documentation + commit         | ✅ Terminée       | 2026-06-10 | `docs/architecture/database-schema.md` MAJ + nouveau `docs/ref/srs/architecture.md` + archive de la doc cible.       |
+| 7 — Documentation + commit         | ✅ Terminée       | 2026-06-10 | `docs/systeme/base-de-donnees.md` MAJ + nouveau `docs/systeme/srs.md` + archive de la doc cible.                     |
 
 ---
 
@@ -26,7 +26,7 @@
 
 **Livrables** :
 
-- `docs/wip/srs-fsrs-spec-tdd.md` — comportements attendus pour chaque API, trigger, helper, UI.
+- `docs/archive/wip/srs-fsrs-spec-tdd.md` — comportements attendus pour chaque API, trigger, helper, UI.
 - Décisions par défaut actées (8 questions résolues, cf. §0).
 
 **Décisions clés validées** :
@@ -80,18 +80,18 @@
 
 **Référence canonique (post-livraison)** :
 
-- `docs/ref/srs/architecture.md` — doc de référence stable (Phase 7).
-- `docs/architecture/database-schema.md` — section "SRS / FSRS" ajoutée + `Compétences` mise à jour (Phase 7).
+- `docs/systeme/srs.md` — doc de référence stable (Phase 7).
+- `docs/systeme/base-de-donnees.md` — section "SRS / FSRS" ajoutée + `Compétences` mise à jour (Phase 7).
 
 **Archive de la doc de design** :
 
-- ~~`docs/ref/srs/architecture-cible-2026-06.md`~~ — supprimée (historique via `git log --follow`).
+- ~~`docs/systeme/srs/architecture-cible-2026-06.md`~~ — supprimée (historique via `git log --follow`).
 
 **WIP (chantier — peuvent être nettoyés ultérieurement)** :
 
-- `docs/wip/srs-fsrs-spec-tdd.md` (Phase 0, spec TDD originale).
+- `docs/archive/wip/srs-fsrs-spec-tdd.md` (Phase 0, spec TDD originale).
 - `docs/wip/srs-fsrs-progress.md` (ce document — historique d'exécution).
-- `docs/wip/srs-fsrs-security-audit-findings.md` (audit sécurité + spec V2 anti-fraud + risques préexistants).
+- `docs/archive/wip/srs-fsrs-security-audit-findings.md` (audit sécurité + spec V2 anti-fraud + risques préexistants).
 
 **Plan d'exécution** :
 

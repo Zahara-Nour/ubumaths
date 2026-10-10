@@ -1,0 +1,293 @@
+{
+	"title": "k-uplets (avec répétition) : n puissance k",
+	"description": "Nombre de k-uplets d'un ensemble à n éléments : cadenas, questionnaire, ADN, dés, mots (pièges : kⁿ au lieu de nᵏ, n × k, éléments distincts à tort)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-032", "TSPE-044"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "k-uplets",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Un cadenas possède ${{k}}$ molettes, chacune portant les chiffres de $0$ à $9$.\n\nCombien de combinaisons différentes ce cadenas admet-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une combinaison est un ${{k}}$-uplet de chiffres : l'ordre compte et un chiffre peut être répété.",
+					"$10^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:10^k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un questionnaire comporte ${{k}}$ questions ; chacune propose ${{m}}$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..8"
+				},
+				{
+					"name": "m",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une grille est un ${{k}}$-uplet de réponses (une par question), chacune choisie parmi ${{m}}$, avec répétition possible.",
+					"${{m}}^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:m^k}}}$ (et non ${{k}}^{ {{m}} }$)."
+				]
+			}
+		},
+		{
+			"statement": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de ${{k}}$ bases existe-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une séquence est un ${{k}}$-uplet de l'ensemble $\\{\\mathrm{A},\\mathrm{C},\\mathrm{G},\\mathrm{T}\\}$ à $4$ éléments (l'ordre compte, répétitions permises).",
+					"$4^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:4^k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance ${{k}}$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:6^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une liste de résultats est un ${{k}}$-uplet de $\\{1,2,3,4,5,6\\}$ ; un même résultat peut sortir plusieurs fois.",
+					"$6^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:6^k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de « mots » de ${{k}}$ lettres (ayant un sens ou non) peut-on écrire avec les $26$ lettres de l'alphabet, une lettre pouvant être répétée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:26^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un mot de ${{k}}$ lettres est un ${{k}}$-uplet de lettres, avec répétition possible.",
+					"$26^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:26^k}}}$ (lettres toutes distinctes : ce serait moins)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : k = 4 → 10 000",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["10000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 10 × 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : chiffres distincts 5040",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["5040"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 9⁴ (oubli du 0)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["6561"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3⁵ = 243",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "3"
+			},
+			"answers": ["243"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 5³ = 125",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "3"
+			},
+			"answers": ["125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3 × 5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "3"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 4⁶ = 4096",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["4096"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 4 × 6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 6⁴",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["1296"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 6³ = 216",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["216"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 3⁶ = 729",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["729"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : résultats sans ordre C(8,3) = 56",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 26³ = 17 576",
+			"variationIndex": 4,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["17576"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : lettres distinctes 15 600",
+			"variationIndex": 4,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["15600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

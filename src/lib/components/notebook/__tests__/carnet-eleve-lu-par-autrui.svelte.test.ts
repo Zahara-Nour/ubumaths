@@ -192,7 +192,9 @@ describe('Exécution : aucun bouton pour le lecteur non auteur', () => {
 			props: { cell: codeCell(), isActive: true, isReadonly: false, executionLocked: true }
 		});
 		const el = screen.container as HTMLElement;
-		await expect.poll(() => el.textContent).toContain('print');
+		// PythonEditor charge six modules CodeMirror à la demande : à froid sur la CI,
+		// plus que la seconde par défaut de expect.poll (échec vu deux fois sur #1014)
+		await expect.poll(() => el.textContent, { timeout: 10_000 }).toContain('print');
 		expect(el.querySelector('[aria-label="Exécuter la cellule"]')).toBeNull();
 	});
 

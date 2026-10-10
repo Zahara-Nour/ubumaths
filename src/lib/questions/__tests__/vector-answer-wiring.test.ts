@@ -2,7 +2,7 @@
  * Case « vecteur » (`answerKind: 'vecteur'`, option `vectorMode`) dans toute la
  * chaîne : validateur (navigateur), barème serveur, `orderIndependent`,
  * générateur, schémas Zod, specs de test du modèle, verdicts par case.
- * Comportements : docs/wip/reponse-vecteur-premier-progress.md.
+ * Comportements : docs/archive/wip/reponse-vecteur-premier-progress.md.
  */
 
 import { describe, it, expect } from 'vitest';

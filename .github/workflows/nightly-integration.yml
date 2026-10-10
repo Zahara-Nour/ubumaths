@@ -46,6 +46,8 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       # src/lib : dossiers atteints par la suite
+      - 'src/lib/data/math-dictionary-fr.ts'
+      - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
       - 'src/lib/mathAST/**'
       - 'src/lib/migration/**'
@@ -152,7 +154,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -176,7 +178,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies

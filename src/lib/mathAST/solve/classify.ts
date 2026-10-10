@@ -9,7 +9,7 @@
 import type { MathNode, RelationNode } from '../types';
 import type { ClassificationResult } from './types';
 import { subtract } from '../factory';
-import { isNumber } from '../guards';
+import { isDelimiter, isNumber } from '../guards';
 import { getVariables } from '../eval/substitute';
 
 // Import and re-export from analysis module for backwards compatibility
@@ -25,6 +25,39 @@ export { containsTranscendental, getTranscendentalType, getPolynomialDegree, isP
 // =============================================================================
 // Standard Form Conversion
 // =============================================================================
+
+/**
+ * Retire les parenthèses de groupement qui enveloppent TOUT un nœud :
+ * `(2x-3)` → `2x-3`, `((x-5))` → `x-5`.
+ *
+ * `flattenSumShallow` s'arrête aux délimiteurs (frontière voulue) : un membre
+ * `(2x-3)` y apparaît comme UN SEUL terme contenant x, et l'extraction des
+ * coefficients lisait alors `a = (2x-3)/x` — d'où `(2x-3)=0` résolue en x = 0.
+ * Seuls les délimiteurs de groupement sont retirés : un intervalle, un
+ * ensemble, un vecteur ou une matrice gardent leur sens.
+ */
+export function unwrapGrouping(node: MathNode): MathNode {
+	let current = node;
+	while (
+		isDelimiter(current) &&
+		(current.semantic === undefined || current.semantic === 'grouping')
+	) {
+		current = current.content;
+	}
+	return current;
+}
+
+/**
+ * Une équation dont chaque membre est lu comme son contenu : `(2x-3) = 0`
+ * devient `2x-3 = 0`. Rend l'équation d'origine (même référence) quand aucun
+ * membre n'est parenthésé.
+ */
+export function unwrapGroupingMembers(equation: RelationNode): RelationNode {
+	const left = unwrapGrouping(equation.left);
+	const right = unwrapGrouping(equation.right);
+	if (left === equation.left && right === equation.right) return equation;
+	return { ...equation, left, right };
+}
 
 /**
  * Convert equation to standard form: f(x) = 0.

@@ -1,0 +1,354 @@
+{
+	"title": "Inverse et quotient de nombres complexes",
+	"description": "Inverse 1/(a+ib), quotient par multiplication par le conjugué du dénominateur (pièges : conjugué du numérateur, a²−b² au dénominateur, i² = 1)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-004", "TEXP-006", "TEXP-003"],
+	"theme": "Nombres complexes",
+	"domain": "Forme algébrique",
+	"subdomain": "Inverse et quotient",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $z={{a}}+({{b}})i$. Écris $\\dfrac{1}{z}$ sous forme algébrique $a+ib$.\n\n$\\dfrac{1}{z}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a^2+b^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/n}}{{eval:-b/n;+}}i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie numérateur et dénominateur par le conjugué $\\overline{z}$ : $\\dfrac{1}{z}=\\dfrac{\\overline{z}}{z\\overline{z}}$, avec $z\\overline{z}={{eval:a^2}}+{{eval:b^2}}={{n}}$.",
+					"$\\dfrac{1}{z}=\\dfrac{ {{a}}{{if:-b==1|+i|{{if:-b==-1|-i|{{eval:-b;+}}i}}}}}{ {{n}} }$, soit $\\dfrac{1}{z}=\\textcolor{{{color:primary.0}}}{{{eval:a/n}}{{eval:-b/n;+}}i}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous forme algébrique $a+ib$ le quotient $z=\\dfrac{ {{u}}{{if:v==1|+i|{{if:v==-1|-i|{{eval:v;+}}i}}}}}{ {{c}}{{if:d==1|+i|{{if:d==-1|-i|{{eval:d;+}}i}}}}}$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "u",
+					"expression": "eval:p*c-q*d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:p*d+q*c"
+				},
+				{
+					"name": "n",
+					"expression": "eval:c^2+d^2"
+				}
+			],
+			"conditions": ["u != 0", "v != 0", "abs(u) != 1 or abs(v) != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}+({{q}})i"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie numérateur et dénominateur par ${{c}}-({{d}})i$, conjugué du dénominateur. Dénominateur : ${{eval:c^2}}+{{eval:d^2}}$, soit ${{n}}$.",
+					"Numérateur : $({{u}}+({{v}})i)({{c}}-({{d}})i)={{eval:n*p}}+({{eval:n*q}})i$.",
+					"$z=\\dfrac{ {{eval:n*p}}{{eval:n*q;+}}i}{ {{n}} }$, soit $z={{p}}+({{q}})i$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous forme algébrique $a+ib$ le quotient $z=\\dfrac{ {{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}}}{ {{c}}{{if:d==1|+i|{{if:d==-1|-i|{{eval:d;+}}i}}}}}$.\n\n$z=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "eval:c^2+d^2"
+				}
+			],
+			"conditions": [
+				"a*c+b*d != 0",
+				"b*c-a*d != 0",
+				"mod(a*c+b*d, n) != 0 or mod(b*c-a*d, n) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*c+b*d)/n}}{{if:(b*c-a*d)/n==1|+i|{{if:(b*c-a*d)/n==-1|-i|{{eval:(b*c-a*d)/n;+}}i}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie numérateur et dénominateur par ${{c}}-({{d}})i$, conjugué du dénominateur : $({{c}}+({{d}})i)({{c}}-({{d}})i)={{eval:c^2}}+{{eval:d^2}}$, soit ${{n}}$.",
+					"Numérateur : $({{a}}+({{b}})i)({{c}}-({{d}})i)={{eval:a*c+b*d}}+({{eval:b*c-a*d}})i$ (car $i^2=-1$).",
+					"$z=\\textcolor{{{color:primary.0}}}{{{eval:(a*c+b*d)/n}}{{if:(b*c-a*d)/n==1|+i|{{if:(b*c-a*d)/n==-1|-i|{{eval:(b*c-a*d)/n;+}}i}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 1/(1+i) = 1/2 − i/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{2}-\\frac{1}{2}i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 écriture 1/2 − i/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{2}-\\frac{i}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 conjugué seul, sans diviser → 1−i",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"n": "2"
+			},
+			"answers": ["1-i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 signe de la partie imaginaire → 1/2 + i/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{2}+\\frac{1}{2}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 une seule fraction (1-i)/2 : même forme que 1/2 - i/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"n": "2"
+			},
+			"answers": ["\\frac{1-i}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 décimaux 0,5 − 0,5i",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"n": "2"
+			},
+			"answers": ["0.5-0.5i"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 1/(2−3i) = 2/13 + 3i/13",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"n": "13"
+			},
+			"answers": ["\\frac{2}{13}+\\frac{3}{13}i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 a² − b² au dénominateur → −2/5 − 3i/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"n": "13"
+			},
+			"answers": ["-\\frac{2}{5}-\\frac{3}{5}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 (3+i)/(2−i) = 1+i",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["1+i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 multiplié par le dénominateur au lieu de son conjugué → 7/5 − i/5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["\\frac{7}{5}-\\frac{1}{5}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 non simplifié (5+5i)/5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["\\frac{5+5i}{5}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 parties divisées terme à terme → 3/2 − i",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"c": "2",
+				"d": "-1",
+				"u": "3",
+				"v": "1",
+				"n": "5"
+			},
+			"answers": ["\\frac{3}{2}-i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 (1+2i)/(1−2i) = −3/5 + 4i/5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "-2",
+				"n": "5"
+			},
+			"answers": ["-\\frac{3}{5}+\\frac{4}{5}i"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 i² = 1 au numérateur → 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "-2",
+				"n": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 conjugué du numérateur → −3/5 − 4i/5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "-2",
+				"n": "5"
+			},
+			"answers": ["-\\frac{3}{5}-\\frac{4}{5}i"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

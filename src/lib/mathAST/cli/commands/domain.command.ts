@@ -4,16 +4,28 @@
  * Computes and displays the domain of definition for mathematical expressions.
  * Uses French interval notation and provides detailed constraint explanations.
  *
- * Syntax: .domain expr [variable]
+ * Syntax: .domain expr[ ; variable]
  * - .domain sqrt(x)        -> [0, +∞[
  * - .domain ln(x) + sqrt(1-x)  -> ]0, 1]
- * - .domain 1/(x-1) y      -> explicit var: y
+ * - .domain 1/(y-1) ; y    -> explicit var: y
+ * - .domain ln(t)          -> en x, avec l'indication « … écris « ; t » »
+ *
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE —
+ * jamais après un espace : `1/(x-1) y` est un produit (voir
+ * `core/variable-argument.ts`, décision de David du 2026-10-06).
  */
 
 import chalk from 'chalk';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { parse } from '../core/pipeline';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	readCommandArguments,
+	keywordCommandLabel
+} from '../core/variable-argument';
 import { computeDomain } from '../../domain/compute';
 import { formatDomainInterval, formatDomainCondition } from '../../domain/format';
 import { toCustom } from '../../custom-generator';
@@ -54,8 +66,8 @@ import { toCustom } from '../../custom-generator';
 export class DomainCommand extends BaseCommand {
 	readonly name = 'domain';
 	readonly aliases = ['dom', 'df'] as const;
-	readonly description = 'Compute domain of definition: .domain expr [variable]';
-	readonly usage = 'domain <expression> [variable]';
+	readonly description = 'Compute domain of definition: .domain expr[ ; variable]';
+	readonly usage = 'domain <expression>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -67,13 +79,31 @@ export class DomainCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'Aucune expression fournie. Usage : .domain <expression> [variable]'
+					message: 'Aucune expression fournie. Usage : .domain <expression>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract expression and optional variable
-		const { expression, variable } = this.parseInput(input);
+		// `ln x` sans parenthèses : refusé, jamais lu l·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon x
+		const reading = readCommandArguments('domain', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable } = reading.args;
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -88,9 +118,38 @@ export class DomainCommand extends BaseCommand {
 			};
 		}
 
+		const chosen = chosenVariable(explicitVariable, parserOptions, {
+			node: parseResult.ast,
+			bound: ctx.evalState?.bindings.keys(),
+			label: keywordCommandLabel('domain')
+		});
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
+		}
+		const variable = chosen.variable;
+		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
+		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
+		const hint: string | null = null;
+
 		try {
 			// Compute domain with steps
 			const result = computeDomain(parseResult.ast, variable, { showSteps: true });
+
+			// Contrainte non résolue : on refuse plutôt que d'annoncer un domaine faux
+			if (result.unresolved && result.unresolved.length > 0) {
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: 'DOMAIN_UNRESOLVED',
+						message: 'Je ne sais pas encore déterminer ce domaine.'
+					}
+				};
+			}
 
 			// Format output
 			const exprCustom = toCustom(parseResult.ast);
@@ -115,6 +174,7 @@ export class DomainCommand extends BaseCommand {
 			// Final domain
 			lines.push(chalk.bold('Domaine :') + ' ' + chalk.green(intervalStr));
 			lines.push(chalk.bold('Condition :') + ' ' + chalk.green(conditionStr));
+			if (hint !== null) lines.push(hint);
 
 			return {
 				success: true,
@@ -129,40 +189,5 @@ export class DomainCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
-	}
-
-	/**
-	 * Parse the input to extract expression and optional variable.
-	 *
-	 * Strategy: If the last token is a single word that looks like a variable
-	 * (single letter or valid identifier) and there's more before it,
-	 * treat it as the domain variable.
-	 *
-	 * Examples:
-	 * - "sqrt(x)" -> { expression: "sqrt(x)", variable: "x" }
-	 * - "x^3 y" -> { expression: "x^3", variable: "y" }
-	 * - "1/(y-1) y" -> { expression: "1/(y-1)", variable: "y" }
-	 */
-	private parseInput(input: string): { expression: string; variable: string } {
-		const trimmed = input.trim();
-
-		// Try to find a trailing variable (single word at the end after whitespace)
-		const match = trimmed.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/);
-
-		if (match) {
-			const [, expr, varCandidate] = match;
-			if (expr.trim() && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
-				return {
-					expression: expr.trim(),
-					variable: varCandidate
-				};
-			}
-		}
-
-		// Default: entire input is the expression, variable defaults to 'x'
-		return {
-			expression: trimmed,
-			variable: 'x'
-		};
 	}
 }

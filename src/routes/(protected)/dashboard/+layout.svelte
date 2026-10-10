@@ -48,6 +48,7 @@
 	import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
 	import { activityStore } from '$lib/stores/activity.svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
+	import AlmanachHeaderDate from '$lib/components/almanach/AlmanachHeaderDate.svelte';
 	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
 	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
 	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
@@ -340,11 +341,14 @@
 					<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
 				</a>
 
-				<!-- Zone title - hidden on very small screens -->
-				<div class="hidden sm:block">
-					<h1 class="text-2xl font-bold tracking-tight text-foreground">
+				<!-- Nom de l'espace (masqué sur mobile) et, dessous, la date de l'Almanach :
+					 format court sur mobile, à côté de la gidouille -->
+				<div class="flex flex-col items-start leading-tight">
+					<!-- Nom de l'espace, pas un titre : le seul h1 est celui de la page -->
+					<div class="hidden text-2xl font-bold tracking-tight text-foreground sm:block">
 						{getZoneTitle(navRole)}
-					</h1>
+					</div>
+					<AlmanachHeaderDate date={data.almanachToday} />
 				</div>
 			</div>
 

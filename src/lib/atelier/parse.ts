@@ -10,9 +10,10 @@
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { parseLatexSafe } from '$lib/mathAST/parser';
-import { detectInputFormat } from '$lib/mathAST/cli/core/input-detector';
+import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { transformAST } from '$lib/mathAST/visitor';
 import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
 import {
@@ -24,6 +25,7 @@ import {
 import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
+import { coupleOrSetRefusal } from './decimal-comma';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -106,11 +108,49 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
 	return { names: [...names], allowDerivatives: true, allowInverse: true };
 }
 
+/**
+ * Le symbole `π` tapé tel quel, réécrit `\pi` — la constante, que les deux
+ * parseurs connaissent. Sans quoi ils lisent une VARIABLE nommée « π » :
+ * `f(x) = 2sin(π x)` ne s'évaluait pas, et sa dérivée l'affichait comme une
+ * lettre. L'atelier conseille pourtant « \pi ou le symbole π » (#896).
+ *
+ * ⚠️ Propre à l'atelier : ailleurs (le DSL de géométrie), `π` est un nom comme
+ * un autre, décision prise. L'espace qui suit évite de coller la commande à
+ * une lettre (`πx` → `\pi x`, pas `\pix`).
+ */
+export function withPiCommand(text: string): string {
+	return text.replace(/π/g, '\\pi ');
+}
+
+/**
+ * Le refus d'une saisie MÊLÉE : `sin(` sans antislash (texte) avec une commande
+ * LaTeX que le parseur maison ne connaît pas (`\frac`, `\sqrt`, `\cdot`…).
+ */
+export const MIXED_NOTATION_MESSAGE =
+	'Deux écritures mélangées : sin(x) est en texte, \\frac, \\sqrt ou \\cdot en LaTeX. Choisis-en une — en texte : 1/2*sin(x), sqrt(x)*cos(x), 2*cos(x) ; en LaTeX : \\frac{1}{2}\\sin(x).';
+
+/**
+ * Le message d'une saisie mêlée que le parseur maison ne lit pas, ou `null`.
+ *
+ * Le `sin(` l'emporte à la détection (syntaxe maison) ; le parseur maison
+ * refusait alors la commande LaTeX par « Invalid backslash sequence at
+ * position 0 », en anglais, montré tel quel dans une ligne de calcul (revue
+ * #911). Une saisie mêlée qu'il LIT (`cos(3x+\pi/4)`, `e^{sin(x)}`) passe.
+ */
+export function mixedNotationMessage(text: string): string | null {
+	if (!hasBareFunctionCall(text)) return null;
+	const read = parseCustomSafe(withPiCommand(text));
+	return read.ast === null && read.errors.some((e) => e.code === 'UNKNOWN_COMMAND')
+		? MIXED_NOTATION_MESSAGE
+		: null;
+}
+
 function parseByProvenance(
-	definition: string,
+	rawDefinition: string,
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
+	const definition = withPiCommand(rawDefinition);
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
@@ -359,7 +399,12 @@ export function parseDefinition(
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {
-		return { error: `« ${definition.trim()} » n'est pas une expression valide.` };
+		return {
+			error:
+				coupleOrSetRefusal(definition) ??
+				mixedNotationMessage(definition) ??
+				`« ${definition.trim()} » n'est pas une expression valide.`
+		};
 	}
 
 	if (kind === 'value') {
@@ -465,6 +510,22 @@ function calledFunctions(node: MathNode): string[] {
 	};
 	visit(node);
 	return out;
+}
+
+/**
+ * Le nombre d'Euler écrit `e`, et non `\euler`.
+ *
+ * ⚠️ `toCustom` écrit `\euler`, que ni le parseur du grapheur ni le moteur de
+ * Calcul ne lisent (« Unknown command: \euler ») : `f(x) = e^x` ne se traçait
+ * pas, `.deriver f` rendait une ligne vide (retour de David, 2026-10-05). `e`
+ * est un nom réservé de l'atelier : l'écrire `e` ne peut désigner rien d'autre,
+ * et les deux le lisent comme Euler.
+ */
+export function withPlainEuler(ast: MathNode): MathNode {
+	return transformAST(ast, {
+		enterConstant: (node) =>
+			node.constant === 'euler' ? { type: 'variable', name: 'e' } : undefined
+	});
 }
 
 /**

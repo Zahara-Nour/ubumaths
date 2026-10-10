@@ -36,10 +36,12 @@
  */
 
 import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
+import { GREEK_LETTERS } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, euler, complex } from '../../factory';
+import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import {
 	isGroupingBracket,
@@ -62,30 +64,9 @@ import {
  * Map custom syntax symbol names to MathAST GreekLetter type
  * Note: 'pi' is NOT here - it's a MathConstant, not a GreekLetter
  */
-const GREEK_SYMBOL_MAP: Record<string, GreekLetter> = {
-	alpha: 'alpha',
-	beta: 'beta',
-	gamma: 'gamma',
-	delta: 'delta',
-	epsilon: 'epsilon',
-	zeta: 'zeta',
-	eta: 'eta',
-	theta: 'theta',
-	iota: 'iota',
-	kappa: 'kappa',
-	lambda: 'lambda',
-	mu: 'mu',
-	nu: 'nu',
-	xi: 'xi',
-	rho: 'rho',
-	sigma: 'sigma',
-	tau: 'tau',
-	upsilon: 'upsilon',
-	phi: 'phi',
-	chi: 'chi',
-	psi: 'psi',
-	omega: 'omega'
-};
+const GREEK_SYMBOL_MAP: Readonly<Record<string, GreekLetter>> = Object.fromEntries(
+	GREEK_LETTERS.map((letter) => [letter, letter])
+);
 
 /**
  * Map custom syntax symbol names to MathAST MathSymbol type
@@ -197,11 +178,15 @@ class CustomRDParser {
 	// Token Management
 	// =========================================================================
 
+	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
+	private previousToken: CustomToken | undefined;
+
 	/**
 	 * Advance to the next token
 	 */
 	private advance(): CustomToken {
 		const prev = this.currentToken;
+		this.previousToken = prev;
 		this.currentToken = this.tokenizer.nextToken();
 		return prev;
 	}
@@ -636,8 +621,25 @@ class CustomRDParser {
 	private parseFractionOperand(): MathNode {
 		let operand = this.parseAtom();
 
-		while (this.check('CARET') || this.check('UNDERSCORE') || this.checkUnitBracket()) {
-			if (this.check('CARET')) {
+		while (
+			this.check('CARET') ||
+			this.check('UNDERSCORE') ||
+			this.check('EXCLAMATION') ||
+			this.checkUnitBracket()
+		) {
+			if (this.check('EXCLAMATION')) {
+				// Factorielle postfixe : `n!`, `2^3!` = (2³)! ; `3!!` refusé
+				this.advance();
+				if (this.check('EXCLAMATION')) {
+					this.error(
+						DOUBLE_FACTORIAL_ERROR,
+						this.currentToken.position,
+						this.currentToken.length,
+						'UNEXPECTED_TOKEN'
+					);
+				}
+				operand = this.applyColor(factorialOf(operand));
+			} else if (this.check('CARET')) {
 				this.advance();
 				operand = this.applyColor(MathAST.superscript(operand, this.parsePowerOperand()));
 			} else if (this.check('UNDERSCORE')) {
@@ -746,7 +748,9 @@ class CustomRDParser {
 		}
 
 		// NUMBER cannot start implicit multiplication (prevents x2, (a)2)
+		// Sauf juste après une factorielle : `3!27!` = 3! × 27! (écriture de `\frac{30!}{3!27!}`)
 		if (token.type === 'NUMBER') {
+			if (this.previousToken?.type === 'EXCLAMATION') return true;
 			return false;
 		}
 

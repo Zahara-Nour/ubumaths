@@ -3,7 +3,7 @@
  * analyse du texte.
  *
  * Spécification validée par David le 2026-10-01
- * (`docs/wip/outils-statistiques-progress.md`, lot 3).
+ * (`docs/archive/wip/outils-statistiques-progress.md`, lot 3).
  */
 
 import { describe, it, expect } from 'vitest';

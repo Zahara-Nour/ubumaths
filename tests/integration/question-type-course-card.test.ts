@@ -3,7 +3,7 @@
  * ================================================================
  *
  * Migration : 20260928120000_question_templates_type_carte_de_cours.sql
- * Spécification : docs/wip/cartes-de-cours-progress.md
+ * Spécification : docs/archive/wip/cartes-de-cours-progress.md
  *
  * La contrainte `question_templates_type_check` doit admettre `course_card` et
  * continuer de refuser un type inconnu. Chaque assertion vérifie une valeur relue.

@@ -1,0 +1,489 @@
+{
+	"title": "Opérations sur les matrices : somme, combinaison linéaire",
+	"description": "Calculer A + B, kA − B, et trouver B tel que A + B = C pour des matrices 2 × 2, coefficient par coefficient (pièges : signe d'un coefficient négatif, k appliqué aux deux matrices)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-124", "TEXP-122"],
+	"theme": "Graphes et matrices",
+	"domain": "Matrices",
+	"subdomain": "Calcul matriciel",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a4",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b4",
+					"expression": "-4..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a1+b1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a2+b2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a3+b3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a4+b4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On additionne coefficient par coefficient : $A + B = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:a1+b1}}}&\\textcolor{{{color:primary.0}}}{{{eval:a2+b2}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:a3+b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:a4+b4}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note ${{k}}A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a4",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b4",
+					"expression": "-4..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*a1-b1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*a2-b2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*a3-b3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*a4-b4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{k}}A = \\begin{pmatrix}{{eval:k*a1}}&{{eval:k*a2}}\\\\{{eval:k*a3}}&{{eval:k*a4}}\\end{pmatrix}$, puis on soustrait $B$ coefficient par coefficient : ${{k}}A - B = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:k*a1-b1}}}&\\textcolor{{{color:primary.0}}}{{{eval:k*a2-b2}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:k*a3-b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:k*a4-b4}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $A + B = \\begin{pmatrix}{{eval:a1+b1}}&{{eval:a2+b2}}\\\\{{eval:a3+b3}}&{{eval:a4+b4}}\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a4",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b4",
+					"expression": "-4..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$B = (A + B) - A = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:b1}}}&\\textcolor{{{color:primary.0}}}{{{eval:b2}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:b4}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nCalcule la matrice ${{k}}A-B$.\n\n${{k}}A-B=?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "a4",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b1",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b2",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b3",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b4",
+					"expression": "-4..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:k*a1-b1}}&{{eval:k*a2-b2}}\\\\{{eval:k*a3-b3}}&{{eval:k*a4-b4}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Coefficient par coefficient : ${{k}} \\times {{a1;()}} - {{b1;()}}$, etc.",
+					"${{k}}A-B = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:k*a1-b1}}}&\\textcolor{{{color:primary.0}}}{{{eval:k*a2-b2}}}\\\\\\textcolor{{{color:primary.0}}}{{{eval:k*a3-b3}}}&\\textcolor{{{color:primary.0}}}{{{eval:k*a4-b4}}}\\end{pmatrix}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : A + B",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5"
+			},
+			"answers": ["3", "3", "1", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : A − B",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5"
+			},
+			"answers": ["1", "-5", "5", "-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : signe de −1 + 4 perdu",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5"
+			},
+			"answers": ["3", "5", "1", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2A − B",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5",
+				"k": "2"
+			},
+			"answers": ["3", "-6", "8", "-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 2(A − B)",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5",
+				"k": "2"
+			},
+			"answers": ["2", "-10", "10", "-10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : B retrouvée",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5"
+			},
+			"answers": ["1", "4", "-2", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : A + (A + B)",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "2",
+				"a2": "-1",
+				"a3": "3",
+				"a4": "0",
+				"b1": "1",
+				"b2": "4",
+				"b3": "-2",
+				"b4": "5"
+			},
+			"answers": ["5", "2", "4", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 2A-B",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2",
+				"k": "2"
+			},
+			"answers": ["\\begin{pmatrix}2&3\\\\7&6\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : 2A-B, écriture de MathLive",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2",
+				"k": "2"
+			},
+			"answers": ["\\begin{pmatrix}2 & 3\\\\ 7 & 6\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : 2A+B (signe)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2",
+				"k": "2"
+			},
+			"answers": ["\\begin{pmatrix}2&5\\\\5&10\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : A-B (coefficient k oublié)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2",
+				"k": "2"
+			},
+			"answers": ["\\begin{pmatrix}1&1\\\\4&2\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : dimension fausse (colonne)",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2",
+				"k": "2"
+			},
+			"answers": ["\\begin{pmatrix}2\\\\7\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : \\frac{4}{2} pour 2",
+			"variables": {
+				"a1": "1",
+				"a2": "2",
+				"a3": "3",
+				"a4": "4",
+				"b1": "0",
+				"b2": "1",
+				"b3": "-1",
+				"b4": "2",
+				"k": "2"
+			},
+			"answers": ["\\begin{pmatrix}\\frac{4}{2}&3\\\\7&6\\end{pmatrix}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variationIndex": 3
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

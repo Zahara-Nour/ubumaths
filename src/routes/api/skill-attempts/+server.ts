@@ -23,7 +23,7 @@
  *   404 — template_id inexistant
  *   500 — INSERT ou UPSERT échoue
  *
- * Spec : docs/wip/srs-fsrs-spec-tdd.md §1
+ * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §1
  */
 
 import { json, error } from '@sveltejs/kit';

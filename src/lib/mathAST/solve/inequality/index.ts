@@ -33,7 +33,7 @@ import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isEmpty as isDomainEmpty, union, difference } from '../../domain/algebra';
 import { emptyDomain, intervalSet } from '../../domain/factory';
-import { promoteEulerInRelation } from '../promote-euler';
+import { promoteEulerInRelation, promoteStandaloneEulerInRelation } from '../promote-euler';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);
 
@@ -82,7 +82,11 @@ export function solveInequality(
 	// appears as the base of a superscript. Without this, `detectVariable`
 	// treats `e^x - 1 > 0` as having two unknowns `{e, x}` and returns null,
 	// short-circuiting into the constant-inequality path.
-	const promoted = promoteEulerInRelation(relation);
+	// Le `e` seul (`e^x > e`) aussi, dès qu'il ne peut pas être l'inconnue.
+	const promoted = promoteStandaloneEulerInRelation(
+		promoteEulerInRelation(relation),
+		options.variable
+	);
 	const expression = canon(subtract(promoted.left, promoted.right));
 
 	const variable = options.variable ?? detectVariable(promoted);

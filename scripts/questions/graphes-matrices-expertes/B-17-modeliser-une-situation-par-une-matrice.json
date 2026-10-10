@@ -1,0 +1,382 @@
+{
+	"title": "Modéliser une situation par une matrice",
+	"description": "Traduire une situation par une matrice : système de prix AX = B, échanges de population U(n+1) = MU(n) (pourcentages), suite récurrente d'ordre 2 X(n+1) = AX(n), système U(n+1) = AU(n) + C (pièges : matrice transposée, pourcentages gardés entiers, lignes de la suite échangées, terme constant oublié)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-132", "TEXP-128", "TEXP-129", "TEXP-131"],
+	"theme": "Graphes et matrices",
+	"domain": "Matrices",
+	"subdomain": "Modélisation matricielle",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Au marché, ${{p}}$ kg de pommes et ${{q}}$ kg de poires coûtent ${{eval:p*x+q*y}}$ € ; ${{r}}$ kg de pommes et ${{s}}$ kg de poires coûtent ${{eval:r*x+s*y}}$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $AX = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A=?$\n\n$B=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				},
+				{
+					"name": "s",
+					"expression": "1..5"
+				},
+				{
+					"name": "x",
+					"expression": "2..6"
+				},
+				{
+					"name": "y",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["p*s != q*r", "q != r", "x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{p}}&{{q}}\\\\{{r}}&{{s}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				},
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:p*x+q*y}}\\\\{{eval:r*x+s*y}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le problème se traduit par $ {{p}}x+{{q}}y = {{eval:p*x+q*y}}$ et ${{r}}x+{{s}}y = {{eval:r*x+s*y}}$ : une équation par ligne de $A$.",
+					"$A = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{p}}&{{q}}\\\\{{r}}&{{s}}\\end{pmatrix}}$ (première colonne : les pommes, seconde : les poires) et $B = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:p*x+q*y}}\\\\{{eval:r*x+s*y}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque année, ${{p}}$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et ${{q}}$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n+1} = MU_n$ (valeurs exactes ou décimales).\n\n$M=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "5|10|15|20|25|30"
+				},
+				{
+					"name": "q",
+					"expression": "5|10|15|20|25|30"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{eval:(100-p)/100}}&{{eval:q/100}}\\\\{{eval:p/100}}&{{eval:(100-q)/100}}\\end{pmatrix}",
+					"answerKind": "matrice",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$v_{n+1} = {{eval:(100-p)/100;d}}\\,v_n + {{eval:q/100;d}}\\,c_n$ : la ville garde ${{eval:100-p}}$ % de ses habitants et reçoit ${{q}}$ % de ceux de la campagne.",
+					"$c_{n+1} = {{eval:p/100;d}}\\,v_n + {{eval:(100-q)/100;d}}\\,c_n$.",
+					"$M = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(100-p)/100;d}}&{{eval:q/100;d}}\\\\{{eval:p/100;d}}&{{eval:(100-q)/100;d}}\\end{pmatrix}}$ : chaque COLONNE a pour somme $1$ (personne ne disparaît)."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ vérifie $u_{n+2} = {{a}}u_{n+1}+({{b}})u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n+1} = AX_n$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{a}}&{{b}}\\\\1&0\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X_{n+1} = \\begin{pmatrix}u_{n+2}\\\\u_{n+1}\\end{pmatrix}$ avec $u_{n+2} = {{a}}u_{n+1}+({{b}})u_n$ et $u_{n+1} = 1u_{n+1}+0u_n$.",
+					"$A = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{a}}&{{b}}\\\\1&0\\end{pmatrix}}$ : la seconde ligne recopie $u_{n+1}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux suites $(a_n)$ et $(b_n)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n+1} = {{p}}a_n+({{q}})b_n+({{r}})$ et $b_{n+1} = {{s}}a_n+({{t}})b_n+({{w}})$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n+1} = AU_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A=?$\n\n$C=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "t",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "w",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["q != s"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{p}}&{{q}}\\\\{{s}}&{{t}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				},
+				{
+					"expectedAnswer": "\\begin{pmatrix}{{r}}\\\\{{w}}\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coefficients de $a_n$ et $b_n$ forment les lignes de $A$ ; les termes constants forment $C$.",
+					"$A = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{p}}&{{q}}\\\\{{s}}&{{t}}\\end{pmatrix}}$ et $C = \\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{r}}\\\\{{w}}\\end{pmatrix}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2 pommes + 3 poires = 17, 4 + 1 = 13 (x = 4, y = 3)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "4",
+				"s": "1",
+				"x": "4",
+				"y": "3"
+			},
+			"answers": [
+				"\\begin{pmatrix}2&3\\\\4&1\\end{pmatrix}",
+				"\\begin{pmatrix}17\\\\19\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : A transposée (colonnes = achats)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "4",
+				"s": "1",
+				"x": "4",
+				"y": "3"
+			},
+			"answers": [
+				"\\begin{pmatrix}2&4\\\\3&1\\end{pmatrix}",
+				"\\begin{pmatrix}17\\\\19\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : B écrite en ligne",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "4",
+				"s": "1",
+				"x": "4",
+				"y": "3"
+			},
+			"answers": [
+				"\\begin{pmatrix}2&3\\\\4&1\\end{pmatrix}",
+				"\\begin{pmatrix}17&19\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 10 % et 20 % → (9/10 1/5 ; 1/10 4/5)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"q": "20"
+			},
+			"answers": [
+				"\\begin{pmatrix}\\frac{9}{10}&\\frac{1}{5}\\\\\\frac{1}{10}&\\frac{4}{5}\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimaux exacts acceptés",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"q": "20"
+			},
+			"answers": ["\\begin{pmatrix}0.9&0.2\\\\0.1&0.8\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : transposée (lignes de somme 1)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"q": "20"
+			},
+			"answers": ["\\begin{pmatrix}0.9&0.1\\\\0.2&0.8\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : pourcentages gardés entiers",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"q": "20"
+			},
+			"answers": ["\\begin{pmatrix}90&20\\\\10&80\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : départs seulement, sans ceux qui restent",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"q": "20"
+			},
+			"answers": ["\\begin{pmatrix}0.1&0.2\\\\0.1&0.2\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : u(n+2) = 3u(n+1) − 2u(n)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["\\begin{pmatrix}3&-2\\\\1&0\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : coefficients échangés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["\\begin{pmatrix}-2&3\\\\1&0\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : seconde ligne (0 1)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["\\begin{pmatrix}3&-2\\\\0&1\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : A et C justes",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"r": "3",
+				"s": "1",
+				"t": "4",
+				"w": "-5"
+			},
+			"answers": [
+				"\\begin{pmatrix}2&-1\\\\1&4\\end{pmatrix}",
+				"\\begin{pmatrix}3\\\\-5\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : A transposée",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"r": "3",
+				"s": "1",
+				"t": "4",
+				"w": "-5"
+			},
+			"answers": [
+				"\\begin{pmatrix}2&1\\\\-1&4\\end{pmatrix}",
+				"\\begin{pmatrix}3\\\\-5\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : C oubliée (nulle)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"q": "-1",
+				"r": "3",
+				"s": "1",
+				"t": "4",
+				"w": "-5"
+			},
+			"answers": [
+				"\\begin{pmatrix}2&-1\\\\1&4\\end{pmatrix}",
+				"\\begin{pmatrix}0\\\\0\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

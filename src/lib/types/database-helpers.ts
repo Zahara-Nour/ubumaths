@@ -307,7 +307,7 @@ export type KanbanTagUpdate = Partial<Pick<KanbanTag, 'name' | 'color'>>;
 // ============================================================================
 // Skills System — Phase 1 référentiel de compétences (2026-06-09)
 // ============================================================================
-// Spec      : docs/wip/skills-referentiel-design.md (décisions 57-72)
+// Spec      : docs/archive/wip/skills-referentiel-design.md (décisions 57-72)
 // Migrations: supabase/migrations/20260609120000..02_competence_referentiel_*.sql
 // Business types stables (MathCompetenceLevel, SkillSource, ...) : src/lib/types/skills.ts
 // ============================================================================

@@ -30,7 +30,8 @@ import {
 	INLINE_DETAIL_REGEX,
 	maskSpans,
 	parseCalloutKind,
-	parseDetailKind
+	parseDetailKind,
+	isLexiconMarkWord
 } from '$lib/ubumark/utils/detail-kinds';
 
 // ============================================================================
@@ -332,6 +333,8 @@ function transformInlineDetails(text: string, mode: Mode, ctx: Context): string 
 	while ((match = regex.exec(masked)) !== null) {
 		const start = match.index;
 		const end = start + match[0].length;
+		// `[mot]{.def}` marque un mot du lexique : il reste dans les deux versions
+		if (isLexiconMarkWord(match[2])) continue;
 		if (!parseDetailKind(match[2])) {
 			ctx.errors.push(
 				`Détail en ligne « {.${match[2]}} » : type inconnu. Types possibles : calcul, rappel, méthode, attention.`

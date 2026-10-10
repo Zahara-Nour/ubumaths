@@ -1,0 +1,155 @@
+{
+	"title": "Graphe : ordre, degrés, nombre d'arêtes",
+	"description": "Lire sur un graphe (figure ou liste d'arêtes) son ordre, le degré d'un sommet et le nombre d'arêtes (pièges : ordre confondu avec le nombre d'arêtes, arête comptée deux fois, degré compté en sommets voisins non adjacents)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-112", "TEXP-114"],
+	"theme": "Graphes et matrices",
+	"domain": "Graphes",
+	"subdomain": "Vocabulaire des graphes",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nOrdre du graphe : $?$\n\nDegré du sommet $B$ : $?$\n\nNombre d'arêtes : $?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				},
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordre est le nombre de sommets : $\\textcolor{{{color:primary.0}}}{5}$.",
+					"$B$ est adjacent à $A$, $C$, $D$ et $E$ : degré $\\textcolor{{{color:primary.0}}}{4}$.",
+					"Arêtes : $AB$, $AE$, $BC$, $BE$, $CD$, $BD$, soit $\\textcolor{{{color:primary.0}}}{6}$ (la somme des degrés $2 + 4 + 2 + 2 + 2 = 12$ en vaut le double)."
+				]
+			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 7.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 6 sommets A à F ; arêtes AB, AC, BC, CD, DE, DF, EF, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(2, 0, etiquette=\"bas\")\nD = point(5, 2, etiquette=\"haut\")\nE = point(7, 4, etiquette=\"haut\")\nF = point(7, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(C, D)\nsegment(D, E)\nsegment(D, F)\nsegment(E, F)\nsegment(B, D)\n```\n\nOrdre du graphe : $?$\n\nDegré du sommet $D$ : $?$\n\nNombre d'arêtes : $?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				},
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le graphe a $\\textcolor{{{color:primary.0}}}{6}$ sommets.",
+					"$D$ est adjacent à $B$, $C$, $E$ et $F$ : degré $\\textcolor{{{color:primary.0}}}{4}$.",
+					"Somme des degrés : $2 + 3 + 3 + 4 + 2 + 2 = 16$, donc $\\textcolor{{{color:primary.0}}}{8}$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "Un graphe a pour sommets $1$, $2$, $3$, $4$, $5$, $6$ et pour arêtes :\n\n$\\{1, 2\\}$, $\\{1, 3\\}$, $\\{2, 3\\}$, $\\{2, 4\\}$, $\\{3, 5\\}$, $\\{4, 5\\}$, $\\{5, 6\\}$.\n\nDegré du sommet $5$ : $?$\n\nSomme des degrés de tous les sommets : $?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				},
+				{
+					"expectedAnswer": "14"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$5$ apparaît dans $\\{3, 5\\}$, $\\{4, 5\\}$, $\\{5, 6\\}$ : degré $\\textcolor{{{color:primary.0}}}{3}$.",
+					"Chaque arête compte pour deux sommets : somme des degrés $= 2 \\times 7 = \\textcolor{{{color:primary.0}}}{14}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 5, 4, 6",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["5", "4", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ordre = arêtes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["6", "4", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 12 arêtes (somme des degrés)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["5", "4", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : degré de B = 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["5", "3", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 6, 4, 8",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["6", "4", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 16 arêtes",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["6", "4", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 et 14",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3", "14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 7 (nombre d'arêtes)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

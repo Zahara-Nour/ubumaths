@@ -145,7 +145,7 @@ describe('consentement parental décidé par le niveau', () => {
 		}
 	);
 
-	it.each(['1_GEN', '1_SPE', '1_STMG', 'T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_STMG'])(
+	it.each(['1_GEN', '1_SPE', '1_TECHNO', 'T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_TECHNO'])(
 		'A2 — passage en %s : non soumis',
 		async (g) => {
 			await modifier(eleveId, { grade: '6', consent_granted_at: null });

@@ -21,8 +21,6 @@
 | `frontend-developer` | Composants UI, layouts, Shadcn-svelte, Tailwind, UX |
 | `svelte-expert` | Question sémantique runes (`$derived` vs `$effect`, `$bindable`, snippets, untrack, migration Svelte 4→5) |
 | `supabase-expert` | Schéma DB, migrations, RLS, Supabase Auth (Opus) |
-| `api-designer` | Design *contrat* REST (URLs, statuts, pagination, Zod) avant implémentation |
-| `typescript-expert` | Types avancés (generics, conditional, mapped, template literal), tsconfig |
 
 ## Famille 3 — Qualité (proactif après code)
 
@@ -39,8 +37,6 @@
 
 | Agent | Quand |
 |---|---|
-| `commit-manager` | Commits complexes multi-fichiers. **Jamais auto-push, jamais auto-release, jamais Co-Authored-By** |
-| `documentation-writer` | **Proactif** après features importantes |
 
 ## Famille 5 — Recherche
 
@@ -52,9 +48,9 @@
 
 - **Lancer un agent pour un bug ciblé dans 1-2 fichiers connus** → travail direct (CLAUDE.md "Quand NE PAS utiliser d'agent")
 - **Lancer un agent pour < 20 lignes de code** → travail direct
-- **Faire tourner un agent pour exécuter `pnpm check`, `pnpm build`, `pnpm lint`, `pnpm test:triggers`** → INTERDIT (memory : saturation mémoire, faux positifs, ou setup Docker cassé)
+- **Faire tourner un agent pour exécuter `pnpm check`, `pnpm build`, `pnpm lint`** → INTERDIT : aucun verrou ne les protège, deux en parallèle saturent la RAM (CLAUDE.md)
 - **Choisir `frontend-developer` pour un composant dans `geometry-core/`** → utiliser `geometry-expert` (connaît les invariants Canvas et le système réactif)
-- **Choisir `typescript-expert` pour un fichier mathAST** → utiliser `mathast-expert` (invariants nodes immutables, no-negative-number-literal, pattern module obligatoire)
+- **Choisir un agent générique pour un fichier mathAST** → utiliser `mathast-expert` (invariants nodes immutables, no-negative-number-literal, pattern module obligatoire)
 
 ## Modèles
 
@@ -71,5 +67,5 @@ Tous les agents respectent :
 4. **CLAUDE.md règle #3** : Svelte 5 runes uniquement, `$effect` réservé aux side-effects
 5. **CLAUDE.md règle #5** : `pnpm svelte:autofix <fichier>` (ou `mcp__svelte__svelte-autofixer` si le MCP est configuré) obligatoire après chaque `.svelte`
 6. **CLAUDE.md règle #6** : types custom dans `database-helpers.ts`, jamais dans `database.ts` auto-généré
-7. **Commandes interdites** : `pnpm check`, `pnpm check:fast`, `svelte-check` sans `--incremental`, `pnpm build` pour vérifier, `pnpm test:triggers`, runs multiples de `pnpm check:incremental`
+7. **Commandes interdites** : `pnpm check`, `pnpm check:fast`, `svelte-check` sans `--incremental`, `pnpm build` pour vérifier, runs multiples de `pnpm check:incremental`
 8. **Pas de Co-Authored-By Claude** dans les commits ; pas d'auto-push, pas d'auto-release

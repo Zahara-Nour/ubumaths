@@ -1,6 +1,6 @@
 # Fix régression checkForm — answer-validator (2026-06-12)
 
-> Issu du chantier « tests stale » (`docs/wip/stale-tests-sweep.md`). Cluster answer-validator :
+> Issu du chantier « tests stale » (`docs/archive/wip/stale-tests-sweep.md`). Cluster answer-validator :
 > 18 régressions confirmées + 1 test à réaligner. Plan **validé par David** test par test.
 
 ## Racine

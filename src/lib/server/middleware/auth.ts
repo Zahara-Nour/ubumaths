@@ -24,7 +24,7 @@
  * MIGRATION FROM DUPLICATED CODE:
  * - Before: 10 lines of auth boilerplate per endpoint + 1 DB query
  * - After: 1 line of middleware call (reuses profile from session)
- * - See: docs/guides/auth-middleware-migration.md for migration guide
+ * - See: docs/systeme/auth-middleware-migration.md for migration guide
  */
 
 import { error } from '@sveltejs/kit';

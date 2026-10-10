@@ -2,7 +2,7 @@
  * Game leaderboards — Integration Tests (RLS / scoping)
  * =====================================================
  *
- * Feature: docs/wip/game-leaderboards.md. Two SECURITY DEFINER RPCs, both ranked
+ * Feature: docs/archive/wip/game-leaderboards.md. Two SECURITY DEFINER RPCs, both ranked
  * by the CALLER (`auth.uid()`) and school-bounded via `my_school()`:
  *   - game_leaderboard(p_game, p_scope, p_limit)            — unified ranking
  *   - minesweeper_scoped_leaderboard(p_scope, p_limit)      — detailed (avg_top_10)

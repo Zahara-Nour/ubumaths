@@ -7,7 +7,7 @@
  * exige de trouver exactement le texte attendu (sinon la retouche lève une
  * erreur : la ligne a changé depuis la relecture, rien n'est écrit).
  *
- * Défauts relevés par les agents de corrections (docs/wip/corrections-strategies-progress.md),
+ * Défauts relevés par les agents de corrections (docs/archive/wip/corrections-strategies-progress.md),
  * vérifiés sur la prod (lecture seule) le 2026-09-30. Écartés après vérification :
  * - 294c4316 (facteur commun) : `c` est tiré premier avec `b` (`!cd(b)`), donc les
  *   diviseurs communs de a×b et a×c sont EXACTEMENT les diviseurs de a : la règle

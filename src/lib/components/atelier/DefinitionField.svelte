@@ -12,6 +12,7 @@
 	import MathField from '$lib/components/MathField.svelte';
 	import { useAtelier } from '$lib/atelier/context';
 	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
+	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
 	import type { AtelierObject } from '$lib/atelier/types';
 
 	interface Props {
@@ -27,9 +28,18 @@
 
 	let element = $state<MathfieldElement>();
 
+	/**
+	 * La lettre de l'élève (`f(t)`). Le champ montre et reçoit `t` ; l'atelier
+	 * range en x (`letter.ts`).
+	 */
+	const letter = $derived(typedLetterOf(atelier, object));
+
+	/** Pourquoi la dernière frappe n'a pas été rangée (`f(t) = t + x`), ou `null`. */
+	let refusal = $state<string | null>(null);
+
 	/** Ce qu'affiche le champ, en LaTeX. */
 	// svelte-ignore state_referenced_locally
-	let latex = $state(fieldLatexOf(object, atelier.functionNames));
+	let latex = $state(fieldLatexOf(object, atelier.functionNames, typedLetterOf(atelier, object)));
 
 	/**
 	 * La dernière définition que CE champ a écrite dans l'atelier.
@@ -40,6 +50,14 @@
 	 */
 	// svelte-ignore state_referenced_locally
 	let lastWritten = object.definition;
+
+	/**
+	 * La lettre que montre le champ. ⚠️ Elle peut changer SANS que la définition
+	 * rangée change : Calcul `f(s) = s^2` après `f(t) = t^2` range toujours x^2,
+	 * et le champ restait en t (revue de #905).
+	 */
+	// svelte-ignore state_referenced_locally
+	let lastLetter = letter;
 
 	let timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -55,7 +73,7 @@
 
 	const prefix = $derived(
 		object.kind === 'function'
-			? `${object.name}(x) =`
+			? `${object.name}(${letter}) =`
 			: object.kind === 'sequence'
 				? // Une récurrence donne le terme SUIVANT (décision S3)
 					object.mode === 'recurrence'
@@ -70,7 +88,15 @@
 		timer = null;
 		if (!dirty) return;
 		dirty = false;
-		const definition = definitionFromField(object.kind, latex);
+		const typed = definitionFromField(object.kind, latex);
+		const internal =
+			object.kind === 'function'
+				? internalDefinition(typed, letter, object.name, 'keyboard', atelier.functionNames)
+				: ({ ok: true, definition: typed } as const);
+		// Rien n'est rangé : renommer t → x changerait le sens en silence
+		refusal = internal.ok ? null : internal.message;
+		if (!internal.ok) return;
+		const definition = internal.definition;
 		if (definition === object.definition) return;
 		lastWritten = definition;
 		atelier.update(object.name, definition, 'keyboard');
@@ -85,13 +111,16 @@
 	// C8 : modifiée ailleurs, la définition est recopiée dans le champ
 	$effect(() => {
 		const definition = object.definition;
-		if (definition === lastWritten) return;
+		const shownLetter = letter;
+		if (definition === lastWritten && shownLetter === lastLetter) return;
 		lastWritten = definition;
+		lastLetter = shownLetter;
 		// La version venue d'ailleurs l'emporte sur une frappe encore en attente
 		if (timer !== null) clearTimeout(timer);
 		timer = null;
 		dirty = false;
-		latex = fieldLatexOf(object, atelier.functionNames);
+		refusal = null;
+		latex = fieldLatexOf(object, atelier.functionNames, shownLetter);
 		// ⚠️ `MathField` ne recopie pas une valeur VIDE (`if (value)`) ; on ne
 		// touche pas à ce composant partagé avec les réponses aux questions
 		if (latex === '' && element) element.value = '';
@@ -116,8 +145,16 @@
 		class="saisie"
 	/>
 </div>
+{#if refusal}
+	<p class="refus" role="alert">{refusal}</p>
+{/if}
 
 <style>
+	.refus {
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+		color: var(--color-destructive);
+	}
 	.champ {
 		display: flex;
 		align-items: center;

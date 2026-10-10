@@ -2,7 +2,7 @@
  * Série regroupée en classes (programme de 2de, `2-160` et `2-161`).
  *
  * Spécification validée par David le 2026-10-01
- * (`docs/wip/outils-statistiques-progress.md`, lot 1, partie C).
+ * (`docs/archive/wip/outils-statistiques-progress.md`, lot 1, partie C).
  *
  * Répartition supposée uniforme dans chaque classe : la moyenne se calcule
  * avec les centres, la médiane s'estime par interpolation linéaire dans la

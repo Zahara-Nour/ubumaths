@@ -15,7 +15,7 @@
  * @module atelier/desk
  */
 
-import type { Atelier } from './atelier.svelte';
+import type { Atelier, Refused, RemovedWithDependents } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
@@ -40,6 +40,8 @@ import {
 } from '$lib/ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
+import { removedLine, restoredLine } from './removal';
+import { stepOf, type ImportedHistory } from './history-import';
 import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
 import { wordsReason } from './actions';
@@ -73,7 +75,7 @@ export interface Entry {
 	 */
 	readonly steps?: readonly RenderedStep[];
 	/**
-	 * Le tableau de variations, quand l'action en a produit un.
+	 * Le tableau de variations, quand l'action ou `.variations` en a produit un.
 	 *
 	 * Il se dessine sous la ligne — le moteur, lui, n'en rendait qu'une
 	 * description en texte de terminal.
@@ -81,9 +83,50 @@ export interface Entry {
 	readonly table?: VariationTableNode;
 	/** Le graphique d'une simulation (`.fréquence`, `.échantillons`, Q80) */
 	readonly chart?: StatChartScene;
+	/**
+	 * Une indication montrée avec la réponse, même composée en mathématiques
+	 * (`.dériver t^2` : « Calcul par rapport à x… »).
+	 */
+	readonly note?: string;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
+	/**
+	 * Le geste qui a produit la ligne, pour l'export et le rejeu (lot C).
+	 * Absent d'une ligne secondaire : un geste n'est rejoué qu'une fois.
+	 */
+	readonly replay?: ReplayStep;
 }
+
+/**
+ * Un geste rejouable : ce que l'élève a tapé, cliqué sur une carte, ou gardé.
+ * Le rejeu le refait par le MÊME chemin (`submit`, `runFromPanel`, `image`,
+ * `keep`) — rien n'est injecté dans l'atelier.
+ */
+export type ReplayStep =
+	| { readonly kind: 'saisie'; readonly input: string }
+	| {
+			readonly kind: 'action';
+			readonly action: string;
+			readonly name: string;
+			readonly value?: string;
+	  }
+	/** Supprimer un objet et ses dépendants (lot B) */
+	| { readonly kind: 'supprimer'; readonly name: string }
+	/** Annuler la dernière suppression */
+	| { readonly kind: 'annuler' }
+	/** `line` : l'indice, dans l'historique, de la ligne gardée */
+	| { readonly kind: 'garder'; readonly line: number };
+
+/** Ce qu'un rejeu a donné : tout, ou l'arrêt à une ligne (R3). */
+export type ReplayReport =
+	| { readonly ok: true; readonly replayed: number }
+	| {
+			readonly ok: false;
+			readonly replayed: number;
+			/** Le numéro (à partir de 1) de la ligne du fichier où le rejeu s'est arrêté */
+			readonly line: number;
+			readonly message: string;
+	  };
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
@@ -170,13 +213,24 @@ export class CalcDesk {
 
 	#nextId = 0;
 
+	/** Le geste en cours : attaché à la PREMIÈRE ligne qu'il écrit, puis oublié. */
+	#gesture: ReplayStep | null = null;
+
+	/** La dernière suppression, pour rejouer une annulation. */
+	#lastRemoval: RemovedWithDependents | null = null;
+
 	constructor(atelier: Atelier, engine: WebReplEngine = new WebReplEngine()) {
 		this.atelier = atelier;
 		this.session = { atelier, engine };
 	}
 
 	#push(entry: Omit<Entry, 'id'>): void {
-		this.entries = [...this.entries, { id: this.#nextId++, ...entry }];
+		const replay = this.#gesture;
+		this.#gesture = null;
+		this.entries = [
+			...this.entries,
+			{ id: this.#nextId++, ...entry, ...(replay !== null && { replay }) }
+		];
 	}
 
 	/**
@@ -187,6 +241,7 @@ export class CalcDesk {
 	 * l'historique comme toute action (G7) ; la carte affiche le résultat.
 	 */
 	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
+		this.#gesture = { kind: 'action', action: 'image', name, value: value.trim() };
 		const outcome = runAction(this.session, 'image', name, value.trim());
 		const text = outcome.ok ? outcome.output : outcome.message;
 		this.#push({
@@ -200,6 +255,8 @@ export class CalcDesk {
 
 	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
 	clear(): void {
+		this.#gesture = null;
+		this.#lastRemoval = null;
 		this.entries = [];
 		this.notice = null;
 	}
@@ -208,6 +265,7 @@ export class CalcDesk {
 	submit(text: string): void {
 		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
+		this.#gesture = { kind: 'saisie', input: text };
 
 		this.#push({
 			label: text,
@@ -215,11 +273,129 @@ export class CalcDesk {
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
+			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
+			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
+				? { note: result.note }
+				: {}),
 			failed: result.kind === 'refus',
 			result
 		});
 		this.draft = '';
 		this.notice = null;
+	}
+
+	/**
+	 * Rejouer un historique relu (lot C2) : chaque geste est refait par le MÊME
+	 * chemin que l'élève — saisie, clic sur une carte, « Garder ».
+	 *
+	 * S'arrête à la première ligne qui échoue alors qu'elle avait réussi (R3) ;
+	 * une ligne qui avait échoué peut échouer encore. Ce qui précède reste.
+	 * L'atelier n'est PAS vidé ici : c'est au conteneur de le faire, après
+	 * confirmation (R2).
+	 */
+	replay(history: ImportedHistory, graph?: GrapheurStore): ReplayReport {
+		// Le brouillon de l'élève survit au rejeu : `submit` le vide (revue)
+		const draft = this.draft;
+		// Indice dans le fichier → indice rejoué : « Garder » vise une ligne du
+		// fichier, et un geste peut écrire plus ou moins de lignes qu'à l'export
+		const rows: number[] = [];
+		let replayed = 0;
+		let stop: { line: number; message: string } | null = null;
+		for (const [index, entry] of history.entries.entries()) {
+			const step = stepOf(entry);
+			if (step === null) continue;
+			const before = this.entries.length;
+			this.notice = null;
+			const missed = this.#replayStep(step, rows, graph);
+			const first = this.entries[before];
+			if (first !== undefined) rows[index] = before;
+			// R3 : on ne s'arrête que si la ligne AVAIT réussi
+			const broken =
+				missed ??
+				(entry.failed
+					? null
+					: first === undefined
+						? (this.notice ?? 'cette ligne ne s’est pas rejouée.')
+						: first.failed
+							? first.text
+							: null);
+			if (broken !== null) {
+				stop = { line: index + 1, message: broken };
+				break;
+			}
+			replayed++;
+		}
+		this.draft = draft;
+		if (stop !== null) {
+			this.notice = `Rejeu arrêté à la ligne ${stop.line} : ${stop.message}`;
+			return { ok: false, replayed, ...stop };
+		}
+		this.notice = `Historique rejoué : ${replayed} ${replayed > 1 ? 'lignes' : 'ligne'}.`;
+		return { ok: true, replayed };
+	}
+
+	/** Refaire un geste ; rend la raison d'un échec que la ligne ne dirait pas, sinon null. */
+	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
+		switch (step.kind) {
+			case 'saisie':
+				this.submit(step.input);
+				return null;
+			case 'action':
+				if (step.action === 'image') this.image(step.name, step.value ?? '');
+				else this.runFromPanel(step.action, step.name, graph);
+				return null;
+			case 'supprimer': {
+				const removed = this.remove(step.name);
+				return removed.ok ? null : removed.message;
+			}
+			case 'annuler':
+				return this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)
+					? null
+					: 'la suppression ne s’est pas annulée.';
+			case 'garder': {
+				const row = rows[step.line];
+				const kept = row === undefined ? undefined : this.entries[row];
+				if (kept === undefined) return 'la ligne à garder n’a pas été rejouée.';
+				this.keep(kept);
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * Supprimer un objet et ses dépendants, et le dire dans l'historique (G7 ;
+	 * retour de David : « quand je supprime une carte, on ne voit rien »).
+	 * La confirmation est l'affaire de la vue.
+	 */
+	remove(name: string): RemovedWithDependents | Refused {
+		const result = this.atelier.removeWithDependents(name);
+		if (!result.ok) return result;
+		this.#lastRemoval = result;
+		this.#gesture = { kind: 'supprimer', name };
+		this.#push({
+			label: `Supprimer ${displayName(name)}`,
+			text: removedLine(result.removed),
+			failed: false
+		});
+		return result;
+	}
+
+	/**
+	 * Annuler cette suppression, et le dire. Refusée — sans ligne, la vue le
+	 * dit — si l'atelier a changé depuis (L4).
+	 */
+	undoRemoval(result: RemovedWithDependents): boolean {
+		if (!this.atelier.undoRemoval(result)) return false;
+		// Rejouable seulement si la suppression est dans CET historique : après
+		// « Repartir de zéro », le fichier n'aurait qu'un `annuler` orphelin (revue)
+		this.#gesture = result === this.#lastRemoval ? { kind: 'annuler' } : null;
+		this.#lastRemoval = null;
+		this.#push({
+			label: 'Annuler la suppression',
+			text: restoredLine(result.removed),
+			failed: false
+		});
+		return true;
 	}
 
 	/** Garder une ligne sous un nom — décision D5. */
@@ -230,6 +406,15 @@ export class CalcDesk {
 		}
 		const kept = promote(this.session, entry.result);
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
+		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
+		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
+		const line = this.entries.indexOf(entry);
+		// Une ligne qui n'est plus dans l'historique (« Repartir de zéro ») ne se
+		// rejouerait pas : l'objet est gardé, mais sans geste à rejouer
+		if (kept.ok) {
+			this.#gesture = line >= 0 ? { kind: 'garder', line } : null;
+			this.#push({ label: 'Garder', text: this.notice, failed: false });
+		}
 	}
 
 	/** La liste nommée, si c'en est une et qu'elle est exploitable. */
@@ -469,6 +654,19 @@ export class CalcDesk {
 	 * (`image`, phase 0 `/grapheur` §3 A4).
 	 */
 	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
+		// Posé avant tout : « Comparer » passe par `submit`, qui le remplace par
+		// la commande tapée — c'est elle qu'on rejouera
+		this.#gesture = { kind: 'action', action: actionId, name };
+		try {
+			return this.#runFromPanel(actionId, name, graph);
+		} finally {
+			// Une action sans ligne (diagramme, commande préparée) ne doit pas
+			// léguer son geste à la ligne d'un autre (revue du lot C1)
+			this.#gesture = null;
+		}
+	}
+
+	#runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {
@@ -564,7 +762,9 @@ export class CalcDesk {
 
 		this.#push({
 			label: `${label} ${displayName(name)}`,
-			text: (outcome.ok ? outcome.output : outcome.message) + note,
+			text: outcome.ok ? outcome.output : outcome.message,
+			// À part du texte : visible même quand la réponse est en mathématiques
+			...(note !== null && { note }),
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),

@@ -1,0 +1,249 @@
+{
+	"title": "Étudier les variations d'une fonction avec cos ou sin",
+	"description": "f(x) = cx − 2 sin x, cx + 2 cos x, 2 sin x − cx sur [0 ; π] (c = 1, √2 ou √3) : signe de f′ par cos x ⩽ a ou sin x ⩾ a ; bornes ouvrables (pièges : sens, cos et sin confondus, π − α oublié)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-187", "TSPE-182"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Dérivées et variations",
+	"level": 3,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles",
+			"openableBounds": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*pi/12)}}}}x-2\\sin x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{a}};\\pi]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:2*cos(n*pi/12)}}-2\\cos x$, et $f'(x)\\geqslant0\\iff\\cos x\\leqslant{{eval:cos(n*pi/12)}}$.",
+					"Sur $\\left[0\\,;\\pi\\right]$, $\\cos$ est décroissante et $\\cos{{a}}={{eval:cos(n*pi/12)}}$ : $\\cos x\\leqslant{{eval:cos(n*pi/12)}}\\iff x\\in\\left[{{a}}\\,;\\pi\\right]$.",
+					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;\\pi\\right]}$ (et décroissante sur $\\left[0\\,;{{a}}\\right]$)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==2||{{eval:2*sin(n*pi/12)}}}}x+2\\cos x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **décroissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12-n)/gcd(12-n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12-n,12)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{a}};{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:2*sin(n*pi/12)}}-2\\sin x$, et $f'(x)\\leqslant0\\iff\\sin x\\geqslant{{eval:sin(n*pi/12)}}$.",
+					"Sur $\\left[0\\,;\\pi\\right]$ : $\\sin x\\geqslant{{eval:sin(n*pi/12)}}\\iff x\\in\\left[{{a}}\\,;\\pi-{{a}}\\right]$, avec $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$.",
+					"```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) >= sin({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
+					"$f$ est décroissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\right]}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*pi/12)}}}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[0;{{a}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=2\\cos x-{{eval:2*cos(n*pi/12)}}$, et $f'(x)\\geqslant0\\iff\\cos x\\geqslant{{eval:cos(n*pi/12)}}$.",
+					"Sur $\\left[0\\,;\\pi\\right]$, $\\cos$ est décroissante : $\\cos x\\geqslant\\cos{{a}}\\iff x\\in\\left[0\\,;{{a}}\\right]$.",
+					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[0\\,;{{a}}\\right]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 x − 2sin x : [π/3 ; π] → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 borne ouverte → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["]\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 sens inversé [0 ; π/3] → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[0;\\frac{\\pi}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 confusion cos/sin [π/6 ; π] → faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 √3x − 2sin x : [π/6 ; π] → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"answers": ["[\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 √2x − 2sin x : [π/4 ; π] → juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["[\\frac{\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 x + 2cos x : [π/6 ; 5π/6] → juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"answers": ["[\\frac{\\pi}{6};\\frac{5\\pi}{6}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 seconde solution oubliée [π/6 ; π] → faux",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"answers": ["[\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 croissance donnée → faux",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"answers": ["[0;\\frac{\\pi}{6}]\\cup[\\frac{5\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 √3x + 2cos x : [π/3 ; 2π/3] → juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[\\frac{\\pi}{3};\\frac{2\\pi}{3}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 √2x + 2cos x : [π/4 ; 3π/4] → juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["[\\frac{\\pi}{4};\\frac{3\\pi}{4}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 2sin x − x : [0 ; π/3] → juste",
+			"variationIndex": 2,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[0;\\frac{\\pi}{3}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 sens inversé → faux",
+			"variationIndex": 2,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

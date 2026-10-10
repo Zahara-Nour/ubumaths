@@ -17,7 +17,9 @@ import {
 	isTrivialWrtVariable,
 	PedagogicalDifferentiationNotImplemented
 } from '../pipeline';
-import { func, greek, number, variable } from '../../factory';
+import { euler, func, greek, multiply, number, power, variable } from '../../factory';
+import { toLatex } from '../../latex-generator';
+import { PedagogicalDifferentiationRenderer } from '../renderer';
 import { parseLatex } from '../../parser';
 import type { MathNode } from '../../types';
 
@@ -156,9 +158,14 @@ describe('Regression — FunctionNode.power must not be silently dropped', () =>
 		expect(result.steps[0].subSteps?.[0].rule).toBe('cos');
 	});
 
-	it("(\\sin^{-1}(x))' refuses (inverse function out of V1 scope)", () => {
-		// Constructed manually to avoid parser ambiguity around `^{-1}`.
+	it("(\\sin^{-1}(x))' (drapeau isInverse) est la réciproque : règle arcsin (#884)", () => {
 		const node = func('sin', [variable('x')], { isInverse: true });
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+		expect(result.steps[0].rule).toBe('arcsin');
+	});
+
+	it("(\\ln^{-1}(x))' refuses (réciproque sans définition, out of V1 scope)", () => {
+		const node = func('ln', [variable('x')], { isInverse: true });
 		expect(() => generatePedagogicalDifferentiationSteps(node, lyceeOpts)).toThrow(
 			PedagogicalDifferentiationNotImplemented
 		);
@@ -964,5 +971,74 @@ describe('generatePedagogicalDifferentiationSteps — id generation', () => {
 		const r2 = generatePedagogicalDifferentiationSteps(number('7'), lyceeOpts);
 		expect(r1.steps[0].id).toBe(1);
 		expect(r2.steps[0].id).toBe(1);
+	});
+});
+
+/**
+ * Base d'Euler : (e^u)' = u'·e^u, règle `exp` — jamais « exponentielle
+ * généralisée » avec ln(e).
+ *
+ * ⚠️ Vu par David dans l'atelier (2026-10-05) : `.deriver e^x` rendait
+ * `ln(e)·e^x` sous le titre « Règle de l'exponentielle généralisée ».
+ */
+describe("Base d'Euler — (e^u)' = u' e^u", () => {
+	const steps = (node: MathNode) => generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+	const renderTop = (node: MathNode) =>
+		new PedagogicalDifferentiationRenderer().renderAll(steps(node).steps, {
+			schoolLevel: 'lycee',
+			verbosity: 'detailed'
+		})[0];
+
+	it("(e^x)' = e^x, règle exp", () => {
+		const result = steps(parseLatex('e^x'));
+		expect(result.steps[0].rule).toBe('exp');
+		expect(toLatex(result.derivative)).toBe('e^x');
+	});
+
+	it("(e^{3x})' = e^{3x}·3, u = 3x", () => {
+		const result = steps(parseLatex('e^{3x}'));
+		expect(result.steps[0].rule).toBe('exp');
+		expect(toLatex(result.steps[0].bindings?.u as MathNode)).toBe('3 x');
+		expect(toLatex(result.derivative)).toBe('e^{3 x} 3');
+	});
+
+	it("(e^{x^2})' = e^{x^2}·2x", () => {
+		const result = steps(parseLatex('e^{x^2}'));
+		expect(result.steps[0].rule).toBe('exp');
+		expect(toLatex(result.derivative)).toBe('e^{x^2} 2 x');
+	});
+
+	it("(2e^{-x})' : coefficient sorti, puis règle exp, sans ln", () => {
+		const result = steps(parseLatex('2e^{-x}'));
+		expect(result.steps[0].rule).toBe('linear-coefficient');
+		expect(result.steps[0].subSteps?.[0].rule).toBe('exp');
+		expect(toLatex(result.derivative)).not.toContain('\\ln');
+	});
+
+	it("(x e^x)' : produit dont le facteur e^x suit la règle exp", () => {
+		const result = steps(parseLatex('xe^x'));
+		expect(result.steps[0].rule).toBe('product');
+		expect(result.steps[0].subSteps?.map((s) => s.rule)).toContain('exp');
+		expect(toLatex(result.derivative)).toBe('e^x + x e^x');
+	});
+
+	it('la constante euler (parseur custom) suit la même règle', () => {
+		const node = power(euler(), multiply(number('3'), variable('x'), 'implicit'));
+		const result = steps(node);
+		expect(result.steps[0].rule).toBe('exp');
+		expect(toLatex(result.derivative)).toBe('\\exponentialE^{3 x} 3');
+	});
+
+	it('le rendu nomme la dérivée de l’exponentielle, sans ln(e)', () => {
+		const rendered = renderTop(parseLatex('e^{3x}'));
+		expect(rendered.title).toBe("Dérivée de l'exponentielle");
+		expect(rendered.explanation).toBe("Avec u = 3 x, on a (e^u)' = e^u \\times u'.");
+		expect(rendered.expressionLatex).not.toContain('\\ln');
+	});
+
+	it("(2^x)' garde la règle de la base constante et ln(2)", () => {
+		const result = steps(parseLatex('2^x'));
+		expect(result.steps[0].rule).toBe('power-constant-base');
+		expect(toLatex(result.derivative)).toBe('2^x \\ln\\left( 2 \\right)');
 	});
 });

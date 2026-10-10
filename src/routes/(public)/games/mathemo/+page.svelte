@@ -36,6 +36,11 @@
 	// ===== Server Data =====
 	let { data }: { data: PageData } = $props();
 
+	// Les mots viennent du dictionnaire en base : donnés une fois, avant toute
+	// lecture du jeu (`selectedGrade` ci-dessous lit déjà la partie en cours)
+	// svelte-ignore state_referenced_locally
+	game.init(data.words);
+
 	/** Whether scores can be saved (authenticated student) */
 	let canSaveScore = $derived(data.canSaveScore);
 
@@ -476,6 +481,9 @@
 </svelte:head>
 
 <div class="mx-auto max-w-4xl px-4 py-8">
+	<!-- Titre de la page pour les lecteurs d'écran (la bannière en tient lieu à l'écran) -->
+	<h1 class="sr-only">Mathémo</h1>
+
 	<!-- Banner -->
 	<div class="mb-8 overflow-hidden rounded-xl">
 		<img

@@ -1,0 +1,290 @@
+{
+	"title": "Python : générer les paires, les triplets, les parties",
+	"description": "Lire un programme qui énumère des objets : paires i < j (C(n, 2)), couples i ≠ j (n(n − 1)), triplets i < j < k (C(n, 3)), liste des parties (2ⁿ), ligne du triangle de Pascal (pièges : confondre i < j et i ≠ j)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-050", "TSPE-048", "TSPE-043", "TSPE-033"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Algorithmique",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n```\n\nQue renvoie `compte({{n}})` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "k",
+					"expression": "2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle parcourt les couples $(i\\,;j)$ avec $0\\leqslant i<j\\leqslant {{eval:n-1}}$ : chaque paire $\\{i,j\\}$ est comptée **une** fois.",
+					"$\\binom{ {{n}} }{ 2 }=\\dfrac{ {{n}}\\times{{eval:n-1}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n```\n\nQue renvoie `compte({{n}})` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les couples **ordonnés** $(i\\,;j)$ d'éléments distincts : ${{n}}$ choix pour $i$, puis ${{eval:n-1}}$ pour $j$.",
+					"${{n}}\\times{{eval:n-1}}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)}}}$ (chaque paire est comptée deux fois)."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n```\n\nQue renvoie `len(triplets({{n}}))` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				},
+				{
+					"name": "k",
+					"expression": "3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La liste contient les triplets $i<j<k$ : chaque partie à $3$ éléments de $\\{0,\\dots,{{eval:n-1}}\\}$ y figure une fois.",
+					"$\\binom{ {{n}} }{ 3 }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n```\n\nQue renvoie `len(parties(list(range({{n}}))))` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au départ, `L` contient la seule partie vide ; à chaque élément `x`, on garde chaque partie et on ajoute sa copie augmentée de `x` : la longueur double.",
+					"Après ${{n}}$ éléments : $2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$ parties."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n```\n\nQue renvoie `ligne({{n}})[{{k}}]` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:n-2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque passage construit la ligne suivante du triangle de Pascal (relation de Pascal) : `ligne(n)` est la liste des $\\binom{ n }{ i }$, et l'indice ${{k}}$ donne $\\binom{ {{n}} }{ {{k}} }$.",
+					"$\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : n = 10 → 45",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 90 (couples ordonnés)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : n = 10 → 90",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 45 (i < j à tort)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 100 (i = j compté)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : n = 6 → 20",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 120 (triplets ordonnés)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : n = 4 → 16",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 15 (partie vide oubliée)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 8",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : ligne(6)[2] → 15",
+			"variationIndex": 4,
+			"variables": {
+				"n": "6",
+				"k": "2"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : ligne(6)[3] lu à la place → 20",
+			"variationIndex": 4,
+			"variables": {
+				"n": "6",
+				"k": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : C(7, 2) = 21 (décalage d'une ligne)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "6",
+				"k": "2"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

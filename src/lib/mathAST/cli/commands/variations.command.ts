@@ -9,22 +9,37 @@
  * 4. Determining intervals of increase/decrease
  * 5. Finding local and global extrema
  *
- * Syntax: .variations expr [variable]
+ * Syntax: .variations expr[ ; variable]
  *
  * Examples:
  *   .variations x^2           -> Study of x^2 (variable x)
  *   .variations x^3 - 3x      -> Study of x^3 - 3x
  *   .variations exp(x)        -> Study of exp(x)
- *   .variations t^2 + 2t t    -> Study with variable t
+ *   .variations t^2 + 2t ; t  -> Study with variable t
+ *   .variations t^2           -> en x, avec l'indication « … écris « ; t » »
+ *
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE —
+ * jamais après un espace : `t^2 t` est le produit t³ (voir
+ * `core/variable-argument.ts`, décision de David du 2026-10-06).
  */
 
 import chalk from 'chalk';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { parse } from '../core/pipeline';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	readCommandArguments,
+	keywordCommandLabel
+} from '../core/variable-argument';
 import { computeVariations } from '../../variations/compute';
-import { getDerivativeSignSymbol } from '../../variations/format';
+import { getDerivativeSignSymbol, unresolvedDerivativeZerosMessage } from '../../variations/format';
 import { toCustom } from '../../custom-generator';
+import { readableText, reducedDerivative } from '../../variations/display';
+import { formatEndpointValue as formatBound } from '../../domain/format';
+import { DomainUnresolvedError } from '../../domain/errors';
 import { formatInterval } from '../../domain/format';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import type { Interval } from '$lib/math/intervals/types';
@@ -61,37 +76,37 @@ import type {
  * ```
  * > .variations x^2
  * Expression : x^2
- * Derivee : f'(x) = 2x
+ * Dérivée : f'(x) = 2x
  *
- * Domaine : R (tous les reels)
+ * Domaine : ℝ
  *
  * Points critiques :
  *   x = 0 (f'=0)
  *
  * Signe de f'(x) :
- *   ]-inf ; 0[ : -  (f decroissante)
+ *   ]-∞ ; 0[ : -  (f décroissante)
  *   {0}       : 0  (f constante)
- *   ]0 ; +inf[ : +  (f croissante)
+ *   ]0 ; +∞[ : +  (f croissante)
  *
  * Extrema :
  *   Minimum global : f(0) = 0
  *
  * > .variations x^3 - 3x
  * Expression : x^3 - 3x
- * Derivee : f'(x) = 3x^2 - 3
+ * Dérivée : f'(x) = 3x^2 - 3
  *
- * Domaine : R (tous les reels)
+ * Domaine : ℝ
  *
  * Points critiques :
  *   x = -1 (f'=0)
  *   x = 1 (f'=0)
  *
  * Signe de f'(x) :
- *   ]-inf ; -1[ : +  (f croissante)
+ *   ]-∞ ; -1[ : +  (f croissante)
  *   {-1}       : 0  (f constante)
- *   ]-1 ; 1[    : -  (f decroissante)
+ *   ]-1 ; 1[    : -  (f décroissante)
  *   {1}        : 0  (f constante)
- *   ]1 ; +inf[  : +  (f croissante)
+ *   ]1 ; +∞[  : +  (f croissante)
  *
  * Extrema :
  *   Maximum local : f(-1) = 2
@@ -101,8 +116,8 @@ import type {
 export class VariationsCommand extends BaseCommand {
 	readonly name = 'variations';
 	readonly aliases = ['var', 'monotone', 'etude'] as const;
-	readonly description = "Etude des variations d'une expression : .variations expr [variable]";
-	readonly usage = 'variations <expression> [variable]';
+	readonly description = "Etude des variations d'une expression : .variations expr[ ; variable]";
+	readonly usage = 'variations <expression>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -114,13 +129,31 @@ export class VariationsCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'Aucune expression fournie. Usage : .variations <expression> [variable]'
+					message: 'Aucune expression fournie. Usage : .variations <expression>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract expression and optional variable
-		const { expression, variable } = this.parseInput(input);
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon x
+		const reading = readCommandArguments('variations', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable } = reading.args;
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -134,6 +167,23 @@ export class VariationsCommand extends BaseCommand {
 				error: { code: 'PARSE_ERROR', message: errorMsg }
 			};
 		}
+
+		const chosen = chosenVariable(explicitVariable, parserOptions, {
+			node: parseResult.ast,
+			bound: ctx.evalState?.bindings.keys(),
+			label: keywordCommandLabel('variations')
+		});
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
+		}
+		const variable = chosen.variable;
+		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
+		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
+		const hint: string | null = null;
 
 		try {
 			// Compute variations
@@ -149,7 +199,10 @@ export class VariationsCommand extends BaseCommand {
 			// Expression header
 			lines.push(chalk.bold('Expression :') + ' ' + chalk.cyan(toCustom(result.expression)));
 			lines.push(
-				chalk.bold('Derivee :') + ` f'(${variable}) = ` + chalk.cyan(toCustom(result.derivative))
+				chalk.bold('Dérivée :') +
+					` f'(${variable}) = ` +
+					// Réduite et lisible : `-2/(2x-1)^2`, jamais `{-2}/{(2x-1)^2}`
+					chalk.cyan(readableText(reducedDerivative(result.derivative)))
 			);
 			lines.push('');
 
@@ -158,16 +211,21 @@ export class VariationsCommand extends BaseCommand {
 			lines.push(chalk.bold('Domaine :') + ' ' + chalk.green(domainStr));
 			lines.push('');
 
-			// Critical points
-			lines.push(this.formatCriticalPointsColored(result.criticalPoints, variable));
-			lines.push('');
+			if (result.derivativeZerosUnresolved) {
+				// ⚠️ f'(x) = 0 non résolue : ni « aucun », ni sens de variation.
+				lines.push(chalk.yellow(unresolvedDerivativeZerosMessage(variable)));
+			} else {
+				// Critical points
+				lines.push(this.formatCriticalPointsColored(result.criticalPoints, variable));
+				lines.push('');
 
-			// Sign of derivative and monotonicity
-			lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
-			lines.push('');
+				// Sign of derivative and monotonicity
+				lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
+				lines.push('');
 
-			// Extrema
-			lines.push(this.formatExtremaColored(result.extrema));
+				// Extrema
+				lines.push(this.formatExtremaColored(result.extrema));
+			}
 
 			// Boundary limits (if available)
 			if (result.boundaryLimits && result.boundaryLimits.length > 0) {
@@ -184,12 +242,25 @@ export class VariationsCommand extends BaseCommand {
 				}
 			}
 
+			if (hint !== null) {
+				lines.push('');
+				lines.push(hint);
+			}
+
 			return {
 				success: true,
 				output: lines.join('\n'),
 				ast: parseResult.ast
 			};
 		} catch (err) {
+			// Domaine non résolu : refus en français, jamais un domaine faux
+			if (err instanceof DomainUnresolvedError) {
+				return {
+					success: false,
+					output: '',
+					error: { code: 'DOMAIN_UNRESOLVED', message: err.message }
+				};
+			}
 			const message = err instanceof Error ? err.message : "Erreur lors de l'etude des variations";
 			return {
 				success: false,
@@ -200,41 +271,6 @@ export class VariationsCommand extends BaseCommand {
 	}
 
 	/**
-	 * Parse the input to extract expression and optional variable.
-	 *
-	 * Strategy: If the last token is a single word that looks like a variable
-	 * (single letter or valid identifier) and there's more before it,
-	 * treat it as the domain variable.
-	 *
-	 * Examples:
-	 * - "x^2" -> { expression: "x^2", variable: "x" }
-	 * - "x^3 - 3x" -> { expression: "x^3 - 3x", variable: "x" }
-	 * - "t^2 + 2t t" -> { expression: "t^2 + 2t", variable: "t" }
-	 */
-	private parseInput(input: string): { expression: string; variable: string } {
-		const trimmed = input.trim();
-
-		// Try to find a trailing variable (single word at the end after whitespace)
-		const match = trimmed.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/);
-
-		if (match) {
-			const [, expr, varCandidate] = match;
-			if (expr.trim() && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
-				return {
-					expression: expr.trim(),
-					variable: varCandidate
-				};
-			}
-		}
-
-		// Default: entire input is the expression, variable defaults to 'x'
-		return {
-			expression: trimmed,
-			variable: 'x'
-		};
-	}
-
-	/**
 	 * Format domain for display.
 	 */
 	private formatDomain(domain: Domain): string {
@@ -242,7 +278,7 @@ export class VariationsCommand extends BaseCommand {
 			case 'empty':
 				return 'ensemble vide';
 			case 'universal':
-				return 'R (tous les reels)';
+				return 'ℝ';
 			default:
 				return formatInterval(domain);
 		}
@@ -263,9 +299,9 @@ export class VariationsCommand extends BaseCommand {
 		lines.push(chalk.bold('Points critiques :'));
 
 		for (const point of points) {
-			const xStr = toCustom(point.x);
+			const xStr = formatBound(point.x);
 			const nature =
-				point.nature === 'derivative_zero' ? chalk.dim("(f'=0)") : chalk.dim("(f' non definie)");
+				point.nature === 'derivative_zero' ? chalk.dim("(f'=0)") : chalk.dim("(f' non définie)");
 			lines.push(`  ${variable} = ${chalk.yellow(xStr)} ${nature}`);
 		}
 
@@ -280,7 +316,7 @@ export class VariationsCommand extends BaseCommand {
 		variable: string
 	): string {
 		if (intervals.length === 0) {
-			return chalk.bold(`Signe de f'(${variable}) :`) + ' ' + chalk.dim('indetermine');
+			return chalk.bold(`Signe de f'(${variable}) :`) + ' ' + chalk.dim('indéterminé');
 		}
 
 		const lines: string[] = [];
@@ -316,8 +352,8 @@ export class VariationsCommand extends BaseCommand {
 
 		for (const ext of extrema) {
 			const typeStr = this.getExtremumTypeFr(ext.type);
-			const xStr = toCustom(ext.x);
-			const yStr = toCustom(ext.y);
+			const xStr = formatBound(ext.x);
+			const yStr = formatBound(ext.y);
 			const isGlobal = ext.type.includes('global');
 			const isMin = ext.type.includes('minimum');
 
@@ -342,11 +378,14 @@ export class VariationsCommand extends BaseCommand {
 		lines.push(chalk.bold('Limites aux bornes :'));
 
 		for (const bl of limits) {
-			const pointStr = toCustom(bl.point);
+			const pointStr = formatBound(bl.point);
 			const limitStr = this.formatLimitValue(bl.limit);
-			const dirStr = bl.direction === 'left' ? '^-' : bl.direction === 'right' ? '^+' : '';
+			// `lim (x → 1/2⁻) f(x) = -∞`, plus la notation `lim_{x -> 1/2^-}`
+			// Un côté n'a de sens qu'en un point fini : `x → -∞`, pas `-∞⁺`
+			const side = bl.point.type === 'infinity' ? undefined : bl.direction;
+			const dirStr = side === 'left' ? '⁻' : side === 'right' ? '⁺' : '';
 			lines.push(
-				`  lim_{${variable} -> ${chalk.yellow(pointStr)}${dirStr}} f(${variable}) = ${chalk.cyan(limitStr)}`
+				`  lim (${variable} → ${chalk.yellow(pointStr)}${dirStr}) f(${variable}) = ${chalk.cyan(limitStr)}`
 			);
 		}
 
@@ -384,9 +423,10 @@ export class VariationsCommand extends BaseCommand {
 	 */
 	private formatEndpointValue(value: MathNode): string {
 		if (value.type === 'infinity') {
-			return value.sign === 'positive' ? '+inf' : '-inf';
+			return value.sign === 'positive' ? '+∞' : '-∞';
 		}
-		return toCustom(value);
+		// Bornes exactes comme le domaine (1/2, -√2), jamais le `:/` interne
+		return formatBound(value);
 	}
 
 	/**
@@ -429,11 +469,11 @@ export class VariationsCommand extends BaseCommand {
 			case 'increasing':
 				return 'f croissante';
 			case 'decreasing':
-				return 'f decroissante';
+				return 'f décroissante';
 			case 'constant':
 				return 'f constante';
 			case 'unknown':
-				return 'indetermine';
+				return 'sens indéterminé';
 		}
 	}
 
@@ -457,9 +497,9 @@ export class VariationsCommand extends BaseCommand {
 	 * Format a limit value.
 	 */
 	private formatLimitValue(value: LimitValue): string {
-		if (value === 'infinity') return '+inf';
-		if (value === 'negative_infinity') return '-inf';
-		if (value === 'indeterminate') return 'indetermine';
-		return toCustom(value);
+		if (value === 'infinity') return '+∞';
+		if (value === 'negative_infinity') return '-∞';
+		if (value === 'indeterminate') return 'indéterminée';
+		return formatBound(value);
 	}
 }

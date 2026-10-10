@@ -1,7 +1,7 @@
 /**
  * Case « équation » (`answerKind: 'equation'`) dans toute la chaîne : validateur
  * (navigateur), barème serveur, `orderIndependent`, générateur, schémas Zod,
- * specs de test du modèle. Comportements : docs/wip/reponse-equation-progress.md.
+ * specs de test du modèle. Comportements : docs/archive/wip/reponse-equation-progress.md.
  */
 
 import { describe, it, expect } from 'vitest';

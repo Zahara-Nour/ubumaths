@@ -263,7 +263,9 @@
 		dialogExigence = point.exigence as Exigence;
 		dialogRegime = point.regime_acquisition as Regime;
 		dialogRang = point.rang === null ? '' : String(point.rang);
-		dialogObjectiveId = point.objective_id;
+		// objective_id est nullable depuis le schéma cible (points neufs sans objectif) ;
+		// cette page n'affiche que l'ancienne génération, toujours rattachée.
+		dialogObjectiveId = point.objective_id ?? '';
 		dialogCode = point.code;
 		dialogOpen = true;
 	}

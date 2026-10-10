@@ -8,6 +8,7 @@
  * @module utils/answer-validator
  */
 
+import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
 import type {
 	QuestionInstance,
 	InstanceBlank,
@@ -32,6 +33,8 @@ import {
 	type CheckFormOptions,
 	cosmeticViolations,
 	isSimpleNumberLatex,
+	isDecimalComplexLatex,
+	isSingleTermLatex,
 	isNumberOrNumberFractionLatex,
 	isQuantityValueLatex,
 	forgotPercentSign,
@@ -56,12 +59,14 @@ import {
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
 import { rulesDecide } from '$lib/questions/rules-suffice';
+import { matchesAngleModulo2Pi } from '$lib/questions/angle-modulo';
 import {
 	judgeIntervalAnswer,
 	DEFAULT_INTERVAL_FORM_MODE
 } from '$lib/questions/intervals/interval-answer';
 import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
 import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
+import { judgeMatrixAnswer, matrixEntryTexts } from '$lib/questions/matrices/matrix-answer';
 import { judgePrimitiveAnswer } from '$lib/questions/calculus/primitive-answer';
 import { judgeDifferentialEquationAnswer } from '$lib/questions/calculus/differential-equation-answer';
 import type { CalculusVerdict } from '$lib/questions/calculus/calculus-reading';
@@ -800,6 +805,29 @@ function checkSimpleNumberForm(
 }
 
 /**
+ * Écriture d'un angle juste à 2kπ près (`angleModulo`) : une somme ou une différence
+ * (`\frac{\pi}{4}+2\pi`, calcul non fait) est de mauvaise forme ; sinon la réponse est
+ * comparée à elle-même, seules restent les contraintes d'écriture.
+ */
+function angleWritingForm(
+	latex: string,
+	constraints: ConstraintOptions,
+	genericFunctions?: GenericFunctionConfig
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const severities = buildConstraintSeverities(constraints);
+	const raw = cosmeticViolations(latex, severities, formOptionsOf(constraints, genericFunctions));
+	const { status, violations } = mapCosmeticViolations(raw, false);
+	if (!isSingleTermLatex(latex)) {
+		const feedback = CONSTRAINT_FEEDBACK['form'].single;
+		return {
+			status: 'bad_form',
+			violations: [{ constraint: 'form', severity: 'error', feedback }, ...violations]
+		};
+	}
+	return { status, violations };
+}
+
+/**
  * Case `rulesSuffice` sans précision : un nombre en fraction (`\\frac{1}{2}`) y
  * est une réponse au même titre qu'un nombre simple (décision de David du
  * 2026-10-03). Avec une précision, l'exigence d'un nombre simple (arrondi) reste.
@@ -816,6 +844,14 @@ function allowsNumberFraction(blank: InstanceBlank): boolean {
  */
 function acceptsExactDecimal(blank: InstanceBlank, latex: string): boolean {
 	return blank.acceptDecimal === true && isSimpleNumberLatex(latex);
+}
+
+/**
+ * Case `acceptDecimal` dont la réponse est un complexe écrit en décimaux (`0.5-0.5i`
+ * pour `\frac{1-i}{2}`) : même règle que pour un réel (décision de David du 2026-10-05).
+ */
+function acceptsExactDecimalComplex(blank: InstanceBlank, latex: string): boolean {
+	return blank.acceptDecimal === true && isDecimalComplexLatex(latex);
 }
 
 /**
@@ -870,6 +906,12 @@ function validateBlankValue(
 		);
 	}
 
+	// Matrice : dimensions, puis coefficients comparés par valeur
+	if (blank.answerKind === 'matrice') {
+		const { status } = judgeMatrixAnswer(userAnswer, blank.expectedAnswer);
+		return status === 'correct' || status === 'unoptimal_form';
+	}
+
 	// Primitive, solution d'équation différentielle : jugées sur la dérivée / par substitution
 	if (isCalculusBlank(blank)) return calculusVerdict(userAnswer, blank).status === 'correct';
 
@@ -902,7 +944,27 @@ function validateBlankValue(
 		return result.isCorrect;
 	}
 
-	return isAnswerMatch(userAnswer, blank.expectedAnswer, instance);
+	return (
+		isAnswerMatch(userAnswer, blank.expectedAnswer, instance) ||
+		isAngleModuloMatch(userAnswer, blank, instance)
+	);
+}
+
+/**
+ * Case `angleModulo: '2pi'` : la réponse vaut l'attendue plus 2kπ, k entier non nul
+ * (cf. questions/angle-modulo). Faux sans l'option.
+ */
+function isAngleModuloMatch(
+	userAnswer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): boolean {
+	return (
+		blank.angleModulo === '2pi' &&
+		matchesAngleModulo2Pi(userAnswer, blank.expectedAnswer, (answer, expected) =>
+			isAnswerMatch(answer, expected, instance)
+		)
+	);
 }
 
 /**
@@ -920,6 +982,7 @@ function roundingOnlyFeedback(
 		!blank.precision ||
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
+		blank.answerKind === 'matrice' ||
 		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
@@ -1112,6 +1175,63 @@ function vectorCoordinatesForm(
 	return verdict;
 }
 
+/**
+ * Case « matrice » : verdict de `judgeMatrixAnswer` dans la forme de
+ * `validateSingleBlank`. Une matrice juste voit ensuite l'écriture de ses
+ * coefficients jugée (cf. matrixEntriesForm).
+ */
+function matrixBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeMatrixAnswer(answer, blank.expectedAnswer);
+	if (status === 'correct') return matrixEntriesForm(answer, blank, instance);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	// Facteur devant une matrice juste : perfectible (distribuer le facteur)
+	if (status === 'unoptimal_form' && feedback) {
+		return {
+			isCorrect: true,
+			status,
+			feedback,
+			constraintViolations: [{ constraint: 'form', severity: 'warning', feedback }]
+		};
+	}
+	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+}
+
+/**
+ * Écriture des coefficients d'une matrice JUSTE, chacun jugé comme une case
+ * ordinaire contre le coefficient attendu (`\frac{4}{2}` pour 2 : même verdict
+ * que dans une case seule). Même règle que les coordonnées d'un vecteur exact
+ * (cf. vectorCoordinatesForm) : mauvaise forme, sinon forme non optimale, sinon juste.
+ */
+function matrixEntriesForm(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const correct = { isCorrect: true, status: 'correct' as const };
+	const answers = matrixEntryTexts(answer)?.flat();
+	const expected = matrixEntryTexts(blank.expectedAnswer)?.flat();
+	if (!answers || !expected || answers.length !== expected.length) return correct;
+
+	let verdict: ReturnType<typeof validateSingleBlank> = correct;
+	for (const [i, entry] of answers.entries()) {
+		// `acceptDecimal` de la case vaut pour chaque coefficient (attendue exacte, décimal exact juste)
+		const entryBlank: InstanceBlank = {
+			expectedAnswer: expected[i],
+			type: 'math',
+			...(blank.acceptDecimal && { acceptDecimal: true })
+		};
+		const result = validateSingleBlank(entry, entryBlank, entry, instance);
+		if (result.status === 'bad_form') return result;
+		if (result.status === 'unoptimal_form' && verdict.status === 'correct') verdict = result;
+		// Autre verdict (valeur lue autrement qu'en matrice) : celui de la matrice fait foi
+	}
+	return verdict;
+}
+
 /** Case « primitive » ou « solution-ed » (cf. questions/calculus/) */
 function isCalculusBlank(blank: InstanceBlank): boolean {
 	return blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed';
@@ -1195,6 +1315,11 @@ function validateSingleBlank(
 		return vectorBlankResult(userAnswerLatex || userAnswer, blank, instance);
 	}
 
+	// Matrice dans une case : chaîne à part, cf. matrices/matrix-answer.ts
+	if (blank.answerKind === 'matrice') {
+		return matrixBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
 	// Primitive, solution d'équation différentielle : chaîne à part, cf. questions/calculus/
 	if (isCalculusBlank(blank)) {
 		return calculusBlankResult(userAnswerLatex || userAnswer, blank, instance);
@@ -1220,6 +1345,9 @@ function validateSingleBlank(
 	let isCorrect: boolean;
 	// Durée composée juste mais mal écrite (« 2 h 75 min », « 2 h 15 mn ») : jugée à l'étape 4
 	let durationFormIssue: DurationFormIssue | undefined;
+	// Juste à un multiple non nul de 2π près (`angleModulo`) : la forme de l'attendue
+	// n'est pas un modèle, seule l'écriture de la réponse est jugée
+	let angleShifted = false;
 
 	if (rulesDecide(blank)) {
 		// Plusieurs bonnes réponses : les règles, déjà passées, suffisent.
@@ -1267,6 +1395,11 @@ function validateSingleBlank(
 		isCorrect = result.isCorrect;
 	} else {
 		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer, instance);
+		// Argument « à 2π près » : juste en valeur, écriture jugée seule (étape 4)
+		if (!isCorrect && isAngleModuloMatch(userAnswer, blank, instance)) {
+			isCorrect = true;
+			angleShifted = true;
+		}
 	}
 
 	if (!isCorrect) {
@@ -1393,6 +1526,13 @@ function validateSingleBlank(
 		};
 	}
 
+	// acceptCombinatorialNotation : `\binom{32}{5}`, `6!`, `\frac{10!}{7!}` (valeur déjà
+	// vérifiée à l'étape 2) sont justes ; sans l'option, jugés comme `10\times9\times8`
+	// par le contrôle « exact » ci-dessous (calcul non effectué).
+	if (blank.acceptCombinatorialNotation === true && isCombinatorialNotationLatex(effectiveLatex)) {
+		return { isCorrect: true, status: 'correct', constraintViolations: [] };
+	}
+
 	// acceptDecimal : un décimal exact (valeur déjà vérifiée à l'étape 2) n'a pas à
 	// reproduire l'écriture attendue (`0{,}5` pour `\frac{1}{2}`) ; seules restent
 	// les contraintes cosmétiques d'un nombre simple (zéros inutiles, espaces).
@@ -1402,6 +1542,33 @@ function validateSingleBlank(
 			constraints,
 			genericFunctions
 		);
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// acceptDecimal, complexe en décimaux : seules restent les contraintes cosmétiques
+	if (acceptsExactDecimalComplex(blank, effectiveLatex)) {
+		const { status, violations } = mapCosmeticViolations(
+			cosmeticViolations(effectiveLatex, severities, formOptions),
+			false
+		);
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// angleModulo : réponse juste à 2kπ près (k ≠ 0). Un calcul laissé en somme
+	// (`\frac{\pi}{4}+2\pi`) est de mauvaise forme ; sinon seules les contraintes
+	// d'écriture comptent (`-\frac{14\pi}{8}` : fraction à simplifier).
+	if (angleShifted) {
+		const { status, violations } = angleWritingForm(effectiveLatex, constraints, genericFunctions);
 		return {
 			isCorrect: status !== 'bad_form',
 			status,
@@ -1785,6 +1952,11 @@ function matchedAnswerForm(
 		const result = vectorBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
+	// Case « matrice » appariée : même jugement que seule (écriture des coefficients)
+	if (blank.answerKind === 'matrice') {
+		const result = matrixBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
 	// Case « primitive » / « solution-ed » appariée : même jugement que seule
 	if (isCalculusBlank(blank)) {
 		const result = calculusBlankResult(blankLatex || userAnswer, blank, instance);
@@ -1796,6 +1968,20 @@ function matchedAnswerForm(
 	if (blank.unit?.expected) {
 		const result = validateSingleBlank(userAnswer, blank, blankLatex, instance);
 		return { status: singleBlankStatus(result), violations: result.constraintViolations ?? [] };
+	}
+
+	// Argument juste à 2kπ près (k ≠ 0, `angleModulo`) : même jugement que seule
+	if (
+		!blank.requiredForm &&
+		blankLatex &&
+		!isAnswerMatch(userAnswer, blank.expectedAnswer, instance) &&
+		isAngleModuloMatch(userAnswer, blank, instance)
+	) {
+		return angleWritingForm(
+			blankLatex,
+			instance.options?.constraints ?? {},
+			templateGenericFunctions(instance.genericFunctions)
+		);
 	}
 
 	let worstStatus: ValidationStatus = 'correct';

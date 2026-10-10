@@ -37,8 +37,9 @@ describe('EvalCommand', () => {
 			expect(typeof command.usage).toBe('string');
 		});
 
-		it('requires AST', () => {
-			expect(command.requiresAst).toBe(true);
+		// `.eval x^2 en x=3` (2026-10-08) : la commande relit son argument
+		it('relit son argument (requiresAst = false)', () => {
+			expect(command.requiresAst).toBe(false);
 		});
 	});
 
@@ -203,7 +204,8 @@ describe('EvalCommand', () => {
 			const evalState = createEvalState();
 			const ctx: CommandContext = {
 				ast: undefined,
-				input: 'invalid',
+				// Un argument tapé est relu (`en x=3`) : sans argument ni dernière expression
+				input: '',
 				format: 'custom',
 				options: {},
 				isRepl: true,

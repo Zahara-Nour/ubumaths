@@ -5,7 +5,7 @@
  * POST /api/teacher/curriculum/themes           — create a theme
  *
  * Teacher/admin only (RLS also enforces is_teacher_or_admin()).
- * Spec: docs/wip/suivi-programme-progress.md
+ * Spec: docs/archive/wip/suivi-programme-progress.md
  */
 
 import { json } from '@sveltejs/kit';

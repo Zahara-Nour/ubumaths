@@ -61,9 +61,27 @@ import { denormalize, normalize } from '../../normal';
  * // Returns zeros at -2 and 2
  */
 export function findZeros(expr: MathNode, variable: string, domain: Domain): ZeroInfo[] {
+	return findZerosWithStatus(expr, variable, domain).zeros;
+}
+
+/**
+ * Les zéros, ET le fait que f(x) = 0 a bien été résolue.
+ *
+ * ⚠️ **« Aucun zéro » et « je n'ai pas su résoudre » ne sont pas la même
+ * réponse.** `findZeros` rend `[]` dans les deux cas : un échec du solveur
+ * (« Type d'equation … non supporte ») devenait « aucun zéro », et le tableau
+ * de signes concluait sur un intervalle qui en contenait peut-être. Même
+ * distinction que `.variations` (#852) : une erreur n'est une absence
+ * DÉMONTRÉE que si le solveur le dit (`conclusive`).
+ */
+export function findZerosWithStatus(
+	expr: MathNode,
+	variable: string,
+	domain: Domain
+): { readonly zeros: ZeroInfo[]; readonly resolved: boolean } {
 	// Handle empty domain
 	if (domain.kind === 'empty') {
-		return [];
+		return { zeros: [], resolved: true };
 	}
 
 	try {
@@ -72,11 +90,16 @@ export function findZeros(expr: MathNode, variable: string, domain: Domain): Zer
 
 		// Validate that we created a valid relation
 		if (!isRelation(equation)) {
-			return [];
+			return { zeros: [], resolved: false };
 		}
 
 		// Solve the equation
 		const result = solve(equation, { variable });
+
+		// Un échec du solveur n'est pas une absence de zéro (voir plus haut).
+		if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
+			return { zeros: [], resolved: false };
+		}
 
 		// Handle cases where solving failed or no solutions
 		if (
@@ -84,13 +107,13 @@ export function findZeros(expr: MathNode, variable: string, domain: Domain): Zer
 			result.status === 'no-real-solution' ||
 			result.solutions.length === 0
 		) {
-			return [];
+			return { zeros: [], resolved: true };
 		}
 
 		// Handle infinite solutions (e.g., 0 = 0)
 		if (result.status === 'infinite') {
 			// Expression is identically zero - no isolated zeros to report
-			return [];
+			return { zeros: [], resolved: true };
 		}
 
 		// Handle periodic solutions on bounded domains
@@ -103,18 +126,46 @@ export function findZeros(expr: MathNode, variable: string, domain: Domain): Zer
 				isFinite(bounds.lower) &&
 				isFinite(bounds.upper)
 			) {
-				return enumeratePeriodicZeros(result.periodicSolutions, bounds, domain);
+				// La famille ET les solutions isolées : `x(sin²x − 1/4)` a x = 0
+				// hors de la famille ±π/6 + kπ, `(x − 1)·sin x` a x = 1. Ne
+				// parcourir que la famille les perdait.
+				return {
+					zeros: mergeZeros(
+						enumeratePeriodicZeros(result.periodicSolutions, bounds, domain),
+						filterSolutionsInDomain(result.solutions, domain)
+					),
+					resolved: true
+				};
 			}
 		}
 
 		// Filter solutions within the domain (default non-periodic path)
-		const zerosInDomain = filterSolutionsInDomain(result.solutions, domain);
-
-		return zerosInDomain;
+		return { zeros: filterSolutionsInDomain(result.solutions, domain), resolved: true };
 	} catch {
-		// If solving fails (unsupported equation type, etc.), return empty
-		return [];
+		// Le solveur a levé une exception : f(x) = 0 n'est pas résolue.
+		return { zeros: [], resolved: false };
 	}
+}
+
+/**
+ * Réunion de deux listes de zéros, dédoublonnée sur la valeur numérique et
+ * triée. Un zéro sans valeur numérique est gardé tel quel.
+ *
+ * @internal
+ */
+function mergeZeros(periodic: readonly ZeroInfo[], isolated: readonly ZeroInfo[]): ZeroInfo[] {
+	const merged: ZeroInfo[] = [...periodic];
+	for (const zero of isolated) {
+		const value = zero.approximate;
+		const duplicate =
+			value !== undefined &&
+			merged.some((z) => z.approximate !== undefined && Math.abs(z.approximate - value) < 1e-9);
+		if (!duplicate) merged.push(zero);
+	}
+	return merged.sort(
+		(a, b) =>
+			(a.approximate ?? Number.POSITIVE_INFINITY) - (b.approximate ?? Number.POSITIVE_INFINITY)
+	);
 }
 
 /**

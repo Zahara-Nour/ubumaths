@@ -329,6 +329,18 @@ export class Tokenizer {
 		// jamais une variable nommée « % » multipliée en silence
 		if (char === '%') return this.makeToken('COMMAND', '%', startPos, 1);
 
+		// `<=`, `>=` tapés au clavier : `\leq`, `\geq`. Sans ça, `x^3<=x` (envoyé
+		// au parseur LaTeX à cause du `^`) répondait « Unexpected token: = »
+		// (2026-10-08). `<=>` reste hors de cette lecture.
+		if (
+			(char === '<' || char === '>') &&
+			this.input[this.position] === '=' &&
+			this.input[this.position + 1] !== '>'
+		) {
+			this.position += 1;
+			return this.makeToken('COMMAND', char === '<' ? 'leq' : 'geq', startPos, 2);
+		}
+
 		// `≤`, `≥`, `≠` tapés tels quels : les relations `\leq`, `\geq`, `\neq`
 		const relation = UNICODE_RELATIONS[char];
 		if (relation) return this.makeToken('COMMAND', relation, startPos, char.length);

@@ -6,7 +6,7 @@
  * Body : RunJobOptions (optional). Vide = options par défaut.
  * Réponse : JobReport.
  *
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B7
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B7
  */
 
 import { error, json, type RequestHandler } from '@sveltejs/kit';

@@ -7,4 +7,13 @@ Disallow: /dashboard/
 Disallow: /auth/
 Disallow: /api/
 
+# Pages de démonstration et de mise au point : sans intérêt pour un visiteur,
+# elles dilueraient le site dans les résultats.
+Disallow: /demo
+Disallow: /geometry-demo
+Disallow: /construction-demo
+Disallow: /test-font
+Disallow: /api-docs
+Disallow: /blockly
+
 Sitemap: https://www.chiph.re/sitemap.xml

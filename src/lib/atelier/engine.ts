@@ -23,14 +23,14 @@ import {
 	clearBindings,
 	clearFunctions
 } from '$lib/mathAST/cli/core/eval-state';
-import { substituteAll } from '$lib/mathAST/eval/substitute';
+import { substitute, substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
 import { derivativeOf } from './names';
-import { astOf, readNumber } from './parse';
+import { astOf, readNumber, withPlainEuler } from './parse';
 import { constantOf } from './constant';
 import { transformAST } from '$lib/mathAST/visitor';
 import {
@@ -184,8 +184,10 @@ function expandDerivatives(
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];
 			if (args.length === 0) return expandDerivatives(derived, functions);
+			// ⚠️ Une seule passe : `f'(2x)` remplace x par 2x, puis plus rien —
+			// itérer donnait cos(1024x) (2026-10-06)
 			return expandDerivatives(
-				substituteAll(derived, { [target.parameters[0] ?? 'x']: args[0] }, substituteFunction),
+				substitute(derived, { [target.parameters[0] ?? 'x']: args[0] }, { maxIterations: 1 }),
 				functions
 			);
 		}
@@ -283,7 +285,33 @@ export function expandInput(atelier: Atelier, text: string): string {
 	// s'évalue pas mais se dérive, et `k'` doit valoir `b`.
 	const { derivableFunctions } = bindingsOf(atelier, '');
 	const expanded = expandDerivatives(ast, derivableFunctions);
-	return toCustom(expanded);
+	return toCustom(withPlainEuler(expanded));
+}
+
+/**
+ * L'argument d'une commande qui cite une dérivée, prêt pour le moteur : les
+ * dérivées développées PUIS les noms substitués, le tout dans l'ARBRE.
+ *
+ * ⚠️ Pas en texte : `expandInput` rendait `2ax` collé (toCustom), et la
+ * substitution textuelle des noms ne retrouvait plus `a` — avec a = 2 et
+ * f(x) = a x², `.resoudre f'(x)=4` répondait « pas de solution » (revue #859).
+ *
+ * @returns null si l'argument ne se lit pas : à l'appelant de garder son texte
+ */
+export function expandCommandArgument(atelier: Atelier, text: string): string | null {
+	const ast = astOf(text, 'url', atelier.functionNames);
+	if (ast === null) return null;
+	const { variables, functions, derivableFunctions } = bindingsOf(atelier, '');
+	let expanded: MathNode;
+	try {
+		expanded = expandDerivatives(ast, derivableFunctions);
+	} catch {
+		return null;
+	}
+	const substituted = substituteAll(expanded, variables, substituteFunction, {
+		functions: functions satisfies FunctionBindings
+	});
+	return toCustom(withPlainEuler(substituted));
 }
 
 /**
@@ -358,13 +386,36 @@ export function substitutedAstOf(
 	return { ok: true, ast: substituted };
 }
 
+/**
+ * L'ARBRE qu'affiche la carte `f′` : la dérivée calculée, noms et paramètres
+ * substitués, mise au propre — sans jamais repasser par le texte.
+ *
+ * ⚠️ La carte relisait `expressionOf` (écriture maison) avec `astOf` : chaque
+ * aller-retour texte rouvrait un défaut (`sin` relu `s i n`, `\\pi x` collé,
+ * `x^{-2/3}/3` en barre oblique). Ici, l'arbre va droit à `toLatex`.
+ *
+ * `tidyTerms` APRÈS la substitution : la dérivée est rangée avant, mais les
+ * paramètres (a = 3) et les fonctions citées (`g(2x)`) n'arrivent qu'ensuite —
+ * sans cette passe, `2 × 2 × 2x` restait tel quel. Même mise au propre que
+ * `.dériver` dans Calcul.
+ */
+export function derivativeAstOf(
+	atelier: Atelier,
+	name: string
+):
+	| { readonly ok: true; readonly ast: MathNode }
+	| { readonly ok: false; readonly message: string } {
+	const result = substitutedAstOf(atelier, name);
+	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
+}
+
 export function expressionOf(
 	atelier: Atelier,
 	name: string,
 	options?: { readonly forDerivation?: boolean }
 ): Substituted {
 	const result = substitutedAstOf(atelier, name, options);
-	return result.ok ? { ok: true, expression: toCustom(result.ast) } : result;
+	return result.ok ? { ok: true, expression: toCustom(withPlainEuler(result.ast)) } : result;
 }
 
 /** `v_n` → `v(n)` pour chaque autre suite explicite liée. */

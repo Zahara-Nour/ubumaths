@@ -79,7 +79,6 @@ Before any `rm`, `rm -rf`, `mv`, or overwrite: run `git status` to verify the ta
 - `pnpm build` to verify code
 - `pnpm lint` on the whole project
 - `npx tsc --noEmit <file>` (false positives on `$lib`)
-- `pnpm test:triggers` (memory `feedback_no-trigger-tests` — Docker-based, doesn't work locally)
 
 Use targeted Read/Grep/single-test runs to investigate. Quality checks happen ONCE at the end of the plan, not during debugging.
 

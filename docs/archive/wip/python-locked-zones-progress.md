@@ -237,7 +237,7 @@ Même session, follow-up UX. Le formulaire d'appel d'une fonction (`funcname(arg
 - `src/routes/(public)/python-exercises/[id]/+page.svelte` — `zonesBlocked` derived, snippet `zonesTooltipWrap` (Tooltip.Provider + Tooltip.Root + child-snippet pattern), boutons enveloppés conditionnellement, déplacement du formulaire d'appel dans la toolbar, panneau résultats conditionné sur la présence de contenu.
 - `scripts/generate-bac-locked-zones-migration.ts` — préserve le placeholder original (commentaire explicatif).
 - `supabase/migrations/20260514011041_restore_locked_zones_while_ellipsis_default.sql` — NOUVEAU.
-- `docs/ref/python/README.md` — description « Tester ma fonction » mise à jour.
+- `docs/systeme/python/README.md` — description « Tester ma fonction » mise à jour.
 
 ### Commits de ce patch
 

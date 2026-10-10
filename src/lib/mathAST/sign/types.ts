@@ -179,6 +179,13 @@ export interface SignAnalysisResult {
 
 	/** Warnings encountered during analysis */
 	readonly warnings?: readonly string[];
+
+	/**
+	 * `true` quand le solveur n'a pas su résoudre f(x) = 0 : `zeros` peut alors
+	 * en manquer, et le signe n'est conclu que là où l'analyse ALGÉBRIQUE le
+	 * prouve (sans échantillonnage). Ce n'est pas « aucun zéro ».
+	 */
+	readonly zerosUnresolved?: boolean;
 }
 
 // =============================================================================

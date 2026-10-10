@@ -1,0 +1,1579 @@
+{
+	"version": "2026-10-09.16",
+	"statut": "validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; EN BASE depuis le 2026-10-08 (CP→3e), branche Logique restructurée C2 le 2026-10-08 ; NETTOYÉ de ses facettes le 2026-10-09 (audit tranché par David, ADR 0020 § 3 précisé : un seul découpage par notion, par contenu) — les nœuds archivés sont listés à part ; EN BASE depuis le 2026-10-10 (#1002, migration 20261012080000) — la base fait foi, ce JSON en est la copie de doc (audit : docs/wip/arbre-notions/audit-facettes.md)",
+	"branches": [
+		{
+			"nom": "Nombres et calculs",
+			"notions": [
+				{
+					"nom": "Entiers : numération",
+					"niveaux": "CP à 6e",
+					"sous_notions": [
+						"ordre",
+						"décomposition",
+						"écritures",
+						"droite graduée",
+						"dénombrement",
+						"ordinaux et rangs"
+					],
+					"note": null
+				},
+				{
+					"nom": "Entiers : addition et soustraction",
+					"niveaux": "CP à CM2",
+					"sous_notions": [
+						"complément",
+						"tables",
+						"double et moitié",
+						"calcul astucieux",
+						"calcul posé"
+					],
+					"note": null
+				},
+				{
+					"nom": "Entiers : multiplication",
+					"niveaux": "CP à 5e",
+					"sous_notions": [
+						"tables",
+						"carrés",
+						"décomposition",
+						"distributivité",
+						"double et moitié",
+						"triple et tiers",
+						"quadruple et quart",
+						"puissances de 10",
+						"produits particuliers",
+						"calcul astucieux",
+						"calcul posé"
+					],
+					"note": null
+				},
+				{
+					"nom": "Entiers : division",
+					"niveaux": "CE2 à 6e",
+					"sous_notions": ["quotient", "division euclidienne", "calcul posé", "calcul réfléchi"],
+					"note": null
+				},
+				{
+					"nom": "Entiers : priorités opératoires",
+					"niveaux": "CM1 à 5e",
+					"sous_notions": ["avec parenthèses", "sans parenthèses", "écriture d'une expression"],
+					"note": null
+				},
+				{
+					"nom": "Décimaux : numération",
+					"niveaux": "CM1 à 6e",
+					"sous_notions": [
+						"ordre",
+						"décomposition",
+						"écritures",
+						"encadrement",
+						"forme fractionnaire",
+						"arrondis et ordres de grandeur",
+						"droite graduée"
+					],
+					"note": null
+				},
+				{
+					"nom": "Décimaux : calculs",
+					"niveaux": "CM1 à 6e",
+					"sous_notions": ["addition", "soustraction", "multiplication", "division"],
+					"note": null
+				},
+				{
+					"nom": "Fractions : sens et écritures",
+					"niveaux": "CE1 à 2de",
+					"sous_notions": [
+						"définition",
+						"ordre",
+						"décomposition",
+						"égalité de fractions",
+						"simplification",
+						"forme décimale",
+						"droite graduée"
+					],
+					"note": null
+				},
+				{
+					"nom": "Fractions : calculs",
+					"niveaux": "CE1 à 3e",
+					"sous_notions": [
+						"addition et soustraction",
+						"multiplication",
+						"division",
+						"inverse",
+						"fraction d'une quantité"
+					],
+					"note": null
+				},
+				{
+					"nom": "Relatifs : sens et écritures",
+					"niveaux": "5e, 4e",
+					"sous_notions": ["définition", "ordre", "droite graduée"],
+					"note": null
+				},
+				{
+					"nom": "Relatifs : calculs",
+					"niveaux": "5e, 4e",
+					"sous_notions": [
+						"sommes",
+						"différences",
+						"sommes algébriques",
+						"produit",
+						"quotient",
+						"carré"
+					],
+					"note": null
+				},
+				{
+					"nom": "Puissances : sens et écritures",
+					"niveaux": "5e à 3e",
+					"sous_notions": ["définition", "puissances de 10", "notation scientifique"],
+					"note": null
+				},
+				{
+					"nom": "Puissances : calculs",
+					"niveaux": "5e à 2de",
+					"sous_notions": [
+						"produit de puissances",
+						"quotient de puissances",
+						"puissance de puissance"
+					],
+					"note": null
+				},
+				{
+					"nom": "Racines carrées : sens et écritures",
+					"niveaux": "5e à 2de",
+					"sous_notions": ["définition"],
+					"note": null
+				},
+				{
+					"nom": "Racines carrées : calculs",
+					"niveaux": "4e, 2de",
+					"sous_notions": ["techniques de calcul", "propriétés"],
+					"note": null
+				},
+				{
+					"nom": "Problèmes arithmétiques",
+					"niveaux": "CP à 6e",
+					"sous_notions": [
+						"parties-tout",
+						"comparaison",
+						"en deux étapes ou plus",
+						"multiplicatifs",
+						"produits cartésiens",
+						"optimisation"
+					],
+					"note": "classés par structure ; cycle 4 à confirmer"
+				}
+			]
+		},
+		{
+			"nom": "Arithmétique",
+			"notions": [
+				{
+					"nom": "Divisibilité",
+					"niveaux": "CE1 à Expertes",
+					"sous_notions": [
+						"pair ou impair",
+						"multiples et diviseurs",
+						"critères de divisibilité",
+						"division euclidienne"
+					],
+					"note": "reprend aussi l'ancien « Entiers : diviser, divisibilité » (CE2 à CM2) ; parité dès le CE1"
+				},
+				{
+					"nom": "Nombres premiers",
+					"niveaux": "3e, Expertes",
+					"sous_notions": ["primalité", "décomposition en facteurs premiers"],
+					"note": null
+				},
+				{
+					"nom": "PGCD, Bézout et Gauss",
+					"niveaux": "Expertes",
+					"sous_notions": ["PGCD", "théorèmes de Bézout et de Gauss", "équations diophantiennes"],
+					"note": null
+				},
+				{
+					"nom": "Congruences",
+					"niveaux": "Expertes",
+					"sous_notions": [
+						"congruences",
+						"équations ax ≡ b [n]",
+						"petit théorème de Fermat",
+						"chiffrement"
+					],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Nombres complexes",
+			"notions": [
+				{
+					"nom": "Forme algébrique",
+					"niveaux": "Expertes",
+					"sous_notions": [
+						"calculs",
+						"conjugaison",
+						"inverse et quotient",
+						"formule du binôme",
+						"équations"
+					],
+					"note": null
+				},
+				{
+					"nom": "Module et argument",
+					"niveaux": "Expertes",
+					"sous_notions": ["module", "argument"],
+					"note": null
+				},
+				{
+					"nom": "Formes trigo. et exponentielle",
+					"niveaux": "Expertes",
+					"sous_notions": [
+						"forme trigonométrique",
+						"formules d'addition et de duplication",
+						"forme exponentielle",
+						"formule de Moivre",
+						"formules d'Euler"
+					],
+					"note": null
+				},
+				{
+					"nom": "Équations polynomiales",
+					"niveaux": "Expertes",
+					"sous_notions": ["second degré", "racines d'un polynôme", "degré 3 et factorisation"],
+					"note": null
+				},
+				{
+					"nom": "Interprétation géométrique",
+					"niveaux": "Expertes",
+					"sous_notions": [
+						"affixes et distances",
+						"alignement et orthogonalité",
+						"angles et quotient",
+						"ensembles de points",
+						"racines de l'unité"
+					],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Proportionnalité",
+			"notions": [
+				{
+					"nom": "Situations de proportionnalité",
+					"niveaux": "CM1 à 3e",
+					"sous_notions": [
+						"caractérisation",
+						"quatrième proportionnelle",
+						"ratio",
+						"coefficient de proportionnalité"
+					],
+					"note": "reprend « Tableaux de proportionnalité »"
+				},
+				{
+					"nom": "Pourcentages",
+					"niveaux": "6e à 2de",
+					"sous_notions": ["définition", "calculs de pourcentages"],
+					"note": null
+				},
+				{
+					"nom": "Évolutions",
+					"niveaux": "4e à 2de, 1re ens. sci., Tle techno",
+					"sous_notions": [
+						"variations en pourcentage",
+						"évolutions successives et réciproque",
+						"taux d'évolution moyen",
+						"indices"
+					],
+					"note": "coefficient multiplicateur dès la 4e"
+				},
+				{
+					"nom": "Échelle d'une carte",
+					"niveaux": "6e, 3e",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Vitesse",
+					"niveaux": "4e",
+					"sous_notions": [],
+					"note": "vient de Grandeurs et mesures"
+				}
+			]
+		},
+		{
+			"nom": "Algèbre",
+			"notions": [
+				{
+					"nom": "Premiers pas algébriques",
+					"niveaux": "CM1 à 6e",
+					"sous_notions": [
+						"égalités à trous",
+						"nombre inconnu",
+						"programmes de calcul",
+						"suites de motifs"
+					],
+					"note": "pensée algébrique du cycle 3 ; les lettres formelles attendent le cycle 4"
+				},
+				{
+					"nom": "Calcul littéral",
+					"niveaux": "5e à 2de",
+					"sous_notions": [
+						"substitution",
+						"réduction",
+						"écriture simplifiée",
+						"opposé d'une expression",
+						"développement",
+						"factorisation",
+						"identités remarquables",
+						"isoler une variable",
+						"expressions fractionnaires"
+					],
+					"note": null
+				},
+				{
+					"nom": "Équations : premier degré",
+					"niveaux": "5e à 2de",
+					"sous_notions": ["ax = b", "ax + b = c", "ax + b = cx + d"],
+					"note": "reprend « Dans ℕ, ℤ, ℚ » : l'ensemble devient une difficulté (level)"
+				},
+				{
+					"nom": "Équations : produit et quotient",
+					"niveaux": "3e, 2de",
+					"sous_notions": ["produit nul", "x² = a", "équation quotient"],
+					"note": null
+				},
+				{
+					"nom": "Inéquations : premier degré",
+					"niveaux": "3e à 2de",
+					"sous_notions": ["ax + b < c", "ax + b < cx + d"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Inéquations : produit et quotient",
+					"niveaux": "2de",
+					"sous_notions": ["tableau de signes", "inéquation produit", "inéquation quotient"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Équations : second degré",
+					"niveaux": "1re",
+					"sous_notions": ["discriminant", "équations incomplètes", "se ramener au second degré"],
+					"note": null
+				},
+				{
+					"nom": "Inéquations : second degré",
+					"niveaux": "1re",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Inégalités",
+					"niveaux": "2de à Tle",
+					"sous_notions": ["règles de calcul", "comparaison et encadrement"],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Fonctions",
+			"notions": [
+				{
+					"nom": "Généralités sur les fonctions",
+					"niveaux": "5e à 1re",
+					"sous_notions": [
+						"images et antécédents",
+						"ensemble de définition",
+						"appartenance à une courbe",
+						"équations et inéquations f(x) = k",
+						"variations",
+						"extremums",
+						"signe",
+						"parité"
+					],
+					"note": "reprend ta nouvelle fiche et « Calcul d'images »"
+				},
+				{
+					"nom": "Fonctions affines",
+					"niveaux": "3e, 2de",
+					"sous_notions": [
+						"fonction linéaire",
+						"expression et droite",
+						"coefficient directeur et ordonnée à l'origine",
+						"variations et signe",
+						"équations"
+					],
+					"note": null
+				},
+				{
+					"nom": "Fonction carré",
+					"niveaux": "3e, 2de",
+					"sous_notions": ["définition et courbe", "variations", "x² = k, x² < k"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Fonction inverse",
+					"niveaux": "2de",
+					"sous_notions": ["définition et courbe", "variations", "1/x = k, 1/x < k"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Fonction racine carrée",
+					"niveaux": "2de",
+					"sous_notions": ["définition et courbe", "variations", "√x = k, √x < k"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Fonction cube",
+					"niveaux": "2de",
+					"sous_notions": ["définition et courbe", "variations", "x³ = k, x³ < k"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Fonction valeur absolue",
+					"niveaux": "2de",
+					"sous_notions": [
+						"définition et distance",
+						"courbe",
+						"variations",
+						"équations et inéquations"
+					],
+					"note": "reprend le domaine Valeur absolue"
+				},
+				{
+					"nom": "Second degré",
+					"niveaux": "1re",
+					"sous_notions": [
+						"racines",
+						"signe",
+						"formes",
+						"variations",
+						"parabole",
+						"somme et produit des racines"
+					],
+					"note": "équations et inéquations → Algèbre"
+				},
+				{
+					"nom": "Dérivation",
+					"niveaux": "1re, Tle, Tle comp.",
+					"sous_notions": [
+						"taux de variation",
+						"nombre dérivé",
+						"tangente",
+						"approximation affine",
+						"fonctions dérivées",
+						"opérations sur les dérivées",
+						"dérivabilité en un point",
+						"variations et extremums",
+						"position relative de deux courbes",
+						"fonctions composées"
+					],
+					"note": "optimisation : fondue dans « variations et extremums » (audit des facettes, 2026-10-09)"
+				},
+				{
+					"nom": "Fonction exponentielle",
+					"niveaux": "1re, 1re ens. sci., Tle, Tle techno",
+					"sous_notions": [
+						"propriétés algébriques",
+						"dérivée",
+						"variations",
+						"courbe",
+						"équations et inéquations",
+						"croissance et décroissance exponentielles",
+						"fonctions x ↦ aˣ"
+					],
+					"note": null
+				},
+				{
+					"nom": "Fonctions trigonométriques",
+					"niveaux": "1re, Tle",
+					"sous_notions": [
+						"cercle et radians",
+						"cosinus et sinus d'un réel",
+						"angles associés",
+						"équations",
+						"inéquations",
+						"parité et périodicité",
+						"dérivées et variations"
+					],
+					"note": null
+				},
+				{
+					"nom": "Limites de fonctions",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [
+						"limite en un point",
+						"opérations",
+						"formes indéterminées",
+						"comparaison et encadrement",
+						"croissances comparées",
+						"asymptotes"
+					],
+					"note": null
+				},
+				{
+					"nom": "Continuité",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [
+						"continuité en un point",
+						"valeurs intermédiaires",
+						"fonction réciproque",
+						"encadrement d'une solution"
+					],
+					"note": null
+				},
+				{
+					"nom": "Convexité",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [
+						"caractérisations",
+						"dérivée seconde",
+						"point d'inflexion",
+						"inégalités de convexité"
+					],
+					"note": null
+				},
+				{
+					"nom": "Logarithmes",
+					"niveaux": "Tle, Tle comp., Tle techno",
+					"sous_notions": [
+						"réciproque de l'exponentielle",
+						"propriétés algébriques",
+						"équations et inéquations",
+						"dérivée",
+						"courbe",
+						"logarithme décimal"
+					],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Intégration",
+			"notions": [
+				{
+					"nom": "Calcul d'intégrales",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [
+						"par une primitive",
+						"relation de Chasles",
+						"linéarité",
+						"positivité et inégalités",
+						"intégration par parties",
+						"suites d'intégrales",
+						"méthode des rectangles"
+					],
+					"note": null
+				},
+				{
+					"nom": "Intégrale et aire",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": ["aire algébrique", "aire entre deux courbes"],
+					"note": null
+				},
+				{
+					"nom": "Valeur moyenne",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Fonction intégrale",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": ["dérivée d'une fonction intégrale"],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Équations différentielles",
+			"notions": [
+				{
+					"nom": "Généralités",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": ["notion de solution", "allure des courbes", "méthode d'Euler"],
+					"note": null
+				},
+				{
+					"nom": "y′ = f",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [
+						"primitives : notion",
+						"primitives des fonctions de référence",
+						"forme (v′∘u)×u′"
+					],
+					"note": "les primitives sont les solutions de y′ = f"
+				},
+				{
+					"nom": "y′ = ay",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "y′ = ay + b",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "y′ = ay + f",
+					"niveaux": "Tle",
+					"sous_notions": [],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Suites",
+			"notions": [
+				{
+					"nom": "Généralités sur les suites",
+					"niveaux": "1re",
+					"sous_notions": [
+						"explicite ou par récurrence",
+						"représentation graphique",
+						"sens de variation"
+					],
+					"note": null
+				},
+				{
+					"nom": "Suites arithmétiques",
+					"niveaux": "1re",
+					"sous_notions": ["terme général", "somme des termes", "définition"],
+					"note": null
+				},
+				{
+					"nom": "Suites géométriques",
+					"niveaux": "1re",
+					"sous_notions": ["terme général", "somme des termes", "définition"],
+					"note": null
+				},
+				{
+					"nom": "Modèles d'évolution",
+					"niveaux": "1re, Tle, Tle comp.",
+					"sous_notions": ["seuil"],
+					"note": null
+				},
+				{
+					"nom": "Limites de suites",
+					"niveaux": "1re, Tle, Tle comp.",
+					"sous_notions": [
+						"définition",
+						"opérations",
+						"formes indéterminées",
+						"comparaison et encadrement",
+						"suites géométriques",
+						"convergence monotone",
+						"suites majorées, minorées"
+					],
+					"note": null
+				},
+				{
+					"nom": "Raisonnement par récurrence",
+					"niveaux": "Tle",
+					"sous_notions": ["structure d'une récurrence"],
+					"note": null
+				},
+				{
+					"nom": "Suites récurrentes",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": ["escalier", "point fixe"],
+					"note": null
+				},
+				{
+					"nom": "Suites arithmético-géométriques",
+					"niveaux": "Tle, Tle comp.",
+					"sous_notions": ["solution constante", "suite auxiliaire", "limite"],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Matrices",
+			"notions": [
+				{
+					"nom": "Calcul matriciel",
+					"niveaux": "Expertes",
+					"sous_notions": ["opérations", "inverse", "puissances de matrices"],
+					"note": null
+				},
+				{
+					"nom": "Systèmes linéaires",
+					"niveaux": "Expertes",
+					"sous_notions": ["écriture matricielle", "résolution"],
+					"note": null
+				},
+				{
+					"nom": "Suites et matrices",
+					"niveaux": "Expertes",
+					"sous_notions": ["suites couplées"],
+					"note": null
+				},
+				{
+					"nom": "Transformations du plan",
+					"niveaux": "Expertes",
+					"sous_notions": ["matrice d'une transformation"],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Graphes",
+			"notions": [
+				{
+					"nom": "Vocabulaire des graphes",
+					"niveaux": "Expertes",
+					"sous_notions": ["sommets, arêtes, degré", "graphe orienté"],
+					"note": null
+				},
+				{
+					"nom": "Chaînes et connexité",
+					"niveaux": "Expertes",
+					"sous_notions": ["chaînes et cycles", "connexité"],
+					"note": null
+				},
+				{
+					"nom": "Matrice d'adjacence",
+					"niveaux": "Expertes",
+					"sous_notions": ["matrice d'adjacence", "nombre de chaînes de longueur n"],
+					"note": null
+				},
+				{
+					"nom": "Chaînes de Markov",
+					"niveaux": "Expertes",
+					"sous_notions": [
+						"graphe probabiliste",
+						"matrice de transition",
+						"distribution après n transitions",
+						"état stable"
+					],
+					"note": "vient de l'ancien domaine Chaînes de Markov (3 modèles)"
+				}
+			]
+		},
+		{
+			"nom": "Géométrie",
+			"notions": [
+				{
+					"nom": "Solides",
+					"niveaux": "CP à 3e, 1re et Tle techno",
+					"sous_notions": [
+						"propriétés",
+						"constructions",
+						"patrons",
+						"perspective cavalière",
+						"perspective centrale",
+						"sections planes"
+					],
+					"note": "le collège (D2) viendra avec le cycle 4"
+				},
+				{
+					"nom": "Figures planes",
+					"niveaux": "CP à 4e, 1re et Tle techno",
+					"sous_notions": [
+						"propriétés",
+						"angles droits",
+						"perpendiculaires et parallèles",
+						"constructions",
+						"cercle",
+						"triangles",
+						"parallélogrammes",
+						"médiatrice et bissectrice",
+						"polygones réguliers",
+						"coniques"
+					],
+					"note": null
+				},
+				{
+					"nom": "Symétrie axiale",
+					"niveaux": "CE2 à 3e",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Repérage et déplacements",
+					"niveaux": "CP à 3e",
+					"sous_notions": [
+						"positions et plans",
+						"coder un déplacement",
+						"coordonnées dans le plan"
+					],
+					"note": null
+				},
+				{
+					"nom": "Symétrie centrale",
+					"niveaux": "5e, 4e",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Translations",
+					"niveaux": "4e, 3e, 1re techno",
+					"sous_notions": ["frises et pavages"],
+					"note": null
+				},
+				{
+					"nom": "Théorème de Pythagore",
+					"niveaux": "4e, 3e",
+					"sous_notions": ["calcul de longueurs", "réciproque"],
+					"note": null
+				},
+				{
+					"nom": "Théorème de Thalès",
+					"niveaux": "4e, 3e",
+					"sous_notions": ["droite des milieux", "calcul de longueurs", "réciproque"],
+					"note": "droite des milieux en 4e (décision S2)"
+				},
+				{
+					"nom": "Trigonométrie du triangle rectangle",
+					"niveaux": "3e",
+					"sous_notions": ["calcul de longueurs", "calcul d'angles"],
+					"note": null
+				},
+				{
+					"nom": "Rotations",
+					"niveaux": "hors programme",
+					"sous_notions": [],
+					"note": "ancienne 3e — demandé par David : enrichissement, évolutions futures"
+				},
+				{
+					"nom": "Homothéties",
+					"niveaux": "hors programme",
+					"sous_notions": [],
+					"note": "ancienne 3e — demandé par David"
+				},
+				{
+					"nom": "Triangles semblables",
+					"niveaux": "hors programme",
+					"sous_notions": ["cas d'égalité des triangles"],
+					"note": "ancienne 3e (cas d'égalité : ancienne 4e)"
+				},
+				{
+					"nom": "Repérage dans l'espace",
+					"niveaux": "1re techno (STD2A)",
+					"sous_notions": [],
+					"note": "ancien programme : pavé (4e), sphère latitude-longitude (3e)"
+				},
+				{
+					"nom": "Vecteurs",
+					"niveaux": "3e, 2de",
+					"sous_notions": [
+						"translation et vecteur",
+						"égalité de vecteurs",
+						"somme et relation de Chasles",
+						"produit par un réel",
+						"colinéarité",
+						"combinaison linéaire",
+						"coordonnées",
+						"norme"
+					],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Géométrie repérée",
+					"niveaux": "2de, 1re",
+					"sous_notions": [
+						"milieu et distance",
+						"équations de droites",
+						"vecteur directeur",
+						"intersection de deux droites",
+						"vecteur normal et équation de droite",
+						"équation de cercle",
+						"projeté orthogonal"
+					],
+					"note": null
+				},
+				{
+					"nom": "Produit scalaire",
+					"niveaux": "1re",
+					"sous_notions": [
+						"expressions du produit scalaire",
+						"angles et longueurs",
+						"propriétés",
+						"lieux de points"
+					],
+					"note": null
+				},
+				{
+					"nom": "Espace",
+					"niveaux": "Tle",
+					"sous_notions": [
+						"vecteurs de l'espace",
+						"colinéarité et alignement",
+						"coplanarité et décomposition",
+						"positions relatives et intersections",
+						"coordonnées",
+						"représentation paramétrique"
+					],
+					"note": null
+				},
+				{
+					"nom": "Orthogonalité et distances dans l'espace",
+					"niveaux": "Tle",
+					"sous_notions": [
+						"produit scalaire dans l'espace",
+						"orthogonalité de droites et plans",
+						"projeté orthogonal",
+						"angles",
+						"sphère",
+						"vecteur normal et équation cartésienne"
+					],
+					"note": "dans l'espace"
+				}
+			]
+		},
+		{
+			"nom": "Grandeurs et mesures",
+			"notions": [
+				{
+					"nom": "Longueurs",
+					"niveaux": "CP à 6e",
+					"sous_notions": ["comparaison et mesure", "unités et conversions"],
+					"note": null
+				},
+				{
+					"nom": "Masses",
+					"niveaux": "CP à CM1",
+					"sous_notions": ["comparaison et mesure", "unités et conversions"],
+					"note": "cycle 4 à confirmer"
+				},
+				{
+					"nom": "Contenances",
+					"niveaux": "CE2, CM1",
+					"sous_notions": ["comparaison et mesure", "unités et conversions"],
+					"note": "bascule vers les volumes au collège"
+				},
+				{
+					"nom": "Monnaie",
+					"niveaux": "CP à CE2",
+					"sous_notions": ["pièces et billets", "euros et centimes", "rendre la monnaie"],
+					"note": "porte l'écriture à virgule du cycle 2"
+				},
+				{
+					"nom": "Angles",
+					"niveaux": "CM1 à 6e",
+					"sous_notions": ["comparaison", "mesure en degrés", "construction"],
+					"note": "la grandeur ; les angles-objets (médiatrice, bissectrice…) → Figures planes"
+				},
+				{
+					"nom": "Périmètres",
+					"niveaux": "CE2, 6e",
+					"sous_notions": ["carré", "rectangle", "disque"],
+					"note": "au CE2 : par mesurage, sans formule ; formules carré/rectangle/disque en 6e"
+				},
+				{
+					"nom": "Aires",
+					"niveaux": "CM1 à 5e",
+					"sous_notions": [
+						"carré",
+						"rectangle",
+						"triangle rectangle",
+						"triangle quelconque",
+						"parallélogramme",
+						"disque",
+						"unités et conversions"
+					],
+					"note": "au CM : comparer et mesurer, formules carré/rectangle au CM2"
+				},
+				{
+					"nom": "Volumes",
+					"niveaux": "6e à 3e",
+					"sous_notions": [
+						"cube et pavé",
+						"prisme et cylindre",
+						"pyramide et cône",
+						"boule",
+						"conversions"
+					],
+					"note": null
+				},
+				{
+					"nom": "Durées",
+					"niveaux": "CP à 6e",
+					"sous_notions": ["lecture de l'heure", "calcul de durées", "conversions"],
+					"note": null
+				},
+				{
+					"nom": "Unités et conversions",
+					"niveaux": "6e",
+					"sous_notions": ["unités simples", "unités composées"],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Probabilités",
+			"notions": [
+				{
+					"nom": "Expériences aléatoires",
+					"niveaux": "CM1 à 2de",
+					"sous_notions": ["fréquences", "probabilité simple", "équiprobabilité", "événements"],
+					"note": "reprend le domaine Probabilités > Apprivoiser"
+				},
+				{
+					"nom": "Probabilités conditionnelles",
+					"niveaux": "2de, 1re",
+					"sous_notions": [
+						"arbres pondérés",
+						"tableaux croisés",
+						"indépendance",
+						"probabilités totales",
+						"inversion du conditionnement",
+						"épreuves indépendantes successives"
+					],
+					"note": null
+				},
+				{
+					"nom": "Variables aléatoires",
+					"niveaux": "1re",
+					"sous_notions": ["loi d'une variable aléatoire", "espérance", "variance et écart-type"],
+					"note": null
+				},
+				{
+					"nom": "Loi binomiale",
+					"niveaux": "Tle, Tle comp., Tle techno",
+					"sous_notions": [
+						"schéma de Bernoulli",
+						"expression de la loi",
+						"intervalle de fluctuation",
+						"espérance et variance"
+					],
+					"note": null
+				},
+				{
+					"nom": "Autres lois",
+					"niveaux": "Tle comp.",
+					"sous_notions": [
+						"loi géométrique",
+						"loi uniforme discrète",
+						"loi uniforme continue",
+						"loi exponentielle",
+						"absence de mémoire",
+						"densité et aire",
+						"fonction de répartition",
+						"espérance et variance"
+					],
+					"note": null
+				},
+				{
+					"nom": "Sommes et concentration",
+					"niveaux": "Tle",
+					"sous_notions": [
+						"espérance et variance d'une somme",
+						"échantillons",
+						"Bienaymé-Tchebychev",
+						"inégalité de concentration",
+						"loi des grands nombres"
+					],
+					"note": "sommes de variables aléatoires"
+				}
+			]
+		},
+		{
+			"nom": "Dénombrement",
+			"notions": [
+				{
+					"nom": "Principes de dénombrement",
+					"niveaux": "Tle",
+					"sous_notions": [
+						"principes additif et multiplicatif",
+						"k-uplets",
+						"parties d'un ensemble"
+					],
+					"note": null
+				},
+				{
+					"nom": "Arrangements et permutations",
+					"niveaux": "Tle",
+					"sous_notions": ["arrangements", "permutations", "factorielle"],
+					"note": null
+				},
+				{
+					"nom": "Combinaisons",
+					"niveaux": "Tle",
+					"sous_notions": ["combinaisons", "coefficients binomiaux", "triangle de Pascal"],
+					"note": null
+				},
+				{
+					"nom": "Problèmes de dénombrement",
+					"niveaux": "Tle",
+					"sous_notions": [],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Statistiques",
+			"notions": [
+				{
+					"nom": "Représenter des données",
+					"niveaux": "CP à 2de",
+					"sous_notions": [
+						"effectifs et fréquences",
+						"tableaux",
+						"tableau à double entrée",
+						"diagrammes en barres",
+						"diagrammes circulaires",
+						"courbes et repères",
+						"histogrammes",
+						"fréquences cumulées"
+					],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Indicateurs",
+					"niveaux": "5e à 2de, Tle comp.",
+					"sous_notions": [
+						"moyenne",
+						"médiane",
+						"quartiles",
+						"déciles et rapport interdécile",
+						"étendue",
+						"écart-type",
+						"boîte à moustaches"
+					],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Échantillonnage",
+					"niveaux": "2de, 1re, 1re techno",
+					"sous_notions": ["fluctuation", "simulation", "estimation d'une proportion"],
+					"note": "aucun modèle aujourd'hui"
+				},
+				{
+					"nom": "Tableaux croisés",
+					"niveaux": "2de",
+					"sous_notions": [
+						"tableau croisé d'effectifs",
+						"fréquences marginales et conditionnelles"
+					],
+					"note": "croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"
+				},
+				{
+					"nom": "Statistique à deux variables",
+					"niveaux": "1re ens. sci., 1re techno, Tle comp., Tle techno",
+					"sous_notions": [
+						"nuage de points",
+						"point moyen",
+						"ajustement affine",
+						"coefficient de corrélation",
+						"changement de variable"
+					],
+					"note": "reprend le thème Statistiques"
+				}
+			]
+		},
+		{
+			"nom": "Logique",
+			"notions": [
+				{
+					"nom": "Proposition mathématique",
+					"niveaux": "2de, 1re",
+					"sous_notions": ["statut des lettres et des égalités", "et, ou, non"],
+					"note": "tête de branche : le méta-langage (ex-« Connecteurs et contre-exemples », restructurée C2 le 2026-10-08)"
+				},
+				{
+					"nom": "Implication et équivalence",
+					"niveaux": "2de, 1re",
+					"sous_notions": [
+						"implication",
+						"réciproque",
+						"contraposée",
+						"équivalence",
+						"condition nécessaire, condition suffisante"
+					],
+					"note": null
+				},
+				{
+					"nom": "Quantificateurs et négation",
+					"niveaux": "2de, 1re",
+					"sous_notions": ["pour tout, il existe", "négation d'une proposition"],
+					"note": null
+				},
+				{
+					"nom": "Raisonnements",
+					"niveaux": "2de à Tle",
+					"sous_notions": [
+						"par l'absurde",
+						"par contraposée",
+						"disjonction de cas",
+						"par équivalence",
+						"contre-exemple"
+					],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Ensembles",
+			"notions": [
+				{
+					"nom": "Ensembles de nombres",
+					"niveaux": "2de",
+					"sous_notions": [
+						"ℕ, ℤ, 𝔻, ℚ, ℝ",
+						"nombres irrationnels",
+						"appartenance et inclusion",
+						"intervalles"
+					],
+					"note": null
+				},
+				{
+					"nom": "Opérations sur les ensembles",
+					"niveaux": "2de, 1re",
+					"sous_notions": ["union et intersection", "complémentaire", "différence"],
+					"note": null
+				},
+				{
+					"nom": "Cardinal et produit cartésien",
+					"niveaux": "1re, Tle",
+					"sous_notions": ["cardinal", "produit cartésien"],
+					"note": null
+				}
+			]
+		},
+		{
+			"nom": "Algorithmique",
+			"notions": [
+				{
+					"nom": "Préalgorithmique",
+					"niveaux": "CM2",
+					"sous_notions": [],
+					"note": null
+				},
+				{
+					"nom": "Variables et instructions",
+					"niveaux": "5e à 2de",
+					"sous_notions": ["variables et affectation", "types", "instructions conditionnelles"],
+					"note": null
+				},
+				{
+					"nom": "Boucles",
+					"niveaux": "5e à 2de",
+					"sous_notions": ["boucle bornée", "boucle non bornée"],
+					"note": null
+				},
+				{
+					"nom": "Fonctions Python",
+					"niveaux": "2de",
+					"sous_notions": ["définir une fonction", "appeler une fonction"],
+					"note": null
+				},
+				{
+					"nom": "Listes",
+					"niveaux": "1re",
+					"sous_notions": [
+						"créer une liste",
+						"éléments et indices",
+						"parcourir une liste",
+						"liste en compréhension"
+					],
+					"note": null
+				}
+			]
+		}
+	],
+	"archives": [
+		{
+			"kind": "subnotion",
+			"chemin": "Algèbre > Inégalités > signe d'une expression"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Algèbre > Inéquations : premier degré > mettre en inéquation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Algèbre > Inéquations : second degré > inéquations du second degré"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Algèbre > Inéquations : second degré > mettre en inéquation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Algèbre > Équations : premier degré > mettre en équation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Algèbre > Équations : second degré > mettre en équation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Dénombrement > Problèmes de dénombrement > algorithmique"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Dénombrement > Problèmes de dénombrement > dénombrer avec contraintes"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Dénombrement > Problèmes de dénombrement > reconnaître le modèle"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Continuité > lecture graphique"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Convexité > lecture graphique"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Dérivation > optimisation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Dérivation > étude de fonction"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Fonction carré > comparer des images"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Fonction inverse > comparer des images"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Fonctions > Fonction racine carrée > comparer des images"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Graphes > Vocabulaire des graphes > modélisation par un graphe"
+		},
+		{
+			"kind": "notion",
+			"chemin": "Géométrie > Espace : avec coordonnées"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Espace : avec coordonnées > intersections"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Espace : avec coordonnées > positions relatives par le calcul"
+		},
+		{
+			"kind": "notion",
+			"chemin": "Géométrie > Orthogonalité : avec coordonnées"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Orthogonalité : avec coordonnées > coordonnées du projeté orthogonal"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Orthogonalité : avec coordonnées > norme et distance"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Orthogonalité : avec coordonnées > équation cartésienne d'un plan"
+		},
+		{
+			"kind": "notion",
+			"chemin": "Géométrie > Vecteurs : avec coordonnées"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Vecteurs : avec coordonnées > colinéarité et déterminant"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Géométrie > Vecteurs : avec coordonnées > somme et produit par un réel"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Intégration > Intégrale et aire > lecture graphique"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Intégration > Valeur moyenne > calcul"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Intégration > Valeur moyenne > encadrement"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Intégration > Valeur moyenne > interprétation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Matrices > Calcul matriciel > produit"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Matrices > Suites et matrices > modélisation"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Décimaux : calculs > calcul astucieux"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Décimaux : calculs > calcul posé"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Décimaux : calculs > distributivité"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Décimaux : calculs > double et moitié"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Décimaux : calculs > puissances de 10"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Entiers : addition et soustraction > différence"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Entiers : addition et soustraction > somme"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Entiers : addition et soustraction > triple et tiers"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Entiers : multiplication > produit"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Puissances : calculs > mélange"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Racines carrées : sens et écritures > réduire"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Nombres et calculs > Racines carrées : sens et écritures > égalités"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Probabilités > Loi binomiale > coefficients binomiaux"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Probabilités > Loi binomiale > reconnaître une loi"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Probabilités > Probabilités conditionnelles > problèmes en contexte"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Probabilités > Variables aléatoires > compléter une loi"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Probabilités > Variables aléatoires > jeux et gains"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Proportionnalité > Situations de proportionnalité > appliquer"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Proportionnalité > Vitesse > calculer"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Proportionnalité > Vitesse > convertir"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Proportionnalité > Échelle d'une carte > trouver l'échelle"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Proportionnalité > Échelle d'une carte > utiliser l'échelle"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Généralités sur les suites > calculer un terme"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Généralités sur les suites > deviner le terme général"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Modèles d'évolution > algorithmes"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Modèles d'évolution > placements"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Modèles d'évolution > pourcentages"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Suites arithmétiques > calculer un terme"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Suites arithmétiques > raison"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Suites arithmétiques > reconnaître"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Suites géométriques > calculer un terme"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Suites géométriques > raison"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Suites > Suites géométriques > reconnaître"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = ay + b > condition initiale"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = ay + b > solution générale"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = ay + f > solution générale"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = ay + f > solution particulière donnée"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = ay > condition initiale"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = ay > solution générale"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = f > formes u′eᵘ, 2uu′, u′/u"
+		},
+		{
+			"kind": "subnotion",
+			"chemin": "Équations différentielles > y′ = f > sinus et cosinus"
+		}
+	]
+}

@@ -167,14 +167,46 @@ export interface SolveResult {
 	/** Error message if unsupported */
 	readonly error?: string;
 
+	/**
+	 * `true` quand `error` EXPLIQUE une absence de solution démontrée — toutes
+	 * les racines du numérateur sont étrangères, ou l'expression n'est définie
+	 * nulle part — au lieu de signaler un échec du solveur.
+	 *
+	 * ⚠️ Sans ce drapeau, `error` ne distingue pas « pas de solution » de « je
+	 * ne sais pas » : `.variations √x` (f' = 1/(2√x)) passait pour non résolue.
+	 */
+	readonly conclusive?: boolean;
+
 	/** Periodicity note for trigonometric solutions */
 	readonly periodicityNote?: string;
 
 	/** Periodic solution family for trig equations (used by sign module for zero enumeration) */
 	readonly periodicSolutions?: PeriodicSolutionFamily;
 
+	/**
+	 * L'écriture du manuel, quand elle diffère de `periodicSolutions` : une
+	 * famille par branche de la résolution, chacune avec SA période
+	 * (`sin 2x = sin x` : 2kπ ou π/3 + 2kπ/3). Même ensemble que
+	 * `periodicSolutions`, qui reste la référence des calculs (2026-10-09).
+	 */
+	readonly displayFamilies?: readonly PeriodicSolutionFamily[];
+
 	/** Domain of definition of the expression (where the equation is defined) */
 	readonly domain?: Domain;
+}
+
+/**
+ * Le solveur a ÉCHOUÉ : `error` présent, aucune solution, et l'absence n'est
+ * pas démontrée (`conclusive`).
+ *
+ * ⚠️ Le statut d'un échec vaut `no-solution` (pas de statut « non supporté »).
+ * Tout chemin qui lit un sous-résultat (facteur d'un produit, sous-équation
+ * d'une décomposition) doit tester ceci AVANT le statut : sinon un facteur
+ * non résolu passe pour un facteur sans solution, et la réponse paraît
+ * complète — `x(sin²x − 1/4) = 0` rendait `x = 0` seul.
+ */
+export function isSolverFailure(result: SolveResult): boolean {
+	return result.error !== undefined && result.conclusive !== true && result.solutions.length === 0;
 }
 
 // =============================================================================

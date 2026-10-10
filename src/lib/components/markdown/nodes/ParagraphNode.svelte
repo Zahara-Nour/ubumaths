@@ -169,6 +169,8 @@
 				italic={child.italic}
 				code={child.code}
 				detail={child.detail}
+				terms={child.terms}
+				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}
@@ -273,12 +275,8 @@
 					#{child.tag}
 				</button>
 			{:else}
-				<a
-					href="/search?tag={encodeURIComponent(child.tag)}"
-					class="hashtag font-medium text-primary hover:text-primary/80"
-				>
-					#{child.tag}
-				</a>
+				<!-- Pas de page de recherche par étiquette : du texte, pas un lien mort -->
+				<span class="hashtag font-medium text-primary">#{child.tag}</span>
 			{/if}
 		{:else if child.type === 'mention'}
 			{#if onMentionClick}
@@ -290,12 +288,8 @@
 					@{child.username}
 				</button>
 			{:else}
-				<a
-					href="/profile/{encodeURIComponent(child.username)}"
-					class="mention font-medium text-primary hover:text-primary/80"
-				>
-					@{child.username}
-				</a>
+				<!-- Pas de page de profil public : du texte, pas un lien mort -->
+				<span class="mention font-medium text-primary">@{child.username}</span>
 			{/if}
 		{:else if child.type === 'hint-reference'}
 			<HintReference hintId={child.hintId} {hints} {onHintOpen} />

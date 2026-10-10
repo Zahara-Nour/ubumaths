@@ -26,7 +26,7 @@ import {
 import type { CriticalPointInfo, MonotonicInterval, ExtremumInfo } from '../types';
 import type { Domain, IntervalSet } from '../../domain/types';
 import { parseLatex } from '../../parser';
-import { number, opposite } from '../../factory';
+import { infinity, number, opposite } from '../../factory';
 import { numericNode } from '../../common/numeric';
 import {
 	interval,
@@ -379,7 +379,12 @@ describe('classifyGlobalExtrema', () => {
 				}
 			];
 
-			const result = classifyGlobalExtrema(localExtrema, expr, 'x', universalDomain());
+			// Les limites aux bornes SONT nécessaires : sans elles, rien n'interdit
+			// que f dépasse 0 (revue de #857). Ici f → +∞ des deux côtés.
+			const result = classifyGlobalExtrema(localExtrema, expr, 'x', universalDomain(), [
+				{ point: infinity('negative'), limit: 'infinity' },
+				{ point: infinity('positive'), limit: 'infinity' }
+			]);
 
 			expect(result.length).toBe(1);
 			expect(result[0].type).toBe('global_minimum');
@@ -398,7 +403,11 @@ describe('classifyGlobalExtrema', () => {
 				}
 			];
 
-			const result = classifyGlobalExtrema(localExtrema, expr, 'x', universalDomain());
+			// f → −∞ des deux côtés : le maximum 0 est global
+			const result = classifyGlobalExtrema(localExtrema, expr, 'x', universalDomain(), [
+				{ point: infinity('negative'), limit: 'negative_infinity' },
+				{ point: infinity('positive'), limit: 'negative_infinity' }
+			]);
 
 			expect(result.length).toBe(1);
 			expect(result[0].type).toBe('global_maximum');

@@ -423,7 +423,8 @@ describe('VipCardSelectorModal - Edge Cases', () => {
 		const endTime = performance.now();
 
 		// Should be fast (< 10ms for 100 cards)
-		expect(endTime - startTime).toBeLessThan(10);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(endTime - startTime).toBeLessThan(100);
 		expect(sorted).toHaveLength(100);
 
 		// Verify correct sorting (first card should be legendary or epic)

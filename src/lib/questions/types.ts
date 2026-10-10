@@ -54,7 +54,7 @@ import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-rendere
  * Backward compatibility alias - prefer GradeCode in new code.
  *
  * NOTE: The old type included 'SPE_1', 'SPE_T', 'STMG' which are now
- * '1_SPE', 'T_SPE', '1_STMG', 'T_STMG' in the unified system.
+ * '1_SPE', 'T_SPE', '1_TECHNO', 'T_TECHNO' in the unified system.
  * See mapLegacyGradeCode() in utils/grades.ts for migration.
  */
 export type GradeLevel = GradeCode;
@@ -235,13 +235,20 @@ export type QuestionVariable = SharedVariable;
  * }
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
-export type AnswerKind = 'intervalles' | 'equation' | 'vecteur' | 'primitive' | 'solution-ed';
+export type AnswerKind =
+	| 'intervalles'
+	| 'equation'
+	| 'vecteur'
+	| 'matrice'
+	| 'primitive'
+	| 'solution-ed';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
 	'intervalles',
 	'equation',
 	'vecteur',
+	'matrice',
 	'primitive',
 	'solution-ed'
 ] as const satisfies readonly AnswerKind[];
@@ -299,12 +306,16 @@ export interface BlankDefaults extends CalculusBlankFields {
 	rulesSuffice?: boolean;
 	/** Voir `TemplateBlank.acceptDecimal` */
 	acceptDecimal?: boolean;
+	/** Voir `TemplateBlank.acceptCombinatorialNotation` */
+	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` */
 	answerKind?: AnswerKind;
 	/** Voir `TemplateBlank.vectorMode` */
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` */
 	openableBounds?: boolean;
+	/** Voir `TemplateBlank.angleModulo` */
+	angleModulo?: AngleModulo;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -344,6 +355,14 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 */
 	acceptDecimal?: boolean;
 	/**
+	 * Accepter la notation combinatoire non calculée : attendu `201376`, l'élève
+	 * peut répondre `\binom{32}{5}`, `6!` ou `\frac{10!}{7!}` (de MÊME valeur,
+	 * nombres seulement, au moins une factorielle ou un coefficient binomial) — au
+	 * bac, en dénombrement, c'est une réponse acceptée. Sans l'option, ces écritures
+	 * sont jugées comme `10\times9\times8` (calcul non effectué : `bad_form`).
+	 */
+	acceptCombinatorialNotation?: boolean;
+	/**
 	 * Nature de la réponse, quand ce n'est pas une expression :
 	 * `'intervalles'` = un ensemble de réels en notation intervalle (ensemble de
 	 * solutions d'une inéquation). Réponse attendue écrite par l'auteur, bornes en
@@ -358,6 +377,10 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * `'vecteur'` = un vecteur dans UNE case, coordonnées `(a;b)` ou colonne
 	 * `\begin{pmatrix}a\\b\end{pmatrix}` (dimension 2 ou 3), comparées exactement ;
 	 * voir `vectorMode`. Jugée par `questions/vectors/vector-answer.ts`.
+	 * `'matrice'` = une matrice dans UNE case (`\begin{pmatrix}a&b\\c&d\end{pmatrix}`,
+	 * aussi `bmatrix`), dimensions vérifiées, coefficients comparés par valeur puis
+	 * leur écriture jugée comme une case ordinaire. Jugée par
+	 * `questions/matrices/matrix-answer.ts`.
 	 * `'primitive'` = une primitive de `integrand` (à une constante près, lettre
 	 * libre ≠ variable comprise), vérifiée en dérivant la réponse ; `interval`
 	 * facultatif. `'solution-ed'` = une solution de `equation` (1er ordre),
@@ -379,6 +402,13 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * de l'ensemble attendu. Jamais pour un ensemble de solutions d'inéquation.
 	 */
 	openableBounds?: boolean;
+	/**
+	 * Case ordinaire (sans `answerKind`) : `'2pi'` = une réponse qui diffère de l'attendue
+	 * d'un multiple entier de 2π est juste (« donne UN argument de z » :
+	 * `-\frac{7\pi}{4}` pour `\frac{\pi}{4}`). Son écriture est jugée seule (fraction à
+	 * simplifier perfectible, calcul non fait `\frac{\pi}{4}+2\pi` de mauvaise forme).
+	 */
+	angleModulo?: AngleModulo;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -759,12 +789,16 @@ export interface InstanceBlank extends CalculusBlankFields {
 	rulesSuffice?: boolean;
 	/** Voir `TemplateBlank.acceptDecimal` (fusionné avec blankDefaults) */
 	acceptDecimal?: boolean;
+	/** Voir `TemplateBlank.acceptCombinatorialNotation` (fusionné avec blankDefaults) */
+	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` (fusionné avec blankDefaults) */
 	answerKind?: AnswerKind;
 	/** Voir `TemplateBlank.vectorMode` (fusionné avec blankDefaults) */
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` (fusionné avec blankDefaults, case intervalles seulement) */
 	openableBounds?: boolean;
+	/** Voir `TemplateBlank.angleModulo` (fusionné avec blankDefaults, case ordinaire seulement) */
+	angleModulo?: AngleModulo;
 
 	/** Unit config (merged) */
 	unit?: {
@@ -1127,11 +1161,18 @@ export type RequiredForm =
 	| 'fraction'
 	| 'power'
 	| EquationForm
+	| ComplexForm
 	| {
 			pattern: string;
 			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
 			acceptable?: string;
 	  };
+
+/** Réponse d'angle « à … près » (cf. `TemplateBlank.angleModulo`) */
+export type AngleModulo = '2pi';
+
+/** Valeurs de `AngleModulo` (schémas Zod) */
+export const ANGLE_MODULOS = ['2pi'] as const satisfies readonly AngleModulo[];
 
 /** Forme exigeable d'une équation (cf. `RequiredForm`) */
 export type EquationForm = 'reduite' | 'cartesienne' | 'centre-rayon';
@@ -1142,6 +1183,18 @@ export const EQUATION_FORMS = [
 	'cartesienne',
 	'centre-rayon'
 ] as const satisfies readonly EquationForm[];
+
+/**
+ * Forme exigeable d'un nombre complexe (cf. `RequiredForm`, `questions/complex-forms.ts`) :
+ * `exponentielle` = re^{iθ} avec r > 0 ; `algebrique` = a + ib.
+ */
+export type ComplexForm = 'exponentielle' | 'algebrique';
+
+/** Valeurs de `ComplexForm` (schémas Zod, éditeur) */
+export const COMPLEX_FORMS = [
+	'exponentielle',
+	'algebrique'
+] as const satisfies readonly ComplexForm[];
 
 // ============================================================================
 // TEST SPECS

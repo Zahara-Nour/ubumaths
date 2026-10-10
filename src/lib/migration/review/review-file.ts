@@ -1,5 +1,5 @@
 /**
- * Fichier de verdict de relecture (`docs/relecture/<lot>/<globalIndex>.json`)
+ * Fichier de verdict de relecture (`data/relecture/<lot>/<globalIndex>.json`)
  * ==========================================================================
  *
  * Un fichier par question relue. Il reste dans le dépôt (lisible par David)

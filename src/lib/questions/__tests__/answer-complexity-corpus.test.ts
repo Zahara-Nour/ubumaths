@@ -6,7 +6,7 @@
  * - réponses ATTENDUES : chaque variation de chaque modèle, plusieurs tirages ;
  * - réponses des SPECS de test (justes ou non : un élève peut les écrire).
  *
- * Sources : `docs/relecture/<lot>/*.json` (632 questions relues, instantané de la
+ * Sources : `data/relecture/<lot>/*.json` (632 questions relues, instantané de la
  * base) et `scripts/questions/**\/*.json` (modèles écrits depuis). Les cases
  * « intervalles » ont leur propre garde et ne passent pas par celle-ci.
  *
@@ -28,7 +28,7 @@ import {
 import type { QuestionTemplate } from '../types';
 
 // Constantes
-const RELECTURE_DIR = join(process.cwd(), 'docs/relecture');
+const RELECTURE_DIR = join(process.cwd(), 'data/relecture');
 const SCRIPTS_DIR = join(process.cwd(), 'scripts/questions');
 /** Tirages par variation */
 const SEEDS = [0, 1, 2, 3, 4, 5, 6, 7];

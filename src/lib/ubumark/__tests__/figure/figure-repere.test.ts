@@ -1,7 +1,7 @@
 /**
  * Bloc ```figure — axes et grille (lot 0 de la géométrie repérée, 2026-10-03)
  *
- * Spécification : `docs/wip/figure-repere-progress.md`. Syntaxe alignée sur
+ * Spécification : `docs/archive/wip/figure-repere-progress.md`. Syntaxe alignée sur
  * ```courbe (`grille: 1 ; 2`) ; `axes: oui` et `graduations:` en plus.
  */
 import { describe, it, expect } from 'vitest';

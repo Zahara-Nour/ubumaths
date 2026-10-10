@@ -37,6 +37,12 @@ export interface StudentProgressRow {
 	notWorked: number;
 	/** Exercices jamais positionnés. */
 	untouched: number;
+	/**
+	 * Assigné individuellement, inscrit dans aucune classe : la RLS ne laisse
+	 * pas le prof lire son auto-évaluation (`is_teacher_of_student`). Sans ce
+	 * drapeau, il apparaîtrait « jamais positionné », ce qui serait faux.
+	 */
+	masteryHidden: boolean;
 	/** Date de la dernière auto-évaluation, ou null si aucune. */
 	lastActivityAt: string | null;
 }
@@ -140,6 +146,23 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	}
 	for (const row of individual ?? []) studentIds.add(row.student_id);
 
+	// Un assigné individuel inscrit dans AUCUNE classe : son auto-évaluation est
+	// invisible au prof (RLS). On le signale au lieu de l'afficher « jamais positionné ».
+	const individualIds = (individual ?? []).map((r) => r.student_id);
+	const outsideClass = new Set<string>();
+	if (individualIds.length > 0) {
+		const { data: anyMembership, error: anyMembershipError } = await locals.supabase
+			.from('class_members')
+			.select('student_id')
+			.in('student_id', individualIds);
+		if (anyMembershipError) {
+			console.error('Périmètre illisible :', anyMembershipError);
+			throw error(500, 'Impossible de déterminer le périmètre');
+		}
+		const enrolled = new Set((anyMembership ?? []).map((m) => m.student_id));
+		for (const id of individualIds) if (!enrolled.has(id)) outsideClass.add(id);
+	}
+
 	// --- Exercices de la fiche ------------------------------------------------
 	const { data: exercises, error: exercisesError } = await locals.supabase
 		.from('worksheet_exercises')
@@ -165,14 +188,22 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	}
 
 	// --- Profils + auto-évaluations ------------------------------------------
-	const [{ data: profiles }, { data: mastery }] = await Promise.all([
-		locals.supabase.from('profiles').select('id, firstname, lastname, full_name').in('id', ids),
-		locals.supabase
-			.from('student_exercise_mastery')
-			.select('student_id, exercise_id, status, updated_at')
-			.in('student_id', ids)
-			.in('exercise_id', exerciseIds)
-	]);
+	const [{ data: profiles, error: profilesError }, { data: mastery, error: masteryError }] =
+		await Promise.all([
+			locals.supabase.from('profiles').select('id, firstname, lastname, full_name').in('id', ids),
+			locals.supabase
+				.from('student_exercise_mastery')
+				.select('student_id, exercise_id, status, updated_at')
+				.in('student_id', ids)
+				.in('exercise_id', exerciseIds)
+		]);
+
+	// Une panne ici s'afficherait « personne n'a rien fait » : le même symptôme
+	// muet que l'absence de règle RLS corrigée le 2026-10-12.
+	if (profilesError || masteryError) {
+		console.error('Lecture impossible :', profilesError ?? masteryError);
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	const nameById = new Map(
 		(profiles ?? []).map((p) => [p.id, p.full_name?.trim() || formatName(p.firstname, p.lastname)])
@@ -206,6 +237,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 				needsReview: b.needsReview,
 				notWorked: b.notWorked,
 				untouched: Math.max(0, exerciseIds.length - positioned),
+				masteryHidden: outsideClass.has(id),
 				lastActivityAt: b.last
 			};
 		})

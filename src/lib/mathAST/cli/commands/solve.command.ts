@@ -4,29 +4,81 @@
  * Solves equations symbolically with step-by-step solutions.
  * Supports linear, quadratic, and transcendental equations.
  *
- * Syntax: .solve equation [variable]
+ * Syntax: .solve equation[ ; variable]
  * - .solve 2x + 4 = 0        -> x = -2
  * - .solve x^2 - 4x + 3 = 0  -> x = 1, x = 3
  * - .solve ln(x) = 0         -> x = 1
+ * - .solve 3 = 2t ; t        -> t = 3/2
  *
- * Options:
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
+ * (voir `core/variable-argument.ts`). Plus de « dernier mot = variable » :
+ * `.solve 3 = 2 x` arrachait le `x` et répondait « Pas de solution ».
+ *
+ * Options (EN TÊTE seulement, avant l'équation : `.solve -q x^2 = 4`) :
  * - --verbose or -v: Show detailed steps
  * - --quiet or -q: Show only result
  */
 
 import { BaseCommand, type OptionDefinition } from './base-command';
-import type { CommandContext, CommandResult } from '../types';
+import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
+import {
+	solutionsLatex,
+	periodicSolutionsText,
+	inequalitySolutionLatex,
+	inequalityThresholdText,
+	logarithmicValueLatex,
+	logarithmicValueText,
+	logarithmicBounds,
+	withRealLineWritten
+} from './solve-latex';
+import { solveInequality } from '../../solve/inequality';
+import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';
-import { solve, type SolvingVerbosity, SolveError } from '../../solve';
+import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from '../../solve';
+import { isSolverFailure } from '../../solve/types';
 import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { preprocess } from '../../normal';
-import { number, opposite, add } from '../../factory';
+import { number, opposite, add, subtract } from '../../factory';
+import { findZerosWithStatus } from '../../sign/helpers/zeros';
+import { closedEndpoint, interval, intervalSet, openEndpoint } from '../../domain/factory';
+import { intersect, isEmpty } from '../../domain/algebra';
+import type { Domain } from '../../domain/types';
+import { toLatex } from '../../latex-generator';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
 import { evaluate } from '../../eval/evaluate';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	indexVariables,
+	readCommandArguments,
+	keywordCommandLabel,
+	parameterLetters
+} from '../core/variable-argument';
+
+/** Les relations d'inéquation que `.solve` résout. */
+const INEQUALITY_RELATIONS: ReadonlySet<string> = new Set(['<', '>', '<=', '>=']);
+
+/** Code de l'inéquation que le moteur ne sait pas (encore) résoudre. */
+export const INEQUALITY_UNSOLVED = 'INEQUALITY_UNSOLVED' satisfies ErrorCode;
+
+/** Ce qu'on dit alors — jamais « pas su lire » : l'inéquation a été lue. */
+export const INEQUALITY_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette inéquation.';
+
+/** Code de l'équation lue que le moteur ne sait pas (encore) résoudre. */
+export const EQUATION_UNSOLVED = 'EQUATION_UNSOLVED' satisfies ErrorCode;
+
+/** Ce qu'on dit alors, au lieu de « Type d'equation non supporte: unknown ». */
+export const EQUATION_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette équation.';
+
+/** Une solution qui dépendrait de paramètres (`u_0·q^n = 10` en n). */
+function parameterMessage(letters: readonly string[]): string {
+	return `La solution dépend de ${letters.join(', ')} : je ne sais pas encore résoudre avec un paramètre.`;
+}
 
 /**
  * Negate a math node, properly handling double negatives.
@@ -338,10 +390,12 @@ function extractLinearParts(expr: MathNode, variable: string): { a: MathNode; b:
 
 		if (vars.has(variable)) {
 			// This term contains the variable - extract coefficient
+			// Un terme en x non reconnu (`2(x-1)`, `(2x-3)`) n'est PAS ignoré :
+			// l'ignorer donnait a = 0, puis « On divise les deux membres par 0 ».
+			// Sans lecture fiable, on ne raconte pas d'étapes.
 			const coeff = extractCoefficientFromTerm(signedTerm, variable);
-			if (coeff) {
-				coefficients.push(coeff);
-			}
+			if (!coeff) return null;
+			coefficients.push(coeff);
 		} else {
 			// Constant term
 			constantTerms.push(signedTerm);
@@ -571,7 +625,12 @@ function extractQuadraticCoeffsForDisplay(
 		} else if (degree === 1) {
 			const coeff = extractQuadraticCoeff(signedTerm, variable, 1);
 			bStr = bStr === '0' ? coeff : `${bStr}+${coeff}`;
-		} else if (degree === 0) {
+		} else if (getVariables(signedTerm).has(variable)) {
+			// Terme en x de forme non reconnue (`(x^2-3x)`) : le compter dans c
+			// affichait a = 0, b = 0, c = (x^2-3x). Pas d'étapes plutôt que des
+			// coefficients faux.
+			return null;
+		} else {
 			const termStr = toCustom(signedTerm);
 			cStr = cStr === '0' ? termStr : `${cStr}+${termStr}`;
 		}
@@ -771,6 +830,9 @@ function generateQuadraticPedagogicalSteps(
 	return steps;
 }
 
+/** Les options de `.solve`, reconnues seulement comme mots entiers, en tête. */
+const SOLVE_FLAGS: ReadonlySet<string> = new Set(['--verbose', '-v', '--quiet', '-q']);
+
 // =============================================================================
 // Solve Command
 // =============================================================================
@@ -787,7 +849,7 @@ function generateQuadraticPedagogicalSteps(
  * Equation lineaire: 2x + 4 = 0
  * Solution: x = -2
  *
- * > .solve x^2 - 5x + 6 = 0 --verbose
+ * > .solve --verbose x^2 - 5x + 6 = 0
  * Equation quadratique: x^2 - 5x + 6 = 0
  * Coefficients: a = 1, b = -5, c = 6
  * Discriminant: Delta = 25 - 24 = 1 > 0
@@ -799,8 +861,8 @@ function generateQuadraticPedagogicalSteps(
 export class SolveCommand extends BaseCommand {
 	readonly name = 'solve';
 	readonly aliases = ['s', 'resoudre'] as const;
-	readonly description = 'Solve equation: .solve equation [variable] [--verbose|-v] [--quiet|-q]';
-	readonly usage = 'solve <equation> [variable] [options]';
+	readonly description = 'Solve equation: .solve [--verbose|-v] [--quiet|-q] equation[ ; variable]';
+	readonly usage = 'solve [options] <equation>[ ; <variable>]';
 	readonly requiresAst = false;
 
 	override getOptionDefinitions(): readonly OptionDefinition[] {
@@ -821,13 +883,35 @@ export class SolveCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'No equation to solve. Usage: .solve <equation> [variable]'
+					message: 'No equation to solve. Usage: .solve <equation>[ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract equation and optional variable
-		const { expression, variable } = this.parseInput(input);
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de David)
+		const bare = bareFunctionName(input);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
+		// Variable explicite après un point-virgule, sinon x
+		const reading = readCommandArguments('solve', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { variable: explicitVariable } = reading.args;
+		// `<-` est l'affectation du terminal (`x <- 5`, lue par le REPL avant le
+		// parseur) : dans une inéquation, c'est « < » suivi d'un moins. Sans ça,
+		// `sqrt(x)<-1` répondait « Je n'ai pas su lire » (2026-10-08).
+		const expression = reading.args.expression.replace(/<-/g, '< -');
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -842,8 +926,13 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
-		// Verify it's an equation (relation with =)
-		if (!isRelation(parseResult.ast) || parseResult.ast.relation !== '=') {
+		// Une inéquation est résolue elle aussi (plus bas, `solveInequalityRelation`) :
+		// toute inéquation tapée dans l'atelier répondait « Je n'ai pas su lire
+		// cette expression » (2026-10-08), alors que `solveInequality` sait faire
+		if (
+			!isRelation(parseResult.ast) ||
+			(parseResult.ast.relation !== '=' && !INEQUALITY_RELATIONS.has(parseResult.ast.relation))
+		) {
 			return {
 				success: false,
 				output: '',
@@ -854,15 +943,83 @@ export class SolveCommand extends BaseCommand {
 			};
 		}
 
+		// Les inconnues indicées (`u_n`, `x_1`, `u_{n+1}`) deviennent des variables
+		// ordinaires, nommées comme `chosenVariable` les nomme. Sans ça, la
+		// variable était devinée sur l'arbre réécrit (`u_n`) et le solveur
+		// recevait l'arbre BRUT, où `u_n` est un indice de base `u` : `.résoudre
+		// u_n+1=3` répondait « Type d'equation non supporte » (2026-10-08).
+		const flattened = indexVariables(parseResult.ast).node;
+		const relation: RelationNode = isRelation(flattened) ? flattened : parseResult.ast;
+
+		const chosen = chosenVariable(explicitVariable, parserOptions, {
+			node: relation,
+			bound: ctx.evalState?.bindings.keys(),
+			label: keywordCommandLabel('solve')
+		});
+		if (!chosen.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
+			};
+		}
+		// Variable tapée absente d'une équation qui en contient d'autres : on ne
+		// résout pas « en t » ce qui n'a pas de t (revue #962)
+		if (explicitVariable !== null) {
+			const present = getVariables(relation);
+			if (present.size > 0 && !present.has(chosen.variable)) {
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: 'COMMAND_SYNTAX',
+						message: `« ${explicitVariable} » n’apparaît pas dans l’équation.`
+					}
+				};
+			}
+		}
+		// Plus d'indication « Calcul par rapport à x » : sans variable tapée, elle
+		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
+		const hint: string | null = null;
+
+		// `dans [a ; b]` : les solutions dans l'intervalle (décision de David, 2026-10-08)
+		if (reading.args.interval !== null) {
+			return this.solveInInterval(relation, chosen.variable, reading.args.interval, parserOptions);
+		}
+
+		if (relation.relation !== '=') {
+			return this.withHint(this.solveInequalityRelation(relation, chosen.variable), hint);
+		}
+
 		try {
 			// Solve the equation
-			const result = solve(parseResult.ast, {
-				variable: variable || undefined,
+			const result = solve(relation, {
+				variable: chosen.variable,
 				verbosity
 			});
 
+			// Échec du solveur (aucun ne s'applique) : un refus en français, jamais
+			// « Type d'equation non supporte: unknown » montré tel quel (revue,
+			// 2026-10-09 : `.résoudre u_0*q^n=10 pour n`). Une absence de solution
+			// DÉMONTRÉE n'est pas un échec (`isSolverFailure`).
+			if (isSolverFailure(result)) {
+				const letters = parameterLetters(relation, chosen.variable, ctx.evalState?.bindings.keys());
+				return {
+					success: false,
+					output: '',
+					error: {
+						code: EQUATION_UNSOLVED,
+						message: letters.length > 0 ? parameterMessage(letters) : EQUATION_UNSOLVED_MESSAGE
+					}
+				};
+			}
+
 			// Format output with toggle support
-			return this.formatOutputWithToggle(parseResult.ast, result, verbosity, ctx);
+			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx);
+			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
+			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
+			const latex = solutionsLatex(result);
+			return this.withHint(latex === null ? formatted : { ...formatted, latex }, hint);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
@@ -883,62 +1040,235 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	/**
-	 * Parse options from context.
+	 * Une inéquation : l'ensemble de `solveInequality` (tableau de signes, domaine
+	 * de définition compris — √x < 2 donne [0 ; 4[, pas ]-∞ ; 4[). Un signe
+	 * qu'on n'a pas pu établir sur un morceau : on le DIT, sans ensemble faux.
 	 */
-	private parseOptions(ctx: CommandContext): { input: string; verbosity: SolvingVerbosity } {
-		let input = ctx.input.trim();
-		let verbosity: SolvingVerbosity = 'summarized';
-
-		// Check for verbose flag
-		if (
-			ctx.options['verbose'] ||
-			ctx.options['v'] ||
-			input.includes('--verbose') ||
-			input.includes('-v')
-		) {
-			verbosity = 'detailed';
-			input = input.replace(/--verbose|-v/g, '').trim();
+	private solveInequalityRelation(inequality: RelationNode, variable: string): CommandResult {
+		const unsolved: CommandResult = {
+			success: false,
+			output: '',
+			error: { code: INEQUALITY_UNSOLVED, message: INEQUALITY_UNSOLVED_MESSAGE }
+		};
+		try {
+			const result = solveInequality(inequality, { variable });
+			if (result.status === 'partial') return unsolved;
+			const latex = inequalitySolutionLatex(result.solution, variable);
+			if (latex === null) return unsolved;
+			// Un seuil en ln (`0.8^n < 0.1`) : `n > ln(0.1)/ln(0.8) ≈ 10.32`, comme le LaTeX
+			const threshold = inequalityThresholdText(result.solution, variable);
+			return {
+				success: true,
+				output: threshold ?? `S = ${formatInterval(withRealLineWritten(result.solution))}`,
+				latex
+			};
+		} catch {
+			return unsolved;
 		}
-
-		// Check for quiet flag
-		if (
-			ctx.options['quiet'] ||
-			ctx.options['q'] ||
-			input.includes('--quiet') ||
-			input.includes('-q')
-		) {
-			verbosity = 'result';
-			input = input.replace(/--quiet|-q/g, '').trim();
-		}
-
-		return { input, verbosity };
 	}
 
 	/**
-	 * Parse the input to extract equation and optional variable.
+	 * `.résoudre 0,8^n < 0,1 dans [0 ; 100]` : l'ensemble de l'inéquation (celui
+	 * de `solveInequalityRelation`) intersecté avec l'intervalle. Une borne en
+	 * ln reçoit sa valeur approchée, comme un seuil (#980) :
+	 * `S = ]\dfrac{\ln(0{,}1)}{\ln(0{,}8)} ; 100] \text{ avec } … \approx 10{,}32`.
 	 */
-	private parseInput(input: string): { expression: string; variable: string | null } {
-		const trimmed = input.trim();
+	private solveInequalityInInterval(
+		inequality: RelationNode,
+		variable: string,
+		domain: Domain
+	): CommandResult {
+		const unsolved: CommandResult = {
+			success: false,
+			output: '',
+			error: { code: INEQUALITY_UNSOLVED, message: INEQUALITY_UNSOLVED_MESSAGE }
+		};
+		try {
+			const result = solveInequality(inequality, { variable });
+			if (result.status === 'partial') return unsolved;
+			const restricted = intersect(result.solution, domain);
+			const set = inequalitySolutionLatex(restricted);
+			if (set === null) return unsolved;
+			if (isEmpty(restricted)) {
+				return { success: true, output: 'Pas de solution dans cet intervalle', latex: set };
+			}
+			const bounds = logarithmicBounds(restricted);
+			return {
+				success: true,
+				output: `S = ${formatInterval(restricted)}${bounds.map((b) => ` avec ${b.text}`).join('')}`,
+				latex: `${set}${bounds.map((b) => ` \\text{ avec } ${b.latex}`).join('')}`
+			};
+		} catch {
+			return unsolved;
+		}
+	}
 
-		// Try to find a trailing variable after the equation
-		// Match pattern: equation = ... [variable]
-		const match = trimmed.match(/^(.+=.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)$/);
-
-		if (match) {
-			const [, expr, varCandidate] = match;
-			// Only treat as variable if it's a simple identifier
-			if (expr.trim() && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(varCandidate)) {
+	/**
+	 * Résoudre dans un intervalle BORNÉ, écrit à la française : `[0 ; 2\pi]`,
+	 * `]0 ; 1]`. Les zéros de `gauche − droite` sur ce domaine, familles
+	 * périodiques comprises (`findZerosWithStatus`, celui des tableaux de signes).
+	 */
+	private solveInInterval(
+		equation: RelationNode,
+		variable: string,
+		text: string,
+		parserOptions: Parameters<typeof parse>[1]
+	): CommandResult {
+		const fail = (message: string): CommandResult => ({
+			success: false,
+			output: '',
+			error: { code: 'COMMAND_SYNTAX', message }
+		});
+		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
+		if (written === null) {
+			return fail(
+				`Écris l'intervalle avec des crochets et « ; » : dans [0 ; 2\\pi], pas « ${text} ».`
+			);
+		}
+		const lower = parse(written[2], parserOptions).ast;
+		const upper = parse(written[3], parserOptions).ast;
+		const finite = (node: MathNode | undefined): boolean => {
+			if (node === undefined) return false;
+			const value = evaluate(node, { mode: 'decimal' });
+			return (
+				value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
+			);
+		};
+		if (lower === undefined || upper === undefined || !finite(lower) || !finite(upper)) {
+			return fail(`Les bornes de l'intervalle doivent être des nombres : « ${text} ».`);
+		}
+		const lowerNumber = evaluate(lower, { mode: 'decimal' });
+		const upperNumber = evaluate(upper, { mode: 'decimal' });
+		const lowerValue = lowerNumber.status === 'value' ? Number(lowerNumber.value) : NaN;
+		const upperValue = upperNumber.status === 'value' ? Number(upperNumber.value) : NaN;
+		const closed = written[1] === '[' && written[4] === ']';
+		if (lowerValue > upperValue || (lowerValue === upperValue && !closed)) {
+			return fail(
+				`Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
+			);
+		}
+		const domain = intervalSet([
+			interval(
+				written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
+				written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
+			)
+		]);
+		// Une inéquation : son ensemble solution, restreint à l'intervalle
+		if (equation.relation !== '=') {
+			return this.solveInequalityInInterval(equation, variable, domain);
+		}
+		const intervalLatex = `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`;
+		// Identité (`x = x`, `0 = 0`) : tout l'intervalle ; impossible : ∅ — comme
+		// sans `dans`, puis restreint à l'intervalle
+		try {
+			const whole = solve(equation, { variable });
+			if (whole.status === 'infinite') {
 				return {
-					expression: expr.trim(),
-					variable: varCandidate
+					success: true,
+					output: `Tous les nombres de ${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
+					latex: `S = ${intervalLatex}`
 				};
 			}
+			if (whole.status === 'no-solution' && !isSolverFailure(whole)) {
+				return { success: true, output: 'Pas de solution', latex: 'S = \\emptyset' };
+			}
+		} catch {
+			// Le solveur ne sait pas : les zéros sur l'intervalle prennent le relais
 		}
+		const { zeros, resolved } = findZerosWithStatus(
+			subtract(equation.left, equation.right),
+			variable,
+			domain
+		);
+		// Un échec de RÉSOLUTION, pas de lecture : le même refus que sans `dans` —
+		// l'atelier changeait ce PARSE_ERROR en « Je n'ai pas su lire cette
+		// expression » (revue, 2026-10-09)
+		if (!resolved) {
+			return {
+				success: false,
+				output: '',
+				error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
+			};
+		}
+		const values = [...zeros]
+			.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0))
+			.map((zero) => zero.value);
+		// Une solution en ln : décimaux gardés, valeur approchée, comme sans `dans`
+		const only = zeros.length === 1 ? zeros[0] : null;
+		const latex =
+			values.length === 0
+				? 'S = \\emptyset'
+				: values.length === 1
+					? `${variable} = ${(only && logarithmicValueLatex(only.value, only.approximate)) ?? toLatex(values[0])}`
+					: `S = \\left\\{ ${values.map((v) => toLatex(v)).join(' \\,;\\, ')} \\right\\}`;
+		const output =
+			values.length === 0
+				? 'Pas de solution dans cet intervalle'
+				: values
+						.map(
+							(v) =>
+								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
+						)
+						.join(' ou ');
+		return { success: true, output, latex };
+	}
 
-		// Default: entire input is the equation, variable auto-detected
+	/**
+	 * Lire les options (`--verbose`/`-v`, `--quiet`/`-q`) et rendre le reste.
+	 *
+	 * ⚠️ **Une option ne mange jamais l'expression.** L'ancien découpage
+	 * cherchait `-v` n'importe où : `.solve 3-v=1 ; v` devenait « 3=1 ; v » et
+	 * répondait « contradictoire » au lieu de v = 2. Une option n'est reconnue
+	 * que comme MOT entier (séparé par des espaces), connu de la commande, et
+	 * seulement EN TÊTE, avant l'expression (`.solve -q x^2=1`) ; partout
+	 * ailleurs, c'est de l'expression — en fin, `.solve x = -v` perdait son
+	 * `-v` (revue #888).
+	 */
+	private parseOptions(ctx: CommandContext): { input: string; verbosity: SolvingVerbosity } {
+		const words = ctx.input
+			.trim()
+			.split(/\s+/)
+			.filter((word) => word !== '');
+		const flags: string[] = [];
+		while (words.length > 0 && SOLVE_FLAGS.has(words[0])) flags.push(words.shift() as string);
+
+		const verbose =
+			Boolean(ctx.options['verbose'] || ctx.options['v']) ||
+			flags.some((flag) => flag === '--verbose' || flag === '-v');
+		const quiet =
+			Boolean(ctx.options['quiet'] || ctx.options['q']) ||
+			flags.some((flag) => flag === '--quiet' || flag === '-q');
+		// Comme avant : « quiet » l'emporte sur « verbose »
+		const verbosity: SolvingVerbosity = quiet ? 'result' : verbose ? 'detailed' : 'summarized';
+
+		return { input: words.join(' '), verbosity };
+	}
+
+	/**
+	 * Ajouter l'indication de variable (`otherVariableHint`) à la fin de chaque
+	 * sortie du résultat — texte, HTML, exacte et décimale : la bascule de la
+	 * console ne doit pas la faire disparaître.
+	 */
+	private withHint(result: CommandResult, hint: string | null): CommandResult {
+		if (hint === null) return result;
+		const text = (output: string | undefined) =>
+			output === undefined ? undefined : output === '' ? hint : `${output}\n${hint}`;
+		const html = (output: string | undefined) =>
+			output === undefined
+				? undefined
+				: `${output}<br><span class="text-muted-foreground">${this.escapeHtml(hint)}</span>`;
 		return {
-			expression: trimmed,
-			variable: null
+			...result,
+			output: text(result.output) ?? hint,
+			...(result.outputHtml !== undefined && { outputHtml: html(result.outputHtml) }),
+			...(result.exactOutput !== undefined && { exactOutput: text(result.exactOutput) }),
+			...(result.exactOutputHtml !== undefined && {
+				exactOutputHtml: html(result.exactOutputHtml)
+			}),
+			...(result.decimalOutput !== undefined && { decimalOutput: text(result.decimalOutput) }),
+			...(result.decimalOutputHtml !== undefined && {
+				decimalOutputHtml: html(result.decimalOutputHtml)
+			})
 		};
 	}
 
@@ -978,10 +1308,13 @@ export class SolveCommand extends BaseCommand {
 		// Generate pedagogical steps based on equation type
 		let pedagogicalSteps: PedagogicalStep[] = [];
 		if (verbosity !== 'result' && result.solutions.length > 0 && isRelation(equation)) {
+			// Un membre parenthésé se raconte comme son contenu, comme le
+			// solveur le lit : `(2x-3) = 0` a les étapes de `2x-3 = 0`.
+			const unwrapped = unwrapGroupingMembers(equation);
 			if (result.equationType === 'linear' && result.status === 'unique') {
 				const solutionValue = result.solutions[0].value;
 				pedagogicalSteps = generateLinearPedagogicalSteps(
-					equation as RelationNode,
+					unwrapped,
 					result.variable,
 					solutionValue
 				);
@@ -990,7 +1323,7 @@ export class SolveCommand extends BaseCommand {
 				(result.status === 'unique' || result.status === 'multiple')
 			) {
 				pedagogicalSteps = generateQuadraticPedagogicalSteps(
-					equation as RelationNode,
+					unwrapped,
 					result.variable,
 					result.solutions
 				);
@@ -1035,8 +1368,12 @@ export class SolveCommand extends BaseCommand {
 			case 'unique':
 			case 'multiple': {
 				// Build exact and decimal solution strings
+				// Une seule solution en ln : sa valeur approchée, comme le LaTeX
 				const exactSolutions = result.solutions
-					.map((sol) => `${result.variable} = ${toCustom(sol.value)}`)
+					.map(
+						(sol) =>
+							`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}`
+					)
 					.join(result.solutions.length > 1 ? ' ou ' : '');
 
 				// Check if a fraction has a terminating decimal representation
@@ -1098,22 +1435,25 @@ export class SolveCommand extends BaseCommand {
 					: exactSolutions;
 
 				// Only toggle if decimal provides different/useful info
-				const canToggle = hasUsefulApproximate;
+				// Une famille périodique : la période fait partie de la réponse — le
+				// texte disait « x = 0 ou x = 3\\pi » pour sin(x/3) = 0 (2026-10-09)
+				const periodicText = periodicSolutionsText(result);
+				const exactText = periodicText ?? exactSolutions;
+				const decimalText = periodicText ?? decimalSolutions;
+				const canToggle = periodicText === null && hasUsefulApproximate;
 
 				// Build full output strings
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
 				const headerHtmlPrefix =
 					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
-				const exactOutput = headerPrefix + exactSolutions;
-				const decimalOutput = headerPrefix + decimalSolutions;
+				const exactOutput = headerPrefix + exactText;
+				const decimalOutput = headerPrefix + decimalText;
 
 				const exactOutputHtml =
-					headerHtmlPrefix +
-					`<span class="text-green-400">${this.escapeHtml(exactSolutions)}</span>`;
+					headerHtmlPrefix + `<span class="text-green-400">${this.escapeHtml(exactText)}</span>`;
 				const decimalOutputHtml =
-					headerHtmlPrefix +
-					`<span class="text-green-400">${this.escapeHtml(decimalSolutions)}</span>`;
+					headerHtmlPrefix + `<span class="text-green-400">${this.escapeHtml(decimalText)}</span>`;
 
 				// Use current mode to determine initial display
 				const useDecimal = currentMode === 'decimal';
@@ -1133,7 +1473,11 @@ export class SolveCommand extends BaseCommand {
 			}
 
 			case 'infinite': {
-				const msg = 'Solutions infinies: toute valeur est solution';
+				// Une identité sur un domaine (`x²/x = x`) : tout le domaine
+				const msg =
+					result.domain === undefined || result.domain.kind === 'universal'
+						? 'Solutions infinies: toute valeur est solution'
+						: `Solutions infinies: toute valeur du domaine est solution, S = ${formatInterval(withRealLineWritten(result.domain))}`;
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
 				const headerHtmlPrefix =
 					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';

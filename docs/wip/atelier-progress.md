@@ -7,17 +7,17 @@ branche: aucune en cours (tout est sur main)
 
 # Atelier — progression
 
-| Document                                                               | Rôle                                      |
-| ---------------------------------------------------------------------- | ----------------------------------------- |
-| [atelier-recherche-eleve.md](atelier-recherche-eleve.md)               | Cadrage, 5 décisions figées, périmètre v1 |
-| [atelier-recherche-eleve-phase0.md](atelier-recherche-eleve-phase0.md) | Comportements attendus, décisions D1 à D8 |
-| **ce fichier**                                                         | Où en est le chantier                     |
+| Document                                                                              | Rôle                                      |
+| ------------------------------------------------------------------------------------- | ----------------------------------------- |
+| [atelier-recherche-eleve.md](../archive/wip/atelier-recherche-eleve.md)               | Cadrage, 5 décisions figées, périmètre v1 |
+| [atelier-recherche-eleve-phase0.md](../archive/wip/atelier-recherche-eleve-phase0.md) | Comportements attendus, décisions D1 à D8 |
+| **ce fichier**                                                                        | Où en est le chantier                     |
 
 > **Objectif (David, 2026-10-01)** : l'atelier a vocation à **remplacer le REPL web** (`/cas`).
 > Il garde `WebReplEngine` comme **calculateur** (option B du 2026-09-16, `atelier/engine.ts`) :
 > le moteur reste, la page `/cas` partira. Conséquence : ce que les commandes du moteur
 > affichent (`.stats`, `.ajustement`…) est affiché **dans l'atelier**, à des élèves — leur
-> sortie relève de l'atelier. Note, pas d'ADR. Source : `docs/wip/outils-statistiques-progress.md`.
+> sortie relève de l'atelier. Note, pas d'ADR. Source : `docs/archive/wip/outils-statistiques-progress.md`.
 
 ---
 

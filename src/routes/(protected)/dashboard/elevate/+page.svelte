@@ -89,7 +89,9 @@
 					<ShieldCheck class="h-6 w-6 text-amber-600 dark:text-amber-400" />
 				</div>
 			</div>
-			<Card.Title class="text-2xl">Accès administration</Card.Title>
+			<Card.Title class="text-2xl"
+				><h1 class="text-2xl! leading-none!">Accès administration</h1></Card.Title
+			>
 			<Card.Description>
 				Saisissez le mot de passe du compte administrateur pour accéder à cet espace.
 			</Card.Description>

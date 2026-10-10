@@ -2,11 +2,23 @@ name: Code Quality
 
 on:
   push:
-    branches: [main, feature/**]
-    paths-ignore:
-      - '**/*.md'
-      - 'docs/**'
-      - '.github/dependabot.yml'
+    branches: [main]
+    # `paths` (et non `paths-ignore`) pour pouvoir RÉINCLURE : le dernier motif
+    # qui correspond l'emporte. data/corrections est validé par un test
+    # (scripts/corrections : pas d'identifiant d'utilisateur, RGPD) : un commit
+    # de doc qui le touche doit déclencher la CI. Tout autre fichier lu par un
+    # test vit sous tests/ (garde : src/lib/__tests__/tests-sans-lecture-de-docs).
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!docs/**'
+      - '!.github/dependabot.yml'
+      - 'data/**'
+      # Le code et le contenu servi, `.md` compris : les articles du Shtam
+      # (src/lib/server/shtam/articles/*.md) sont importés au build, Vercel les
+      # construit (scripts/vercel-ignore-build.sh), la CI doit donc tourner.
+      - 'src/**'
+      - 'static/**'
   pull_request:
     branches: [main]
     # No paths-ignore here: with required status checks on `main`, EVERY PR must
@@ -14,15 +26,46 @@ on:
     # "expected" required checks that never run → it could never be merged.
   workflow_dispatch: # Allow manual trigger
 
-# Cancel an in-progress run when a newer commit is pushed to the same ref —
-# saves Actions minutes (free tier) instead of running stale + fresh in parallel.
+# Sur une branche, un run périmé est annulé par le suivant. Sur main, JAMAIS :
+# chaque commit de main part en prod, son run doit aller au bout. Annulé, il
+# laissait passer en prod un commit jamais testé, et un rouge ne se rattachait
+# plus au bon merge (5 runs de main annulés du 8 au 9/10). Dépôt public : les
+# minutes Actions sont gratuites, l'économie ne valait rien.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  # Raccourci du commit de version (ADR 0021). `pnpm deploy:prod` crée un commit
+  # `chore(release): …` qui ne change que le numéro de version et le CHANGELOG,
+  # sur un état déjà vérifié : refaire typecheck, build et tests coûtait ~5 min à
+  # chaque mise en prod, pour rien. Si scripts/ci-version-seule.sh le confirme
+  # (conditions strictes, testées), les jobs lourds sont sautés et `summary`
+  # passe au vert. Dans tous les autres cas (PR comprises), CI complète.
+  # Le script sort toujours en 0 : un échec du verdict ne bloque pas la CI,
+  # il la laisse simplement complète (`!cancelled()` sur chaque job).
+  version:
+    name: Commit de version ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      seule: ${{ steps.verdict.outputs.seule }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 60
+
+      - name: Verdict
+        id: verdict
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci-version-seule.sh "${{ github.sha }}" >> "$GITHUB_OUTPUT" || echo "seule=false" >> "$GITHUB_OUTPUT"
+
   lint:
     name: Lint
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -36,20 +79,31 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Cache prettier, stratégie `content` (un checkout réécrit les dates) : seuls
+      # les fichiers modifiés sont revérifiés. Sans cache : 162 s sur les 220 s du
+      # job (run du 2026-10-09). Même schéma de clés que le cache ESLint plus bas.
+      - name: Restore Prettier cache
+        uses: actions/cache@v6
+        with:
+          path: .prettier-cache
+          key: prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-${{ github.sha }}
+          restore-keys: |
+            prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-
+
       - name: Run Prettier check
-        run: pnpm prettier --check .
+        run: pnpm prettier --check . --cache --cache-strategy content --cache-location .prettier-cache
 
       # Tailwind 4 exposes complete colours as --color-* ; the bare --border,
       # --foreground, … tokens that `hsl(var(--x))` expects do not exist, so
       # those declarations are invalid and silently dropped. It once left an
       # SVG stroke fully invisible. A baseline carries the pre-existing debt,
-      # so this only blocks NEW occurrences. See docs/ref/css-color-tokens.md.
+      # so this only blocks NEW occurrences. See docs/pratiques/css-color-tokens.md.
       - name: Guard CSS colour tokens (no hsl(var(--…)))
         run: bash scripts/check-css-tokens.sh
 
@@ -65,6 +119,17 @@ jobs:
       # vitest-browser-svelte 3 : `render` rend une Promise. Un appel sans
       # `await` monte quand même le composant — le test passe, rien ne rougit,
       # et le typecheck exclut les tests. ListNode-trig l'a montré pendant #431.
+      # Liens internes de la doc : bloquant (aussi au pre-push, qui couvre les
+      # commits de doc poussés directement sur main, que cette CI ne voit pas).
+      - name: Guard doc links
+        run: pnpm docs:check-links
+
+      # Renvois de docs/systeme et docs/pratiques vers le code : avertissement
+      # pendant la remise à jour de la doc (P2 de docs/wip/reorganisation-docs-progress.md),
+      # puis `--strict`.
+      - name: Guard doc refs (avertissement)
+        run: pnpm docs:check-refs
+
       - name: Guard awaited render (vitest-browser-svelte 3)
         run: npx tsx scripts/check-await-render.ts
 
@@ -92,6 +157,8 @@ jobs:
 
   typecheck:
     name: Type Check
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -105,7 +172,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -118,13 +185,50 @@ jobs:
       - name: Run svelte-check
         run: pnpm check
 
+  # Cliquet des types des tests (scripts/cliquet-types-tests.ts) : `pnpm check`
+  # exclut les tests ; ce job les vérifie avec tsgo, fichier par fichier, contre
+  # tests/cliquet-types-tests.json. Job à part, en parallèle : ~30 s qui
+  # n'allongent pas la CI.
+  types-tests:
+    name: Types des tests (cliquet)
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Placeholder env so `svelte-kit sync` emits the $env/static members.
+      - name: Create CI env (placeholders)
+        run: cp .github/ci.env .env
+
+      - name: Cliquet des types des tests
+        run: pnpm types:cliquet
+
   build:
     name: Build
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The build takes 2-4 min normally;
     # 10 left no room for a slow runner and cancelled the job mid-build.
     timeout-minutes: 15
-    # PAS de `needs:`. Ce job est autonome — checkout, install, build, garde de
+    # Seul `needs:` admis : `version` (raccourci du commit de version, ~15 s).
+    # Sinon ce job est autonome — checkout, install, build, garde de
     # chunk — il ne consomme aucun artefact de lint ni de typecheck. L'y enchaîner
     # n'économisait que des minutes de RUNNER quand lint échoue, au prix de
     # minutes d'ATTENTE HUMAINE sur chaque PR qui passe, c'est-à-dire presque
@@ -145,7 +249,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -157,7 +261,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # Guardrail for the Safari/iPad WebKit TDZ bug (docs/ref/safari-webkit-tdz.md):
+      # Guardrail for the Safari/iPad WebKit TDZ bug (docs/pratiques/safari-webkit-tdz.md):
       # the root layout node chunk must stay < 100 KB, otherwise iPad/Safari throws
       # "Cannot access 'universal' before initialization". Fails the build if exceeded.
       - name: Guard root layout chunk size (< 100 KB — Safari TDZ)
@@ -171,7 +275,7 @@ jobs:
           limit=102400
           echo "Root layout chunk: $size bytes (limit $limit)"
           if [ "$size" -gt "$limit" ]; then
-            echo "::error::Root layout chunk $size B > 100 KB — Safari/iPad TDZ risk (see docs/ref/safari-webkit-tdz.md). Move heavy static imports out of src/routes/+layout.ts."
+            echo "::error::Root layout chunk $size B > 100 KB — Safari/iPad TDZ risk (see docs/pratiques/safari-webkit-tdz.md). Move heavy static imports out of src/routes/+layout.ts."
             exit 1
           fi
           echo "::notice::Root layout chunk OK ($size B < 100 KB)"
@@ -180,6 +284,8 @@ jobs:
   # no browser. Sharded for parallelism.
   test-server:
     name: Server Tests (shard ${{ matrix.shard }}/4)
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -197,7 +303,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -213,8 +319,20 @@ jobs:
   # The real-Pyodide integration tests (*-real.svelte.test.ts) are excluded
   # here — they download and run Python in headless Chromium (slow + flaky in
   # CI) and stay runnable locally.
+  # Deux navigateurs en parallèle au lieu d'un : « Browser connection was closed »
+  # a fait rougir la CI 3 fois du 6 au 8/10, chaque fois sur un fichier
+  # DIFFÉRENT (serialize, ExerciseList-modifier, liens-dangereux) et sans test
+  # qui navigue : c'est Chromium qui tombait sous 234 fichiers. Deux fois moins de
+  # charge par navigateur, et le job raccourcit. Checks exigés par la protection
+  # de main : « Client Tests (browser, shard 1/2) » et « … 2/2 ».
   test-client:
-    name: Client Tests (browser)
+    name: Client Tests (browser, shard ${{ matrix.shard }}/2)
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -228,7 +346,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -256,7 +374,7 @@ jobs:
       # (gated on CI=true), since the CLI --exclude flag does not propagate to
       # project configs in vitest's projects mode.
       - name: Run client tests
-        run: pnpm exec vitest run --project client
+        run: pnpm exec vitest run --project client --shard=${{ matrix.shard }}/2
 
   # Security gate for production dependencies (incl. transitive vulns Dependabot
   # can't auto-PR for pnpm — those need `pnpm.overrides`). Tuned to avoid locking
@@ -265,6 +383,8 @@ jobs:
   #   - HIGH     → warning annotation only → visible, never blocks.
   audit:
     name: Security Audit
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The audit itself runs in under a
     # minute, but it waits on the npm advisory endpoint, which can hang: a
@@ -281,7 +401,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -310,6 +430,8 @@ jobs:
   # Local : `pnpm db:start` puis `pnpm test:definer-guard`.
   definer-guard:
     name: Garde SECURITY DEFINER
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -323,7 +445,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -382,14 +504,20 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, build, test-server, test-client, audit, definer-guard]
+    needs:
+      [version, lint, typecheck, types-tests, build, test-server, test-client, audit, definer-guard]
     if: always()
 
     steps:
       - name: Check results
         run: |
+          if [ "${{ needs.version.outputs.seule }}" = "true" ]; then
+            echo "Commit de version sur un état vérifié : jobs lourds sautés (ADR 0021)."
+            exit 0
+          fi
           echo "Lint: ${{ needs.lint.result }}"
           echo "Type Check: ${{ needs.typecheck.result }}"
+          echo "Types des tests (cliquet): ${{ needs.types-tests.result }}"
           echo "Build: ${{ needs.build.result }}"
           echo "Server Tests: ${{ needs.test-server.result }}"
           echo "Client Tests: ${{ needs.test-client.result }}"
@@ -398,6 +526,7 @@ jobs:
 
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.typecheck.result }}" != "success" ] || \
+             [ "${{ needs.types-tests.result }}" != "success" ] || \
              [ "${{ needs.build.result }}" != "success" ] || \
              [ "${{ needs.test-server.result }}" != "success" ] || \
              [ "${{ needs.test-client.result }}" != "success" ] || \

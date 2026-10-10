@@ -48,6 +48,7 @@
 		Menu,
 		FlaskConical,
 		Shapes,
+		KeyRound,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -120,6 +121,8 @@
 			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
 			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
+			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
+			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',
@@ -188,7 +191,7 @@
 		>
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
 			<div class="flex flex-col leading-none">
-				<h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
+				<span class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</span>
 			</div>
 		</a>
 

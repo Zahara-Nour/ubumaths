@@ -105,7 +105,7 @@ Données :
 - `src/lib/constructions-v2/core/choreographies/registry.ts` (+1 entrée REGISTRY + 1 import)
 - `src/lib/constructions-v2/core/__tests__/choreographies-integration.test.ts` (+~8 tests : 6 todos + 2 actifs)
 - `src/lib/geometry-core/rendering/__tests__/angle-canonical-cases.test.ts` (+2 tests post-anim)
-- `docs/ref/geometry/dsl-builtins.md` (section `transporte` : ajouter sous-section chorégraphie)
+- `docs/systeme/geometrie/dsl-builtins.md` (section `transporte` : ajouter sous-section chorégraphie)
 
 ## Cas dégénérés
 

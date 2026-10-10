@@ -5,7 +5,7 @@
 
 ## Contexte
 
-Le panel (`docs/ref/panel-simplifications.md`) a montré 13 écarts sur 51 entre `simplify` et le mode
+Le panel (`docs/systeme/mathast/panel-simplifications.md`) a montré 13 écarts sur 51 entre `simplify` et le mode
 `auto` de `pedagogical-simplify`. Cause : ce sont **deux moteurs** — `simplify` (`tidy` → `normalize`
 sous barrière de coût, a un juge) et `pedagogical-simplify` (règles de motifs par intention, a le
 vocabulaire). `pattern/rule-sets/index.ts` le dit : « The `simplify()` pipeline does NOT use these ».
@@ -21,7 +21,7 @@ vocabulaire). `pattern/rule-sets/index.ts` le dit : « The `simplify()` pipeline
 | `auto`       | développer **seulement si moins cher** |
 | `factoriser` | jamais développer, et factoriser       |
 
-- `auto` ≠ `réduire` : sa spec case par case est `docs/wip/tidy-phase0.md` §C (colonne « attendu »).
+- `auto` ≠ `réduire` : sa spec case par case est `docs/systeme/mathast/tidy-spec.md` §C (colonne « attendu »).
 - `auto` **ne factorise jamais** : garder `(x+1)²` est de la conservation, produire `(x+1)²` depuis
   `x²+2x+1` répond à une autre consigne.
 - `développer` contient `réduire` (« développer et réduire »), l'inverse est faux.

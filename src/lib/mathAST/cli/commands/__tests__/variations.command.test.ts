@@ -59,7 +59,7 @@ describe('VariationsCommand', () => {
 
 			expect(result.success).toBe(true);
 			expect(result.output).toContain('Expression');
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should show derivative for x^2', () => {
@@ -142,7 +142,7 @@ describe('VariationsCommand', () => {
 
 			expect(result.success).toBe(true);
 			expect(result.output).toContain('Expression');
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should show critical point at x=0 for x^3', () => {
@@ -196,7 +196,7 @@ describe('VariationsCommand', () => {
 
 			expect(result.success).toBe(true);
 			expect(result.output).toContain('Expression');
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should show exp(x) is increasing everywhere', () => {
@@ -250,10 +250,12 @@ describe('VariationsCommand', () => {
 	// With Different Variable
 	// =============================================================================
 
+	// Décision de David (2026-10-06) : la variable se donne après « ; »
+	// (`t^2 t` est désormais le produit t³, étudié en x)
 	describe('with variable specification', () => {
 		it('should use t as variable when specified', () => {
 			const ctx: CommandContext = {
-				input: 't^2 t',
+				input: 't^2 ; t',
 				format: 'custom',
 				options: {},
 				isRepl: false
@@ -268,7 +270,7 @@ describe('VariationsCommand', () => {
 
 		it('should analyze t^2 + 2t with variable t', () => {
 			const ctx: CommandContext = {
-				input: 't^2 + 2t t',
+				input: 't^2 + 2t ; t',
 				format: 'custom',
 				options: {},
 				isRepl: false
@@ -279,7 +281,8 @@ describe('VariationsCommand', () => {
 			expect(result.success).toBe(true);
 			// t^2 + 2t has derivative 2t + 2
 			// Critical point at t = -1
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
+			expect(result.output).toContain('t = -1');
 		});
 
 		it('should default to variable x when not specified', () => {
@@ -328,7 +331,7 @@ describe('VariationsCommand', () => {
 			const result = command.execute(ctx);
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should include domain in output', () => {
@@ -435,7 +438,7 @@ describe('VariationsCommand', () => {
 
 			expect(result.success).toBe(true);
 			// sin'(x) = cos(x)
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 			expect(result.output).toContain('cos');
 		});
 
@@ -452,7 +455,7 @@ describe('VariationsCommand', () => {
 			expect(result.success).toBe(true);
 			// 1/x has derivative -1/x^2
 			// Decreasing everywhere on its domain
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should analyze ln(x)', () => {
@@ -468,7 +471,7 @@ describe('VariationsCommand', () => {
 			expect(result.success).toBe(true);
 			// ln'(x) = 1/x
 			// Domain is (0, +inf)
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 			expect(result.output).toContain('Domaine');
 		});
 
@@ -545,8 +548,8 @@ describe('VariationsCommand', () => {
 			expect(result.success).toBe(true);
 			// Polynomial is defined everywhere
 			expect(result.output).toContain('Domaine');
-			// Should indicate R (all reals)
-			expect(result.output).toMatch(/R|reels/i);
+			// ℝ, écrit comme `.domaine`
+			expect(result.output).toContain('Domaine : ℝ');
 		});
 
 		it('should handle restricted domain for ln(x)', () => {
@@ -644,7 +647,7 @@ describe('VariationsCommand', () => {
 			const result = command.execute(ctx);
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should handle LaTeX power', () => {
@@ -658,7 +661,7 @@ describe('VariationsCommand', () => {
 			const result = command.execute(ctx);
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should handle LaTeX sqrt', () => {
@@ -673,7 +676,7 @@ describe('VariationsCommand', () => {
 
 			expect(result.success).toBe(true);
 			// sqrt(x) = x^(1/2), derivative = 1/(2*sqrt(x))
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 	});
 
@@ -801,7 +804,7 @@ describe('VariationsCommand', () => {
 			const result = command.execute(ctx);
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 
 		it('should work without REPL context', () => {
@@ -815,7 +818,7 @@ describe('VariationsCommand', () => {
 			const result = command.execute(ctx);
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Derivee');
+			expect(result.output).toContain('Dérivée');
 		});
 	});
 });

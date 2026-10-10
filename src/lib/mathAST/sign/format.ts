@@ -66,7 +66,11 @@ export function formatSignAnalysis(result: SignAnalysisResult): string {
 	lines.push('');
 
 	// Zeros
-	lines.push(formatZeros(result.zeros, v));
+	lines.push(
+		result.zerosUnresolved
+			? "Zeros : non déterminés — f(x) = 0 n'a pas pu être résolue"
+			: formatZeros(result.zeros, v)
+	);
 	lines.push('');
 
 	// Sign table

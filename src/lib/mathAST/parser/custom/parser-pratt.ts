@@ -29,10 +29,18 @@ import type {
 	LogicalOperator,
 	NodeMetadata
 } from '../../types';
+import { GREEK_LETTERS } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
-import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
+import {
+	CustomTokenizer,
+	KNOWN_FUNCTION_NAMES,
+	unknownFunctionMessage,
+	type CustomToken,
+	type CustomTokenType
+} from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
+import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import {
 	isGroupingBracket,
@@ -80,30 +88,9 @@ const enum BP {
  * Map custom syntax symbol names to MathAST GreekLetter type
  * Note: 'pi' is NOT here - it's a MathConstant, not a GreekLetter
  */
-const GREEK_SYMBOL_MAP: Record<string, GreekLetter> = {
-	alpha: 'alpha',
-	beta: 'beta',
-	gamma: 'gamma',
-	delta: 'delta',
-	epsilon: 'epsilon',
-	zeta: 'zeta',
-	eta: 'eta',
-	theta: 'theta',
-	iota: 'iota',
-	kappa: 'kappa',
-	lambda: 'lambda',
-	mu: 'mu',
-	nu: 'nu',
-	xi: 'xi',
-	rho: 'rho',
-	sigma: 'sigma',
-	tau: 'tau',
-	upsilon: 'upsilon',
-	phi: 'phi',
-	chi: 'chi',
-	psi: 'psi',
-	omega: 'omega'
-};
+const GREEK_SYMBOL_MAP: Readonly<Record<string, GreekLetter>> = Object.fromEntries(
+	GREEK_LETTERS.map((letter) => [letter, letter])
+);
 
 /**
  * Map custom syntax symbol names to MathAST MathSymbol type
@@ -233,11 +220,15 @@ class CustomPrattParser {
 	// Token Management
 	// =========================================================================
 
+	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
+	private previousToken: CustomToken | undefined;
+
 	/**
 	 * Advance to the next token
 	 */
 	private advance(): CustomToken {
 		const prev = this.currentToken;
+		this.previousToken = prev;
 		this.currentToken = this.tokenizer.nextToken();
 		return prev;
 	}
@@ -549,6 +540,10 @@ class CustomPrattParser {
 			case 'DOUBLE_LBRACKET':
 				return BP.MULTIPLY;
 
+			// `3!27!` : un nombre juste après une factorielle (cf. shouldInsertImplicitMultiply)
+			case 'NUMBER':
+				return this.previousToken?.type === 'EXCLAMATION' ? BP.MULTIPLY : BP.NONE;
+
 			default:
 				break;
 		}
@@ -602,9 +597,23 @@ class CustomPrattParser {
 			this.check('CARET') ||
 			this.check('UNDERSCORE') ||
 			this.check('PERCENT') ||
+			this.check('EXCLAMATION') ||
 			this.checkUnitBracket()
 		) {
-			if (this.check('PERCENT')) {
+			if (this.check('EXCLAMATION')) {
+				// Factorielle postfixe : `n!`, `2^3!` = (2³)!, `n!^2` = (n!)² ; `!=` est
+				// un autre token (≠). `3!!` (double factorielle) : refusé.
+				this.advance();
+				if (this.check('EXCLAMATION')) {
+					this.error(
+						DOUBLE_FACTORIAL_ERROR,
+						this.currentToken.position,
+						this.currentToken.length,
+						'UNEXPECTED_TOKEN'
+					);
+				}
+				operand = this.applyColor(factorialOf(operand));
+			} else if (this.check('PERCENT')) {
 				// Pourcentage, postfixe : `20%`, `x^2%` = (x²) %, `(a+5)%`
 				// `20%%` : erreur de lecture, jamais un pourcentage de pourcentage silencieux
 				if (operand.type === 'percentage') {
@@ -1329,7 +1338,9 @@ class CustomPrattParser {
 		}
 
 		// NUMBER cannot start implicit multiplication (prevents x2, (a)2)
+		// Sauf juste après une factorielle : `3!27!` = 3! × 27! (écriture de `\frac{30!}{3!27!}`)
 		if (token.type === 'NUMBER') {
+			if (this.previousToken?.type === 'EXCLAMATION') return true;
 			return false;
 		}
 
@@ -1630,6 +1641,17 @@ class CustomPrattParser {
 		const funcToken = this.advance(); // consume FUNC token
 		const name = funcToken.value;
 
+		// `racine(x)`, `acoss(x)` : un nom inconnu se REFUSE — lu en produit de
+		// lettres, il donnait un résultat faux sans aucune erreur
+		if (!KNOWN_FUNCTION_NAMES.includes(name)) {
+			this.error(
+				unknownFunctionMessage(name),
+				funcToken.position,
+				funcToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+
 		// Check for power BEFORE arguments: sin^2
 		let power: MathNode | undefined;
 		if (this.check('CARET')) {
@@ -1679,6 +1701,12 @@ class CustomPrattParser {
 		// Create function node with power/base if present
 		if (name === 'sqrt' && nthRoot) {
 			return this.applyColor(MathAST.func('sqrt', args, { power, base: nthRoot }));
+		}
+
+		// cbrt(x) = ∛x : le même nœud que sqrt[3](x), sans quoi l'arbre aurait une
+		// fonction que ni la dérivation ni la normalisation ne connaissent
+		if (name === 'cbrt') {
+			return this.applyColor(MathAST.func('sqrt', args, { power, base: MathAST.number('3') }));
 		}
 
 		const funcNode = MathAST.func(name, args, { power, base });

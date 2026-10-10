@@ -27,7 +27,8 @@ import type {
 	AnswerKind,
 	BlankDefaults,
 	CalculusBlankFields,
-	TemplateBlank
+	TemplateBlank,
+	ValidationRule
 } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
@@ -56,6 +57,7 @@ import { declaredGenericFunctions, templateGenericFunctions } from '../generic-f
 import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
+import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
 
@@ -235,6 +237,47 @@ function resolveCalculusFields(
 
 /** Un marqueur `{{…}}`, imbrications comprises (`{{eval:{{a}}*2}}`) */
 const MARKER_REGEX = /\{\{(?:[^{}]|\{\{[^{}]*\}\})*\}\}/g;
+
+/** Marqueur d'une variable seule (`{{n}}`) : substitué par l'évaluateur de règles */
+const BARE_MARKER_REGEX = /^\{\{\s*[A-Za-z_]\w*\s*\}\}$/;
+
+/**
+ * Calcule les marqueurs `{{eval:…}}` (et toute formule `{{a+1}}`) d'une règle de
+ * validation. L'évaluateur de règles ne sait substituer que `{{nom}}` : une borne
+ * `{{eval:floor(S/p1)}}` lui arrivait telle quelle, était illisible, et la règle
+ * refusait toute réponse. Les `{{nom}}` restent pour l'évaluateur ; le reste est
+ * remplacé par sa valeur, parenthésée hors nombre positif (`-3`, `\dfrac{31}{3}`).
+ */
+function resolveValidationRules(
+	rules: ValidationRule[] | undefined,
+	resolvedVariables: ResolvedVariable[],
+	random: RandomSource
+): ValidationRule[] | undefined {
+	if (!rules) return rules;
+	const resolve = (text: string) =>
+		text.replace(MARKER_REGEX, (marker) => {
+			if (BARE_MARKER_REGEX.test(marker)) return marker;
+			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
+		});
+	return rules.map((rule): ValidationRule => {
+		switch (rule.type) {
+			case 'divisor':
+				return { ...rule, dividend: resolve(rule.dividend) };
+			case 'multiple':
+				return { ...rule, base: resolve(rule.base) };
+			case 'range':
+				return { ...rule, min: resolve(rule.min), max: resolve(rule.max) };
+			case 'equation_root':
+				return { ...rule, equation: resolve(rule.equation) };
+			case 'equivalent':
+			case 'custom':
+				return { ...rule, expression: resolve(rule.expression) };
+			default:
+				return rule;
+		}
+	});
+}
 
 /**
  * Generate a question instance from a template
@@ -471,7 +514,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					isMathBlank &&
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
 					answerKind !== 'intervalles' &&
-					answerKind !== 'vecteur';
+					answerKind !== 'vecteur' &&
+					answerKind !== 'matrice';
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions)
 					: resolvedExpected;
@@ -483,6 +527,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const vectorMode = blank.vectorMode ?? resolvedVariation.blankDefaults?.vectorMode;
 				const openableBounds =
 					blank.openableBounds ?? resolvedVariation.blankDefaults?.openableBounds;
+				const angleModulo = blank.angleModulo ?? resolvedVariation.blankDefaults?.angleModulo;
 				const calculusFields = resolveCalculusFields(
 					answerKind,
 					blank,
@@ -504,7 +549,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						random
 					),
-					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
+					validationRules: resolveValidationRules(
+						blank.validationRules ?? resolvedVariation.validationRules,
+						resolvedVariables,
+						random
+					),
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
 					...((blank.rulesSuffice ?? resolvedVariation.blankDefaults?.rulesSuffice) && {
 						rulesSuffice: true
@@ -512,9 +561,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					...((blank.acceptDecimal ?? resolvedVariation.blankDefaults?.acceptDecimal) && {
 						acceptDecimal: true
 					}),
+					...((blank.acceptCombinatorialNotation ??
+						resolvedVariation.blankDefaults?.acceptCombinatorialNotation) && {
+						acceptCombinatorialNotation: true
+					}),
 					...(answerKind && { answerKind }),
 					...(answerKind === 'vecteur' && vectorMode && { vectorMode }),
 					...(answerKind === 'intervalles' && openableBounds && { openableBounds: true }),
+					// Argument « à 2π près » : case ordinaire seulement
+					...(answerKind === undefined && angleModulo && { angleModulo }),
 					...calculusFields,
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
@@ -536,13 +591,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Generate expectedAnswerLatex for math blanks
 				if (resolved.type === 'math') {
 					// Ensemble en notation intervalle : ni expression ni calcul, rendu à part
-					// Vecteur : rendu en colonne
+					// Vecteur : rendu en colonne ; matrice : en pmatrix
 					resolved.expectedAnswerLatex =
 						resolved.answerKind === 'intervalles'
 							? expectedIntervalsLatex(resolved.expectedAnswer)
 							: resolved.answerKind === 'vecteur'
 								? expectedVectorLatex(resolved.expectedAnswer)
-								: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
+								: resolved.answerKind === 'matrice'
+									? expectedMatrixLatex(resolved.expectedAnswer)
+									: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
 				}
 				return resolved;
 			});

@@ -1,7 +1,7 @@
 # Cartes probabilités et statistique de terminale — progression
 
 Branche `feat/cartes-probas-stats-terminale`, worktree `ubumaths-wt-probaT`. Partie 2 de
-`docs/wip/referentiel/correspondance-tspe-tcomp.md` (TCOMP-084 → 125) + points TSPE de probabilités.
+`docs/systeme/programmes/correspondance-tspe-tcomp.md` (TCOMP-084 → 125) + points TSPE de probabilités.
 
 - [x] 22 modèles dans `scripts/questions/probas-stats-terminale/` (A lois discrètes et coefficients
       binomiaux, B sommes de variables et concentration — spé seule, C lois à densité et

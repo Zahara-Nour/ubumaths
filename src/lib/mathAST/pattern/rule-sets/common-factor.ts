@@ -72,6 +72,42 @@ import { extractRational } from '../../common/numeric';
 // baril créerait un cycle de chunk avec `algebraic-identities.ts`.
 
 /**
+ * Une règle construite au PREMIER usage, et non au chargement du module.
+ *
+ * ⚠️ **Cycle d'imports.** `solve/solve.ts` utilise `commonFactorRules` (mise en
+ * facteur avant le produit nul). Or `pattern/builder.ts` atteint `solve.ts`
+ * par ses propres imports (`rule-parser → constraints → numtype → … →
+ * domain/range-helpers → variations/critical-points → solve`). Quand
+ * `builder.ts` est chargé le premier, ce module s'évalue AVANT lui : un
+ * `P.parse(…)` au niveau du module lit alors un `P` encore `undefined`
+ * (mesuré : « Cannot read properties of undefined (reading 'parse') »).
+ * Différer la construction du motif au premier appel coupe le problème sans
+ * toucher au graphe d'imports ; le nom reste lisible tout de suite.
+ */
+function lazyRule(name: string, build: () => Rule): Rule {
+	let built: Rule | null = null;
+	const rule = (): Rule => (built ??= build());
+	return {
+		name,
+		get pattern() {
+			return rule().pattern;
+		},
+		get replacement() {
+			return rule().replacement;
+		},
+		get condition() {
+			return rule().condition;
+		},
+		get priority() {
+			return rule().priority;
+		},
+		get group() {
+			return rule().group;
+		}
+	};
+}
+
+/**
  * La somme mise en facteur, TOUJOURS parenthésée.
  *
  * ⚠️ Sans les parenthèses, `(a+b)x` se rend `a + b x` — une expression fausse,
@@ -92,17 +128,19 @@ function isNumeric(node: MathNode): boolean {
  * Le facteur commun ne doit pas être un nombre : ce serait la factorisation
  * numérique, traitée ailleurs.
  */
-const factorCommonInProducts = createRule(
-	P.parse('a * c + b * c'),
-	(bindings) =>
-		factoredProduct(
-			add(bindings.get('a') as MathNode, bindings.get('b') as MathNode),
-			bindings.get('c') as MathNode
-		),
-	{
-		name: 'common-factor-products',
-		condition: (bindings) => !isNumeric(bindings.get('c') as MathNode)
-	}
+const factorCommonInProducts = lazyRule('common-factor-products', () =>
+	createRule(
+		P.parse('a * c + b * c'),
+		(bindings) =>
+			factoredProduct(
+				add(bindings.get('a') as MathNode, bindings.get('b') as MathNode),
+				bindings.get('c') as MathNode
+			),
+		{
+			name: 'common-factor-products',
+			condition: (bindings) => !isNumeric(bindings.get('c') as MathNode)
+		}
+	)
 );
 
 /**
@@ -111,14 +149,19 @@ const factorCommonInProducts = createRule(
  * Le terme nu compte pour `1 × c`. On écrit `(b+1)` plutôt que `(1+b)` : c'est
  * l'ordre du tableau, degré décroissant — `eˣ + x·eˣ = (x+1)eˣ`.
  */
-const factorCommonWithBareTerm = createRule(
-	P.parse('c + b * c'),
-	(bindings) =>
-		factoredProduct(add(bindings.get('b') as MathNode, number('1')), bindings.get('c') as MathNode),
-	{
-		name: 'common-factor-bare-term',
-		condition: (bindings) => !isNumeric(bindings.get('c') as MathNode)
-	}
+const factorCommonWithBareTerm = lazyRule('common-factor-bare-term', () =>
+	createRule(
+		P.parse('c + b * c'),
+		(bindings) =>
+			factoredProduct(
+				add(bindings.get('b') as MathNode, number('1')),
+				bindings.get('c') as MathNode
+			),
+		{
+			name: 'common-factor-bare-term',
+			condition: (bindings) => !isNumeric(bindings.get('c') as MathNode)
+		}
+	)
 );
 
 // =============================================================================
@@ -401,6 +444,11 @@ function boundSum(bindings: MatchBindings, kind: 'addition' | 'subtraction'): Ma
  * `diff-squares`.
  */
 function createContentRule(kind: 'addition' | 'subtraction', name: string): Rule {
+	return lazyRule(name, () => buildContentRule(kind, name));
+}
+
+/** La construction elle-même, différée par `createContentRule` (voir `lazyRule`). */
+function buildContentRule(kind: 'addition' | 'subtraction', name: string): Rule {
 	const pattern = kind === 'addition' ? P.add(P._('a'), P._('b')) : P.sub(P._('a'), P._('b'));
 	return createRule(
 		pattern,

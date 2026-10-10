@@ -43,6 +43,7 @@ import { variable } from '$lib/mathAST/factory';
 import { isInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 import { checkReducedFractions } from '$lib/questions/constraint-validators';
+import { judgeComplexFiniteSet, readExpectedComplexSet } from './complex-finite-set';
 
 // Types
 export interface IntervalVerdict {
@@ -64,6 +65,7 @@ export interface IntervalJudgeOptions {
 /** Messages figés (français, tutoiement) */
 export const INTERVAL_FEEDBACK = {
 	separator: 'Sépare les bornes par un point-virgule : ]2 ; 3[.',
+	setSeparator: 'Sépare les solutions par un point-virgule : {a ; b}.',
 	closedInfinity: "L'infini est toujours exclu : écris ]-∞ ou +∞[.",
 	boundsOrder: "Écris les bornes dans l'ordre croissant : la plus petite à gauche.",
 	notASet: "Écris un ensemble (un intervalle ou une réunion d'intervalles), pas une inégalité.",
@@ -80,7 +82,8 @@ export const INTERVAL_FEEDBACK = {
 			? `Le point ${values[0]} ne fait pas partie de l'ensemble.`
 			: `Les points ${values.slice(0, -1).join(', ')} et ${values.at(-1)} ne font pas partie de l'ensemble.`,
 	contiguous: 'Réunis en un seul intervalle ceux qui se touchent ou se chevauchent.',
-	unsimplified: 'Simplifie les bornes (par exemple 2 plutôt que 4/2).'
+	unsimplified: 'Simplifie les bornes (par exemple 2 plutôt que 4/2).',
+	unsimplifiedSet: 'La fraction peut être simplifiée.'
 };
 
 /** Mode par défaut de `intervalForm` : écriture à reprendre = ½ */
@@ -110,19 +113,27 @@ function withoutSetName(answer: string): string {
 }
 
 /**
- * Virgule employée comme séparateur de bornes (`]2,3[`) : un morceau entre
- * crochets sans point-virgule mais avec une virgule. La virgule décimale de
- * MathLive (`{,}`) n'en est pas une ; avec un point-virgule, la virgule est
- * décimale (`]0,5;1[`).
+ * Virgule employée comme séparateur : de bornes (`]2,3[`, message des intervalles)
+ * ou de solutions (`{a,b}`, message des ensembles). Un morceau sans point-virgule
+ * mais avec une virgule. La virgule décimale de MathLive (`{,}`) n'en est pas une ;
+ * avec un point-virgule, la virgule est décimale (`]0,5;1[`, `{1,5;2}`) ; entre
+ * accolades, une seule virgule entre deux chiffres est décimale (`{0,5}`).
  */
-function usesCommaSeparator(answer: string): boolean {
+function commaSeparatorFeedback(answer: string): string | undefined {
 	const text = answer.replace(/\{,\}/g, '');
-	return text.split(/\\cup|∪|U/).some((piece) => {
-		if (piece.includes(';') || !piece.includes(',')) return false;
-		// Entre crochets : toute virgule ; entre accolades : celle qui n'est pas décimale ({0,5})
-		if (/[[\]]|\\[lr]brack/.test(piece)) return true;
-		return /\{|\\lbrace/.test(piece) && /(?<!\d),|,(?!\d)/.test(piece);
-	});
+	for (const piece of text.split(/\\cup|∪|U/)) {
+		if (piece.includes(';') || !piece.includes(',')) continue;
+		// Entre crochets : toute virgule
+		if (/[[\]]|\\[lr]brack/.test(piece)) return INTERVAL_FEEDBACK.separator;
+		// Entre accolades : une virgule non décimale, ou plusieurs ({1,3,6})
+		if (
+			/\{|\\lbrace/.test(piece) &&
+			(/(?<!\d),|,(?!\d)/.test(piece) || (piece.match(/,/g) ?? []).length > 1)
+		) {
+			return INTERVAL_FEEDBACK.setSeparator;
+		}
+	}
+	return undefined;
 }
 
 /** Valeur d'un point pour un message (unicode, virgule décimale) : `0,5`, `√2` */
@@ -148,9 +159,9 @@ function isolatedPoints(domain: Domain): string[] | undefined {
  * Réponse hostile ou démesurée (radicaux imbriqués : coût ×9 par niveau) : un
  * morceau entre séparateurs dépasse les limites d'une borne. Vérifié AVANT toute
  * lecture, pour le correcteur serveur des évaluations comme pour le navigateur.
+ * (La longueur est vérifiée avant, dans `judgeIntervalAnswer`.)
  */
 function isAnswerTooComplex(answer: string): boolean {
-	if (answer.length > MAX_ANSWER_LENGTH) return true;
 	return answer
 		.split(/;|\[|\]|∪|\\cup|\\setminus|\\[lr]brack|\\left|\\right/)
 		.some((segment) => isBoundTooComplex(segment.trim()));
@@ -179,6 +190,16 @@ function pieceError(piece: StudentDomainPiece): string | undefined {
 	return undefined;
 }
 
+/** Valeurs d'un morceau « ensemble fini » tel qu'écrit (`{\frac{2\pi}{6};1}`), sinon [] */
+function finiteSetValues(piece: StudentDomainPiece): string[] {
+	const source = piece.source.trim();
+	if (piece.bounds || !source.startsWith('{') || !source.endsWith('}')) return [];
+	return source
+		.slice(1, -1)
+		.split(';')
+		.map((value) => value.trim());
+}
+
 /** Écriture à reprendre d'un ensemble JUSTE (½ par défaut), ou undefined */
 function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): string | undefined {
 	const singleton = pieces.find(
@@ -195,6 +216,10 @@ function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): st
 
 	const bounds = pieces.flatMap((piece) => piece.bounds ?? []);
 	if (checkReducedFractions(bounds).length > 0) return INTERVAL_FEEDBACK.unsimplified;
+
+	// Ensemble fini `{a;b}` : ses valeurs, comme des bornes (décision de David, 2026-10-05)
+	if (checkReducedFractions(pieces.flatMap(finiteSetValues)).length > 0)
+		return INTERVAL_FEEDBACK.unsimplifiedSet;
 
 	return undefined;
 }
@@ -282,6 +307,16 @@ export function readExpectedIntervals(expected: string): ExpectedIntervals {
 	}
 }
 
+/**
+ * Attendue d'une case « intervalles » lisible : ensemble de réels, ou ensemble FINI de
+ * complexes (`\{1+i;1-i\}`, cf. `complex-finite-set.ts`). Sert aux specs du modèle.
+ */
+export function readExpectedSet(expected: string): { ok: true } | { ok: false; error: string } {
+	if (readExpectedComplexSet(withoutSetName(expected))) return { ok: true };
+	const read = readExpectedIntervals(expected);
+	return read.ok ? { ok: true } : read;
+}
+
 function readExpected(expected: string): ExpectedIntervals {
 	const parsed = parseStudentDomainPieces(withoutSetName(expected));
 	if (!parsed.success) return { ok: false, error: parsed.error };
@@ -309,6 +344,11 @@ export function judgeIntervalAnswer(
 ): IntervalVerdict {
 	const written = withoutSetName(answer);
 	if (!written) return { status: 'empty' };
+	if (written.length > MAX_ANSWER_LENGTH) return incorrect(INTERVAL_FEEDBACK.tooComplex);
+	// Avant le garde de complexité : `{a,b,c,d}` sans point-virgule forme un seul long
+	// morceau, qui serait « trop compliqué » au lieu de « mal séparé » (regex sur ≤ 400 car.)
+	const separatorFeedback = commaSeparatorFeedback(written);
+	if (separatorFeedback) return incorrect(separatorFeedback);
 	if (isAnswerTooComplex(written)) return incorrect(INTERVAL_FEEDBACK.tooComplex);
 	try {
 		return judgeWritten(written, expected, mode, options);
@@ -324,11 +364,13 @@ function judgeWritten(
 	mode: ConstraintMode,
 	options: IntervalJudgeOptions
 ): IntervalVerdict {
+	// Ensemble fini de complexes (`\{1+i;1-i\}`) : lu et comparé élément par élément
+	const complexSet = readExpectedComplexSet(withoutSetName(expected));
+	if (complexSet) return judgeComplexFiniteSet(written, complexSet, mode);
+
 	// Modèle fautif : jamais une exception devant l'élève
 	const target = readExpectedIntervals(expected);
 	if (!target.ok) return incorrect();
-
-	if (usesCommaSeparator(written)) return incorrect(INTERVAL_FEEDBACK.separator);
 
 	const parsed = parseStudentDomainPieces(written);
 	if (!parsed.success) return incorrect(INTERVAL_FEEDBACK.unreadable);
@@ -421,6 +463,8 @@ function domainLatex(domain: Domain): string {
  * Illisible : rendue telle quelle (le test du modèle la signale).
  */
 export function expectedIntervalsLatex(expected: string): string {
+	const complexSet = readExpectedComplexSet(withoutSetName(expected));
+	if (complexSet) return `\\{${complexSet.join(';')}\\}`;
 	const target = readExpectedIntervals(expected);
 	return target.ok ? domainLatex(target.domain) : expected;
 }

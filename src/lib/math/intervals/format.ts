@@ -119,6 +119,8 @@ function formatSingleInterval(interval: Interval): string {
 	const rightBracket = interval.upper.type === 'closed' ? ']' : '[';
 	const lower = formatEndpointValue(interval.lower.value);
 	const upper = formatEndpointValue(interval.upper.value);
+	// [a ; a] est le singleton {a} : √x ≤ x s'écrivait [0 ; 0] ∪ [1 ; +∞[
+	if (leftBracket === '[' && rightBracket === ']' && lower === upper) return `{${lower}}`;
 
 	return `${leftBracket}${lower} ; ${upper}${rightBracket}`;
 }
@@ -177,13 +179,26 @@ export function formatEndpointValue(value: MathNode): string {
 		return constantMap[value.constant] ?? value.constant;
 	}
 
-	// Handle sqrt with nice √ symbol
-	if (isFunction(value) && value.name === 'sqrt' && value.args.length === 1) {
-		const arg = value.args[0];
-		if (isNumber(arg)) {
-			return `√${arg.value}`;
+	// Handle sqrt with nice √ symbol — avec son indice : ∛, ∜ (∛4 s'écrivait √4)
+	if (
+		isFunction(value) &&
+		(value.name === 'sqrt' || value.name === 'cbrt') &&
+		value.args.length === 1
+	) {
+		const symbol = rootSymbol(value);
+		if (symbol !== null) {
+			const arg = value.args[0];
+			if (isNumber(arg)) {
+				return `${symbol}${arg.value}`;
+			}
+			return `${symbol}(${formatEndpointValue(arg)})`;
 		}
-		return `√(${formatEndpointValue(arg)})`;
+	}
+
+	// Fonction à indice ou base (ⁿ√, log_b, …) : l'écriture complète de
+	// `toCustom` — `sqrt(2)` pour ⁵√2 se lisait √2
+	if (isFunction(value) && value.base !== undefined) {
+		return toCustom(value);
 	}
 
 	// Handle other functions
@@ -192,18 +207,40 @@ export function formatEndpointValue(value: MathNode): string {
 		return `${value.name}(${args})`;
 	}
 
+	// Opposé : −√2, −1/3 (même rendu que la partie positive)
+	if (value.type === 'opposite') {
+		return `-${formatEndpointValue(value.operand)}`;
+	}
+
+	// Somme / différence : (1+√5)/2 doit garder ses parenthèses
+	if (value.type === 'addition' || value.type === 'subtraction') {
+		const right = formatEndpointValue(value.right);
+		const op = value.type === 'addition' ? '+' : '-';
+		return `${formatEndpointValue(value.left)}${op}${right}`;
+	}
+
 	// Handle division: a/b
 	if (isDivision(value)) {
-		return `${formatEndpointValue(value.numerator)}/${formatEndpointValue(value.denominator)}`;
+		const wrap = (node: MathNode): string => {
+			const text = formatEndpointValue(node);
+			return node.type === 'addition' || node.type === 'subtraction' ? `(${text})` : text;
+		};
+		return `${wrap(value.numerator)}/${wrap(value.denominator)}`;
+	}
+
+	// 3π : coefficient entier collé
+	if (isMultiplication(value) && isNumber(value.left) && isMathConstant(value.right)) {
+		return `${value.left.value}${formatEndpointValue(value.right)}`;
 	}
 
 	// Handle multiplication: a*b
 	if (isMultiplication(value)) {
 		// Check if it's coefficient * sqrt(n) pattern for nice display
-		if (isFunction(value.right) && value.right.name === 'sqrt' && value.right.args.length === 1) {
+		if (isFunction(value.right) && value.right.args.length === 1) {
+			const symbol = rootSymbol(value.right);
 			const arg = value.right.args[0];
-			if (isNumber(arg)) {
-				return `${formatEndpointValue(value.left)}*√${arg.value}`;
+			if (symbol !== null && isNumber(arg)) {
+				return `${formatEndpointValue(value.left)}*${symbol}${arg.value}`;
 			}
 		}
 		return `${formatEndpointValue(value.left)}*${formatEndpointValue(value.right)}`;
@@ -279,4 +316,20 @@ function formatIntervalAsCondition(interval: Interval, variable: string): string
 	const upperOp = upper.type === 'closed' ? '≤' : '<';
 
 	return `${lowerVal} ${lowerOp} ${variable} ${upperOp} ${upperVal}`;
+}
+
+/**
+ * Symbole d'une racine : √ (carrée), ∛ (cubique, `\sqrt[3]` ou `cbrt`), ∜ ;
+ * `null` pour un autre indice (rendu par `toCustom`, `sqrt[5](…)`).
+ */
+function rootSymbol(node: MathNode): string | null {
+	if (!isFunction(node)) return null;
+	if (node.name === 'cbrt') return '∛';
+	if (node.name !== 'sqrt') return null;
+	if (node.base === undefined) return '√';
+	if (!isNumber(node.base)) return null;
+	if (node.base.value === '2') return '√';
+	if (node.base.value === '3') return '∛';
+	if (node.base.value === '4') return '∜';
+	return null;
 }

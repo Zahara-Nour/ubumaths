@@ -168,7 +168,45 @@ export function sampleSignOnInterval(
 	}
 
 	// Check if all signs are the same
-	return determineConsensusSign(signs);
+	const sign = determineConsensusSign(signs);
+
+	// ⚠️ Sur un intervalle infini, les points sont tirés jusqu'à ±100 : une
+	// exponentielle y passe sous la tolérance (e^{−34}·(−33) ≈ 10⁻¹³) et le
+	// signe sortait « 0 » — f « constante » sur ]−∞ ; −1/2[ pour x e^{2x},
+	// sur ℝ pour e^{−x²}. On reprend alors des points PROCHES de la borne
+	// finie, où la valeur se mesure. Une expression vraiment nulle sur
+	// l'intervalle (x + |x| sur ]−∞ ; 0[) y reste nulle.
+	if (sign === 'zero') {
+		const near = getNearSamplePoints(interval);
+		if (near.length > 0) {
+			const nearSigns = near
+				.map((point) => evaluateAtPoint(expr, variable, point))
+				.filter((value): value is number => value !== null)
+				.map((value) => signFromNumber(value, tolerance));
+			if (nearSigns.length > 0) return determineConsensusSign(nearSigns);
+		}
+	}
+
+	return sign;
+}
+
+/** Les écarts à la borne finie où reprendre l'échantillonnage. */
+const NEAR_OFFSETS = [0.5, 1, 2, 4, 8] as const;
+
+/**
+ * Des points proches de la borne FINIE d'un intervalle infini (ou autour de 0
+ * sur ℝ), `[]` pour un intervalle borné : là, les points sont déjà proches.
+ */
+function getNearSamplePoints(interval: Interval): number[] {
+	const lower = getNumericBound(interval.lower.value, 'lower');
+	const upper = getNumericBound(interval.upper.value, 'upper');
+	if (lower === null || upper === null) return [];
+	const lowerInfinite = lower === -Infinity;
+	const upperInfinite = upper === Infinity;
+	if (lowerInfinite && upperInfinite) return [-2, -1, 0, 1, 2];
+	if (lowerInfinite) return NEAR_OFFSETS.map((d) => upper - d);
+	if (upperInfinite) return NEAR_OFFSETS.map((d) => lower + d);
+	return [];
 }
 
 // =============================================================================

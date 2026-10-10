@@ -1668,6 +1668,47 @@ export type Database = {
           },
         ]
       }
+      classification_nodes: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          kind: string
+          name: string
+          parent_id: string | null
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          name: string
+          parent_id?: string | null
+          position?: number
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          name?: string
+          parent_id?: string | null
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classification_nodes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       construction_demo_scripts: {
         Row: {
           author_id: string
@@ -2112,12 +2153,15 @@ export type Database = {
           created_at: string
           display_order: number
           exigence: string
+          grade: string | null
           id: string
           kind: string
           name: string
-          objective_id: string
+          node_id: string | null
+          objective_id: string | null
           rang: number | null
           regime_acquisition: string
+          rubrique: string | null
           updated_at: string
         }
         Insert: {
@@ -2126,12 +2170,15 @@ export type Database = {
           created_at?: string
           display_order?: number
           exigence?: string
+          grade?: string | null
           id?: string
           kind: string
           name: string
-          objective_id: string
+          node_id?: string | null
+          objective_id?: string | null
           rang?: number | null
           regime_acquisition?: string
+          rubrique?: string | null
           updated_at?: string
         }
         Update: {
@@ -2140,15 +2187,25 @@ export type Database = {
           created_at?: string
           display_order?: number
           exigence?: string
+          grade?: string | null
           id?: string
           kind?: string
           name?: string
-          objective_id?: string
+          node_id?: string | null
+          objective_id?: string | null
           rang?: number | null
           regime_acquisition?: string
+          rubrique?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "curriculum_points_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "curriculum_points_objective_id_fkey"
             columns: ["objective_id"]
@@ -2329,6 +2386,107 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      dictionary_entries: {
+        Row: {
+          auto_link: boolean
+          created_at: string
+          definitions: Json | null
+          derived_from: string | null
+          exemples: Json | null
+          forms: string[]
+          grade: string
+          hidden: boolean
+          history: string | null
+          id: string
+          image: string | null
+          position: number
+          see_also: Json | null
+          sense: string | null
+          shared_with: string[]
+          synonyms: string[]
+          tags: string[]
+          term: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_link?: boolean
+          created_at?: string
+          definitions?: Json | null
+          derived_from?: string | null
+          exemples?: Json | null
+          forms?: string[]
+          grade: string
+          hidden?: boolean
+          history?: string | null
+          id?: string
+          image?: string | null
+          position: number
+          see_also?: Json | null
+          sense?: string | null
+          shared_with?: string[]
+          synonyms?: string[]
+          tags?: string[]
+          term: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_link?: boolean
+          created_at?: string
+          definitions?: Json | null
+          derived_from?: string | null
+          exemples?: Json | null
+          forms?: string[]
+          grade?: string
+          hidden?: boolean
+          history?: string | null
+          id?: string
+          image?: string | null
+          position?: number
+          see_also?: Json | null
+          sense?: string | null
+          shared_with?: string[]
+          synonyms?: string[]
+          tags?: string[]
+          term?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      dictionary_entry_versions: {
+        Row: {
+          entry: Json
+          entry_id: string
+          id: string
+          saved_at: string
+          saved_by: string | null
+        }
+        Insert: {
+          entry: Json
+          entry_id: string
+          id?: string
+          saved_at?: string
+          saved_by?: string | null
+        }
+        Update: {
+          entry?: Json
+          entry_id?: string
+          id?: string
+          saved_at?: string
+          saved_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictionary_entry_versions_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "dictionary_entries"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2958,6 +3116,45 @@ export type Database = {
           },
         ]
       }
+      exercise_classifications: {
+        Row: {
+          created_at: string
+          exercise_id: string
+          is_primary: boolean
+          node_id: string
+          position: number
+        }
+        Insert: {
+          created_at?: string
+          exercise_id: string
+          is_primary?: boolean
+          node_id: string
+          position?: number
+        }
+        Update: {
+          created_at?: string
+          exercise_id?: string
+          is_primary?: boolean
+          node_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_classifications_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_classifications_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercise_completions: {
         Row: {
           assignment_id: string | null
@@ -3241,6 +3438,7 @@ export type Database = {
           shared: Json | null
           slug: string | null
           source: string | null
+          source_type_id: string | null
           title: string | null
           topic: string | null
           updated_at: string
@@ -3260,6 +3458,7 @@ export type Database = {
           shared?: Json | null
           slug?: string | null
           source?: string | null
+          source_type_id?: string | null
           title?: string | null
           topic?: string | null
           updated_at?: string
@@ -3279,6 +3478,7 @@ export type Database = {
           shared?: Json | null
           slug?: string | null
           source?: string | null
+          source_type_id?: string | null
           title?: string | null
           topic?: string | null
           updated_at?: string
@@ -3306,6 +3506,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "exercises_source_type_id_fkey"
+            columns: ["source_type_id"]
+            isOneToOne: false
+            referencedRelation: "source_types"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -4702,6 +4909,24 @@ export type Database = {
             referencedColumns: ["student_id"]
           },
         ]
+      }
+      grade_predecessors: {
+        Row: {
+          created_at: string
+          grade: string
+          previous_grade: string
+        }
+        Insert: {
+          created_at?: string
+          grade: string
+          previous_grade: string
+        }
+        Update: {
+          created_at?: string
+          grade?: string
+          previous_grade?: string
+        }
+        Relationships: []
       }
       journal_entry_activities: {
         Row: {
@@ -8894,6 +9119,7 @@ export type Database = {
       }
       question_templates: {
         Row: {
+          classification_node_id: string | null
           created_at: string | null
           created_by: string | null
           default_display_options: Json | null
@@ -8918,6 +9144,7 @@ export type Database = {
           variations: Json
         }
         Insert: {
+          classification_node_id?: string | null
           created_at?: string | null
           created_by?: string | null
           default_display_options?: Json | null
@@ -8942,6 +9169,7 @@ export type Database = {
           variations: Json
         }
         Update: {
+          classification_node_id?: string | null
           created_at?: string | null
           created_by?: string | null
           default_display_options?: Json | null
@@ -8966,6 +9194,13 @@ export type Database = {
           variations?: Json
         }
         Relationships: [
+          {
+            foreignKeyName: "question_templates_classification_node_id_fkey"
+            columns: ["classification_node_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "question_templates_created_by_fkey"
             columns: ["created_by"]
@@ -10174,6 +10409,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      source_types: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          name: string
+          position: number
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          position?: number
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          position?: number
+        }
+        Relationships: []
       }
       spreadsheets: {
         Row: {
@@ -14630,6 +14889,7 @@ export type Database = {
           shared: Json | null
           slug: string | null
           source: string | null
+          source_type_id: string | null
           title: string | null
           topic: string | null
           updated_at: string
@@ -15177,6 +15437,7 @@ export type Database = {
         Args: { p_token: string; p_worksheet_id: string }
         Returns: Json
       }
+      grade_ancestors: { Args: { p_grade: string }; Returns: string[] }
       grant_parental_consent: {
         Args: { p_ip?: unknown; p_token: string; p_user_agent?: string }
         Returns: Json

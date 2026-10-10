@@ -1,69 +1,45 @@
 /**
- * Config eslint « rapide » : les deux règles maison, plus `no-irregular-whitespace`.
+ * Config eslint « rapide » : les règles de la config complète, sans le service
+ * TypeScript.
  *
  * Le coût d'eslint vient de `projectService: true`, qui construit tout le
- * programme TypeScript. Or `require-zod-validation` et
- * `require-supabase-error-check` sont des règles AST pures — elles ne consultent
- * jamais le vérificateur de types. Sans le service, elles couvrent tout le
- * projet pour une fraction du coût, ce qui permet de les lancer avant de
- * pousser plutôt que d'attendre un aller-retour CI.
+ * programme TypeScript. La config complète (`eslint.config.js`) ne le pose que
+ * sur les fichiers Svelte, et ses règles de niveau ERREUR sont des règles AST
+ * ou de jeton :
  *
- * `configs.base` installe le parseur Svelte sans activer de règles ; les plugins
- * sont enregistrés (sans leurs règles) pour que les commentaires
- * `eslint-disable` du code se résolvent au lieu de lever « rule not found ».
+ * - `js.configs.recommended` : `no-fallthrough` (CI rouge de #927 alors que ce
+ *   lint rapide était vert), `no-case-declarations`, `no-useless-escape`,
+ *   `no-irregular-whitespace` (#762), `prefer-const`, `no-empty`… ;
+ * - `ts.configs.recommended`, la variante SANS types de typescript-eslint :
+ *   `no-explicit-any`, `ban-ts-comment`, `no-unused-expressions`,
+ *   `no-unused-vars`… ;
+ * - `svelte.configs.recommended` : `require-each-key`, `valid-each-key`,
+ *   `no-unused-svelte-ignore`, `no-useless-mustaches`… ;
+ * - les deux règles maison : `custom/require-zod-validation`,
+ *   `supabase/require-error-check`.
  *
- * La config complète (`eslint.config.js`) reste la référence en CI.
+ * Seule exception : `svelte/no-unused-props` exige les types et se tait sans
+ * eux (`getTypeScriptTools` rend null) — elle reste vue par la CI seule.
+ *
+ * On réutilise donc la config complète telle quelle en retirant seulement
+ * `projectService` : la liste des règles ne peut pas diverger de la CI. Les
+ * règles en `warn` ne font pas échouer la CI ; `scripts/lint-fast.sh` passe
+ * `--quiet` pour n'afficher que les erreurs.
  */
-import { fileURLToPath } from 'node:url';
-import { includeIgnoreFile } from '@eslint/compat';
-import svelte from 'eslint-plugin-svelte';
-import { defineConfig } from 'eslint/config';
-import ts from 'typescript-eslint';
-import requireZodValidation from './eslint-rules/require-zod-validation.js';
-import requireSupabaseErrorCheck from './eslint-rules/require-supabase-error-check.js';
+import fullConfig from './eslint.config.js';
 
-const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
+/**
+ * Copie d'un bloc de config sans `projectService` (le parseur TS des
+ * `<script lang="ts">` et `svelteConfig` sont conservés).
+ */
+function withoutProjectService(block) {
+	const parserOptions = block.languageOptions?.parserOptions;
+	if (!parserOptions || !('projectService' in parserOptions)) return block;
+	const { projectService: _projectService, ...rest } = parserOptions;
+	return {
+		...block,
+		languageOptions: { ...block.languageOptions, parserOptions: rest }
+	};
+}
 
-export default defineConfig(
-	includeIgnoreFile(gitignorePath),
-	{ ignores: ['extern/**', 'externe/**', 'static/upsilon-simulator/**'] },
-	...svelte.configs.base,
-	{
-		// `configs.base` pose le parseur Svelte mais laisse le `<script>` en JS :
-		// sans cette délégation, tout `lang="ts"` casse au premier type annoté.
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-		languageOptions: { parserOptions: { parser: ts.parser, extraFileExtensions: ['.svelte'] } }
-	},
-	{
-		files: ['**/*.ts'],
-		languageOptions: { parser: ts.parser }
-	},
-	{
-		// Aucune règle de ces plugins n'est active ici : leurs `eslint-disable`
-		// seraient donc tous signalés inutiles. C'est un artefact de la config
-		// réduite, pas une information.
-		linterOptions: { reportUnusedDisableDirectives: 'off' }
-	},
-	{
-		// Enregistrés pour leurs noms seulement : aucune de leurs règles n'est activée.
-		plugins: { '@typescript-eslint': ts.plugin }
-	},
-	{
-		// Règle de jeton, sans service TypeScript : une espace insécable écrite
-		// telle quelle (souvent dans une regex de test) a fait rougir la CI de #762
-		// alors que ce lint rapide était vert.
-		files: ['**/*.ts', '**/*.svelte'],
-		rules: { 'no-irregular-whitespace': 'error' }
-	},
-	{
-		files: ['src/routes/api/**/*.ts'],
-		plugins: { custom: { rules: { 'require-zod-validation': requireZodValidation } } },
-		rules: { 'custom/require-zod-validation': 'error' }
-	},
-	{
-		files: ['src/**/*.ts', 'src/**/*.svelte'],
-		ignores: ['src/**/__tests__/**', 'src/**/*.test.ts', 'src/**/*.spec.ts'],
-		plugins: { supabase: { rules: { 'require-error-check': requireSupabaseErrorCheck } } },
-		rules: { 'supabase/require-error-check': 'error' }
-	}
-);
+export default fullConfig.map(withoutProjectService);

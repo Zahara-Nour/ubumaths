@@ -6,10 +6,10 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 
 ## Documents sources
 
-- Étude v1 : [`docs/wip/geometry/study-angle-object.md`](./study-angle-object.md)
-- Étude v2 (finale) : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
+- Étude v1 : `docs/wip/geometry/study-angle-object.md`
+- Étude v2 (finale) : `docs/wip/geometry/study-angle-object-v2.md`
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
-- Prompt source : [`docs/wip/geometry/prompt-angle-object.md`](./prompt-angle-object.md)
+- Prompt source : `docs/wip/geometry/prompt-angle-object.md`
 
 ## Statut des phases
 
@@ -207,16 +207,16 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 
 ### Documentation
 
-- `docs/ref/geometry/dsl-builtins.md` (section `angle` complète, ~80 LoC).
+- `docs/systeme/geometrie/dsl-builtins.md` (section `angle` complète, ~80 LoC).
 - `CHANGELOG.md` (5 breaking changes).
 
 ---
 
 ## Liens
 
-- Prompt source : [`docs/wip/geometry/prompt-angle-object.md`](./prompt-angle-object.md)
-- Étude v1 : [`docs/wip/geometry/study-angle-object.md`](./study-angle-object.md) (sections 5, 7, 8, 9 réutilisables)
-- Étude v2 finale : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
+- Prompt source : `docs/wip/geometry/prompt-angle-object.md`
+- Étude v1 : `docs/wip/geometry/study-angle-object.md` (sections 5, 7, 8, 9 réutilisables)
+- Étude v2 finale : `docs/wip/geometry/study-angle-object-v2.md`
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
 - MEMORY : `geometry-core-status.md`, `transformation-objects.md`, `vector-implementation.md`
 
@@ -656,7 +656,7 @@ Résidus `marque_angle|angle_droit|angleMark|createAngleMark|createScalarAngle|a
 
 ### Prêt pour P7 ?
 
-Oui. P7 couvre : démos (4 routes), converters (3 fichiers), outillage migration (`lint-angle-builtins.ts`, `migrate-angle-builtins-supabase.ts`), documentation (`docs/ref/geometry/dsl-builtins.md`), CHANGELOG.md (5 breaking changes), code-review final, suppression de `figure-angle-mark.test.ts`.
+Oui. P7 couvre : démos (4 routes), converters (3 fichiers), outillage migration (`lint-angle-builtins.ts`, `migrate-angle-builtins-supabase.ts`), documentation (`docs/systeme/geometrie/dsl-builtins.md`), CHANGELOG.md (5 breaking changes), code-review final, suppression de `figure-angle-mark.test.ts`.
 
 ---
 
@@ -688,10 +688,10 @@ Oui. P7 couvre : démos (4 routes), converters (3 fichiers), outillage migration
 
 ### Bloc D — Documentation
 
-- `docs/ref/geometry/dsl-builtins.md` créé (~190 LoC) : `angle()`, `angle_polaire()`, `mesure()` (3 overloads), `sommet()`, `cote()`, `bissectrice()` overload, `rotation()` overload, table marquages, table migration.
+- `docs/systeme/geometrie/dsl-builtins.md` créé (~190 LoC) : `angle()`, `angle_polaire()`, `mesure()` (3 overloads), `sommet()`, `cote()`, `bissectrice()` overload, `rotation()` overload, table marquages, table migration.
 - `CHANGELOG.md` : section `[Unreleased]` ajoutée avec les 5 breaking changes + liens outils.
-- `docs/ref/geometry/architecture.md` : `GeoAngleMark` → `GeoAngle` dans la liste des types.
-- `docs/ref/geometry/code-quality.md` : `angle_vecteurs` → `mesure` dans la suggestion de modules.
+- `docs/systeme/geometrie/architecture.md` : `GeoAngleMark` → `GeoAngle` dans la liste des types.
+- `docs/systeme/geometrie/code-quality.md` : `angle_vecteurs` → `mesure` dans la suggestion de modules.
 
 ### Bloc E — Nettoyage
 
@@ -727,7 +727,7 @@ Pas de code-reviewer lancé (travail direct sur les migrations mécaniques, tous
 
 - `scripts/migrate-angle-builtins-supabase.ts`
 - `scripts/lint-angle-builtins.ts`
-- `docs/ref/geometry/dsl-builtins.md`
+- `docs/systeme/geometrie/dsl-builtins.md`
 
 **Modifiés :**
 
@@ -750,8 +750,8 @@ Pas de code-reviewer lancé (travail direct sur les migrations mécaniques, tous
 - `src/lib/geometry-core/rendering/__tests__/test-helpers.ts`
 - `src/lib/geometry-core/graph/__tests__/figure-angle.test.ts`
 - `src/lib/geometry-core/graph/__tests__/figure-scalar.test.ts`
-- `docs/ref/geometry/architecture.md`
-- `docs/ref/geometry/code-quality.md`
+- `docs/systeme/geometrie/architecture.md`
+- `docs/systeme/geometrie/code-quality.md`
 - `CHANGELOG.md`
 
 **Supprimé :**

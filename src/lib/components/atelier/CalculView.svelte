@@ -7,7 +7,7 @@
 	 * (décision D5). Les objets du panneau sont connus du moteur sans que rien
 	 * ne soit redéclaré (Q1, option B).
 	 *
-	 * Spécification : `docs/wip/atelier-vue-calcul-phase0.md`.
+	 * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md`.
 	 */
 	import { convertLatexToMarkup } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
@@ -16,13 +16,55 @@
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import {
+		exportFileName,
+		historyToJson,
+		historyToUbumark,
+		type ExportFormat
+	} from '$lib/atelier/history-export';
+	import {
+		MAX_HISTORY_BYTES,
+		readHistory,
+		type ImportedHistory
+	} from '$lib/atelier/history-import';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
 	 * cliquées dans « Mes objets », et elles doivent écrire dans le même
 	 * historique que la saisie au clavier.
 	 */
-	let { desk }: { desk: CalcDesk } = $props();
+	let {
+		desk,
+		onreplay
+	}: {
+		desk: CalcDesk;
+		/**
+		 * Un historique relu et valide : au conteneur de confirmer, de vider
+		 * l'atelier puis de rejouer (R2) — ce n'est pas l'affaire de cette vue.
+		 */
+		onreplay?: (history: ImportedHistory) => void;
+	} = $props();
+
+	let fileInput = $state<HTMLInputElement | null>(null);
+
+	/** Lire le fichier choisi ; un refus est dit dans la ligne de retour (E1 à E3). */
+	async function handleFile(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		// Vidé tout de suite : rechoisir le même fichier doit relancer la lecture
+		input.value = '';
+		if (file === undefined) return;
+		if (file.size > MAX_HISTORY_BYTES) {
+			desk.notice = 'Cet historique est trop long pour être rejoué.';
+			return;
+		}
+		const read = readHistory(await file.text());
+		if (!read.ok) {
+			desk.notice = read.message;
+			return;
+		}
+		onreplay?.(read.history);
+	}
 
 	let field = $state<HTMLInputElement | null>(null);
 
@@ -97,9 +139,67 @@
 	function canKeep(entry: Entry): boolean {
 		return entry.result?.kind === 'calcul' && entry.result.ast !== undefined;
 	}
+
+	/** Rien à exporter : les boutons restent visibles, désactivés, avec leur raison (X1). */
+	const empty = $derived(desk.entries.length === 0);
+
+	/** Enregistrer l'historique dans un fichier, au format choisi (lot C). */
+	function download(format: ExportFormat) {
+		const now = new Date();
+		const content =
+			format === 'json' ? historyToJson(desk.entries, now) : historyToUbumark(desk.entries, now);
+		const type = format === 'json' ? 'application/json' : 'text/markdown';
+		const url = URL.createObjectURL(new Blob([content], { type: `${type};charset=utf-8` }));
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = exportFileName(format, now);
+		// Dans la page, et l'adresse libérée plus tard : Firefox et Safari ont
+		// annulé des téléchargements dont l'adresse disparaissait aussitôt (revue)
+		document.body.append(link);
+		link.click();
+		link.remove();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+	}
 </script>
 
 <div class="calcul">
+	<div class="export" role="group" aria-label="Exporter l’historique">
+		<span>Exporter l’historique :</span>
+		<!-- La raison est reliée aux boutons : désactivés, ils ne prennent pas le focus (a11y) -->
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={empty}
+			aria-describedby={empty ? 'export-raison' : undefined}
+			onclick={() => download('json')}
+		>
+			JSON (pour rejouer)
+		</Button>
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={empty}
+			aria-describedby={empty ? 'export-raison' : undefined}
+			onclick={() => download('ubumark')}
+		>
+			ubumark (pour lire)
+		</Button>
+		{#if empty}<span id="export-raison" class="raison">Rien à exporter pour l’instant.</span>{/if}
+		{#if onreplay}
+			<Button variant="outline" size="sm" onclick={() => fileInput?.click()}>
+				Rejouer un historique…
+			</Button>
+			<input
+				bind:this={fileInput}
+				class="sr-only"
+				type="file"
+				accept="application/json,.json"
+				tabindex="-1"
+				aria-hidden="true"
+				onchange={handleFile}
+			/>
+		{/if}
+	</div>
 	<ol class="historique">
 		{#each desk.entries as entry (entry.id)}
 			{@const markup = markupOf(entry)}
@@ -111,6 +211,10 @@
 						<span class="math">{@html markup}</span>
 					{:else}
 						<span class="texte">{entry.text}</span>
+					{/if}
+					{#if entry.note !== undefined}
+						<!-- Montrée même quand la réponse est composée en mathématiques -->
+						<span class="note">{entry.note}</span>
 					{/if}
 					{#if canKeep(entry)}
 						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
@@ -204,6 +308,18 @@
 		padding: 0.75rem;
 	}
 
+	.export {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+	}
+
+	.raison {
+		color: var(--color-muted-foreground);
+	}
+
 	.historique {
 		flex: 1;
 		min-height: 0;
@@ -245,6 +361,11 @@
 	}
 	.texte {
 		white-space: pre-wrap;
+	}
+	.note {
+		flex-basis: 100%;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
 	}
 
 	/* Un tableau déborde en largeur bien plus qu'une formule : il défile dans

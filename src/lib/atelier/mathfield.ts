@@ -15,6 +15,7 @@
 
 import type { AtelierObject, ObjectKind } from './types';
 import { astOf, parseDefinition, readingMode, readNumber } from './parse';
+import { INTERNAL_LETTER, renameVariable } from './letter';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 
@@ -28,10 +29,18 @@ import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
  * Une définition illisible est rendue telle quelle : l'élève doit retrouver ce
  * qu'il a tapé pour le corriger, pas un champ vide.
  */
-export function fieldLatexOf(object: AtelierObject, functionNames: readonly string[]): string {
-	const definition = object.definition;
-	if (definition.trim() === '') return '';
+export function fieldLatexOf(
+	object: AtelierObject,
+	functionNames: readonly string[],
+	letter: string = INTERNAL_LETTER
+): string {
+	// `f(t) = t^2` : rangée en x, montrée dans la lettre de l'élève (`letter.ts`)
 	const provenance = object.provenance ?? 'url';
+	const definition =
+		letter === INTERNAL_LETTER || object.kind !== 'function'
+			? object.definition
+			: renameVariable(object.definition, INTERNAL_LETTER, letter, provenance, functionNames);
+	if (definition.trim() === '') return '';
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
 	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
 	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)

@@ -94,19 +94,21 @@ describe('Seed du programme — 1ʳᵉ spécialité', () => {
 		);
 	});
 
-	it('laisse regime_acquisition au défaut et ne crée aucune liste d’automatismes', async () => {
+	it('laisse regime_acquisition au défaut et aucune liste d’automatismes ne vise ses points', async () => {
 		const { points } = await pointsOfGrade('1_SPE');
+		expect(points).toHaveLength(173);
 		// Le prof bascule en `fluence` les points qu'il décide de travailler par
 		// répétition ; le seed ne présume de rien.
 		expect(points.every((p) => p.regime_acquisition === 'diversite')).toBe(true);
 
-		// Aucune liste d'automatismes : les points concernés appartiennent aux
-		// programmes des années antérieures, dont les arbres n'existent pas encore.
+		// La liste d'automatismes de 1re spé est celle du seed points → nœuds
+		// (20261009080000) : elle ne vise jamais un point de cet ancien seed.
 		const { data: listes } = await service
 			.from('curriculum_point_automatismes')
 			.select('point_id')
 			.eq('grade', '1_SPE');
-		expect(listes ?? []).toHaveLength(0);
+		const anciens = new Set(points.map((p) => p.id));
+		expect((listes ?? []).filter((l) => anciens.has(l.point_id))).toEqual([]);
 	});
 
 	it('marque en approfondissement les 28 points hors attendus', async () => {
@@ -297,22 +299,25 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 		await cleanupCompetenceTestData();
 	});
 
-	it('un élève connecté lit les 262 points', async () => {
+	it('un élève connecté lit les 262 points de l’ancien seed', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
 
+		// Ancien seed seulement (grade NULL) : le seed points → nœuds de Tle spé
+		// (20261009120000) occupe aussi des codes TSPE-3xx/5xx.
 		const { data, error } = await client
 			.from('curriculum_points')
 			.select('code')
-			.like('code', 'TSPE-%');
+			.like('code', 'TSPE-%')
+			.is('grade', null);
 		expect(error).toBeNull();
 		expect(data ?? []).toHaveLength(262);
 	});
 
-	it('un visiteur anonyme ne lit aucun point', async () => {
-		// Les 262 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+	it('un visiteur anonyme lit les points (ouverture B6, 2026-10-07)', async () => {
+		// Les 262 points existent bien (décor vérifié côté service).
 		const { points } = await pointsOfGrade('T_SPE');
 		expect(points).toHaveLength(262);
 
@@ -327,11 +332,11 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 			.from('curriculum_points')
 			.select('code')
 			.like('code', 'TSPE-%');
-		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
-		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
-		// refus d'une autre erreur (table absente, colonne renommée)
-		expect(error?.code).toBe('42501');
-		expect(data ?? []).toHaveLength(0);
+		// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+		// copie des BO, documents publics — l'anonyme LIT les points (GRANT + policy ;
+		// cf. anon-option-b.test.ts, TABLES_LUES_PAR_ANON).
+		expect(error).toBeNull();
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 });
 
@@ -407,22 +412,25 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 		await cleanupCompetenceTestData();
 	});
 
-	it('un élève connecté lit les 139 points', async () => {
+	it('un élève connecté lit les 139 points de l’ancien seed', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
 
+		// Ancien seed seulement (grade NULL) : le seed points → nœuds de Tle comp.
+		// (20261009160000) occupe aussi des codes TCOMP-2xx/3xx.
 		const { data, error } = await client
 			.from('curriculum_points')
 			.select('code')
-			.like('code', 'TCOMP-%');
+			.like('code', 'TCOMP-%')
+			.is('grade', null);
 		expect(error).toBeNull();
 		expect(data ?? []).toHaveLength(139);
 	});
 
-	it('un visiteur anonyme ne lit aucun point', async () => {
-		// Les 139 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+	it('un visiteur anonyme lit les points (ouverture B6, 2026-10-07)', async () => {
+		// Les 139 points existent bien (décor vérifié côté service).
 		const { points } = await pointsOfGrade('T_COMP');
 		expect(points).toHaveLength(139);
 
@@ -437,11 +445,11 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 			.from('curriculum_points')
 			.select('code')
 			.like('code', 'TCOMP-%');
-		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
-		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
-		// refus d'une autre erreur (table absente, colonne renommée)
-		expect(error?.code).toBe('42501');
-		expect(data ?? []).toHaveLength(0);
+		// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+		// copie des BO, documents publics — l'anonyme LIT les points (GRANT + policy ;
+		// cf. anon-option-b.test.ts, TABLES_LUES_PAR_ANON).
+		expect(error).toBeNull();
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 });
 
@@ -541,22 +549,25 @@ describe('Seed du programme — terminale maths expertes, accès', () => {
 		await cleanupCompetenceTestData();
 	});
 
-	it('un élève connecté lit les 153 points', async () => {
+	it('un élève connecté lit les 153 points de l’ancien seed', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const client = (await createAuthenticatedClient(
 			student.email
 		)) as unknown as SupabaseClient<Database>;
 
+		// Ancien seed seulement (grade NULL) : le seed points → nœuds des Expertes
+		// (20261009200000) occupe aussi des codes TEXP-2xx/3xx.
 		const { data, error } = await client
 			.from('curriculum_points')
 			.select('code')
-			.like('code', 'TEXP-%');
+			.like('code', 'TEXP-%')
+			.is('grade', null);
 		expect(error).toBeNull();
 		expect(data ?? []).toHaveLength(153);
 	});
 
-	it('un visiteur anonyme ne lit aucun point', async () => {
-		// Les 153 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+	it('un visiteur anonyme lit les points (ouverture B6, 2026-10-07)', async () => {
+		// Les 153 points existent bien (décor vérifié côté service).
 		const { points } = await pointsOfGrade('T_EXP');
 		expect(points).toHaveLength(153);
 
@@ -571,11 +582,11 @@ describe('Seed du programme — terminale maths expertes, accès', () => {
 			.from('curriculum_points')
 			.select('code')
 			.like('code', 'TEXP-%');
-		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
-		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
-		// refus d'une autre erreur (table absente, colonne renommée)
-		expect(error?.code).toBe('42501');
-		expect(data ?? []).toHaveLength(0);
+		// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+		// copie des BO, documents publics — l'anonyme LIT les points (GRANT + policy ;
+		// cf. anon-option-b.test.ts, TABLES_LUES_PAR_ANON).
+		expect(error).toBeNull();
+		expect((data ?? []).length).toBeGreaterThan(0);
 	});
 });
 

@@ -33,13 +33,13 @@ beforeEach(() => {
 });
 
 describe('per-student load (auth)', () => {
-	it('redirects unauthenticated to /auth/signin', async () => {
+	it('redirects unauthenticated to /auth/login', async () => {
 		const { load } = await import('../+page.server');
 		const supabase = createMockSupabase();
 		const locals = createMockLocals(undefined, supabase);
 
 		await expect(load({ params: { student_id: STUDENT_ID }, locals } as any)).rejects.toMatchObject(
-			{ status: 303, location: '/auth/signin' }
+			{ status: 303, location: '/auth/login' }
 		);
 	});
 

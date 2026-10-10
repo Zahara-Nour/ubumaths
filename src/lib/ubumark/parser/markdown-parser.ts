@@ -36,7 +36,8 @@ import type {
 	HintReferenceNode,
 	LineBreakNode,
 	InternalLinkNode,
-	InternalLinkReferenceType
+	InternalLinkReferenceType,
+	LexiconMark
 } from '../types';
 import {
 	extractMathOutside,
@@ -65,6 +66,7 @@ import { blockLineRanges, isSpecialBlockEnd } from './block-ranges';
 import {
 	INLINE_CODE_REGEX,
 	INLINE_DETAIL_REGEX,
+	LEXICON_MARK_REGEX,
 	maskSpans,
 	parseDetailKind
 } from '../utils/detail-kinds';
@@ -265,7 +267,9 @@ const LINK_REGEX = /(?<!!)\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g;
  * #algebre_II
  * ```
  */
-const HASHTAG_REGEX = /(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ][a-zA-Zàâäéèêëïîôùûüçœæ0-9_-]*)/g;
+// Ne se termine jamais par un tiret : « #geo- » donne « geo »
+const HASHTAG_REGEX =
+	/(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ](?:[a-zA-Zàâäéèêëïîôùûüçœæ0-9_-]*[a-zA-Zàâäéèêëïîôùûüçœæ0-9_])?)/g;
 
 /**
  * Regex for mentions: @username (must start with letter)
@@ -283,7 +287,8 @@ const HASHTAG_REGEX = /(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ][a
  * @user_123
  * ```
  */
-const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z][a-zA-Z0-9_.-]*)/g;
+// Ne se termine jamais par un point ou un tiret : « Merci @cotice. » donne « cotice »
+const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?)/g;
 
 /**
  * Regex for hint references: {{hint:id}} where id starts with a letter
@@ -1457,9 +1462,46 @@ function parseTextFormatting(text: string): InlineNode[] {
 }
 
 /**
- * Pipeline de {@link parseTextFormatting}, hors détails en ligne.
+ * Pipeline de {@link parseTextFormatting}, hors détails en ligne : d'abord les
+ * mots du lexique marqués à la main (`[mot]{.def}`, `{.def=…}`, `{.nodef}`),
+ * dont le texte suit le pipeline ordinaire puis reçoit la marque. Le code en
+ * ligne est masqué : un marqueur n'y est jamais lu.
  */
 function parseTextFormattingPipeline(text: string): InlineNode[] {
+	if (!text) return [];
+
+	const nodes: InlineNode[] = [];
+	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
+	const markRegex = new RegExp(LEXICON_MARK_REGEX.source, LEXICON_MARK_REGEX.flags);
+	let position = 0;
+	let match: RegExpExecArray | null;
+	while ((match = markRegex.exec(masked)) !== null) {
+		if (match.index > position) {
+			nodes.push(...parseTextFormattingCore(text.slice(position, match.index)));
+		}
+		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
+		const target = match[3]?.trim();
+		const lexicon: LexiconMark =
+			match[2] === 'nodef'
+				? { mode: 'block' }
+				: target
+					? { mode: 'force', target }
+					: { mode: 'force' };
+		for (const node of parseTextFormattingCore(inner)) {
+			nodes.push(node.type === 'text' ? { ...node, lexicon } : node);
+		}
+		position = match.index + match[0].length;
+	}
+	if (position < text.length) {
+		nodes.push(...parseTextFormattingCore(text.slice(position)));
+	}
+	return nodes;
+}
+
+/**
+ * Pipeline ordinaire : trous, indices, liens, hashtags, mentions, mise en forme.
+ */
+function parseTextFormattingCore(text: string): InlineNode[] {
 	if (!text) return [];
 
 	// Step 1: Extract blanks first

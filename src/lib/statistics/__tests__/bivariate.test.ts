@@ -4,7 +4,7 @@
  * r en décimal.
  *
  * Valeurs de référence calculées en Python (fractions), consignées dans
- * `docs/wip/bloc-nuage-progress.md`.
+ * `docs/archive/wip/bloc-nuage-progress.md`.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -157,7 +157,11 @@ describe('grandes fractions (revue)', () => {
 	it('100 points aux dénominateurs les plus grands permis : vite, et des décimaux finis', () => {
 		const start = performance.now();
 		const fit = bivariateFit(xs, ys)!;
-		expect(performance.now() - start).toBeLessThan(200);
+		// Garde contre une EXPLOSION (fractions géantes : des secondes, voire
+		// plus), pas une mesure de performance. La borne à 200 ms a échoué en CI à
+		// 201 ms sur une machine chargée : 1000 ms laisse la marge du bruit et
+		// attrape toujours l'explosion.
+		expect(performance.now() - start).toBeLessThan(1000);
 		for (const value of [fit.slope, fit.intercept, fit.meanX, fit.meanY]) {
 			expect(Number.isFinite(toSafeNumber(value))).toBe(true);
 		}

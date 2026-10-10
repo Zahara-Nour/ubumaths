@@ -26,6 +26,11 @@ contourner en silence.
 | 0015 | [Évaluation notée : correction côté serveur](0015-evaluation-notee-correction-serveur.md)                            | 2026-09-30 |
 | 0016 | [Auto-évaluation : le meilleur résultat du jour](0016-auto-evaluation-meilleur-resultat-du-jour.md)                  | 2026-09-30 |
 | 0017 | [Correction concise et détaillée : détails marqués dans le texte](0017-correction-concise-et-detaillee.md)           | 2026-10-02 |
+| 0018 | [Chapitres : une liste tenue par le prof, distincte de la source](0018-chapitres-liste-tenue-par-le-prof.md)         | 2026-10-06 |
+| 0019 | [Classement des contenus : branche > notion > sous-notion](0019-classement-branche-notion-sous-notion.md)            | 2026-10-06 |
+| 0020 | [L'arbre des notions est central ; les programmes pointent l'arbre](0020-arbre-central-programmes-pointeurs.md)      | 2026-10-07 |
+| 0021 | [La prod se met à jour à la main, par la branche `production`](0021-branche-production-mise-en-prod-manuelle.md)     | 2026-10-10 |
+| 0022 | [Le dictionnaire vit en base, l'admin le modifie](0022-dictionnaire-en-base-admin.md)                                | 2026-10-10 |
 
 ## Écrire un ADR
 

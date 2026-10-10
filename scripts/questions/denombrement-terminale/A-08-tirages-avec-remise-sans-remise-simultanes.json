@@ -1,0 +1,212 @@
+{
+	"title": "Tirages dans une urne : avec remise, sans remise, simultanés",
+	"description": "Une même urne, trois façons de tirer : nᵏ, n!/(n − k)!, C(n, k) ; puis tirages contenant une boule donnée (pièges : confondre les trois modèles, oublier de fixer la boule imposée)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-043", "TSPE-032", "TSPE-034", "TSPE-037", "TSPE-044"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Reconnaître le modèle",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Une urne contient ${{n}}$ boules numérotées de $1$ à ${{n}}$. On tire ${{k}}$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement **avec remise** (liste ordonnée des numéros) : $?$\n- successivement **sans remise** (liste ordonnée des numéros) : $?$\n- **simultanément** (ensemble des numéros) : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n^k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:factorial(n)/factorial(n-k)}}",
+					"acceptCombinatorialNotation": true
+				},
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec remise : ordre et répétition, ${{n}}^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:n^k}}}$.",
+					"Sans remise : ordre, pas de répétition, $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }=\\textcolor{{{color:primary.0}}}{{{eval:factorial(n)/factorial(n-k)}}}$.",
+					"Simultanément : ni ordre ni répétition, $\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient ${{n}}$ boules numérotées de $1$ à ${{n}}$. On tire successivement et sans remise ${{k}}$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la **première** boule tirée porte-t-elle le numéro $1$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "k",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:factorial(n-1)/factorial(n-k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La première boule est imposée ; il reste à tirer dans l'ordre ${{eval:k-1}}$ boules distinctes parmi les ${{eval:n-1}}$ restantes.",
+					"$\\dfrac{ {{eval:n-1}}! }{ {{eval:n-k}}! }=\\textcolor{{{color:primary.0}}}{{{eval:factorial(n-1)/factorial(n-k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient ${{n}}$ boules numérotées de $1$ à ${{n}}$. On tire simultanément ${{k}}$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..15"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n-1,k-1)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boule $1$ est dans le tirage ; il reste à choisir ses ${{eval:k-1}}$ compagnes parmi les ${{eval:n-1}}$ autres boules.",
+					"$\\binom{ {{eval:n-1}} }{ {{eval:k-1}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n-1,k-1)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : n = 8, k = 3 → 512 ; 336 ; 56",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["512", "336", "56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : sans remise et simultané échangés",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["512", "56", "336"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : avec remise compté 3⁸",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["6561", "336", "56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : n = 10, k = 3 → 72",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : tous les tirages 720",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["720"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : C(9, 2) = 36 (ordre oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : n = 10, k = 4 → 84",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "4"
+			},
+			"answers": ["84"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : C(9, 4) = 126 (tirages SANS la boule 1)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "4"
+			},
+			"answers": ["126"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : C(10, 4) = 210",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "4"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

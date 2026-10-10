@@ -110,7 +110,7 @@ if (found) {
 	console.error('lint-angle-builtins: FAILED — forbidden angle builtins detected:\n');
 	console.error(output);
 	console.error(
-		'Fix: migrate using the patterns documented in docs/ref/geometry/dsl-builtins.md\n' +
+		'Fix: migrate using the patterns documented in docs/systeme/geometrie/dsl-builtins.md\n' +
 			'     or run: npx tsx scripts/migrate-angle-builtins-supabase.ts --apply'
 	);
 	process.exit(1);

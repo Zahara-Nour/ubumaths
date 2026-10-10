@@ -1,0 +1,208 @@
+{
+	"title": "Principe additif : « ou », sans compter deux fois",
+	"description": "Cardinal d'une réunion d'ensembles deux à deux disjoints : sorties, codes de 3 ou 4 chiffres, cartes « cœur ou figure » (pièges : multiplier au lieu d'additionner, compter deux fois l'intersection)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-030", "TSPE-044"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Principes additif et multiplicatif",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Pour sa soirée, Inès hésite entre le cinéma, où ${{c}}$ films sont à l'affiche, et le théâtre, où ${{t}}$ pièces sont jouées. Elle ne fera qu'**une seule** sortie.\n\nCombien de choix a-t-elle ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..12"
+				},
+				{
+					"name": "t",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c+t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Inès choisit un film **ou** une pièce : les deux ensembles de choix sont disjoints, on **additionne** (principe additif).",
+					"${{c}}+{{t}}=\\textcolor{{{color:primary.0}}}{{{eval:c+t}}}$ (et non ${{c}}\\times{{t}}$, qui compterait les couples film-pièce)."
+				]
+			}
+		},
+		{
+			"statement": "Un code d'accès est formé soit de ${{k}}$ chiffres, soit de ${{eval:k+1}}$ chiffres (de $0$ à $9$, un chiffre pouvant être répété).\n\nCombien de codes différents existe-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^k+10^(k+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un code de ${{k}}$ chiffres et un code de ${{eval:k+1}}$ chiffres ne sont jamais égaux : on additionne les deux nombres de codes.",
+					"Chaque chiffre a $10$ valeurs possibles : $10^{ {{k}} }+10^{ {{eval:k+1}} }=\\textcolor{{{color:primary.0}}}{{{eval:10^k+10^(k+1)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère un jeu de $32$ cartes (as, roi, dame, valet, $10$, $9$, $8$, $7$ dans chacune des quatre couleurs).\n\nCombien de cartes sont un cœur **ou** une figure (roi, dame, valet) ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "17"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a $8$ cœurs et $12$ figures, mais les $3$ figures de cœur sont dans les deux ensembles : $8+12$ les compterait deux fois.",
+					"On découpe en ensembles disjoints : les $8$ cœurs, puis les $9$ figures qui ne sont pas des cœurs. $8+9=\\textcolor{{{color:primary.0}}}{17}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère un jeu de $52$ cartes ($13$ cartes dans chacune des quatre couleurs, dont un as par couleur).\n\nCombien de cartes sont un pique **ou** un as ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "16"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a $13$ piques et $4$ as, mais l'as de pique est dans les deux ensembles.",
+					"Ensembles disjoints : les $13$ piques, puis les $3$ as qui ne sont pas des piques. $13+3=\\textcolor{{{color:primary.0}}}{16}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 8 films, 3 pièces → 11",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"t": "3"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : produit 24",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"t": "3"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3 ou 4 chiffres → 11 000",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["11000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : écrit avec espace",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["11\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : seulement les codes de 4 chiffres",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["10000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : produit 10³ × 10⁴",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["10000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : codes sans répétition 720 + 5040",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["5760"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 17",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : compté deux fois 8 + 12",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 16",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : compté deux fois 13 + 4",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

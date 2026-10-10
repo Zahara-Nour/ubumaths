@@ -270,4 +270,4 @@ try {
 - [Google OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
 - [Google Classroom API Reference](https://developers.google.com/classroom/reference/rest)
 - [PKCE Specification (RFC 7636)](https://tools.ietf.org/html/rfc7636)
-- [Database Schema Documentation](../../../../docs/architecture/google-classroom-schema.md)
+- [Database Schema Documentation](../../../../docs/systeme/google-classroom-schema.md)

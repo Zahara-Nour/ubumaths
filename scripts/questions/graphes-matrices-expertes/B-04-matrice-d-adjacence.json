@@ -1,0 +1,218 @@
+{
+	"title": "Matrice d'adjacence d'un graphe",
+	"description": "Écrire une ligne de la matrice d'adjacence d'un graphe donné par sa figure, lire degré et nombre d'arêtes sur la matrice, arcs sortants d'un graphe orienté (pièges : 1 sur la diagonale, ligne et colonne confondues pour un graphe orienté, somme des coefficients non divisée par 2)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-117", "TEXP-114"],
+	"theme": "Graphes et matrices",
+	"domain": "Graphes",
+	"subdomain": "Matrice d'adjacence",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$, $E$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nComplète la ligne de $B$ de sa matrice d'adjacence.\n\n|  | $A$ | $B$ | $C$ | $D$ | $E$ |\n| --- | --- | --- | --- | --- | --- |\n| ligne de $B$ | $?$ | $?$ | $?$ | $?$ | $?$ |",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient de la ligne $B$, colonne $X$ vaut $1$ si $B$ et $X$ sont adjacents, $0$ sinon ($0$ pour $X = B$ : pas de boucle).",
+					"Ligne de $B$ : $\\textcolor{{{color:primary.0}}}{1,\\ 0,\\ 1,\\ 1,\\ 1}$."
+				]
+			}
+		},
+		{
+			"statement": "La matrice d'adjacence d'un graphe non orienté, de sommets $A$, $B$, $C$, $D$, $E$ (dans cet ordre), est\n\n$$M = \\begin{pmatrix}0&1&1&0&0\\\\1&0&1&1&0\\\\1&1&0&1&1\\\\0&1&1&0&1\\\\0&0&1&1&0\\end{pmatrix}$$\n\nDegré du sommet $C$ : $?$\n\nNombre d'arêtes du graphe : $?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le degré de $C$ est la somme des coefficients de sa ligne : $1 + 1 + 0 + 1 + 1 = \\textcolor{{{color:primary.0}}}{4}$.",
+					"La somme de tous les coefficients ($14$) est la somme des degrés : $\\textcolor{{{color:primary.0}}}{7}$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "La matrice d'adjacence d'un graphe **orienté** de sommets $A$, $B$, $C$, $D$ (dans cet ordre) est\n\n$$M = \\begin{pmatrix}0&1&0&0\\\\0&0&1&1\\\\1&0&0&1\\\\0&0&0&0\\end{pmatrix}$$\n\n(le coefficient ligne $X$, colonne $Y$ vaut $1$ s'il y a un arc de $X$ vers $Y$).\n\nNombre d'arcs **partant** de $B$ : $?$\n\nNombre d'arcs **arrivant** en $B$ : $?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Arcs partant de $B$ : somme de la **ligne** de $B$, $0 + 0 + 1 + 1 = \\textcolor{{{color:primary.0}}}{2}$.",
+					"Arcs arrivant en $B$ : somme de la **colonne** de $B$, $1 + 0 + 0 + 0 = \\textcolor{{{color:primary.0}}}{1}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 4 sommets A, B, C, D ; arêtes AB, AC, BC, CD.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(0, 4, etiquette=\"haut\")\nC = point(3, 2, etiquette=\"haut\")\nD = point(6, 2, etiquette=\"droite\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(C, D)\n```\n\nÉcris sa matrice d'adjacence $M$ (onglet « Matrice » du clavier : gabarit 3 × 3, puis « + ligne » et « + colonne »).\n\n$M=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}",
+					"answerKind": "matrice"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient ligne $X$, colonne $Y$ vaut $1$ si $X$ et $Y$ sont reliés par une arête, $0$ sinon ; la diagonale est nulle (pas de boucle) et la matrice est symétrique (graphe non orienté).",
+					"$M = \\begin{pmatrix}\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}\\\\\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}\\\\\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}\\\\\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{0}&\\textcolor{{{color:primary.0}}}{1}&\\textcolor{{{color:primary.0}}}{0}\\end{pmatrix}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 1 0 1 1 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "0", "1", "1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : boucle sur B",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "1", "1", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : ligne de A recopiée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0", "1", "0", "0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 4 et 7",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["4", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 14 arêtes",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["4", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2 sortants, 1 entrant",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : ligne et colonne confondues",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 (tous les arcs touchant B)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : matrice d'adjacence",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : écriture de MathLive",
+			"variables": {},
+			"answers": [
+				"\\begin{pmatrix}0 & 1 & 1 & 0\\\\ 1 & 0 & 1 & 0\\\\ 1 & 1 & 0 & 1\\\\ 0 & 0 & 1 & 0\\end{pmatrix}"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : 1 sur la diagonale (boucles)",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}1&1&1&0\\\\1&1&1&0\\\\1&1&1&1\\\\0&0&1&1\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : arête CD oubliée",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&0\\\\0&0&0&0\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		},
+		{
+			"description": "v3 : dimension fausse (3 × 3)",
+			"variables": {},
+			"answers": ["\\begin{pmatrix}0&1&1\\\\1&0&1\\\\1&1&0\\end{pmatrix}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variationIndex": 3
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -2,7 +2,7 @@
  * Les réglages d'affichage appartiennent à l'objet — lot 1 du passage de
  * `/grapheur` par l'atelier.
  *
- * Phase 0 : `docs/wip/atelier-grapheur-phase0.md` §1 (S1 à S5, L1). L'atelier
+ * Phase 0 : `docs/archive/wip/atelier-grapheur-phase0.md` §1 (S1 à S5, L1). L'atelier
  * détient l'état (décision figée n° 1) : couleur, style, tangente, aire… sont
  * rangés sur l'objet et RECOPIÉS vers le grapheur, jamais l'inverse. Sinon un
  * réglage fait dans la carte serait écrasé à la synchronisation suivante.
@@ -440,7 +440,7 @@ describe('réglages d’affichage — revue du lot 1', () => {
 		syncPlots(atelier, graph);
 
 		expect(graph.functions.map((f) => f.type)).toEqual(['explicit']);
-		expect(onlyCurve(graph).latex).toBe('x+1');
+		expect(onlyCurve(graph).latex).toBe('x + 1');
 	});
 });
 

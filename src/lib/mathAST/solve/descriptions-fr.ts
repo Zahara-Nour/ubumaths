@@ -77,11 +77,16 @@ export type SolvingRule =
 	| 'quartic-factor-quadratics'
 	// Product decomposition (zero-product property)
 	| 'zero-product-property'
+	| 'common-factor'
 	| 'solve-factor'
 	// Trig recursive decomposition
 	| 'trig-recursive-decomposition'
 	// Exp/log recursive decomposition
 	| 'exp-log-recursive-decomposition'
+	| 'equal-exponentials'
+	// Changement de variable (u = sin x, cos x, tan x, ln x, eˣ)
+	| 'change-of-variable'
+	| 'change-of-variable-back'
 	// General
 	| 'to-standard-form'
 	| 'simplify-expression'
@@ -169,6 +174,7 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	// Product decomposition (zero-product property)
 	'zero-product-property': 'Par la propriete du produit nul: si A × B = 0 alors A = 0 ou B = 0',
 	'solve-factor': 'On resout chaque facteur separement',
+	'common-factor': 'On factorise par le facteur commun à tous les termes',
 
 	// Trig recursive decomposition
 	'trig-recursive-decomposition':
@@ -177,6 +183,11 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	// Exp/log recursive decomposition
 	'exp-log-recursive-decomposition':
 		'On decompose en resolvant f(x) = u pour chaque u-valeur exponentielle/logarithmique',
+	'equal-exponentials': "L'exponentielle est injective : e^A = e^B equivaut a A = B",
+
+	// Changement de variable
+	'change-of-variable': 'On pose u pour ramener a une equation polynomiale en u',
+	'change-of-variable-back': 'On revient a x en resolvant chaque equation obtenue pour u',
 
 	// General
 	'to-standard-form': "On met l'equation sous forme standard (... = 0)",

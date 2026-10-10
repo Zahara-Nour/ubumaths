@@ -51,12 +51,21 @@ describe('Sidebar (Outils libres)', () => {
 			expect(container.querySelector('a[href="/geometry-demo"]')).not.toBeNull();
 		});
 
+		// Le Cabinet Noir de Turingrad, à côté de l'atelier (décision de David, 2026-10-06)
+		it('mène au chiffrement, juste après l’atelier', async () => {
+			const { container } = await render(Sidebar, { profile: null });
+
+			const hrefs = [...container.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+			expect(hrefs.indexOf('/chiffrement')).toBe(hrefs.indexOf('/atelier') + 1);
+			await expect.element(page.getByText('Chiffrement', { exact: true })).toBeInTheDocument();
+		});
+
 		it('rend bien une icône pour chacun', async () => {
 			const { container } = await render(Sidebar, { profile: null });
 
 			// Une icône Lucide manquante ne casse pas le rendu : le lien s'afficherait
 			// sans son SVG. On vérifie donc explicitement sa présence.
-			for (const href of ['/atelier', '/geometry-demo']) {
+			for (const href of ['/atelier', '/chiffrement', '/geometry-demo']) {
 				const link = container.querySelector(`a[href="${href}"]`);
 				expect(link?.querySelector('svg')).not.toBeNull();
 			}

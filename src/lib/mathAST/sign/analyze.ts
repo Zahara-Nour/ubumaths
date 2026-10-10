@@ -64,7 +64,8 @@ import type {
 } from './types';
 import { DEFAULT_SIGN_OPTIONS, SignAnalysisError } from './types';
 import { computeDomain } from '../domain/compute';
-import { findZeros, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
+import { assertDomainResolved } from '../domain/errors';
+import { findZerosWithStatus, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
 import { determineSignOnInterval } from './helpers/interval-sign';
 import { sampleSignOnInterval } from './helpers/sampling';
 import {
@@ -76,6 +77,8 @@ import {
 } from '$lib/math/intervals/factory';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { shouldIncludeStep } from '../common/verbosity';
+import { expandOddRootPowers } from '../common/odd-root-power';
+import { expandFunctionPowers } from '../common/function-power';
 
 /**
  * Tolerance for considering two partition points (zero / excluded) as the
@@ -108,7 +111,13 @@ const PARTITION_DEDUPE_TOLERANCE = DEFAULT_SIGN_OPTIONS.tolerance;
  * //   { interval: ]2, +infinity[, sign: 'positive' }
  * // ]
  */
-export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): SignAnalysisResult {
+export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): SignAnalysisResult {
+	// `\sin^2(x)` : exposant porté par `power` du nœud fonction, que le domaine,
+	// les zéros et le signe ignoraient (0 zéro, signe inconnu). On analyse
+	// `\sin(x)^2` ; `\cos^{-1}(x)` devient `arccos(x)`. L'expression rendue
+	// reste celle de l'appelant.
+	// x^{p/q}, q impair : analysée en radical ᵠ√(x^p) (décision du 2026-10-08)
+	const expr = expandOddRootPowers(expandFunctionPowers(rawExpr));
 	const opts = mergeOptions(options);
 	const variable = opts.variable;
 	const steps: SignAnalysisStep[] = [];
@@ -125,6 +134,8 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 		recordStep(steps, stepId++, 'use_provided_domain', 'Using provided domain', opts.verbosity);
 	} else {
 		const domainResult = computeDomain(expr, variable);
+		// Contrainte non résolue : on refuse plutôt que de signer sur ℝ
+		assertDomainResolved(domainResult);
 		domain = domainResult.domain;
 		recordStep(
 			steps,
@@ -146,7 +157,7 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 			opts.verbosity
 		);
 		return {
-			expression: expr,
+			expression: rawExpr,
 			variable,
 			domain,
 			zeros: [],
@@ -169,7 +180,12 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 		opts.verbosity,
 		'summarized'
 	);
-	const rawZeros = findZeros(expr, variable, domain);
+	const { zeros: rawZeros, resolved: zerosResolved } = findZerosWithStatus(expr, variable, domain);
+	if (!zerosResolved) {
+		warnings.push(
+			"f(x) = 0 n'a pas pu être résolue : des zéros peuvent manquer, le signe n'est conclu que là où il se démontre."
+		);
+	}
 	const uniqueZeros = getUniqueZeros(rawZeros, opts.tolerance);
 	const sortedZeros = sortZerosByValue(uniqueZeros);
 
@@ -241,7 +257,11 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 		// Evaluates the expression at several points inside the interval.
 		// Between consecutive zeros, a continuous function has constant sign (IVT),
 		// so if all samples agree, the sign is determined.
-		if (sign === 'unknown' && opts.numericFallback) {
+		//
+		// ⚠️ Pas quand f(x) = 0 n'a pas été résolue : l'intervalle peut contenir
+		// un zéro manqué, et des échantillons d'accord « confirmeraient » un
+		// signe faux. Le signe reste alors inconnu.
+		if (sign === 'unknown' && opts.numericFallback && zerosResolved) {
 			sign = sampleSignOnInterval(expr, variable, int, {
 				tolerance: opts.tolerance
 			});
@@ -264,13 +284,14 @@ export function analyzeSign(expr: MathNode, options?: SignAnalysisOptions): Sign
 	}
 
 	return {
-		expression: expr,
+		expression: rawExpr,
 		variable,
 		domain,
 		zeros: sortedZeros,
 		signedIntervals,
 		steps: opts.verbosity !== 'result' ? steps : undefined,
-		warnings: warnings.length > 0 ? warnings : undefined
+		warnings: warnings.length > 0 ? warnings : undefined,
+		...(zerosResolved ? {} : { zerosUnresolved: true })
 	};
 }
 

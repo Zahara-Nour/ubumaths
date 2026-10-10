@@ -14,7 +14,7 @@
 	import { foldOutput } from '$lib/utils/output-fold';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import {
-		hasUnsafeMathCommand,
+		isRefusedRestrictedFormula,
 		readRestrictedRendering
 	} from '$lib/components/markdown/restricted-rendering';
 	import 'mathlive';
@@ -221,9 +221,10 @@
 							class="max-w-full"
 						/>
 					</div>
-				{:else if output.data['text/plain'] && isRestricted && hasUnsafeMathCommand(output.data['text/plain'])}
+				{:else if output.data['text/plain'] && isRestricted && isRefusedRestrictedFormula(output.data['text/plain'])}
 					<!-- Restreint : une commande MathLive capable de poser style, classe ou
-					     lien → la formule reste en TEXTE (règle du chat, S1) -->
+					     lien, ou une formule hors bornes de rendu (longueur, imbrication) →
+					     la formule reste en TEXTE (règle du chat, S1) -->
 					<pre
 						class="rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap text-foreground">{output
 							.data['text/plain']}</pre>

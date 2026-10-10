@@ -10,7 +10,7 @@
  * ⚠️ `structuredClone` jette sur un proxy `$state` : toute sérialisation
  * (URL, stockage local) doit passer par `$state.snapshot()`.
  *
- * Spécification : `docs/wip/atelier-recherche-eleve-phase0.md` §2.
+ * Spécification : `docs/archive/wip/atelier-recherche-eleve-phase0.md` §2.
  *
  * @module atelier/atelier
  */
@@ -58,7 +58,9 @@ import {
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
+import { INTERNAL_LETTER, letterRejection } from './letter';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { listCitedMessage } from './list-cited';
 import { transformAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
@@ -90,6 +92,26 @@ export interface Removed {
 	readonly broken: readonly string[];
 }
 
+/**
+ * Le reçu d'une suppression en cascade : ce qui est parti, et de quoi
+ * l'annuler (`undoRemoval`). Opaque pour l'appelant, qui le rend tel quel.
+ */
+export interface RemovedWithDependents {
+	readonly ok: true;
+	/** L'objet puis ses dépendants, dans l'ordre des cartes. */
+	readonly removed: readonly string[];
+}
+
+/** De quoi remettre l'atelier tel qu'il était avant une suppression en cascade. */
+interface RemovalUndo {
+	readonly receipt: RemovedWithDependents;
+	/** `revision` juste après la suppression : si elle a bougé, on n'annule plus (L4). */
+	readonly revision: number;
+	readonly items: AtelierObject[];
+	readonly charts: [string, ListChartState][];
+	readonly partnerChoices: [string, string][];
+}
+
 export interface Updated {
 	readonly ok: true;
 	readonly object: AtelierObject;
@@ -119,6 +141,11 @@ export interface CreateInput {
 	readonly kind: ObjectKind;
 	readonly definition?: string;
 	readonly name?: string;
+	/**
+	 * Pour une fonction : la lettre de l'élève (`f(t) = …`), affichage seulement.
+	 * ⚠️ `definition` est déjà en x (voir `letter.ts`).
+	 */
+	readonly letter?: string;
 	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
 	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
 }
@@ -132,6 +159,9 @@ const DEFAULT_SLIDER = { min: -10, max: 10, step: 0.1 } as const;
 
 /** Plus grand rang de départ accepté : au-delà, rien ne s'afficherait. */
 const MAX_FIRST_INDEX = 1000;
+
+/** Le trait d'une dérivée selon son ordre : `f′`, `f″`, `f‴`. */
+const DERIVATIVE_LINE_STYLES = ['dashed', 'dotted', 'dashdot'] as const;
 
 /** Ce qu'un réglage de suite peut changer (S1, U1). */
 const sequencePatchSchema = z
@@ -338,6 +368,22 @@ export class Atelier {
 	 */
 	private partnerChoices = new SvelteMap<string, string>();
 
+	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
+	#lastRemoval: RemovalUndo | null = null;
+
+	/**
+	 * Les lois des variables aléatoires (décision de David, 2026-10-09) :
+	 * variable → ligne de tête du bloc ```loi (`X ~ B(10 ; 0,3)`), posée par
+	 * `.binomiale`, `.geometrique`, `.uniforme`, `.exponentielle`, `.normale`,
+	 * pour que `P(X ⩽ 3)` tapé seul se calcule.
+	 *
+	 * ⚠️ Hors de `serialize()` : rien de rangé d'une visite à l'autre, et ce
+	 * n'est PAS un objet de l'atelier (aucune liste créée, Q142) — X peut
+	 * nommer en même temps un objet et une variable aléatoire. Pas réactif :
+	 * aucune vue ne l'affiche. `restore()` (vider, rejouer, charger) l'oublie.
+	 */
+	#laws = new Map<string, string>();
+
 	get objects(): readonly AtelierObject[] {
 		return this.items;
 	}
@@ -362,6 +408,16 @@ export class Atelier {
 
 	get(name: string): AtelierObject | undefined {
 		return this.items.find((o) => o.name === name);
+	}
+
+	/** Retenir la loi de `variable` : remplace la précédente (2026-10-09) */
+	rememberLaw(variable: string, head: string): void {
+		this.#laws.set(variable, head);
+	}
+
+	/** La ligne de tête de la loi de `variable`, si une commande l'a définie */
+	lawOf(variable: string): string | undefined {
+		return this.#laws.get(variable);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -403,10 +459,18 @@ export class Atelier {
 		} else {
 			const rejection = validateName(input.name, this.names);
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
+			const asLetter = this.#letterUse(input.name);
+			if (asLetter !== null) return { ok: false, message: asLetter };
 			name = input.name;
 		}
 
-		const built = this.build(name, input.kind, definition, provenance);
+		const letter = input.kind === 'function' ? input.letter : undefined;
+		if (letter !== undefined) {
+			const refused = letterRejection(letter, name, this.names);
+			if (refused !== null) return { ok: false, message: refused };
+		}
+
+		const built = this.build(name, input.kind, definition, provenance, letter);
 		this.items.push(
 			isSequence(built) && input.sequence
 				? { ...built, ...sequenceSettings(input.sequence, built) }
@@ -547,6 +611,17 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/**
+	 * Le refus d'un nom qui est la LETTRE d'une fonction (`t` après `f(t)`), ou
+	 * `null`. Sinon la carte de `f` montrerait `t` pour deux choses à la fois.
+	 */
+	#letterUse(name: string): string | null {
+		const owner = this.items.find((o) => isFunction(o) && o.letter === name);
+		return owner === undefined
+			? null
+			: `« ${name} » est la variable de ${owner.name}(${name}) : choisis un autre nom.`;
+	}
+
+	/**
 	 * Les objets que cite une définition. ⚠️ Une LISTE n'en cite aucun : c'est
 	 * du texte brut. Lue comme une expression, `fille ; garçon` citait `fille`
 	 * et `garçon`, et la liste restait « en attente » d'objets inexistants (Q84).
@@ -595,6 +670,8 @@ export class Atelier {
 		const others = this.names.filter((n) => n !== from);
 		const rejection = validateName(to, others);
 		if (rejection) return { ok: false, message: nameRejectionMessage(rejection, to) };
+		const asLetter = this.#letterUse(to);
+		if (asLetter !== null) return { ok: false, message: asLetter };
 
 		// L'objet renommé voit sa PROPRE définition réécrite lui aussi : une suite
 		// récurrente se cite elle-même (`u(n+1) = 2·u(n)`), et l'oublier la
@@ -652,9 +729,26 @@ export class Atelier {
 	// Modification
 	// ---------------------------------------------------------------------------
 
-	update(name: string, definition: string, provenance: Provenance = 'url'): Updated | Refused {
+	/**
+	 * @param letter - Pour une fonction : la lettre de l'élève, ou `undefined`
+	 *   pour garder la sienne. ⚠️ `definition` est déjà en x (`letter.ts`).
+	 */
+	update(
+		name: string,
+		definition: string,
+		provenance: Provenance = 'url',
+		letter?: string
+	): Updated | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
+		if (letter !== undefined) {
+			const refused = letterRejection(
+				letter,
+				name,
+				this.names.filter((n) => n !== name)
+			);
+			if (refused !== null) return { ok: false, message: refused };
+		}
 
 		const dependents = this.allDependents(name);
 		// ⚠️ `build()` fabrique un objet NEUF : ce qui relève de l'affichage doit
@@ -662,7 +756,13 @@ export class Atelier {
 		// courbe. Même famille que le curseur écrasé (revue #334, point 7) : tout
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
-		const rebuilt = this.build(name, previous.kind, definition, provenance);
+		const rebuilt = this.build(
+			name,
+			previous.kind,
+			definition,
+			provenance,
+			letter ?? (isFunction(previous) ? previous.letter : undefined)
+		);
 		// K3 (dette n° 2) : le curseur réglé survit à la définition — `build()`
 		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
 		const keptSlider =
@@ -721,6 +821,76 @@ export class Atelier {
 		this.recomputeAll();
 
 		return { ok: true, broken };
+	}
+
+	/**
+	 * Ce qu'emporterait la suppression de `name` : ses dépendants, directs ou en
+	 * chaîne, dans l'ordre des cartes (lot B, N2 et L1).
+	 */
+	removalOf(name: string): readonly string[] {
+		const dependents = new Set(this.allDependents(name));
+		// Un cycle (`f` cite `g` qui cite `f`) ramène `name` parmi ses propres
+		// dépendants : il serait annoncé et compté deux fois (revue du lot B)
+		dependents.delete(name);
+		return this.items.filter((o) => dependents.has(o.name)).map((o) => o.name);
+	}
+
+	/**
+	 * Supprimer `name` ET ses dépendants (décision de David, 2026-10-05 : ils ne
+	 * restent plus « en attente »). La confirmation est l'affaire de la vue.
+	 *
+	 * Le reçu rendu permet UNE annulation, tant que rien d'autre n'a changé.
+	 */
+	removeWithDependents(name: string): RemovedWithDependents | Refused {
+		if (this.get(name) === undefined) {
+			return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
+		}
+		const removed = [name, ...this.removalOf(name)];
+		const gone = new Set(removed);
+		// Copié AVANT : `items` est un `$state`, ses objets des proxies
+		const items = $state.snapshot(this.items) as AtelierObject[];
+		const charts = [...this.charts].filter(
+			([list, c]) => gone.has(list) || gone.has(c.partner ?? '')
+		);
+		const partnerChoices = [...this.partnerChoices].filter(
+			([list, partner]) => gone.has(list) || gone.has(partner)
+		);
+
+		this.items = this.items.filter((o) => !gone.has(o.name));
+		for (const [list] of charts) this.charts.delete(list);
+		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
+		this.recomputeAll();
+
+		const receipt: RemovedWithDependents = { ok: true, removed };
+		this.#lastRemoval = {
+			receipt,
+			revision: this.revision,
+			items,
+			charts: $state.snapshot(charts) as [string, ListChartState][],
+			partnerChoices
+		};
+		return receipt;
+	}
+
+	/**
+	 * Annuler la suppression de ce reçu. Refusé — et rien ne bouge — si une autre
+	 * suppression l'a suivie, si elle est déjà annulée, ou si l'atelier a changé
+	 * depuis : on ne restaure jamais par-dessus un nom repris (L4).
+	 */
+	undoRemoval(receipt: RemovedWithDependents): boolean {
+		const undo = this.#lastRemoval;
+		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
+		this.#lastRemoval = null;
+		this.items = undo.items;
+		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
+		for (const [list, chart] of undo.charts) {
+			if (!this.charts.has(list)) this.charts.set(list, chart);
+		}
+		for (const [list, partner] of undo.partnerChoices) {
+			if (!this.partnerChoices.has(list)) this.partnerChoices.set(list, partner);
+		}
+		this.recomputeAll();
+		return true;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -798,6 +968,8 @@ export class Atelier {
 			// Recopié champ par champ : `display` est un objet, donc un proxy
 			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
+			// La lettre de l'élève (`f(t)`) : absente pour x, qui ne pèse rien
+			...(isFunction(o) && o.letter ? { letter: o.letter } : {}),
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
@@ -830,15 +1002,23 @@ export class Atelier {
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
+		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
 
 		for (const stored of state.objects) {
-			const result = this.create({
+			const input: CreateInput = {
 				kind: stored.kind,
 				name: stored.name,
 				definition: stored.definition,
+				...(stored.kind === 'function' && stored.letter && { letter: stored.letter }),
 				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
-			});
+			};
+			let result = this.create(input);
+			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
+			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`)
+			if (!result.ok && input.letter !== undefined) {
+				result = this.create({ ...input, letter: undefined });
+			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
 				continue;
@@ -872,7 +1052,7 @@ export class Atelier {
 		// ensuite, retirée ou non (phase 0 `/grapheur` §1 L1).
 		const display =
 			plotted && isFunction(current) && current.display === undefined
-				? newDisplay(this.#displays())
+				? this.#firstDisplay(name)
 				: plotted && isSequence(current) && current.display === undefined
 					? newSequenceDisplay(this.#displays())
 					: undefined;
@@ -882,6 +1062,10 @@ export class Atelier {
 			...(withList !== undefined && { plottedWith: withList }),
 			...(display && { display })
 		} as AtelierObject;
+		// `f′` tracée avant `f` s'aligne sur la couleur que `f` reçoit ici
+		if (display !== undefined && isFunction(current)) {
+			this.#recolorDerivatives(name, display.color);
+		}
 		this.recomputeAll();
 	}
 
@@ -904,8 +1088,13 @@ export class Atelier {
 		// Rien à changer, rien à sauvegarder
 		if (Object.keys(read.patch).length === 0) return { ok: true };
 
-		const base = current.display ?? newDisplay(this.#displays());
-		this.items[index] = { ...current, display: { ...base, ...read.patch } };
+		const base = current.display ?? this.#firstDisplay(name);
+		const display = { ...base, ...read.patch };
+		this.items[index] = { ...current, display };
+		// Ses dérivées suivent sa couleur (décision de David, 2026-10-05) — y
+		// compris quand `f` reçoit ici ses premiers réglages. Les relectures
+		// (`restore`, `mergeInto`) posent par `adoptDisplay` et ne passent pas ici
+		if (current.display?.color !== display.color) this.#recolorDerivatives(name, display.color);
 		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
 		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
 		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
@@ -942,6 +1131,30 @@ export class Atelier {
 		const current = this.items[index];
 		if (current === undefined || !isFunction(current)) return;
 		this.items[index] = { ...current, display: fullDisplay(stored) };
+	}
+
+	/**
+	 * Les réglages d'une fonction à son premier tracé. Une dérivée prend la
+	 * couleur de sa fonction, et un trait qui dit son ordre (comme la case
+	 * « f′ » de l'ancien grapheur) : `f′` en tirets, `f″` en pointillés.
+	 */
+	#firstDisplay(name: string): CurveDisplay {
+		const fresh = newDisplay(this.#displays());
+		const derivative = derivativeOf(name);
+		if (derivative === null) return fresh;
+		const lineStyle = DERIVATIVE_LINE_STYLES[derivative.order - 1] ?? 'dashed';
+		const base = this.get(derivative.base);
+		const color = base !== undefined && isFunction(base) ? base.display?.color : undefined;
+		return { ...fresh, lineStyle, ...(color !== undefined && { color }) };
+	}
+
+	/** Donner à toutes les dérivées déjà tracées de `name` sa nouvelle couleur. */
+	#recolorDerivatives(name: string, color: CurveDisplay['color']): void {
+		this.items = this.items.map((o) =>
+			isFunction(o) && o.display !== undefined && derivativeOf(o.name)?.base === name
+				? { ...o, display: { ...o.display, color } }
+				: o
+		);
 	}
 
 	/** Les couples couleur/style déjà pris (fonctions et suites) — pour ne pas les doubler. */
@@ -1088,7 +1301,8 @@ export class Atelier {
 		name: string,
 		kind: ObjectKind,
 		definition: string,
-		provenance: Provenance = 'url'
+		provenance: Provenance = 'url',
+		letter?: string
 	): AtelierObject {
 		const parsed = parseDefinition(kind, definition, provenance, this.functionNames);
 		const base = {
@@ -1127,7 +1341,12 @@ export class Atelier {
 				return value;
 			}
 			case 'function':
-				return { ...base, kind: 'function', variable: 'x' };
+				return {
+					...base,
+					kind: 'function',
+					variable: 'x',
+					...(letter !== undefined && letter !== INTERNAL_LETTER && { letter })
+				};
 			case 'sequence':
 				// S4 : une définition qui se cite elle-même est une récurrence
 				return {
@@ -1192,6 +1411,15 @@ export class Atelier {
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
 			const refs = this.#refsOf(o).filter((r) => !(r.name === o.name && o.kind === 'sequence'));
+			// Une liste citée comme un nombre (`a = L + 1`) : le refus de Calcul
+			// (#985), jamais L lu comme une lettre libre
+			if (!ownError.get(o.name)) {
+				const cited = listCitedMessage(
+					this.items,
+					refs.map((r) => r.name)
+				);
+				if (cited !== null) ownError.set(o.name, cited);
+			}
 			deps.set(
 				o.name,
 				refs.filter((r) => usable(r.name)).map((r) => r.name)

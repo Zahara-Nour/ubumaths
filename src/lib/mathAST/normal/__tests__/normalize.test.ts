@@ -915,9 +915,10 @@ describe('Logarithm Expansion', () => {
 	});
 
 	describe('Power expansion: ln(x^n) = n·ln(x)', () => {
-		test('ln(x^2) = 2·ln(x)', () => {
+		// ln(x²) est définie sur ℝ*, 2 ln x sur ]0 ; +∞[ seulement (décision du 2026-10-08)
+		test('ln(x^2) = 2·ln|x|', () => {
 			const lnX2 = fn('ln', power(variable('x'), num('2')));
-			const twoLnX = mul(num('2'), fn('ln', variable('x')));
+			const twoLnX = mul(num('2'), fn('ln', abs(variable('x'))));
 			expect(normalize(lnX2).hash).toBe(normalize(twoLnX).hash);
 		});
 
@@ -968,9 +969,9 @@ describe('Logarithm Expansion', () => {
 	});
 
 	describe('Combined cases', () => {
-		test('ln(x^2·y) = 2·ln(x) + ln(y)', () => {
+		test('ln(x^2·y) = 2·ln|x| + ln(y)', () => {
 			const expr = fn('ln', mul(power(variable('x'), num('2')), variable('y')));
-			const expanded = add(mul(num('2'), fn('ln', variable('x'))), fn('ln', variable('y')));
+			const expanded = add(mul(num('2'), fn('ln', abs(variable('x')))), fn('ln', variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
 		});
 
@@ -1176,8 +1177,8 @@ describe('Exp/Ln Robustness After Ln Expansion Changes', () => {
 			expect(normalize(diff).hash).toBe(normalize(lnDiv).hash);
 		});
 
-		test('2·ln(x) = ln(x^2) (symbolic)', () => {
-			const left = mul(num('2'), fn('ln', variable('x')));
+		test('2·ln|x| = ln(x^2) (symbolic)', () => {
+			const left = mul(num('2'), fn('ln', abs(variable('x'))));
 			const right = fn('ln', power(variable('x'), num('2')));
 			expect(normalize(left).hash).toBe(normalize(right).hash);
 		});
@@ -2604,9 +2605,9 @@ describe('Log Expansion', () => {
 	});
 
 	describe('Power expansion: log(x^n) = n·log(x)', () => {
-		test('log(x^2) = 2·log(x)', () => {
+		test('log(x^2) = 2·log|x|', () => {
 			const expr = fn('log', power(variable('x'), num('2')));
-			const expanded = mul(num('2'), fn('log', variable('x')));
+			const expanded = mul(num('2'), fn('log', abs(variable('x'))));
 			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
 		});
 
@@ -2616,9 +2617,9 @@ describe('Log Expansion', () => {
 			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
 		});
 
-		test('log_3(x^2) = 2·log_3(x) (base preserved)', () => {
+		test('log_3(x^2) = 2·log_3|x| (base preserved)', () => {
 			const expr = fnWithBase('log', num('3'), power(variable('x'), num('2')));
-			const expanded = mul(num('2'), fnWithBase('log', num('3'), variable('x')));
+			const expanded = mul(num('2'), fnWithBase('log', num('3'), abs(variable('x'))));
 			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
 		});
 	});
@@ -2686,9 +2687,9 @@ describe('Log Expansion', () => {
 	});
 
 	describe('Combined cases', () => {
-		test('log(x^2·y) = 2·log(x) + log(y)', () => {
+		test('log(x^2·y) = 2·log|x| + log(y)', () => {
 			const expr = fn('log', mul(power(variable('x'), num('2')), variable('y')));
-			const expanded = add(mul(num('2'), fn('log', variable('x'))), fn('log', variable('y')));
+			const expanded = add(mul(num('2'), fn('log', abs(variable('x')))), fn('log', variable('y')));
 			expect(normalize(expr).hash).toBe(normalize(expanded).hash);
 		});
 

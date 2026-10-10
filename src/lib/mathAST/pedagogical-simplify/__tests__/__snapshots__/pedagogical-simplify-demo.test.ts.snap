@@ -39,25 +39,25 @@ exports[`pedagogical-simplify-demo — snapshots > distribution > (2x+3)(x-1) 1`
 ## lycee (verbosity=detailed)
 - [distribute-binomial-product] On distribue le produit des deux binômes
   · On multiplie chaque terme du premier binôme par chaque terme du second.
-  \\begin{aligned} \\textcolor{blue}{\\left( 2 x + 3 \\right) \\left( x - 1 \\right)} & \\\\ = 2 x x - 2 x 1 + 3 x - 3 1 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{\\left( 2 x + 3 \\right) \\left( x - 1 \\right)} & \\\\ = 2 x x - 2 x 1 + 3 x - 3 \\times 1 \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 \\times 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 \\times 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 \\times 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 \\times 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 \\times 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 \\times 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
 => 2 x^2 + x - 3"
 `;
 
@@ -197,8 +197,9 @@ exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > e^(ln x) 
 "# e^(ln x) — intent=reduire — e^{\\ln(x)}
 
 ## lycee (verbosity=detailed)
-(no steps — already simplified for this intent)
-=> e^{\\ln\\left( x \\right)}"
+- [euler-identities] Propriétés de l'exponentielle : ln(e^a) = a, e^(ln a) = a, e^a × e^b = e^(a+b), (e^a)^n = e^(an)
+  \\begin{aligned} \\textcolor{blue}{e^{\\ln\\left( x \\right)}} & \\\\ = x \\end{aligned}
+=> x"
 `;
 
 exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > ln(2·3) 1`] = `
@@ -286,10 +287,10 @@ exports[`pedagogical-simplify-demo — snapshots > radicaux > √2 · √3 1`] =
 
 ## lycee (verbosity=detailed)
 - [sqrt-product] √(a·b) = √a · √b
-  \\begin{aligned} \\textcolor{blue}{\\sqrt{2} \\cdot \\sqrt{3}} & \\\\ = \\sqrt{2 3} \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{\\sqrt{2} \\cdot \\sqrt{3}} & \\\\ = \\sqrt{2 \\times 3} \\end{aligned}
 - [combine-like-terms] On regroupe les termes semblables
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
-  \\begin{aligned} \\textcolor{blue}{\\sqrt{2 3}} & \\\\ = \\sqrt{6} \\end{aligned}
+  \\begin{aligned} \\textcolor{blue}{\\sqrt{2 \\times 3}} & \\\\ = \\sqrt{6} \\end{aligned}
 => \\sqrt{6}"
 `;
 

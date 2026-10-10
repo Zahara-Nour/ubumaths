@@ -20,7 +20,7 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
-	import { hasUnsafeMathCommand, readRestrictedRendering } from '../restricted-rendering';
+	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
 
 	/**
 	 * MathLive math-field element interface
@@ -93,10 +93,13 @@
 	});
 
 	// Mode restreint (chat élève) : une commande MathLive de style, classe,
-	// identifiant, données ou lien ne part pas dans MathLive — texte (S1)
+	// identifiant, données ou lien ne part pas dans MathLive — texte (S1) ; une
+	// formule trop longue ou trop imbriquée non plus (rendu de plusieurs Mo).
+	// `expression` d'abord : hors bornes, `latex` n'est jamais calculé (`$derived`
+	// paresseux) — sa conversion lèverait sur une entrée géante.
 	const isRestricted = readRestrictedRendering();
 	let unsafe = $derived(
-		isRestricted() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex))
+		isRestricted() && (isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))
 	);
 
 	// Extract prompt indices from the expression

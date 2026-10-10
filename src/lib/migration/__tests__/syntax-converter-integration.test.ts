@@ -223,7 +223,8 @@ describe('TinyCAS Syntax Converter > Integration Tests - Performance', () => {
 
 		expect(results.length).toBe(100);
 		expect(results.every((r) => r.success)).toBe(true);
-		expect(endTime - startTime).toBeLessThan(100);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(endTime - startTime).toBeLessThan(1000);
 	});
 
 	it('should handle complex questions with many patterns efficiently', () => {
@@ -235,7 +236,8 @@ describe('TinyCAS Syntax Converter > Integration Tests - Performance', () => {
 		const endTime = performance.now();
 
 		expect(result.success).toBe(true);
-		expect(endTime - startTime).toBeLessThan(10); // Should be very fast
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(endTime - startTime).toBeLessThan(200);
 		expect(result.stats!.total).toBeGreaterThan(10);
 	});
 
@@ -370,7 +372,8 @@ describe('TinyCAS Syntax Converter > Integration Tests - Batch Conversion', () =
 
 		expect(results.length).toBe(1000);
 		expect(results.every((r) => r.success)).toBe(true);
-		expect(endTime - startTime).toBeLessThan(500); // Should complete in under 500ms
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(endTime - startTime).toBeLessThan(2500);
 	});
 });
 

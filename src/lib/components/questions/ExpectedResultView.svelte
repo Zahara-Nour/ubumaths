@@ -209,7 +209,7 @@
 </div>
 
 <style>
-	/* Couleurs du résultat attendu, à partir des tokens (docs/ref/css-color-tokens.md) :
+	/* Couleurs du résultat attendu, à partir des tokens (docs/pratiques/css-color-tokens.md) :
 	   teintes foncées en clair, claires en sombre, pour un contraste suffisant */
 	.expected-result {
 		--expected-correct: light-dark(

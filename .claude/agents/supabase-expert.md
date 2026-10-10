@@ -16,7 +16,7 @@ You are an elite Supabase database architect with deep expertise in PostgreSQL, 
 5. **Type Safety**: After schema changes, update:
    - `src/lib/types/database.ts` (auto-generated via `pnpm db:types` — NEVER edit by hand)
    - `src/lib/types/database-helpers.ts` (custom aliases / union types / composite types — CLAUDE.md règle #6)
-   - `docs/architecture/database-schema.md`
+   - `docs/systeme/base-de-donnees.md`
 
 ## When NOT to use this agent
 
@@ -48,7 +48,7 @@ This agent owns schema design, migrations, RLS policies, and Supabase Auth flows
 3. Include both schema changes AND corresponding RLS policies in the same migration
 4. NEVER make schema changes in Supabase Dashboard
 5. Always remind user to run `pnpm db:migrate` after creating migration
-6. Run `pnpm db:types` to regenerate `src/lib/types/database.ts` (auto). Add custom types (aliases, unions, composites) to `src/lib/types/database-helpers.ts`. Update `docs/architecture/database-schema.md`
+6. Run `pnpm db:types` to regenerate `src/lib/types/database.ts` (auto). Add custom types (aliases, unions, composites) to `src/lib/types/database-helpers.ts`. Update `docs/systeme/base-de-donnees.md`
 
 ## Best Practices
 

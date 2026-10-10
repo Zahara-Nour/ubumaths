@@ -18,7 +18,6 @@ import {
 	formatDomainFull as intervalsFormatFull,
 	formatEndpointValue
 } from '$lib/math/intervals/format';
-import { toCustom } from '../custom-generator';
 
 // =============================================================================
 // Re-export from intervals
@@ -130,7 +129,9 @@ function formatIntervalSetWithExcluded(domain: IntervalSet): string {
 		return base;
 	}
 
-	const excludedStr = domain.excludedPoints.map((p) => formatEndpointValue(p.value)).join(', ');
+	// « ; » à la française, comme les intervalles : « {1/3, 1/2} » se lirait
+	// aussi comme le décimal 1,2 (revue, 2026-10-08)
+	const excludedStr = domain.excludedPoints.map((p) => formatEndpointValue(p.value)).join(' ; ');
 
 	// If the base is ℝ, use "ℝ \ {0}" notation
 	if (base === 'ℝ') {
@@ -213,7 +214,8 @@ function formatComparisonOp(op: string): string {
  * Format a MathNode for display in domain context.
  */
 function formatMathNode(node: import('../types').MathNode): string {
-	return toCustom(node);
+	// Même rendu que les bornes d'intervalle : π/2, pas \pi/2
+	return formatEndpointValue(node);
 }
 
 /**

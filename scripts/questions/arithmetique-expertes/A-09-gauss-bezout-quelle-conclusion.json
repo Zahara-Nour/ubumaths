@@ -1,0 +1,288 @@
+{
+	"title": "Gauss, Bézout, premiers entre eux : quelle conclusion ?",
+	"description": "Choisir la conclusion correcte du théorème de Gauss ou de Bézout (pièges : conclure sur le mauvais facteur, oublier l'hypothèse « premiers entre eux », croire que au + bv = d donne PGCD(a, b) = d)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-088", "TEXP-087", "TEXP-086"],
+	"theme": "Arithmétique",
+	"domain": "PGCD, Bézout et Gauss",
+	"subdomain": "PGCD, Bézout et Gauss",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$x$ et $y$ sont des entiers tels que ${{a}}x = {{b}}y$.\n\nQue peut-on en déduire ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..15"
+				},
+				{
+					"name": "b",
+					"expression": "4..16"
+				}
+			],
+			"conditions": ["gcd(a,b) == 1", "a != b"],
+			"choices": [
+				{
+					"content": "${{b}}$ divise $x$"
+				},
+				{
+					"content": "${{a}}$ divise $x$"
+				},
+				{
+					"content": "$x = {{b}}$ et $y = {{a}}$"
+				},
+				{
+					"content": "${{b}}$ divise $y$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"${{b}}$ divise ${{a}}x$ et $\\mathrm{PGCD}({{a}} \\,;\\, {{b}}) = 1$.",
+					"D'après le théorème de Gauss, $\\textcolor{{{color:primary.0}}}{{{b}} \\text{ divise } x}$ (et de même ${{a}}$ divise $y$). $x = {{b}}$ n'est qu'une solution parmi d'autres : $x = {{eval:2*b}}$, $y = {{eval:2*a}}$ convient aussi."
+				]
+			}
+		},
+		{
+			"statement": "$n$ est un entier tel que ${{a}}$ divise ${{c}}n$.\n\nQue peut-on en déduire ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..13"
+				},
+				{
+					"name": "c",
+					"expression": "4..30"
+				}
+			],
+			"conditions": ["gcd(a,c) == 1"],
+			"choices": [
+				{
+					"content": "${{a}}$ divise $n$"
+				},
+				{
+					"content": "${{a}}$ divise ${{c}}$"
+				},
+				{
+					"content": "${{c}}$ divise $n$"
+				},
+				{
+					"content": "$n = {{a}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$\\mathrm{PGCD}({{a}} \\,;\\, {{c}}) = 1$ : ${{a}}$ et ${{c}}$ sont premiers entre eux.",
+					"D'après le théorème de Gauss, $\\textcolor{{{color:primary.0}}}{{{a}} \\text{ divise } n}$."
+				]
+			}
+		},
+		{
+			"statement": "$a$ et $b$ sont des entiers tels que ${{s}}a + {{t}}b = {{d}}$.\n\nQue peut-on en déduire ?",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["s != t"],
+			"choices": [
+				{
+					"content": "$\\mathrm{PGCD}(a \\,;\\, b)$ divise ${{d}}$"
+				},
+				{
+					"content": "$\\mathrm{PGCD}(a \\,;\\, b) = {{d}}$"
+				},
+				{
+					"content": "$a$ et $b$ sont premiers entre eux"
+				},
+				{
+					"content": "${{d}}$ divise $a$ et $b$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Tout diviseur commun de $a$ et $b$ divise ${{s}}a + {{t}}b = {{d}}$ : $\\textcolor{{{color:primary.0}}}{\\mathrm{PGCD}(a \\,;\\, b) \\text{ divise } {{d}}}$.",
+					"Seule l'égalité $au + bv = 1$ permet de conclure (Bézout). Ici le PGCD divise ${{d}}$ sans être forcément égal à ${{d}}$ : par exemple $2 \\times 3 + 1 \\times (-4) = 2$, alors que $\\mathrm{PGCD}(3 \\,;\\, -4) = 1$."
+				]
+			}
+		},
+		{
+			"statement": "$a$ et $b$ sont des entiers tels que ${{s}}a - {{t}}b = 1$.\n\nQue peut-on en déduire ?",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["s != t"],
+			"choices": [
+				{
+					"content": "$a$ et $b$ sont premiers entre eux"
+				},
+				{
+					"content": "$\\mathrm{PGCD}(a \\,;\\, b) = {{s}}$"
+				},
+				{
+					"content": "$a$ divise $b$"
+				},
+				{
+					"content": "$a = {{t}}$ et $b = {{s}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$au + bv = 1$ avec $u = {{s}}$ et $v = {{eval:-t}}$ entiers.",
+					"D'après le théorème de Bézout, $\\textcolor{{{color:primary.0}}}{a \\text{ et } b \\text{ sont premiers entre eux}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : b divise x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "9"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a divise x (facteur inversé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "9"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : x = b seulement",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "9"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : b divise y",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "9"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a divise n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "12"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : a divise c",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "12"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : PGCD divise d",
+			"variationIndex": 2,
+			"variables": {
+				"s": "3",
+				"t": "5",
+				"d": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : PGCD = d (piège)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "3",
+				"t": "5",
+				"d": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : premiers entre eux",
+			"variationIndex": 3,
+			"variables": {
+				"s": "3",
+				"t": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : PGCD = s",
+			"variationIndex": 3,
+			"variables": {
+				"s": "3",
+				"t": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}

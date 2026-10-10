@@ -2,7 +2,7 @@
  * Une action ne change pas de vue — lot 3b du passage de `/grapheur` par
  * l'atelier.
  *
- * Phase 0 `docs/wip/atelier-grapheur-phase0.md` §3 (A1 à A5) et §2 L1.
+ * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §3 (A1 à A5) et §2 L1.
  * Décision G7 de David : toute action écrit une ligne dans Calcul, SANS changer
  * de vue — on va dans Calcul seulement si on le décide. Un repère sur l'onglet
  * dit qu'un résultat attend.

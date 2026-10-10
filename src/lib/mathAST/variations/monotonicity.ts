@@ -16,6 +16,7 @@ import type { Interval } from '$lib/math/intervals/types';
 import type { Sign, SignedInterval, SignAnalysisResult } from '../sign/types';
 import type { Monotonicity, MonotonicInterval } from './types';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { tidyCriticalAbscissa } from './critical-points';
 
 // =============================================================================
 // Sign to Monotonicity Conversion
@@ -78,6 +79,22 @@ export function monotonicityToSign(monotonicity: Monotonicity): Sign {
 // =============================================================================
 
 /**
+ * Les bornes écrites comme les abscisses critiques : `exp(-1)` (forme du
+ * solveur) devient `\dfrac{1}{\exponentialE}`, comme dans la ligne des points
+ * critiques. Une borne sans exponentielle reste la même référence.
+ */
+function withTidyEndpoints(interval: Interval): Interval {
+	const lower = tidyCriticalAbscissa(interval.lower.value);
+	const upper = tidyCriticalAbscissa(interval.upper.value);
+	if (lower === interval.lower.value && upper === interval.upper.value) return interval;
+	return {
+		...interval,
+		lower: { ...interval.lower, value: lower },
+		upper: { ...interval.upper, value: upper }
+	};
+}
+
+/**
  * Build monotonic intervals from a sign analysis result.
  *
  * Converts each signed interval from the derivative's sign analysis
@@ -105,7 +122,7 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
 		const derivativeSign = signToDerivativeSignLabel(signedInterval.sign);
 
 		monotonicIntervals.push({
-			interval: signedInterval.interval,
+			interval: withTidyEndpoints(signedInterval.interval),
 			monotonicity,
 			derivativeSign,
 			reason: buildMonotonicityReason(signedInterval, signResult.variable)
@@ -122,6 +139,8 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
  * Point intervals at zeros are excluded from merging (they represent critical points).
  *
  * @param intervals - Array of monotonic intervals to merge
+ * @param isCut - Vrai pour une jonction à ne jamais franchir : une valeur
+ *   exclue du domaine de f (la monotonie ne se recolle pas par-dessus)
  * @returns Array with adjacent same-monotonicity intervals merged
  *
  * @example
@@ -129,7 +148,8 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
  * // Output: [decreasing on ]-2 ; 0[, constant at 0, increasing on ]0 ; 3[]
  */
 export function mergeMonotonicIntervals(
-	intervals: readonly MonotonicInterval[]
+	intervals: readonly MonotonicInterval[],
+	isCut: (value: number) => boolean = () => false
 ): MonotonicInterval[] {
 	if (intervals.length === 0) {
 		return [];
@@ -146,7 +166,10 @@ export function mergeMonotonicIntervals(
 			current.monotonicity === next.monotonicity &&
 			!isPointInterval(current.interval) &&
 			!isPointInterval(next.interval) &&
-			areIntervalsAdjacent(current.interval, next.interval)
+			areIntervalsAdjacent(current.interval, next.interval) &&
+			// ⚠️ Une valeur interdite coupe l'étude : 1/(2x-1) est décroissante
+			// sur ]-∞ ; 1/2[ et sur ]1/2 ; +∞[, JAMAIS sur ℝ (f(0) = -1 < f(1) = 1)
+			!isCut(endpointToNumber(current.interval.upper.value))
 		) {
 			// Merge by extending current interval to include next
 			current = {

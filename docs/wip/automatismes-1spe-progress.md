@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-28. Pour reprendre dans une nouvelle session : lire ce fichier, puis
 > [ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md) et
-> [`docs/ref/fiches-exercices.md`](../ref/fiches-exercices.md) § 2 bis.
+> [`docs/pratiques/fiches-exercices.md`](../pratiques/fiches-exercices.md) § 2 bis.
 
 ## Décisions de David (figées)
 
@@ -34,7 +34,7 @@ fiche régénérée depuis la base, compilée par le compilateur de prod, 0 déb
 
 1. **Collision de vocabulaire « série ».** `CONTEXT.md` définit désormais **Série** = exercice de
    fiche fait d'instances figées (ADR 0011). Mais la spec en attente
-   [`series-de-questions-dans-un-chapitre-spec.md`](series-de-questions-dans-un-chapitre-spec.md)
+   [`series-de-questions-dans-un-chapitre-spec.md`](../archive/wip/series-de-questions-dans-un-chapitre-spec.md)
    (2026-09-14) appelle « série » une évaluation interactive (`assessments`). Deux sens pour un même
    mot : faire trancher lequel garde « série » et renommer l'autre (puis corriger `CONTEXT.md`).
 2. **Modèle 5 (évolution répétée)** : `(1+0{,}03)^5`, `(103/100)^5` sont jugés `bad_form` (calcul

@@ -90,7 +90,10 @@ export type {
 	// Video types
 	VideoProvider,
 	// Input state
-	InputState
+	InputState,
+	// Lexique (mots cliquables)
+	LexiconMark,
+	TermRange
 } from './types';
 
 // Variation Table Types

@@ -186,6 +186,12 @@ export interface DomainResult {
 	readonly domain: Domain;
 	readonly variable: string;
 	readonly steps?: readonly DomainStep[];
+	/**
+	 * Contraintes (LaTeX) que le moteur n'a pas su résoudre : quand elle est
+	 * présente, `domain` est INCOMPLET (il ignore ces contraintes) et ne doit
+	 * pas être annoncé comme le domaine.
+	 */
+	readonly unresolved?: readonly string[];
 }
 
 /**

@@ -69,3 +69,12 @@ static/images/questions/
 # Outillage des fiches d’exercices (scripts/fiches) : venv PyMuPDF, cache du compilateur
 scripts/fiches/.venv/
 __pycache__/
+
+# Captures d'échec de vitest (mode navigateur) : deux avaient été commitées par erreur
+.vitest-attachments/
+
+# Cache prettier de la CI (cf. quality.yml)
+.prettier-cache
+
+# Environnement Python propre à la machine : se recrée depuis requirements.txt
+tools/shantell-math/venv/

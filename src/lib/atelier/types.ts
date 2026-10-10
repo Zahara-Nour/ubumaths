@@ -4,7 +4,7 @@
  * Un objet de l'atelier = un nom + une définition + un état d'affichage.
  * C'est l'unité que les trois vues (Calcul, Graphe, Données) se partagent.
  *
- * Spécification : `docs/wip/atelier-recherche-eleve-phase0.md` §1.
+ * Spécification : `docs/archive/wip/atelier-recherche-eleve-phase0.md` §1.
  *
  * @module atelier/types
  */
@@ -133,6 +133,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	readonly kind: 'function';
 	/** Décision D2 : `x` seulement en v1 — `createEvaluator` la code en dur. */
 	readonly variable: 'x';
+	/**
+	 * La lettre que l'élève a choisie (`f(t) = t^2`), pour l'AFFICHAGE seulement.
+	 * Absente = x. ⚠️ La définition rangée est TOUJOURS en x (décision de David,
+	 * 2026-10-06) : tout l'atelier calcule en x, seule la carte montre `t`.
+	 * Voir `letter.ts`.
+	 */
+	readonly letter?: string;
 	/**
 	 * Réglages d'affichage. Absents tant que la fonction n'a jamais été tracée :
 	 * ils naissent au premier tracé, puis survivent au retrait (§1 L1).

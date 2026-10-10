@@ -120,11 +120,13 @@ export function extractPowerEquation(
 	// Flatten to get terms
 	const flatSum = flattenSumShallow(expr);
 
-	// We need exactly two terms: x^n and -k (or just x^n if k=0)
-	if (flatSum.length === 0 || flatSum.length > 2) return null;
+	// Un terme en x^n et des constantes (x⁴ − 17 − 12√2 : trois termes)
+	if (flatSum.length === 0) return null;
 
 	let powerTerm: MathNode | null = null;
 	let powerDegree: number | null = null;
+	// Coefficient constant de a·x^n (null : x^n ou −x^n, sans coefficient)
+	let powerCoefficient: MathNode | null = null;
 	let constantTerm: MathNode = number('0');
 
 	for (const { sign, term } of flatSum) {
@@ -134,15 +136,20 @@ export function extractPowerEquation(
 		if (degree === null) return null;
 
 		if (degree >= 3) {
-			// This is the power term - check it's a pure power (x^n, not 2x^n)
-			if (!isPurePower(signedTerm, variable)) return null;
 			// Only one power term allowed (reject x^4 + x^3 etc.)
 			if (powerTerm !== null) return null;
+			// a·x^n, a constant non nul : on divise par a (x^n = −c/a). Sans
+			// cela, 2√2·x³ = 1 partait chez Cardano et rendait ∛0 + ∛(√2/4).
+			if (!isPurePower(signedTerm, variable)) {
+				const coefficient = extractCoefficient([signedTerm], variable, degree);
+				if (!isConstantCoefficient(coefficient, variable) || isZeroNode(coefficient)) return null;
+				powerCoefficient = coefficient;
+			}
 			powerTerm = signedTerm;
 			powerDegree = degree;
 		} else if (degree === 0) {
-			// Constant term: we have -k in standard form, so k = -constantTerm
-			constantTerm = signedTerm;
+			// Constant terms are summed: we have -k in standard form, so k = -constantTerm
+			constantTerm = isZeroNode(constantTerm) ? signedTerm : add(constantTerm, signedTerm);
 		} else {
 			// Has x or x^2 terms - not a pure power equation
 			return null;
@@ -151,11 +158,41 @@ export function extractPowerEquation(
 
 	if (powerTerm === null || powerDegree === null) return null;
 
-	// k is the opposite of the constant term (x^n - k = 0 => k = -constant)
-	const k = isZeroNode(constantTerm) ? number('0') : opposite(constantTerm);
+	// x^n + c = 0 ⇒ x^n = −c ; −x^n + c = 0 ⇒ x^n = c. Le signe du terme en
+	// x^n était ignoré : 2 − x³ = 0 rendait −∛2, 1 − x⁴ = 0 « aucune solution »
+	const negatedPower = isNegatedPower(powerTerm);
+	const k = isZeroNode(constantTerm)
+		? number('0')
+		: powerCoefficient !== null
+			? fraction(opposite(constantTerm), powerCoefficient)
+			: negatedPower
+				? constantTerm
+				: opposite(constantTerm);
 	const kSimplified = denormalize(normalize(k));
 
 	return { n: powerDegree, k: kSimplified };
+}
+
+/**
+ * Coefficient constant de a·x^n : aucune lettre, sinon la seule lettre `e`,
+ * lue comme la constante d'Euler (convention de `evaluate` et `compile`) —
+ * e·x³ = 1 suit le chemin de π·x³ = 1. Sauf si l'inconnue est `e` elle-même.
+ */
+function isConstantCoefficient(coefficient: MathNode, variable: string): boolean {
+	const names = getVariables(coefficient);
+	if (names.size === 0) return true;
+	return variable !== 'e' && names.size === 1 && names.has('e');
+}
+
+/** Le terme en x^n est-il un opposé (−x^n, −(x^n)) ? Compte les `opposite` imbriqués. */
+function isNegatedPower(term: MathNode): boolean {
+	let negated = false;
+	let current = term;
+	while (current.type === 'opposite') {
+		negated = !negated;
+		current = current.operand;
+	}
+	return negated;
 }
 
 /**
@@ -545,6 +582,30 @@ function handleNoRealSolution(
 }
 
 /**
+ * Racine n-ième de k sous la forme ±r·√m (r rationnel), quand elle existe :
+ * ∛(√2/4) = √2/2, ∛(8/27) = 2/3, ⁴√(1/4) = √2/2. La valeur r² est devinée
+ * numériquement, puis le candidat est VÉRIFIÉ exactement (candidat^n = k en
+ * forme normale) : une approximation ne peut donc pas devenir une solution.
+ */
+function simpleNthRoot(k: MathNode, n: number, rootValue: number | undefined): MathNode | null {
+	if (rootValue === undefined || !Number.isFinite(rootValue) || rootValue === 0) return null;
+	const square = findSimpleFraction(rootValue * rootValue, 1000);
+	if (square === null) return null;
+	// √(n/d) écrit √(n·d)/d : la forme normale ne rationalise pas √(1/2)
+	const magnitude = fraction(
+		func('sqrt', [numericNode(square.n * square.d)]),
+		numericNode(square.d)
+	);
+	const candidate = denormalize(normalize(rootValue < 0 ? opposite(magnitude) : magnitude));
+	try {
+		const raised = normalize(power(candidate, numericNode(n)));
+		return normalFormsEquivalent(raised, normalize(k)) ? candidate : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Handle odd n: x = k^(1/n) (one real solution)
  */
 function handleOddExponent(
@@ -580,15 +641,15 @@ function handleOddExponent(
 			approximate = Number(exactRoot);
 		} else {
 			// Not a perfect power - symbolic root
-			solutionNode = createNthRootNode(k, n);
 			approximate =
 				kValue !== null ? Math.sign(kValue) * Math.pow(Math.abs(kValue), 1 / n) : undefined;
+			solutionNode = simpleNthRoot(k, n, approximate) ?? createNthRootNode(k, n);
 		}
 	} else {
 		// Non-integer k - symbolic root
-		solutionNode = createNthRootNode(k, n);
 		approximate =
 			kValue !== null ? Math.sign(kValue) * Math.pow(Math.abs(kValue), 1 / n) : undefined;
+		solutionNode = simpleNthRoot(k, n, approximate) ?? createNthRootNode(k, n);
 	}
 
 	// Simplify the solution
@@ -654,13 +715,13 @@ function handleEvenPositive(
 			approximatePositive = Number(exactRoot);
 		} else {
 			// Not a perfect power - symbolic root
-			positiveRoot = createNthRootNode(k, n);
 			approximatePositive = kValue !== null ? Math.pow(kValue, 1 / n) : undefined;
+			positiveRoot = simpleNthRoot(k, n, approximatePositive) ?? createNthRootNode(k, n);
 		}
 	} else {
 		// Non-integer k - symbolic root
-		positiveRoot = createNthRootNode(k, n);
 		approximatePositive = kValue !== null ? Math.pow(kValue, 1 / n) : undefined;
+		positiveRoot = simpleNthRoot(k, n, approximatePositive) ?? createNthRootNode(k, n);
 	}
 
 	// Simplify roots

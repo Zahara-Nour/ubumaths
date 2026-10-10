@@ -37,7 +37,7 @@
 		ConstraintMode,
 		TestSpec
 	} from '$lib/questions/types';
-	import { EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
+	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
 	import { questionTemplateSchema } from '$lib/questions/template-schema';
 	import {
@@ -388,6 +388,13 @@
 	let sharedBlankAcceptDecimal = $state(
 		initialTemplate?.shared?.blankDefaults?.acceptDecimal ?? false
 	);
+	// Argument d'un complexe : une réponse juste à 2kπ près est juste
+	let sharedBlankAngleModulo = $state(
+		initialTemplate?.shared?.blankDefaults?.angleModulo === '2pi'
+	);
+	let sharedBlankAcceptCombinatorial = $state(
+		initialTemplate?.shared?.blankDefaults?.acceptCombinatorialNotation ?? false
+	);
 	let sharedBlankIntervals = $state(
 		initialTemplate?.shared?.blankDefaults?.answerKind === 'intervalles'
 	);
@@ -402,6 +409,7 @@
 	let sharedBlankVectorCollinear = $state(
 		initialTemplate?.shared?.blankDefaults?.vectorMode === 'colineaire'
 	);
+	let sharedBlankMatrix = $state(initialTemplate?.shared?.blankDefaults?.answerKind === 'matrice');
 	// Primitive, solution d'équation différentielle : nature et champs de la case
 	let sharedBlankCalculus = $state(calculusEditorState(initialTemplate?.shared?.blankDefaults));
 	let sharedValidationRulesJson = $state(
@@ -430,7 +438,8 @@
 		'additionOnly',
 		'fraction',
 		'power',
-		...EQUATION_FORMS
+		...EQUATION_FORMS,
+		...COMPLEX_FORMS
 	] as const;
 
 	// Help dialog states
@@ -792,6 +801,8 @@
 		}
 		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (sharedBlankAcceptDecimal) blankDefaults.acceptDecimal = true;
+		if (sharedBlankAngleModulo) blankDefaults.angleModulo = '2pi';
+		if (sharedBlankAcceptCombinatorial) blankDefaults.acceptCombinatorialNotation = true;
 		// Une seule nature de réponse : « intervalles » l'emporte si les deux sont cochées
 		if (sharedBlankIntervals) {
 			blankDefaults.answerKind = 'intervalles';
@@ -801,7 +812,8 @@
 			blankDefaults.answerKind = 'vecteur';
 			// Colinéaire : tout vecteur colinéaire non nul est juste
 			if (sharedBlankVectorCollinear) blankDefaults.vectorMode = 'colineaire';
-		} else {
+		} else if (sharedBlankMatrix) blankDefaults.answerKind = 'matrice';
+		else {
 			// Primitive ou solution d'équation différentielle, avec leurs champs
 			const calculus = calculusBlankDefaults(sharedBlankCalculus);
 			if (calculus) Object.assign(blankDefaults, calculus);
@@ -963,11 +975,14 @@
 		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
+		sharedBlankAngleModulo = t.shared?.blankDefaults?.angleModulo === '2pi';
+		sharedBlankAcceptCombinatorial = t.shared?.blankDefaults?.acceptCombinatorialNotation ?? false;
 		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
 		sharedBlankOpenableBounds = t.shared?.blankDefaults?.openableBounds === true;
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
 		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
 		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
+		sharedBlankMatrix = t.shared?.blankDefaults?.answerKind === 'matrice';
 		sharedBlankCalculus = calculusEditorState(t.shared?.blankDefaults);
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
@@ -1663,11 +1678,14 @@
 			bind:sharedBlankUnitExpected
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
+			bind:sharedBlankAngleModulo
+			bind:sharedBlankAcceptCombinatorial
 			bind:sharedBlankIntervals
 			bind:sharedBlankOpenableBounds
 			bind:sharedBlankEquation
 			bind:sharedBlankVector
 			bind:sharedBlankVectorCollinear
+			bind:sharedBlankMatrix
 			bind:sharedBlankCalculus
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson

@@ -22,7 +22,19 @@ import {
 	isFunction,
 	isInfinity
 } from '../guards';
-import { number, divide, multiply, subtract, add, power, opposite } from '../factory';
+import {
+	number,
+	divide,
+	multiply,
+	subtract,
+	add,
+	power,
+	opposite,
+	positiveInfinity,
+	negativeInfinity,
+	parentheses
+} from '../factory';
+import { limitByGeneralizedDegree } from './generalized-degree';
 import { numericNode } from '../common/numeric';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -266,9 +278,18 @@ export function tryRationalization(
 }
 
 /**
+ * B², B parenthésé s'il est déjà une puissance. B = x² était autrefois pris
+ * tel quel (B² = x²) : x² − √(x⁴+x) devenait (x² − x⁴ − x)/(x² + √(x⁴+x))
+ * → −∞, au lieu de −x/(x² + √(x⁴+x)) → 0.
+ */
+function square(node: MathNode): MathNode {
+	return power(isSuperscript(node) ? parentheses(node) : node, number('2'));
+}
+
+/**
  * Find conjugate for rationalization.
  */
-function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
+export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
 	// Look for √a - b
 	if (isSubtraction(expr)) {
 		if (isSqrt(expr.left) && !isSqrt(expr.right)) {
@@ -277,10 +298,7 @@ function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNod
 			const sqrtArg = getSqrtArg(expr.left);
 			if (sqrtArg) {
 				const conjugate = add(expr.left, expr.right);
-				const expanded = subtract(
-					sqrtArg,
-					isSuperscript(expr.right) ? expr.right : power(expr.right, number('2'))
-				);
+				const expanded = subtract(sqrtArg, square(expr.right));
 				return { conjugate, expanded };
 			}
 		}
@@ -290,10 +308,7 @@ function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNod
 			const sqrtArg = getSqrtArg(expr.right);
 			if (sqrtArg) {
 				const conjugate = add(expr.left, expr.right);
-				const expanded = subtract(
-					isSuperscript(expr.left) ? expr.left : power(expr.left, number('2')),
-					sqrtArg
-				);
+				const expanded = subtract(square(expr.left), sqrtArg);
 				return { conjugate, expanded };
 			}
 		}
@@ -305,10 +320,7 @@ function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNod
 			const sqrtArg = getSqrtArg(expr.left);
 			if (sqrtArg) {
 				const conjugate = subtract(expr.left, expr.right);
-				const expanded = subtract(
-					sqrtArg,
-					isSuperscript(expr.right) ? expr.right : power(expr.right, number('2'))
-				);
+				const expanded = subtract(sqrtArg, square(expr.right));
 				return { conjugate, expanded };
 			}
 		}
@@ -387,8 +399,10 @@ export function tryDominantTerm(
 	let description: string;
 
 	if (numDegree > denDegree) {
-		// Numerator dominates → ±∞
-		const sign = numLeading * denLeading > 0 === positive ? 'positive' : 'negative';
+		// Numerator dominates → ±∞, comme (a/b)·x^{p−q} : en −∞, x^{p−q} n'est
+		// négatif que si p − q est impair (x³/x = x² → +∞ en −∞)
+		const powerNegative = !positive && (numDegree - denDegree) % 2 === 1;
+		const sign = numLeading * denLeading > 0 !== powerNegative ? 'positive' : 'negative';
 		limitValue = { type: 'infinity', sign };
 		description = `Degré numérateur (${numDegree}) > degré dénominateur (${denDegree})`;
 	} else if (numDegree < denDegree) {
@@ -397,8 +411,15 @@ export function tryDominantTerm(
 		description = `Degré numérateur (${numDegree}) < degré dénominateur (${denDegree})`;
 	} else {
 		// Same degree → ratio of leading coefficients
-		const ratio = numLeading / denLeading;
-		limitValue = number(String(ratio));
+		// Rapport EXACT des termes dominants (2/3, pas 0.666…) ; flottant
+		// seulement si un coefficient n'est pas rationnel
+		const exact = limitByGeneralizedDegree(
+			expr,
+			varName,
+			positive ? positiveInfinity() : negativeInfinity()
+		);
+		limitValue =
+			exact !== null && !isInfinity(exact) ? exact : numericNode(numLeading / denLeading);
 		description = `Même degré, rapport des coefficients dominants: ${numLeading}/${denLeading}`;
 	}
 
@@ -781,22 +802,9 @@ export function tryAlgebraicSimplification(
 			if (postFact.success) {
 				return { ...postFact, technique: 'abs-simplification' };
 			}
-			// Factorization may fail (e.g., (-x)/x), evaluate near approach point
-			const approachVal = parseFloat(approach.value);
-			const epsilon = 1e-8;
-			const testPt = direction === 'right' ? approachVal + epsilon : approachVal - epsilon;
-			const evalResult = evaluateAtPoint(absResult.simplified, varName, testPt);
-			if (evalResult !== null && Number.isFinite(evalResult)) {
-				const rounded = Math.round(evalResult);
-				if (Math.abs(evalResult - rounded) < 1e-6) {
-					return {
-						success: true,
-						simplified: numericNode(rounded),
-						technique: 'abs-simplification',
-						description: absResult.description
-					};
-				}
-			}
+			// L'expression sans valeur absolue est rendue telle quelle : sa limite
+			// est calculée par le moteur (evaluate.ts). L'évaluer en a ± 10⁻⁸ et
+			// arrondir rendait |x|/x² en 0 « exact 100000000 » au lieu de +∞.
 			return absResult;
 		}
 	}

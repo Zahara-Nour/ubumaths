@@ -2,12 +2,13 @@
  * `pnpm release` — rendre son niveau à une fonctionnalité
  * =======================================================
  *
- * En dessous de 1.0.0, standard-version force `preMajor` et rétrograde chaque
+ * En dessous de 1.0.0, commit-and-tag-version (fork maintenu de standard-version,
+ * abandonné en 2022 ; remplacé le 2026-10-10) force `preMajor` et rétrograde chaque
  * niveau d'un cran : une fonctionnalité ne vaut plus qu'un patch. Ce n'est pas
  * configurable — la ligne est écrite en dur, APRÈS la lecture de
  * `.versionrc.json` :
  *
- *   // node_modules/standard-version/lib/lifecycles/bump.js:117
+ *   // node_modules/commit-and-tag-version/lib/lifecycles/bump.js:280
  *   if (semver.lt(currentVersion, '1.0.0')) presetOptions.preMajor = true
  *
  * Résultat vécu : la v0.14.2 est sortie avec dix `feat:` dedans, annoncée
@@ -15,7 +16,13 @@
  * on ne s'en aperçoit qu'en relisant le CHANGELOG.
  *
  * Ce script décide donc le niveau lui-même et le passe en `--release-as`.
- * Tout le reste (CHANGELOG, commit de release, tag) reste à standard-version,
+ * ⚠️ Version 12, pas 13 : la 13 (conventional-changelog 8) plante sur notre
+ * configuration (« headerPartial is not a function », essai à blanc du
+ * 2026-10-10). Et le champ `repository` de package.json est requis : sans lui,
+ * les liens du CHANGELOG sortent en `///compare/…` (standard-version lisait le
+ * remote git).
+ *
+ * Tout le reste (CHANGELOG, commit de release, tag) reste à commit-and-tag-version,
  * qui lit toujours `.versionrc.json`.
  *
  *   feat / feature   → MINEUR  (au lieu de patch)
@@ -104,7 +111,7 @@ function main(): void {
 	}
 
 	const cli = fileURLToPath(
-		new URL('../node_modules/standard-version/bin/cli.js', import.meta.url)
+		new URL('../node_modules/commit-and-tag-version/bin/cli.js', import.meta.url)
 	);
 	const res = spawnSync(process.execPath, [cli, ...args], { stdio: 'inherit' });
 	process.exit(res.status ?? 1);

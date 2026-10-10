@@ -2,7 +2,7 @@
  * Convention de couleurs des corrections rédigées (mode A)
  * ========================================================
  *
- * Trois rôles, pas plus (cf. docs/ref/corrections-redaction.md) :
+ * Trois rôles, pas plus (cf. docs/pratiques/corrections-redaction.md) :
  * - `transformed`  (primary.0, orange) : ce que l'on transforme — le nombre qu'on
  *   décompose, les signes « − » que l'on regarde ;
  * - `intermediate` (primary.1, bleu)   : l'étape intermédiaire — la dizaine atteinte,

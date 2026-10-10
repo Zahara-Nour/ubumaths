@@ -13,11 +13,13 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 ## La plateforme
 
-| Terme       | Sens                                                                 | Code / note                                                  |
-| ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Chiphre** | La plateforme (marque, **singulier**, domaine chiph.re).             | « ubumaths » = nom historique (dépôt, 3 résidus volontaires) |
-| chiphres    | « chiffres » à l'ubuesque — lexique du lore, **pas** la marque.      | `src/lib/config/lore.ts`                                     |
-| Mathres     | Les mathématiques, en wording interne (lore pataphysique Jarry/Ubu). | `docs/Chiphres/`                                             |
+| Terme        | Sens                                                                 | Code / note                                                  |
+| ------------ | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Chiphre**  | La plateforme (marque, **singulier**, domaine chiph.re).             | « ubumaths » = nom historique (dépôt, 3 résidus volontaires) |
+| chiphres     | « chiffres » à l'ubuesque — lexique du lore, **pas** la marque.      | `src/lib/config/lore.ts`                                     |
+| Mathres      | Les mathématiques, en wording interne (lore pataphysique Jarry/Ubu). | `docs/Chiphres/`                                             |
+| Shtam        | La gazette parodique du Royaume : fausses nouvelles mathresques.     | `/shtam`, `src/lib/server/shtam/` ; jamais « rubrique »      |
+| Vrai du faux | Encadré obligatoire en fin d'article du Shtam : le fait réel.        |                                                              |
 
 ⛔ « Chiphres » (pluriel) comme nom de marque : faux.
 
@@ -34,6 +36,26 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 | Élève archivé     | Retiré d'une classe : relit ce qu'il a reçu, ne reçoit plus rien.                            | `class_members.left_at` (posé par trigger)           |
 
 → [ADR 0002](docs/adr/0002-mono-professeur-ecole-frontiere-sociale.md)
+
+## Le Cabinet Noir (chiffrement)
+
+| Terme                        | Sens                                                                              | Code / note                                |
+| ---------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------ |
+| Cabinet Noir de Turingrad    | La section du chiffrement (nom affiché).                                          | `/chiffrement`, `src/lib/ciphers/`         |
+| **Chiffrer**                 | Transformer un message **avec** une clé pour le rendre illisible.                 | `*Encrypt`                                 |
+| **Déchiffrer**               | Retrouver le message **avec** la clé.                                             | `*Decrypt`                                 |
+| **Décrypter**                | Retrouver le message **sans** la clé (fréquences, force brute…).                  | onglet « Décrypter », `caesarBruteForce`   |
+| Chiffre (un)                 | Une méthode d'écriture secrète : le chiffre de César, la scytale…                 | `cipher`                                   |
+| Substitution / transposition | Remplacer les lettres / changer leur ordre (la scytale transpose).                |                                            |
+| Inverse modulaire            | a′ tel que a × a′ ≡ 1 (mod 26) ; n'existe que si a est premier avec 26.           | `modInverse`, `src/lib/ciphers/modular.ts` |
+| Indice de coïncidence        | Probabilité que deux lettres tirées du texte soient égales (≈ 0,078 en français). | `indexOfCoincidence`                       |
+| Kasiski (méthode de)         | Longueur d'une clé de Vigenère déduite des écarts entre séquences répétées.       | `kasiski`                                  |
+| Matrice inversible mod 26    | Matrice 2 × 2 dont le déterminant est premier avec 26 : clé de Hill déchiffrable. | `hillInverse`, `src/lib/ciphers/hill.ts`   |
+| Indicatrice d'Euler φ(n)     | Pour n = p × q (p, q premiers) : φ(n) = (p − 1)(q − 1).                           | `rsaKeys`, `src/lib/ciphers/rsa.ts`        |
+| Exponentiation rapide        | Calcul de mᵉ mod n par carrés successifs, selon l'écriture binaire de e.          | `modPow`                                   |
+| Clé publique / clé privée    | RSA : (n, e) sert à chiffrer et se publie ; d sert à déchiffrer et se garde.      |                                            |
+
+⛔ « Crypter » : déconseillé par les spécialistes de la sécurité (chiffrer sans clé n’a pas de sens). Écrire chiffrer, ou décrypter.
 
 ## Le cours
 
@@ -57,7 +79,7 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 Les policies testent `published_at <= now()`, jamais `is not null` (une date programmée ne publie pas
 en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de-la-classe.md) ·
-`docs/architecture/database-schema.md` §`published_at`
+`docs/systeme/base-de-donnees.md` §`published_at`
 
 ## Les questions
 
@@ -79,7 +101,7 @@ en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de
 | **Série**                | Composition de questions : des catégories de modèles, chacune avec un nombre de répétitions et une durée ; tirée à neuf à chaque usage (en classe, flash-cards, interactif, course aux nombres, évaluation).                                                                                                                                                                              | `series` (verrouillée dès qu'un élève a commencé), panier `questionCart`        |
 | **Série statistique**    | Données d'une enquête (valeurs, éventuellement avec effectifs ou en classes) dont on calcule des indicateurs et trace des diagrammes. **Toujours avec l'adjectif** : sans lui, « série » = composition de questions.                                                                                                                                                                      | `Dataset` (brut), `FrequencyTable` (valeurs + effectifs) ; jamais `series`      |
 | **Série figée**          | Série dont les instances sont fixées par une graine : même copie pour toute la classe (exercice d'une fiche d'automatismes).                                                                                                                                                                                                                                                              | → [ADR 0011](docs/adr/0011-fiche-d-automatismes-figee-par-graine.md)            |
-| **Relecture**            | Revue des 633 questions TinyMath importées, lot par lot.                                                                                                                                                                                                                                                                                                                                  | `docs/relecture/`                                                               |
+| **Relecture**            | Revue des 633 questions TinyMath importées, lot par lot.                                                                                                                                                                                                                                                                                                                                  | `data/relecture/`                                                               |
 
 Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_rounded`,
 `algebraic_transform`, `fill_in_blanks`, `multiple_choice`, plus `course_card`.
@@ -93,7 +115,7 @@ Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_round
 | **Flash-cards**        | Forme d'une série en autonomie : carte retournable, l'élève dit s'il avait trouvé (auto-évaluation), sans chrono ; jamais une évaluation.                                                                           | `TestMode` `flash`                                                                                                                |
 | **Entraînement**       | Forme d'une série en autonomie : l'élève répond question par question, correction et score à la fin.                                                                                                                | `TestMode` `interactive`                                                                                                          |
 | **Course aux nombres** | Forme d'une série : toutes les questions à la fois, temps global, score.                                                                                                                                            | `TestMode` `course`                                                                                                               |
-| **SRS / révision**     | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                                                                                                                              | `srs_*`, `docs/ref/srs/`                                                                                                          |
+| **SRS / révision**     | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                                                                                                                              | `srs_*`, `docs/systeme/srs.md`                                                                                                    |
 | **Deck**               | Paquet de cartes de révision (un chapitre peut en porter). ≠ `Deck` d'UbuSlides (diaporama).                                                                                                                        | `srs_decks`, `chapter_decks`                                                                                                      |
 | **Quiz de chapitre**   | Quiz d'un chapitre, sur le moteur de questions. Supprimé le 2026-09-15 (jamais servi).                                                                                                                              | migration `20260915340000_drop_ancien_quiz_de_chapitre`                                                                           |
 | **Tentative**          | Une réponse d'élève enregistrée.                                                                                                                                                                                    | `skill_attempts`                                                                                                                  |
@@ -102,6 +124,14 @@ Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_round
 
 La **correction des réponses est côté client** : les statistiques sont un outil pour l'élève, jamais
 une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
+
+## Le dictionnaire
+
+| Terme             | Sens                                                                                                                                                                                                   | Code                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| **Dictionnaire**  | Les mots mathématiques et leurs définitions par niveau scolaire (sens, synonymes, formes, filières partagées). En base, modifié par l'admin → [ADR 0022](docs/adr/0022-dictionnaire-en-base-admin.md). | `src/lib/data/math-dictionary-fr.ts` (`MathTerm`), table à créer |
+| **Glossaire**     | Page publique qui affiche le dictionnaire, filtrable par niveau.                                                                                                                                       | `src/routes/(public)/glossaire/`                                 |
+| **Mot cliquable** | Mot d'un énoncé reconnu dans le dictionnaire : un clic ouvre sa fiche au niveau de l'élève.                                                                                                            | `src/lib/lexicon/`, `TextNode.terms`                             |
 
 ## Le moteur mathématique (`src/lib/mathAST/`)
 
@@ -117,11 +147,11 @@ une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
 | **Empreinte**              | Forme comparée par le décideur (réduite **pour comparer**, jamais affichée).                                                                   | → [ADR 0006](docs/adr/0006-reduire-pour-comparer-pas-pour-ecrire.md)                                                                        |
 | **Hypothèse de l'énoncé**  | Condition sur une variable libre de la réponse (« x > 0 », « n entier »), déclarée par le modèle ; le décideur ne compare que là où elle vaut. | `answerAssumptions` (à créer) → `TypeContext.assumptions` → [ADR 0012](docs/adr/0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) |
 | **Palier**                 | Famille de problèmes du moteur d'inéquations (1 linéaire, 2a, 2b second degré, 3 rationnel). **Pas** un niveau de détail.                      | `pedagogical-*`                                                                                                                             |
-| **Grandeur**               | Nombre muni d'une unité (`~3[m.s^-1]~`) ; `12000 m ≡ 12 km`.                                                                                   | `units/`, `docs/ref/notation-unites.md`                                                                                                     |
+| **Grandeur**               | Nombre muni d'une unité (`~3[m.s^-1]~`) ; `12000 m ≡ 12 km`.                                                                                   | `units/`, `docs/pratiques/notation-unites.md`                                                                                               |
 | **ubumark**                | Notation texte des énoncés (maths entre `~…~`).                                                                                                | `src/lib/ubumark/`                                                                                                                          |
-| **Panel**                  | Tableau de référence de ce que rendent `simplify` et les 4 intentions.                                                                         | `docs/ref/panel-simplifications.md`                                                                                                         |
+| **Panel**                  | Tableau de référence de ce que rendent `simplify` et les 4 intentions.                                                                         | `docs/systeme/mathast/panel-simplifications.md`                                                                                             |
 
-Sens précis de l'équivalence par domaine : `docs/ref/convention-equivalence.md`.
+Sens précis de l'équivalence par domaine : `docs/systeme/mathast/convention-equivalence.md`.
 
 ⚠️ Dans une expression évaluée, les variables `e` et `i` sont lues comme la constante d'Euler et
 l'unité imaginaire.
@@ -131,25 +161,33 @@ l'unité imaginaire.
 Seule la **famille B** (compétences mathématiques) est d'actualité ; la famille A est abandonnée
 → [ADR 0008](docs/adr/0008-referentiel-famille-a-abandonne.md).
 
-| Terme                       | Sens                                                                                                      | Code                            |
-| --------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| **Compétence mathématique** | L'une des six, stables tous niveaux : Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer. | `math_competences`              |
-| **Composante**              | Unité évaluée d'une compétence mathématique, calibrée par niveau scolaire.                                | `math_competence_subdimensions` |
-| **Indicateur**              | Ce qui permet de dire qu'un niveau est validé.                                                            | (pas de colonne en base)        |
-| **Thème**                   | Regroupement de contenus du programme officiel.                                                           | `curriculum_themes`             |
-| **Objectif**                | Attendu du programme dans un thème (mot visible de l'élève : « Mes objectifs »).                          | `curriculum_objectives`         |
-| **Point du programme**      | Élément précis d'un objectif, suivi par le prof (« suivi programme »).                                    | `curriculum_points`             |
+| Terme                       | Sens                                                                                                                                                                                                    | Code                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Compétence mathématique** | L'une des six, stables tous niveaux : Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer.                                                                                               | `math_competences`                                                           |
+| **Composante**              | Unité évaluée d'une compétence mathématique, calibrée par niveau scolaire.                                                                                                                              | `math_competence_subdimensions`                                              |
+| **Indicateur**              | Ce qui permet de dire qu'un niveau est validé.                                                                                                                                                          | (pas de colonne en base)                                                     |
+| **Thème**                   | Regroupement de contenus du programme officiel.                                                                                                                                                         | `curriculum_themes`                                                          |
+| **Branche**                 | Premier niveau du classement des contenus, stable à tous les niveaux scolaires (« Fonctions », « Géométrie ») ; ≠ thème du programme.                                                                   | à créer → [ADR 0019](docs/adr/0019-classement-branche-notion-sous-notion.md) |
+| **Notion**                  | Ce dont parle un exercice ou un modèle de questions (« Second degré », « Fractions ») ; regroupée dans une branche.                                                                                     | à créer (remplace `exercises.topic`, `question_templates.theme`/`domain`)    |
+| **Sous-notion**             | Subdivision facultative d'une notion (« Discriminant », « Factorisation »).                                                                                                                             | à créer (remplace `question_templates.subdomain`)                            |
+| **Source**                  | Provenance d'un exercice (« BAC Juin 2025 Asie J1 », « Concours général 2024 ») ; texte libre, avec un **type de source** (Bac, Brevet, Concours, Manuel…). Jamais sur une question, jamais un contenu. | `exercises.source` ; type de source à créer                                  |
+| **Catégorie** (d'exercice)  | Genre de tâche : automatisme, application, recherche, synthèse… Une question n'en a pas : elle est question de cours ou automatisme.                                                                    | `exercises.category`                                                         |
+| **Tag**                     | Mot-clé transversal à plusieurs notions (« lecture graphique », « algorithme ») ; jamais un contenu que l'arbre nomme déjà.                                                                             | `resource_tags`                                                              |
+| **Objectif**                | Attendu du programme dans un thème (mot visible de l'élève : « Mes objectifs »).                                                                                                                        | `curriculum_objectives`                                                      |
+| **Point du programme**      | Élément précis d'un objectif, suivi par le prof (« suivi programme »).                                                                                                                                  | `curriculum_points`                                                          |
 
 Échelle 1-4 jamais montrée comme une note (états ◯ / 🟠 / 🟢 / ✨).
 
 ### Termes bannis
 
-| ❌ Ne pas dire                              | ✅ Dire                                           |
-| ------------------------------------------- | ------------------------------------------------- |
-| compétence (seule)                          | **compétence mathématique**, ou **composante**    |
-| compétence atomique                         | **composante**                                    |
-| rubrique                                    | **indicateur**                                    |
-| domaine (au sens Sacoche)                   | **thème**                                         |
-| Mode Révision (forme de série)              | **En classe** (≠ révision SRS)                    |
-| Quiz (forme de série)                       | **Entraînement**                                  |
-| niveau de détail, palier (d'une correction) | **correction concise** / **correction détaillée** |
+| ❌ Ne pas dire                               | ✅ Dire                                           |
+| -------------------------------------------- | ------------------------------------------------- |
+| compétence (seule)                           | **compétence mathématique**, ou **composante**    |
+| compétence atomique                          | **composante**                                    |
+| rubrique                                     | **indicateur**                                    |
+| domaine (au sens Sacoche)                    | **thème**                                         |
+| thème / domaine d'un exercice ou d'un modèle | **branche**, **notion** (selon le niveau)         |
+| Mode Révision (forme de série)               | **En classe** (≠ révision SRS)                    |
+| Quiz (forme de série)                        | **Entraînement**                                  |
+| niveau de détail, palier (d'une correction)  | **correction concise** / **correction détaillée** |
+| lexique (pour les mots mathématiques)        | **dictionnaire** (« lexique » : celui du lore)    |

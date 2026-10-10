@@ -38,9 +38,13 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { isMultiplication, isUnit } from './guards';
+import { isLimit, isMultiplication, isNumber, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
+	needsParenthesesAsRightFactor,
+	needsParenthesesAsRightTerm,
+	needsParenthesesUnderFactorial,
+	needsParenthesesUnderOpposite,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -208,6 +212,187 @@ const KNOWN_FUNCTIONS = new Set([
 	'mod'
 ]);
 
+/** `factorial(x)` sans puissance, base ni dérivée : s'écrit `x!` */
+function isPlainFactorial(node: FunctionNode): boolean {
+	return (
+		node.name === 'factorial' &&
+		node.args.length === 1 &&
+		!node.power &&
+		!node.base &&
+		!node.derivativeOrder &&
+		!node.isInverse
+	);
+}
+
+/** `binom(n, k)` sans puissance, base ni dérivée : s'écrit `\binom{n}{k}` */
+function isPlainBinom(node: FunctionNode): boolean {
+	return (
+		node.name === 'binom' &&
+		node.args.length === 2 &&
+		!node.power &&
+		!node.base &&
+		!node.derivativeOrder &&
+		!node.isInverse
+	);
+}
+
+// =============================================================================
+// Portée de \lim
+// =============================================================================
+
+/**
+ * `\lim` sans parenthèses porte sur toute l'expression qui suit (décision du
+ * 2026-10-07) : le parseur n'arrête son argument qu'à la fin du groupe, devant
+ * une relation, ou devant un opérateur (ou une juxtaposition) suivi d'un autre
+ * `\lim`. Règle d'écriture qui en découle : toute limite non FINALE — suivie,
+ * au même niveau, d'autre chose qu'un `\lim` — est parenthésée, et le corps
+ * d'une limite qui contient lui-même « opérateur + \lim » aussi.
+ *
+ * Les décisions d'un nœud ne dépendent que de son sous-arbre (nœuds
+ * immuables) : elles sont mémorisées, sinon les parcours de bords gauche et
+ * droit se répètent à chaque niveau.
+ */
+interface OperandWraps {
+	readonly left: boolean;
+	readonly right: boolean;
+}
+
+const containsLimitCache = new WeakMap<MathNode, boolean>();
+const operandWrapsCache = new WeakMap<MathNode, OperandWraps | null>();
+
+/** Le sous-arbre contient-il une limite (ailleurs que dans un délimiteur) ? */
+function containsExposedLimit(node: MathNode): boolean {
+	const cached = containsLimitCache.get(node);
+	if (cached !== undefined) return cached;
+	let result: boolean;
+	switch (node.type) {
+		case 'limit':
+			result = true;
+			break;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			result = containsExposedLimit(node.left) || containsExposedLimit(node.right);
+			break;
+		case 'division':
+			result =
+				node.displayStyle !== 'fraction' &&
+				(containsExposedLimit(node.numerator) || containsExposedLimit(node.denominator));
+			break;
+		case 'opposite':
+		case 'positive':
+			result = containsExposedLimit(node.operand);
+			break;
+		default:
+			result = false;
+	}
+	containsLimitCache.set(node, result);
+	return result;
+}
+
+/**
+ * Parenthèses des deux opérandes d'un opérateur binaire écrit EN LIGNE (somme,
+ * différence, produit, quotient `/` ou `:`), limites comprises. Null pour tout
+ * autre nœud (`\dfrac` groupe déjà).
+ */
+function binaryOperandWraps(node: MathNode): OperandWraps | null {
+	const cached = operandWrapsCache.get(node);
+	if (cached !== undefined) return cached;
+	let left: MathNode;
+	let right: MathNode;
+	let wrapLeft: boolean;
+	let wrapRight: boolean;
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+			left = node.left;
+			right = node.right;
+			wrapLeft = false;
+			wrapRight = needsParenthesesAsRightTerm(right, node.type);
+			break;
+		case 'multiplication':
+			left = node.left;
+			right = node.right;
+			wrapLeft = needsParenthesesUnderSign(left);
+			wrapRight = needsParenthesesAsRightFactor(right);
+			break;
+		case 'division':
+			if (node.displayStyle === 'fraction') {
+				operandWrapsCache.set(node, null);
+				return null;
+			}
+			left = node.numerator;
+			right = node.denominator;
+			wrapLeft = needsParenthesesUnderSign(left);
+			wrapRight = needsParenthesesUnderSign(right);
+			break;
+		default:
+			operandWrapsCache.set(node, null);
+			return null;
+	}
+	if (!wrapLeft && endsWithLimit(left) && (wrapRight || !startsWithLimit(right))) {
+		wrapLeft = true;
+	}
+	const wraps = { left: wrapLeft, right: wrapRight };
+	operandWrapsCache.set(node, wraps);
+	return wraps;
+}
+
+/** Le rendu de `node` commence-t-il par un `\lim` non parenthésé ? */
+function startsWithLimit(node: MathNode): boolean {
+	if (isLimit(node)) return true;
+	if (!containsExposedLimit(node)) return false;
+	const wraps = binaryOperandWraps(node);
+	if (wraps === null || wraps.left) return false;
+	return startsWithLimit(node.type === 'division' ? node.numerator : binaryLeft(node));
+}
+
+/** Le rendu de `node` finit-il par une limite non parenthésée ? */
+function endsWithLimit(node: MathNode): boolean {
+	if (isLimit(node)) return true;
+	if (!containsExposedLimit(node)) return false;
+	if (node.type === 'opposite') {
+		return !needsParenthesesUnderOpposite(node.operand) && endsWithLimit(node.operand);
+	}
+	if (node.type === 'positive') return endsWithLimit(node.operand);
+	const wraps = binaryOperandWraps(node);
+	if (wraps === null || wraps.right) return false;
+	return endsWithLimit(node.type === 'division' ? node.denominator : binaryRight(node));
+}
+
+/**
+ * Le rendu de `node` contient-il, à son niveau, un opérateur (ou une
+ * juxtaposition) suivi d'un `\lim` ? Corps d'une limite : il faut alors le
+ * parenthéser, sinon la limite extérieure s'arrêterait devant.
+ */
+function hasLimitBreak(node: MathNode): boolean {
+	if (!containsExposedLimit(node)) return false;
+	if (node.type === 'opposite') {
+		return !needsParenthesesUnderOpposite(node.operand) && hasLimitBreak(node.operand);
+	}
+	if (node.type === 'positive') return hasLimitBreak(node.operand);
+	const wraps = binaryOperandWraps(node);
+	if (wraps === null) return false;
+	const left = node.type === 'division' ? node.numerator : binaryLeft(node);
+	const right = node.type === 'division' ? node.denominator : binaryRight(node);
+	return (
+		(!wraps.right && (startsWithLimit(right) || hasLimitBreak(right))) ||
+		(!wraps.left && hasLimitBreak(left))
+	);
+}
+
+function binaryLeft(node: MathNode): MathNode {
+	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'multiplication'
+		? node.left
+		: node;
+}
+
+function binaryRight(node: MathNode): MathNode {
+	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'multiplication'
+		? node.right
+		: node;
+}
+
 // =============================================================================
 // Delimiter Metadata Helpers
 // =============================================================================
@@ -334,31 +519,48 @@ export class LatexGenerator {
 				break;
 
 			case 'addition':
+			case 'subtraction': {
+				// Mêmes parenthèses que generateAddition / generateSubtraction
+				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
+				const wrapLeft = binaryOperandWraps(node)?.left ?? false;
+				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
-				this.emit(' + ', node.operatorMetadata ?? node.metadata);
+				if (wrapLeft) this.emit(' \\right)', node.metadata);
+				this.emit(node.type === 'addition' ? ' + ' : ' - ', node.operatorMetadata ?? node.metadata);
+				if (wrapRight) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.right);
+				if (wrapRight) this.emit(' \\right)', node.metadata);
 				break;
+			}
 
-			case 'subtraction':
+			case 'multiplication': {
+				// Mêmes parenthèses que generateMultiplication
+				const wrapLeft = binaryOperandWraps(node)?.left ?? false;
+				const wrapRight = needsParenthesesAsRightFactor(node.right);
+				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.left);
-				this.emit(' - ', node.operatorMetadata ?? node.metadata);
-				this.visitWithSpans(node.right);
-				break;
-
-			case 'multiplication':
-				this.visitWithSpans(node.left);
+				if (wrapLeft) this.emit(' \\right)', node.metadata);
 				this.visitMultiplicationOperatorSpan(node);
+				if (wrapRight) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.right);
+				if (wrapRight) this.emit(' \\right)', node.metadata);
 				break;
+			}
 
 			case 'division':
 				this.visitDivisionSpans(node);
 				break;
 
-			case 'opposite':
+			case 'opposite': {
+				// Même parenthésage que generateOpposite : sans lui, −(x + 2) s'écrivait
+				// `-x + 2` dans les étapes pédagogiques (mesuré, revues de #838).
+				const wrap = needsParenthesesUnderOpposite(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
+				if (wrap) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.operand);
+				if (wrap) this.emit(' \\right)', node.metadata);
 				break;
+			}
 
 			case 'positive':
 				this.emit('+', node.operatorMetadata ?? node.metadata);
@@ -494,7 +696,8 @@ export class LatexGenerator {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
 			case 'implicit':
-				this.emit(juxtaposesQuantities(node) ? '~' : ' ', opMeta);
+				if (juxtaposesDigits(node)) this.emit(' \\times ', opMeta);
+				else this.emit(juxtaposesQuantities(node) ? '~' : ' ', opMeta);
 				break;
 			case 'dot':
 				this.emit(' \\cdot ', opMeta);
@@ -526,15 +729,16 @@ export class LatexGenerator {
 				this.emit('}', opMeta);
 				break;
 			case 'inline':
+			case 'ratio': {
+				// Limite non finale : parenthésée (voir binaryOperandWraps)
+				const wrapLeft = endsWithLimit(node.numerator) && !startsWithLimit(node.denominator);
+				if (wrapLeft) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.numerator);
-				this.emit(' / ', opMeta);
+				if (wrapLeft) this.emit(' \\right)', node.metadata);
+				this.emit(node.displayStyle === 'inline' ? ' / ' : ' : ', opMeta);
 				this.visitWithSpans(node.denominator);
 				break;
-			case 'ratio':
-				this.visitWithSpans(node.numerator);
-				this.emit(' : ', opMeta);
-				this.visitWithSpans(node.denominator);
-				break;
+			}
 			default: {
 				const exhaustive: never = node.displayStyle;
 				throw new Error(`Unknown division style: ${exhaustive}`);
@@ -604,6 +808,25 @@ export class LatexGenerator {
 			this.emit('\\lceil ', leftMeta);
 			this.visitWithSpans(node.args[0]);
 			this.emit(' \\rceil', rightMeta);
+			return;
+		}
+
+		// Factorielle `n!` et coefficient binomial `\binom{n}{k}` : la notation du
+		// tableau, relue par les deux parseurs LaTeX (cf. parser/factorial-notation)
+		if (isPlainFactorial(node)) {
+			const wrap = needsParenthesesUnderFactorial(node.args[0]);
+			if (wrap) this.emit('\\left( ', node.metadata);
+			this.visitWithSpans(node.args[0]);
+			if (wrap) this.emit(' \\right)', node.metadata);
+			this.emit('!', node.nameMetadata ?? node.metadata);
+			return;
+		}
+		if (isPlainBinom(node)) {
+			this.emit('\\binom{', node.nameMetadata ?? node.metadata);
+			this.visitWithSpans(node.args[0]);
+			this.emit('}{', node.metadata);
+			this.visitWithSpans(node.args[1]);
+			this.emit('}', node.metadata);
 			return;
 		}
 
@@ -896,7 +1119,10 @@ export class LatexGenerator {
 			this.emit('^{-}', node.metadata);
 		}
 		this.emit('} ', node.metadata);
+		const wrapBody = hasLimitBreak(node.expression);
+		if (wrapBody) this.emit('\\left( ', node.metadata);
 		this.visitWithSpans(node.expression);
+		if (wrapBody) this.emit(' \\right)', node.metadata);
 	}
 
 	/**
@@ -1087,17 +1313,26 @@ export class LatexGenerator {
 	}
 
 	private generateAddition(node: AdditionNode): string {
-		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		const left = this.groupLeftOperand(node);
+		// `a + -b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'addition')
+			? `\\left( ${renderedRight} \\right)`
+			: renderedRight;
 		return `${left} + ${right}`;
 	}
 
 	private generateSubtraction(node: SubtractionNode): string {
-		const left = this.generateNode(node.left);
+		const left = this.groupLeftOperand(node);
 		// ⚠️ L'opérande DROIT seulement : `y − (x+1)` vaut `y − x − 1`, alors que
 		// `y - x + 1` se relit `y − x + 1`. À gauche, `(x+1) − y` se rend
 		// `x + 1 - y` sans ambiguïté, et parenthéser alourdirait pour rien.
-		const right = this.groupIfSum(node.right);
+		// Un terme qui commence par un signe aussi : `a - -b` (voir
+		// needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'subtraction')
+			? `\\left( ${renderedRight} \\right)`
+			: renderedRight;
 		return `${left} - ${right}`;
 	}
 
@@ -1116,14 +1351,25 @@ export class LatexGenerator {
 		return needsParenthesesUnderSign(node) ? `\\left( ${rendered} \\right)` : rendered;
 	}
 
+	/** Opérande gauche d'un opérateur en ligne, limites comprises : voir binaryOperandWraps. */
+	private groupLeftOperand(node: AdditionNode | SubtractionNode | MultiplicationNode): string {
+		const rendered = this.generateNode(node.left);
+		return binaryOperandWraps(node)?.left ? `\\left( ${rendered} \\right)` : rendered;
+	}
+
 	private generateMultiplication(node: MultiplicationNode): string {
 		// Les deux opérandes : `(x+1)y` comme `y(x+1)` perdent leur sens sans
-		// parenthèses.
-		const left = this.groupIfSum(node.left);
-		const right = this.groupIfSum(node.right);
+		// parenthèses. À droite, un facteur qui commence par un signe aussi :
+		// `2 -e^{-x}` se lirait « 2 moins e^{-x} » (voir needsParenthesesAsRightFactor).
+		const left = this.groupLeftOperand(node);
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightFactor(node.right)
+			? `\\left( ${renderedRight} \\right)`
+			: renderedRight;
 
 		switch (node.displayStyle) {
 			case 'implicit':
+				if (juxtaposesDigits(node)) return `${left} \\times ${right}`;
 				return juxtaposesQuantities(node) ? `${left}~${right}` : `${left} ${right}`;
 			case 'dot':
 				return `${left} \\cdot ${right}`;
@@ -1141,7 +1387,8 @@ export class LatexGenerator {
 	private generateDivision(node: DivisionNode): string {
 		// `\dfrac` groupe déjà ; les écritures EN LIGNE, non.
 		const grouped = node.displayStyle !== 'fraction';
-		const num = grouped ? this.groupIfSum(node.numerator) : this.generateNode(node.numerator);
+		const renderedNum = this.generateNode(node.numerator);
+		const num = binaryOperandWraps(node)?.left ? `\\left( ${renderedNum} \\right)` : renderedNum;
 		const denom = grouped ? this.groupIfSum(node.denominator) : this.generateNode(node.denominator);
 
 		switch (node.displayStyle) {
@@ -1171,7 +1418,9 @@ export class LatexGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderSign(node.operand) ? `-\\left( ${operand} \\right)` : `-${operand}`;
+		return needsParenthesesUnderOpposite(node.operand)
+			? `-\\left( ${operand} \\right)`
+			: `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {
@@ -1215,6 +1464,17 @@ export class LatexGenerator {
 		if (node.name === 'ceil' && node.args.length === 1 && !node.power && !node.base) {
 			const content = this.generateNode(node.args[0]);
 			return `\\lceil ${content} \\rceil`;
+		}
+
+		// Factorielle `n!` et coefficient binomial `\binom{n}{k}` (cf. visitFunctionSpans)
+		if (isPlainFactorial(node)) {
+			const operand = this.generateNode(node.args[0]);
+			return needsParenthesesUnderFactorial(node.args[0])
+				? `\\left( ${operand} \\right)!`
+				: `${operand}!`;
+		}
+		if (isPlainBinom(node)) {
+			return `\\binom{${this.generateNode(node.args[0])}}{${this.generateNode(node.args[1])}}`;
 		}
 
 		// Special case: sqrt, cbrt, root functions use \sqrt{} syntax instead of function call syntax.
@@ -1418,7 +1678,9 @@ export class LatexGenerator {
 		}
 
 		const subscript = `${node.variable} \\to ${approach}${directionSuperscript}`;
-		const expression = this.generateNode(node.expression);
+		// Corps contenant « opérateur + \\lim » : parenthésé (voir hasLimitBreak)
+		const rendered = this.generateNode(node.expression);
+		const expression = hasLimitBreak(node.expression) ? `\\left( ${rendered} \\right)` : rendered;
 
 		return `\\lim_{${subscript}} ${expression}`;
 	}
@@ -1538,6 +1800,67 @@ function juxtaposesQuantities(node: MultiplicationNode): boolean {
 	let left: MathNode = node.left;
 	while (isMultiplication(left) && left.displayStyle === 'implicit') left = left.right;
 	return isUnit(left) && isUnit(node.right);
+}
+
+/**
+ * Un produit implicite qui collerait deux CHIFFRES : `3 3 x^2` se lit « 33x² ».
+ *
+ * ⚠️ **Vu par David** : la dérivée de `3x^3` montrait l'étape `3 3 x^2`. Une
+ * règle de dérivation construit `coefficient × (x³)′` en style implicite, sans
+ * délimiteur ; le rendu par une espace colle les deux nombres. `3 × 3x²` est
+ * une étape de classe, `3 3x²` ne l'est jamais : entre deux chiffres, la croix.
+ *
+ * Seul le cas visé change : le facteur de gauche s'écrit en finissant par un
+ * nombre, celui de droite en commençant par un nombre (ni l'un ni l'autre
+ * parenthésé). `2x × 3` (`2 x 3`) et `3x` restent tels quels.
+ *
+ * Même règle après un APPEL de fonction : `\ln\left( 2 \right) 2^x` (dérivée
+ * de `2^x` sur la carte f′ et le bouton « Dériver ») ne se relit pas — l'oracle
+ * des dérivées l'a relevé. `\ln(2) × 2^x` se lit sans ambiguïté.
+ */
+function juxtaposesDigits(node: MultiplicationNode): boolean {
+	if (needsParenthesesUnderSign(node.left) || needsParenthesesAsRightFactor(node.right)) {
+		return false;
+	}
+	// Limite parenthésée devant un nombre : `\left(\lim x\right) 3` ne se relit pas
+	const limitWrapped = binaryOperandWraps(node)?.left ?? false;
+	return (
+		(endsWithNumber(node.left) || endsWithFunctionCall(node.left) || limitWrapped) &&
+		startsWithNumber(node.right)
+	);
+}
+
+/** L'écriture de ce nœud finit-elle par un appel de fonction (`\ln\left( 2 \right)`) ? */
+function endsWithFunctionCall(node: MathNode): boolean {
+	if (node.type === 'function') return true;
+	if (isMultiplication(node)) {
+		return !needsParenthesesAsRightFactor(node.right) && endsWithFunctionCall(node.right);
+	}
+	return false;
+}
+
+/** L'écriture de ce nœud finit-elle par un nombre (hors exposant, hors parenthèses) ? */
+function endsWithNumber(node: MathNode): boolean {
+	if (isNumber(node)) return true;
+	if (isMultiplication(node)) {
+		return !needsParenthesesAsRightFactor(node.right) && endsWithNumber(node.right);
+	}
+	if (node.type === 'opposite') {
+		return !needsParenthesesUnderOpposite(node.operand) && endsWithNumber(node.operand);
+	}
+	return false;
+}
+
+/** L'écriture de ce nœud commence-t-elle par un nombre (hors parenthèses) ? */
+function startsWithNumber(node: MathNode): boolean {
+	if (isNumber(node)) return true;
+	if (isMultiplication(node)) {
+		return !needsParenthesesUnderSign(node.left) && startsWithNumber(node.left);
+	}
+	if (node.type === 'superscript') {
+		return !needsParenthesesAsPowerBase(node.base) && startsWithNumber(node.base);
+	}
+	return false;
 }
 
 export function toLatex(node: MathNode, options?: LatexGeneratorOptions): string {

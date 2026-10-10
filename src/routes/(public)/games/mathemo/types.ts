@@ -16,20 +16,20 @@ import type { GradeCode } from '$lib/types/grades';
 export type FeedbackType = 'x' | 'c' | '_';
 
 /**
- * Display label keys used in WORD_LISTS (French grade names)
- */
-export type Difficulty = '6ème' | '5ème' | '4ème' | '3ème' | '2nde' | '1ère' | 'Tale';
-
-/**
- * Map of difficulty level to word list
- */
-export type WordLists = Record<Difficulty, string[]>;
-
-/**
  * Grade levels available in Mathemo
- * Middle school through high school specialty
+ * Middle school through high school, with the three branches of 1re
  */
-export const MATHEMO_GRADES: GradeCode[] = ['6', '5', '4', '3', '2', '1_SPE', 'T_SPE'];
+export const MATHEMO_GRADES: GradeCode[] = [
+	'6',
+	'5',
+	'4',
+	'3',
+	'2',
+	'1_GEN',
+	'1_SPE',
+	'1_TECHNO',
+	'T_SPE'
+];
 
 /**
  * Display labels for each grade level (French)
@@ -40,8 +40,10 @@ export const GRADE_LABELS: Record<string, string> = {
 	'4': '4ème',
 	'3': '3ème',
 	'2': '2nde',
-	'1_SPE': '1ère',
-	T_SPE: 'Tale'
+	'1_GEN': '1ère générale',
+	'1_SPE': '1ère spé',
+	'1_TECHNO': '1ère techno',
+	T_SPE: 'Tale spé'
 };
 
 /**

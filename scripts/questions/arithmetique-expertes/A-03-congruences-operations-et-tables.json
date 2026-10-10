@@ -1,0 +1,304 @@
+{
+	"title": "Congruences : compatibilité avec les opérations, tables de restes",
+	"description": "Reste d'une somme, d'une différence, d'un produit à partir des restes ; tables de restes de x² modulo 5 et de 2ᵏ modulo 7 (pièges : reste négatif laissé tel quel, produit des restes non réduit)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-073", "TEXP-074"],
+	"theme": "Arithmétique",
+	"domain": "Congruences",
+	"subdomain": "Congruences",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$a \\equiv {{r1}} \\,[{{n}}]$ et $b \\equiv {{r2}} \\,[{{n}}]$.\n\nQuel est le reste de la division euclidienne de $ab$ par ${{n}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "7..13"
+				},
+				{
+					"name": "r1",
+					"expression": "2..12"
+				},
+				{
+					"name": "r2",
+					"expression": "2..12"
+				}
+			],
+			"conditions": ["r1 < n", "r2 < n", "r1*r2 >= n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(r1*r2,n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les congruences sont compatibles avec le produit : $ab \\equiv {{r1}} \\times {{r2}} = {{eval:r1*r2}} \\,[{{n}}]$.",
+					"${{eval:r1*r2}} = {{n}} \\times {{eval:floor(r1*r2/n)}} + {{eval:mod(r1*r2,n)}}$ : le reste est $\\textcolor{{{color:primary.0}}}{{{eval:mod(r1*r2,n)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$a \\equiv {{r1}} \\,[{{n}}]$ et $b \\equiv {{r2}} \\,[{{n}}]$.\n\nQuel est le reste de la division euclidienne de $a-{{k}}b$ par ${{n}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..11"
+				},
+				{
+					"name": "r1",
+					"expression": "0..10"
+				},
+				{
+					"name": "r2",
+					"expression": "1..10"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["r1 < n", "r2 < n", "r1 - k*r2 < 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(r1-k*r2,n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a - {{k}}b \\equiv {{r1}} - {{k}} \\times {{r2}} = {{eval:r1-k*r2}} \\,[{{n}}]$.",
+					"${{eval:r1-k*r2}}$ n'est pas un reste (un reste est entre $0$ et ${{eval:n-1}}$) : on ajoute ${{n}}$ autant de fois qu'il faut.",
+					"${{eval:r1-k*r2}} \\equiv \\textcolor{{{color:primary.0}}}{{{eval:mod(r1-k*r2,n)}}} \\,[{{n}}]$."
+				]
+			}
+		},
+		{
+			"statement": "Complète la table des restes de $x^2$ modulo $5$.\n\n| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- | --- |\n| reste | $?$ | $?$ | $?$ | $?$ | $?$ |",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$0^2 = 0$, $1^2 = 1$, $2^2 = 4$, $3^2 = 9 = 5 + 4$, $4^2 = 16 = 3 \\times 5 + 1$.",
+					"Restes : $\\textcolor{{{color:primary.0}}}{0}$, $\\textcolor{{{color:primary.0}}}{1}$, $\\textcolor{{{color:primary.0}}}{4}$, $\\textcolor{{{color:primary.0}}}{4}$, $\\textcolor{{{color:primary.0}}}{1}$. Un carré n'est jamais congru à $2$ ni à $3$ modulo $5$."
+				]
+			}
+		},
+		{
+			"statement": "Complète la table des restes de $2^k$ modulo $7$.\n\n| $k$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ |\n| --- | --- | --- | --- | --- | --- | --- |\n| reste | $?$ | $?$ | $?$ | $?$ | $?$ | $?$ |",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2^0 = 1$, $2^1 = 2$, $2^2 = 4$, $2^3 = 8 \\equiv 1 \\,[7]$.",
+					"Puis chaque reste est le double du précédent, réduit modulo $7$ : $2^4 \\equiv 2$, $2^5 \\equiv 4$.",
+					"Restes : $\\textcolor{{{color:primary.0}}}{1}$, $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{4}$, $\\textcolor{{{color:primary.0}}}{1}$, $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{4}$ : ils se répètent avec une période de $3$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 4×6 = 24 ≡ 3 [7]",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"r1": "4",
+				"r2": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 24 non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"r1": "4",
+				"r2": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 10 (somme des restes)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"r1": "4",
+				"r2": "6"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −4 (représentant négatif)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"r1": "4",
+				"r2": "6"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2 − 3×4 = −10 ≡ 4 [7]",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"r1": "2",
+				"r2": "4",
+				"k": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −10 laissé négatif",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"r1": "2",
+				"r2": "4",
+				"k": "3"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −3 (réduit mais négatif)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"r1": "2",
+				"r2": "4",
+				"k": "3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3 (signe perdu)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"r1": "2",
+				"r2": "4",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : table des carrés mod 5",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0", "1", "4", "4", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 9 et 16 non réduits",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0", "1", "4", "9", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2x au lieu de x²",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0", "2", "4", "1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 2^k mod 7",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1", "2", "4", "1", "2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 2^0 = 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0", "2", "4", "1", "2", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 8, 16, 32 non réduits",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1", "2", "4", "8", "16", "32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

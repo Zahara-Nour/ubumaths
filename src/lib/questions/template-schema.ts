@@ -16,7 +16,14 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
-import { ANSWER_KINDS, EQUATION_FORMS, SOLUTION_MODES, VECTOR_MODES } from './types';
+import {
+	ANGLE_MODULOS,
+	ANSWER_KINDS,
+	COMPLEX_FORMS,
+	EQUATION_FORMS,
+	SOLUTION_MODES,
+	VECTOR_MODES
+} from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 
 // ============================================================================
@@ -28,7 +35,15 @@ import { genericFunctionNamesSchema } from './generic-functions';
 export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
 export const requiredFormSchema = z.union([
-	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power', ...EQUATION_FORMS]),
+	z.enum([
+		'product',
+		'sum',
+		'additionOnly',
+		'fraction',
+		'power',
+		...EQUATION_FORMS,
+		...COMPLEX_FORMS
+	]),
 	z.object({ pattern: z.string(), acceptable: z.string().optional() })
 ]);
 
@@ -314,9 +329,11 @@ export const blankDefaultsSchema = z.object({
 	removeSpaces: z.boolean().optional(),
 	rulesSuffice: z.boolean().optional(),
 	acceptDecimal: z.boolean().optional(),
+	acceptCombinatorialNotation: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
+	angleModulo: z.enum(ANGLE_MODULOS).optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -331,9 +348,11 @@ export const blankSchema = z.object({
 	validationRules: z.array(validationRuleSchema).optional(),
 	rulesSuffice: z.boolean().optional(),
 	acceptDecimal: z.boolean().optional(),
+	acceptCombinatorialNotation: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
+	angleModulo: z.enum(ANGLE_MODULOS).optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -373,7 +392,15 @@ export const optionsSchema = z.object({
 // ============================================================================
 
 const requiredFormStrictZ = z.union([
-	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power', ...EQUATION_FORMS]),
+	z.enum([
+		'product',
+		'sum',
+		'additionOnly',
+		'fraction',
+		'power',
+		...EQUATION_FORMS,
+		...COMPLEX_FORMS
+	]),
 	z.object({ pattern: z.string(), acceptable: z.string().optional() }).strict()
 ]);
 
@@ -562,9 +589,11 @@ const blankDefaultsStrictZ = z
 		removeSpaces: z.boolean().optional(),
 		rulesSuffice: z.boolean().optional(),
 		acceptDecimal: z.boolean().optional(),
+		acceptCombinatorialNotation: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
+		angleModulo: z.enum(ANGLE_MODULOS).optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
@@ -581,9 +610,11 @@ const blankStrictZ = z
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		rulesSuffice: z.boolean().optional(),
 		acceptDecimal: z.boolean().optional(),
+		acceptCombinatorialNotation: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
+		angleModulo: z.enum(ANGLE_MODULOS).optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})

@@ -15,7 +15,7 @@
  * `en_apprentissage` quel que soit `nextReview` (le `state='new'` arrive
  * avant la 1ère review, sa date next_review n'a pas de sens). Cf. `templateToBadge`.
  *
- * Cf. `docs/wip/srs-fsrs-spec-tdd.md` §5 + `docs/ref/srs/architecture.md` §5.1.
+ * Cf. `docs/archive/wip/srs-fsrs-spec-tdd.md` §5 + `docs/systeme/srs/architecture.md` §5.1.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

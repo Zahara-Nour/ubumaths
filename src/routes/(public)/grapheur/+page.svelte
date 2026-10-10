@@ -1,8 +1,9 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	/**
 	 * `/grapheur` — l'atelier, ouvert sur le graphique.
 	 *
-	 * Décisions de David (phase 0 `docs/wip/atelier-grapheur-phase0.md`, G1/G2) :
+	 * Décisions de David (phase 0 `docs/archive/wip/atelier-grapheur-phase0.md`, G1/G2) :
 	 * l'atelier est l'entrée unique, et cette adresse continue de marcher (favoris,
 	 * liens notés). Elle ouvre l'atelier PERSONNEL sur la vue Graphe, « Mes objets »
 	 * visible ; un atelier vide reçoit une carte `f` prête à taper (B3).
@@ -54,13 +55,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Grapheur | Chiphre</title>
-	<meta
-		name="description"
-		content="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
-	/>
-</svelte:head>
+<SeoHead
+	title="Grapheur | Chiphre"
+	description="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
+/>
 
 <div class="page">
 	{#if opened}

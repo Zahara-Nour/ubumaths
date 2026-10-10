@@ -1,0 +1,288 @@
+{
+	"title": "Théorème de Bézout : trouver des coefficients u et v",
+	"description": "Compléter une égalité de Bézout au + bv = 1 ou au + bv = PGCD(a, b), donner un coefficient u qui convient parmi une infinité (pièges : u et v inversés, signe du coefficient négatif, au + bv = 1 alors que PGCD ≠ 1)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-087", "TEXP-086"],
+	"theme": "Arithmétique",
+	"domain": "PGCD, Bézout et Gauss",
+	"subdomain": "PGCD, Bézout et Gauss",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "${{a}}$ et ${{b}}$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n${{a}} \\times {{s}} + {{b}} \\times ? = 1$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "14..60"
+				},
+				{
+					"name": "s",
+					"expression": "eval:mod(mod(a,b)^(b-2),b)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(1-a*s)/b"
+				}
+			],
+			"conditions": ["mod(a,b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{b}} \\times v = 1 - {{a}} \\times {{s}} = 1 - {{eval:a*s}} = {{eval:1-a*s}}$.",
+					"$v = \\dfrac{ {{eval:1-a*s}} }{ {{b}} } = \\textcolor{{{color:primary.0}}}{{{t}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que ${{a}}u + {{b}}v = 1$.\n\n$u=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "14..60"
+				},
+				{
+					"name": "s",
+					"expression": "eval:mod(mod(a,b)^(b-2),b)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(1-a*s)/b"
+				}
+			],
+			"conditions": ["mod(a,b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "({{a}}*answer-1) % {{b}} == 0",
+							"description": "Pour ce u, 1 − au n'est pas un multiple de b : aucun entier v ne convient."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut ${{a}}u \\equiv 1 \\,[{{b}}]$, soit ${{eval:mod(a,b)}}u \\equiv 1 \\,[{{b}}]$ : $u = \\textcolor{{{color:primary.0}}}{{{s}}}$ convient, avec $v = {{t}}$ : ${{a}} \\times {{s}} + {{b}} \\times ({{t}}) = 1$.",
+					"Tout $u = {{s}} + {{b}}k$ ($k \\in \\mathbb{Z}$) convient aussi."
+				]
+			}
+		},
+		{
+			"statement": "$\\mathrm{PGCD}({{eval:k*a}} \\,;\\, {{eval:k*b}}) = {{k}}$. Complète l'égalité de Bézout :\n\n${{eval:k*a}} \\times {{s}} + {{eval:k*b}} \\times ? = {{k}}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "14..60"
+				},
+				{
+					"name": "s",
+					"expression": "eval:mod(mod(a,b)^(b-2),b)"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(1-a*s)/b"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["mod(a,b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:k*b}} \\times v = {{k}} - {{eval:k*a*s}} = {{eval:k-k*a*s}}$.",
+					"$v = \\dfrac{ {{eval:k-k*a*s}} }{ {{eval:k*b}} } = \\textcolor{{{color:primary.0}}}{{{t}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 17×3 + 5×(−10) = 1",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 10 (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 3 (u et v inversés)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 23×4 + 7×(−13) = 1",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "23",
+				"s": "4",
+				"t": "-13"
+			},
+			"answers": ["-13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u = 3",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u = 8",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u = −2",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −10 (c'est v)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 51×3 + 15×(−10) = 3",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10",
+				"k": "3"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −30 (multiplié par le PGCD)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "17",
+				"s": "3",
+				"t": "-10",
+				"k": "3"
+			},
+			"answers": ["-30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,165 @@
+{
+	"globalIndex": 314,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Comparer deux nombres relatifs.",
+		"description": "Valeurs entières - qcm",
+		"shared": {
+			"statement": "Quel est le plus petit de ces 2 nombres ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..19"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+1}}..20"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["1"],
+				"choices": [
+					{
+						"content": "$${{a}}$$"
+					},
+					{
+						"content": "$$-{{b}}$$"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["1"],
+				"choices": [
+					{
+						"content": "$$-{{a}}$$"
+					},
+					{
+						"content": "$$-{{b}}$$"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["0"],
+				"choices": [
+					{
+						"content": "$$-{{b}}$$"
+					},
+					{
+						"content": "$$-{{a}}$$"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "positif contre négatif : le négatif est le plus petit",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "piège : le positif choisi",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "deux négatifs : -b < -a",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "piège : -a choisi (plus petite distance à zéro)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne haute a=19, b=20",
+				"variationIndex": 1,
+				"variables": {
+					"a": "19",
+					"b": "20"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé : -b en premier",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne basse a=1, b=2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "2"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "piège : -a choisi",
+				"variationIndex": 2,
+				"variables": {
+					"a": "1",
+					"b": "2"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

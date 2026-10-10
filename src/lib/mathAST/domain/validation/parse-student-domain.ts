@@ -144,7 +144,7 @@ function latexCommand(name: string): RegExp {
  * analyseurs ci-dessous. Les bornes gardent leur LaTeX (`\frac`, `\sqrt`,
  * `\pi`) : `parseEndpointValue` les lit avec le parseur de mathAST.
  *
- * Écritures mesurées au vrai clavier de MathLive (docs/wip/reponse-intervalles-progress.md) :
+ * Écritures mesurées au vrai clavier de MathLive (docs/archive/wip/reponse-intervalles-progress.md) :
  * `\left\lbrack…\right\rbrack`, `\lbrace3\rbrace`, `\{3\}`, `]\,2\,;\,3\,[`,
  * `\frac{]3}{2}` (« / » tapé juste après « ] » emporte le crochet au numérateur).
  */

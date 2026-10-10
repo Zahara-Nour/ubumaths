@@ -42,7 +42,7 @@ Reject the request with 400 + the first issue message on failure. Never call `.p
 3. **Database Schema Design**: Create migrations following the timestamp format (YYYYMMDDHHMMSS_description.sql) in `supabase/migrations/`. Design normalized schemas with appropriate foreign keys, indexes, and Row Level Security (RLS) policies. After schema changes update:
    - `src/lib/types/database.ts` (auto-generated via `pnpm db:types` — NEVER edit by hand)
    - `src/lib/types/database-helpers.ts` (custom aliases, union types, composite types — CLAUDE.md règle #6)
-   - `docs/architecture/database-schema.md` (architecture doc)
+   - `docs/systeme/base-de-donnees.md` (architecture doc)
 
 4. **Form Actions**: Build server actions that handle form submissions with validation, error handling, and proper response objects. Use the SvelteKit pattern of returning { success: boolean, errors?: object }.
 

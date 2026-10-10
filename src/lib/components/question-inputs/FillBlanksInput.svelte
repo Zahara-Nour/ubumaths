@@ -31,8 +31,10 @@
 
 <script lang="ts">
 	import { parseMarkdown } from '$lib/ubumark';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { readLexicon } from '$lib/components/markdown/lexicon-context';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
-	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';
 	import type { MathfieldElement } from 'mathlive';
 	import {
 		hasPrompts,
@@ -45,6 +47,11 @@
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
+	import { buildMatricesKeyboardLayout } from '$lib/questions/matrices/keyboard-matrices';
+	import {
+		buildCombinatoricsKeyboardLayout,
+		hasCombinatoricsKeyboard
+	} from '$lib/questions/combinatorics/keyboard-combinatorics';
 	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
 	import type { Snippet } from 'svelte';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
@@ -109,6 +116,8 @@
 		unitKeys?: string[];
 		/** Fonctions déclarées par le modèle (`P(x)`), pour les formules `~…~` ; absent : défauts */
 		genericFunctions?: GenericFunctionConfig;
+		/** Niveaux de la carte : Terminale → onglet « n! » (factorielle, coefficient binomial) */
+		grades?: readonly GradeLevel[];
 	}
 
 	let {
@@ -126,7 +135,8 @@
 		onSubmit,
 		mathModeSpace,
 		unitKeys: providedUnitKeys,
-		genericFunctions
+		genericFunctions,
+		grades = []
 	}: Props = $props();
 
 	// When showing correct answers, force disabled
@@ -181,9 +191,16 @@
 			.flat();
 	}
 
+	// Mots cliquables : repérés au niveau de lecture posé par le cadre de la question
+	// (le dictionnaire est chargé au premier besoin)
+	const lexicon = readLexicon();
+	$effect(() => {
+		if (lexicon()) loadLexiconRuntime();
+	});
+
 	// Parse statement to AST and augment expression nodes
 	// In flash mode, skip augmentation (no "= ?" appended to expressions)
-	let augmentedAST = $derived.by(() => {
+	let structuredAST = $derived.by(() => {
 		const ast = parseMarkdown(statement);
 		if (flashMode) return ast;
 		const augmented = augmentASTForExpressions(ast, expressions);
@@ -199,6 +216,14 @@
 			};
 		}
 		return augmented;
+	});
+
+	// Mots repérés en dernier : les positions portent sur le texte affiché (après le
+	// découpage en phrases de `onlyBlanks`)
+	let augmentedAST = $derived.by(() => {
+		const grade = lexicon();
+		const runtime = lexiconRuntime();
+		return grade && runtime ? runtime.linkDocument(structuredAST, grade) : structuredAST;
 	});
 
 	// Build InputState[] from blanks + validationResults (or correction mode)
@@ -251,6 +276,16 @@
 			!effectiveDisabled &&
 			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'vecteur')
 	);
+	// Case « matrice » à remplir : onglet « Matrice » (gabarits, ajout de ligne / colonne)
+	let hasMatrixBlank = $derived(
+		!flashMode &&
+			!effectiveDisabled &&
+			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'matrice')
+	);
+	// Carte de Terminale à remplir : onglet « n! » (d'après le niveau, jamais la réponse)
+	let hasCombinatoricsTab = $derived(
+		!flashMode && !effectiveDisabled && hasCombinatoricsKeyboard(grades)
+	);
 
 	let container: HTMLDivElement | undefined = $state();
 
@@ -260,7 +295,8 @@
 	}
 
 	/**
-	 * Onglets « Unités » / « Intervalles » / « Vecteur » du clavier virtuel MathLive.
+	 * Onglets « Unités » / « Intervalles » / « Vecteur » / « Matrice » du clavier virtuel MathLive,
+	 * et « n! » (factorielle, coefficient binomial) pour une carte de Terminale.
 	 *
 	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
 	 * par tous les champs de la page : les onglets sont ajoutés quand le focus ENTRE
@@ -272,7 +308,7 @@
 	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false`
 	 * (mesuré au vrai clavier le 2026-10-01 : avec `smartFence`, taper `[` ouvre une
 	 * paire `\left\lbrack…\right\rbrack` refermée d'office, et `[2;3[` devient
-	 * illisible — docs/wip/reponse-intervalles-progress.md). Il retrouve son réglage
+	 * illisible — docs/archive/wip/reponse-intervalles-progress.md). Il retrouve son réglage
 	 * au démontage seulement.
 	 *
 	 * ⚠️ Le réglage se pose AVANT que le clavier ne s'ouvre (`pointerdown` en capture,
@@ -288,7 +324,9 @@
 		const layouts = [
 			...(unitKeys.length > 0 ? [buildUnitsKeyboardLayout(unitKeys)] : []),
 			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : []),
-			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : [])
+			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : []),
+			...(hasMatrixBlank ? [buildMatricesKeyboardLayout()] : []),
+			...(hasCombinatoricsTab ? [buildCombinatoricsKeyboardLayout()] : [])
 		];
 		if (!element || layouts.length === 0) return;
 

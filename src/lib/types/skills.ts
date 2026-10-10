@@ -6,7 +6,7 @@
  * auto-générée `database.ts` (les unions de valeurs viennent des CHECK
  * constraints SQL, mais sont copiées ici pour la lisibilité et la stabilité).
  *
- * Spec : `docs/wip/skills-referentiel-design.md` (décisions 57-72)
+ * Spec : `docs/archive/wip/skills-referentiel-design.md` (décisions 57-72)
  * Phase 1 progress : `docs/wip/competence-referentiel-phase1-progress.md`
  *
  * Pour les types DERIVED de la base (`Tables<'observables'>`, etc.), voir

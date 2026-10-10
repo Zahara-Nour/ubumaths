@@ -27,6 +27,7 @@ import type {
 } from './types';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
+import { tidyExactValue } from './critical-points';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { containsNode } from '../domain/algebra';
 
@@ -47,6 +48,11 @@ export interface BoundaryValue {
 	readonly x: MathNode;
 	/** The y-value at the boundary */
 	readonly y: number;
+	/**
+	 * `false` pour une LIMITE en une borne ouverte ou infinie : la valeur n'est
+	 * pas atteinte, elle ne peut pas être un extremum. Absent = atteinte.
+	 */
+	readonly attained?: boolean;
 }
 
 // =============================================================================
@@ -280,6 +286,15 @@ export function classifyGlobalExtrema(
 		}
 	}
 
+	// ⚠️ Une limite aux bornes peut DÉPASSER tout extremum : +∞ interdit un
+	// maximum global, −∞ un minimum global, et une limite indéterminée ou
+	// inconnue interdit les deux — on ne conclut pas sans savoir. Ces limites
+	// étaient écartées de la comparaison (`Number.isFinite`) : x³ − 3x annonçait
+	// « Maximum global : f(−1) = 2 » (revue de #857, 2026-10-05).
+	const unbounded = unboundedSides(domain, boundaryLimits);
+	if (unbounded.above) globalMaxValue = Infinity;
+	if (unbounded.below) globalMinValue = -Infinity;
+
 	// Build the result array with upgraded types
 	const result: ExtremumInfo[] = [];
 
@@ -312,7 +327,12 @@ export function classifyGlobalExtrema(
 	const hasGlobalMinInLocal = result.some((e) => e.type === 'global_minimum');
 	const hasGlobalMaxInLocal = result.some((e) => e.type === 'global_maximum');
 
-	for (const bv of boundaryValues) {
+	// ⚠️ Seules les bornes FERMÉES sont des valeurs atteintes. Une limite finie
+	// en une borne ouverte ou infinie compte pour la comparaison (un maximum
+	// local dépassé par une limite n'est pas global), mais n'est PAS un
+	// extremum : mesuré avant, `x ln(x)` annonçait « Maximum global :
+	// f(0) = 0 », 0 hors du domaine, et `ln(x)/x` « Minimum global : f(+∞) ».
+	for (const bv of boundaryValues.filter((value) => value.attained !== false)) {
 		if (!hasGlobalMinInLocal && Math.abs(bv.y - globalMinValue) < 1e-10) {
 			const yNode = computeYValue(expr, variable, bv.x);
 			result.push({
@@ -472,18 +492,15 @@ function evaluateToNumber(node: MathNode): number | null {
  * Compute f(x) at a given x value.
  */
 function computeYValue(expr: MathNode, variable: string, x: MathNode): MathNode {
+	const substituted = substitute(expr, { [variable]: x });
+	let evaluated: MathNode | null = null;
 	try {
-		const substituted = substitute(expr, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'exact' });
-		if (result.status !== 'value') {
-			// Evaluation did not produce a value: fall back to the substituted expression
-			return substituted;
-		}
-		return result.node;
+		if (result.status === 'value') evaluated = result.node;
 	} catch {
-		// Return the substituted expression if evaluation fails
-		return substitute(expr, { [variable]: x });
+		// L'évaluation a échoué : la substitution, mise au propre, reste
 	}
+	return tidyExactValue(substituted, evaluated);
 }
 
 /**
@@ -492,6 +509,50 @@ function computeYValue(expr: MathNode, variable: string, x: MathNode): MathNode 
 function computeYApproximate(y: MathNode): number | undefined {
 	const result = evaluateToNumber(y);
 	return result ?? undefined;
+}
+
+/**
+ * f peut-elle dépasser, vers le haut ou vers le bas, toute valeur atteinte ?
+ *
+ * Vrai d'un côté dès qu'une limite aux bornes vaut l'infini de ce côté, et des
+ * deux côtés si une limite est indéterminée, non numérique, ou si le domaine a
+ * une borne ouverte ou infinie sans limite calculée.
+ */
+function unboundedSides(
+	domain: Domain,
+	boundaryLimits?: readonly BoundaryLimit[]
+): { above: boolean; below: boolean } {
+	if (boundaryLimits === undefined || boundaryLimits.length === 0) {
+		const open = hasOpenOrInfiniteEnd(domain);
+		return { above: open, below: open };
+	}
+	let above = false;
+	let below = false;
+	for (const bl of boundaryLimits) {
+		if (bl.limit === 'infinity') above = true;
+		else if (bl.limit === 'negative_infinity') below = true;
+		else if (
+			bl.limit === 'indeterminate' ||
+			bl.approximate === undefined ||
+			!Number.isFinite(bl.approximate)
+		) {
+			above = true;
+			below = true;
+		}
+	}
+	return { above, below };
+}
+
+/** Le domaine a-t-il une borne ouverte ou infinie (où f n'est pas évaluée) ? */
+function hasOpenOrInfiniteEnd(domain: Domain): boolean {
+	if (domain.kind !== 'interval_set') return true;
+	return (domain as IntervalSet).intervals.some(
+		(interval) =>
+			interval.lower.type !== 'closed' ||
+			interval.upper.type !== 'closed' ||
+			!Number.isFinite(endpointToNumber(interval.lower.value)) ||
+			!Number.isFinite(endpointToNumber(interval.upper.value))
+	);
 }
 
 /**
@@ -514,7 +575,7 @@ function getBoundaryValues(
 			if (Number.isFinite(lower) && interval.lower.type === 'closed') {
 				const yValue = evaluateAtPoint(expr, variable, interval.lower.value);
 				if (yValue !== null) {
-					values.push({ x: interval.lower.value, y: yValue });
+					values.push({ x: interval.lower.value, y: yValue, attained: true });
 				}
 			}
 
@@ -523,7 +584,7 @@ function getBoundaryValues(
 			if (Number.isFinite(upper) && interval.upper.type === 'closed') {
 				const yValue = evaluateAtPoint(expr, variable, interval.upper.value);
 				if (yValue !== null) {
-					values.push({ x: interval.upper.value, y: yValue });
+					values.push({ x: interval.upper.value, y: yValue, attained: true });
 				}
 			}
 		}
@@ -533,7 +594,7 @@ function getBoundaryValues(
 	if (boundaryLimits) {
 		for (const bl of boundaryLimits) {
 			if (bl.approximate !== undefined && Number.isFinite(bl.approximate)) {
-				values.push({ x: bl.point, y: bl.approximate });
+				values.push({ x: bl.point, y: bl.approximate, attained: false });
 			}
 		}
 	}

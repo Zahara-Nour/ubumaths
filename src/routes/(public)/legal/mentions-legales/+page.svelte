@@ -1,25 +1,23 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
-<svelte:head>
-	<title>Mentions Legales - Chiphre</title>
-	<meta
-		name="description"
-		content="Mentions legales d'Chiphre. Informations sur l'editeur, l'hebergement et les conditions d'utilisation."
-	/>
-</svelte:head>
+<SeoHead
+	title="Mentions légales - Chiphre"
+	description="Mentions légales de Chiphre : informations sur l’éditeur, l’hébergement et les conditions d’utilisation."
+/>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">
-		<h1>Mentions Legales</h1>
+		<h1>Mentions légales</h1>
 
 		<p class="lead text-muted-foreground">Derniere mise a jour : 15 juin 2026</p>
 
 		<hr />
 
 		<section>
-			<h2>1. Editeur du site</h2>
+			<h2>1. Éditeur du site</h2>
 			<p>
 				Le site <strong>Chiphre</strong> accessible a l'adresse
 				<a href={resolve('/')}>chiph.re</a> est edite par :
@@ -33,9 +31,9 @@
 		</section>
 
 		<section>
-			<h2>2. Hebergement</h2>
+			<h2>2. Hébergement</h2>
 
-			<h3>2.1 Hebergement de l'application</h3>
+			<h3>2.1 Hébergement de l'application</h3>
 			<div class="rounded-lg border border-border p-4">
 				<p class="m-0 font-semibold">Vercel Inc.</p>
 				<p class="m-0 text-sm text-muted-foreground">
@@ -44,7 +42,7 @@
 				</p>
 			</div>
 
-			<h3>2.2 Hebergement des donnees</h3>
+			<h3>2.2 Hébergement des données</h3>
 			<div class="rounded-lg border border-border p-4">
 				<p class="m-0 font-semibold">Supabase Inc.</p>
 				<p class="m-0 text-sm text-muted-foreground">
@@ -58,7 +56,7 @@
 		</section>
 
 		<section>
-			<h2>3. Propriete intellectuelle</h2>
+			<h2>3. Propriété intellectuelle</h2>
 			<p>
 				L'ensemble des elements presents sur le site (textes, exercices, images, logos, code source,
 				design) sont la propriete exclusive d'Chiphre, sauf mention contraire.
@@ -70,7 +68,7 @@
 		</section>
 
 		<section>
-			<h2>4. Donnees personnelles</h2>
+			<h2>4. Données personnelles</h2>
 
 			<h3>4.1 Responsable du traitement</h3>
 			<ul>
@@ -78,7 +76,7 @@
 				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 
-			<h3>4.2 Politique de confidentialite</h3>
+			<h3>4.2 Politique de confidentialité</h3>
 			<p>
 				Pour plus d'informations sur la collecte et le traitement des donnees personnelles,
 				consultez notre <a href={resolve('/legal/confidentialite')}>Politique de Confidentialite</a
@@ -96,7 +94,7 @@
 			</ul>
 			<p>Pour exercer ces droits, contactez-nous a : <strong>contact@chiph.re</strong></p>
 
-			<h3>4.4 Reclamation</h3>
+			<h3>4.4 Réclamation</h3>
 			<p>En cas de difficulte, vous pouvez adresser une reclamation a la CNIL :</p>
 			<ul>
 				<li>
@@ -150,7 +148,7 @@
 		</section>
 
 		<section>
-			<h2>6. Limitation de responsabilite</h2>
+			<h2>6. Limitation de responsabilité</h2>
 			<p>
 				Chiphre s'efforce d'assurer la disponibilite du site 24h/24 et 7j/7, mais ne peut garantir
 				une disponibilite permanente. Des interruptions pour maintenance peuvent survenir.
@@ -179,15 +177,15 @@
 		</section>
 
 		<section>
-			<h2>9. Credits</h2>
-			<h3>Technologies utilisees</h3>
+			<h2>9. Crédits</h2>
+			<h3>Technologies utilisées</h3>
 			<ul>
 				<li><strong>Framework</strong> : SvelteKit</li>
 				<li><strong>Base de donnees</strong> : Supabase (PostgreSQL)</li>
 				<li><strong>Hebergement</strong> : Vercel</li>
 				<li><strong>Editeur mathematique</strong> : MathLive</li>
 			</ul>
-			<h3>Icones</h3>
+			<h3>Icônes</h3>
 			<p>Lucide Icons (licence MIT)</p>
 		</section>
 

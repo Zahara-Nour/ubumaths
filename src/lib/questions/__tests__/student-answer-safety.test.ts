@@ -8,7 +8,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { neutralizeStudentLatex, escapeStudentText } from '../student-answer-safety';
+import {
+	neutralizeStudentLatex,
+	escapeStudentText,
+	exceedsMathNestingLimits
+} from '../student-answer-safety';
 import { parseMarkdown } from '$lib/ubumark';
 
 // Fixtures
@@ -126,9 +130,18 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 		}
 	});
 
-	it('trois coordonnées au plus : les passages à la ligne en masse sont retirés', () => {
-		const many = `\\begin{pmatrix}${'1\\\\'.repeat(500)}1\\end{pmatrix}`;
-		expect(neutralizeStudentLatex(many).match(/\\\\/g)).toHaveLength(2);
+	it('six lignes au plus : les passages à la ligne en masse sont retirés', () => {
+		// 300 lignes : sous la borne de longueur (au-delà, la réponse entière devient inerte)
+		const many = `\\begin{pmatrix}${'1\\\\'.repeat(300)}1\\end{pmatrix}`;
+		expect(neutralizeStudentLatex(many).match(/\\\\/g)).toHaveLength(5);
+	});
+
+	it('six lignes pour TOUTE la formule : colonnes imbriquées ou juxtaposées comprises', () => {
+		const column = (inner: string) => `\\begin{pmatrix}${inner}\\\\1\\\\2\\end{pmatrix}`;
+		const nested = column(column(column('x')));
+		expect(neutralizeStudentLatex(nested).match(/\\\\/g)).toHaveLength(5);
+		const sideBySide = `${column('1')}${column('2')}${column('3')}`;
+		expect(neutralizeStudentLatex(sideBySide).match(/\\\\/g)).toHaveLength(5);
 	});
 
 	it('passage à la ligne hors d’une colonne : toujours retiré', () => {
@@ -149,5 +162,232 @@ describe('neutralizeStudentLatex — vecteur en colonne', () => {
 			expect(safe).not.toMatch(/\\begin|\\end(?![a-zA-Z])/);
 			expect(safe).not.toContain('[r]');
 		}
+	});
+});
+
+describe('neutralizeStudentLatex — `%` après des backslashes', () => {
+	it('`\\\\%` (passage à la ligne puis %) : le % est échappé', () => {
+		expect(neutralizeStudentLatex('\\begin{pmatrix}1\\\\% x\\end{pmatrix}')).toBe(
+			'\\begin{pmatrix}1\\\\\\% x\\end{pmatrix}'
+		);
+	});
+
+	it('`\\%` déjà échappé : inchangé', () => {
+		expect(neutralizeStudentLatex('33\\%')).toBe('33\\%');
+	});
+});
+
+describe('neutralizeStudentLatex — fin de matrice dans un groupe', () => {
+	it('`\\end{pmatrix}` dans un groupe ne ferme pas la matrice : `&` toujours plafonnés', () => {
+		for (const closer of [
+			'{\\end{pmatrix}}',
+			'\\text{\\end{pmatrix}}',
+			'\\sqrt[\\end{pmatrix}]{2}',
+			'\\left(\\end{pmatrix}\\right)'
+		]) {
+			const safe = neutralizeStudentLatex(`\\begin{pmatrix}${closer}${'1&'.repeat(100)}1`);
+			expect((safe.match(/&/g) ?? []).length).toBeLessThanOrEqual(30);
+		}
+	});
+
+	it('`&` hors matrice : plafonnés pour toute la formule', () => {
+		const safe = neutralizeStudentLatex('1&'.repeat(300));
+		expect((safe.match(/&/g) ?? []).length).toBeLessThanOrEqual(30);
+	});
+
+	it('matrice 6 × 6 : ses 30 `&` gardés', () => {
+		const row = Array(6).fill('1').join('&');
+		const latex = `\\begin{pmatrix}${Array(6).fill(row).join('\\\\')}\\end{pmatrix}`;
+		expect(neutralizeStudentLatex(latex)).toBe(latex);
+	});
+});
+
+// Matrice saisie avec l'onglet « Matrice » du clavier (case « matrice », 2026-10-05) :
+// `&` est un caractère ordinaire ; jusqu'à 6 lignes (matrice d'adjacence)
+describe('neutralizeStudentLatex — matrice', () => {
+	it('matrices intactes, écriture de MathLive comprise (2 × 2 à 6 × 6, ligne, fractions)', () => {
+		const square = (n: number) =>
+			`\\begin{pmatrix}${Array.from({ length: n }, (_, i) =>
+				Array.from({ length: n }, (_, j) => (i === j ? '1' : '0')).join(' & ')
+			).join('\\\\ ')}\\end{pmatrix}`;
+		for (const latex of [
+			'\\begin{pmatrix}2 & -1\\\\ 0 & 3\\end{pmatrix}',
+			'\\begin{pmatrix}0.4&0.6\\end{pmatrix}',
+			'\\begin{pmatrix}\\frac{1}{2} & -\\frac{3}{4}\\\\ 0 & 1\\end{pmatrix}',
+			'A^{-1}=\\begin{pmatrix}1&0\\\\0&1\\end{pmatrix}',
+			square(3),
+			square(4),
+			square(6)
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
+		}
+	});
+});
+
+// Rendu géant avec des commandes ADMISES (mesuré le 2026-10-05, MathLive 0.110) :
+// `\left(\dfrac{…}{1}\right)` ×12 rend 4 096em et 4 Mo de HTML, `\sqrt` ×200 sans
+// accolades des Mo aussi. Au-delà des bornes, la réponse devient un texte inerte.
+describe('neutralizeStudentLatex — profondeur et longueur bornées', () => {
+	const nest = (times: number, wrap: (inner: string) => string, seed = 'x') => {
+		let latex = seed;
+		for (let i = 0; i < times; i++) latex = wrap(latex);
+		return latex;
+	};
+	const INERT = /^\\text\{[^\\{}$]*\}$/;
+
+	it.each([
+		['\\left(\\dfrac{…}{1}\\right) ×13', nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`)],
+		['\\left(\\frac{…}{1}\\right) ×20', nest(20, (s) => `\\left(\\frac{${s}}{1}\\right)`)],
+		['\\left(\\dfrac1…\\right) ×13 sans accolades', nest(13, (s) => `\\left(\\dfrac1${s}\\right)`)],
+		['\\left|…\\right| ×4', nest(4, (s) => `\\left|\\dfrac{${s}}{1}\\right|`)],
+		['\\sqrt ×100 sans accolades', `${'\\sqrt'.repeat(100)}x`],
+		['\\dfrac ×30', nest(30, (s) => `\\dfrac{${s}}{1}`)],
+		['accolades ×500', nest(500, (s) => `{${s}}`)],
+		['accolades ouvertes ×900', '{'.repeat(900)],
+		['colonnes imbriquées ×8', nest(8, (s) => `\\begin{pmatrix}${s}\\\\1\\end{pmatrix}`)],
+		['réponse de 5 000 caractères', '1+'.repeat(2500)]
+	])('%s : texte inerte et court', (_, raw) => {
+		const safe = neutralizeStudentLatex(raw);
+		expect(safe).toMatch(INERT);
+		expect(safe.length).toBeLessThan(400);
+	});
+
+	it('écritures légitimes imbriquées intactes (parenthèses du clavier, fractions, racines)', () => {
+		for (const latex of [
+			'f\\left(g\\left(h\\left(x\\right)\\right)\\right)',
+			'\\left(\\dfrac{\\left(x+1\\right)^{2}}{\\sqrt{x}}\\right)',
+			'\\left(\\dfrac{1}{\\left(\\dfrac{1}{\\left(x\\right)}\\right)}\\right)',
+			'\\dfrac{\\dfrac{\\dfrac{1}{2}}{3}}{4}',
+			'\\sqrt{\\sqrt{\\sqrt{2}}}',
+			'e^{-\\frac{x^{2}}{2}}',
+			'\\left\\lbrace\\begin{pmatrix}\\frac{1}{2}\\\\-\\sqrt{3}\\end{pmatrix}\\right.'
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
+		}
+	});
+
+	it('texte inerte : le début de la réponse, syntaxe neutralisée, sans `$`', () => {
+		const safe = neutralizeStudentLatex(nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`));
+		expect(safe.startsWith('\\text{＼left（＼dfrac｛')).toBe(true);
+		expect(safe.endsWith('…}')).toBe(true);
+		expect(neutralizeStudentLatex(`$${'{'.repeat(1500)}%`)).toMatch(INERT);
+	});
+});
+
+/**
+ * Même mesure, exportée pour le rendu RESTREINT (chat, messages, signalements,
+ * carnets d'élèves lus par autrui) : une formule hors bornes n'y part pas dans
+ * MathLive. Une seule source pour les plafonds.
+ */
+describe('exceedsMathNestingLimits', () => {
+	const nest = (times: number, wrap: (inner: string) => string, seed = 'x') => {
+		let latex = seed;
+		for (let i = 0; i < times; i++) latex = wrap(latex);
+		return latex;
+	};
+
+	it.each([
+		['\\left(\\dfrac{…}{1}\\right) ×13', nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`)],
+		['\\left(\\dfrac1…\\right) ×13 sans accolades', nest(13, (s) => `\\left(\\dfrac1${s}\\right)`)],
+		['\\left(…\\right) ×4', nest(4, (s) => `\\left(${s}\\right)`)],
+		['\\sqrt ×100 sans accolades', `${'\\sqrt'.repeat(100)}x`],
+		['accolades ×400 (801 caractères)', nest(400, (s) => `{${s}}`)],
+		['2 000 accolades', `${'{'.repeat(1000)}${'}'.repeat(1000)}`],
+		['20 000 caractères', 'x+'.repeat(10_000)],
+		['1 001 caractères', 'x'.repeat(1001)],
+		// Saut de ligne entre `\left` et son délimiteur : compté comme un blanc
+		['\\left\n( ×4', nest(4, (s) => `\\left\n(${s}\\right\n)`)],
+		// Commande inconnue (non retirée ici, contrairement à neutralizeStudentLatex)
+		['\\boxed{…} ×13 dans \\left', nest(13, (s) => `\\left(\\boxed{${s}}\\right)`)]
+	])('%s : hors bornes', (_, latex) => {
+		expect(exceedsMathNestingLimits(latex)).toBe(true);
+	});
+
+	it.each([
+		'x^2',
+		'\\frac{1}{2}',
+		'\\sqrt{x+1}',
+		'\\begin{pmatrix}1\\\\2\\end{pmatrix}',
+		'f\\left(g\\left(h\\left(x\\right)\\right)\\right)',
+		'\\dfrac{\\dfrac{\\dfrac{1}{2}}{3}}{4}',
+		'e^{-\\frac{x^{2}}{2}}',
+		'x'.repeat(1000),
+		''
+	])('%s : dans les bornes', (latex) => {
+		expect(exceedsMathNestingLimits(latex)).toBe(false);
+	});
+
+	it('ne change pas neutralizeStudentLatex (mêmes plafonds, même verdict)', () => {
+		const deep = nest(13, (s) => `\\left(\\dfrac{${s}}{1}\\right)`);
+		expect(exceedsMathNestingLimits(deep)).toBe(true);
+		expect(neutralizeStudentLatex(deep)).toMatch(/^\\text\{/);
+		const legit = '\\left(\\dfrac{\\left(x+1\\right)^{2}}{\\sqrt{x}}\\right)';
+		expect(exceedsMathNestingLimits(legit)).toBe(false);
+		expect(neutralizeStudentLatex(legit)).toBe(legit);
+	});
+});
+
+// Audit du 2026-10-05 : `{\begin{pmatrix}}}1&2\\3%QQQ` (accolade fermée DANS la matrice)
+// ne rendait presque rien chez MathLive. Une formule mal formée devient un texte inerte
+// COMPLET : le professeur voit toute la réponse.
+describe('neutralizeStudentLatex — structure mal formée', () => {
+	const INERT = /^\\text\{[^\\{}$]*\}$/;
+
+	it.each([
+		['accolade fermée dans la matrice', '{\\begin{pmatrix}}}1&2\\\\3%QQQ'],
+		['accolade en trop', '\\frac{1}{2}}}QQQ'],
+		['accolade en moins', '\\frac{1}{2QQQ'],
+		['`\\left(` seul', '\\left(1+2QQQ'],
+		['`\\right)` seul', '1+2\\right)QQQ'],
+		['`\\begin{pmatrix}` seul', '\\begin{pmatrix}1&2QQQ'],
+		['`\\end{pmatrix}` seul', '1\\end{pmatrix}QQQ'],
+		['`\\left` fermé par `\\end`', '\\begin{pmatrix}\\left(1\\end{pmatrix}QQQ\\right)'],
+		['accolade comme délimiteur de `\\left`', '\\left{1\\right}QQQ']
+	])('%s : texte inerte complet', (_, raw) => {
+		const safe = neutralizeStudentLatex(raw);
+		expect(safe).toMatch(INERT);
+		expect(safe).toContain('QQQ');
+		expect(safe.endsWith('…}')).toBe(false);
+	});
+
+	it('réponse mal formée longue : montrée en entier (sous la borne de longueur)', () => {
+		const raw = `{${'1+'.repeat(400)}QQQ`;
+		const safe = neutralizeStudentLatex(raw);
+		expect(safe).toMatch(INERT);
+		expect(safe).toContain(`${'1+'.repeat(400)}QQQ`);
+	});
+
+	it('formules bien formées intactes (délimiteurs échappés, `\\left.`, matrice dans des parenthèses)', () => {
+		for (const latex of [
+			'\\left\\{1;2\\right\\}',
+			'\\left\\lbrace x\\right.',
+			'\\left]0;1\\right[',
+			'\\left(\\begin{pmatrix}1\\\\2\\end{pmatrix}\\right)',
+			'\\sqrt[3]{\\frac{1}{2}}',
+			'\\{1;2\\}'
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
+		}
+	});
+});
+
+// `\&` : une esperluette AFFICHÉE, pas un séparateur de colonne (audit du 2026-10-05)
+describe('neutralizeStudentLatex — `\\&`', () => {
+	const separators = (latex: string) => (latex.match(/(?<!\\)&/g) ?? []).length;
+
+	it('`\\&` reste échappé', () => {
+		expect(neutralizeStudentLatex('a\\&b')).toBe('a\\&b');
+		expect(neutralizeStudentLatex('\\text{A\\&B}')).toBe('\\text{A\\&B}');
+	});
+
+	it('`\\&` hors du plafond de `&` : une ligne de 6 colonnes garde ses 5 séparateurs', () => {
+		const latex = '\\begin{pmatrix}1\\&2&3&4&5&6&7\\&8\\end{pmatrix}';
+		expect(neutralizeStudentLatex(latex)).toBe(latex);
+	});
+
+	it('`\\&` en masse : les vrais `&` restent plafonnés à 30', () => {
+		const safe = neutralizeStudentLatex(`${'\\&'.repeat(100)}${'1&'.repeat(100)}`);
+		expect(separators(safe)).toBeLessThanOrEqual(30);
+		expect((safe.match(/\\&/g) ?? []).length).toBe(100);
 	});
 });

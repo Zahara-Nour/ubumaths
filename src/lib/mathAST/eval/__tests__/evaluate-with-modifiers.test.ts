@@ -398,3 +398,39 @@ describe('evaluateAstWithModifiers - base négative et exposant littéral', () =
 		expect(evalCustom('-{2}^n')).toBe('-2^n');
 	});
 });
+
+// Multiple rationnel de π écrit comme au tableau : `\dfrac{\pi}{6}`, pas `\dfrac{1}{6} \pi`
+// (décision de David, 2026-10-05 : convention des cartes de trigonométrie).
+describe('evaluateWithModifiers - multiple rationnel de π', () => {
+	const evalCustom = (source: string, modifiers = {}) => evaluateWithModifiers(source, modifiers);
+
+	it.each([
+		['\\frac{2\\pi}{12}', '\\dfrac{\\pi}{6}'],
+		['\\frac{10\\pi}{12}', '\\dfrac{5 \\pi}{6}'],
+		['-\\frac{8\\pi}{12}', '-\\dfrac{2 \\pi}{3}'],
+		['\\frac{\\pi}{4}+\\frac{\\pi}{3}', '\\dfrac{7 \\pi}{12}'],
+		['\\frac{2\\pi}{3}-\\pi', '-\\dfrac{\\pi}{3}'],
+		['\\frac{12\\pi}{12}', '\\pi'],
+		['\\frac{24\\pi}{12}', '2 \\pi'],
+		['\\frac{0\\pi}{12}', '0']
+	])('%s → %s', (source, expected) => {
+		expect(evalCustom(source)).toBe(expected);
+	});
+
+	it('signe des modificateurs conservé : (-\\dfrac{2 \\pi}{3}) et +\\dfrac{\\pi}{6}', () => {
+		expect(evalCustom('-\\frac{8\\pi}{12}', { bracketNegative: true })).toBe(
+			'(-\\dfrac{2 \\pi}{3})'
+		);
+		expect(evalCustom('\\frac{2\\pi}{12}', { addPositive: true })).toBe('+\\dfrac{\\pi}{6}');
+	});
+
+	it('`;d` donne toujours la valeur décimale', () => {
+		expect(evalCustom('\\frac{2\\pi}{12}', { decimal: true }).startsWith('0.523598')).toBe(true);
+	});
+
+	it('hors classe visée : somme, π², racine — écriture inchangée', () => {
+		expect(evalCustom('\\frac{3\\pi}{2}+1')).toBe('\\dfrac{3}{2} \\pi + 1');
+		expect(evalCustom('\\frac{\\pi^2}{6}')).toBe('\\dfrac{1}{6} \\pi^2');
+		expect(evalCustom('12\\pi')).toBe('12 \\pi');
+	});
+});

@@ -14,6 +14,7 @@
 import type { MathNode } from '../types';
 import type { NormalForm, NormalTerm, Rational, NormalizationStep, SymbolicFactor } from './types';
 import { type Verbosity, shouldIncludeStep } from '../common/verbosity.js';
+import { inverseNotationAsFunction, isInverseNotation } from '../common/function-power.js';
 import {
 	type AbortChecker,
 	AbortError,
@@ -80,13 +81,15 @@ import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess, expandTrigDefinitions, expandCommensurableArcs } from './rules/index.js';
 import { denormalize } from './denormalize';
 import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { evaluateNodeToApproximatedNumber, exactBinomial, exactFactorial } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
 import { divide, euler, number, opposite, parentheses, piConstant, superscript } from '../factory';
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
+import { applyEulerIdentities } from './rules/euler-identities';
+import { expandImaginaryExponentials } from './rules/euler-formula';
 import { expandPositiveBasePowers } from './rules/general-power';
 import { expandFractionalPowers } from './rules/fractional-power';
 import { expandNthRootPowers } from './rules/nth-root-power';
@@ -1796,6 +1799,20 @@ function extractPositiveRational(form: NormalForm): { n: bigint; d: bigint } | n
 }
 
 /**
+ * Plus grand n calculé pour `n!` / `binom(n, k)` dans la normalisation : 200! a
+ * 375 chiffres, calculé en BigInt sans délai ; au-delà (une saisie hostile comme
+ * `1000000000!`), le nœud reste opaque.
+ */
+const MAX_COMBINATORIAL_ARGUMENT = 200n;
+
+/** Entier d'une forme normale purement numérique (0 compris), sinon `null` */
+function integerOfForm(form: NormalForm): bigint | null {
+	if (form.numerator.length === 0 && isOnePolynomial(form.denominator)) return 0n;
+	const rational = extractPureRational(form);
+	return rational !== null && rational.d === 1n ? rational.n : null;
+}
+
+/**
  * Extracts a pure rational (exact, no radicals) from a NormalForm.
  * Returns the Rational or null if the form contains variables or radicals.
  */
@@ -2060,25 +2077,48 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	// First, apply preprocessing rules (Phase 1)
-	const simplified = preprocess(node);
+	const preprocessed = preprocess(node);
 
 	// Record pre-simplification step if anything changed
 	if (ctx?.recorder && ctx.verbosity && ctx.verbosity !== 'result') {
 		const beforeHash = hashMathNode(node);
-		const afterHash = hashMathNode(simplified);
+		const afterHash = hashMathNode(preprocessed);
 		if (beforeHash !== afterHash) {
 			ctx.recorder.recordStep(
 				'preprocess',
 				getRuleDescription('preprocess'),
 				node,
-				simplified,
+				preprocessed,
 				'detailed'
 			);
 		}
 	}
 
+	// Puis les identités de la base d'Euler écrite `e^{…}` (ln(eᵃ) = a, eᵃ·eᵇ,
+	// (eᵃ)ⁿ, e^{ln a}), comme pour `exp(…)` — en gardant l'écriture `e^{…}`.
+	// Décision de David (option A, 2026-10-05), détail dans
+	// `rules/euler-identities.ts`. Sans base d'Euler, le nœud passe inchangé.
+	const simplified = applyEulerIdentities(preprocessed, {
+		canonicalExponent: (exponent) => denormalize(normalize(exponent))
+	});
+	recordTreeStep(ctx, 'euler-identities', preprocessed, simplified, 'summarized');
+
 	// Then normalize (Phase 2)
 	return normalizeNode(simplified, ctx);
+}
+
+/** Enregistre la réécriture d'arbre d'une règle, si l'arbre a changé. */
+function recordTreeStep(
+	ctx: NormalizeContext | undefined,
+	rule: string,
+	before: MathNode,
+	after: MathNode,
+	stepVerbosity: Verbosity
+): void {
+	if (!ctx?.recorder || !ctx.verbosity || ctx.verbosity === 'result') return;
+	if (!shouldIncludeStep(stepVerbosity, ctx.verbosity)) return;
+	if (hashMathNode(before) === hashMathNode(after)) return;
+	ctx.recorder.recordStep(rule, getRuleDescription(rule), before, after, stepVerbosity);
 }
 
 /**
@@ -2120,7 +2160,12 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	// même domaine des deux côtés (a > 0, b > 0, b ≠ 1), et la décomposition
 	// des `ln` fait le reste (`\log_{4}(x) ≡ \frac{1}{2}\log_{2}(x)`). Détail
 	// dans `rules/log-base.ts`.
-	const withEuler = expandEulerPowers(expandLogBases(node));
+	// Formule d'Euler : `exp(a + iθ)` (θ constant) devient `exp(a)(cos θ + i sin θ)`,
+	// et `2e^{i\frac{\pi}{3}}` rencontre `1+i\sqrt{3}`. Détail dans
+	// `rules/euler-formula.ts`.
+	const withEuler = expandImaginaryExponentials(expandEulerPowers(expandLogBases(node)), {
+		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx))
+	});
 	// `2^{x}` devient `exp(x·ln 2)` : sans ça, un exposant symbolique sur une
 	// base numérique restait opaque (`2^{x+1} ≢ 2·2^{x}`). Bases rationnelles
 	// strictement positives seulement — détail dans `rules/general-power.ts`.
@@ -3789,23 +3834,81 @@ function expandLogInteger(n: bigint, logName: LogFunctionName, base?: MathNode):
 }
 
 /**
- * Expands log(x^n) = n·log(x)
+ * a² ± 2ab + b² → a ± b (forme développée d'un carré, comme pour √) ; null
+ * sinon. Sert à ln((x − 1)²) = ln(x² − 2x + 1) = 2 ln|x − 1|.
+ */
+function perfectSquareTrinomialBase(form: NormalForm, ctx?: NormalizeContext): MathNode | null {
+	if (!isOnePolynomial(form.denominator) || form.numerator.length !== 3) return null;
+	const factored = tryFactorPerfectSquareTrinomial(form.numerator, ctx);
+	return factored === null ? null : denormalize(factored);
+}
+
+/** Base d'un facteur strictement positive pour tout réel : e^…, exp(…), b^… (b > 0), π */
+function isPositiveFactorBase(node: MathNode): boolean {
+	if (isExpLikeBase(node)) return true;
+	if (node.type === 'constant') return node.constant === 'pi';
+	if (isSuperscript(node)) {
+		return isEulerConstant(node.base) || (isNumber(node.base) && Number(node.base.value) > 0);
+	}
+	return false;
+}
+
+/**
+ * u > 0 pour tout réel, prouvé sur la forme normale (jamais supposé) : chaque
+ * terme a un coefficient rationnel > 0 et des facteurs positifs ou de
+ * puissance paire, et au moins un terme est strictement positif (x² + 1,
+ * eˣ + x², 3). Un paramètre littéral n'est jamais supposé positif.
+ */
+function isProvablyPositiveForm(form: NormalForm): boolean {
+	if (!isOnePolynomial(form.denominator)) return false;
+	if (form.numerator.length === 0) return false;
+	let hasStrictlyPositiveTerm = false;
+	for (const term of form.numerator) {
+		if (term.coefficient.terms.some((t) => t.hasImaginaryUnit)) return false;
+		if (!isPureRational(term.coefficient)) return false;
+		const value = getRationalValue(term.coefficient);
+		if (value === null || value.n <= 0n) return false;
+		let strictlyPositive = true;
+		for (const factor of term.monomial) {
+			if (isPositiveFactorBase(factor.base)) continue;
+			if (factor.exponent.n % 2n !== 0n) return false;
+			strictlyPositive = false;
+		}
+		if (strictlyPositive) hasStrictlyPositiveTerm = true;
+	}
+	return hasStrictlyPositiveTerm;
+}
+
+/**
+ * Expands log(u^r) = r·log(u), ou r·log|u| quand le numérateur de r est pair
+ * (décision de David, 2026-10-08) : ln(x²) est définie sur ℝ*, 2 ln x sur
+ * ]0 ; +∞[ seulement — ln(x²) = 2 ln|x|. Base prouvée positive : |u| = u, la
+ * valeur absolue n'est pas écrite. Puissance impaire : le domaine de ln(uⁿ)
+ * impose déjà u > 0, n·ln u est juste.
  * Uses recursive normalization to handle composition (e.g., ln(exp(x)) = x)
  */
 function expandLogPower(
 	info: { base: MathNode; exponent: Rational },
 	logName: LogFunctionName,
-	logBase?: MathNode
+	logBase?: MathNode,
+	ctx?: NormalizeContext
 ): NormalForm {
+	const evenNumerator = info.exponent.n % 2n === 0n;
+	const argument: MathNode =
+		evenNumerator && !isProvablyPositiveForm(normalizeNode(info.base, ctx))
+			? { type: 'function', name: 'abs', args: [info.base] }
+			: info.base;
+
 	// Use normalizeNode to allow ln(exp(x)) = x composition rule
 	const logNode: MathNode & { type: 'function'; base?: MathNode } = {
 		type: 'function',
 		name: logName,
-		args: [info.base]
+		args: [argument]
 	};
 	if (logBase) logNode.base = logBase;
 
-	const logBaseForm = normalizeNode(logNode);
+	// ctx transmis : sous l'hypothèse u ≥ 0 (ADR 0012), |u| → u
+	const logBaseForm = normalizeNode(logNode, ctx);
 	const expForm = normalFormFromRational(info.exponent);
 	return mulNormalForms(expForm, logBaseForm);
 }
@@ -3817,7 +3920,8 @@ function expandLogPower(
 function expandLogProduct(
 	factors: MathNode[],
 	logName: LogFunctionName,
-	base?: MathNode
+	base?: MathNode,
+	ctx?: NormalizeContext
 ): NormalForm {
 	if (factors.length === 0) return ZERO_NORMAL_FORM;
 
@@ -3829,7 +3933,7 @@ function expandLogProduct(
 			args: [f]
 		};
 		if (base) logNode.base = base;
-		return normalizeNode(logNode);
+		return normalizeNode(logNode, ctx);
 	};
 
 	if (factors.length === 1) return normalizeLogFactor(factors[0]);
@@ -3877,7 +3981,8 @@ function expandLogRational(
 function expandLogDivision(
 	form: NormalForm,
 	logName: LogFunctionName,
-	base?: MathNode
+	base?: MathNode,
+	ctx?: NormalizeContext
 ): NormalForm {
 	const numNode = denormalize(normalFormFromFraction(form.numerator, ONE_POLYNOMIAL));
 	const denNode = denormalize(normalFormFromFraction(form.denominator, ONE_POLYNOMIAL));
@@ -3898,8 +4003,8 @@ function expandLogDivision(
 	};
 	if (base) logDenNode.base = base;
 
-	const logNum: NormalForm = normalizeNode(logNumNode);
-	const logDen: NormalForm = normalizeNode(logDenNode);
+	const logNum: NormalForm = normalizeNode(logNumNode, ctx);
+	const logDen: NormalForm = normalizeNode(logDenNode, ctx);
 
 	return subNormalForms(logNum, logDen);
 }
@@ -3963,6 +4068,11 @@ function stripOpposites(node: MathNode): { node: MathNode; negated: boolean } {
 	}
 }
 
+/** Un littéral entier positif ou nul (`8`, pas `8.5`). */
+function isNonNegativeIntegerLiteral(node: MathNode): boolean {
+	return isNumber(node) && /^\d+$/.test(node.value);
+}
+
 function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeContext): NormalForm {
 	const originalArg = node.args[0];
 
@@ -3986,6 +4096,21 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 		const indexVal = parseFloat(node.base.value);
 		if (Number.isInteger(indexVal) && indexVal >= 2) {
 			rootIndex = BigInt(Math.floor(indexVal));
+		}
+	}
+
+	// A0. Indice IMPAIR d'un entier négatif : ⁿ√(−m) = −ⁿ√m. La racine impaire
+	// est définie sur ℝ entier et impaire — ∛(−8) = −2, ⁵√(−32) = −2. Sans ce
+	// cas, le radicande négatif tombait sur le garde `rootIndex !== 2n` plus bas
+	// et le nœud restait opaque. Une racine PAIRE d'un négatif n'est pas
+	// concernée. L'évaluation numérique (`eval/`) n'est pas touchée.
+	if (rootIndex % 2n === 1n) {
+		const unsigned = stripOpposites(originalArg);
+		if (unsigned.negated && isNonNegativeIntegerLiteral(unsigned.node)) {
+			const positiveRoot = normalizeSqrt({ ...node, args: [unsigned.node] }, ctx);
+			const result = negNormalForm(positiveRoot);
+			recordNormalizationStep(ctx, 'radical-simplify', node, result, 'summarized');
+			return result;
 		}
 	}
 
@@ -4396,21 +4521,27 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 	return result;
 }
 
+/** `cbrt(a)` → `\sqrt[3]{a}` ; `root(a, n)`, n entier littéral ≥ 2 → `\sqrt[n]{a}`. */
+function namedRootAsSqrt(
+	node: MathNode & { type: 'function' }
+): (MathNode & { type: 'function' }) | null {
+	if (node.power !== undefined) return null;
+	if (node.name === 'cbrt' && node.args.length === 1) {
+		return { type: 'function', name: 'sqrt', args: [node.args[0]], base: number('3') };
+	}
+	if (node.name === 'root' && node.args.length === 2) {
+		const index = node.args[1];
+		if (index.type === 'number' && /^\d+$/.test(index.value) && Number(index.value) >= 2) {
+			return { type: 'function', name: 'sqrt', args: [node.args[0]], base: index };
+		}
+	}
+	return null;
+}
+
 /**
  * Normalizes a function call.
  * Arguments are normalized first to ensure canonical representation.
  */
-/**
- * `-1` en exposant d'une fonction nommée : la réciproque, pas l'inverse.
- * La fabrique refuse les littéraux signés, donc `-1` se lit `opposite(1)`.
- */
-function isInverseNotation(power: MathNode): boolean {
-	if (power.type === 'opposite') {
-		return power.operand.type === 'number' && power.operand.value === '1';
-	}
-	return power.type === 'number' && power.value === '-1';
-}
-
 function normalizeFunction(
 	node: MathNode & { type: 'function' },
 	ctx?: NormalizeContext
@@ -4430,10 +4561,25 @@ function normalizeFunction(
 		return normalizeNode({ type: 'superscript', base: withoutPower, superscript: power }, ctx);
 	}
 
+	// 1b. `\cos^{-1}(x)` a la forme normale de `arccos(x)` (même réciproque,
+	//     deux écritures). Les autres `f^{-1}` (`\ln^{-1}`…) restent opaques :
+	//     on n'invente pas de réciproque.
+	const reciprocal = inverseNotationAsFunction(node);
+	if (reciprocal !== null && reciprocal.name !== name) {
+		return normalizeNode(reciprocal, ctx);
+	}
+
 	// 2. Handle sqrt specially (before canonicalization to detect √(a×a))
 	if (name === 'sqrt' && node.args.length === 1) {
 		return normalizeSqrt(node, ctx);
 	}
+
+	// 2b. `cbrt(a)` et `root(a, n)` — écritures que rend `denormalize` (une
+	//     primitive ¾x·cbrt(x)) — ont la forme normale de `\sqrt[n]{a}` : sans
+	//     ce pas, cbrt(−8) restait opaque (∫_{−8}^{1} x^{1/3} dx rendait
+	//     ¾cbrt(1) + 6cbrt(−8) au lieu de −45/4).
+	const asRoot = namedRootAsSqrt(node);
+	if (asRoot !== null) return normalizeSqrt(asRoot, ctx);
 
 	// 3. Canonicalize arguments for other functions
 	const canonicalNode = canonicalizeFunctionNode(node, ctx);
@@ -4558,21 +4704,32 @@ function normalizeFunction(
 				return expandLogRational(ratVal.n, ratVal.d, 'ln');
 			}
 
+			// ln(a² ± 2ab + b²) = 2·ln|a ± b|
+			const squareBase = perfectSquareTrinomialBase(argForm, ctx);
+			if (squareBase !== null) {
+				return expandLogPower(
+					{ base: squareBase, exponent: { n: 2n, d: 1n } },
+					'ln',
+					undefined,
+					ctx
+				);
+			}
+
 			// ln(x^n) = n·ln(x) — but only if exponent != 1
 			const powerInfo = extractSimplePower(argForm);
 			if (powerInfo && !isOneRational(powerInfo.exponent)) {
-				return expandLogPower(powerInfo, 'ln');
+				return expandLogPower(powerInfo, 'ln', undefined, ctx);
 			}
 
 			// ln(a·b·c) = ln(a) + ln(b) + ln(c)
 			const factors = extractProductFactors(argForm);
 			if (factors.length > 1) {
-				return expandLogProduct(factors, 'ln');
+				return expandLogProduct(factors, 'ln', undefined, ctx);
 			}
 
 			// ln(a/b) = ln(a) - ln(b)
 			if (!isOnePolynomial(argForm.denominator)) {
-				return expandLogDivision(argForm, 'ln');
+				return expandLogDivision(argForm, 'ln', undefined, ctx);
 			}
 		}
 
@@ -4605,21 +4762,32 @@ function normalizeFunction(
 				return expandLogRational(ratVal.n, ratVal.d, 'log', logBase);
 			}
 
+			// log(a² ± 2ab + b²) = 2·log|a ± b|
+			const squareBase = perfectSquareTrinomialBase(argForm, ctx);
+			if (squareBase !== null) {
+				return expandLogPower(
+					{ base: squareBase, exponent: { n: 2n, d: 1n } },
+					'log',
+					logBase,
+					ctx
+				);
+			}
+
 			// log(x^n) = n·log(x) — but only if exponent != 1
 			const powerInfo = extractSimplePower(argForm);
 			if (powerInfo && !isOneRational(powerInfo.exponent)) {
-				return expandLogPower(powerInfo, 'log', logBase);
+				return expandLogPower(powerInfo, 'log', logBase, ctx);
 			}
 
 			// log(a·b·c) = log(a) + log(b) + log(c)
 			const factors = extractProductFactors(argForm);
 			if (factors.length > 1) {
-				return expandLogProduct(factors, 'log', logBase);
+				return expandLogProduct(factors, 'log', logBase, ctx);
 			}
 
 			// log(a/b) = log(a) - log(b)
 			if (!isOnePolynomial(argForm.denominator)) {
-				return expandLogDivision(argForm, 'log', logBase);
+				return expandLogDivision(argForm, 'log', logBase, ctx);
 			}
 		}
 
@@ -4857,6 +5025,33 @@ function normalizeFunction(
 		}
 
 		// Contains variables or evaluation failed - treat as opaque
+		return normalizeOpaqueNode(canonicalNode);
+	}
+
+	// 10 bis. Factorielle et coefficient binomial (`6!`, `\binom{10}{3}`, `\frac{30!}{3!27!}`) :
+	// calculés en entiers EXACTS (BigInt) quand les arguments sont des entiers, n naturel.
+	// Borne sur n, pas sur le résultat : la forme normale garde des rationnels BigInt
+	// (`30!` dépasse 2⁵³ mais `\frac{30!}{3!27!}` vaut 4060). Au-delà — ou `n!`, `(1/2)!` —
+	// le nœud reste opaque, jamais une erreur.
+	if (
+		(name === 'factorial' && canonicalArgs.length === 1) ||
+		(name === 'binom' && canonicalArgs.length === 2)
+	) {
+		const integers = canonicalArgs.map((arg) => integerOfForm(normalizeNode(arg, ctx)));
+		const [top, bottom] = integers;
+		if (top !== null && top >= 0n && top <= MAX_COMBINATORIAL_ARGUMENT) {
+			const value =
+				name === 'factorial'
+					? exactFactorial(top, false)
+					: bottom !== null
+						? exactBinomial(top, bottom, false)
+						: null;
+			if (value !== null) {
+				const result = normalFormFromRational(fromInteger(value));
+				recordNormalizationStep(ctx, 'combinatorial-function', node, result, 'summarized');
+				return result;
+			}
+		}
 		return normalizeOpaqueNode(canonicalNode);
 	}
 

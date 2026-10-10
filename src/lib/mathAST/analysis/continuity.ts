@@ -159,7 +159,7 @@ export function analyzeContinuity(
 		'detailed'
 	);
 
-	const candidates = findDiscontinuityCandidates(expr, variable, domain, opts);
+	const { candidates, unresolved } = collectDiscontinuityCandidates(expr, variable, domain, opts);
 
 	// Step 3: Analyze each candidate
 	const discontinuities: Discontinuity[] = [];
@@ -187,13 +187,17 @@ export function analyzeContinuity(
 	}
 
 	// Step 4: Determine if continuous on domain
-	const isContinuousOnDomain = checkContinuousOnDomain(discontinuities, domain);
+	// ⚠️ Des sauts de sign(u) peuvent manquer quand u = 0 n'est pas résolue :
+	// la continuité n'est alors pas établie.
+	const isContinuousOnDomain = !unresolved && checkContinuousOnDomain(discontinuities, domain);
 
 	// Add summary step
 	if (opts.verbosity !== 'result') {
 		recorder.recordStep(
 			'continuity-check',
-			summarizeContinuityResult(discontinuities, isContinuousOnDomain, variable),
+			unresolved
+				? "La continuité n'a pas pu être établie : les zéros de l'argument de sign n'ont pas pu être déterminés."
+				: summarizeContinuityResult(discontinuities, isContinuousOnDomain, variable),
 			'summarized'
 		);
 	}
@@ -202,6 +206,7 @@ export function analyzeContinuity(
 		domain,
 		discontinuities,
 		isContinuousOnDomain,
+		...(unresolved ? { candidatesUnresolved: true } : {}),
 		variable,
 		...(opts.verbosity !== 'result' && { steps: recorder.getStepsFiltered(opts.verbosity) })
 	};
@@ -228,6 +233,20 @@ export function findDiscontinuityCandidates(
 	domain?: Domain,
 	options: ContinuityOptions = {}
 ): DiscontinuityCandidate[] {
+	return collectDiscontinuityCandidates(expr, variable, domain, options).candidates;
+}
+
+/**
+ * Les candidats, ET le fait que tous ont pu être trouvés : `unresolved` vaut
+ * `true` quand les zéros de l'argument d'un `sign(u)` n'ont pas pu être
+ * déterminés — des sauts peuvent alors manquer.
+ */
+function collectDiscontinuityCandidates(
+	expr: MathNode,
+	variable: string,
+	domain?: Domain,
+	options: ContinuityOptions = {}
+): { readonly candidates: DiscontinuityCandidate[]; readonly unresolved: boolean } {
 	const opts: Required<ContinuityOptions> = { ...DEFAULT_OPTIONS, ...options };
 	const candidates: DiscontinuityCandidate[] = [];
 	const seenPoints = new Set<string>();
@@ -305,8 +324,8 @@ export function findDiscontinuityCandidates(
 	}
 
 	// 3. Find piecewise function boundaries (abs, sign, floor, ceil)
-	const piecewiseCandidates = findPiecewiseBoundaries(expr, variable, opts);
-	for (const pc of piecewiseCandidates) {
+	const piecewise = findPiecewiseBoundaries(expr, variable, opts);
+	for (const pc of piecewise.candidates) {
 		const key = getPointKey(pc.point);
 		if (!seenPoints.has(key)) {
 			seenPoints.add(key);
@@ -314,7 +333,7 @@ export function findDiscontinuityCandidates(
 		}
 	}
 
-	return candidates;
+	return { candidates, unresolved: piecewise.unresolved };
 }
 
 /**
@@ -680,8 +699,9 @@ function findPiecewiseBoundaries(
 	expr: MathNode,
 	variable: string,
 	opts: Required<ContinuityOptions>
-): DiscontinuityCandidate[] {
+): { readonly candidates: DiscontinuityCandidate[]; readonly unresolved: boolean } {
 	const candidates: DiscontinuityCandidate[] = [];
+	let unresolved = false;
 
 	// Find all piecewise function calls
 	const piecewiseFuncs = findNodes(
@@ -699,7 +719,10 @@ function findPiecewiseBoundaries(
 
 		// For abs and sign: find zeros of the argument
 		if (funcName === 'abs' || funcName === 'sign' || funcName === 'sgn') {
-			const zeros = findArgumentZeros(arg, variable);
+			const { zeros, resolved } = findArgumentZeros(arg, variable);
+			// Les zéros de |u| ne sont pas des sauts (|u| est continue là où u
+			// l'est) : seuls ceux de sign(u) manquent à la continuité.
+			if (!resolved && funcName !== 'abs') unresolved = true;
 			for (const zero of zeros) {
 				candidates.push({
 					point: zero,
@@ -725,7 +748,7 @@ function findPiecewiseBoundaries(
 		}
 	}
 
-	return candidates;
+	return { candidates, unresolved };
 }
 
 /**
@@ -803,13 +826,19 @@ function findPeriodicFunctionDiscontinuities(
  * @param variable - The variable name
  * @returns Array of points where arg = 0
  */
-function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
+function findArgumentZeros(
+	arg: MathNode,
+	variable: string
+): { readonly zeros: MathNode[]; readonly resolved: boolean } {
 	// Tier 1: Try algebraic method from domain module (fastest)
 	// Handles linear, quadratic, and cubic expressions directly
 	try {
 		const algebraicZeros = findZeros(arg, variable);
 		if (algebraicZeros.length > 0) {
-			return algebraicZeros.map((z) => ({ type: 'number' as const, value: formatNumber(z) }));
+			return {
+				zeros: algebraicZeros.map((z) => ({ type: 'number' as const, value: formatNumber(z) })),
+				resolved: true
+			};
 		}
 	} catch {
 		// findZeros failed, try solver
@@ -826,19 +855,22 @@ function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
 
 		if (result.status === 'unique' || result.status === 'multiple') {
 			// Normalize solutions: convert opposite nodes to numbers for easier handling
-			return result.solutions.map((s) => normalizeSolutionToNumber(s.value));
+			return {
+				zeros: result.solutions.map((s) => normalizeSolutionToNumber(s.value)),
+				resolved: true
+			};
 		}
 
-		// If no-solution or infinite, return empty
-		if (result.status === 'no-solution' || result.status === 'infinite') {
-			return [];
-		}
+		// ⚠️ Un échec du solveur (« Type d'equation … non supporte », statut
+		// `no-solution`) n'est PAS une absence de zéro — sauf quand l'erreur
+		// explique une absence démontrée (`conclusive`). Même distinction que
+		// `.variations` (#852).
+		const failed = result.error !== undefined && !result.conclusive;
+		return { zeros: [], resolved: !failed };
 	} catch {
-		// Solver also failed
+		// Le solveur a levé une exception : u = 0 n'est pas résolue.
+		return { zeros: [], resolved: false };
 	}
-
-	// Tier 3: No zeros found
-	return [];
 }
 
 /**
@@ -939,6 +971,19 @@ function detectSourceFromExpression(
 		if (name === 'sign' || name === 'sgn') return 'sign';
 		if (name === 'floor') return 'floor';
 		if (name === 'ceil') return 'ceil';
+	}
+
+	// Puissance d'exposant non entier (x^{2/3}) : borne du domaine comme une
+	// racine (convention x^a = e^{a ln x}, base ≥ 0), pas une discontinuité
+	const fractionalPowers = findNodes(
+		expr,
+		(node) =>
+			node.type === 'superscript' &&
+			findNodes(node.superscript, (n) => n.type === 'variable').length === 0 &&
+			!Number.isInteger(tryEvaluateNumeric(node.superscript) ?? 0)
+	);
+	if (fractionalPowers.length > 0) {
+		return 'sqrt';
 	}
 
 	// Check for divisions in subexpressions

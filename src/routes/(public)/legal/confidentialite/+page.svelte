@@ -1,25 +1,23 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
-<svelte:head>
-	<title>Politique de Confidentialite - Chiphre</title>
-	<meta
-		name="description"
-		content="Politique de confidentialite d'Chiphre. Decouvrez comment nous collectons, utilisons et protegeons vos donnees personnelles."
-	/>
-</svelte:head>
+<SeoHead
+	title="Politique de confidentialité - Chiphre"
+	description="Politique de confidentialité de Chiphre : comment nous collectons, utilisons et protégeons vos données personnelles."
+/>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">
-		<h1>Politique de Confidentialite</h1>
+		<h1>Politique de confidentialité</h1>
 
 		<p class="lead text-muted-foreground">Derniere mise a jour : 15 juin 2026 | Version 1.1</p>
 
 		<hr />
 
 		<section>
-			<h2>1. Identite du responsable de traitement</h2>
+			<h2>1. Identité du responsable de traitement</h2>
 			<p><strong>Chiphre</strong> est edite par :</p>
 			<ul>
 				<li><strong>Responsable</strong> : [A COMPLETER]</li>
@@ -45,9 +43,9 @@
 		</section>
 
 		<section>
-			<h2>3. Donnees personnelles collectees</h2>
+			<h2>3. Données personnelles collectées</h2>
 
-			<h3>3.1 Donnees d'identification</h3>
+			<h3>3.1 Données d'identification</h3>
 			<div class="overflow-x-auto">
 				<table>
 					<thead>
@@ -87,7 +85,7 @@
 				</table>
 			</div>
 
-			<h3>3.2 Donnees pedagogiques</h3>
+			<h3>3.2 Données pédagogiques</h3>
 			<div class="overflow-x-auto">
 				<table>
 					<thead>
@@ -121,7 +119,7 @@
 				</table>
 			</div>
 
-			<h3>3.3 Donnees NON collectees</h3>
+			<h3>3.3 Données NON collectées</h3>
 			<p>
 				Conformement au principe de minimisation des donnees (Art. 5(1)(c) RGPD), nous ne collectons
 				<strong>pas</strong> :
@@ -137,7 +135,7 @@
 		</section>
 
 		<section>
-			<h2>4. Finalites du traitement</h2>
+			<h2>4. Finalités du traitement</h2>
 			<p>Vos donnees sont utilisees exclusivement pour :</p>
 			<ol>
 				<li>
@@ -159,7 +157,7 @@
 		<section>
 			<h2>5. Protection des mineurs</h2>
 
-			<h3>5.1 Age des utilisateurs</h3>
+			<h3>5.1 Âge des utilisateurs</h3>
 			<p>
 				Chiphre est destine principalement aux eleves ages de <strong>11 a 18 ans</strong>.
 				Conformement a l'article 8 du RGPD et aux recommandations de la CNIL :
@@ -171,7 +169,7 @@
 				<li><strong>Eleves de moins de 15 ans</strong> : Le consentement parental est requis</li>
 			</ul>
 
-			<h3>5.2 Mesures de protection specifiques</h3>
+			<h3>5.2 Mesures de protection spécifiques</h3>
 			<ul>
 				<li>
 					<strong>Minimisation</strong> : Seules les donnees strictement necessaires sont collectees
@@ -185,9 +183,9 @@
 		</section>
 
 		<section>
-			<h2>6. Destinataires des donnees</h2>
+			<h2>6. Destinataires des données</h2>
 
-			<h3>6.1 Acces internes</h3>
+			<h3>6.1 Accès internes</h3>
 			<ul>
 				<li><strong>Enseignant</strong> : Acces aux donnees de ses eleves uniquement</li>
 				<li><strong>Administrateur</strong> : Acces pour maintenance et support</li>
@@ -230,7 +228,7 @@
 		</section>
 
 		<section>
-			<h2>7. Duree de conservation</h2>
+			<h2>7. Durée de conservation</h2>
 			<div class="overflow-x-auto">
 				<table>
 					<thead>
@@ -267,7 +265,7 @@
 
 			<div class="grid gap-4 md:grid-cols-2">
 				<div class="rounded-lg border border-border p-4">
-					<h4 class="font-semibold">Droit d'acces (Art. 15)</h4>
+					<h4 class="font-semibold">Droit d'accès (Art. 15)</h4>
 					<p class="text-sm text-muted-foreground">
 						Obtenir une copie de vos donnees personnelles via Parametres > Exporter mes donnees
 					</p>
@@ -281,21 +279,21 @@
 				</div>
 
 				<div class="rounded-lg border border-border p-4">
-					<h4 class="font-semibold">Droit a l'effacement (Art. 17)</h4>
+					<h4 class="font-semibold">Droit à l'effacement (Art. 17)</h4>
 					<p class="text-sm text-muted-foreground">
 						Demander la suppression de votre compte via Parametres > Supprimer mon compte
 					</p>
 				</div>
 
 				<div class="rounded-lg border border-border p-4">
-					<h4 class="font-semibold">Droit a la portabilite (Art. 20)</h4>
+					<h4 class="font-semibold">Droit à la portabilité (Art. 20)</h4>
 					<p class="text-sm text-muted-foreground">
 						Telecharger vos donnees en format JSON via Parametres > Exporter
 					</p>
 				</div>
 			</div>
 
-			<h3>Droit de reclamation</h3>
+			<h3>Droit de réclamation</h3>
 			<p>
 				Si vous estimez que vos droits ne sont pas respectes, vous pouvez deposer une reclamation
 				aupres de la CNIL :
@@ -312,7 +310,7 @@
 		</section>
 
 		<section>
-			<h2>9. Securite des donnees</h2>
+			<h2>9. Sécurité des données</h2>
 			<p>Nous mettons en oeuvre les mesures de securite suivantes :</p>
 			<ul>
 				<li>

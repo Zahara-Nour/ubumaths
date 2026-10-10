@@ -3,8 +3,8 @@
 //
 // Generates supabase/migrations/20260609120002_competence_referentiel_seeds.sql
 // from the markdown referentiel files:
-//   - docs/wip/referentiel/6e-savoirs.md       → Family A (knowledge)
-//   - docs/wip/referentiel/college-competences.md → Family B (competence)
+//   - docs/archive/wip/referentiel/6e-savoirs.md       → Family A (knowledge)
+//   - docs/systeme/programmes/college-competences.md → Family B (competence)
 //
 // Run with: pnpm tsx scripts/generate-competence-seeds.ts
 //
@@ -411,8 +411,8 @@ function generateSQL(themes: Theme[], competences: MathCompetence[]): string {
 	lines.push(`-- Re-generate with: pnpm tsx scripts/generate-competence-seeds.ts`);
 	lines.push(`--`);
 	lines.push(`-- Sources:`);
-	lines.push(`--   Family A (knowledge) : docs/wip/referentiel/6e-savoirs.md`);
-	lines.push(`--   Family B (competence): docs/wip/referentiel/college-competences.md`);
+	lines.push(`--   Family A (knowledge) : docs/archive/wip/referentiel/6e-savoirs.md`);
+	lines.push(`--   Family B (competence): docs/systeme/programmes/college-competences.md`);
 	lines.push(`--`);
 	lines.push(`-- Counts (verified by script):`);
 
@@ -661,8 +661,8 @@ function generateSQL(themes: Theme[], competences: MathCompetence[]): string {
 // ---------------------------------------------------------------------------
 
 function main(): void {
-	const savoirsPath = join(ROOT, 'docs/wip/referentiel/6e-savoirs.md');
-	const competencesPath = join(ROOT, 'docs/wip/referentiel/college-competences.md');
+	const savoirsPath = join(ROOT, 'docs/archive/wip/referentiel/6e-savoirs.md');
+	const competencesPath = join(ROOT, 'docs/systeme/programmes/college-competences.md');
 	const outputPath = join(
 		ROOT,
 		'supabase/migrations/20260609120002_competence_referentiel_seeds.sql'

@@ -65,6 +65,9 @@
 		stripFenceLanguages
 	} from './restricted-rendering';
 	import type { ContentLocale } from '$lib/types/locale';
+	import type { GradeCode } from '$lib/types/grades';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { provideLexicon, readLexicon } from './lexicon-context';
 
 	interface Props {
 		/** Markdown content to render (template or resolved instance) */
@@ -123,6 +126,12 @@
 		 * un parent restreint l'impose. Absent : rendu complet.
 		 */
 		restricted?: boolean;
+		/**
+		 * Niveau de lecture des mots cliquables (lot 2 du lexique) : les mots du
+		 * dictionnaire visibles à ce niveau ouvrent leur fiche. Absent : celui
+		 * d'un rendu parent ou du cadre de la question ; `null` : aucun mot.
+		 */
+		lexiconGrade?: GradeCode | null;
 	}
 
 	let {
@@ -143,13 +152,21 @@
 		onHintOpen,
 		locale,
 		showAuthoringErrors,
-		restricted
+		restricted,
+		lexiconGrade
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
 	provideAuthoringErrors(() => showAuthoringErrors);
 	provideRestrictedRendering(() => restricted);
 	const isRestricted = readRestrictedRendering();
+	provideLexicon(() => lexiconGrade);
+	const lexicon = readLexicon();
+
+	// Le dictionnaire n'est chargé qu'au premier énoncé à mots cliquables
+	$effect(() => {
+		if (lexicon()) loadLexiconRuntime();
+	});
 
 	/**
 	 * Source effectivement analysée : en mode restreint, les blocs de code
@@ -168,8 +185,14 @@
 			return { type: 'document', children: [] };
 		}
 
-		// Mode restreint : filet sur l'AST (copie, le cache n'est pas modifié)
-		const finish = (doc: DocumentNode) => (isRestricted() ? restrictDocument(doc) : doc);
+		// Mode restreint : filet sur l'AST ; mots cliquables : repérés au niveau du
+		// lecteur (copies, le cache n'est pas modifié)
+		const finish = (doc: DocumentNode) => {
+			const safe = isRestricted() ? restrictDocument(doc) : doc;
+			const grade = lexicon();
+			const runtime = lexiconRuntime();
+			return grade && runtime ? runtime.linkDocument(safe, grade) : safe;
+		};
 
 		// Check cache first
 		const cached = getCachedAST(source, parseOptions);
@@ -202,7 +225,8 @@
 	 * imbriqués compris) : un nouveau budget à chaque nouveau contenu.
 	 */
 	let renderBudget = $derived.by(() => {
-		void ast;
+		// La source, pas l'AST : l'arrivée des mots cliquables ne recalcule pas les figures
+		void source;
 		return createRenderBudget();
 	});
 	provideRenderBudget(() => renderBudget);

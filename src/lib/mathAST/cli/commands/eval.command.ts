@@ -11,6 +11,10 @@ import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
 import { evaluate, substitute } from '../../eval';
 import { bindingsToRecord } from '../core/eval-state';
+import { parse } from '../core/pipeline';
+import { readCommandArguments } from '../core/variable-argument';
+import type { MathNode } from '../../types';
+import { getVariables } from '../../eval/substitute';
 
 // =============================================================================
 // Eval Command
@@ -34,10 +38,73 @@ export class EvalCommand extends BaseCommand {
 	readonly name = 'eval';
 	readonly aliases = ['e'] as const;
 	readonly description = 'Evaluate expression with variable substitution';
-	readonly usage = 'eval <expression>';
+	readonly usage = 'eval <expression> [en <variable>=<valeur>]';
+	// `.eval x^2 en x=3` : l'argument n'est pas une expression d'un bloc
+	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
-		if (!ctx.ast) {
+		// L'argument tapé, relu ici : `EXPR en x=3` (ou `pour x=3`, décision de
+		// David, 2026-10-08). Sans argument : la dernière expression (`ctx.ast`).
+		let ast: MathNode | undefined = ctx.ast;
+		let assigned: Record<string, MathNode> = {};
+		const input = ctx.input.trim();
+		if (input !== '') {
+			const reading = readCommandArguments('eval', input);
+			if (!reading.ok) {
+				return {
+					success: false,
+					output: '',
+					error: { code: 'COMMAND_SYNTAX', message: reading.message }
+				};
+			}
+			const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
+			const parsed = parse(reading.args.expression, parserOptions);
+			const { assignment } = reading.args;
+			const value = assignment === null ? null : parse(assignment.value, parserOptions);
+			const failed = [parsed, value].find(
+				(result) => result !== null && (result.errors.length > 0 || !result.ast)
+			);
+			if (failed !== undefined && failed !== null) {
+				const message = failed.errors[0]?.message ?? 'Failed to parse expression';
+				return { success: false, output: '', error: { code: 'PARSE_ERROR', message } };
+			}
+			ast = parsed.ast;
+			// Ce qui ne se calculerait pas : refus clairs, en français (revue #962)
+			const bound = ctx.evalState?.bindings;
+			const free = (node: MathNode): string[] =>
+				[...getVariables(node)].filter((name) => !(bound?.has(name) ?? false)).sort();
+			const fail = (message: string): CommandResult => ({
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message }
+			});
+			// Sans état (hors REPL) : l'erreur INVALID_OPTIONS plus bas
+			const letters = ast === undefined || !ctx.evalState ? [] : free(ast);
+			const written = reading.args.expression;
+			if (assignment === null) {
+				if (letters.length > 0) {
+					return fail(`Il manque la valeur : .évaluer ${written} en ${letters[0]}=3, par exemple.`);
+				}
+			} else if (ctx.evalState && ast !== undefined && value?.ast !== undefined) {
+				if (!letters.includes(assignment.name)) {
+					return fail(`« ${assignment.name} » n'apparaît pas dans ${written}.`);
+				}
+				if (free(value.ast).length > 0) {
+					return fail(
+						`La valeur de ${assignment.name} doit être un nombre, pas « ${assignment.value} ».`
+					);
+				}
+				const rest = letters.filter((name) => name !== assignment.name);
+				if (rest.length > 0) {
+					return fail(
+						`Il reste ${rest.length === 1 ? 'une lettre' : 'des lettres'} sans valeur : ${rest.join(', ')}. On ne remplace qu’une lettre à la fois.`
+					);
+				}
+				assigned = { [assignment.name]: value.ast };
+			}
+		}
+
+		if (!ast) {
 			return {
 				success: false,
 				output: '',
@@ -58,10 +125,11 @@ export class EvalCommand extends BaseCommand {
 
 		try {
 			// Convert bindings Map to Record for substitute()
-			const bindings = bindingsToRecord(ctx.evalState.bindings);
+			// La valeur donnée après `en` l'emporte sur une valeur posée (`.let`)
+			const bindings = { ...bindingsToRecord(ctx.evalState.bindings), ...assigned };
 
 			// Substitute variables
-			const substituted = substitute(ctx.ast, bindings);
+			const substituted = substitute(ast, bindings);
 
 			// Evaluate using current mode
 			const result = evaluate(substituted, { mode: ctx.evalState.mode });

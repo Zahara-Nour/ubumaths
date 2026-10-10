@@ -78,7 +78,6 @@ Step types are a discriminated union (`EquationOperation`): `identify-equation`,
 
 - `pnpm check`, `pnpm check:fast`, `svelte-check` without `--incremental`
 - `pnpm build` to verify
-- `pnpm test:triggers`
 - Full `pnpm test:server` / `pnpm test:client` runs to "understand a bug" — use targeted runs
 
 ## Conventions

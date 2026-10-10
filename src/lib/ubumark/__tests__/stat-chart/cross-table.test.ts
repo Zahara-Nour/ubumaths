@@ -2,7 +2,7 @@
  * Bloc ```tableau-croise — analyse, scène, Typst.
  *
  * Spécification validée par David le 2026-10-01
- * (`docs/wip/outils-statistiques-progress.md`, lot 4).
+ * (`docs/archive/wip/outils-statistiques-progress.md`, lot 4).
  */
 
 import { describe, it, expect, vi } from 'vitest';

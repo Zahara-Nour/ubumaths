@@ -19,6 +19,7 @@ import type { LimitResult, LimitDirection } from '../limits/types';
 // Direct import (bypassing the limits barrel) to avoid a Rollup chunk-cycle
 // warning between `limits/index.ts` and `limits/evaluate.ts`.
 import { evaluateLimit } from '../limits/evaluate';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { infinity } from '../factory';
 import { isNumber, isInfinity } from '../guards';
 import {
@@ -173,8 +174,13 @@ export function getDomainBoundaries(domain: Domain): BoundaryPoint[] {
  * @returns The corresponding LimitValue
  */
 export function convertLimitResult(result: LimitResult): LimitValue {
-	// Handle cases where limit doesn't exist or is unsupported
-	if (result.status === 'does-not-exist' || result.status === 'unsupported') {
+	// Handle cases where limit doesn't exist or is unsupported. Une valeur
+	// approchée (repli numérique) n'est pas une limite : on ne l'affiche pas.
+	if (
+		result.status === 'does-not-exist' ||
+		result.status === 'unsupported' ||
+		result.status === 'approximate'
+	) {
 		return 'indeterminate';
 	}
 
@@ -380,12 +386,14 @@ function getApproximateValue(result: LimitResult): number | undefined {
 		return result.value.sign === 'positive' ? Infinity : -Infinity;
 	}
 
-	if (isNumber(result.value)) {
-		const val = parseFloat(result.value.value);
+	// Évalue le nœud : une limite exacte est une fraction (2/3) ou un
+	// opposé (−1/2), pas seulement un littéral
+	try {
+		const val = evaluateNodeToApproximatedNumber(result.value);
 		return Number.isFinite(val) ? val : undefined;
+	} catch {
+		return undefined;
 	}
-
-	return undefined;
 }
 
 /**

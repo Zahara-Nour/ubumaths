@@ -841,8 +841,10 @@ function evaluateOneSidedDerivativeLimit(
 			return 'undefined';
 		}
 
-		// Handle 'unsupported' status by falling back to numeric approximation
-		if (result.status === 'unsupported') {
+		// Handle 'unsupported' status by falling back to numeric approximation.
+		// Une valeur 'approximate' (repli numérique du moteur) n'est pas une
+		// limite : même traitement, par l'approximation dédiée de ce module.
+		if (result.status === 'unsupported' || result.status === 'approximate') {
 			return approximateDerivativeLimitFromDerivative(derivative, variable, point, direction);
 		}
 

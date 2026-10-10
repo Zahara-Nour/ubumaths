@@ -1,0 +1,206 @@
+{
+	"title": "Somme des degrés et graphe complet",
+	"description": "Nombre d'arêtes d'un graphe complet, d'un graphe dont on connaît les degrés, degré d'un sommet du graphe complet (pièges : n(n − 1) sans diviser par 2, degré n au lieu de n − 1)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-113", "TEXP-114"],
+	"theme": "Graphes et matrices",
+	"domain": "Graphes",
+	"subdomain": "Vocabulaire des graphes",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Combien d'arêtes possède le graphe complet d'ordre ${{n}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le graphe complet, chacun des ${{n}}$ sommets est de degré ${{eval:n-1}}$ : somme des degrés ${{n}} \\times {{eval:n-1}} = {{eval:n*(n-1)}}$.",
+					"Chaque arête est comptée deux fois : $\\dfrac{ {{eval:n*(n-1)}} }{2} = \\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)/2}}}$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "Dans un tournoi, chacune des ${{n}}$ équipes rencontre une fois chacune des autres. Combien de matchs sont joués ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On modélise par le graphe complet d'ordre ${{n}}$ : un sommet par équipe, une arête par match.",
+					"Nombre d'arêtes : $\\dfrac{ {{n}} \\times {{eval:n-1}} }{2} = \\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un graphe a ${{n}}$ sommets, tous de degré ${{k}}$. Combien a-t-il d'arêtes ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..14"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["mod(n*k,2) == 0", "k < n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*k/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Somme des degrés : ${{n}} \\times {{k}} = {{eval:n*k}}$, égale au double du nombre d'arêtes.",
+					"Nombre d'arêtes : $\\textcolor{{{color:primary.0}}}{{{eval:n*k/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le degré de chaque sommet du graphe complet d'ordre ${{n}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque sommet est adjacent à tous les **autres** : degré $\\textcolor{{{color:primary.0}}}{{{eval:n-1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : K6 → 15",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 30 (non divisé par 2)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 36",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 10 équipes → 45",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 90 (aller-retour)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 8 sommets de degré 3 → 12",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 24",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : K7 → 6",
+			"variationIndex": 3,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 7",
+			"variationIndex": 3,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

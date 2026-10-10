@@ -7,7 +7,7 @@
  * RLS bloque automatiquement les decks `is_assigned=true` ou
  * `is_auto_managed=true` (cf. migration 20260610100100).
  *
- * Spec : docs/wip/srs-fsrs-spec-tdd.md §6
+ * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §6
  */
 
 import { json } from '@sveltejs/kit';

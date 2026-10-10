@@ -21,7 +21,9 @@
 
 import type { MathNode, RelationNode } from '../types';
 import { euler } from '../factory';
-import { mapNode } from '../transforms';
+import { findNodes, mapNode } from '../transforms';
+import { isEulerConstant, isFunction, isSuperscript, isVariable } from '../guards';
+import { getVariables } from '../eval/substitute';
 
 /**
  * Walk `node` and replace `superscript { base: var('e'), … }` with
@@ -56,4 +58,75 @@ export function promoteEulerInRelation(relation: RelationNode): RelationNode {
 		left: promoteEulerSuperscriptBase(relation.left),
 		right: promoteEulerSuperscriptBase(relation.right)
 	};
+}
+
+/**
+ * Promeut en `euler()` TOUTE variable `e` de la relation — y compris hors
+ * d'un exposant — dès que `e` ne peut pas être l'inconnue.
+ *
+ * Pourquoi : `promoteEulerInRelation` ne touche que la base de `e^u`. Le `e`
+ * seul de `e^x = e` restait une variable : `detectVariable` voyait `{e, x}`,
+ * l'équation partait dans le chemin des équations constantes et le moteur
+ * affirmait « contradictoire » (avec l'inconnue imposée, la réponse restait
+ * `ln(e)`, jamais réduite à 1). C'est la convention de `evaluate`, `compile`
+ * et `isEulerBase` (dérivation) : la lettre `e` est lue comme Euler.
+ *
+ * `e` reste une variable quand elle peut être l'inconnue :
+ * - l'inconnue imposée est `e` ;
+ * - aucune inconnue imposée et `e` est la SEULE lettre (`e + 1 = 3`).
+ * Si une autre inconnue est imposée, ou si une autre lettre est présente,
+ * `e` est la constante.
+ *
+ * ⚠️ Et SEULEMENT si la relation contient une exponentielle ou un logarithme
+ * de l'inconnue (`e^{…x…}`, `exp(…x…)`, `ln(…x…)`, `log(…x…)`). Sans cette
+ * garde (revue de #863), `x^2 = e` résolue en x rendait `\exp(1/2)` au lieu
+ * de `\sqrt{e}`, et `ex = 1` `\exp(-1)` au lieu de `\dfrac{1}{e}` — chez
+ * tous les appelants internes qui imposent l'inconnue (racines, zéros,
+ * points critiques). Hors de ce contexte, la lettre `e` garde le
+ * comportement d'avant.
+ */
+export function promoteStandaloneEulerInRelation(
+	relation: RelationNode,
+	unknown?: string
+): RelationNode {
+	if (unknown === 'e') return relation;
+	if (unknown === undefined) {
+		const names = new Set([...getVariables(relation.left), ...getVariables(relation.right)]);
+		if (!names.has('e') || names.size < 2) return relation;
+	}
+	if (!hasExpOrLogOfUnknown(relation, unknown)) return relation;
+	return {
+		...relation,
+		left: promoteEulerVariable(relation.left),
+		right: promoteEulerVariable(relation.right)
+	};
+}
+
+/** Remplace chaque variable `e` par la constante `euler()`. */
+function promoteEulerVariable(node: MathNode): MathNode {
+	return mapNode(node, (n) => (isVariable(n) && n.name === 'e' ? euler() : n));
+}
+
+/**
+ * La relation contient-elle une exponentielle ou un logarithme dont
+ * l'argument dépend de l'inconnue ? Sans inconnue imposée : de toute lettre
+ * autre que `e`. À appeler APRÈS `promoteEulerInRelation` (base `euler()`).
+ */
+function hasExpOrLogOfUnknown(relation: RelationNode, unknown?: string): boolean {
+	const dependsOnUnknown = (node: MathNode): boolean => {
+		const names = getVariables(node);
+		if (unknown !== undefined) return names.has(unknown);
+		return [...names].some((name) => name !== 'e');
+	};
+	const isExpOrLogOfUnknown = (n: MathNode): boolean => {
+		if (isSuperscript(n)) return isEulerConstant(n.base) && dependsOnUnknown(n.superscript);
+		if (isFunction(n) && ['exp', 'ln', 'log'].includes(n.name)) {
+			return n.args.some(dependsOnUnknown);
+		}
+		return false;
+	};
+	return (
+		findNodes(relation.left, isExpOrLogOfUnknown).length > 0 ||
+		findNodes(relation.right, isExpOrLogOfUnknown).length > 0
+	);
 }

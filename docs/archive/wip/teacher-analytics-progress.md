@@ -147,4 +147,4 @@ Plan complet : voir conversation `2026-06-10` + memory.
 ## Phase 4 — E2E + doc ⏳ À venir
 
 - Vérif navigateur sur classe réelle
-- `docs/ref/teacher-analytics.md` (NEW)
+- `docs/systeme/analytique-prof.md` (NEW)

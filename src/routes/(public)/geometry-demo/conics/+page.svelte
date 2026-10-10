@@ -121,6 +121,7 @@ style(c3, couleur="vert")`;
 </script>
 
 <div class="container mx-auto max-w-6xl p-8">
+	<h1 class="sr-only">Coniques</h1>
 	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
 		>← Retour aux demos</a
 	>

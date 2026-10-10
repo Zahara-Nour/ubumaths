@@ -1,18 +1,16 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
-<svelte:head>
-	<title>Conditions Generales d'Utilisation - Chiphre</title>
-	<meta
-		name="description"
-		content="Conditions Generales d'Utilisation d'Chiphre. Regles d'utilisation de la plateforme educative de mathematiques."
-	/>
-</svelte:head>
+<SeoHead
+	title="Conditions générales d’utilisation - Chiphre"
+	description="Conditions générales d’utilisation de Chiphre : règles d’utilisation de la plateforme éducative de mathématiques."
+/>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<article class="prose max-w-none prose-slate dark:prose-invert">
-		<h1>Conditions Generales d'Utilisation</h1>
+		<h1>Conditions générales d’utilisation</h1>
 
 		<p class="lead text-muted-foreground">Derniere mise a jour : 15 janvier 2026 | Version 1.0</p>
 
@@ -33,13 +31,13 @@
 		</section>
 
 		<section>
-			<h2>2. Presentation du Service</h2>
+			<h2>2. Présentation du Service</h2>
 			<p>
 				Chiphre est une plateforme educative de mathematiques destinee aux eleves du secondaire
 				(college et lycee) et a leurs enseignants.
 			</p>
 
-			<h3>2.1 Fonctionnalites principales</h3>
+			<h3>2.1 Fonctionnalités principales</h3>
 			<ul>
 				<li>
 					<strong>Exercices interactifs</strong> : Exercices de mathematiques adaptes au niveau scolaire
@@ -63,7 +61,7 @@
 		</section>
 
 		<section>
-			<h2>3. Acces au Service</h2>
+			<h2>3. Accès au Service</h2>
 
 			<h3>3.1 Inscription</h3>
 			<p>
@@ -75,7 +73,7 @@
 				legal est requis conformement a l'article 8 du RGPD.
 			</p>
 
-			<h3>3.2 Conditions d'acces</h3>
+			<h3>3.2 Conditions d'accès</h3>
 			<p>L'utilisateur s'engage a :</p>
 			<ul>
 				<li>Fournir des informations exactes lors de l'inscription</li>
@@ -84,7 +82,7 @@
 				<li>Signaler immediatement toute utilisation non autorisee de son compte</li>
 			</ul>
 
-			<h3>3.3 Gratuite</h3>
+			<h3>3.3 Gratuité</h3>
 			<p class="rounded-lg bg-green-50 p-4 dark:bg-green-950">
 				L'utilisation du Service est <strong>gratuite</strong> pour les eleves et les enseignants.
 			</p>
@@ -93,7 +91,7 @@
 		<section>
 			<h2>4. Obligations de l'utilisateur</h2>
 
-			<h3>4.1 Comportement general</h3>
+			<h3>4.1 Comportement général</h3>
 			<p>L'utilisateur s'engage a utiliser le Service de maniere responsable et a ne pas :</p>
 			<ul>
 				<li>Perturber le fonctionnement normal du Service</li>
@@ -112,7 +110,7 @@
 		</section>
 
 		<section>
-			<h2>5. Propriete intellectuelle</h2>
+			<h2>5. Propriété intellectuelle</h2>
 			<p>
 				L'ensemble des elements du Service (exercices, textes, images, logos, code source) sont la
 				propriete exclusive d'Chiphre et sont proteges par les lois relatives a la propriete
@@ -125,7 +123,7 @@
 		</section>
 
 		<section>
-			<h2>6. Protection des donnees personnelles</h2>
+			<h2>6. Protection des données personnelles</h2>
 			<p>
 				Le traitement des donnees personnelles est decrit dans notre
 				<a href={resolve('/legal/confidentialite')}>Politique de Confidentialite</a>.
@@ -140,9 +138,9 @@
 		</section>
 
 		<section>
-			<h2>7. Responsabilites</h2>
+			<h2>7. Responsabilités</h2>
 
-			<h3>7.1 Responsabilite d'Chiphre</h3>
+			<h3>7.1 Responsabilité de Chiphre</h3>
 			<p>Chiphre s'engage a :</p>
 			<ul>
 				<li>Assurer la disponibilite du Service dans la mesure du possible</li>
@@ -150,7 +148,7 @@
 				<li>Corriger les dysfonctionnements signales dans des delais raisonnables</li>
 			</ul>
 
-			<h3>7.2 Responsabilite de l'utilisateur</h3>
+			<h3>7.2 Responsabilité de l'utilisateur</h3>
 			<p>L'utilisateur est responsable :</p>
 			<ul>
 				<li>De l'utilisation qu'il fait du Service</li>
@@ -167,7 +165,7 @@
 		</section>
 
 		<section>
-			<h2>8. Moderation et sanctions</h2>
+			<h2>8. Modération et sanctions</h2>
 			<p>
 				Les enseignants ont acces aux messages de leurs eleves dans le cadre du suivi pedagogique.
 				Les contenus contraires aux CGU peuvent etre supprimes sans preavis.
@@ -181,7 +179,7 @@
 		</section>
 
 		<section>
-			<h2>9. Disponibilite du Service</h2>
+			<h2>9. Disponibilité du Service</h2>
 			<p>
 				Chiphre peut interrompre temporairement le Service pour des operations de maintenance. Ces
 				interruptions seront, dans la mesure du possible, planifiees en dehors des heures de cours.

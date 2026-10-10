@@ -78,6 +78,8 @@
 				italic={child.italic}
 				code={child.code}
 				detail={child.detail}
+				terms={child.terms}
+				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline' && child.detail}
 			<!-- Formule d'un détail en ligne `[…]{.rappel}` (ADR 0017) -->

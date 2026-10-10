@@ -1,0 +1,1260 @@
+{
+	"version": "2026-10-09.16",
+	"points": [
+		{
+			"code": "TTECHNO-001",
+			"grade": "T_TECHNO",
+			"display_order": 1,
+			"name": "Coniques : sections planes d'un cône de révolution",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "sections planes"
+		},
+		{
+			"code": "TTECHNO-002",
+			"grade": "T_TECHNO",
+			"display_order": 2,
+			"name": "Notion de tangente à une conique en un point",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "coniques"
+		},
+		{
+			"code": "TTECHNO-003",
+			"grade": "T_TECHNO",
+			"display_order": 3,
+			"name": "Étudier le raccordement d'arcs de cercles, d'ellipses ou de courbes représentatives de fonctions",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "coniques"
+		},
+		{
+			"code": "TTECHNO-004",
+			"grade": "T_TECHNO",
+			"display_order": 4,
+			"name": "Perspective centrale : projection centrale",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-005",
+			"grade": "T_TECHNO",
+			"display_order": 5,
+			"name": "Propriétés de conservation (alignement, contact) ou de non conservation (longueurs, milieux, rapports de longueurs, angles, parallélisme) ; cas particulier des plans frontaux",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-006",
+			"grade": "T_TECHNO",
+			"display_order": 6,
+			"name": "Point de fuite d'une droite",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-007",
+			"grade": "T_TECHNO",
+			"display_order": 7,
+			"name": "Point de fuite principal",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-008",
+			"grade": "T_TECHNO",
+			"display_order": 8,
+			"name": "Ligne de fuite d'un plan non frontal, ligne d'horizon",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-009",
+			"grade": "T_TECHNO",
+			"display_order": 9,
+			"name": "Image d'un quadrillage, de solides simples (parallélépipède rectangle, prisme, pyramide)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-010",
+			"grade": "T_TECHNO",
+			"display_order": 10,
+			"name": "Utiliser le vocabulaire usuel de la perspective centrale",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-011",
+			"grade": "T_TECHNO",
+			"display_order": 11,
+			"name": "Utiliser les propriétés d'une projection centrale",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-012",
+			"grade": "T_TECHNO",
+			"display_order": 12,
+			"name": "Utiliser la conservation de forme dans les plans frontaux",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-013",
+			"grade": "T_TECHNO",
+			"display_order": 13,
+			"name": "Utiliser la position relative de l'image de deux droites parallèles",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-014",
+			"grade": "T_TECHNO",
+			"display_order": 14,
+			"name": "Construire l'image d'un quadrillage ou d'un parallélépipède rectangle ayant au moins une arête en vraie grandeur",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective centrale"
+		},
+		{
+			"code": "TTECHNO-015",
+			"grade": "T_TECHNO",
+			"display_order": 15,
+			"name": "Interpréter un indice de base 100 ; calculer un indice ; calculer le taux d'évolution entre deux valeurs",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Automatismes",
+			"branche": "Proportionnalité",
+			"notion": "Évolutions",
+			"sous_notion": "indices"
+		},
+		{
+			"code": "TTECHNO-016",
+			"grade": "T_TECHNO",
+			"display_order": 16,
+			"name": "Moyenne arithmétique de deux nombres",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": null
+		},
+		{
+			"code": "TTECHNO-017",
+			"grade": "T_TECHNO",
+			"display_order": 17,
+			"name": "Somme des $n$ premiers termes d'une suite arithmétique ; notation $\\Sigma$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "somme des termes"
+		},
+		{
+			"code": "TTECHNO-018",
+			"grade": "T_TECHNO",
+			"display_order": 18,
+			"name": "Moyenne géométrique de deux nombres positifs",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": null
+		},
+		{
+			"code": "TTECHNO-019",
+			"grade": "T_TECHNO",
+			"display_order": 19,
+			"name": "Somme des $n$ premiers termes d'une suite géométrique ; notation $\\Sigma$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "somme des termes"
+		},
+		{
+			"code": "TTECHNO-020",
+			"grade": "T_TECHNO",
+			"display_order": 20,
+			"name": "Prouver que trois nombres sont (ou ne sont pas) les termes consécutifs d'une suite arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "TTECHNO-021",
+			"grade": "T_TECHNO",
+			"display_order": 21,
+			"name": "Prouver que trois nombres sont (ou ne sont pas) les termes consécutifs d'une suite géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "TTECHNO-022",
+			"grade": "T_TECHNO",
+			"display_order": 22,
+			"name": "Déterminer la raison d'une suite arithmétique modélisant une évolution",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "TTECHNO-023",
+			"grade": "T_TECHNO",
+			"display_order": 23,
+			"name": "Déterminer la raison d'une suite géométrique modélisant une évolution",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "TTECHNO-024",
+			"grade": "T_TECHNO",
+			"display_order": 24,
+			"name": "Exprimer en fonction de $n$ le terme général d'une suite arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "terme général"
+		},
+		{
+			"code": "TTECHNO-025",
+			"grade": "T_TECHNO",
+			"display_order": 25,
+			"name": "Exprimer en fonction de $n$ le terme général d'une suite géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "terme général"
+		},
+		{
+			"code": "TTECHNO-026",
+			"grade": "T_TECHNO",
+			"display_order": 26,
+			"name": "Calculer la somme des $n$ premiers termes d'une suite arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "somme des termes"
+		},
+		{
+			"code": "TTECHNO-027",
+			"grade": "T_TECHNO",
+			"display_order": 27,
+			"name": "Calculer la somme des $n$ premiers termes d'une suite géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "somme des termes"
+		},
+		{
+			"code": "TTECHNO-028",
+			"grade": "T_TECHNO",
+			"display_order": 28,
+			"name": "Reconnaitre une situation relevant du calcul d'une somme de termes consécutifs d'une suite arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "somme des termes"
+		},
+		{
+			"code": "TTECHNO-029",
+			"grade": "T_TECHNO",
+			"display_order": 29,
+			"name": "Reconnaitre une situation relevant du calcul d'une somme de termes consécutifs d'une suite géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "somme des termes"
+		},
+		{
+			"code": "TTECHNO-030",
+			"grade": "T_TECHNO",
+			"display_order": 30,
+			"name": "Écrire en langage Python une fonction qui calcule la somme des $n$ premiers carrés, des $n$ premiers cubes ou des $n$ premiers inverses ; établir le lien entre l'écriture de la somme à l'aide du symbole $\\Sigma$ et les composantes de l'algorithme (initialisation, sortie de boucle, accumulateur, compteur)",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
+		},
+		{
+			"code": "TTECHNO-031",
+			"grade": "T_TECHNO",
+			"display_order": 31,
+			"name": "Définition de la fonction $x \\mapsto a^x$ pour $x$ positif comme prolongement à des valeurs non entières positives de la suite géométrique $(a^n)_{n \\in \\mathbb{N}}$ ; extension à $\\mathbb{R}_-$ en posant $a^{-x} = \\frac{1}{a^x}$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-032",
+			"grade": "T_TECHNO",
+			"display_order": 32,
+			"name": "Sens de variation de $x \\mapsto a^x$ selon les valeurs de $a$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-033",
+			"grade": "T_TECHNO",
+			"display_order": 33,
+			"name": "Allure de la courbe représentative de $x \\mapsto a^x$ selon les valeurs de $a$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-034",
+			"grade": "T_TECHNO",
+			"display_order": 34,
+			"name": "Propriétés algébriques : $a^{x+y} = a^x a^y$ ; $a^{x-y} = \\frac{a^x}{a^y}$ ; $a^{nx} = (a^x)^n$ pour $n$ entier relatif",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-035",
+			"grade": "T_TECHNO",
+			"display_order": 35,
+			"name": "Cas particulier de l'exposant $\\frac{1}{n}$ pour calculer un taux d'évolution moyen équivalent à $n$ évolutions successives",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Proportionnalité",
+			"notion": "Évolutions",
+			"sous_notion": "taux d'évolution moyen"
+		},
+		{
+			"code": "TTECHNO-036",
+			"grade": "T_TECHNO",
+			"display_order": 36,
+			"name": "Connaitre et utiliser le sens de variation des fonctions de la forme $x \\mapsto k a^x$, selon le signe de $k$ et les valeurs de $a$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-037",
+			"grade": "T_TECHNO",
+			"display_order": 37,
+			"name": "Connaitre les propriétés algébriques des fonctions exponentielles et les utiliser pour transformer des écritures numériques ou littérales",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-038",
+			"grade": "T_TECHNO",
+			"display_order": 38,
+			"name": "Calculer le taux d'évolution moyen équivalent à des évolutions successives",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Proportionnalité",
+			"notion": "Évolutions",
+			"sous_notion": "taux d'évolution moyen"
+		},
+		{
+			"code": "TTECHNO-039",
+			"grade": "T_TECHNO",
+			"display_order": 39,
+			"name": "Intercaler entre deux points déjà construits un troisième point ayant pour abscisse (respectivement pour ordonnée) la moyenne arithmétique (respectivement géométrique) des abscisses (respectivement des ordonnées) des deux points initiaux",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions exponentielles",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "TTECHNO-040",
+			"grade": "T_TECHNO",
+			"display_order": 40,
+			"name": "Définition du logarithme décimal de $b$ pour $b > 0$ comme l'unique solution de l'équation $10^x = b$ ; notation $\\log$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction logarithme décimal",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "logarithme décimal"
+		},
+		{
+			"code": "TTECHNO-041",
+			"grade": "T_TECHNO",
+			"display_order": 41,
+			"name": "Sens de variation de la fonction logarithme décimal",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction logarithme décimal",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "logarithme décimal"
+		},
+		{
+			"code": "TTECHNO-042",
+			"grade": "T_TECHNO",
+			"display_order": 42,
+			"name": "Propriétés algébriques : $\\log(ab) = \\log(a) + \\log(b)$, $\\log(a^n) = n\\log(a)$ et $\\log\\left(\\frac{a}{b}\\right) = \\log(a) - \\log(b)$, pour $n$ entier naturel, $a$ et $b$ réels strictement positifs",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction logarithme décimal",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "logarithme décimal"
+		},
+		{
+			"code": "TTECHNO-043",
+			"grade": "T_TECHNO",
+			"display_order": 43,
+			"name": "Utiliser le logarithme décimal pour résoudre une équation du type $a^x = b$ ou $x^a = b$ d'inconnue $x$ réelle, une inéquation du type $a^x < b$ ou $x^a < b$ d'inconnue $x$ réelle ou du type $a^n < b$ d'inconnue $n$ entier naturel",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction logarithme décimal",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "logarithme décimal"
+		},
+		{
+			"code": "TTECHNO-044",
+			"grade": "T_TECHNO",
+			"display_order": 44,
+			"name": "Utiliser les propriétés algébriques de la fonction logarithme décimal pour transformer des expressions numériques ou littérales",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction logarithme décimal",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sous_notion": "logarithme décimal"
+		},
+		{
+			"code": "TTECHNO-045",
+			"grade": "T_TECHNO",
+			"display_order": 45,
+			"name": "Comportement de la fonction inverse aux bornes de son ensemble de définition",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction inverse",
+			"branche": "Fonctions",
+			"notion": "Fonction inverse",
+			"sous_notion": "définition et courbe"
+		},
+		{
+			"code": "TTECHNO-046",
+			"grade": "T_TECHNO",
+			"display_order": 46,
+			"name": "Dérivée de la fonction inverse",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction inverse",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "TTECHNO-047",
+			"grade": "T_TECHNO",
+			"display_order": 47,
+			"name": "Sens de variation de la fonction inverse",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction inverse",
+			"branche": "Fonctions",
+			"notion": "Fonction inverse",
+			"sous_notion": "variations"
+		},
+		{
+			"code": "TTECHNO-048",
+			"grade": "T_TECHNO",
+			"display_order": 48,
+			"name": "Courbe représentative de la fonction inverse ; asymptotes",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction inverse",
+			"branche": "Fonctions",
+			"notion": "Fonction inverse",
+			"sous_notion": "définition et courbe"
+		},
+		{
+			"code": "TTECHNO-049",
+			"grade": "T_TECHNO",
+			"display_order": 49,
+			"name": "Étudier et représenter des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction inverse",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "variations et extremums"
+		},
+		{
+			"code": "TTECHNO-050",
+			"grade": "T_TECHNO",
+			"display_order": 50,
+			"name": "Changement de variable dans l'étude graphique d'une série statistique à deux variables quantitatives",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "changement de variable"
+		},
+		{
+			"code": "TTECHNO-051",
+			"grade": "T_TECHNO",
+			"display_order": 51,
+			"name": "Ajustement se ramenant par changement de variable à un ajustement affine",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "changement de variable"
+		},
+		{
+			"code": "TTECHNO-052",
+			"grade": "T_TECHNO",
+			"display_order": 52,
+			"name": "Représenter un nuage de points en effectuant un changement de variable donné (par exemple $u^2$, $\\frac{1}{t}$, $\\frac{1}{\\sqrt{n}}$, $\\log(y)$, etc.) afin de conjecturer une relation de linéarité entre de nouvelles variables",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "changement de variable"
+		},
+		{
+			"code": "TTECHNO-053",
+			"grade": "T_TECHNO",
+			"display_order": 53,
+			"name": "Automatiser le calcul de $\\sum_i \\left(y_i - (ax_i + b)\\right)^2$",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "TTECHNO-054",
+			"grade": "T_TECHNO",
+			"display_order": 54,
+			"name": "Rechercher un couple $(a, b)$ minimisant cette expression parmi un ensemble fini de couples proposés par les élèves ou générés par balayage, tirage aléatoire, etc.",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "TTECHNO-055",
+			"grade": "T_TECHNO",
+			"display_order": 55,
+			"name": "Formule des probabilités totales pour une partition de l'univers",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Probabilités conditionnelles",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "probabilités totales"
+		},
+		{
+			"code": "TTECHNO-056",
+			"grade": "T_TECHNO",
+			"display_order": 56,
+			"name": "Calculer la probabilité d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Probabilités conditionnelles",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "probabilités totales"
+		},
+		{
+			"code": "TTECHNO-057",
+			"grade": "T_TECHNO",
+			"display_order": 57,
+			"name": "Loi binomiale $\\mathcal{B}(n, p)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": null
+		},
+		{
+			"code": "TTECHNO-058",
+			"grade": "T_TECHNO",
+			"display_order": 58,
+			"name": "Espérance de la loi binomiale (admise)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "espérance et variance"
+		},
+		{
+			"code": "TTECHNO-059",
+			"grade": "T_TECHNO",
+			"display_order": 59,
+			"name": "Coefficients binomiaux $\\binom{n}{k}$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
+			"sous_notion": "coefficients binomiaux"
+		},
+		{
+			"code": "TTECHNO-060",
+			"grade": "T_TECHNO",
+			"display_order": 60,
+			"name": "Triangle de Pascal",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
+			"sous_notion": "triangle de Pascal"
+		},
+		{
+			"code": "TTECHNO-061",
+			"grade": "T_TECHNO",
+			"display_order": 61,
+			"name": "Calculer des coefficients binomiaux $\\binom{n}{k}$ à l'aide du triangle de Pascal pour $n \\leqslant 10$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
+			"sous_notion": "coefficients binomiaux"
+		},
+		{
+			"code": "TTECHNO-062",
+			"grade": "T_TECHNO",
+			"display_order": 62,
+			"name": "Reconnaitre une situation relevant de la loi binomiale et en identifier le couple de paramètres",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "schéma de Bernoulli"
+		},
+		{
+			"code": "TTECHNO-063",
+			"grade": "T_TECHNO",
+			"display_order": 63,
+			"name": "Lorsque la variable aléatoire $X$ suit une loi binomiale : interpréter l'évènement $\\{X = k\\}$ sur un arbre de probabilité",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "expression de la loi"
+		},
+		{
+			"code": "TTECHNO-064",
+			"grade": "T_TECHNO",
+			"display_order": 64,
+			"name": "Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer les probabilités des évènements $\\{X = 0\\}$, $\\{X = 1\\}$, $\\{X = n\\}$, $\\{X = n - 1\\}$ et de ceux qui s'en déduisent par réunion",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "expression de la loi"
+		},
+		{
+			"code": "TTECHNO-065",
+			"grade": "T_TECHNO",
+			"display_order": 65,
+			"name": "Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer la probabilité de l'évènement $\\{X = k\\}$ à l'aide des coefficients binomiaux",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "expression de la loi"
+		},
+		{
+			"code": "TTECHNO-066",
+			"grade": "T_TECHNO",
+			"display_order": 66,
+			"name": "Générer un triangle de Pascal de taille $n$ donnée",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Dénombrement",
+			"notion": "Combinaisons",
+			"sous_notion": "triangle de Pascal"
+		},
+		{
+			"code": "TTECHNO-067",
+			"grade": "T_TECHNO",
+			"display_order": 67,
+			"name": "Représenter par un diagramme en bâtons la loi de probabilité d'une loi binomiale $\\mathcal{B}(n, p)$ ; faire le lien avec l'histogramme des fréquences observées des 1 lors de la simulation de $N$ échantillons de taille $n$ d'une loi de Bernoulli de paramètre $p$ faite en classe de première",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": null
+		},
+		{
+			"code": "TTECHNO-068",
+			"grade": "T_TECHNO",
+			"display_order": 68,
+			"name": "Calculer l'espérance $\\sum x_i p_i$ d'une variable aléatoire suivant une loi de probabilité donnée ; cas particulier d'une variable aléatoire suivant la loi binomiale $\\mathcal{B}(n, p)$",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "espérance"
+		},
+		{
+			"code": "TTECHNO-069",
+			"grade": "T_TECHNO",
+			"display_order": 69,
+			"name": "Représenter graphiquement l'espérance de lois binomiales $\\mathcal{B}(n, p)$ à $p$ fixé et $n$ variable, à $n$ fixé et $p$ variable, puis faire le lien avec l'expression admise de l'espérance",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "espérance et variance"
+		}
+	],
+	"references": [
+		{
+			"code": "6-140",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-056",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-364",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-376",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-057",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-377",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-367",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "TTECHNO-015",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-378",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-379",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-042",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-036",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-013",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-025",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-005",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "6-106",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-006",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "6-119",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "CM1-068",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "6-150",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-051",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "CE2-052",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "6-159",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-052",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "CE2-047",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-279",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-280",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-281",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-328",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-330",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-066",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-273",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-274",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-035",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-016",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-022",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-039",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-080",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-077",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-079",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-040",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-336",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-057",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-329",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-349",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-331",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-316",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-315",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-314",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-077",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-372",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-030",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-096",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-201",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-202",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-203",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-204",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-205",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-206",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-207",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-210",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-212",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-214",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-001",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-002",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-003",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-004",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-005",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-006",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-007",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-008",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-009",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-010",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-011",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-012",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-013",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-037",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-038",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-393",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-398",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-399",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-391",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "2-397",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-096",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "1TECHNO-099",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-110",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-111",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-070",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-052",
+			"grade": "T_TECHNO"
+		}
+	]
+}

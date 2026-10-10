@@ -98,7 +98,7 @@ export const gradeWithMetadataSchema = z.object({
 	shortName: z.string(),
 	level: z.enum(['primary', 'middle', 'high']),
 	schoolYear: z.number().int().min(1).max(12),
-	track: z.enum(['general', 'spe_maths', 'stmg']).optional(),
+	track: z.enum(['general', 'spe_maths', 'techno']).optional(),
 	mathsIntensity: z.enum(['basic', 'standard', 'advanced', 'expert']),
 	prerequisites: z.array(gradeCodeSchema)
 });
@@ -123,7 +123,7 @@ export const schoolLevelSchema = z.enum(['primary', 'middle', 'high']);
 /**
  * High school track schema
  */
-export const highSchoolTrackSchema = z.enum(['general', 'spe_maths', 'stmg']);
+export const highSchoolTrackSchema = z.enum(['general', 'spe_maths', 'techno']);
 
 /**
  * Maths intensity schema

@@ -24,6 +24,9 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl px-4 py-8">
+	<!-- Titre de la page pour les lecteurs d'écran (la bannière en tient lieu à l'écran) -->
+	<h1 class="sr-only">2048</h1>
+
 	<!-- Banner -->
 	<div class="mb-8 overflow-hidden rounded-xl">
 		<img

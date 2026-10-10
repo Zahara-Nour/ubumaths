@@ -1,0 +1,404 @@
+---
+title: Atelier — `/grapheur` passe par l'atelier, progression
+date: 2026-10-04
+phase0: docs/archive/wip/atelier-grapheur-phase0.md (validée le 2026-10-04)
+---
+
+# `/grapheur` passe par l'atelier — progression
+
+## Lot 1 — les réglages d'affichage appartiennent à l'objet
+
+Branche `feat/atelier-reglages-affichage`, worktree `../ubumaths-wt-reglages`.
+
+- [x] Tests rouges : `src/lib/atelier/__tests__/reglages-affichage.test.ts`
+      — 23 rouges sur le comportement (`setDisplay` absent, aucun réglage) ;
+      3 verts, tous des garde-fous de limite (fonction jamais tracée sans
+      réglages, rien de rangé pour rien, jamais de case f′).
+- [x] Implémentation — 26/26 ; suites atelier + grapheur + stores : 1 347
+      serveur, 308 navigateur ; `check:incremental` 0 erreur ; `lint:fast` propre.
+  - `display.ts` : `curveDisplaySchema` (une seule règle pour la carte, la
+    sauvegarde et le lien), `newDisplay` (couple couleur/style libre, règle
+    `getNextSlot` du grapheur), `readDisplayPatch`, `plainDisplay` (copie sans
+    proxy, pour `structuredClone`).
+  - `FunctionObject.display?` ; `setPlotted` l'attribue au premier tracé ;
+    `update` le conserve ; `setDisplay` le modifie ; `adoptDisplay` le pose à
+    la relecture (`restore`, `mergeInto`) AVANT le tracé.
+  - Sauvegarde/lien : champ optionnel, version inchangée ; `.catch(undefined)`
+    — un réglage abîmé est oublié, l'objet gardé.
+  - `syncPlots` recopie les réglages en n'écrivant que ce qui diffère ;
+    `showDerivative` toujours ramené à `false` (Q1).
+  - Preuves rouges par neutralisation (copie de sauvegarde, pas de
+    `git checkout`) : sans `.catch` → « réglage illisible » rougit ; diff
+    forcé → « n'écrit rien » rougit.
+- [x] Revue `code-reviewer` : rien de bloquant ; corrigé, tests d'abord (rouges vus) :
+  - F1 une clé `undefined` (zod 4 la garde) effaçait le réglage et faisait
+    jeter `serialize()` → écartée dans `readDisplayPatch` ;
+  - F2 bornes ±1e9 partagées avec le grapheur (`COORDINATE_LIMIT`) ;
+  - F3 `setDisplay` ne relance plus `recomputeAll` (seulement `revision++`) ;
+  - F4 un nom qui pointait vers un nuage est retracé en courbe ;
+  - F5 `settingsDiff` recopie sans proxy ; F9 patch vide = rien ;
+  - F7 mesuré : sans compression, 8 fonctions aux réglages complets = 2 332
+    caractères de lien (plafond 1 800) → rangement compact (couleur, style,
+    écarts au défaut) : 1 351.
+  - F6 **accepté, noté** : une fonction reçue par lien garde sa couleur même
+    si une courbe de l'atelier l'a déjà ; les fonctions retirées gardent la
+    leur et comptent dans le choix de la suivante. À revoir si ça gêne à
+    l'usage.
+- [x] PR #779, CI verte (un job relancé : port Postgres occupé sur le runner), mergée.
+
+## Lot 2a — la carte modifiable
+
+Branche `feat/atelier-carte-modifiable`, worktree `../ubumaths-wt-carte`.
+Le lot 2 est coupé en deux PR (contenu inchangé) : 2a = champ + carte fermée,
+2b = « Sur le graphique ».
+
+### Mesure préalable — ce que MathLive écrit (Chromium, frappe réelle)
+
+| Tapé       | MathLive rend                                         |
+| ---------- | ----------------------------------------------------- |
+| `f'(x)+1`  | `f^{\prime}\left(x\right)+1`                          |
+| `x^2-3x+1` | `x^2-3x+1` (sort seul de l'exposant après un chiffre) |
+| `sin(x)`   | `\sin\left(x\right)`                                  |
+| `a*x`      | `a\cdot x`                                            |
+| `1/2x`     | `\frac{1}{2x}` ⚠️ = 1/(2x)                            |
+
+- [x] `f^{\prime}` était **refusé** par le parseur LaTeX → accepté
+      (`^{\prime}`, `^{\prime\prime}`, `^\prime`), tests au niveau du
+      parseur, preuve rouge (5 rouges avec l'ancien parseur).
+- [x] En LaTeX, l'atelier ne transmettait pas ses noms de fonctions :
+      `k(x)` tapé dans la carte se lisait k·x → corrigé (`parse.ts`).
+- Suites mathAST + atelier + grapheur + questions : 21 145 verts.
+- [x] Secours « unité » : MathLive écrit `12\operatorname{\mathrm{km}}`
+      (refusé) ; `normalizeStudentQuantity` (questions) le ramène à
+      `12\unit{km}` mais ferait de `2b` « 2 unité b » (mesuré) → appliqué
+      SEULEMENT si la saisie brute ne se lit pas et que le résultat est une
+      grandeur (`atelier/mathfield.ts`). 10 tests, 4 rouges sur stub.
+- [x] Carte : `DefinitionField.svelte` (préfixe `f(x) =`, MathLive, écriture
+      0,3 s après la dernière touche, provenance `keyboard`, suit une
+      modification faite ailleurs, prête à taper si vide, flush à la
+      fermeture) ; `ObjectCard` : pastille de couleur, définition rendue par
+      `toLatex` (jamais le texte saisi dans `{@html}`), 👁 sans changer de vue.
+      14 tests navigateur (11 rouges avant) ; 2 anciens tests qui cherchaient
+      le texte brut `x^2` adaptés (rendu mathématique voulu, C1).
+- Suites client atelier + grapheur : 322 verts ; `check:incremental` 0 ;
+  eslint des fichiers touchés propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` : rien de bloquant
+      côté sécurité (sonde XSS : `\href`, `\htmlData`, `<img onerror>`…,
+      tout refusé ou dépouillé). Corrigé, tests d'abord (rouges vus) :
+  - A ouvrir puis fermer une carte réécrivait la définition traduite
+    (drapeau `dirty` ; preuve par neutralisation) ;
+  - B MathLive ne connaît pas `\unit` (« 12 \unitkm ») → `forMathlive`
+    réécrit en `\operatorname{\mathrm{km}}`, sa propre forme ;
+  - C définition vidée ailleurs : champ vidé (correctif LOCAL — `MathField`
+    est partagé avec les réponses aux questions, on n'y touche pas) ;
+  - a11y : définition rendue `aria-hidden` + texte lisible
+    (`convertLatexToSpeakableText`) ; 👁 à étiquette constante + `aria-pressed` ;
+    focus visible ; pastille neutre = cercle vide lisible en projection.
+  - Fermer une carte = en ouvrir une autre (re-cliquer ne referme pas :
+    comportement existant, noté).
+- Noté, hors lot (revue D/E) : un nom de fonction suivi d'un exposant entre
+  accolades (`u^{2}`, `h^{10}`) ne se lit pas en LaTeX (limite antérieure,
+  désormais atteignable depuis la carte) ; `F`, `G`, `H` ne sont plus des
+  fonctions par défaut en lecture LaTeX (cohérent avec la lecture texte).
+- Noté pour le lot 3 : l'action « Tracer » (qui bascule vers Graphe) fait
+  maintenant doublon avec 👁 — à trancher avec la règle des actions.
+
+## Lot 2b — « Sur le graphique » dans la carte
+
+Branche `feat/atelier-carte-reglages`, worktree `../ubumaths-wt-reglages2`.
+Lot 2a mergé (#784) ; pied de page limité à l'accueil (#787, hors chantier).
+
+- [x] `curveOf(atelier, graph, nom)` (`plot-sync.ts`) : la courbe dessinée
+      pour un objet, en lecture seule — 3 tests, rouges avant.
+- [x] `CurveSettings.svelte` : couleur, épaisseur, style, tangente (curseur
+      x₀, pente, cercle osculateur, κ), aire (bornes, aire signée, longueur).
+      Écrit dans l'atelier (`setDisplay`) ; calcule sur la courbe dessinée.
+      Pas de case f′ (Q1). Rien dans Calcul (S5). 8 tests navigateur, 7 rouges
+      avant (1 garde-fou).
+- [x] `AtelierContainer` fournit son grapheur par contexte à tout le
+      conteneur (la carte lit la courbe et la fenêtre visible).
+- Trouvé par le test : deux bornes modifiées coup sur coup — la seconde lisait
+  la prop périmée et effaçait la première → lecture de l'état courant de
+  l'atelier.
+- Suites : 335 navigateur, 1 379 serveur ; `check:incremental` 0 ; eslint propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` : rien de bloquant ;
+      corrigé, tests d'abord (rouges vus) :
+  - réactivité : retirer puis retracer laissait « pente non définie »
+    (`posted` non réactif) → le `$derived` lit `graph.functions` ; preuve par
+    neutralisation ;
+  - borne > 1e9 refusée en silence → message (`role="alert"`,
+    `aria-invalid`), et le champ reprend la valeur retenue en le quittant ;
+  - curseur x₀ : `aria-valuetext` « x₀ = 1,5, pente 3 » (le curseur partagé ne
+    transmet rien à son pouce → posé sur l'élément `role="slider"`) ;
+  - bornes : groupe nommé, noms qui commencent par le mot visible (WCAG 2.5.3) ;
+    tailles lisibles en projection ; pas de `h3` orphelin ;
+  - nombres avec la virgule (règle #448) — ⚠️ le grapheur, lui, affiche
+    encore un point : écart assumé, à aligner lors de la bascule (lot 6).
+- Noté, à trancher (revue) : des bornes inversées (de 0 à −3) donnent une
+  aire POSITIVE (`integralUnder` trie les bornes, comme le grapheur).
+
+## Lot 3a — « Dériver » crée la carte `f′`
+
+Branche `feat/atelier-deriver-carte`, worktree `../ubumaths-wt-deriver`.
+Lot 2b mergé (#795). Le lot 3 est coupé en deux PR (contenu inchangé) :
+3a = l'objet `f′` ; 3b = règle des actions (pas de bascule vers Calcul,
+repère « nouveau résultat », champ « Image »).
+
+Mesuré avant : `g(x) = f'(x)` valait déjà `2x-3` (dérivée vivante) ; le nom
+`f'` était refusé ; `f'(2)` se calcule même avec un objet `f'` présent (le
+moteur n'est donc pas touché).
+
+- [x] `names.ts` : `isDerivativeName`, `derivativeOf`, `derivativeName`,
+      `displayName` (`f'` s'affiche `f′`, `f''` → `f″`).
+- [x] `createDerivative` : objet `f'` défini par `f'(x)` (vivant), tracé si
+      `f` l'est, pas de doublon (`existed`), refusé sur vide / illisible /
+      en attente (message de l'objet) / non-fonction ; un objet `f'` défini
+      autrement est refusé (E1). Renommer `f` renomme `f′` ; la fusion d'un
+      lien emmène `f′` avec `f` renommée.
+- [x] « Dériver » (bouton) et `.dériver f` créent la carte ET écrivent la
+      ligne ; `.dériver x^2+1` ne crée rien ; `f'(x) = 3x` tapé est refusé.
+- [x] « Garder la dérivée » supprimée (action, code, et son fichier de test
+      — dont un test assertait l'inverse de G6) ; ses cas utiles repris.
+- [x] Carte `f′` : nom `f′`, formule calculée, pas de champ, « dérivée de f ».
+- Trouvé en route : sur une fonction en attente, « Dériver » ajoutait « ne
+  se lit pas » (faux) → la carte n'est tentée que si le calcul aboutit.
+- [x] Revue `code-reviewer` — corrigé, tests d'abord (7 rouges vus) :
+  - **B1 (bloquant)** : `differentiate` lève sur |x| ; la carte `f′` qui suit
+    `f` le rencontrait dès que `f` devenait `abs(x)` → carte, moteur et tracés
+    tombaient. `expressionOf` rattrape l'échec, la carte `f′` passe en erreur
+    (« La dérivée de « f » ne se calcule pas. »), aucune carte n'est créée
+    pour une fonction non dérivable.
+  - B2 : renommer `g` en `f` alors qu'une `f′` orpheline existe faisait deux
+    `f′` → refusé. C3 : renommer `f′` elle-même → refusé (« c'est f qu'on
+    renomme »). C1 : la fusion traite les fonctions avant leurs dérivées.
+    C2 : `.dériver f` dit « existe déjà » / « ne se calcule pas » comme le
+    bouton (`derivativeNote`, partagé).
+  - Noté, non traité : C4 (une `f′` orpheline peut arriver par sauvegarde ou
+    lien — sans danger, aucune saisie élève ne l'atteint) ; M1 (`f″` de x³
+    s'affiche `3*2x` : `differentiate` ne simplifie pas) ; M5 (L1 : la carte
+    existante n'est pas SÉLECTIONNÉE — avec le lot 3b, qui gère l'écran).
+- ⚠️ La bascule vers Calcul après « Dériver » reste jusqu'au lot 3b.
+- Tests : 32 serveur (27 rouges avant) + 3 navigateur ; suites atelier
+  236 navigateur, 2 120 serveur ; `check:incremental` 0 ; les 18
+  avertissements eslint des fichiers touchés sont antérieurs (aucun dans
+  les lignes modifiées, vérifié).
+
+## Lot 3b — une action ne change pas de vue
+
+Branche `feat/atelier-actions-sans-bascule`, worktree `../ubumaths-wt-actions`.
+Lot 3a mergé (#798).
+
+- [x] Une action écrit sa ligne dans Calcul SANS y emmener (G7, A1/A2) ;
+      « Tracer », « Nuage », « Diagramme » gardent leur bascule (A5, Q2).
+- [x] Repère « • » sur l'onglet Calcul tant qu'un résultat n'a pas été vu
+      (A3), avec texte pour lecteur d'écran et annonce ; ce qu'on calcule
+      sous ses yeux dans Calcul ne compte pas comme nouveau.
+- [x] « Image d'un nombre » : n'est plus un bouton qui prépare `f(` dans
+      Calcul, mais un champ `f( x ) = …` dans la carte (A4) ; la ligne va
+      aussi dans Calcul ; ⚠️ ne passe pas par `submit`, qui VIDAIT le
+      brouillon de Calcul.
+- [x] L1 : dériver une seconde fois sélectionne la carte `f′` existante.
+- ⚠️ Écart avec A1, à signaler à David : « Tableau croisé » et **« Simuler »**
+  (et non « Comparer », qui calcule tout de suite) PRÉPARENT une commande à
+  compléter au clavier → elles emmènent toujours dans Calcul. A1 rangeait
+  `.simuler` parmi les actions sans bascule.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord
+      (8 rouges vus ; sélection prouvée par neutralisation) :
+  - a11y **bloquant** : champ « Image » sans bouton ni touche Entrée sur
+    tablette (clavier décimal iOS) → bouton « = », plus d'`inputmode`
+    décimal (x peut valoir −2 ou π), `enterkeyhint` ;
+  - résultat de l'image annoncé avec son contexte (« f(3) = 9 »,
+    `role="status"`), plus d'annonce doublée ; effacé quand x change ou
+    quand l'atelier change (`revision`, qui couvre aussi `f′`) ; erreur dite
+    en toutes lettres (« Erreur : … »), pas seulement en couleur ;
+  - repère de l'onglet : un NOMBRE en pastille inversée (le point orange
+    faisait 2,2:1 en thème clair) ;
+  - A5 : « Nuage » n'écrit plus de ligne… sauf pour dire les valeurs
+    ignorées (§4 L1 de la v1) — compromis ;
+  - L1 : la carte `f′` n'est sélectionnée que si elle est valide (f = |x|) ;
+  - code mort retiré (branche `image` de `runFromPanel`).
+- 3 anciens tests mis en accord avec A4/A5 (ils assertaient : « Image »
+  prépare `f(`, le nuage écrit une ligne) — ce qu'ils protégeaient encore est
+  gardé (bonnes ordonnées, brouillon intact).
+- Suites : 346 navigateur, 1 171 serveur ; `check:incremental` 0 ; eslint :
+  0 sur les fichiers touchés.
+- Tests : 10 navigateur (8 rouges avant, 2 garde-fous) ; un ancien test
+  (« Image prépare la saisie ») remplacé — il assertait le comportement que
+  A4 supprime. Suites : 338 navigateur, 1 171 serveur ; `check:incremental` 0.
+
+## Lot 4 — les curseurs
+
+Branche `feat/atelier-curseurs`, worktree `../ubumaths-wt-curseurs`.
+Lot 3b mergé (#799). Exception à A1 (« Tableau croisé », « Simuler »)
+tranchée par David et inscrite dans la phase 0.
+
+Mesuré avant : `a = 0,5` est lu 0,5 → le curseur écrit avec la virgule.
+
+- [x] Modèle : `setSlider` (bornes, pas — refus dit, ancien réglage gardé,
+      bornes ±1e9 comme le grapheur), `slideTo` (arrondi au pas, gardé dans
+      les bornes, refusé sur une valeur CALCULÉE qui perdrait sa formule).
+- [x] **Dette n° 2 soldée** : `update` garde le curseur réglé (K3) ; une
+      valeur tapée hors des bornes les élargit (L1), à la création aussi.
+- [x] Rangé (seulement s'il est réglé), relu, fusionné ; abîmé → oublié.
+- [x] « Régler le curseur » n'est plus un bouton : `ValueSlider.svelte` dans
+      la carte (crans entiers = un pas, `aria-valuetext` « a = 2 »), et la
+      carte dit pourquoi une grandeur ou une valeur calculée n'en a pas.
+- 2 anciens tests mis en accord (ils assertaient le bouton) ; D3/D4 gardés.
+- Tests : 21 serveur (20 rouges avant) + 6 navigateur (rouges avant) ;
+  suites 352 navigateur, 1 192 serveur ; `check:incremental` 0.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests
+      d'abord (rouges vus) :
+  - A1 : une constante écrite par MathLive (`\frac{1}{2}`, `2{,}5`, `\pi`)
+    était prise pour une valeur « calculée » (faux message, plus de curseur)
+    → `constantOf` : seule une définition qui CITE un objet est calculée ;
+    une constante s'évalue (`evaluate`, mode décimal).
+  - **A2, tranché par David (2026-10-04)** : des bornes resserrées sous la
+    valeur la RAMÈNENT dedans (`a = 5`, max 3 → `a = 3`) ; une valeur
+    calculée n'est pas touchée.
+  - A3 : bornes plafonnées à ±1e9 partout (élargissement, relecture,
+    `adoptSlider` qui revalide) ; jamais de `NaN` écrit.
+  - M1 : pas très fin (1e-7) → décimales lues sur la notation scientifique ;
+    M3 : le champ affiche `2,5` et range `2{,}5` en `2,5` ; M4 code mort du
+    bouton retiré ; M6 un cran sans changement ne recalcule rien.
+  - a11y (bloquant) : le pouce n'avait pas de nom (l'aria-label reste sur la
+    racine du `<Slider>` partagé) → posé sur le pouce, ici ET sur le curseur
+    de la tangente (lot 2b) ; noms des champs qui commencent par le mot
+    visible ; refus relié au champ (`aria-describedby`), toujours dans l'arbre,
+    et qui reste affiché après avoir quitté le champ.
+- Suites : 356 navigateur, 2 210 serveur ; `check:incremental` 0 ; eslint :
+  0 erreur, rien dans les lignes modifiées.
+
+## Lot 5a — les suites : modèle et Calcul
+
+Branche `feat/atelier-suites-modele`, worktree `../ubumaths-wt-suites`.
+Lot 4 mergé (#801). Décisions S1 à S4 de David inscrites dans la phase 0.
+
+Mesuré avant : une suite explicite marchait (`u(5)` = 11 pour `2n+1`) ; une
+récurrence répondait par une erreur en anglais (« free variables: u »,
+« Unknown function: u ») ; `u(n+1) = …` tapé dans Calcul échouait.
+
+- [x] `SequenceObject` : `mode`, `firstIndex`, `firstTerm` (nombre ou nom de
+      valeur, S1) ; mode déduit (se cite elle-même → récurrence, S4), y compris
+      pour les suites rangées avant ; `setSequence` validé (zod) ; rang et
+      premier terme gardés à la modification ; le premier terme compte dans
+      les dépendances (valeur absente → en attente ; renommée → suivie).
+- [x] `termsOf` (`engine.ts`) : réutilise `computeSequenceTerms` du grapheur ;
+      `u_n` et `u(n)` acceptés (S2) ; une récurrence n'est plus liée au moteur
+      comme une fonction de n.
+- [x] Calcul (S3) : `u(n+1) = …` crée une récurrence ; `u(5)`, `u(3) + 1` sont
+      calculés (termes substitués avant le moteur) ; rang avant le premier
+      refusé en français.
+- [x] Rangé (mode toujours ; rang et premier terme s'ils diffèrent), relu,
+      fusionné.
+- `constantOf` déplacée dans `constant.ts` (le moteur s'en sert : pas
+  d'import circulaire), réexportée par l'atelier.
+- Tests : 26 serveur (25 rouges avant) ; suites 1 231 serveur, 263 navigateur ;
+  `check:incremental` 0 ; `lint:fast` propre.
+- [x] Revue `code-reviewer` — corrigé, tests d'abord (12 rouges vus) :
+  - **B1 (bloquant)** : retaper `u(n) = 2n+1` sur une récurrence la laissait
+    en récurrence → `u(3)` valait 5 au lieu de 7, sans un mot. Le mode est
+    désormais REDÉDUIT à chaque modification ; une récurrence constante
+    (`u(n+1) = 3`) se demande explicitement (Calcul, ou le sélecteur de la
+    carte au lot 5b). Choix signalé à David.
+  - C1 : un objet qui cite une récurrence comme une fonction (`f(x) = u(x)+1`)
+    passe en erreur, en français (il répondait en anglais).
+  - C2 : `2u(3)` se calcule (le `\b` ne coupait pas après un chiffre) ; un
+    rang non entier est refusé en français. C3 : « limité aux 1000 premiers
+    termes » et « la suite diverge » ne se confondent plus.
+  - C4/C5/M1 : récurrence d'un autre ordre, premier terme qui n'est pas une
+    valeur, grandeur comme premier terme → erreur dès la définition.
+  - C6 : une commande sur une récurrence (`.dériver u(2)`) est refusée en
+    français. M2 : un terme affiché avec 15 chiffres au plus.
+  - Noté (M3) : une valeur renommée à l'arrivée d'un lien n'est pas suivie
+    par le premier terme (comme les définitions, comportement antérieur).
+- Suites : 1 245 serveur, 263 navigateur ; `check:incremental` 0 ; lint propre.
+
+## Lot 5b — les suites : carte et tracé
+
+Branche `feat/atelier-suites-carte`, worktree `../ubumaths-wt-suites2`.
+Lot 5a mergé (#805).
+
+- [x] `SequenceObject.display` (couleur, trait, nuage ou escalier, marches),
+      né au premier tracé, couples couleur/style partagés avec les fonctions ;
+      `setSequenceDisplay` validé ; escalier refusé avec sa raison sur une
+      suite explicite ou une récurrence qui dépend de n (le `n` de `u_n` ne
+      compte pas — trouvé par le test).
+- [x] `plot-sync` pose les suites dans le grapheur (`addSequence` /
+      `updateSequence`, n'écrit que ce qui diffère) : LaTeX `u_n` produit par
+      `graphLatexOf` (noms substitués, `u(n)` réécrit), premier terme
+      numérique (`firstTermValue`, qui suit un curseur), masquée tant qu'elle
+      ne peut rien produire.
+- [x] « Premiers termes » (U3) : dix termes dans Calcul, sans changer de vue ;
+      « Tracer en nuage / escalier » ne sont plus des boutons (👁 + U2).
+- [x] Carte : `u(n+1) =` / `u(n) =` selon le mode, champ MathLive (vérifié :
+      `0{,}5u\left(n\right)+3` donne les bons termes), mode, rang, premier
+      terme (nombre ou valeur), 👁 et pastille, « Sur le graphique ».
+- Tests : 18 serveur (15 rouges avant) + 11 navigateur (10 rouges avant) ; un
+  ancien test (les deux boutons de tracé) mis en accord. Suites : 367
+  navigateur, 1 263 serveur ; `check:incremental` 0 ; lint propre.
+- [x] **Tranché par David (revue du lot 5b)** : le mode CHOISI d'une suite est
+      gardé à la modification, sauf si la définition se met à se citer
+      (→ récurrence). Calcul dit le mode par la forme tapée : `u(n) =` remet en
+      explicite (le cas B1 du lot 5a reste couvert), `u(n+1) =` en récurrence.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord :
+  - escalier refusé à tort pour une suite `p(n)` (lue p·(n), noms de
+    fonctions absents) ;
+  - suite « ok » qui ne dessinait rien : le moteur garde l'ARBRE substitué
+    (`substitutedAstOf`) au lieu de passer par le texte — `e^(-n)` devenait
+    `\euler^{-n}`, illisible ; `v_n` d'une autre suite explicite est remplacé ;
+    une suite qui ne se calcule ou ne se trace pas est en erreur ;
+  - a11y : noms qui commencent par le mot visible (« nuage », « escalier »,
+    « u(0) = », « marches », le mode) ; refus relié au seul champ fautif,
+    annoncé en quittant le champ (plus d'alerte à chaque touche) ; coche ✓ et
+    bordure pour l'état choisi ; 44 px au doigt ; focus visible.
+- Suites : 368 navigateur, 1 269 serveur ; `check:incremental` 0 ; lint propre.
+
+## Lot 6 — la bascule de `/grapheur`
+
+Branche `feat/grapheur-par-atelier`, worktree `../ubumaths-wt-bascule`.
+Lot 5b mergé (#809). Reprise des courbes de l'ancien grapheur : ABANDONNÉE
+(décision du 2026-10-04).
+
+- [x] `/grapheur` ouvre l'atelier PERSONNEL sur la vue Graphe, « Mes objets »
+      visible (B2) ; un atelier vide reçoit une carte `f` vide, tracée, prête à
+      taper — plus de x² d'office (B3, option `startWith` du conteneur).
+- [x] `/grapheur?f=…` (B4, B5) : courbes validées par Zod (1 à 8, 200
+      caractères chacune — pas `MAX_DEFINITION_LENGTH`, taillé pour une liste),
+      atelier ÉPHÉMÈRE (`grapheur-link.ts`), bandeau « ton atelier n'est pas
+      touché » ; lien abîmé → on le dit et on ouvre l'atelier personnel (B6).
+- [x] « Repartir de zéro » avec confirmation (B7), absent d'un atelier reçu
+      par lien.
+- [x] Navigation (B1) : plus d'entrée « Grapheur » ; la barre latérale garde
+      « Atelier », le menu du haut le gagne (il ne l'avait pas).
+- [x] `adoptGrapheurState` (jamais appelée) retirée, avec ses tests.
+- `GrapheurContainer` et le singleton restent : `/calc` s'en sert.
+- Vérifié hors tests : `/grapheur`, `/grapheur?f=…`, `/atelier` répondent 200
+  sur le serveur de dev, sans erreur au journal (pas d'outil navigateur dans
+  la session : rendu à l'écran NON vérifié à la main).
+- Tests : 8 serveur (7 rouges sur stub) + 5 navigateur (2 rouges ; les 3
+  autres garde-fous) ; test de la barre latérale mis en accord (G1). Suites :
+  393 + 123 navigateur, 1 270 + 1 195 serveur ; `check:incremental` 0 ;
+  lint propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord :
+  - **B1 (bloquant)** : « Partager » depuis `/grapheur` fabriquait
+    `/grapheur?a=…`, que la page ne lisait pas (le camarade voyait son propre
+    atelier, sans un mot) → porte unique `openLink` (`?a=` et `?f=`) pour
+    `/atelier` et `/grapheur`, relue quand l'adresse change (M1) ;
+  - C1 : « Garder dans mon atelier » versait dans l'atelier ÉPHÉMÈRE (copies
+    renommées, rien d'enregistré) → `keepReceived` verse dans l'atelier
+    PERSONNEL et l'enregistre ; 2 anciens tests qui assertaient le défaut
+    réécrits ;
+  - C2 : la simple visite enregistrait la carte vide → n'est enregistrée que
+    si l'élève y touche ; C3 : « Repartir de zéro » vide aussi l'historique et
+    retrouve l'écran d'arrivée ; C4 : `?f=y=2x` (courbe en attente) refusé ;
+  - a11y : `h1` (« Grapheur » / « Atelier ») ; `section` au lieu d'un `main`
+    imbriqué ; notice d'un lien abîmé écrite APRÈS le montage (annoncée) ;
+    « Repartir de zéro » plus grand, désactivé sur un atelier vide ;
+  - décision n° 5 du cadrage marquée « remplacée par G1/G2/B2 ».
+  - Gardé, signalé : le curseur dans le champ à l'arrivée (B3 validé par
+    David ; clavier virtuel MathLive en mode `manual`, il ne s'ouvre pas seul).
+- Suites : 454 navigateur, 2 474 serveur ; `check:incremental` 0 ; lint propre.
+
+## Lots suivants
+
+2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

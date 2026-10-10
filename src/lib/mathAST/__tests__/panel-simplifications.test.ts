@@ -1,13 +1,13 @@
 /**
  * Le panel de référence des simplifications.
  *
- * Ce fichier **pinne** `docs/ref/panel-simplifications.md`, qui est le document
+ * Ce fichier **pinne** `docs/systeme/mathast/panel-simplifications.md`, qui est le document
  * de référence que David et moi consultons pour savoir ce que le moteur rend.
  *
  * ⚠️ **Les deux vont ensemble.** Quand une valeur change ici, elle doit changer
  * là-bas dans le même commit. Sans ce test, le document pourrit en silence :
  * c'est exactement ce qui est arrivé au §1 de
- * `docs/wip/simplify-reecriture-releve.md`, mesuré le 2026-09-20 et périmé
+ * `docs/archive/wip/simplify-reecriture-releve.md`, mesuré le 2026-09-20 et périmé
  * neuf PR plus tard sans que rien ne le signale.
  *
  * Les quatre intentions sont mesurées à `schoolLevel: 'lycee'` : les identités
@@ -33,7 +33,7 @@ const parIntention = (entree: string, intent: SimplifyIntent) =>
 		generatePedagogicalSimplifySteps(parseLatex(entree), { intent, schoolLevel: 'lycee' }).result
 	);
 
-describe('panel de référence — docs/ref/panel-simplifications.md', () => {
+describe('panel de référence — docs/systeme/mathast/panel-simplifications.md', () => {
 	describe('Fractions numériques', () => {
 		it.each([
 			[
@@ -105,7 +105,7 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 				'\\sqrt[3]{x^2}',
 				'\\sqrt[3]{x} \\sqrt[3]{x}'
 			],
-			['\\sqrt{2}\\sqrt{8}', '4', '4', '4', '4', '\\sqrt{2} 2 \\sqrt{2}']
+			['\\sqrt{2}\\sqrt{8}', '4', '4', '4', '4', '\\sqrt{2} \\times 2 \\sqrt{2}']
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
 			expect(parSimplify(entree)).toBe(attenduSimplify);
 			expect(parIntention(entree, 'auto')).toBe(auto);
@@ -254,13 +254,17 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 		it.each([
 			['x^{2}x^{3}', 'x^5', 'x^5', 'x^5', 'x^5', 'x^2 x^3'],
 			['(x^{2})^{3}', 'x^6', 'x^6', 'x^6', 'x^6', 'x^6'],
-			['e^{x}e^{2x}', 'e^x e^{2 x}', 'e^{3 x}', 'e^{3 x}', 'e^{2 x} e^x', 'e^x e^{2 x}'],
+			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
+			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
+			['e^{x}e^{2x}', 'e^{3 x}', 'e^{3 x}', 'e^{3 x}', 'e^{3 x}', 'e^x e^{2 x}'],
+			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
+			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
 			[
 				'(e^{x})^{3}',
 				'\\left( e^x \\right)^3',
 				'e^{3 x}',
 				'e^{3 x}',
-				'\\left( e^x \\right)^3',
+				'e^{3 x}',
 				'\\left( e^x \\right)^3'
 			],
 			['x^{a}x^{b}', 'x^a x^b', 'x^{a + b}', 'x^{a + b}', 'x^a x^b', 'x^a x^b']
@@ -276,9 +280,12 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 	describe('Exponentielle et logarithme', () => {
 		it.each([
 			['e^{x}', 'e^x', 'e^x', 'e^x', 'e^x', 'e^x'],
+			// Figeait un manque (⚠️ capacité) comblé par fix/normalize-ln-exp : normalize
+			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
+			// ⚠️ Reste : `ln(e)` (lettre e) non réduit en auto/reduire/developper.
 			[
 				'\\ln(e^{x})',
-				'\\ln\\left( e^x \\right)',
+				'x',
 				'x \\ln\\left( e \\right)',
 				'x \\ln\\left( e \\right)',
 				'x \\ln\\left( e \\right)',

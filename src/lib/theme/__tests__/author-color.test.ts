@@ -2,7 +2,7 @@
  * Couleur écrite par un auteur dans un bloc (droite graduée, cercle trigo, figure) :
  * résolution écran / PDF, avertissements (L3-a : inconnue ; D2 : hex peu lisible en sombre).
  *
- * Spécification : docs/wip/couleurs-lot3-progress.md.
+ * Spécification : docs/archive/wip/couleurs-lot3-progress.md.
  */
 
 import { readFileSync } from 'node:fs';

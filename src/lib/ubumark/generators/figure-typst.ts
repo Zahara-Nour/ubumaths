@@ -24,6 +24,7 @@ import type { FigureNode, FigureWindow } from '../types/figure';
 import { FIGURE_WIDTH_CM } from '../types/figure';
 import { buildFigureScene, type FigureFrame } from '../utils/figure-scene';
 import { exportToTypst } from '$lib/geometry-core/rendering/export-typst';
+import { localizeFigureText } from '../utils/figure-text-locale';
 import { FIGURE_TYPST_UNAVAILABLE, type FigureTypstOptions } from './figure-typst-registry';
 
 /**
@@ -115,7 +116,9 @@ export function generateFigureTypst(node: FigureNode, options: FigureTypstOption
 		includeViewportBounds: true,
 		// Objets découpés à la fenêtre comme à l'écran ; repère, noms et textes entiers
 		clipToViewport: true,
-		annotate: true
+		annotate: true,
+		// Nombres des textes : virgule en français, point en anglais (comme l'écran)
+		formatText: (text) => localizeFigureText(text, scene.locale)
 	});
 	return `#import "@preview/cetz:0.3.0"\n\n#align(center)[\n${canvas}\n]`;
 }

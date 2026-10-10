@@ -1,9 +1,16 @@
 <script lang="ts">
-	import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+	import { onMount } from 'svelte';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
-	import { resolveGradedField, type MathTerm } from '$lib/data/math-dictionary-fr';
-	import { hasAccessToGrade } from '$lib/utils/grades';
+	import {
+		gradeMetBy,
+		isTermVisibleTo,
+		resolveGradedField,
+		type GradedField,
+		type MathTerm
+	} from '$lib/dictionary/model';
+	import { resolve } from '$app/paths';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
@@ -12,6 +19,10 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
+	import { findPrincipal } from '$lib/lexicon/card';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 
 	// ===== Constants =====
 
@@ -20,12 +31,30 @@
 	/** Grade levels relevant for filtering */
 	const LEVEL_OPTIONS = [
 		{ value: 'all', label: 'Tous les niveaux' },
-		...(['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6', '5', '4', '3', '2', '1_SPE', 'T_SPE'] as const).map(
-			(code) => ({
-				value: code,
-				label: GRADES[code].displayName
-			})
-		)
+		...(
+			[
+				'CP',
+				'CE1',
+				'CE2',
+				'CM1',
+				'CM2',
+				'6',
+				'5',
+				'4',
+				'3',
+				'2',
+				'1_GEN',
+				'1_SPE',
+				'1_TECHNO',
+				'T_SPE',
+				'T_EXP',
+				'T_COMP',
+				'T_TECHNO'
+			] as const
+		).map((code) => ({
+			value: code,
+			label: GRADES[code].displayName
+		}))
 	];
 
 	// ===== State =====
@@ -83,13 +112,29 @@
 		selectedTags = [];
 	}
 
+	/**
+	 * « Tous les niveaux » montre tout : aucun niveau ne donne accès à la fois à la
+	 * Terminale spécialité et aux maths expertes (deux branches après la 1ʳᵉ).
+	 */
+	function resolveForLevel(field: GradedField, level: string): string[] {
+		if (level !== 'all') return resolveGradedField(field, level as GradeCode);
+		const all = field.items.map((item) => item.content);
+		return field.mode === 'discriminant' ? all.slice(-1) : all;
+	}
+
+	/** Niveau affiché : celui où le lecteur du filtre rencontre le terme, sinon celui d'origine */
+	function displayedGrade(term: MathTerm): GradeCode {
+		if (selectedLevel === 'all') return term.grade;
+		return gradeMetBy(term, selectedLevel as GradeCode) ?? term.grade;
+	}
+
 	function openTerm(term: MathTerm) {
 		selectedTerm = term;
 		showTermDialog = true;
 	}
 
 	function openTermByName(name: string) {
-		const term = MATH_DICTIONARY.find((t) => t.term === name);
+		const term = findPrincipal(data.entries, name);
 		if (term) openTerm(term);
 	}
 
@@ -97,11 +142,20 @@
 		document.getElementById(`letter-${letter}`)?.scrollIntoView({ behavior: 'smooth' });
 	}
 
+	// Lien « Voir dans le glossaire » d'un mot cliquable : `/glossaire?q=aire`
+	onMount(() => {
+		const query = new URLSearchParams(window.location.search).get('q');
+		if (query) {
+			searchQuery = query;
+			debouncedQuery = query;
+		}
+	});
+
 	// ===== Derived =====
 
 	/** All unique tags sorted */
 	let allTags = $derived(
-		[...new Set(MATH_DICTIONARY.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b, 'fr'))
+		[...new Set(data.entries.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b, 'fr'))
 	);
 
 	/** Whether any filter is active */
@@ -111,7 +165,7 @@
 
 	/** Filtered and sorted terms */
 	let filteredTerms = $derived.by(() => {
-		let terms = [...MATH_DICTIONARY];
+		let terms = [...data.entries];
 
 		// Search filter (uses debounced query for performance)
 		if (debouncedQuery.length > 0) {
@@ -121,7 +175,7 @@
 		// Grade filter
 		if (selectedLevel !== 'all') {
 			const readerGrade = selectedLevel as GradeCode;
-			terms = terms.filter((t) => hasAccessToGrade(readerGrade, t.grade));
+			terms = terms.filter((t) => isTermVisibleTo(t, readerGrade));
 		}
 
 		// Tag filter
@@ -150,13 +204,10 @@
 	let activeLetters = $derived(new Set(Object.keys(groupedTerms)));
 </script>
 
-<svelte:head>
-	<title>Glossaire Mathématique | Chiphre</title>
-	<meta
-		name="description"
-		content="Glossaire de vocabulaire mathématique - Définitions, exemples et histoire des termes de la 6ème à la Terminale"
-	/>
-</svelte:head>
+<SeoHead
+	title="Glossaire Mathématique | Chiphre"
+	description="Glossaire de vocabulaire mathématique - Définitions, exemples et histoire des termes de la 6ème à la Terminale"
+/>
 
 <div class="mx-auto max-w-4xl p-4 md:p-6">
 	<!-- Header -->
@@ -285,7 +336,7 @@
 							</div>
 						{/if}
 						<span class="ml-auto shrink-0 text-xs text-muted-foreground">
-							{GRADES[term.grade].displayName}
+							{GRADES[displayedGrade(term)].displayName}
 						</span>
 					</button>
 				{/each}
@@ -298,15 +349,24 @@
 <Dialog.Root bind:open={showTermDialog}>
 	<Dialog.Content class="sm:max-w-md">
 		{#if selectedTerm}
-			{@const readerGrade = (selectedLevel !== 'all' ? selectedLevel : 'T_SPE') as GradeCode}
 			{@const definitions = selectedTerm.definitions
-				? resolveGradedField(selectedTerm.definitions, readerGrade)
+				? resolveForLevel(selectedTerm.definitions, selectedLevel)
 				: []}
 			{@const exemples = selectedTerm.exemples
-				? resolveGradedField(selectedTerm.exemples, readerGrade)
+				? resolveForLevel(selectedTerm.exemples, selectedLevel)
 				: []}
 
 			{@const derivedFrom = selectedTerm.derivedFrom}
+			<!-- Un renvoi sans définition propre montre celle du terme cité : l'élève lit tout de suite -->
+			{@const target = derivedFrom ? findPrincipal(data.entries, derivedFrom) : undefined}
+			{@const shownDefinitions =
+				definitions.length === 0 && target?.definitions
+					? resolveForLevel(target.definitions, selectedLevel)
+					: definitions}
+			{@const definitionTitle =
+				definitions.length === 0 && target
+					? `Définition de « ${target.term}${target.sense ? ` (${target.sense})` : ''} »`
+					: 'Définition'}
 
 			<Dialog.Header>
 				<Dialog.Title class="text-2xl font-bold">
@@ -321,7 +381,7 @@
 			</Dialog.Header>
 
 			<div class="flex flex-wrap items-center gap-2 pb-2">
-				<Badge variant="secondary">{GRADES[selectedTerm.grade].displayName}</Badge>
+				<Badge variant="secondary">{GRADES[displayedGrade(selectedTerm)].displayName}</Badge>
 				{#each selectedTerm.tags as tag (tag)}
 					<Badge variant="outline" class="text-xs">{tag}</Badge>
 				{/each}
@@ -329,8 +389,8 @@
 
 			<div class="space-y-4 py-4">
 				{#if derivedFrom}
-					<p class="text-muted-foreground italic">
-						Forme dérivée de
+					<p class="text-muted-foreground">
+						Voir :
 						<button
 							class="font-medium text-primary underline"
 							onclick={() => openTermByName(derivedFrom)}
@@ -340,10 +400,10 @@
 					</p>
 				{/if}
 
-				{#if definitions.length > 0}
+				{#if shownDefinitions.length > 0}
 					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Définition</h3>
-						{#each definitions as def (def)}
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">{definitionTitle}</h3>
+						{#each shownDefinitions as def (def)}
 							<div class="text-sm">
 								<InlineMarkdown content={def} />
 							</div>
@@ -370,6 +430,15 @@
 						<div class="text-sm">
 							<InlineMarkdown content={selectedTerm.history} />
 						</div>
+					</div>
+				{/if}
+
+				{#if selectedTerm.seeAlso}
+					<div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Voir aussi</h3>
+						<a href={resolve(selectedTerm.seeAlso.path)} class="text-sm text-primary underline">
+							{selectedTerm.seeAlso.label}
+						</a>
 					</div>
 				{/if}
 

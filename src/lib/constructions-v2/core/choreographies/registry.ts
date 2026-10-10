@@ -15,7 +15,7 @@
  *   2. Reference it in the same row below.
  *
  * Auto-generated docs : `pnpm tsx scripts/generate-construction-docs.ts`
- * reads this registry and produces `docs/ref/geometry/methodes-de-construction.md`.
+ * reads this registry and produces `docs/systeme/geometrie/methodes-de-construction.md`.
  */
 
 import type { ChoreographyRegistry } from './types';

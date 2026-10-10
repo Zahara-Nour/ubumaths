@@ -189,12 +189,22 @@ export function parseGradeCode(input: string): GradeCode | null {
 		'1ere specialite': '1_SPE',
 		'première spécialité maths': '1_SPE',
 		'premiere specialite maths': '1_SPE',
-		'1_stmg': '1_STMG',
-		'1stmg': '1_STMG',
-		'1ère stmg': '1_STMG',
-		'1ere stmg': '1_STMG',
-		'première stmg': '1_STMG',
-		'premiere stmg': '1_STMG',
+		// Voie technologique (les alias « stmg » restent acceptés en saisie)
+		'1techno': '1_TECHNO',
+		'1ère techno': '1_TECHNO',
+		'1ere techno': '1_TECHNO',
+		'première techno': '1_TECHNO',
+		'premiere techno': '1_TECHNO',
+		'1ère technologique': '1_TECHNO',
+		'1ere technologique': '1_TECHNO',
+		'première technologique': '1_TECHNO',
+		'premiere technologique': '1_TECHNO',
+		'1_stmg': '1_TECHNO',
+		'1stmg': '1_TECHNO',
+		'1ère stmg': '1_TECHNO',
+		'1ere stmg': '1_TECHNO',
+		'première stmg': '1_TECHNO',
+		'premiere stmg': '1_TECHNO',
 		// Terminale variations
 		t_gen: 'T_GEN',
 		tgen: 'T_GEN',
@@ -224,11 +234,17 @@ export function parseGradeCode(input: string): GradeCode | null {
 		'terminale maths complémentaires': 'T_COMP',
 		'terminale maths complementaires': 'T_COMP',
 		'term comp': 'T_COMP',
-		t_stmg: 'T_STMG',
-		tstmg: 'T_STMG',
-		'terminale stmg': 'T_STMG',
-		'term stmg': 'T_STMG',
-		'tle stmg': 'T_STMG'
+		ttechno: 'T_TECHNO',
+		'terminale techno': 'T_TECHNO',
+		'terminale technologique': 'T_TECHNO',
+		'term techno': 'T_TECHNO',
+		'tle techno': 'T_TECHNO',
+		'tle technologique': 'T_TECHNO',
+		t_stmg: 'T_TECHNO',
+		tstmg: 'T_TECHNO',
+		'terminale stmg': 'T_TECHNO',
+		'term stmg': 'T_TECHNO',
+		'tle stmg': 'T_TECHNO'
 	};
 
 	if (normalized in highSchoolMap) {
@@ -286,7 +302,7 @@ export function getGradeSelectItemsByLevel(
  * Get grade items for a specific high school track
  */
 export function getGradeSelectItemsByTrack(
-	track: 'general' | 'spe_maths' | 'stmg'
+	track: 'general' | 'spe_maths' | 'techno'
 ): Array<{ value: GradeCode; label: string }> {
 	const grades = GRADE_CODES.filter((code) => {
 		const info = GRADES[code];

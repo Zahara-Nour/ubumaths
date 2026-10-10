@@ -77,6 +77,8 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	// Rounding and Absolute Value Functions
 	// ==========================================================================
 	'rounding-function': "Évaluation de fonction d'arrondi (floor, ceil, round)",
+	'combinatorial-function':
+		'Calcul de la factorielle ou du coefficient binomial : 3! = 6, (4 parmi 2) = 6',
 	'abs-function': 'Évaluation de la valeur absolue: |a| = a si a ≥ 0, -a si a < 0',
 	'abs-idempotent': 'Idempotence de la valeur absolue: ||x|| = |x|',
 	'abs-even-power': 'Puissance paire et valeur absolue: |x^n| = x^n et |x|^n = x^n pour n pair',
@@ -93,6 +95,8 @@ export const RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 		'Réduction de décalage trigonométrique (périodicité, supplémentaire, cofonction)',
 	'exp-ln-inverse': 'exp(ln(x)) = x',
 	'ln-exp-inverse': 'ln(exp(x)) = x',
+	'euler-identities':
+		"Propriétés de l'exponentielle : ln(e^a) = a, e^(ln a) = a, e^a × e^b = e^(a+b), (e^a)^n = e^(an)",
 	'log-simplify': 'Simplification du logarithme',
 	'rationalize-denominator': 'Rationalisation du dénominateur: 1/√x = √x/x',
 	'rationalize-conjugate': 'Rationalisation par conjugué: 1/(a+√b) = (a-√b)/(a²-b)',

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import {
 		// Sword,
 		Lock
@@ -68,13 +69,10 @@
 	];
 </script>
 
-<svelte:head>
-	<title>Jeux Mathématiques | Chiphre</title>
-	<meta
-		name="description"
-		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, 2048 et Navadra."
-	/>
-</svelte:head>
+<SeoHead
+	title="Jeux Mathématiques | Chiphre"
+	description="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, 2048 et Navadra."
+/>
 
 <div class="mx-auto max-w-6xl p-4 md:p-6">
 	<!-- Hero Section -->

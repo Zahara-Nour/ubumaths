@@ -2,7 +2,7 @@
  * Security — anon reachability (needs a running DB)
  * =================================================
  *
- * Vague-0 incident regression guard (docs/wip/security-audit-2026-08.md).
+ * Vague-0 incident regression guard (docs/archive/wip/security-audit-2026-08.md).
  *
  * The public `anon` key ships in the browser bundle, so `/rest/v1/` and
  * `/rest/v1/rpc/` are callable by anyone with curl. These tests assert that an

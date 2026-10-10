@@ -1,0 +1,283 @@
+{
+	"title": "k-uplets d'éléments distincts : codes, bureaux, places, anagrammes",
+	"description": "Arrangements n!/(n − k)! et permutations n! en situation : code sans chiffre répété, bureau à rôles, places dans une rangée, anagrammes (pièges : nᵏ, combinaison au lieu d'arrangement)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-034", "TSPE-036", "TSPE-044"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Arrangements et permutations",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Un code est formé de ${{k}}$ chiffres (de $0$ à $9$) **tous différents**.\n\nCombien de codes différents existe-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:factorial(n)/factorial(n-k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordre compte et les chiffres sont distincts : on compte des ${{k}}$-uplets d'éléments distincts de $\\{0,\\dots,9\\}$.",
+					"$\\dfrac{10!}{ {{eval:10-k}}! }=\\textcolor{{{color:primary.0}}}{{{eval:factorial(n)/factorial(n-k)}}}$ (et non $10^{ {{k}} }$, qui autorise les répétitions)."
+				]
+			}
+		},
+		{
+			"statement": "Une association de ${{n}}$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)*(n-2)*(n-3)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les rôles sont différents : l'ordre compte. On compte des $4$-uplets de membres distincts.",
+					"${{n}}\\times{{eval:n-1}}\\times{{eval:n-2}}\\times{{eval:n-3}}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)*(n-2)*(n-3)}}}$ (et non $\\binom{ {{n}} }{4}$, qui ignore les rôles)."
+				]
+			}
+		},
+		{
+			"statement": "${{k}}$ amis entrent dans une salle de cinéma où une rangée de ${{n}}$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..12"
+				},
+				{
+					"name": "k",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:factorial(n)/factorial(n-k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"On attribue à chaque ami un fauteuil, deux amis n'ayant jamais le même : ${{k}}$-uplets de fauteuils distincts.",
+					"$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }=\\textcolor{{{color:primary.0}}}{{{eval:factorial(n)/factorial(n-k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une anagramme d'un mot est un mot (ayant un sens ou non) formé avec exactement les mêmes lettres.\n\nCombien le mot PYTHON a-t-il d'anagrammes, lui-même compris ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "720",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $6$ lettres de PYTHON sont toutes différentes : une anagramme est une permutation de ces $6$ lettres.",
+					"$6!=\\textcolor{{{color:primary.0}}}{720}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : k = 4 → 5040",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["5040"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : produit non effectué 10×9×8×7",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["10\\times9\\times8\\times7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : 10⁴ (répétitions)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["10000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : C(10, 4) = 210 (ordre oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : n = 12 → 11 880",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["11880"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : C(12, 4) = 495",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["495"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 12⁴",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["20736"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 amis, 10 fauteuils → 720",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["720"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : C(10, 3) = 120",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 10³",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3¹⁰ (chaque fauteuil choisit un ami)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "3"
+			},
+			"answers": ["59049"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 720",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["720"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 6⁶",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["46656"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 6! (notation acceptée)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["6!"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : \\frac{10!}{6!} (notation acceptée)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["\\frac{10!}{6!}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 10×9×8×7 non calculé, même avec l’option",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["10\\times9\\times8\\times7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

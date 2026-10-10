@@ -1,6 +1,6 @@
 name: Release
 
-# When standard-version pushes a vX.Y.Z tag, publish a GitHub Release whose notes
+# When `pnpm deploy:prod` (via commit-and-tag-version) pushes a vX.Y.Z tag, publish a GitHub Release whose notes
 # are the matching section extracted from CHANGELOG.md.
 
 on:

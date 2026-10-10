@@ -18,7 +18,7 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 
 - `supabase/migrations/20260526190624_create_kanban_tables.sql` — 3 tables (`kanban_boards`, `kanban_columns`, `kanban_cards`), 4 indexes, 2 triggers `updated_at`, 3 helpers SECURITY DEFINER (`is_class_member`, `can_access_kanban_board`, `can_access_kanban_column`), 12 policies RLS.
 - `src/lib/types/database-helpers.ts` — types stopgap `KanbanBoard` / `KanbanColumn` / `KanbanCard` + Insert/Update + composite `KanbanBoardWithCounts`. `class_id` exclu de `KanbanBoardUpdate` (immuable post-création).
-- `docs/architecture/database-schema.md` — section Kanban ajoutée.
+- `docs/systeme/base-de-donnees.md` — section Kanban ajoutée.
 
 **Code review (Opus)** : 0 bloquant. Ajustements appliqués : `KanbanBoardUpdate` exclut `class_id`, commentaire SQL sur `owner_id` clarifié.
 
@@ -121,7 +121,7 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 
 **Dette technique notée pour plus tard :**
 
-- **Keyboard fallback DnD** : `svelte-dnd-action` propose un mode clavier (`zoneTabIndex`) non activé. À ajouter pour a11y complète. Documenter dans `docs/ref/warning-svelte.md`.
+- **Keyboard fallback DnD** : `svelte-dnd-action` propose un mode clavier (`zoneTabIndex`) non activé. À ajouter pour a11y complète. Documenter dans `docs/pratiques/warning-svelte.md`.
 - **Race condition handleSaveCard** : si suppression concurrente pendant edition, rollback peut viser le mauvais index. Atténuation : retrouver l'index par id juste avant rollback (mono-user OK, à corriger si realtime arrive).
 - **CardEditForm `{#key card.id}`** : le commentaire mentionne un `{#key}` non implémenté. Soit ajouter, soit corriger le commentaire.
 - **Confirmations natives** : `confirm()` pour suppression colonne/carte (cohérent avec liste boards). Migrer vers shadcn `AlertDialog` plus tard.
@@ -157,7 +157,7 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 - Frontend détail : `kanban/[boardId]/+page.{server.ts,svelte}`, `KanbanColumn.svelte`, `KanbanCard.svelte`, `CardEditDialog.svelte`, `CardEditForm.svelte`, `api.ts`
 - Utils : `src/lib/utils/fractional-indexing.ts`
 - Types : section Kanban ajoutée à `src/lib/types/database-helpers.ts`
-- Doc : `docs/architecture/database-schema.md` (section Kanban), `docs/wip/kanban-progress.md`
+- Doc : `docs/systeme/base-de-donnees.md` (section Kanban), `docs/wip/kanban-progress.md`
 
 **Dépendance ajoutée :** `svelte-dnd-action@^0.9.69`.
 
@@ -200,7 +200,7 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 ## Documents produits
 
 - `docs/wip/kanban-progress.md` (ce fichier)
-- `docs/architecture/database-schema.md` (section Kanban ajoutée)
+- `docs/systeme/base-de-donnees.md` (section Kanban ajoutée)
 
 ---
 

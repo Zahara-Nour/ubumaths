@@ -44,18 +44,11 @@ import { isDelimiter, isFunction, isSuperscript } from '../../guards';
 import { mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 import { hashMathNode } from '../hash';
+import { isInverseNotation } from '../../common/function-power';
 
 /** Le nœud sans ses parenthèses englobantes. */
 function stripDelimiters(node: MathNode): MathNode {
 	return isDelimiter(node) ? stripDelimiters(node.content) : node;
-}
-
-/** Exposant `-1` écrit `^{-1}` : notation de la réciproque, pas une puissance. */
-function isInverseNotation(power: MathNode): boolean {
-	if (power.type === 'opposite') {
-		return power.operand.type === 'number' && power.operand.value === '1';
-	}
-	return power.type === 'number' && power.value === '-1';
 }
 
 /**

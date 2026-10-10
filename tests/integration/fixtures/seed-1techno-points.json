@@ -1,0 +1,1760 @@
+{
+	"version": "2026-10-09.16",
+	"points": [
+		{
+			"code": "1TECHNO-001",
+			"grade": "1_TECHNO",
+			"display_order": 1,
+			"name": "Identifier le statut d'une égalité (identité, équation) et celui de la ou des lettres utilisées (variable, indéterminée, inconnue, paramètre)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Vocabulaire ensembliste et logique",
+			"branche": "Logique",
+			"notion": "Proposition mathématique",
+			"sous_notion": "statut des lettres et des égalités"
+		},
+		{
+			"code": "1TECHNO-002",
+			"grade": "1_TECHNO",
+			"display_order": 2,
+			"name": "Utiliser à bon escient les expressions « condition nécessaire », « condition suffisante », « équivalence logique »",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Vocabulaire ensembliste et logique",
+			"branche": "Logique",
+			"notion": "Implication et équivalence",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-003",
+			"grade": "1_TECHNO",
+			"display_order": 3,
+			"name": "Utiliser un générateur de nombres aléatoires entre 0 et 1 pour simuler une loi de Bernoulli de paramètre $p$",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-004",
+			"grade": "1_TECHNO",
+			"display_order": 4,
+			"name": "Utiliser la notion de compteur",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Boucles",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-005",
+			"grade": "1_TECHNO",
+			"display_order": 5,
+			"name": "Utiliser le principe d'accumulateur pour calculer une somme, un produit",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Boucles",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-006",
+			"grade": "1_TECHNO",
+			"display_order": 6,
+			"name": "Identifier les entrées et les sorties d'une fonction",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Fonctions Python",
+			"sous_notion": "définir une fonction"
+		},
+		{
+			"code": "1TECHNO-007",
+			"grade": "1_TECHNO",
+			"display_order": 7,
+			"name": "Structurer un programme en ayant recours aux fonctions",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Fonctions Python",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-008",
+			"grade": "1_TECHNO",
+			"display_order": 8,
+			"name": "Générer une liste en extension ou par ajouts successifs",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Listes",
+			"sous_notion": "créer une liste"
+		},
+		{
+			"code": "1TECHNO-009",
+			"grade": "1_TECHNO",
+			"display_order": 9,
+			"name": "Générer une liste en compréhension",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Listes",
+			"sous_notion": "liste en compréhension"
+		},
+		{
+			"code": "1TECHNO-010",
+			"grade": "1_TECHNO",
+			"display_order": 10,
+			"name": "Manipuler des éléments d'une liste (ajouter, supprimer, etc.) et leurs indices",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Listes",
+			"sous_notion": "éléments et indices"
+		},
+		{
+			"code": "1TECHNO-011",
+			"grade": "1_TECHNO",
+			"display_order": 11,
+			"name": "Itérer sur les éléments d'une liste",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Algorithmique",
+			"notion": "Listes",
+			"sous_notion": "parcourir une liste"
+		},
+		{
+			"code": "1TECHNO-012",
+			"grade": "1_TECHNO",
+			"display_order": 12,
+			"name": "Traiter un fichier contenant des données réelles pour en extraire de l'information et l'analyser",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Statistiques",
+			"notion": "Tableaux croisés",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-013",
+			"grade": "1_TECHNO",
+			"display_order": 13,
+			"name": "Réaliser un tableau croisé de données sur deux critères à partir de données brutes",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation (sauf série STD2A)",
+			"branche": "Statistiques",
+			"notion": "Tableaux croisés",
+			"sous_notion": "tableau croisé d'effectifs"
+		},
+		{
+			"code": "1TECHNO-014",
+			"grade": "1_TECHNO",
+			"display_order": 14,
+			"name": "Exemples de polygones réguliers",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "polygones réguliers"
+		},
+		{
+			"code": "1TECHNO-015",
+			"grade": "1_TECHNO",
+			"display_order": 15,
+			"name": "Exemples de frises ou de pavages",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": "frises et pavages"
+		},
+		{
+			"code": "1TECHNO-016",
+			"grade": "1_TECHNO",
+			"display_order": 16,
+			"name": "Analyser et construire des polygones réguliers à l'aide d'un motif élémentaire et de transformations du plan",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "polygones réguliers"
+		},
+		{
+			"code": "1TECHNO-017",
+			"grade": "1_TECHNO",
+			"display_order": 17,
+			"name": "Calculer des distances, des angles, des aires et des périmètres associés aux polygones réguliers",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "polygones réguliers"
+		},
+		{
+			"code": "1TECHNO-018",
+			"grade": "1_TECHNO",
+			"display_order": 18,
+			"name": "Créer une figure à partir d'un motif élémentaire par répétition d'une ou de deux transformations simples",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": "frises et pavages"
+		},
+		{
+			"code": "1TECHNO-019",
+			"grade": "1_TECHNO",
+			"display_order": 19,
+			"name": "Analyser une frise ou un pavage et en rechercher un motif élémentaire",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+			"branche": "Géométrie",
+			"notion": "Translations",
+			"sous_notion": "frises et pavages"
+		},
+		{
+			"code": "1TECHNO-020",
+			"grade": "1_TECHNO",
+			"display_order": 20,
+			"name": "Coordonnées d'un point dans un repère orthonormal de l'espace",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Repérage dans l'espace",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-021",
+			"grade": "1_TECHNO",
+			"display_order": 21,
+			"name": "Distance entre deux points",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Repérage dans l'espace",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-022",
+			"grade": "1_TECHNO",
+			"display_order": 22,
+			"name": "Perspective cavalière : projection sur un plan parallèlement à une droite",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective cavalière"
+		},
+		{
+			"code": "1TECHNO-023",
+			"grade": "1_TECHNO",
+			"display_order": 23,
+			"name": "Propriétés conservées (milieux, contacts, rapports de longueurs) et non conservées (longueurs, angles) par une projection parallèle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective cavalière"
+		},
+		{
+			"code": "1TECHNO-024",
+			"grade": "1_TECHNO",
+			"display_order": 24,
+			"name": "Cylindres de révolution",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "propriétés"
+		},
+		{
+			"code": "1TECHNO-025",
+			"grade": "1_TECHNO",
+			"display_order": 25,
+			"name": "Sections planes d'un cube",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "sections planes"
+		},
+		{
+			"code": "1TECHNO-026",
+			"grade": "1_TECHNO",
+			"display_order": 26,
+			"name": "Sections planes d'un cylindre de révolution ; ellipses",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "sections planes"
+		},
+		{
+			"code": "1TECHNO-027",
+			"grade": "1_TECHNO",
+			"display_order": 27,
+			"name": "Utiliser la représentation en perspective cavalière d'un quadrillage ou d'un cube pour représenter d'autres objets",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective cavalière"
+		},
+		{
+			"code": "1TECHNO-028",
+			"grade": "1_TECHNO",
+			"display_order": 28,
+			"name": "Représenter en perspective ou en vraie grandeur des sections planes",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "sections planes"
+		},
+		{
+			"code": "1TECHNO-029",
+			"grade": "1_TECHNO",
+			"display_order": 29,
+			"name": "Construire des sections planes de cubes et de cylindres de révolution",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "sections planes"
+		},
+		{
+			"code": "1TECHNO-030",
+			"grade": "1_TECHNO",
+			"display_order": 30,
+			"name": "Construire un parallélogramme circonscrit à une ellipse",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Figures planes",
+			"sous_notion": "coniques"
+		},
+		{
+			"code": "1TECHNO-031",
+			"grade": "1_TECHNO",
+			"display_order": 31,
+			"name": "Construire l'image perspective d'un cercle à partir d'un carré circonscrit au cercle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+			"branche": "Géométrie",
+			"notion": "Solides",
+			"sous_notion": "perspective cavalière"
+		},
+		{
+			"code": "1TECHNO-032",
+			"grade": "1_TECHNO",
+			"display_order": 32,
+			"name": "Différents modes de génération d'une suite numérique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1TECHNO-033",
+			"grade": "1_TECHNO",
+			"display_order": 33,
+			"name": "Sens de variation d'une suite",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "sens de variation"
+		},
+		{
+			"code": "1TECHNO-034",
+			"grade": "1_TECHNO",
+			"display_order": 34,
+			"name": "Représentation graphique : nuage de points $(n, u(n))$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1TECHNO-035",
+			"grade": "1_TECHNO",
+			"display_order": 35,
+			"name": "Suites arithmétiques (modèles discrets d'évolutions absolues constantes) : relation de récurrence",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "1TECHNO-036",
+			"grade": "1_TECHNO",
+			"display_order": 36,
+			"name": "Suites géométriques à termes strictement positifs (modèles discrets d'évolutions relatives constantes) : relation de récurrence",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "1TECHNO-037",
+			"grade": "1_TECHNO",
+			"display_order": 37,
+			"name": "Suites arithmétiques : explicitation du terme de rang $n$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "terme général"
+		},
+		{
+			"code": "1TECHNO-038",
+			"grade": "1_TECHNO",
+			"display_order": 38,
+			"name": "Suites géométriques : explicitation du terme de rang $n$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "terme général"
+		},
+		{
+			"code": "1TECHNO-039",
+			"grade": "1_TECHNO",
+			"display_order": 39,
+			"name": "Suites arithmétiques : sens de variation",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-040",
+			"grade": "1_TECHNO",
+			"display_order": 40,
+			"name": "Suites géométriques : sens de variation",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-041",
+			"grade": "1_TECHNO",
+			"display_order": 41,
+			"name": "Suites arithmétiques et géométriques : représentation graphique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1TECHNO-042",
+			"grade": "1_TECHNO",
+			"display_order": 42,
+			"name": "Reconnaitre si une situation relève d'un modèle discret de variation linéaire ou exponentielle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Modèles d'évolution",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-043",
+			"grade": "1_TECHNO",
+			"display_order": 43,
+			"name": "Calculer un terme de rang donné d'une suite définie par une relation fonctionnelle ou une relation de récurrence",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1TECHNO-044",
+			"grade": "1_TECHNO",
+			"display_order": 44,
+			"name": "Réaliser et exploiter la représentation graphique des termes d'une suite",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1TECHNO-045",
+			"grade": "1_TECHNO",
+			"display_order": 45,
+			"name": "Conjecturer, à partir de sa représentation graphique, la nature arithmétique ou géométrique d'une suite",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1TECHNO-046",
+			"grade": "1_TECHNO",
+			"display_order": 46,
+			"name": "Démontrer qu'une suite est arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "1TECHNO-047",
+			"grade": "1_TECHNO",
+			"display_order": 47,
+			"name": "Démontrer qu'une suite est géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "1TECHNO-048",
+			"grade": "1_TECHNO",
+			"display_order": 48,
+			"name": "Déterminer le sens de variation d'une suite arithmétique à l'aide de la raison",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-049",
+			"grade": "1_TECHNO",
+			"display_order": 49,
+			"name": "Déterminer le sens de variation d'une suite géométrique à l'aide de la raison",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-050",
+			"grade": "1_TECHNO",
+			"display_order": 50,
+			"name": "Calculer un terme de rang donné d'une suite, une somme finie de termes",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-051",
+			"grade": "1_TECHNO",
+			"display_order": 51,
+			"name": "Déterminer une liste de termes d'une suite et les représenter",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1TECHNO-052",
+			"grade": "1_TECHNO",
+			"display_order": 52,
+			"name": "Déterminer le rang à partir duquel les termes d'une suite sont supérieurs ou inférieurs à un seuil donné, ou aux termes de même rang d'une autre suite",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Suites numériques",
+			"branche": "Suites",
+			"notion": "Modèles d'évolution",
+			"sous_notion": "seuil"
+		},
+		{
+			"code": "1TECHNO-053",
+			"grade": "1_TECHNO",
+			"display_order": 53,
+			"name": "Différents modes de représentation d'une fonction : expression littérale, représentation graphique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-054",
+			"grade": "1_TECHNO",
+			"display_order": 54,
+			"name": "Notations $y = f(x)$ et $x \\mapsto f(x)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-055",
+			"grade": "1_TECHNO",
+			"display_order": 55,
+			"name": "Taux de variation, entre deux valeurs de la variable $x$, d'une grandeur $y$ vérifiant $y = f(x)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "taux de variation"
+		},
+		{
+			"code": "1TECHNO-056",
+			"grade": "1_TECHNO",
+			"display_order": 56,
+			"name": "Fonctions monotones sur un intervalle, lien avec le signe du taux de variation",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "variations"
+		},
+		{
+			"code": "1TECHNO-057",
+			"grade": "1_TECHNO",
+			"display_order": 57,
+			"name": "Éléments caractéristiques de la courbe d'une fonction polynôme de degré 2 : allure, axe de symétrie, coordonnées du sommet en lien avec la symétrie et tableau de variation de la fonction",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1TECHNO-058",
+			"grade": "1_TECHNO",
+			"display_order": 58,
+			"name": "Racines et signe d'un polynôme de degré 2 donné sous forme factorisée (le calcul des racines à l'aide du discriminant ne figure pas au programme)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": null
+		},
+		{
+			"code": "1TECHNO-059",
+			"grade": "1_TECHNO",
+			"display_order": 59,
+			"name": "Résoudre graphiquement une équation du type $f(x) = k$ ou une inéquation de la forme $f(x) < k$ ou $f(x) > k$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "équations et inéquations f(x) = k"
+		},
+		{
+			"code": "1TECHNO-060",
+			"grade": "1_TECHNO",
+			"display_order": 60,
+			"name": "Interpréter le taux de variation comme pente de la sécante à la courbe passant par deux points distincts",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "taux de variation"
+		},
+		{
+			"code": "1TECHNO-061",
+			"grade": "1_TECHNO",
+			"display_order": 61,
+			"name": "Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme $x \\mapsto ax^2$, $x \\mapsto ax^2 + c$, $x \\mapsto a(x - x_1)(x - x_2)$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1TECHNO-062",
+			"grade": "1_TECHNO",
+			"display_order": 62,
+			"name": "Déterminer des éléments caractéristiques de la fonction $x \\mapsto ax^2 + bx + c$ (aucune formule n'est attendue ; l'axe de symétrie se détermine par exemple en résolvant $f(x) = c$)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1TECHNO-063",
+			"grade": "1_TECHNO",
+			"display_order": 63,
+			"name": "Vérifier qu'une valeur conjecturée est racine d'un polynôme de degré 2",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "racines"
+		},
+		{
+			"code": "1TECHNO-064",
+			"grade": "1_TECHNO",
+			"display_order": 64,
+			"name": "Savoir factoriser, dans des cas simples, une expression du second degré connaissant au moins une de ses racines",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "formes"
+		},
+		{
+			"code": "1TECHNO-065",
+			"grade": "1_TECHNO",
+			"display_order": 65,
+			"name": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "racines"
+		},
+		{
+			"code": "1TECHNO-066",
+			"grade": "1_TECHNO",
+			"display_order": 66,
+			"name": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "signe"
+		},
+		{
+			"code": "1TECHNO-067",
+			"grade": "1_TECHNO",
+			"display_order": 67,
+			"name": "Calculer une valeur approchée d'une solution d'une équation par balayage",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions de la variable réelle",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "équations et inéquations f(x) = k"
+		},
+		{
+			"code": "1TECHNO-068",
+			"grade": "1_TECHNO",
+			"display_order": 68,
+			"name": "Sécantes à une courbe passant par un point donné ; taux de variation en un point",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "taux de variation"
+		},
+		{
+			"code": "1TECHNO-069",
+			"grade": "1_TECHNO",
+			"display_order": 69,
+			"name": "Tangente à une courbe en un point, définie comme position limite des sécantes passant par ce point",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "tangente"
+		},
+		{
+			"code": "1TECHNO-070",
+			"grade": "1_TECHNO",
+			"display_order": 70,
+			"name": "Nombre dérivé en un point défini comme limite du taux de variation en ce point",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "nombre dérivé"
+		},
+		{
+			"code": "1TECHNO-071",
+			"grade": "1_TECHNO",
+			"display_order": 71,
+			"name": "Équation réduite de la tangente en un point",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "tangente"
+		},
+		{
+			"code": "1TECHNO-072",
+			"grade": "1_TECHNO",
+			"display_order": 72,
+			"name": "Fonction dérivée",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "1TECHNO-073",
+			"grade": "1_TECHNO",
+			"display_order": 73,
+			"name": "Fonctions dérivées de $x \\mapsto x^2$, $x \\mapsto x^3$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "1TECHNO-074",
+			"grade": "1_TECHNO",
+			"display_order": 74,
+			"name": "Dérivée d'une somme, dérivée de $kf$ ($k \\in \\mathbb{R}$), dérivée d'un polynôme de degré inférieur ou égal à 3",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "opérations sur les dérivées"
+		},
+		{
+			"code": "1TECHNO-075",
+			"grade": "1_TECHNO",
+			"display_order": 75,
+			"name": "Sens de variation d'une fonction, lien avec le signe de la dérivée",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "variations et extremums"
+		},
+		{
+			"code": "1TECHNO-076",
+			"grade": "1_TECHNO",
+			"display_order": 76,
+			"name": "Tableau de variations, extrémums",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "variations et extremums"
+		},
+		{
+			"code": "1TECHNO-077",
+			"grade": "1_TECHNO",
+			"display_order": 77,
+			"name": "Interpréter géométriquement le nombre dérivé comme coefficient directeur de la tangente",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "nombre dérivé"
+		},
+		{
+			"code": "1TECHNO-078",
+			"grade": "1_TECHNO",
+			"display_order": 78,
+			"name": "Construire la tangente à une courbe en un point",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "tangente"
+		},
+		{
+			"code": "1TECHNO-079",
+			"grade": "1_TECHNO",
+			"display_order": 79,
+			"name": "Déterminer l'équation réduite de la tangente à une courbe en un point",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "tangente"
+		},
+		{
+			"code": "1TECHNO-080",
+			"grade": "1_TECHNO",
+			"display_order": 80,
+			"name": "Calculer la dérivée d'une fonction polynôme de degré inférieur ou égal à trois",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "opérations sur les dérivées"
+		},
+		{
+			"code": "1TECHNO-081",
+			"grade": "1_TECHNO",
+			"display_order": 81,
+			"name": "Déterminer le sens de variation et les extrémums d'une fonction polynôme de degré inférieur ou égal à 3",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "variations et extremums"
+		},
+		{
+			"code": "1TECHNO-082",
+			"grade": "1_TECHNO",
+			"display_order": 82,
+			"name": "Nuage de points associé à une série statistique à deux variables quantitatives",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "nuage de points"
+		},
+		{
+			"code": "1TECHNO-083",
+			"grade": "1_TECHNO",
+			"display_order": 83,
+			"name": "Ajustement affine",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "1TECHNO-084",
+			"grade": "1_TECHNO",
+			"display_order": 84,
+			"name": "Point moyen",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "point moyen"
+		},
+		{
+			"code": "1TECHNO-085",
+			"grade": "1_TECHNO",
+			"display_order": 85,
+			"name": "Représenter un nuage de points",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "nuage de points"
+		},
+		{
+			"code": "1TECHNO-086",
+			"grade": "1_TECHNO",
+			"display_order": 86,
+			"name": "Savoir calculer les coordonnées du point moyen",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "point moyen"
+		},
+		{
+			"code": "1TECHNO-087",
+			"grade": "1_TECHNO",
+			"display_order": 87,
+			"name": "Déterminer et utiliser un ajustement affine",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "1TECHNO-088",
+			"grade": "1_TECHNO",
+			"display_order": 88,
+			"name": "Interpoler ou extrapoler des valeurs inconnues à l'aide d'un ajustement affine",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Séries statistiques à deux variables quantitatives",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "1TECHNO-089",
+			"grade": "1_TECHNO",
+			"display_order": 89,
+			"name": "Indépendance de deux évènements",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "indépendance"
+		},
+		{
+			"code": "1TECHNO-090",
+			"grade": "1_TECHNO",
+			"display_order": 90,
+			"name": "Formule des probabilités totales",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "probabilités totales"
+		},
+		{
+			"code": "1TECHNO-091",
+			"grade": "1_TECHNO",
+			"display_order": 91,
+			"name": "Savoir utiliser ou justifier l'indépendance de deux évènements",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "indépendance"
+		},
+		{
+			"code": "1TECHNO-092",
+			"grade": "1_TECHNO",
+			"display_order": 92,
+			"name": "Dans les cas simples, calculer une probabilité à l'aide de la formule des probabilités totales",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "probabilités totales"
+		},
+		{
+			"code": "1TECHNO-093",
+			"grade": "1_TECHNO",
+			"display_order": 93,
+			"name": "Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Modèle associé à une expérience aléatoire à plusieurs épreuves indépendantes",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1TECHNO-094",
+			"grade": "1_TECHNO",
+			"display_order": 94,
+			"name": "Représenter par un arbre de probabilités la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$ afin de calculer des probabilités",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Modèle associé à une expérience aléatoire à plusieurs épreuves indépendantes",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1TECHNO-095",
+			"grade": "1_TECHNO",
+			"display_order": 95,
+			"name": "Variable aléatoire discrète : loi de probabilité",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "loi d'une variable aléatoire"
+		},
+		{
+			"code": "1TECHNO-096",
+			"grade": "1_TECHNO",
+			"display_order": 96,
+			"name": "Variable aléatoire discrète : espérance",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "espérance"
+		},
+		{
+			"code": "1TECHNO-097",
+			"grade": "1_TECHNO",
+			"display_order": 97,
+			"name": "Loi de Bernoulli (0,1) de paramètre $p$, espérance",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "schéma de Bernoulli"
+		},
+		{
+			"code": "1TECHNO-098",
+			"grade": "1_TECHNO",
+			"display_order": 98,
+			"name": "Interpréter en situation les écritures $\\{X = a\\}$, $\\{X \\leqslant a\\}$ où $X$ désigne une variable aléatoire et calculer les probabilités correspondantes $P(X = a)$, $P(X \\leqslant a)$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "loi d'une variable aléatoire"
+		},
+		{
+			"code": "1TECHNO-099",
+			"grade": "1_TECHNO",
+			"display_order": 99,
+			"name": "Calculer et interpréter en contexte l'espérance d'une variable aléatoire discrète",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "espérance"
+		},
+		{
+			"code": "1TECHNO-100",
+			"grade": "1_TECHNO",
+			"display_order": 100,
+			"name": "Reconnaitre une situation aléatoire modélisée par une loi de Bernoulli",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sous_notion": "schéma de Bernoulli"
+		},
+		{
+			"code": "1TECHNO-101",
+			"grade": "1_TECHNO",
+			"display_order": 101,
+			"name": "Simuler $N$ échantillons de taille $n$ d'une loi de Bernoulli et représenter les fréquences observées des 1 par un histogramme ou un nuage de points",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "simulation"
+		},
+		{
+			"code": "1TECHNO-102",
+			"grade": "1_TECHNO",
+			"display_order": 102,
+			"name": "Interpréter sur des exemples la distance à $p$ de la fréquence observée des 1 dans un échantillon de taille $n$ d'une loi de Bernoulli de paramètre $p$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "fluctuation"
+		},
+		{
+			"code": "1TECHNO-103",
+			"grade": "1_TECHNO",
+			"display_order": 103,
+			"name": "Simuler des échantillons de taille $n$ d'une loi de Bernoulli à partir d'un générateur de nombres aléatoires entre 0 et 1",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "simulation"
+		},
+		{
+			"code": "1TECHNO-104",
+			"grade": "1_TECHNO",
+			"display_order": 104,
+			"name": "Représenter par un histogramme ou par un nuage de points les fréquences observées des 1 dans $N$ échantillons de taille $n$ d'une loi de Bernoulli",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "simulation"
+		},
+		{
+			"code": "1TECHNO-105",
+			"grade": "1_TECHNO",
+			"display_order": 105,
+			"name": "Compter le nombre de valeurs situées dans un intervalle de la forme $[p - ks\\,;\\,p + ks]$ pour $k \\in \\{1\\,;2\\,;3\\}$",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Statistiques et probabilités > Variables aléatoires",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "fluctuation"
+		}
+	],
+	"references": [
+		{
+			"code": "2-377",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-367",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-378",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-379",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-267",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-328",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-330",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "1TECHNO-066",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-016",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-022",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-039",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-336",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-329",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-349",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-316",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-315",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-314",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-077",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-372",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-030",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-096",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-382",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-370",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-029",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-039",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-040",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-396",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-397",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-399",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-400",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-276",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-277",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-013",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-025",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-005",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-106",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-119",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "CM1-068",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-150",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-051",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "CE2-052",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-159",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-052",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "CE2-047",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-011",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-008",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-025",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-014",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-269",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-273",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-274",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-035",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-140",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-056",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-141",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-057",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-040",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-331",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-041",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-044",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-016",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-047",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-144",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-147",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-152",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-061",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-052",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-050",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-053",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-029",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-021",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-034",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-022",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-023",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-380",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-381",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-186",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-048",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-187",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-201",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-202",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-203",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-204",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-205",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-206",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-207",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-210",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-212",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "2-214",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-199",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "6-201",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-108",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-110",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "5-111",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "4-070",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-052",
+			"grade": "1_TECHNO"
+		},
+		{
+			"code": "3-056",
+			"grade": "1_TECHNO"
+		}
+	]
+}

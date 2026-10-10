@@ -50,9 +50,12 @@ import type {
 	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
+import { GREEK_LETTERS } from './types';
 import { format } from './units/formatter';
 import {
 	needsParenthesesAsPowerBase,
+	needsParenthesesAsRightTerm,
+	needsParenthesesUnderOpposite,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -92,31 +95,7 @@ export interface CustomGeneratorOptions {
  * parsers as a MathConstant; the rest produce GreekLetter nodes.
  * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
-export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([
-	'alpha',
-	'beta',
-	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega'
-]);
+export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([...GREEK_LETTERS, 'pi']);
 
 /**
  * Supported symbols in custom syntax.
@@ -368,6 +347,19 @@ function startsWithNumberToken(s: string): boolean {
 }
 
 /**
+ * Whether juxtaposing `left` and `right` would glue a command to a letter:
+ * `\pi` then `x` gives `\pix`, an unknown command on reparse. A space keeps
+ * them apart (`\pi x`), as in LaTeX.
+ *
+ * ⚠️ Dans l'atelier, `f(x) = 3\pi x^2` s'écrivait `3\pix^2` à la
+ * substitution : « Dériver » et « Variations » échouaient (oracle des
+ * dérivées, #910).
+ */
+function gluesCommandToLetter(left: string, right: string): boolean {
+	return /\\[a-zA-Z]+$/.test(left) && /^[a-zA-Z]/.test(right);
+}
+
+/**
  * Whether an emitted fragment begins with a unary sign (`+` or `-`) — i.e. the
  * output of an `opposite` or `positive` node. Juxtaposing such a RHS to a left
  * operand produces text like `x-sin(x)` which the parser silently reads as a
@@ -496,22 +488,35 @@ export class CustomGenerator {
 				break;
 
 			case 'addition':
+			case 'subtraction': {
+				// Mêmes parenthèses que generateAddition / generateSubtraction
+				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
-				this.emit('+', node.operatorMetadata ?? node.metadata);
+				this.emit(node.type === 'addition' ? '+' : '-', node.operatorMetadata ?? node.metadata);
+				if (wrapRight) this.emit('(', node.metadata);
 				this.visitWithSpans(node.right);
+				if (wrapRight) this.emit(')', node.metadata);
 				break;
-
-			case 'subtraction':
-				this.visitWithSpans(node.left);
-				this.emit('-', node.operatorMetadata ?? node.metadata);
-				this.visitWithSpans(node.right);
-				break;
+			}
 
 			case 'multiplication': {
 				const wrapLeft = node.displayStyle === 'implicit' && shouldWrapForImplicitMul(node.left);
 				const meta = node.operatorMetadata ?? node.metadata;
+				// Sommes en facteur : mêmes parenthèses que groupIfSum dans
+				// generateMultiplication (`2(x+2)` s'écrivait `2x+2`).
+				const groupLeft = needsParenthesesUnderSign(node.left);
+				const groupRight = needsParenthesesUnderSign(node.right);
 				if (wrapLeft) this.emit('{', meta);
+				if (groupLeft) this.emit('(', meta);
+				// Le texte de gauche, relu dans ses spans (sans couleur) : regénérer
+				// le sous-arbre à chaque produit implicite était quadratique
+				const leftStart = this.spans.length;
 				this.visitWithSpans(node.left);
+				const leftPlain = this.spans
+					.slice(leftStart)
+					.map((span) => span.text)
+					.join('');
+				if (groupLeft) this.emit(')', meta);
 				if (wrapLeft) this.emit('}', meta);
 				// Implicit mul safety net (matches generateMultiplication). Two regimes:
 				//   A. RHS starts with a NUMBER token → emit explicit `*` (`x*1/x`)
@@ -521,7 +526,9 @@ export class CustomGenerator {
 				// colored RHS would be wrapped in `@color{...}` (e.g. `@red{2}`), defeating
 				// the leading-character check.
 				const rhsPlain =
-					node.displayStyle === 'implicit' ? new CustomGenerator().generate(node.right) : '';
+					node.displayStyle === 'implicit' && !groupRight
+						? new CustomGenerator().generate(node.right)
+						: '';
 				const safetyA = node.displayStyle === 'implicit' && startsWithNumberToken(rhsPlain);
 				const safetyB = node.displayStyle === 'implicit' && startsWithUnarySign(rhsPlain);
 				if (safetyA) {
@@ -533,7 +540,19 @@ export class CustomGenerator {
 					this.emit(')', meta);
 				} else {
 					this.visitMultiplicationOperatorSpan(node);
+					// `\pi x`, pas `\pix` (même règle que generateMultiplication)
+					if (
+						node.displayStyle === 'implicit' &&
+						!groupRight &&
+						!groupLeft &&
+						!wrapLeft &&
+						gluesCommandToLetter(leftPlain, rhsPlain)
+					) {
+						this.emit(' ', meta);
+					}
+					if (groupRight) this.emit('(', meta);
 					this.visitWithSpans(node.right);
+					if (groupRight) this.emit(')', meta);
 				}
 				break;
 			}
@@ -542,10 +561,15 @@ export class CustomGenerator {
 				this.visitDivisionSpans(node);
 				break;
 
-			case 'opposite':
+			case 'opposite': {
+				// Même parenthésage que generateOpposite : `-(x+2)`, pas `-x+2`.
+				const wrap = needsParenthesesUnderOpposite(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
+				if (wrap) this.emit('(', node.metadata);
 				this.visitWithSpans(node.operand);
+				if (wrap) this.emit(')', node.metadata);
 				break;
+			}
 
 			case 'positive':
 				this.emit('+', node.operatorMetadata ?? node.metadata);
@@ -711,7 +735,7 @@ export class CustomGenerator {
 		if (!SUPPORTED_GREEK.has(node.letter)) {
 			throw new Error(
 				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
-					`Only pi, alpha, beta, gamma, theta are supported.`
+					`See SUPPORTED_GREEK for the supported letters.`
 			);
 		}
 		this.emit(`\\${node.letter}`, node.metadata);
@@ -1203,7 +1227,7 @@ export class CustomGenerator {
 		if (!SUPPORTED_GREEK.has(node.letter)) {
 			throw new Error(
 				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
-					`Only pi, alpha, beta, gamma, theta are supported.`
+					`See SUPPORTED_GREEK for the supported letters.`
 			);
 		}
 		return `\\${node.letter}`;
@@ -1220,7 +1244,11 @@ export class CustomGenerator {
 
 	private generateAddition(node: AdditionNode): string {
 		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
+		// `a+-b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'addition')
+			? `(${renderedRight})`
+			: renderedRight;
 		return `${left}+${right}`;
 	}
 
@@ -1242,8 +1270,12 @@ export class CustomGenerator {
 	private generateSubtraction(node: SubtractionNode): string {
 		const left = this.generateNode(node.left);
 		// L'opérande DROIT seulement : `y-(x+1)` vaut `y−x−1`, alors que `y-x+1`
-		// se relit `y−x+1`. À gauche il n'y a pas d'ambiguïté.
-		const right = this.groupIfSum(node.right);
+		// se relit `y−x+1`. À gauche il n'y a pas d'ambiguïté. Un terme qui
+		// commence par un signe aussi : `a--b` (voir needsParenthesesAsRightTerm).
+		const renderedRight = this.generateNode(node.right);
+		const right = needsParenthesesAsRightTerm(node.right, 'subtraction')
+			? `(${renderedRight})`
+			: renderedRight;
 		return `${left}-${right}`;
 	}
 
@@ -1268,6 +1300,7 @@ export class CustomGenerator {
 				if (startsWithUnarySign(right)) {
 					return `${wrappedLeft}*(${right})`;
 				}
+				if (gluesCommandToLetter(wrappedLeft, right)) return `${wrappedLeft} ${right}`;
 				return `${wrappedLeft}${right}`;
 			}
 			case 'dot':
@@ -1318,7 +1351,7 @@ export class CustomGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderSign(node.operand) ? `-(${operand})` : `-${operand}`;
+		return needsParenthesesUnderOpposite(node.operand) ? `-(${operand})` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {

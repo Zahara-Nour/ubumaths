@@ -2,7 +2,7 @@
  * Indicateurs d'une série statistique : brute (A) ou à effectifs (B).
  *
  * Spécification validée par David le 2026-10-01
- * (`docs/wip/outils-statistiques-progress.md`, lot 1).
+ * (`docs/archive/wip/outils-statistiques-progress.md`, lot 1).
  *
  * ⚠️ **Quartiles du programme de 2de** : Q1 est la plus petite valeur telle
  * qu'au moins 25 % des données lui soient inférieures ou égales. Ce n'est PAS

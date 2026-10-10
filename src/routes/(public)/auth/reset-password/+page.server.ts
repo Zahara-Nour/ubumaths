@@ -26,7 +26,8 @@ const logger = createLogger('auth/reset-password/+page.server.ts');
 /** Generic success — never reveals whether the account exists (anti-enumeration). */
 const GENERIC_SUCCESS = {
 	success: true as const,
-	message: 'If an account exists with that email, you will receive a password reset link shortly.'
+	message:
+		'Si un compte existe avec cette adresse, tu vas recevoir un lien pour choisir un nouveau mot de passe.'
 };
 
 export const actions = {

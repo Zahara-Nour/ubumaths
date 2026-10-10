@@ -13,11 +13,15 @@ import type { Domain } from '../domain/types';
 import type { CriticalPointInfo, CriticalPointNature } from './types';
 import type { Solution } from '../solve/types';
 import { solve } from '../solve/solve';
-import { equals, number } from '../factory';
-import { isRelation } from '../guards';
+import { equals, euler, number, superscript } from '../factory';
+import { isFunction, isRelation } from '../guards';
+import { findFirst, mapNode } from '../transforms';
+import { normalize, denormalize } from '../normal';
 import { computeDomain } from '../domain/compute';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
+import { tidy } from '../tidy';
+import { cheapest } from '../simplify/cost';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { containsNode } from '../domain/algebra';
 
@@ -64,15 +68,33 @@ export function findCriticalPoints(
 	domain: Domain,
 	originalExpr?: MathNode
 ): CriticalPointInfo[] {
+	return findCriticalPointsWithStatus(derivative, variable, domain, originalExpr).points;
+}
+
+/**
+ * Les points critiques, ET le fait que f'(x) = 0 a bien été résolue.
+ *
+ * ⚠️ **« Aucun zéro » et « je n'ai pas su résoudre » ne sont pas la même
+ * réponse.** `findCriticalPoints` rend `[]` dans les deux cas ; c'est ce qui
+ * faisait annoncer « Points critiques : aucun » pour eˣ − x − 2 = 0, que le
+ * solveur ne sait pas résoudre, et en déduire un signe constant. Le
+ * drapeau `derivativeZerosResolved` les sépare.
+ */
+export function findCriticalPointsWithStatus(
+	derivative: MathNode,
+	variable: string,
+	domain: Domain,
+	originalExpr?: MathNode
+): { readonly points: CriticalPointInfo[]; readonly derivativeZerosResolved: boolean } {
 	// Handle empty domain
 	if (domain.kind === 'empty') {
-		return [];
+		return { points: [], derivativeZerosResolved: true };
 	}
 
 	const criticalPoints: CriticalPointInfo[] = [];
 
 	// 1. Find zeros of the derivative: f'(x) = 0
-	const zeros = findDerivativeZeros(derivative, variable, domain);
+	const { zeros, resolved } = findDerivativeZeros(derivative, variable, domain);
 	for (const zero of zeros) {
 		const evalResult = originalExpr
 			? evaluateAtCriticalPoint(originalExpr, variable, zero.value)
@@ -112,7 +134,10 @@ export function findCriticalPoints(
 	}
 
 	// 3. Sort by x-value and remove duplicates
-	return sortCriticalPoints(removeDuplicateCriticalPoints(criticalPoints));
+	return {
+		points: sortCriticalPoints(removeDuplicateCriticalPoints(criticalPoints)),
+		derivativeZerosResolved: resolved
+	};
 }
 
 /**
@@ -173,11 +198,7 @@ export function evaluateAtCriticalPoint(
 
 		// Try exact evaluation first
 		const exactResult = evaluate(substituted, { mode: 'exact' });
-		if (exactResult.status !== 'value') {
-			// Evaluation did not produce a value (indeterminate/unevaluable)
-			return null;
-		}
-		const y = exactResult.node;
+		const exactNode = exactResult.status === 'value' ? exactResult.node : null;
 
 		// Get numeric approximation
 		let yApproximate: number | undefined;
@@ -194,10 +215,93 @@ export function evaluateAtCriticalPoint(
 			// Numeric evaluation failed, leave yApproximate undefined
 		}
 
-		return { y, yApproximate };
+		// Ni valeur exacte ni valeur approchée : f n'est pas définie en x.
+		// ⚠️ L'évaluation exacte peut échouer sur une valeur bien définie —
+		// mesuré : `-1/2·e^{2·(−1/2)}` pour x e^{2x} —, le décimal tranche alors.
+		if (exactNode === null && yApproximate === undefined) return null;
+
+		return { y: tidyExactValue(substituted, exactNode), yApproximate };
 	} catch {
 		// Evaluation failed (e.g., division by zero, domain error)
 		return null;
+	}
+}
+
+/**
+ * La valeur exacte f(x₀), mise au propre pour l'affichage : `normalize`
+ * applique les identités, `tidy` met au propre.
+ *
+ * Trois écritures candidates de la même valeur : l'évaluation exacte
+ * (`-exp(-1)` pour x eˣ en −1), la forme normale de la substitution, et la
+ * substitution elle-même (`-1·e^{-1}`, que `tidy` rend −1/e). `cheapest` garde
+ * la plus simple ; la substitution mise au propre gagne les égalités.
+ *
+ * Mesuré avant : le minimum de x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`, celui
+ * de x² ln x `ln(e^{−1/2})(e^{−1/2})²`. `tidy` n'applique aucune identité
+ * (ln(eᵃ) = a est exclu, docs/systeme/mathast/tidy-spec.md §A) : c'est `normalize` qui
+ * réduit (décision de David, option A, 2026-10-05).
+ *
+ * `normalize` écrit `1/e` sous la forme `exp(-1)`, que `tidy` ne touche pas :
+ * chaque candidate repasse en écriture `e^{…}` avant `tidy` (−1/e, pas
+ * `-exp(-1)`).
+ *
+ * @param substituted - f(x₀), x₀ substitué, non évalué
+ * @param evaluated - Ce que rend l'évaluation exacte, `null` si elle a échoué
+ */
+export function tidyExactValue(substituted: MathNode, evaluated: MathNode | null): MathNode {
+	const candidates: MathNode[] = [];
+	if (evaluated !== null) candidates.push(evaluated);
+	const normalized = normalizeSafe(substituted);
+	if (normalized !== null) candidates.push(normalized);
+	candidates.push(substituted);
+
+	let best: MathNode | null = null;
+	for (const candidate of candidates) {
+		const tidied = tidySafe(toEulerPowers(candidate));
+		best = best === null ? tidied : cheapest(best, tidied);
+	}
+	return best ?? tidySafe(substituted);
+}
+
+/**
+ * Une abscisse critique mise au propre comme une valeur, si elle contient une
+ * exponentielle : le solveur rend `exp(-1)` pour ln x = −1, affiché
+ * `\dfrac{1}{\exponentialE}`. Sans exponentielle, l'abscisse n'est pas touchée.
+ *
+ * Partagée avec les bornes des intervalles de monotonie (`monotonicity.ts`) :
+ * sans ça, le tableau écrivait `x = 1/e` au-dessus de `]0 ; exp(-1)[`.
+ */
+export function tidyCriticalAbscissa(value: MathNode): MathNode {
+	if (findFirst(value, isExpCall) === undefined) return value;
+	return tidyExactValue(value, null);
+}
+
+function isExpCall(node: MathNode): boolean {
+	return isFunction(node) && node.name === 'exp' && node.args.length === 1;
+}
+
+/** `exp(u)` → `e^{u}` : l'écriture que `tidy` sait mettre au propre (e^{−1} → 1/e). */
+function toEulerPowers(node: MathNode): MathNode {
+	return mapNode(node, (current) =>
+		isFunction(current) && isExpCall(current) ? superscript(euler(), current.args[0]) : current
+	);
+}
+
+/** La forme normale réécrite, `null` si `normalize` lève une exception. */
+function normalizeSafe(node: MathNode): MathNode | null {
+	try {
+		return denormalize(normalize(node));
+	} catch {
+		return null;
+	}
+}
+
+/** `tidy` peut relancer une exception imprévue : on garde alors la forme brute. */
+function tidySafe(node: MathNode): MathNode {
+	try {
+		return tidy(node);
+	} catch {
+		return node;
 	}
 }
 
@@ -238,17 +342,29 @@ function findDerivativeZeros(
 	derivative: MathNode,
 	variable: string,
 	domain: Domain
-): Array<{ value: MathNode; approximate?: number; exact: boolean }> {
+): {
+	readonly zeros: Array<{ value: MathNode; approximate?: number; exact: boolean }>;
+	/** `false` quand le solveur n'a pas su résoudre f'(x) = 0 — ce n'est pas « aucun zéro ». */
+	readonly resolved: boolean;
+} {
 	try {
 		// Create equation f'(x) = 0
 		const equation: RelationNode = equals(derivative, number('0'));
 
 		if (!isRelation(equation)) {
-			return [];
+			return { zeros: [], resolved: false };
 		}
 
 		// Solve the equation
 		const result = solve(equation, { variable });
+
+		// Le solveur signale un échec par `error` (« Type d'equation … non
+		// supporte ») avec un statut `no-solution` : ce n'est PAS une absence
+		// de zéro — sauf quand l'erreur explique une absence DÉMONTRÉE
+		// (`conclusive`, ex. racines étrangères de 1/(2√x) = 0).
+		if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
+			return { zeros: [], resolved: false };
+		}
 
 		// Handle cases where solving failed or no solutions
 		if (
@@ -256,20 +372,20 @@ function findDerivativeZeros(
 			result.status === 'no-real-solution' ||
 			result.solutions.length === 0
 		) {
-			return [];
+			return { zeros: [], resolved: true };
 		}
 
 		// Handle infinite solutions
 		if (result.status === 'infinite') {
 			// Derivative is identically zero - constant function
-			return [];
+			return { zeros: [], resolved: true };
 		}
 
 		// Filter solutions within the domain
-		return filterSolutionsInDomain(result.solutions, domain);
+		return { zeros: filterSolutionsInDomain(result.solutions, domain), resolved: true };
 	} catch {
-		// Solving failed
-		return [];
+		// Le solveur a levé une exception : f'(x) = 0 n'est pas résolue.
+		return { zeros: [], resolved: false };
 	}
 }
 
@@ -336,7 +452,7 @@ function filterSolutionsInDomain(
 		}
 
 		result.push({
-			value: solution.value,
+			value: tidyCriticalAbscissa(solution.value),
 			approximate: solution.approximate,
 			exact: solution.exact
 		});

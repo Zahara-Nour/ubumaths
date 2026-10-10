@@ -23,6 +23,7 @@ import { unitKeysFor } from '$lib/questions/units/keyboard-units';
 import {
 	getQuestionType,
 	type ConstraintMode,
+	type GradeLevel,
 	type InstanceBlank,
 	type QuestionInstance
 } from './types';
@@ -56,6 +57,8 @@ export interface PublicQuestion {
 	spaces?: ConstraintMode;
 	/** Fonctions déclarées par le modèle (`P`, `C`) : notation de l'énoncé, aucune réponse */
 	genericFunctions?: string[];
+	/** Niveaux de la carte (clavier : onglet « n! » en Terminale) : aucune réponse, aucun indice */
+	grades?: GradeLevel[];
 }
 
 // Functions
@@ -94,6 +97,7 @@ export function toPublicQuestion(
 	const spaces = instance.options?.constraints?.spaces;
 	if (spaces) question.spaces = spaces;
 	if (instance.genericFunctions?.length) question.genericFunctions = [...instance.genericFunctions];
+	if (instance.grades?.length) question.grades = [...instance.grades];
 
 	if (type === 'multiple_choice') {
 		question.choices = (instance.shuffledChoices ?? []).map((choice) => ({
@@ -124,7 +128,7 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 	const instance: QuestionInstance = {
 		templateId: '',
 		statement: question.statement as ResolvedMarkdown,
-		grades: [],
+		grades: question.grades ? [...question.grades] : [],
 		theme: '',
 		domain: '',
 		level: 0,

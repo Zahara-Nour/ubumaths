@@ -78,12 +78,14 @@ describe('la ligne corrige le moteur au lieu de le suivre', () => {
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
 		expect(result.latex).toBe('x = \\dfrac{5}{11}');
-		// Le moteur, lui, répond « x = 3 » — c'est LUI qui se trompe.
-		expect(result.output).toContain('3');
+		// Le moteur répondait « x = 3 » ; depuis le 2026-10-06 (variable après
+		// « ; »), il lit lui aussi `3x+5=14x`.
+		expect(result.output).toContain('x = 5/11');
 	});
 
+	// Passé à la nouvelle règle (2026-10-06) : l'inconnue est x sauf « ; v »
 	it('un « -v » reste une soustraction', () => {
-		const result = runInput(session(), '.résoudre 3-v=1');
+		const result = runInput(session(), '.résoudre 3-v=1 ; v');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
@@ -125,7 +127,7 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 		// une commande sans raisonnement à montrer n'invente pas d'étapes — il
 		// lui faut seulement une commande qui le reste. `.équivalent` répond
 		// oui ou non : il n'y a rien à dérouler derrière.
-		const result = runInput(session(), '.équivalent (x+1)^2 x^2+2x+1');
+		const result = runInput(session(), '.équivalent (x+1)^2 et x^2+2x+1');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
@@ -175,8 +177,10 @@ describe('`.résoudre` sur une inéquation', () => {
 		if (result.kind !== 'commande') return;
 		expect(result.latex).toBe('x < 3');
 		expect(result.steps).toBeDefined();
-		// Le moteur, lui, n'a rien produit : c'est le trou que ce lot comble.
-		expect(result.output).toBe('');
+		// Le moteur ne rendait rien ici ; depuis le lot « radicaux du lycée »
+		// (2026-10-08), `.solve` résout l'inéquation lui aussi. Les étapes
+		// restent prioritaires : la ligne garde `x < 3`.
+		expect(result.output).toBe('S = ]-∞ ; 3[');
 	});
 
 	it('une inéquation du second degré rend son ensemble de solutions', () => {

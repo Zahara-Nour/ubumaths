@@ -399,6 +399,33 @@ main h6 {
 	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
 
+/* Titres d'un contenu Markdown (HeadingNode) : balise décalée d'un niveau (`#` → h2),
+   taille du niveau d'origine. Classe + élément > élément seul : ces règles l'emportent. */
+main .md-h1 {
+	font-size: calc(clamp(1.75rem, 1.25rem + 2vw, 2.25rem) * var(--font-scale)) !important;
+	line-height: calc(clamp(2rem, 1.5rem + 2vw, 2.5rem) * var(--font-scale)) !important;
+}
+main .md-h2 {
+	font-size: calc(clamp(1.5rem, 1rem + 1.75vw, 1.875rem) * var(--font-scale)) !important;
+	line-height: calc(clamp(1.75rem, 1.25rem + 2vw, 2.25rem) * var(--font-scale)) !important;
+}
+main .md-h3 {
+	font-size: calc(clamp(1.25rem, 0.875rem + 1.5vw, 1.5rem) * var(--font-scale)) !important;
+	line-height: calc(clamp(1.5rem, 1rem + 2vw, 2rem) * var(--font-scale)) !important;
+}
+main .md-h4 {
+	font-size: calc(1.25rem * var(--font-scale)) !important;
+	line-height: calc(1.75rem * var(--font-scale)) !important;
+}
+main .md-h5 {
+	font-size: calc(1.125rem * var(--font-scale)) !important;
+	line-height: calc(1.75rem * var(--font-scale)) !important;
+}
+main .md-h6 {
+	font-size: calc(1rem * var(--font-scale)) !important;
+	line-height: calc(1.5rem * var(--font-scale)) !important;
+}
+
 /* Apply scaling to main content text elements */
 main p,
 main li {

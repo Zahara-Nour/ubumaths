@@ -31,16 +31,18 @@
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
 	<Card.Root class="w-full max-w-md">
 		<Card.Header>
-			<Card.Title class="text-center text-3xl">Set new password</Card.Title>
+			<Card.Title class="text-center text-3xl"
+				><h1 class="text-3xl! leading-none!">Nouveau mot de passe</h1></Card.Title
+			>
 			<Card.Description class="text-center">
-				Choose a strong password for your account.
+				Choisis un mot de passe solide pour ton compte.
 			</Card.Description>
 		</Card.Header>
 
 		<Card.Content>
 			<form method="POST" action="?/updatePassword" use:enhance class="space-y-4">
 				<div class="space-y-2">
-					<Label for="password">New Password</Label>
+					<Label for="password">Nouveau mot de passe</Label>
 					<MyPasswordInput
 						id="password"
 						name="password"
@@ -71,7 +73,7 @@
 							<div class="space-y-1 text-xs text-muted-foreground">
 								<div class="flex items-center gap-2">
 									<span class={passwordStrength.requirements.minLength ? 'text-green-600' : ''}>
-										{passwordStrength.requirements.minLength ? '✓' : '○'} At least 8 characters
+										{passwordStrength.requirements.minLength ? '✓' : '○'} Au moins 8 caractères
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
@@ -84,19 +86,19 @@
 										{passwordStrength.requirements.hasUpperCase &&
 										passwordStrength.requirements.hasLowerCase
 											? '✓'
-											: '○'} Mixed case letters
+											: '○'} Majuscules et minuscules
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<span class={passwordStrength.requirements.hasNumber ? 'text-green-600' : ''}>
-										{passwordStrength.requirements.hasNumber ? '✓' : '○'} Numbers
+										{passwordStrength.requirements.hasNumber ? '✓' : '○'} Des chiffres
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<span
 										class={passwordStrength.requirements.hasSpecialChar ? 'text-green-600' : ''}
 									>
-										{passwordStrength.requirements.hasSpecialChar ? '✓' : '○'} Special characters
+										{passwordStrength.requirements.hasSpecialChar ? '✓' : '○'} Des caractères spéciaux
 									</span>
 								</div>
 							</div>
@@ -105,7 +107,7 @@
 				</div>
 
 				<div class="space-y-2">
-					<Label for="confirmPassword">Confirm New Password</Label>
+					<Label for="confirmPassword">Confirme le nouveau mot de passe</Label>
 					<MyPasswordInput
 						id="confirmPassword"
 						name="confirmPassword"
@@ -120,11 +122,11 @@
 					</Alert.Root>
 				{/if}
 
-				<Button type="submit" class="w-full">Update password</Button>
+				<Button type="submit" class="w-full">Changer le mot de passe</Button>
 
 				<div class="text-center text-sm">
 					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
-						>Back to login</a
+						>Retour à la connexion</a
 					>
 				</div>
 			</form>

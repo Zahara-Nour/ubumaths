@@ -13,9 +13,10 @@ import type { ValidationResult } from '$lib/types/question-display';
 import { generateInstanceWithFixedVariables } from './generator/test-instance-builder';
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { getQuestionType, isCourseCard } from './types';
-import { readExpectedIntervals } from './intervals/interval-answer';
+import { readExpectedSet } from './intervals/interval-answer';
 import { readExpectedEquation } from './equations/equation-answer';
 import { readExpectedVector } from './vectors/vector-answer';
+import { readExpectedMatrix } from './matrices/matrix-answer';
 import { readExpectedPrimitive } from './calculus/primitive-answer';
 import { readExpectedSolution } from './calculus/differential-equation-answer';
 
@@ -59,7 +60,7 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 	const instance = genResult.instance;
 	const questionType = getQuestionType(instance);
 
-	// Case « intervalles », « équation » ou « vecteur » : une réponse attendue illisible est une erreur du MODÈLE
+	// Case « intervalles », « équation », « vecteur » ou « matrice » : une réponse attendue illisible est une erreur du MODÈLE
 	// (côté élève, elle rendrait toute réponse fausse sans le dire). Case « primitive » ou
 	// « solution-ed » : de même pour une attendue qui ne vérifie pas elle-même la règle.
 	for (const [index, blank] of (instance.blanks ?? []).entries()) {
@@ -78,10 +79,12 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 		}
 		const expected =
 			blank.answerKind === 'intervalles'
-				? readExpectedIntervals(blank.expectedAnswer)
+				? readExpectedSet(blank.expectedAnswer)
 				: blank.answerKind === 'vecteur'
 					? readExpectedVector(blank.expectedAnswer, blank.vectorMode)
-					: readExpectedEquation(blank.expectedAnswer);
+					: blank.answerKind === 'matrice'
+						? readExpectedMatrix(blank.expectedAnswer)
+						: readExpectedEquation(blank.expectedAnswer);
 		if (!expected.ok) {
 			return makeError(
 				`Réponse attendue illisible (case ${index + 1}) : ${blank.expectedAnswer} — ${expected.error}`

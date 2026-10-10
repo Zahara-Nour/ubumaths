@@ -1,7 +1,7 @@
 /**
  * Le cœur de `tidy` : relire une expression comme une somme de termes.
  *
- * Une fonction par étape du contrat (docs/wip/tidy-phase0.md, §A) :
+ * Une fonction par étape du contrat (docs/systeme/mathast/tidy-spec.md, §A) :
  *
  * | étape | fonction                                                        |
  * | ----- | --------------------------------------------------------------- |
@@ -34,6 +34,7 @@ import {
 	floorRational,
 	fromInteger,
 	isInteger as isIntegerRational,
+	isNegative as isNegativeRational,
 	isOne as isOneRational,
 	isPositive as isPositiveRational,
 	isZero as isZeroRational,
@@ -62,7 +63,7 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { sortFactors, sortTerms } from './order';
+import { isFirstDegreeSum, sortFactors, sortTerms } from './order';
 
 // =============================================================================
 // Types internes
@@ -95,6 +96,12 @@ type Accumulator = {
 	 * simplement porté devant, et ce n'est pas un geste.
 	 */
 	signCount: number;
+	/**
+	 * Le terme n'est qu'une somme opérande d'un `−` (`x − (−x − 1)`,
+	 * `−(−x − 1)`) : ce n'est pas un facteur, son signe ne sort pas. Sinon le
+	 * passage suivant aplatirait le `+(x + 1)` obtenu — `tidy` non idempotent.
+	 */
+	keepSumSign: boolean;
 };
 
 /**
@@ -656,7 +663,7 @@ function absorbFactor(
 	}
 
 	if (alreadyTidied) {
-		addFactor(acc, node, exponent);
+		addSumFactor(acc, node, exponent);
 		return;
 	}
 
@@ -665,7 +672,7 @@ function absorbFactor(
 	// nombre rejoigne le coefficient au lieu de rester un facteur.
 	const cleaned = tidyAtom(node, acc.unitChoice);
 	if (hashMathNode(cleaned) === hashMathNode(node)) {
-		addFactor(acc, cleaned, exponent);
+		addSumFactor(acc, cleaned, exponent);
 		return;
 	}
 	// ⚠️ `tidyAtom` repart dans `tidyExpression` SANS options : le carnet n'y voit
@@ -673,6 +680,36 @@ function absorbFactor(
 	// « on regroupe les facteurs » tairait la moitié du geste. Sentinelle.
 	acc.watch?.add('other');
 	absorbFactor(cleaned, exponent, acc, true);
+}
+
+/**
+ * Un facteur déjà mis au propre. Une somme de degré 1 dont TOUS les termes sont
+ * négatifs y perd son signe − (décision de David, 2026-10-06), parité de
+ * l'exposant respectée : `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`,
+ * `(−x − 1)³` → `−(x + 1)³`. Hors d'un facteur, `−x − 1` reste tel quel : ce
+ * chemin n'est emprunté que par la base d'un facteur.
+ */
+function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): void {
+	const positive =
+		!acc.keepSumSign && isIntegerRational(exponent) ? positiveFirstDegreeSum(node, acc) : null;
+	if (positive === null) {
+		addFactor(acc, node, exponent);
+		return;
+	}
+	if (exponent.n % 2n !== 0n) acc.coefficient = negRational(acc.coefficient);
+	addFactor(acc, positive, exponent);
+}
+
+/** `−x − 1` → `x + 1` ; `null` si la somme n'est pas de degré 1 à termes tous négatifs. */
+function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | null {
+	if (!isSumNode(node)) return null;
+	const terms = toSumTerms(node, undefined, acc.unitChoice);
+	if (terms.length < 2) return null;
+	const plain = terms.every(
+		(term) => !term.verbatim && term.unit === null && isNegativeRational(term.coefficient)
+	);
+	if (!plain || !isFirstDegreeSum(terms)) return null;
+	return buildSum(sortTerms(terms.map(negateTerm)));
 }
 
 // =============================================================================
@@ -683,7 +720,8 @@ function toTerm(
 	node: MathNode,
 	watch: FamilyWatch,
 	unitChoice: UnitChoice,
-	carriedSigns = 0
+	carriedSigns = 0,
+	keepSumSign = false
 ): TidyTerm {
 	const acc: Accumulator = {
 		coefficient: ONE,
@@ -694,7 +732,8 @@ function toTerm(
 		// ⚠️ Le `−` de tête est consommé par `flattenSumShallow`, donc il n'atteint
 		// jamais `absorbFactor`. Sans lui, `−(−x)` ne comptait qu'UN signe et
 		// passait sous le filet alors que deux signes s'y annulent.
-		signCount: carriedSigns
+		signCount: carriedSigns,
+		keepSumSign
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
@@ -751,6 +790,13 @@ function isSumNode(node: MathNode): boolean {
 	return node.type === 'addition' || node.type === 'subtraction';
 }
 
+/** Le nœud sous ses parenthèses : `((−x − 1))` → `−x − 1`. */
+function stripDelimiters(node: MathNode): MathNode {
+	let current = node;
+	while (isDelimiter(current)) current = current.content;
+	return current;
+}
+
 function negateTerm(term: TidyTerm): TidyTerm {
 	return { ...term, coefficient: negRational(term.coefficient) };
 }
@@ -789,7 +835,14 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			continue;
 		}
 
-		const collected = toTerm(term, watch, unitChoice, sign === '-' ? 1 : 0);
+		const negated = sign === '-';
+		const collected = toTerm(
+			term,
+			watch,
+			unitChoice,
+			negated ? 1 : 0,
+			negated && isSumNode(stripDelimiters(term))
+		);
 		// Précédé d'un `-`, une somme reste groupée : `-(x+2)` n'est pas distribué.
 		const inner = sign === '+' ? expandableSum(collected) : null;
 		if (inner !== null) {

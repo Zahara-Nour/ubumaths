@@ -106,6 +106,34 @@ describe('le parcours de la vue Calcul', () => {
 		expect(atelier.names).toEqual([]);
 		expect(container.querySelector('.refus')).toBeTruthy();
 	});
+
+	// Décision de David (2026-10-08, Q1) : une seule lettre est la variable.
+	// L'ancienne indication « Calcul par rapport à x » n'a plus lieu d'être ;
+	// une note visible avec la réponse reste couverte par « f′ existe déjà ».
+	it('`.dériver t^2` montre la réponse en t, sans indication de variable', async () => {
+		const { submit, container } = await open();
+
+		await submit('.dériver t^2');
+
+		const reponse = container.querySelector('.historique li .reponse');
+		expect(reponse?.querySelector('.math')).toBeTruthy();
+		expect(reponse?.textContent).not.toContain('Calcul par rapport à x');
+	});
+
+	// ⚠️ « f′ existe déjà » était collé au TEXTE de la ligne, que la vue
+	// n'affiche pas quand la réponse se compose en mathématiques : invisible
+	it('`.dériver f` une seconde fois dit, à l’écran, que f′ existe déjà', async () => {
+		const { submit, container } = await open();
+
+		await submit('f(x) = x^3');
+		await submit('.dériver f');
+		await submit('.dériver f');
+
+		const lignes = [...container.querySelectorAll('.historique li .reponse')];
+		const ligne = lignes.find((l) => l.textContent?.includes('existe déjà'));
+		expect(ligne, 'une ligne qui dit « existe déjà »').toBeTruthy();
+		expect(ligne?.querySelector('.math')).toBeTruthy();
+	});
 });
 
 /**
@@ -142,6 +170,26 @@ describe('les actions du panneau répondent vraiment', () => {
 		const { container } = await clickAction('Dériver');
 
 		expect(container.querySelector('.historique')?.textContent).toContain('2x');
+	});
+
+	// Même défaut par le bouton : la note était collée au texte, invisible
+	it('« Dériver » une seconde fois dit, à l’écran, que f′ existe déjà', async () => {
+		const { container } = await clickAction('Dériver');
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
+		) as HTMLElement;
+		// La carte de f est restée sélectionnée : son bouton est toujours là
+		const bouton = [...carte.querySelectorAll('button')].find((b) =>
+			b.textContent?.trim().startsWith('Dériver')
+		) as HTMLButtonElement | undefined;
+		expect(bouton, 'bouton « Dériver »').toBeTruthy();
+		bouton!.click();
+		await settle();
+
+		const lignes = [...container.querySelectorAll('.historique li .reponse')];
+		const ligne = lignes.find((l) => l.textContent?.includes('existe déjà'));
+		expect(ligne, 'une ligne qui dit « existe déjà »').toBeTruthy();
+		expect(ligne?.querySelector('.math')).toBeTruthy();
 	});
 
 	it('et bascule sur la vue Calcul pour qu’on voie la réponse', async () => {
@@ -318,5 +366,35 @@ describe('les lois dans l’historique (manche 13, PR c)', () => {
 
 		expect(container.querySelector('polyline.stat-densite')).not.toBeNull();
 		expect(container.querySelector('polygon.stat-aire')).not.toBeNull();
+	});
+});
+
+// =============================================================================
+// Exporter l'historique (lot C1, `atelier-suppression-export-phase0.md`)
+// =============================================================================
+
+describe('exporter l’historique', () => {
+	function exportButtons(container: HTMLElement): HTMLButtonElement[] {
+		return [...container.querySelectorAll('.export button')] as HTMLButtonElement[];
+	}
+
+	it('historique vide : boutons désactivés, avec leur raison (X1)', async () => {
+		const { container } = await open();
+
+		expect(exportButtons(container).map((b) => b.disabled)).toEqual([true, true]);
+		expect(container.querySelector('.export')?.textContent).toContain('Rien à exporter');
+	});
+
+	it('après une saisie, on peut exporter dans les deux formats', async () => {
+		const { container, submit } = await open();
+
+		await submit('f(x)=x^2');
+
+		const buttons = exportButtons(container);
+		expect(buttons.map((b) => b.disabled)).toEqual([false, false]);
+		expect(buttons.map((b) => b.textContent?.trim())).toEqual([
+			'JSON (pour rejouer)',
+			'ubumark (pour lire)'
+		]);
 	});
 });

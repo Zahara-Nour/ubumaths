@@ -130,6 +130,12 @@ function findHoleIndices(node: MathNode): number[] {
 		if ('args' in n && Array.isArray(n.args)) {
 			n.args.forEach((arg) => traverse(arg as MathNode));
 		}
+		// Matrice (`pmatrix`, `bmatrix`) : ses cases sont dans les lignes. Sans ce
+		// parcours, `\begin{pmatrix}?&?\\?&?\end{pmatrix}` était rendue statique et
+		// l'élève ne voyait aucune case (constat du 2026-10-05).
+		if (n.type === 'matrix') {
+			n.rows.forEach((row) => row.forEach((cell) => traverse(cell)));
+		}
 	}
 
 	traverse(node);
@@ -153,14 +159,22 @@ function findPlaceholderIndices(latex: string): number[] {
  * @returns Array of unique hole indices, sorted
  */
 export function extractPromptIndices(expression: string, syntax: 'latex' | 'custom'): number[] {
-	const result = syntax === 'latex' ? parseLatexSafe(expression) : parseCustomSafe(expression);
-	if (!result.ast) {
+	let ast: ReturnType<typeof parseLatexSafe>['ast'] | undefined;
+	try {
+		ast = (syntax === 'latex' ? parseLatexSafe(expression) : parseCustomSafe(expression)).ast;
+	} catch {
+		// Le parseur LÈVE au-delà de sa longueur maximale (`SecurityError`) : appelé
+		// au rendu d'un paragraphe, avant tout filtrage, il ferait tomber tout le
+		// rendu (message de chat de 20 000 caractères). Même repli qu'une formule non lue.
+		ast = undefined;
+	}
+	if (!ast) {
 		// Le parseur ne lit pas tout le LaTeX affichable (`\vec`, `\overrightarrow`…),
 		// alors que MathLive l'affiche : on repère les cases dans le texte, sinon la
 		// formule serait rendue statique et l'élève ne verrait aucune case.
 		return syntax === 'latex' ? findPlaceholderIndices(expression) : [];
 	}
-	return findHoleIndices(result.ast);
+	return findHoleIndices(ast);
 }
 
 /**

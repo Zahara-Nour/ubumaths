@@ -10,7 +10,7 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, LimitResult, OneSidedLimitResult, LimitOptions } from './types';
 import type { LimitStepRecorder } from './step-recorder';
-import { isNumber, isInfinity } from '../guards';
+import { isNumber, isInfinity, isFunction } from '../guards';
 import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
 import { substitute } from '../eval/substitute';
@@ -307,6 +307,11 @@ function hasAsymmetricBehavior(expr: MathNode, varName: string, approach: MathNo
 		}
 	}
 
+	// Pôle de tan, cot, sec, csc au point (tan x en π/2) : +∞ d'un côté, −∞ de l'autre
+	if (isTrigPoleAt(expr, varName, approach)) {
+		return true;
+	}
+
 	// Absolute value or sign function - check if argument changes sign
 	// (domain is ℝ for these functions, but behavior changes at 0)
 	if (expr.type === 'function') {
@@ -392,6 +397,31 @@ function getSign(value: number | null): 'positive' | 'negative' | 'zero' | 'unkn
  * @param value - The numeric value to substitute
  * @returns The numeric result or null if evaluation fails
  */
+/** Pôle d'une fonction trigonométrique : le facteur qui s'y annule. */
+const TRIG_POLE_VANISHING: Record<string, (u: number) => number> = {
+	tan: Math.cos,
+	sec: Math.cos,
+	cot: Math.sin,
+	csc: Math.sin
+};
+
+/** tan u, sec u (cos u = 0) ou cot u, csc u (sin u = 0) au point approché. */
+function isTrigPoleAt(expr: MathNode, varName: string, approach: MathNode): boolean {
+	if (!isFunction(expr) || expr.args.length !== 1) return false;
+	const vanishingFactor = TRIG_POLE_VANISHING[expr.name];
+	if (vanishingFactor === undefined) return false;
+	let point: number;
+	try {
+		point = evaluateNodeToApproximatedNumber(approach);
+	} catch {
+		return false;
+	}
+	if (!Number.isFinite(point)) return false;
+	const arg = evaluateAtValue(expr.args[0], varName, point);
+	if (arg === null) return false;
+	return Math.abs(vanishingFactor(arg)) < 1e-9;
+}
+
 function evaluateAtValue(expr: MathNode, varName: string, value: number): number | null {
 	try {
 		const valueNode: MathNode = { type: 'number', value: String(value) };
@@ -418,8 +448,12 @@ export function recordOneSidedSteps(
 	recorder: LimitStepRecorder
 ): void {
 	const approachStr = isNumber(approach) ? approach.value : '∞';
+	// Une limite unilatérale ±∞ (statut `infinite`) est une limite trouvée,
+	// au même titre qu'une valeur finie : son étape est enregistrée.
+	const isResolved = (r: LimitResult | null): r is LimitResult =>
+		r !== null && (r.status === 'exact' || r.status === 'infinite') && r.value !== null;
 
-	if (oneSided.left && oneSided.left.status === 'exact') {
+	if (isResolved(oneSided.left)) {
 		recorder.recordStep(
 			'one-sided',
 			`Limite à gauche (${varName} → ${approachStr}⁻)`,
@@ -435,7 +469,7 @@ export function recordOneSidedSteps(
 		);
 	}
 
-	if (oneSided.right && oneSided.right.status === 'exact') {
+	if (isResolved(oneSided.right)) {
 		recorder.recordStep(
 			'one-sided',
 			`Limite à droite (${varName} → ${approachStr}⁺)`,
