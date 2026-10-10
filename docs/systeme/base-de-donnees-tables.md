@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-218 tables · 25 vues · 311 fonctions. Colonne suivie de `?` : peut être nulle.
+220 tables · 25 vues · 311 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -531,6 +531,18 @@ Liens : `test_session_id` → `test_sessions`
 `categories` · `completed_at?` · `created_at?` · `evaluation_id?` · `grade?` · `id` · `mode` · `points_earned?` · `score?` · `time_limit?` · `time_spent?` · `total_questions` · `user_id?`
 
 Liens : `evaluation_id` → `evaluations`
+
+## Dictionnaire (mots mathématiques) (2)
+
+### `dictionary_entries`
+
+`auto_link` · `created_at` · `definitions?` · `derived_from?` · `exemples?` · `forms` · `grade` · `hidden` · `history?` · `id` · `image?` · `position` · `see_also?` · `sense?` · `shared_with` · `synonyms` · `tags` · `term` · `updated_at` · `updated_by?`
+
+### `dictionary_entry_versions`
+
+`entry` · `entry_id` · `id` · `saved_at` · `saved_by?`
+
+Liens : `entry_id` → `dictionary_entries`
 
 ## Révisions (SRS) (7)
 

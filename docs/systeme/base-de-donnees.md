@@ -260,6 +260,13 @@ affectée (`student_can_read_evaluation`) ; il lit ses sessions, le professeur c
 
 Code : `src/lib/server/` (`evaluations.ts`, `evaluation-attempts.ts`, `test-mode.ts`), `src/routes/api/evaluations`, `src/routes/api/tests`.
 
+### Dictionnaire (mots mathématiques)
+
+Les mots mathématiques et leurs définitions par niveau (ADR 0022) : `dictionary_entries`, et
+`dictionary_entry_versions` pour l'historique des modifications de l'admin. Code : `src/lib/dictionary/`,
+chargement serveur `src/lib/server/dictionary/load.ts` ; affichage : glossaire public et mots
+cliquables (`src/lib/lexicon/`).
+
 ### Révisions (SRS)
 
 Répétition espacée FSRS greffée sur les modèles de questions. Détail : [srs/architecture.md](srs/architecture.md).

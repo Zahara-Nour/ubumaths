@@ -128,6 +128,7 @@ export const DOMAINS: Domain[] = [
 		title: 'Évaluations',
 		match: ['evaluation', 'parody_evaluations', 'test_answers', 'test_sessions']
 	},
+	{ title: 'Dictionnaire (mots mathématiques)', match: ['dictionary_'] },
 	{ title: 'Révisions (SRS)', match: ['srs_'] },
 	{ title: 'Python', match: ['python_'] },
 	{
