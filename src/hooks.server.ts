@@ -1,3 +1,4 @@
+import { accountStatusHandle } from '$lib/server/accountStatusHandle';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { supabaseCspSource } from '$lib/server/csp';
 import { handle as supabaseHandle } from '$lib/server/supabase';
@@ -519,7 +520,7 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 // Combine hooks in sequence: Request ID first (for tracing), then maintenance gate
 // (BEFORE Supabase so it works with the DB frozen/unreachable), then Supabase, then others
 // Order matters: Request ID -> Maintenance -> Supabase auth -> Redirects -> User/Profile loading
-// -> Admin elevation (reads the elevation cookie, builds locals.adminSupabase; AFTER profile
+// -> Account status (non-approved: 403 on API and writes, B6) -> Admin elevation (reads the elevation cookie, builds locals.adminSupabase; AFTER profile
 // loading so DB role is available, BEFORE CSRF) -> CSRF validation -> Security Headers -> Error monitoring
 export const handle: Handle = sequence(
 	requestIdHandle,
@@ -527,6 +528,7 @@ export const handle: Handle = sequence(
 	supabaseHandle,
 	redirectHandle,
 	userProfileHandle,
+	accountStatusHandle,
 	adminElevationHandle,
 	csrfHandle,
 	securityHeadersHandle,

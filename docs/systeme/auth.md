@@ -158,7 +158,12 @@ Routes :
 `profiles.status` (enum `user_status` : `pending | approved | rejected`) :
 
 - `(protected)/+layout.server.ts` est **deny-by-default** : `pending` → `/auth/pending-approval` ;
-  tout autre statut que `approved` → `signOut()` + `/auth/login?error=Accès refusé.`
+  tout autre statut que `approved` → `signOut()` + `/auth/login?error=Accès refusé.` — mais il ne
+  garde que les **pages**.
+- **`accountStatusHandle`** (`src/lib/server/accountStatusHandle.ts`, dans le hook juste après le
+  chargement du profil ; B6, 2026-10-10) : un compte non approuvé reçoit **403 sur toute API et
+  toute écriture** (actions de formulaire comprises), sauf `/auth/logout`, `/api/account/export` et
+  `/api/account/delete` (droits RGPD).
 - Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
   `api/admin/users/[id]/status` (motif dans `rejection_reason`).
 
@@ -176,7 +181,10 @@ Trois branches, dans cet ordre :
 2. **Élève pré-importé** (`pending_students` non activé, même e-mail) — import par l'admin
    (`dashboard/admin/import-students`) : profil pré-rempli **`approved`**, inscrit dans ses
    `class_ids`, ligne `pending_students` marquée activée.
-3. **Défaut** : `student`, `pending` si l'e-mail finit par `@voltairedoha.com`, sinon `approved`.
+3. **Défaut** : `student`, **toujours `pending`** (B7, décision de David du 2026-10-10 ; avant :
+   `approved` d'office hors `@voltairedoha.com`) — un `signUp` GoTrue direct ou une première
+   connexion Google sans code ni pré-inscription attend l'approbation du prof. Migration
+   `20261015090400`, test `tests/integration/inscription-sans-code-en-attente.test.ts`.
 
 Le trigger **ne lit jamais** `role`, `status`, `school_id` ni `grade` dans les métadonnées
 (contrôlées par l'attaquant). Il **avale ses erreurs** (`RAISE WARNING`) : un compte peut donc
