@@ -3,7 +3,7 @@
 	import { MONTH_PALETTES } from '$lib/almanach/palettes';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import JsonLd from '$lib/seo/JsonLd.svelte';
-	import { SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
+	import { SITE_LOGO, SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
 	import type { PageProps } from './$types';
 
 	// Constantes
@@ -17,7 +17,7 @@
 				'@type': 'Organization',
 				name: SITE_NAME,
 				url: SITE_URL,
-				logo: absoluteUrl('/apple-touch-icon.png')
+				logo: absoluteUrl(SITE_LOGO)
 			}
 		]
 	};

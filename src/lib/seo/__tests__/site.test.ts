@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { SITE_URL, absoluteUrl, toJsonLdScript, toPlainText } from '../site';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { SITE_LOGO, SITE_URL, absoluteUrl, toJsonLdScript, toPlainText } from '../site';
 
 describe('absoluteUrl', () => {
 	it('préfixe un chemin par le domaine canonique', () => {
@@ -32,5 +34,17 @@ describe('toPlainText', () => {
 
 	it('retire le gras et les autres marques', () => {
 		expect(toPlainText('Un **grand** ~a^2~ et $\\sqrt{2}$')).toBe('Un grand a^2 et √2');
+	});
+});
+
+describe('SITE_LOGO', () => {
+	it('est un fichier dédié de static/, carré et d’au moins 512 px (Google : 112 px minimum)', () => {
+		expect(SITE_LOGO).toBe('/logo.png');
+		const png = readFileSync(join(process.cwd(), 'static', SITE_LOGO));
+		// En-tête PNG : largeur et hauteur aux octets 16-23
+		const width = png.readUInt32BE(16);
+		const height = png.readUInt32BE(20);
+		expect(width).toBe(height);
+		expect(width).toBeGreaterThanOrEqual(512);
 	});
 });
