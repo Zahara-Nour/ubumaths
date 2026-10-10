@@ -7,8 +7,18 @@ Branche `chore/deploiements-vercel`, worktree `ubumaths-wt-deploiements-vercel`,
 Alerte Vercel du 2026-10-10 : stockage des déploiements à 100 % des 10 Go du
 plan gratuit, quatre jours après un ménage manuel (117 → 11 déploiements).
 
-- Le compteur est en Go-mois : chaque jour, le maximum stocké par projet,
-  additionné sur la période. Supprimer arrête l'accumulation, ne rembourse rien.
+- La jauge du tableau de bord (Usage → Deployment Storage) est le volume stocké
+  du jour, pas un cumul. ⚠️ Une première explication, « compteur en Go-mois,
+  le ménage ne rembourse rien », était fausse pour cette jauge : la facturation
+  Pro compte en Go-mois, la limite du plan gratuit regarde le stock.
+- Courbe relevée le 10/10 : 28 Go au pic du 21-22/09, puis une dent de scie
+  entre ~1 et ~10 Go depuis le 23/09, pic proche de 10 Go le 8-9/10 (d'où
+  l'alerte), 247 Mo le 10/10 après la purge automatique de Vercel.
+- Cause : la rétention du projet était à 30 jours partout (production,
+  annulés, en erreur). À ~40 builds par jour, le stock monte d'environ 3 Go
+  par jour et touche les 10 Go en trois jours. Vercel supprime alors tout ce
+  qui n'est pas protégé. Le ménage du 6/10 a vidé le stock, qui s'est rempli
+  de nouveau en trois jours.
 - Rythme mesuré du 30/09 au 10/10 : 734 pushes sur `main`, dont 451 avec du
   code (~45 par jour). Chaque build de prod pèse ~81 Mo de statique et
   28,5 Mo de fonction.
@@ -48,11 +58,23 @@ suivis sont restés intacts. Réparé par `git switch main` dans le dépôt
 principal. Les tests de cette PR refusent désormais tout dossier hors du
 dossier jetable (`dansLeBac`) et posent `GIT_CEILING_DIRECTORIES`.
 
+## Vérifié en prod (2026-10-10)
+
+PR #1003 fusionnée (merge `6b3e5ab3d`). Journal du build de prod :
+
+```
+ignoreCommand : commit 6b3e5ab3d, dernier déploiement 72dce506f, dépôt https://github.com/Zahara-Nour/ubumaths.git
+ignoreCommand : src/ ou static/ a changé depuis 72dce506f → build
+```
+
+`VERCEL_GIT_PREVIOUS_SHA` arrive bien rempli : c'est le dernier déploiement
+RÉUSSI, et non le commit de doc annulé qui le suivait. L'URL du dépôt est
+correcte. Ce commit de doc sert à vérifier la règle 4 (« rien que de la doc →
+build sauté »).
+
 ## Reste à faire
 
-- CI verte, merge.
-- Après le merge : lire la sortie de l'ignore step dans le journal du premier
-  build de prod (`vercel inspect <url> --logs`). Elle doit afficher le dernier
-  déploiement (preuve que `VERCEL_GIT_PREVIOUS_SHA` arrive), le dépôt
-  `https://github.com/Zahara-Nour/ubumaths.git`, puis « src/ ou static/ a
-  changé … → build ».
+- La rétention du projet (Settings → Security → Deployment Retention Policy) :
+  à raccourcir, décision de David. À ce rythme, 10 Go ne tiennent que ~3 jours
+  de builds. Le plan gratuit garde de toute façon les 3 dernières prod pour un
+  retour arrière.
