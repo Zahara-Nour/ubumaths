@@ -229,7 +229,7 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
 - **classements unifiés** : les trois portées passent par `my_school()` ;
 - **tournois** : bornés aux classes ciblées.
 - **parties de démineur** : privées depuis le 2026-10-10 (D16) — chacun ne lit que les siennes ; le
-  rang de la page de stats vient de `minesweeper_rank_in_school()` (le nombre seul, borné à l'école).
+  rang et le tableau de la page de stats viennent de `minesweeper_scoped_leaderboard('school')` (borné à l'école, prénom seul).
   Auparavant, `anon` et tout compte lisaient toutes les parties terminées.
 
 ⚠️ Exceptions constatées, voir Doutes : file multijoueur, classements énigmes et 2048 ancien.

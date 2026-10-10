@@ -16,10 +16,9 @@
  *   1. anon ne lit plus aucune partie d'élève ;
  *   2. un autre élève, même de la même école, ne lit plus les parties d'un camarade ;
  *   3. l'élève lit toujours ses propres parties ;
- *   4. `minesweeper_rank_in_school()` rend le rang de l'APPELANT parmi les élèves classés
- *      (≥ 10 parties gagnées) de SON école — un meilleur élève d'une autre école ne compte
- *      pas ; null s'il n'est pas classé ;
- *   5. anon ne peut pas appeler la fonction.
+ *   4. le rang et le classement de la page de stats, par `minesweeper_scoped_leaderboard`
+ *      (serveur, bornée à l'école), restent justes une fois les parties privées : rang de
+ *      l'appelant, meilleur élève d'une autre école ignoré, non classé sans rang.
  *
  * @vitest-environment node
  */
@@ -140,30 +139,28 @@ describe('parties de démineur privées, rang par le serveur', () => {
 		expect(data).toHaveLength(10);
 	});
 
-	it('le rang est celui de l’appelant, dans son école seulement', async () => {
-		const clientMoyen = await clientFor(moyen.email);
-		const { data: rangMoyen, error } = await clientMoyen.rpc('minesweeper_rank_in_school' as never);
+	/** Ligne de l'appelant dans le classement d'école, comme la page de stats. */
+	async function maLigne(email: string) {
+		const client = await clientFor(email);
+		const { data, error } = await client.rpc('minesweeper_scoped_leaderboard', {
+			p_scope: 'school',
+			p_limit: 100
+		});
 		expect(error).toBeNull();
-		expect(rangMoyen).toBe(2);
+		return { lignes: data ?? [], moi: (data ?? []).find((l) => l.is_me) };
+	}
 
-		const clientFort = await clientFor(fort.email);
-		const { data: rangFort } = await clientFort.rpc('minesweeper_rank_in_school' as never);
-		expect(rangFort).toBe(1);
+	it('le rang de l’appelant reste juste, dans son école seulement', async () => {
+		const m = await maLigne(moyen.email);
+		expect(m.moi?.rank).toBe(2);
+		// L'élève de l'autre école (meilleur que tous) n'apparaît pas.
+		expect(m.lignes.map((l) => l.user_id).sort()).toEqual([moyen.id, fort.id, debutant.id].sort());
+		const f = await maLigne(fort.email);
+		expect(f.moi?.rank).toBe(1);
 	});
 
 	it('un élève non classé n’a pas de rang', async () => {
-		const client = await clientFor(debutant.email);
-		const { data, error } = await client.rpc('minesweeper_rank_in_school' as never);
-		expect(error).toBeNull();
-		expect(data).toBeNull();
-	});
-
-	it('anon ne peut pas appeler la fonction de rang', async () => {
-		const pg = await getPostgresClient();
-		const { rows } = await pg.query<{ granted: boolean }>(
-			`select has_function_privilege('anon', 'public.minesweeper_rank_in_school()', 'EXECUTE')
-			   as granted`
-		);
-		expect(rows[0].granted).toBe(false);
+		const d = await maLigne(debutant.email);
+		expect(d.moi?.top_games_count ?? 0).toBeLessThan(10);
 	});
 });
