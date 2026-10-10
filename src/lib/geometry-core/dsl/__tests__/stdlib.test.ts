@@ -14,6 +14,13 @@ function pos(
 	return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
 }
 
+// Identifiant de figure d'un symbole : il doit exister, sinon le test échoue ici.
+function idOf(symbols: ReturnType<typeof runDsl>['symbols'], name: string): string {
+	const entry = symbols.get(name);
+	if (!entry?.figureId) throw new Error(`Symbol "${name}" not found or has no figureId`);
+	return entry.figureId;
+}
+
 function dist(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
 	return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 }
@@ -434,7 +441,7 @@ describe('stdlib — distance(point, droite)', () => {
 			].join('\n')
 		);
 		expect(symbols.get('r')!.type).toBe('scalar');
-		expect(figure.getScalarValue(symbols.get('r')!.figureId)).toBeCloseTo(3, 10);
+		expect(figure.getScalarValue(idOf(symbols, 'r'))).toBeCloseTo(3, 10);
 	});
 
 	it('works with segment', () => {
@@ -447,14 +454,14 @@ describe('stdlib — distance(point, droite)', () => {
 				'r = distance(P, s)'
 			].join('\n')
 		);
-		expect(figure.getScalarValue(symbols.get('r')!.figureId)).toBeCloseTo(5, 10);
+		expect(figure.getScalarValue(idOf(symbols, 'r'))).toBeCloseTo(5, 10);
 	});
 
 	it('point-to-point distance still works', () => {
 		const { figure, symbols } = runDsl(
 			['A = point(0, 0)', 'B = point(3, 4)', 'r = distance(A, B)'].join('\n')
 		);
-		expect(figure.getScalarValue(symbols.get('r')!.figureId)).toBeCloseTo(5, 10);
+		expect(figure.getScalarValue(idOf(symbols, 'r'))).toBeCloseTo(5, 10);
 	});
 });
 
@@ -568,9 +575,9 @@ describe('stdlib — cercle_inscrit', () => {
 				'd3 = distance(I, droite(A, C))'
 			].join('\n')
 		);
-		const d1 = figure.getScalarValue(symbols.get('d1')!.figureId);
-		const d2 = figure.getScalarValue(symbols.get('d2')!.figureId);
-		const d3 = figure.getScalarValue(symbols.get('d3')!.figureId);
+		const d1 = figure.getScalarValue(idOf(symbols, 'd1'));
+		const d2 = figure.getScalarValue(idOf(symbols, 'd2'));
+		const d3 = figure.getScalarValue(idOf(symbols, 'd3'));
 		expect(d1).toBeCloseTo(d2!, 5);
 		expect(d2).toBeCloseTo(d3!, 5);
 	});

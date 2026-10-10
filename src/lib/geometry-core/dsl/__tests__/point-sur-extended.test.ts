@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
+import type { SymbolTable } from '../symbol-table';
 import { runDsl, serializeDsl } from '../index';
 import { geoToNumber } from '../../compute/to-number';
 import { numeric } from '../../types/geo-value';
@@ -14,11 +15,7 @@ function run(script: string) {
 	return interpret(program);
 }
 
-function getPos(
-	figure: ReturnType<typeof run>['figure'],
-	pointName: string,
-	symbols: Map<string, { figureId?: string }>
-) {
+function getPos(figure: ReturnType<typeof run>['figure'], pointName: string, symbols: SymbolTable) {
 	const sym = symbols.get(pointName);
 	if (!sym?.figureId) throw new Error(`Symbol "${pointName}" not found`);
 	return figure.getPosition(sym.figureId);

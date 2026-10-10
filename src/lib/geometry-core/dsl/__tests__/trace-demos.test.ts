@@ -7,6 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
+import type { SymbolTable } from '../symbol-table';
 import { numeric } from '../../types/geo-value';
 
 function run(script: string) {
@@ -14,7 +15,7 @@ function run(script: string) {
 	return interpret(program);
 }
 
-function getId(symbols: Map<string, { figureId?: string }>, name: string): string {
+function getId(symbols: SymbolTable, name: string): string {
 	const sym = symbols.get(name);
 	if (!sym?.figureId) throw new Error(`Symbol "${name}" not found`);
 	return sym.figureId;
