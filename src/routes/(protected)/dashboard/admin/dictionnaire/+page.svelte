@@ -24,6 +24,7 @@
 	let query = $state('');
 	/** L'entrée ouverte : son id, `'nouvelle'`, ou rien. */
 	let openId = $state<string | null>(null);
+	let editor = $state<ReturnType<typeof EntryEditor>>();
 
 	let results = $derived(searchRows(rows, query));
 	let openRow = $derived(rows.find((row) => row.id === openId) ?? null);
@@ -33,6 +34,13 @@
 
 	function label(row: AdminDictionaryRow): string {
 		return row.sense ? `${row.term} (${row.sense})` : row.term;
+	}
+
+	/** Changer de fiche : confirmer d'abord si la fiche ouverte a des modifications. */
+	function open(id: string) {
+		if (id === openId) return;
+		if (editor?.isDirty() && !confirm('Abandonner les modifications non enregistrées ?')) return;
+		openId = id;
 	}
 
 	function handleSaved(saved: AdminDictionaryRow) {
@@ -50,7 +58,7 @@
 <section class="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
 	<div class="flex flex-wrap items-center justify-between gap-2">
 		<h1 class="text-2xl font-bold tracking-tight">Dictionnaire</h1>
-		<Button onclick={() => (openId = 'nouvelle')}>
+		<Button onclick={() => open('nouvelle')}>
 			<Plus class="mr-1 size-4" /> Nouvelle entrée
 		</Button>
 	</div>
@@ -76,7 +84,7 @@
 							type="button"
 							class="flex w-full items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-muted"
 							class:bg-muted={row.id === openId}
-							onclick={() => (openId = row.id)}
+							onclick={() => open(row.id)}
 						>
 							<span class:text-muted-foreground={row.hidden}>{label(row)}</span>
 							<span class="flex shrink-0 gap-1">
@@ -94,11 +102,11 @@
 		<div>
 			{#if openId === 'nouvelle'}
 				{#key openId}
-					<EntryEditor row={null} {principalNames} onsaved={handleSaved} />
+					<EntryEditor bind:this={editor} row={null} {principalNames} onsaved={handleSaved} />
 				{/key}
 			{:else if openRow}
 				{#key `${openRow.id}|${openRow.updated_at}`}
-					<EntryEditor row={openRow} {principalNames} onsaved={handleSaved} />
+					<EntryEditor bind:this={editor} row={openRow} {principalNames} onsaved={handleSaved} />
 				{/key}
 			{:else}
 				<p class="text-muted-foreground">Choisissez un mot dans la liste, ou ajoutez une entrée.</p>

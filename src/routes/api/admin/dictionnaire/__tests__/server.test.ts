@@ -4,7 +4,7 @@
  * cohérence rend ses messages en français et n'écrit rien.
  */
 
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { DictionaryEntryInput } from '$lib/dictionary/entry-schema';
 
@@ -13,6 +13,7 @@ vi.mock('$lib/server/dictionary/load', async (importOriginal) => ({
 	forgetDictionary: vi.fn()
 }));
 
+const { forgetDictionary } = await import('$lib/server/dictionary/load');
 const { POST } = await import('../+server');
 const { PATCH } = await import('../[id]/+server');
 
@@ -50,14 +51,19 @@ const ROWS = [
 
 /** Client Supabase factice : lit ROWS, garde la trace de chaque écriture. */
 function fakeSupabase() {
-	const writes: { op: string; payload: Record<string, unknown> }[] = [];
+	const writes: { op: string; payload: Record<string, unknown>; where?: unknown[] }[] = [];
 	const client = {
 		from: () => {
 			let payload: Record<string, unknown> = {};
 			const builder = {
 				select: () => builder,
 				order: () => builder,
-				eq: () => builder,
+				// Le filtre d'une écriture : quelle ligne est visée
+				eq: (...args: unknown[]) => {
+					const last = writes.at(-1);
+					if (last) last.where = args;
+					return builder;
+				},
 				range: () => Promise.resolve({ data: ROWS, error: null }),
 				insert: (p: Record<string, unknown>) => {
 					payload = p;
@@ -133,6 +139,10 @@ async function status(promise: Promise<Response>): Promise<number> {
 	}
 }
 
+beforeEach(() => {
+	vi.mocked(forgetDictionary).mockClear();
+});
+
 describe('POST /api/admin/dictionnaire', () => {
 	it.each<[Who, number]>([
 		['visiteur', 401],
@@ -142,6 +152,7 @@ describe('POST /api/admin/dictionnaire', () => {
 		const { e, writes } = event(who, NEW_ENTRY);
 		expect(await status(POST(e as Parameters<typeof POST>[0]))).toBe(expected);
 		expect(writes()).toEqual([]);
+		expect(forgetDictionary).not.toHaveBeenCalled();
 	});
 
 	it('8. ajoute une entrée à la fin du dictionnaire', async () => {
@@ -151,6 +162,8 @@ describe('POST /api/admin/dictionnaire', () => {
 		expect(writes()).toEqual([
 			{ op: 'insert', payload: expect.objectContaining({ term: 'numérateur', position: 2 }) }
 		]);
+		// Le site relit la base : la nouvelle entrée n'attend pas la fin de la mémoire du serveur
+		expect(forgetDictionary).toHaveBeenCalledTimes(1);
 	});
 
 	it('10. refuse une première définition hors du niveau du mot, avec le message, sans rien écrire', async () => {
@@ -165,6 +178,7 @@ describe('POST /api/admin/dictionnaire', () => {
 			'« numérateur » : la première définition doit être au niveau du mot (6e), pas en 5e.'
 		]);
 		expect(writes()).toEqual([]);
+		expect(forgetDictionary).not.toHaveBeenCalled();
 	});
 
 	it('15. refuse un nom déjà pris (accents et majuscules ignorés)', async () => {
@@ -173,12 +187,14 @@ describe('POST /api/admin/dictionnaire', () => {
 		expect(response.status).toBe(400);
 		expect((await response.json()).message).toContain('existe déjà');
 		expect(writes()).toEqual([]);
+		expect(forgetDictionary).not.toHaveBeenCalled();
 	});
 
 	it('refuse une saisie invalide (Zod) : image externe', async () => {
 		const { e, writes } = event('admin', { ...NEW_ENTRY, image: '//pisteur.example/x.png' });
 		expect(await status(POST(e as Parameters<typeof POST>[0]))).toBe(400);
 		expect(writes()).toEqual([]);
+		expect(forgetDictionary).not.toHaveBeenCalled();
 	});
 });
 
@@ -191,13 +207,17 @@ describe('PATCH /api/admin/dictionnaire/[id]', () => {
 			"Le renvoi « fractionner » vise « fraction », qui est masqué : masquer ou modifier d'abord le renvoi."
 		]);
 		expect(writes()).toEqual([]);
+		expect(forgetDictionary).not.toHaveBeenCalled();
 	});
 
 	it('8. masque un renvoi, avec le client de l’admin élevé', async () => {
 		const { e, elevatedWrites } = event('prof élevé', { hidden: true }, RENVOI_ID);
 		const response = await PATCH(e as Parameters<typeof PATCH>[0]);
 		expect(response.status).toBe(200);
-		expect(elevatedWrites).toEqual([{ op: 'update', payload: { hidden: true } }]);
+		expect(elevatedWrites).toEqual([
+			{ op: 'update', payload: { hidden: true }, where: ['id', RENVOI_ID] }
+		]);
+		expect(forgetDictionary).toHaveBeenCalledTimes(1);
 	});
 
 	it('refuse un corps vide et un identifiant invalide', async () => {
@@ -215,5 +235,6 @@ describe('PATCH /api/admin/dictionnaire/[id]', () => {
 		const { e, writes } = event('prof', { hidden: true }, RENVOI_ID);
 		expect(await status(PATCH(e as Parameters<typeof PATCH>[0]))).toBe(403);
 		expect(writes()).toEqual([]);
+		expect(forgetDictionary).not.toHaveBeenCalled();
 	});
 });

@@ -190,6 +190,13 @@ export async function loadVersions(
 		id: v.id,
 		savedAt: v.saved_at,
 		savedBy: v.saved_by ? (names.get(v.saved_by) ?? 'admin') : null,
-		entry: v.entry
+		entry: withoutAuthorId(v.entry)
 	}));
+}
+
+/** La version telle que l'admin la lit : sans l'identifiant de compte de l'auteur précédent */
+function withoutAuthorId(entry: Json): Json {
+	if (entry === null || typeof entry !== 'object' || Array.isArray(entry)) return entry;
+	const { updated_by: _authorId, ...rest } = entry;
+	return rest;
 }

@@ -69,5 +69,18 @@ PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : worktree `../ubum
 - Tests : règles 17 (rouges 14/17 sans les règles), brouillon 5, routes 11 (rouges 3/11 sans la
   garde de cohérence), intégration 4 (rouges 2/4 sans la garde). Base locale : tables réappliquées
   à la main (`docker exec psql` + `migration repair`), une autre session l'avait recréée.
+- Revues 2b (2026-10-10) : security-auditor sans bloquant (corrigé par le coordinateur :
+  `withoutAuthorId`, l'identifiant de compte de l'auteur ne quitte pas le serveur). Retours du
+  code-reviewer corrigés : « Masquer » désactivé tant que la fiche a des modifications non
+  enregistrées, confirmation avant de changer de fiche ; partage retiré quand le niveau ne le
+  permet plus (`pruneShares`) ; refus 12 sans accents ni majuscules ; refus 16 : masquer le premier
+  homonyme visé par un renvoi est refusé même si le renvoi glisserait vers un second (cas
+  « fonction exponentielle ») ; clés stables des niveaux ; historique illisible → toaster ; phrase
+  « masquée : pas vérifiée avant son réaffichage » ; tests renforcés (image, mode, partage et
+  « Voir aussi » comparés à la ligne d'origine ; filtre `eq('id')` et `forgetDictionary` vérifiés).
+- Laissé tel quel (point 7 de la revue) : `newProblems` compare des ENSEMBLES de messages. Un
+  problème déjà présent dont le message est identique masque le même problème ajouté ailleurs
+  (deux fois le même message) ; un problème existant dont le message change (libellé du mot
+  modifié) compte comme nouveau.
 
 ## PR 3 — suppression du fichier (après un `deploy:prod` lancé par David)

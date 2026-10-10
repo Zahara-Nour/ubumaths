@@ -142,7 +142,9 @@ export function checkDictionary(entries: readonly CheckedEntry[]): string[] {
 		if (
 			!term.derivedFrom &&
 			!term.sense &&
-			principals.some((other) => other !== term && other.term === term.term)
+			principals.some(
+				(other) => other !== term && normalizeName(other.term) === normalizeName(term.term)
+			)
 		) {
 			problems.push(
 				`« ${term.term} » a plusieurs sens : chaque entrée doit porter une étiquette de sens.`
@@ -170,18 +172,18 @@ export function checkDictionary(entries: readonly CheckedEntry[]): string[] {
 
 		// Refus 11 et 16 : un renvoi vise un mot principal visible, lisible par chacun de ses lecteurs
 		if (term.derivedFrom) {
-			const target = principals.find((t) => t.term === term.derivedFrom);
-			if (!target) {
-				const hiddenTarget = entries.some(
-					(e) => e.hidden && !e.term.derivedFrom && e.term.term === term.derivedFrom
-				);
+			// Le renvoi vise le PREMIER mot principal de ce nom, masqué ou non : le masquer
+			// ferait glisser le renvoi vers un homonyme, sans que personne l'ait décidé
+			const first = entries.find((e) => !e.term.derivedFrom && e.term.term === term.derivedFrom);
+			if (!first || first.hidden) {
 				problems.push(
-					hiddenTarget
+					first
 						? `Le renvoi « ${term.term} » vise « ${term.derivedFrom} », qui est masqué : masquer ou modifier d'abord le renvoi.`
 						: `Le renvoi « ${term.term} » vise « ${term.derivedFrom} », qui n'existe pas.`
 				);
 				continue;
 			}
+			const target = first.term;
 			const blind = GRADE_CODES.filter(
 				(reader) => isTermVisibleTo(term, reader) && !isTermVisibleTo(target, reader)
 			);

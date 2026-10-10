@@ -127,6 +127,8 @@ describe('Dictionnaire : écriture par la page d’admin', () => {
 		const versions = await loadVersions(adminClient, created.row.id);
 		expect(versions).toHaveLength(1);
 		expect(versions[0].savedBy).not.toBeNull();
+		// L'écran montre le nom de l'auteur : l'identifiant de compte ne quitte pas le serveur
+		expect(versions[0].entry).not.toHaveProperty('updated_by');
 		const { rows } = await pg.query(
 			'select saved_by, entry from public.dictionary_entry_versions where entry_id = $1',
 			[created.row.id]

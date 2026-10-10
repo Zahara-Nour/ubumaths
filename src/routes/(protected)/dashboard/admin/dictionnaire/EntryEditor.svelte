@@ -15,11 +15,13 @@
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
-	import { hasAccessToGrade } from '$lib/utils/grades';
 	import { markDictionaryEdited } from '$lib/dictionary/fetch-dictionary';
 	import { refreshLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
 	import {
 		draftToInput,
+		newItemKey,
+		parallelGrades,
+		pruneShares,
 		rowToDraft,
 		type AdminDictionaryRow,
 		type DictionaryVersion,
@@ -45,6 +47,11 @@
 	let saving = $state(false);
 	let versions = $state<DictionaryVersion[] | null>(null);
 
+	// Ce que la ligne enregistrée donnerait : le brouillon en diffère-t-il ?
+	// svelte-ignore state_referenced_locally
+	const savedInput = JSON.stringify(draftToInput(rowToDraft(row)));
+	let dirty = $derived(JSON.stringify(draftToInput(draft)) !== savedInput);
+
 	const gradeItems = GRADE_CODES.map((code) => ({ value: code, label: GRADES[code].displayName }));
 
 	let derivedItems = $derived([
@@ -52,15 +59,9 @@
 		...principalNames.map((name) => ({ value: name, label: name }))
 	]);
 
-	/** Filières parallèles de la même année : les seules avec qui partager (refus 13). */
-	function parallelGrades(grade: GradeCode): GradeCode[] {
-		return GRADE_CODES.filter(
-			(other) =>
-				other !== grade &&
-				GRADES[other].schoolYear === GRADES[grade].schoolYear &&
-				!hasAccessToGrade(other, grade) &&
-				!hasAccessToGrade(grade, other)
-		);
+	/** La page demande confirmation avant de quitter une fiche modifiée. */
+	export function isDirty(): boolean {
+		return dirty;
 	}
 
 	function toggle(list: GradeCode[], grade: GradeCode, on: boolean): GradeCode[] {
@@ -69,7 +70,7 @@
 
 	function addItem(field: DraftField) {
 		const last = field.items.at(-1)?.grade ?? draft.grade;
-		field.items.push({ grade: last, content: '', sharedWith: [] });
+		field.items.push({ key: newItemKey(), grade: last, content: '', sharedWith: [] });
 	}
 
 	/** Réponse d'erreur du serveur : ses messages de refus, ou son message seul. */
@@ -122,12 +123,13 @@
 
 	async function loadVersions() {
 		if (!row) return;
-		const response = await fetch(`/api/admin/dictionnaire/${row.id}/versions`);
-		if (!response.ok) {
-			toaster.error('Historique illisible');
-			return;
+		try {
+			const response = await fetch(`/api/admin/dictionnaire/${row.id}/versions`);
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			versions = await response.json();
+		} catch {
+			toaster.error('Historique illisible : serveur injoignable ou réponse invalide');
 		}
-		versions = await response.json();
 	}
 
 	function versionSummary(entry: DictionaryVersion['entry']): string {
@@ -163,13 +165,15 @@
 {#snippet gradedField(title: string, field: DraftField)}
 	<fieldset class="space-y-3">
 		<legend class="font-semibold">{title}</legend>
-		{#each field.items as item, index (index)}
+		{#each field.items as item, index (item.key)}
 			<div class="space-y-2 rounded-md border p-3">
 				<div class="flex items-center gap-2">
 					<div class="w-48">
 						<MySelect
 							type="single"
 							bind:value={item.grade}
+							onValueChange={(grade) =>
+								(item.sharedWith = pruneShares(grade as GradeCode, item.sharedWith))}
 							items={gradeItems}
 							triggerAriaLabel={`${title} ${index + 1} : ${GRADES[item.grade].displayName}`}
 						/>
@@ -203,6 +207,12 @@
 		<h2 class="text-xl font-bold">{row ? row.term : 'Nouvelle entrée'}</h2>
 		{#if row?.hidden}<Badge variant="secondary">masquée</Badge>{/if}
 	</div>
+	{#if row?.hidden}
+		<p class="text-sm text-muted-foreground">
+			Masquée : personne ne la lit, et ses règles ne sont pas vérifiées. Elles le seront à son
+			réaffichage.
+		</p>
+	{/if}
 
 	<div class="grid gap-4 sm:grid-cols-2">
 		<label class="space-y-1 text-sm">
@@ -218,6 +228,8 @@
 			<MySelect
 				type="single"
 				bind:value={draft.grade}
+				onValueChange={(grade) =>
+					(draft.sharedWith = pruneShares(grade as GradeCode, draft.sharedWith))}
 				items={gradeItems}
 				triggerAriaLabel={`Niveau du mot : ${GRADES[draft.grade].displayName}`}
 			/>
@@ -273,7 +285,8 @@
 			{row ? 'Enregistrer' : 'Ajouter l’entrée'}
 		</Button>
 		{#if row}
-			<Button variant="outline" onclick={toggleHidden} disabled={saving}>
+			<!-- Masquer recharge la fiche : le brouillon non enregistré serait perdu -->
+			<Button variant="outline" onclick={toggleHidden} disabled={saving || dirty}>
 				{#if row.hidden}
 					<Eye class="mr-1 size-4" /> Réafficher
 				{:else}
@@ -285,6 +298,11 @@
 			</Button>
 		{/if}
 	</div>
+	{#if row && dirty}
+		<p class="text-sm text-muted-foreground">
+			Enregistre d’abord tes modifications pour {row.hidden ? 'réafficher' : 'masquer'} l’entrée.
+		</p>
+	{/if}
 
 	{#if versions}
 		<section class="space-y-2">

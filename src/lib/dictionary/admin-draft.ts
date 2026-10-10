@@ -10,7 +10,8 @@
  * @module dictionary/admin-draft
  */
 
-import type { GradeCode } from '$lib/types/grades';
+import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { hasAccessToGrade } from '$lib/utils/grades';
 import type { Json } from '$lib/types/database';
 import { normalizeName } from './consistency';
 import type { DictionaryEntryInput, DictionaryRow } from './entry-schema';
@@ -21,6 +22,8 @@ import type { GradedField } from './model';
 // ---------------------------------------------------------------------------
 
 export interface DraftItem {
+	/** Clé stable de la liste (un niveau retiré ne décale pas les autres) ; jamais envoyée. */
+	key: number;
 	grade: GradeCode;
 	content: string;
 	sharedWith: GradeCode[];
@@ -79,8 +82,37 @@ export interface SearchableRow {
 const SEARCH_LIMIT = 50;
 
 // ---------------------------------------------------------------------------
+// Variables
+// ---------------------------------------------------------------------------
+
+let lastItemKey = 0;
+
+// ---------------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------------
+
+/** Une clé neuve pour un niveau de brouillon. */
+export function newItemKey(): number {
+	lastItemKey += 1;
+	return lastItemKey;
+}
+
+/** Filières parallèles de la même année : les seules avec qui partager (refus 13). */
+export function parallelGrades(grade: GradeCode): GradeCode[] {
+	return GRADE_CODES.filter(
+		(other) =>
+			other !== grade &&
+			GRADES[other].schoolYear === GRADES[grade].schoolYear &&
+			!hasAccessToGrade(other, grade) &&
+			!hasAccessToGrade(grade, other)
+	);
+}
+
+/** Le niveau change : seuls restent les partages encore possibles. */
+export function pruneShares(grade: GradeCode, sharedWith: readonly GradeCode[]): GradeCode[] {
+	const allowed = parallelGrades(grade);
+	return sharedWith.filter((other) => allowed.includes(other));
+}
 
 /** Champ gradué de la base (jsonb déjà validé à la lecture) en brouillon. */
 function toDraftField(field: DictionaryRow['definitions']): DraftField {
@@ -88,6 +120,7 @@ function toDraftField(field: DictionaryRow['definitions']): DraftField {
 	return {
 		...(graded?.mode && { mode: graded.mode }),
 		items: (graded?.items ?? []).map((item) => ({
+			key: newItemKey(),
 			grade: item.grade,
 			content: item.content,
 			sharedWith: [...(item.sharedWith ?? [])]

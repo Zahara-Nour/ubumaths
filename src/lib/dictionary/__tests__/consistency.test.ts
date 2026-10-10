@@ -98,6 +98,13 @@ describe('checkDictionary', () => {
 		]);
 	});
 
+	it('refus 12 : should compare names without accents nor case', () => {
+		const problems = checkDictionary(visible(word('Base', { sense: 'géométrie' }), word('bàse')));
+		expect(problems).toEqual([
+			'« bàse » a plusieurs sens : chaque entrée doit porter une étiquette de sens.'
+		]);
+	});
+
 	it('refus 13 : should refuse sharing with a branch that is not parallel', () => {
 		const problems = checkDictionary(
 			visible(
@@ -150,6 +157,25 @@ describe('checkDictionary', () => {
 		]);
 		expect(problems).toEqual([
 			"Le renvoi « fractionner » vise « fraction », qui est masqué : masquer ou modifier d'abord le renvoi."
+		]);
+	});
+
+	// « fonction exponentielle » a deux entrées principales : masquer la première ferait
+	// glisser ses renvois vers la seconde, sans que personne l'ait décidé
+	it('refus 16 : should refuse hiding the first homonym, even if the cross-reference would slide to a readable second one', () => {
+		const problems = checkDictionary([
+			{ term: word('fonction exponentielle', { sense: 'suites' }), hidden: true },
+			{ term: word('fonction exponentielle', { sense: 'fonctions' }), hidden: false },
+			{
+				term: word('exponentielle', {
+					derivedFrom: 'fonction exponentielle',
+					definitions: undefined
+				}),
+				hidden: false
+			}
+		]);
+		expect(problems).toEqual([
+			"Le renvoi « exponentielle » vise « fonction exponentielle », qui est masqué : masquer ou modifier d'abord le renvoi."
 		]);
 	});
 
