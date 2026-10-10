@@ -898,3 +898,14 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     2. les questions restantes du lot ;
     3. la question d'accès ;
     4. la migration.
+- **2026-10-10 — Migration appliquée en prod, doc de l'arbre passée en .16.**
+  - `db:migrate` a été lancé par David (20261012080000). Les empreintes de prod sont identiques à l'état attendu :
+    1 005 modèles, 446 rangements d'exercices, 1 951 points ; 625 nœuds actifs et 74 archivés ; triggers de date
+    rétablis, dates inchangées.
+  - `arbre-notions.json` est réécrit en .16 depuis la fixture, avec la liste `archives` et un statut à jour. La note
+    de Dérivation (optimisation) est corrigée.
+  - `dessin_branches.py` et `page.py` LISENT le JSON : plus d'arbre ni de comptes en dur. La page est régénérée :
+    19 branches, 134 notions, 472 sous-notions, 74 archivés.
+  - Docs `seed-*.md` : 491 colonnes de nœud mises à jour. Les 1 951 lignes de point ont été vérifiées par script
+    contre leur fixture .16, sans aucun écart.
+  - LISEZMOI à jour : la base fait foi, le JSON en est la copie de doc.

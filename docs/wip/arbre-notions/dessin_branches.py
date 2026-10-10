@@ -1,24 +1,25 @@
-import html, textwrap
+import html, json, textwrap
 E=html.escape
-# notion, niveaux, [(préfixe, [sous-notions])], note (activités sorties)
-NC=[
-("Entiers : numération","CP à 6e",[("",["comparer","décomposer","écrire","repérer","dénombrer","ordinaux et rangs"])],None),
-("Entiers : addition et soustraction","CP à CM2",[("",["somme","différence","complément","tables","double et moitié","triple et tiers","calcul astucieux","calcul posé"])],None),
-("Entiers : multiplication","CP à 5e",[("",["tables","produit","carrés","décomposition","distributivité","double et moitié","triple et tiers","quadruple et quart","puissances de 10","produits particuliers","calcul astucieux","calcul posé"])],None),
-("Entiers : division","CE2 à 6e",[("",["quotient","division euclidienne","calcul posé","calcul réfléchi"])],None),
-("Entiers : priorités opératoires","CM1 à 5e",[("",["avec parenthèses","sans parenthèses","traduire une phrase"])],None),
-("Décimaux : numération","CM1 à 6e",[("",["comparer","décomposer","écrire","encadrer","forme fractionnaire","arrondis et ordres de grandeur","droite graduée"])],None),
-("Décimaux : calculs","CM1 à 6e",[("",["additionner","soustraire","multiplier","diviser","puissances de 10","distributivité","double et moitié","calcul astucieux","calcul posé"])],None),
-("Fractions : sens et écritures","CE1 à 2de",[("",["définition","comparer","décomposer","égalité de fractions","simplifier","forme décimale","droite graduée"])],None),
-("Fractions : calculs","CE1 à 3e",[("",["additionner et soustraire","multiplier","diviser","inverse","fraction d'une quantité"])],None),
-("Relatifs : sens et écritures","5e, 4e",[("",["définition","comparer","droite graduée"])],None),
-("Relatifs : calculs","5e, 4e",[("",["sommes","différences","sommes algébriques","produit","quotient","carré"])],None),
-("Puissances : sens et écritures","5e à 3e",[("",["définition","puissances de 10","notation scientifique"])],None),
-("Puissances : calculs","5e à 2de",[("",["multiplier","diviser","puissance de puissance","mélange"])],None),
-("Racines carrées : sens et écritures","5e à 2de",[("",["définition","égalités","réduire"])],None),
-("Racines carrées : calculs","4e, 2de",[("",["calculer","propriétés"])],None),
-("Problèmes arithmétiques","CP à 6e",[("",["parties-tout","comparaison","en deux étapes ou plus","multiplicatifs","produits cartésiens","optimisation"])],"classés par structure ; cycle 4 à confirmer"),
-]
+# L'arbre se LIT dans arbre-notions.json (copie de doc de la base, version .16) ; ce script ne réécrit plus le JSON.
+# Il produit nc-section.html, que page.py assemble dans arbre-notions.html.
+ARBRE=json.load(open('arbre-notions.json'))
+def notions(branche):
+    """(notion, niveaux, [(préfixe, [sous-notions])], note) d'une branche, dans l'ordre du JSON."""
+    for b in ARBRE['branches']:
+        if b['nom']==branche:
+            return [(n['nom'],n['niveaux'],[("",n['sous_notions'])],n['note']) for n in b['notions']]
+    raise SystemExit(f'branche introuvable dans arbre-notions.json : {branche}')
+DESSIN=[("Nombres et calculs","NC"),("Arithmétique","AR"),("Nombres complexes","CX"),("Proportionnalité","PR"),
+ ("Algèbre","AL"),("Fonctions","FO"),("Intégration","IN"),("Équations différentielles","ED"),("Suites","SU"),
+ ("Matrices","MA"),("Graphes","GR"),("Géométrie","GE"),("Grandeurs et mesures","GR_M"),("Probabilités","PS"),
+ ("Dénombrement","DE"),("Statistiques","ST"),("Logique","LO"),("Ensembles","EN"),("Algorithmique","AG")]
+# Chaque branche du JSON doit être dessinée, et aucune autre.
+assert {b for b,_ in DESSIN}=={b['nom'] for b in ARBRE['branches']}, 'branches du JSON et du dessin différentes'
+NC=notions("Nombres et calculs"); AR=notions("Arithmétique"); CX=notions("Nombres complexes"); PR=notions("Proportionnalité")
+AL=notions("Algèbre"); FO=notions("Fonctions"); IN=notions("Intégration"); ED=notions("Équations différentielles")
+SU=notions("Suites"); MA=notions("Matrices"); GR=notions("Graphes"); GE=notions("Géométrie")
+GR_M=notions("Grandeurs et mesures"); PS=notions("Probabilités"); DE=notions("Dénombrement"); ST=notions("Statistiques")
+LO=notions("Logique"); EN=notions("Ensembles"); AG=notions("Algorithmique")
 W=1000; BX=4; BW=170; NX=215; NW=285; GX=525; GW=W-GX-6; LH=19; CH=7.1
 def chips_for(groups):
     out=[];row=0;x=0
@@ -73,248 +74,83 @@ def build(NC,b1,b2,label,cls):
   o.append('</svg>')
   return '\n'.join(o)
 
-
-PR=[
-("Situations de proportionnalité","CM1 à 3e",[("",["reconnaître","appliquer","quatrième proportionnelle","ratio"])],"reprend « Tableaux de proportionnalité »"),
-("Pourcentages","6e à 2de",[("",["définition","calculer"])],None),
-("Évolutions","4e à 2de, 1re ens. sci., Tle techno",[("",["variations en pourcentage","évolutions successives et réciproque","taux d'évolution moyen","indices"])],"coefficient multiplicateur dès la 4e"),
-("Échelle d'une carte","6e, 3e",[("",["trouver l'échelle","utiliser l'échelle"])],None),
-("Vitesse","4e",[("",["calculer","convertir"])],"vient de Grandeurs et mesures"),
-]
-AL=[
-("Premiers pas algébriques","CM1 à 6e",[("",["égalités à trous","nombre inconnu","programmes de calcul","suites de motifs"])],"pensée algébrique du cycle 3 ; les lettres formelles attendent le cycle 4"),
-("Calcul littéral","5e à 2de",[("",["substitution","réduire","simplifier l'écriture","opposé d'une expression","développer","factoriser","identités remarquables","isoler une variable","expressions fractionnaires"])],None),
-("Équations : premier degré","5e à 2de",[("",["ax = b","ax + b = c","ax + b = cx + d","mettre en équation"])],"reprend « Dans ℕ, ℤ, ℚ » : l'ensemble devient une difficulté (level)"),
-("Équations : produit et quotient","3e, 2de",[("",["produit nul","x² = a","équation quotient"])],None),
-("Inéquations : premier degré","3e à 2de",[("",["ax + b < c","ax + b < cx + d","mettre en inéquation"])],"aucun modèle aujourd'hui"),
-("Inéquations : produit et quotient","2de",[("",["tableau de signes","inéquation produit","inéquation quotient"])],"aucun modèle aujourd'hui"),
-("Équations : second degré","1re",[("",["discriminant","équations incomplètes","se ramener au second degré","mettre en équation"])],None),
-("Inéquations : second degré","1re",[("",["inéquations du second degré","mettre en inéquation"])],None),
-("Inégalités","2de à Tle",[("",["règles de calcul","signe d'une expression","comparer et encadrer"])],None),
-]
-FO=[
-("Généralités sur les fonctions","5e à 1re",[("",["images et antécédents","ensemble de définition","appartenance à une courbe","résolution graphique","variations","extremums","signe","parité"])],"reprend ta nouvelle fiche et « Calcul d'images »"),
-("Fonctions affines","3e, 2de",[("",["fonction linéaire","expression et droite","coefficient directeur et ordonnée à l'origine","variations et signe","équations"])],None),
-("Fonction carré","3e, 2de",[("",["définition et courbe","variations","comparer des images","x² = k, x² < k"])],"aucun modèle aujourd'hui"),
-("Fonction inverse","2de",[("",["définition et courbe","variations","comparer des images","1/x = k, 1/x < k"])],"aucun modèle aujourd'hui"),
-("Fonction racine carrée","2de",[("",["définition et courbe","variations","comparer des images","√x = k, √x < k"])],"aucun modèle aujourd'hui"),
-("Fonction cube","2de",[("",["définition et courbe","variations","x³ = k, x³ < k"])],"aucun modèle aujourd'hui"),
-("Fonction valeur absolue","2de",[("",["définition et distance","courbe","variations","équations et inéquations"])],"reprend le domaine Valeur absolue"),
-("Second degré","1re",[("",["racines","signe","formes","variations","parabole","somme et produit des racines"])],"équations et inéquations → Algèbre"),
-("Dérivation","1re, Tle, Tle comp.",[("",["taux de variation","nombre dérivé","tangente","approximation affine","fonctions dérivées","opérations sur les dérivées","dérivabilité en un point","variations","étude de fonction","position relative de deux courbes","optimisation","fonctions composées"])],"optimisation : sous-notion, plus une notion"),
-("Fonction exponentielle","1re, 1re ens. sci., Tle, Tle techno",[("",["propriétés algébriques","dérivée","variations","courbe","équations et inéquations","suites et modélisation","fonctions x ↦ aˣ"])],None),
-("Fonctions trigonométriques","1re, Tle",[("",["cercle et radians","cosinus et sinus d'un réel","angles associés","équations","inéquations","parité et périodicité","dérivées et variations"])],None),
-("Limites de fonctions","Tle, Tle comp.",[("",["limite en un point","opérations","formes indéterminées","comparaison et encadrement","croissances comparées","asymptotes"])],None),
-("Continuité","Tle, Tle comp.",[("",["continuité en un point","lecture graphique","valeurs intermédiaires","fonction réciproque","encadrement d'une solution"])],None),
-("Convexité","Tle, Tle comp.",[("",["caractérisations","dérivée seconde","point d'inflexion","inégalités de convexité","lecture graphique"])],None),
-("Logarithmes","Tle, Tle comp., Tle techno",[("",["réciproque de l'exponentielle","propriétés algébriques","équations et inéquations","dérivée","courbe","logarithme décimal"])],None),
-]
-IN=[
-("Calcul d'intégrales","Tle, Tle comp.",[("",["par une primitive","relation de Chasles","linéarité","positivité et inégalités","intégration par parties","suites d'intégrales","méthode des rectangles"])],None),
-("Intégrale et aire","Tle, Tle comp.",[("",["aire algébrique","aire entre deux courbes","lecture graphique"])],None),
-("Valeur moyenne","Tle, Tle comp.",[("",["calcul","encadrement","interprétation"])],None),
-("Fonction intégrale","Tle, Tle comp.",[("",["dérivée d'une fonction intégrale"])],None),
-]
-ED=[
-("Généralités","Tle, Tle comp.",[("",["notion de solution","allure des courbes","méthode d'Euler"])],None),
-("y′ = f","Tle, Tle comp.",[("",["primitives : notion","primitives des fonctions de référence","formes u′eᵘ, 2uu′, u′/u","forme (v′∘u)×u′","sinus et cosinus"])],"les primitives sont les solutions de y′ = f"),
-("y′ = ay","Tle, Tle comp.",[("",["solution générale","condition initiale"])],None),
-("y′ = ay + b","Tle, Tle comp.",[("",["solution générale","condition initiale"])],None),
-("y′ = ay + f","Tle",[("",["solution particulière donnée","solution générale"])],None),
-]
-SU=[
-("Généralités sur les suites","1re",[("",["calculer un terme","explicite ou par récurrence","deviner le terme général","représentation graphique","sens de variation"])],None),
-("Suites arithmétiques","1re",[("",["reconnaître","raison","terme général","calculer un terme","somme des termes"])],None),
-("Suites géométriques","1re",[("",["reconnaître","raison","terme général","calculer un terme","somme des termes"])],None),
-("Suites et modélisation","1re, Tle, Tle comp.",[("",["placements","pourcentages","seuil","algorithmes"])],None),
-("Limites de suites","1re, Tle, Tle comp.",[("",["définition","opérations","formes indéterminées","comparaison et encadrement","suites géométriques","convergence monotone","suites majorées, minorées"])],None),
-("Raisonnement par récurrence","Tle",[("",["structure d'une récurrence"])],None),
-("Suites récurrentes","Tle, Tle comp.",[("",["escalier","point fixe"])],None),
-("Suites arithmético-géométriques","Tle, Tle comp.",[("",["solution constante","suite auxiliaire","limite"])],None),
-]
-GE=[
-("Solides","CP à 3e, 1re et Tle techno",[("",["reconnaître et décrire","construire","patrons","perspective cavalière","perspective centrale","sections planes"])],"le collège (D2) viendra avec le cycle 4"),
-("Figures planes","CP à 4e, 1re et Tle techno",[("",["reconnaître et décrire","angles droits","perpendiculaires et parallèles","reproduire et construire","cercle","triangles","parallélogrammes","médiatrice et bissectrice","polygones réguliers","coniques"])],None),
-("Symétrie axiale","CE2 à 3e",[("",[])],None),
-("Repérage et déplacements","CP à 3e",[("",["positions et plans","coder un déplacement","coordonnées dans le plan"])],None),
-("Symétrie centrale","5e, 4e",[("",[])],None),
-("Translations","4e, 3e, 1re techno",[("",["frises et pavages"])],None),
-("Théorème de Pythagore","4e, 3e",[("",["calculer une longueur","réciproque"])],None),
-("Théorème de Thalès","4e, 3e",[("",["droite des milieux","calculer une longueur","réciproque"])],"droite des milieux en 4e (décision S2)"),
-("Trigonométrie du triangle rectangle","3e",[("",["calculer une longueur","calculer un angle"])],None),
-("Rotations","hors programme",[("",[])],"ancienne 3e — demandé par David : enrichissement, évolutions futures"),
-("Homothéties","hors programme",[("",[])],"ancienne 3e — demandé par David"),
-("Triangles semblables","hors programme",[("",["cas d'égalité des triangles"])],"ancienne 3e (cas d'égalité : ancienne 4e)"),
-("Repérage dans l'espace","1re techno (STD2A)",[("",[])],"ancien programme : pavé (4e), sphère latitude-longitude (3e)"),
-("Vecteurs : sans coordonnées","3e, 2de",[("",["translation et vecteur","égalité de vecteurs","somme et relation de Chasles","produit par un réel","colinéarité","combinaison linéaire"])],"aucun modèle aujourd'hui"),
-("Vecteurs : avec coordonnées","2de",[("",["coordonnées d'un vecteur","somme et produit par un réel","norme","colinéarité et déterminant"])],"aucun modèle aujourd'hui"),
-("Géométrie repérée","2de, 1re",[("",["milieu et distance","équations de droites","vecteur directeur","intersection de deux droites","vecteur normal et équation de droite","équation de cercle","projeté orthogonal"])],None),
-("Produit scalaire","1re",[("",["calculer un produit scalaire","angles et longueurs","propriétés","lieux de points"])],None),
-("Espace : sans coordonnées","Tle",[("",["vecteurs de l'espace","colinéarité et alignement","coplanarité et décomposition","positions relatives de droites et plans"])],None),
-("Espace : avec coordonnées","Tle",[("",["coordonnées dans l'espace","représentation paramétrique d'une droite","intersections","positions relatives par le calcul"])],None),
-("Orthogonalité : sans coordonnées","Tle",[("",["produit scalaire dans l'espace","orthogonalité de droites et plans","projeté orthogonal","angles"])],"dans l'espace"),
-("Orthogonalité : avec coordonnées","Tle",[("",["norme et distance","vecteur normal à un plan","équation cartésienne d'un plan","coordonnées du projeté orthogonal","sphère"])],"dans l'espace"),
-]
-GR_M=[
-("Longueurs","CP à 6e",[("",["comparer et mesurer","unités et conversions"])],None),
-("Masses","CP à CM1",[("",["comparer et mesurer","unités et conversions"])],"cycle 4 à confirmer"),
-("Contenances","CE2, CM1",[("",["comparer et mesurer","unités et conversions"])],"bascule vers les volumes au collège"),
-("Monnaie","CP à CE2",[("",["pièces et billets","euros et centimes","rendre la monnaie"])],"porte l'écriture à virgule du cycle 2"),
-("Angles","CM1 à 6e",[("",["comparer","mesurer en degrés","construire"])],"la grandeur ; les angles-objets (médiatrice, bissectrice…) → Figures planes"),
-("Périmètres","CE2, 6e",[("",["carré","rectangle","disque"])],"au CE2 : par mesurage, sans formule ; formules carré/rectangle/disque en 6e"),
-("Aires","CM1 à 5e",[("",["carré","rectangle","triangle rectangle","triangle quelconque","parallélogramme","disque","unités et conversions"])],"au CM : comparer et mesurer, formules carré/rectangle au CM2"),
-("Volumes","6e à 3e",[("",["cube et pavé","prisme et cylindre","pyramide et cône","boule","conversions"])],None),
-("Durées","CP à 6e",[("",["lire l'heure","calculer","convertir"])],None),
-("Unités et conversions","6e",[("",["unités simples","unités composées"])],None),
-]
-PS=[
-("Expériences aléatoires","CM1 à 2de",[("",["fréquences","probabilité simple","équiprobabilité","événements"])],"reprend le domaine Probabilités > Apprivoiser"),
-("Probabilités conditionnelles","2de, 1re",[("",["arbres pondérés","tableaux croisés","indépendance","probabilités totales","inversion du conditionnement","épreuves indépendantes successives","problèmes en contexte"])],None),
-("Variables aléatoires","1re",[("",["loi d'une variable aléatoire","compléter une loi","espérance","variance et écart-type","jeux et gains"])],None),
-("Loi binomiale","Tle, Tle comp., Tle techno",[("",["schéma de Bernoulli","reconnaître une loi","calcul de probabilités","intervalle de fluctuation","coefficients binomiaux","espérance et variance"])],None),
-("Autres lois","Tle comp.",[("",["loi géométrique","loi uniforme discrète","loi uniforme continue","loi exponentielle","absence de mémoire","densité et aire","fonction de répartition","espérance et variance"])],None),
-("Sommes et concentration","Tle",[("",["espérance et variance d'une somme","échantillons","Bienaymé-Tchebychev","inégalité de concentration","loi des grands nombres"])],"sommes de variables aléatoires"),
-]
-DE=[
-("Principes de dénombrement","Tle",[("",["principes additif et multiplicatif","k-uplets","parties d'un ensemble"])],None),
-("Arrangements et permutations","Tle",[("",["arrangements","permutations","factorielle"])],None),
-("Combinaisons","Tle",[("",["combinaisons","coefficients binomiaux","triangle de Pascal"])],None),
-("Problèmes de dénombrement","Tle",[("",["dénombrer avec contraintes","reconnaître le modèle","algorithmique"])],None),
-]
-ST=[
-("Représenter des données","CP à 2de",[("",["effectifs et fréquences","tableaux","tableau à double entrée","diagrammes en barres","diagrammes circulaires","courbes et repères","histogrammes","fréquences cumulées"])],"aucun modèle aujourd'hui"),
-("Indicateurs","5e à 2de, Tle comp.",[("",["moyenne","médiane","quartiles","déciles et rapport interdécile","étendue","écart-type","boîte à moustaches"])],"aucun modèle aujourd'hui"),
-("Échantillonnage","2de, 1re, 1re techno",[("",["fluctuation","simulation","estimation d'une proportion"])],"aucun modèle aujourd'hui"),
-("Tableaux croisés","2de",[("",["tableau croisé d'effectifs","fréquences marginales et conditionnelles"])],"croisement de deux variables qualitatives ; le versant probabiliste reste sous Probabilités conditionnelles"),
-("Statistique à deux variables","1re ens. sci., 1re techno, Tle comp., Tle techno",[("",["nuage de points","point moyen","ajustement affine","coefficient de corrélation","changement de variable"])],"reprend le thème Statistiques"),
-]
-LO=[
-("Proposition mathématique","2de, 1re",[("",["statut des lettres et des égalités","et, ou, non"])],"tête de branche : le méta-langage (ex-« Connecteurs et contre-exemples », restructurée C2 le 2026-10-08)"),
-("Implication et équivalence","2de, 1re",[("",["implication","réciproque","contraposée","équivalence","condition nécessaire, condition suffisante"])],None),
-("Quantificateurs et négation","2de, 1re",[("",["pour tout, il existe","négation d'une proposition"])],None),
-("Raisonnements","2de à Tle",[("",["par l'absurde","par contraposée","disjonction de cas","par équivalence","contre-exemple"])],None),
-]
-EN=[
-("Ensembles de nombres","2de",[("",["ℕ, ℤ, 𝔻, ℚ, ℝ","nombres irrationnels","appartenance et inclusion","intervalles"])],None),
-("Opérations sur les ensembles","2de, 1re",[("",["union et intersection","complémentaire","différence"])],None),
-("Cardinal et produit cartésien","1re, Tle",[("",["cardinal","produit cartésien"])],None),
-]
-AG=[
-("Préalgorithmique","CM2",[("",[])],None),
-("Variables et instructions","5e à 2de",[("",["variables et affectation","types","instructions conditionnelles"])],None),
-("Boucles","5e à 2de",[("",["boucle bornée","boucle non bornée"])],None),
-("Fonctions Python","2de",[("",["définir une fonction","appeler une fonction"])],None),
-("Listes","1re",[("",["créer une liste","éléments et indices","parcourir une liste","liste en compréhension"])],None),
-]
-MA=[
-("Calcul matriciel","Expertes",[("",["opérations","produit","inverse","puissances de matrices"])],None),
-("Systèmes linéaires","Expertes",[("",["écriture matricielle","résolution"])],None),
-("Suites et matrices","Expertes",[("",["suites couplées","modélisation"])],None),
-("Transformations du plan","Expertes",[("",["matrice d'une transformation"])],None),
-]
-GR=[
-("Vocabulaire des graphes","Expertes",[("",["sommets, arêtes, degré","graphe orienté","modélisation par un graphe"])],None),
-("Chaînes et connexité","Expertes",[("",["chaînes et cycles","connexité"])],None),
-("Matrice d'adjacence","Expertes",[("",["matrice d'adjacence","nombre de chaînes de longueur n"])],None),
-("Chaînes de Markov","Expertes",[("",["graphe probabiliste","matrice de transition","distribution après n transitions","état stable"])],"vient de l'ancien domaine Chaînes de Markov (3 modèles)"),
-]
-CX=[
-("Forme algébrique","Expertes",[("",["calculs","conjugaison","inverse et quotient","formule du binôme","équations"])],None),
-("Module et argument","Expertes",[("",["module","argument"])],None),
-("Formes trigo. et exponentielle","Expertes",[("",["forme trigonométrique","formules d'addition et de duplication","forme exponentielle","formule de Moivre","formules d'Euler"])],None),
-("Équations polynomiales","Expertes",[("",["second degré","racines d'un polynôme","degré 3 et factorisation"])],None),
-("Interprétation géométrique","Expertes",[("",["affixes et distances","alignement et orthogonalité","angles et quotient","ensembles de points","racines de l'unité"])],None),
-]
-AR=[
-("Divisibilité","CE1 à Expertes",[("",["pair ou impair","multiples et diviseurs","critères de divisibilité","division euclidienne"])],"reprend aussi l'ancien « Entiers : diviser, divisibilité » (CE2 à CM2) ; parité dès le CE1"),
-("Nombres premiers","3e, Expertes",[("",["reconnaître un nombre premier","décomposition en facteurs premiers"])],None),
-("PGCD, Bézout et Gauss","Expertes",[("",["PGCD","théorèmes de Bézout et de Gauss","équations diophantiennes"])],None),
-("Congruences","Expertes",[("",["congruences","équations ax ≡ b [n]","petit théorème de Fermat","chiffrement"])],None),
-]
-nc=build(NC,"Nombres","et calculs","Branche Nombres et calculs, rangée par type de nombre : 16 notions et leurs sous-notions","c1")
-pr=build(PR,"Proportion-","nalité","Branche Proportionnalité : 5 notions et leurs sous-notions","c2")
-al=build(AL,"Algèbre","","Branche Algèbre : 9 notions et leurs sous-notions","c3")
-fo=build(FO,"Fonctions","","Branche Fonctions : 15 notions et leurs sous-notions","c4")
-in_=build(IN,"Intégration","","Branche Intégration : 4 notions et leurs sous-notions","c14")
-ed=build(ED,"Équations","différentielles","Branche Équations différentielles : 5 notions et leurs sous-notions","c15")
-su=build(SU,"Suites","","Branche Suites : 8 notions et leurs sous-notions","c5")
-ge=build(GE,"Géométrie","","Branche Géométrie : 21 notions et leurs sous-notions","c6")
-gm_=build(GR_M,"Grandeurs","et mesures","Branche Grandeurs et mesures : 10 notions et leurs sous-notions","c7")
-ps=build(PS,"Probabilités","","Branche Probabilités : 6 notions et leurs sous-notions","c8")
-de=build(DE,"Dénombrement","","Branche Dénombrement : 4 notions et leurs sous-notions","c18")
-st=build(ST,"Statistiques","","Branche Statistiques : 5 notions et leurs sous-notions","c17")
-lo=build(LO,"Logique","","Branche Logique : 4 notions et leurs sous-notions","c9")
-en=build(EN,"Ensembles","","Branche Ensembles : 3 notions et leurs sous-notions","c19")
-ag=build(AG,"Algorithmique","","Branche Algorithmique : 5 notions et leurs sous-notions","c16")
-ma=build(MA,"Matrices","","Branche Matrices : 4 notions et leurs sous-notions","c12")
-gr=build(GR,"Graphes","","Branche Graphes : 4 notions et leurs sous-notions","c13")
-cx=build(CX,"Nombres","complexes","Branche Nombres complexes : 5 notions et leurs sous-notions","c11")
-ar=build(AR,"Arithmétique","","Branche Arithmétique : 4 notions et leurs sous-notions","c10")
-sec=f'''<section class="branch" id="nombres"><h2><span class="dot c1"></span>Nombres et calculs <small>par type de nombre, 16 notions</small></h2>
+nc=build(NC,"Nombres","et calculs",f"Branche Nombres et calculs, rangée par type de nombre : {len(NC)} notions et leurs sous-notions","c1")
+pr=build(PR,"Proportion-","nalité",f"Branche Proportionnalité : {len(PR)} notions et leurs sous-notions","c2")
+al=build(AL,"Algèbre","",f"Branche Algèbre : {len(AL)} notions et leurs sous-notions","c3")
+fo=build(FO,"Fonctions","",f"Branche Fonctions : {len(FO)} notions et leurs sous-notions","c4")
+in_=build(IN,"Intégration","",f"Branche Intégration : {len(IN)} notions et leurs sous-notions","c14")
+ed=build(ED,"Équations","différentielles",f"Branche Équations différentielles : {len(ED)} notions et leurs sous-notions","c15")
+su=build(SU,"Suites","",f"Branche Suites : {len(SU)} notions et leurs sous-notions","c5")
+ge=build(GE,"Géométrie","",f"Branche Géométrie : {len(GE)} notions et leurs sous-notions","c6")
+gm_=build(GR_M,"Grandeurs","et mesures",f"Branche Grandeurs et mesures : {len(GR_M)} notions et leurs sous-notions","c7")
+ps=build(PS,"Probabilités","",f"Branche Probabilités : {len(PS)} notions et leurs sous-notions","c8")
+de=build(DE,"Dénombrement","",f"Branche Dénombrement : {len(DE)} notions et leurs sous-notions","c18")
+st=build(ST,"Statistiques","",f"Branche Statistiques : {len(ST)} notions et leurs sous-notions","c17")
+lo=build(LO,"Logique","",f"Branche Logique : {len(LO)} notions et leurs sous-notions","c9")
+en=build(EN,"Ensembles","",f"Branche Ensembles : {len(EN)} notions et leurs sous-notions","c19")
+ag=build(AG,"Algorithmique","",f"Branche Algorithmique : {len(AG)} notions et leurs sous-notions","c16")
+ma=build(MA,"Matrices","",f"Branche Matrices : {len(MA)} notions et leurs sous-notions","c12")
+gr=build(GR,"Graphes","",f"Branche Graphes : {len(GR)} notions et leurs sous-notions","c13")
+cx=build(CX,"Nombres","complexes",f"Branche Nombres complexes : {len(CX)} notions et leurs sous-notions","c11")
+ar=build(AR,"Arithmétique","",f"Branche Arithmétique : {len(AR)} notions et leurs sous-notions","c10")
+sec=f'''<section class="branch" id="nombres"><h2><span class="dot c1"></span>Nombres et calculs <small>par type de nombre, {len(NC)} notions</small></h2>
 <p class="read">Le type de nombre vient en premier ; les gros (Entiers, Décimaux) sont découpés par opération. Les problèmes arithmétiques du primaire ont leur notion, classés par structure. À droite, chaque pastille est une sous-notion distincte.</p>
 <div class="scroll">{nc}</div></section>
-<section class="branch" id="arithmetique"><h2><span class="dot c10"></span>Arithmétique <small>branche à part, 4 notions</small></h2>
+<section class="branch" id="arithmetique"><h2><span class="dot c10"></span>Arithmétique <small>branche à part, {len(AR)} notions</small></h2>
 <p class="read">Sortie de Nombres et calculs. Elle reprend les quatre domaines actuels (maths expertes) et peut accueillir l'arithmétique du collège (multiples, diviseurs, nombres premiers en 3e).</p>
 <div class="scroll">{ar}</div></section>
-<section class="branch" id="proportionnalite"><h2><span class="dot c2"></span>Proportionnalité <small>mise à jour, 5 notions</small></h2>
+<section class="branch" id="proportionnalite"><h2><span class="dot c2"></span>Proportionnalité <small>mise à jour, {len(PR)} notions</small></h2>
 <p class="read">Découpage demandé par David. Vitesse vient de Grandeurs et mesures.</p>
 <div class="scroll">{pr}</div></section>
-<section class="branch" id="algebre"><h2><span class="dot c3"></span>Algèbre <small>9 notions</small></h2>
+<section class="branch" id="algebre"><h2><span class="dot c3"></span>Algèbre <small>{len(AL)} notions</small></h2>
 <p class="read">Les premiers pas algébriques du cycle 3 ouvrent la branche ; calcul littéral en une seule notion ; équations et inéquations classées par forme. Équations et inéquations du second degré ici ; racines, signe, formes et variations d'un trinôme dans Fonctions. Matrices et Graphes deviennent deux branches à part.</p>
 <div class="scroll">{al}</div></section>
-<section class="branch" id="fonctions"><h2><span class="dot c4"></span>Fonctions <small>15 notions</small></h2>
-<p class="read">Une notion par fonction de référence. Optimisation devient une sous-notion de Dérivation. Intégration et Équations différentielles deviennent deux branches à part.</p>
+<section class="branch" id="fonctions"><h2><span class="dot c4"></span>Fonctions <small>{len(FO)} notions</small></h2>
+<p class="read">Une notion par fonction de référence. L'optimisation se range sous « Dérivation &gt; variations et extremums » (audit des facettes, 2026-10-09). Intégration et Équations différentielles deviennent deux branches à part.</p>
 <div class="scroll">{fo}</div></section>
-<section class="branch" id="integration"><h2><span class="dot c14"></span>Intégration <small>4 notions</small></h2>
+<section class="branch" id="integration"><h2><span class="dot c14"></span>Intégration <small>{len(IN)} notions</small></h2>
 <p class="read">Branche à part (terminale). Reprend le thème Intégration et ses cinq domaines.</p>
 <div class="scroll">{in_}</div></section>
-<section class="branch" id="equadiff"><h2><span class="dot c15"></span>Équations différentielles <small>5 notions</small></h2>
+<section class="branch" id="equadiff"><h2><span class="dot c15"></span>Équations différentielles <small>{len(ED)} notions</small></h2>
 <p class="read">Branche à part (terminale). Une notion par forme d'équation ; les primitives sont des sous-notions de y′ = f.</p>
 <div class="scroll">{ed}</div></section>
-<section class="branch" id="suites"><h2><span class="dot c5"></span>Suites <small>8 notions</small></h2>
-<p class="read">Reprend les 15 domaines actuels du thème Suites. « Reconnaître une suite », « Sommes » et « Seuils » deviennent des sous-notions.</p>
+<section class="branch" id="suites"><h2><span class="dot c5"></span>Suites <small>{len(SU)} notions</small></h2>
+<p class="read">Reprend les 15 domaines actuels du thème Suites. « Sommes » et « Seuils » deviennent des sous-notions ; reconnaître une suite arithmétique ou géométrique relève de sa « définition ».</p>
 <div class="scroll">{su}</div></section>
-<section class="branch" id="complexes"><h2><span class="dot c11"></span>Nombres complexes <small>branche à part, 5 notions</small></h2>
+<section class="branch" id="complexes"><h2><span class="dot c11"></span>Nombres complexes <small>branche à part, {len(CX)} notions</small></h2>
 <p class="read">Sortie de Nombres et calculs, comme Arithmétique : ses cinq domaines actuels (maths expertes) deviennent des notions.</p>
 <div class="scroll">{cx}</div></section>
-<section class="branch" id="matrices"><h2><span class="dot c12"></span>Matrices <small>branche à part, 4 notions</small></h2>
+<section class="branch" id="matrices"><h2><span class="dot c12"></span>Matrices <small>branche à part, {len(MA)} notions</small></h2>
 <p class="read">Maths expertes. Reprend l'ancien domaine Matrices (9 modèles) ; les sous-notions sans modèle aujourd'hui suivent le programme.</p>
 <div class="scroll">{ma}</div></section>
-<section class="branch" id="graphes"><h2><span class="dot c13"></span>Graphes <small>branche à part, 4 notions</small></h2>
+<section class="branch" id="graphes"><h2><span class="dot c13"></span>Graphes <small>branche à part, {len(GR)} notions</small></h2>
 <p class="read">Maths expertes. Reprend les domaines Graphes (7 modèles) et Chaînes de Markov (3 modèles).</p>
 <div class="scroll">{gr}</div></section>
-<section class="branch" id="geometrie"><h2><span class="dot c6"></span>Géométrie <small>21 notions</small></h2>
-<p class="read">Du primaire (solides, figures planes, symétries, repérage) au lycée (vecteurs, espace), en passant par le collège (translations, Pythagore, Thalès, trigonométrie) — plus quatre notions hors programme héritées de l'ancien cycle 4 (rotations, homothéties, triangles semblables, repérage dans l'espace).</p>
+<section class="branch" id="geometrie"><h2><span class="dot c6"></span>Géométrie <small>{len(GE)} notions</small></h2>
+<p class="read">Du primaire (solides, figures planes, symétries, repérage) au lycée (vecteurs, espace), en passant par le collège (translations, Pythagore, Thalès, trigonométrie) — plus quatre notions hors programme héritées de l'ancien cycle 4 (rotations, homothéties, triangles semblables, repérage dans l'espace). Vecteurs, Espace et Orthogonalité ne sont plus coupés « avec / sans coordonnées » : les coordonnées sont une méthode, que disent les points (audit des facettes, 2026-10-09).</p>
 <div class="scroll">{ge}</div></section>
-<section class="branch" id="grandeurs"><h2><span class="dot c7"></span>Grandeurs et mesures <small>10 notions</small></h2>
+<section class="branch" id="grandeurs"><h2><span class="dot c7"></span>Grandeurs et mesures <small>{len(GR_M)} notions</small></h2>
 <p class="read">Les grandeurs du primaire (longueurs, masses, contenances, monnaie) ont leurs notions ; Vitesse est partie dans Proportionnalité.</p>
 <div class="scroll">{gm_}</div></section>
-<section class="branch" id="probas"><h2><span class="dot c8"></span>Probabilités <small>6 notions</small></h2>
+<section class="branch" id="probas"><h2><span class="dot c8"></span>Probabilités <small>{len(PS)} notions</small></h2>
 <p class="read">Reprend le thème Probabilités. « Expériences aléatoires » remplace « Probabilités » pour ne pas répéter le nom de la branche.</p>
 <div class="scroll">{ps}</div></section>
-<section class="branch" id="denombrement"><h2><span class="dot c18"></span>Dénombrement <small>branche à part, 4 notions</small></h2>
+<section class="branch" id="denombrement"><h2><span class="dot c18"></span>Dénombrement <small>branche à part, {len(DE)} notions</small></h2>
 <p class="read">Sorti de Probabilités (terminale). Reprend les 9 sous-domaines de l'ancien domaine Dénombrement (15 modèles).</p>
 <div class="scroll">{de}</div></section>
-<section class="branch" id="stats"><h2><span class="dot c17"></span>Statistiques <small>5 notions</small></h2>
+<section class="branch" id="stats"><h2><span class="dot c17"></span>Statistiques <small>{len(ST)} notions</small></h2>
 <p class="read">Séparée des probabilités. Seule la statistique à deux variables a des modèles aujourd'hui ; les autres notions suivent le programme.</p>
 <div class="scroll">{st}</div></section>
-<section class="branch" id="logique"><h2><span class="dot c9"></span>Logique <small>4 notions</small></h2>
+<section class="branch" id="logique"><h2><span class="dot c9"></span>Logique <small>{len(LO)} notions</small></h2>
 <p class="read">Reprend le domaine Logique et raisonnement, restructuré (C2, 2026-10-08) : « Proposition mathématique » en tête (méta-langage + connecteurs), « contre-exemple » rejoint les Raisonnements.</p>
 <div class="scroll">{lo}</div></section>
-<section class="branch" id="ensembles"><h2><span class="dot c19"></span>Ensembles <small>branche à part, 3 notions</small></h2>
+<section class="branch" id="ensembles"><h2><span class="dot c19"></span>Ensembles <small>branche à part, {len(EN)} notions</small></h2>
 <p class="read">Reprend le domaine Ensembles (1re) ; les ensembles de nombres et les intervalles de 2de y trouvent leur place.</p>
 <div class="scroll">{en}</div></section>
-<section class="branch" id="algorithmique"><h2><span class="dot c16"></span>Algorithmique <small>5 notions</small></h2>
+<section class="branch" id="algorithmique"><h2><span class="dot c16"></span>Algorithmique <small>{len(AG)} notions</small></h2>
 <p class="read">Aucun modèle aujourd'hui : notions tirées du programme (2de, 1re). « Fonctions Python » pour ne pas confondre avec la branche Fonctions.</p>
 <div class="scroll">{ag}</div></section>'''
 open('nc-section.html','w').write(sec)
 
-import json
-ORDRE=[("Nombres et calculs",NC),("Arithmétique",AR),("Nombres complexes",CX),("Proportionnalité",PR),("Algèbre",AL),
- ("Fonctions",FO),("Intégration",IN),("Équations différentielles",ED),("Suites",SU),("Matrices",MA),("Graphes",GR),
- ("Géométrie",GE),("Grandeurs et mesures",GR_M),("Probabilités",PS),("Dénombrement",DE),("Statistiques",ST),
- ("Logique",LO),("Ensembles",EN),("Algorithmique",AG)]
-out={"version":"2026-10-07.15","statut":"validé par David (TOUS les programmes CP→Tle au gabarit v2 : cycles 2-4, 2de, 1re/Tle spé, Tle comp., Expertes, 1re ens. sci., 1re/Tle techno — 2026-10-06/07) ; niveaux INDICATIFS — ADR 0020 : les niveaux vivent dans les programmes qui pointeront les nœuds ; « hors programme » = nœud sans pointeur, voulu ; EN BASE depuis le 2026-10-08 (CP→3e), branche Logique restructurée C2 le 2026-10-08",
- "branches":[{"nom":b,"notions":[{"nom":n,"niveaux":niv,"sous_notions":[(f"{p} : {i}" if p else i) for p,its in g for i in its],"note":note} for n,niv,g,note in L]} for b,L in ORDRE]}
-json.dump(out,open('arbre-notions.json','w'),ensure_ascii=False,indent=2)
-print(len(out["branches"]),sum(len(b["notions"]) for b in out["branches"]),sum(len(n["sous_notions"]) for b in out["branches"] for n in b["notions"]))
+print(len(ARBRE['branches']),sum(len(b['notions']) for b in ARBRE['branches']),
+      sum(len(n['sous_notions']) for b in ARBRE['branches'] for n in b['notions']),len(ARBRE.get('archives',[])))

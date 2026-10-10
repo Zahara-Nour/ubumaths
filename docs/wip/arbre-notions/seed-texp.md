@@ -1,5 +1,7 @@
 # Seed Maths expertes — points du programme (architecture points → nœuds)
 
+> 2026-10-10 : nœuds mis à jour pour l'arbre .16 (nettoyage des facettes, #1002).
+
 > **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : reprise un
 > pour un, rubriques, discutables, A1 = non). Livraison en cours.** ⚠️ Soin maximal. Le
 > **dernier seed** du référentiel.
@@ -206,8 +208,8 @@ polynomiales > racines d'un polynôme` : on cherche des racines (l'outil est
 | TEXP-277 | 086 | Couples d'entiers premiers entre eux                                                 | conn. | PGCD, Bézout et Gauss > PGCD                                                        |
 | TEXP-278 | 087 | Théorème de Bézout                                                                   | conn. | PGCD, Bézout et Gauss > théorèmes de Bézout et de Gauss                             |
 | TEXP-279 | 088 | Théorème de Gauss                                                                    | conn. | PGCD, Bézout et Gauss > théorèmes de Bézout et de Gauss                             |
-| TEXP-280 | 099 | Nombres premiers                                                                     | conn. | Nombres premiers > reconnaître un nombre premier                                    |
-| TEXP-281 | 100 | L'ensemble des nombres premiers est infini                                           | conn. | Nombres premiers > reconnaître un nombre premier                                    |
+| TEXP-280 | 099 | Nombres premiers                                                                     | conn. | Nombres premiers > primalité                                                        |
+| TEXP-281 | 100 | L'ensemble des nombres premiers est infini                                           | conn. | Nombres premiers > primalité                                                        |
 | TEXP-282 | 101 | Existence et unicité de la décomposition d'un entier en produit de facteurs premiers | conn. | Nombres premiers > décomposition en facteurs premiers                               |
 | TEXP-283 | 102 | Petit théorème de Fermat                                                             | conn. | Congruences > petit théorème de Fermat                                              |
 | TEXP-284 | 075 | Déterminer les diviseurs d'un entier                                                 | s-f   | Divisibilité > multiples et diviseurs                                               |
@@ -216,15 +218,15 @@ polynomiales > racines d'un polynôme` : on cherche des racines (l'outil est
 | TEXP-287 | 077 | Déterminer un inverse de $a$ modulo $n$ lorsque $a$ et $n$ sont premiers entre eux   | s-f   | Congruences > équations ax ≡ b [n]                                                  |
 | TEXP-288 | 078 | Établir des tests de divisibilité                                                    | s-f   | Divisibilité > critères de divisibilité                                             |
 | TEXP-289 | 079 | Utiliser des tests de divisibilité                                                   | s-f   | Divisibilité > critères de divisibilité                                             |
-| TEXP-290 | 103 | Étudier la primalité de certains nombres                                             | s-f   | Nombres premiers > reconnaître un nombre premier                                    |
+| TEXP-290 | 103 | Étudier la primalité de certains nombres                                             | s-f   | Nombres premiers > primalité                                                        |
 | TEXP-291 | 080 | Étudier des problèmes de chiffrement                                                 | s-f   | Congruences > chiffrement                                                           |
 | TEXP-292 | 090 | Résoudre des équations diophantiennes simples                                        | s-f   | PGCD, Bézout et Gauss > équations diophantiennes                                    |
 | TEXP-293 | 091 | Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \in \mathbb{Z}^2$    | dém.  | PGCD, Bézout et Gauss > théorèmes de Bézout et de Gauss                             |
 | TEXP-294 | 092 | Théorème de Gauss (démonstration)                                                    | dém.  | PGCD, Bézout et Gauss > théorèmes de Bézout et de Gauss                             |
-| TEXP-295 | 104 | L'ensemble des nombres premiers est infini (démonstration)                           | dém.  | Nombres premiers > reconnaître un nombre premier                                    |
+| TEXP-295 | 104 | L'ensemble des nombres premiers est infini (démonstration)                           | dém.  | Nombres premiers > primalité                                                        |
 | TEXP-296 | 093 | Algorithme d'Euclide de calcul du PGCD de deux nombres                               | algo. | PGCD, Bézout et Gauss > PGCD                                                        |
 | TEXP-297 | 094 | Calcul d'un couple de Bézout par l'algorithme d'Euclide                              | algo. | PGCD, Bézout et Gauss > théorèmes de Bézout et de Gauss                             |
-| TEXP-298 | 105 | Crible d'Ératosthène                                                                 | algo. | Nombres premiers > reconnaître un nombre premier                                    |
+| TEXP-298 | 105 | Crible d'Ératosthène                                                                 | algo. | Nombres premiers > primalité                                                        |
 | TEXP-299 | 106 | Décomposition en facteurs premiers                                                   | algo. | Nombres premiers > décomposition en facteurs premiers                               |
 | TEXP-300 | 095 | Détermination des racines rationnelles d'un polynôme à coefficients entiers          | s-f ⁺ | `Nombres complexes` Équations polynomiales > racines d'un polynôme _(discutable 1)_ |
 | TEXP-301 | 096 | Lemme chinois et applications à des situations concrètes                             | s-f ⁺ | Congruences (notion)                                                                |
@@ -266,8 +268,8 @@ polynomiales > racines d'un polynôme` : on cherche des racines (l'outil est
 | TEXP-332 | 143 | Pour une chaîne de Markov à deux ou trois états de matrice $P$, interprétation du coefficient $(i, j)$ de $P^n$                                                           | conn. | `Graphes` Chaînes de Markov > distribution après n transitions    |
 | TEXP-333 | 144 | Distribution d'une chaîne de Markov après $n$ transitions, représentée comme la matrice ligne $\pi_0 P^n$                                                                 | conn. | `Graphes` Chaînes de Markov > distribution après n transitions    |
 | TEXP-334 | 145 | Distributions invariantes d'une chaîne de Markov à deux ou trois états                                                                                                    | conn. | `Graphes` Chaînes de Markov > état stable                         |
-| TEXP-335 | 118 | Modéliser une situation par un graphe                                                                                                                                     | s-f   | `Graphes` Vocabulaire des graphes > modélisation par un graphe    |
-| TEXP-336 | 132 | Modéliser une situation par une matrice                                                                                                                                   | s-f   | `Matrices` Suites et matrices > modélisation                      |
+| TEXP-335 | 118 | Modéliser une situation par un graphe                                                                                                                                     | s-f   | `Graphes` Vocabulaire des graphes (notion)                        |
+| TEXP-336 | 132 | Modéliser une situation par une matrice                                                                                                                                   | s-f   | `Matrices` Suites et matrices (notion)                            |
 | TEXP-337 | 146 | Associer un graphe orienté pondéré à une chaîne de Markov à deux ou trois états                                                                                           | s-f   | `Graphes` Chaînes de Markov > graphe probabiliste                 |
 | TEXP-338 | 133 | Calculer l'inverse d'une matrice carrée                                                                                                                                   | s-f   | `Matrices` Calcul matriciel > inverse                             |
 | TEXP-339 | 134 | Calculer les puissances d'une matrice carrée                                                                                                                              | s-f   | `Matrices` Calcul matriciel > puissances de matrices              |

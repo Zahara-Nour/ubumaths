@@ -1,5 +1,7 @@
-import html
+import html, json
 E=html.escape
+# Les comptes viennent d'arbre-notions.json (copie de doc de la base) : plus aucun compte en dur.
+ARBRE=json.load(open('./arbre-notions.json'))
 # (branche, couleur, [(notion, niveaux, reprend)])
 B=[]
 W=880; ROW=58; BW=190; NX=290; NW=W-NX-8
@@ -26,10 +28,11 @@ def svg(name,cls,notions):
         out.append(f'<text x="{NX+61}" y="{y+38}" class="rtext">reprend : {E(rep)}</text>')
     out.append('</svg>')
     return '\n'.join(out)
-total=sum(len(b[2]) for b in B)+137
+NB=len(ARBRE['branches']); NN=sum(len(b['notions']) for b in ARBRE['branches'])
+NS=sum(len(n['sous_notions']) for b in ARBRE['branches'] for n in b['notions']); NA=len(ARBRE.get('archives',[]))
 sections=[open('./nc-section.html').read()]
 for name,cls,notions in B:
     sections.append(f'<section class="branch"><h2><span class="dot {cls}"></span>{E(name)} <small>{len(notions)} notions</small></h2><div class="scroll">{svg(name,cls,notions)}</div></section>')
 tpl=open('./tpl.html').read()
-open('./arbre-notions.html','w').write(tpl.replace('%%SECTIONS%%','\n'.join(sections)).replace('%%NB%%',str(len(B)+19)).replace('%%NN%%',str(total)))
-print(len(B),total)
+open('./arbre-notions.html','w').write(tpl.replace('%%SECTIONS%%','\n'.join(sections)).replace('%%NB%%',str(NB)).replace('%%NN%%',str(NN)).replace('%%NS%%',str(NS)).replace('%%NA%%',str(NA)))
+print(NB,NN,NS,NA)
