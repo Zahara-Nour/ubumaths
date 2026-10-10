@@ -259,7 +259,8 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
    2026-10-11). Le choix se fait **à l'impression**, juste avant Typst, par `correctionForPrint`
    (`questions/correction-detail.ts`) : PDF du prof (`worksheet-generator.ts`, et l'aperçu
    markdown de `PdfPreview.svelte`) et PDF de l'élève (`student-worksheet-typst.ts`, réglage
-   transmis par l'API élève). Une série d'automatismes **garde** ses marqueurs de détail ; les
+   transmis par l'API élève, et par l'API d'aperçu de l'affectation pour le PDF du prof). Le PDF d'un
+   exercice seul (`exercise-typst-generator.ts`, sans fiche) imprime la version détaillée. Une série d'automatismes **garde** ses marqueurs de détail ; les
    écrans qui affichent un corrigé d'exercice montrent la version détaillée (`detailedCorrection`).
    Aucun marqueur brut n'atteint Typst. Les encadrés `> [!méthode]`… s'impriment encore comme une
    citation simple, sans titre. Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
