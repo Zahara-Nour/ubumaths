@@ -36,7 +36,8 @@ import {
 	ShieldCheck,
 	Search,
 	User as UserIcon,
-	LogOut
+	LogOut,
+	LibraryBig
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '$lib/config/lore';
@@ -159,6 +160,7 @@ export function getNavLinks(
 			{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 			{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 			{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
+			{ href: '/dashboard/admin/dictionnaire', label: 'Dictionnaire', icon: LibraryBig },
 			{ href: '/dashboard/admin/vip-cards', label: 'VIP Cards', icon: Sparkles },
 			{ href: '/dashboard/admin/bug-reports', label: 'Bug Reports', icon: Bug },
 			// Personal kanban board(s) for tracking site-wide work (features,
