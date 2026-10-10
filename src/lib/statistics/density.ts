@@ -144,6 +144,54 @@ export function normalCdf(z: number): number {
 	return z >= 0 ? 1 - 0.5 * erfcPositive(z / Math.SQRT2) : 0.5 * erfcPositive(-z / Math.SQRT2);
 }
 
+/** Coefficients de l'approximation rationnelle de Φ⁻¹ (P. J. Acklam) */
+const QUANTILE_A = [
+	-3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2, 1.38357751867269e2,
+	-3.066479806614716e1, 2.506628277459239
+];
+const QUANTILE_B = [
+	-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1,
+	-1.328068155288572e1
+];
+const QUANTILE_C = [
+	-7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838, -2.549732539343734,
+	4.374664141464968, 2.938163982698783
+];
+const QUANTILE_D = [
+	7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416
+];
+/** En deçà : l'approximation de la queue (au-delà de 0,5, par symétrie) */
+const QUANTILE_P_LOW = 0.02425;
+
+/** Polynôme de coefficients `coefficients` (degré décroissant) en x */
+function horner(coefficients: readonly number[], x: number): number {
+	return coefficients.reduce((sum, coefficient) => sum * x + coefficient, 0);
+}
+
+/**
+ * Φ⁻¹(p) pour 0 < p < 1, sans table (D7, simulation de la loi normale) :
+ * approximation rationnelle d'Acklam (erreur relative < 1,2 × 10⁻⁹), affinée
+ * par un pas de Halley sur `normalCdf` (≈ 10⁻¹⁵). Le pas est sauté dans les
+ * queues extrêmes (|z| > 37), où la densité sous-déborde.
+ */
+export function normalQuantile(p: number): number {
+	// Symétrie exacte : 1 − p est exact pour p > 0,5, et la queue basse est la
+	// plus précise (le pas de Halley y travaille sur une petite probabilité)
+	if (p > 0.5) return -normalQuantile(1 - p);
+	let z: number;
+	if (p < QUANTILE_P_LOW) {
+		const q = Math.sqrt(-2 * Math.log(p));
+		z = horner(QUANTILE_C, q) / (horner(QUANTILE_D, q) * q + 1);
+	} else {
+		const q = p - 0.5;
+		const r = q * q;
+		z = (horner(QUANTILE_A, r) * q) / (horner(QUANTILE_B, r) * r + 1);
+	}
+	if (Math.abs(z) > 37) return z;
+	const u = (normalCdf(z) - p) * Math.sqrt(2 * Math.PI) * Math.exp((z * z) / 2);
+	return z - u / (1 + (z * u) / 2);
+}
+
 /**
  * P(low ⩽ X ⩽ high) pour X ~ N(μ ; σ²) (σ > 0) ; `null` : pas de borne de ce
  * côté. Une seule borne : la queue directement, sans soustraction (précision).

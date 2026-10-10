@@ -127,7 +127,12 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
 
 - Échantillonneurs `LawSampler` (un tirage + la loi) : `discreteSampler` (probabilités
   cumulées), et par **inversion** `geometricSampler`, `uniformSampler`, `uniformDensitySampler`,
-  `exponentialSampler`. **Pas d'échantillonneur de loi normale.**
+  `exponentialSampler`, `normalSampler` (μ + σ·Φ⁻¹(u), u = 0 ramené au plus petit flottant
+  positif ; D7, décision de David du 2026-10-11). Dans un bloc ` ```simulation `, `Y ~ N(μ ; σ²)`
+  se tire en histogramme sur **μ ± 3σ**, les deux classes du bord prenant ce qui dépasse (mention
+  des deux bords sous le graphique), courbe de ` ```loi ` superposée ; modes `moyenne` et
+  `échantillons` comme les autres lois. Tests : `statistics/__tests__/simulation-normale.test.ts`,
+  `ubumark/__tests__/stat-chart/simulation-laws.test.ts`.
 - `simulateCounts` (effectifs par valeur), `simulateDraws` (tirages bruts),
   `simulateRunningMean` / `simulateLawRunningMean` (loi des grands nombres),
   `simulateSamples` / `simulateLawSamples` (N échantillons de taille n, nombre de moyennes à
@@ -181,6 +186,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
    par elle. Test : `src/lib/statistics/__tests__/arrondi-unique.test.ts`.
 9. **Loi normale** : Φ par série puis fraction continue de Laplace (pas de table), précision
    relative des queues (Φ(−8) ≈ 6,2 × 10⁻¹⁶) ; une seule borne → la queue directement.
+   Φ⁻¹ (`normalQuantile`, pour les tirages) : approximation rationnelle d'Acklam affinée par un
+   pas de Halley sur Φ (≈ 10⁻¹⁵), pas sauté au-delà de |z| = 37.
 10. **Intervalle de fluctuation binomial** (`binomialInterval`) : le plus petit [a ; b] tel que
     P(X < a) ⩽ α/2 et P(X > b) ⩽ α/2 — le programme n'impose pas de méthode, celle-ci est
     écrite sous le résultat par le bloc.
@@ -275,8 +282,8 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
   en flottant : valeurs positives ou de grille, sans demi négatif à départager.
 - `exponentialProbability` et `normalProbability` prennent des `number`, leurs moments des
   `Fraction` : l'appelant convertit.
-- Pas d'échantillonneur de loi normale. La binomiale n'a pas d'échantillonneur propre : la
-  scène la tire comme loi finie, avec les probabilités exactes de `binomialDistribution`.
+- La binomiale n'a pas d'échantillonneur propre : la scène la tire comme loi finie, avec les
+  probabilités exactes de `binomialDistribution`.
 - `atMost`, `findThreshold` et `MAX_COMPUTED_VALUE` ne servent qu'à l'intérieur du module,
   bien qu'exportés.
 

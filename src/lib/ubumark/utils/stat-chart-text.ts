@@ -116,6 +116,8 @@ interface StatText {
 		summary: (draws: string, plural: boolean, mean: string, variable: string, e: string) => string;
 		/** Loi exponentielle : la dernière classe compte ce qui dépasse l'axe */
 		overflow: (bound: string, count: string) => string;
+		/** Loi normale : les deux classes du bord comptent ce qui dépasse μ ± 3σ */
+		overflowBoth: (low: string, below: string, high: string, beyond: string) => string;
 	};
 	/** Nuage de points (```nuage, manche 15) ; nombres déjà écrits selon la langue */
 	scatter: {
@@ -241,7 +243,9 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			summary: (draws, plural, mean, variable, e) =>
 				`${draws} tirage${plural ? 's' : ''} ; moyenne observée ≈ ${mean} (E(${variable}) = ${e})`,
 			overflow: (bound, count) =>
-				`la dernière classe compte aussi les tirages au-delà de ${bound} (ici ${count})`
+				`la dernière classe compte aussi les tirages au-delà de ${bound} (ici ${count})`,
+			overflowBoth: (low, below, high, beyond) =>
+				`la première classe compte aussi les tirages en deçà de ${low} (ici ${below}), la dernière ceux au-delà de ${high} (ici ${beyond})`
 		},
 		scatter: {
 			title: 'Nuage de points',
@@ -354,7 +358,9 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			summary: (draws, plural, mean, variable, e) =>
 				`${draws} draw${plural ? 's' : ''}; observed mean ≈ ${mean} (E(${variable}) = ${e})`,
 			overflow: (bound, count) =>
-				`the last class also counts the draws beyond ${bound} (here ${count})`
+				`the last class also counts the draws beyond ${bound} (here ${count})`,
+			overflowBoth: (low, below, high, beyond) =>
+				`the first class also counts the draws below ${low} (here ${below}), the last those beyond ${high} (here ${beyond})`
 		},
 		scatter: {
 			title: 'Scatter plot',
