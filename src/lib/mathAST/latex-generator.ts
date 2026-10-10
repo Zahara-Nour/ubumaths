@@ -1,8 +1,13 @@
 /**
- * LaTeX Generator for MathAST
+ * Générateur LaTeX de MathAST.
  *
- * Converts MathAST nodes to AMS-LaTeX output with auto-sizing delimiters.
- * Trusts the AST structure for precedence - no smart parentheses insertion.
+ * Écrit un arbre en AMS-LaTeX (délimiteurs `\left( … \right)`). Contrat : le
+ * LaTeX produit se RELIT par `parseLatex` au même arbre, ou au moins à la même
+ * valeur. D'où des parenthèses posées selon le contexte (`common/sign-parentheses.ts` :
+ * somme sous un signe, facteur qui commence par un signe, base d'une puissance,
+ * portée de `\lim`…), un `\times` entre deux chiffres juxtaposés, et la
+ * réécriture des nombres en notation scientifique JS (`1e-7` → `10^{-7}`), que
+ * le parseur LaTeX ne lit pas.
  */
 
 import type {
@@ -37,6 +42,8 @@ import type {
 	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
+import { divide, multiply, number, opposite, parentheses, superscript } from './factory';
+import { transformAST } from './visitor';
 import { format } from './units/formatter';
 import { isLimit, isMultiplication, isNumber, isUnit } from './guards';
 import {
@@ -237,6 +244,96 @@ function isPlainBinom(node: FunctionNode): boolean {
 }
 
 // =============================================================================
+// Notation scientifique JS → puissance de 10
+// =============================================================================
+
+/**
+ * Chaîne d'un nombre en notation scientifique JS : `String(1e-7)` = '1e-7',
+ * `String(1e21)` = '1e+21', `String(1.5e-7)` = '1.5e-7'.
+ */
+const SCIENTIFIC_NUMBER = /^(\d+(?:\.\d+)?)[eE]([+-]?)(\d+)$/;
+
+/**
+ * Le parseur LaTeX ne lit pas la notation scientifique (`e` = constante
+ * d'Euler, décision de David du 2026-10-10) : `1e-7` écrit tel quel se
+ * relirait 1·e − 7. Un tel nombre s'écrit donc `10^{-7}`, ou
+ * `1.5 \times 10^{-7}` quand la mantisse n'est pas 1 (même forme que ce que
+ * le parseur rend pour `1{,}5\times10^{-7}`).
+ */
+function expandScientificNumber(node: NumberNode): MathNode | undefined {
+	const match = SCIENTIFIC_NUMBER.exec(node.value);
+	if (!match) return undefined;
+	const [, mantissa, sign, digits] = match;
+	const exponentDigits = number(String(Number(digits)));
+	const exponent = sign === '-' ? opposite(exponentDigits) : exponentDigits;
+	if (Number(mantissa) === 1) return superscript(number('10'), exponent, node.metadata);
+	return multiply(number(mantissa), superscript(number('10'), exponent), 'cross', {
+		metadata: node.metadata
+	});
+}
+
+/**
+ * L'arbre contient-il un nombre en notation scientifique ? Parcours générique
+ * des champs (tous types de nœuds), sans allocation : `toLatex` est appelé
+ * très souvent, la réécriture ne se paie que si elle sert.
+ */
+function containsScientificNumber(value: unknown): boolean {
+	if (Array.isArray(value)) return value.some(containsScientificNumber);
+	if (typeof value !== 'object' || value === null) return false;
+	if ('type' in value && value.type === 'number' && 'value' in value) {
+		return typeof value.value === 'string' && SCIENTIFIC_NUMBER.test(value.value);
+	}
+	for (const child of Object.values(value)) {
+		if (containsScientificNumber(child)) return true;
+	}
+	return false;
+}
+
+/**
+ * Remplace chaque nombre en notation scientifique par sa puissance de 10.
+ *
+ * L'écriture réécrite doit se relire à la même valeur dans TOUT contexte. Les
+ * règles de parenthèses du générateur (base d'une puissance, facteur qui
+ * commence par un signe…) s'appliquent seules à la forme réécrite ; deux
+ * contextes restent, où l'ancienne écriture `1.5e-7` était un atome et la
+ * nouvelle ne l'est plus :
+ * - facteur de DROITE d'un produit implicite : `\pi 10^{-7}` serait refusé
+ *   (« nombre écrit après un facteur ») → `\pi \left( 10^{-7} \right)` ;
+ * - dénominateur d'une division EN LIGNE : `\pi / 1.5 \times 10^{-7}` se
+ *   relirait (π/1,5)·10⁻⁷ → `\pi / \left( 1.5 \times 10^{-7} \right)`.
+ * Ces parenthèses ne sont posées que sur un nombre réécrit : le reste de
+ * l'arbre garde exactement son écriture.
+ */
+function withoutScientificNumbers(node: MathNode): MathNode {
+	if (!containsScientificNumber(node)) return node;
+	const expanded = new WeakSet<MathNode>();
+	return transformAST(node, {
+		leaveNumber: (n) => {
+			const written = expandScientificNumber(n);
+			if (written) expanded.add(written);
+			return written;
+		},
+		leaveMultiplication: (n) => {
+			if (n.displayStyle !== 'implicit' || !expanded.has(n.right)) return undefined;
+			return multiply(n.left, parentheses(n.right), n.displayStyle, {
+				operatorMetadata: n.operatorMetadata,
+				metadata: n.metadata
+			});
+		},
+		leaveDivision: (n) => {
+			if (n.displayStyle === 'fraction') return undefined;
+			const denominator = n.denominator;
+			const core = denominator.type === 'opposite' ? denominator.operand : denominator;
+			if (!expanded.has(core) || core.type !== 'multiplication') return undefined;
+			return divide(n.numerator, parentheses(denominator), n.displayStyle, {
+				operatorMetadata: n.operatorMetadata,
+				metadata: n.metadata
+			});
+		}
+	});
+}
+
+// =============================================================================
 // Portée de \lim
 // =============================================================================
 
@@ -428,7 +525,9 @@ export class LatexGenerator {
 		};
 	}
 
-	generate(node: MathNode): string {
+	generate(input: MathNode): string {
+		// Les parenthèses se décident sur la forme écrite : `(10^{-7})^2`.
+		const node = withoutScientificNumbers(input);
 		if (!this.options.renderMetadata) {
 			// Mode simple (existing behavior): generate without coalescence
 			return this.generateNode(node);

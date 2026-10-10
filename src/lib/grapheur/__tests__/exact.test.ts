@@ -231,3 +231,17 @@ describe('exactTermValue — accord avec le point tracé', () => {
 		}
 	});
 });
+
+// =============================================================================
+// Premier terme en notation scientifique JS (String(1e-7) = '1e-7')
+// =============================================================================
+
+describe('exactTermValues — premier terme minuscule ou énorme', () => {
+	// Le parseur LaTeX ne lit plus `1e-7` (e = constante d'Euler) : le LaTeX
+	// rendu ne doit jamais contenir de notation scientifique.
+	it.each([1e-7, 1e21])('u_0 = %s : écrit sans notation scientifique', (firstTerm) => {
+		const latex = latexOf(exactOf('2u_n', 0, { mode: 'recurrence', firstTerm }));
+		expect(latex).not.toBeNull();
+		expect(latex).not.toMatch(/\de[+-]?\d/);
+	});
+});

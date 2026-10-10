@@ -17,6 +17,15 @@ scientifique reste en syntaxe custom (`1e5`).
 
 ## Fait
 
-- [ ] Tests vus rouges
-- [ ] Tokenizer LaTeX, `toLatex`
-- [ ] Doc, code-reviewer, PR
+- [x] Tests vus rouges (2026-10-11) : 20 — 12 parseur (pratt + rd), 7 `toLatex`, 1 période
+      (`sin(1e-7*x)`). `exact.ts` était déjà juste (le premier terme est évalué en fraction).
+- [x] Tokenizer LaTeX (bloc exposant retiré, 29 tests du tokenizer qui enregistraient l'ancienne
+      lecture réécrits) ; `toLatex` réécrit `1e-7` en `10^{-7}` avant rendu.
+- [x] Doc : `docs/systeme/mathast/README.md` (invariant 6).
+- [ ] code-reviewer, PR
+- `2e3` : refusé comme `2e 3` (« nombre écrit après un facteur »), pas 2·e·3 — aligné.
+- Régressions relevées par le coordinateur, corrigées : `\pi \cdot 3e-7` implicite et
+  `\pi / 2.5e-8` en ligne → parenthèses posées par la passe (table contextes × valeurs, 5 rouges).
+- Hors périmètre, relevé : le parseur rd ne connaît pas `\exponentialE`.
+- ⚠️ OUVERT : `{{eval:…}}` rend `1e-7` / `1e+22` (`formatNumber` de
+  `eval/evaluate-with-modifiers.ts`) ; `areEquivalent('1e-7', '10^{-7}')` = false désormais.
