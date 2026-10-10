@@ -23,6 +23,7 @@ Branche `feat/chiffrement`, worktree `../ubumaths-wt-chiffrement`. Démarré le 
 
 ## Reste à faire (hors lot 1)
 
+- **Relecture des récits (dépêches du Czar) par David** : pas faite au 2026-10-10. Le chantier reste ouvert tant qu'elle ne l'est pas.
 - Lien vers `/chiffrement` depuis l'accueil ou la navigation (non fait : l'accueil a des modifications locales de David sur `main`).
 - Lot lycée : affine, Vigenère (Kasiski, indice de coïncidence), Hill, RSA de poche.
 - Défis « Dépêches du Czar ».
