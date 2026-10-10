@@ -1,7 +1,7 @@
 /**
  * Bloc ```courbe — suites (décision de David du 2026-10-01, 1re spé)
  *
- * Comportements S1 à S11 de docs/wip/bloc-courbe-progress.md, section « Suites ».
+ * Comportements S1 à S11 de docs/archive/wip/bloc-courbe-progress.md, section « Suites ».
  */
 import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';

@@ -1,7 +1,7 @@
 /**
  * Bloc ```figure — une couleur nommée suit le thème à l'écran, et prend sa
  * variante claire au PDF ; un hexadécimal écrit par l'auteur reste tel quel.
- * Spécification : docs/wip/palette-figures-progress.md (1 à 5, 8).
+ * Spécification : docs/archive/wip/palette-figures-progress.md (1 à 5, 8).
  */
 import { describe, it, expect } from 'vitest';
 import { parseFigureContent } from '../../parser/figure-parser';

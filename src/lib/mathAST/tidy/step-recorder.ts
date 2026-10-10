@@ -1,7 +1,7 @@
 /**
  * Les étapes de `tidy` — ce que la mise au propre raconte.
  *
- * Spécification : `docs/wip/tidy-voix-phase0.md` (validée le 2026-09-21).
+ * Spécification : `docs/archive/wip/tidy-voix-phase0.md` (validée le 2026-09-21).
  *
  * `tidy` ne réécrit pas : il décompose en `TidyTerm[]`, accumule, reconstruit.
  * Il n'existe donc aucune expression intermédiaire « naturelle ». Les étapes

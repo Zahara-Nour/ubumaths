@@ -7,7 +7,7 @@
 	 * (décision D5). Les objets du panneau sont connus du moteur sans que rien
 	 * ne soit redéclaré (Q1, option B).
 	 *
-	 * Spécification : `docs/wip/atelier-vue-calcul-phase0.md`.
+	 * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md`.
 	 */
 	import { convertLatexToMarkup } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';

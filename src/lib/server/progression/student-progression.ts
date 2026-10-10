@@ -18,7 +18,7 @@
  *
  * Toute surface qui affiche une progression élève passe désormais par ici.
  *
- * Spec : docs/wip/progression-eleve-progress.md
+ * Spec : docs/archive/wip/progression-eleve-progress.md
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

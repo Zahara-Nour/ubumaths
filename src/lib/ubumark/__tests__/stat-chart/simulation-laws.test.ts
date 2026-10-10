@@ -1,7 +1,7 @@
 /**
  * Bloc ```simulation : les lois de maths complémentaires (manche 14, PR b).
  *
- * Spécification validée par David le 2026-10-04 (`docs/wip/simulation-lois-progress.md`) :
+ * Spécification validée par David le 2026-10-04 (`docs/archive/wip/simulation-lois-progress.md`) :
  * `X ~ G(p)`, `X ~ U(a ; b)`, `X ~ U([a ; b])`, `X ~ E(λ)` dans ```simulation.
  * - `tirages`, G : k = 1 à 10 puis « 11 ou plus » (P(X ⩾ 11) = (1 − p)^10 exacte) ;
  * - `tirages`, U discrète : une ligne par valeur, au plus 30 ;

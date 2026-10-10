@@ -4,7 +4,7 @@
  * Un objet de l'atelier = un nom + une définition + un état d'affichage.
  * C'est l'unité que les trois vues (Calcul, Graphe, Données) se partagent.
  *
- * Spécification : `docs/wip/atelier-recherche-eleve-phase0.md` §1.
+ * Spécification : `docs/archive/wip/atelier-recherche-eleve-phase0.md` §1.
  *
  * @module atelier/types
  */

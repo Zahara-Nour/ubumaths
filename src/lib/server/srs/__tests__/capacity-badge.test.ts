@@ -12,7 +12,7 @@
  *   - computePointBadges (avec mock Supabase) : 2 round-trips DB + agrégation.
  *
  * Source : src/lib/server/srs/capacity-badge.ts (refonte chantier 2026-06-10)
- * Spec    : docs/wip/srs-fsrs-spec-tdd.md §5 + docs/ref/srs/architecture.md §5
+ * Spec    : docs/archive/wip/srs-fsrs-spec-tdd.md §5 + docs/ref/srs/architecture.md §5
  */
 
 import { describe, it, expect, vi } from 'vitest';

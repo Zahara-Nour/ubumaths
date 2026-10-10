@@ -1,7 +1,7 @@
 /**
  * Le PDF de ```courbe et ```stat-chart imprime la variante claire de la palette
  * commune des figures : la même valeur qu'à l'écran en mode clair.
- * Spécification : docs/wip/palette-figures-progress.md (5, 7).
+ * Spécification : docs/archive/wip/palette-figures-progress.md (5, 7).
  */
 import { describe, it, expect } from 'vitest';
 import { generateCourbeTypst } from '../../generators/courbe-typst';

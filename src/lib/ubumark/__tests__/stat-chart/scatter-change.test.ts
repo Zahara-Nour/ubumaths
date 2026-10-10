@@ -2,7 +2,7 @@
  * Bloc ```nuage : changement de variable (manche 15, PR b) — `ajustement:
  * z = ln(y)` et les sept autres formes, relation retrouvée, courbe, `nuage: z`.
  *
- * Valeurs de référence (Python) : `docs/wip/nuage-changement-variable-progress.md`.
+ * Valeurs de référence (Python) : `docs/archive/wip/nuage-changement-variable-progress.md`.
  */
 
 import { describe, it, expect } from 'vitest';

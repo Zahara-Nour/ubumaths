@@ -4,7 +4,7 @@
  * Liste les flags anti-fraud des élèves de la classe (jointure class_members).
  * Filtres : resolved, since, type, capacity.
  *
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B9
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
  */
 
 import { error, json } from '@sveltejs/kit';

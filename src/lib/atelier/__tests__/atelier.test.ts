@@ -2,7 +2,7 @@
  * Cycle de vie d'un objet de l'atelier — comportements du §2.
  *
  * Chaque `it` porte le numéro du cas de la spécification
- * (`docs/wip/atelier-recherche-eleve-phase0.md`).
+ * (`docs/archive/wip/atelier-recherche-eleve-phase0.md`).
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';

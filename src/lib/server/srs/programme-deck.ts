@@ -8,7 +8,7 @@
  * Pattern lookup-then-insert avec gestion de la race condition, inspiré de
  * `resource-tags.ts` (`syncResourceTags`).
  *
- * Spec : `docs/wip/srs-fsrs-spec-tdd.md` §4.
+ * Spec : `docs/archive/wip/srs-fsrs-spec-tdd.md` §4.
  * Architecture : `docs/ref/srs/architecture.md` §3.4 + §4.1.
  */
 

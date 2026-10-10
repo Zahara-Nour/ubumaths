@@ -1,6 +1,6 @@
 /**
  * Supprimer depuis une carte : confirmation quand l'objet a des dépendants,
- * puis « Annuler » — lot B de `docs/wip/atelier-suppression-export-phase0.md`.
+ * puis « Annuler » — lot B de `docs/archive/wip/atelier-suppression-export-phase0.md`.
  */
 
 import { describe, it, expect } from 'vitest';

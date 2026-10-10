@@ -1,7 +1,7 @@
 /**
  * Anti-fraud SRS runner — orchestrateur du job de détection.
  *
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B7..B8
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B7..B8
  *
  * Flux :
  *   1. Vérifie app_config.anti_fraud_enabled. Exit early si false.
@@ -32,7 +32,7 @@
  *      le retirer est la traduction fidèle de la fusion — pas une perte de
  *      précision. Ne PAS le remplacer par `regime_acquisition` : ce champ
  *      répond à « comment on mesure la maîtrise », pas à « de quel arbre vient
- *      ce point » (cf. docs/wip/refonte-referentiel-progress.md §5a).
+ *      ce point » (cf. docs/archive/wip/refonte-referentiel-progress.md §5a).
  *   3. Le regroupement devient (élève × point de programme).
  *
  * Pourquoi ce n'est pas fait tout de suite : `detectSrsVsQuizGap` exige ≥ 10

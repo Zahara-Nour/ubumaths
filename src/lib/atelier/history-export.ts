@@ -8,7 +8,7 @@
  * - **ubumark** pour lire et recopier dans une fiche : formules en `$…$` LaTeX,
  *   jamais en `~…~` (pièges connus : grec, primes sur une autre lettre que f).
  *
- * Phase 0 : `docs/wip/atelier-suppression-export-phase0.md`, lot C.
+ * Phase 0 : `docs/archive/wip/atelier-suppression-export-phase0.md`, lot C.
  *
  * @module atelier/history-export
  */

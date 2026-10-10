@@ -1,7 +1,7 @@
 /**
  * Security — classmate relation expiry (needs a running DB)
  * =========================================================
- * Vague-2 finding M14 (docs/wip/security-audit-2026-08.md): are_classmates() must
+ * Vague-2 finding M14 (docs/archive/wip/security-audit-2026-08.md): are_classmates() must
  * only count ACTIVE memberships in an ACTIVE class, so a student who left
  * (status='archived') no longer sees a former classmate's profile.
  *

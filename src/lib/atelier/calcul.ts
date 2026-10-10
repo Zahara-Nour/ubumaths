@@ -5,7 +5,7 @@
  * (elle crée ou met à jour un objet), un **calcul** (il produit une ligne
  * d'historique), ou une **commande** (elle commence par un point).
  *
- * Spécification : `docs/wip/atelier-vue-calcul-phase0.md` §2 et §4.
+ * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md` §2 et §4.
  *
  * @module atelier/calcul
  */

@@ -3,7 +3,7 @@
  *
  * Compteur de flags non-résolus pour la classe (alimente le badge UI).
  *
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B12
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B12
  */
 
 import { json } from '@sveltejs/kit';

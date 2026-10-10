@@ -4,7 +4,7 @@
  * r en décimal.
  *
  * Valeurs de référence calculées en Python (fractions), consignées dans
- * `docs/wip/bloc-nuage-progress.md`.
+ * `docs/archive/wip/bloc-nuage-progress.md`.
  */
 
 import { describe, it, expect } from 'vitest';

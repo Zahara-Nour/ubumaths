@@ -3,7 +3,7 @@
  *
  * Marque un flag comme résolu (resolved=true). Idempotent.
  *
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B10
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B10
  */
 
 import { json } from '@sveltejs/kit';

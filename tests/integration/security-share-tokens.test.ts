@@ -1,7 +1,7 @@
 /**
  * Security — exercise share tokens (needs a running DB)
  * =====================================================
- * Vague-1 finding H8 (docs/wip/security-audit-2026-08.md).
+ * Vague-1 finding H8 (docs/archive/wip/security-audit-2026-08.md).
  *
  * Before: two PUBLIC blanket RLS policies let anon `GET /rest/v1/exercises` read
  * every ever-shared exercise (solution included) and `GET /rest/v1/exercise_share_tokens`

@@ -1,7 +1,7 @@
 <!--
 	Liste des flags anti-fraud actifs pour la classe.
 
-	Spec : docs/wip/srs-anti-fraud-spec-tdd.md §B9
+	Spec : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
 -->
 <script lang="ts">
 	import { lore } from '$lib/config/lore';

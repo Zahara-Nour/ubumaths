@@ -4,7 +4,7 @@
  *  - socle-mapping.ts  (getSocleCodes / formatSocleCell)
  *  - export-csv.ts     (buildCompetencesCsv)
  *
- * Mirrors behaviours 1-9 of docs/wip/export-competences-study.md / plan Phase 0.
+ * Mirrors behaviours 1-9 of docs/archive/wip/export-competences-study.md / plan Phase 0.
  */
 
 import { describe, it, expect } from 'vitest';

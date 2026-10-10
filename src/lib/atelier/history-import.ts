@@ -5,7 +5,7 @@
  * par Zod et borné avant que le moindre geste ne soit rejoué. Une seule issue
  * pour tout ce qui n'est pas un historique, en français (E1 à E3).
  *
- * Phase 0 : `docs/wip/atelier-suppression-export-phase0.md`, lot C2.
+ * Phase 0 : `docs/archive/wip/atelier-suppression-export-phase0.md`, lot C2.
  *
  * @module atelier/history-import
  */

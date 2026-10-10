@@ -308,7 +308,7 @@
 	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false`
 	 * (mesuré au vrai clavier le 2026-10-01 : avec `smartFence`, taper `[` ouvre une
 	 * paire `\left\lbrack…\right\rbrack` refermée d'office, et `[2;3[` devient
-	 * illisible — docs/wip/reponse-intervalles-progress.md). Il retrouve son réglage
+	 * illisible — docs/archive/wip/reponse-intervalles-progress.md). Il retrouve son réglage
 	 * au démontage seulement.
 	 *
 	 * ⚠️ Le réglage se pose AVANT que le clavier ne s'ouvre (`pointerdown` en capture,

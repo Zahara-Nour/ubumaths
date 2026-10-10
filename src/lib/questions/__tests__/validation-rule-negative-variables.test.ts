@@ -5,7 +5,7 @@
  * `{{p}}` était substitué tel quel : avec p = −3, `answer^2 + {{p}}` devenait
  * `answer^2 + -3` et `{{p}}^2` valait −9. Une valeur négative ou une expression
  * est désormais substituée entre parenthèses, pour TOUTES les règles qui
- * résolvent des variables. Cf. docs/wip/regle-negatif-inegalite-progress.md.
+ * résolvent des variables. Cf. docs/archive/wip/regle-negatif-inegalite-progress.md.
  */
 
 import { describe, it, expect } from 'vitest';

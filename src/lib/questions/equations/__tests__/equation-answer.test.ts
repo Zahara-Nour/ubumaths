@@ -1,6 +1,6 @@
 /**
  * Réponse « équation » : jugement d'une équation de droite ou de cercle
- * (spécification validée par David le 2026-10-03, docs/wip/reponse-equation-progress.md).
+ * (spécification validée par David le 2026-10-03, docs/archive/wip/reponse-equation-progress.md).
  * Les numéros renvoient au tableau des comportements du document de suivi.
  */
 

@@ -4,7 +4,7 @@
  *
  * `["P", "C"]` complète la liste par défaut du parseur (f, g, h, u, v, w, F, G, H) :
  * `P(x)` est une fonction, `P'(2)` sa dérivée en 2. Sans l'option, rien ne change.
- * Cf. docs/wip/modele-fonctions-generiques-progress.md.
+ * Cf. docs/archive/wip/modele-fonctions-generiques-progress.md.
  */
 
 import { describe, it, expect } from 'vitest';

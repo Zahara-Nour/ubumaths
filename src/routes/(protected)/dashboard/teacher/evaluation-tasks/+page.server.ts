@@ -6,7 +6,7 @@
  * par ce prof. Chacune mène à l'édition (périmètre) et plus tard à la
  * saisie en séance.
  *
- * Spec : docs/wip/skills-referentiel-design.md §3 (périmètre), §7 (evaluation_tasks)
+ * Spec : docs/archive/wip/skills-referentiel-design.md §3 (périmètre), §7 (evaluation_tasks)
  */
 
 import type { PageServerLoad } from './$types';

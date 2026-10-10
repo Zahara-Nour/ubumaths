@@ -1,7 +1,7 @@
 /**
  * Le cœur de `tidy` : relire une expression comme une somme de termes.
  *
- * Une fonction par étape du contrat (docs/wip/tidy-phase0.md, §A) :
+ * Une fonction par étape du contrat (docs/ref/mathast/tidy-spec.md, §A) :
  *
  * | étape | fonction                                                        |
  * | ----- | --------------------------------------------------------------- |

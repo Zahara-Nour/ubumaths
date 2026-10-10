@@ -2,7 +2,7 @@
 	Vue prof : niveaux de compétences (famille B) d'une classe + export CSV.
 
 	Le tableau « large » (élèves × 6 compétences) est la vue consultable ; le CSV
-	exporte exactement ce contenu (cf. docs/wip/export-competences-study.md §8).
+	exporte exactement ce contenu (cf. docs/archive/wip/export-competences-study.md §8).
 	Visuels de niveau cohérents avec ClassCompetenceGrid (◯/🟠/🟢/✨).
 -->
 <script lang="ts">

@@ -10,7 +10,7 @@
  *   `entersProgrammeDeck`).
  * - Pour les cartes custom (front/back libre), aucun skill_attempts n'est créé.
  *
- * Spec : docs/wip/srs-fsrs-spec-tdd.md §2
+ * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §2
  */
 
 import { error, json } from '@sveltejs/kit';

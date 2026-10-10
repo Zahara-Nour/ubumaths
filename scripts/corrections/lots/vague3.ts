@@ -3,7 +3,7 @@
  * unités, pourcentages
  * ============================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, codes N-REL-ADD (dont
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, codes N-REL-ADD (dont
  * les 4 trous 24331791, 84755a7b, b1550840, 372d4f79 — décision du 2026-09-29),
  * N-REL-SUB, N-COMPARER-REL, N-REL-DEF, N-OPPOSES, N-REL-ALG, N-FRAC-MULT,
  * N-FRAC-ADD, N-INVERSE, N-UNITES, N-UNITES-VOL, N-UNITES-AIRE, N-POURCENT.

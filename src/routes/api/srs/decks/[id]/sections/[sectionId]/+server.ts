@@ -5,7 +5,7 @@
  * DELETE /api/srs/decks/[id]/sections/[sectionId]  — supprime une section
  *                                                    (cartes orphelines → section_id NULL via ON DELETE SET NULL)
  *
- * Spec : docs/wip/srs-fsrs-spec-tdd.md §6
+ * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §6
  */
 
 import { json } from '@sveltejs/kit';

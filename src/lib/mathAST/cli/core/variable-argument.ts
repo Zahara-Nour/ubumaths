@@ -384,7 +384,7 @@ export function bareFunctionMessage(name: string): string {
 }
 
 // =============================================================================
-// Mots-clés (décisions de David, 2026-10-08 — docs/wip/syntaxe-commandes-calcul.md)
+// Mots-clés (décisions de David, 2026-10-08 — docs/ref/syntaxe-commandes-atelier.md)
 // =============================================================================
 
 /** Les commandes dont l'argument se lit avec des mots-clés. */

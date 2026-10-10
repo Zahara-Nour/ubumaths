@@ -4,7 +4,7 @@
  * Un nom est unique dans TOUT l'atelier, tous types confondus (décision D1) :
  * sinon `f` valeur et `f` fonction coexistent, et `f(2)` devient ambigu.
  *
- * Spécification : `docs/wip/atelier-recherche-eleve-phase0.md` §1 et §2.2.
+ * Spécification : `docs/archive/wip/atelier-recherche-eleve-phase0.md` §1 et §2.2.
  *
  * @module atelier/names
  */

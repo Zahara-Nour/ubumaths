@@ -2,7 +2,7 @@
  * Tests des schemas Zod anti-fraud.
  *
  * Couvre l'entrée des 4 endpoints (admin run, GET flags, PATCH resolve, count).
- * Cf. spec TDD : docs/wip/srs-anti-fraud-spec-tdd.md §B7..B12
+ * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B7..B12
  */
 
 import { describe, expect, it } from 'vitest';

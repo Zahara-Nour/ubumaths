@@ -3,7 +3,7 @@
  * `e^{…}` comme il le fait déjà pour `exp(…)`.
  *
  * Décision de David (option A, 2026-10-05) : `tidy` garde son contrat et
- * n'applique aucune identité (docs/wip/tidy-phase0.md §A) ; c'est `normalize`
+ * n'applique aucune identité (docs/ref/mathast/tidy-spec.md §A) ; c'est `normalize`
  * qui réduit `ln(eᵃ)`, `e^{ln a}`, `(eᵃ)ⁿ`, `eᵃ·eᵇ`, `e⁰`. Mesuré avant :
  * `ln(\exp(x))` rendait `x`, mais `ln(e^{x})` restait écrit.
  *
