@@ -46,7 +46,7 @@ describe('PDF d’un exercice seul : corrigé détaillé, sans marqueur brut', (
 			includeMetadata: false
 		});
 		expect(result.success).toBe(true);
-		expectDetailedWithoutMarkers(result.typstContent);
+		expectDetailedWithoutMarkers(result.typstContent ?? '');
 	});
 
 	it('generateStaticExerciseTypst', async () => {
