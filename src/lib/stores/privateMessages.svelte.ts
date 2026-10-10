@@ -102,12 +102,29 @@ export interface MessageDetails {
 	recipients: MessageRecipientDisplay[] | null;
 }
 
+/** Un message du fil, tel que le rend GET /api/messages/thread
+ *  (threadMessageResponseSchema côté serveur). */
+export interface ThreadMessage {
+	id: string;
+	sender_id: string;
+	sender_name: string | null;
+	sender_avatar_url: string | null;
+	sender_role: string | null;
+	subject: string;
+	content: unknown;
+	sent_at: string;
+	edited_at: string | null;
+	parent_message_id: string | null;
+	level: number;
+	attachments: MessageAttachment[] | null;
+}
+
 class PrivateMessagesStore {
 	// State
 	inbox = $state<PrivateMessage[]>([]);
 	sent = $state<SentMessage[]>([]);
 	currentMessage = $state<MessageDetails | null>(null);
-	currentThread = $state<MessageDetails[]>([]);
+	currentThread = $state<ThreadMessage[]>([]);
 	drafts = $state<MessageDraftRow[]>([]);
 
 	recipients = $state<MessageRecipient[]>([]);

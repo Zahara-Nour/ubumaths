@@ -53,7 +53,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					p_message_id: row.message_id,
 					p_user_id: user.id
 				});
-				// Jamais un fil partiel : un message illisible fait échouer la requête
+				// Seul l'admin reçoit de get_message_thread des messages qu'il n'a ni
+				// envoyés ni reçus, que get_message_details lui refuse : ils sont
+				// écartés, la règle « envoyé ou reçu » vaut ainsi pour tous.
+				if (detailsError?.message?.includes('do not have access')) return null;
+				// Toute autre erreur : jamais un fil partiel
 				if (detailsError || !details?.[0]) {
 					console.error('Error fetching thread message details:', detailsError);
 					throw error(500, 'Erreur lors de la récupération du fil de discussion');
@@ -79,7 +83,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Validate response
 		const validated = validateJsonResponse(
 			messageThreadResponseSchema,
-			{ messages: detailed },
+			{ messages: detailed.filter((message) => message !== null) },
 			'GET /api/messages/thread'
 		);
 

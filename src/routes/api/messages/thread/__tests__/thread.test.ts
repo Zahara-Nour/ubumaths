@@ -134,12 +134,43 @@ describe('GET /api/messages/thread', () => {
 		await expect(promise).rejects.toMatchObject({ status: 403 });
 	});
 
-	it('détails d’un message refusés : 500, jamais un fil partiel', async () => {
+	// get_message_thread exempte l'admin du filtre « envoyé ou reçu », pas
+	// get_message_details : une réponse privée élève → prof dans un fil où l'admin
+	// est partie lui reste illisible. Elle est écartée, le reste du fil s'affiche.
+	it('admin : un message qu’il n’a ni envoyé ni reçu est écarté, le fil reste lisible', async () => {
+		const { promise } = call((name, args) => {
+			if (name === 'get_message_thread')
+				return { data: [threadRow(ROOT, TEACHER, 0), threadRow(REPLY, USER, 1)], error: null };
+			return args.p_message_id === REPLY
+				? { data: null, error: { message: 'You do not have access to this message' } }
+				: { data: [detailsRow(ROOT, TEACHER)], error: null };
+		});
+		const response = await promise;
+		expect(response.status).toBe(200);
+		const { messages } = await response.json();
+		expect(messages.map((m: { id: string }) => m.id)).toEqual([ROOT]);
+	});
+
+	it('autre erreur sur les détails : 500, jamais un fil partiel', async () => {
 		const { promise } = call((name) =>
 			name === 'get_message_thread'
 				? { data: [threadRow(ROOT, TEACHER, 0)], error: null }
-				: { data: null, error: { message: 'You do not have access to this message' } }
+				: { data: null, error: { message: 'connection reset' } }
 		);
 		await expect(promise).rejects.toMatchObject({ status: 500 });
+	});
+
+	it('expéditeur sans nom mais avec avatar : accepté tel quel', async () => {
+		const { promise } = call((name, args) => {
+			const row = { ...threadRow(ROOT, TEACHER, 0), sender_name: null, sender_avatar_url: 'a.png' };
+			if (name === 'get_message_thread') return { data: [row], error: null };
+			return { data: [{ ...detailsRow(args.p_message_id, TEACHER), ...row }], error: null };
+		});
+		const response = await promise;
+		expect(response.status).toBe(200);
+		expect((await response.json()).messages[0]).toMatchObject({
+			sender_name: null,
+			sender_avatar_url: 'a.png'
+		});
 	});
 });
