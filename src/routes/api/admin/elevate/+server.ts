@@ -27,6 +27,7 @@
  * - 429: rate limited
  */
 
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { json, error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
@@ -84,10 +85,11 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 
 	// 4. Mono-admin model: the caller submits only the password. Resolve the
 	//    single admin account's email server-side. `.single()` enforces exactly
-	//    one admin row (0 or >1 → error). profiles is readable here via the broad
-	//    leaderboard SELECT policy; the email is used only to drive the
-	//    server-side sign-in below and is never returned to the client.
-	const { data: adminProfile, error: adminLookupError } = await locals.supabase
+	//    one admin row (0 or >1 → error). Lu par le client SERVICE : aucune policy ne
+	//    montre le profil admin au prof (la « policy de classement large » invoquée ici
+	//    a disparu) — l'élévation échouait en 500 (constat B5, 2026-10-10). L'e-mail ne
+	//    sert qu'à la connexion côté serveur ci-dessous, jamais renvoyé au client.
+	const { data: adminProfile, error: adminLookupError } = await createServiceRoleClient()
 		.from('profiles')
 		.select('email')
 		.eq('role', 'admin')

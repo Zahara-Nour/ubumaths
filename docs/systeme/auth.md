@@ -223,7 +223,8 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
 
 1. `POST /api/admin/elevate` (prof ou admin connecté) : Zod (`adminElevateSchema`, mot de passe
    seul) → limites dédiées (`checkElevationRateLimitByIP` / `ByEmail`, distinctes du login) →
-   e-mail de l'admin retrouvé côté serveur → `signInWithPassword` sur un client **éphémère**
+   e-mail de l'admin retrouvé côté serveur **par le client service** (aucune policy ne montre le
+   profil admin au prof : sans lui, l'élévation échouait en 500 — B5, 2026-10-10) → `signInWithPassword` sur un client **éphémère**
    (`createEphemeralAuthClient` : ne persiste rien, n'écrit aucun cookie) → rôle `admin`
    relu en base → cookie posé.
 2. **Cookie `ubu-admin-elevation`** : base64url de
