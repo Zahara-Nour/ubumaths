@@ -12,7 +12,7 @@
  * les specs (a = 40, 100, 13) restent vertes.
  */
 import { describe, it, expect } from 'vitest';
-import { callPost, callPut, fakeDb, FIXTURE, type FakeDb } from './fake-templates-db';
+import { callPost, callPut, fakeDb, FIXTURE, templateRow, type FakeDb } from './fake-templates-db';
 
 const BROKEN_ANSWER = '{{eval:2*a+sqrt(a-8)-sqrt(a-8)}}';
 
@@ -121,6 +121,30 @@ describe('POST : créer directement publié passe le même contrôle', () => {
 		(body.variations[0] as { blanks: Array<{ expectedAnswer: string }> }).blanks[0].expectedAnswer =
 			BROKEN_ANSWER;
 		const response = await callPost(db, body);
+
+		expect(response.status).toBe(201);
+	});
+});
+
+// Collision de catégorie à la création : refus, comme le PUT et le lot (décision
+// de David du 2026-09-29, étendue à la création le 2026-10-10) ; plus de
+// décalage automatique du niveau
+describe('POST : catégorie déjà occupée', () => {
+	it('créer publié dans une catégorie occupée → 400, rien inséré, niveau inchangé', async () => {
+		const db = fakeDb();
+		db.question_templates = [{ ...templateRow(), status: 'published' }];
+		const response = await callPost(db, createBody('published'));
+
+		expect(response.status).toBe(400);
+		const json = await response.json();
+		expect(json.errors.join(' ')).toMatch(/Cette catégorie existe déjà/);
+		expect(db.inserts).toEqual([]);
+	});
+
+	it('créer en BROUILLON dans une catégorie occupée → 201 (le contrôle vient à la publication)', async () => {
+		const db = fakeDb();
+		db.question_templates = [{ ...templateRow(), status: 'published' }];
+		const response = await callPost(db, createBody('draft'));
 
 		expect(response.status).toBe(201);
 	});
