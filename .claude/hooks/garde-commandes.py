@@ -84,7 +84,7 @@ for brut in segments:
     if re.match(r"git\s+push\b", s) and "--no-verify" in s:
         refuser("`--no-verify` saute aussi `lint:fast` ; le hook pre-push est léger, il n'y a plus de raison de le contourner.")
 
-    if re.match(r"pnpm\s+(?:run\s+)?release(?::\w+)?\b", s):
+    if re.match(r"pnpm\s+(?:run\s+)?release(?::\w+)?\b", s) and "--dry-run" not in s:
         refuser("la version se crée avec la mise en prod : `pnpm deploy:prod`, sur demande explicite de David (ADR 0021).")
 
     # `pnpm deploy:prod` n'est plus soumis à confirmation (décision de David,

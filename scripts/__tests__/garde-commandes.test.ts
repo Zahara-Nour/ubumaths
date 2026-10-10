@@ -87,6 +87,7 @@ describe('garde-commandes — le reste passe sans bruit', () => {
 		passe('pnpm db:migrate');
 		passe('git push origin main');
 		passe('git -C /tmp/x status');
+		passe('pnpm release --dry-run'); // essai à blanc : aucune version créée
 	});
 
 	it('une commande ordinaire, et un mot interdit dans un message de commit', () => {
