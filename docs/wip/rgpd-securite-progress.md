@@ -174,3 +174,22 @@ masquage — faille antérieure relevée par security-auditor) ; toast multijoue
 3. **B6 / B7** comptes `pending`/`rejected` et inscription GoTrue directe.
 4. **E20** (SRS, DELETE sans `.select()`), **B5** (à mesurer), **B8**, **D17** (question : voulu ?).
 5. **C9 → C15** : point par point avec David (aligner le code ou les documents).
+
+## Suppression d'un message par la modération (nouveau constat, branche `fix/moderation-suppression-message`)
+
+- Reproduit en local (2026-10-10), écriture de la route rejouée avec le client du prof :
+  conversation de groupe → `42501` (policy SELECT `deleted_at IS NULL` refuse la nouvelle ligne,
+  la route répond 500) ; **1-1 entre élèves → 0 ligne, sans erreur : la route répondait
+  « supprimé »**, le message restait visible. En prod : 2 suppressions le 30/12/2025, aucune depuis.
+- Correctif sans SQL : la route vérifie déjà les droits ; l'écriture passe par le client service
+  (`/api/moderation/messages/[id]/` ajouté à `ALLOWED_SERVICE_ROLE_PATHS`), `.select('id')` et
+  exactement une ligne exigée, sinon 500. `soft_delete_message` (RPC existante, jamais appelée)
+  n'a pas été reprise : sa garde exclut les 1-1 entre élèves, que la route autorise.
+- Les tests unitaires enregistraient le bug (UPDATE simulé à 0 ligne compté comme succès) :
+  réécrits ; 3 cas rouges avec l'ancienne route.
+- security-auditor : la route rendait réels des droits que la base bloquait. **Décision de David
+  (2026-10-10)** : le prof ne supprime que des messages écrits par un élève (ou les siens), jamais
+  ceux de l'admin ; l'admin garde tout. Contrôle ajouté dans la route, testé.
+- Remarque, non traitée : la route LIT le message avec le client du prof ; la policy SELECT ne lui
+  montre une conversation 1-1 que si les deux élèves sont membres d'une classe — un 1-1 entre
+  élèves hors classe donnerait 404 (contraire à l'option B « le prof supervise tout élève »).
