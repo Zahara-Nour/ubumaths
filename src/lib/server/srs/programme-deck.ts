@@ -9,7 +9,7 @@
  * `resource-tags.ts` (`syncResourceTags`).
  *
  * Spec : `docs/archive/wip/srs-fsrs-spec-tdd.md` §4.
- * Architecture : `docs/ref/srs/architecture.md` §3.4 + §4.1.
+ * Architecture : `docs/systeme/srs/architecture.md` §3.4 + §4.1.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -151,7 +151,7 @@ export async function ensureProgrammeDeckCard(
 	}
 
 	// Un refus silencieux rendrait zéro ligne sans erreur
-	// (cf. docs/ref/rls-echecs-silencieux.md) : on le rend visible.
+	// (cf. docs/pratiques/rls-echecs-silencieux.md) : on le rend visible.
 	if (!inserted || inserted.length !== 1) {
 		const message = `[programme-deck] Carte non écrite : ${inserted?.length ?? 0} ligne(s) rendue(s)`;
 		console.error(message, { deckId, templateId });

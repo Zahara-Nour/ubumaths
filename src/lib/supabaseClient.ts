@@ -27,7 +27,7 @@
  * - One-off scripts that don't need SSR
  * - Local development debugging (temporarily)
  *
- * See the official guide: https://supabase.com/docs/guides/auth/server-side/sveltekit
+ * See the official guide: https://supabase.com/docs/systeme/auth/server-side/sveltekit
  */
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';

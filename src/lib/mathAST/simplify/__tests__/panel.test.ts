@@ -1,6 +1,6 @@
 /**
  * Le panel de `simplify()` — colonne « attendu » validée par David
- * (docs/ref/mathast/tidy-spec.md §C, 2026-09-20).
+ * (docs/systeme/mathast/tidy-spec.md §C, 2026-09-20).
  *
  * `simplify` = tidy → règles → « développer seulement si moins cher » → tidy.
  * Les attendus sont en syntaxe maison, tels que `toCustom` les imprime.

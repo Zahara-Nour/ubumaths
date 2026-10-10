@@ -106,7 +106,7 @@ export interface ApplyFsrsOptions {
 	bestOfDay?: { now: Date };
 	/**
 	 * Vérifie que l'écriture a bien touché une ligne (`.select()`) : la RLS
-	 * échoue en SILENCE (0 ligne, sans erreur), cf. docs/ref/rls-echecs-silencieux.md.
+	 * échoue en SILENCE (0 ligne, sans erreur), cf. docs/pratiques/rls-echecs-silencieux.md.
 	 */
 	verifyWrite?: boolean;
 }

@@ -25,7 +25,7 @@
  * Hors périmètre : les fonctions trigger et event_trigger, que Postgres refuse
  * d'exécuter hors de leur déclencheur (« can only be called as triggers »).
  *
- * Que faire quand il échoue : docs/ref/rls-echecs-silencieux.md, § « Nouvelle
+ * Que faire quand il échoue : docs/pratiques/rls-echecs-silencieux.md, § « Nouvelle
  * fonction SECURITY DEFINER ».
  *
  * @vitest-environment node

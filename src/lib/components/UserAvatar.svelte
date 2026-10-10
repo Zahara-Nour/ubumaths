@@ -124,7 +124,7 @@
 	</span>
 	<!--
 		DO NOT remove `referrerpolicy="no-referrer"` or `{loading}`. See the
-		top-of-file "KNOWN TRAP" block and docs/ref/google-avatar-cdn.md.
+		top-of-file "KNOWN TRAP" block and docs/systeme/auth/google-avatar-cdn.md.
 		Without either, most Google OAuth avatars 429 / 403 silently and the
 		page degrades to the role-based default for nearly every user.
 	-->

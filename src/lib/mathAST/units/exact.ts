@@ -1,7 +1,7 @@
 /**
  * Les coefficients de conversion, en **rationnels exacts**.
  *
- * Contrat : `docs/ref/mathast/tidy-spec.md` §D.1, et son erratum du 2026-09-20.
+ * Contrat : `docs/systeme/mathast/tidy-spec.md` §D.1, et son erratum du 2026-09-20.
  * `floatToRational` n'est pas exact sur les coefficients des définitions
  * (`floatToRational(273.15)` rend `8535937499999999/31250000000000`) :
  * l'exactitude vient de **l'écriture décimale** de la définition, relue par

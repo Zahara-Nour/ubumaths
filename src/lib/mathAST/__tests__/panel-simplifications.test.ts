@@ -1,7 +1,7 @@
 /**
  * Le panel de référence des simplifications.
  *
- * Ce fichier **pinne** `docs/ref/panel-simplifications.md`, qui est le document
+ * Ce fichier **pinne** `docs/systeme/mathast/panel-simplifications.md`, qui est le document
  * de référence que David et moi consultons pour savoir ce que le moteur rend.
  *
  * ⚠️ **Les deux vont ensemble.** Quand une valeur change ici, elle doit changer
@@ -33,7 +33,7 @@ const parIntention = (entree: string, intent: SimplifyIntent) =>
 		generatePedagogicalSimplifySteps(parseLatex(entree), { intent, schoolLevel: 'lycee' }).result
 	);
 
-describe('panel de référence — docs/ref/panel-simplifications.md', () => {
+describe('panel de référence — docs/systeme/mathast/panel-simplifications.md', () => {
 	describe('Fractions numériques', () => {
 		it.each([
 			[

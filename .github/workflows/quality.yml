@@ -103,7 +103,7 @@ jobs:
       # --foreground, … tokens that `hsl(var(--x))` expects do not exist, so
       # those declarations are invalid and silently dropped. It once left an
       # SVG stroke fully invisible. A baseline carries the pre-existing debt,
-      # so this only blocks NEW occurrences. See docs/ref/css-color-tokens.md.
+      # so this only blocks NEW occurrences. See docs/pratiques/css-color-tokens.md.
       - name: Guard CSS colour tokens (no hsl(var(--…)))
         run: bash scripts/check-css-tokens.sh
 
@@ -216,7 +216,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # Guardrail for the Safari/iPad WebKit TDZ bug (docs/ref/safari-webkit-tdz.md):
+      # Guardrail for the Safari/iPad WebKit TDZ bug (docs/pratiques/safari-webkit-tdz.md):
       # the root layout node chunk must stay < 100 KB, otherwise iPad/Safari throws
       # "Cannot access 'universal' before initialization". Fails the build if exceeded.
       - name: Guard root layout chunk size (< 100 KB — Safari TDZ)
@@ -230,7 +230,7 @@ jobs:
           limit=102400
           echo "Root layout chunk: $size bytes (limit $limit)"
           if [ "$size" -gt "$limit" ]; then
-            echo "::error::Root layout chunk $size B > 100 KB — Safari/iPad TDZ risk (see docs/ref/safari-webkit-tdz.md). Move heavy static imports out of src/routes/+layout.ts."
+            echo "::error::Root layout chunk $size B > 100 KB — Safari/iPad TDZ risk (see docs/pratiques/safari-webkit-tdz.md). Move heavy static imports out of src/routes/+layout.ts."
             exit 1
           fi
           echo "::notice::Root layout chunk OK ($size B < 100 KB)"

@@ -1,6 +1,6 @@
 /**
  * Syntaxe des commandes de Calcul par mots-clés (décisions de David,
- * 2026-10-08 — `docs/ref/syntaxe-commandes-atelier.md`).
+ * 2026-10-08 — `docs/systeme/atelier-syntaxe.md`).
  *
  * L'expression s'arrête au PREMIER mot-clé ; ordre des mots-clés libre ;
  * `à` s'écrit aussi `a` ; une borne est un seul bloc sans espace.

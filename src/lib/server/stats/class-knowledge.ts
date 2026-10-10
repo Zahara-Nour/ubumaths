@@ -9,7 +9,7 @@
  *   - getStudentGradeHistogram      → Widget D (7 jours, distribution {1,2,3,4})
  *
  * Performance : approche batchée (1-3 queries par fonction, pas N×queries).
- * Cf. `docs/ref/teacher-analytics.md` §3.
+ * Cf. `docs/systeme/analytique-prof.md` §3.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

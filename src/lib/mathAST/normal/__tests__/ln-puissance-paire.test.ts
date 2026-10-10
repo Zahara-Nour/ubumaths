@@ -6,7 +6,7 @@
  * n·ln u (le domaine de ln(u^n) impose déjà u > 0). Base prouvée positive
  * (x² + 1, e^x) : |u| = u, la valeur absolue disparaît.
  *
- * Comparaison (docs/ref/convention-equivalence.md) : la convention compare sur
+ * Comparaison (docs/systeme/mathast/convention-equivalence.md) : la convention compare sur
  * l'intersection des domaines, où ln(x²) = 2 ln x (]0 ; +∞[). Le décideur ne
  * porte pas le domaine : il compare 2 ln|x| à 2 ln x et les sépare. Faux
  * négatif assumé, de la famille de `√x·√x ≢ |x|` et `\ln|x| ≢ \ln x` ; sous

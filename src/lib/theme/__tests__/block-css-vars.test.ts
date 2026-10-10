@@ -1,7 +1,7 @@
 /**
  * Chaque `var(--x)` des blocs du lot 3 doit exister : déclarée dans app.css, ou
  * localement dans le `<style>` du composant. Une variable absente est jetée en
- * silence par le navigateur (cf. docs/ref/css-color-tokens.md) : avant le lot,
+ * silence par le navigateur (cf. docs/pratiques/css-color-tokens.md) : avant le lot,
  * les quatre composants lisaient `--foreground`, `--border`… qui n'existent pas,
  * et ne tenaient que par leurs couleurs de repli codées en dur.
  */
