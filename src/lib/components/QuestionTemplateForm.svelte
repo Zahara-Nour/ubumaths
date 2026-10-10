@@ -128,7 +128,8 @@
 		onSave: (
 			template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>,
 			options?: { silent?: boolean }
-		) => void;
+			// `false` = refusé par le serveur : la publication est annulée côté formulaire
+		) => void | Promise<boolean>;
 		onCancel: () => void;
 		isSubmitting: boolean;
 	}
@@ -1124,6 +1125,18 @@
 		onCancel();
 	}
 
+	/**
+	 * Publie : `status` passe à `published` pour construire le modèle, et revient
+	 * à sa valeur si le serveur refuse — sinon chaque enregistrement suivant
+	 * (silencieux compris) renverrait `published` et serait refusé à son tour.
+	 */
+	async function publish() {
+		const previousStatus = status;
+		status = 'published';
+		const saved = await onSave(buildTemplate());
+		if (saved === false) status = previousStatus;
+	}
+
 	// Publish question (with category validation)
 	function handlePublish() {
 		if (jsonMode) {
@@ -1144,9 +1157,7 @@
 			showPublishDialog = true;
 		} else {
 			// No duplicate, publish directly
-			status = 'published';
-			const templateData = buildTemplate();
-			onSave(templateData);
+			publish();
 		}
 	}
 
@@ -1155,13 +1166,11 @@
 		if (suggestedLevel) {
 			level = suggestedLevel;
 		}
-		status = 'published';
 		showPublishDialog = false;
 
 		// Wait for next tick to let level update
 		await tick();
-		const templateData = buildTemplate();
-		onSave(templateData);
+		await publish();
 	}
 
 	// Memoize buildTemplate() for preview (avoid recalculating on every render)

@@ -43,7 +43,7 @@
 
 	async function handleSave(
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
-	) {
+	): Promise<boolean> {
 		isSubmitting = true;
 
 		try {
@@ -69,13 +69,19 @@
 					toaster.success('Question créée avec succès');
 				}
 				goto('/dashboard/admin/questions').then(() => {});
+				return true;
 			} else {
-				toaster.error('Erreur lors de la création');
-				console.error('Validation errors:', result.errors);
+				// Raisons du refus (contrôle de publication : spec rouge, tirage en échec…)
+				const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+				toaster.error('Erreur lors de la création', {
+					description: errors.slice(0, 5).join('\n') || undefined
+				});
+				return false;
 			}
 		} catch (error) {
 			toaster.error('Erreur serveur');
 			console.error('Server error:', error);
+			return false;
 		} finally {
 			isSubmitting = false;
 		}

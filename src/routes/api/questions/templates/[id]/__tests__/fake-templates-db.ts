@@ -9,6 +9,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { PUT } from '../+server';
+import { POST } from '../../+server';
 
 export type Row = Record<string, unknown>;
 
@@ -16,6 +17,7 @@ export interface FakeDb {
 	question_templates: Row[];
 	profiles: Row[];
 	updates: Row[];
+	inserts: Row[];
 }
 
 export const USER_ID = '11111111-1111-4111-8111-111111111111';
@@ -46,7 +48,7 @@ export function templateRow(): Row {
 		variations: structuredClone(FIXTURE.variations),
 		options: null,
 		default_display_options: null,
-		test_specs: null,
+		test_specs: structuredClone(FIXTURE.testSpecs ?? null),
 		multiple_answers: null,
 		exercise_instruction: null,
 		created_at: '2026-09-28T09:14:03.52+00:00',
@@ -59,9 +61,21 @@ export function templateRow(): Row {
 function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 	const filters: Array<(row: Row) => boolean> = [];
 	let patch: Row | null = null;
+	let inserted: Row | null = null;
 	let single: false | 'single' | 'maybe' = false;
 
 	function execute() {
+		if (inserted) {
+			const row = {
+				id: '44444444-4444-4444-8444-444444444444',
+				created_at: '2026-10-10T09:00:00+00:00',
+				updated_at: '2026-10-10T09:00:00+00:00',
+				...inserted
+			};
+			db.inserts.push(inserted);
+			db[table].push(row);
+			return single ? { data: { ...row }, error: null } : { data: [{ ...row }], error: null };
+		}
 		const matching = db[table].filter((row) => filters.every((keep) => keep(row)));
 		if (patch) {
 			db.updates.push(patch);
@@ -81,6 +95,10 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 
 	const builder = {
 		select: () => builder,
+		insert: (values: Row) => {
+			inserted = values;
+			return builder;
+		},
 		update: (values: Row) => {
 			patch = values;
 			return builder;
@@ -119,7 +137,8 @@ export function fakeDb(): FakeDb {
 	return {
 		question_templates: [templateRow()],
 		profiles: [{ id: USER_ID, role: 'admin' }],
-		updates: []
+		updates: [],
+		inserts: []
 	};
 }
 
@@ -134,4 +153,17 @@ export async function callPut(db: FakeDb, body: unknown) {
 		supabase: { from: (table: 'question_templates' | 'profiles') => fakeQuery(db, table) }
 	};
 	return PUT({ request, locals, params: { id: ID } } as never);
+}
+
+export async function callPost(db: FakeDb, body: unknown) {
+	const request = new Request('http://localhost/api/questions/templates', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body)
+	});
+	const locals = {
+		safeGetSession: async () => ({ user: { id: USER_ID } }),
+		supabase: { from: (table: 'question_templates' | 'profiles') => fakeQuery(db, table) }
+	};
+	return POST({ request, locals } as never);
 }
