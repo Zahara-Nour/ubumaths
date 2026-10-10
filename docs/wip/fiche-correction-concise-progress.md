@@ -8,6 +8,6 @@ d'automatismes garde ses marqueurs ; les affichages écran d'un corrigé d'exerc
 Branche `feat/fiche-correction-concise`, worktree `../ubumaths-wt-fiche-concise`.
 
 - [x] Tests rouges : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
-- [ ] `correctionForPrint`, réglage (type, Zod, lecture, UI), PDF prof + élève, API élève, série.
-- [ ] Écrans : corrigés d'exercice via `detailedCorrection`.
-- [ ] Doc (`fiches-et-pdf.md`, `CONTEXT.md` si besoin), écarts (D4) ; check, revue, PR.
+- [x] `correctionForPrint`, réglage (type, Zod, lecture, UI), PDF prof + élève, API élève, série.
+- [x] Écrans : corrigés d'exercice via `detailedCorrection`.
+- [x] Doc (`fiches-et-pdf.md`, `CONTEXT.md` si besoin), écarts (D4) ; check, revue, PR.

@@ -26,7 +26,7 @@ Priorité : **1** = touche les copies ou les résultats des élèves · **2** = 
 
 | #   | Chantier                                             | Écarts                           | Taille     | Prio |
 | --- | ---------------------------------------------------- | -------------------------------- | ---------- | ---- |
-| K1  | **Tirages des fiches** (un élève, une copie)         | V1, V2, M4, D4                   | L          | 1    |
+| K1  | **Tirages des fiches** (un élève, une copie)         | V1, V2, M4                       | L          | 1    |
 | K3  | **Fusion des moteurs (ADR 0007)** — projet existant  | V8                               | L          | 1    |
 | K4  | **Gras coupé par un marquage du lexique**            | L16                              | S          | 3    |
 | K7  | **Tableur**                                          | V3, V4                           | M          | 2    |
@@ -51,7 +51,8 @@ d'un modèle publié décalait le niveau d'une catégorie occupée au lieu de re
 (formule `~…~` en cellule de tableau, écran et PDF, #1063 ; aucun contenu réel touché, mesuré le
 2026-10-10). **V11** reclassé en bug latent (L16, K4 passé en priorité 3). **V6** (une seule règle d'arrondi d'affichage,
 `statistics/rounding.ts`, #1064, 2026-10-11) ; **K5 / D7** (la loi normale se simule
-comme les autres lois, décision de David du 2026-10-11).
+comme les autres lois, décision de David du 2026-10-11). **D4** (la fiche choisit son corrigé imprimé,
+concis ou détaillé : lot 3 de l'ADR 0017, déjà décidé le 2026-10-02 — D11).
 K3 reste le projet « fusion simplify / pedagogical-simplify » déjà suivi. K7-K10 ensuite, après les
 décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 
@@ -140,7 +141,6 @@ décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 | D1  | Pages analytique et export compétences réservées au rôle `teacher` (layout `dashboard/teacher/+layout.server.ts`, `requireRole(locals, 'teacher')`) ; leurs endpoints acceptent `admin`. L'ancienne doc promettait l'accès admin. | [analytique-prof.md](../systeme/analytique-prof.md), [export-competences.md](../systeme/export-competences.md) | L'admin doit-il voir ces pages ?                                   | S      | vérifié    |
 | D2  | Deux « acquis » : la grille calcule un badge FSRS (`srs_card_stats`), sans lire `student_point_state` (régimes `fluence`/`diversite`).                                                                                            | [analytique-prof.md](../systeme/analytique-prof.md)                                                            | Quel « acquis » montre-t-on au prof, ou les deux ?                 | M-L    | vérifié    |
 | D3  | Export compétences sans entrée de menu (atteint depuis l'analytique d'une classe ou par URL).                                                                                                                                     | [export-competences.md](../systeme/export-competences.md)                                                      | Ajouter une entrée « Tableau de bord → Compétences → Export » ?    | S      | vérifié    |
-| D4  | Correction concise / détaillée au PDF : le glossaire dit « la fiche choisit », `WorksheetConfig` n'a pas d'option.                                                                                                                | [fiches-et-pdf.md](../systeme/fiches-et-pdf.md) #7                                                             | Option par fiche, ou corriger le glossaire ?                       | M      | vérifié    |
 | D5  | Tableau blanc : la route admet les élèves, le lien n'est montré qu'au prof.                                                                                                                                                       | [outils-prof.md](../systeme/outils-prof.md) #3                                                                 | Les élèves y ont-ils droit ?                                       | S      | vérifié    |
 | D6  | Nuages de points : pas de forme de point distincte par place (Q1a, reportée).                                                                                                                                                     | [grapheur.md](../systeme/grapheur.md)                                                                          | Déjà reportée : la garder en attente ?                             | M      | vérifié    |
 | D8  | Remplacement de `/cas` (inventaire puis retrait) et devenir de `/calc` (encore au sitemap).                                                                                                                                       | [atelier.md](../systeme/atelier.md), [atelier-progress.md](atelier-progress.md)                                | Déjà décidé (remplacer) ; reste à lancer l'inventaire.             | L      | vérifié    |

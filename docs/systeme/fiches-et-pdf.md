@@ -23,7 +23,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-11.
 
 ## À quoi ça sert
 
@@ -254,6 +254,16 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
 8. **Une série figée ne suit plus son modèle** : corriger le modèle ne corrige pas la fiche ; la
    régénérer par le script.
 
+9. **Le corrigé imprimé est concis ou détaillé selon la fiche** (`config.correction_detail`,
+   détaillé par défaut ; [ADR 0017](../adr/0017-correction-concise-et-detaillee.md), D11, lot 3 du
+   2026-10-11). Le choix se fait **à l'impression**, juste avant Typst, par `correctionForPrint`
+   (`questions/correction-detail.ts`) : PDF du prof (`worksheet-generator.ts`, et l'aperçu
+   markdown de `PdfPreview.svelte`) et PDF de l'élève (`student-worksheet-typst.ts`, réglage
+   transmis par l'API élève). Une série d'automatismes **garde** ses marqueurs de détail ; les
+   écrans qui affichent un corrigé d'exercice montrent la version détaillée (`detailedCorrection`).
+   Aucun marqueur brut n'atteint Typst. Les encadrés `> [!méthode]`… s'impriment encore comme une
+   citation simple, sans titre. Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
+
 ## Comment étendre
 
 - **Un bloc ubumark de plus dans le PDF** : son générateur Typst dans
@@ -326,10 +336,13 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    l'invariant 2.
 6. **Ré-exports dépréciés encore importés** (`$lib/worksheets/typst-compiler`, `typst-generator`) par
    `PdfPreview.svelte` et les routes `pdf/` : avertissement console en dev à chaque chargement.
-7. **Concise / détaillée sur PDF** : le glossaire dit que « la fiche choisit » ; `WorksheetConfig`
-   n'a pas d'option. Seule la série d'automatismes fige une correction, détaillée.
+7. **`available_from` nul refusé par la réponse de l'API élève** :
+   `studentWorksheetDetailResponseSchema` déclare `available_from` non nullable, alors que la
+   colonne l'est (« disponible tout de suite ») ; une telle affectation ferait répondre
+   `GET /api/student/worksheets/[assignmentId]` en 500. Mesuré le 2026-10-11 : 0 affectation
+   concernée sur 11.
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.
