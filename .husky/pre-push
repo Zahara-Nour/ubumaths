@@ -18,3 +18,10 @@ echo "pre-push : lint rapide…"
 if ! pnpm lint:fast; then
 	exit 1
 fi
+
+# Liens de la doc : un commit de doc poussé directement sur main ne passe pas
+# par la CI (`paths-ignore`) ; c'est ici qu'un lien cassé est arrêté (~1 s).
+echo "pre-push : liens de la doc…"
+if ! pnpm docs:check-links; then
+	exit 1
+fi

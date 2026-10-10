@@ -96,7 +96,8 @@
 		"migration:rollback:all": "tsx scripts/rollback-migration.ts --all",
 		"game:import-challenges": "npx tsx scripts/import-navadra-challenges.ts",
 		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts",
-		"docs:check-links": "npx tsx scripts/check-doc-links.ts",
+		"docs:check-links": "tsx scripts/check-doc-links.ts",
+		"docs:check-refs": "tsx scripts/check-doc-refs.ts",
 		"openapi:generate": "npx tsx scripts/generate-openapi.ts",
 		"migrate:sanitize": "tsx scripts/sanitize-existing-notifications.ts",
 		"math": "tsx src/lib/mathAST/cli/cli.ts"
