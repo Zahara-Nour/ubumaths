@@ -35,12 +35,17 @@ create table public.dictionary_entries (
 	definitions jsonb,
 	exemples jsonb,
 	history text,
-	image text,
+	-- Chemin relatif au site seulement : pas d'URL externe (pistage des visiteurs)
+	image text check (image is null or image ~ '^/[A-Za-z0-9/_.-]+$'),
 	synonyms text[] not null default '{}',
 	forms text[] not null default '{}',
 	auto_link boolean not null default true,
 	derived_from text,
-	see_also jsonb,
+	-- Lien « Voir aussi » du glossaire : pages du Cabinet Noir seulement (jamais javascript:…)
+	see_also jsonb check (
+		see_also is null
+		or (see_also->>'path') ~ '^/chiffrement(/[a-z]+)?$'
+	),
 	shared_with text[] not null default '{}',
 	hidden boolean not null default false,
 	created_at timestamptz not null default now(),
@@ -73,6 +78,7 @@ create index dictionary_entry_versions_entry
 -- ============================================================================
 -- Droits de l'appelant (pas SECURITY DEFINER) : l'admin a le droit d'insérer
 -- dans l'historique (policy ci-dessous), personne d'autre ne modifie une entrée.
+-- L'auteur et les dates sont posés ici, jamais par l'appelant.
 
 create function public.dictionary_entries_keep_version()
 returns trigger
@@ -80,8 +86,13 @@ language plpgsql
 set search_path = ''
 as $$
 begin
-	insert into public.dictionary_entry_versions (entry_id, entry, saved_by)
-	values (old.id, to_jsonb(old), auth.uid());
+	if tg_op = 'UPDATE' then
+		insert into public.dictionary_entry_versions (entry_id, entry, saved_by)
+		values (old.id, to_jsonb(old), auth.uid());
+		new.created_at := old.created_at;
+	else
+		new.created_at := now();
+	end if;
 	new.updated_at := now();
 	new.updated_by := auth.uid();
 	return new;
@@ -89,7 +100,7 @@ end;
 $$;
 
 create trigger dictionary_entries_keep_version
-	before update on public.dictionary_entries
+	before insert or update on public.dictionary_entries
 	for each row execute function public.dictionary_entries_keep_version();
 
 -- ============================================================================
@@ -113,7 +124,8 @@ revoke execute on function public.dictionary_entries_keep_version() from public,
 alter table public.dictionary_entries enable row level security;
 alter table public.dictionary_entry_versions enable row level security;
 
--- Deux policies de lecture (OU) : is_admin() n'est pas exécutable par anon
+-- Deux policies de lecture (OU) : les entrées masquées pour l'admin seul ;
+-- is_admin() n'est appelé que pour authenticated, une fois par requête (select …)
 create policy "Anyone can read visible dictionary entries"
 	on public.dictionary_entries for select
 	to anon, authenticated
@@ -122,28 +134,29 @@ create policy "Anyone can read visible dictionary entries"
 create policy "Admins can read hidden dictionary entries"
 	on public.dictionary_entries for select
 	to authenticated
-	using (public.is_admin());
+	using ((select public.is_admin()));
 
 create policy "Admins can insert dictionary entries"
 	on public.dictionary_entries for insert
 	to authenticated
-	with check (public.is_admin());
+	with check ((select public.is_admin()));
 
 create policy "Admins can update dictionary entries"
 	on public.dictionary_entries for update
 	to authenticated
-	using (public.is_admin())
-	with check (public.is_admin());
+	using ((select public.is_admin()))
+	with check ((select public.is_admin()));
 
 create policy "Admins can read dictionary history"
 	on public.dictionary_entry_versions for select
 	to authenticated
-	using (public.is_admin());
+	using ((select public.is_admin()));
 
+-- Une version porte toujours l'auteur réel : pas de faux historique, même par l'admin
 create policy "Admins can write dictionary history"
 	on public.dictionary_entry_versions for insert
 	to authenticated
-	with check (public.is_admin());
+	with check ((select public.is_admin()) and saved_by = (select auth.uid()));
 
 -- ============================================================================
 -- 5. Reprise des 671 entrées du fichier (2026-10-10)

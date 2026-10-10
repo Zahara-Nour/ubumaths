@@ -305,6 +305,76 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 		expect(visitor.error?.code).toBe('42501');
 	});
 
+	// Revue sécurité du 2026-10-10
+
+	it('le prof sans élévation ne lit ni les entrées masquées ni l’historique', async () => {
+		const hidden = await seedEntry('masquée pour prof', true);
+		await adminClient.from('dictionary_entries').update({ history: 'trace' }).eq('id', hidden.id);
+		const entries = await teacherClient.from('dictionary_entries').select('id').eq('id', hidden.id);
+		expect(entries.data ?? []).toEqual([]);
+		const versions = await teacherClient
+			.from('dictionary_entry_versions')
+			.select('id')
+			.eq('entry_id', hidden.id);
+		expect(versions.data ?? []).toEqual([]);
+	});
+
+	it('une modification refusée ne laisse aucune version ; démasquer est refusé', async () => {
+		const hidden = await seedEntry('reste masquée', true);
+		const { data } = await studentClient
+			.from('dictionary_entries')
+			.update({ hidden: false })
+			.eq('id', hidden.id)
+			.select('id');
+		expect(data ?? []).toEqual([]);
+		const { data: versions } = await service
+			.from('dictionary_entry_versions')
+			.select('id')
+			.eq('entry_id', hidden.id);
+		expect(versions ?? []).toEqual([]);
+	});
+
+	it('personne ne fabrique une version, pas même l’admin avec un autre auteur', async () => {
+		const entry = await seedEntry('version forgée');
+		for (const client of [studentClient, teacherClient]) {
+			const { error } = await client
+				.from('dictionary_entry_versions')
+				.insert({ entry_id: entry.id, entry: { term: 'faux' }, saved_by: adminId });
+			expect(error).not.toBeNull();
+		}
+		const forged = await adminClient
+			.from('dictionary_entry_versions')
+			.insert({ entry_id: entry.id, entry: { term: 'faux' }, saved_by: entry.id });
+		expect(forged.error?.code).toBe('42501');
+	});
+
+	it('l’auteur d’une modification est toujours l’admin réel', async () => {
+		const entry = await seedEntry('auteur');
+		const { data } = await adminClient
+			.from('dictionary_entries')
+			.update({ history: 'note', updated_by: entry.id })
+			.eq('id', entry.id)
+			.select('updated_by');
+		expect(data).toEqual([{ updated_by: adminId }]);
+	});
+
+	it('un lien « Voir aussi » hors du Cabinet Noir ou une image externe : refusés (23514)', async () => {
+		const link = await service.from('dictionary_entries').insert({
+			position: 1,
+			term: `${TAG} lien`,
+			grade: '6',
+			see_also: { label: 'x', path: 'javascript:alert(1)' }
+		});
+		expect(link.error?.code).toBe('23514');
+		const image = await service.from('dictionary_entries').insert({
+			position: 1,
+			term: `${TAG} image`,
+			grade: '6',
+			image: 'https://pisteur.example/x.png'
+		});
+		expect(image.error?.code).toBe('23514');
+	});
+
 	// --------------------------------------------------------------------------
 	// Contraintes
 	// --------------------------------------------------------------------------

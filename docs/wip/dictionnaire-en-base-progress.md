@@ -9,7 +9,7 @@ Worktree `../ubumaths-wt-dictionnaire`, branche `feat/dictionnaire-en-base`.
   gardé dans `position`) : `dictionary_entries`, `dictionary_entry_versions`, trigger d'historique
   (droits de l'appelant), lecture publique des entrées non masquées, écriture admin (`is_admin()`),
   aucun DELETE accordé, historique lisible par l'admin seul.
-- Tests `tests/integration/dictionnaire-en-base.test.ts` : 11 rouges sans la migration, 11 verts avec.
+- Tests `tests/integration/dictionnaire-en-base.test.ts` : 11 rouges sans la migration ; 16 verts avec, après la revue sécurité (lien « Voir aussi » et image en liste blanche, pas de fausse version, auteur et dates posés par le trigger).
 - Supabase local : la migration `20261012120000` (autre session) avait été appliquée à la main, sans
   trace dans l'historique ; `migration repair --status applied` avant `migration up --local`.
 - Reste : security-auditor, PR, CI, `db:migrate`, `db:types`.
