@@ -131,7 +131,7 @@ const NEW_ENTRY: DictionaryEntryInput = {
 	shared_with: []
 };
 
-async function status(promise: Promise<Response>): Promise<number> {
+async function status(promise: Response | Promise<Response>): Promise<number> {
 	try {
 		return (await promise).status;
 	} catch (thrown) {
