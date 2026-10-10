@@ -127,3 +127,26 @@ Reste : **2e PR** après `db:migrate` + `db:types` — la route `api/marketplace
 - Suite d'intégration complète en local : 18 échecs **identiques avec et sans** la migration A2
   (arbre des notions, presques-évaluations, succès du démineur) → état de la base locale partagée ;
   la CI tranchera.
+
+## État au 2026-10-10 (soir)
+
+- **A2 mergée (#1042), PAS encore en prod** : `db push` refuse (`DbPushMissingRemoteError`) à cause
+  de `20261013120000_tags_modeles_points` (session tags, mergée, non migrée), datée avant ma
+  migration A1 déjà en prod — mes horodatages `20261014…` étaient dans le futur. **Décision de
+  David : attendre que la session tags migre la sienne**, puis pousser A2, puis E19.
+- Après `db:migrate` de A2 : `db:types`, puis 2e PR — `api/marketplace/listings` GET filtre
+  `marketplace_hidden_creators(school_id)` (client service).
+
+## E19 — récompenses de tournoi et de multijoueur (branche `fix/gidouilles-history-e19`)
+
+- Mesuré en prod : aucun tournoi finalisé depuis le renommage (3 le 02/01), aucun match multijoueur
+  jamais joué → personne lésé.
+- Tournois : journal dans `gidouilles_activity` (solde déjà crédité).
+- Multijoueur : réparé (table, `ROW(1500)`, abandon en compte à rebours) **sans aucune récompense**
+  — décision de David après security-auditor (farm illimité entre complices, grille non comparée à
+  la graine). À rouvrir avec un anti-triche.
+- Tâches automatiques (`run_weekly_rewards`, `award_weekly_best_bonuses`) : sautent les élèves en
+  lecture seule (décision A2).
+- **À trancher par David** : `process_weekly_rewards` et `purchase_shop_item` écrivent aussi dans
+  `gidouilles_history`, sans AUCUN appelant (ni code, ni cron) → les supprimer ? (destructif).
+- Migration à pousser APRÈS celle de A2 (elle appelle `has_full_access`).

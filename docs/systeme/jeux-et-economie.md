@@ -274,13 +274,18 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
 
 ## Doutes (constatés le 2026-10-10, non corrigés)
 
-- **`gidouilles_history` n'existe plus** (renommée `gidouilles_activity`), mais six fonctions du
-  baseline y écrivent encore : `finalize_tournament`, `redistribute_tournament_rewards`,
-  `complete_multiplayer_match`, `abandon_multiplayer_match`, `process_weekly_rewards`,
-  `purchase_shop_item`. En plpgsql l'erreur ne sort qu'à l'exécution : un podium de tournoi avec
-  récompense ou une victoire en multijoueur échouerait (`42P01`). Le test de `finalize_tournament`
-  (`tests/integration/minesweeper-rpc.test.ts`) ne passe que par un tournoi inexistant. **À
-  prouver par un test d'intégration avant de corriger.**
+- ✅ **`gidouilles_history` (corrigé le 2026-10-10, migration `20261014120000_gidouilles_history_e19`)** :
+  `finalize_tournament`, `redistribute_tournament_rewards`, `complete_multiplayer_match` et
+  `abandon_multiplayer_match` ne plantent plus (tournois : journal dans `gidouilles_activity` ;
+  matchs : `ROW(1500)` perdait le champ `rank`, l'abandon en compte à rebours violait
+  `started_must_have_timestamp`). **Le multijoueur ne rapporte AUCUNE gidouille** (décision de
+  David, 2026-10-10) : sans anti-triche (grille non comparée à la graine, pas de plafond), deux
+  complices farmaient sans limite. À rouvrir avec un anti-triche. Mesuré en prod : aucun tournoi
+  finalisé depuis le renommage, aucun match joué — personne lésé. Test :
+  `tests/integration/gidouilles-tournois-multijoueur.test.ts`. **Restent** `process_weekly_rewards` et
+  `purchase_shop_item`, sans aucun appelant (ni code, ni cron) : suppression à décider.
+- **Lecture seule** (2026-10-10) : `run_weekly_rewards` et `award_weekly_best_bonuses` sautent les
+  élèves sans consentement (`has_full_access`) ; le prof peut toujours en donner à la main.
 - **File multijoueur non bornée par l'école** : `join_multiplayer_queue` apparie sur difficulté
   et classement seulement — contraire à l'ADR 0002 (page sans lien, donc peu exposée).
 - **Classement des énigmes** : la route lit la vue `riddle_progress` sans filtre d'école.
