@@ -23,82 +23,61 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 	// Retirer une zone quand sa doc est écrite (et lui donner son `couvre:`).
 	trous: [
 		{
-			glob: 'src/lib/server/{chapter*,chapters*,class-sessions,curriculum*,journal*}.ts',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/server/{chapter*,chapters*,class-sessions,curriculum*,journal*}.ts'
 		},
 		{
-			glob: 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
 		},
 		{
-			glob: 'src/lib/components/{cours,journal,templates,progression}/**',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/components/{cours,journal,templates,progression}/**'
 		},
 		{
-			glob: 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
 		},
 		{
-			glob: 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching}.ts',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching}.ts'
 		},
 		{
-			glob: 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
 		},
 		{
-			glob: 'src/routes/api/student/{chapters,checklist}/**',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/routes/api/student/{chapters,checklist}/**'
 		},
 		{
-			glob: 'src/routes/(protected)/dashboard/{teacher,student}/{cours,cahier-texte,avancement,programme,journal,progression}/**',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/routes/(protected)/dashboard/{teacher,student}/{cours,cahier-texte,avancement,programme,journal,progression}/**'
 		},
 		{
-			glob: 'src/routes/(public)/cahier/**',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/routes/(public)/cahier/**'
 		},
 		{
-			glob: 'src/lib/server/progression/**',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/server/progression/**'
 		},
 		{
-			glob: 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte',
-			note: 'chapitres, cours, cahier de texte, programme prof'
+			glob: 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
 		},
 		{
-			glob: 'src/routes/(protected)/dashboard/{teacher,student}/{assessments,evaluation-tasks,presques-evaluations,competences,work,reports}/**',
-			note: 'évaluations, séries notées, tests'
+			glob: 'src/routes/(protected)/dashboard/{teacher,student}/{assessments,evaluation-tasks,presques-evaluations,competences,work,reports}/**'
 		},
 		{
-			glob: 'src/routes/api/{evaluations,tests,test-mode,series}/**',
-			note: 'évaluations, séries notées, tests'
-		},
-		{ glob: 'src/routes/api/student/reports/**', note: 'évaluations, séries notées, tests' },
-		{
-			glob: 'src/lib/components/{test,assessments,series}/**',
-			note: 'évaluations, séries notées, tests'
+			glob: 'src/routes/api/{evaluations,tests,test-mode,series}/**'
 		},
 		{
-			glob: 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades}.ts',
-			note: 'évaluations, séries notées, tests'
+			glob: 'src/lib/components/{test,assessments,series}/**'
 		},
 		{
-			glob: 'src/lib/types/{evaluation*,test,grades,skills}.ts',
-			note: 'évaluations, séries notées, tests'
+			glob: 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades}.ts'
 		},
 		{
-			glob: 'src/lib/utils/{test-launch,test-score,grades}.ts',
-			note: 'évaluations, séries notées, tests'
-		},
-		{ glob: 'src/lib/stores/test-mode.svelte.ts', note: 'évaluations, séries notées, tests' },
-		{
-			glob: 'src/routes/(public)/presques-evaluations/**',
-			note: 'évaluations, séries notées, tests'
+			glob: 'src/lib/types/{evaluation*,test,grades,skills}.ts'
 		},
 		{
-			glob: 'src/lib/components/teacher/TestModeToggle.svelte',
-			note: 'évaluations, séries notées, tests'
+			glob: 'src/lib/utils/{test-launch,test-score,grades}.ts'
+		},
+		{
+			glob: 'src/routes/(public)/presques-evaluations/**'
+		},
+		{
+			glob: 'src/lib/components/teacher/TestModeToggle.svelte'
 		},
 		{
 			glob: 'src/routes/api/exercises/**',
