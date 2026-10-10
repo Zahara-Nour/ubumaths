@@ -1,6 +1,6 @@
 # Alléger les déploiements Vercel — progression
 
-Branche `chore/deploiements-vercel`, worktree `ubumaths-wt-deploiements-vercel`.
+Branche `chore/deploiements-vercel`, worktree `ubumaths-wt-deploiements-vercel`, PR #1003.
 
 ## Pourquoi
 
@@ -24,18 +24,35 @@ plan gratuit, quatre jours après un ménage manuel (117 → 11 déploiements).
 
 ## Fait
 
-- `scripts/vercel-ignore-build.sh` + `vercel.json` : trois règles (redéploiement
-  toujours construit ; pointe de `main` seule ; doc seule depuis le dernier
-  déploiement réussi → sautée, `.md` de la racine compris).
-- 12 tests (`scripts/__tests__/vercel-ignore-build.test.ts`). Preuve rouge :
-  contre l'ancienne commande, 5 échouent (les comportements nouveaux), 7
-  passent (ceux à conserver).
+- `scripts/vercel-ignore-build.sh` + `vercel.json` : redéploiement toujours
+  construit ; pointe de `main` seule ; src/ ou static/ modifié → build
+  (articles du Shtam) ; doc seule depuis le dernier déploiement réussi →
+  sautée, `.md` de la racine compris ; `VERCEL_GIT_PREVIOUS_SHA` vide → build.
+- `scripts/vercel-maintenance.sh` : redéploie le dernier déploiement READY.
+  Il prenait le premier listé, souvent un push de doc ANNULÉ, que l'ignore step
+  sautait : la bascule était muette (défaut antérieur à cette PR).
 - 79 doublons `.ogg` retirés : −8,9 Mo de statique par déploiement.
+- Tests : 17 sur l'ignore step, 2 sur la maintenance. Preuves rouges contre
+  l'ancienne commande (5 échecs), contre la v1 relue (8 échecs, dont 4 par le
+  statut) et contre l'ancien script de maintenance (2 échecs).
+- Revue `code-reviewer` de la v1 : six constats, tous appliqués.
+
+## Incident pendant la revue (2026-10-10, 07:50)
+
+Le banc d'essai bash de l'agent de revue (dans le scratchpad, hors dépôt) a
+réutilisé sa variable de dossier pour un SHA : `mktemp` a échoué, puis
+`git -C ""` est resté dans le dossier courant, le dépôt principal. Six
+`checkout` l'ont basculé sur des commits de test : 10 649 fichiers suivis
+retirés du disque. GitHub, la branche `main`, les remotes et les fichiers non
+suivis sont restés intacts. Réparé par `git switch main` dans le dépôt
+principal. Les tests de cette PR refusent désormais tout dossier hors du
+dossier jetable (`dansLeBac`) et posent `GIT_CEILING_DIRECTORIES`.
 
 ## Reste à faire
 
-- Revue `code-reviewer`, PR, CI, merge.
+- CI verte, merge.
 - Après le merge : lire la sortie de l'ignore step dans le journal du premier
-  build de prod (`vercel inspect <url> --logs`), qui doit afficher
-  « du code a changé depuis … → build ». Vérifier aussi qu'un push de doc
-  affiche « rien que de la doc … → build sauté ».
+  build de prod (`vercel inspect <url> --logs`). Elle doit afficher le dernier
+  déploiement (preuve que `VERCEL_GIT_PREVIOUS_SHA` arrive), le dépôt
+  `https://github.com/Zahara-Nour/ubumaths.git`, puis « src/ ou static/ a
+  changé … → build ».
