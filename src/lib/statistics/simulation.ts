@@ -19,7 +19,12 @@ import { failure, success, type Outcome } from './outcome';
 import { randomVariable, type RandomVariableLaw } from './random-variable';
 import { geometricMoments } from './geometric';
 import { uniformMoments } from './uniform';
-import { exponentialMoments, uniformDensityMoments } from './density';
+import {
+	exponentialMoments,
+	normalMoments,
+	normalQuantile,
+	uniformDensityMoments
+} from './density';
 import type { RandomSource } from '../utils/random';
 
 // =============================================================================
@@ -172,6 +177,23 @@ export function exponentialSampler(lambda: Fraction): LawSampler {
 	const rate = lambda.toNumber();
 	// `+ 0` : −0 pour u = 0 s'écrirait « −0 »
 	return { law: exponentialMoments(lambda), draw: (random) => -Math.log1p(-random()) / rate + 0 };
+}
+
+/**
+ * N(μ ; σ²) par inversion (D7, 2026-10-11) : μ + σ·Φ⁻¹(u), un nombre
+ * aléatoire par tirage comme les autres lois. u = 0 (Φ⁻¹ = −∞) est ramené au
+ * plus petit flottant positif : le tirage reste fini (≈ μ − 38,5σ).
+ */
+export function normalSampler(mu: Fraction, variance: Fraction): LawSampler {
+	const center = mu.toNumber();
+	const sigma = Math.sqrt(variance.toNumber());
+	return {
+		law: normalMoments(mu, variance),
+		draw: (random) => {
+			const u = random();
+			return center + sigma * normalQuantile(u === 0 ? Number.MIN_VALUE : u);
+		}
+	};
 }
 
 /** n tirages bruts d'une loi (manche 14) : les lois de maths complémentaires */

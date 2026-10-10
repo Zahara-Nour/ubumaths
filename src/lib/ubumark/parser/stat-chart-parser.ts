@@ -2232,15 +2232,6 @@ function checkSimulatedNamedLaw(
 			simulation: { ...common, values: checked.law.values, named: { family: 'uniform', a, b } }
 		};
 	}
-	// La loi normale ne se simule pas (hors périmètre du 2026-10-09)
-	if (named.family === 'normal') {
-		return {
-			error: {
-				message: `Ligne ${named.line} : la loi normale ne se simule pas : utiliser un bloc \`\`\`loi`,
-				line: named.line
-			}
-		};
-	}
 	const checked = checkDensity(named, options, optionLines);
 	if ('error' in checked) return checked;
 	const classes = options.simulationClasses ?? STAT_CHART_LIMITS.simulationClasses.default;
@@ -2251,7 +2242,9 @@ function checkSimulatedNamedLaw(
 			named:
 				named.family === 'uniform-density'
 					? { family: 'uniform-density', a: named.a, b: named.b, classes }
-					: { family: 'exponential', lambda: named.lambda, classes }
+					: named.family === 'normal'
+						? { family: 'normal', mu: named.mu, variance: named.variance, classes }
+						: { family: 'exponential', lambda: named.lambda, classes }
 		}
 	};
 }

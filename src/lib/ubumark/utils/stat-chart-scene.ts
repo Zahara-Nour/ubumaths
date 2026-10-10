@@ -67,6 +67,7 @@ import {
 	discreteSampler,
 	exponentialSampler,
 	geometricSampler,
+	normalSampler,
 	simulateCounts,
 	simulateDraws,
 	simulateLawRunningMean,
@@ -2698,6 +2699,8 @@ function namedSampler(named: SimulatedNamedLaw): LawSampler {
 			return uniformDensitySampler(read(named.a, Fraction.ZERO), read(named.b, Fraction.ONE));
 		case 'exponential':
 			return exponentialSampler(read(named.lambda, Fraction.ONE));
+		case 'normal':
+			return normalSampler(read(named.mu, Fraction.ZERO), read(named.variance, Fraction.ONE));
 	}
 }
 
@@ -2798,7 +2801,7 @@ function namedDiscreteTable(
 function buildDensityDrawsScene(
 	spec: StatChartSpec,
 	simulation: SimulationData,
-	named: Extract<SimulatedNamedLaw, { family: 'uniform-density' | 'exponential' }>,
+	named: Extract<SimulatedNamedLaw, { family: 'uniform-density' | 'exponential' | 'normal' }>,
 	sampler: LawSampler,
 	locale: ContentLocale
 ): HistogramScene {
@@ -2811,9 +2814,12 @@ function buildDensityDrawsScene(
 	const curve = densityChart(
 		spec,
 		{
-			law: uniform
-				? { family: 'uniform', a: named.a, b: named.b }
-				: { family: 'exponential', lambda: named.lambda },
+			law:
+				named.family === 'uniform-density'
+					? { family: 'uniform', a: named.a, b: named.b }
+					: named.family === 'normal'
+						? { family: 'normal', mu: named.mu, variance: named.variance }
+						: { family: 'exponential', lambda: named.lambda },
 			places: 3,
 			queries: [],
 			chart: true,
@@ -2823,8 +2829,20 @@ function buildDensityDrawsScene(
 		simulation.variable,
 		locale
 	);
-	const low = uniform ? (Fraction.parse(named.a)?.toNumber() ?? 0) : 0;
-	const high = uniform ? (Fraction.parse(named.b)?.toNumber() ?? 1) : curve.xMax;
+	// U : de a à b ; E : de 0 au bord de la courbe ; N : μ ± 3σ (il reste ≈ 0,13 %
+	// de chaque côté), les deux classes du bord prenant ce qui dépasse
+	let low = 0;
+	let high = curve.xMax;
+	if (named.family === 'uniform-density') {
+		low = Fraction.parse(named.a)?.toNumber() ?? 0;
+		high = Fraction.parse(named.b)?.toNumber() ?? 1;
+	} else if (named.family === 'normal') {
+		const mu = Fraction.parse(named.mu)?.toNumber() ?? 0;
+		const sigma = Math.sqrt(Fraction.parse(named.variance)?.toNumber() ?? 1);
+		low = Number((mu - 3 * sigma).toPrecision(12));
+		high = Number((mu + 3 * sigma).toPrecision(12));
+	}
+	const normal = named.family === 'normal';
 	const classes = named.classes;
 	const width = (high - low) / classes;
 	const counts = new Array<number>(classes).fill(0);
@@ -2840,8 +2858,10 @@ function buildDensityDrawsScene(
 			: uniform
 				? `${shownReal(upper, locale)}]`
 				: '+∞[';
+		// N : la première classe s'ouvre sur −∞
+		const opening = normal && i === 0 ? ']−∞' : `[${shownReal(lower, locale)}`;
 		return {
-			label: `[${shownReal(lower, locale)} ; ${closing}`,
+			label: `${opening} ; ${closing}`,
 			lower,
 			upper,
 			// Hauteur = fréquence / amplitude : l'aire du rectangle est la fréquence
@@ -2869,6 +2889,19 @@ function buildDensityDrawsScene(
 	const text = STAT_TEXT[locale];
 	const mean = draws.reduce((sum, x) => sum + x, 0) / n;
 	const beyond = draws.filter((x) => x > high).length;
+	const below = draws.filter((x) => x < low).length;
+	const overflow = uniform
+		? []
+		: normal
+			? [
+					text.simulation.overflowBoth(
+						formatTick(low, locale),
+						String(below),
+						formatTick(high, locale),
+						String(beyond)
+					)
+				]
+			: [text.simulation.overflow(formatTick(high, locale), String(beyond))];
 	return {
 		kind: 'histogramme',
 		title: spec.title,
@@ -2886,7 +2919,7 @@ function buildDensityDrawsScene(
 				simulation.variable,
 				fractionText(sampler.law.expectation, locale)
 			),
-			...(uniform ? [] : [text.simulation.overflow(formatTick(high, locale), String(beyond))]),
+			...overflow,
 			seedLine(simulation.seed, locale)
 		],
 		xMin: curve.xMin,
