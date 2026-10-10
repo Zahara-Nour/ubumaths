@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.16.0...v0.17.0) (2026-10-10)
+
+### 📚 Documentation
+
+- **wip:** base locale remplie — inventaire des tables à copier, exclure, générer ([d872cb1](https://github.com/Zahara-Nour/ubumaths/commit/d872cb15602d1133c4967e6eede81ba1ec9d4bb7))
+
+### ✨ Features
+
+- **db:** pnpm db:seed-riche — base locale avec le contenu de la prod et des élèves fictifs ([245dd27](https://github.com/Zahara-Nour/ubumaths/commit/245dd279519ac56d795549f6395cc0ef5f9b4d5c))
+- **db:** seed-riche, lot 2 — activité des élèves fictifs ([c28113a](https://github.com/Zahara-Nour/ubumaths/commit/c28113ac0293c593bb09a03006fce39147c483ec)), closes [#2ccacae2](https://github.com/Zahara-Nour/ubumaths/issues/2ccacae2)
+
+### 🐛 Bug Fixes
+
+- **db:** seed-riche — garde finale (ids, e-mails, noms d'élèves), texte libre neutralisé, base prod refusée ([775f822](https://github.com/Zahara-Nour/ubumaths/commit/775f82237698d68db04e37b3a9629abf522d74a6))
+- **deploy:** attendre une CI en cours ; raccourci de CI pour le commit de version ([3a7925f](https://github.com/Zahara-Nour/ubumaths/commit/3a7925f913bdd37c70209413bfa0020a90ee7d12))
+- **progression:** erreurs de lecture levées ; élève hors classe signalé au lieu de « jamais positionné » ([e7469df](https://github.com/Zahara-Nour/ubumaths/commit/e7469dfce4de272811aaf654758fbb01505be88c))
+- **rls:** le prof lit l'auto-évaluation des élèves de ses classes ([4cc0baf](https://github.com/Zahara-Nour/ubumaths/commit/4cc0bafb2b65a080c9abfeeac99fbd60725ef286))
+
 ## [0.16.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.15.0...v0.16.0) (2026-10-10)
 
 ### 📚 Documentation
