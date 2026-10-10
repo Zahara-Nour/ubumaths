@@ -51,7 +51,8 @@ vi.mock('$lib/utils/logger', () => ({
 // Mock auth middleware - returns a fixed user
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: vi.fn().mockResolvedValue({
-		user: { id: 'user-123', email: 'test@example.com' }
+		user: { id: 'user-123', email: 'test@example.com' },
+		profile: { id: 'user-123', role: 'student' }
 	})
 }));
 
@@ -76,6 +77,7 @@ vi.mock('$lib/server/middleware/rateLimit', () => ({
 }));
 
 // Import after mocks
+import * as auth from '$lib/server/middleware/auth';
 import * as rateLimit from '$lib/server/middleware/rateLimit';
 import * as serviceRoleClient from '$lib/server/serviceRoleClient';
 
@@ -199,6 +201,24 @@ describe('DELETE /api/account/delete', () => {
 				status: 400,
 				body: { message: 'Corps de requete JSON invalide' }
 			});
+		});
+
+		test.each(['teacher', 'admin'])('refuse un compte %s sans rien écrire', async (role) => {
+			const { client } = setupSuccessfulDeletion();
+			vi.mocked(auth.requireAuth).mockResolvedValueOnce({
+				user: { id: 'user-123', email: 'test@example.com' },
+				profile: { id: 'user-123', role }
+			} as never);
+
+			const event = createMockEvent({
+				confirmation: ACCOUNT_DELETION_CONFIRMATION_PHRASE
+			});
+
+			await expect(DELETE(event as never)).rejects.toMatchObject({ status: 403 });
+			expect(mockRateLimitFn).not.toHaveBeenCalled();
+			expect(client.from).not.toHaveBeenCalled();
+			expect(client.rpc).not.toHaveBeenCalled();
+			expect(client.auth.admin.deleteUser).not.toHaveBeenCalled();
 		});
 
 		test('accepts correct confirmation phrase', async () => {

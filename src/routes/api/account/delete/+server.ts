@@ -8,6 +8,8 @@
  *
  * Security:
  * - Requires authentication
+ * - Student accounts only (403 for teacher/admin): in the single-teacher model a
+ *   teacher's cascade would wipe every student's work (David, 2026-10-10)
  * - Requires explicit French confirmation phrase
  * - Rate limited: 1 attempt per 24 hours per user
  * - Uses service role for auth.admin.deleteUser (bypasses RLS)
@@ -52,9 +54,15 @@ async function hashEmail(email: string): Promise<string> {
 
 export const DELETE: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	// Step 1: Authenticate user
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
 	const userId = user.id;
 	const userEmail = user.email || 'unknown';
+
+	// Seul un compte élève se supprime ici ; prof et admin se ferment à la main.
+	// Refusé avant la limite de débit et l'audit : rien n'est consommé ni écrit.
+	if (profile.role !== 'student') {
+		throw error(403, 'La suppression en libre-service est réservée aux comptes élèves');
+	}
 
 	logger.info('Account deletion requested', { userId });
 

@@ -16,7 +16,11 @@
  *   1. l'étape 1 réussit pour un élève qui a joué, gagné des gidouilles et écrit ;
  *   2. l'étape 2 réussit ensuite : plus de compte, plus de profil ;
  *   3. plus AUCUNE ligne ne porte l'identifiant de l'élève (quelle que soit la table) ;
- *   4. une identité inconnue ou NULL est refusée sans effet.
+ *   4. ses messages disparaissent pour tous, aperçu de conversation compris (décision
+ *      de David du 2026-10-10 : effacer le texte, pas seulement l'auteur) ;
+ *   5. un compte prof ou admin est refusé sans effet (décision du 2026-10-10 : en
+ *      mono-prof, sa cascade emporterait le travail de tous les élèves) ;
+ *   6. une identité NULL est refusée.
  *
  * @vitest-environment node
  */
@@ -33,6 +37,9 @@ import { TestData } from '../helpers/database/test-data-factory';
 // ============================================================================
 
 const service = createServiceRoleClient();
+
+/** Texte reconnaissable écrit par l'élève dans une conversation. */
+const TEXTE_ELEVE = 'zz-texte-de-l-eleve-a-effacer';
 
 // ============================================================================
 // HELPERS
@@ -92,6 +99,45 @@ async function eleveActif(studentId: string, teacherId: string): Promise<void> {
 	await pg.query(`insert into tutor_conversations (student_id) values ($1)`, [studentId]);
 }
 
+/**
+ * Une conversation de groupe prof + élève où l'élève écrit le dernier message :
+ * l'aperçu de la conversation recopie son texte. Rend l'identifiant de la conversation.
+ */
+async function conversationAvecMessage(studentId: string, teacherId: string): Promise<string> {
+	const pg = await getPostgresClient();
+	const { rows } = await pg.query<{ id: string }>(
+		`insert into conversations (name, is_group, created_by) values ('zz-groupe', true, $1)
+		 returning id`,
+		[teacherId]
+	);
+	const conversationId = rows[0].id;
+	await pg.query(
+		`insert into conversation_participants (conversation_id, user_id) values ($1, $2), ($1, $3)`,
+		[conversationId, teacherId, studentId]
+	);
+	await pg.query(
+		// `plain_text` est recalculé depuis `content` (TipTap) par un trigger.
+		`insert into messages (conversation_id, sender_id, content, plain_text)
+		 values ($1, $2, jsonb_build_object('type', 'doc', 'content', jsonb_build_array(
+		   jsonb_build_object('type', 'paragraph', 'content', jsonb_build_array(
+		     jsonb_build_object('type', 'text', 'text', $3::text))))), $3)`,
+		[conversationId, studentId, TEXTE_ELEVE]
+	);
+	return conversationId;
+}
+
+/** Ce qui reste lisible du texte de l'élève dans une conversation. */
+async function texteRestant(conversationId: string): Promise<string[]> {
+	const pg = await getPostgresClient();
+	const { rows } = await pg.query<{ t: string | null }>(
+		`select plain_text as t from messages where conversation_id = $1
+		 union all
+		 select last_message_preview from conversations where id = $1`,
+		[conversationId]
+	);
+	return rows.map((r) => r.t ?? '').filter((t) => t.includes(TEXTE_ELEVE));
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================
@@ -111,7 +157,9 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 	it("un élève actif est entièrement effacé : fonction, puis compte d'authentification", async () => {
 		const eleve = await TestData.profile().withRole('student').create();
 		await eleveActif(eleve.id, teacherId);
+		const conversationId = await conversationAvecMessage(eleve.id, teacherId);
 		expect(Object.keys(await tracesRestantes(eleve.id)).length).toBeGreaterThan(0);
+		expect((await texteRestant(conversationId)).length).toBeGreaterThan(0);
 
 		const { error: rpcError } = await service.rpc('delete_user_account', {
 			p_user_id: eleve.id
@@ -124,6 +172,7 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		const { data: profil } = await service.from('profiles').select('id').eq('id', eleve.id);
 		expect(profil).toEqual([]);
 		expect(await tracesRestantes(eleve.id)).toEqual({});
+		expect(await texteRestant(conversationId)).toEqual([]);
 	});
 
 	it('un élève qui n’a jamais rien fait est effacé aussi', async () => {
@@ -136,6 +185,18 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		const { error: authError } = await service.auth.admin.deleteUser(eleve.id);
 		expect(authError).toBeNull();
 		expect(await tracesRestantes(eleve.id)).toEqual({});
+	});
+
+	it.each(['teacher', 'admin'] as const)('un compte %s est refusé sans effet', async (role) => {
+		// Invariant mono-prof : un seul compte teacher, celui du beforeAll.
+		const compteId =
+			role === 'teacher' ? teacherId : (await TestData.profile().withRole(role).create()).id;
+
+		const { error } = await service.rpc('delete_user_account', { p_user_id: compteId });
+		expect(error).not.toBeNull();
+
+		const { data: profil } = await service.from('profiles').select('role').eq('id', compteId);
+		expect(profil).toEqual([{ role }]);
 	});
 
 	it('une identité NULL est refusée', async () => {
