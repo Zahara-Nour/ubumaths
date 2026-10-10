@@ -1,7 +1,7 @@
 # Dictionnaire en base — progression
 
 ADR 0022 et spécification validées par David le 2026-10-10 ([spec](dictionnaire-en-base-spec.md)).
-PR 1 : #1024 (fusionnée). PR 2 : worktree `../ubumaths-wt-dico-admin`, branche `feat/dictionnaire-admin`.
+PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : worktree `../ubumaths-wt-dictionnaire-admin`, branche `feat/dictionnaire-admin`.
 
 ## PR 1 — tables, droits, reprise (FAITE, #1024)
 
@@ -45,5 +45,29 @@ PR 1 : #1024 (fusionnée). PR 2 : worktree `../ubumaths-wt-dico-admin`, branche 
 - Ancien « à faire » : règles de cohérence partagées (refus 10–16), Zod (`see_also`, `image`), lecture en base
   avec cache 5 min (immédiat pour l'admin) dans le glossaire, Mathémo et le runtime des mots
   cliquables, page `/dashboard/admin/dictionnaire` (comportements 5–9), revues.
+
+## PR 2b — page d'admin et règles de cohérence (en cours)
+
+- Migration `20261013090000` appliquée en prod le 2026-10-10 (question d'accès tranchée par David :
+  « oui » ; contrainte vérifiée en lecture seule). Images futures : stockées comme nom de fichier
+  dans le stockage Supabase (comme `question-images`), règle à assouplir à ce moment-là.
+- `$lib/dictionary/consistency.ts` : `checkDictionary` (refus 10 à 16, messages en français) et
+  `newProblems(avant, après)` — un défaut déjà présent ailleurs ne bloque pas un enregistrement.
+  Les 671 entrées passent sans refus. Entrées masquées : non vérifiées, mais leur nom reste pris
+  (15) et un renvoi visible ne peut pas les viser (11, 16).
+- `$lib/dictionary/admin-draft.ts` : brouillon de la page (listes séparées par des virgules),
+  recherche accents/majuscules ignorés ; aller-retour sans perte prouvé sur les 671 entrées.
+  Image, « Voir aussi » et mode d'un champ gradué : gardés tels quels, non éditables.
+- `$lib/server/dictionary/admin.ts` + routes `/api/admin/dictionnaire` (GET, POST),
+  `[id]` (PATCH : entrée et/ou `hidden`), `[id]/versions` (GET) : `requireAdmin` (client de
+  l'admin élevé), Zod borné (`dictionaryEntryInputSchema`), règles sur tout le dictionnaire relu,
+  `.single()` après écriture (RLS silencieuse), `forgetDictionary()`. Aucune suppression.
+- Page `/dashboard/admin/dictionnaire` (+ lien « Dictionnaire » du menu admin) : liste cherchable,
+  fiche éditable (définitions et exemples par niveau avec aperçu, partage limité aux filières
+  parallèles, renvoi, « jamais souligné »), ajout, masquer/réafficher, historique. Après
+  enregistrement : `markDictionaryEdited()` + `refreshLexiconRuntime()`.
+- Tests : règles 17 (rouges 14/17 sans les règles), brouillon 5, routes 11 (rouges 3/11 sans la
+  garde de cohérence), intégration 4 (rouges 2/4 sans la garde). Base locale : tables réappliquées
+  à la main (`docker exec psql` + `migration repair`), une autre session l'avait recréée.
 
 ## PR 3 — suppression du fichier (après un `deploy:prod` lancé par David)

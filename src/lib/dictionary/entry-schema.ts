@@ -126,3 +126,62 @@ export function rowToTerm(row: unknown): MathTerm | null {
 		...(r.see_also && { seeAlso: r.see_also })
 	};
 }
+
+// ---------------------------------------------------------------------------
+// Saisie de l'admin
+// ---------------------------------------------------------------------------
+
+const TEXT_MAX = 5000;
+const NAME_MAX = 100;
+const LIST_MAX = 50;
+
+const nameSchema = z.string().trim().min(1, 'Nom vide').max(NAME_MAX, 'Nom trop long');
+
+const gradedInputSchema = z
+	.object({
+		mode: z.enum(['cumulative', 'discriminant']).optional(),
+		items: z
+			.array(
+				z
+					.object({
+						grade: gradeSchema,
+						content: z.string().trim().min(1, 'Texte vide').max(TEXT_MAX, 'Texte trop long'),
+						sharedWith: z.array(gradeSchema).max(5).optional()
+					})
+					.strict()
+			)
+			.max(20, 'Trop de niveaux')
+	})
+	.strict();
+
+/**
+ * Une entrée telle que l'admin l'enregistre (colonnes de `dictionary_entries`) :
+ * mêmes règles que la lecture, plus des bornes de taille. Les règles de
+ * cohérence (refus 10 à 16) sont vérifiées ensuite, sur tout le dictionnaire.
+ */
+export const dictionaryEntryInputSchema = z
+	.object({
+		term: nameSchema,
+		sense: nameSchema.nullable(),
+		grade: gradeSchema,
+		tags: z
+			.array(z.string().trim().min(1).max(NAME_MAX).toLowerCase())
+			.min(1, 'Au moins une étiquette de thème')
+			.max(20),
+		definitions: gradedInputSchema.nullable(),
+		exemples: gradedInputSchema.nullable(),
+		history: z.string().trim().min(1).max(TEXT_MAX).nullable(),
+		image: z.string().regex(SITE_PATH, 'Image : chemin du site seulement').max(300).nullable(),
+		synonyms: z.array(nameSchema).max(LIST_MAX),
+		forms: z.array(nameSchema).max(LIST_MAX),
+		auto_link: z.boolean(),
+		derived_from: nameSchema.nullable(),
+		see_also: z
+			.object({ label: nameSchema, path: z.enum(SEE_ALSO_PATHS) })
+			.strict()
+			.nullable(),
+		shared_with: z.array(gradeSchema).max(5)
+	})
+	.strict();
+
+export type DictionaryEntryInput = z.infer<typeof dictionaryEntryInputSchema>;
