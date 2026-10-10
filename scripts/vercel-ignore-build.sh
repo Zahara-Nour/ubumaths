@@ -21,10 +21,9 @@
 #    variables : le sauter rendrait la bascule muette. Un push neuf descend
 #    strictement du dernier déploiement ; un redéploiement, non.
 #
-# 2. Seule la POINTE de main se construit. Quand des merges s'accumulent
-#    derrière le build en cours, les commits dépassés sont sautés : le build
-#    de la pointe les embarque. Simulé sur les pushes du 30/09 au 10/10 :
-#    13 à 20 % de builds en moins.
+# 2. Seule la POINTE de la branche déployée se construit (`production` depuis
+#    l'ADR 0021, `main` avant). Si elle a avancé pendant que ce commit
+#    attendait son tour, il est sauté : le build de la pointe l'embarque.
 #
 # 3. Ce qui change sous src/ ou static/ se construit, `.md` compris : les
 #    articles du Shtam (src/lib/server/shtam/articles/*.md) sont importés au
@@ -71,7 +70,7 @@ precedent="${VERCEL_GIT_PREVIOUS_SHA:-}"
 [ -n "$precedent" ] ||
 	decider 1 "VERCEL_GIT_PREVIOUS_SHA vide : dernier déploiement inconnu → build"
 
-# Le dépôt où lire la pointe de main. IGNORE_BUILD_REMOTE_URL ne sert qu'aux
+# Le dépôt où lire la pointe de la branche. IGNORE_BUILD_REMOTE_URL ne sert qu'aux
 # tests ; sur Vercel, le dépôt (public) se déduit des variables système.
 depot="${IGNORE_BUILD_REMOTE_URL:-}"
 if [ -z "$depot" ] && [ -n "${VERCEL_GIT_REPO_OWNER:-}" ] && [ -n "${VERCEL_GIT_REPO_SLUG:-}" ]; then
@@ -96,11 +95,12 @@ git merge-base --is-ancestor "$precedent" "$sha" 2>/dev/null ||
 
 # Règle 2. Une pointe qui est un ancêtre de ce commit est une réponse en
 # retard : elle ne sera pas reconstruite, ce commit doit l'être.
-if [ "${VERCEL_GIT_COMMIT_REF:-}" = "main" ] && [ -n "$depot" ]; then
-	pointe="$(borne git ls-remote "$depot" refs/heads/main 2>/dev/null | cut -f1)"
+branche="${VERCEL_GIT_COMMIT_REF:-}"
+if [ -n "$branche" ] && [ -n "$depot" ]; then
+	pointe="$(borne git ls-remote "$depot" "refs/heads/$branche" 2>/dev/null | cut -f1)"
 	if [ -n "$pointe" ] && [ "$pointe" != "$sha" ] &&
 		! git merge-base --is-ancestor "$pointe" "$sha" 2>/dev/null; then
-		decider 0 "main a avancé jusqu'à $(court "$pointe"), dont le build embarquera $(court "$sha") → build sauté"
+		decider 0 "$branche a avancé jusqu'à $(court "$pointe"), dont le build embarquera $(court "$sha") → build sauté"
 	fi
 fi
 

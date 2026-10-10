@@ -1,14 +1,14 @@
 # Git Workflow — UbuMaths
 
 > **Process de développement OBLIGATOIRE** (bug fixes ET features), décidé avec David le 2026-06-17.
-> `main` = **production** (Vercel y déploie la prod). Référencé depuis `CLAUDE.md`.
+> `main` = **branche de travail** ; Vercel ne déploie que `production`, avancée par `pnpm deploy:prod` ([ADR 0021](../adr/0021-branche-production-mise-en-prod-manuelle.md)). Référencé depuis `CLAUDE.md`.
 > Outils disponibles : `gh`, `vercel`, `supabase` (CLI) + MCP Supabase/Vercel — Claude prend en charge branche → PR → CI → merge → déploiement → vérif.
 
 ---
 
 ## 1. Règles d'or
 
-1. **`main` = prod, toujours vert et déployable.** Jamais de commit de **code** directement sur `main`.
+1. **`main` toujours vert et déployable** (la prod en est un instantané, `production`). Jamais de commit de **code** directement sur `main`.
 2. Tout changement de code → **branche → PR → CI 100 % verte → merge commit → suppression de branche**.
 3. **Seule exception au PR** : changement **100 % documentaire** (`docs/**` et `**/*.md`, aucun fichier de code) → commit direct sur `main`, **quel que soit le nombre de fichiers**. Plafond de 2 fichiers levé le 2026-09-14.
    - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (voir le commentaire du fichier — les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown relance donc **les 12 jobs**, ~4 min, pour zéro vérification utile. Sur `push`, `paths-ignore` couvre les docs → commit direct = **aucune CI**.
@@ -54,8 +54,8 @@
 - Changement de **schéma pur** (colonne / index / table sans logique) : `pnpm db:reset` doit réussir **+** `pnpm db:types` régénéré et commité.
 - ❌ **JAMAIS** valider une fonction `SECURITY DEFINER` par un smoke-test avec `auth.uid()` NULL — le garde sort **avant** la vraie requête (faux positif).
 - **Timing migration ↔ déploiement** :
-  - **Additive** (`CREATE`, `ADD COLUMN`, `CREATE OR REPLACE`) → `pnpm db:migrate` **avant/avec** le déploiement (le code peut s'y appuyer).
-  - **Destructive** (`DROP`, breaking) → `db:migrate` **après** que le code qui l'utilisait soit déployé (au besoin, 2 migrations séparées).
+  - **Additive** (`CREATE`, `ADD COLUMN`, `CREATE OR REPLACE`) → `pnpm db:migrate` **au merge** : la base précède le code en prod, sans risque.
+  - **Destructive** (`DROP`, breaking) → `db:migrate` **après** le `pnpm deploy:prod` qui livre le code qui ne l'utilise plus (au besoin, 2 migrations séparées).
 - `pnpm db:migrate` **uniquement depuis la branche mergée dans `main`** (sinon désync de l'historique `schema_migrations`).
 
 ## 6. PR, revue & merge
@@ -68,7 +68,9 @@
 
 ## 7. Déploiement & vérification
 
-- Merge sur `main` → Vercel **build + déploie la prod** (`VERCEL_ENV=production`). **Previews OFF** : le **job Build CI** (+ garde TDZ Safari) valide le build, pas besoin de preview.
+- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (`pnpm release` : numéro, CHANGELOG, tag) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait.
+- Ce qui attend la prod : `git log --first-parent origin/production..origin/main`.
+- **Previews OFF** : le **job Build CI** (+ garde TDZ Safari) valide le build.
 - Surveiller le déploiement (`get_deployment` → `READY`).
 - **Vérifier en prod** tout changement user-facing (bypass si maintenance — voir §8).
 

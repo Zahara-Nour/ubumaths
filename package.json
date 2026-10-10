@@ -49,7 +49,7 @@
 		"deploy:status": "gh api repos/{owner}/{repo}/commits/main/status -q '\"overall: \\(.state)\", (.statuses[] | \"\\(.context): \\(.state)  \\(.target_url)\")'",
 		"status": "pnpm ci:status && pnpm deploy:status",
 		"vercel:env": "vercel env ls production",
-		"vercel:deploy": "vercel --prod",
+		"deploy:prod": "bash scripts/deploy-prod.sh",
 		"env:pull": "vercel env pull .env.local",
 		"env:pull:prod": "vercel env pull --environment=production .env.local",
 		"maintenance:on": "bash scripts/vercel-maintenance.sh on",
