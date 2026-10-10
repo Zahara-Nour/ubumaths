@@ -5,7 +5,7 @@
 	 * 4 sections automatiques calculées depuis l'état FSRS :
 	 *   🆘 À remédier / 🔁 À renforcer / ⏳ En apprentissage / ✅ Acquise en mémoire
 	 *
-	 * Cf. docs/systeme/srs/architecture.md §5.2
+	 * Cf. docs/systeme/srs.md §5.2
 	 */
 
 	import * as Card from '$lib/components/ui/card';
