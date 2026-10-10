@@ -63,8 +63,12 @@ for brut in segments:
     if re.match(r"pnpm\s+(?:run\s+)?check:fast\b", s) or re.search(r"\btsc\b.*--noEmit", s):
         refuser("meurt sur le tas V8 (~4 Go) et donne de faux positifs `$lib`. Utiliser `pnpm check:incremental`.")
 
-    if re.search(r"\bsvelte-check\b", s) and "--incremental" not in s:
-        refuser("`svelte-check` sans `--incremental` meurt sur le tas V8. Utiliser `pnpm check:incremental`.")
+    # Seule une EXÉCUTION compte : `npm view svelte-check` ou un grep ne lancent rien.
+    lance_svelte_check = re.search(
+        r"(?:^|\benv\s.*|\bnpx\s+|\bpnpm\s+(?:exec\s+|dlx\s+)?|\.bin/)svelte-check\b", s
+    )
+    if lance_svelte_check and "--incremental" not in s and "--tsgo" not in s:
+        refuser("`svelte-check` sans `--tsgo` ni `--incremental` meurt sur le tas V8. Utiliser `pnpm check:incremental`.")
 
     if re.match(r"pnpm\s+(?:run\s+)?dev\b", s):
         if re.search(r"\s--\s", s + " "):
