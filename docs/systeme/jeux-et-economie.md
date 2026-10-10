@@ -1,499 +1,258 @@
-# Analyse economique des cartes VIP
+# Jeux et économie (gidouilles, cartes VIP, marché, classements)
 
-> Derniere mise a jour : 2026-03-11
+> Remplace `vips/economy.md` (mars 2026), qui décrivait l'économie sans le code des jeux et citait
+> huit migrations antérieures au baseline `20260616220000`. Les catalogues de prix, les estimations
+> de revenu et la simulation Monte-Carlo de cette version sont **jetés** : les prix vivent en base
+> (`vip_card_templates`, modifiés en prod), pas dans le code.
+> Vérifié contre le code le 2026-10-10.
 
-## Vue d'ensemble
+## À quoi ça sert
 
-L'economie des cartes VIP repose sur les **gidouilles**, monnaie virtuelle gagnee principalement via le minesweeper. Les eleves depensent leurs gidouilles pour acheter des cartes VIP dans la boutique ou pour payer des tirages aleatoires.
+Motiver les élèves par le jeu sans sortir des mathématiques : des **jeux** (démineur, 2048,
+Mathémo, Trio, énigmes) rapportent des **gidouilles** (monnaie virtuelle, `profiles.gidouilles`),
+dépensées en **cartes VIP** (privilèges et pouvoirs accordés en classe par le prof) ou en
+pouvoirs de jeu. Les cartes s'échangent sur le **marché** entre élèves d'une même école. Le
+prof distribue aussi gidouilles et cartes à la main.
+
+Le compagnon virtuel (Palotins) a sa propre doc : [buddy-palotins.md](buddy-palotins.md).
+Les tables, une par une : [base-de-donnees-tables.md](base-de-donnees-tables.md) (sections
+« Jeux, défis et récompenses » et « Marché »).
+
+## Carte du code
+
+### Les jeux branchés
+
+Catalogue : `src/routes/(public)/games/+page.svelte` (Trio, Mathémo, Démineur, 2048 ; Navadra
+commenté).
+
+| Jeu                  | Page                                                            | API / logique                                                                                                                         | Gidouilles                                    |
+| -------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **Démineur**         | `src/routes/(public)/games/minesweeper/+page.svelte`            | `src/routes/api/games/minesweeper/` (start, `[id]/complete`, hint, detect, undo, loss) ; store `src/lib/stores/minesweeper.svelte.ts` | oui, par `complete_minesweeper_game`          |
+| **2048**             | `src/routes/(public)/games/2048/+page.svelte`                   | logique pure `src/routes/(public)/games/2048/game-logic.ts` ; `src/routes/api/games/2048/scores/+server.ts`                           | oui, `src/lib/server/games/reward-2048.ts`    |
+| **Mathémo** (mot)    | `src/routes/(public)/games/mathemo/+page.svelte`                | `src/routes/(public)/games/mathemo/game.svelte.ts` ; `src/routes/api/games/mathemo/scores/+server.ts`                                 | oui, `src/lib/server/games/reward-mathemo.ts` |
+| **Trio** (a × b ± c) | `src/routes/(public)/games/trio/+page.svelte`                   | tout dans `src/routes/(public)/games/trio/Trio.svelte`                                                                                | non                                           |
+| **Énigmes**          | `src/routes/(protected)/dashboard/student/riddles/+page.svelte` | `src/routes/api/riddles/[id]/submit/+server.ts` ; validation `src/lib/utils/riddle-validator.ts`                                      | oui, par `submit_riddle_attempt`              |
+
+Côté prof, les énigmes se gèrent sous `src/routes/(protected)/dashboard/teacher/contenu/enigmes/`
+(création, énigme du jour, validation des réponses libres, stats). L'énigme du jour est choisie
+par `src/lib/server/riddle-auto-select.ts` via `src/routes/api/riddles/auto-select-daily/+server.ts`
+(appelable par l'admin ; `vercel.json` n'a aucun cron).
+
+### Démineur : tournois et multijoueur
+
+- **Tournois** — créés par le prof (`src/routes/(protected)/dashboard/teacher/minesweeper/tournaments/`),
+  joués par l'élève (`src/routes/(protected)/dashboard/student/minesweeper/tournaments/`), API sous
+  `src/routes/api/games/minesweeper/tournaments/`. Validation : `src/lib/server/validation/minesweeper-tournament.ts`
+  (`podium_rewards` : 0 à 100 gidouilles par place). Ciblés par classe
+  (`minesweeper_tournament_classes`, `can_participate_in_tournament`) ; score par
+  `calculate_tournament_score` ; podium versé par `finalize_tournament`.
+- **Multijoueur** — `src/routes/(protected)/games/minesweeper/multiplayer/+page.svelte`, store
+  `src/lib/stores/multiplayer.svelte.ts`, API sous `src/routes/api/games/minesweeper/multiplayer/`,
+  file d'attente `join_multiplayer_queue` (même difficulté, ±200 de classement, saison = mois).
+  Réparé par `supabase/migrations/20261003211000_rpc_lot4_multijoueur_vues.sql` : il n'avait
+  jamais pu démarrer. **Aucun lien de l'interface ne mène à cette page** (URL directe seulement).
+- **Succès** du démineur : `minesweeper_achievements`, pages `stats/` et `achievements/` sous
+  `src/routes/(protected)/dashboard/student/minesweeper/`.
+- **Temps de référence** par cycle : `minesweeper_reference_times`, lus par
+  `get_minesweeper_reference_time`, recalculés par `run_recalculate_minesweeper_ref_times`.
+
+### Jeux présents mais pas au catalogue
+
+- **Navadra** (combats de monstres, sorts) : routes `src/routes/(protected)/dashboard/navadra/`
+  (hub, `combat/`, `spells/`), tables `game_players`, `game_spells`, `game_combats`,
+  `game_monsters`…, stores `src/lib/stores/game/`. Retiré du catalogue (entrée commentée). Le hub
+  renvoie vers `achievements`, `leaderboard`, `profile` et `tutorial`, **routes inexistantes**.
+  Le trigger `trigger_award_gidouilles_on_combat_victory` (fonction `award_gidouilles_on_victory`,
+  `xp_gained / 10 + 5`) crédite sans écrire `gidouilles_activity`.
+- **Evoland** (moteur d'aventure, `src/lib/games/evoland/`) : page `src/routes/(public)/games/evoland/+page.svelte`,
+  aucun lien vers elle.
+
+### Économie
+
+| Rôle                                  | Où                                                                                                                                                                                                           |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Récompense de partie (cap journalier) | `record_game_reward` (SQL)                                                                                                                                                                                   |
+| Bonus hebdomadaires                   | `run_weekly_best_bonuses` → `award_weekly_best_bonuses` ; `run_weekly_rewards` (pg_cron, hors dépôt)                                                                                                         |
+| Gestes du prof                        | `src/routes/api/teacher/rewards/` (`update-student`, `update-class`, `grant-specific-vip-card`, `use-vip-card`) ; écran `src/routes/(protected)/dashboard/teacher/gamification/rewards/GidouillesTab.svelte` |
+| Journal des gains                     | `gidouilles_activity` → trigger `trigger_log_gidouilles_to_events` → `reward_events` ; `src/routes/api/rewards/journal/+server.ts`, `src/lib/server/reward-journal-balance.ts`                               |
+| Succès (achievements)                 | `src/lib/server/achievements/service.ts`, `process_achievement_event` ; versement `src/lib/server/achievements/credit-gidouilles.ts`                                                                         |
+| Cartes VIP : boutique, vente          | `src/routes/api/vip-cards/shop/+server.ts`, `purchase/`, `sell/` → `purchase_vip_card`, `sell_vip_card`                                                                                                      |
+| Cartes VIP : tirages                  | `src/routes/api/rewards/draw-vip-cards/+server.ts` → `draw_multiple_vip_cards` ; prix `VIP_CARD_COST` dans `src/lib/utils/vip-cards.ts`                                                                      |
+| Cartes VIP : activation par le prof   | `request_vip_card_activation`, `approve_vip_card`, `reject_vip_card`, `use_vip_card` ; onglet `ActivationRequestsTab.svelte`                                                                                 |
+| Cartes VIP : admin                    | `src/routes/(protected)/dashboard/admin/vip-cards/+page.svelte`, `src/routes/api/admin/vip-cards/` ; Zod `src/lib/server/validation/vip-card-admin.ts`                                                       |
+| Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                        |
+| Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                |
+| Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                             |
+
+Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue dans
+`vip_card_templates`, les probabilités de tirage dans `vip_card_config`, le journal dans
+`vip_cards_activity`.
+
+### Classements
+
+| Classement                                        | Où                                                                                                                                                              | Bornage                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **Classements unifiés** (2048, Mathémo, Démineur) | `src/routes/(protected)/games/leaderboards/+page.server.ts` → `game_leaderboard`, `minesweeper_scoped_leaderboard` ; constantes `src/lib/games/leaderboards.ts` | portée `class` / `grade` / `school`, toutes bornées par `my_school()` |
+| Tournoi                                           | `src/routes/api/games/minesweeper/tournaments/[id]/standings/+server.ts`                                                                                        | classes du tournoi                                                    |
+| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (vue `riddle_progress`)                                                          | voir Doutes                                                           |
+| Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
+| 2048 (ancien)                                     | `src/routes/api/games/2048/leaderboard/+server.ts`                                                                                                              | voir Doutes                                                           |
+
+Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
+
+## Invariants
+
+### Gidouilles : sources et plafonds
+
+1. **Une gidouille par jour et par type de jeu.** `record_game_reward` (baseline) n'accepte que
+   `minesweeper`, `riddle`, `2048`, `mathemo`, et verse `1` à la première victoire du jour **de ce
+   type de jeu** (`daily_game_rewards.is_first_win_of_day`), `0` ensuite. ⚠️ L'ancienne doc disait
+   le cap « partagé entre jeux » : c'est faux depuis l'ajout de 2048 et Mathémo (commentaire de la
+   fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que l'élève lui-même
+   (`auth.uid() = p_student_id`, rôle `student`) et une récompense théorique entre 0 et 1000. La
+   date et la semaine sont celles du fuseau et de la `week_config` de l'école
+   (`calculate_week_boundaries`).
+2. **La récompense théorique ne sert qu'au bonus hebdomadaire.** Chaque partie gagnée met à jour
+   `weekly_best_rewards` (meilleure récompense théorique de la semaine, **par type de jeu**).
+   Calcul par jeu :
+   - **Démineur** (`complete_minesweeper_game`, baseline) : base 1 / 3 / 6 (débutant /
+     intermédiaire / expert) × `GREATEST(0.7, 1.3 − 0.3 × temps / temps_de_référence)` ×
+     (1 − pénalité d'indices), bornée à [0,30 ; 8,00]. Pénalités cumulées : `0,10 / 0,22 / 0,35`
+     (indices payés en gidouilles) et `0,05 / 0,11 / 0,17` (indices par carte VIP), plafond 0,50.
+     Temps de référence par défaut 180 / 600 / 1200 s si la table n'a rien.
+   - **Énigmes** : `calculate_riddle_gidouilles` = difficulté × 3 / 2 / 1 (1ᵉʳ, 2ᵉ, 3ᵉ+ essai).
+   - **2048** : `calculate2048TheoreticalReward`, interpolation entre `[1000, 0,5]` et
+     `[50000, 8]` ; rien sous `REWARD_2048_MIN_SCORE` (1000).
+   - **Mathémo** : `calculateMathemoTheoreticalReward`, longueur du mot × efficacité
+     (1,5 au 1ᵉʳ essai → 0,8 au dernier), bornée par `REWARD_MATHEMO_MIN` / `REWARD_MATHEMO_MAX`
+     (0,3 / 8).
+3. **Bonus hebdomadaire « meilleur jeu »** : `award_weekly_best_bonuses` verse, pour chaque type
+   de jeu joué, la meilleure récompense théorique de la semaine (`weekly_best_game_bonus:<jeu>`
+   dans `gidouilles_activity`). `run_weekly_best_bonuses` le déclenche école par école le
+   6ᵉ jour de la semaine scolaire, après 12 h (fuseau de l'école).
+4. **Bonus hebdomadaire « sans avertissement »** : `run_weekly_rewards` verse **1** gidouille
+   (`weekly_no_warning`, ligne dans `weekly_rewards`) à chaque membre actif d'une classe sans
+   avertissement, retrait de gidouilles ou retrait de carte pour avertissement dans la semaine.
+   Serveur seul depuis `supabase/migrations/20261003150000_vip_cartes_verrou.sql`. L'écran admin
+   `src/routes/(protected)/dashboard/admin/cron/+page.svelte` peut le relancer. Les crons
+   eux-mêmes (pg_cron) ne sont dans aucune migration.
+5. **Gestes du prof** : ±1000 par geste (`src/lib/server/validation/rewards.ts`), via
+   `update_student_gidouilles` et `update_class_gidouilles`. Podium de tournoi : 0 à 100 par place.
+6. **Succès** : les gidouilles d'un succès-jalon (2048, Mathémo) passent par
+   `update_student_gidouilles` à 5 arguments (`credit-gidouilles.ts`) — le bug « jamais crédités »
+   de l'ancienne doc est corrigé (test `tests/integration/succes-gidouilles.test.ts`).
+7. **Toute écriture de gidouilles passe par `gidouilles_activity`**, d'où le journal
+   (`reward_events`) — sauf Navadra (voir plus haut) et les fonctions citées dans Doutes.
+
+### Dépenses
+
+- **Achat** (`purchase_vip_card`) : refuse si `is_purchasable = false`, si le solde est inférieur
+  à `base_price`, ou si l'élève a déjà `max_owned_per_student` exemplaires (défaut 5, borné 1 à
+  100 par contrainte).
+- **Tirage** (`draw_multiple_vip_cards`) : par gidouilles ou par carte de tirage. Un élève paie
+  `count × VIP_CARD_COST` (3), calculé **côté serveur** par la route ; la fonction garde un
+  plancher de 1 par carte et réserve `p_force_rarity` / `p_min_rarity` au prof
+  (`supabase/migrations/20260902096000_security_draw_vip_internal_guard.sql`). Le tirage **ne
+  consulte pas** `max_owned_per_student`.
+- **Probabilités** : la ligne active de `vip_card_config` (somme = 100 par contrainte ;
+  60 / 25 / 12 / 3 proposés par défaut dans `src/lib/components/vip-cards/VipCardConfigEditor.svelte`).
+- **Vente** (`sell_vip_card`) : au `sell_price` du modèle (proratisé pour un consommable
+  entamé) ; refusée si la carte est utilisée, en demande d'activation, en délai, ou engagée sur
+  le marché.
+- **Pouvoirs de jeu** : indice démineur 5 (`use_hint`), détecteur 10 (`use_detector`) — une
+  carte VIP adaptée est consommée d'abord ; `use_minesweeper_undo` exige une carte (pas de
+  repli en gidouilles). 2048 (`use_2048_power`) : 3 à 40 selon le pouvoir ; Mathémo
+  (`use_mathemo_power`) : 5 à 15.
+- **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde
+  `guard_profile_reserved_fields`, migration `20261003150000_vip_cartes_verrou.sql`) ; seules les
+  fonctions SECURITY DEFINER le font.
+
+### Marché
+
+- Config par école ou par classe (`marketplace_config`) : `max_listings_per_student` 5,
+  `max_trades_per_day` 10, `listing_duration_days` 7 par défaut (repli
+  `DEFAULT_MAX_TRADES_PER_DAY` dans `src/lib/server/marketplace/helpers.ts`, garde SQL
+  `check_daily_trade_limit`).
+- Annonces → propositions (`marketplace_proposals`) → `accept_proposal_atomic` ; échange direct
+  entre amis → `marketplace_trades` → confirmation → `execute_trade`. Cartes engagées verrouillées
+  (`marketplace_locked_cards`, `lock_cards` / `unlock_cards`, serveur seul).
+- **`execute_trade` exige les quatre drapeaux** (validation et confirmation des deux côtés) ;
+  chaque élève n'écrit que **sa** moitié de l'offre. Faille du 2026-10-04 (vol de cartes et de
+  gidouilles) fermée par `supabase/migrations/20261004190000_echanges_garde_base.sql`.
+
+### L'école est la frontière sociale ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md))
+
+Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_school()` :
+
+- **marché** : annonces filtrées par `school_id` (`src/routes/api/marketplace/listings/+server.ts`) ;
+  échange direct seulement entre **amis de la même école** (garde en base, migration
+  `20261004190000`) ; participants résolus par `src/lib/server/marketplace/participants.ts` ;
+- **classements unifiés** : les trois portées passent par `my_school()` ;
+- **tournois** : bornés aux classes ciblées.
+
+⚠️ Exceptions constatées, voir Doutes : file multijoueur, classements énigmes et 2048 ancien.
+
+## Comment étendre
+
+- **Nouveau jeu qui rapporte** : ajouter son type à la liste blanche de `record_game_reward`
+  (migration), calculer la récompense théorique côté serveur (modèle :
+  `src/lib/server/games/reward-2048.ts` + son test), appeler `record_game_reward` depuis la route
+  de score, l'ajouter au libellé de `award_weekly_best_bonuses`. Pour le classement : la liste
+  blanche de `game_leaderboard` **et** `GAME_LEADERBOARD_GAMES` (`src/lib/games/leaderboards.ts`).
+- **Nouvelle carte** : par l'admin (`vip_card_templates`), pas par migration — la prod fait foi.
+- **Tout ce qui relie deux élèves** : borner par `same_school()`, avec un test d'intégration
+  qui prouve qu'un élève d'une autre école est refusé.
+- Toute écriture de gidouilles : `.select()` et vérifier les lignes (la RLS échoue en silence),
+  et écrire `gidouilles_activity`.
+
+## Tests
+
+- Unitaires : `src/lib/server/games/__tests__/reward-2048.test.ts`,
+  `src/lib/server/games/__tests__/reward-mathemo.test.ts`,
+  `src/routes/(public)/games/2048/__tests__/game-logic.test.ts`,
+  `src/routes/(public)/games/mathemo/__tests__/dictionary-words.test.ts`,
+  `src/lib/stores/__tests__/minesweeper.svelte.test.ts`,
+  `src/routes/api/games/minesweeper/__tests__/minesweeper-authorization.test.ts`,
+  `src/lib/server/__tests__/vip-card-purchase.test.ts`,
+  `src/lib/server/validation/__tests__/draw-vip-cards.test.ts`,
+  `src/lib/server/marketplace/__tests__/security.test.ts`,
+  `src/lib/utils/__tests__/riddle-validator.test.ts`, `src/lib/games/evoland/logic/__tests__/`.
+- Intégration (Supabase local) : `tests/integration/game-leaderboards.test.ts`,
+  `tests/integration/minesweeper-rpc.test.ts`, `tests/integration/rpc-lot4-hygiene.test.ts`,
+  `tests/integration/succes-gidouilles.test.ts`, `tests/integration/vip-cartes-verrou.test.ts`,
+  `tests/integration/vip-card-rarity-distribution.test.ts`,
+  `tests/integration/draw-vip-cards-race-conditions.test.ts`,
+  `tests/integration/marketplace-trades-garde.test.ts`, `tests/integration/marche-verrou.test.ts`,
+  `tests/integration/participants-du-marche.test.ts`.
+
+## Décisions
+
+- [ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md) — école = frontière sociale.
+- Q131 à Q134 (2026-10-03) : cartes, verrous et bonus hebdomadaire réservés au serveur
+  (en-tête de `20261003150000_vip_cartes_verrou.sql`).
+- 2026-10-04 : garde des échanges en base (en-tête de `20261004190000_echanges_garde_base.sql`).
+- Q160 : réparer le multijoueur (`20261003211000_rpc_lot4_multijoueur_vues.sql`).
+
+## Doutes (constatés le 2026-10-10, non corrigés)
+
+- **`gidouilles_history` n'existe plus** (renommée `gidouilles_activity`), mais six fonctions du
+  baseline y écrivent encore : `finalize_tournament`, `redistribute_tournament_rewards`,
+  `complete_multiplayer_match`, `abandon_multiplayer_match`, `process_weekly_rewards`,
+  `purchase_shop_item`. En plpgsql l'erreur ne sort qu'à l'exécution : un podium de tournoi avec
+  récompense ou une victoire en multijoueur échouerait (`42P01`). Le test de `finalize_tournament`
+  (`tests/integration/minesweeper-rpc.test.ts`) ne passe que par un tournoi inexistant. **À
+  prouver par un test d'intégration avant de corriger.**
+- **File multijoueur non bornée par l'école** : `join_multiplayer_queue` apparie sur difficulté
+  et classement seulement — contraire à l'ADR 0002 (page sans lien, donc peu exposée).
+- **Classement des énigmes** : la route lit la vue `riddle_progress` sans filtre d'école.
+- **`src/routes/api/games/2048/leaderboard/+server.ts`** : top global sur `game_2048_scores`
+  (policy `USING (true)` pour tout authentifié), sans appelant dans `src/`.
+- **Sans appelant applicatif** : `process_weekly_rewards`, `award_weekly_reward`,
+  `purchase_shop_item`, `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés).
+- **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
+  hors journal. **Evoland** : page sans lien.
+- `scripts/simulate-vip-economy.ts` simule l'ancienne économie (cap partagé) : périmé.
 
 ---
 
-## 1. Sources de revenus (gidouilles)
-
-### 1.1 Minesweeper (source principale)
-
-**Systeme actuel : limite journaliere (depuis 2026-01-01)**
-
-Le systeme calcule une recompense theorique, mais n'attribue que **1g maximum par jour** (premiere victoire du jour). Les victoires suivantes rapportent 0g mais le `theoretical_reward` est enregistre pour le bonus hebdomadaire.
-
-```
-theoretical_reward = base x time_mult x (1 - hint_penalty)
-Bornes : max(0.30, min(8.00, resultat))
-actual_reward = 1g si premiere victoire du jour, 0g sinon
-```
-
-**Recompenses de base par difficulte :**
-
-| Difficulte   | Base | Temps de ref. | Min theorique | Typique | Max theorique |
-| ------------ | ---- | ------------- | ------------- | ------- | ------------- |
-| Beginner     | 1.0g | 3 min         | 0.52g         | 1.0g    | 1.3g          |
-| Intermediate | 3.0g | 10 min        | 1.56g         | 3.0g    | 3.9g          |
-| Expert       | 6.0g | 20 min        | 3.12g         | 6.0g    | 7.8g          |
-
-_Note : les valeurs theoriques ci-dessus servent au calcul du `week_best_reward`, mais la recompense reelle est toujours 0 ou 1g._
-
-**Multiplicateur de temps** (continu, affecte le theoretical_reward) :
-
-```
-time_mult = 1.3 - 0.5 x min(1, temps_partie / temps_reference)
-```
-
-- Instantane : x1.30
-- Mi-temps : x1.05
-- Temps de reference : x0.80
-- Au-dela : x0.80 (plancher)
-
-**Penalites d'indices** (progressives, cumulatives, affectent le theoretical_reward) :
-
-| Nb indices | Indices gidouilles (cout plein) | Indices VIP (cout reduit) |
-| ---------- | ------------------------------- | ------------------------- |
-| 1          | -10%                            | -5%                       |
-| 2          | -22%                            | -11%                      |
-| 3          | -35%                            | -17%                      |
-
-Penalite totale plafonnee a 50%.
-
-**Limite journaliere (partagee entre tous les jeux) :**
-
-| Victoire du jour | Recompense reelle |
-| ---------------- | ----------------- |
-| 1ere             | 1g                |
-| 2e et suivantes  | 0g                |
-
-Le cap de 1g/jour est **partage entre minesweeper et enigmes** via `record_game_reward()`. Si un eleve gagne une enigme en premier, son minesweeper du jour rapporte 0g (et vice versa).
-
-### 1.2 Enigmes
-
-Meme systeme de cap journalier que le minesweeper. La recompense theorique est calculee mais seule la 1ere victoire du jour (tous jeux confondus) rapporte 1g.
-
-**Recompense theorique** : `difficulte x multiplicateur`
-
-| Difficulte | 1er essai | 2eme essai | 3e+ essai |
-| ---------- | --------- | ---------- | --------- |
-| 1          | 3g        | 2g         | 1g        |
-| 2          | 6g        | 4g         | 2g        |
-| 3          | 9g        | 6g         | 3g        |
-
-_La recompense theorique sert au calcul du bonus hebdomadaire (meilleur jeu)._
-
-### 1.3 Bonus hebdomadaire sans avertissement
-
-- **Montant** : 1g/semaine
-- **Condition** : aucun avertissement actif (non supprime) pendant la semaine scolaire
-- **Execution** : cron automatique le 6e jour de la semaine scolaire, apres-midi
-- **Code** : `run_weekly_rewards()` dans `20260104160000_pg_cron_weekly_rewards.sql`
-
-### 1.4 Bonus hebdomadaire meilleur jeu
-
-Source de revenu significative souvent negligee.
-
-- **Montant** : egal au **meilleur `theoretical_reward`** de la semaine precedente
-- **Plage** : 0.30g (beginner lent avec indices) a 7.80g (expert rapide sans indices), voire 9g (enigme diff 3 au 1er essai)
-- **Condition** : avoir joue au moins 1 partie gagnee dans la semaine
-- **Execution** : cron automatique le 6e jour de la semaine scolaire (meme timing que le bonus sans avertissement)
-- **Code** : `award_weekly_best_bonuses()` dans `20260101200000_daily_weekly_reward_limits.sql`
-
-**Impact** : un eleve jouant expert rapidement gagne ~8g de bonus hebdo en plus de ses gains journaliers. C'est potentiellement la plus grosse source reguliere de revenus.
-
-### 1.5 Sources discretionnaires (prof)
-
-| Source                    | Montant        | Condition                        |
-| ------------------------- | -------------- | -------------------------------- |
-| Recompense individuelle   | -1000 a +1000g | Action manuelle du prof          |
-| Recompense classe entiere | -1000 a +1000g | Action manuelle du prof          |
-| Roue de la fortune (prof) | defaut 10g     | Prof fait tourner la roue        |
-| Tournoi podium            | defaut 10/5/3g | Tournoi finalise par le createur |
-| Carte Sheikh (activation) | +50g           | Carte approuvee par le prof      |
-
-_Les montants prof sont valides par Zod (-1000 a +1000). Le solde ne peut pas descendre sous 0._
-
-### 1.6 Sources inactives ou speciales
-
-| Source                   | Montant   | Statut                               |
-| ------------------------ | --------- | ------------------------------------ |
-| Defis quotidiens         | 5/3/2g    | **Supprimes** (migration 2026-01-02) |
-| Victoire combat (legacy) | (xp/10)+5 | Systeme Navadra, pas d'audit trail   |
-| Achievements             | variable  | **BUG : jamais credites** (voir 6.3) |
-| Marketplace              | variable  | Transfert uniquement (zero-sum)      |
-
-### 1.7 Estimation du revenu hebdomadaire
-
-Le revenu depend du cap 1g/jour (partage minesweeper+enigmes), du bonus sans avertissement, et du bonus meilleur jeu.
-
-| Profil eleve    | Jeux (1g/jour) | Bonus sans avert. | Bonus meilleur jeu | Total estime    |
-| --------------- | -------------- | ----------------- | ------------------ | --------------- |
-| Peu actif (3j)  | ~3g            | 1g                | ~1g (beginner)     | ~5g/semaine     |
-| Actif (5j)      | ~5g            | 1g                | ~3g (intermediate) | ~9g/semaine     |
-| Tres actif (7j) | ~7g            | 1g                | ~6-8g (expert)     | ~14-16g/semaine |
-
-_Sans compter les sources discretionnaires (prof, tournois)._
-
----
-
-## 2. Catalogue des cartes et prix
-
-> **Source** : base de donnees de production (`vip_card_templates`), interrogee le 2026-03-11.
-> Les migrations SQL ne refletent PAS l'etat reel — les raretes et prix ont ete modifies directement en prod.
-
-### 2.1 Cartes Common (7 actives, prix moyen 6.4g)
-
-| ID               | Nom                   | Prix | Action  | Categorie |
-| ---------------- | --------------------- | ---- | ------- | --------- |
-| bougeotte        | Bougeotte             | 5g   | passive | privilege |
-| minesweeper-hint | Indice Demineur (1)   | 5g   | hint    | power     |
-| lalalalala       | Lalalalala            | 5g   | passive | privilege |
-| batman           | Batman and Robin      | 5g   | passive | power     |
-| fame             | Voltaire's got talent | 5g   | passive | social    |
-| tranquilou       | Tranquilou            | 10g  | passive | privilege |
-| mathemagie       | Mathemagie            | 10g  | passive | power     |
-
-_Desactivees : candy (5g), captain (5g)_
-
-### 2.2 Cartes Rare (10 actives, prix moyen 11.8g)
-
-| ID                 | Nom                 | Prix | Action            | Categorie |
-| ------------------ | ------------------- | ---- | ----------------- | --------- |
-| minesweeper-undo   | Seconde Chance      | 3g   | undo              | power     |
-| throne             | Game of throne      | 5g   | passive           | privilege |
-| minesweeper-hint-2 | Indice Demineur (2) | 8g   | hint              | power     |
-| bonus              | Bonus               | 10g  | passive (+1)      | bonus     |
-| memoire            | Trou de memoire     | 10g  | passive           | power     |
-| minesweeper-freeze | Gel Temporaire      | 12g  | gel timer 60s     | power     |
-| soldes             | Soldes              | 15g  | tire 2 cartes     | bonus     |
-| super-bougeotte    | Super Bougeotte     | 15g  | passive           | privilege |
-| help               | Help !              | 15g  | passive           | power     |
-| ecrabouilleur      | Ecrabouilleur       | 25g  | supprime 1 avert. | power     |
-
-_Desactivee : team (15g)_
-
-### 2.3 Cartes Epic (6 actives, prix moyen 27.0g)
-
-| ID                      | Nom                 | Prix | Action         | Categorie |
-| ----------------------- | ------------------- | ---- | -------------- | --------- |
-| minesweeper-hint-3      | Indice Demineur (3) | 12g  | hint           | power     |
-| super-soldes            | Super Soldes        | 25g  | tire 3 cartes  | bonus     |
-| minesweeper-chronostase | Chronostase         | 25g  | gel timer 120s | power     |
-| jeu                     | Jeu                 | 30g  | passive        | privilege |
-| super-bonus             | Super Bonus         | 30g  | passive (+2)   | bonus     |
-| alchimie                | Alchimie            | 40g  | echange 3 -> 1 | power     |
-
-### 2.4 Cartes Legendary (7 actives, prix moyen 62.9g)
-
-| ID          | Nom                | Prix | Achetable | Action                    |
-| ----------- | ------------------ | ---- | --------- | ------------------------- |
-| inventeur   | Inventeur          | 20g  | oui       | passive                   |
-| mega-soldes | Mega Soldes        | 30g  | oui       | tire 4 cartes             |
-| coup-double | Coup Double        | 50g  | oui       | passive (x2 note)         |
-| mega-bonus  | Mega Bonus         | 60g  | oui       | passive (+3)              |
-| choix       | Libre choix        | 80g  | oui       | choisit 1 carte           |
-| fortune     | Roue de la Fortune | 80g  | oui       | echange 5 -> 5 aleatoires |
-| Sheikh      | Sheikh - Sheikha   | 120g | **non**   | +50 gidouilles            |
-
-### 2.5 Limites de possession
-
-- **Toutes les cartes** : max 5 exemplaires par eleve
-- **Minesweeper undo** : max 10 exemplaires
-
-### 2.6 Principes de tarification
-
-Le prix reflete la **valeur/puissance** de la carte. La rarete determine la **probabilite de tirage** (60/25/12/3%).
-
-- **Common (5-10g)** : privileges simples, consommables basiques — accessibles en < 1 semaine
-- **Rare (3-25g)** : bonus academiques legers, consommables ameliores — 1-3 semaines
-- **Epic (12-40g)** : bonus academiques forts, consommables puissants — 1.5-4.5 semaines
-- **Legendary (20-120g)** : cartes a fort impact (x2 note, +3 points, choix libre) — 2-9+ semaines
-
-Les cartes draw (Soldes, Super Soldes, Mega Soldes) sont tarifees pour un ratio **~x1.5** entre cout et valeur esperee (ni trop rentable, ni desavantageux).
-
----
-
-## 3. Temps d'acces par prix et profil
-
-### 3.1 Vue par tranche de prix
-
-| Tranche | Exemples                                                                           | ~5g/sem  | ~9g/sem | ~15g/sem |
-| ------- | ---------------------------------------------------------------------------------- | -------- | ------- | -------- |
-| 3-5g    | undo, bougeotte, hint-1, lalala, batman, fame, throne                              | 1.0 sem  | 0.6 sem | 0.3 sem  |
-| 8-12g   | hint-2, bonus, memoire, freeze, hint-3                                             | 2.0 sem  | 1.1 sem | 0.7 sem  |
-| 15g     | soldes, super-bougeotte, help                                                      | 3.0 sem  | 1.7 sem | 1.0 sem  |
-| 20-30g  | inventeur, chronostase, super-soldes, jeu, super-bonus, mega-soldes, ecrabouilleur | 5.0 sem  | 2.8 sem | 1.7 sem  |
-| 40-50g  | alchimie, coup-double                                                              | 9.0 sem  | 5.0 sem | 3.0 sem  |
-| 60-80g  | mega-bonus, choix, fortune                                                         | 14.0 sem | 7.8 sem | 4.7 sem  |
-| 120g    | Sheikh (**non achetable**)                                                         | -        | -       | -        |
-
-### 3.2 Collection complete
-
-| Rarete    | Nb cartes   | Prix total   |
-| --------- | ----------- | ------------ |
-| Common    | 7           | 45g          |
-| Rare      | 10          | 118g         |
-| Epic      | 6           | 162g         |
-| Legendary | 6 (+Sheikh) | 320g (+120g) |
-| **Total** | **30**      | **765g**     |
-
-| Profil           | Semaines pour tout acheter |
-| ---------------- | -------------------------- |
-| Peu actif (5g)   | ~153 semaines              |
-| Actif (9g)       | ~85 semaines               |
-| Tres actif (15g) | ~51 semaines               |
-
-### 3.3 Analyse de coherence des prix
-
-- **Prix correle a la puissance** : les cartes a fort impact academique (coup-double, mega-bonus, choix) sont les plus cheres
-- **Common accessibles** : toutes les common a 5-10g, achetables en < 1 semaine meme pour un peu actif
-- **Legendary = investissement long terme** : 20-80g, de 2 a 9 semaines pour un actif
-- **Ratios draw equilibres** : x1.4-1.6 (ni trop rentable, ni desavantageux)
-- **Ratio pouvoir d'achat entre profils** : x3 (15g vs 5g/sem), amplifie par le bonus hebdo meilleur jeu
-
----
-
-## 4. Systeme de tirage aleatoire
-
-### 4.1 Probabilites par defaut
-
-| Rarete    | Probabilite | Plage (1-100) |
-| --------- | ----------- | ------------- |
-| Common    | 60%         | 1-60          |
-| Rare      | 25%         | 61-85         |
-| Epic      | 12%         | 86-97         |
-| Legendary | 3%          | 98-100        |
-
-### 4.2 Valeur esperee d'un tirage
-
-| Rarete    | Nb cartes | Prix moyen | Proba | Contribution |
-| --------- | --------- | ---------- | ----- | ------------ |
-| Common    | 7         | 6.4g       | 60%   | 3.9g         |
-| Rare      | 10        | 11.8g      | 25%   | 3.0g         |
-| Epic      | 6         | 27.0g      | 12%   | 3.2g         |
-| Legendary | 7         | 62.9g      | 3%    | 1.9g         |
-| **Total** |           |            |       | **11.9g**    |
-
-### 4.3 Rentabilite des cartes de tirage
-
-| Carte        | Rarete    | Cout | Nb tirages | Valeur esperee | Ratio |
-| ------------ | --------- | ---- | ---------- | -------------- | ----- |
-| Soldes       | rare      | 15g  | 2          | 23.9g          | x1.6  |
-| Super Soldes | epic      | 25g  | 3          | 35.8g          | x1.4  |
-| Mega Soldes  | legendary | 30g  | 4          | 47.7g          | x1.6  |
-
-Les ratios ~x1.5 sont equilibres : les cartes draw restent rentables (incitation a les utiliser) sans etre des exploits economiques. La valeur esperee est theorique — les cartes passives n'ont pas de valeur marchande directe, et la limite de possession (5 max) reduit la valeur reelle quand l'eleve possede deja beaucoup de cartes.
-
----
-
-## 5. Cartes d'echange et leur economie
-
-### 5.1 Alchimie (50g)
-
-- **Cout total** : 50g + 3 cartes sacrifiees
-- **Resultat** : 1 carte bonus au choix
-- **Cas d'usage** : cibler une carte specifique impossible a obtenir autrement
-- **Rentabilite** : negative en valeur brute, justifiee uniquement par le ciblage
-
-### 5.2 Fortune (80g)
-
-- **Cout total** : 80g + 5 cartes sacrifiees
-- **Resultat** : 5 cartes aleatoires
-- **Valeur esperee des 5 tirages** : ~60g (5 x 11.9g)
-- **Rentabilite** : gambling pur, cout net ~80g + 5 cartes pour ~60g de valeur esperee — generalement deficitaire
-
-### 5.3 Sheikh (120g, non achetable)
-
-- **Obtention** : tirage (3% legendary), cadeau prof, echange
-- **Effet** : +50g a l'activation
-- **ROI si achetable** : 50/120 = 42% de retour (perte nette de 70g)
-- **Protection** : marque `is_purchasable = false` pour eviter la boucle achat -> activation -> profit
-
----
-
-## 6. Mecanismes d'equilibre
-
-### 6.1 Anti-inflation
-
-| Mecanisme             | Effet                                                 |
-| --------------------- | ----------------------------------------------------- |
-| Cap 1g/jour (partage) | Maximum 7g/semaine via jeux (minesweeper+enigmes)     |
-| Sheikh non achetable  | Empeche la boucle achat -> +50g                       |
-| Limite de possession  | 5 max par carte, evite la thesaurisation              |
-| Penalite indices      | Reduit le theoretical_reward (et donc le bonus hebdo) |
-| Trade limit           | Max 10 echanges/jour au marketplace                   |
-
-### 6.2 Money sinks (destruction de gidouilles)
-
-| Sink            | Gidouilles detruites  |
-| --------------- | --------------------- |
-| Achat de cartes | 3-80g par achat       |
-| Tirage prof     | 3g par tirage         |
-| Hint 1 (achat)  | 5g par hint           |
-| Hint 2 (achat)  | 8g par hint           |
-| Hint 3 (achat)  | 12g par hint          |
-| Undo (achat)    | 3g par seconde chance |
-
-### 6.3 Facteurs de risque identifies
-
-| Risque                      | Severite    | Detail                                                                                              |
-| --------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
-| Bonus hebdo meilleur jeu    | **Haute**   | Un expert rapide gagne ~8g/sem de bonus, inflationiste                                              |
-| Achievements non credites   | **Moyenne** | `student_achievements.gidouilles_awarded` rempli mais `profiles.gidouilles` jamais mis a jour — BUG |
-| Cartes draw equilibrees     | Resolu      | Ratio x1.4-1.6 (etait x3.9-5.9 avant reevaluation)                                                  |
-| Combat legacy sans audit    | Moyenne     | `award_gidouilles_on_victory()` ne log pas dans `gidouilles_history`                                |
-| Pas de sink passif          | Faible      | Pas d'expiration, taxe ou cout de maintenance                                                       |
-| Ecart de richesse           | Faible      | Bonus hebdo meilleur jeu amplifie l'ecart (expert vs beginner)                                      |
-| Max non verifie au tirage   | Faible      | Un eleve peut depasser le max de 5 via tirage (non bloque)                                          |
-| Prix correle a la puissance | Resolu      | Reevaluation : common 5-10g, rare 3-25g, epic 12-40g, legendary 20-120g                             |
-
----
-
-## 7. Simulation : parcours type d'un eleve
-
-_Base : eleve actif (~9g/semaine incluant bonus meilleur jeu)_
-
-### Semaines 1-2 : Decouverte
-
-- Gains cumules : ~18g
-- Achats possibles : 2-3 cartes common
-- Premiere carte des la 1ere semaine
-
-### Semaines 3-4 : Premiere rare
-
-- Gains cumules : ~36g
-- Achat d'une carte rare (15g) + 1-2 commons
-- Motivation : objectif atteint rapidement
-
-### Semaines 5-8 : Objectif epic
-
-- Gains cumules : ~72g
-- Epargne possible pour une epic (40g)
-- Ou strategie tirage : acheter des Soldes pour tenter des cartes superieures
-
-### Semaines 9-12 : Accumulation
-
-- Gains cumules : ~108g
-- Fortune (80g) accessible
-- Collection diversifiee
-
-### Au-dela de 12 semaines
-
-- Surplus de gidouilles si pas de depenses
-- Risque de desinteret sans nouveaux objectifs
-
----
-
-## 8. Simulation Monte Carlo (10 000 parcours, 36 semaines)
-
-> Script : `scripts/simulate-vip-economy.ts`
-> Lancer : `npx tsx scripts/simulate-vip-economy.ts`
-
-### 8.1 Comparaison des strategies (profil actif)
-
-> **Attention :** Les resultats ci-dessous datent d'avant le cap a 1g/jour, la suppression des defis quotidiens, et la decouverte du bonus hebdo meilleur jeu. La simulation utilisait ~8g/sem ; le revenu reel est ~9g/sem (actif) ou ~15g/sem (tres actif). Les tendances relatives entre strategies restent valides.
-
-| Strategie      | Uniques (moy) | Total cartes | Gidouilles restantes | Collection complete |
-| -------------- | ------------- | ------------ | -------------------- | ------------------- |
-| Soldes only    | 17.3 / 30     | 47.8         | 133.2g               | 0%                  |
-| Cheapest first | 3.2 / 30      | 286.5        | 0.7g                 | 0%                  |
-| Save for rare  | 1.0 / 30      | 36.0         | 252.1g               | 0%                  |
-| **Balanced**   | **24.5 / 30** | 34.9         | 19.9g                | ~0%                 |
-| Random buy     | 19.2 / 30     | 48.7         | 10.4g                | 0%                  |
-
-**Constats :**
-
-- **Balanced domine** pour la diversite de collection (24.5 uniques vs 17.3 pour Soldes only)
-- "Soldes only" genere beaucoup de cartes en volume mais avec des doublons massifs, et laisse 133g non depensees (n'achete QUE des cartes draw)
-- "Cheapest first" achete 286 cartes mais seulement 3 types differents (spam de hints a 1g)
-- Aucune strategie ne permet de completer la collection en 36 semaines (30 cartes, certaines uniquement par tirage)
-
-### 8.2 Impact du profil d'activite
-
-| Profil     | Rev/sem | Uniques | Collection complete |
-| ---------- | ------- | ------- | ------------------- |
-| Peu actif  | ~4g     | 18.1    | 0%                  |
-| Actif      | ~8g     | 24.6    | ~0%                 |
-| Tres actif | ~13g    | 28.3    | 5%                  |
-
-Seuls les eleves tres actifs ont une chance (5%) de completer la collection sur l'annee.
-
-### 8.3 Progression hebdomadaire (balanced, medium)
-
-```
-S01  ████              3.7 uniques
-S04  █████████          9.2 uniques
-S08  █████████████      13.1 uniques
-S12  ███████████████    15.3 uniques
-S16  █████████████████  17.4 uniques
-S20  ████████████████████  19.5 uniques
-S24  ██████████████████████  21.5 uniques
-S28  ███████████████████████  22.8 uniques
-S32  ████████████████████████  23.7 uniques
-S36  █████████████████████████  24.5 uniques
-```
-
-La progression ralentit fortement apres la semaine 20 (effet de saturation : les tirages donnent des doublons).
-
-### 8.4 Valeur reelle des tirages (100k simulations)
-
-| Tirage            | Cout | Valeur moy | Mediane | P10  | P90   | Ratio |
-| ----------------- | ---- | ---------- | ------- | ---- | ----- | ----- |
-| 1 tirage (ref)    | -    | 14.7g      | 8.0g    | 5.0g | 40.0g | -     |
-| Soldes (x2)       | 8g   | 29.4g      | 20.0g   | 10g  | 55g   | x3.7  |
-| Super Soldes (x3) | 10g  | 44.3g      | 33.0g   | 15g  | 90g   | x4.4  |
-| Mega Soldes (x4)  | 20g  | 59.0g      | 50.0g   | 23g  | 110g  | x2.9  |
-
-**Super Soldes est la carte la plus rentable** (ratio x4.4). Mais cette rentabilite est theorique : les cartes tirees ne sont pas revendables et la valeur reelle depend de l'usage en classe.
-
-### 8.5 Distribution de richesse (balanced, medium)
-
-| Percentile | Gidouilles restantes | Cartes uniques |
-| ---------- | -------------------- | -------------- |
-| P10        | 4.1g                 | 23 / 30        |
-| P25        | 10.0g                | 24 / 30        |
-| P50        | 20.3g                | 24 / 30        |
-| P75        | 30.2g                | 25 / 30        |
-| P90        | 36.0g                | 26 / 30        |
-
-Ecart P90/P10 en cartes totales : **x1.2** — l'economie est remarquablement egalitaire entre eleves d'un meme profil d'activite.
-
-### 8.6 Conclusions de la simulation
-
-1. **Les cartes draw sont puissantes mais ne dominent pas** — la strategie "tout en Soldes" donne plus de volume mais moins de diversite que "Balanced"
-2. **La collection complete est quasi-impossible** — 30 cartes avec des legendary a 3% de tirage, c'est un objectif de tres long terme
-3. **L'economie est bien calibree** — surplus median de ~20g, ni trop ni trop peu
-4. **Faible ecart de richesse** entre eleves d'un meme profil (ratio x1.2)
-5. **Le vrai goulot d'etranglement** : les cartes epic/legendary non achetees directement, uniquement accessibles par tirage aleatoire a faible probabilite
-
----
-
-## 9. Indicateurs cles
-
-| Metrique                       | Valeur                           |
-| ------------------------------ | -------------------------------- |
-| Max jeux/jour                  | 1g (partage minesweeper+enigmes) |
-| Bonus hebdo sans avertissement | 1g                               |
-| Bonus hebdo meilleur jeu       | 0.3-8g (selon difficulte/perf)   |
-| Revenu median hebdomadaire     | ~9g (actif) / ~5g (peu actif)    |
-| Nb total de cartes actives     | 30 (7C + 10R + 6E + 7L)          |
-| Prix moyen par rarete          | C:6.4g R:11.8g E:27.0g L:62.9g   |
-| Valeur esperee d'un tirage     | 11.9g                            |
-| Collection complete (prix)     | 765g (~85 sem a 9g/sem)          |
-| Sheikh (non achetable)         | 120g, +50g a l'activation        |
-| Ratio draw                     | x1.4-1.6 (equilibre)             |
-
----
-
-## Fichiers de reference
-
-| Fichier                                                                       | Contenu                                                                            |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| **DB prod `vip_card_templates`**                                              | **Source de verite** pour cartes, prix et raretes                                  |
-| `supabase/migrations/*_vip_card_templates*`                                   | Definition initiale (NE REFLETE PAS l'etat actuel)                                 |
-| `supabase/migrations/20260101200000_daily_weekly_reward_limits.sql`           | `record_game_reward()`, `award_weekly_best_bonuses()`, `weekly_best_rewards` table |
-| `supabase/migrations/20260101200001_minesweeper_daily_limit.sql`              | `complete_minesweeper_game()` avec cap 1g/jour                                     |
-| `supabase/migrations/20260101200002_riddles_daily_limit.sql`                  | `submit_riddle_attempt()` / `validate_riddle_attempt()` avec cap partage           |
-| `supabase/migrations/20260104150000_pg_cron_weekly_best_bonuses.sql`          | Cron bonus hebdo meilleur jeu                                                      |
-| `supabase/migrations/20260104160000_pg_cron_weekly_rewards.sql`               | Cron bonus hebdo sans avertissement                                                |
-| `supabase/migrations/20260102120000_add_minesweeper_tournaments.sql`          | Tournois et podium rewards                                                         |
-| `supabase/migrations/20251121000000_create_universal_achievements_system.sql` | Achievements (gidouilles non creditees - BUG)                                      |
-| `supabase/migrations/057_add_game_triggers_and_functions.sql`                 | Combat victory rewards (legacy)                                                    |
-| `src/lib/server/vip-cards/`                                                   | Logique serveur cartes VIP                                                         |
-| `src/routes/api/vip-cards/`                                                   | Endpoints API                                                                      |
-| `src/routes/api/teacher/rewards/`                                             | Recompenses manuelles prof (student + class)                                       |
-| `scripts/simulate-vip-economy.ts`                                             | Simulation Monte Carlo (obsolete - a mettre a jour)                                |
+Vérifié contre le code le 2026-10-10.
