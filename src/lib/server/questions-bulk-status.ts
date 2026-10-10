@@ -2,9 +2,10 @@
  * Publication par lot des modèles de questions
  * =============================================
  *
- * Publier : chaque modèle repasse dans `checkTemplate` (le même contrôle que
- * l'import : structure, schéma strict, specs vertes, une spec « correct » par
- * variation, 50 tirages par variation). Un modèle qui échoue reste en brouillon.
+ * Publier : chaque modèle repasse dans `templatePublicationErrors`, le contrôle
+ * partagé avec la publication d'un modèle seul (`checkTemplate` : structure,
+ * schéma strict, specs vertes, une spec « correct » par variation, 50 tirages
+ * par variation). Un modèle qui échoue reste en brouillon.
  * Une collision de catégorie (thème, domaine, sous-domaine, niveau) avec un
  * modèle déjà publié OU avec un autre modèle de la sélection est refusée : pas
  * de décalage automatique du niveau (décision de David, 2026-09-29).
@@ -21,7 +22,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { checkTemplate } from '$lib/migration/review/check-template';
+import { templatePublicationErrors } from '$lib/server/template-publication';
 import {
 	templateCategoryKey,
 	type BulkPublishResult,
@@ -221,9 +222,9 @@ export async function publishTemplates(
 			});
 			continue;
 		}
-		const report = checkTemplate(withoutDbMetadata(toQuestionTemplate(row)));
-		if (!report.passed) {
-			refused.push({ id, title: row.title, reasons: report.reasons });
+		const reasons = templatePublicationErrors(withoutDbMetadata(toQuestionTemplate(row)));
+		if (reasons.length > 0) {
+			refused.push({ id, title: row.title, reasons });
 			continue;
 		}
 		checked.push(row);
