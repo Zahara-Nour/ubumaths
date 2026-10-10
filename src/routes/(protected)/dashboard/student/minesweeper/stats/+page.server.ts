@@ -179,30 +179,25 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const rewardsDay = (firstDay + 5) % 7;
 		const triggerHour = getCronTriggerLocalHour(schoolTimezone);
 
-		// Fetch leaderboard data for this student
-		const { data: rankData, error: rankDataError } = await supabase
-			.from('minesweeper_leaderboard')
-			.select('avg_top_10, top_games_count')
-			.eq('student_id', user.id)
-			.single();
+		// Classement de l'ÉCOLE (D16, 2026-10-10) : les parties des autres ne sont plus
+		// lisibles directement ; `minesweeper_scoped_leaderboard` (serveur, borné à l'école,
+		// comptes de test exclus) rend le classement et le rang de l'élève (`is_me`).
+		const { data: classement, error: classementError } = await supabase.rpc(
+			'minesweeper_scoped_leaderboard',
+			{ p_scope: 'school', p_limit: 100 }
+		);
 
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 		// ne doit pas se confondre avec une donnée réellement vide.
-		if (rankDataError && rankDataError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', rankDataError);
+		if (classementError) {
+			console.error('Contexte illisible :', classementError);
 		}
 
-		// Compute rank among classified students (>= 10 games, excluding teachers)
-		let classifiedRank: number | null = null;
-		if (rankData && (rankData.top_games_count ?? 0) >= 10) {
-			const { count } = await supabase
-				.from('minesweeper_leaderboard')
-				.select('*', { count: 'exact', head: true })
-				.gte('top_games_count', 10)
-				.eq('role', 'student')
-				.gt('avg_top_10', rankData.avg_top_10);
-			classifiedRank = (count ?? 0) + 1;
-		}
+		const lignesClassement = classement ?? [];
+		const moi = lignesClassement.find(
+			(l) => l.is_me && !l.is_teacher && (l.top_games_count ?? 0) >= 10
+		);
+		const classifiedRank: number | null = moi?.rank ?? null;
 
 		// Fetch all minesweeper games for this student
 		const { data: games, error: gamesError } = await supabase
@@ -220,7 +215,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const recentGameIds = (games || []).slice(0, 20).map((g) => g.id);
 
 		// Fetch theoretical rewards, weekly bests, and leaderboard in parallel
-		const [rewardsResult, weeklyBestsResult, leaderboardResult] = await Promise.all([
+		const [rewardsResult, weeklyBestsResult] = await Promise.all([
 			recentGameIds.length > 0
 				? supabase
 						.from('daily_game_rewards')
@@ -234,12 +229,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				)
 				.eq('student_id', user.id)
 				.order('week_start', { ascending: false })
-				.limit(10),
-			supabase
-				.from('minesweeper_leaderboard')
-				.select('student_id, firstname, lastname, role, avg_top_10, top_games_count')
-				.order('rank', { ascending: true })
-				.limit(100)
+				.limit(10)
 		]);
 
 		const rewards = rewardsResult.data || [];
@@ -408,8 +398,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 			effectivePeriods,
 			schoolTimezone,
 			leaderboardRank: classifiedRank,
-			leaderboardScore: classifiedRank ? rankData!.avg_top_10 : null,
-			leaderboard: leaderboardResult.data || [],
+			leaderboardScore: moi?.avg_top_10 ?? null,
+			// Prénom seul (ce que rend la fonction d'école) : plus de nom de famille des autres.
+			leaderboard: lignesClassement.map((l) => ({
+				student_id: l.user_id,
+				firstname: l.firstname,
+				lastname: null,
+				role: l.is_teacher ? 'teacher' : 'student',
+				avg_top_10: l.avg_top_10,
+				top_games_count: l.top_games_count
+			})),
 			currentUserId: user.id
 		};
 	} catch (err) {

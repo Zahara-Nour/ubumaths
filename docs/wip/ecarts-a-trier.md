@@ -46,8 +46,9 @@ Priorité : **1** = touche les copies ou les résultats des élèves · **2** = 
 Ordre suggéré : K4, K5, puis K1 (le plus lourd de la priorité 1).
 
 Corrigés depuis le tri : **K6 / L3** (publication unitaire aussi stricte que par lot, contrôle
-partagé `templatePublicationErrors`, 2026-10-10) ; **K2** (règles `ln`/`exp` et garde-fous du
-moteur : V7, L5, L6, C8, 2026-10-10).
+partagé `templatePublicationErrors`, #1056, 2026-10-10) ; trouvé en route et corrigé : la création
+d'un modèle publié décalait le niveau d'une catégorie occupée au lieu de refuser (#1059) ; **K2**
+(règles `ln`/`exp` et garde-fous du moteur : V7, L5, L6, C8, #1061, 2026-10-10).
 K3 reste le projet « fusion simplify / pedagogical-simplify » déjà suivi. K7-K10 ensuite, après les
 décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 

@@ -12,7 +12,7 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { checkCategoryUniqueness } from '$lib/questions/category-validation';
+import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
@@ -228,7 +228,12 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 					{
 						success: false,
 						errors: [
-							`Cette catégorie existe déjà (Thème: ${merged.theme}, Domaine: ${merged.domain}${merged.subdomain ? ', Sous-domaine: ' + merged.subdomain : ''}, Niveau: ${merged.level}). Veuillez choisir un niveau différent.`
+							categoryTakenMessage({
+								theme: merged.theme,
+								domain: merged.domain,
+								subdomain: merged.subdomain,
+								level: merged.level
+							})
 						]
 					},
 					{ status: 400 }

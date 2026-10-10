@@ -1,0 +1,34 @@
+-- ============================================================================
+-- D16 — parties de démineur privées ; rang calculé par le serveur
+-- ============================================================================
+--
+-- Mesuré en prod le 2026-10-10 : deux policies SELECT rendaient lisibles par
+-- N'IMPORTE QUI sans connexion (anon) et par tout compte de toute école les parties
+-- terminées des élèves — 13 890 parties de 44 élèves, avec identifiant, temps, dates.
+-- Prouvé par tests/integration/demineur-parties-privees.test.ts. Aucun code ne lisait
+-- sans connexion ; connecté, seul le rang de l'élève sur sa page de stats en dépendait
+-- (rang ET tableau du top 100, par la vue minesweeper_leaderboard, security_invoker).
+--
+-- Question d'accès posée à David (2026-10-10) — qui pourra lire les parties des autres ?
+-- « Personne, rang calculé à part. » Le rang et le classement de la page de stats passent
+-- par minesweeper_scoped_leaderboard (SECURITY DEFINER existante, bornée à l'école,
+-- prénom seul) — même PR, aucune fonction nouvelle. Question en miroir — qui perd quoi : anon et les
+-- autres élèves perdent la lecture des parties d'autrui ; chaque élève garde les siennes
+-- (« Users can view own minesweeper games », inchangée).
+--
+-- Aucune donnée touchée (deux policies retirées).
+-- ⚠️ Entre cette migration et le déploiement du code de la même PR, l'ANCIENNE page de
+-- stats ne voit plus que les parties de l'élève : rang affiché 1 et tableau réduit à sa
+-- ligne, sans erreur.
+--
+-- ROLLBACK :
+--   CREATE POLICY "Anonymous can view completed games for leaderboard"
+--     ON public.minesweeper_games FOR SELECT TO anon
+--     USING (status = ANY (ARRAY['won'::text, 'lost'::text]));
+--   CREATE POLICY "Anyone can view completed games for leaderboard"
+--     ON public.minesweeper_games FOR SELECT TO authenticated
+--     USING (status = ANY (ARRAY['won'::text, 'lost'::text]));
+-- ============================================================================
+
+DROP POLICY "Anonymous can view completed games for leaderboard" ON public.minesweeper_games;
+DROP POLICY "Anyone can view completed games for leaderboard" ON public.minesweeper_games;

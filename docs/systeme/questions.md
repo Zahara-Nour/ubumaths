@@ -281,9 +281,13 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
   (`src/lib/server/template-publication.ts`) = `checkTemplate` (structure, schéma strict, specs
   vertes, une spec `correct` par variation, 50 tirages par variation) + dépendances circulaires.
   Les trois chemins qui publient l'appellent : création (`POST`), `PUT` d'un modèle, lot.
+- **Catégorie occupée = refus, sur les trois chemins**, jamais de décalage automatique du niveau
+  (décision du 2026-09-29, étendue à la création le 2026-10-10). Création et `PUT` rendent le même
+  message (`categoryTakenMessage`, `category-validation.ts`). Avant l'envoi, `QuestionTemplateForm`
+  repère la collision et propose un niveau libre (`questionCategoriesCache.getNextAvailableLevel`),
+  que l'auteur choisit lui-même.
 - `POST /api/questions/templates` (statut `published` **par défaut**) : `templatePublicationErrors`,
-  puis, en cas de collision de catégorie, **décalage automatique du niveau** (`getNextAvailableLevel`),
-  contrairement au `PUT` et au lot qui refusent.
+  puis unicité de la catégorie. Un brouillon n'est pas contrôlé.
 - `PUT` d'un modèle dont le statut fusionné est `published` (publication, **ou toute modification
   d'un modèle déjà publié**) : `templatePublicationErrors`, puis **unicité de la catégorie**
   (thème, domaine, sous-domaine, niveau). Un modèle publié qui échoue ne se modifie plus qu'en

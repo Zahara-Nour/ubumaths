@@ -606,6 +606,29 @@ export type CurriculumPoint = Omit<
 	exigence: CurriculumExigence;
 };
 
+/** Genre d'un nœud de l'arbre des notions (ADR 0019, 0020). */
+export type ClassificationNodeKind = 'branch' | 'notion' | 'subnotion';
+
+/** Nœud de l'arbre des notions : branche > notion > sous-notion. */
+export type ClassificationNode = Omit<Tables<'classification_nodes'>, 'kind'> & {
+	kind: ClassificationNodeKind;
+};
+
+/**
+ * Point de programme de la génération NEUVE (ADR 0020) : rattaché à un nœud de
+ * l'arbre et à un niveau, rangé dans l'ordre du BO (`display_order`).
+ *
+ * `node_id` et `grade` sont nullables dans la table tant que l'ancienne
+ * génération (rattachée à un objectif) coexiste ; un point neuf les a toujours.
+ */
+export type ProgrammePoint = Pick<
+	Tables<'curriculum_points'>,
+	'id' | 'code' | 'name' | 'display_order' | 'rubrique' | 'archived_at'
+> & {
+	node_id: string;
+	grade: GradeCode;
+};
+
 /** Tags a system exercise with a curriculum point it covers. */
 export type ExerciseCurriculumPoint = Tables<'exercise_curriculum_points'>;
 
