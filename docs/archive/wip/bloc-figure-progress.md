@@ -8,7 +8,7 @@ branche: feat/bloc-figure (worktree ../ubumaths-wt-figure)
 # Bloc ubumark ```figure
 
 Spécification validée par David le 2026-10-01. Point de reprise en cas de crash.
-Modèle à reproduire : le bloc ```courbe (`docs/wip/bloc-courbe-progress.md`, #576).
+Modèle à reproduire : le bloc ```courbe (`docs/archive/wip/bloc-courbe-progress.md`, #576).
 
 ## Syntaxe (v1)
 

@@ -100,7 +100,7 @@ Cinq manques, dans l'ordre où ils font mal.
 
 5. **Trois moteurs de calcul rivaux** (`mathAST`, le parser du tableur, sympy) et
    deux moteurs de tracé. Pour les tracés, la coexistence est **justifiée** :
-   `docs/wip/grapheur-vs-geometry-core.md` §1 établit que l'analyse exige
+   `docs/archive/wip/grapheur-vs-geometry-core.md` §1 établit que l'analyse exige
    d'écraser un axe et la géométrie que le cercle reste rond. Pour les moteurs de
    calcul, non.
 

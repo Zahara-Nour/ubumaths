@@ -9,7 +9,7 @@ branche: refactor/grapheur-store
 
 Prérequis de l'atelier de recherche : **l'atelier possède l'état, les vues n'en
 sont que des projections** (décision figée n° 1,
-[`atelier-recherche-eleve.md`](../archive/wip/atelier-recherche-eleve.md)). Tant que les
+[`atelier-recherche-eleve.md`](atelier-recherche-eleve.md)). Tant que les
 composants du grapheur importaient `grapheurStore` en dur, une seconde instance
 était impossible — ils auraient lu l'état de la première.
 
@@ -59,7 +59,7 @@ reçoit les actions, le singleton reste vide, et deux instances ne se voient pas
 changer `store` après le montage n'aurait de toute façon aucun effet. Pour
 piloter une autre instance, il faut remonter le conteneur — `{#key}` suffit.
 
-Cas documenté comme légitime par [`warning-svelte.md`](../ref/warning-svelte.md)
+Cas documenté comme légitime par [`warning-svelte.md`](../../ref/warning-svelte.md)
 §1 (pattern snapshot). Le projet est à 0 warning, et le reste.
 
 ## Deux pièges fermés, signalés par la revue

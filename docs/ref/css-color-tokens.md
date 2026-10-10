@@ -165,7 +165,7 @@ teinte vit dans `src/app.css` (`--color-curve-N`, en `light-dark()`), et
   `grapheur/__tests__/curve-palette.test.ts` lit `app.css` et vérifie le contraste.
 - **Export** (`grapheur/export.ts`) : toujours en clair, styles calculés figés
   dans le fichier — un SVG exporté ne connaît pas `app.css`.
-- Décisions et mesures : `docs/wip/grapheur-couleurs-theme-progress.md`.
+- Décisions et mesures : `docs/archive/wip/grapheur-couleurs-theme-progress.md`.
 
 ## Couleurs nommées des figures (`couleur: rouge`)
 
@@ -200,7 +200,7 @@ n'existe pas en clair : c'était le bug des `--number-line-*`. Ne pas redéfinir
 couleur sous `:global(.dark)` quand un token `light-dark()` existe : il bascule seul.
 
 geometry-core conserve le **nom canonique** jusqu'au rendu (`resolveStyle().color === 'rouge'`) ;
-`resolvePrintStyle()` le traduit pour les exports. Décisions : `docs/wip/palette-figures-progress.md`.
+`resolvePrintStyle()` le traduit pour les exports. Décisions : `docs/archive/wip/palette-figures-progress.md`.
 
 ## La garde CI
 

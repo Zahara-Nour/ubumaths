@@ -1,7 +1,7 @@
 # Couleurs thémables, lot 3 : droite graduée, cercle trigo, tableau de variations, arbre
 
 **Branche** `feat/couleurs-lot3` · ouvert le 2026-10-04 · suite des lots 1 (#708, palette
-nommée) et 2 (figures interactives). Décisions communes : `docs/wip/palette-figures-progress.md`.
+nommée) et 2 (figures interactives). Décisions communes : `docs/archive/wip/palette-figures-progress.md`.
 
 ## Décisions de David
 

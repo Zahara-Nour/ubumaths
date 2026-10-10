@@ -1,7 +1,7 @@
 # Figures interactives et constructions : thème clair / sombre (lot 2)
 
 **Branche** `feat/figures-interactives-theme` · ouvert le 2026-10-03 · suite de #708 (palette
-nommée, lot 1) — décisions communes : `docs/wip/palette-figures-progress.md` (fusionné).
+nommée, lot 1) — décisions communes : `docs/archive/wip/palette-figures-progress.md` (fusionné).
 
 ## Le problème, mesuré
 
