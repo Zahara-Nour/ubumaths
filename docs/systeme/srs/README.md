@@ -34,7 +34,7 @@ SRS self-graded, Référentiel BO). Refonte 2026-06-10 (livrée v0.9.9).
 > gardent les anciens noms : ce sont des instantanés, pas de la référence — lire
 > ce tableau avant de chasser un identifiant qui n'existe plus.
 >
-> Schéma à jour : [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md#référentiel--contenus-et-compétences-fusion-2026-08-29).
+> Schéma à jour : [`docs/systeme/base-de-donnees.md`](../base-de-donnees.md#programme-et-suivi-par-compétences).
 
 ---
 
