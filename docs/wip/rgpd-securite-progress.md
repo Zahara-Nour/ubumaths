@@ -193,3 +193,21 @@ masquage — faille antérieure relevée par security-auditor) ; toast multijoue
 - Remarque, non traitée : la route LIT le message avec le client du prof ; la policy SELECT ne lui
   montre une conversation 1-1 que si les deux élèves sont membres d'une classe — un 1-1 entre
   élèves hors classe donnerait 404 (contraire à l'option B « le prof supervise tout élève »).
+
+## Suite — 2026-10-10 (nuit)
+
+- **Modération (#1057, mergée, code seul)** : la suppression d'un message passe par le client
+  service après les contrôles de la route, et exige une ligne touchée ; le prof ne supprime que des
+  messages d'élèves (décision de David). En prod au prochain `deploy:prod`.
+- **D16 (#1058, mergée, migration en prod)** : `minesweeper_games` n'a plus qu'une policy SELECT
+  (ses propres parties) — vérifié en prod. La page de stats lit rang et tableau par
+  `minesweeper_scoped_leaderboard('school')` (prénom seul). Jusqu'au `deploy:prod`, l'ancienne page
+  affiche le rang 1 et un tableau réduit à l'élève. Mineurs notés : égalités (rang d'en-tête ≠
+  position dans le tableau), prof en fin de tableau.
+- Migration D16 poussée depuis son worktree (lien `supabase/.temp` recopié) : le dépôt principal
+  est bloqué un commit en retard par deux fichiers régénérés non commités (identiques à
+  `origin/main`) — en attente de l'accord de David pour les annuler.
+
+### Reste, dans l'ordre validé
+
+D18 (frontière d'école), B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
