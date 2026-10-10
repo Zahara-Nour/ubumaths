@@ -201,7 +201,8 @@
 			attachmentRecords
 		);
 
-		if (!message) {
+		// Refus « lecture seule » : le store a déjà affiché le message explicite.
+		if (!message && !chatStore.lastSendRefusedForConsent) {
 			toaster.error("Erreur lors de l'envoi du message");
 		}
 	}

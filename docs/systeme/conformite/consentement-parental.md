@@ -108,6 +108,45 @@ pending_students (modified)
 
 ---
 
+## Garde côté base (2026-10-10, constat A2)
+
+> Les routes ne suffisaient pas : la base laissait un élève en lecture seule écrire directement
+> (insert du chat dans `messages`, marché, démineur multijoueur par fonction `SECURITY DEFINER`).
+> Prouvé par `tests/integration/lecture-seule-garde-base.test.ts`.
+
+Migration `20261014110000_lecture_seule_garde_base` :
+
+- `has_full_access(uuid)` — copie exacte de `hasValidConsent` (non exposée : `service_role` seul).
+  **Les deux doivent rester identiques** ; changer l'une, c'est changer l'autre.
+- Trigger `guard_read_only_author_trg` (BEFORE INSERT, fonction `guard_read_only_author`) sur 11
+  tables. Il regarde l'**auteur** de la ligne et lève `42501` « Consentement parental requis » :
+  `messages`, `private_messages`, `marketplace_chat_messages` (`sender_id`) ;
+  `marketplace_listings` (`creator_id`), `marketplace_proposals` (`proposer_id`),
+  `marketplace_trade_offers` (`offered_by`), `marketplace_trades` (`initiator_id` **et**
+  `partner_id`) ; `minesweeper_games`, `minesweeper_multiplayer_queue`,
+  `minesweeper_tournament_games` (`student_id`), `minesweeper_multiplayer_game_state`
+  (`player_id`).
+- Un trigger s'exécute aussi sous une fonction `SECURITY DEFINER` et sous `service_role` : il ferme
+  la route, l'appel direct et les RPC. Le prof qui écrit à un élève en lecture seule n'est pas gêné.
+- Même garde à la création sur `message_reactions` (`user_id`), `message_attachments` et
+  `message_attachments_v2` (`uploaded_by`).
+- **« Retirer oui, agir non »** (décision du 2026-10-10) : trigger `guard_read_only_actor_trg`
+  (BEFORE UPDATE, fonction `guard_read_only_actor`) qui regarde **qui agit** (`auth.uid()` ; une
+  tâche système passe). Règles en **listes blanches de colonnes** : un élève en lecture seule peut
+  supprimer ou signaler ses messages, annuler ses annonces et ses échanges, retirer sa validation
+  d'un échange, retirer ou refuser une proposition, abandonner une partie de tournoi ; tout le
+  reste est refusé (réécrire ou déplacer un message, réactiver ou modifier une annonce, valider ou
+  conclure un échange, accepter une proposition, jouer).
+- **Matchmaking** : `join_multiplayer_queue` ignore un adversaire en lecture seule (sinon, resté en
+  file, il faisait échouer le matchmaking de tous les suivants).
+- **Annonces d'un auteur en lecture seule** : aucune nouvelle proposition (`guard_proposal_listing_open`)
+  ; masquage du marché via `marketplace_hidden_creators(p_school_id)`, **`service_role` seul**
+  (appelable par un élève, elle nommerait ses camarades sans consentement) — **la route l'utilise
+  dans une seconde PR** (la fonction doit être en prod pour `db:types`).
+- **Hors périmètre, décidé** : les récompenses. Seules les tâches automatiques sauteront ces élèves
+  (filtre dans la tâche, avec E19) ; le prof peut toujours en donner à la main.
+- `requireConsent` reste dans les routes (message clair, 403 avant tout travail).
+
 ## Phase 3: Access Control Integration - COMPLETED
 
 ### Changes Made
