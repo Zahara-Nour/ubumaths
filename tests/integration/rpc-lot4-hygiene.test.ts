@@ -318,6 +318,15 @@ describe('RPC lot 4 : hygiène', () => {
 			return (await response.json()) as Record<string, unknown>;
 		};
 
+		// D18 (2026-10-10) : l'appariement est borné à l'école — les deux élèves en
+		// partagent une, le temps de ce cas.
+		const { error: ecoleMajError } = await service
+			.from('profiles')
+			.update({ school_id: ecoleId })
+			.in('id', [aId, bId])
+			.select('id');
+		expect(ecoleMajError).toBeNull();
+
 		const premier = await rejoindre(eleveA, aId);
 		expect(premier).toMatchObject({ matched: false, waiting: true });
 
@@ -332,6 +341,8 @@ describe('RPC lot 4 : hygiène', () => {
 			.single();
 		expect(error).toBeNull();
 		expect(match).toEqual({ player1_id: aId, player2_id: bId, status: 'countdown' });
+
+		await service.from('profiles').update({ school_id: null }).in('id', [aId, bId]).select('id');
 	});
 
 	// ===========================================================================
