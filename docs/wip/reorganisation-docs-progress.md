@@ -65,7 +65,7 @@ Constats remontés à David (non corrigés, décisions à prendre) :
 
 ## Reste
 
-- Vocabulaire à trancher avec David (skill domain-modeling) : « carte » (atelier) vs « carte de cours » ; module `lexicon/` alors que « lexique » = lore ; CONTEXT.md dit encore « table à créer » (dictionnaire) et liste des types TinyMath disparus.
+- [x] Vocabulaire tranché par David (CONTEXT.md) : « carte » seule bannie (carte de cours / de révision / VIP / d'objet) ; « capacité » bannie → point du programme ; `lexicon/` gardé ; types de question et dictionnaire corrigés. **Chantier à part** : renommer « capacité » dans le code et l'interface prof (52 fichiers, `getClassCapacityGrid`…).
 - `docs/wip/atelier-progress.md` (chapeau) périmé : garanties /grapheur livrées ; en-tête « Proposition » de `systeme/atelier-syntaxe.md` à requalifier.
 - `docs/wip/chiffrement-progress.md` : chantier clos ? → archiver.
 - [x] Relues contre le code (1762d1114) : analytique-prof, export-competences, realtime, architecture-generale et les 20 `pratiques/*` (~30 affirmations corrigées). Toute la doc porte désormais « Vérifié contre le code le 2026-10-10 » (sauf mesures-mac-mini, historique).

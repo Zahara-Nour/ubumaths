@@ -103,8 +103,9 @@ en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de
 | **Série figée**          | Série dont les instances sont fixées par une graine : même copie pour toute la classe (exercice d'une fiche d'automatismes).                                                                                                                                                                                                                                                              | → [ADR 0011](docs/adr/0011-fiche-d-automatismes-figee-par-graine.md)            |
 | **Relecture**            | Revue des 633 questions TinyMath importées, lot par lot.                                                                                                                                                                                                                                                                                                                                  | `data/relecture/`                                                               |
 
-Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_rounded`,
-`algebraic_transform`, `fill_in_blanks`, `multiple_choice`, plus `course_card`.
+Les types de question (déduits de la structure par `getQuestionType`) : `fill_in_blanks`,
+`multiple_choice`, `course_card`. Les types TinyMath (`numerical_exact`…) n'existent plus que dans le
+code de migration.
 
 ## Les usages des questions
 
@@ -127,11 +128,18 @@ une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
 
 ## Le dictionnaire
 
-| Terme             | Sens                                                                                                                                                                                                   | Code                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| **Dictionnaire**  | Les mots mathématiques et leurs définitions par niveau scolaire (sens, synonymes, formes, filières partagées). En base, modifié par l'admin → [ADR 0022](docs/adr/0022-dictionnaire-en-base-admin.md). | `src/lib/data/math-dictionary-fr.ts` (`MathTerm`), table à créer |
-| **Glossaire**     | Page publique qui affiche le dictionnaire, filtrable par niveau.                                                                                                                                       | `src/routes/(public)/glossaire/`                                 |
-| **Mot cliquable** | Mot d'un énoncé reconnu dans le dictionnaire : un clic ouvre sa fiche au niveau de l'élève.                                                                                                            | `src/lib/lexicon/`, `TextNode.terms`                             |
+| Terme             | Sens                                                                                                                                                                                                   | Code                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| **Dictionnaire**  | Les mots mathématiques et leurs définitions par niveau scolaire (sens, synonymes, formes, filières partagées). En base, modifié par l'admin → [ADR 0022](docs/adr/0022-dictionnaire-en-base-admin.md). | `src/lib/data/math-dictionary-fr.ts` (`MathTerm`), table `dictionary_entries` |
+| **Glossaire**     | Page publique qui affiche le dictionnaire, filtrable par niveau.                                                                                                                                       | `src/routes/(public)/glossaire/`                                              |
+| **Mot cliquable** | Mot d'un énoncé reconnu dans le dictionnaire : un clic ouvre sa fiche au niveau de l'élève.                                                                                                            | `src/lib/lexicon/`, `TextNode.terms`                                          |
+
+## L'atelier
+
+| Terme             | Sens                                                                                          | Code / note                                      |
+| ----------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| **Atelier**       | Outil de calcul et de recherche de l'élève : il pose des objets, les transforme, ne juge pas. | `src/lib/atelier/` (`Atelier`), route `/atelier` |
+| **Carte d'objet** | Affichage d'un objet de l'atelier (fonction, suite, liste…) avec ses actions.                 | `ObjectCard.svelte`                              |
 
 ## Le moteur mathématique (`src/lib/mathAST/`)
 
@@ -180,14 +188,16 @@ Seule la **famille B** (compétences mathématiques) est d'actualité ; la famil
 
 ### Termes bannis
 
-| ❌ Ne pas dire                               | ✅ Dire                                           |
-| -------------------------------------------- | ------------------------------------------------- |
-| compétence (seule)                           | **compétence mathématique**, ou **composante**    |
-| compétence atomique                          | **composante**                                    |
-| rubrique                                     | **indicateur**                                    |
-| domaine (au sens Sacoche)                    | **thème**                                         |
-| thème / domaine d'un exercice ou d'un modèle | **branche**, **notion** (selon le niveau)         |
-| Mode Révision (forme de série)               | **En classe** (≠ révision SRS)                    |
-| Quiz (forme de série)                        | **Entraînement**                                  |
-| niveau de détail, palier (d'une correction)  | **correction concise** / **correction détaillée** |
-| lexique (pour les mots mathématiques)        | **dictionnaire** (« lexique » : celui du lore)    |
+| ❌ Ne pas dire                               | ✅ Dire                                                                     |
+| -------------------------------------------- | --------------------------------------------------------------------------- |
+| compétence (seule)                           | **compétence mathématique**, ou **composante**                              |
+| compétence atomique                          | **composante**                                                              |
+| rubrique                                     | **indicateur**                                                              |
+| domaine (au sens Sacoche)                    | **thème**                                                                   |
+| thème / domaine d'un exercice ou d'un modèle | **branche**, **notion** (selon le niveau)                                   |
+| Mode Révision (forme de série)               | **En classe** (≠ révision SRS)                                              |
+| Quiz (forme de série)                        | **Entraînement**                                                            |
+| niveau de détail, palier (d'une correction)  | **correction concise** / **correction détaillée**                           |
+| lexique (pour les mots mathématiques)        | **dictionnaire** (« lexique » : celui du lore)                              |
+| carte (seule)                                | **carte de cours**, **carte de révision**, **carte VIP**, **carte d'objet** |
+| capacité (d'un élève, d'une grille)          | **point du programme** (« capacité » : famille A, abandonnée)               |
