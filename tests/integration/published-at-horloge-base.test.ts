@@ -45,6 +45,7 @@ type TableContenu =
 	| 'chapter_exercises'
 	| 'chapter_checklist_items'
 	| 'chapter_worksheets'
+	| 'chapter_series'
 	| 'chapter_decks';
 
 const service = createServiceRoleClient();
@@ -103,8 +104,6 @@ async function maintenantBase(chapitre: string): Promise<number> {
 	return new Date(sonde.created_at).getTime();
 }
 
-type ContenuCouvert = Exclude<ChapterContentType, 'series'>;
-
 describe('publier pose l’heure de la base, pas celle de Node', () => {
 	let enseignantId: string;
 	let classe: string;
@@ -112,13 +111,14 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 	let prof: SupabaseClient<Database>;
 	let eleve: SupabaseClient<Database>;
 
-	// Les séries (`series`, ajoutées depuis) n'ont pas de cas ici : seuls les
-	// quatre contenus d'origine sont couverts.
-	const liens: Record<ContenuCouvert, string> = {
+	// `Record<ChapterContentType, …>` complet : un type de contenu ajouté sans
+	// cas ici casse le typage.
+	const liens: Record<ChapterContentType, string> = {
 		document: '',
 		exercise: '',
 		checklist: '',
-		worksheet: ''
+		worksheet: '',
+		series: ''
 	};
 	let lienDeck: string;
 	let ficheId: string;
@@ -208,6 +208,31 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 			published_at: null
 		});
 
+		// Série : la policy élève ne demande que chapitre visible + membre actif
+		// + rattachement publié. Le professeur ne rattache que SES séries.
+		const serie = await insert('series', {
+			title: 'Série horloge HB',
+			grade: '1_SPE',
+			categories: [
+				{
+					category: {
+						theme: 'Fonctions',
+						domain: 'Étude de fonction',
+						subdomain: 'Méthode',
+						level: 1
+					},
+					quantity: 4,
+					delay: 20
+				}
+			],
+			created_by: enseignantId
+		});
+		liens.series = await insert('chapter_series', {
+			chapter_id: chapitre,
+			series_id: serie,
+			published_at: null
+		});
+
 		// Deck : la policy élève exige aussi la copie ET l'assignation.
 		const deck = await insert('srs_decks', {
 			owner_id: enseignantId,
@@ -242,11 +267,12 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 		await cleanupAllTestData();
 	});
 
-	const CAS: { type: ContenuCouvert; table: TableContenu }[] = [
+	const CAS: { type: ChapterContentType; table: TableContenu }[] = [
 		{ type: 'document', table: 'chapter_documents' },
 		{ type: 'exercise', table: 'chapter_exercises' },
 		{ type: 'checklist', table: 'chapter_checklist_items' },
-		{ type: 'worksheet', table: 'chapter_worksheets' }
+		{ type: 'worksheet', table: 'chapter_worksheets' },
+		{ type: 'series', table: 'chapter_series' }
 	];
 
 	for (const { type, table } of CAS) {
