@@ -56,7 +56,7 @@ $$\begin{align} \left( \textcolor{…0}{-}3 \right) \times 2 &= \textcolor{…2}
 ```
 
 (`…0` abrège `{{color:primary.0}}`.) Rendus réels, sur 3 tirages par modèle :
-[data/corrections/pilote/APERCU.md](../corrections/pilote/APERCU.md).
+[data/corrections/pilote/APERCU.md](../../data/corrections/pilote/APERCU.md).
 
 ## Outil : `scripts/corrections/`
 

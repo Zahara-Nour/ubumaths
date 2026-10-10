@@ -2,7 +2,7 @@
 
 > ⛔ **PÉRIMÉ (2026-09-26) — ne pas suivre ce document.** Il recommande des commandes qui
 > importaient sans relecture. La relecture et l'import passent désormais par l'outillage décrit dans
-> [`docs/relecture/README.md`](../../relecture/README.md) ; suivi dans
+> [`data/relecture/README.md`](../../../data/relecture/README.md) ; suivi dans
 > [`relecture-questions-progress.md`](../../wip/relecture-questions-progress.md). `migration:import`,
 > `rollback-migration` et `validate-phase1-questions` sont en simulation par défaut (`--publier`).
 
