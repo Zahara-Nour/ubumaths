@@ -30,7 +30,8 @@ import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/stati
 import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
-import { bivariateFit, roundFraction, type BivariateFit } from '$lib/statistics/bivariate';
+import { bivariateFit, type BivariateFit } from '$lib/statistics/bivariate';
+import { roundFraction } from '$lib/statistics/rounding';
 import type { Fraction } from '$lib/statistics/fraction';
 import {
 	affineExpression,

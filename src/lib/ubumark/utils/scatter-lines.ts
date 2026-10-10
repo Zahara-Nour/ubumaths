@@ -19,10 +19,10 @@ import {
 	predictX,
 	predictY,
 	readExactValue,
-	roundFraction,
 	toSafeNumber,
 	type BivariateFit
 } from '../../statistics/bivariate';
+import { roundFraction } from '../../statistics/rounding';
 import { Fraction } from '../../statistics/fraction';
 import {
 	relationX,

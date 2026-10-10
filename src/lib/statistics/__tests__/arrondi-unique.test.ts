@@ -7,8 +7,8 @@
  * −0,12), et 1,005 × 100 = 100,4999… → 1 au lieu de 1,01.
  */
 import { describe, it, expect } from 'vitest';
-import { formatApproxValue } from '../format';
-import { roundFraction } from '../bivariate';
+import { formatApproxValue, formatLawApproxValue } from '../format';
+import { roundFraction, roundNumber } from '../rounding';
 import { Fraction } from '../fraction';
 
 describe('formatApproxValue : demi vers le haut sur la valeur absolue', () => {
@@ -40,5 +40,27 @@ describe('formatApproxValue : demi vers le haut sur la valeur absolue', () => {
 			const shown = formatApproxValue(Number(num) / Number(den), 'en').replace(/^[=≈] /, '');
 			expect(Number(shown.replace('−', '-'))).toBe(Number(exact));
 		}
+	});
+});
+
+// Les autres affichages de valeurs (moyennes simulées au millième, E et V d'une
+// loi, petites valeurs d'une loi) passent par `roundNumber`
+describe('roundNumber : la même règle pour tout affichage de valeur', () => {
+	it.each([
+		[-3.5875, 3, -3.588],
+		[3.5875, 3, 3.588],
+		[1.0005, 3, 1.001],
+		[-1.0005, 3, -1.001],
+		[-0.0004, 3, 0],
+		[1e-7, 2, 0],
+		[12345.675, 2, 12345.68]
+	])('roundNumber(%s, %s) = %s', (value, places, expected) => {
+		expect(roundNumber(value, places)).toBe(expected);
+		expect(Object.is(roundNumber(value, places), -0)).toBe(false);
+	});
+
+	it('petite valeur d’une loi : deux chiffres significatifs, demi sur la valeur absolue', () => {
+		expect(formatLawApproxValue(-0.00125, 'fr')).toBe('≈ −0,0013');
+		expect(formatLawApproxValue(0.00125, 'fr')).toBe('≈ 0,0013');
 	});
 });
