@@ -179,6 +179,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde soi, ami (is_friend, partenaire d’échange) ou prof/admin (lot 5)'
 	},
+	'minesweeper_rank_in_school()': {
+		categorie: 'auth-uid',
+		justification:
+			'sans paramètre : rang de auth.uid() parmi les élèves classés de son école, le nombre seul (D16)'
+	},
 	'check_marketplace_enabled(p_student_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde soi, ami (is_friend, partenaire d’échange) ou prof/admin (lot 5)'
