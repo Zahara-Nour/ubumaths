@@ -20,8 +20,13 @@ SCOPE="$(node -e "try{process.stdout.write(require('./.vercel/project.json').org
 SCOPE_ARG=()
 [ -n "$SCOPE" ] && SCOPE_ARG=(--scope "$SCOPE")
 
+# Le dernier déploiement READY, pas le dernier tout court : `vercel ls --prod`
+# liste aussi les déploiements ANNULÉS, et chaque push de doc en crée un, qui
+# arrive en tête. Redéployer celui-là, c'est rejouer un commit de doc que
+# l'ignore step (scripts/vercel-ignore-build.sh) saute aussitôt : la bascule
+# restait sans effet. Test : scripts/__tests__/vercel-maintenance.test.ts.
 latest_prod_url() {
-	vercel ls --prod "${SCOPE_ARG[@]}" 2>/dev/null | grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' | head -1
+	vercel ls --prod --status READY "${SCOPE_ARG[@]}" 2>/dev/null | grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' | head -1
 }
 
 redeploy_prod() {
@@ -33,6 +38,8 @@ redeploy_prod() {
 	fi
 	echo "♻️  Redeploy du dernier déploiement prod : $url"
 	vercel redeploy "$url" --target production "${SCOPE_ARG[@]}"
+	# Atteint seulement si le redeploy a abouti (set -e) : un build annulé sort en erreur.
+	echo "✅ Redeploy terminé : la bascule est en ligne."
 }
 
 case "$cmd" in
