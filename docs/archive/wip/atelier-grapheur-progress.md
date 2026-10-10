@@ -1,7 +1,7 @@
 ---
 title: Atelier — `/grapheur` passe par l'atelier, progression
 date: 2026-10-04
-phase0: docs/wip/atelier-grapheur-phase0.md (validée le 2026-10-04)
+phase0: docs/archive/wip/atelier-grapheur-phase0.md (validée le 2026-10-04)
 ---
 
 # `/grapheur` passe par l'atelier — progression

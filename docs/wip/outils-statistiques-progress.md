@@ -14,7 +14,7 @@ Restent hors chantier : la PR « blocs non fermés » (Q25), et deux questions d
   L'exigence « une seule source » impose de le brancher sur le futur module.
 - ⚠️ **Doc périmée, pas le code** : le moteur divise bien par `n` (l.1615-1630),
   mais le 2ᵉ paragraphe de la JSDoc de `describeList` et
-  `docs/wip/atelier-vue-donnees-progress.md` (§ « Le diviseur », l.16-30)
+  `docs/archive/wip/atelier-vue-donnees-progress.md` (§ « Le diviseur », l.16-30)
   affirment encore qu'il rend l'estimateur `n − 1` (« 9 contre 6 »). À corriger.
 - Patron `courbe` présent : `types/courbe.ts`, `parser/courbe-parser.ts`,
   `utils/courbe-scene.ts`, `generators/courbe-typst.ts`, `nodes/Courbe.svelte`,

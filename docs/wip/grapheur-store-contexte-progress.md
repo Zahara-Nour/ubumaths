@@ -9,7 +9,7 @@ branche: refactor/grapheur-store
 
 Prérequis de l'atelier de recherche : **l'atelier possède l'état, les vues n'en
 sont que des projections** (décision figée n° 1,
-[`atelier-recherche-eleve.md`](atelier-recherche-eleve.md)). Tant que les
+[`atelier-recherche-eleve.md`](../archive/wip/atelier-recherche-eleve.md)). Tant que les
 composants du grapheur importaient `grapheurStore` en dur, une seconde instance
 était impossible — ils auraient lu l'état de la première.
 
