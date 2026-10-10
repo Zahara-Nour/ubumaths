@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { draftToInput, parallelGrades, pruneShares, rowToDraft, searchRows } from '../admin-draft';
 import { dictionaryEntryInputSchema, type DictionaryRow } from '../entry-schema';
 import type { MathTerm } from '../model';
@@ -27,7 +27,7 @@ function termToRow(t: MathTerm): DictionaryRow {
 describe('brouillon de la page d’admin', () => {
 	// Ouvrir une fiche puis l'enregistrer sans rien toucher ne doit rien changer
 	it('should give back every entry unchanged after a round trip', () => {
-		const changed = MATH_DICTIONARY.map(termToRow).filter((row) => {
+		const changed = REFERENCE_DICTIONARY.map(termToRow).filter((row) => {
 			const input = draftToInput(rowToDraft(row));
 			return JSON.stringify(input) !== JSON.stringify(dictionaryEntryInputSchema.parse(row));
 		});
@@ -35,7 +35,7 @@ describe('brouillon de la page d’admin', () => {
 	});
 
 	it('should accept every entry of the reference dictionary as admin input', () => {
-		const refused = MATH_DICTIONARY.map(termToRow).filter(
+		const refused = REFERENCE_DICTIONARY.map(termToRow).filter(
 			(row) => !dictionaryEntryInputSchema.safeParse(draftToInput(rowToDraft(row))).success
 		);
 		expect(refused.map((r) => r.term)).toEqual([]);

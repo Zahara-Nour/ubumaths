@@ -5,7 +5,7 @@ couvre:
   - 'src/lib/server/dictionary/**'
   - src/lib/components/markdown/lexicon-context.ts
   - src/lib/components/markdown/nodes/LexiconTerm.svelte
-  - src/lib/data/math-dictionary-fr.ts
+  - tests/fixtures/lexique/dictionnaire-reference.ts
   - 'src/routes/api/dictionnaire/**'
   - 'src/routes/api/admin/dictionnaire/**'
   - 'src/routes/(protected)/dashboard/admin/dictionnaire/**'
@@ -17,8 +17,8 @@ couvre:
 
 # Dictionnaire, glossaire et mots cliquables
 
-> Vérifié contre le code le 2026-10-10. Chantier vivant : l'état des lots (données, page d'admin,
-> suppression du fichier) est dans [lexique-progress.md](../wip/lexique-progress.md),
+> Vérifié contre le code le 2026-10-10. L'état des lots de données et l'histoire de la reprise en
+> base sont dans [lexique-progress.md](../wip/lexique-progress.md),
 > [lexique/](../wip/lexique/) et [dictionnaire-en-base-progress.md](../wip/dictionnaire-en-base-progress.md)
 > — cette doc ne les recopie pas.
 
@@ -50,9 +50,15 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/lexicon/grade.ts`, `reader-grade.ts`                         | Niveau de lecture (`lexiconGrade`, `provideReaderGrade`)                                 |
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
-| `src/lib/data/math-dictionary-fr.ts`                                  | **Ancienne source**, reprise en base ; ne sert plus qu'aux tests (voir Écarts)           |
+| `src/lib/dictionary/consistency.ts`                                   | `checkDictionary`, `newProblems` : règles de cohérence (enregistrement admin et tests)   |
+| `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                  |
+| `src/lib/server/dictionary/admin.ts`                                  | `loadAdminDictionary`, `createEntry`, `updateEntry`, `loadVersions`                      |
+| `src/routes/api/admin/dictionnaire/`                                  | `GET`/`POST` (liste, création), `PATCH [id]` (modifier, masquer), `GET [id]/versions`    |
+| `src/routes/(protected)/dashboard/admin/dictionnaire/`                | Page d'admin : recherche, fiche (`EntryEditor.svelte`), masquer, historique              |
+| `tests/fixtures/lexique/dictionnaire-reference.ts`                    | `REFERENCE_DICTIONARY` : jeu de référence figé, **tests seulement** (voir Invariants)    |
 | `supabase/migrations/20261012153000_dictionnaire_en_base.sql`         | Tables, trigger d'historique, droits, RLS                                                |
 | `supabase/migrations/20261013090000_dictionnaire_image_meme_site.sql` | Contrainte : image du site seulement (`//hôte` refusé)                                   |
+| `supabase/migrations/20261015090000_dictionnaire_historique_*.sql`    | Historique écrit par le trigger seul (SECURITY DEFINER gardé par `is_admin()`)           |
 
 Page de démonstration : `src/routes/(public)/demo/mots-cliquables/+page.svelte`.
 
@@ -73,7 +79,8 @@ principal), `seeAlso` (lien vers une page du Cabinet Noir, liste blanche `SEE_AL
 
 `dictionary_entry_versions` garde, à chaque modification, l'entrée **telle qu'elle était avant**
 (trigger `dictionary_entries_keep_version`, droits de l'appelant ; auteur et dates posés par le
-trigger, jamais par l'appelant).
+trigger, jamais par l'appelant). Le trigger est `SECURITY DEFINER`, gardé par `is_admin()` :
+personne n'écrit directement dans l'historique.
 
 ### Lecture par niveau (`model.ts`)
 
@@ -118,6 +125,11 @@ trigger, jamais par l'appelant).
 ## Invariants
 
 - **La base est la seule source** pour le site (ADR 0022) ; tout passe par `loadDictionary`.
+- **Le jeu de référence ne sert qu'aux tests** : `tests/fixtures/lexique/dictionnaire-reference.ts`
+  est la copie figée du dictionnaire à sa reprise en base (2026-10-10). Aucun fichier de
+  l'application (hors `__tests__`) ne l'importe. Il ne suit pas les modifications de l'admin : les
+  règles de cohérence et les copies des lots y sont vérifiées, la base est vérifiée par
+  `checkDictionary` à chaque enregistrement.
 - **Le résultat de `loadDictionary` ne dépend pas de l'appelant** : la mémoire est partagée, seul
   le filtre `hidden` (explicite dans la requête, même pour l'admin à qui la RLS montre les entrées
   masquées) décide. Une policy de lecture par niveau ou par école casserait cette mémoire.
@@ -131,11 +143,16 @@ trigger, jamais par l'appelant).
 
 ## Comment étendre
 
-- **Corriger / ajouter une entrée** : aujourd'hui, une migration de données ou l'admin en base ;
-  la page `/dashboard/admin/dictionnaire` est prévue (ADR 0022) mais pas encore livrée — voir
-  [dictionnaire-en-base-progress.md](../wip/dictionnaire-en-base-progress.md). Après un
-  enregistrement : `forgetDictionary()` (serveur), puis `markDictionaryEdited()` et
+- **Corriger / ajouter une entrée** : la page `/dashboard/admin/dictionnaire` (admin, après
+  élévation : `requireAdmin`). Chercher un mot, modifier ses définitions par niveau (avec aperçu),
+  synonymes, formes, sens, « jamais souligné », filières partagées, renvoi ; ajouter une entrée ;
+  masquer ou réafficher ; lire l'historique. Chaque enregistrement relit tout le dictionnaire,
+  applique la modification en mémoire et passe `checkDictionary` : un **nouveau** problème
+  (`newProblems`) refuse l'enregistrement, avec un message en français, et rien n'est écrit.
+  Après l'écriture : `forgetDictionary()` (serveur), puis `markDictionaryEdited()` et
   `refreshLexiconRuntime()` (navigateur).
+- **Ne pas corriger le jeu de référence** pour suivre la base : il est figé. Un test qui a besoin
+  d'une donnée absente fabrique son entrée ou en ajoute une copie figée sous `tests/fixtures/`.
 - **Activer les mots cliquables dans un nouveau cadre** : appeler `provideLexicon` (ou
   `provideQuestionLexicon`) pendant l'initialisation du composant ; ne pas passer le niveau de
   composant en composant.
@@ -144,16 +161,18 @@ trigger, jamais par l'appelant).
 
 ## Tests
 
-| Test                                                                              | Prouve                                                                     |
-| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `tests/integration/dictionnaire-en-base.test.ts`                                  | Droits et RLS : lecture anon, écriture admin seul, pas de DELETE, trigger  |
-| `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture par le site : base = fichier, filtre `hidden`, mémoire 90 s, image |
-| `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                             |
-| `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                   |
-| `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                      |
-| `src/lib/data/__tests__/math-dictionary-fr.test.ts`                               | Règles de cohérence des données, lots 0b → 0h au mot près                  |
-| `src/lib/lexicon/__tests__/`                                                      | Repérage (`linker`), fiche (`card`), chargement à la demande               |
-| `src/lib/components/questions/__tests__/QuestionCard-champ-stable.svelte.test.ts` | Le champ de réponse n'est pas recréé à l'arrivée du repérage               |
+| Test                                                                              | Prouve                                                                    |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `tests/integration/dictionnaire-en-base.test.ts`                                  | Droits et RLS : lecture anon, écriture admin seul, pas de DELETE, trigger |
+| `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence, filtre `hidden`, mémoire 90 s, image   |
+| `tests/integration/dictionnaire-admin.test.ts`                                    | Enregistrement admin : refus de cohérence, historique, masquage           |
+| `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
+| `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                  |
+| `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                     |
+| `src/lib/dictionary/__tests__/reference*.test.ts`                                 | Jeu de référence : cohérence, lots 0b → 0h au mot près, chiffrement       |
+| `src/lib/dictionary/__tests__/consistency.test.ts`                                | Règles de cohérence : référence sans problème, chaque refus 10 → 16       |
+| `src/lib/lexicon/__tests__/`                                                      | Repérage (`linker`), fiche (`card`), chargement à la demande              |
+| `src/lib/components/questions/__tests__/QuestionCard-champ-stable.svelte.test.ts` | Le champ de réponse n'est pas recréé à l'arrivée du repérage              |
 
 Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun test ne lit `docs/`).
 
@@ -167,12 +186,7 @@ Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun te
 
 ## Écarts connus
 
-- **Le fichier `src/lib/data/math-dictionary-fr.ts` existe encore** (9 300 lignes) : le site ne le
-  lit plus, mais les tests de cohérence et plusieurs tests de composants l'importent comme jeu de
-  données. Sa suppression attend un `deploy:prod` (PR 3 du chantier) ; les règles de cohérence
-  doivent alors tourner sur un jeu de référence.
-- **Pas encore de page d'admin** ni de règles de cohérence au moment de l'enregistrement
-  (ADR 0022) : `forgetDictionary` et `markDictionaryEdited` n'ont pas encore d'appelant hors tests.
-- **CONTEXT.md** dit encore « table à créer » pour le Dictionnaire : la table existe
-  (`dictionary_entries`). À corriger dans CONTEXT.md (signalé, pas tranché ici).
+- **Le jeu de référence s'éloigne de la base** à mesure que l'admin modifie le dictionnaire :
+  c'est voulu (les tests ne dépendent pas des données vivantes). Une base locale fraîche
+  (`db:reset`) contient la reprise, donc encore la référence (`dictionnaire-lecture.test.ts`).
 - Un marquage `[mot]{.def}` au milieu de `**gras**` casse le gras (même limite que `{.rappel}`).

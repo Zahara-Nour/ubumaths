@@ -11,9 +11,11 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
 
-// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, les entrées du fichier
+// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
 vi.mock('$lib/dictionary/fetch-dictionary', async () => {
-	const { default: entries } = await import('$lib/data/math-dictionary-fr');
+	const { REFERENCE_DICTIONARY: entries } = await import(
+		'../../../../../tests/fixtures/lexique/dictionnaire-reference'
+	);
 	return { fetchDictionary: async () => entries };
 });
 

@@ -4,10 +4,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { createLexicon } from '../runtime';
 
-const { lexiconCard } = createLexicon(MATH_DICTIONARY);
+const { lexiconCard } = createLexicon(REFERENCE_DICTIONARY);
 
 describe('fiche d’un mot cliquable', () => {
 	it('10. un homonyme montre chacun de ses sens, avec son étiquette', () => {

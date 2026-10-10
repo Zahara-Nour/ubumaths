@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import type { MathTerm } from '../model';
 import { rowToTerm } from '../entry-schema';
 
@@ -39,8 +39,8 @@ const base = termToRow({
 
 describe('rowToTerm', () => {
 	it('1. chacune des entrées reprises se relit à l’identique', () => {
-		const relues = MATH_DICTIONARY.map((entry) => rowToTerm(termToRow(entry)));
-		expect(relues).toEqual(MATH_DICTIONARY);
+		const relues = REFERENCE_DICTIONARY.map((entry) => rowToTerm(termToRow(entry)));
+		expect(relues).toEqual(REFERENCE_DICTIONARY);
 		// toEqual ignore une clé `undefined` : aucune ne doit apparaître
 		for (const entry of relues) {
 			expect(Object.values(entry ?? {}).includes(undefined)).toBe(false);
