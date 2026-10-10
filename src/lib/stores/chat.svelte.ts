@@ -1,3 +1,4 @@
+import { toaster } from '$lib/stores/toaster.svelte';
 import { browser } from '$app/environment';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
@@ -884,6 +885,13 @@ class ChatStore {
 
 			if (insertError) {
 				logger.error('Failed to insert message to DB:', insertError);
+				// Refus de la garde « lecture seule » de la base (trigger guard_read_only_author) :
+				// reconnu à son texte, car la RLS rend aussi 42501 (élève rendu muet, par exemple).
+				if (insertError.message?.includes('Consentement parental requis')) {
+					toaster.error(
+						'Consentement parental requis pour envoyer des messages. Contactez votre enseignant.'
+					);
+				}
 				// Remove optimistic message on failure
 				const currentMessages = this.messages.get(conversationId) || [];
 				const rollback = currentMessages.filter((msg) => msg.id !== optimisticId);
