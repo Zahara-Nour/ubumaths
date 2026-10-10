@@ -257,6 +257,13 @@ Points à retenir :
   (texte intact) ; les blocs ` ```courbe `, ` ```figure `, statistiques et de code sont
   repérés dans les deux et **appariés par rang** — une formule `$$` sur plusieurs lignes placée
   avant décalerait sinon les indices.
+- **Cellule de tableau** : une chaîne (`TableCellNode.content`), relue à l'affichage. `$…$` et
+  `~…~` y sont des formules, lues de gauche à droite (`$…$` d'abord : le `~` d'espace insécable
+  d'un `$…$` n'ouvre rien ; `\~` reste du texte) — écran : `parseCellContent` de
+  `TableNode.svelte` ; PDF : `processTableCellContent` (`typst-generator.ts`), qui convertit
+  `~…~` comme un paragraphe (`customInlineMathToTypst`). Tests :
+  `src/lib/ubumark/generators/__tests__/tilde-tableau-typst.test.ts`,
+  `src/lib/components/markdown/__tests__/tilde-tableau.svelte.test.ts`.
 - **Dans une liste**, un autre chemin : `parseContentWithCodeBlocks` et `textWithUnclosedBlocks`
   (`markdown-parser.ts`), avec `SPECIAL_BLOCK_KINDS` pour variation / probtree / trig / line.
   Les formules du bloc y sont restaurées (`restoreMathPlaceholders`) avant le parseur du bloc.
@@ -387,5 +394,3 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   du module ni de leurs tests (grep du 2026-10-10) : export en sommeil ou mort, à trancher.
 - `src/lib/components/markdown/nodes/MathInlineOld.svelte` et `MathBlockOld.svelte` ne sont
   importés nulle part (grep du 2026-10-10) : candidats au ménage, à confirmer par David.
-- Une formule `~…~` dans une cellule de tableau Markdown n'était pas convertie au PDF (relevé du
-  2026-09-25) ; non revérifié pour cette doc — préférer `$…$` en cellule.
