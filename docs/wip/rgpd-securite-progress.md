@@ -238,12 +238,12 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 
 ## Point d'étape — 2026-10-11
 
-| Constat                                  | PR    | En prod                       |
-| ---------------------------------------- | ----- | ----------------------------- |
-| B6 comptes non approuvés (garde du hook) | #1065 | code : au `deploy:prod`       |
-| B7 inscription sans code → en attente    | #1065 | ✅ migration `20261015090400` |
-| E20 suppressions SRS silencieuses        | #1066 | code : au `deploy:prod`       |
-| B5 élévation admin cassée (500)          | #1067 | code : au `deploy:prod`       |
+| Constat | PR | En prod |
+| ------- | -- | ------- |
+| B6 comptes non approuvés (garde du hook) | #1065 | code : au `deploy:prod` |
+| B7 inscription sans code → en attente | #1065 | ✅ migration `20261015090400` |
+| E20 suppressions SRS silencieuses | #1066 | code : au `deploy:prod` |
+| B5 élévation admin cassée (500) | #1067 | code : au `deploy:prod` |
 
 - E20 : une section inexistante reste une suppression idempotente (200, contrat de
   `sections-crud`) ; 0 ligne sur une section existante → 403.
