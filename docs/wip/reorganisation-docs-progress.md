@@ -7,7 +7,7 @@
 
 1. `docs/systeme/` = une doc par système en service ; `docs/pratiques/` = comment travailler (ex-`docs/claude/` + ref transverses). `docs/ref/`, `docs/claude/`, `docs/architecture/`, `docs/guides/` disparaissent.
 2. README de `src/` : centralisés dans `docs/systeme/`, un pointeur d'une ligne reste dans `src/` (sauf `src/lib/geometry-core/CLAUDE.md`, réduit à des renvois).
-3. `docs/corrections/` et `docs/relecture/` → `data/`, en PR isolée, fin de P1.
+3. `data/corrections/` et `data/relecture/` → `data/`, en PR isolée, fin de P1.
 4. Garde `docs:check-refs` (chemins et symboles cités dans systeme/ et pratiques/ existent) : avertissement en P1-P2, bloquante ensuite ; idem `docs:check-links` une fois les liens réparés.
 5. Schéma de base : liste des tables générée depuis `database.ts` + texte écrit à la main.
 

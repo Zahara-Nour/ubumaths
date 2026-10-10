@@ -105,9 +105,9 @@ Pratiques : [base-de-donnees.md](base-de-donnees.md) · schéma : [../systeme/ba
 
 | Commande                                                                       | Effet                                                               |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `pnpm question:specs`                                                          | Spécifications de questions (lit `docs/relecture/`)                 |
+| `pnpm question:specs`                                                          | Spécifications de questions (lit `data/relecture/`)                 |
 | `pnpm relecture:verdicts` / `relecture:import`                                 | Enregistre les verdicts de relecture / importe les questions relues |
-| `pnpm corrections:generate` / `:check` / `:preview` / `:import` / `:retouches` | Chaîne des corrections (`docs/corrections/`)                        |
+| `pnpm corrections:generate` / `:check` / `:preview` / `:import` / `:retouches` | Chaîne des corrections (`data/corrections/`)                        |
 | `pnpm fiche:verifier`                                                          | Vérifie une fiche PDF ([fiches-exercices.md](fiches-exercices.md))  |
 | `pnpm math`                                                                    | CLI mathAST                                                         |
 | `pnpm openapi:generate`                                                        | Spec OpenAPI                                                        |

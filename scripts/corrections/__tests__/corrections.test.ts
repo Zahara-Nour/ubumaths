@@ -805,7 +805,7 @@ describe('instantané sans identifiant d’utilisateur', () => {
 	it.each([PILOT_LOT.name, R_INV_LOT.name, N_FRACDEC_LOT.name, N_DECOMP_LOT.name])(
 		'l’instantané commité du lot %s n’en contient pas',
 		(lot) => {
-			const raw = readFileSync(`docs/corrections/${lot}/_modeles.json`, 'utf8');
+			const raw = readFileSync(`data/corrections/${lot}/_modeles.json`, 'utf8');
 			expect(raw).not.toMatch(/"(created_by|updated_by|user_id)"/);
 		}
 	);

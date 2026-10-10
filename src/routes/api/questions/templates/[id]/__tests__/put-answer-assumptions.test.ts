@@ -8,7 +8,7 @@
  * français) une hypothèse posée sur une variable tirée.
  *
  * Base simulée en mémoire, ligne de la forme réelle : question TinyMath #139
- * relue (`docs/relecture/entiers/139.json`), variable tirée `a` dans `shared`.
+ * relue (`data/relecture/entiers/139.json`), variable tirée `a` dans `shared`.
  */
 import { describe, it, expect } from 'vitest';
 import { callPut, fakeDb } from './fake-templates-db';

@@ -7,7 +7,7 @@
  *   pnpm corrections:generate pilote --source rows.json    (modèles lus dans un JSON local)
  *   pnpm corrections:generate pilote --source snapshot     (instantané déjà présent)
  *
- * Écrit `docs/corrections/<lot>/_modeles.json` (instantané) et une proposition
+ * Écrit `data/corrections/<lot>/_modeles.json` (instantané) et une proposition
  * `<id>.json` par modèle. N'écrit RIEN en base.
  */
 

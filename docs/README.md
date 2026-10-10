@@ -12,7 +12,7 @@ Quatre dossiers, un rôle chacun :
 
 Vocabulaire du domaine : [CONTEXT.md](../CONTEXT.md) (glossaire unique). Règles pour Claude : [CLAUDE.md](../CLAUDE.md).
 
-Hors doc, mais rangés ici pour l'instant : [corrections/](corrections/) et [relecture/](relecture/) sont des **données de travail** lues par des scripts (passage sous `data/` prévu) ; [Chiphres/](Chiphres/) est le lore de l'univers (contenu éditorial).
+Les **données de travail** lues par des scripts et des tests (corrections, relecture) vivent hors de docs/, sous [`data/`](../data/). [Chiphres/](Chiphres/) est le lore de l'univers (contenu éditorial).
 
 ## Gabarit d'une doc système
 
