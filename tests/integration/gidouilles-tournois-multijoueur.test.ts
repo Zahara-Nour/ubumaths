@@ -12,15 +12,16 @@
  *   1. finaliser un tournoi crédite le podium : solde ET journal (`gidouilles_activity`) ;
  *   2. redistribuer les récompenses d'un tournoi terminé sans récompense crédite aussi,
  *      et une seconde redistribution est refusée ;
- *   3. l'abandon d'un match multijoueur crédite l'adversaire : solde ET journal (la
- *      version d'origine n'écrivait que dans le journal, avec des colonnes qui n'ont
- *      jamais existé — le solde n'aurait jamais bougé — et plantait sans statistiques
- *      de saison : ROW(1500) perdait le nom du champ rank) ;
+ *   3. l'abandon d'un match multijoueur aboutit — en cours ou pendant le compte à
+ *      rebours — SANS aucune gidouille (décision de David, 2026-10-10 : sans anti-triche,
+ *      deux complices farmaient sans limite). Il plantait sur la table disparue, puis
+ *      sans statistiques de saison (ROW(1500) perdait le champ rank), puis en compte à
+ *      rebours (started_must_have_timestamp) ;
  *   4. décision de David (2026-10-10) : le bonus automatique du meilleur jeu de la
  *      semaine saute un élève en lecture seule, et reste versé aux autres.
  *
- * `complete_multiplayer_match` reçoit la même correction que l'abandon ; elle exige une
- * grille gagnante valide, que ce fichier ne fabrique pas.
+ * `complete_multiplayer_match` reçoit la même correction (récompense 0, ROW(1500)) ; sa
+ * validation de grille n'est pas fabriquée ici.
  *
  * @vitest-environment node
  */
@@ -155,32 +156,40 @@ describe('récompenses de tournoi et de multijoueur', () => {
 		expect(await solde(eleve.id)).toBe(avant + 10);
 	});
 
-	it('l’abandon d’un match crédite l’adversaire : solde et journal', async () => {
-		const quitte = await TestData.profile().withRole('student').create();
-		const adversaire = await TestData.profile().withRole('student').create();
-		const pg = await getPostgresClient();
-		const { rows } = await pg.query<{ id: string }>(
-			`insert into minesweeper_multiplayer_matches
-			   (match_type, difficulty, seed, player1_id, player2_id, status, started_at)
-			 values ('quick', 'beginner', 'zz-graine', $1, $2, 'in_progress', now())
-			 returning id`,
-			[quitte.id, adversaire.id]
-		);
-		const avant = await solde(adversaire.id);
+	it.each(['in_progress', 'countdown'])(
+		'abandon d’un match (%s) : il aboutit, sans aucune gidouille',
+		async (status) => {
+			const quitte = await TestData.profile().withRole('student').create();
+			const adversaire = await TestData.profile().withRole('student').create();
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ id: string }>(
+				`insert into minesweeper_multiplayer_matches
+				   (match_type, difficulty, seed, player1_id, player2_id, status, started_at)
+				 values ('quick', 'beginner', 'zz-graine', $1, $2, $3,
+				   case when $3 = 'in_progress' then now() end)
+				 returning id`,
+				[quitte.id, adversaire.id, status]
+			);
+			const avant = await solde(adversaire.id);
 
-		const client = await clientFor(quitte.email);
-		const { error } = await client.rpc('abandon_multiplayer_match', {
-			p_match_id: rows[0].id,
-			p_reason: 'player_quit'
-		});
-		expect(error).toBeNull();
+			const client = await clientFor(quitte.email);
+			const { error } = await client.rpc('abandon_multiplayer_match', {
+				p_match_id: rows[0].id,
+				p_reason: 'player_quit'
+			});
+			expect(error).toBeNull();
 
-		expect(await solde(adversaire.id)).toBe(avant + 10);
-		expect(await journal(adversaire.id)).toEqual([
-			expect.objectContaining({ delta: 10, reason: 'minesweeper_multiplayer_opponent_quit' })
-		]);
-		await pg.query('delete from minesweeper_multiplayer_matches where id = $1', [rows[0].id]);
-	});
+			const { rows: match } = await pg.query<{ status: string; winner_reward: number }>(
+				'select status, winner_reward from minesweeper_multiplayer_matches where id = $1',
+				[rows[0].id]
+			);
+			expect(match[0]).toEqual({ status: 'abandoned', winner_reward: 0 });
+			// Décision de David (2026-10-10) : pas de gidouilles en multijoueur sans anti-triche.
+			expect(await solde(adversaire.id)).toBe(avant);
+			expect(await journal(adversaire.id)).toEqual([]);
+			await pg.query('delete from minesweeper_multiplayer_matches where id = $1', [rows[0].id]);
+		}
+	);
 
 	it('bonus automatique de la semaine : sauté en lecture seule, versé aux autres', async () => {
 		const pg = await getPostgresClient();

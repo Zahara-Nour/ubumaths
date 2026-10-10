@@ -10,9 +10,11 @@
 -- aucun match multijoueur jamais joué → personne n'a été lésé ; le prochain tournoi
 -- aurait échoué.
 --
--- Les deux matchs multijoueur n'écrivaient QUE dans le journal (colonnes amount et
--- description, inexistantes) : on ajoute le crédit du solde, comme les tournois.
--- (update_student_gidouilles n'est pas utilisable ici : sa garde refuse un élève.)
+-- Matchs multijoueur : réparés SANS récompense (décision de David, 2026-10-10, après
+-- security-auditor : une fois réparés, deux complices farmaient sans limite — abandons
+-- en boucle, victoire avec une grille non comparée à la graine). Ni solde ni journal ;
+-- le gain affiché vaut 0. Corrigé aussi : l'abandon pendant le compte à rebours violait
+-- started_must_have_timestamp.
 --
 -- Décision de David (2026-10-10, A2) : les récompenses AUTOMATIQUES sautent les élèves
 -- en lecture seule — run_weekly_rewards et award_weekly_best_bonuses filtrent par
@@ -334,6 +336,9 @@ BEGIN
   END IF;
 
   v_total_gidouilles := v_base_gidouilles + v_bonus_gidouilles;
+  -- E19 : récompense désactivée (pas d'anti-triche : la grille n'est pas comparée à la
+  -- graine). Le match, l'ELO et les statistiques fonctionnent ; le gain affiché vaut 0.
+  v_total_gidouilles := 0;
 
   -- Get current ELO ratings (filter by current season)
   SELECT rank INTO v_winner_stats
@@ -377,14 +382,8 @@ BEGIN
   WHERE id = p_match_id;
 
   -- Award gidouilles to winner
-  -- E19 : crédit du solde ET journal (l'ancienne version n'écrivait qu'un journal
-  -- disparu, avec des colonnes qui n'ont jamais existé : le solde ne bougeait pas).
-  UPDATE profiles
-  SET gidouilles = COALESCE(gidouilles, 0) + v_total_gidouilles
-  WHERE id = v_student_id;
-
-  INSERT INTO gidouilles_activity (student_id, delta, reason)
-  VALUES (v_student_id, v_total_gidouilles, 'minesweeper_multiplayer_win');
+  -- E19 : AUCUNE gidouille en multijoueur (décision de David, 2026-10-10) — sans
+  -- anti-triche, deux complices farmeraient sans limite. Ni solde ni journal.
 
   -- Update winner stats
   INSERT INTO minesweeper_player_stats (
@@ -540,11 +539,16 @@ BEGIN
     WHEN 'expert' THEN 50
     ELSE 10
   END;
+  -- E19 : récompense désactivée (décision de David, 2026-10-10).
+  v_opponent_reward := 0;
 
   -- Update match record
   UPDATE minesweeper_multiplayer_matches
   SET
     status = 'abandoned',
+    -- E19 : un match abandonné pendant le compte à rebours n'a pas de started_at,
+    -- exigé par started_must_have_timestamp hors waiting/countdown.
+    started_at = COALESCE(started_at, NOW()),
     winner_id = v_opponent_id,
     completed_at = NOW(),
     winner_reward = v_opponent_reward,
@@ -553,14 +557,8 @@ BEGIN
   WHERE id = p_match_id;
 
   -- Award gidouilles to opponent
-  -- E19 : crédit du solde ET journal (l'ancienne version n'écrivait qu'un journal
-  -- disparu, avec des colonnes qui n'ont jamais existé : le solde ne bougeait pas).
-  UPDATE profiles
-  SET gidouilles = COALESCE(gidouilles, 0) + v_opponent_reward
-  WHERE id = v_opponent_id;
-
-  INSERT INTO gidouilles_activity (student_id, delta, reason)
-  VALUES (v_opponent_id, v_opponent_reward, 'minesweeper_multiplayer_opponent_quit');
+  -- E19 : AUCUNE gidouille en multijoueur (décision de David, 2026-10-10) — sans
+  -- anti-triche, deux complices farmeraient les abandons sans limite.
 
   -- Update opponent stats (win by forfeit)
   INSERT INTO minesweeper_player_stats (

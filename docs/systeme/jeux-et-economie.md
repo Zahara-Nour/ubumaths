@@ -276,9 +276,11 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
 
 - ✅ **`gidouilles_history` (corrigé le 2026-10-10, migration `20261014120000_gidouilles_history_e19`)** :
   `finalize_tournament`, `redistribute_tournament_rewards`, `complete_multiplayer_match` et
-  `abandon_multiplayer_match` écrivent dans `gidouilles_activity` ; les deux matchs créditent aussi
-  le solde (ils n'écrivaient qu'un journal aux colonnes inexistantes) et ne plantent plus sans
-  statistiques de saison (`ROW(1500)` perdait le champ `rank`). Mesuré en prod : aucun tournoi
+  `abandon_multiplayer_match` ne plantent plus (tournois : journal dans `gidouilles_activity` ;
+  matchs : `ROW(1500)` perdait le champ `rank`, l'abandon en compte à rebours violait
+  `started_must_have_timestamp`). **Le multijoueur ne rapporte AUCUNE gidouille** (décision de
+  David, 2026-10-10) : sans anti-triche (grille non comparée à la graine, pas de plafond), deux
+  complices farmaient sans limite. À rouvrir avec un anti-triche. Mesuré en prod : aucun tournoi
   finalisé depuis le renommage, aucun match joué — personne lésé. Test :
   `tests/integration/gidouilles-tournois-multijoueur.test.ts`. **Restent** `process_weekly_rewards` et
   `purchase_shop_item`, sans aucun appelant (ni code, ni cron) : suppression à décider.
