@@ -153,18 +153,18 @@ Reste : **2e PR** après `db:migrate` + `db:types` — la route `api/marketplace
 
 ## Point d'étape — 2026-10-10, fin de soirée
 
-| Constat                               | PR    | Mergée | En prod (base) | Reste                                                                                     |
-| ------------------------------------- | ----- | ------ | -------------- | ----------------------------------------------------------------------------------------- |
-| A1 suppression de compte              | #1034 | ✅     | ✅ migrée      | —                                                                                         |
-| B4 élévation admin                    | #1035 | ✅     | (code seul)    | `deploy:prod` par David — les cookies d'élévation en cours seront refusés (se ré-élever)  |
-| A2 lecture seule                      | #1042 | ✅     | ⏳             | migrer ; puis `db:types` et 2e PR (masquage des annonces dans la route)                   |
-| E19 récompenses tournoi / multijoueur | #1048 | ✅     | ⏳             | migrer après A2 ; décider `process_weekly_rewards` / `purchase_shop_item` (sans appelant) |
-| A3 règle de consentement              | #1050 | ✅     | ⏳             | migrer après E19                                                                          |
+| Constat                               | PR            | Mergée | En prod (base)          | Reste                                                                                              |
+| ------------------------------------- | ------------- | ------ | ----------------------- | -------------------------------------------------------------------------------------------------- |
+| A1 suppression de compte              | #1034         | ✅     | ✅                      | —                                                                                                  |
+| B4 élévation admin                    | #1035         | ✅     | (code seul)             | `deploy:prod` — les élévations en cours seront refusées (se ré-élever)                             |
+| A2 lecture seule                      | #1042 + #1054 | ✅     | ✅ (vérifié)            | —                                                                                                  |
+| E19 récompenses tournoi / multijoueur | #1048         | ✅     | ✅ (vérifié)            | décider `process_weekly_rewards` / `purchase_shop_item` (sans appelant ; suppression = destructif) |
+| A3 règle de consentement              | #1050         | ✅     | ✅ (33 comptes marqués) | —                                                                                                  |
 
-**Blocage des migrations** : `20261013120000_tags_modeles_points` (session tags) est mergée mais pas
-migrée, et datée avant A1 (déjà en prod) → `db push` exige `--include-all`. Décision de David :
-attendre que la session tags migre la sienne. Ordre ensuite : `20261014110000` (A2) →
-`20261014120000` (E19) → `20261015090100` (A3).
+Les migrations A2, E19 et A3 sont parties avec celle de la session tags (`--include-all`), vérifiées
+en prod le 2026-10-10. #1054 : `db:types` ; annonces d'un auteur en lecture seule masquées aux élèves
+(prof et admin les voient) ; `creator_id` validé et réservé à l'élève lui-même (il contournait le
+masquage — faille antérieure relevée par security-auditor) ; toast multijoueur sans « +0 ».
 
 ### Ordre proposé pour la suite (à valider par David)
 
@@ -174,3 +174,22 @@ attendre que la session tags migre la sienne. Ordre ensuite : `20261014110000` (
 3. **B6 / B7** comptes `pending`/`rejected` et inscription GoTrue directe.
 4. **E20** (SRS, DELETE sans `.select()`), **B5** (à mesurer), **B8**, **D17** (question : voulu ?).
 5. **C9 → C15** : point par point avec David (aligner le code ou les documents).
+
+## Suppression d'un message par la modération (nouveau constat, branche `fix/moderation-suppression-message`)
+
+- Reproduit en local (2026-10-10), écriture de la route rejouée avec le client du prof :
+  conversation de groupe → `42501` (policy SELECT `deleted_at IS NULL` refuse la nouvelle ligne,
+  la route répond 500) ; **1-1 entre élèves → 0 ligne, sans erreur : la route répondait
+  « supprimé »**, le message restait visible. En prod : 2 suppressions le 30/12/2025, aucune depuis.
+- Correctif sans SQL : la route vérifie déjà les droits ; l'écriture passe par le client service
+  (`/api/moderation/messages/[id]/` ajouté à `ALLOWED_SERVICE_ROLE_PATHS`), `.select('id')` et
+  exactement une ligne exigée, sinon 500. `soft_delete_message` (RPC existante, jamais appelée)
+  n'a pas été reprise : sa garde exclut les 1-1 entre élèves, que la route autorise.
+- Les tests unitaires enregistraient le bug (UPDATE simulé à 0 ligne compté comme succès) :
+  réécrits ; 3 cas rouges avec l'ancienne route.
+- security-auditor : la route rendait réels des droits que la base bloquait. **Décision de David
+  (2026-10-10)** : le prof ne supprime que des messages écrits par un élève (ou les siens), jamais
+  ceux de l'admin ; l'admin garde tout. Contrôle ajouté dans la route, testé.
+- Remarque, non traitée : la route LIT le message avec le client du prof ; la policy SELECT ne lui
+  montre une conversation 1-1 que si les deux élèves sont membres d'une classe — un 1-1 entre
+  élèves hors classe donnerait 404 (contraire à l'option B « le prof supervise tout élève »).

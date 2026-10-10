@@ -15,7 +15,7 @@
  */
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference';
 import type { Database } from '$lib/types/database';
 import { forgetDictionary, loadDictionary } from '$lib/server/dictionary/load';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
@@ -112,7 +112,7 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 
 	it('1. un visiteur lit exactement les entrées du fichier, dans son ordre', async () => {
 		const entries = await loadDictionary(anon);
-		expect(entries.filter((e) => !e.term.startsWith(TAG))).toEqual(MATH_DICTIONARY);
+		expect(entries.filter((e) => !e.term.startsWith(TAG))).toEqual(REFERENCE_DICTIONARY);
 	});
 
 	it('4. une entrée masquée n’est lue ni par un visiteur, ni par l’admin', async () => {

@@ -1,7 +1,7 @@
 # Dictionnaire en base — progression
 
 ADR 0022 et spécification validées par David le 2026-10-10 ([spec](dictionnaire-en-base-spec.md)).
-PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : #1036 (fusionnée). Historique fermé : #1043 (fusionnée, migration en prod).
+PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : #1036 (fusionnée). Historique fermé : #1043 (fusionnée, migration en prod). PR 3 : suppression du fichier (en cours).
 
 ## PR 1 — tables, droits, reprise (FAITE, #1024)
 
@@ -94,3 +94,21 @@ PR 1 : #1024 (fusionnée). PR 2a : #1025 (fusionnée). PR 2b : #1036 (fusionnée
   garde présente, plus d'INSERT ni d'EXECUTE pour authenticated, seule la policy de lecture reste.
 
 ## PR 3 — suppression du fichier (après un `deploy:prod` lancé par David)
+
+- Branche `chore/dictionnaire-fichier-supprime` (comportements 18 et 19 de la spec).
+- `src/lib/data/math-dictionary-fr.ts` déplacé par `git mv` (historique gardé) vers
+  `tests/fixtures/lexique/dictionnaire-reference.ts` : `REFERENCE_DICTIONARY` seul, copie figée de
+  la reprise (2026-10-10) ; ré-exports et helpers retirés (`getTermsForGrade` du fichier,
+  `getTermsByTag`, `getTermsByTagAndGrade`, `getAllTerms`), les types viennent de
+  `$lib/dictionary/model`.
+- Tests du fichier déplacés sous `src/lib/dictionary/__tests__/` (`reference.test.ts`,
+  `reference-cryptographie.test.ts`). `getTermsForGrade` testé dans sa version de `model.ts` ;
+  les assertions de données des helpers retirés (thèmes « arithmétique », « géométrie » en 4e,
+  « fonction » invisible en 6e) gardées par filtre direct ; le test « `getAllTerms` rend une
+  copie » retiré (helper sans équivalent, aucune donnée).
+- Tous les autres tests (dictionary, lexicon, Mathémo, glossaire, mocks de `fetch-dictionary`,
+  intégration) lisent `REFERENCE_DICTIONARY` par import relatif (le même chemin marche dans les
+  projets server, client et integration ; l'alias `$tests` n'est pas suivi par
+  `check:integration-paths`).
+- Nightly : le filtre `paths` suit la fixture au lieu du fichier supprimé ; `CONTEXT.md` et
+  `docs/systeme/dictionnaire.md` mis à jour (page d'admin livrée, fixture réservée aux tests).

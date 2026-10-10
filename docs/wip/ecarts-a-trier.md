@@ -30,7 +30,6 @@ Priorité : **1** = touche les copies ou les résultats des élèves · **2** = 
 | K3  | **Fusion des moteurs (ADR 0007)** — projet existant  | V8                               | L          | 1    |
 | K4  | **Rendu PDF des tableaux et du gras**                | V10, V11                         | M          | 1    |
 | K5  | **Arrondis et ajustements statistiques**             | V6, M16, D7                      | M          | 1    |
-| K6  | **Publication unitaire aussi stricte que par lot**   | L3                               | S          | 1    |
 | K7  | **Tableur**                                          | V3, V4                           | M          | 2    |
 | K8  | **Tableau blanc et Google éteint**                   | V5, D5, M11                      | S          | 2    |
 | K9  | **Accès admin et entrées de menu prof**              | D1, D3, L1                       | S          | 2    |
@@ -44,8 +43,11 @@ Priorité : **1** = touche les copies ou les résultats des élèves · **2** = 
 | K17 | **Ménage : code mort**                               | M1-M3, M8-M10, M15, M18-M20      | M          | 3    |
 | K18 | **Ménage : commentaires et vocabulaire**             | C1, C3-C5, C9-C11, C13, C14, D11 | M          | 3    |
 
-Ordre suggéré : K6 (petit, priorité 1), K4, K5, puis K1 (le plus lourd de la priorité 1). K2
-(règles `ln`/`exp` et garde-fous du moteur : V7, L5, L6, C8) est fait le 2026-10-10.
+Ordre suggéré : K4, K5, puis K1 (le plus lourd de la priorité 1).
+
+Corrigés depuis le tri : **K6 / L3** (publication unitaire aussi stricte que par lot, contrôle
+partagé `templatePublicationErrors`, 2026-10-10) ; **K2** (règles `ln`/`exp` et garde-fous du
+moteur : V7, L5, L6, C8, 2026-10-10).
 K3 reste le projet « fusion simplify / pedagogical-simplify » déjà suivi. K7-K10 ensuite, après les
 décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 
@@ -74,7 +76,6 @@ décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------ | --------------------------------------------------------- |
 | L1  | `dashboard/teacher/classes/[classId]/analytics/+page.server.ts` compte `srs_anti_fraud_flags` sans tester l'erreur.                                                                                                                                                                     | [analytique-prof.md](../systeme/analytique-prof.md)                                           | Un échec affiche un badge « Surveillance » à 0 (anti-triche éteint aujourd'hui).           | S      | vérifié                                                   |
 | L2  | Rétention par paquet sans effet : un profil de `RETENTION_PROFILES` est enregistré dans `deck.config`, mais les révisions utilisent `new FSRS()` ; `fsrsConfigSchema` n'est importé nulle part ailleurs.                                                                                | [srs.md](../systeme/srs.md)                                                                   | Le prof règle une rétention qui ne change rien.                                            | M      | vérifié                                                   |
-| L3  | Publication unitaire (`PUT` d'un modèle de question) : ni les specs ni les 50 tirages de `checkTemplate`, contrairement au lot.                                                                                                                                                         | [questions.md](../systeme/questions.md)                                                       | Une question cassée peut être publiée aux élèves par ce chemin.                            | S      | vérifié                                                   |
 | L4  | `findVerticalAsymptotes` purement numérique, même sur une fraction rationnelle.                                                                                                                                                                                                         | [grapheur.md](../systeme/grapheur.md)                                                         | Une asymptote peut manquer ou être fausse sur un cas limite.                               | M      | vérifié                                                   |
 | L7  | `run_flag_stale_python_rechecks` n'est pas programmé (absent de `cron.job` en prod et de `ALLOWED_JOB_PATHS`).                                                                                                                                                                          | [serveur.md](../systeme/serveur.md) #2                                                        | Les soumissions Python à revérifier ne le sont jamais.                                     | S      | mesuré en prod (doc)                                      |
 | L8  | Journalisation hétérogène : `console.error` direct dans 319 endpoints, logger structuré dans 4.                                                                                                                                                                                         | [serveur.md](../systeme/serveur.md) #7                                                        | Erreurs de prod difficiles à trier.                                                        | L      | vérifié (`git grep`)                                      |

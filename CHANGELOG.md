@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.18.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.18.1...v0.18.2) (2026-10-10)
+
+### 🐛 Bug Fixes
+
+- **marche:** creator_id validé et réservé à l'élève lui-même ; prof non masqué ([cfbd3fc](https://github.com/Zahara-Nour/ubumaths/commit/cfbd3fc1fe7e2cfc8a4d29b4963a981f5b2e74fe))
+- **questions:** création publiée contrôlée aussi ; l'éditeur affiche les raisons du refus ([63b0f0e](https://github.com/Zahara-Nour/ubumaths/commit/63b0f0e26d55f3b2d3f3909b03e146170513975e))
+- **questions:** la page de création rend son verdict ; statut remis après un refus testé ([dae847f](https://github.com/Zahara-Nour/ubumaths/commit/dae847f652abde6b3488114fb2908b2e7b175996))
+- **questions:** publication unitaire et par lot passent le même contrôle checkTemplate ([e473fac](https://github.com/Zahara-Nour/ubumaths/commit/e473fac39063118562d2d4b5996777a2e072a91f))
+- **rgpd:** annonces d'un auteur en lecture seule masquées ; types régénérés ([be81f6f](https://github.com/Zahara-Nour/ubumaths/commit/be81f6fc7b087b7ca588a3d45ac5ba9af646fb75))
+
+### 📚 Documentation
+
+- **questions:** un seul contrôle de publication ; écart L3 / K6 retiré ([fdb2e96](https://github.com/Zahara-Nour/ubumaths/commit/fdb2e96b5b50e4e520ce4e0880a60a59ea42f044))
+- **wip:** arbre des notions — étape 3, recos validées par David ([bcf1e04](https://github.com/Zahara-Nour/ubumaths/commit/bcf1e043cc82eeeeb212007aaeea333e03078880))
+- **wip:** progression RGPD — A2, E19, A3 en prod ; suite A2 livrée ([af0f3bc](https://github.com/Zahara-Nour/ubumaths/commit/af0f3bc43b7fb30fbd169ade32c677b48881a05d))
+- **wip:** publication unitaire (K6) livrée, journal archivé ([eca3ab2](https://github.com/Zahara-Nour/ubumaths/commit/eca3ab22bf9b09ab4daee8d842bea44ed437e169))
+
 ## [0.18.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.18.0...v0.18.1) (2026-10-10)
 
 ### 🐛 Bug Fixes

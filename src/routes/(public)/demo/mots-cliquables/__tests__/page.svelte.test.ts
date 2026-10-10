@@ -8,9 +8,11 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
-// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, les entrées du fichier
+// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
 vi.mock('$lib/dictionary/fetch-dictionary', async () => {
-	const { default: entries } = await import('$lib/data/math-dictionary-fr');
+	const { REFERENCE_DICTIONARY: entries } = await import(
+		'../../../../../../tests/fixtures/lexique/dictionnaire-reference'
+	);
 	return { fetchDictionary: async () => entries };
 });
 

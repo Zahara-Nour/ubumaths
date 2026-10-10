@@ -64,9 +64,14 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// proposition, que la RLS ne permet plus au proposant que de retirer (Q147)
 	'lib/server/marketplace/auto-accept.ts',
 	'/api/marketplace/listings/[id]/proposals/',
+	// Modération : soft-delete d'un message, droits vérifiés par la route (la RLS du prof
+	// refusait l'écriture ou ne touchait aucune ligne, 2026-10-10)
+	'/api/moderation/messages/[id]/+server',
 	// Marché : verrous des cartes d'une proposition et compteur de l'annonce
 	'lib/server/marketplace/proposal-locks.ts',
 	'lib/server/marketplace/acceptance.ts',
+	// Marché : auteurs en lecture seule, masqués (A2 ; la fonction n'est pas exposée)
+	'lib/server/marketplace/hidden-creators.ts',
 	'/api/marketplace/proposals/[id]/',
 	// Game milestone awards (student_achievements RLS only allows service_role inserts)
 	'/api/games/2048/scores',

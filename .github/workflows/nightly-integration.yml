@@ -34,6 +34,8 @@ on:
       - 'supabase/**'
       - 'tests/integration/**'
       - 'tests/helpers/**'
+      # jeu de référence figé du dictionnaire, lu par la suite
+      - 'tests/fixtures/lexique/dictionnaire-reference.ts'
       - 'vitest.integration.config.ts'
       - 'vitest.base.config.ts'
       - 'svelte.config.js'
@@ -46,7 +48,6 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       # src/lib : dossiers atteints par la suite
-      - 'src/lib/data/math-dictionary-fr.ts'
       - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
       - 'src/lib/mathAST/**'

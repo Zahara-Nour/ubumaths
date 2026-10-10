@@ -20,7 +20,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
@@ -158,9 +158,9 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 			.returns<EntryRow[]>();
 		expect(error).toBeNull();
 		const rows = data ?? [];
-		expect(rows).toHaveLength(MATH_DICTIONARY.length);
+		expect(rows).toHaveLength(REFERENCE_DICTIONARY.length);
 		const differences: string[] = [];
-		MATH_DICTIONARY.forEach((term, i) => {
+		REFERENCE_DICTIONARY.forEach((term, i) => {
 			const row = rows[i];
 			const expected = {
 				term: term.term,

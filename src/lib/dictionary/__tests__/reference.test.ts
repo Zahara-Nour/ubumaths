@@ -1,14 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import MATH_DICTIONARY, {
-	getAllTerms,
-	getTermsByTag,
-	getTermsByTagAndGrade,
+import {
 	getTermsForGrade,
 	gradeMetBy,
 	isTermVisibleTo,
 	resolveGradedField,
 	type MathTerm
-} from '../math-dictionary-fr';
+} from '$lib/dictionary/model';
+import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { readFileSync } from 'node:fs';
 import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
 import { hasAccessToGrade } from '$lib/utils/grades';
@@ -139,17 +137,17 @@ function normalizeName(text: string): string {
 		.trim();
 }
 
-describe('math-dictionary-fr', () => {
+describe('dictionnaire de référence', () => {
 	// -----------------------------------------------------------------------
 	// Data integrity
 	// -----------------------------------------------------------------------
 
 	it('should have at least 200 terms', () => {
-		expect(MATH_DICTIONARY.length).toBeGreaterThanOrEqual(200);
+		expect(REFERENCE_DICTIONARY.length).toBeGreaterThanOrEqual(200);
 	});
 
 	it('should have no duplicate terms (term + sense)', () => {
-		const keys = MATH_DICTIONARY.map((t) => `${t.term}|${t.sense ?? ''}`);
+		const keys = REFERENCE_DICTIONARY.map((t) => `${t.term}|${t.sense ?? ''}`);
 		const unique = new Set(keys);
 		const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
 		expect(duplicates).toEqual([]);
@@ -158,7 +156,7 @@ describe('math-dictionary-fr', () => {
 
 	it('should have valid GradeCode for every term', () => {
 		const validCodes = new Set<string>(GRADE_CODES);
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			expect(validCodes.has(term.grade), `"${term.term}" has invalid grade "${term.grade}"`).toBe(
 				true
 			);
@@ -166,13 +164,13 @@ describe('math-dictionary-fr', () => {
 	});
 
 	it('should have at least 1 tag for every term', () => {
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			expect(term.tags.length, `"${term.term}" has no tags`).toBeGreaterThanOrEqual(1);
 		}
 	});
 
 	it('should have non-empty definitions for principal terms', () => {
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			if (term.derivedFrom) continue;
 			expect(term.definitions?.items.length, `"${term.term}" has no definitions`).toBeGreaterThan(
 				0
@@ -188,7 +186,7 @@ describe('math-dictionary-fr', () => {
 
 	it('should have valid GradeCode in definition items', () => {
 		const validCodes = new Set<string>(GRADE_CODES);
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			for (const item of term.definitions?.items ?? []) {
 				expect(
 					validCodes.has(item.grade),
@@ -199,7 +197,7 @@ describe('math-dictionary-fr', () => {
 	});
 
 	it('should have no duplicate terms, ignoring accents and case', () => {
-		const keys = MATH_DICTIONARY.map(
+		const keys = REFERENCE_DICTIONARY.map(
 			(t) => `${normalizeName(t.term)}|${normalizeName(t.sense ?? '')}`
 		);
 		const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
@@ -215,7 +213,7 @@ describe('math-dictionary-fr', () => {
 
 	it('should show a definition to every reader who has access to the term', () => {
 		const hidden: string[] = [];
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			if (term.derivedFrom || !term.definitions) continue;
 			for (const reader of GRADE_CODES) {
 				if (!isTermVisibleTo(term, reader)) continue;
@@ -229,7 +227,7 @@ describe('math-dictionary-fr', () => {
 
 	it('should start definitions at the term grade, then go up', () => {
 		const misplaced: string[] = [];
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			const items = term.definitions?.items ?? [];
 			if (items.length === 0) continue;
 			if (items[0].grade !== term.grade) {
@@ -248,7 +246,7 @@ describe('math-dictionary-fr', () => {
 
 	it('should never place an example before its term', () => {
 		const early: string[] = [];
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			for (const item of term.exemples?.items ?? []) {
 				if (!hasAccessToGrade(item.grade, term.grade)) {
 					early.push(`${term.term} : terme ${term.grade}, exemple ${item.grade}`);
@@ -267,7 +265,7 @@ describe('math-dictionary-fr', () => {
 		expect(LOT_0B.derives).toHaveLength(16);
 		const wrong: string[] = [];
 		for (const expected of LOT_0B.principaux) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
 			);
 			if (!term) {
@@ -283,7 +281,7 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		for (const expected of LOT_0B.derives) {
-			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && t.derivedFrom);
+			const term = REFERENCE_DICTIONARY.find((t) => t.term === expected.term && t.derivedFrom);
 			if (term?.grade !== expected.grade) {
 				const found = term?.grade ?? 'introuvable';
 				wrong.push(`${expected.term} (dérivé) : ${found}, attendu ${expected.grade}`);
@@ -298,7 +296,7 @@ describe('math-dictionary-fr', () => {
 		expect(LOT_0C.entrees).toHaveLength(116);
 		const wrong: string[] = [];
 		for (const expected of LOT_0C.entrees) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense
 			);
 			if (!term) {
@@ -346,7 +344,7 @@ describe('math-dictionary-fr', () => {
 		expect(LOT_0D.synonymes).toHaveLength(5);
 		const wrong: string[] = [];
 		for (const expected of LOT_0D.entrees) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
 			);
 			if (!term) {
@@ -366,7 +364,7 @@ describe('math-dictionary-fr', () => {
 		}
 		for (const expected of LOT_0D.synonymes) {
 			// Les cinq termes n'ont pas de sens : un homonyme ajouté plus tard ne doit pas être visé
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && !t.sense && !t.derivedFrom
 			);
 			if (!term) {
@@ -389,7 +387,7 @@ describe('math-dictionary-fr', () => {
 		expect(LOT_0E.formes).toHaveLength(13);
 		const wrong: string[] = [];
 		for (const expected of LOT_0E.verbes) {
-			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
+			const term = REFERENCE_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
 			if (!term || term.derivedFrom) {
 				wrong.push(`${expected.term} : ${term ? 'encore un renvoi' : 'introuvable'}`);
 				continue;
@@ -405,7 +403,7 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		for (const expected of LOT_0E.formes) {
-			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
+			const term = REFERENCE_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
 			if ((term?.forms ?? []).join(', ') !== expected.forms.join(', ')) {
 				wrong.push(`${expected.term} : formes ${term?.forms?.join(', ') ?? 'aucune'}`);
 			}
@@ -421,11 +419,11 @@ describe('math-dictionary-fr', () => {
 	// terme, rendrait le repérage des mots ambigu.
 	it('should give each conjugated form to a single entry', () => {
 		const names = new Set(
-			MATH_DICTIONARY.flatMap((t) => [t.term, ...(t.synonyms ?? [])]).map(normalizeName)
+			REFERENCE_DICTIONARY.flatMap((t) => [t.term, ...(t.synonyms ?? [])]).map(normalizeName)
 		);
 		const seen = new Map<string, string>();
 		const wrong: string[] = [];
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			for (const form of term.forms ?? []) {
 				const key = normalizeName(form);
 				if (names.has(key)) wrong.push(`« ${form} » (${term.term}) est déjà un terme`);
@@ -438,14 +436,14 @@ describe('math-dictionary-fr', () => {
 	});
 
 	it('should recognise the consignes measured in published questions on 2026-10-09', () => {
-		const forms = new Set(MATH_DICTIONARY.flatMap((t) => t.forms ?? []).map(normalizeName));
+		const forms = new Set(REFERENCE_DICTIONARY.flatMap((t) => t.forms ?? []).map(normalizeName));
 		const missing = LOT_0E.consignesEnProd.filter((c) => !forms.has(normalizeName(c)));
 		expect(missing).toEqual([]);
 	});
 
 	// Liste fermée : un mot ne devient « jamais souligné » que par décision de David.
 	it('should never auto-link exactly the closed list of common words', () => {
-		const excluded = MATH_DICTIONARY.filter((t) => t.autoLink === false).map((t) =>
+		const excluded = REFERENCE_DICTIONARY.filter((t) => t.autoLink === false).map((t) =>
 			t.sense ? `${t.term} (${t.sense})` : t.term
 		);
 		expect(excluded.sort()).toEqual([...LOT_0E.exclus, ...LOT_0F.exclus, ...LOT_2.exclus].sort());
@@ -455,7 +453,7 @@ describe('math-dictionary-fr', () => {
 	it('should not keep the synonyms removed for clickable words (lot 2)', () => {
 		expect(LOT_2.synonymesRetires).toHaveLength(1);
 		for (const removed of LOT_2.synonymesRetires) {
-			const term = MATH_DICTIONARY.find((t) => t.term === removed.term);
+			const term = REFERENCE_DICTIONARY.find((t) => t.term === removed.term);
 			expect(term?.synonyms ?? []).not.toContain(removed.synonym);
 		}
 	});
@@ -477,7 +475,7 @@ describe('math-dictionary-fr', () => {
 		const lines = (items: { grade: string; content: string }[]) =>
 			items.map((i) => `${i.grade} : ${i.content}`);
 		for (const expected of LOT_0F.entrees) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
 			);
 			if (!term) {
@@ -497,13 +495,13 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		for (const expected of LOT_0F.renvois) {
-			const term = MATH_DICTIONARY.find((t) => t.term === expected.term);
+			const term = REFERENCE_DICTIONARY.find((t) => t.term === expected.term);
 			if (term?.derivedFrom !== expected.derivedFrom || term.grade !== expected.grade) {
 				wrong.push(`${expected.term} : renvoi ${term?.derivedFrom ?? 'introuvable'}`);
 			}
 		}
 		for (const expected of LOT_0F.synonymes) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && !t.sense && !t.derivedFrom
 			);
 			for (const synonym of expected.ajouts) {
@@ -512,26 +510,28 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		for (const expected of LOT_0F.etiquettes) {
-			if (!MATH_DICTIONARY.some((t) => t.term === expected.term && t.sense === expected.sense)) {
+			if (
+				!REFERENCE_DICTIONARY.some((t) => t.term === expected.term && t.sense === expected.sense)
+			) {
 				wrong.push(`${expected.term} (${expected.sense}) : introuvable`);
 			}
 		}
 		for (const removed of LOT_0F.supprimees) {
-			const still = MATH_DICTIONARY.some(
+			const still = REFERENCE_DICTIONARY.some(
 				(t) =>
 					t.term === removed.term && t.definitions?.items.some((i) => i.content === removed.content)
 			);
 			if (still) wrong.push(`${removed.term} : doublon « ${removed.content} » encore là`);
 		}
 		for (const expected of LOT_0F.definitionsAjoutees) {
-			const term = MATH_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
+			const term = REFERENCE_DICTIONARY.find((t) => t.term === expected.term && !t.sense);
 			const tail = lines(term?.definitions?.items ?? []).slice(-expected.definitions.length);
 			if (tail.join('\n') !== lines(expected.definitions).join('\n')) {
 				wrong.push(`${expected.term} : définitions ajoutées absentes`);
 			}
 		}
 		// Orthographe du BO (« évènement ») et accents dans les formules
-		const names = MATH_DICTIONARY.map((t) => t.term);
+		const names = REFERENCE_DICTIONARY.map((t) => t.term);
 		for (const old of LOT_0F.orthographe.avant)
 			if (names.includes(old)) wrong.push(`« ${old} » : ancienne orthographe`);
 		for (const now of LOT_0F.orthographe.apres)
@@ -539,7 +539,7 @@ describe('math-dictionary-fr', () => {
 		// Nom, sens, formes, définitions et exemples : partout, sauf les synonymes validés
 		// au lot 0h, qui gardent la graphie « événement » des énoncés publiés
 		const spellingSynonyms = new Set(LOT_0H.synonymes.flatMap((s) => s.ajouts));
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			const synonyms = (term.synonyms ?? []).filter((s) => !spellingSynonyms.has(s));
 			if (JSON.stringify({ ...term, synonyms }).includes('événement'))
 				wrong.push(`${term.term} : « événement »`);
@@ -548,12 +548,12 @@ describe('math-dictionary-fr', () => {
 					if (item.content.includes(unaccented)) wrong.push(`${term.term} : ${unaccented}`);
 			}
 		}
-		const minute = MATH_DICTIONARY.find((t) => t.term === 'minute');
+		const minute = REFERENCE_DICTIONARY.find((t) => t.term === 'minute');
 		const minuteLevels = (minute?.definitions?.items ?? []).map((i) => i.grade);
 		if (minuteLevels.join() !== LOT_0F.minute.join()) {
 			wrong.push(`minute : niveaux ${minuteLevels.join(', ')}`);
 		}
-		const repere = MATH_DICTIONARY.find((t) => t.term === 'repère');
+		const repere = REFERENCE_DICTIONARY.find((t) => t.term === 'repère');
 		if (repere?.synonyms?.includes(LOT_0F.repereSynonymeRetire)) {
 			wrong.push(`repère : synonyme « ${LOT_0F.repereSynonymeRetire} »`);
 		}
@@ -570,7 +570,7 @@ describe('math-dictionary-fr', () => {
 		const lines = (items: { grade: string; content: string }[]) =>
 			items.map((i) => `${i.grade} : ${i.content}`).join('\n');
 		for (const expected of LOT_0H.entrees) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && (t.sense ?? null) === expected.sense && !t.derivedFrom
 			);
 			if (!term) {
@@ -590,7 +590,7 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		for (const expected of LOT_0H.synonymes) {
-			const term = MATH_DICTIONARY.find(
+			const term = REFERENCE_DICTIONARY.find(
 				(t) => t.term === expected.term && !t.sense && !t.derivedFrom
 			);
 			for (const synonym of expected.ajouts) {
@@ -599,13 +599,15 @@ describe('math-dictionary-fr', () => {
 			}
 		}
 		for (const expected of LOT_0H.etiquettes) {
-			if (!MATH_DICTIONARY.some((t) => t.term === expected.term && t.sense === expected.sense)) {
+			if (
+				!REFERENCE_DICTIONARY.some((t) => t.term === expected.term && t.sense === expected.sense)
+			) {
 				wrong.push(`${expected.term} (${expected.sense}) : introuvable`);
 			}
 		}
 		// Le renvoi « exponentielle » mène à la fonction exp (glossaire et fiche prennent
 		// le premier terme principal de ce nom)
-		const target = MATH_DICTIONARY.find(
+		const target = REFERENCE_DICTIONARY.find(
 			(t) => t.term === 'fonction exponentielle' && !t.derivedFrom
 		);
 		if (target?.sense !== 'exp')
@@ -616,7 +618,7 @@ describe('math-dictionary-fr', () => {
 	// Un mot à plusieurs sens se lit « carré (géométrie) » ou « carré (puissance) » :
 	// une entrée sans étiquette à côté d'une autre ne dit pas de quel sens elle parle.
 	it('should label every entry of a word that has several meanings', () => {
-		const principals = MATH_DICTIONARY.filter((t) => !t.derivedFrom);
+		const principals = REFERENCE_DICTIONARY.filter((t) => !t.derivedFrom);
 		const unlabeled = principals.filter(
 			(t) => !t.sense && principals.some((other) => other !== t && other.term === t.term)
 		);
@@ -627,9 +629,11 @@ describe('math-dictionary-fr', () => {
 	// définition à montrer au niveau du lecteur.
 	it('should never place a derived term before the term it points to', () => {
 		const early: string[] = [];
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			if (!term.derivedFrom) continue;
-			const target = MATH_DICTIONARY.find((t) => t.term === term.derivedFrom && !t.derivedFrom);
+			const target = REFERENCE_DICTIONARY.find(
+				(t) => t.term === term.derivedFrom && !t.derivedFrom
+			);
 			if (!target) continue;
 			// Chaque lecteur du renvoi, filières parallèles comprises, doit pouvoir lire sa cible
 			for (const reader of GRADE_CODES) {
@@ -645,7 +649,7 @@ describe('math-dictionary-fr', () => {
 	// un mot de 1re spé que nomme aussi le programme de 1re générale lui était caché.
 	describe('mots partagés entre les filières de 1re (lot 0g)', () => {
 		const find = (term: string, sense: string | null = null) => {
-			const found = MATH_DICTIONARY.find(
+			const found = REFERENCE_DICTIONARY.find(
 				(t) => t.term === term && (t.sense ?? null) === sense && !t.derivedFrom
 			);
 			if (!found) throw new Error(`${term} : introuvable`);
@@ -657,7 +661,7 @@ describe('math-dictionary-fr', () => {
 		it('should share exactly the validated words, and nothing else', () => {
 			expect(LOT_0G.termes).toHaveLength(25);
 			expect(LOT_0G.definitions).toHaveLength(7);
-			const sharedTerms = MATH_DICTIONARY.filter((t) => t.sharedWith).map(
+			const sharedTerms = REFERENCE_DICTIONARY.filter((t) => t.sharedWith).map(
 				(t) => `${label(t.term, t.sense ?? null)} → ${t.sharedWith?.join(', ')}`
 			);
 			// Le lot 0h a ajouté des mots partagés dès leur création
@@ -673,14 +677,14 @@ describe('math-dictionary-fr', () => {
 				...expectedTerms.map((e) => ({ ...e, grade: null as string | null })),
 				...LOT_0G.definitions
 			].flatMap((e) => {
-				const term = MATH_DICTIONARY.find(
+				const term = REFERENCE_DICTIONARY.find(
 					(t) => t.term === e.term && (t.sense ?? null) === e.sense
 				);
 				if (!term?.definitions) return [];
 				const grade = e.grade ?? term.grade;
 				return [`${label(e.term, e.sense)} [${grade}] → ${e.sharedWith.join(', ')}`];
 			});
-			const sharedItems = MATH_DICTIONARY.flatMap((t) =>
+			const sharedItems = REFERENCE_DICTIONARY.flatMap((t) =>
 				(t.definitions?.items ?? [])
 					.filter((i) => i.sharedWith)
 					.map(
@@ -692,18 +696,18 @@ describe('math-dictionary-fr', () => {
 
 		it('should let a 1re générale student read « seuil » and its definition', () => {
 			const seuil = find('seuil');
-			expect(getTermsForGrade('1_GEN')).toContain(seuil);
+			expect(getTermsForGrade(REFERENCE_DICTIONARY, '1_GEN')).toContain(seuil);
 			expect(resolveGradedField(definitionsOf(seuil), '1_GEN')).toHaveLength(1);
 		});
 
 		it('should follow the grade hierarchy: Tle comp. reads what 1re générale reads', () => {
-			expect(getTermsForGrade('T_COMP')).toContain(find('seuil'));
-			expect(getTermsForGrade('T_TECHNO')).toContain(find('dérivée'));
+			expect(getTermsForGrade(REFERENCE_DICTIONARY, 'T_COMP')).toContain(find('seuil'));
+			expect(getTermsForGrade(REFERENCE_DICTIONARY, 'T_TECHNO')).toContain(find('dérivée'));
 		});
 
 		it('should let a 1re spé student read « croissance linéaire »', () => {
 			const term = find('croissance linéaire');
-			expect(getTermsForGrade('1_SPE')).toContain(term);
+			expect(getTermsForGrade(REFERENCE_DICTIONARY, '1_SPE')).toContain(term);
 			expect(resolveGradedField(definitionsOf(term), '1_SPE')).toHaveLength(1);
 		});
 
@@ -717,7 +721,7 @@ describe('math-dictionary-fr', () => {
 			expect(resolveGradedField(definitionsOf(echantillon), '1_TECHNO')).toEqual([
 				definitionsOf(echantillon).items[0].content
 			]);
-			expect(getTermsForGrade('1_GEN')).not.toContain(echantillon);
+			expect(getTermsForGrade(REFERENCE_DICTIONARY, '1_GEN')).not.toContain(echantillon);
 		});
 
 		// Le glossaire affiche ce niveau : « 1ère spécialité » ferait croire à un élève
@@ -732,7 +736,7 @@ describe('math-dictionary-fr', () => {
 		});
 
 		it('should still hide « seuil » from a 2de student', () => {
-			expect(getTermsForGrade('2')).not.toContain(find('seuil'));
+			expect(getTermsForGrade(REFERENCE_DICTIONARY, '2')).not.toContain(find('seuil'));
 		});
 
 		// Ni un niveau qui voit déjà le contenu (inutile), ni un niveau d'une autre année
@@ -748,7 +752,7 @@ describe('math-dictionary-fr', () => {
 					}
 				}
 			};
-			for (const term of MATH_DICTIONARY) {
+			for (const term of REFERENCE_DICTIONARY) {
 				check(term.term, term.grade, term.sharedWith);
 				for (const item of term.definitions?.items ?? []) {
 					check(`${term.term}, définition`, item.grade, item.sharedWith);
@@ -761,8 +765,10 @@ describe('math-dictionary-fr', () => {
 	it('should have valid derivedFrom references', () => {
 		// Un renvoi pointe vers un terme principal : « solution » → « solution (équation) »,
 		// jamais vers lui-même ni vers un autre renvoi
-		const termNames = new Set(MATH_DICTIONARY.filter((t) => !t.derivedFrom).map((t) => t.term));
-		for (const term of MATH_DICTIONARY) {
+		const termNames = new Set(
+			REFERENCE_DICTIONARY.filter((t) => !t.derivedFrom).map((t) => t.term)
+		);
+		for (const term of REFERENCE_DICTIONARY) {
 			if (term.derivedFrom) {
 				expect(
 					termNames.has(term.derivedFrom),
@@ -773,7 +779,7 @@ describe('math-dictionary-fr', () => {
 	});
 
 	it('should have lowercase tags', () => {
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			for (const tag of term.tags) {
 				expect(tag, `tag "${tag}" on "${term.term}" is not lowercase`).toBe(tag.toLowerCase());
 			}
@@ -785,7 +791,7 @@ describe('math-dictionary-fr', () => {
 	// -----------------------------------------------------------------------
 
 	it('should cover all 12+ themes', () => {
-		const allTags = new Set(MATH_DICTIONARY.flatMap((t) => t.tags));
+		const allTags = new Set(REFERENCE_DICTIONARY.flatMap((t) => t.tags));
 		const expectedThemes = [
 			'entiers',
 			'décimaux',
@@ -862,7 +868,7 @@ describe('math-dictionary-fr', () => {
 
 	describe('getTermsForGrade', () => {
 		it('should return CP terms for grade CP', () => {
-			const terms = getTermsForGrade('CP');
+			const terms = getTermsForGrade(REFERENCE_DICTIONARY, 'CP');
 			expect(terms.length).toBeGreaterThan(0);
 			for (const t of terms) {
 				expect(t.grade).toBe('CP');
@@ -870,17 +876,17 @@ describe('math-dictionary-fr', () => {
 		});
 
 		it('should return CP through 6e terms for grade 6', () => {
-			const terms = getTermsForGrade('6');
+			const terms = getTermsForGrade(REFERENCE_DICTIONARY, '6');
 			expect(terms.some((t) => t.grade === 'CP')).toBe(true);
 			expect(terms.some((t) => t.grade === '6')).toBe(true);
 			expect(terms.some((t) => t.grade === '5')).toBe(false);
 		});
 
 		it('should include more terms at higher grades', () => {
-			const cpTerms = getTermsForGrade('CP');
-			const cm2Terms = getTermsForGrade('CM2');
-			const sixTerms = getTermsForGrade('6');
-			const troisTerms = getTermsForGrade('3');
+			const cpTerms = getTermsForGrade(REFERENCE_DICTIONARY, 'CP');
+			const cm2Terms = getTermsForGrade(REFERENCE_DICTIONARY, 'CM2');
+			const sixTerms = getTermsForGrade(REFERENCE_DICTIONARY, '6');
+			const troisTerms = getTermsForGrade(REFERENCE_DICTIONARY, '3');
 			expect(cm2Terms.length).toBeGreaterThan(cpTerms.length);
 			expect(sixTerms.length).toBeGreaterThan(cm2Terms.length);
 			expect(troisTerms.length).toBeGreaterThan(sixTerms.length);
@@ -888,72 +894,29 @@ describe('math-dictionary-fr', () => {
 	});
 
 	// -----------------------------------------------------------------------
-	// getTermsByTag
+	// Thèmes et niveaux (assertions sur les données des anciens helpers
+	// getTermsByTag / getTermsByTagAndGrade, retirés avec le fichier)
 	// -----------------------------------------------------------------------
 
-	describe('getTermsByTag', () => {
-		it('should return terms for "arithmétique"', () => {
-			const terms = getTermsByTag('arithmétique');
-			expect(terms.length).toBeGreaterThan(0);
-			for (const t of terms) {
-				expect(t.tags).toContain('arithmétique');
-			}
+	describe('thèmes par niveau', () => {
+		const byTag = (tag: string) => REFERENCE_DICTIONARY.filter((t) => t.tags.includes(tag));
+
+		it('a des termes pour "arithmétique" et "géométrie"', () => {
+			expect(byTag('arithmétique').length).toBeGreaterThan(0);
+			expect(byTag('géométrie').length).toBeGreaterThan(0);
+			expect(byTag('nonexistent-tag-xyz')).toEqual([]);
 		});
 
-		it('should return terms for "géométrie"', () => {
-			const terms = getTermsByTag('géométrie');
-			expect(terms.length).toBeGreaterThan(0);
-		});
-
-		it('should return empty array for unknown tag', () => {
-			const terms = getTermsByTag('nonexistent-tag-xyz');
-			expect(terms).toEqual([]);
-		});
-	});
-
-	// -----------------------------------------------------------------------
-	// getTermsByTagAndGrade
-	// -----------------------------------------------------------------------
-
-	describe('getTermsByTagAndGrade', () => {
-		it('should return a subset of getTermsByTag', () => {
-			const allGeometrie = getTermsByTag('géométrie');
-			const geometrie4 = getTermsByTagAndGrade('géométrie', '4');
+		it('a des termes de géométrie visibles en 4e, sous-ensemble de la géométrie', () => {
+			const geometrie4 = getTermsForGrade(byTag('géométrie'), '4');
 			expect(geometrie4.length).toBeGreaterThan(0);
-			expect(geometrie4.length).toBeLessThanOrEqual(allGeometrie.length);
-			for (const t of geometrie4) {
-				expect(allGeometrie).toContainEqual(t);
-			}
+			expect(geometrie4.length).toBeLessThanOrEqual(byTag('géométrie').length);
 		});
 
-		it('should respect grade filtering', () => {
-			const terms = getTermsByTagAndGrade('fonctions', '6');
-			for (const t of terms) {
-				expect(t.tags).toContain('fonctions');
-			}
-			expect(terms.some((t) => t.term === 'fonction')).toBe(false);
-		});
-	});
-
-	// -----------------------------------------------------------------------
-	// getAllTerms
-	// -----------------------------------------------------------------------
-
-	describe('getAllTerms', () => {
-		it('should return all terms', () => {
-			const all = getAllTerms();
-			expect(all.length).toBe(MATH_DICTIONARY.length);
-		});
-
-		it('should return a copy (not the original array)', () => {
-			const all = getAllTerms();
-			all.push({
-				term: 'test',
-				tags: ['test'],
-				definitions: { items: [{ grade: 'CP', content: 'test' }] },
-				grade: 'CP'
-			} satisfies MathTerm);
-			expect(getAllTerms().length).toBe(MATH_DICTIONARY.length);
+		it('ne montre pas « fonction » en 6e', () => {
+			const fonctions6 = getTermsForGrade(byTag('fonctions'), '6');
+			expect(fonctions6.some((t) => t.term === 'fonction')).toBe(false);
+			expect(byTag('fonctions').some((t) => t.term === 'fonction')).toBe(true);
 		});
 	});
 });

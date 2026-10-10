@@ -8339,6 +8339,7 @@ export type Database = {
           consent_grace_period_ends: string | null
           consent_granted_at: string | null
           consent_required: boolean
+          consent_rule_pending: boolean
           created_at: string
           email: string
           firstname: string | null
@@ -8368,6 +8369,7 @@ export type Database = {
           consent_grace_period_ends?: string | null
           consent_granted_at?: string | null
           consent_required?: boolean
+          consent_rule_pending?: boolean
           created_at?: string
           email: string
           firstname?: string | null
@@ -8397,6 +8399,7 @@ export type Database = {
           consent_grace_period_ends?: string | null
           consent_granted_at?: string | null
           consent_required?: boolean
+          consent_rule_pending?: boolean
           created_at?: string
           email?: string
           firstname?: string | null
@@ -15462,6 +15465,7 @@ export type Database = {
         Args: { p_assignment_id: string }
         Returns: boolean
       }
+      has_full_access: { Args: { p_user_id: string }; Returns: boolean }
       has_individual_assignment: {
         Args: { p_assignment_id: string }
         Returns: boolean
@@ -15614,6 +15618,10 @@ export type Database = {
       mark_message_as_read: {
         Args: { p_message_id: string; p_user_id: string }
         Returns: undefined
+      }
+      marketplace_hidden_creators: {
+        Args: { p_school_id: string }
+        Returns: string[]
       }
       minesweeper_scoped_leaderboard: {
         Args: { p_limit?: number; p_scope: string }
