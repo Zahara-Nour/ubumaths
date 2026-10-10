@@ -24,6 +24,7 @@ import { Fraction } from '$lib/statistics/fraction';
 import {
 	exponentialSampler,
 	geometricSampler,
+	normalSampler,
 	simulateDraws,
 	uniformSampler,
 	type LawSampler
@@ -317,6 +318,100 @@ describe('simulation d’une loi à densité, mode tirages : histogramme en dens
 			/^the last class also counts the draws beyond 10 \(here \d+\)$/
 		);
 		expect(scene.indicators[2]).toBe('seed 4');
+	});
+});
+
+// =============================================================================
+// Loi normale (D7, décision de David du 2026-10-11)
+// =============================================================================
+
+describe('simulation de N(μ ; σ²), mode tirages : histogramme sur μ ± 3σ', () => {
+	const NORMAL = 'Y ~ N(10 ; 4)\ntirages: 1000\ngraine: 4';
+	const sampler = () => normalSampler(new Fraction(10n, 1n), new Fraction(4n, 1n));
+
+	it('10 classes égales de [4 ; 16] (μ ± 3σ, σ = 2), aire totale 1', () => {
+		const scene = sceneOf<HistogramScene>(NORMAL);
+		expect(scene.kind).toBe('histogramme');
+		expect(scene.rects.map((r) => r.lower)).toEqual([
+			4, 5.2, 6.4, 7.6, 8.8, 10, 11.2, 12.4, 13.6, 14.8
+		]);
+		expect(scene.rects[9].upper).toBe(16);
+		expect(areaOf(scene)).toBeCloseTo(1, 12);
+	});
+
+	it('les deux classes du bord prennent ce qui dépasse : ]−∞ ; …[ et [… ; +∞[', () => {
+		const scene = sceneOf<HistogramScene>(NORMAL);
+		expect(scene.rects[0].label).toBe(']−∞ ; 5,2[');
+		expect(scene.rects[9].label).toBe('[14,8 ; +∞[');
+		const draws = drawsOf(sampler(), 1000, 4);
+		const inClass = (i: number) =>
+			draws.filter((x) => {
+				const low = 4 + 1.2 * i;
+				if (i === 0) return x < 5.2;
+				if (i === 9) return x >= 14.8;
+				return x >= low - 1e-9 && x < low + 1.2 - 1e-9;
+			}).length;
+		scene.rects.forEach((rect, i) => expect(rect.height).toBeCloseTo(inClass(i) / 1000 / 1.2, 12));
+	});
+
+	it('la courbe superposée : la même que le bloc ```loi', () => {
+		const scene = sceneOf<HistogramScene>(NORMAL);
+		const law = parseStatChartContent('loi', 'Y ~ N(10 ; 4)\ndiagramme: oui');
+		const curve = (buildStatChartScene(law.spec!) as LawScene).densityChart!;
+		expect(scene.densityCurve?.points).toEqual(curve.points);
+		expect(scene.densityCurve?.color).toBe(curve.color);
+		expect(scene.xMin).toBe(curve.xMin);
+		expect(scene.xMax).toBe(curve.xMax);
+	});
+
+	it('résumé (E(Y) = 10), mention des deux bords, puis la graine', () => {
+		const scene = sceneOf<HistogramScene>(NORMAL);
+		const draws = drawsOf(sampler(), 1000, 4);
+		const below = draws.filter((x) => x < 4).length;
+		const beyond = draws.filter((x) => x > 16).length;
+		expect(scene.indicators[0]).toMatch(
+			/^1\u00a0000 tirages ; moyenne observée ≈ \d+,\d+ \(E\(Y\) = 10\)$/
+		);
+		expect(scene.indicators[1]).toBe(
+			`la première classe compte aussi les tirages en deçà de 4 (ici ${below}), la dernière ceux au-delà de 16 (ici ${beyond})`
+		);
+		expect(scene.indicators[2]).toBe('graine 4');
+	});
+
+	it('anglais : mention des deux bords en anglais', () => {
+		const scene = sceneOf<HistogramScene>(NORMAL, 'en');
+		expect(scene.indicators[1]).toMatch(
+			/^the first class also counts the draws below 4 \(here \d+\), the last those beyond 16 \(here \d+\)$/
+		);
+	});
+
+	it('`classes: 6` ; N(0 ; 1) : bornes négatives', () => {
+		const scene = sceneOf<HistogramScene>('Y ~ N(0 ; 1)\nclasses: 6\ntirages: 500');
+		expect(scene.rects.map((r) => r.lower)).toEqual([-3, -2, -1, 0, 1, 2]);
+		expect(scene.rects[0].label).toBe(']−∞ ; −2[');
+		expect(areaOf(scene)).toBeCloseTo(1, 12);
+	});
+
+	it('mode moyenne : droite E(Y) = μ ; mode échantillons : histogramme des moyennes', () => {
+		const mean = sceneOf<MeanScene>('Y ~ N(10 ; 4)\nmode: moyenne\ntirages: 2000');
+		expect(mean.kind).toBe('moyenne-selon-n');
+		expect(mean.reference.value).toBe(10);
+		const samples = sceneOf<HistogramScene>(
+			'Y ~ N(10 ; 4)\nmode: échantillons\néchantillons: 100\ntaille: 50'
+		);
+		expect(samples.rects.reduce((sum, r) => sum + r.height, 0)).toBe(100);
+	});
+
+	it('`répartition:` reste refusée : F n’a pas de formule', () => {
+		expect(errorOf('Y ~ N(0 ; 1)\nrépartition: oui')).toMatch(/répartition/);
+	});
+
+	it('Typst : un rectangle par classe, la courbe, l’axe « Densité », la graine', () => {
+		const typst = generateStatChartTypst(parseStatChartContent('simulation', NORMAL));
+		expect(typst.match(/^ {2}rect\(/gm)).toHaveLength(10);
+		expect(typst).toContain('// courbe de densité');
+		expect(typst).toContain('Densité');
+		expect(typst).toContain('graine 4');
 	});
 });
 

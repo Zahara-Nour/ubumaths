@@ -97,9 +97,10 @@ describe('le bloc ```loi : Y ~ N(μ ; σ²)', () => {
 		);
 	});
 
-	it('pas de simulation de la loi normale (hors périmètre) : refus clair', () => {
+	it('la loi normale se simule comme les autres lois (D7, 2026-10-11)', () => {
 		const node = parseStatChartContent('simulation', 'Y ~ N(0 ; 1)\ntirages: 100');
-		expect(node.errors[0]?.message).toContain('loi normale');
+		expect(node.errors).toEqual([]);
+		expect(node.spec).not.toBeNull();
 	});
 });
 
