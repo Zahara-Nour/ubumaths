@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'src/lib/stores/{notebookStore,pythonPlayground,pythonDebug}.svelte.ts'
+---
+
 # Python Playground — Store
 
 Documentation de `src/lib/stores/pythonPlayground.svelte.ts` (≈ 1 000 lignes), le store réactif du playground Python.

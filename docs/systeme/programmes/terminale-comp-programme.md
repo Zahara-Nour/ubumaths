@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'supabase/migrations/*_seed_curriculum_terminale_comp.sql'
+  - 'supabase/migrations/*_seed_curriculum_points_tcomp.sql'
+---
+
 # Programme de suivi terminale mathématiques complémentaires — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'T_COMP'`.

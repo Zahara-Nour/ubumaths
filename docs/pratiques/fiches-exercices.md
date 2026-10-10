@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'scripts/fiches/**'
+---
+
 # Créer des fiches d'exercices — démarche, choix et pièges
 
 > Rédigé le 2026-09-26, après les 18 fiches de 1re spécialité (8 thèmes + géométrie repérée).

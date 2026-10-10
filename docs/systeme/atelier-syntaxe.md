@@ -1,3 +1,10 @@
+---
+couvre:
+  - src/lib/atelier/commands.ts
+  - src/lib/atelier/law-commands.ts
+  - src/lib/mathAST/cli/core/variable-argument.ts
+---
+
 # Syntaxe des commandes de Calcul (atelier)
 
 > **Référence en service** (proposée et validée le 2026-10-08, implémentée : `src/lib/atelier/commands.ts`, `src/lib/mathAST/cli/core/variable-argument.ts`, test `src/lib/atelier/__tests__/syntaxe-mots-cles.test.ts`). Vue d'ensemble de l'atelier : [atelier.md](atelier.md). **Décisions de David (2026-10-08)** : Q1 oui (variable devinée quand un seul choix), Q2 `en` ET `pour`, Q3 probabilités/statistiques inchangées. Liste complète validée le 2026-10-08 (incohérences corrigées : `.ajustement`, mots-clés sans accent).

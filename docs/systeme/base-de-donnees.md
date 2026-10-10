@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'supabase/migrations/**'
+  - src/lib/types/database-helpers.ts
+---
+
 # Base de données — ce que la liste des tables ne dit pas
 
 La base Supabase (Postgres, région **EU**, `eu-west-3`) porte tout l'état de Chiphre : comptes,

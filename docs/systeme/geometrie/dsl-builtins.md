@@ -1,3 +1,10 @@
+---
+couvre:
+  - 'src/lib/geometry-core/dsl/builtins*.ts'
+  - scripts/lint-angle-builtins.ts
+  - scripts/migrate-angle-builtins-supabase.ts
+---
+
 # DSL de géométrie — référence des builtins
 
 Référence de ce qu'on peut écrire dans un script de figure (éditeur `GeometryCanvas`, bloc

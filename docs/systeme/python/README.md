@@ -1,3 +1,25 @@
+---
+couvre:
+  - 'src/lib/components/python/**'
+  - 'src/lib/components/notebook/**'
+  - 'src/lib/shared/python/**'
+  - src/lib/workers/pyodide.worker.ts
+  - 'src/lib/stores/{notebookStore,pythonPlayground,pythonDebug}.svelte.ts'
+  - 'src/lib/utils/{locked-zones,notebook-export,notebook-import,notebook-outline,notebook-foreign-content,output-fold}.ts'
+  - 'src/lib/utils/codemirror-*.ts'
+  - 'src/lib/utils/notebook-*.example.ts'
+  - 'src/lib/types/{python-exercises,python-worker,notebook}.ts'
+  - 'src/lib/data/python-examples/**'
+  - src/lib/server/notebook-template-gallery.ts
+  - 'src/lib/server/validation/{notebooks,notebook-checkpoints,notebook-templates,python-exercises,python-files,python-settings}.ts'
+  - 'src/routes/(public)/python/**'
+  - 'src/routes/(public)/python-exercises/**'
+  - 'src/routes/(protected)/python-notebook/**'
+  - 'src/routes/(protected)/dashboard/teacher/contenu/notebooks/**'
+  - 'src/routes/api/python-*/**'
+  - 'src/routes/api/profile/python-settings/**'
+---
+
 # Python Ecosystem — UbuMaths
 
 Documentation technique de l'écosystème Python d'UbuMaths : playground, notebook, debugger, exercices et bibliothèque d'exemples.

@@ -1,3 +1,17 @@
+---
+couvre:
+  - src/lib/utils/consent.ts
+  - src/lib/stores/consent.svelte.ts
+  - src/lib/server/middleware/consent.ts
+  - src/lib/email-templates/parental-consent.ts
+  - 'src/lib/server/email/**'
+  - 'src/lib/components/{ConsentBanner,ConsentButton}.svelte'
+  - 'src/routes/(public)/consent/**'
+  - 'src/routes/(protected)/dashboard/teacher/consent/**'
+  - 'src/routes/api/consent/**'
+  - 'supabase/migrations/*consentement*.sql'
+---
+
 # Parental Consent System - Progress Document
 
 > ⚠️ **DOCUMENT DATÉ (2026-01-16).** Drifts actuels : période de grâce **= date fixe 2026-06-30** (et

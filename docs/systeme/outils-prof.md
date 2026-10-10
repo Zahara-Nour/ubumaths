@@ -1,3 +1,30 @@
+---
+couvre:
+  - 'src/lib/whiteboard/**'
+  - 'src/lib/slides/**'
+  - 'src/lib/spreadsheet/**'
+  - 'src/lib/constructions/**'
+  - 'src/lib/components/spreadsheet/**'
+  - 'src/lib/components/google/**'
+  - 'src/lib/server/google/**'
+  - src/lib/server/kanban.ts
+  - 'src/lib/server/validation/{kanban,spreadsheet,google,whiteboard-drive,whiteboard-templates}.ts'
+  - src/lib/types/google.ts
+  - 'src/routes/(protected)/whiteboard/**'
+  - 'src/routes/(protected)/spreadsheet/**'
+  - 'src/routes/(protected)/organisation/kanban/**'
+  - 'src/routes/slides/**'
+  - 'src/routes/(protected)/dashboard/teacher/google/**'
+  - 'src/routes/(protected)/dashboard/teacher/settings/google/**'
+  - 'src/routes/(protected)/dashboard/student/{classroom,devoirs,materials}/**'
+  - 'src/routes/api/whiteboard/**'
+  - 'src/routes/api/spreadsheets/**'
+  - 'src/routes/api/organisation/kanban/**'
+  - 'src/routes/api/google/**'
+  - 'src/routes/api/constructions/**'
+  - 'src/routes/api/student/{shared-coursework,shared-materials}/**'
+---
+
 # Outils du prof : tableau blanc, diaporamas, tableur, kanban, anciennes constructions, Google Classroom
 
 > Six outils périphériques, sans doc jusqu'ici. Écrit depuis le code, le schéma

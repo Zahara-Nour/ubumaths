@@ -1,3 +1,24 @@
+---
+couvre:
+  - 'src/lib/worksheets/**'
+  - 'src/lib/typst/**'
+  - 'src/lib/server/worksheets/**'
+  - src/lib/server/validation/worksheets.ts
+  - 'src/lib/components/worksheets/**'
+  - 'src/lib/components/student/worksheets/**'
+  - src/lib/types/worksheets.ts
+  - src/lib/types/locale.ts
+  - 'src/lib/exercises/typst/**'
+  - src/lib/ubumark/generators/typst-generator.ts
+  - 'src/routes/(protected)/dashboard/teacher/contenu/worksheets/**'
+  - 'src/routes/(protected)/dashboard/student/worksheets/**'
+  - 'src/routes/(public)/cahier/*/fiche/**'
+  - 'src/routes/api/worksheets/**'
+  - 'src/routes/api/student/worksheets/**'
+  - 'src/routes/api/teacher/chapters/*/worksheets/**'
+  - 'scripts/fiches/**'
+---
+
 # Fiches d'exercices et production PDF
 
 > Première doc de référence du module ; le savoir était dans les journaux de

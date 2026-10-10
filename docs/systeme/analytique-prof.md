@@ -1,3 +1,12 @@
+---
+couvre:
+  - 'src/lib/server/stats/**'
+  - src/lib/server/validation/teacher-analytics.ts
+  - 'src/lib/components/teacher/analytics/**'
+  - 'src/routes/(protected)/dashboard/teacher/classes/*/analytics/**'
+  - 'src/routes/api/teacher/classes/*/analytics/**'
+---
+
 # Analytique prof — la page « analytics » d'une classe
 
 > Vérifié contre le code le 2026-10-10. Historique du chantier (V2.0, juin 2026) :

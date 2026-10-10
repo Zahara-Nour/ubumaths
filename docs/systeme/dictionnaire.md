@@ -1,3 +1,20 @@
+---
+couvre:
+  - 'src/lib/dictionary/**'
+  - 'src/lib/lexicon/**'
+  - 'src/lib/server/dictionary/**'
+  - src/lib/components/markdown/lexicon-context.ts
+  - src/lib/components/markdown/nodes/LexiconTerm.svelte
+  - src/lib/data/math-dictionary-fr.ts
+  - 'src/routes/api/dictionnaire/**'
+  - 'src/routes/api/admin/dictionnaire/**'
+  - 'src/routes/(protected)/dashboard/admin/dictionnaire/**'
+  - 'src/routes/(public)/glossaire/**'
+  - 'src/routes/(public)/games/mathemo/dictionary-words.ts'
+  - 'src/routes/(public)/demo/mots-cliquables/**'
+  - 'supabase/migrations/*_dictionnaire_*.sql'
+---
+
 # Dictionnaire, glossaire et mots cliquables
 
 > Vérifié contre le code le 2026-10-10. Chantier vivant : l'état des lots (données, page d'admin,

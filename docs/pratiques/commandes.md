@@ -1,3 +1,11 @@
+---
+couvre:
+  - scripts/gros-process.sh
+  - scripts/with-db-lock.sh
+  - scripts/check-changed.sh
+  - scripts/release.ts
+---
+
 # Scripts pnpm — référence
 
 Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié contre `package.json` le 2026-10-10.

@@ -1,3 +1,16 @@
+---
+couvre:
+  - 'src/lib/components/buddy/**'
+  - src/lib/config/buddy-messages.ts
+  - src/lib/config/buddy-quiz.ts
+  - src/lib/config/personalities.ts
+  - 'src/lib/server/buddy-*.ts'
+  - src/lib/server/validation/buddy.ts
+  - src/lib/types/buddy.ts
+  - src/lib/utils/buddy-xp.ts
+  - 'src/routes/api/student/buddy/**'
+---
+
 # Buddy System — Les Palotins
 
 > Document de specification pour le systeme de compagnon virtuel d'UbuMaths.

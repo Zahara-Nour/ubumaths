@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'src/lib/mathAST/tidy/**'
+---
+
 # `tidy()` — phase 0 : les comportements attendus, à valider
 
 > Rédigé le 2026-09-20, après le relevé

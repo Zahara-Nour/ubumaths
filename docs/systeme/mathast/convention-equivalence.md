@@ -1,3 +1,15 @@
+---
+couvre:
+  - 'src/lib/math/**'
+  - 'src/lib/mathAST/equivalence*.ts'
+  - src/lib/mathAST/assumptions.ts
+  - src/lib/mathAST/decimal-comma.ts
+  - src/lib/mathAST/domain/validation/parse-student-domain.ts
+  - 'src/lib/questions/{intervals,equations,vectors,matrices,calculus}/**'
+  - src/lib/questions/angle-modulo.ts
+  - src/lib/questions/complex-forms.ts
+---
+
 # Ce que `areEquivalent` veut dire
 
 > Écrit le 2026-09-20, après une journée où la même question s'est reposée

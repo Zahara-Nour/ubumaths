@@ -1,3 +1,19 @@
+---
+couvre:
+  - 'src/lib/grapheur/**'
+  - 'src/lib/components/grapheur/**'
+  - 'src/lib/stores/grapheur*.ts'
+  - 'src/lib/geometry-core/viewport/**'
+  - src/lib/geometry-core/rendering/bezier.ts
+  - src/lib/geometry-core/rendering/colors.ts
+  - src/lib/geometry-core/graph/parametric-calculus.ts
+  - src/lib/ubumark/parser/courbe-parser.ts
+  - src/lib/ubumark/utils/courbe-scene.ts
+  - src/lib/atelier/plot-sync.ts
+  - src/lib/atelier/display.ts
+  - 'src/routes/(public)/grapheur/**'
+---
+
 # Le grapheur
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,

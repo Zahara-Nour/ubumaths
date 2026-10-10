@@ -1,3 +1,35 @@
+---
+couvre:
+  - src/hooks.server.ts
+  - src/app.d.ts
+  - src/lib/server/supabase.ts
+  - src/lib/server/auth.ts
+  - 'src/lib/server/auth/**'
+  - 'src/lib/server/middleware/**'
+  - src/lib/server/adminElevation.ts
+  - src/lib/server/serviceRoleClient.ts
+  - src/lib/server/rateLimiter.ts
+  - src/lib/server/csrfProtection.ts
+  - src/lib/server/passwordPolicy.ts
+  - src/lib/server/validateRedirectUrl.ts
+  - src/lib/server/private-response.ts
+  - src/lib/server/validation/auth.ts
+  - src/lib/server/validation/admin-elevation.ts
+  - src/lib/server/google/oauth.ts
+  - src/lib/server/google/encryption.ts
+  - src/lib/config/google-login.ts
+  - src/lib/config/google-classroom.ts
+  - src/lib/components/UserAvatar.svelte
+  - 'src/routes/(public)/auth/**'
+  - 'src/routes/(protected)/+layout.server.ts'
+  - 'src/routes/(protected)/dashboard/admin/+layout.server.ts'
+  - 'src/routes/(protected)/dashboard/elevate/**'
+  - 'src/routes/api/admin/elevate/**'
+  - 'src/routes/api/admin/pending-users/**'
+  - 'src/routes/api/admin/users/*/status/**'
+  - 'src/routes/api/google/auth/**'
+---
+
 # Authentification, profils et élévation admin
 
 > Remplace les 11 fichiers de [`auth/`](../archive/systeme-2026-06/auth/README.md) (juin 2026, archivés, antérieurs au modèle

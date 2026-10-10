@@ -1,3 +1,42 @@
+---
+couvre:
+  - 'src/lib/games/**'
+  - 'src/lib/server/achievements/**'
+  - 'src/lib/server/games/**'
+  - 'src/lib/server/marketplace/**'
+  - src/lib/server/reward-journal-balance.ts
+  - 'src/lib/server/riddle-*.ts'
+  - 'src/lib/server/vip-card-*.ts'
+  - 'src/lib/server/validation/{achievements,choose-cards,draw-vip-cards,exchange-cards,games,marketplace-rpc,minesweeper,minesweeper-multiplayer,minesweeper-rpc,minesweeper-tournament,navadra,reward-journal,rewards,riddles,vip-card-admin,vip-card-rpc,vip-cards}.ts'
+  - 'src/lib/stores/game/**'
+  - 'src/lib/stores/{marketplace,minesweeper,multiplayer,rewardJournal,vipCardTemplates,holo-card,achievements}.svelte.ts'
+  - 'src/lib/utils/{riddle-validator,riddle-badges,vip-cards,vip-card-modals,bonus-modals,holo-math}.ts'
+  - 'src/lib/utils/game/**'
+  - src/lib/client/validation/multiplayer-responses.ts
+  - 'src/lib/components/teacher/{BonusReasonModal,VipCardUseDialog}.svelte'
+  - 'src/lib/data/game/**'
+  - 'src/lib/validation/{shop,marketplace}.ts'
+  - src/lib/constants/vip-card-ui.ts
+  - 'src/lib/types/{vip-card,vip-card-admin,marketplace,minesweeper,riddle,reward-journal,achievements,game}.ts'
+  - 'src/lib/components/{vip-cards,marketplace,minesweeper,riddles,game,rewards,achievements}/**'
+  - 'src/lib/components/{VipCard*,Gidouille*,BonusHistoryModal,StudentVipCardsModal,RewardsBlock}.svelte'
+  - 'src/routes/(protected)/dashboard/navadra/**'
+  - 'src/routes/(protected)/dashboard/student/{inventory,marketplace,minesweeper,riddles,vip-cards}/**'
+  - 'src/routes/(protected)/dashboard/teacher/{gamification,minesweeper}/**'
+  - 'src/routes/(protected)/dashboard/teacher/contenu/enigmes/**'
+  - 'src/routes/(protected)/dashboard/admin/vip-cards/**'
+  - 'src/routes/(protected)/games/**'
+  - 'src/routes/(public)/games/**'
+  - 'src/routes/(public)/demo/vip-cards-demo/**'
+  - 'src/routes/api/{vip-cards,games,marketplace,riddles,rewards,achievements}/**'
+  - 'src/routes/api/teacher/rewards/**'
+  - 'src/routes/api/admin/vip-cards/**'
+  - 'src/routes/api/student/{bonus-history,gidouilles-activity,rewards}/**'
+  - 'src/routes/api/students/*/vip-cards/**'
+  - 'src/routes/api/classes/*/gidouilles/**'
+  - scripts/simulate-vip-economy.ts
+---
+
 # Jeux et économie (gidouilles, cartes VIP, marché, classements)
 
 > Remplace `vips/economy.md` (mars 2026), qui décrivait l'économie sans le code des jeux et citait

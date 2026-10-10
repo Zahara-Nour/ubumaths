@@ -1,3 +1,14 @@
+---
+couvre:
+  - src/hooks.server.ts
+  - src/hooks.client.ts
+  - src/app.d.ts
+  - src/app.html
+  - src/routes/+layout.server.ts
+  - src/routes/+layout.ts
+  - 'src/routes/(protected)/+layout.server.ts'
+---
+
 # Architecture générale
 
 > Vérifié contre le code le 2026-10-10.

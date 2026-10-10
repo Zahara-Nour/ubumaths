@@ -1,3 +1,11 @@
+---
+couvre:
+  - 'src/lib/competences/**'
+  - 'src/lib/server/competences/**'
+  - 'src/routes/(protected)/dashboard/teacher/competences/export/**'
+  - 'src/routes/api/teacher/competences/export/**'
+---
+
 # Export des compétences vers l'ENT
 
 > Vérifié contre le code le 2026-10-10 (sauf les marches à suivre côté Pronote / EcoleDirecte /

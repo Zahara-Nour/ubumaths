@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'src/lib/mathAST/**'
+---
+
 # mathAST — le moteur de calcul symbolique
 
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).

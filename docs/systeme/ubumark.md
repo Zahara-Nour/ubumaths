@@ -1,3 +1,14 @@
+---
+couvre:
+  - 'src/lib/ubumark/**'
+  - 'src/lib/components/markdown/**'
+  - 'src/lib/extensions/**'
+  - 'src/lib/components/rich-text/markdown-{import,export}.ts'
+  - src/lib/components/exercises/LaTeXImportDialog.svelte
+  - src/lib/utils/markdown-cache.ts
+  - scripts/check-ubumark.ts
+---
+
 # ubumark — la notation des contenus
 
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.

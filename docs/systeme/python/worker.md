@@ -1,3 +1,10 @@
+---
+couvre:
+  - 'src/lib/shared/python/{config,index}.ts'
+  - 'src/lib/shared/python/{worker,validation,validation-core,debug}/**'
+  - src/lib/workers/pyodide.worker.ts
+---
+
 # Python Ecosystem — Web Worker
 
 Documentation technique de `src/lib/workers/pyodide.worker.ts` (≈ 4 000 lignes), le Web Worker qui exécute tout le Python d'UbuMaths.

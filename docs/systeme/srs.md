@@ -1,3 +1,20 @@
+---
+couvre:
+  - 'src/lib/srs/**'
+  - 'src/lib/server/srs/**'
+  - 'src/lib/server/anti-fraud/**'
+  - 'src/lib/server/validation/{srs,skill-attempts,anti-fraud}.ts'
+  - 'src/lib/components/srs/**'
+  - 'src/lib/components/teacher/anti-fraud/**'
+  - 'src/routes/(protected)/dashboard/revisions/**'
+  - 'src/routes/(protected)/dashboard/teacher/srs/**'
+  - 'src/routes/(protected)/dashboard/student/objectifs/**'
+  - 'src/routes/api/srs/**'
+  - 'src/routes/api/skill-attempts/**'
+  - 'src/routes/api/admin/anti-fraud/**'
+  - 'src/routes/api/teacher/classes/*/anti-fraud/**'
+---
+
 # Révisions espacées (SRS / FSRS)
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la

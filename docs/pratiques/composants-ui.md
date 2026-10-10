@@ -1,3 +1,11 @@
+---
+couvre:
+  - 'src/lib/components/ui/**'
+  - 'src/lib/components/{MySelect,MyCheckbox,UserAvatar}.svelte'
+  - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
+  - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
+---
+
 # UI Components
 
 Référence synthétique pour Claude : **composants UI obligatoires**, imports Shadcn-svelte, conventions Tailwind 4. Règles non négociables : [CLAUDE.md](../../CLAUDE.md#règles-de-code-non-négociables).

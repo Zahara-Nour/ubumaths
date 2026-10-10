@@ -1,3 +1,14 @@
+---
+couvre:
+  - 'src/lib/statistics/**'
+  - src/lib/utils/random.ts
+  - 'src/lib/atelier/{chart,compare,desk.svelte,filter,law-commands,simulate}.ts'
+  - src/lib/components/atelier/DataView.svelte
+  - src/lib/ubumark/parser/stat-chart-parser.ts
+  - src/lib/ubumark/types/stat-chart.ts
+  - 'src/lib/ubumark/utils/{comparison-scene,scatter-lines,stat-chart-scene}.ts'
+---
+
 # Statistiques et probabilités (`src/lib/statistics/`)
 
 > Vérifié contre le code le 2026-10-10. Usage dans l'atelier : [atelier.md](atelier.md)

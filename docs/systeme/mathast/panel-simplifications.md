@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'src/lib/mathAST/simplify/**'
+  - 'src/lib/mathAST/pedagogical-simplify/**'
+---
+
 # Panel de référence des simplifications
 
 > **Mesuré le 2026-09-21** sur `main` à `006873aad`, et **pinné** par

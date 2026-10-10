@@ -1,3 +1,14 @@
+---
+couvre:
+  - 'src/lib/atelier/**'
+  - 'src/lib/components/atelier/**'
+  - src/lib/mathAST/cli/web/web-repl-engine.ts
+  - 'src/routes/(public)/atelier/**'
+  - 'src/routes/(public)/calc/**'
+  - 'src/routes/(public)/cas/**'
+  - 'src/routes/(public)/grapheur/**'
+---
+
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :

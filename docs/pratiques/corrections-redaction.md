@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'scripts/corrections/**'
+---
+
 # Rédiger une correction (mode A) — style maison et couleurs
 
 Une correction en mode A est une liste `correction.steps` de chaînes markdown, rendues dans l'ordre.

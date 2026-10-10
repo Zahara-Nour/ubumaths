@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'supabase/migrations/*_security_audit_trigger_minimize.sql'
+---
+
 # Database Schema Reference
 
 > ⚠️ **DOCUMENT DATÉ (2026-01-16).** Le code actuel trace `profiles`, **`exercise_completions`**,

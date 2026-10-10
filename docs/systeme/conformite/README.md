@@ -1,3 +1,10 @@
+---
+couvre:
+  - 'src/routes/api/account/**'
+  - 'src/routes/api/consent/**'
+  - 'src/routes/(public)/legal/**'
+---
+
 # Conformité au droit — UbuMaths
 
 Dossier central de la **conformité réglementaire** d'UbuMaths (RGPD, ePrivacy/cookies, LCEN, DSA).

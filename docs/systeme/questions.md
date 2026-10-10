@@ -1,3 +1,26 @@
+---
+couvre:
+  - 'src/lib/questions/**'
+  - 'src/lib/exercises/**'
+  - src/lib/validation/series.ts
+  - src/lib/srs/generator.ts
+  - src/lib/utils/answer-validator.ts
+  - src/lib/mathAST/cosmetic-transforms.ts
+  - 'src/lib/migration/review/**'
+  - 'src/lib/types/{question-display,question-template}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,grading-budget,corrected-detail}.ts'
+  - src/lib/server/validation/questions.ts
+  - 'src/lib/components/questions/**'
+  - 'src/lib/components/question-inputs/**'
+  - src/lib/components/markdown/nodes/BlankInput.svelte
+  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor}.svelte'
+  - src/lib/components/exercises/VariationEditor.svelte
+  - 'src/routes/api/questions/**'
+  - 'src/routes/(protected)/dashboard/admin/questions/**'
+  - 'src/routes/(protected)/dashboard/teacher/series/**'
+  - 'src/routes/(public)/automaths/**'
+---
+
 # Questions, exercices de fiche, validation des réponses
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de

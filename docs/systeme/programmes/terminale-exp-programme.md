@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'supabase/migrations/*_seed_curriculum_terminale_exp.sql'
+  - 'supabase/migrations/*_seed_curriculum_points_texp.sql'
+---
+
 # Programme de suivi terminale mathématiques expertes — Thème → Objectif → Point
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'T_EXP'`.

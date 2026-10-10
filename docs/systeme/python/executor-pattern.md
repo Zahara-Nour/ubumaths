@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'src/lib/shared/python/execution/**'
+---
+
 # Python Executor Pattern
 
 Documentation du pattern d'abstraction qui sépare la **gestion du worker Pyodide** des **concerns UI/persistance** dans l'écosystème Python d'UbuMaths.

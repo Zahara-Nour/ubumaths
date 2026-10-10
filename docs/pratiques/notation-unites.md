@@ -1,3 +1,10 @@
+---
+couvre:
+  - 'src/lib/mathAST/units/**'
+  - src/lib/mathAST/parser/custom/unit-writing.ts
+  - 'src/lib/questions/units/{feedback,keyboard-units,student-input}.ts'
+---
+
 # Notation des unités (grandeurs)
 
 > Référence de la notation d'une **grandeur** (un nombre et son unité) dans les énoncés, les corrigés, les questions et l'atelier. Chaque comportement ci-dessous a été mesuré sur le code le 2026-09-24 ; les tests qui le verrouillent sont listés en fin de page.

@@ -4,6 +4,11 @@ date: 2026-09-04
 status: vivant
 audience: développeurs
 scope: src/**/*.svelte, src/**/*.css
+couvre:
+  - src/app.css
+  - 'src/lib/theme/**'
+  - scripts/check-css-tokens.sh
+  - scripts/css-tokens-baseline.txt
 ---
 
 # Tokens de couleur CSS

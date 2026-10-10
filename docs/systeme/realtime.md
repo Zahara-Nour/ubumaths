@@ -1,3 +1,18 @@
+---
+couvre:
+  - 'src/lib/stores/{supabaseRealtime,presence,notificationsRealtime,achievementsRealtime,chat,tradeRealtime,multiplayer,friends}.svelte.ts'
+  - src/lib/stores/pomodoro/broadcast.ts
+  - 'src/lib/components/chat/**'
+  - src/lib/server/validation/chat.ts
+  - src/lib/components/markdown/restricted-rendering.ts
+  - 'src/routes/(protected)/dashboard/+layout.svelte'
+  - 'src/routes/(protected)/dashboard/friends/**'
+  - 'src/routes/(protected)/dashboard/chat/**'
+  - 'src/routes/(protected)/dashboard/student/marketplace/trade/**'
+  - 'src/routes/api/chat/**'
+  - 'supabase/migrations/*_realtime_*.sql'
+---
+
 # Temps réel (Supabase Realtime)
 
 > Vérifié contre le code le 2026-10-10.

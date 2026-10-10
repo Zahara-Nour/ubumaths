@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'supabase/migrations/*_seed_curriculum_6e.sql'
+  - 'supabase/migrations/*_seed_curriculum_points_6e.sql'
+---
+
 # Programme de suivi 6ᵉ — Thème → Item → Point (à relire)
 
 > **But** : source de vérité pour le **seed** du référentiel de programme (table `curriculum_*`), grade `'6'`. **Distinct** du référentiel d'évaluation.

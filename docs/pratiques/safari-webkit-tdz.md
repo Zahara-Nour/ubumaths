@@ -1,3 +1,9 @@
+---
+couvre:
+  - src/routes/+layout.ts
+  - src/hooks.client.ts
+---
+
 # Safari/WebKit TDZ Bug - Root Layout Fix
 
 ## The Problem

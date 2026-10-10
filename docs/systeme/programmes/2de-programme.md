@@ -1,3 +1,10 @@
+---
+couvre:
+  - 'supabase/migrations/*_seed_curriculum_2de.sql'
+  - 'supabase/migrations/*_seed_curriculum_points_2de.sql'
+  - 'supabase/migrations/*_points_vagues_2de.sql'
+---
+
 # Programme de suivi seconde générale et technologique — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'2'`.

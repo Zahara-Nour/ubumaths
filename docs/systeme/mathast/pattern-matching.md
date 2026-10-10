@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'src/lib/mathAST/pattern/**'
+  - src/lib/mathAST/parser/custom/pattern-parser.ts
+---
+
 # Module `pattern` — motifs, règles, vérification de forme
 
 > Source : `src/lib/mathAST/pattern/` (tests : `pattern/__tests__/`, `pattern/rule-sets/__tests__/`).

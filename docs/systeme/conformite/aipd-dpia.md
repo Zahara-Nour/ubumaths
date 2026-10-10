@@ -1,3 +1,8 @@
+---
+couvre:
+  - 'src/routes/(public)/legal/confidentialite/**'
+---
+
 # Analyse d'Impact relative à la Protection des Données (AIPD / DPIA) — UbuMaths
 
 > Document de conformité RGPD (**article 35**). Méthodologie : guides **PIA de la CNIL**

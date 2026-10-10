@@ -1,3 +1,18 @@
+---
+couvre:
+  - 'src/lib/almanach/**'
+  - 'src/lib/ciphers/**'
+  - 'src/lib/components/almanach/**'
+  - 'src/lib/components/ciphers/**'
+  - src/lib/config/lore.ts
+  - 'src/lib/server/shtam/**'
+  - 'src/routes/(public)/almanach/**'
+  - 'src/routes/(public)/chiffrement/**'
+  - 'src/routes/(public)/shtam/**'
+  - 'src/routes/(public)/+page.server.ts'
+  - 'src/routes/sitemap.xml/**'
+---
+
 # Univers Chiphre : Cabinet Noir, Almanach, Shtam, lore
 
 > Vérifié contre le code le 2026-10-10. Le **contenu éditorial** (personnages, pays, voix, calendrier)

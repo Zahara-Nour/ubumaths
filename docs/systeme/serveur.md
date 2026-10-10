@@ -1,3 +1,15 @@
+---
+couvre:
+  - src/hooks.server.ts
+  - 'src/lib/server/*.ts'
+  - 'src/lib/server/middleware/**'
+  - 'src/lib/server/utils/**'
+  - 'src/lib/server/validation/{index,common,params,response-utils,cron}.ts'
+  - 'src/lib/utils/{form-action,logger}.ts'
+  - 'src/routes/(protected)/dashboard/admin/cron/**'
+  - 'src/routes/api/admin/cron/**'
+---
+
 # Le serveur : conventions et index de `src/lib/server/`
 
 > Ce que fait le code serveur (endpoints `+server.ts`, actions de formulaire, `src/lib/server/`) et où le trouver.

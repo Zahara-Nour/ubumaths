@@ -1,3 +1,17 @@
+---
+couvre:
+  - 'src/lib/geometry-core/**'
+  - 'src/lib/constructions-v2/**'
+  - 'src/lib/components/geometry/**'
+  - 'src/lib/components/markdown/nodes/FigureBlock*.svelte'
+  - 'src/lib/ubumark/utils/figure-*.ts'
+  - 'src/lib/ubumark/generators/figure-typst*.ts'
+  - 'src/routes/(protected)/constructions/**'
+  - 'src/routes/(public)/construction-demo/**'
+  - 'src/routes/(public)/geometry-demo/**'
+  - 'src/routes/api/construction-demo-scripts/**'
+---
+
 # Géométrie : `geometry-core` et `constructions-v2`
 
 Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :

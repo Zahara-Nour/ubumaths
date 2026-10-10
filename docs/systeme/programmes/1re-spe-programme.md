@@ -1,3 +1,10 @@
+---
+couvre:
+  - 'supabase/migrations/*_seed_curriculum_1re_spe.sql'
+  - 'supabase/migrations/*_reamorcage_1re_spe_*.sql'
+  - 'supabase/migrations/*_seed_curriculum_points_1spe.sql'
+---
+
 # Programme de suivi 1ʳᵉ spécialité maths — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'1_SPE'`.

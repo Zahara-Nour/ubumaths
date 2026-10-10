@@ -1,3 +1,8 @@
+---
+couvre:
+  - scripts/lib/lock.py
+---
+
 # Worktrees — règles de travail
 
 > Résumé impératif : [CLAUDE.md](../../CLAUDE.md) §Worktrees. Ici : le pourquoi,

@@ -1,3 +1,15 @@
+---
+couvre:
+  - src/lib/utils/consent.ts
+  - src/lib/server/validation/account.ts
+  - 'src/lib/server/email/**'
+  - 'src/lib/components/account/**'
+  - 'src/routes/api/account/**'
+  - 'src/routes/(public)/legal/**'
+  - 'supabase/migrations/*_security_rgpd_erasure.sql'
+  - 'supabase/migrations/*_suppression_compte_art17.sql'
+---
+
 # Audit de Conformite RGPD - UbuMaths
 
 > ⚠️ **DOCUMENT HISTORIQUE (2026-01-16), partiellement daté.** État **actuel** et écarts confrontés au

@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'src/lib/components/python/**'
+  - 'src/lib/components/notebook/**'
+---
+
 # Python Ecosystem — Composants
 
 Documentation des composants Svelte 5 de `src/lib/components/python/`. Tous utilisent **Svelte 5 runes** + Shadcn-svelte + Tailwind + MathLive.

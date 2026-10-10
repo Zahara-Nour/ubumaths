@@ -1,3 +1,12 @@
+---
+couvre:
+  - src/lib/shared/python/types.ts
+  - src/lib/utils/locked-zones.ts
+  - src/lib/typst/notebook-pdf.ts
+  - src/lib/typst/generators/notebook-generator.ts
+  - 'src/routes/(protected)/python-notebook/**'
+---
+
 # Python Ecosystem - Architecture
 
 Detailed architecture documentation for the Python ecosystem (Playground, Notebook, Debugger).

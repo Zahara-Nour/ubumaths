@@ -1,3 +1,9 @@
+---
+couvre:
+  - 'supabase/migrations/*_seed_curriculum_terminale_spe.sql'
+  - 'supabase/migrations/*_seed_curriculum_points_tspe.sql'
+---
+
 # Programme de suivi terminale spécialité maths — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'T_SPE'`.
