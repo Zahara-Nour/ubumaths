@@ -135,7 +135,6 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | Tournoi                                           | `src/routes/api/games/minesweeper/tournaments/[id]/standings/+server.ts`                                                                                        | classes du tournoi                                                    |
 | Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (vue `riddle_progress`)                                                          | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
-| 2048 (ancien)                                     | `src/routes/api/games/2048/leaderboard/+server.ts`                                                                                                              | voir Doutes                                                           |
 
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
 
@@ -232,7 +231,15 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
   rang et le tableau de la page de stats viennent de `minesweeper_scoped_leaderboard('school')` (borné à l'école, prénom seul).
   Auparavant, `anon` et tout compte lisaient toutes les parties terminées.
 
-⚠️ Exceptions constatées, voir Doutes : file multijoueur, classements énigmes et 2048 ancien.
+- **scores 2048** : privés depuis le 2026-10-10 (D18) — chacun ne lit que le sien ; le classement
+  passe par `game_leaderboard` ; la route `/api/games/2048/leaderboard` (top global, sans appelant)
+  est supprimée ;
+- **démineur multijoueur** : `join_multiplayer_queue` n'apparie que deux élèves de la même école
+  (`same_school`, D18).
+
+⚠️ Classement des énigmes (`riddle_progress`, vue invoker) : pas de fuite — un élève ne voit que les
+profils de ses camarades/amis et ses propres tentatives —, mais le classement est **faux** (les
+autres à 0). Bug fonctionnel, à traiter à part.
 
 ## Comment étendre
 
@@ -289,11 +296,10 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
   `purchase_shop_item`, sans aucun appelant (ni code, ni cron) : suppression à décider.
 - **Lecture seule** (2026-10-10) : `run_weekly_rewards` et `award_weekly_best_bonuses` sautent les
   élèves sans consentement (`has_full_access`) ; le prof peut toujours en donner à la main.
-- **File multijoueur non bornée par l'école** : `join_multiplayer_queue` apparie sur difficulté
-  et classement seulement — contraire à l'ADR 0002 (page sans lien, donc peu exposée).
-- **Classement des énigmes** : la route lit la vue `riddle_progress` sans filtre d'école.
-- **`src/routes/api/games/2048/leaderboard/+server.ts`** : top global sur `game_2048_scores`
-  (policy `USING (true)` pour tout authentifié), sans appelant dans `src/`.
+- ✅ File multijoueur et scores 2048 : bornés / privés le 2026-10-10 (D18, voir « L'école est la
+  frontière sociale »).
+- **Classement des énigmes** : vue `riddle_progress` lue avec les droits de l'élève — pas de fuite,
+  mais classement faux (les autres à 0).
 - **Sans appelant applicatif** : `process_weekly_rewards`, `award_weekly_reward`,
   `purchase_shop_item`, `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés).
 - **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
