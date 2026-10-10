@@ -8,8 +8,9 @@
  * APRÈS le chargement du profil, ferme les deux en un seul endroit : un compte non
  * approuvé reçoit 403 sur toute API et toute écriture.
  *
- * Restent ouverts : la déconnexion, et l'export et la suppression du compte (droits
- * RGPD art. 15, 17 et 20 — un compte refusé peut toujours les exercer).
+ * Restent ouverts : déconnexion, connexion, inscription, réinitialisation du mot de
+ * passe, consentement parental, journal d'erreurs, export et suppression du compte
+ * (droits RGPD art. 15, 17 et 20).
  */
 
 import { json, type Handle } from '@sveltejs/kit';
@@ -18,8 +19,26 @@ import { json, type Handle } from '@sveltejs/kit';
 // CONSTANTES
 // ============================================================================
 
-/** Chemins toujours ouverts à un compte connecté, quel que soit son statut. */
-const CHEMINS_OUVERTS = new Set(['/auth/logout', '/api/account/delete', '/api/account/export']);
+/**
+ * Routes toujours ouvertes à un compte connecté, quel que soit son statut — par
+ * IDENTIFIANT de route, jamais par chemin brut : SvelteKit route sur le chemin décodé
+ * (`/%61pi/x` atteint `/api/x`), un test sur `url.pathname` se contourne.
+ */
+const ROUTES_OUVERTES = new Set([
+	'/(public)/auth/logout',
+	'/(public)/auth/login',
+	'/(public)/auth/register',
+	// Réinitialisation du mot de passe d'un compte en attente
+	'/(public)/auth/update-password',
+	// Consentement parental : un parent peut signer sur l'ordinateur où le compte de
+	// l'enfant est ouvert
+	'/(public)/consent/[token]',
+	// Journal des erreurs client
+	'/api/errors/log',
+	// Droits RGPD (art. 15, 17, 20)
+	'/api/account/export',
+	'/api/account/delete'
+]);
 
 /** Méthodes qui ne modifient rien. */
 const METHODES_LECTURE = new Set(['GET', 'HEAD', 'OPTIONS']);
@@ -36,12 +55,12 @@ export const accountStatusHandle: Handle = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	const { pathname } = event.url;
-	if (CHEMINS_OUVERTS.has(pathname)) {
+	const routeId = event.route.id;
+	if (routeId && ROUTES_OUVERTES.has(routeId)) {
 		return resolve(event);
 	}
 
-	const estApi = pathname.startsWith('/api/');
+	const estApi = routeId?.startsWith('/api/') ?? false;
 	const estEcriture = !METHODES_LECTURE.has(event.request.method);
 	if (estApi || estEcriture) {
 		return json({ message: 'Compte non approuvé' }, { status: 403 });

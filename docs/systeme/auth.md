@@ -162,8 +162,13 @@ Routes :
   garde que les **pages**.
 - **`accountStatusHandle`** (`src/lib/server/accountStatusHandle.ts`, dans le hook juste après le
   chargement du profil ; B6, 2026-10-10) : un compte non approuvé reçoit **403 sur toute API et
-  toute écriture** (actions de formulaire comprises), sauf `/auth/logout`, `/api/account/export` et
-  `/api/account/delete` (droits RGPD).
+  toute écriture** (actions de formulaire comprises). Le test porte sur `event.route.id`, jamais sur
+  le chemin brut (SvelteKit route sur le chemin décodé : `/%61pi/…` atteint `/api/…`). Restent
+  ouverts : déconnexion, connexion, inscription, `update-password`, `/consent/[token]`,
+  `/api/errors/log`, `/api/account/export` et `/api/account/delete` (droits RGPD).
+- ⚠️ **La base, elle, ignore le statut** : avec son jeton, un compte en attente garde via PostgREST
+  ce qu'a un élève sans école ni classe (écrire ses propres données, écrire au prof, lire des
+  statistiques de jeu pseudonymes en `using (true)`). Aucun accès à un mineur. Constat ouvert.
 - Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
   `api/admin/users/[id]/status` (motif dans `rejection_reason`).
 

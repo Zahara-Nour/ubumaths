@@ -221,3 +221,17 @@ masquage — faille antérieure relevée par security-auditor) ; toast multijoue
 ### Reste, dans l'ordre validé
 
 B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
+
+## B6 / B7 (branche `fix/rgpd-comptes-non-approuves`)
+
+- Décisions de David (2026-10-10) : B7 « tous en attente » (compte sans code ni pré-inscription) ;
+  B6 « un seul garde dans le hook ».
+- Mesure prod : 1 compte refusé, 0 en attente ; 2 élèves approuvés sans classe (laissés tels quels).
+- Garde `accountStatusHandle` par **identifiant de route** (security-auditor : `/%61pi/…` contournait
+  un test sur le chemin brut) ; routes ouvertes : déconnexion, connexion, inscription,
+  `update-password`, consentement parental, journal d'erreurs, export et suppression de compte.
+- **Nouveau constat (hors branche)** : la base ignore `profiles.status` — un compte en attente garde
+  via PostgREST ce qu'a un élève sans école (écrire ses données, écrire au prof, lire des stats de
+  jeu pseudonymes en `using (true)` : `mathemo_scores`, `minesweeper_player_stats`,
+  `minesweeper_student_achievements`, `marketplace_listing_views`). Aucun accès à un mineur. À
+  proposer à David.

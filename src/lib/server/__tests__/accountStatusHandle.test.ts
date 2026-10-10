@@ -21,10 +21,13 @@ import { accountStatusHandle } from '../accountStatusHandle';
 function evenement(
 	chemin: string,
 	methode: string,
-	statut: 'approved' | 'pending' | 'rejected' | null
+	statut: 'approved' | 'pending' | 'rejected' | null,
+	// Identifiant de route résolu par SvelteKit (sur le chemin DÉCODÉ) ; par défaut, le chemin.
+	routeId: string = chemin
 ): RequestEvent {
 	return {
 		url: new URL(`http://localhost${chemin}`),
+		route: { id: routeId },
 		request: new Request(`http://localhost${chemin}`, { method: methode }),
 		locals: {
 			user: statut ? { id: 'compte' } : null,
@@ -58,7 +61,11 @@ describe('accountStatusHandle', () => {
 	it.each(['pending', 'rejected'] as const)(
 		'compte %s : une action de formulaire (POST sur une page) répond 403',
 		async (statut) => {
-			expect(await passe(evenement('/dashboard/profile', 'POST', statut))).toEqual({
+			expect(
+				await passe(
+					evenement('/dashboard/profile', 'POST', statut, '/(protected)/dashboard/profile')
+				)
+			).toEqual({
 				passe: false,
 				status: 403
 			});
@@ -66,15 +73,26 @@ describe('accountStatusHandle', () => {
 	);
 
 	it('compte en attente : une page en GET passe (le layout le renvoie vers l’attente)', async () => {
-		expect((await passe(evenement('/dashboard', 'GET', 'pending'))).passe).toBe(true);
+		expect(
+			(await passe(evenement('/dashboard', 'GET', 'pending', '/(protected)/dashboard'))).passe
+		).toBe(true);
 	});
 
-	it.each(['/auth/logout', '/api/account/delete', '/api/account/export'])(
-		'compte refusé : %s reste ouvert (déconnexion, droits RGPD)',
-		async (chemin) => {
-			expect((await passe(evenement(chemin, 'POST', 'rejected'))).passe).toBe(true);
-		}
-	);
+	it.each([
+		['/auth/logout', '/(public)/auth/logout'],
+		['/auth/update-password', '/(public)/auth/update-password'],
+		['/consent/abc', '/(public)/consent/[token]'],
+		['/api/account/delete', '/api/account/delete'],
+		['/api/account/export', '/api/account/export']
+	])('compte refusé : %s reste ouvert', async (chemin, routeId) => {
+		expect((await passe(evenement(chemin, 'POST', 'rejected', routeId))).passe).toBe(true);
+	});
+
+	it('chemin encodé (/%61pi/…) : bloqué quand même, la route est /api/…', async () => {
+		expect(
+			await passe(evenement('/%61pi/messages/inbox', 'GET', 'pending', '/api/messages/inbox'))
+		).toEqual({ passe: false, status: 403 });
+	});
 
 	it('compte approuvé : tout passe', async () => {
 		expect((await passe(evenement('/api/messages/send', 'POST', 'approved'))).passe).toBe(true);
