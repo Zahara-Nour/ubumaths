@@ -5,7 +5,7 @@
 > risques de sécurité → plan d'action → validation).
 > Document interne (non publié). Complémentaire du
 > [registre des traitements](registre-traitements.md) et de la
-> [politique de confidentialité](<../../src/routes/(public)/legal/confidentialite>).
+> [politique de confidentialité](<../../../src/routes/(public)/legal/confidentialite>).
 
 |                               |                                                                                     |
 | ----------------------------- | ----------------------------------------------------------------------------------- |

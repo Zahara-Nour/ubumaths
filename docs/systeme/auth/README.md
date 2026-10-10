@@ -143,7 +143,7 @@ rate-limit fail-open, et le **doublon RBAC** (décision ouverte).
 
 ---
 
-## [progress/](../../ref/authentication/progress) — Documents de travail
+## [progress/](../../archive/ref-progress/authentication-progress-README.md) — Documents de travail
 
 Les progress docs (`docs/wip/`) liés à ce thème seront regroupés ici. **Vide
 pour l'instant** : aucun wip auth/google n'existait dans `docs/wip/` à la
