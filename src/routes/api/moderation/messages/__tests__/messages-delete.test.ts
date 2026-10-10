@@ -182,6 +182,11 @@ describe('DELETE /api/moderation/messages/[id] - Authentication & Authorization'
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -269,6 +274,11 @@ describe('DELETE /api/moderation/messages/[id] - Authentication & Authorization'
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -324,6 +334,11 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -395,6 +410,11 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -459,6 +479,11 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -524,6 +549,11 @@ describe('DELETE /api/moderation/messages/[id] - Input Validation', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock request that throws on json()
 		const request = {
@@ -549,6 +579,11 @@ describe('DELETE /api/moderation/messages/[id] - Input Validation', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		const request = createMockRequest(
 			{
@@ -576,6 +611,11 @@ describe('DELETE /api/moderation/messages/[id] - Input Validation', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		const request = createMockRequest(
 			{
@@ -603,6 +643,11 @@ describe('DELETE /api/moderation/messages/[id] - Input Validation', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		const request = createMockRequest(
 			{
@@ -630,6 +675,11 @@ describe('DELETE /api/moderation/messages/[id] - Input Validation', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		const request = createMockRequest({}, 'DELETE'); // Missing reason
 
@@ -663,6 +713,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message not found
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -696,6 +751,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock already deleted message
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -729,6 +789,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock database error during fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -762,6 +827,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch (success)
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -799,11 +869,68 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 		}
 	});
 
+	it('le prof ne supprime pas un message de l’admin (décision du 2026-10-10)', async () => {
+		const { DELETE } = await import('../[id]/+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { ...mockMessages.classChannelMessage, sender_id: TEST_IDS.admin },
+			error: null
+		});
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { user_id: TEST_IDS.teacher },
+			error: null
+		});
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { role: 'admin' },
+			error: null
+		});
+
+		await expect(
+			DELETE({
+				request: createMockRequest({ reason: 'Test reason' }, 'DELETE'),
+				locals,
+				params: { id: TEST_IDS.message }
+			} as any)
+		).rejects.toMatchObject({ status: 403 });
+		expect(ecriture.appels).toEqual([]);
+	});
+
+	it('le prof supprime son propre message, sans contrôle de rôle', async () => {
+		const { DELETE } = await import('../[id]/+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({ data: null, error: null });
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { ...mockMessages.classChannelMessage, sender_id: TEST_IDS.teacher },
+			error: null
+		});
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { user_id: TEST_IDS.teacher },
+			error: null
+		});
+		mockSupabase.rpc = vi.fn().mockResolvedValue({ data: null, error: null });
+
+		const response = await DELETE({
+			request: createMockRequest({ reason: 'Test reason' }, 'DELETE'),
+			locals,
+			params: { id: TEST_IDS.message }
+		} as any);
+		expect(response.status).toBe(200);
+	});
+
 	it('aucune ligne supprimée : 500, jamais « supprimé »', async () => {
 		const { DELETE } = await import('../[id]/+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockMessages.classChannelMessage,
 			error: null
@@ -831,6 +958,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockMessages.classChannelMessage,
 			error: null
@@ -862,6 +994,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockMessages.classChannelMessage,
 			error: null
@@ -888,6 +1025,11 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -947,6 +1089,11 @@ describe('DELETE /api/moderation/messages/[id] - Privacy & Logging', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		const messageContent = 'This is a sensitive message that should not be logged';
 		// La route lit `plain_text` : `content` est du jsonb (texte enrichi), dont
@@ -1011,6 +1158,11 @@ describe('DELETE /api/moderation/messages/[id] - Privacy & Logging', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		// Par défaut, l'auteur du message est un élève (les réponses « Once » passent avant).
+		mockSupabase._mockChain.maybeSingle.mockResolvedValue({
+			data: { role: 'student' },
+			error: null
+		});
 
 		// Mock message fetch
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({

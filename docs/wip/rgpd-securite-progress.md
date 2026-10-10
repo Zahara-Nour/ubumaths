@@ -187,6 +187,9 @@ masquage — faille antérieure relevée par security-auditor) ; toast multijoue
   n'a pas été reprise : sa garde exclut les 1-1 entre élèves, que la route autorise.
 - Les tests unitaires enregistraient le bug (UPDATE simulé à 0 ligne compté comme succès) :
   réécrits ; 3 cas rouges avec l'ancienne route.
+- security-auditor : la route rendait réels des droits que la base bloquait. **Décision de David
+  (2026-10-10)** : le prof ne supprime que des messages écrits par un élève (ou les siens), jamais
+  ceux de l'admin ; l'admin garde tout. Contrôle ajouté dans la route, testé.
 - Remarque, non traitée : la route LIT le message avec le client du prof ; la policy SELECT ne lui
   montre une conversation 1-1 que si les deux élèves sont membres d'une classe — un 1-1 entre
   élèves hors classe donnerait 404 (contraire à l'option B « le prof supervise tout élève »).

@@ -160,6 +160,25 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			}
 		}
 		// If membership exists OR authorization checks passed, proceed to deletion
+
+		// Décision de David (2026-10-10) : le prof ne supprime que des messages écrits par
+		// un élève (ou les siens) — jamais ceux de l'admin. Un message sans auteur (compte
+		// supprimé) reste supprimable.
+		if (message.sender_id && message.sender_id !== locals.user.id) {
+			const { data: sender, error: senderError } = await locals.supabase
+				.from('profiles')
+				.select('role')
+				.eq('id', message.sender_id)
+				.maybeSingle();
+
+			if (senderError && senderError.code !== 'PGRST116') {
+				console.error('Contrôle d’accès impossible :', senderError);
+				throw error(500, 'Impossible de vérifier votre accès');
+			}
+			if (sender?.role !== 'student') {
+				throw error(403, 'You can only delete messages written by students');
+			}
+		}
 	}
 
 	// 7. Soft delete — par le client SERVICE, les droits ayant été vérifiés ci-dessus.
