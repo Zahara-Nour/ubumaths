@@ -5,7 +5,7 @@
  * pour le développeur, en anglais (« Parse expression and display AST… »),
  * avec l'ancienne syntaxe (`.integrate expr[ ; variable] [a b]`) et des
  * commandes internes. Elle est désormais en français, avec la syntaxe par
- * mots-clés (`docs/ref/syntaxe-commandes-atelier.md`) et un exemple qui marche
+ * mots-clés (`docs/systeme/atelier-syntaxe.md`) et un exemple qui marche
  * par commande. L'ancienne liste reste là, derrière `.aide dev`.
  *
  * ⚠️ **Le catalogue (`commandCatalog`) est la source unique** : descriptions,

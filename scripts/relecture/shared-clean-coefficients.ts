@@ -4,7 +4,7 @@
  *
  * Utilisé par `update-published-questions.ts`. `shared` porte les variables et conditions
  * communes à toutes les variations : un écart y change chaque tirage, d'où l'arrêt
- * historique du script. L'option `cleanCoefficients` (docs/ref/fiches-exercices.md) vit
+ * historique du script. L'option `cleanCoefficients` (docs/pratiques/fiches-exercices.md) vit
  * pourtant dans `shared` : son AJOUT est accepté, et rien d'autre. La valeur écrite est
  * reconstruite depuis la BASE (`{ ...base, cleanCoefficients: true }`), jamais copiée du
  * fichier.

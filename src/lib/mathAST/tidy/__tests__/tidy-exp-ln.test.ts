@@ -1,7 +1,7 @@
 /**
  * `tidy()` et le logarithme d'une puissance de e.
  *
- * Le contrat (docs/ref/mathast/tidy-spec.md, §A) EXCLUT `ln(eˣ) → x` de `tidy` :
+ * Le contrat (docs/systeme/mathast/tidy-spec.md, §A) EXCLUT `ln(eˣ) → x` de `tidy` :
  * « appliquer une identité […] reste aux règles de motif et à `normalize` ».
  * Conséquence mesurée (2026-10-05) : le minimum de x² ln x s'affiche
  * `ln(e^{−1/2})·(e^{−1/2})²` au lieu de −1/(2e). Décision de David (option A,

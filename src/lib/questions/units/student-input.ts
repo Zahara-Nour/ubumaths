@@ -13,7 +13,7 @@
  *   1. une tête numérique (signe, chiffres, virgule ou point décimal, fraction
  *      de nombres, notation scientifique `a\cdot10^{n}`) ;
  *   2. le reste est l'écriture de l'unité, nettoyée de ses habillages LaTeX.
- * C'est `parseUnitExpression` (règle unique, `docs/ref/notation-unites.md`) qui
+ * C'est `parseUnitExpression` (règle unique, `docs/pratiques/notation-unites.md`) qui
  * décide ensuite si l'écriture est une unité : rien n'est deviné ici. `5ms`
  * reste la milliseconde, `5xyz` devient `5\unit{xyz}`, refusé par le parseur.
  *

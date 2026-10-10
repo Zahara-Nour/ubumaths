@@ -14,7 +14,7 @@
  *
  * Chaque refus est mesuré par son CODE (42501, 23514, 23505, 23503) ou par la
  * relecture de la ligne (une écriture refusée par la RLS rend zéro ligne, sans
- * erreur — cf. docs/ref/rls-echecs-silencieux.md).
+ * erreur — cf. docs/pratiques/rls-echecs-silencieux.md).
  *
  * Les colonnes/tables neuves ne sont pas dans `database.ts` (généré depuis la
  * production) : les clients sont donc créés sans le type `Database`.

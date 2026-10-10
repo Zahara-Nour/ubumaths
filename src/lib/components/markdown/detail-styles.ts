@@ -8,7 +8,7 @@
  * - attention : encadré aux couleurs d'alerte ;
  * - en ligne : mise en valeur discrète (calcul), ou teinte du type.
  *
- * Couleurs : tokens `--color-*` via les utilitaires Tailwind (docs/ref/css-color-tokens.md).
+ * Couleurs : tokens `--color-*` via les utilitaires Tailwind (docs/pratiques/css-color-tokens.md).
  *
  * @module components/markdown/detail-styles
  */

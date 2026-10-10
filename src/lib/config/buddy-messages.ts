@@ -1,7 +1,7 @@
 /**
  * Pre-written messages for the Palotin buddy system.
  * Each Palotin has messages organized by context.
- * Generated via ChatGPT with personality-specific prompts (see docs/ref/buddy-palotins.md).
+ * Generated via ChatGPT with personality-specific prompts (see docs/systeme/buddy-palotins.md).
  */
 
 export type BuddyMessageContext =

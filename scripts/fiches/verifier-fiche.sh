@@ -4,7 +4,7 @@
 #   2. compilation par le compilateur EXACT de la production (typst.ts 0.6.1-rc5) ;
 #   3. débords de colonne (texte ET tracés) ;
 #   4. pages en images, à RELIRE (les détecteurs ne voient pas tout).
-# Guide : docs/ref/fiches-exercices.md
+# Guide : docs/pratiques/fiches-exercices.md
 #
 # Usage : pnpm fiche:verifier <dossier> [titre de la fiche]
 set -u

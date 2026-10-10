@@ -94,7 +94,7 @@ export function buildPreview(
 		`> ${description}. Généré par \`pnpm corrections:preview ${lotName}\` : ne pas éditer à la main ` +
 			`(éditer la proposition \`<id>.json\` ou le lot, puis régénérer). ` +
 			`Couleurs : orange = ce que l'on transforme, bleu = étape intermédiaire, vert = conclusion ` +
-			`(cf. docs/ref/corrections-redaction.md).`,
+			`(cf. docs/pratiques/corrections-redaction.md).`,
 		'',
 		...items.map(
 			({ template, proposal }) =>

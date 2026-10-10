@@ -5,7 +5,7 @@
  * en 4 sections automatiques calculées à la lecture depuis l'état FSRS.
  *
  * Cf. docs/archive/wip/srs-fsrs-spec-tdd.md §8
- *     docs/ref/srs/architecture.md §3.4 + §5.2
+ *     docs/systeme/srs/architecture.md §3.4 + §5.2
  */
 
 import type { PageServerLoad } from './$types';

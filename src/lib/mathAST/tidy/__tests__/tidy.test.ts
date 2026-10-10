@@ -1,7 +1,7 @@
 /**
  * `tidy()` — la mise au propre sans développement.
  *
- * Contrat : docs/ref/mathast/tidy-spec.md, §A (validé par David le 2026-09-20).
+ * Contrat : docs/systeme/mathast/tidy-spec.md, §A (validé par David le 2026-09-20).
  * Chaque `it` est une ligne de ce contrat. Les attendus sont écrits en syntaxe
  * maison, telle que `toCustom` l'imprime.
  */

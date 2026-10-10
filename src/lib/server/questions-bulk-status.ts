@@ -11,7 +11,7 @@
  *
  * Repasser en brouillon : aucun contrôle.
  *
- * La RLS échoue en silence (docs/ref/rls-echecs-silencieux.md) : une mise à
+ * La RLS échoue en silence (docs/pratiques/rls-echecs-silencieux.md) : une mise à
  * jour refusée rend zéro ligne sans erreur. Seules les lignes RENDUES par
  * `.update().select()` comptent comme changées ; les autres sont des refus.
  */

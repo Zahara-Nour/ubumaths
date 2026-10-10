@@ -2,7 +2,7 @@
  * Le choix de l'unité adaptée à l'ordre de grandeur.
  *
  * Déplacé depuis `eval/evaluate-with-units.ts` (où il était privé) pour que
- * `tidy` s'en serve aussi (§D.3 de `docs/ref/mathast/tidy-spec.md`). Le seuil bas
+ * `tidy` s'en serve aussi (§D.3 de `docs/systeme/mathast/tidy-spec.md`). Le seuil bas
  * est un paramètre : l'évaluation garde le sien (0,1), `tidy` demande le sien.
  *
  * @module mathAST/units/selection

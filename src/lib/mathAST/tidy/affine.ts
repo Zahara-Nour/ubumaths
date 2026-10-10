@@ -1,7 +1,7 @@
 /**
  * L'arithmétique des températures, dans `tidy`.
  *
- * Contrat : `docs/ref/mathast/tidy-spec.md` §D.2 — les règles de `evaluateWithUnits`,
+ * Contrat : `docs/systeme/mathast/tidy-spec.md` §D.2 — les règles de `evaluateWithUnits`,
  * reprises telles quelles, mais **sans jamais lever** :
  *
  * | somme            | résultat                         |

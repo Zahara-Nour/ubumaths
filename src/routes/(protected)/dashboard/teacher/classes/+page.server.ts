@@ -470,7 +470,7 @@ export const actions: Actions = {
 
 		// Même piège que sur l'update : une suppression refusée affecte zéro ligne
 		// en silence. L'écran a déjà annoncé des suppressions qui n'avaient pas eu
-		// lieu (cf. docs/ref/rls-echecs-silencieux.md).
+		// lieu (cf. docs/pratiques/rls-echecs-silencieux.md).
 		const { data: deleted, error: deleteError } = await supabase
 			.from('class_schedules')
 			.delete()
