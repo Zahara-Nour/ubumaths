@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.18.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.18.0...v0.18.1) (2026-10-10)
+
+### 🐛 Bug Fixes
+
+- **jeux:** multijoueur réparé sans récompense (retour security-auditor) ([98fe7f0](https://github.com/Zahara-Nour/ubumaths/commit/98fe7f028c3ede86409e4ebb2556118a4ba81109))
+- **jeux:** récompenses de tournoi et de multijoueur réparées (E19) ([8edf8b0](https://github.com/Zahara-Nour/ubumaths/commit/8edf8b0492f67ff52f12c687c8929b89e29f826f))
+- **rgpd:** la marque survit au passage 6e → 5e (retour security-auditor) ([c75a404](https://github.com/Zahara-Nour/ubumaths/commit/c75a40453af26241e7059c08f5a054e5af48afdb))
+- **rgpd:** règle de consentement — la base fait foi, comptes anciens soumis au retour ([93ab660](https://github.com/Zahara-Nour/ubumaths/commit/93ab660c7ba7ef9428969e9845421f1a75965ea4))
+
+### 📚 Documentation
+
+- **atelier:** chapeau wip à jour (historique archivé), syntaxe requalifiée en référence ([d26ad16](https://github.com/Zahara-Nour/ubumaths/commit/d26ad161306983201aa48292ffa85e511b42c85e))
+- **context:** carte seule et capacité bannies, carte d'objet, types de question à jour ([cff95d3](https://github.com/Zahara-Nour/ubumaths/commit/cff95d38c1772c974826de05ef659f3b1f327680))
+- en-têtes couvre: sur 52 docs (le code que chaque doc décrit) ([e27555c](https://github.com/Zahara-Nour/ubumaths/commit/e27555cdfdd2a5b834897208a46f50e7922a99f3))
+- **skill:** doc-a-jour — la doc d'abord quand on touche une zone sans doc ([da50ff1](https://github.com/Zahara-Nour/ubumaths/commit/da50ff11c87c2d80a8c689d28171415b331be061))
+- **systeme:** cours et chapitres, évaluations — deux zones sans doc documentées ([ef65533](https://github.com/Zahara-Nour/ubumaths/commit/ef655339f43a4180be4dc802b07a242a56b2e9e7))
+- une seule règle de port (5175 au dépôt principal, 5176+ en worktree, jamais 5173) ([9716b40](https://github.com/Zahara-Nour/ubumaths/commit/9716b401cf492f0f3364035f1a4d2842755ac630))
+- **wip:** arbre des notions — tags modèles → points en prod et vérifiés ([6cb1a79](https://github.com/Zahara-Nour/ubumaths/commit/6cb1a796f416e9e7aca0c44c46a85630709eae96))
+- **wip:** chiffrement — la relecture des récits par David reste à faire ([620d8bb](https://github.com/Zahara-Nour/ubumaths/commit/620d8bb55f080c57bc68e3094f81e675a7a5ea80))
+- **wip:** dictionnaire, page d'admin et historique fermé livrés ([7d877cb](https://github.com/Zahara-Nour/ubumaths/commit/7d877cb2387270b05521e828a5a3fb4917aa6fe4))
+- **wip:** écarts des docs système triés en 18 chantiers ; 15 points transmis à la session RGPD ([41d1773](https://github.com/Zahara-Nour/ubumaths/commit/41d17735cafdf93a88fdae1369c69e093ea46fe2))
+- **wip:** garde doc à jour — bascule en bloquant prévue le 2026-10-17 ([4b15844](https://github.com/Zahara-Nour/ubumaths/commit/4b15844c4fbf21a8f6e00082aaef87f9608ca42e))
+- **wip:** progression RGPD — A2 en attente de migration, E19 ([e6606ed](https://github.com/Zahara-Nour/ubumaths/commit/e6606ed5cdabc7207f4d242c95364a3e8a17d826))
+- **wip:** progression RGPD — point d'étape, migrations en attente ([5617b31](https://github.com/Zahara-Nour/ubumaths/commit/5617b312df93dc0cab3fc70ebee64bfd486ba6e8))
+
 ## [0.18.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.17.0...v0.18.0) (2026-10-10)
 
 ### ✨ Features
