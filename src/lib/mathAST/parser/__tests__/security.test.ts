@@ -293,7 +293,9 @@ describe('profondeur contrôlée avant l’analyse', () => {
 	// imbrications (signes, commandes, valeurs absolues) qui débordaient la pile.
 	const otherDeep: Array<[string, string]> = [
 		['signes moins ×9999', '-'.repeat(9999) + 'x'],
-		['\\sqrt ×1900', '\\sqrt'.repeat(1900) + 'x'],
+		// L'espace évite que la dernière racine se lise `\sqrtx` (commande inconnue) : sans elle,
+		// le verdict dépendait de la taille de pile de la machine (rouge en CI Linux).
+		['\\sqrt ×1600', '\\sqrt '.repeat(1600) + 'x'],
 		['\\sin ×1600', '\\sin '.repeat(1600) + 'x'],
 		['valeurs absolues ×4000', '|'.repeat(4000) + 'x' + '|'.repeat(4000)]
 	];
