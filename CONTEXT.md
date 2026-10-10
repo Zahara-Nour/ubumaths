@@ -125,6 +125,14 @@ Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_round
 La **correction des réponses est côté client** : les statistiques sont un outil pour l'élève, jamais
 une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
 
+## Le dictionnaire
+
+| Terme             | Sens                                                                                                                                                                                                   | Code                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| **Dictionnaire**  | Les mots mathématiques et leurs définitions par niveau scolaire (sens, synonymes, formes, filières partagées). En base, modifié par l'admin → [ADR 0022](docs/adr/0022-dictionnaire-en-base-admin.md). | `src/lib/data/math-dictionary-fr.ts` (`MathTerm`), table à créer |
+| **Glossaire**     | Page publique qui affiche le dictionnaire, filtrable par niveau.                                                                                                                                       | `src/routes/(public)/glossaire/`                                 |
+| **Mot cliquable** | Mot d'un énoncé reconnu dans le dictionnaire : un clic ouvre sa fiche au niveau de l'élève.                                                                                                            | `src/lib/lexicon/`, `TextNode.terms`                             |
+
 ## Le moteur mathématique (`src/lib/mathAST/`)
 
 | Terme                      | Sens                                                                                                                                           | Code                                                                                                                                        |
@@ -182,3 +190,4 @@ Seule la **famille B** (compétences mathématiques) est d'actualité ; la famil
 | Mode Révision (forme de série)               | **En classe** (≠ révision SRS)                    |
 | Quiz (forme de série)                        | **Entraînement**                                  |
 | niveau de détail, palier (d'une correction)  | **correction concise** / **correction détaillée** |
+| lexique (pour les mots mathématiques)        | **dictionnaire** (« lexique » : celui du lore)    |
