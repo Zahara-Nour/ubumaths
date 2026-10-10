@@ -2,8 +2,8 @@
 
 > ⛔ **PÉRIMÉ (2026-09-26) — ne pas suivre ce document.** Il recommande des commandes qui
 > importaient sans relecture. La relecture et l'import passent désormais par l'outillage décrit dans
-> [`docs/relecture/README.md`](../relecture/README.md) ; suivi dans
-> [`relecture-questions-progress.md`](relecture-questions-progress.md). `migration:import`,
+> [`docs/relecture/README.md`](../../relecture/README.md) ; suivi dans
+> [`relecture-questions-progress.md`](../../wip/relecture-questions-progress.md). `migration:import`,
 > `rollback-migration` et `validate-phase1-questions` sont en simulation par défaut (`--publier`).
 
 ## Overview
@@ -717,11 +717,11 @@ Champ `answer` renommé en `solution` (v1), puis `solution` renommé en `correct
 ## Crash Recovery
 
 ```
-"Lis docs/wip/question-migration-status.md et continue l'implementation"
+"Lis docs/archive/wip/question-migration-status.md et continue l'implementation"
 ```
 
 **Documents de référence** :
 
-- Status: `docs/wip/question-migration-status.md` (ce fichier)
+- Status: `docs/archive/wip/question-migration-status.md` (ce fichier)
 - Analyse: `docs/wip/question-migration-analysis.md`
 - Review system: `docs/wip/migration-review-system-progress.md`

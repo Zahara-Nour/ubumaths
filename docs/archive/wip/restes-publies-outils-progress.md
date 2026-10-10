@@ -8,7 +8,7 @@ Comparaison de TOUS les champs des fichiers `scripts/questions/*-existants/*.jso
 (lecture seule, 2026-10-03). Écarts trouvés, tous des changements avérés faits en base :
 
 - **f8ccc8b6** (vrai / faux, polynômes) : `subdomain` « Vrai ou Faux » → « Propriétés » (Q117 (a),
-  `docs/wip/questions-de-cours-progress.md`) ; `options.courseQuestion: true` (Q116 (b)). ⚠️ `options`
+  `docs/archive/wip/questions-de-cours-progress.md`) ; `options.courseQuestion: true` (Q116 (b)). ⚠️ `options`
   est ÉCRIT par le script : sans la synchronisation, une écriture aurait EFFACÉ le marqueur « question de
   cours ».
 - **158ecaa4**, **1315d326**, **c23840b6**, **849aabbc** : sous-domaines accentués

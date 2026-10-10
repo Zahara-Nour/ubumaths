@@ -3,7 +3,7 @@
 > État au **2026-09-14**. Tous les chiffres de ce document sont **mesurés en
 > production** (MCP Supabase read-only, EU), pas déduits du code.
 >
-> Chantier voisin, **clos** : [cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md).
+> Chantier voisin, **clos** : [cahier-texte-travaux-multiples-progress.md](../../wip/cahier-texte-travaux-multiples-progress.md).
 >
 > Le prompt de reprise `prompts/prompt-mon-cours-quiz.md` a été **supprimé** : il
 > demandait de trancher le contrat du quiz, ce qui est fait (option 1, le
@@ -35,7 +35,7 @@ entièrement construite et n'avait jamais servi. La conclusion qu'on en tirait �
 justement la première mise en service qui a montré ce qui manquait. Le
 diagnostic « construit mais jamais utilisé » vaut toujours pour d'autres
 chantiers, voir
-[bascule-annee-scolaire-etat-des-lieux.md](bascule-annee-scolaire-etat-des-lieux.md).
+[bascule-annee-scolaire-etat-des-lieux.md](../../wip/bascule-annee-scolaire-etat-des-lieux.md).
 
 Pour comparaison, ce qui EST utilisé : 12 fiches, 2 séances de cahier de texte
 avec leurs 2 travaux, 453 points de programme sur 18 thèmes.
@@ -70,7 +70,7 @@ exige `student_has_worksheet_access` en plus du chapitre visible.
 
 La mise à jour vers une version plus récente **ne supprime plus rien**, si bien
 qu'elle n'efface pas les rattachements faits à la main. Voir
-[publication-progressive-progress.md](publication-progressive-progress.md),
+[publication-progressive-progress.md](../../wip/publication-progressive-progress.md),
 phase 5.
 
 ⚠️ Le message de refus de publication est resté en arrière : il énumère quatre
@@ -280,7 +280,7 @@ ne s'en sert pas — il n'existe aujourd'hui aucun moyen d'imposer une variation
 Les quatre phases de « plusieurs travaux par séance » sont livrées, phase 2
 comprise : les anciennes colonnes `homework_content` / `homework_due_date`
 n'existent plus, et rien ne les référence. Détail et pièges dans
-[cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md).
+[cahier-texte-travaux-multiples-progress.md](../../wip/cahier-texte-travaux-multiples-progress.md).
 
 ## Le programme — construit, non alimenté
 
@@ -292,7 +292,7 @@ curriculum_points ......... 453    exercise_curriculum_points  0
 Le référentiel est semé, mais **aucun exercice n'est rattaché à un point** et
 **aucune séance ne cite de point**. La couverture par classe et la heatmap
 d'avancement calculent donc sur du vide. Voir
-[suivi-programme-progress.md](../archive/wip/suivi-programme-progress.md).
+[suivi-programme-progress.md](suivi-programme-progress.md).
 
 **Ce n'est ni un chantier ni un abandon : c'est de la saisie.** Tranché le
 2026-09-13 — David taguera lui-même, rien à coder.
@@ -358,7 +358,7 @@ modèle retire le patron, les chapitres restent — simplement détachés.
 - **Documents de chapitre** : plafond à 25 Mo et téléversement direct
   navigateur → storage (PR #266, #267, #268). Le détail, et le piège des deux
   gardes de taille, sont dans
-  [database-schema.md](../architecture/database-schema.md).
+  [database-schema.md](../../architecture/database-schema.md).
 
 ## Ce qui rapporterait le plus, dans l'ordre
 

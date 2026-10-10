@@ -207,7 +207,7 @@ inter-écoles ci-dessus.
 
 Ce volet a désormais ses propres documents, tenus à jour et mesurés :
 
-- **[mon-cours-chapitres-progress.md](mon-cours-chapitres-progress.md)** —
+- **[mon-cours-chapitres-progress.md](../archive/wip/mon-cours-chapitres-progress.md)** —
   l'état complet de « Mon cours » : le modèle à deux étages (chapitre par
   CLASSE, modèle par NIVEAU), les fiches rattachées (livrées), le quiz
   (rebranché) et ce qu'un modèle emporte ou n'emporte pas.

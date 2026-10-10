@@ -17,7 +17,7 @@ branche: aucune en cours (tout est sur main)
 > Il garde `WebReplEngine` comme **calculateur** (option B du 2026-09-16, `atelier/engine.ts`) :
 > le moteur reste, la page `/cas` partira. Conséquence : ce que les commandes du moteur
 > affichent (`.stats`, `.ajustement`…) est affiché **dans l'atelier**, à des élèves — leur
-> sortie relève de l'atelier. Note, pas d'ADR. Source : `docs/wip/outils-statistiques-progress.md`.
+> sortie relève de l'atelier. Note, pas d'ADR. Source : `docs/archive/wip/outils-statistiques-progress.md`.
 
 ---
 

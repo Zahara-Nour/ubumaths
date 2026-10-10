@@ -1,7 +1,7 @@
 # Paquet de révision calculé du chapitre (questions de cours, étape 3)
 
 Branche `feat/paquet-revision-chapitre`, worktree `ubumaths-wt-paquet-chapitre`.
-Décisions : `docs/wip/questions-de-cours-progress.md` (Q163–Q168). Comportements validés par David
+Décisions : `docs/archive/wip/questions-de-cours-progress.md` (Q163–Q168). Comportements validés par David
 (N1–N6, L1–L6, E1–E4) : voir le brief de l'étape 3, repris ci-dessous.
 
 ## Comportements

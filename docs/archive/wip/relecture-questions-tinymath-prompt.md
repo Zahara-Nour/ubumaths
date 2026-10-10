@@ -83,7 +83,7 @@ constraintViolations?}, description}`. **Aucune commande en ligne** ne lance les
   n'a **jamais** été lancé.
 - `scripts/rollback-migration.ts` filtre sur des colonnes NULL en prod ; `pnpm
 migrate:phase1:rollback` est une simulation.
-- `docs/wip/question-migration-status.md` est **périmé** (recommande des commandes dangereuses,
+- `docs/archive/wip/question-migration-status.md` est **périmé** (recommande des commandes dangereuses,
   renvoie à des docs absentes) : ne pas le suivre, le corriger à la fin.
 
 ### Plan (Phase 0 d'abord — CLAUDE.md § Planning)

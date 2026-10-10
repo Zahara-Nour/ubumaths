@@ -1,6 +1,6 @@
 # 0009 — Carte de cours : type explicite `course_card`
 
-- **Statut** : acceptée (migration PR #493 ; code en cours, `docs/wip/cartes-de-cours-progress.md`)
+- **Statut** : acceptée (migration PR #493 ; code en cours, `docs/archive/wip/cartes-de-cours-progress.md`)
 - **Date** : 2026-09-28 · **Décidée par** : David
 
 ## Contexte

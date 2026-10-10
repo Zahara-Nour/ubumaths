@@ -1,6 +1,6 @@
 # Relecture des questions TinyMath — progression
 
-> Prompt de départ : `docs/wip/relecture-questions-tinymath-prompt.md`.
+> Prompt de départ : `docs/archive/wip/relecture-questions-tinymath-prompt.md`.
 
 ## Décisions de David
 

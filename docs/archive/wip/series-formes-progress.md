@@ -23,7 +23,7 @@ Une **série** (composition : catégories × répétitions × durée) s'utilise 
   devient une **série figée** (ADR 0011). « Évaluation » = série assignée, réponses enregistrées,
   vérifiées, notées. → `CONTEXT.md`.
 - **Q2 — Note** : les évaluations sont corrigées **par le serveur** ; ailleurs, correction dans le
-  navigateur inchangée. → [ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md) (restreint
+  navigateur inchangée. → [ADR 0015](../../adr/0015-evaluation-notee-correction-serveur.md) (restreint
   l'ADR 0001).
 - **Q3 — En classe, retour en arrière** : revenir sur une question déjà passée **met le minuteur en
   pause** ; on relance avec Espace.
