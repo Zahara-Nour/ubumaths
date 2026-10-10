@@ -90,6 +90,10 @@ interface SharedDecor {
 	exercisePoint: string;
 	/** Point neuf de la sous-notion 1, qu'un test pose sur l'exercice */
 	pointOnSub1: string;
+	/** Point neuf de 1re spé sur la notion, qu'un test pose sur le modèle */
+	pointSpe: string;
+	/** Autre notion de la branche, vers laquelle un test re-parente la sous-notion 1 */
+	otherNotion: string;
 }
 
 interface TagState {
@@ -164,12 +168,17 @@ const POINT_MOVED_TEMPLATE =
 	/est tagué sur le modèle .*, et ne serait ni sur le nœud de ce modèle ni sur sa notion/;
 const POINT_ON_UNRANGED_TEMPLATE =
 	/serait sur un nœud, mais le modèle .* qui le porte n'est rangé dans aucun nœud/;
-const POINT_MOVED_EXERCISE = /est tagué sur l'exercice .*, qui n'est rangé ni sur le nœud du point/;
+const POINT_MOVED_EXERCISE =
+	/un tag d'exercice deviendrait hors règle \(l'exercice n'est rangé ni sur le nœud du point/;
 const ONE_GENERATION = new RegExp(ONE_GENERATION_CONSTRAINT);
+/** Le refus d'accès habituel (RLS), sans rien de la règle. */
+const RLS_REFUSAL = /row-level security policy/;
+/** Tout message des règles de tag. */
+const ANY_RULE_MESSAGE = /point|modèle|exercice|nœud|notion|programme/i;
 const POINT_UNRANGED = /il ne peut pas perdre son nœud/;
 const POINT_REGRADED = /passerait au programme 2, dont le modèle .* porte déjà un point/;
 const SUBNOTION_TEMPLATE = /changerait de notion alors que le modèle .*, rangé sur elle/;
-const SUBNOTION_EXERCISE = /changerait de notion alors que l'exercice .*, rangé sur elle/;
+const SUBNOTION_EXERCISE = /changerait de notion : un tag d'exercice deviendrait hors règle/;
 const EXERCISE_UNCOVERED = /qui ne serait plus couvert par aucun de ses rangements/;
 
 // ============================================================================
@@ -283,6 +292,8 @@ async function createSharedDecor(pg: Client, authorId: string): Promise<SharedDe
 	const templatePoint = await insertPoint(pg, 'deux-sessions-modele', '2', notion);
 	const exercisePoint = await insertPoint(pg, 'deux-sessions-exercice', '2', notion);
 	const pointOnSub1 = await insertPoint(pg, 'deux-sessions-sous-notion-1', '2', sub1);
+	const pointSpe = await insertPoint(pg, 'deux-sessions-spe', '1_SPE', notion);
+	const otherNotion = await insertNode(pg, 'notion', 'autre notion (deux sessions)', branch);
 	const template = await insertTemplate(pg, sub1);
 	await pg.query(TAG_TEMPLATE, [template, templatePoint]);
 	const exercise = await insertExercise(pg, authorId, [sub1, sub2]);
@@ -296,12 +307,22 @@ async function createSharedDecor(pg: Client, authorId: string): Promise<SharedDe
 		templatePoint,
 		exercise,
 		exercisePoint,
-		pointOnSub1
+		pointOnSub1,
+		pointSpe,
+		otherNotion
 	};
 }
 
 /** Ramène le décor partagé à son état de départ (chaque écriture passe les règles). */
 async function resetSharedDecor(pg: Client, s: SharedDecor): Promise<void> {
+	await pg.query(
+		'delete from public.question_template_points where template_id = $1 and point_id = $2',
+		[s.template, s.pointSpe]
+	);
+	await pg.query('update public.classification_nodes set parent_id = $2 where id = $1', [
+		s.sub1,
+		s.notion
+	]);
 	await pg.query(
 		'delete from public.exercise_curriculum_points where exercise_id = $1 and point_id = $2',
 		[s.exercise, s.pointOnSub1]
@@ -326,9 +347,9 @@ async function dropSharedDecor(pg: Client, s: SharedDecor): Promise<void> {
 	]);
 	await pg.query('delete from public.question_templates where id = $1', [s.template]);
 	await pg.query('delete from public.curriculum_points where id = any($1::uuid[])', [
-		[s.templatePoint, s.exercisePoint, s.pointOnSub1]
+		[s.templatePoint, s.exercisePoint, s.pointOnSub1, s.pointSpe]
 	]);
-	for (const node of [s.sub1, s.sub2, s.notion, s.branch]) {
+	for (const node of [s.sub1, s.sub2, s.notion, s.otherNotion, s.branch]) {
 		await pg.query('delete from public.classification_nodes where id = $1', [node]);
 	}
 }
@@ -509,6 +530,17 @@ async function waitForLock(
 	throw new Error(`la session ${pid} n'attend pas ${what}`);
 }
 
+/**
+ * Joue la suite de la transaction sous un VRAI rôle : `authenticated`, avec les claims du compte
+ * (comme PostgREST). Annulé avec le point de sauvegarde de l'essai.
+ */
+async function asUser(pg: Client, userId: string): Promise<void> {
+	await pg.query("select set_config('request.jwt.claims', $1, true)", [
+		JSON.stringify({ sub: userId, role: 'authenticated' })
+	]);
+	await pg.query('set local role authenticated');
+}
+
 /** Annule les deux transactions d'un scénario à deux sessions, qu'il ait réussi ou échoué :
  * un scénario rouge ne doit pas laisser de verrou au suivant. */
 async function rollbackBoth(first: Client, second: Client): Promise<void> {
@@ -588,17 +620,18 @@ describe('Tags modèles → points neufs : la fixture, le fichier, l’état app
 		]);
 	});
 
-	it('les six fonctions : ni SECURITY DEFINER, search_path fixé, exécutables ni par anon, ni par authenticated, ni par PUBLIC', async () => {
+	it('les six fonctions : SECURITY DEFINER, propriétaire postgres, search_path fixé, exécutables ni par anon, ni par authenticated, ni par PUBLIC', async () => {
 		const pg = await getPostgresClient();
 		const r = await pg.query<{
 			proname: string;
 			prosecdef: boolean;
+			owner: string;
 			proconfig: string[] | null;
 			anon: boolean;
 			auth: boolean;
 			everyone: boolean;
 		}>(
-			`select p.proname, p.prosecdef, p.proconfig,
+			`select p.proname, p.prosecdef, p.proowner::regrole::text as owner, p.proconfig,
 			        has_function_privilege('anon', p.oid, 'EXECUTE') as anon,
 			        has_function_privilege('authenticated', p.oid, 'EXECUTE') as auth,
 			        exists (select 1 from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
@@ -611,7 +644,8 @@ describe('Tags modèles → points neufs : la fixture, le fichier, l’état app
 		expect(r.rows.map((row) => row.proname)).toEqual([...FUNCTIONS].sort());
 		for (const row of r.rows) {
 			expect(row, row.proname).toMatchObject({
-				prosecdef: false,
+				prosecdef: true,
+				owner: 'postgres',
 				proconfig: ['search_path=public, pg_temp'],
 				anon: false,
 				auth: false,
@@ -784,24 +818,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 					return tagTemplate(t, d.points.onNotion);
 				})
 			).rejects.toMatchObject({ code: '23505' });
-		});
-	});
-
-	describe('Accès : le point d’un tag se lit verrouillé ; sans droit de modifier les points, pas de tag', () => {
-		it('un utilisateur sans rôle de prof (RLS) qui tague avec un point existant : droits insuffisants (42501), refusé par la règle', async () => {
-			await expect(
-				trial(db(), async () => {
-					const e = await exercise([d.sub1]);
-					await db().query("select set_config('request.jwt.claims', $1, true)", [
-						JSON.stringify({ sub: crypto.randomUUID(), role: 'authenticated' })
-					]);
-					await db().query('set local role authenticated');
-					return tagExercise(e, d.points.onNotion);
-				})
-			).rejects.toMatchObject({
-				code: '42501',
-				message: expect.stringMatching(/Droits insuffisants pour taguer avec le point/)
-			});
 		});
 	});
 
@@ -1291,6 +1307,180 @@ describe('4 bis. Écritures simultanées entre tables : l’une attend l’autre
 			await rollbackBoth(t1, t2);
 		}
 	}, 30_000);
+
+	it('3a × 3d : T1 tague le modèle (point de la notion) ; T2, qui re-parente sa sous-notion, attend ; T1 valide ; T2 est refusé', async () => {
+		const { observer, t1, t2, s } = sessions();
+		try {
+			await resetSharedDecor(observer, s);
+			// Le seul tag du modèle est sur sa sous-notion : re-parenter serait permis sans T1
+			await observer.query(MOVE_POINT, [s.templatePoint, s.sub1]);
+			await t1.query('begin');
+			await t1.query(TAG_TEMPLATE, [s.template, s.pointSpe]);
+
+			await t2.query('begin');
+			const pid = await backendPid(t2);
+			const outcome = pending(
+				t2,
+				'update public.classification_nodes set parent_id = $2 where id = $1',
+				[s.sub1, s.otherNotion]
+			);
+			await waitForLock(observer, pid, ROW_LOCK, 'la ligne de la sous-notion, verrouillée par T1');
+
+			await t1.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(SUBNOTION_TEMPLATE)
+			});
+		} finally {
+			await rollbackBoth(t1, t2);
+		}
+	}, 30_000);
+
+	it('3d × 3a : T2 re-parente la sous-notion ; T1, qui tague le modèle d’un point de l’ancienne notion, attend ; T2 valide ; T1 est refusé', async () => {
+		const { observer, t1, t2, s } = sessions();
+		try {
+			await resetSharedDecor(observer, s);
+			await observer.query(MOVE_POINT, [s.templatePoint, s.sub1]);
+			await t2.query('begin');
+			await t2.query('update public.classification_nodes set parent_id = $2 where id = $1', [
+				s.sub1,
+				s.otherNotion
+			]);
+
+			await t1.query('begin');
+			const pid = await backendPid(t1);
+			const outcome = pending(t1, TAG_TEMPLATE, [s.template, s.pointSpe]);
+			await waitForLock(observer, pid, ROW_LOCK, 'la ligne de la sous-notion, verrouillée par T2');
+
+			await t2.query('commit');
+			expect(await outcome).toMatchObject({
+				code: CHECK_VIOLATION,
+				message: expect.stringMatching(RULE1)
+			});
+		} finally {
+			await rollbackBoth(t1, t2);
+		}
+	}, 30_000);
+});
+
+describe('Rôles réels : prof, admin, élève (la règle juge sur une vue complète)', () => {
+	let pg: Client | undefined;
+	let d: Decor;
+	let teacherId = '';
+	let adminId = '';
+	let studentId = '';
+
+	function db(): Client {
+		if (!pg) throw new Error('client pg non initialisé');
+		return pg;
+	}
+	const exercise = (nodeIds: string[]) => insertExercise(db(), d.authorId, nodeIds);
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		teacherId = (await TestData.profile().withRole('teacher').create()).id;
+		adminId = (await TestData.profile().withRole('admin').create()).id;
+		studentId = (await TestData.profile().withRole('student').create()).id;
+		pg = await getPostgresClient();
+		await pg.query('begin');
+		// Les exercices du décor sont ceux du prof, privés (is_public faux par défaut)
+		d = await createDecor(pg, teacherId);
+	});
+
+	afterAll(async () => {
+		await pg?.query('rollback');
+		await cleanupAllTestData();
+	});
+
+	it('l’admin re-parente une sous-notion qui casserait le tag d’un exercice privé du prof : refusé', async () => {
+		await expectRefused(
+			db(),
+			async () => {
+				const e = await exercise([d.sub1]);
+				await db().query(TAG_EXERCISE, [e, d.points.onNotion]);
+				await asUser(db(), adminId);
+				return db().query('update public.classification_nodes set parent_id = $2 where id = $1', [
+					d.sub1,
+					d.other
+				]);
+			},
+			SUBNOTION_EXERCISE
+		);
+	});
+
+	it('l’admin re-rattache un point porté par un exercice privé, qui reste conforme : accepté', async () => {
+		await expectAccepted(db(), async () => {
+			const e = await exercise([d.sub1, d.sub2]);
+			await db().query(TAG_EXERCISE, [e, d.points.onNotion]);
+			await asUser(db(), adminId);
+			return db().query(MOVE_POINT, [d.points.onNotion, d.sub2]);
+		});
+	});
+
+	it('l’admin re-rattache un point porté par un exercice privé, qui deviendrait hors règle : refusé', async () => {
+		await expectRefused(
+			db(),
+			async () => {
+				const e = await exercise([d.sub1]);
+				await db().query(TAG_EXERCISE, [e, d.points.onNotion]);
+				await asUser(db(), adminId);
+				return db().query(MOVE_POINT, [d.points.onNotion, d.sub2]);
+			},
+			POINT_MOVED_EXERCISE
+		);
+	});
+
+	it('l’admin (la RLS l’y autorise) tague un exercice privé du prof, tag conforme : accepté', async () => {
+		await expectAccepted(db(), async () => {
+			const e = await exercise([d.sub1]);
+			await asUser(db(), adminId);
+			return db().query(TAG_EXERCISE, [e, d.points.onNotion]);
+		});
+	});
+
+	it('le prof : un tag conforme est accepté', async () => {
+		await expectAccepted(db(), async () => {
+			const t = await insertTemplate(db(), d.sub1);
+			await asUser(db(), teacherId);
+			return db().query(TAG_TEMPLATE, [t, d.points.onNotion]);
+		});
+	});
+
+	it('le prof : un tag hors règle est refusé, avec le message de la règle 1', async () => {
+		await expectRefused(
+			db(),
+			async () => {
+				const t = await insertTemplate(db(), d.sub1);
+				await asUser(db(), teacherId);
+				return db().query(TAG_TEMPLATE, [t, d.points.onOther]);
+			},
+			RULE1
+		);
+	});
+
+	it('l’élève : son tag est refusé par l’accès habituel (RLS), sans message de règle, que le modèle existe ou non', async () => {
+		const refusal = async (templateId: () => Promise<string>) => {
+			try {
+				await trial(db(), async () => {
+					const t = await templateId();
+					await asUser(db(), studentId);
+					return db().query(TAG_TEMPLATE, [t, d.points.onOther]);
+				});
+			} catch (e) {
+				return e as { code?: string; message: string };
+			}
+			throw new Error('le tag de l’élève a été accepté');
+		};
+		const existing = await refusal(() => insertTemplate(db(), d.sub1));
+		const missing = await refusal(async () => crypto.randomUUID());
+		expect(existing.code).toBe('42501');
+		expect(existing.message).toMatch(RLS_REFUSAL);
+		expect(existing.message.replace(/"[^"]*"/g, '')).not.toMatch(ANY_RULE_MESSAGE);
+		expect({ code: missing.code, message: missing.message }).toEqual({
+			code: existing.code,
+			message: existing.message
+		});
+	});
 });
 
 describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', () => {

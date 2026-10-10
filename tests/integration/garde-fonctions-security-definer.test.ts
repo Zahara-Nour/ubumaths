@@ -25,6 +25,10 @@
  * Hors périmètre : les fonctions trigger et event_trigger, que Postgres refuse
  * d'exécuter hors de leur déclencheur (« can only be called as triggers »).
  *
+ *   (d) les fonctions de trigger SECURITY DEFINER DÉCLARÉES (`DECLENCHEURS_DEFINER_VERIFIES`)
+ *       sont définies comme annoncé : trigger, DEFINER, propriétaire postgres, EXECUTE retiré à
+ *       PUBLIC, anon et authenticated, et garde d'appelant présente dans le corps.
+ *
  * Que faire quand il échoue : docs/pratiques/rls-echecs-silencieux.md, § « Nouvelle
  * fonction SECURITY DEFINER ».
  *
@@ -32,7 +36,10 @@
  */
 import { describe, it, expect, beforeAll } from 'vitest';
 import { getPostgresClient } from '../helpers/database/postgres-client';
-import { FONCTIONS_DEFINER_VERIFIEES } from './fixtures/fonctions-definer-verifiees';
+import {
+	DECLENCHEURS_DEFINER_VERIFIES,
+	FONCTIONS_DEFINER_VERIFIEES
+} from './fixtures/fonctions-definer-verifiees';
 
 // ============================================================================
 // TYPES
@@ -183,5 +190,47 @@ describe('Garde-fou Q145 : search_path des fonctions SECURITY DEFINER', () => {
 			)
 			.join('\n');
 		expect(fautives, message).toEqual([]);
+	});
+});
+
+describe('Garde-fou Q145 : fonctions de trigger SECURITY DEFINER déclarées', () => {
+	it('(d) chacune existe, est un trigger DEFINER de postgres, sans EXECUTE public, avec sa garde d’appelant', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query<{
+			signature: string;
+			trigger: boolean;
+			definer: boolean;
+			owner: string;
+			executable: boolean;
+			garde: boolean;
+		}>(
+			`select p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')' as signature,
+			        p.prorettype = 'trigger'::regtype as trigger,
+			        p.prosecdef as definer,
+			        p.proowner::regrole::text as owner,
+			        has_function_privilege('anon', p.oid, 'EXECUTE')
+			          or has_function_privilege('authenticated', p.oid, 'EXECUTE')
+			          or exists (select 1 from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+			                      where a.grantee = 0 and a.privilege_type = 'EXECUTE') as executable,
+			        p.prosrc like '%auth.role()%' and p.prosrc like '%public.is_teacher_or_admin()%' as garde
+			   from pg_proc p
+			   join pg_namespace n on n.oid = p.pronamespace
+			  where n.nspname = 'public'`
+		);
+		const parSignature = new Map(rows.map((r) => [r.signature, r]));
+		const fautives = Object.keys(DECLENCHEURS_DEFINER_VERIFIES).flatMap((sig) => {
+			const f = parSignature.get(sig);
+			if (!f) return [`${sig} : n'existe pas`];
+			const ecarts = [
+				!f.trigger && 'pas une fonction de trigger',
+				!f.definer && 'pas SECURITY DEFINER',
+				f.owner !== 'postgres' && `propriétaire ${f.owner}`,
+				f.executable && 'EXECUTE accordé à PUBLIC, anon ou authenticated',
+				!f.garde && 'garde d’appelant absente'
+			].filter(Boolean);
+			return ecarts.length > 0 ? [`${sig} : ${ecarts.join(', ')}`] : [];
+		});
+		expect(fautives).toEqual([]);
+		expect(Object.keys(DECLENCHEURS_DEFINER_VERIFIES)).toHaveLength(6);
 	});
 });

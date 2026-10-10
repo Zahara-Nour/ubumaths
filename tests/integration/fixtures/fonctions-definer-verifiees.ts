@@ -882,3 +882,32 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		justification: 'booléen : un partage est-il restreint, sans dire à qui'
 	}
 };
+
+// ============================================================================
+// FONCTIONS DE TRIGGER SECURITY DEFINER
+// ============================================================================
+
+/**
+ * Une fonction de trigger ne s'appelle pas en RPC (« can only be called as triggers ») : elle
+ * sort de la liste ci-dessus. Celles qui sont déclarées ici sont vérifiées une à une par le
+ * garde-fou (d) : SECURITY DEFINER, propriétaire postgres, EXECUTE retiré à PUBLIC, anon et
+ * authenticated, garde d'appelant lue dans le corps (`auth.role()` et
+ * `public.is_teacher_or_admin()`).
+ */
+export interface DeclencheurDefinerVerifie {
+	/** Une ligne, en français : ce que fait la fonction, et pourquoi DEFINER. */
+	justification: string;
+}
+
+/** Règles de tag (migration 20261012160000_tags_modeles_points, choix (A) de David, 2026-10-10). */
+const REGLES_DE_TAG =
+	'validation des règles de tag sur une vue complète ; garde d’appelant (ni prof ni admin : non évalué) ; aucune écriture, aucune donnée renvoyée';
+
+export const DECLENCHEURS_DEFINER_VERIFIES: Record<string, DeclencheurDefinerVerifie> = {
+	'question_template_points_check_rules()': { justification: REGLES_DE_TAG },
+	'question_templates_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'curriculum_points_guard_tags()': { justification: REGLES_DE_TAG },
+	'classification_nodes_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'exercise_curriculum_points_check_rules()': { justification: REGLES_DE_TAG },
+	'exercise_classifications_guard_point_tags()': { justification: REGLES_DE_TAG }
+};
