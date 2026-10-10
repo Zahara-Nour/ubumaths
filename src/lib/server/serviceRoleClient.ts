@@ -67,6 +67,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Modération : soft-delete d'un message, droits vérifiés par la route (la RLS du prof
 	// refusait l'écriture ou ne touchait aucune ligne, 2026-10-10)
 	'/api/moderation/messages/[id]/+server',
+	// Élévation admin : e-mail du compte admin, invisible au prof par la RLS (B5)
+	'/api/admin/elevate/+server',
 	// Marché : verrous des cartes d'une proposition et compteur de l'annonce
 	'lib/server/marketplace/proposal-locks.ts',
 	'lib/server/marketplace/acceptance.ts',

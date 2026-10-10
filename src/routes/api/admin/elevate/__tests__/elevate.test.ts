@@ -39,6 +39,21 @@ vi.mock('$lib/server/rateLimiter', () => ({
 	checkElevationRateLimitByEmail: vi.fn().mockResolvedValue({ allowed: true })
 }));
 
+// Lecture de l'e-mail de l'admin : par le client SERVICE (constat B5, 2026-10-10 — le
+// client du prof ne voit pas le profil admin : aucune policy ne le lui montre, et
+// l'élévation échouait en 500 « Compte administrateur introuvable »).
+const serviceAdminSingle = vi.fn();
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => {
+		const chain = {
+			select: () => chain,
+			eq: () => chain,
+			single: (...args: unknown[]) => serviceAdminSingle(...args)
+		};
+		return { from: () => chain };
+	}
+}));
+
 // Control the ephemeral verification client created via createClient(...).
 // The ephemeral client both signs in AND reads its own profile role, so the
 // mock exposes a chainable from().select().eq().single().
@@ -109,15 +124,23 @@ function signInSuccess(userId: string, email: string) {
 	};
 }
 
-/** Mono-admin model: stub the single-admin email lookup on the caller client. */
+/**
+ * Mono-admin model: stub the single-admin email lookup on the SERVICE client. The caller
+ * (teacher) client is made to see NO admin row, as in production.
+ */
 function mockAdminLookup(supabase: any) {
-	supabase._mockChain.single.mockResolvedValueOnce({ data: { email: ADMIN_EMAIL }, error: null });
+	serviceAdminSingle.mockResolvedValueOnce({ data: { email: ADMIN_EMAIL }, error: null });
+	supabase._mockChain.single.mockResolvedValue({
+		data: null,
+		error: { code: 'PGRST116', message: 'no rows' }
+	});
 }
 
 describe('POST /api/admin/elevate', () => {
 	beforeEach(() => {
 		signInWithPassword.mockReset();
 		ephemeralSingle.mockReset();
+		serviceAdminSingle.mockReset();
 		return import.meta.hot?.invalidate();
 	});
 
