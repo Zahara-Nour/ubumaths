@@ -177,7 +177,7 @@ allumée (`ALLOW_DB=1` pour passer outre) : sur l'ancien laptop de 8 Go, elle
 étranglait le typecheck (15 min puis tué). **Retirée le 2026-09-29** : sur le
 Mac mini (M6, 24 Go), le scénario exact — édition sous `src/routes`, Supabase ET
 serveur de dev allumés — a pris 47 s, swap +0. `pnpm check`, `build` et `lint`,
-eux, ne sont sous **aucun verrou** : ne pas les lancer en parallèle.
+eux, partagent depuis le 2026-10-10 le verrou de `check:incremental` (`scripts/gros-process.sh`) : un second lanceur sort en exit 2.
 
 ### L'état de rejeu reste local — et doit le rester
 
