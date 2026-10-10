@@ -193,14 +193,17 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    e-mail de l'admin retrouvé côté serveur → `signInWithPassword` sur un client **éphémère**
    (`createEphemeralAuthClient` : ne persiste rien, n'écrit aucun cookie) → rôle `admin`
    relu en base → cookie posé.
-2. **Cookie `ubu-admin-elevation`** : base64url de `{ adminUserId, accessToken, expiresAt }`,
+2. **Cookie `ubu-admin-elevation`** : base64url de
+   `{ adminUserId, accessToken, expiresAt, elevatedBy }` — `elevatedBy` = le compte dont la session
+   s'est élevée ; l'élévation ne vaut que pour **cette** session (2026-10-10),
    `httpOnly`, `secure` hors dev, **`SameSite=Strict`**, durée ≤ 1 h (celle du jeton d'accès,
    **sans** jeton de rafraîchissement). Pas de chiffrement : l'intégrité vient de la signature
    du JWT, revérifiée à chaque requête. Le nom ne commence pas par `sb-` : `@supabase/ssr`
    l'ignore et la racine ne le transmet pas au client.
 3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*` et `/api/admin*`.
-   **Sans session (`locals.user` nul), jamais d'élévation** : le cookie est effacé, le jeton
-   n'est pas vérifié (poste partagé après un logout ; constat B4, 2026-10-10). Sinon : décode,
+   **Sans session, ou avec la session d'un autre compte que `elevatedBy`, jamais d'élévation** :
+   le cookie est effacé, le jeton n'est pas vérifié (poste partagé : logout, session expirée,
+   élève connecté ensuite sur le même navigateur ; constat B4, 2026-10-10). Sinon : décode,
    `getUser(token)`, compare l'identifiant, relit `role = 'admin'`, puis pose
    `locals.adminSupabase` (client dont la RLS s'exécute en tant qu'admin) et
    `locals.adminElevation = { active, adminUserId, expiresAt }`.

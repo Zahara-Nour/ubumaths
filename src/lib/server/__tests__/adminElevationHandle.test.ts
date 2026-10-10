@@ -10,7 +10,10 @@
  * Ce que le fichier prouve :
  *   1. cookie valide mais aucune session → pas d'élévation, jeton jamais vérifié,
  *      cookie effacé ;
- *   2. non-régression : cookie valide + session → élévation active.
+ *   2. cookie posé par le prof, session d'un AUTRE compte (élève connecté ensuite sur le
+ *      même navigateur, session du prof terminée sans passer par le logout) → pas
+ *      d'élévation, cookie effacé (security-auditor, 2026-10-10) ;
+ *   3. non-régression : cookie valide + session du compte qui s'est élevé → élévation.
  */
 import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -26,6 +29,7 @@ import {
 
 const ADMIN_ID = '550e8400-e29b-41d4-a716-446655440002';
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
+const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440003';
 
 // ============================================================================
 // HELPERS
@@ -43,7 +47,8 @@ function eventAvecCookie(user: { id: string } | null) {
 	const cookie = encodeElevationCookie({
 		adminUserId: ADMIN_ID,
 		accessToken: 'jeton-admin',
-		expiresAt: Date.now() + 3600_000
+		expiresAt: Date.now() + 3600_000,
+		elevatedBy: TEACHER_ID
 	});
 	const cookies = {
 		get: vi.fn((name: string) => (name === ADMIN_ELEVATION_COOKIE ? cookie : undefined)),
@@ -79,6 +84,22 @@ describe('createAdminElevationHandle — session exigée', () => {
 			expect.objectContaining({ path: '/' })
 		);
 		expect(resolve).toHaveBeenCalled();
+	});
+
+	it('la session d’un autre compte ne reprend pas l’élévation du prof', async () => {
+		const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client: adminClient() });
+		const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
+		const { event, cookies, locals } = eventAvecCookie({ id: STUDENT_ID });
+
+		await handle({ event, resolve: vi.fn().mockResolvedValue(new Response()) });
+
+		expect(locals.adminElevation).toBeNull();
+		expect(locals.adminSupabase).toBeUndefined();
+		expect(verifyToken).not.toHaveBeenCalled();
+		expect(cookies.delete).toHaveBeenCalledWith(
+			ADMIN_ELEVATION_COOKIE,
+			expect.objectContaining({ path: '/' })
+		);
 	});
 
 	it('avec une session, un cookie valide donne l’élévation (non-régression)', async () => {

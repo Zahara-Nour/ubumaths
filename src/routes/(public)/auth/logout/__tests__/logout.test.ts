@@ -65,7 +65,8 @@ describe('POST /auth/logout — élévation admin', () => {
 		const cookie = encodeElevationCookie({
 			adminUserId: '550e8400-e29b-41d4-a716-446655440002',
 			accessToken: 'jeton-admin',
-			expiresAt: Date.now() + 3600_000
+			expiresAt: Date.now() + 3600_000,
+			elevatedBy: '550e8400-e29b-41d4-a716-446655440001'
 		});
 		const { event, cookies, supabase } = eventDeLogout(cookie);
 
@@ -84,7 +85,8 @@ describe('POST /auth/logout — élévation admin', () => {
 		const cookie = encodeElevationCookie({
 			adminUserId: '550e8400-e29b-41d4-a716-446655440002',
 			accessToken: 'jeton-admin',
-			expiresAt: Date.now() + 3600_000
+			expiresAt: Date.now() + 3600_000,
+			elevatedBy: '550e8400-e29b-41d4-a716-446655440001'
 		});
 		const { event, cookies } = eventDeLogout(cookie);
 

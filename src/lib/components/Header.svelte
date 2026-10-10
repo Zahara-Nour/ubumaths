@@ -27,7 +27,8 @@
   - Safe to trust and display to the user
 
   LOGOUT FLOW:
-  1. Call supabase.auth.signOut() to clear session
+  1. POST /auth/logout (src/lib/utils/auth.ts): server-side signOut(), and the admin
+     elevation cookie is revoked and cleared
   2. Call invalidate('supabase:auth') to trigger server re-verification
   3. Navigate to home page
   4. The invalidate triggers the reactive chain:

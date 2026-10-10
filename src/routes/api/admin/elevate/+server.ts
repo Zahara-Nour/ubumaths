@@ -152,7 +152,13 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 		Math.max(0, Math.floor((expiresAtMs - Date.now()) / 1000))
 	);
 
-	const cookieValue = encodeElevationCookie({ adminUserId, accessToken, expiresAt: expiresAtMs });
+	const cookieValue = encodeElevationCookie({
+		adminUserId,
+		accessToken,
+		expiresAt: expiresAtMs,
+		// L'élévation ne vaut que pour cette session (voir adminElevationHandle).
+		elevatedBy: locals.user.id
+	});
 
 	cookies.set(ADMIN_ELEVATION_COOKIE, cookieValue, {
 		path: '/',
