@@ -355,6 +355,11 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 			.from('dictionary_entry_versions')
 			.insert({ entry_id: entry.id, entry: { term: 'faux' }, saved_by: adminId });
 		expect(forged.error?.code).toBe('42501');
+		const { data: none } = await service
+			.from('dictionary_entry_versions')
+			.select('id')
+			.eq('entry_id', entry.id);
+		expect(none ?? []).toEqual([]);
 
 		await adminClient.from('dictionary_entries').update({ history: 'vraie' }).eq('id', entry.id);
 		const { data } = await service

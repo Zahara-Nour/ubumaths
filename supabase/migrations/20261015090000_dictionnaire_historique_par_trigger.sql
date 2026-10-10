@@ -23,8 +23,22 @@
 --   create policy "Admins can write dictionary history"
 --     on public.dictionary_entry_versions for insert to authenticated
 --     with check ((select public.is_admin()) and saved_by = (select auth.uid()));
---   -- puis recréer dictionary_entries_keep_version() sans security definer ni garde
---   -- (corps de 20261012153000_dictionnaire_en_base.sql, set search_path = '').
+--   create or replace function public.dictionary_entries_keep_version()
+--   returns trigger language plpgsql set search_path = '' as $$
+--   begin
+--     if tg_op = 'UPDATE' then
+--       insert into public.dictionary_entry_versions (entry_id, entry, saved_by)
+--       values (old.id, to_jsonb(old), auth.uid());
+--       new.created_at := old.created_at;
+--     else
+--       new.created_at := now();
+--     end if;
+--     new.updated_at := now();
+--     new.updated_by := auth.uid();
+--     return new;
+--   end;
+--   $$;
+--   -- (sans « security definer », create or replace la repasse en SECURITY INVOKER)
 
 create or replace function public.dictionary_entries_keep_version()
 returns trigger
