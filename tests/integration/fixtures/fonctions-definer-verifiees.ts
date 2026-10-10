@@ -179,11 +179,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde soi, ami (is_friend, partenaire d’échange) ou prof/admin (lot 5)'
 	},
-	'marketplace_hidden_creators()': {
-		categorie: 'compte-appelant-ou-prof',
-		justification:
-			'sans paramètre : auteurs en lecture seule des annonces ACTIVES de l’école de auth.uid() (A2, masquage)'
-	},
 	'check_marketplace_enabled(p_student_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'garde soi, ami (is_friend, partenaire d’échange) ou prof/admin (lot 5)'

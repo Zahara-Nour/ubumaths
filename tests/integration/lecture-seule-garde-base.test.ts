@@ -292,17 +292,21 @@ describe('lecture seule gardée par la base', () => {
 	// 4. Fonction non exposée
 	// --------------------------------------------------------------------------
 
-	it.each(['anon', 'authenticated', 'public'])(
-		'%s ne peut pas appeler has_full_access',
-		async (role) => {
-			const pg = await getPostgresClient();
-			const { rows } = await pg.query<{ granted: boolean }>(
-				`select has_function_privilege($1, 'public.has_full_access(uuid)', 'EXECUTE') as granted`,
-				[role]
-			);
-			expect(rows[0].granted).toBe(false);
-		}
-	);
+	it.each([
+		['anon', 'has_full_access(uuid)'],
+		['authenticated', 'has_full_access(uuid)'],
+		['public', 'has_full_access(uuid)'],
+		['anon', 'marketplace_hidden_creators(uuid)'],
+		['authenticated', 'marketplace_hidden_creators(uuid)'],
+		['public', 'marketplace_hidden_creators(uuid)']
+	])('%s ne peut pas appeler %s (statut de consentement d’autrui)', async (role, fn) => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query<{ granted: boolean }>(
+			`select has_function_privilege($1, $2, 'EXECUTE') as granted`,
+			[role, `public.${fn}`]
+		);
+		expect(rows[0].granted).toBe(false);
+	});
 
 	// --------------------------------------------------------------------------
 	// 5. Retirer oui, agir non
@@ -386,6 +390,31 @@ describe('lecture seule gardée par la base', () => {
 			await pg.query('rollback');
 		});
 
+		it('déplacer son ancien message dans une autre conversation : refusé', async () => {
+			const id = await ancienMessage();
+			const autre = await conversationAvec(teacherId, eleveId);
+			const { error } = await eleve
+				.from('messages')
+				.update({ conversation_id: autre, created_at: new Date().toISOString() })
+				.eq('id', id);
+			expect(error?.code).toBe('42501');
+		});
+
+		it('retirer sa confirmation d’un échange : permis', async () => {
+			const id = await ancienEchange();
+			const pg = await getPostgresClient();
+			await pg.query('update marketplace_trades set confirmed_by_partner = true where id = $1', [
+				id
+			]);
+			const { data, error } = await eleve
+				.from('marketplace_trades')
+				.update({ confirmed_by_partner: false })
+				.eq('id', id)
+				.select('id');
+			expect(error).toBeNull();
+			expect(data).toHaveLength(1);
+		});
+
 		it('réagir à un message : refusé', async () => {
 			const id = await ancienMessage();
 			const { error } = await eleve
@@ -441,9 +470,11 @@ describe('lecture seule gardée par la base', () => {
 			);
 			await mettreEnGrace(amiId);
 
-			const { data: caches, error: rpcError } = await ami.rpc('marketplace_hidden_creators');
-			expect(rpcError).toBeNull();
-			expect(caches).toContain(eleveId);
+			const { rows: caches } = await pg.query<{ c: string[] }>(
+				'select public.marketplace_hidden_creators($1) as c',
+				[await ecoleDe(eleveId)]
+			);
+			expect(caches[0].c).toContain(eleveId);
 
 			await expect(
 				pg.query(

@@ -132,15 +132,17 @@ Migration `20261014110000_lecture_seule_garde_base` :
   `message_attachments_v2` (`uploaded_by`).
 - **« Retirer oui, agir non »** (décision du 2026-10-10) : trigger `guard_read_only_actor_trg`
   (BEFORE UPDATE, fonction `guard_read_only_actor`) qui regarde **qui agit** (`auth.uid()` ; une
-  tâche système passe). Un élève en lecture seule peut supprimer ses messages, annuler ses annonces
-  et ses échanges, retirer ou refuser une proposition ; il ne peut plus réécrire un message,
-  réactiver ou modifier une annonce, conclure un échange, accepter une proposition, ni continuer une
-  partie (solo, tournoi, multijoueur).
+  tâche système passe). Règles en **listes blanches de colonnes** : un élève en lecture seule peut
+  supprimer ou signaler ses messages, annuler ses annonces et ses échanges, retirer sa validation
+  d'un échange, retirer ou refuser une proposition, abandonner une partie de tournoi ; tout le
+  reste est refusé (réécrire ou déplacer un message, réactiver ou modifier une annonce, valider ou
+  conclure un échange, accepter une proposition, jouer).
 - **Matchmaking** : `join_multiplayer_queue` ignore un adversaire en lecture seule (sinon, resté en
   file, il faisait échouer le matchmaking de tous les suivants).
 - **Annonces d'un auteur en lecture seule** : aucune nouvelle proposition (`guard_proposal_listing_open`)
-  ; masquage du marché via `marketplace_hidden_creators()` — **la route l'utilise dans une seconde
-  PR** (la fonction doit être en prod pour `db:types`).
+  ; masquage du marché via `marketplace_hidden_creators(p_school_id)`, **`service_role` seul**
+  (appelable par un élève, elle nommerait ses camarades sans consentement) — **la route l'utilise
+  dans une seconde PR** (la fonction doit être en prod pour `db:types`).
 - **Hors périmètre, décidé** : les récompenses. Seules les tâches automatiques sauteront ces élèves
   (filtre dans la tâche, avec E19) ; le prof peut toujours en donner à la main.
 - `requireConsent` reste dans les routes (message clair, 403 avant tout travail).
