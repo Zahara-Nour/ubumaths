@@ -192,6 +192,54 @@ describe('/api/marketplace/listings', () => {
 			);
 		});
 
+		test('le prof voit toujours ces annonces (surveillance)', async () => {
+			const hidden = await import('$lib/server/marketplace/hidden-creators');
+			(
+				hidden.getHiddenMarketplaceCreators as unknown as ReturnType<typeof vi.fn>
+			).mockResolvedValue(['user-2']);
+			mockSupabase._mockChain.single.mockResolvedValue({
+				data: { role: 'teacher', school_id: 'school-1' },
+				error: null
+			});
+			mockSupabase._mockChain.then = vi.fn((callback) =>
+				callback({ data: [], error: null, count: 0 })
+			);
+
+			await GET({
+				url: new URL('http://localhost/api/marketplace/listings'),
+				locals: { supabase: mockSupabase, user: { id: 'teacher-1' } }
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any);
+
+			expect(mockSupabase._mockChain.not).not.toHaveBeenCalledWith(
+				'creator_id',
+				'in',
+				expect.anything()
+			);
+		});
+
+		test('un élève ne consulte pas les annonces d’un autre par creator_id', async () => {
+			await expect(
+				GET({
+					url: new URL(
+						'http://localhost/api/marketplace/listings?creator_id=550e8400-e29b-41d4-a716-446655440099'
+					),
+					locals: { supabase: mockSupabase, user: { id: mockUser.id } }
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				} as any)
+			).rejects.toMatchObject({ status: 403 });
+		});
+
+		test('creator_id qui n’est pas un uuid : 400', async () => {
+			await expect(
+				GET({
+					url: new URL('http://localhost/api/marketplace/listings?creator_id=pas-un-uuid'),
+					locals: { supabase: mockSupabase, user: { id: mockUser.id } }
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				} as any)
+			).rejects.toMatchObject({ status: 400 });
+		});
+
 		test('sans auteur en lecture seule, aucun filtre ajouté', async () => {
 			mockSupabase._mockChain.then = vi.fn((callback) =>
 				callback({ data: [], error: null, count: 0 })

@@ -1,4 +1,5 @@
 import { json, error } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { createListingSchema, listingsQuerySchema } from '$lib/server/marketplace/validation';
@@ -42,7 +43,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	const { page, limit, type, card_template_id } = queryValidation.data;
-	const creatorId = url.searchParams.get('creator_id');
+	const creatorIdParam = url.searchParams.get('creator_id');
+	const creatorIdValidation = z.string().uuid().nullable().safeParse(creatorIdParam);
+	if (!creatorIdValidation.success) {
+		throw error(400, 'creator_id invalide');
+	}
+	const creatorId = creatorIdValidation.data;
 
 	// Get user profile to check role
 	const { data: profile, error: profileError } = await supabase
@@ -68,6 +74,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 		if (!marketplaceEnabled) {
 			throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		}
+
+		// Un élève ne consulte par auteur que SES annonces (seul usage de l'interface) :
+		// sinon `creator_id` contournerait le statut et le masquage ci-dessous (A2).
+		if (creatorId && creatorId !== userId) {
+			throw error(403, 'Accès refusé');
 		}
 
 		// Get student's school ID
@@ -100,10 +112,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	if (!creatorId) {
 		query = query.eq('status', 'active').neq('creator_id', userId);
 
-		// Annonces d'un auteur en lecture seule (consentement parental) : masquées.
-		const hiddenCreators = await getHiddenMarketplaceCreators(schoolId);
-		if (hiddenCreators.length > 0) {
-			query = query.not('creator_id', 'in', `(${hiddenCreators.join(',')})`);
+		// Annonces d'un auteur en lecture seule (consentement parental) : masquées aux
+		// élèves, qui ne pourraient pas les conclure ; le prof et l'admin les voient
+		// toujours (surveillance).
+		if (profile.role === 'student') {
+			const hiddenCreators = await getHiddenMarketplaceCreators(schoolId);
+			if (hiddenCreators.length > 0) {
+				query = query.not('creator_id', 'in', `(${hiddenCreators.join(',')})`);
+			}
 		}
 	}
 

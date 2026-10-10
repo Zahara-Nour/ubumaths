@@ -160,7 +160,9 @@ Migration `20261014110000_lecture_seule_garde_base` :
   ; masquage du marché via `marketplace_hidden_creators(p_school_id)`, **`service_role` seul**
   (appelable par un élève, elle nommerait ses camarades sans consentement) ; la route
   `api/marketplace/listings` (GET, parcours du marché) l'appelle par
-  `src/lib/server/marketplace/hidden-creators.ts` (client service).
+  `src/lib/server/marketplace/hidden-creators.ts` (client service). Masquage pour les **élèves** ;
+  le prof et l'admin voient toujours ces annonces (surveillance). Un élève ne peut lister par
+  `creator_id` que ses propres annonces (sinon le paramètre contournait le masquage).
 - **Hors périmètre, décidé** : les récompenses. Seules les tâches automatiques sauteront ces élèves
   (filtre dans la tâche, avec E19) ; le prof peut toujours en donner à la main.
 - `requireConsent` reste dans les routes (message clair, 403 avant tout travail).
