@@ -18,8 +18,8 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 
 Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout** (détail : [étape 5](docs/wip/etape5-mesures-mac-mini.md)) : `pnpm check` 82 s (plus gros process 5,3 Go) · `pnpm build` 64 s (5,7 Go) · `pnpm lint` 530 s (4,1 Go) · `check:incremental` 44 s à chaud, 82 s à cache froid · `test:integration` 180 s.
 
-- **`pnpm check`, `pnpm build`, `pnpm lint` : autorisés, UN SEUL gros process à la fois.** Ils ne sont sous **aucun verrou** : deux en parallèle = 2 × 5 Go. Ni deux ensemble, ni pendant un `check:incremental`.
-- **eslint complet autorisé en local, en arrière-plan** (`pnpm lint`, 530 s : trop près de la coupure à 10 min du premier plan).
+- **`pnpm check`, `pnpm build`, `pnpm lint` : autorisés, UN SEUL gros process à la fois.** Ils passent sous le **même verrou** que `check:incremental` (`scripts/gros-process.sh`, depuis le 2026-10-10) : un second gros process sort en **exit 2** en nommant le détenteur, ça s'attend. Pas de verrou en CI ni sur Vercel.
+- **eslint complet autorisé en local, en arrière-plan** (`pnpm lint`, 530 s à froid : trop près de la coupure à 10 min du premier plan ; avec son cache ESLint, les passages suivants ne relisent que les fichiers changés).
 - **Déconseillés — limite de Node, pas de la RAM** : `npx tsc --noEmit` (et l'ancien `pnpm check:fast`, retiré le 2026-10-10) et `svelte-check` sans `--incremental` meurent sur le **tas par défaut de Node (~4 Go)** : `JavaScript heap out of memory`, exit 134, en 44-47 s, swap +0 (mesuré le 2026-09-29). Plus de RAM n'y change rien. `tsc --noEmit` donne en plus des faux positifs `$lib`.
 - **Le check du quotidien : `pnpm check:incremental`** (TS + Svelte, **0 erreur exigée**) : ~45 s à chaud, ~80 s à cache froid (`FRESH=1`), une édition sous `src/routes` comprise (47 s). Verrou : un 2ᵉ run concurrent sort en **exit 2** ; si rien n'a changé, le résultat précédent est rejoué (`FORCE=1` pour passer outre).
 - **`pnpm lint:fast`** (~2,5 s, contre 530 s pour eslint complet — le motif est la **durée**) rejoue toutes les règles de niveau **erreur** de la config complète, sans `projectService` (`eslint.fast.config.js` en dérive : la liste ne peut plus diverger de la CI ; seule `svelte/no-unused-props`, qui exige les types, reste vue par la CI seule). Élargi le 2026-10-07, après un échec CI sur `no-fallthrough` invisible à l'ancien `lint:fast`. Lancé au `pre-push`.
@@ -187,7 +187,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 - **Travail direct** (pas d'agent) si : bug ciblé 1-2 fichiers connus · modif < 20 lignes · investigation (Read/Grep) · faisable en < 5 min.
 - **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
-- **Agents autorisés** : `pnpm check:incremental` (verrouillé) et les tests ciblés. ⛔ **Réservés à la session principale** : `pnpm check`, `pnpm build`, `pnpm lint` complets — aucun verrou, donc risque de deux gros process en parallèle (décidé le 2026-09-29). ⛔ `format` interdit aux agents : reformater l'arbre entier noie le vrai changement dans un diff hors sujet, et le pre-commit formate déjà les fichiers modifiés. ⛔ Tourner > 5 min sans résultat concret.
+- **Agents autorisés** : `pnpm check:incremental` (verrouillé) et les tests ciblés. ⛔ **Réservés à la session principale** : `pnpm check`, `pnpm build`, `pnpm lint` complets — verrouillés depuis le 2026-10-10, mais longs et lourds : un agent ne doit pas tenir le verrou à la place de la session.
 
 (Liste complète : `.claude/agents/README.md`.)
 
