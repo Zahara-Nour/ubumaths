@@ -18,6 +18,8 @@ import { describe, it, expect } from 'vitest';
 import {
 	COPIE,
 	JAMAIS,
+	detecterFuite,
+	remplacerIds,
 	filtrerLignes,
 	neutraliser,
 	valeurPg,
@@ -153,12 +155,103 @@ describe('neutraliser', () => {
 			name: '5e A',
 			join_code: 'LOCAL001',
 			registration_open: false,
-			google_classroom_course_id: null
+			google_classroom_course_id: null,
+			description: null,
+			tutor_config: null
 		});
 	});
 
 	it('ne touche pas aux autres tables', () => {
 		const l = { id: 1, join_code: 'X' };
 		expect(neutraliser('exercises', l, 0)).toBe(l);
+	});
+});
+
+describe('remplacerIds (en profondeur)', () => {
+	const correspondance = new Map([['prof-prod-0000', 'prof-local']]);
+
+	it('remplace un identifiant du personnel partout : colonne simple, JSON imbriqué, tableau', () => {
+		const r = remplacerIds(
+			{
+				updated_by: 'prof-prod-0000',
+				snap: { auteur: 'prof-prod-0000', liste: ['prof-prod-0000', 'x'] }
+			},
+			correspondance
+		);
+		expect(r).toEqual({
+			updated_by: 'prof-local',
+			snap: { auteur: 'prof-local', liste: ['prof-local', 'x'] }
+		});
+	});
+
+	it('remplace aussi un identifiant cité à l’intérieur d’un texte', () => {
+		expect(remplacerIds({ t: 'par prof-prod-0000.' }, correspondance)).toEqual({
+			t: 'par prof-local.'
+		});
+	});
+});
+
+describe('detecterFuite', () => {
+	const interdits = {
+		ids: ['eleve-uuid-1', 'prof-prod-0000'],
+		noms: ['Camille Durand']
+	};
+
+	it('rien de personnel : null', () => {
+		expect(detecterFuite({ id: 1, enonce: 'Résoudre 2x + 3 = 7' }, interdits)).toBeNull();
+	});
+
+	it('un identifiant d’utilisateur de prod caché dans un JSON', () => {
+		expect(detecterFuite({ shared: { avec: ['eleve-uuid-1'] } }, interdits)).toMatch(/identifiant/);
+	});
+
+	it('un identifiant du personnel resté (colonne sans clé étrangère)', () => {
+		expect(detecterFuite({ updated_by: 'prof-prod-0000' }, interdits)).toMatch(/identifiant/);
+	});
+
+	it('un nom de fichier « @0.5x » (images haute densité) n’est pas une adresse', () => {
+		expect(detecterFuite({ image_path: 'cartes/dragon@0.5x.webp' }, interdits)).toBeNull();
+	});
+
+	it('une adresse e-mail', () => {
+		expect(detecterFuite({ notes: 'écrire à camille.d@exemple.fr' }, interdits)).toMatch(/e-mail/);
+	});
+
+	it('le nom complet d’un élève, sans tenir compte de la casse', () => {
+		expect(detecterFuite({ description: 'Bravo à camille durand !' }, interdits)).toMatch(/nom/);
+	});
+
+	it('ne révèle jamais la donnée trouvée dans son message', () => {
+		const m = detecterFuite({ description: 'Bravo à Camille Durand' }, interdits) ?? '';
+		expect(m).not.toContain('Camille');
+	});
+});
+
+describe('neutraliser (après audit)', () => {
+	it('exclut les documents liés à la prod et coupe le texte libre des classes et de l’emploi du temps', () => {
+		expect(COPIE).not.toContain('chapter_documents');
+		const c = neutraliser(
+			'classes',
+			{ id: 'c', name: 'n', description: 'd', tutor_config: { x: 1 }, join_code: 'J' },
+			0
+		);
+		expect(c.description).toBeNull();
+		expect(c.tutor_config).toBeNull();
+		expect(neutraliser('class_schedules', { id: 1, notes: 'Lucas absent' }, 0).notes).toBeNull();
+	});
+});
+
+describe('verifierCibles (après audit)', () => {
+	it('refuse une URL Postgres avec des paramètres, qui pourraient changer l’hôte', () => {
+		expect(() =>
+			verifierCibles({ source: PROD, cible: LOCAL, pg: `${PG_LOCAL}?host=db.exemple.com` })
+		).toThrow(/paramètre/);
+	});
+});
+
+describe('liste de copie (après audit)', () => {
+	it('copie class_chapters, parent des chapitres, et pas chapter_decks, qui pointe vers des paquets d’élèves', () => {
+		expect(COPIE).toContain('class_chapters');
+		expect(COPIE).not.toContain('chapter_decks');
 	});
 });

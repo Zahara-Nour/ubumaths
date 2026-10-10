@@ -22,7 +22,16 @@ import { createClient } from '@supabase/supabase-js';
 import { parse } from 'dotenv';
 import { readFileSync } from 'node:fs';
 import pg from 'pg';
-import { COPIE, filtrerLignes, neutraliser, valeurPg, verifierCibles, type Ligne } from './regles';
+import {
+	COPIE,
+	detecterFuite,
+	filtrerLignes,
+	neutraliser,
+	remplacerIds,
+	valeurPg,
+	verifierCibles,
+	type Ligne
+} from './regles';
 
 const PROF_LOCAL = '11111111-1111-4111-8111-111111111111';
 const ADMIN_LOCAL = '33333333-3333-4333-8333-333333333333';
@@ -174,17 +183,41 @@ async function main() {
 	await db.connect();
 
 	try {
-		const { data: personnel, error } = await prod
-			.from('profiles')
-			.select('id, role')
-			.in('role', ['teacher', 'admin']);
-		if (error) throw new Error(`lecture du personnel : ${error.message}`);
+		// Identifiants et noms restent en mémoire : ils servent aux gardes, jamais à un affichage.
+		const utilisateurs: { id: string; role: string; full_name: string | null }[] = [];
+		for (let debut = 0; ; debut += PAGE) {
+			const { data, error } = await prod
+				.from('profiles')
+				.select('id, role, full_name')
+				.order('id')
+				.range(debut, debut + PAGE - 1);
+			if (error) throw new Error(`lecture des profils : ${error.message}`);
+			utilisateurs.push(...(data ?? []));
+			if (!data || data.length < PAGE) break;
+		}
 		const correspondance = new Map<string, string>(
-			(personnel ?? []).map((p) => [
-				p.id as string,
-				p.role === 'teacher' ? PROF_LOCAL : ADMIN_LOCAL
-			])
+			utilisateurs
+				.filter((u) => u.role === 'teacher' || u.role === 'admin')
+				.map((u) => [u.id, u.role === 'teacher' ? PROF_LOCAL : ADMIN_LOCAL])
 		);
+		const interdits = {
+			ids: utilisateurs.map((u) => u.id),
+			noms: utilisateurs
+				.filter((u) => u.role === 'student' && u.full_name)
+				.map((u) => u.full_name as string)
+		};
+
+		// La cible ne doit contenir AUCUN compte de la prod : c'est la preuve que
+		// ce n'est pas la prod (atteinte par un tunnel ou une URL trompeuse).
+		const intrus = await db.query(
+			'select count(*)::int n from auth.users where id = any($1::uuid[])',
+			[interdits.ids]
+		);
+		if (intrus.rows[0].n > 0) {
+			throw new Error(
+				'La base cible contient des comptes de la prod : ce n’est pas la base locale. Rien n’est écrit.'
+			);
+		}
 		console.log(`Personnel de prod : ${correspondance.size} compte(s) → comptes locaux.`);
 
 		// Les comptes locaux (prof, admin, élève de dev) doivent exister avant le contenu.
@@ -199,13 +232,20 @@ async function main() {
 				console.log(`  ⚠️  ${table} : absente en local, ignorée`);
 				continue;
 			}
-			const brutes = await lireProd(prod, table, await clePrimaire(db, table));
+			const cle = await clePrimaire(db, table);
+			if (cle.length === 0)
+				throw new Error(`${table} : pas de clé primaire, lecture paginée non fiable`);
+			const brutes = await lireProd(prod, table, cle);
 			const { gardees, ecartees } = filtrerLignes(
 				brutes,
 				await colonnesUtilisateur(db, table),
 				correspondance
 			);
-			const lignes = gardees.map((l, i) => neutraliser(table, l, i));
+			const lignes = gardees.map((l, i) => neutraliser(table, remplacerIds(l, correspondance), i));
+			for (const ligne of lignes) {
+				const fuite = detecterFuite(ligne, interdits);
+				if (fuite) throw new Error(`${table} : une ligne contient ${fuite}. Rien n’est écrit.`);
+			}
 			await db.query(`delete from public."${table}"`);
 			await inserer(db, table, colonnes, lignes);
 			total += lignes.length;

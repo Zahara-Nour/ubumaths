@@ -52,3 +52,20 @@ vérifié qu'aucun élève n'est auteur dans ces tables.
 - **Écriture :** dans la base locale uniquement (`pnpm db:seed-riche`, après `pnpm db:reset`).
 - **Garde-fou :** le script refuse de tourner si la base cible n'est pas la base locale.
 - **Contrôle de l'auteur :** le filtre « auteur = prof, admin ou personne » est rejoué à chaque copie, en plus de la liste.
+
+## Après l'audit de sécurité (2026-10-10)
+
+Le filtre d'auteur ne voyait que les colonnes reliées à un compte. Ajouts :
+
+- **Garde finale qui fait échouer le script :** une ligne qui contient encore un identifiant d'utilisateur de la prod, une adresse e-mail ou le nom complet d'un élève arrête tout. Le message ne nomme que la table.
+- **Remplacement partout :** les identifiants du prof et de l'admin sont remplacés jusque dans le JSON et dans les colonnes sans lien formel (`app_config.updated_by`).
+- **Neutralisé :** description et configuration de tuteur des classes, notes de l'emploi du temps.
+- **Chapitres :**
+  - `class_chapters` ajoutée : c'est la table parente des chapitres ;
+  - `chapter_decks` retirée : elle pointe vers des paquets d'élèves ;
+  - `chapter_documents` retirée : ses liens Drive et de stockage visent la prod.
+- **Refus de tourner si la base cible contient un compte de la prod :** c'est la preuve que la cible n'est pas la base locale.
+
+Fausse alerte rencontrée, et désormais figée par un test : `dragon@0.5x.webp`, une image haute densité, n'est pas une adresse e-mail.
+
+À savoir : la base locale écoute sur `0.0.0.0:54322`, réglage par défaut de Supabase CLI. Elle est donc joignable depuis le réseau local, avec un mot de passe public. Sur un réseau partagé, le pare-feu de macOS doit bloquer ce port.
