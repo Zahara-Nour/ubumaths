@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../../../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { GRADE_CODES } from '$lib/types/grades';
 import {
 	allPlayableWords,
@@ -9,7 +9,7 @@ import {
 import { GRADE_LABELS, MATHEMO_GRADES } from '../types';
 
 // Ce que le serveur envoie au jeu (ici, depuis les entrées du fichier)
-const terms = playableTerms(MATH_DICTIONARY);
+const terms = playableTerms(REFERENCE_DICTIONARY);
 const getWordsForLevel = (level: Parameters<typeof wordsAmong>[1]) => wordsAmong(terms, level);
 const allWordsNormalized = allPlayableWords(terms);
 
@@ -18,7 +18,9 @@ describe('Mathémo : mots tirés du dictionnaire', () => {
 	// tiré au sort, et aucun joueur ne pouvait le trouver
 	it('ne tire au sort que des mots tapables au clavier du jeu', () => {
 		// Le dictionnaire contient bien des mots à trait d'union, sinon le test ne prouve rien
-		const hyphenated = MATH_DICTIONARY.filter((t) => !t.term.includes(' ') && t.term.includes('-'));
+		const hyphenated = REFERENCE_DICTIONARY.filter(
+			(t) => !t.term.includes(' ') && t.term.includes('-')
+		);
 		expect(hyphenated.map((t) => t.term)).toContain('demi-droite');
 		const untypable: string[] = [];
 		for (const grade of GRADE_CODES) {

@@ -5,7 +5,7 @@
 import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../../../../../tests/fixtures/lexique/dictionnaire-reference';
 import Glossaire from '../+page.svelte';
 import type { PageData } from '../$types';
 
@@ -13,7 +13,7 @@ import type { PageData } from '../$types';
  *  La page ne lit que `entries` : le reste de PageData (session, profil, venus du
  *  layout) n'est pas fabriqué, mais `entries` reste vérifié par `satisfies`. */
 async function renderGlossaire() {
-	const data = { entries: MATH_DICTIONARY } satisfies Pick<PageData, 'entries'>;
+	const data = { entries: REFERENCE_DICTIONARY } satisfies Pick<PageData, 'entries'>;
 	return await render(Glossaire, {
 		props: { params: {}, data: data as PageData, form: undefined }
 	});

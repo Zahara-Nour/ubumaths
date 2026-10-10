@@ -1,8 +1,9 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import MATH_DICTIONARY, { resolveGradedField } from '../math-dictionary-fr';
+import { resolveGradedField } from '$lib/dictionary/model';
+import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 
-const crypto = MATH_DICTIONARY.filter((t) => t.tags.includes('cryptographie'));
+const crypto = REFERENCE_DICTIONARY.filter((t) => t.tags.includes('cryptographie'));
 
 describe('glossaire du chiffrement', () => {
 	it('les termes du Cabinet Noir sont présents', () => {
@@ -32,7 +33,7 @@ describe('glossaire du chiffrement', () => {
 	});
 
 	it('« crypter » n’est ni un terme ni un synonyme', () => {
-		for (const term of MATH_DICTIONARY) {
+		for (const term of REFERENCE_DICTIONARY) {
 			expect(term.term).not.toBe('crypter');
 			expect(term.synonyms ?? []).not.toContain('crypter');
 		}
@@ -46,7 +47,7 @@ describe('glossaire du chiffrement', () => {
 	});
 
 	it('chaque « Voir aussi » mène à une page qui existe', () => {
-		const linked = MATH_DICTIONARY.filter((t) => t.seeAlso);
+		const linked = REFERENCE_DICTIONARY.filter((t) => t.seeAlso);
 		expect(linked.length).toBeGreaterThan(10);
 		for (const term of linked) {
 			const path = term.seeAlso?.path ?? '';

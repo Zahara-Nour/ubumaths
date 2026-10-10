@@ -1,25 +1,14 @@
 /**
- * Dictionnaire du vocabulaire mathématique, en français : les données reprises
- * en base le 2026-10-10 (ADR 0022, migration 20261012153000). Le site lit la
- * base ; ce fichier sert à la CI (base reprise = fichier) jusqu'à sa suppression.
+ * Jeu de référence du dictionnaire mathématique : copie figée du dictionnaire
+ * au moment de sa reprise en base (2026-10-10, ADR 0022, migration
+ * 20261012153000). La base (`dictionary_entries`) fait foi ; ce fichier ne sert
+ * qu'aux tests, et le code de l'application ne doit jamais l'importer.
  * Types et règles de lecture : $lib/dictionary/model.
  */
 
-import type { GradeCode } from '$lib/types/grades';
-import { isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
+import type { MathTerm } from '$lib/dictionary/model';
 
-export {
-	canRead,
-	gradeMetBy,
-	isTermVisibleTo,
-	resolveGradedField,
-	type GradedContent,
-	type GradedField,
-	type MathTerm,
-	type SeeAlsoPath
-} from '$lib/dictionary/model';
-
-const MATH_DICTIONARY: MathTerm[] = [
+export const REFERENCE_DICTIONARY: MathTerm[] = [
 	// =========================================================================
 	// TRANSVERSAL (termes generaux)
 	// =========================================================================
@@ -9288,38 +9277,3 @@ const MATH_DICTIONARY: MathTerm[] = [
 		seeAlso: { label: 'RSA de poche', path: '/chiffrement/rsa' }
 	}
 ];
-
-// ---------------------------------------------------------------------------
-// Utility functions
-// ---------------------------------------------------------------------------
-
-/**
- * Returns all terms visible at the given grade: introduced at this grade or
- * earlier, or shared with this branch of 1re.
- */
-export function getTermsForGrade(grade: GradeCode): MathTerm[] {
-	return MATH_DICTIONARY.filter((t) => isTermVisibleTo(t, grade));
-}
-
-/**
- * Returns all terms matching the given tag.
- */
-export function getTermsByTag(tag: string): MathTerm[] {
-	return MATH_DICTIONARY.filter((t) => t.tags.includes(tag));
-}
-
-/**
- * Returns terms matching both a tag and a grade (introduced at or before).
- */
-export function getTermsByTagAndGrade(tag: string, grade: GradeCode): MathTerm[] {
-	return MATH_DICTIONARY.filter((t) => t.tags.includes(tag) && isTermVisibleTo(t, grade));
-}
-
-/**
- * Returns all terms in the dictionary.
- */
-export function getAllTerms(): MathTerm[] {
-	return [...MATH_DICTIONARY];
-}
-
-export default MATH_DICTIONARY;

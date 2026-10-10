@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
+import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { checkDictionary, newProblems, type CheckedEntry } from '../consistency';
 import type { MathTerm } from '../model';
 
 /** Le dictionnaire de référence, toutes entrées visibles. */
-const REFERENCE: CheckedEntry[] = MATH_DICTIONARY.map((term) => ({ term, hidden: false }));
+const REFERENCE: CheckedEntry[] = REFERENCE_DICTIONARY.map((term) => ({ term, hidden: false }));
 
 /** Un mot principal simple, de 6e. */
 function word(term: string, extra: Partial<MathTerm> = {}): MathTerm {
