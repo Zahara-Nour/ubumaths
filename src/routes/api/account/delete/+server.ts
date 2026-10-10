@@ -13,21 +13,22 @@
  * - Requires explicit French confirmation phrase
  * - Rate limited: 1 attempt per 24 hours per user
  * - Uses service role for auth.admin.deleteUser (bypasses RLS)
- * - Anonymizes audit trails, does not delete them
  * - Full audit logging for security monitoring
  *
  * Flow:
  * 1. Authenticate user
- * 2. Check rate limit
- * 3. Validate confirmation phrase
+ * 2. Validate confirmation phrase
+ * 3. Check rate limit (after validation: a typo must not lock the student out 24 h)
  * 4. Create audit entry
- * 5. Call RPC to anonymize audit logs and cleanup data
- * 6. Clean up storage files (best-effort)
- * 7. Delete auth user (triggers CASCADE on profiles)
+ * 5. Call RPC: deletes messages, clears FKs without ON DELETE, fails atomically if
+ *    one remains, and returns the exact storage paths to remove
+ * 6. Delete auth user (triggers CASCADE on profiles)
+ * 7. Remove those files from storage (best-effort, only once the account is gone)
  * 8. Update audit entry with result
  */
 
 import { json, error } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { deleteAccountSchema } from '$lib/server/validation/account';
@@ -66,7 +67,20 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 
 	logger.info('Account deletion requested', { userId });
 
-	// Step 2: Rate limiting (1 per 24 hours)
+	// Step 2: Parse and validate request body
+	let body: unknown;
+	try {
+		body = await request.json();
+	} catch {
+		throw error(400, 'Corps de requete JSON invalide');
+	}
+
+	const validation = deleteAccountSchema.safeParse(body);
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
+
+	// Step 3: Rate limiting (1 per 24 hours)
 	try {
 		rateLimit(`account_delete:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
 	} catch (rateLimitError) {
@@ -85,19 +99,6 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 
 		logger.warn('Account deletion rate limited', { userId });
 		throw rateLimitError;
-	}
-
-	// Step 3: Parse and validate request body
-	let body: unknown;
-	try {
-		body = await request.json();
-	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
-	}
-
-	const validation = deleteAccountSchema.safeParse(body);
-	if (!validation.success) {
-		throw error(400, validation.error.issues[0].message);
 	}
 
 	// Step 4: Get service role client and create audit entry
@@ -127,8 +128,8 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 	const auditId = auditEntry?.id;
 
 	try {
-		// Step 5: Call database cleanup function
-		// This anonymizes audit logs and prepares data for cascade deletion
+		// Step 5: Call database cleanup function (see the migration
+		// 20261014100000_suppression_compte_art17 for what it deletes)
 		const { data: cleanupResult, error: cleanupError } = await serviceClient.rpc(
 			'delete_user_account',
 			{ p_user_id: userId }
@@ -154,10 +155,7 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 
 		logger.info('Database cleanup completed', { userId, result: cleanupResult });
 
-		// Step 6: Clean up storage files (best-effort, don't fail if this errors)
-		await cleanupUserStorage(serviceClient, userId);
-
-		// Step 7: Delete the auth user (triggers CASCADE on profiles)
+		// Step 6: Delete the auth user (triggers CASCADE on profiles)
 		const { error: authError } = await serviceClient.auth.admin.deleteUser(userId);
 
 		if (authError) {
@@ -178,6 +176,10 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 
 			throw error(500, 'Erreur lors de la suppression du compte');
 		}
+
+		// Step 7: fichiers retirés seulement une fois le compte supprimé : si deleteUser
+		// échoue, l'élève n'a pas perdu ses pièces jointes (best-effort, jamais bloquant).
+		await removeUserFiles(serviceClient, userId, cleanupResult);
 
 		// Step 8: Update audit entry with success
 		if (auditId) {
@@ -221,59 +223,41 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 	}
 };
 
+/** Chemins de fichiers rendus par `delete_user_account`, par bucket. */
+const storagePathsSchema = z.object({
+	storage_paths: z.record(z.string(), z.array(z.string()))
+});
+
 /**
- * Clean up user files from storage buckets
+ * Retire du storage les fichiers de l'élève, par leurs chemins EXACTS — collectés par
+ * `delete_user_account` avant que la cascade n'efface les lignes qui les portent.
+ * (Un `list(userId)` ne trouvait rien : les pièces jointes sont rangées par
+ * conversation ou par message, les captures dans des sous-dossiers.)
  *
- * This is best-effort - failures are logged but don't stop the deletion process.
- * Storage cleanup is non-critical for GDPR compliance as the user association is deleted.
+ * Au mieux : un échec est journalisé en erreur, il n'interrompt pas la suppression.
  */
-async function cleanupUserStorage(
+async function removeUserFiles(
 	serviceClient: ReturnType<typeof createServiceRoleClient>,
-	userId: string
+	userId: string,
+	cleanupResult: unknown
 ): Promise<void> {
-	// Buckets that may contain user-specific files organized by userId
-	const buckets = ['chat-attachments', 'message-attachments', 'bug-report-screenshots'];
+	const parsed = storagePathsSchema.safeParse(cleanupResult);
+	if (!parsed.success) {
+		logger.error('Chemins de fichiers illisibles, fichiers du compte non supprimés', { userId });
+		return;
+	}
 
-	for (const bucket of buckets) {
+	for (const [bucket, paths] of Object.entries(parsed.data.storage_paths)) {
+		if (paths.length === 0) continue;
 		try {
-			// List files in user's folder (if path-based organization)
-			const { data: files, error: filesError } = await serviceClient.storage
-				.from(bucket)
-				.list(userId);
-
-			// ⚠️ Sans la liste, aucun fichier n'est supprimé — et le compte l'est. Les
-			// pièces jointes d'un élève mineur survivraient à la suppression de son
-			// compte. On ne peut pas interrompre la suppression ici, mais ce silence-là
-			// doit être visible.
-			if (filesError) {
-				logger.error('Fichiers du compte illisibles, suppression incomplète', {
-					bucket,
-					userId,
-					error: filesError
-				});
-			}
-
-			if (files && files.length > 0) {
-				const filePaths = files.map((f) => `${userId}/${f.name}`);
-				const { error: removeError } = await serviceClient.storage.from(bucket).remove(filePaths);
-
-				if (removeError) {
-					logger.warn('Failed to remove files from bucket', {
-						bucket,
-						userId,
-						error: removeError
-					});
-				} else {
-					logger.info('Removed user files from bucket', {
-						bucket,
-						userId,
-						count: files.length
-					});
-				}
+			const { error: removeError } = await serviceClient.storage.from(bucket).remove(paths);
+			if (removeError) {
+				logger.error('Fichiers du compte non supprimés', { bucket, userId, error: removeError });
+			} else {
+				logger.info('Fichiers du compte supprimés', { bucket, userId, count: paths.length });
 			}
 		} catch (err) {
-			// Log but don't fail - storage cleanup is best-effort
-			logger.warn('Storage cleanup failed for bucket', { bucket, userId, error: err });
+			logger.error('Fichiers du compte non supprimés', { bucket, userId, error: err });
 		}
 	}
 }

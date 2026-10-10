@@ -20,7 +20,12 @@
  *      de David du 2026-10-10 : effacer le texte, pas seulement l'auteur) ;
  *   5. un compte prof ou admin est refusé sans effet (décision du 2026-10-10 : en
  *      mono-prof, sa cascade emporterait le travail de tous les élèves) ;
- *   6. une identité NULL est refusée.
+ *   6. une identité NULL est refusée ;
+ *   7. (security-auditor) un favori de modèle de message ou un signalement dont un AUTRE
+ *      élève a mis ce compte en `reviewed_by` ne bloquent plus la suppression ;
+ *   8. (atomicité) une référence sans ON DELETE inconnue de la fonction la fait échouer
+ *      AVANT tout effacement : l'élève ne perd rien ;
+ *   9. la fonction rend les chemins exacts des fichiers à retirer du storage.
  *
  * @vitest-environment node
  */
@@ -185,6 +190,81 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		const { error: authError } = await service.auth.admin.deleteUser(eleve.id);
 		expect(authError).toBeNull();
 		expect(await tracesRestantes(eleve.id)).toEqual({});
+	});
+
+	it('favori de modèle et signalement piégé par un autre élève ne bloquent pas', async () => {
+		const eleve = await TestData.profile().withRole('student').create();
+		const autre = await TestData.profile().withRole('student').create();
+		const pg = await getPostgresClient();
+		await pg.query(
+			`insert into template_audit_log (action, performed_by) values ('favorited', $1)`,
+			[eleve.id]
+		);
+		// L'autre élève écrit reviewed_by = eleve sur SON signalement (droit de colonne
+		// ouvert). Fiche et devoir fictifs : contrôles de clés coupés le temps de l'insert.
+		await pg.query('begin');
+		await pg.query("set local session_replication_role = 'replica'");
+		const { rows } = await pg.query<{ id: string }>(
+			`insert into worksheet_error_reports
+			   (assignment_id, worksheet_exercise_id, student_id, description, reviewed_by)
+			 values (gen_random_uuid(), gen_random_uuid(), $1, 'zz-signalement', $2) returning id`,
+			[autre.id, eleve.id]
+		);
+		await pg.query('commit');
+
+		try {
+			const { error: rpcError } = await service.rpc('delete_user_account', {
+				p_user_id: eleve.id
+			});
+			expect(rpcError).toBeNull();
+			const { error: authError } = await service.auth.admin.deleteUser(eleve.id);
+			expect(authError).toBeNull();
+			expect(await tracesRestantes(eleve.id)).toEqual({});
+		} finally {
+			await pg.query('delete from worksheet_error_reports where id = $1', [rows[0].id]);
+		}
+	});
+
+	it('une référence bloquante inconnue fait tout échouer, sans rien effacer', async () => {
+		const eleve = await TestData.profile().withRole('student').create();
+		const conversationId = await conversationAvecMessage(eleve.id, teacherId);
+		const pg = await getPostgresClient();
+		await pg.query(
+			`create table public.zz_blocage_suppression (
+			   id serial primary key, owner uuid not null references public.profiles(id))`
+		);
+		try {
+			await pg.query('insert into public.zz_blocage_suppression (owner) values ($1)', [eleve.id]);
+
+			const { error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
+			expect(error?.message).toContain('zz_blocage_suppression');
+			// Rien n'a été effacé : le message de l'élève est toujours là.
+			expect((await texteRestant(conversationId)).length).toBeGreaterThan(0);
+		} finally {
+			await pg.query('drop table public.zz_blocage_suppression');
+		}
+	});
+
+	it('rend les chemins exacts des fichiers à retirer du storage', async () => {
+		const eleve = await TestData.profile().withRole('student').create();
+		const chemin = `${eleve.id}/zz-rapport/capture.png`;
+		const pg = await getPostgresClient();
+		await pg.query(
+			`insert into bug_reports (user_id, category, title, description, screenshot_path)
+			 values ($1, 'bug', 'zz-titre', 'zz-description assez longue', $2)`,
+			[eleve.id, chemin]
+		);
+
+		const { data, error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
+		expect(error).toBeNull();
+		expect(data).toMatchObject({
+			storage_paths: {
+				'bug-report-screenshots': [chemin],
+				'chat-attachments': [],
+				'message-attachments': []
+			}
+		});
+		await service.auth.admin.deleteUser(eleve.id);
 	});
 
 	it.each(['teacher', 'admin'] as const)('un compte %s est refusé sans effet', async (role) => {

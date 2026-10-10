@@ -560,11 +560,24 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
   en cascade) ;
 - toute l'**économie** (gidouilles, bonus, cartes VIP) : supprimée, plus anonymisée ;
 - tout ce qui pointe vers le profil en cascade (jeux, SRS, progression, consentements…) ;
-- les fichiers de `chat-attachments`, `message-attachments`, `bug-report-screenshots` rangés sous
-  `<userId>/` (au mieux : un échec est journalisé, il n'interrompt pas la suppression).
+- les fichiers de `chat-attachments`, `message-attachments`, `bug-report-screenshots` : la fonction
+  rend leurs chemins exacts, collectés avant la cascade, et la route les retire (au mieux : un échec
+  est journalisé en erreur, il n'interrompt pas la suppression).
 
-**Ce qui reste, sans identifiant** : les lignes dont la clé étrangère est en `SET NULL`
-(`error_logs.user_id`, `audit_logs.user_id`, `message_moderation_logs.student_id`…).
+**Atomicité** : en fin de fonction, si une clé étrangère sans `ON DELETE` vise encore le compte
+(quelle que soit la table, future comprise), la fonction lève une exception et la transaction est
+annulée — rien n'a été effacé à moitié, la route rend 500 et l'audit garde la cause.
+
+**Ce qui reste** (relevé par `security-auditor` le 2026-10-10, à trancher — voir
+`docs/wip/rgpd-securite-progress.md`) :
+
+- sans identifiant, les lignes dont la clé étrangère est en `SET NULL` (`error_logs.user_id`,
+  `audit_logs.user_id`, `message_moderation_logs.student_id`…) — mais `error_logs.request_body`,
+  `message_moderation_logs.reason` gardent leur texte ;
+- **`audit_logs` garde des copies du profil** (`new_values` des INSERT/UPDATE sur `profiles` : e-mail,
+  nom, prénom) sous `record_id` = l'identifiant de l'élève, sans clé étrangère, jusqu'à la purge ;
+- `account_deletion_audit` : hash SHA-256 **sans sel** de l'e-mail, IP, navigateur, sans durée de
+  conservation.
 
 ### 7.3 Export de donnees
 

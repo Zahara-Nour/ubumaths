@@ -38,10 +38,32 @@
 ### État
 
 - [x] Test rouge : `tests/integration/suppression-compte-art17.test.ts`
-- [ ] Question d'accès posée à David
-- [ ] Migration
-- [ ] security-auditor
-- [ ] Docs : `docs/systeme/conformite/`, `auth.md`, `base-de-donnees.md`
+- [x] Question d'accès posée à David
+- [x] Migration
+- [x] security-auditor (2 bloquants corrigés, voir plus bas)
+- [x] Docs : `docs/systeme/conformite/` (`auth.md` non concerné ; `base-de-donnees.md` après `db:types`)
+
+### security-auditor (2026-10-10)
+
+Corrigé dans la même PR (chaque cas rouge avec l'ancienne fonction, vert avec la nouvelle, 8/8) :
+
+- **B1** `template_audit_log.performed_by` (sans ON DELETE) rempli par un élève qui met un modèle en
+  favori → suppression impossible. 0 ligne en prod aujourd'hui.
+- **I4** `worksheet_error_reports.reviewed_by` : un élève peut y écrire l'identifiant d'un AUTRE
+  élève sur son propre signalement → bloquait la suppression de l'autre. 0 en prod.
+  ⚠️ Le droit de colonne lui-même reste ouvert → à fermer (section D).
+- **B2** atomicité : garde générique en fin de fonction (toute FK NO ACTION restante → exception →
+  annulation complète).
+- **I1** fichiers : chemins exacts rendus par la fonction (l'ancien `list(userId)` ne trouvait rien).
+- **M1** une faute de frappe dans la phrase ne consomme plus la limite de 24 h. **M2** commentaires.
+
+Reste à trancher (ajouté au lot C) :
+
+- **I2** `audit_logs.new_values` garde e-mail/nom/prénom du profil (sans FK) ; `error_logs.request_body`,
+  `message_moderation_logs.reason`, `game_combats.player_snapshots` gardent du texte ou des uuid.
+- **I3** `account_deletion_audit` : hash d'e-mail sans sel (retrouvable par dictionnaire), IP,
+  navigateur, sans durée de conservation.
+- Limite de débit en mémoire, par instance (contournable) — déjà au constat B8.
 
 ### Décisions de David (2026-10-10, question d'accès)
 

@@ -19,6 +19,16 @@
 --   3. Seuls les comptes élèves se suppriment par ce chemin : un prof ou un admin
 --      est refusé (en mono-prof, sa cascade emporterait classes et travaux).
 --
+-- security-auditor (2026-10-10), corrigé ici :
+--   - template_audit_log.performed_by et worksheet_error_reports.reviewed_by (sans
+--     ON DELETE) sont remplissables par un élève — le second même au nom d'un
+--     AUTRE élève — et bloquaient la cascade ;
+--   - atomicité : en fin de fonction, toute référence restante sans ON DELETE vers
+--     le compte lève une exception → la transaction entière est annulée, rien n'a
+--     été effacé à moitié (garde générique : couvre aussi les futures tables) ;
+--   - fichiers : les chemins exacts des pièces jointes et captures sont collectés
+--     AVANT la cascade et rendus à la route, qui les supprime du storage.
+--
 -- Additive : aucune donnée n'est touchée au moment de la migration ; seule change
 -- ce que fait la fonction quand un élève demande sa suppression.
 --
@@ -40,6 +50,9 @@ DECLARE
 	v_result jsonb := '{}';
 	v_count integer;
 	v_role text;
+	v_fk record;
+	v_blocked boolean;
+	v_paths jsonb;
 BEGIN
 	IF p_user_id IS NULL THEN
 		RAISE EXCEPTION 'User ID cannot be NULL';
@@ -51,6 +64,34 @@ BEGIN
 		RAISE EXCEPTION 'delete_user_account: student accounts only (role %)', coalesce(v_role, 'none')
 			USING ERRCODE = '42501';
 	END IF;
+
+	-- 0. Fichiers à retirer du storage, collectés avant que la cascade n'efface
+	--    les lignes qui portent leur chemin. La route fait le remove().
+	v_paths := jsonb_build_object(
+		'chat-attachments', coalesce((
+			SELECT jsonb_agg(DISTINCT ma.storage_path)
+			FROM message_attachments ma
+			WHERE ma.storage_path IS NOT NULL
+			  AND (ma.uploaded_by = p_user_id
+			       OR ma.message_id IN (SELECT id FROM messages WHERE sender_id = p_user_id)
+			       -- conversations créées par l'élève : la cascade emporte aussi les
+			       -- messages (et pièces jointes) des autres participants
+			       OR ma.message_id IN (
+			            SELECT m.id FROM messages m
+			            JOIN conversations c ON c.id = m.conversation_id
+			            WHERE c.created_by = p_user_id))
+		), '[]'::jsonb),
+		'message-attachments', coalesce((
+			SELECT jsonb_agg(DISTINCT storage_path)
+			FROM message_attachments_v2
+			WHERE uploaded_by = p_user_id AND storage_path IS NOT NULL
+		), '[]'::jsonb),
+		'bug-report-screenshots', coalesce((
+			SELECT jsonb_agg(DISTINCT screenshot_path)
+			FROM bug_reports
+			WHERE user_id = p_user_id AND screenshot_path IS NOT NULL
+		), '[]'::jsonb)
+	);
 
 	-- 1. Messages de l'élève : le texte disparaît pour tout le monde. L'aperçu de
 	--    conversation recopie le texte du dernier message ; la clé étrangère n'en
@@ -77,16 +118,59 @@ BEGIN
 	GET DIAGNOSTICS v_count = ROW_COUNT;
 	v_result := v_result || jsonb_build_object('student_achievements_unlocked_by_nullified', v_count);
 
+	-- Journal de ses propres favoris de modèles (log_template_action l'accepte
+	-- d'un élève) : son activité, supprimée avec lui.
+	DELETE FROM template_audit_log WHERE performed_by = p_user_id;
+	GET DIAGNOSTICS v_count = ROW_COUNT;
+	v_result := v_result || jsonb_build_object('template_audit_log_deleted', v_count);
+
+	-- reviewed_by est inscriptible par un autre élève sur son propre signalement :
+	-- il ne doit pas pouvoir empêcher cette suppression.
+	UPDATE worksheet_error_reports SET reviewed_by = NULL WHERE reviewed_by = p_user_id;
+	GET DIAGNOSTICS v_count = ROW_COUNT;
+	v_result := v_result || jsonb_build_object('worksheet_error_reports_reviewed_by_nullified', v_count);
+
+	-- 3. Garde d'atomicité : plus AUCUNE référence sans ON DELETE ne doit viser le
+	--    compte, sinon auth.admin.deleteUser échouerait APRÈS nos effacements.
+	--    On lève : la transaction est annulée, l'élève n'a rien perdu.
+	-- Une clé composite ne serait vérifiée que sur sa première colonne : on refuse
+	-- de conclure plutôt que de laisser passer (aucune n'existe au 2026-10-10).
+	IF EXISTS (
+		SELECT 1 FROM pg_constraint c
+		WHERE c.contype = 'f' AND c.confdeltype IN ('a', 'r')
+		  AND c.confrelid IN ('public.profiles'::regclass, 'auth.users'::regclass)
+		  AND array_length(c.conkey, 1) > 1
+	) THEN
+		RAISE EXCEPTION 'delete_user_account: composite foreign key to the account, guard must be extended';
+	END IF;
+
+	FOR v_fk IN
+		SELECT c.conrelid::regclass AS tbl, a.attname AS col
+		FROM pg_constraint c
+		JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = c.conkey[1]
+		WHERE c.contype = 'f'
+		  AND c.confdeltype IN ('a', 'r')
+		  AND c.confrelid IN ('public.profiles'::regclass, 'auth.users'::regclass)
+	LOOP
+		EXECUTE format('SELECT EXISTS (SELECT 1 FROM %s WHERE %I = $1)', v_fk.tbl, v_fk.col)
+			INTO v_blocked USING p_user_id;
+		IF v_blocked THEN
+			RAISE EXCEPTION 'delete_user_account: % still references the account', v_fk.tbl || '.' || v_fk.col
+				USING ERRCODE = '23503';
+		END IF;
+	END LOOP;
+
 	-- Le reste (économie, jeux, SRS, conversations privées, consentements…) part
 	-- avec la cascade de profiles lors de auth.admin.deleteUser.
-	RETURN v_result;
+	RETURN v_result || jsonb_build_object('storage_paths', v_paths);
 END;
 $$;
 
 COMMENT ON FUNCTION public.delete_user_account(uuid) IS
 	'RGPD art. 17 : prépare la suppression d''un compte ÉLÈVE (messages effacés, clés '
-	'étrangères sans ON DELETE nettoyées) avant auth.admin.deleteUser, dont la cascade '
-	'emporte le reste. Refuse prof et admin. Réservée à service_role.';
+	'étrangères sans ON DELETE nettoyées, échec total si une reste) avant '
+	'auth.admin.deleteUser, dont la cascade emporte le reste. Rend storage_paths, les '
+	'fichiers à retirer. Refuse prof et admin. Réservée à service_role.';
 
 REVOKE EXECUTE ON FUNCTION public.delete_user_account(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.delete_user_account(uuid) TO service_role;

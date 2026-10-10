@@ -132,7 +132,10 @@ function setupSuccessfulDeletion() {
 
 	// Mock RPC call
 	client.rpc.mockResolvedValue({
-		data: { error_logs_anonymized: 5, messages_deleted: 10 },
+		data: {
+			messages_deleted: 10,
+			storage_paths: { 'chat-attachments': ['conv-1/msg-1/a.png'] }
+		},
 		error: null
 	});
 
@@ -479,19 +482,41 @@ describe('DELETE /api/account/delete', () => {
 	// =========================================================================
 
 	describe('Storage Cleanup', () => {
-		test('attempts to clean storage buckets', async () => {
+		test('retire les fichiers par les chemins exacts rendus par la fonction', async () => {
 			const { client } = setupSuccessfulDeletion();
-
-			const event = createMockEvent({
-				confirmation: ACCOUNT_DELETION_CONFIRMATION_PHRASE
+			const remove = vi.fn().mockResolvedValue({ error: null });
+			client.storage.from.mockReturnValue({ list: vi.fn(), remove });
+			client.rpc.mockResolvedValue({
+				data: {
+					messages_deleted: 1,
+					storage_paths: {
+						'chat-attachments': ['conv-1/msg-1/a.png'],
+						'message-attachments': [],
+						'bug-report-screenshots': ['user-123/rapport-1/capture.png']
+					}
+				},
+				error: null
 			});
 
-			await DELETE(event as never);
+			await DELETE(
+				createMockEvent({ confirmation: ACCOUNT_DELETION_CONFIRMATION_PHRASE }) as never
+			);
 
-			// Should attempt to clean known buckets
 			expect(client.storage.from).toHaveBeenCalledWith('chat-attachments');
-			expect(client.storage.from).toHaveBeenCalledWith('message-attachments');
 			expect(client.storage.from).toHaveBeenCalledWith('bug-report-screenshots');
+			// Bucket vide : aucun appel inutile.
+			expect(client.storage.from).not.toHaveBeenCalledWith('message-attachments');
+			expect(remove).toHaveBeenCalledWith(['conv-1/msg-1/a.png']);
+			expect(remove).toHaveBeenCalledWith(['user-123/rapport-1/capture.png']);
+		});
+
+		test('une phrase de confirmation fausse ne consomme pas la limite de débit', async () => {
+			setupSuccessfulDeletion();
+
+			await expect(
+				DELETE(createMockEvent({ confirmation: 'SUPRIMER MON COMPTE' }) as never)
+			).rejects.toMatchObject({ status: 400 });
+			expect(mockRateLimitFn).not.toHaveBeenCalled();
 		});
 
 		test('continues even if storage cleanup fails', async () => {
@@ -499,8 +524,8 @@ describe('DELETE /api/account/delete', () => {
 
 			// Make storage fail
 			client.storage.from.mockReturnValue({
-				list: vi.fn().mockRejectedValue(new Error('Storage error')),
-				remove: vi.fn()
+				list: vi.fn(),
+				remove: vi.fn().mockRejectedValue(new Error('Storage error'))
 			});
 
 			const event = createMockEvent({
