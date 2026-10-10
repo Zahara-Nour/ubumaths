@@ -13,7 +13,7 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType } from '$lib/questions/types';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/category-validation';
+import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
 import {
 	createQuestionTemplateSchema,
 	validateRequest,
@@ -171,28 +171,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		// Category uniqueness validation and auto-adjustment (only for published templates)
-		let adjustedLevel = templateData.level;
-		let levelAdjusted = false;
-
+		// Catégorie occupée : refus, comme le PUT et le lot — jamais de décalage
+		// automatique du niveau (l'éditeur propose un niveau libre avant l'envoi)
 		if (templateData.status === 'published') {
-			const categoryCheck = await checkCategoryUniqueness(locals.supabase, {
-				theme: templateData.theme!,
-				domain: templateData.domain!,
+			const category = {
+				theme: templateData.theme,
+				domain: templateData.domain,
 				subdomain: templateData.subdomain,
-				level: templateData.level!
-			});
-
+				level: templateData.level
+			};
+			const categoryCheck = await checkCategoryUniqueness(locals.supabase, category);
 			if (!categoryCheck.isUnique) {
-				// Category exists - auto-adjust level to next available (max + 1)
-				const nextLevel = await getNextAvailableLevel(locals.supabase, {
-					theme: templateData.theme!,
-					domain: templateData.domain!,
-					subdomain: templateData.subdomain
-				});
-
-				adjustedLevel = nextLevel;
-				levelAdjusted = true;
+				return json({ success: false, errors: [categoryTakenMessage(category)] }, { status: 400 });
 			}
 		}
 
@@ -223,7 +213,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				theme: templateData.theme,
 				domain: templateData.domain,
 				subdomain: templateData.subdomain || null,
-				level: adjustedLevel,
+				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				multiple_answers: templateData.multipleAnswers ?? null,
@@ -243,9 +233,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			createQuestionTemplateResponseSchema,
 			{
 				success: true,
-				template,
-				levelAdjusted,
-				adjustedLevel: levelAdjusted ? adjustedLevel : undefined
+				template
 			},
 			'POST /api/questions/templates'
 		);

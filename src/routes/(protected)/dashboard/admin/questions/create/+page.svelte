@@ -60,18 +60,11 @@
 				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
-				// Check if level was auto-adjusted
-				if (result.levelAdjusted) {
-					toaster.success(
-						`Question créée avec succès. Le niveau a été ajusté à ${result.adjustedLevel} car le niveau ${template.level} existait déjà dans cette catégorie.`
-					);
-				} else {
-					toaster.success('Question créée avec succès');
-				}
+				toaster.success('Question créée avec succès');
 				goto('/dashboard/admin/questions').then(() => {});
 				return true;
 			} else {
-				// Raisons du refus (contrôle de publication : spec rouge, tirage en échec…)
+				// Raisons du refus (contrôle de publication, catégorie occupée…)
 				const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
 				toaster.error('Erreur lors de la création', {
 					description: errors.slice(0, 5).join('\n') || undefined
