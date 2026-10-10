@@ -962,3 +962,22 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     - les 6 triggers activés.
   - Reste : les 21 couples sans point (plus tard), étape 3 (bascule du code), étape 4 (nettoyage destructif), passe des
     bornes.
+- **2026-10-10 — Étape 3 (bascule du code) : recos validées par David (« je valide tes recos »).**
+  - Mesuré en prod avant : 0 état d'acquisition (anciens ou neufs), 0 point coché en séance, 814 automatismes déjà
+    sur des points neufs, 22 tentatives → rien à transférer, la bascule ne touche que du code.
+  - Q1 : la page Programme devient une **consultation** branche > notion > points du niveau, plus **renommer** et
+    **archiver** un point. Création de point = migration (le BO fait foi) ; plus de réordonnancement (ordre du BO).
+  - Q2 : les 7 routes d'API thèmes/objectifs sont **supprimées à l'étape 3** ; les tables à l'étape 4.
+  - Q3 : côté élève, la **notion remplace l'objectif** (tableau de bord, « Ma progression », page de détail = page
+    notion avec ses points et automatismes) ; l'échelle 1-4 par rang disparaît (état par point) ;
+    `/student/objectifs/…` redirige vers « Ma progression ».
+  - Q4 : paquet Programme : libellé = notion du point, lien vers la page notion.
+  - Q5 : la liste figée `COVERED_GRADES` disparaît : **un programme apparaît dans la progression de l'élève dès qu'un
+    modèle y est tagué**. Nouvelle **étape 2 bis, en parallèle** : taguer primaire et collège (573 couples : 138 à un
+    seul point possible, 362 à choisir, 73 sans point) — lot proposé, page à cocher, migration.
+  - Q6 : analytique : la **branche remplace le thème** ; le sélecteur ne montre que les branches du niveau de la classe.
+  - Q7 : tags admin : un choix unique par programme, parmi les points du nœud du modèle ou de sa notion ; modèle sans
+    nœud → « rangez d'abord ce modèle ».
+  - Q8 : les codes de points des 397 JSON de `scripts/questions` sont abandonnés (les tags vivent en base).
+  - Découpage : PR A migration SQL (4 fonctions lisent encore l'objectif) · B lectures mécaniques · C nouvel arbre du
+    programme (prof, admin) · D élève · E suppression éditeur et API · F analytique.
