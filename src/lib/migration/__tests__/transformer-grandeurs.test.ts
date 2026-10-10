@@ -18,7 +18,7 @@ import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import { validateAnswer } from '$lib/utils/answer-validator';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 function instanceOf(

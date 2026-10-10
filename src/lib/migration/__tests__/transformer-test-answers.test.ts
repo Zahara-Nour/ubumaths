@@ -2,7 +2,7 @@
  * Conversion des `testAnswerss` TinyMath
  * ======================================
  *
- * Fixtures : questions RÉELLES de `.claude/old-questions.json` (index 209, 216,
+ * Fixtures : questions RÉELLES de `data/tinymath/old-questions.json` (index 209, 216,
  * 481, 611), recopiées sans leur correction détaillée.
  *
  * Avant le correctif : variables écrites `d` au lieu de `{{d}}` (même la bonne

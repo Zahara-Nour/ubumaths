@@ -77,7 +77,7 @@ describe('condition illisible', () => {
 describe('#336 « Quel est le signe de ce produit ? » (TinyMath), de bout en bout', () => {
 	it('seul le bon signe est juste', () => {
 		const questions = JSON.parse(
-			readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+			readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 		) as QuestionWithMigration[];
 		const template = {
 			...transformQuestion(questions[336], 336).template!,

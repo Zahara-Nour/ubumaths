@@ -59,7 +59,7 @@ async function testMigrationPipeline() {
 
 	// Load old questions
 	console.log('\n📁 Loading old questions...');
-	const oldQuestionsData = await readFile('.claude/old-questions.json', 'utf-8');
+	const oldQuestionsData = await readFile('data/tinymath/old-questions.json', 'utf-8');
 	const oldQuestions: OldQuestion[] = JSON.parse(oldQuestionsData);
 
 	// Use questions 480-489 (after Phase 1 which was 0-471)

@@ -65,12 +65,12 @@ const CONFIG = {
 		__dirname,
 		'../extern/new-tinymath/apps/ubumaths/src/lib/questions/questions.ts'
 	),
-	TEST_QUESTIONS_PATH: path.resolve(__dirname, '../.claude/test-questions-sample.json'),
+	TEST_QUESTIONS_PATH: path.resolve(__dirname, '../data/tinymath/test-questions-sample.json'),
 	REPORT_PATH: path.resolve(
 		__dirname,
 		IS_TEST_MODE
-			? '../.claude/migration-phase1-test-report.md'
-			: '../.claude/migration-phase1-report.md'
+			? '../data/tinymath/migration-phase1-test-report.md'
+			: '../data/tinymath/migration-phase1-report.md'
 	),
 	// ⚠️ Écrire en base est le mode EXCEPTIONNEL, pas le défaut. Auparavant
 	// c'est `--dry-run` qu'il fallait demander : lancer le script sans option
@@ -280,7 +280,7 @@ async function loadOldQuestions(): Promise<QuestionBase[]> {
 		}
 
 		// First, check if JSON file exists
-		const jsonPath = path.resolve(__dirname, '../.claude/old-questions.json');
+		const jsonPath = path.resolve(__dirname, '../data/tinymath/old-questions.json');
 
 		try {
 			await fs.access(jsonPath);

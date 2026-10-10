@@ -17,7 +17,7 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 /** Instances de chaque variation sur `seeds` graines ; échec = erreur */

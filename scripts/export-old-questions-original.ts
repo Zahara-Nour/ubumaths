@@ -4,7 +4,7 @@
  * Export Old Questions in Original TinyMath Format
  * =================================================
  *
- * This script exports questions from .claude/old-questions.json
+ * This script exports questions from data/tinymath/old-questions.json
  * in their ORIGINAL TinyMath format (no transformation), with
  * a detailed analysis of the old system's features.
  *
@@ -99,7 +99,7 @@ interface FullStats {
 // CONFIGURATION
 // ============================================================================
 
-const INPUT_FILE = '.claude/old-questions.json';
+const INPUT_FILE = 'data/tinymath/old-questions.json';
 const OUTPUT_BASE = 'data/old-format-export';
 const TIMESTAMP = new Date().toISOString().split('T')[0];
 const EXPORT_DIR = join(OUTPUT_BASE, `export-${TIMESTAMP}`);

@@ -2,12 +2,12 @@
  * Export Questions for Review
  * ============================
  *
- * This script exports questions from .claude/old-questions.json to a structured
+ * This script exports questions from data/tinymath/old-questions.json to a structured
  * file system for manual review. Each question is transformed using the
  * question-transformer and organized by category (theme/domain/subdomain/level).
  *
  * Input:
- *   - .claude/old-questions.json (633 questions with _migration metadata)
+ *   - data/tinymath/old-questions.json (633 questions with _migration metadata)
  *
  * Output structure:
  *   data/migration-output/export-YYYY-MM-DD/
@@ -85,7 +85,7 @@ interface Manifest {
 // CONFIGURATION
 // ============================================================================
 
-const INPUT_FILE = '.claude/old-questions.json';
+const INPUT_FILE = 'data/tinymath/old-questions.json';
 const IMAGE_MAPPING_FILE = 'scripts/image-url-mapping.json';
 const OUTPUT_BASE = 'data/migration-output';
 const TIMESTAMP = new Date().toISOString().split('T')[0]; // YYYY-MM-DD

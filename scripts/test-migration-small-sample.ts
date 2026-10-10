@@ -51,7 +51,7 @@ async function testMigrationOnSample() {
 
 	// Load old questions
 	console.log('\n📁 Loading old questions...');
-	const oldQuestionsData = await readFile('.claude/old-questions.json', 'utf-8');
+	const oldQuestionsData = await readFile('data/tinymath/old-questions.json', 'utf-8');
 	const oldQuestions: OldQuestion[] = JSON.parse(oldQuestionsData);
 
 	// Get first 10 questions (should be from Phase 1 since Phase 1 processed first 472 questions)

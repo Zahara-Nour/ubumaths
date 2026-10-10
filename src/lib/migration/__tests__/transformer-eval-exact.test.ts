@@ -17,7 +17,7 @@ import { generateInstanceWithFixedVariables } from '$lib/questions/generator/tes
 import type { QuestionTemplate } from '$lib/questions/types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 function expectedAnswer(index: number, variables: Record<string, string>): string | undefined {

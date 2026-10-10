@@ -2,7 +2,7 @@
  * Tirages TinyMath → syntaxe du générateur (`normalizeRandomRange`)
  * ================================================================
  *
- * Formes relevées dans `.claude/old-questions.json`, qui faisaient échouer la
+ * Formes relevées dans `data/tinymath/old-questions.json`, qui faisaient échouer la
  * génération (« Failed to generate random number ») :
  * - bornes calculées : `1..a-1`, `b+1..9`, `2..eval:min(10-a,a-1)` ;
  * - exclusions TinyMath sans parenthèses : `cda`, `m2` ; calculées : `-(a)` ;
