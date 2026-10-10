@@ -176,6 +176,8 @@ describe('LinearEquationRenderer — multiply-both-sides flip note', () => {
 			id: 1,
 			rule: 'multiply-both-sides',
 			description: 'On multiplie par -1 (changement de sens)',
+			// Le défaut de `makeStep` (_helpers.ts) pour une étape de résolution
+			verbosityLevel: 'detailed',
 			before: ineq('-x < 3'),
 			after: ineq('x > -3'),
 			operation: {

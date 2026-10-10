@@ -27,7 +27,10 @@ function renderedBefore(power: MathNode): string {
 		schoolLevel: 'college',
 		verbosity: 'summarized'
 	});
-	return rendered.expressionLatex;
+	const latex = rendered.expressionLatex;
+	expect(latex).toBeDefined();
+	if (latex === undefined) throw new Error('attendu une expression rendue');
+	return latex;
 }
 
 describe('renderWithHighlights - base de puissance à parenthéser', () => {

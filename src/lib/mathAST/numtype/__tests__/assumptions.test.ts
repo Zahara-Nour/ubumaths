@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { inferType } from '../infer';
 import { variable, greek, piConstant } from '../../factory';
-import type { TypeContext, VariableAssumption } from '../types';
+import type { NumericType, TypeContext, VariableAssumption } from '../types';
 
 // =============================================================================
 // Helpers
@@ -16,11 +16,11 @@ import type { TypeContext, VariableAssumption } from '../types';
 
 function ctxWithAssumptions(
 	assumptions: Record<string, VariableAssumption>,
-	variables?: Record<string, string>
+	variables?: Record<string, NumericType>
 ): TypeContext {
 	return {
 		...(variables && {
-			variables: new Map(Object.entries(variables)) as ReadonlyMap<string, never>
+			variables: new Map(Object.entries(variables))
 		}),
 		assumptions: new Map(Object.entries(assumptions))
 	};

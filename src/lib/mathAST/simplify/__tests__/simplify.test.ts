@@ -43,12 +43,12 @@ describe('simplify pipeline', () => {
 		});
 
 		it('x * 1 -> x', () => {
-			const result = simplify(multiply(variable('x'), number('1')));
+			const result = simplify(multiply(variable('x'), number('1'), 'cross'));
 			expect(toLatex(result.result)).toBe('x');
 		});
 
 		it('x * 0 -> 0', () => {
-			const result = simplify(multiply(variable('x'), number('0')));
+			const result = simplify(multiply(variable('x'), number('0'), 'cross'));
 			expect(toLatex(result.result)).toBe('0');
 		});
 
@@ -174,7 +174,7 @@ describe('simplify pipeline', () => {
 		it('result cost should be <= input cost', () => {
 			const expressions = [
 				add(variable('x'), number('0')),
-				multiply(variable('x'), number('1')),
+				multiply(variable('x'), number('1'), 'cross'),
 				opposite(opposite(variable('x')))
 			];
 
@@ -190,7 +190,7 @@ describe('simplify pipeline', () => {
 		it('simplify(simplify(e)) == simplify(e)', () => {
 			const expressions = [
 				add(variable('x'), number('0')),
-				multiply(variable('x'), number('1')),
+				multiply(variable('x'), number('1'), 'cross'),
 				parseLatex('2x + 3x')
 			];
 

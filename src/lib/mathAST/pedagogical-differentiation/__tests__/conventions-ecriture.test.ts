@@ -17,7 +17,7 @@ import { parseLatex } from '../../parser';
 
 function ast(source: string) {
 	const parsed = parseCustomSafe(source);
-	if (parsed.ast === undefined) throw new Error(`parse KO : ${source}`);
+	if (parsed.ast === null) throw new Error(`parse KO : ${source}`);
 	return parsed.ast;
 }
 

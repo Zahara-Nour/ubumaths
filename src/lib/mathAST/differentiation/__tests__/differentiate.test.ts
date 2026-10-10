@@ -129,7 +129,7 @@ describe('differentiate', () => {
 		});
 
 		it('d/dtheta(theta * cos(theta)) uses product rule (cos(theta) - theta*sin(theta))', () => {
-			const expr = multiply(greek('theta'), cos(greek('theta')));
+			const expr = multiply(greek('theta'), cos(greek('theta')), 'implicit');
 			const result = differentiate(expr, { variable: 'theta', simplify: true });
 			const latex = toLatex(result);
 			// Product rule: 1 * cos(theta) + theta * (-sin(theta))

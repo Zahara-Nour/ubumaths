@@ -27,9 +27,11 @@ import {
 	closedInterval,
 	openInterval,
 	leftClosedInterval,
-	rightClosedInterval,
-	intervalSet
+	rightClosedInterval
 } from '$lib/math/intervals/factory';
+// L'ensemble d'intervalles du module domain (avec `excludedPoints`), celui
+// qu'attend `analyzeSign` : la variante de math/intervals n'est pas un `Domain`.
+import { intervalSet } from '../../domain/factory';
 
 // =============================================================================
 // Helpers

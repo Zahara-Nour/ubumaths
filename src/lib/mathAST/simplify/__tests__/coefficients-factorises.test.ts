@@ -25,7 +25,7 @@ import { toLatex } from '../../latex-generator';
 
 function simplified(source: string): string {
 	const parsed = parseCustomSafe(source);
-	if (parsed.ast === undefined) throw new Error(`parse KO : ${source}`);
+	if (parsed.ast === null) throw new Error(`parse KO : ${source}`);
 	return toLatex(simplify(parsed.ast).result).replace(/\s+/g, ' ').trim();
 }
 

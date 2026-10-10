@@ -15,7 +15,7 @@ import { checkForm } from '$lib/mathAST/cosmetic-transforms';
 
 function primitive(input: string, variable = 'x'): string {
 	const result = integrate(parseLatex(input), { variable });
-	if (result.antiderivative === undefined) throw new Error(`${input} : ${result.status}`);
+	if (result.antiderivative === null) throw new Error(`${input} : ${result.status}`);
 	return toLatex(result.antiderivative);
 }
 

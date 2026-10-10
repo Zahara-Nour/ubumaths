@@ -22,6 +22,8 @@ import {
 } from '../rule-sets';
 import { applyRules } from '../rule';
 import { nodesEqual } from '../match';
+import { getBindingNode } from '../types';
+import type { BindingValue } from '../types';
 import {
 	number,
 	variable,
@@ -38,6 +40,13 @@ import {
 	piConstant
 } from '../../factory';
 import type { TypeContext } from '../../numtype/types';
+
+/** Affirme que l'extraction a réussi, puis rétrécit les captures. */
+function expectBindings(bindings: Map<string, BindingValue> | null): Map<string, BindingValue> {
+	expect(bindings).not.toBeNull();
+	if (bindings === null) throw new Error('attendu une extraction réussie');
+	return bindings;
+}
 
 describe('Pattern Matching Integration', () => {
 	// ===========================================================================
@@ -114,16 +123,15 @@ describe('Pattern Matching Integration', () => {
 			const bindings = expr.extract(P.add(P._('left'), P._('right')));
 
 			expect(bindings).not.toBeNull();
-			expect(bindings!.get('left')?.type).toBe('variable');
-			expect(bindings!.get('right')?.type).toBe('number');
+			expect(getBindingNode(expectBindings(bindings), 'left')?.type).toBe('variable');
+			expect(getBindingNode(expectBindings(bindings), 'right')?.type).toBe('number');
 		});
 
 		it('extracts single binding', () => {
 			const expr = Exp.parse('x + 0');
 			const bindings = expr.extract(P.add(P._('x'), P.num(0)));
 
-			expect(bindings).not.toBeNull();
-			const node = bindings!.get('x');
+			const node = getBindingNode(expectBindings(bindings), 'x');
 			expect(node?.type).toBe('variable');
 			if (node?.type === 'variable') {
 				expect(node.name).toBe('x');
@@ -142,8 +150,8 @@ describe('Pattern Matching Integration', () => {
 			const bindings = expr.extract(P.pow(P._('base'), P._('exp')));
 
 			expect(bindings).not.toBeNull();
-			expect(bindings!.get('base')?.type).toBe('variable');
-			expect(bindings!.get('exp')?.type).toBe('number');
+			expect(getBindingNode(expectBindings(bindings), 'base')?.type).toBe('variable');
+			expect(getBindingNode(expectBindings(bindings), 'exp')?.type).toBe('number');
 		});
 
 		it('extracts bindings from fraction', () => {
@@ -151,8 +159,8 @@ describe('Pattern Matching Integration', () => {
 			const bindings = expr.extract(P.div(P._('num'), P._('den')));
 
 			expect(bindings).not.toBeNull();
-			expect(bindings!.get('num')?.type).toBe('addition');
-			expect(bindings!.get('den')?.type).toBe('variable');
+			expect(getBindingNode(expectBindings(bindings), 'num')?.type).toBe('addition');
+			expect(getBindingNode(expectBindings(bindings), 'den')?.type).toBe('variable');
 		});
 
 		it('binds same wildcard twice only if values match', () => {
@@ -507,7 +515,10 @@ describe('Pattern Matching Integration', () => {
 				const node = superscript(superscript(variable('a'), variable('m')), variable('n'));
 				const result = applyRules([...powerRules], node);
 				expect(
-					nodesEqual(result, superscript(variable('a'), multiply(variable('m'), variable('n'))))
+					nodesEqual(
+						result,
+						superscript(variable('a'), multiply(variable('m'), variable('n'), 'implicit'))
+					)
 				).toBe(true);
 			});
 
@@ -516,7 +527,8 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies x^2 * x^3 to x^5 (same base product)', () => {
 				const node = multiply(
 					superscript(variable('x'), number('2')),
-					superscript(variable('x'), number('3'))
+					superscript(variable('x'), number('3')),
+					'implicit'
 				);
 				const result = applyRules([...powerRules], node);
 				expect(nodesEqual(result, superscript(variable('x'), number('5')))).toBe(true);
@@ -525,7 +537,8 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies a^m * a^n to a^(m+n) with symbolic exponents', () => {
 				const node = multiply(
 					superscript(variable('a'), variable('m')),
-					superscript(variable('a'), variable('n'))
+					superscript(variable('a'), variable('n')),
+					'implicit'
 				);
 				const result = applyRules([...powerRules], node);
 				expect(
@@ -536,33 +549,39 @@ describe('Pattern Matching Integration', () => {
 			it('does not simplify x^2 * y^3 (different bases)', () => {
 				const node = multiply(
 					superscript(variable('x'), number('2')),
-					superscript(variable('y'), number('3'))
+					superscript(variable('y'), number('3')),
+					'implicit'
 				);
 				const result = applyRules([...powerRules], node);
 				expect(nodesEqual(result, node)).toBe(true);
 			});
 
 			it('simplifies (a/b)^n to a^n / b^n', () => {
-				const node = superscript(divide(variable('a'), variable('b')), variable('n'));
+				const node = superscript(divide(variable('a'), variable('b'), 'fraction'), variable('n'));
 				const result = applyRules([...powerRules], node);
 				expect(
 					nodesEqual(
 						result,
 						divide(
 							superscript(variable('a'), variable('n')),
-							superscript(variable('b'), variable('n'))
+							superscript(variable('b'), variable('n')),
+							'fraction'
 						)
 					)
 				).toBe(true);
 			});
 
 			it('simplifies (x/2)^3 to x^3 / 2^3', () => {
-				const node = superscript(divide(variable('x'), number('2')), number('3'));
+				const node = superscript(divide(variable('x'), number('2'), 'fraction'), number('3'));
 				const result = applyRules([...powerRules], node);
 				expect(
 					nodesEqual(
 						result,
-						divide(superscript(variable('x'), number('3')), superscript(number('2'), number('3')))
+						divide(
+							superscript(variable('x'), number('3')),
+							superscript(number('2'), number('3')),
+							'fraction'
+						)
 					)
 				).toBe(true);
 			});
@@ -570,7 +589,7 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies x^(-1) to 1/x', () => {
 				const node = superscript(variable('x'), opposite(number('1')));
 				const result = applyRules([...powerRules], node);
-				expect(nodesEqual(result, divide(number('1'), variable('x')))).toBe(true);
+				expect(nodesEqual(result, divide(number('1'), variable('x'), 'fraction'))).toBe(true);
 			});
 		});
 
@@ -602,7 +621,9 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies ln(2^x) to x*ln(2) via ln-pow rule', () => {
 				const node = func('ln', [superscript(number('2'), variable('x'))]);
 				const result = applyRules([...logExpRules], node);
-				expect(nodesEqual(result, multiply(variable('x'), func('ln', [number('2')])))).toBe(true);
+				expect(
+					nodesEqual(result, multiply(variable('x'), func('ln', [number('2')]), 'implicit'))
+				).toBe(true);
 			});
 
 			it('does not simplify 2^(ln(x)) (base is not e)', () => {
@@ -626,11 +647,13 @@ describe('Pattern Matching Integration', () => {
 			it('simplifies ln(x^n) to n*ln(x)', () => {
 				const node = func('ln', [superscript(variable('x'), variable('n'))]);
 				const result = applyRules([...logExpRules], node);
-				expect(nodesEqual(result, multiply(variable('n'), func('ln', [variable('x')])))).toBe(true);
+				expect(
+					nodesEqual(result, multiply(variable('n'), func('ln', [variable('x')]), 'implicit'))
+				).toBe(true);
 			});
 
 			it('simplifies ln(x*y) to ln(x)+ln(y)', () => {
-				const node = func('ln', [multiply(variable('x'), variable('y'))]);
+				const node = func('ln', [multiply(variable('x'), variable('y'), 'implicit')]);
 				const result = applyRules([...logExpRules], node);
 				expect(
 					nodesEqual(result, add(func('ln', [variable('x')]), func('ln', [variable('y')])))
@@ -638,7 +661,7 @@ describe('Pattern Matching Integration', () => {
 			});
 
 			it('simplifies ln(x/y) to ln(x)-ln(y)', () => {
-				const node = func('ln', [divide(variable('x'), variable('y'))]);
+				const node = func('ln', [divide(variable('x'), variable('y'), 'fraction')]);
 				const result = applyRules([...logExpRules], node);
 				const expected = {
 					type: 'subtraction' as const,
@@ -667,18 +690,25 @@ describe('Pattern Matching Integration', () => {
 			});
 
 			it('simplifies sqrt(x)*sqrt(y) to sqrt(x*y)', () => {
-				const node = multiply(func('sqrt', [variable('x')]), func('sqrt', [variable('y')]));
-				const result = applyRules([...sqrtRules], node);
-				expect(nodesEqual(result, func('sqrt', [multiply(variable('x'), variable('y'))]))).toBe(
-					true
+				const node = multiply(
+					func('sqrt', [variable('x')]),
+					func('sqrt', [variable('y')]),
+					'implicit'
 				);
+				const result = applyRules([...sqrtRules], node);
+				expect(
+					nodesEqual(result, func('sqrt', [multiply(variable('x'), variable('y'), 'implicit')]))
+				).toBe(true);
 			});
 
 			it('simplifies sqrt(x/y) to sqrt(x)/sqrt(y)', () => {
-				const node = func('sqrt', [divide(variable('x'), variable('y'))]);
+				const node = func('sqrt', [divide(variable('x'), variable('y'), 'fraction')]);
 				const result = applyRules([...sqrtRules], node);
 				expect(
-					nodesEqual(result, divide(func('sqrt', [variable('x')]), func('sqrt', [variable('y')])))
+					nodesEqual(
+						result,
+						divide(func('sqrt', [variable('x')]), func('sqrt', [variable('y')]), 'fraction')
+					)
 				).toBe(true);
 			});
 

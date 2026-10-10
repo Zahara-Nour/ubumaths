@@ -72,11 +72,11 @@ describe('« positif ou nul » ne se propage pas en « positif »', () => {
 	});
 
 	it('un produit par un positif n’est pas strictement positif', () => {
-		expect(isPositiveType(multiply(variable('x'), variable('x')), ctx)).toBe(false);
+		expect(isPositiveType(multiply(variable('x'), variable('x'), 'implicit'), ctx)).toBe(false);
 	});
 
 	it('un produit de facteurs ≥ 0 est ≥ 0', () => {
-		expect(isNonNegativeType(multiply(variable('x'), variable('x')), ctx)).toBe(true);
+		expect(isNonNegativeType(multiply(variable('x'), variable('x'), 'implicit'), ctx)).toBe(true);
 	});
 
 	it('la description le dit', () => {

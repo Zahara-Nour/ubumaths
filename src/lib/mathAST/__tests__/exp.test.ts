@@ -4,7 +4,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { Exp, isVariable, isNumber, number, variable, MathAST } from '../index';
-import type { MathNode } from '../types';
+import type { EvalResult } from '../eval/types';
+
+/** Résultat d'évaluation rétréci au cas « valeur ». */
+type EvalValueResult = Extract<EvalResult, { status: 'value' }>;
 
 // =============================================================================
 // Output Getters
@@ -630,18 +633,29 @@ describe('Exp - Complex Usage Scenarios', () => {
 // =============================================================================
 
 describe('Exp - Evaluation Methods', () => {
+	/** Affirme que l'évaluation a abouti à une valeur, puis rétrécit le résultat. */
+	function expectValue(result: EvalResult): EvalValueResult {
+		expect(result.status).toBe('value');
+		if (result.status !== 'value') {
+			throw new Error(`attendu une valeur, reçu ${result.status}`);
+		}
+		return result;
+	}
+
 	// Helper to verify exact result is a MathNode with expected LaTeX
-	function expectExactValue(
-		result: { value: unknown; node: unknown; exact: boolean },
-		expectedLatex: string
-	) {
-		expect(result.exact).toBe(true);
-		expect(result.node).toBeDefined();
-		expect(typeof result.value).toBe('object');
-		expect(result.value).not.toBeNull();
-		const node = result.value as { type?: string };
-		expect(node.type).toBeDefined(); // It's a MathNode
-		const latex = Exp.from(result.value as MathNode).latex;
+	function expectExactValue(result: EvalResult, expectedLatex: string) {
+		const evaluated = expectValue(result);
+		expect(evaluated.exact).toBe(true);
+		expect(evaluated.node).toBeDefined();
+		const value = evaluated.value;
+		expect(typeof value).toBe('object');
+		expect(value).not.toBeNull();
+		// Une valeur exacte est un MathNode : ni nombre, ni booléen, ni complexe { real, imag }
+		if (typeof value !== 'object' || !('type' in value)) {
+			throw new Error('attendu un MathNode comme valeur exacte');
+		}
+		expect(value.type).toBeDefined(); // It's a MathNode
+		const latex = Exp.from(value).latex;
 		expect(latex).toBe(expectedLatex);
 	}
 
@@ -672,7 +686,7 @@ describe('Exp - Evaluation Methods', () => {
 		});
 
 		it('evaluates non-perfect square root with decimal mode', () => {
-			const result = Exp.parse('\\sqrt{2}').eval({ mode: 'decimal' });
+			const result = expectValue(Exp.parse('\\sqrt{2}').eval({ mode: 'decimal' }));
 			expect(result.exact).toBe(false);
 			expect(typeof result.value).toBe('number');
 			if (typeof result.value === 'number') {
@@ -681,7 +695,7 @@ describe('Exp - Evaluation Methods', () => {
 		});
 
 		it('evaluates with pi constant', () => {
-			const result = Exp.parse('2\\pi').eval({ mode: 'decimal' });
+			const result = expectValue(Exp.parse('2\\pi').eval({ mode: 'decimal' }));
 			expect(result.exact).toBe(false);
 			if (typeof result.value === 'number') {
 				expect(result.value).toBeCloseTo(2 * Math.PI, 10);
@@ -689,7 +703,7 @@ describe('Exp - Evaluation Methods', () => {
 		});
 
 		it('evaluates trigonometric functions', () => {
-			const result = Exp.parse('\\sin(0)').eval({ mode: 'decimal' });
+			const result = expectValue(Exp.parse('\\sin(0)').eval({ mode: 'decimal' }));
 			expect(result.exact).toBe(false);
 			if (typeof result.value === 'number') {
 				expect(result.value).toBeCloseTo(0, 10);
@@ -723,7 +737,7 @@ describe('Exp - Evaluation Methods', () => {
 		});
 
 		it('returns node representation of result', () => {
-			const result = Exp.parse('2+3').eval();
+			const result = expectValue(Exp.parse('2+3').eval());
 			expect(result.node).toBeDefined();
 			expect(result.node.type).toBe('number');
 		});
@@ -760,7 +774,7 @@ describe('Exp - Evaluation Methods', () => {
 		});
 
 		it('evaluates with decimal mode option', () => {
-			const result = Exp.parse('x').evalWith({ x: '\\sqrt{2}' }, { mode: 'decimal' });
+			const result = expectValue(Exp.parse('x').evalWith({ x: '\\sqrt{2}' }, { mode: 'decimal' }));
 			expect(result.exact).toBe(false);
 			if (typeof result.value === 'number') {
 				expect(result.value).toBeCloseTo(1.414, 3);

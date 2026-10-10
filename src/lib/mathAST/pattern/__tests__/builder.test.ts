@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { P } from '../builder';
 import { number, variable, greek } from '../../factory';
 import type { MathNode } from '../../types';
+import { getBindingNode } from '../types';
 
 describe('Pattern Builder (P namespace)', () => {
 	// ===========================================================================
@@ -632,7 +633,7 @@ describe('Pattern Builder (P namespace)', () => {
 				const r = P.rule(P.div(P._('x'), P._('x')), P.num(1), {
 					name: 'self-division',
 					condition: (bindings) => {
-						const x = bindings.get('x');
+						const x = getBindingNode(bindings, 'x');
 						return x?.type !== 'number' || x.value !== '0';
 					}
 				});

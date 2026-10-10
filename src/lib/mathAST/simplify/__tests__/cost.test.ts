@@ -30,13 +30,13 @@ describe('computeCost', () => {
 	describe('operator costs', () => {
 		it('should cost more for multiplication than addition', () => {
 			const addCost = computeCost(add(variable('x'), variable('y')));
-			const mulCost = computeCost(multiply(variable('x'), variable('y')));
+			const mulCost = computeCost(multiply(variable('x'), variable('y'), 'implicit'));
 			expect(mulCost).toBeGreaterThan(addCost);
 		});
 
 		it('should cost more for division than multiplication', () => {
-			const mulCost = computeCost(multiply(variable('x'), variable('y')));
-			const divCost = computeCost(divide(variable('x'), variable('y')));
+			const mulCost = computeCost(multiply(variable('x'), variable('y'), 'implicit'));
+			const divCost = computeCost(divide(variable('x'), variable('y'), 'fraction'));
 			expect(divCost).toBeGreaterThan(mulCost);
 		});
 	});
@@ -62,7 +62,7 @@ describe('computeCost', () => {
 
 		it('1 should cost less than sqrt(2)/2', () => {
 			expect(computeCost(number('1'))).toBeLessThan(
-				computeCost(divide(sqrt(number('2')), number('2')))
+				computeCost(divide(sqrt(number('2')), number('2'), 'fraction'))
 			);
 		});
 
