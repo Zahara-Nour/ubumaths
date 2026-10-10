@@ -4,7 +4,7 @@
 > `src/lib/mathAST/__tests__/panel-simplifications.test.ts`. Si vous modifiez le
 > moteur, le test rougit : mettez les deux à jour **ensemble**, sinon ce
 > document pourrit en silence comme l'a fait le §1 de
-> `docs/wip/simplify-reecriture-releve.md`.
+> `docs/archive/wip/simplify-reecriture-releve.md`.
 
 ## Ce que chaque colonne veut dire
 

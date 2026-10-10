@@ -1,6 +1,6 @@
 # `tidy()` — progression de la phase 1
 
-> Spécification validée : [tidy-phase0.md](tidy-phase0.md) (David, 2026-09-20).
+> Spécification validée : [tidy-phase0.md](../../wip/tidy-phase0.md) (David, 2026-09-20).
 > Trois PR, dans cet ordre, pour que `main` reste cohérente à chaque merge :
 >
 > 1. **`feat/tidy`** (ce worktree, `../ubumaths-wt-tidy`) : le module `tidy`

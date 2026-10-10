@@ -219,4 +219,4 @@ x_1 = \dfrac{3 - \sqrt{5}}{2 1}
 « 2 1 » au dénominateur, au lieu de `2`. C'est dans
 `pedagogical-solve/quadratic-renderer.ts`, pas dans l'atelier, et c'est visible
 par l'élève. À verser au lot de correction de mathAST
-(`docs/wip/mathast-5-defauts-prompt.md`) plutôt qu'à corriger ici.
+(`docs/archive/wip/mathast-5-defauts-prompt.md`) plutôt qu'à corriger ici.

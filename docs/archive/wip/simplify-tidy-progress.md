@@ -1,6 +1,6 @@
 # `simplify` recâblé sur `tidy` — progression (PR 2 de 3)
 
-> Spécification : [tidy-phase0.md](tidy-phase0.md) §B et §C (validée le 2026-09-20).
+> Spécification : [tidy-phase0.md](../../wip/tidy-phase0.md) §B et §C (validée le 2026-09-20).
 > Worktree `../ubumaths-wt-simplify-tidy`, branche `feat/simplify-tidy`.
 > PR 1 (`tidy` seul) : mergée, #378. PR 3 (grandeurs) : après celle-ci.
 

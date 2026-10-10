@@ -1,7 +1,7 @@
 # `tidy()` — phase 0 : les comportements attendus, à valider
 
 > Rédigé le 2026-09-20, après le relevé
-> ([simplify-reecriture-releve.md](simplify-reecriture-releve.md)) et les
+> ([simplify-reecriture-releve.md](../archive/wip/simplify-reecriture-releve.md)) et les
 > décisions de David du même jour. **Rien de ceci n'est codé.** Chaque ligne
 > deviendra un test rouge en phase 1, une fois validée.
 
