@@ -12,6 +12,7 @@
  * les specs (a = 40, 100, 13) restent vertes.
  */
 import { describe, it, expect } from 'vitest';
+import { categoryTakenMessage } from '$lib/questions/category-validation';
 import { callPost, callPut, fakeDb, FIXTURE, templateRow, type FakeDb } from './fake-templates-db';
 
 const BROKEN_ANSWER = '{{eval:2*a+sqrt(a-8)-sqrt(a-8)}}';
@@ -137,7 +138,15 @@ describe('POST : catégorie déjà occupée', () => {
 
 		expect(response.status).toBe(400);
 		const json = await response.json();
-		expect(json.errors.join(' ')).toMatch(/Cette catégorie existe déjà/);
+		// Même message que le PUT, au niveau DEMANDÉ (aucun niveau décalé)
+		expect(json.errors).toEqual([
+			categoryTakenMessage({
+				theme: FIXTURE.theme as string,
+				domain: FIXTURE.domain as string,
+				subdomain: FIXTURE.subdomain as string,
+				level: FIXTURE.level as number
+			})
+		]);
 		expect(db.inserts).toEqual([]);
 	});
 

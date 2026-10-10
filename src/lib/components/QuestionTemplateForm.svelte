@@ -2166,8 +2166,7 @@
 			</div>
 
 			<p class="text-sm text-muted-foreground">
-				Le niveau sera automatiquement ajusté à <strong class="text-green-600"
-					>{suggestedLevel}</strong
+				Si tu confirmes, le niveau passera à <strong class="text-green-600">{suggestedLevel}</strong
 				>
 				pour éviter les doublons.
 			</p>
