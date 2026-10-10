@@ -138,6 +138,10 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 
 		test: {
 			...baseTestConfig,
+			// Logs des seuls tests en échec : les tests de chemins d'erreur écrivent des
+			// milliers de console.error attendus, qui noyaient la vraie cause d'un échec
+			// (11 301 lignes de log pour un job rouge le 2026-10-08).
+			silent: 'passed-only',
 			coverage: {
 				provider: 'v8',
 				reporter: ['text', 'html', 'lcov'],
