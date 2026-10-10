@@ -44,11 +44,12 @@ Points relevés en route (pour P2) :
 
 - [x] Base de données : liste **générée** (`pnpm db:doc`, aussi lancé par `db:types` ; test : chaque table a un domaine) + `base-de-donnees.md` réécrit en français (PR #1026)
 - [x] SRS : 7 fichiers → `systeme/srs.md` (écarts connus en fin de doc) ; auth : 11 fichiers → `systeme/auth.md` ; anciens dossiers → `docs/archive/systeme-2026-06/` (706680a04) ; renvois du code : PR #1027
-- [ ] mathAST : vue d'ensemble unique + pattern-matching + README de src/ réduits à des pointeurs (agent en cours)
-- [ ] Géométrie : vue d'ensemble unique + dsl-builtins à jour + `geometry-core/CLAUDE.md` réduit (agent en cours)
-- [ ] Conformité (RGPD) : chemins morts à corriger — documents à valeur légale, retouches minimales
-- [ ] jeux-et-economie, python, analytique-prof (famille A), export-competences
-- [ ] Glossaires auth/mathast (repris dans les docs refaites ; termes du domaine → CONTEXT.md)
+- [x] mathAST : vue d'ensemble unique + pattern-matching + README de src/ réduits à des pointeurs (9bffc65cf)
+- [x] Géométrie : vue d'ensemble unique + 92 builtins + `geometry-core/CLAUDE.md` réduit (a151563d5)
+- [x] Conformité : renvois corrigés sans toucher au fond (8a1d82481) ; écarts → `rgpd-securite-constats.md`
+- [x] jeux-et-economie réécrit, python renvois (a4b3fec65, b7b37ab47) — [ ] analytique-prof (famille A), export-competences, realtime, architecture-generale : non revus
+- [x] Glossaires auth/mathast : repris en fin des docs refaites, anciens archivés
+- [x] Garde `docs:check-refs` bloquante (PR #1032) — 0 renvoi mort
 
 Constats remontés à David (non corrigés, décisions à prendre) :
 
@@ -56,4 +57,16 @@ Constats remontés à David (non corrigés, décisions à prendre) :
 - RLS : `minesweeper_games` terminées lisibles par anon (student_id) ; `exercises`/`constructions` is_public ouvertes à anon.
 - SRS : anti-triche cassé (colonnes famille A), rétention sans effet, DELETE sans `.select()`.
 
-## P3 — trous : questions, ubumark, atelier, grapheur, statistiques, fiches/PDF, …
+## P3 — trous (fait le 2026-10-10)
+
+- [x] questions, ubumark, atelier (13104d857)
+- [x] grapheur, statistiques, fiches et PDF (f39529abd)
+- [x] dictionnaire, univers-chiphre, outils-prof, serveur (b1eef1cff) — **plus aucun ❌ dans docs/README.md**
+
+## Reste
+
+- Vocabulaire à trancher avec David (skill domain-modeling) : « carte » (atelier) vs « carte de cours » ; module `lexicon/` alors que « lexique » = lore ; CONTEXT.md dit encore « table à créer » (dictionnaire) et liste des types TinyMath disparus.
+- `docs/wip/atelier-progress.md` (chapeau) périmé : garanties /grapheur livrées ; en-tête « Proposition » de `systeme/atelier-syntaxe.md` à requalifier.
+- `docs/wip/chiffrement-progress.md` : chantier clos ? → archiver.
+- Docs non revues contre le code : `analytique-prof.md` (famille A), `export-competences.md`, `realtime.md`, `architecture-generale.md` (comptages périmés), et les `pratiques/*` (seuls leurs chemins sont gardés).
+- Écarts « code » relevés dans chaque doc (section « écarts connus ») : à trier en chantiers (ex. tirage des variations dans les fiches, deux règles d'arrondi en stats, tableur 403 pour le prof).
