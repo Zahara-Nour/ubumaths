@@ -113,13 +113,23 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 
 | Élément                                 | Doc janv.              | **Code actuel**              | Drift                       |
 | --------------------------------------- | ---------------------- | ---------------------------- | --------------------------- |
-| Grades déclencheurs                     | 6,5,4,3,2 + défaut sûr | identique (`consent.ts`)     | ✓                           |
+| Grades déclencheurs                     | 6,5,4,3,2 + défaut sûr | **tout sauf 1re/Tle** (base) | ⚠️ corrigé le 2026-10-10    |
 | **Période de grâce**                    | 30 jours               | **date fixe `2026-06-30`**   | ⏰ modifié (15/02)          |
 | Service email                           | Gmail                  | **Brevo** (`email/brevo.ts`) | modifié                     |
 | Endpoints protégés                      | ~12                    | **19** (`requireConsent`)    | étendu (+jeux, marketplace) |
 | Tables / fonctions / mode lecture seule | présents               | présents                     | ✓                           |
 
-> ⏰ **Attention calendaire** : la période de grâce expire le **2026-06-30** (dans ~2 semaines). Après
+> **Règle (A3, décision de David du 2026-10-10)** : la **base fait foi** —
+> `apply_consent_rule_by_grade` soumet **tout niveau sauf 1re et terminale** (primaire, collège,
+> 2nde et niveau inconnu compris ; question d'âge en 2nde ; 30 jours de grâce à la création ou à
+> l'entrée dans un niveau soumis ; dispense possible par le prof). Le code suit :
+> `GRADES_EXEMPT_FROM_CONSENT` (`src/lib/utils/consent.ts`), comparée à la base par
+> `tests/integration/regle-consentement-code-base.test.ts` ; la page des consentements du prof
+> liste tout élève d'un niveau soumis, ou soumis en base. Comptes **antérieurs** à la règle et
+> jamais soumis (33 en prod, archivés) : marqués `consent_rule_pending`, soumis à leur **retour en
+> classe** (migration `20261015090100`).
+
+> ⏰ **Attention calendaire (historique)** : la période de grâce expire le **2026-06-30** (dans ~2 semaines). Après
 > cette date, les élèves < 15 ans **sans consentement validé** repassent en **lecture seule**. À
 > anticiper (relancer les enseignants, ou repousser la date).
 

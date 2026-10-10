@@ -11,7 +11,7 @@ import {
 	hasValidConsent,
 	isInGracePeriod,
 	getConsentStatus,
-	GRADES_REQUIRING_CONSENT,
+	GRADES_EXEMPT_FROM_CONSENT,
 	type ConsentProfile
 } from '../consent';
 import {
@@ -21,22 +21,14 @@ import {
 } from '$lib/server/middleware/consent';
 
 describe('Parental Consent Utilities', () => {
-	describe('GRADES_REQUIRING_CONSENT constant', () => {
-		it('should include grades for students under 15 years', () => {
-			expect(GRADES_REQUIRING_CONSENT).toEqual(['6', '5', '4', '3', '2']);
-		});
-
-		it('should include 6ème (11 years old)', () => {
-			expect(GRADES_REQUIRING_CONSENT).toContain('6');
-		});
-
-		it('should include 2nde (15 years old, safety margin)', () => {
-			expect(GRADES_REQUIRING_CONSENT).toContain('2');
-		});
-
-		it('should not include 1ère or Terminale (16+ years)', () => {
-			expect(GRADES_REQUIRING_CONSENT).not.toContain('1_GEN');
-			expect(GRADES_REQUIRING_CONSENT).not.toContain('T_GEN');
+	// A3 (David, 2026-10-10) : la base fait foi — tout niveau est soumis SAUF 1re et
+	// terminale (apply_consent_rule_by_grade). La liste est vérifiée contre la base par
+	// tests/integration/regle-consentement-code-base.test.ts.
+	describe('GRADES_EXEMPT_FROM_CONSENT constant', () => {
+		it('liste exactement les niveaux de 1re et de terminale', () => {
+			expect([...GRADES_EXEMPT_FROM_CONSENT].sort()).toEqual(
+				['1_GEN', '1_SPE', '1_TECHNO', 'T_COMP', 'T_EXP', 'T_GEN', 'T_SPE', 'T_TECHNO'].sort()
+			);
 		});
 	});
 
@@ -47,7 +39,15 @@ describe('Parental Consent Utilities', () => {
 				['5', '5ème (12 years)'],
 				['4', '4ème (13 years)'],
 				['3', '3ème (14 years)'],
-				['2', '2nde (15 years, safety margin)']
+				['2', '2nde (15 years, safety margin)'],
+				['CP', 'CP (6 years)'],
+				['CE1', 'CE1'],
+				['CE2', 'CE2'],
+				['CM1', 'CM1'],
+				['CM2', 'CM2 (10 years)'],
+				['primary', 'niveau générique primaire'],
+				['middle', 'niveau générique collège'],
+				['high', 'niveau générique lycée (prudence : âge inconnu)']
 			])('returns true for grade %s (%s)', (grade) => {
 				expect(requiresParentalConsent(grade)).toBe(true);
 			});
@@ -66,12 +66,6 @@ describe('Parental Consent Utilities', () => {
 			])('returns false for grade %s (%s)', (grade) => {
 				expect(requiresParentalConsent(grade)).toBe(false);
 			});
-
-			it('returns false for primary school grades (not in system)', () => {
-				expect(requiresParentalConsent('CP')).toBe(false);
-				expect(requiresParentalConsent('CE1')).toBe(false);
-				expect(requiresParentalConsent('CM1')).toBe(false);
-			});
 		});
 
 		describe('returns true for null/undefined (safe default)', () => {
@@ -89,14 +83,16 @@ describe('Parental Consent Utilities', () => {
 		});
 
 		describe('edge cases', () => {
-			it('returns false for invalid grade strings', () => {
-				expect(requiresParentalConsent('invalid')).toBe(false);
-				expect(requiresParentalConsent('999')).toBe(false);
+			// Comme la base : un niveau inconnu n'est pas une dispense (prudence, âge inconnu).
+			it('returns true for unknown grade strings (same rule as the database)', () => {
+				expect(requiresParentalConsent('invalid')).toBe(true);
+				expect(requiresParentalConsent('999')).toBe(true);
+				expect(requiresParentalConsent('seconde')).toBe(true);
 			});
 
-			it('is case-sensitive (grades are uppercase)', () => {
-				expect(requiresParentalConsent('2')).toBe(true);
-				expect(requiresParentalConsent('seconde')).toBe(false); // Not a grade code
+			it('is case-sensitive: only the exact exempt codes are exempt', () => {
+				expect(requiresParentalConsent('T_GEN')).toBe(false);
+				expect(requiresParentalConsent('t_gen')).toBe(true);
 			});
 		});
 	});

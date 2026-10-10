@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
 import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { GRADES_REQUIRING_CONSENT } from '$lib/utils/consent';
+import { requiresParentalConsent } from '$lib/utils/consent';
 import { isBrevoConfigured } from '$lib/server/email/brevo';
 
 /**
@@ -176,9 +176,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		if (!student) continue;
 
-		// Only include students who need consent (grades 6-2)
-		const needsConsent =
-			student.grade && (GRADES_REQUIRING_CONSENT as readonly string[]).includes(student.grade);
+		// Élèves d'un niveau soumis (règle de la base : tout sauf 1re/terminale, primaire et
+		// niveau inconnu compris), ou déjà soumis en base : une dispense reste visible pour
+		// pouvoir être levée.
+		const needsConsent = requiresParentalConsent(student.grade) || student.consent_required;
 
 		if (!needsConsent) continue;
 

@@ -330,7 +330,9 @@ CRON_SECRET                   # Secret taches planifiees
 - ~~Aucune verification d'age~~ **CORRIGE** : Detection automatique par niveau scolaire (6eme-2nde = <15 ans)
 - ~~Aucun mecanisme de consentement parental~~ **CORRIGE** : Systeme complet implemente
 - ~~Collecte de `gender` (donnee sensible) sans consentement~~ **CORRIGE** (2026-01-15)
-- Eleves de 11-15 ans concernes (grades 6, 5, 4, 3, 2)
+- Eleves de 11-15 ans concernes (grades 6, 5, 4, 3, 2) — **périmé** : depuis 2026-10-01, la base
+  soumet tout niveau sauf 1re/Tle (primaire et niveau inconnu compris) ; le code s'y aligne depuis
+  le 2026-10-10 (A3). Voir [README §4](README.md#4-consentement-parental-art-8).
 
 > **Amelioration 2026-01-15** : Le champ `gender` a ete supprime des tables `profiles` et `pending_students` conformement au principe de minimisation des donnees (Art. 5(1)(c)).
 

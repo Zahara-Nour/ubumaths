@@ -2,38 +2,43 @@
  * Parental Consent Utilities
  *
  * RGPD Article 8: Minors under 15 require parental consent in France.
- * Grades 6, 5, 4, 3, 2 correspond to ages 11-15.
  */
 
 import type { GradeCode } from '$lib/types/grades';
 
 /**
- * Grades requiring parental consent (under 15 years in France)
- * - Collège: 6ème (11), 5ème (12), 4ème (13), 3ème (14)
- * - Lycée: 2nde (15) - included as safety margin for edge cases
+ * Niveaux DISPENSÉS du consentement parental : 1re et terminale.
+ *
+ * La base fait foi (décision de David, 2026-10-10, constat A3) : tout niveau est soumis
+ * SAUF ceux-ci — primaire, collège, 2nde et niveau inconnu compris (la 2nde a en plus la
+ * question d'âge). Copie EXACTE de `v_lycee` dans `apply_consent_rule_by_grade` ;
+ * `tests/integration/regle-consentement-code-base.test.ts` échoue si elles divergent.
  */
-export const GRADES_REQUIRING_CONSENT = ['6', '5', '4', '3', '2'] as const;
-
-export type GradeRequiringConsent = (typeof GRADES_REQUIRING_CONSENT)[number];
+export const GRADES_EXEMPT_FROM_CONSENT = [
+	'1_GEN',
+	'1_SPE',
+	'1_TECHNO',
+	'T_GEN',
+	'T_SPE',
+	'T_EXP',
+	'T_COMP',
+	'T_TECHNO'
+] as const;
 
 /**
- * Check if a grade requires parental consent.
+ * Check if a grade requires parental consent (same rule as the database).
  * Unknown/null grades require consent (safe default per RGPD).
  *
- * @param grade - The grade code to check
- * @returns true if parental consent is required
- *
  * @example
- * requiresParentalConsent('6')     // true (6ème = 11 years old)
- * requiresParentalConsent('2')     // true (2nde = 15 years old)
- * requiresParentalConsent('1_GEN') // false (1ère = 16 years old)
+ * requiresParentalConsent('CM2')   // true
+ * requiresParentalConsent('6')     // true
+ * requiresParentalConsent('2')     // true (plus la question d'âge)
+ * requiresParentalConsent('1_GEN') // false
  * requiresParentalConsent(null)    // true (safe default)
  */
 export function requiresParentalConsent(grade: GradeCode | string | null | undefined): boolean {
-	// Safe default: unknown grades require consent
 	if (!grade) return true;
-
-	return (GRADES_REQUIRING_CONSENT as readonly string[]).includes(grade);
+	return !(GRADES_EXEMPT_FROM_CONSENT as readonly string[]).includes(grade);
 }
 
 /**
