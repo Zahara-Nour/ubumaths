@@ -124,11 +124,10 @@ jobs:
       - name: Guard doc links
         run: pnpm docs:check-links
 
-      # Renvois de docs/systeme et docs/pratiques vers le code : avertissement
-      # pendant la remise à jour de la doc (P2 de docs/wip/reorganisation-docs-progress.md),
-      # puis `--strict`.
-      - name: Guard doc refs (avertissement)
-        run: pnpm docs:check-refs
+      # Renvois de docs/systeme et docs/pratiques vers le code : bloquant. Une PR
+      # qui renomme ou supprime un fichier cité met la doc à jour dans la même PR.
+      - name: Guard doc refs
+        run: pnpm docs:check-refs --strict
 
       - name: Guard awaited render (vitest-browser-svelte 3)
         run: npx tsx scripts/check-await-render.ts
