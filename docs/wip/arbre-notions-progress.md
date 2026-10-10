@@ -928,3 +928,11 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
       seulement dans l'export RGPD) ;
     - un point neuf tagué ne se supprime plus.
   - Ordre : fusion, puis déploiement Vercel des filtres, PUIS `db:migrate` (lancé par David).
+- **2026-10-10 — À revoir PLUS TARD (David)** : les 21 couples (modèle, programme) sans point du lot (liste dans
+  `c5-transfert-liens.csv`, colonne point vide). Ce sont :
+  - 8 contenus de Tle tagués en 1re spé (trigonométrie, escalier) ;
+  - 4 tags de 1re spé remplacés par un point de 2de ;
+  - 4 sans point du BO (reconnaître un raisonnement, contre-exemple en 1re spé, suite majorée) ;
+  - 3 contenus de Tle comp. tagués en Tle spé ;
+  - 2 hors bornes (angles associés pour tout x).
+  - 12 modèles n'ont plus aucun point ; 420 en gardent.
