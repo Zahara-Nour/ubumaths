@@ -18,9 +18,12 @@ function diff(input: string): string {
 
 describe('.diff : la dérivée est rangée', () => {
 	it.each([
-		['x e^{-2x}', 'd/dx(xe^{-2x}) = e^{-2x}-2xe^{-2x}\nLaTeX: e^{-2 x} - 2 x e^{-2 x}'],
-		['2e^{-x}', 'd/dx(2e^{-x}) = -2e^{-x}\nLaTeX: -2 e^{-x}'],
-		['e^{3x}', 'd/dx(e^{3x}) = 3e^{3x}\nLaTeX: 3 e^{3 x}'],
+		[
+			'x e^{-2x}',
+			'd/dx(xe^{-2x}) = e^{-2x}-2xe^{-2x}\nLaTeX: \\exponentialE^{-2 x} - 2 x \\exponentialE^{-2 x}'
+		],
+		['2e^{-x}', 'd/dx(2e^{-x}) = -2e^{-x}\nLaTeX: -2 \\exponentialE^{-x}'],
+		['e^{3x}', 'd/dx(e^{3x}) = 3e^{3x}\nLaTeX: 3 \\exponentialE^{3 x}'],
 		[
 			'sin(x)+cos(x)',
 			'd/dx(sin(x)+cos(x)) = cos(x)-sin(x)\nLaTeX: \\cos\\left( x \\right) - \\sin\\left( x \\right)'
@@ -39,7 +42,7 @@ describe('.diff : témoins déjà propres, inchangés', () => {
 			'x\\sin(x)',
 			'd/dx(xsin(x)) = sin(x)+xcos(x)\nLaTeX: \\sin\\left( x \\right) + x \\cos\\left( x \\right)'
 		],
-		['x^2 e^x', 'd/dx(x^2e^x) = 2xe^x+x^2e^x\nLaTeX: 2 x e^x + x^2 e^x'],
+		['x^2 e^x', 'd/dx(x^2e^x) = 2xe^x+x^2e^x\nLaTeX: 2 x \\exponentialE^x + x^2 \\exponentialE^x'],
 		['\\ln(x)', 'd/dx(ln(x)) = 1/x\nLaTeX: \\dfrac{1}{x}']
 	])('.diff %s', (input, expected) => {
 		expect(diff(input)).toBe(expected);

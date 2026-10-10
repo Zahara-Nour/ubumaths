@@ -708,7 +708,7 @@ class PrattParser {
 
 		// Regular variable
 		this.advance();
-		return this.applyColor(MathAST.variable(letter));
+		return this.applyColor(letter === 'e' ? euler() : MathAST.variable(letter));
 	}
 
 	/**
@@ -803,7 +803,7 @@ class PrattParser {
 		}
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
-		return this.applyColor(MathAST.variable(name));
+		return this.applyColor(name === 'e' ? euler() : MathAST.variable(name));
 	}
 
 	/**
@@ -2165,7 +2165,7 @@ class PrattParser {
 				// A lone letter is just that letter: `\sqrt f(x)` means
 				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
 				this.advance();
-				return this.applyColor(MathAST.variable(token.value));
+				return this.applyColor(token.value === 'e' ? euler() : MathAST.variable(token.value));
 
 			case 'COMMAND':
 				return this.parseCommand();

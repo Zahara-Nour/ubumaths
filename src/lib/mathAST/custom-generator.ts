@@ -360,6 +360,17 @@ function gluesCommandToLetter(left: string, right: string): boolean {
 }
 
 /**
+ * Whether `left`, a term ending in a number juxtaposed with Euler's `e`, would
+ * read as scientific notation once followed by `+`/`-` and `right`: `2e-3`
+ * (2·e − 3) is read back `0.002`. A space before the sign keeps them apart
+ * (`2e -3`) : the tokenizer only reads `e` as an exponent when the sign or the
+ * digit follows it immediately.
+ */
+function gluesEulerToExponent(left: string, right: string): boolean {
+	return /[0-9.,]e$/.test(left) && /^[0-9.,]/.test(right);
+}
+
+/**
  * Whether an emitted fragment begins with a unary sign (`+` or `-`) — i.e. the
  * output of an `opposite` or `positive` node. Juxtaposing such a RHS to a left
  * operand produces text like `x-sin(x)` which the parser silently reads as a
@@ -492,6 +503,19 @@ export class CustomGenerator {
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
+				// La fin du texte de gauche suffit (`2` puis `e`, deux spans) ; le texte
+				// de droite n'est regénéré que si elle finit par `<chiffre>e`.
+				const leftPlain = this.spans
+					.slice(-2)
+					.map((span) => span.text)
+					.join('');
+				if (
+					!wrapRight &&
+					gluesEulerToExponent(leftPlain, '0') &&
+					gluesEulerToExponent(leftPlain, new CustomGenerator().generate(node.right))
+				) {
+					this.emit(' ', node.metadata);
+				}
 				this.emit(node.type === 'addition' ? '+' : '-', node.operatorMetadata ?? node.metadata);
 				if (wrapRight) this.emit('(', node.metadata);
 				this.visitWithSpans(node.right);
@@ -614,8 +638,8 @@ export class CustomGenerator {
 				break;
 
 			case 'constant':
-				// In custom syntax, use \euler or \pi
-				this.emit(node.constant === 'euler' ? '\\euler' : '\\pi', node.metadata);
+				// In custom syntax, use e (read back as Euler by parseCustom) or \pi
+				this.emit(node.constant === 'euler' ? 'e' : '\\pi', node.metadata);
 				break;
 
 			case 'composition':
@@ -1067,7 +1091,7 @@ export class CustomGenerator {
 				this.emit('?', effectiveMeta);
 				break;
 			case 'constant':
-				this.emit(node.constant === 'euler' ? '\\euler' : '\\pi', effectiveMeta);
+				this.emit(node.constant === 'euler' ? 'e' : '\\pi', effectiveMeta);
 				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
@@ -1138,7 +1162,7 @@ export class CustomGenerator {
 				content = this.generateHole(node);
 				break;
 			case 'constant':
-				content = node.constant === 'euler' ? '\\euler' : '\\pi';
+				content = node.constant === 'euler' ? 'e' : '\\pi';
 				break;
 			case 'composition':
 				content = this.generateComposition(node);
@@ -1249,7 +1273,7 @@ export class CustomGenerator {
 		const right = needsParenthesesAsRightTerm(node.right, 'addition')
 			? `(${renderedRight})`
 			: renderedRight;
-		return `${left}+${right}`;
+		return `${left}${gluesEulerToExponent(left, right) ? ' ' : ''}+${right}`;
 	}
 
 	/**
@@ -1276,7 +1300,7 @@ export class CustomGenerator {
 		const right = needsParenthesesAsRightTerm(node.right, 'subtraction')
 			? `(${renderedRight})`
 			: renderedRight;
-		return `${left}-${right}`;
+		return `${left}${gluesEulerToExponent(left, right) ? ' ' : ''}-${right}`;
 	}
 
 	private generateMultiplication(node: MultiplicationNode): string {

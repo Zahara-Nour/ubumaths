@@ -3,6 +3,9 @@
  *
  * ## L'incohérence, mesurée
  *
+ * (Historique : depuis le 2026-10-10, les deux parseurs lisent la lettre `e`
+ * comme la constante `euler` ; le constat ci-dessous date d'avant.)
+ *
  * Le système a **déjà tranché** que `e` désigne le nombre d'Euler :
  * `evaluate(parseLatex('e'))` rend `2.718281828459045`. Seul le chemin
  * symbolique l'ignore. `e^{x}` est parsé en `superscript(variable e, x)`, alors
@@ -126,7 +129,7 @@ describe('hors périmètre : un exposant symbolique sur une base variable', () =
 
 describe('réduire pour comparer, pas pour écrire', () => {
 	it('l’affichage garde la notation de l’élève', () => {
-		expect(toLatex(simplify(parseLatex('e^{x}')).result)).toBe('e^x');
+		expect(toLatex(simplify(parseLatex('e^{x}')).result)).toBe('\\exponentialE^x');
 		expect(toLatex(simplify(parseLatex('\\exp(x)')).result)).toContain('exp');
 	});
 });
@@ -159,8 +162,8 @@ describe('un `e` isolé n’a rien à absorber, on ne le promeut pas', () => {
 	);
 
 	it('et l’affichage de e² ne bouge pas', () => {
-		expect(toLatex(simplify(parseLatex('e^{2}')).result)).toBe('e^2');
-		expect(toLatex(simplify(parseLatex('\\frac{e^{2}}{x}')).result)).toContain('e^2');
+		expect(toLatex(simplify(parseLatex('e^{2}')).result)).toBe('\\exponentialE^2');
+		expect(toLatex(simplify(parseLatex('\\frac{e^{2}}{x}')).result)).toContain('\\exponentialE^2');
 	});
 });
 

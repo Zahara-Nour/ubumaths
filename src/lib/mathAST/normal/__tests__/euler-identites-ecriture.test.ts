@@ -36,9 +36,9 @@ describe('Identités de la base d’Euler, écriture e^{…}', () => {
 		['\\exponentialE^{\\ln(x)}', 'x'],
 		['e^{\\ln(x)}', 'x'],
 		['\\left(\\exponentialE^{x}\\right)^{2}', '\\exponentialE^{2 x}'],
-		['\\left(e^{x}\\right)^{3}', 'e^{3 x}'],
+		['\\left(e^{x}\\right)^{3}', '\\exponentialE^{3 x}'],
 		['\\exponentialE^{x}\\exponentialE^{2x}', '\\exponentialE^{3 x}'],
-		['e^{x}e^{2x}', 'e^{3 x}'],
+		['e^{x}e^{2x}', '\\exponentialE^{3 x}'],
 		['\\exponentialE^{x}\\exponentialE^{-x}', '1'],
 		['3\\exponentialE^{x}\\exponentialE^{2x}', '3 \\exponentialE^{3 x}'],
 		['\\exponentialE^{0}', '1']
@@ -65,7 +65,7 @@ describe('Identités de la base d’Euler, écriture e^{…}', () => {
 describe('Témoins : forme normale inchangée (mesurée avant le correctif)', () => {
 	it.each([
 		['\\exponentialE^{x}', '\\exponentialE^x'],
-		['e^{x}', 'e^x'],
+		['e^{x}', '\\exponentialE^x'],
 		['\\exponentialE^{x}+1', '\\exponentialE^x + 1'],
 		['x^{2}\\ln(x)', 'x^2 \\ln\\left( x \\right)'],
 		// ln(x²) = 2 ln|x| sur ℝ* (décision du 2026-10-08 ; 2 ln x avant)
@@ -73,7 +73,9 @@ describe('Témoins : forme normale inchangée (mesurée avant le correctif)', ()
 		['\\exp(x)\\exp(2x)', '\\exp\\left( 3 x \\right)'],
 		['\\ln(\\exp(x))', 'x'],
 		['\\exponentialE^{2}', '\\exponentialE^2'],
-		['\\exponentialE^{-1}', '\\exp\\left( -1 \\right)'],
+		// Seul témoin qui bouge, voulu (2026-10-10) : `1/e` ne devient plus `exp(-1)`
+		// sans vraie exponentielle à combiner (solution de `ex = 1`, `x ln x + x = 0`).
+		['\\exponentialE^{-1}', '\\dfrac{1}{\\exponentialE}'],
 		['2\\exponentialE^{x}-3x', '-3 x + 2 \\exponentialE^x'],
 		['\\ln(2)+\\ln(3)', '\\ln\\left( 2 \\right) + \\ln\\left( 3 \\right)'],
 		['\\exponentialE^{x+1}', '\\exponentialE^{x + 1}'],

@@ -33,6 +33,9 @@ import {
 	isNegative as isNegativeRational
 } from '../normal/rational';
 import { buildFactor } from './build';
+import { variable } from '../factory';
+import { isEulerConstant } from '../guards';
+import { mapNode } from '../transforms';
 
 // =============================================================================
 // Types
@@ -54,6 +57,9 @@ const CATEGORY_SYMBOL = 0;
 const CATEGORY_FUNCTION = 1;
 const CATEGORY_OTHER = 2;
 
+/** La constante d'Euler dans une clé d'ordre (voir `writtenForm`). */
+const EULER_ORDER_KEY: MathNode = variable('\\euler');
+
 // =============================================================================
 // Écriture d'un nœud
 // =============================================================================
@@ -62,10 +68,15 @@ const CATEGORY_OTHER = 2;
  * L'écriture d'un nœud, utilisée comme clé d'ordre. `toCustom` lève sur les
  * quelques nœuds qu'il ne sait pas écrire (lettre grecque non gérée, style de
  * multiplication absent) : on retombe alors sur le hash, déterministe lui aussi.
+ *
+ * La constante d'Euler s'y range sous `\euler`, comme `\pi` sous `\pi` : les
+ * constantes passent devant les lettres (`\pi a`, `e a`). `toCustom` l'écrit
+ * `e`, qui la rangerait parmi les lettres (`a e`). Le nom `\euler` ne sert qu'à
+ * la clé : il n'est jamais affiché ni relu.
  */
 function writtenForm(node: MathNode): string {
 	try {
-		return toCustom(node);
+		return toCustom(mapNode(node, (n) => (isEulerConstant(n) ? EULER_ORDER_KEY : n)));
 	} catch {
 		return hashMathNode(node);
 	}

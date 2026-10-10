@@ -134,19 +134,16 @@ export function generatePedagogicalIntegrationSteps(
 
 /**
  * Resolve the integration variable from the integrand. Wraps the algorithmic
- * `detectVariable` and adds a workaround for the « `e^x` parses as
- * `superscript(variable('e'), variable('x'))` » quirk : when detectVariable
- * throws « multiple variables » and one of them is the conventional Euler
- * constant `e`, treat `e` as a constant and pick the other variable.
+ * `detectVariable` ; when it throws, a single letter in the integrand is still
+ * taken as the variable (`e` is never one : both parsers read it as Euler).
  */
 function resolveIntegrationVariable(integrand: MathNode): string {
 	try {
 		return detectVariable(integrand) ?? 'x';
 	} catch {
 		const names = collectVariableNames(integrand);
-		const nonEuler = names.filter((n) => n !== 'e');
-		if (nonEuler.length === 1) return nonEuler[0];
-		if (nonEuler.length === 0) return 'x';
+		if (names.length === 1) return names[0];
+		if (names.length === 0) return 'x';
 		throw new PedagogicalIntegrationNotImplemented(
 			integrand,
 			`Multiple integration variables (${names.join(', ')}) — please specify via options.variable`

@@ -28,7 +28,7 @@ describe('simplify garde i dans un produit', () => {
 		['-a i', '-a i'],
 		['\\frac{2ai}{2}', 'a i'],
 		['a(i)', 'a i'],
-		['e i', 'e i'],
+		['e i', '\\exponentialE i'],
 		['\\pi i', '\\pi i'],
 		['2 a i', '2 a i'],
 		['a i + a i', '2 a i'],
@@ -40,11 +40,13 @@ describe('simplify garde i dans un produit', () => {
 	});
 });
 
+// La constante d'Euler se range devant les lettres, comme π (`a\pi` → `\pi a`).
 describe('e (Euler) reste dans un produit', () => {
 	it.each([
-		['a e', 'a e'],
-		['e a', 'a e'],
-		['x e', 'e x']
+		['a e', '\\exponentialE a'],
+		['e a', '\\exponentialE a'],
+		['x e', '\\exponentialE x'],
+		['a\\pi', '\\pi a']
 	])('%s → %s', (input, expected) => {
 		expect(simp(input)).toBe(expected);
 	});

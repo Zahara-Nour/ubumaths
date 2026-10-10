@@ -27,7 +27,8 @@ import {
 	variable,
 	superscript,
 	func,
-	sqrt
+	sqrt,
+	euler
 } from './factory';
 import {
 	isComplex,
@@ -966,10 +967,10 @@ function isImaginaryUnitNode(node: MathNode): boolean {
 }
 
 /**
- * Une seule écriture du nombre e pour comparer les formes : `\exponentialE`
- * (MathLive) devient la lettre `e`, `\exp(u)` (notation du programme) devient
- * `e^{u}`. Ce sont des notations, pas des formes : aucune pénalité (décision de
- * David du 2026-10-02).
+ * Une seule écriture du nombre e pour comparer les formes : la constante
+ * `euler()` (les parseurs y lisent la lettre `e` comme `\exponentialE`), et
+ * `\exp(u)` (notation du programme) devient `e^{u}`. Ce sont des notations, pas
+ * des formes : aucune pénalité (décision de David du 2026-10-02).
  *
  * De même pour l'unité imaginaire : `\imaginaryI` (MathLive, « ii » ou la variante
  * « i imaginaire » de la touche i), que le parseur lit `complex(0, 1)`, devient la
@@ -978,10 +979,9 @@ function isImaginaryUnitNode(node: MathNode): boolean {
  */
 export function unifyEulerNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
-		if (isEulerConstant(node)) return variable('e');
 		if (isImaginaryUnitNode(node)) return variable('i');
 		if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
-			return superscript(variable('e'), node.args[0]);
+			return superscript(euler(), node.args[0]);
 		}
 		return node;
 	});
@@ -1410,11 +1410,6 @@ function unifyLogPowerNotationAST(ast: MathNode): MathNode {
 	});
 }
 
-/** La lettre `e` (après `unifyEulerNotationAST`, qui y ramène `\exponentialE`) */
-function isEulerLetter(node: MathNode): boolean {
-	return node.type === 'variable' && node.name === 'e';
-}
-
 /**
  * Opposé d'un exposant « simple », écrit comme le parseur lit `e^{-a}` : nombre
  * (`2` → `-2`), fraction de nombres, partie littérale (`x`), monôme (`2x` → `(-2)·x`,
@@ -1457,13 +1452,13 @@ function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
 		}
 		const denominator = node.denominator;
 		let negated: MathNode | null = null;
-		if (isEulerLetter(denominator)) {
+		if (isEulerConstant(denominator)) {
 			negated = opposite(number('1'));
-		} else if (denominator.type === 'superscript' && isEulerLetter(denominator.base)) {
+		} else if (denominator.type === 'superscript' && isEulerConstant(denominator.base)) {
 			negated = negatedSimpleExponent(denominator.superscript);
 		}
 		if (negated === null) return node;
-		const power = superscript(variable('e'), negated);
+		const power = superscript(euler(), negated);
 		return node.numerator.value === '1' ? power : multiply(node.numerator, power, 'implicit');
 	});
 }

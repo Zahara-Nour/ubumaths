@@ -82,10 +82,6 @@ export function compile(node: MathNode): CompiledFn {
 	}
 
 	if (isVariable(node)) {
-		// 'e' as a standalone variable is Euler's number (same convention as evaluate.ts)
-		if (node.name === 'e') {
-			return () => Math.E;
-		}
 		const name = node.name;
 		return (v) => v[name] ?? NaN;
 	}

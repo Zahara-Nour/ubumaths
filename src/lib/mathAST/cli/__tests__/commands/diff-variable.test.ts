@@ -60,7 +60,7 @@ describe('.diff : variable par défaut — x, sauf « ; v » (plus de devinette)
 	});
 
 	it('e n’est pas une lettre candidate : e^{2t} se dérive en t', () => {
-		expect(diff('e^{2t}')).toBe('d/dt(e^{2t}) = 2e^{2t}\nLaTeX: 2 e^{2 t}');
+		expect(diff('e^{2t}')).toBe('d/dt(e^{2t}) = 2e^{2t}\nLaTeX: 2 \\exponentialE^{2 t}');
 	});
 
 	it('une constante se dérive en x, sans indication', () => {

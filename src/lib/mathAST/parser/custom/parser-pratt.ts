@@ -827,7 +827,7 @@ class CustomPrattParser {
 		}
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
-		return this.applyColor(MathAST.variable(name));
+		return this.applyColor(name === 'e' ? euler() : MathAST.variable(name));
 	}
 
 	/**

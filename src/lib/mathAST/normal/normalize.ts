@@ -85,7 +85,16 @@ import { evaluateNodeToApproximatedNumber, exactBinomial, exactFactorial } from 
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
-import { divide, euler, number, opposite, parentheses, piConstant, superscript } from '../factory';
+import {
+	divide,
+	euler,
+	func,
+	number,
+	opposite,
+	parentheses,
+	piConstant,
+	superscript
+} from '../factory';
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
 import { applyEulerIdentities } from './rules/euler-identities';
@@ -2152,9 +2161,9 @@ function recordTreeStep(
  * opaque.
  */
 export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalForm {
-	// `e^{x}` est parsé comme une puissance de la VARIABLE `e` : la machinerie
-	// qui combine les exponentielles, qui ne connaît que les nœuds fonction
-	// `exp`, ne le voyait jamais passer. Ici, et ici seulement — la forme
+	// `e^{x}` est parsé comme une puissance de la constante `euler` : la
+	// machinerie qui combine les exponentielles, qui ne connaît que les nœuds
+	// fonction `exp`, ne le voyait jamais passer. Ici, et ici seulement — la forme
 	// affichée garde la notation de l'élève.
 	// `\log_{b}(a)` devient `ln(a)/ln(b)`, `\log(a)` devient `ln(a)/ln(10)` :
 	// même domaine des deux côtés (a > 0, b > 0, b ≠ 1), et la décomposition
@@ -2219,26 +2228,39 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
  *
  * ⚠️ Ici seulement : sur la forme NORMALE, promouvoir `e²` cassait le solveur
  * (cf. `hasRealExpFactor`). `euler¹` reste la constante, forme canonique de
- * `exp(1)`.
+ * `exp(1)` — sauf au DÉNOMINATEUR : `1/e` doit rencontrer `e^{-1}` (devenu
+ * `exp(-1)`), et `combineExpAcrossFraction` ne fait descendre au numérateur
+ * qu'une vraie exponentielle (`1/e` garde sa forme à l'écriture). Le
+ * dénominateur porte donc `exp(1)` en nœud fonction, que la recombinaison de
+ * la fraction remonte en `exp(-1)`.
  */
 function promoteEulerPowers(form: NormalForm): NormalForm {
-	const numerator = promoteEulerPowersInPolynomial(form.numerator);
-	const denominator = promoteEulerPowersInPolynomial(form.denominator);
+	const numerator = promoteEulerPowersInPolynomial(form.numerator, false);
+	// Dénominateur monôme seulement : c'est le seul que `combineExpAcrossFraction` remonte
+	const denominator = promoteEulerPowersInPolynomial(
+		form.denominator,
+		form.denominator.length === 1
+	);
 	if (numerator === null && denominator === null) return form;
 	return normalFormFromFraction(numerator ?? form.numerator, denominator ?? form.denominator);
 }
 
 /** Le polynôme réécrit, ou `null` si aucun monôme n'a bougé. */
-function promoteEulerPowersInPolynomial(polynomial: readonly NormalTerm[]): NormalTerm[] | null {
+function promoteEulerPowersInPolynomial(
+	polynomial: readonly NormalTerm[],
+	includeFirstPower: boolean
+): NormalTerm[] | null {
 	let changed = false;
 	const terms = polynomial.map((term) => {
 		const monomial = term.monomial.map((factor) => {
-			if (!isEulerConstant(factor.base) || isOne(factor.exponent)) return factor;
+			if (!isEulerConstant(factor.base)) return factor;
+			if (isOne(factor.exponent) && !includeFirstPower) return factor;
 			changed = true;
 			const argument = denormalize(
 				normalizeNode(scaleNodeByRational(number('1'), factor.exponent))
 			);
-			return symbolicFactor(expNodeFor(argument), ONE);
+			// `func`, pas `expNodeFor` : celui-ci rendrait `euler()` pour `exp(1)`
+			return symbolicFactor(func('exp', [argument]), ONE);
 		});
 		return { coefficient: term.coefficient, monomial: sortSymbolicFactors(monomial) };
 	});
@@ -5767,7 +5789,8 @@ function combineExpAcrossFraction(
 	// Elle a un prix, mesuré et assumé : `exp(x+1)/exp(1)` s'affiche désormais
 	// `exp(x)` là où `main` gardait la fraction. C'est le SEUL déplacement
 	// exponentiel sur 139 témoins, il est juste, et il est plus court. Les
-	// écritures avec la lettre `e` ne bougent pas : `e^{x+1}/e` garde sa forme.
+	// puissances `e^{…}` ne bougent pas (elles ne sont pas des nœuds `exp`) :
+	// `e^{x+1}/e` garde sa forme.
 
 	// Collect exp factors from numerator
 	const numExpFactors: Array<{ arg: MathNode; exp: Rational }> = [];
@@ -5793,8 +5816,12 @@ function combineExpAcrossFraction(
 		}
 	}
 
-	// No combination needed if no exp factors at all
-	if (numExpFactors.length === 0 && denExpFactors.length === 0) {
+	// No combination needed if no exp factors at all.
+	// ⚠️ Ni sans VRAIE exponentielle d'un côté ou de l'autre : la constante
+	// d'Euler seule n'a rien à absorber. `1/e` devenait `exp(-1)`, et `√e/…`
+	// `exp(1/2)` — la solution de `ex = 1` s'affichait `\exp(-1)`, celles de
+	// `x² = e` `±\exp(1/2)` au lieu de `±\sqrt{e}`.
+	if (!hasRealExpFactor(numTerm.monomial) && !hasRealExpFactor(denTerm.monomial)) {
 		return { numerator: [...numerator], denominator: [...denominator] };
 	}
 

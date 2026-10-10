@@ -16,7 +16,6 @@ import { mapNode } from '../../transforms';
 import { parseLatexSafe } from '../../parser';
 import { parseCustom } from '../../parser/custom';
 import { evaluate } from '../../eval';
-import { substitute } from '../../eval/substitute';
 import type { Domain, Interval } from '../types';
 import type {
 	ParseStudentDomainResult,
@@ -722,15 +721,13 @@ function parseEndpointValue(input: string): MathNode | null {
 }
 
 /**
- * Une borne est un nombre : la lettre `e` y est toujours la constante d'Euler,
- * et `\\exp(u)` s'écrit `e^{u}`. Le parseur LaTeX lit `e` comme une variable
- * (`\\frac{1}{e}`), le parseur maison comme la constante (`e^-1`) ; et
- * `exp(2) - e^2` n'est nul qu'au flottant près. Sans cette unification, la
- * comparaison exacte ne reconnaît ni `\\frac{1}{e}` = `e^{-1}` ni
- * `\\exp(2)` = `e^{2}` (sonde du 2026-10-04).
+ * Une borne est un nombre : `\\exp(u)` s'écrit `e^{u}` (la lettre `e` est déjà
+ * la constante d'Euler pour les deux parseurs). `exp(2) - e^2` n'est nul qu'au
+ * flottant près : sans cette unification, la comparaison exacte ne reconnaît
+ * pas `\\exp(2)` = `e^{2}` (sonde du 2026-10-04).
  */
 function withEulerConstant(node: MathNode): MathNode {
-	return mapNode(substitute(node, { e: euler() }), (n) =>
+	return mapNode(node, (n) =>
 		n.type === 'function' && n.name === 'exp' && n.args.length === 1
 			? superscript(euler(), n.args[0])
 			: n

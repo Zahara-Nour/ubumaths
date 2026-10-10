@@ -2,11 +2,11 @@
  * Solve — la constante d'Euler HORS d'un exposant.
  *
  * ⚠️ Réponse fausse et assurée relevée en revue : `e^x = e` rendait
- * « Pas de solution : l'équation est contradictoire ». Le parseur LaTeX garde
- * la lettre `e` comme variable ; `promoteEulerInRelation` ne la promeut que
- * comme BASE d'un exposant. Le `e` seul du second membre restait une variable,
- * `detectVariable` voyait `{e, x}` et l'équation tombait dans le chemin des
- * équations constantes. Avec l'inconnue imposée, la réponse restait `ln(e)`.
+ * « Pas de solution : l'équation est contradictoire ». Le parseur LaTeX gardait
+ * alors la lettre `e` comme variable : `detectVariable` voyait `{e, x}` et
+ * l'équation tombait dans le chemin des équations constantes. Depuis le
+ * 2026-10-10, les deux parseurs lisent la lettre `e` comme la constante
+ * d'Euler : elle n'est jamais une inconnue.
  *
  * Valeurs EXACTES : on compare le LaTeX de la solution, pas une approximation.
  *
@@ -85,17 +85,18 @@ describe('solve — les autres écritures de e', () => {
 	});
 });
 
-describe('solve — e reste l’inconnue quand c’est la seule lettre', () => {
-	it('e + 1 = 3 → e = 2', () => {
+describe('solve — e n’est jamais l’inconnue', () => {
+	it('e + 1 = 3 : aucune inconnue, égalité fausse (e ≈ 2,718)', () => {
 		const result = solve(asRelation(parseLatex('e+1=3')));
-		expect(result.variable).toBe('e');
-		expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['2']);
+		expect(result.variable).toBe('');
+		expect(result.status).toBe('no-solution');
+		expect(result.solutions).toEqual([]);
 	});
 
-	it('inconnue imposée e : 2e = x reste résolue en e', () => {
-		const result = solve(asRelation(parseLatex('2e=x')), { variable: 'e' });
-		expect(result.variable).toBe('e');
-		expect(result.status).toBe('unique');
+	it('2e = x : l’inconnue est x, et x = 2e', () => {
+		const result = solve(asRelation(parseLatex('2e=x')));
+		expect(result.variable).toBe('x');
+		expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['2 \\exponentialE']);
 	});
 });
 
@@ -111,16 +112,28 @@ describe('solveInequality — même cause, e seul', () => {
 
 /**
  * ⚠️ Témoins de NON-RÉGRESSION (revue de #863) : sans exponentielle ni
- * logarithme de l'inconnue, le `e` seul garde le comportement de main —
- * c'est le cas de tous les appelants internes (racines, zéros, points
- * critiques) qui imposent l'inconnue. Sorties LaTeX mesurées sur main.
+ * logarithme de l'inconnue, `e` s'écrit comme π s'écrirait (`\\sqrt{\\pi}`,
+ * `\\dfrac{1}{\\pi}`) — c'est le cas de tous les appelants internes (racines,
+ * zéros, points critiques) qui imposent l'inconnue. Jamais `\\exp(…)` : la
+ * constante seule n'est pas promue en exponentielle (`combineExpAcrossFraction`).
  */
-describe('solve — sans exp ni ln de l’inconnue, e seul inchangé', () => {
+describe('solve — sans exp ni ln de l’inconnue, e s’écrit comme π', () => {
 	it('x^2 = e (x) → ±\\sqrt{e}, pas \\exp(1/2)', () => {
-		expect(solutionsOf(asRelation(parseLatex('x^2=e')), 'x')).toEqual(['\\sqrt{e}', '-\\sqrt{e}']);
+		expect(solutionsOf(asRelation(parseLatex('x^2=e')), 'x')).toEqual([
+			'\\sqrt{\\exponentialE}',
+			'-\\sqrt{\\exponentialE}'
+		]);
 	});
 
 	it('ex = 1 (x) → \\dfrac{1}{e}, pas \\exp(-1)', () => {
-		expect(solutionsOf(asRelation(parseLatex('ex=1')), 'x')).toEqual(['\\dfrac{1}{e}']);
+		expect(solutionsOf(asRelation(parseLatex('ex=1')), 'x')).toEqual([
+			'\\dfrac{1}{\\exponentialE}'
+		]);
+	});
+
+	it('3e x = 2 (x) → \\dfrac{2}{3e} : coefficient ≠ 1', () => {
+		expect(solutionsOf(asRelation(parseLatex('3ex=2')), 'x')).toEqual([
+			'\\dfrac{2}{3 \\exponentialE}'
+		]);
 	});
 });

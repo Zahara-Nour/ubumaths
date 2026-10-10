@@ -22,7 +22,7 @@ import type { IntervalDomain } from '$lib/math/intervals/types';
 import { intervalSet, closedInterval } from '$lib/math/intervals';
 import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
-import { number, euler } from '../../factory';
+import { number } from '../../factory';
 import { numericNode } from '../../common/numeric';
 
 // =============================================================================
@@ -198,14 +198,6 @@ export function inferMathConstantType(node: MathConstantNode): MathType {
  * - In strict mode: returns 'unknown'
  * - In normal mode: returns 'real' (default assumption)
  *
- * **Parser discrepancy for 'e':**
- * The Custom parser treats 'e' as a reserved constant and produces a
- * MathConstantNode (handled by inferMathConstantType above). But the
- * LaTeX parser has no such rule — it produces a VariableNode for 'e'.
- * Since both parsers can feed into type inference, we handle 'e' here
- * too as a fallback. We create a proper MathConstantNode via euler()
- * so the interval bounds have the correct node type.
- *
  * @param node - The variable node
  * @param ctx - Type context with variable bindings
  * @returns MathType based on context or default
@@ -219,17 +211,6 @@ export function inferVariableType(node: VariableNode, ctx: TypeContext): MathTyp
 			return typeWithAssumption(varType, assumption);
 		}
 		return { base: varType };
-	}
-
-	// Fallback for LaTeX parser: 'e' arrives as VariableNode (see docstring above)
-	if (node.name === 'e') {
-		const ep = euler();
-		return {
-			base: 'transcendental',
-			sign: 'positive',
-			finite: true,
-			bounds: intervalSet([closedInterval(ep, ep)])
-		};
 	}
 
 	// Default behavior based on strict mode

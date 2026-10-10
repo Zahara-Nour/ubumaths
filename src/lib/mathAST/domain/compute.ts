@@ -1437,10 +1437,7 @@ function containsVariable(node: MathNode, variable: string): boolean {
 }
 
 function isEulerBase(node: MathNode): boolean {
-	return (
-		(node.type === 'constant' && node.constant === 'euler') ||
-		(node.type === 'variable' && node.name === 'e')
-	);
+	return node.type === 'constant' && node.constant === 'euler';
 }
 
 /** Valeur numérique d'un nœud sans variable ; null si non évaluable. */

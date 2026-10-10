@@ -111,7 +111,6 @@ import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
-import { promoteEulerInRelation, promoteStandaloneEulerInRelation } from './promote-euler';
 import { tryRationalDecomposition, createRationalDepthState } from './rational';
 import type { Domain } from '../domain/types';
 import {
@@ -1746,22 +1745,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	// Promote bare `e` (parsed as variable) to `euler()` in superscript bases.
-	// Without this, `detectVariable(e^x - 1 = 0)` would see `{e, x}` and return
-	// null, falling into the constant-equation path even though x is the obvious
-	// unknown. See `solve/promote-euler.ts` for the rationale.
-	//
 	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`
 	// est `2x-3 = 0`. Sinon `flattenSumShallow`, qui s'arrête aux délimiteurs,
 	// voit un seul terme et chaque solveur se trompe à sa façon (linéaire :
 	// x = 0 ; exponentiel, logarithmique, trigonométrique, quartique : aucune
 	// solution). L'atelier envoie ces entrées : `f(x)` y devient `(expression)`.
-	//
-	// Le `e` SEUL (`e^x = e`) est lui aussi la constante dès qu'il ne peut pas
-	// être l'inconnue — sinon « contradictoire », réponse fausse et assurée.
-	const unwrapped = unwrapGroupingMembers(
-		promoteStandaloneEulerInRelation(promoteEulerInRelation(equation), opts.variable)
-	);
+	const unwrapped = unwrapGroupingMembers(equation);
 	// x^{p/q}, q impair : définie pour x < 0 (décision du 2026-10-08), résolue
 	// sous la forme ᵠ√(x^p) — x^{2/3} = 4 rendait {8}, ∛(x²) = 4 rend {±8}
 	const promotedEq: RelationNode = {

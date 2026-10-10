@@ -108,8 +108,8 @@ describe('compile — variables', () => {
 		expect(f({})).toBeNaN();
 	});
 
-	it('treats variable "e" as Euler number', () => {
-		const f = compile(variable('e'));
+	it('the letter e, as parsed, is Euler number', () => {
+		const f = compile(parseLatex('e'));
 		expect(f({})).toBe(Math.E);
 	});
 });

@@ -66,10 +66,10 @@ describe('la fusion des racines s’arrête à l’indice 2', () => {
 
 describe('les exposants se réduisent', () => {
 	it.each([
-		['e^{x}e^{2x}', 'e^{3 x}'],
-		['e^{x}e^{x}', 'e^{2 x}'],
-		['(e^{x})^{3}', 'e^{3 x}'],
-		['(e^{2x})^{3}', 'e^{6 x}']
+		['e^{x}e^{2x}', '\\exponentialE^{3 x}'],
+		['e^{x}e^{x}', '\\exponentialE^{2 x}'],
+		['(e^{x})^{3}', '\\exponentialE^{3 x}'],
+		['(e^{2x})^{3}', '\\exponentialE^{6 x}']
 	])('%s → %s', (source, attendu) => {
 		expect(reduire(source)).toBe(attendu);
 	});

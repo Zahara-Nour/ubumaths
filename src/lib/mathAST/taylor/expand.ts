@@ -345,7 +345,7 @@ const PARAMETER_PROBES = [0.7319, -0.7319, 2.31, -2.31] as const;
  * paramètres. `i` surtout : le prendre pour un paramètre réel donnerait un
  * développement faux d'une fonction à valeurs complexes.
  */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi', 'e', 'i']);
+const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi', 'i']);
 
 // =============================================================================
 // Main Taylor Expansion Function

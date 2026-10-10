@@ -1,6 +1,6 @@
 /**
- * La lettre `e` TAPÉE (`parseLatex('e^{x}')` : variable `e`) est la constante
- * d'Euler pour `integrate`, sauf quand on intègre par rapport à `e`.
+ * La lettre `e` TAPÉE est la constante d'Euler pour `integrate` (les deux
+ * parseurs la lisent `euler` depuis le 2026-10-10).
  *
  * Avant : seuls `\exponentialE` et `\exp` passaient ; `e^x` tapé avec la lettre
  * était refusé (« non supporté »), dans le LaTeX comme dans l'atelier. Les
@@ -17,8 +17,7 @@ import { integrate, integrateDefinite } from '../integrate';
 import { toLatex } from '../../latex-generator';
 import { compile } from '../../eval/compile';
 import { checkForm } from '../../cosmetic-transforms';
-import { findNodes, mapNode } from '../../transforms';
-import { variable as variableNode } from '../../factory';
+import { findNodes } from '../../transforms';
 import { isVariable } from '../../guards';
 import type { MathNode } from '../../types';
 import { runInput, type CalcSession } from '$lib/atelier/calcul';
@@ -97,12 +96,10 @@ describe('integrate : la lettre e tapée est la constante d’Euler', () => {
 		expectEulerForm(F, ['e^{t}']);
 	});
 
-	it('intégrer PAR RAPPORT à e : e reste la variable (∫ e^2 de = e^3/3)', () => {
-		const F = primitiveOf('e^{2}', 'e');
-		expect(findNodes(F, (n) => isVariable(n) && n.name === 'e').length).toBeGreaterThan(0);
-		// `compile` lit toujours la lettre e comme Euler : on la renomme y pour l'évaluer
-		const renamed = mapNode(F, (n) => (isVariable(n) && n.name === 'e' ? variableNode('y') : n));
-		expectPrimitive(renamed, (y) => y * y, 'y');
+	it('e est une constante : ∫ 3e^2 dx = 3e^2 x', () => {
+		const F = primitiveOf('3e^{2}');
+		expectPrimitive(F, () => 3 * E * E);
+		expect(findNodes(F, (n) => isVariable(n) && n.name === 'e')).toEqual([]);
 	});
 
 	it('\\exp tapé reste \\exp (la notation de l’élève est gardée)', () => {

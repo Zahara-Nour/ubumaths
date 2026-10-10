@@ -32,7 +32,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST } from '../../factory';
+import { MathAST, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
@@ -853,11 +853,12 @@ class RDParser {
 	}
 
 	/**
-	 * Parse a variable (single letter)
+	 * Parse a variable (single letter). La lettre `e` est la constante d'Euler,
+	 * comme dans `parser-pratt`.
 	 */
 	private parseVariable(): MathNode {
 		const token = this.advance();
-		return this.applyColor(MathAST.variable(token.value));
+		return this.applyColor(token.value === 'e' ? euler() : MathAST.variable(token.value));
 	}
 
 	/**
@@ -1438,7 +1439,7 @@ class RDParser {
 				// A lone letter is just that letter: `\sqrt f(x)` means
 				// `\sqrt{f}(x)`, so the parentheses stay outside the argument.
 				this.advance();
-				return this.applyColor(MathAST.variable(token.value));
+				return this.applyColor(token.value === 'e' ? euler() : MathAST.variable(token.value));
 
 			case 'COMMAND':
 				return this.parseCommand();

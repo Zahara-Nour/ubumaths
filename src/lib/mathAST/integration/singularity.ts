@@ -54,10 +54,8 @@ const REMOVABLE_TOLERANCE = 1e-6;
 /** Lettres de F autres que la variable (paramètres) : contrôle impossible */
 function hasFreeSymbols(antiderivative: MathNode, variable: string): boolean {
 	return (
-		findNodes(
-			antiderivative,
-			(n) => (isVariable(n) && n.name !== variable && n.name !== 'e') || isGreek(n)
-		).length > 0
+		findNodes(antiderivative, (n) => (isVariable(n) && n.name !== variable) || isGreek(n)).length >
+		0
 	);
 }
 
