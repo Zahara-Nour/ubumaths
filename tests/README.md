@@ -1,39 +1,11 @@
 # tests/
 
-Tests qui **ne peuvent pas être co-localisés** dans `src/` : ils ont besoin d'une
-vraie base Supabase, ou ils fournissent de l'infra partagée à d'autres tests.
+Tests qui **ne peuvent pas être co-localisés** dans `src/` (vraie base Supabase) et infra partagée.
+Les tests unitaires vivent dans `src/**/__tests__/` et `scripts/**/__tests__/` ; les e2e dans `e2e/`.
 
-> **Architecture complète & règles** : [docs/pratiques/tests.md](../docs/pratiques/tests.md)
->
-> Les tests **unitaires** vivent à côté de leur code dans `src/**/__tests__/`
-> (et `scripts/**/__tests__/`), pas ici.
+- `integration/` — suite d'intégration contre Supabase local (`pnpm test:integration`)
+- `helpers/` — clients réels et factory (`database/`), mocks (`supabase/`, `fixtures/`), helpers e2e
+- `fixtures/` — copies figées lues par des tests (`lexique/`, `relecture/`)
+- `seed-test-data.ts`, `cleanup-test-data.ts` — seed / nettoyage pour les e2e (à la main, `npx tsx`)
 
-## Contenu
-
-```
-tests/
-├── integration/          # Tests nécessitant Supabase local (port 54321)
-│   ├── *.test.ts         # RLS, RPC, race conditions, endpoints
-│   └── database/         # Triggers / RLS / fonctions PL/pgSQL
-├── helpers/              # Infra de test partagée
-│   ├── supabase/         # Mocks (client, locals, request)
-│   ├── fixtures/         # Factories (profiles, marketplace, game)
-│   └── database/         # Clients réels + factory pour les tests d'intégration
-├── seed-test-data.ts     # Seed du Supabase local pour les e2e (via tsx)
-└── cleanup-test-data.ts  # Nettoyage après e2e (via tsx)
-```
-
-Les tests e2e (Playwright) sont dans [`e2e/`](../e2e/), pas ici.
-
-## Lancer
-
-```bash
-# Intégration (nécessite Supabase local)
-pnpm db:start
-pnpm test:integration
-
-# Les helpers sont importés via l'alias $tests (ex. import ... from '$tests/helpers')
-```
-
-Les tests d'intégration tournent aussi en CI une fois par nuit
-(`.github/workflows/nightly-integration.yml`).
+Tout le système de tests : [docs/pratiques/tests.md](../docs/pratiques/tests.md).

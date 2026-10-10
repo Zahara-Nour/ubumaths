@@ -57,21 +57,10 @@ if (!q.success) throw error(400, q.error.issues[0].message);
 
 ---
 
-## Testing standards
+## Tests
 
-> Architecture complète + TDD collaboratif : [docs/pratiques/tests.md](tests.md).
-
-| Type                       | Emplacement                               | Commande                  |
-| -------------------------- | ----------------------------------------- | ------------------------- |
-| Unit (serveur / logique)   | `src/**/__tests__/`                       | `pnpm test:server <path>` |
-| Client (composants Svelte) | `src/**/*.svelte.test.ts`                 | `pnpm test:client <path>` |
-| Intégration (DB / RLS)     | `tests/integration/` (+ `tests/helpers/`) | `pnpm test:integration`   |
-| E2E                        | `e2e/`                                    | `pnpm test:e2e`           |
-
-- **RLS / `SECURITY DEFINER` / triggers / policies → tests d'intégration OBLIGATOIRES** (`pnpm db:start` puis `pnpm test:integration`).
-- ⚠️ **JAMAIS** valider une fonction `SECURITY DEFINER` par un smoke-test avec `auth.uid()` NULL : le garde sort **avant** la vraie requête → **faux positif** (a déjà laissé partir une RPC cassée en prod). Tester avec un vrai contexte authentifié.
-- Tests **ciblés** > suite complète (contrainte RAM). `pnpm test:changed` pour les fichiers touchés.
-- La CI exécute tout (server shardé ×4, client browser, intégration).
+Tout le système de tests (où ranger un test, projets vitest, ce qui tourne en local / PR / nuit, tests d'intégration) : **[tests.md](tests.md)**.
+Rappel non négociable : RLS / `SECURITY DEFINER` / triggers / policies → tests d'intégration avec un client **authentifié**, jamais un smoke-test `auth.uid()` NULL.
 
 ---
 
