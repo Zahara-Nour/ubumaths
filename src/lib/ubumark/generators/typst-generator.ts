@@ -396,19 +396,15 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 		}
 
 		case 'math-inline': {
-			const latex =
+			// Fractions de premier niveau en taille normale
+			const typstMath =
 				node.syntax === 'custom'
-					? expressionToRawLatex(
-							node.expression,
-							'custom',
-							options.genericFunctions,
-							options.language
-						)
-					: toLocaleDecimal(node.expression, options.language);
-			// Convert LaTeX math to Typst math syntax (fractions de premier niveau en taille normale)
-			const typstMath = convertLatexToTypstMath(markDisplayFractions(latex));
+					? customInlineMathToTypst(node.expression, options.genericFunctions, options.language)
+					: convertLatexToTypstMath(
+							markDisplayFractions(toLocaleDecimal(node.expression, options.language))
+						);
 			// DEBUG LOG: Keep for Typst debugging - logs each inline math conversion
-			console.log('[typst-gen] math-inline:', { latex, typstMath });
+			console.log('[typst-gen] math-inline:', { expression: node.expression, typstMath });
 
 			// ============================================================================
 			// IMPORTANT: Why we DON'T use #box[] for inline math
@@ -653,11 +649,13 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 		for (let col = 0; col < node.header.length; col++) {
 			const cells: string[] = [
 				// First cell: header in bold (may contain math like $z_i$)
-				`[*${processTableCellContent(node.header[col].content, options.language)}*]`
+				`[*${processTableCellContent(node.header[col].content, options.language, options.genericFunctions)}*]`
 			];
 			// Data cells from each row (may contain math)
 			for (const row of node.rows) {
-				cells.push(`[${processTableCellContent(row[col]?.content || '', options.language)}]`);
+				cells.push(
+					`[${processTableCellContent(row[col]?.content || '', options.language, options.genericFunctions)}]`
+				);
 			}
 			rows.push(cells.join(', '));
 		}
@@ -689,7 +687,11 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 		// Corner cell: header styling only if non-empty
 		const headerCells = node.header
 			.map((cell: { content: string }, index: number) => {
-				const content = processTableCellContent(cell.content, options.language);
+				const content = processTableCellContent(
+					cell.content,
+					options.language,
+					options.genericFunctions
+				);
 				if (index === 0) {
 					// Corner cell: bold only if has content
 					return content.trim() ? `[*${content}*]` : `[${content}]`;
@@ -703,7 +705,11 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 			.map((row: { content: string }[]) =>
 				row
 					.map((cell: { content: string }, cellIndex: number) => {
-						const content = processTableCellContent(cell.content, options.language);
+						const content = processTableCellContent(
+							cell.content,
+							options.language,
+							options.genericFunctions
+						);
 						return cellIndex === 0 ? `[*${content}*]` : `[${content}]`;
 					})
 					.join(', ')
@@ -740,7 +746,7 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 	const headerCells = node.header
 		.map(
 			(cell: { content: string }) =>
-				`[*${processTableCellContent(cell.content, options.language)}*]`
+				`[*${processTableCellContent(cell.content, options.language, options.genericFunctions)}*]`
 		)
 		.join(', ');
 
@@ -750,7 +756,7 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 			row
 				.map(
 					(cell: { content: string }) =>
-						`[${processTableCellContent(cell.content, options.language)}]`
+						`[${processTableCellContent(cell.content, options.language, options.genericFunctions)}]`
 				)
 				.join(', ')
 		)
@@ -2986,6 +2992,27 @@ function escapeTableCellText(text: string): string {
 }
 
 /**
+ * Texte d'une cellule : `\~` (tilde littéral, cf. `restoreCellContent` du parseur)
+ * s'écrit `\~` en Typst, où un `~` nu serait une espace insécable.
+ */
+function cellText(text: string): string {
+	return text.split('\\~').map(escapeTableCellText).join('\\~');
+}
+
+/**
+ * Formule en ligne `~…~` (syntaxe maison) → maths Typst. Partagée par le
+ * paragraphe et la cellule de tableau : une formule sort pareil aux deux endroits.
+ */
+function customInlineMathToTypst(
+	expression: string,
+	genericFunctions: ResolvedTypstTranspilerOptions['genericFunctions'],
+	language: string | undefined
+): string {
+	const latex = expressionToRawLatex(expression, 'custom', genericFunctions, language);
+	return convertLatexToTypstMath(markDisplayFractions(latex));
+}
+
+/**
  * Process table cell content that may contain inline math
  *
  * Handles mixed content like "Value: $z_i$" by:
@@ -2995,21 +3022,35 @@ function escapeTableCellText(text: string): string {
  * 4. Reassembling with proper Typst math delimiters
  *
  * @param content - Cell content possibly containing inline math
+ * Formule `~…~` (V10, 2026-10-10) : convertie comme dans un paragraphe. `$…$`
+ * est lu d'abord, de gauche à droite : le `~` d'espace insécable à l'intérieur
+ * d'un `$…$` (`1~\unit{h}`) n'ouvre pas de formule. `\~` reste du texte.
+ *
  * @param language - Langue du document (`en` : point décimal ; sinon virgule)
+ * @param genericFunctions - Fonctions déclarées de l'exercice (formules `~…~`)
  * @returns Processed content safe for Typst tables
  */
-export function processTableCellContent(content: string, language?: string): string {
-	// Match inline math: $...$ (non-greedy, doesn't cross line breaks)
-	// Capture: text before, math content, text after
+export function processTableCellContent(
+	content: string,
+	language?: string,
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions']
+): string {
+	// `$…$` ou `~…~` (sans retour à la ligne)
 	const parts: string[] = [];
 	let lastIndex = 0;
-	const mathRegex = /\$([^$\n]+)\$/g;
+	const mathRegex = /\$([^$\n]+)\$|(?<![\\~])~(?!~)([^~\n]+)~(?!~)/g;
 	let match;
 
 	while ((match = mathRegex.exec(content)) !== null) {
 		// Add text before this math segment (escaped)
 		if (match.index > lastIndex) {
-			parts.push(escapeTableCellText(content.slice(lastIndex, match.index)));
+			parts.push(cellText(content.slice(lastIndex, match.index)));
+		}
+
+		if (match[2] !== undefined) {
+			parts.push(`$${customInlineMathToTypst(match[2], genericFunctions, language)}$`);
+			lastIndex = match.index + match[0].length;
+			continue;
 		}
 
 		// Case à remplir seule dans sa formule (`$\text{……}$`, cf. buildSerie) : en
@@ -3034,7 +3075,7 @@ export function processTableCellContent(content: string, language?: string): str
 
 	// Add remaining text after last math segment (escaped)
 	if (lastIndex < content.length) {
-		parts.push(escapeTableCellText(content.slice(lastIndex)));
+		parts.push(cellText(content.slice(lastIndex)));
 	}
 
 	return parts.join('');
