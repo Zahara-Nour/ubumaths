@@ -45,6 +45,7 @@
 		Star
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
@@ -661,7 +662,7 @@
 								class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 							>
 								<MarkdownRenderer
-									content={currentExercise.correction ?? ''}
+									content={detailedCorrection(currentExercise.correction ?? '')}
 									genericFunctions={exerciseFunctions}
 								/>
 							</div>

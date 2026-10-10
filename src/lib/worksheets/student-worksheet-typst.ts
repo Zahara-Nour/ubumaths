@@ -32,6 +32,7 @@ import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import { exerciseBadge } from '$lib/typst/worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
+import { correctionForPrint } from '$lib/questions/correction-detail';
 
 // ============================================================================
 // HELPERS
@@ -241,7 +242,10 @@ ${exerciseContent}]\n`;
 			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
   #block(sticky: true, below: 0.6em)[#${exerciseBadge(number)}${titlePart}]
 `;
-			const correctionAst = parseMarkdown(correction);
+			// Concise ou détaillée selon la fiche (D11), avant Typst
+			const correctionAst = parseMarkdown(
+				correctionForPrint(correction, worksheet.correction_detail)
+			);
 			typst += generateTypst(correctionAst, {
 				includeSetup: false,
 				genericFunctions,

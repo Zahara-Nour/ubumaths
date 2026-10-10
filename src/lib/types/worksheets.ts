@@ -149,12 +149,17 @@ export type NumberingStyle = (typeof NUMBERING_STYLES)[number];
 // CONFIG TYPES (JSONB structures)
 // =============================================================================
 
+/** Correction imprimée par une fiche (ADR 0017, D11) : sans ou avec ses détails */
+export type CorrectionDetail = 'concise' | 'detailed';
+
 export interface WorksheetConfig {
 	/**
 	 * Language the whole worksheet is rendered in: exercise content and PDF
 	 * chrome alike. Absent means French.
 	 */
 	language?: ContentLocale;
+	/** Corrigé imprimé concis ou détaillé ; absent : détaillé */
+	correction_detail?: CorrectionDetail;
 	show_title?: boolean;
 	show_date?: boolean;
 	show_student_name?: boolean;
@@ -671,6 +676,8 @@ export interface StudentWorksheetView {
 	title: string;
 	/** Language of the worksheet, driving both content and PDF chrome. */
 	language?: ContentLocale;
+	/** Corrigé imprimé concis ou détaillé (réglage de la fiche) ; absent : détaillé */
+	correction_detail?: CorrectionDetail;
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
@@ -945,6 +952,8 @@ export function asWorksheetConfig(value: unknown): WorksheetConfig {
 	const config: WorksheetConfig = {};
 
 	if (isContentLocale(raw.language)) config.language = raw.language;
+	if (raw.correction_detail === 'concise' || raw.correction_detail === 'detailed')
+		config.correction_detail = raw.correction_detail;
 
 	for (const flag of [
 		'show_title',

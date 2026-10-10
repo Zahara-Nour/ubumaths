@@ -10,7 +10,10 @@ import { describe, it, expect } from 'vitest';
 import { correctionForPrint } from '$lib/questions/correction-detail';
 import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import { worksheetConfigSchema } from '$lib/server/validation/worksheets';
+import {
+	studentWorksheetDetailResponseSchema,
+	worksheetConfigSchema
+} from '$lib/server/validation/worksheets';
 import { asWorksheetConfig } from '$lib/types/worksheets';
 import { buildSerie } from '../serie-automatismes';
 import type { QuestionTemplate } from '$lib/questions/types';
@@ -27,13 +30,13 @@ const MARKED = [
 	'',
 	'> [!méthode] On isole la variable.',
 	'',
-	'$$\\begin{align} 2x+3&=7 \\\\ \\detail{2x&=9999 \\\\} x&=2 \\end{align}$$',
+	'$$\\begin{align} 2x+3&=7 \\\\ \\detail{2x&=987 \\\\} x&=2 \\end{align}$$',
 	'',
 	'C’est [une équation du premier degré]{.rappel} simple.'
 ].join('\n');
 
 /** Ce que seule la version détaillée contient */
-const DETAILS = ['isole', 'premier degré', '9999'];
+const DETAILS = ['isole', 'premier degré', '987'];
 
 function expectNoRawMarker(typst: string) {
 	expect(typst).not.toContain('detail{');
@@ -246,5 +249,33 @@ describe('série d’automatismes : les marqueurs sont gardés, le choix se fait
 		}).typstContent;
 		expect(concise).not.toContain('doigts');
 		expect(concise).toContain('additionne');
+	});
+});
+
+// La page de l'élève lit l'API : son schéma de réponse retire les clés qu'il ne
+// connaît pas (`validation.data`). Sans ces deux champs, le PDF de l'élève
+// perdait la langue de la fiche (constaté le 2026-10-11) et perdrait le réglage.
+describe('API élève : la langue et le réglage du corrigé arrivent au PDF', () => {
+	it('le schéma de réponse garde language et correction_detail', () => {
+		const response = {
+			assignment_id: '11111111-1111-4111-8111-111111111111',
+			worksheet_id: '22222222-2222-4222-8222-222222222222',
+			title: 'Equations',
+			language: 'en',
+			correction_detail: 'concise',
+			description: null,
+			type: 'worksheet',
+			instructions: null,
+			available_from: '2026-10-11T08:00:00.000Z',
+			closes_at: null,
+			show_corrections: true,
+			class_name: null,
+			read_only: false,
+			exercises: [],
+			sections: []
+		};
+		const parsed = studentWorksheetDetailResponseSchema.parse(response);
+		expect(parsed.language).toBe('en');
+		expect(parsed.correction_detail).toBe('concise');
 	});
 });
