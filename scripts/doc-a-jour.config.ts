@@ -448,10 +448,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
 		{
-			glob: 'src/lib/config/curriculum-levels.ts',
-			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
-		},
-		{
 			glob: 'src/lib/constants/deadlines.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
@@ -513,7 +509,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			glob: 'src/lib/utils/mathlive-fonts.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
-		{ glob: 'src/lib/utils/reorder.ts', note: 'divers (utilitaires, démos, SEO, éditeur riche)' },
 		{
 			glob: 'src/lib/utils/sanitize-configs.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'

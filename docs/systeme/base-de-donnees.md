@@ -135,9 +135,9 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
 - **`curriculum_points` est le grain unique** : couverture du programme, tagging des ressources et
   acquisition de l'élève s'y accrochent. `code` (`1SPE-047`, `6-012`), attribué par trigger, est le seul
   identifiant lisible et stable d'un environnement à l'autre. Un point se retire par `archived_at`, pas
-  par DELETE : la route `DELETE /api/teacher/curriculum/points/[pointId]` répond **409** dès qu'une
-  référence existe (comptage par `curriculum_point_reference_counts`, en DEFINER, pour voir aussi
-  l'historique des élèves).
+  par DELETE : l'application n'expose plus de suppression (C5 étape 3) ; seuls le libellé et
+  l'archivage d'un point **neuf** se modifient (PATCH `/api/teacher/curriculum/points/[pointId]`).
+  `curriculum_point_reference_counts` (DEFINER) reste en base, sans appelant.
 - **Cible en cours (ADR 0019, 0020)** : `classification_nodes` (branche > notion > sous-notion),
   `source_types`, `exercise_classifications`, `grade_predecessors` (parcours, `grade_ancestors()`), et
   sur `curriculum_points` les colonnes `node_id`, `grade`, `rubrique`. `objective_id` est devenu
@@ -152,9 +152,9 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   recalcule les caches (`update_student_point_state`, `update_student_observable_state` →
   `update_student_competence_level`) ; les caches ne s'écrivent que par lui.
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
-  dernier (triggers `*_place_last`) ; réordonner passe par `reorder_curriculum_points` / `_themes` /
-  `_objectives`, qui renumérotent 1..N et refusent une liste incomplète. Ces trois-là sont en
-  **INVOKER** pour que la RLS s'applique à l'écriture.
+  dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
+  incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
+  les points neufs suivent l'ordre du BO, fixé par migration.
 
 Accès : arbre et compétences lisibles par tout compte connecté (et une partie par `anon`, § 1) ;
 arbre écrit par le professeur / admin ; compétences et `classification_nodes` écrits par l'admin.
@@ -162,8 +162,8 @@ L'élève lit **ses** tentatives et **ses** caches ; le professeur ceux de tous 
 (`is_my_student`). L'élève insère ses tentatives `auto`/`srs`/`student_self` ; le professeur insère les
 `teacher`.
 
-Code : `src/lib/server/curriculum.ts` (insertion d'un point : `pointInsert()`, seul endroit où l'on
-contourne le `code` exigé par le type généré), `src/lib/server/curriculum-coverage.ts`,
+Code : `src/lib/server/curriculum.ts`, `src/lib/server/programme-tree.ts` (arbre branche > notion >
+points neufs d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 `src/lib/server/competences/`, `src/lib/server/stats/`, `src/routes/api/teacher/curriculum`,
 `src/routes/(protected)/dashboard/teacher/programme`. Types : `SkillAttempt` (discriminé, à préférer à
 `Tables<'skill_attempts'>`) dans `src/lib/types/database-helpers.ts`, `MissingForNext` dans
@@ -444,7 +444,8 @@ d'écrire le compte d'un autre.
   contrainte.
 - **Deux générations de seeds du programme.** Les anciens (`20260621160000_seed_curriculum_6e`,
   `20260830090000_seed_curriculum_1re_spe`) amorcent un niveau vide, une fois (garde
-  `IF EXISTS … THEN RETURN`) ; ensuite la page `/dashboard/teacher/programme` fait foi. Les nouveaux
+  `IF EXISTS … THEN RETURN`) ; ensuite la page `/dashboard/teacher/programme` faisait foi, jusqu'à la
+  C5 étape 3 : elle n'affiche plus que les points neufs, que seules les migrations créent. Les nouveaux
   (`202610*_seed_curriculum_points_*`, points rattachés à l'arbre, ADR 0020) insèrent des points neufs
   aux codes distincts (`6-101`… à côté des anciens `6-001`…) et lèvent une exception si le compte
   n'y est pas. Leur rollback (un `delete`) devient **destructif** dès qu'un élève ou un modèle s'accroche

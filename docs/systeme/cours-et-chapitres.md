@@ -1,6 +1,6 @@
 ---
 couvre:
-  - 'src/lib/server/{chapter*,chapters*,class-sessions,curriculum*,journal*}.ts'
+  - 'src/lib/server/{chapter*,chapters*,class-sessions,curriculum*,journal*,programme-tree}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
   - 'src/lib/components/{cours,journal,progression}/**'
@@ -8,7 +8,7 @@ couvre:
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
   - 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
-  - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching}.ts'
+  - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree}.ts'
   - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
@@ -122,14 +122,24 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 
 | Fichier                                             | Rôle                                                                                                                                                                  |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/curriculum.ts`                      | `getCurriculumTree` (thème → objectif → point, archivés exclus sauf demande), colonnes partagées, `curriculumDbError` (erreur Postgres → HTTP).                       |
+| `src/lib/server/curriculum.ts`                      | `getCurriculumTree` (thème → objectif → point, ANCIENNE génération, archivés exclus sauf demande), colonnes partagées, `curriculumDbError` (erreur Postgres → HTTP).  |
+| `src/lib/server/programme-tree.ts`                  | `getProgrammeTree` : points NEUFS d'un niveau (`node_id` non nul) et leurs nœuds, lus explicitement (pas de `!inner`) ; `PROGRAMME_POINT_COLS`.                       |
+| `src/lib/utils/programme-tree.ts`                   | `buildProgrammeTree` (branche > notion > points ; ordre de l'arbre `position` puis nom, ordre du BO `display_order`), `hideArchivedPoints`, `countArchivedPoints`.    |
 | `src/lib/server/curriculum-coverage.ts`             | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints`.                                                               |
 | `src/lib/server/curriculum-grade.ts`                | `keepLinksOfGrade` : une carte rattachée à plusieurs niveaux ne compte que pour celui qu'on lit.                                                                      |
 | `src/lib/server/curriculum-generation.ts`           | `isLegacyPoint` : filtre provisoire de la C5 (points d'ancienne génération, rattachés à un objectif) — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md). |
 | `src/lib/server/progression/student-progression.ts` | Source **unique** de la progression élève : `getObjectivesProgression`, `getCompetencesProgression`, `aggregateObjectiveStats`.                                       |
 
-- `api/teacher/curriculum/{themes,objectives,points}/**` : édition de l'arbre depuis la page
-  `dashboard/teacher/programme/` (réordonnancement par RPC, ex. `reorder_curriculum_themes`).
+- `dashboard/teacher/programme/` : **consultation** du programme d'un niveau dans la génération
+  neuve (ADR 0020, C5 étape 3) — branche > notion > points du niveau, dans l'ordre du BO ; seules les
+  branches et notions qui portent un point du niveau apparaissent (un point sur une sous-notion compte
+  pour sa notion, dont il affiche le nom). Les anciens points n'y apparaissent jamais.
+- `api/teacher/curriculum/points/[pointId]` : **PATCH** `{ name?, archived? }` seulement (objet
+  strict : tout autre champ → 400 ; libellé 1 à 500 caractères). Un ancien point (rattaché à un
+  objectif) → **409** ; l'écriture filtre `node_id` non nul et vérifie la ligne rendue (RLS
+  silencieuse → 404). Créer, supprimer, déplacer ou réordonner un point passe par une migration (le
+  BO fait foi) : les routes `themes/**`, `objectives/**`, `points` (GET/POST), `points/reorder` et le
+  DELETE d'un point ont été retirés à l'étape 3.
 - `api/teacher/curriculum/{activities,coverage}` : activités et couverture **manuelle** d'une
   séance (éditeur de séance).
 - `api/teacher/curriculum/exercise-tags` et `template-tags` : rattacher un exercice ou un modèle

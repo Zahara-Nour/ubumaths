@@ -1,14 +1,14 @@
 /**
- * Integration Tests: Curriculum tracking — CRUD API (Phase 1)
- * ===========================================================
+ * Integration Tests: Programme — génération neuve des points (C5, étape 3)
+ * =======================================================================
  *
- * Exercises the curriculum tree endpoints (Thème → Item → Point):
- *   - /api/teacher/curriculum/themes            (GET, POST)
- *   - /api/teacher/curriculum/themes/[themeId]  (PATCH, DELETE)
- *   - /api/teacher/curriculum/items             (GET, POST)
- *   - /api/teacher/curriculum/items/[objectiveId]    (PATCH, DELETE)
- *   - /api/teacher/curriculum/points            (GET, POST)
- *   - /api/teacher/curriculum/points/[pointId]  (PATCH, DELETE)
+ * Ce qui reste de l'API d'édition du programme après la bascule :
+ *   - getProgrammeTree (lecture branche > notion > points d'un niveau) ;
+ *   - load de la page Programme (rôles) ;
+ *   - PATCH /api/teacher/curriculum/points/[pointId] : renommer, archiver.
+ *
+ * Les routes thèmes / objectifs, la création, la suppression et le
+ * réordonnancement des points ont été retirés : leurs tests avec.
  *
  * Requires local Supabase (`pnpm db:start` + `pnpm db:reset`).
  *
@@ -19,33 +19,9 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vites
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
-import {
-	GET as themesGET,
-	POST as themesPOST
-} from '../../src/routes/api/teacher/curriculum/themes/+server';
-import {
-	PATCH as themePATCH,
-	DELETE as themeDELETE
-} from '../../src/routes/api/teacher/curriculum/themes/[themeId]/+server';
-import {
-	GET as itemsGET,
-	POST as itemsPOST
-} from '../../src/routes/api/teacher/curriculum/objectives/+server';
-import {
-	PATCH as itemPATCH,
-	DELETE as itemDELETE
-} from '../../src/routes/api/teacher/curriculum/objectives/[objectiveId]/+server';
-import {
-	GET as pointsGET,
-	POST as pointsPOST
-} from '../../src/routes/api/teacher/curriculum/points/+server';
-import {
-	PATCH as pointPATCH,
-	DELETE as pointDELETE
-} from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
-import { POST as reorderPOST } from '../../src/routes/api/teacher/curriculum/points/reorder/+server';
-import { POST as reorderThemesPOST } from '../../src/routes/api/teacher/curriculum/themes/reorder/+server';
-import { POST as reorderObjectivesPOST } from '../../src/routes/api/teacher/curriculum/objectives/reorder/+server';
+import { PATCH as pointPATCH } from '../../src/routes/api/teacher/curriculum/points/[pointId]/+server';
+import { load as programmeLoad } from '../../src/routes/(protected)/dashboard/teacher/programme/+page.server';
+import { getProgrammeTree } from '$lib/server/programme-tree';
 
 import {
 	createServiceRoleClient,
@@ -53,78 +29,117 @@ import {
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
 
-// Grade dédié aux fixtures : les seeds du programme peuplent la 6ᵉ et la 1ʳᵉ spé, donc
-// poser les tests sur '5' les isole du référentiel réel (et de sa purge).
+// Les seeds peuplent déjà la 5ᵉ en points neufs : les fixtures vivent dans des
+// branches à elles (nom aléatoire, position haute) et les assertions s'y
+// restreignent.
 const TEST_GRADE = '5';
-const TEST_GRADE_ALT = '4';
 
 // ---------------------------------------------------------------------------
 // Shared service client + cleanup
 // ---------------------------------------------------------------------------
 
 let service: SupabaseClient<Database>;
+const createdNodeIds: string[] = [];
 
 beforeAll(() => {
 	service = createServiceRoleClient();
 });
 
 afterAll(async () => {
-	await cleanupCurriculum();
+	await cleanup();
 	await cleanupCompetenceTestData();
 });
 
 beforeEach(async () => {
-	await cleanupCurriculum();
+	await cleanup();
 	await cleanupCompetenceTestData();
 });
 
-async function cleanupCurriculum() {
-	await service
-		.from('curriculum_themes' as never)
-		.delete()
-		.in('grade', [TEST_GRADE, TEST_GRADE_ALT]);
+async function cleanup() {
+	// Anciens points : la cascade depuis le thème les emporte.
+	await service.from('curriculum_themes').delete().eq('grade', TEST_GRADE).like('name', 'TEST %');
+	if (createdNodeIds.length === 0) return;
+	await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
+	// Enfants d'abord : parent_id est en RESTRICT.
+	for (const kind of ['subnotion', 'notion', 'branch']) {
+		await service.from('classification_nodes').delete().in('id', createdNodeIds).eq('kind', kind);
+	}
+	createdNodeIds.length = 0;
 }
 
 // ---------------------------------------------------------------------------
-// Service-role fixtures (parents created directly to keep tests focused)
+// Service-role fixtures
 // ---------------------------------------------------------------------------
 
-async function svcTheme(grade = TEST_GRADE, name?: string): Promise<{ id: string }> {
+function suffix(): string {
+	return crypto.randomUUID().slice(0, 8);
+}
+
+async function svcNode(
+	kind: 'branch' | 'notion' | 'subnotion',
+	name: string,
+	parentId: string | null,
+	position = 0
+): Promise<string> {
 	const { data, error } = await service
-		.from('curriculum_themes' as never)
-		.insert({ grade, name: name ?? `Thème ${crypto.randomUUID().slice(0, 8)}` } as never)
+		.from('classification_nodes')
+		.insert({ kind, name: `${name} ${suffix()}`, parent_id: parentId, position })
 		.select('id')
 		.single();
 	if (error) throw new Error(error.message);
-	return data as { id: string };
+	createdNodeIds.push(data.id);
+	return data.id;
 }
 
-async function svcItem(themeId: string, name?: string): Promise<{ id: string }> {
+async function svcNewPoint(
+	nodeId: string,
+	displayOrder: number,
+	extra: { name?: string; archived?: boolean } = {}
+): Promise<{ id: string; code: string }> {
+	const code = `TST-${suffix()}`;
 	const { data, error } = await service
-		.from('curriculum_objectives' as never)
-		.insert({ theme_id: themeId, name: name ?? `Item ${crypto.randomUUID().slice(0, 8)}` } as never)
-		.select('id')
-		.single();
-	if (error) throw new Error(error.message);
-	return data as { id: string };
-}
-
-async function svcPoint(objectiveId: string, name?: string): Promise<{ id: string }> {
-	const { data, error } = await service
-		.from('curriculum_points' as never)
+		.from('curriculum_points')
 		.insert({
-			objective_id: objectiveId,
-			name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}`,
-			kind: 'savoir_faire'
-		} as never)
-		.select('id')
+			code,
+			name: extra.name ?? `Point ${code}`,
+			kind: 'savoir_faire',
+			grade: TEST_GRADE,
+			display_order: displayOrder,
+			node_id: nodeId,
+			archived_at: extra.archived ? new Date().toISOString() : null
+		})
+		.select('id, code')
 		.single();
 	if (error) throw new Error(error.message);
-	return data as { id: string };
+	return data;
+}
+
+/** Un point de l'ANCIENNE génération (thème → objectif → point). */
+async function svcOldPoint(): Promise<{ id: string; name: string; code: string }> {
+	const { data: theme, error: themeErr } = await service
+		.from('curriculum_themes')
+		.insert({ grade: TEST_GRADE, name: `TEST ${suffix()}` })
+		.select('id')
+		.single();
+	if (themeErr) throw new Error(themeErr.message);
+	const { data: objective, error: objErr } = await service
+		.from('curriculum_objectives')
+		.insert({ theme_id: theme.id, name: `Objectif ${suffix()}` })
+		.select('id')
+		.single();
+	if (objErr) throw new Error(objErr.message);
+	// `code` est attribué par le trigger pour un ancien point.
+	const { data: point, error: pointErr } = await service
+		.from('curriculum_points')
+		.insert({ objective_id: objective.id, name: 'Ancien point', kind: 'savoir_faire' } as never)
+		.select('id, name, code')
+		.single();
+	if (pointErr) throw new Error(pointErr.message);
+	return point as { id: string; name: string; code: string };
 }
 
 // ---------------------------------------------------------------------------
-// Locals + request/url helpers
+// Locals + request helpers
 // ---------------------------------------------------------------------------
 
 function buildLocals(userOrNull: User | null): App.Locals {
@@ -137,18 +152,16 @@ function buildLocals(userOrNull: User | null): App.Locals {
 	} as unknown as App.Locals;
 }
 
-function req(body: unknown, method: 'POST' | 'PATCH' = 'POST'): Request {
-	return new Request('http://localhost/api/teacher/curriculum', {
-		method,
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
-	});
-}
-
-function urlWith(query: Record<string, string>): URL {
-	const u = new URL('http://localhost/api/teacher/curriculum');
-	for (const [k, v] of Object.entries(query)) u.searchParams.set(k, v);
-	return u;
+function patch(pointId: string, body: unknown, locals: App.Locals) {
+	return pointPATCH({
+		params: { pointId },
+		request: new Request('http://localhost/api/teacher/curriculum/points', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body)
+		}),
+		locals
+	} as never);
 }
 
 async function teacherUser(): Promise<User> {
@@ -156,704 +169,155 @@ async function teacherUser(): Promise<User> {
 	return { id: t.id } as User;
 }
 
+async function readPoint(id: string) {
+	const { data, error } = await service
+		.from('curriculum_points')
+		.select('name, code, archived_at')
+		.eq('id', id)
+		.single();
+	if (error) throw new Error(error.message);
+	return data;
+}
+
 // ============================================================================
-// Thèmes
+// Lecture : getProgrammeTree
 // ============================================================================
 
-describe('POST /api/teacher/curriculum/themes', () => {
-	it('creates a theme and returns 201', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const res = await themesPOST({
-			request: req({ grade: TEST_GRADE, name: 'Calcul' }),
-			locals
-		} as never);
-		expect(res.status).toBe(201);
-		const data = await res.json();
-		// `display_order: 1` et non 0 : un thème créé sans position se place en
-		// dernier (trigger `curriculum_themes_place_last`). Tout laisser à 0
-		// rendait le réordonnancement impossible — échanger 0 contre 0 ne fait rien.
-		expect(data.theme).toMatchObject({ grade: TEST_GRADE, name: 'Calcul', display_order: 1 });
+describe('getProgrammeTree — génération neuve', () => {
+	it('range branche > notion > points dans l’ordre de l’arbre et du BO', async () => {
+		const b1 = await svcNode('branch', 'TEST Algèbre', null, 9001);
+		const b2 = await svcNode('branch', 'TEST Analyse', null, 9000);
+		const nA = await svcNode('notion', 'Équations', b1, 2);
+		const nB = await svcNode('notion', 'Inéquations', b1, 1);
+		const sub = await svcNode('subnotion', 'résoudre', nA, 0);
+		const nC = await svcNode('notion', 'Suites', b2, 0);
+
+		const p3 = await svcNewPoint(nA, 30);
+		const p1 = await svcNewPoint(sub, 10);
+		const p2 = await svcNewPoint(nB, 20);
+		const p4 = await svcNewPoint(nC, 5);
+
+		const tree = (await getProgrammeTree(service as never, TEST_GRADE)).filter(
+			(b) => b.id === b1 || b.id === b2
+		);
+
+		expect(tree.map((b) => b.id)).toEqual([b2, b1]);
+		const algebre = tree[1];
+		expect(algebre.notions.map((n) => n.id)).toEqual([nB, nA]);
+		expect(algebre.notions[1].points.map((p) => p.id)).toEqual([p1.id, p3.id]);
+		expect(algebre.notions[1].points[0].subnotionName).toMatch(/^résoudre /);
+		expect(algebre.notions[0].points.map((p) => p.id)).toEqual([p2.id]);
+		expect(tree[0].notions[0].points.map((p) => p.id)).toEqual([p4.id]);
 	});
 
-	it('returns 400 for an invalid grade code', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(await teacherUser());
-		const res = await themesPOST({ request: req({ grade: '6e', name: 'X' }), locals } as never);
-		expect(res.status).toBe(400);
+	it('n’affiche jamais un ancien point', async () => {
+		const old = await svcOldPoint();
+		const tree = await getProgrammeTree(service as never, TEST_GRADE, { includeArchived: true });
+
+		const ids = tree.flatMap((b) => b.notions.flatMap((n) => n.points.map((p) => p.id)));
+		expect(ids.length).toBeGreaterThan(0);
+		expect(ids).not.toContain(old.id);
 	});
 
-	it('returns 400 for a blank name', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(await teacherUser());
-		const res = await themesPOST({
-			request: req({ grade: TEST_GRADE, name: '   ' }),
-			locals
-		} as never);
-		expect(res.status).toBe(400);
-	});
+	it('exclut les archivés par défaut, les rend sur demande', async () => {
+		const branch = await svcNode('branch', 'TEST Archives', null, 9002);
+		const notion = await svcNode('notion', 'Notion', branch, 0);
+		const visible = await svcNewPoint(notion, 1);
+		const archived = await svcNewPoint(notion, 2, { archived: true });
 
-	it('returns 409 for a duplicate (grade, name)', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(await teacherUser());
-		await themesPOST({ request: req({ grade: TEST_GRADE, name: 'Calcul' }), locals } as never);
-		const res = await themesPOST({
-			request: req({ grade: TEST_GRADE, name: 'Calcul' }),
-			locals
-		} as never);
-		expect(res.status).toBe(409);
-	});
+		const pointsOf = async (includeArchived: boolean) =>
+			(await getProgrammeTree(service as never, TEST_GRADE, { includeArchived }))
+				.filter((b) => b.id === branch)
+				.flatMap((b) => b.notions.flatMap((n) => n.points.map((p) => p.id)));
 
-	it('rejects 401 when unauthenticated', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(null);
-		await expect(
-			themesPOST({ request: req({ grade: TEST_GRADE, name: 'X' }), locals } as never)
-		).rejects.toMatchObject({ status: 401 });
+		expect(await pointsOf(false)).toEqual([visible.id]);
+		expect(await pointsOf(true)).toEqual([visible.id, archived.id]);
 	});
+});
 
-	it('rejects 403 for a student', async () => {
-		expect.assertions(1);
+// ============================================================================
+// Page Programme : rôles
+// ============================================================================
+
+describe('load de la page Programme', () => {
+	it('refuse un élève (403)', async () => {
 		const s = await TestData.profile().withRole('student').create();
-		const locals = buildLocals({ id: s.id } as User);
 		await expect(
-			themesPOST({ request: req({ grade: TEST_GRADE, name: 'X' }), locals } as never)
+			programmeLoad({
+				locals: buildLocals({ id: s.id } as User),
+				url: new URL('http://localhost/dashboard/teacher/programme?grade=5')
+			} as never)
 		).rejects.toMatchObject({ status: 403 });
 	});
 });
 
-describe('GET /api/teacher/curriculum/themes', () => {
-	// L'ordre de CRÉATION fait foi, pas l'alphabet : chaque thème se place en
-	// dernier, donc Beta créé avant Alpha reste devant. Le tri par nom ne sert
-	// plus que de départage, et il n'y a plus d'égalité à départager.
-	it('liste les thèmes d’un niveau dans leur ordre d’affichage', async () => {
-		expect.assertions(4);
-		await svcTheme(TEST_GRADE, 'Beta');
-		await svcTheme(TEST_GRADE, 'Alpha');
-		await svcTheme(TEST_GRADE_ALT, 'Other grade');
+// ============================================================================
+// PATCH /api/teacher/curriculum/points/[pointId]
+// ============================================================================
+
+describe('PATCH /points/[pointId] — génération neuve', () => {
+	it('renomme : le libellé change, jamais le code', async () => {
+		const branch = await svcNode('branch', 'TEST Renommer', null, 9003);
+		const notion = await svcNode('notion', 'Notion', branch, 0);
+		const point = await svcNewPoint(notion, 1);
 		const locals = buildLocals(await teacherUser());
 
-		const res = await themesGET({ url: urlWith({ grade: TEST_GRADE }), locals } as never);
+		const res = await patch(point.id, { name: 'Nouveau libellé' }, locals);
+
 		expect(res.status).toBe(200);
-		const data = await res.json();
-		expect(data.themes).toHaveLength(2);
-		expect(data.themes.map((t: { name: string }) => t.name)).toEqual(['Beta', 'Alpha']);
-		expect(data.themes.map((t: { display_order: number }) => t.display_order)).toEqual([1, 2]);
+		expect(await readPoint(point.id)).toMatchObject({ name: 'Nouveau libellé', code: point.code });
 	});
 
-	it('returns 400 when grade query param is missing/invalid', async () => {
-		expect.assertions(1);
+	it('archive puis restaure', async () => {
+		const branch = await svcNode('branch', 'TEST Archiver', null, 9004);
+		const notion = await svcNode('notion', 'Notion', branch, 0);
+		const point = await svcNewPoint(notion, 1);
 		const locals = buildLocals(await teacherUser());
-		const res = await themesGET({ url: urlWith({}), locals } as never);
-		expect(res.status).toBe(400);
-	});
-});
 
-describe('PATCH/DELETE /api/teacher/curriculum/themes/[themeId]', () => {
-	it('renames a theme', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE, 'Old');
-		const locals = buildLocals(await teacherUser());
-		const res = await themePATCH({
-			request: req({ name: 'New' }, 'PATCH'),
-			locals,
-			params: { themeId: theme.id }
-		} as never);
-		expect(res.status).toBe(200);
-		const data = await res.json();
-		expect(data.theme.name).toBe('New');
+		expect((await patch(point.id, { archived: true }, locals)).status).toBe(200);
+		expect((await readPoint(point.id)).archived_at).not.toBeNull();
+
+		expect((await patch(point.id, { archived: false }, locals)).status).toBe(200);
+		expect((await readPoint(point.id)).archived_at).toBeNull();
 	});
 
-	it('returns 404 when patching a missing theme', async () => {
-		expect.assertions(1);
+	it('refuse 409 un ANCIEN point, sans rien écrire', async () => {
+		const old = await svcOldPoint();
 		const locals = buildLocals(await teacherUser());
-		const res = await themePATCH({
-			request: req({ name: 'X' }, 'PATCH'),
-			locals,
-			params: { themeId: crypto.randomUUID() }
-		} as never);
+
+		const renamed = await patch(old.id, { name: 'Piraté' }, locals);
+		const archived = await patch(old.id, { archived: true }, locals);
+
+		expect(renamed.status).toBe(409);
+		expect(archived.status).toBe(409);
+		expect(await readPoint(old.id)).toMatchObject({ name: old.name, archived_at: null });
+	});
+
+	it('404 pour un point inconnu', async () => {
+		const locals = buildLocals(await teacherUser());
+		const res = await patch(crypto.randomUUID(), { name: 'X' }, locals);
 		expect(res.status).toBe(404);
 	});
 
-	it('returns 400 when PATCH body has no updatable fields', async () => {
-		expect.assertions(1);
-		const theme = await svcTheme(TEST_GRADE);
-		const locals = buildLocals(await teacherUser());
-		const res = await themePATCH({
-			request: req({}, 'PATCH'),
-			locals,
-			params: { themeId: theme.id }
-		} as never);
-		expect(res.status).toBe(400);
-	});
-
-	it('deletes a theme and cascades to items and points', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id);
-		const point = await svcPoint(item.id);
+	it('400 pour un libellé vide ou un champ retiré', async () => {
+		const branch = await svcNode('branch', 'TEST Refus', null, 9005);
+		const notion = await svcNode('notion', 'Notion', branch, 0);
+		const point = await svcNewPoint(notion, 1, { name: 'Intact' });
 		const locals = buildLocals(await teacherUser());
 
-		const res = await themeDELETE({ locals, params: { themeId: theme.id } } as never);
-		expect(res.status).toBe(200);
-
-		const { data: rows } = await service
-			.from('curriculum_points' as never)
-			.select('id')
-			.eq('id', point.id);
-		expect(rows ?? []).toHaveLength(0);
-	});
-});
-
-// ============================================================================
-// Items
-// ============================================================================
-
-describe('Items CRUD', () => {
-	it('creates an item under a theme (201)', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE);
-		const locals = buildLocals(await teacherUser());
-		const res = await itemsPOST({
-			request: req({ theme_id: theme.id, name: 'Fractions' }),
-			locals
-		} as never);
-		expect(res.status).toBe(201);
-		const data = await res.json();
-		expect(data.item).toMatchObject({ theme_id: theme.id, name: 'Fractions' });
-	});
-
-	it('returns 400 when theme_id does not exist (FK violation)', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(await teacherUser());
-		const res = await itemsPOST({
-			request: req({ theme_id: crypto.randomUUID(), name: 'Orphan' }),
-			locals
-		} as never);
-		expect(res.status).toBe(400);
-	});
-
-	it('returns 409 for a duplicate (theme_id, name)', async () => {
-		expect.assertions(1);
-		const theme = await svcTheme(TEST_GRADE);
-		await svcItem(theme.id, 'Fractions');
-		const locals = buildLocals(await teacherUser());
-		const res = await itemsPOST({
-			request: req({ theme_id: theme.id, name: 'Fractions' }),
-			locals
-		} as never);
-		expect(res.status).toBe(409);
-	});
-
-	it('lists items of a theme', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE);
-		await svcItem(theme.id, 'Fractions');
-		await svcItem(theme.id, 'Décimaux');
-		const locals = buildLocals(await teacherUser());
-		const res = await itemsGET({ url: urlWith({ theme_id: theme.id }), locals } as never);
-		expect(res.status).toBe(200);
-		const data = await res.json();
-		expect(data.items).toHaveLength(2);
-	});
-
-	it('deletes an item', async () => {
-		expect.assertions(1);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id);
-		const locals = buildLocals(await teacherUser());
-		const res = await itemDELETE({ locals, params: { objectiveId: item.id } } as never);
-		expect(res.status).toBe(200);
-	});
-
-	it('renames an item', async () => {
-		expect.assertions(1);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id, 'Old');
-		const locals = buildLocals(await teacherUser());
-		const res = await itemPATCH({
-			request: req({ name: 'New' }, 'PATCH'),
-			locals,
-			params: { objectiveId: item.id }
-		} as never);
-		const data = await res.json();
-		expect(data.item.name).toBe('New');
-	});
-});
-
-// ============================================================================
-// Points
-// ============================================================================
-
-describe('Points CRUD', () => {
-	it('creates a point with a kind (201)', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id);
-		const locals = buildLocals(await teacherUser());
-		const res = await pointsPOST({
-			request: req({
-				objective_id: item.id,
-				name: 'Additionner deux fractions',
-				kind: 'savoir_faire'
-			}),
-			locals
-		} as never);
-		expect(res.status).toBe(201);
-		const data = await res.json();
-		expect(data.point).toMatchObject({ name: 'Additionner deux fractions', kind: 'savoir_faire' });
-	});
-
-	it('returns 400 for an invalid kind', async () => {
-		expect.assertions(1);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id);
-		const locals = buildLocals(await teacherUser());
-		const res = await pointsPOST({
-			request: req({ objective_id: item.id, name: 'X', kind: 'competence' }),
-			locals
-		} as never);
-		expect(res.status).toBe(400);
-	});
-
-	it('archives a point (sets archived_at)', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id);
-		const point = await svcPoint(item.id);
-		const locals = buildLocals(await teacherUser());
-		const res = await pointPATCH({
-			request: req({ archived: true }, 'PATCH'),
-			locals,
-			params: { pointId: point.id }
-		} as never);
-		expect(res.status).toBe(200);
-		const data = await res.json();
-		expect(data.point.archived_at).not.toBeNull();
-	});
-
-	it('lists points of an item', async () => {
-		expect.assertions(2);
-		const theme = await svcTheme(TEST_GRADE);
-		const item = await svcItem(theme.id);
-		await svcPoint(item.id, 'A');
-		await svcPoint(item.id, 'B');
-		const locals = buildLocals(await teacherUser());
-		const res = await pointsGET({ url: urlWith({ objective_id: item.id }), locals } as never);
-		expect(res.status).toBe(200);
-		const data = await res.json();
-		expect(data.points).toHaveLength(2);
-	});
-});
-
-// ============================================================================
-// Code, déplacement, garde de suppression
-// ============================================================================
-// Depuis le 2026-08-31 la page Programme fait foi sur le référentiel : le
-// markdown n'amorce plus qu'un niveau vide. Ces trois propriétés sont ce qui
-// rend cette bascule sûre.
-
-describe('Points — code attribué par la base', () => {
-	it('donne au point créé un code de la série du niveau', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-
-		const res = await pointsPOST({
-			request: req({ objective_id: item.id, name: 'Premier point', kind: 'savoir_faire' }),
-			locals
-		} as never);
-		const body = await res.json();
-
-		expect(res.status).toBe(201);
-		// Préfixe = le grade sans underscore ; TEST_GRADE vaut '5'.
-		expect(body.point.code).toMatch(/^5-\d{3}$/);
-	});
-
-	it('donne au suivant le numéro d’après, sans trou ni collision', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-
-		const first = await (
-			await pointsPOST({
-				request: req({ objective_id: item.id, name: 'Point A', kind: 'connaissance' }),
-				locals
-			} as never)
-		).json();
-		const second = await (
-			await pointsPOST({
-				request: req({ objective_id: item.id, name: 'Point B', kind: 'connaissance' }),
-				locals
-			} as never)
-		).json();
-
-		const n = (code: string) => Number(code.split('-')[1]);
-		expect(n(second.point.code)).toBe(n(first.point.code) + 1);
-	});
-
-	it('honore exigence, régime et rang à la création', async () => {
-		expect.assertions(3);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-
-		const res = await pointsPOST({
-			request: req({
-				objective_id: item.id,
-				name: 'Point paramétré',
-				kind: 'savoir_faire',
-				exigence: 'approfondissement',
-				regime_acquisition: 'fluence',
-				rang: 3
-			}),
-			locals
-		} as never);
-		const { point } = await res.json();
-
-		expect(point.exigence).toBe('approfondissement');
-		expect(point.regime_acquisition).toBe('fluence');
-		expect(point.rang).toBe(3);
-	});
-});
-
-describe('PATCH /points/[pointId] — déplacement', () => {
-	it('déplace un point sous un autre objectif en lui gardant son code', async () => {
-		expect.assertions(3);
-		const locals = buildLocals(await teacherUser());
-		const theme = await svcTheme();
-		const from = await svcItem(theme.id, 'Objectif de départ');
-		const to = await svcItem(theme.id, 'Objectif d’arrivée');
-
-		const created = await (
-			await pointsPOST({
-				request: req({ objective_id: from.id, name: 'Point voyageur', kind: 'savoir_faire' }),
-				locals
-			} as never)
-		).json();
-
-		const res = await pointPATCH({
-			params: { pointId: created.point.id },
-			request: req({ objective_id: to.id }, 'PATCH'),
-			locals
-		} as never);
-		const { point } = await res.json();
-
-		expect(res.status).toBe(200);
-		expect(point.objective_id).toBe(to.id);
-		// Le code survit au déplacement : c'est l'identité du point, pas sa place.
-		expect(point.code).toBe(created.point.code);
-	});
-});
-
-describe('DELETE /points/[pointId] — garde de suppression', () => {
-	it('supprime un point que rien ne référence', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const point = await svcPoint((await svcItem((await svcTheme()).id)).id);
-
-		const res = await pointDELETE({ params: { pointId: point.id }, locals } as never);
-		expect(res.status).toBe(200);
-
-		const { data } = await service
-			.from('curriculum_points' as never)
-			.select('id')
-			.eq('id', point.id)
-			.maybeSingle();
-		expect(data).toBeNull();
-	});
-
-	// Cinq des six clés étrangères vers curriculum_points sont en CASCADE : sans
-	// cette garde, un clic sur « Supprimer » effacerait sans un mot la couverture
-	// du cahier de texte et l'acquisition des élèves attachées au point.
-	it('refuse 409 quand quelque chose y est accroché, et dit quoi', async () => {
-		expect.assertions(4);
-		const locals = buildLocals(await teacherUser());
-		const point = await svcPoint((await svcItem((await svcTheme()).id)).id);
-
-		// Le garde de parcours (schéma cible, 2026-10-07) exige un point AVEC grade ;
-		// l'auto-référence (point de 5e dans la liste de 5e) est permise (C13).
-		const { error: gradeErr } = await service
-			.from('curriculum_points')
-			.update({ grade: TEST_GRADE } as never)
-			.eq('id', point.id);
-		if (gradeErr) throw new Error(`décor : grade du point refusé : ${gradeErr.message}`);
-
-		// La référence la moins coûteuse à fabriquer ; la garde ne distingue pas.
-		const { error: linkErr } = await service
-			.from('curriculum_point_automatismes' as never)
-			.insert({ point_id: point.id, grade: TEST_GRADE } as never);
-		expect(linkErr).toBeNull();
-
-		const res = await pointDELETE({ params: { pointId: point.id }, locals } as never);
-		const body = await res.json();
-
-		expect(res.status).toBe(409);
-		expect(body.references).toEqual({ automatisme_lists: 1 });
-		expect(body.error).toMatch(/archivez-le plutôt/);
-	});
-});
-
-// ============================================================================
-// Position d'affichage
-// ============================================================================
-// `display_order` est local à l'objectif et sans rapport avec le `code` : un
-// point déplacé garde le sien. Si les deux séries coïncident sur le seed, c'est
-// seulement qu'il a créé les points dans l'ordre du BO.
-
-/** Les points d'un objectif, dans l'ordre affiché. */
-async function orderOf(objectiveId: string) {
-	const { data } = await service
-		.from('curriculum_points' as never)
-		.select('id, code, display_order')
-		.eq('objective_id', objectiveId)
-		.order('display_order', { ascending: true });
-	return (data ?? []) as { id: string; code: string; display_order: number }[];
-}
-
-describe('Points — placement à la création', () => {
-	it('place un nouveau point EN DERNIER, pas en premier', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-
-		for (const name of ['Premier', 'Deuxième', 'Troisième']) {
-			await pointsPOST({
-				request: req({ objective_id: item.id, name, kind: 'savoir_faire' }),
-				locals
-			} as never);
-		}
-
-		const rows = await orderOf(item.id);
-		// L'API posait `display_order = 0` faute de valeur, alors que les points
-		// seedés commencent à 1 : chaque nouveau passait devant tout le monde.
-		expect(rows.map((r) => r.display_order)).toEqual([1, 2, 3]);
-		expect(rows).toHaveLength(3);
-	});
-});
-
-describe('POST /points/reorder', () => {
-	it('renumérote tout l’objectif en une requête', async () => {
-		expect.assertions(3);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-		for (const n of ['A', 'B', 'C', 'D']) await svcPoint(item.id, `Point ${n}`);
-
-		const before = await orderOf(item.id);
-		const reversed = [...before].reverse().map((r) => r.id);
-
-		const res = await reorderPOST({
-			request: req({ objective_id: item.id, point_ids: reversed }),
-			locals
-		} as never);
-		expect(res.status).toBe(200);
-
-		const after = await orderOf(item.id);
-		expect(after.map((r) => r.id)).toEqual(reversed);
-		// Toujours 1..N : ni trou, ni doublon, ni zéro.
-		expect(after.map((r) => r.display_order)).toEqual([1, 2, 3, 4]);
-	});
-
-	it('garde les codes intacts : déplacer n’est pas renommer', async () => {
-		expect.assertions(1);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-		for (const n of ['A', 'B', 'C']) await svcPoint(item.id, `Point ${n}`);
-
-		const before = await orderOf(item.id);
-		await reorderPOST({
-			request: req({
-				objective_id: item.id,
-				point_ids: [...before].reverse().map((r) => r.id)
-			}),
-			locals
-		} as never);
-
-		const after = await orderOf(item.id);
-		const codeById = new Map(after.map((r) => [r.id, r.code]));
-		expect(before.every((r) => codeById.get(r.id) === r.code)).toBe(true);
-	});
-
-	// Une liste partielle renumèroterait une moitié en laissant l'autre sur ses
-	// anciennes valeurs — donc des doublons et un ordre final imprévisible.
-	it('refuse 400 une liste incomplète', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const item = await svcItem((await svcTheme()).id);
-		for (const n of ['A', 'B', 'C']) await svcPoint(item.id, `Point ${n}`);
-
-		const rows = await orderOf(item.id);
-		const res = await reorderPOST({
-			request: req({ objective_id: item.id, point_ids: [rows[0].id, rows[1].id] }),
-			locals
-		} as never);
-		const body = await res.json();
-
-		expect(res.status).toBe(400);
-		expect(body.error).toMatch(/incomplète/);
-	});
-
-	it('refuse 400 un point étranger à l’objectif', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const theme = await svcTheme();
-		const item = await svcItem(theme.id, 'Objectif cible');
-		const other = await svcItem(theme.id, 'Autre objectif');
-		const a = await svcPoint(item.id, 'Point A');
-		const intrus = await svcPoint(other.id, 'Point intrus');
-
-		const res = await reorderPOST({
-			request: req({ objective_id: item.id, point_ids: [a.id, intrus.id] }),
-			locals
-		} as never);
-		const body = await res.json();
-
-		expect(res.status).toBe(400);
-		expect(body.error).toMatch(/étranger/);
+		expect((await patch(point.id, { name: '  ' }, locals)).status).toBe(400);
+		expect((await patch(point.id, { display_order: 3 }, locals)).status).toBe(400);
+		expect(await readPoint(point.id)).toMatchObject({ name: 'Intact' });
 	});
 
 	it('rejette 403 un élève', async () => {
-		expect.assertions(1);
-		const student = await TestData.profile().withRole('student').create();
-		const item = await svcItem((await svcTheme()).id);
-		const point = await svcPoint(item.id);
+		const branch = await svcNode('branch', 'TEST Élève', null, 9006);
+		const notion = await svcNode('notion', 'Notion', branch, 0);
+		const point = await svcNewPoint(notion, 1);
+		const s = await TestData.profile().withRole('student').create();
 
 		await expect(
-			reorderPOST({
-				request: req({ objective_id: item.id, point_ids: [point.id] }),
-				locals: buildLocals({ id: student.id } as User)
-			} as never)
-		).rejects.toMatchObject({ status: 403 });
-	});
-});
-
-// ============================================================================
-// Position d'affichage — thèmes et objectifs
-// ============================================================================
-// Les trois correctifs de position n'avaient d'abord visé que les points. Les
-// niveaux au-dessus gardaient le défaut, et ça s'est vu : dans « Probabilités
-// et statistiques » de 1ʳᵉ spé, deux objectifs portaient l'ordre 0 — un du seed,
-// un créé depuis l'app. L'échange deux-à-deux troquait 0 contre 0, et le thème
-// paraissait bloqué.
-
-async function objectiveOrderOf(themeId: string) {
-	const { data } = await service
-		.from('curriculum_objectives' as never)
-		.select('id, name, display_order')
-		.eq('theme_id', themeId)
-		.order('display_order', { ascending: true });
-	return (data ?? []) as { id: string; name: string; display_order: number }[];
-}
-
-describe('Thèmes et objectifs — placement à la création', () => {
-	it('place un nouvel objectif en dernier, sans jamais réutiliser 0', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const theme = await svcTheme();
-
-		for (const name of ['Premier', 'Deuxième', 'Troisième']) {
-			await itemsPOST({ request: req({ theme_id: theme.id, name }), locals } as never);
-		}
-
-		const rows = await objectiveOrderOf(theme.id);
-		expect(rows.map((r) => r.display_order)).toEqual([1, 2, 3]);
-		expect(rows.map((r) => r.name)).toEqual(['Premier', 'Deuxième', 'Troisième']);
-	});
-});
-
-describe('POST /objectives/reorder', () => {
-	it('renumérote tout le thème en une requête', async () => {
-		expect.assertions(3);
-		const locals = buildLocals(await teacherUser());
-		const theme = await svcTheme();
-		for (const n of ['A', 'B', 'C', 'D']) await svcItem(theme.id, `Objectif ${n}`);
-
-		const before = await objectiveOrderOf(theme.id);
-		const reversed = [...before].reverse().map((r) => r.id);
-
-		const res = await reorderObjectivesPOST({
-			request: req({ theme_id: theme.id, objective_ids: reversed }),
-			locals
-		} as never);
-		expect(res.status).toBe(200);
-
-		const after = await objectiveOrderOf(theme.id);
-		expect(after.map((r) => r.id)).toEqual(reversed);
-		expect(after.map((r) => r.display_order)).toEqual([1, 2, 3, 4]);
-	});
-
-	it('refuse 400 une liste incomplète', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const theme = await svcTheme();
-		for (const n of ['A', 'B', 'C']) await svcItem(theme.id, `Objectif ${n}`);
-
-		const rows = await objectiveOrderOf(theme.id);
-		const res = await reorderObjectivesPOST({
-			request: req({ theme_id: theme.id, objective_ids: [rows[0].id, rows[1].id] }),
-			locals
-		} as never);
-		const body = await res.json();
-
-		expect(res.status).toBe(400);
-		expect(body.error).toMatch(/incomplète/);
-	});
-
-	it('refuse 400 un objectif étranger au thème', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		const a = await svcTheme(TEST_GRADE, 'Thème cible');
-		const b = await svcTheme(TEST_GRADE, 'Autre thème');
-		const own = await svcItem(a.id, 'Le sien');
-		const intrus = await svcItem(b.id, 'L’intrus');
-
-		const res = await reorderObjectivesPOST({
-			request: req({ theme_id: a.id, objective_ids: [own.id, intrus.id] }),
-			locals
-		} as never);
-		const body = await res.json();
-
-		expect(res.status).toBe(400);
-		expect(body.error).toMatch(/étranger/);
-	});
-});
-
-describe('POST /themes/reorder', () => {
-	it('renumérote tout le niveau en une requête', async () => {
-		expect.assertions(2);
-		const locals = buildLocals(await teacherUser());
-		for (const n of ['A', 'B', 'C']) await svcTheme(TEST_GRADE, `Thème ${n}`);
-
-		const { data: before } = await service
-			.from('curriculum_themes' as never)
-			.select('id, display_order')
-			.eq('grade', TEST_GRADE)
-			.order('display_order', { ascending: true });
-		const reversed = ((before ?? []) as { id: string }[]).reverse().map((r) => r.id);
-
-		const res = await reorderThemesPOST({
-			request: req({ grade: TEST_GRADE, theme_ids: reversed }),
-			locals
-		} as never);
-		expect(res.status).toBe(200);
-
-		const { data: after } = await service
-			.from('curriculum_themes' as never)
-			.select('id, display_order')
-			.eq('grade', TEST_GRADE)
-			.order('display_order', { ascending: true });
-		expect(((after ?? []) as { id: string }[]).map((r) => r.id)).toEqual(reversed);
-	});
-
-	it('rejette 403 un élève', async () => {
-		expect.assertions(1);
-		const student = await TestData.profile().withRole('student').create();
-		const theme = await svcTheme();
-
-		await expect(
-			reorderThemesPOST({
-				request: req({ grade: TEST_GRADE, theme_ids: [theme.id] }),
-				locals: buildLocals({ id: student.id } as User)
-			} as never)
+			patch(point.id, { name: 'X' }, buildLocals({ id: s.id } as User))
 		).rejects.toMatchObject({ status: 403 });
 	});
 });
