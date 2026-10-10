@@ -107,8 +107,7 @@
 	{:else if data.tree.length === 0}
 		<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
 			Aucun programme défini pour le niveau de cette classe.
-			<a class="underline" href={resolve('/dashboard/teacher/programme')}>Le créer dans Programme</a
-			>.
+			<a class="underline" href={resolve('/dashboard/teacher/programme')}>Voir le programme</a>
 		</div>
 	{:else}
 		<!-- Legend + filter -->
