@@ -118,10 +118,25 @@ beforeEach(() => {
 	// Bouchon de `gh api …/commits/<sha>/check-runs` : rend l'état noté pour ce SHA.
 	writeFileSync(
 		join(racine, 'bin/gh'),
+		// « running » : la CI tourne, donc « CI Summary » n'existe pas encore ;
+		// « running-then-success » : deux lectures en cours, puis vert.
 		`#!/bin/bash
-sha=$(printf '%s\\n' "$@" | grep -oE 'commits/[0-9a-f]+' | head -1 | cut -d/ -f2)
+if [ "$1" = run ]; then
+	sha=$(printf '%s\\n' "$@" | grep -A1 -x -- '--commit' | tail -1)
+else
+	sha=$(printf '%s\\n' "$@" | grep -oE 'commits/[0-9a-f]+' | head -1 | cut -d/ -f2)
+fi
 etat=$(grep "^$sha " "$ETATS_CI" | tail -1 | cut -d' ' -f2)
-echo "\${etat:-absent}"
+if [ "$etat" = running-then-success ]; then
+	n=$(cat "$ETATS_CI.$sha" 2>/dev/null || echo 0)
+	[ "$1" = run ] || echo $((n + 1)) > "$ETATS_CI.$sha"
+	[ "$n" -lt 2 ] && etat=running || etat=success
+fi
+if [ "$1" = run ]; then
+	case "$etat" in running) echo in_progress ;; '') echo aucun ;; *) echo completed ;; esac
+else
+	case "$etat" in running) echo absent ;; '') echo absent ;; *) echo "$etat" ;; esac
+fi
 `
 	);
 	chmodSync(join(racine, 'bin/gh'), 0o755);
@@ -231,6 +246,31 @@ describe('deploy-prod.sh — ce qui part en prod', () => {
 		expect(r.sortie).toContain("rien n'est créé");
 		expect(production()).toBeNull();
 		expect(git(local, 'tag')).toBe('');
+	});
+});
+
+describe('deploy-prod.sh — attendre la CI', () => {
+	it('« CI Summary » absent pendant que la CI tourne : « en cours », pas « sans CI »', () => {
+		pousser('success', 'src/a.ts');
+		pousser('running', 'src/b.ts');
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('CI en cours');
+		expect(r.sortie).not.toContain('sans « CI Summary »');
+	});
+
+	it('la CI de la version passe au vert pendant l’attente : mise en prod', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'running-then-success';
+		const r = spawnSync('bash', [SCRIPT], {
+			cwd: dansLeBac(local),
+			env: { ...env(), DEPLOY_PROD_ATTENTE_MAX: '60', DEPLOY_PROD_PAUSE: '0' },
+			encoding: 'utf8'
+		});
+		const sortie = `${r.stdout}${r.stderr}`;
+		expect(r.status, sortie).toBe(0);
+		expect(sortie).toContain('⏳ CI de la version : pending…');
+		expect(production()).toBe(version().sha);
 	});
 });
 

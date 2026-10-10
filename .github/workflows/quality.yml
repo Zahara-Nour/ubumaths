@@ -36,8 +36,36 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  # Raccourci du commit de version (ADR 0021). `pnpm deploy:prod` crée un commit
+  # `chore(release): …` qui ne change que le numéro de version et le CHANGELOG,
+  # sur un état déjà vérifié : refaire typecheck, build et tests coûtait ~5 min à
+  # chaque mise en prod, pour rien. Si scripts/ci-version-seule.sh le confirme
+  # (conditions strictes, testées), les jobs lourds sont sautés et `summary`
+  # passe au vert. Dans tous les autres cas (PR comprises), CI complète.
+  # Le script sort toujours en 0 : un échec du verdict ne bloque pas la CI,
+  # il la laisse simplement complète (`!cancelled()` sur chaque job).
+  version:
+    name: Commit de version ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      seule: ${{ steps.verdict.outputs.seule }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 60
+
+      - name: Verdict
+        id: verdict
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci-version-seule.sh "${{ github.sha }}" >> "$GITHUB_OUTPUT" || echo "seule=false" >> "$GITHUB_OUTPUT"
+
   lint:
     name: Lint
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -118,6 +146,8 @@ jobs:
 
   typecheck:
     name: Type Check
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -146,11 +176,14 @@ jobs:
 
   build:
     name: Build
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The build takes 2-4 min normally;
     # 10 left no room for a slow runner and cancelled the job mid-build.
     timeout-minutes: 15
-    # PAS de `needs:`. Ce job est autonome — checkout, install, build, garde de
+    # Seul `needs:` admis : `version` (raccourci du commit de version, ~15 s).
+    # Sinon ce job est autonome — checkout, install, build, garde de
     # chunk — il ne consomme aucun artefact de lint ni de typecheck. L'y enchaîner
     # n'économisait que des minutes de RUNNER quand lint échoue, au prix de
     # minutes d'ATTENTE HUMAINE sur chaque PR qui passe, c'est-à-dire presque
@@ -206,6 +239,8 @@ jobs:
   # no browser. Sharded for parallelism.
   test-server:
     name: Server Tests (shard ${{ matrix.shard }}/4)
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -241,6 +276,8 @@ jobs:
   # CI) and stay runnable locally.
   test-client:
     name: Client Tests (browser)
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -291,6 +328,8 @@ jobs:
   #   - HIGH     → warning annotation only → visible, never blocks.
   audit:
     name: Security Audit
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The audit itself runs in under a
     # minute, but it waits on the npm advisory endpoint, which can hang: a
@@ -336,6 +375,8 @@ jobs:
   # Local : `pnpm db:start` puis `pnpm test:definer-guard`.
   definer-guard:
     name: Garde SECURITY DEFINER
+    needs: version
+    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -408,12 +449,16 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, build, test-server, test-client, audit, definer-guard]
+    needs: [version, lint, typecheck, build, test-server, test-client, audit, definer-guard]
     if: always()
 
     steps:
       - name: Check results
         run: |
+          if [ "${{ needs.version.outputs.seule }}" = "true" ]; then
+            echo "Commit de version sur un état vérifié : jobs lourds sautés (ADR 0021)."
+            exit 0
+          fi
           echo "Lint: ${{ needs.lint.result }}"
           echo "Type Check: ${{ needs.typecheck.result }}"
           echo "Build: ${{ needs.build.result }}"
