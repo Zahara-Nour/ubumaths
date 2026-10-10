@@ -166,14 +166,15 @@ P.rule(P.div(P._('x'), P._('x')), P.num(1), {
 `group`. `instantiate(motif, liaisons)` reconstruit l'arbre (une séquence passe par
 `unflattenSum`/`unflattenProduct`).
 
-| Application                                               | Comportement                                           |
-| --------------------------------------------------------- | ------------------------------------------------------ |
-| `applyRule(règle, nœud, ctx?)`                            | racine seulement ; `MathNode \| null`                  |
-| `applyRuleDeep(règle, nœud, ctx?)`                        | une règle, parcours ascendant (`mapNode`)              |
-| `applyRules(règles, nœud, maxIterations = 100, ctx?)`     | jusqu'au point fixe, règles triées par priorité        |
-| `applyRulesDeepOnce(règles, nœud, ctx?)`                  | une passe ascendante, première règle qui tire par nœud |
-| `applyRulesDeepOnceTracked(…)`                            | idem, avec les étapes                                  |
-| `applyRulesWithSteps(règles, nœud, maxIterations?, ctx?)` | point fixe + `{ result, changed, steps: RuleStep[] }`  |
+| Application                                               | Comportement                                                                      |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `applyRule(règle, nœud, ctx?)`                            | racine seulement ; `MathNode \| null`                                             |
+| `applyRuleDeep(règle, nœud, ctx?)`                        | une règle, parcours ascendant (`mapNode`)                                         |
+| `applyRules(règles, nœud, maxIterations = 100, ctx?)`     | jusqu'au point fixe, règles triées par priorité ; sinon `RuleIterationLimitError` |
+| `RuleIterationLimitError`                                 | erreur exportée : `maxIterations`, `lastRules`                                    |
+| `applyRulesDeepOnce(règles, nœud, ctx?)`                  | une passe ascendante, première règle qui tire par nœud                            |
+| `applyRulesDeepOnceTracked(…)`                            | idem, avec les étapes                                                             |
+| `applyRulesWithSteps(règles, nœud, maxIterations?, ctx?)` | point fixe + `{ result, changed, steps: RuleStep[] }`                             |
 
 `RuleStep = { ruleName, before, after }` : c'est la matière des étapes pédagogiques.
 
@@ -213,6 +214,8 @@ extractBindings(réponse, motif); // Record<string, string> | null
 
 Exportés par `$lib/mathAST/pattern` : `arithmeticRules`, `powerRules`, `absRules`,
 `allPatternRules`, `simplifyRules`. Les autres s'importent de `pattern/rule-sets`.
+`simplifyRules` (= `absSimplifyRules`) sert à l'usage direct (`applyRules`) : `simplify()`
+ne le lit **pas**, il assemble ses jeux dans `buildSimplifyRules` (voir plus bas).
 
 | Jeu                                                                              | Fichier                    | Règles (noms réels)                                                                                                                                                                                                                                                                                                                                                                                                  |
 | -------------------------------------------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -245,11 +248,19 @@ Exportés par `$lib/mathAST/pattern` : `arithmeticRules`, `powerRules`, `absRule
 ## Pièges connus
 
 - **Une règle ne voit que la représentation que le parseur produit.** `ln-exp`, `exp-ln`
-  et `ln-e` filtrent `P.lit(euler())` (un `MathConstantNode`) ; or `parseLatex('e^x')`
-  rend une **variable** `e`. Mesuré le 2026-10-10 : `applyRules(logExpRules,
-parseLatex('\ln(e^{x})'))` rend `x\ln(e)` (seule `ln-pow` tire). Même famille d'angle
-  mort : `-3y` se lit `opposite(3)·y` (cf. [README §Invariants](README.md#invariants-structurels-non-évidents)),
+  et `ln-e` filtrent la puissance `P.lit(euler())^u` : depuis le 2026-10-10, la lettre `e`
+  est lue `euler`, et `applyRules(logExpRules, parseLatex('\ln(e^{x})'))` rend `x`. Mais
+  `\exp(x)` est un nœud **fonction** `exp`, que ces motifs ne voient pas :
+  `\ln(\exp(x))` reste tel quel (mesuré le 2026-10-10 ; le solveur transcendant (`solve/solvers/transcendental.ts`) filtre les
+  deux formes pour cette raison). Même famille d'angle mort : `-3y` se lit `opposite(3)·y` (cf. [README §Invariants](README.md#invariants-structurels-non-évidents)),
   l'indice d'une racine est dans `function.base`, `\sin^2 x` est une `function` avec
   `power`. **Tester une règle sur une entrée parsée, pas sur un arbre fabriqué.**
 - Coût combinatoire de `P.sum`/`P.prod` sur de longues sommes (pas de mémoïsation).
-- `applyRules` s'arrête à 100 itérations : deux règles inverses bouclent sans erreur.
+- `applyRules` à 100 itérations sans point fixe lève `RuleIterationLimitError`
+  (`maxIterations`, `lastRules` : les six dernières règles appliquées, citées dans le
+  message — un cycle `a-vers-b → b-vers-a` se lit). Une dernière passe vérifie d'abord
+  qu'aucune règle ne change plus l'arbre : un point fixe atteint pile au budget ne lève
+  pas. Mesuré sur la suite serveur (2026-10-10) : aucune entrée réelle n'atteint la
+  limite. Seul appelant en production, la mise en facteur de `solve` rattrape l'erreur et
+  passe aux autres stratégies. Les boucles jumelles (`runPatternLoop`,
+  `applyRulesWithSteps`) s'arrêtent encore en silence.

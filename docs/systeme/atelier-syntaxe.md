@@ -62,6 +62,7 @@ Leurs arguments sont des **noms d'objets et des nombres**, jamais des expression
    - une fonction de l'atelier se dérive par rapport à **sa propre lettre** (`f(t) = t²` → `.dériver f` dérive en t, #905) ;
    - une expression qui ne contient **qu'une seule lettre** (`sin(t)=0`) se résout ou se dérive par rapport à elle ;
    - `pour VAR` n'est exigé que s'il y a **plusieurs lettres et pas de x** (`a t^2` : a ou t ?) ; avec un x présent, x reste la variable par défaut (règle #888).
+   - `e` n'est jamais une variable (constante d'Euler) : `; e` et `pour e` sont refusés avec « e est la constante d'Euler, pas une variable » (`chosenVariable`, `variable-argument.ts`, 2026-10-10) ; `e_1` reste une variable indicée.
      Cela assouplit la règle « x par défaut » de #888 (aujourd'hui `.résoudre sin(t)=0` sans `; t` affiche une indication).
 2. Mot-clé pour `.évaluer` : `en` (« en x = 3 ») ou `pour` (« pour x = 3 ») ? Proposition : les deux.
 3. Probabilités / statistiques inchangées : d'accord ?

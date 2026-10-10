@@ -346,6 +346,10 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`).
+    La constante d'Euler y arrive écrite `e` : `toCustom` l'écrit ainsi et tous les
+    parseurs la relisent comme Euler (depuis le 2026-10-10 ; `withPlainEuler` et le
+    remplacement de `\euler` dans `render.ts` sont retirés). `e` n'est jamais une variable :
+    `.dériver 3e^2 ; e` est refusé (« e est la constante d'Euler, pas une variable »).
 11. **Seul l'affichage passe à la virgule décimale** : le moteur, l'arbre gardé et le rejeu
     restent en `0.5` (`decimal-comma.ts`).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).

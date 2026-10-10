@@ -15,9 +15,11 @@ Branche `fix/mathast-ln-exp-gardes`, worktree `../ubumaths-wt-ln-exp`. Écarts :
 - [x] Nettoyage des contournements (`promote-euler.ts` supprimé, `isEulerBase` & co ramenés à `isEulerConstant`, `unifyEulerNotationAST` inversée, custom-generator écrit `e`).
 - [x] Régressions : `ex=1` → `1/e`, `x^2=e` → `±√e`, `∫_1^e 1/x dx = 1`, ordre `e a` comme `π a`.
 
+- [x] Arbitrages David appliqués : calcul « par rapport à e » refusé (`common/euler-variable.ts`, un test par module : `__tests__/e-pas-une-variable.test.ts`) ; `e_1` variable indicée dans les 4 parseurs (`parser/__tests__/e-indice.test.ts`) ; `factoriser` calcule `2×3` (gardé, testé) ; code mort atelier retiré (`withPlainEuler`, `\euler` de `render.ts`, `CUSTOM_EULER`).
+- [x] L5 : `checkNestingDepth` avant l'analyse (a64f7b594). C8 : commentaire de `rule-sets/index.ts`.
+- [x] L6 : mesure (0 occurrence dans `applyRules` sur la suite serveur) puis `RuleIterationLimitError` ; `solve` rattrape l'erreur (`factorCommon`). Relevé : cycle de `runPatternLoop` sur `x(1±1)` (L15).
+- [x] Doc `docs/systeme/` (mathast/README, panel, pattern-matching, convention-equivalence, tidy-spec ; questions, atelier, atelier-syntaxe, grapheur) ; écarts traités retirés de `ecarts-a-trier.md`, V13 et L15 ajoutés.
+
 ## Reste
 
-- [ ] Arbitrages David : calcul « par rapport à e » imposé par l'appelant ; `e_1` ; `factoriser` calcule `2×3` ; code mort atelier.
-- [ ] L5 (profondeur du parseur avant analyse), L6 (limite d'`applyRules`), C8 (commentaire `rule-sets/index.ts`).
-- [ ] Doc `docs/systeme/mathast/` (README, panel, pattern-matching) ; retirer les écarts traités de `ecarts-a-trier.md`.
 - [ ] code-reviewer, PR.

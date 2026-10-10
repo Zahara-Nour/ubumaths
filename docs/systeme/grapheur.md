@@ -87,6 +87,8 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 
 Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et
 `src/lib/components/atelier/AtelierContainer.svelte` — décrits dans [atelier.md](atelier.md).
+`syncPlots` transmet chaque définition en **LaTeX** (`graphLatexOf`), pas en notation maison :
+le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
 
 ---
 
