@@ -9,13 +9,14 @@
  */
 import { describe, it, expect } from 'vitest';
 import { toTemplatePutBody } from '$lib/questions/template-put-body';
+import { templateMarkdown } from '$lib/ubumark/types/template';
 import { callPut, fakeDb, FIXTURE } from './fake-templates-db';
 
 describe('toTemplatePutBody', () => {
 	it('champ vidable absent → null ; champ présent → inchangé', () => {
 		const body = toTemplatePutBody({
 			title: 'T',
-			variations: [{ statement: 'x' }],
+			variations: [{ statement: templateMarkdown('x') }],
 			grades: ['CE1'],
 			theme: 'Entiers',
 			domain: 'Multiplier',

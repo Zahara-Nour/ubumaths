@@ -43,10 +43,13 @@ describe('/automaths/test — chargement', () => {
 		const categories = encodeURIComponent('[{"a":1}]');
 		const query = new URLSearchParams({ categories }).toString();
 
-		const thrown = await load({
-			locals: { supabase },
-			url: new URL(`http://localhost/automaths/test?${query}`)
-		} as never).catch((e: unknown) => e);
+		// load rend un MaybePromise : Promise.resolve permet le .catch.
+		const thrown = await Promise.resolve(
+			load({
+				locals: { supabase },
+				url: new URL(`http://localhost/automaths/test?${query}`)
+			} as never)
+		).catch((e: unknown) => e);
 
 		expect(isRedirect(thrown)).toBe(true);
 		const location = new URL((thrown as { location: string }).location, 'http://localhost');

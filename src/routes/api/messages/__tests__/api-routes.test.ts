@@ -910,7 +910,9 @@ describe('GET /api/messages/thread', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data).toHaveLength(3);
-		expect(result.data?.[0]?.id).toBe('thread-root');
+		// Le mock (mockThreadMessages) porte `id`, alors que la vraie RPC rend `message_id` :
+		// on vérifie ce que le mock a rendu, sans prétendre que c'est la forme de la RPC.
+		expect(result.data?.[0]).toMatchObject({ id: 'thread-root' });
 	});
 
 	it('should reject thread access for unauthorized user', async () => {

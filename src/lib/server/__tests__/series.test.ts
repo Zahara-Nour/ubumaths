@@ -182,7 +182,8 @@ describe('updateSeries (B13 — verrou)', () => {
 describe('updateSeries — description', () => {
 	it('n’écrit pas la description quand le champ n’est pas fourni', async () => {
 		const fake = createFakeSupabase(() => ({ data: [seriesRow({ title: 'Nouveau' })] }));
-		await updateSeries(fake.client, SERIES_ID, { title: 'Nouveau' });
+		// Champ absent de la requête : le schéma Zod le rend `undefined`.
+		await updateSeries(fake.client, SERIES_ID, { title: 'Nouveau', description: undefined });
 		const update = fake.on('series')[0].calls.find((c) => c.method === 'update')!;
 		expect(update.args[0]).toEqual({ title: 'Nouveau' });
 	});

@@ -9,6 +9,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createMockSupabase, createMockLocals, mockSuccess } from '$tests/helpers';
+import { loadedData } from '$tests/helpers/load-helpers';
 
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440010';
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440000';
@@ -81,7 +82,7 @@ describe('my-progress load (composition)', () => {
 
 		const locals = createMockLocals(STUDENT_ID, supabase);
 
-		const result = await load({ locals } as any);
+		const result = loadedData(await load({ locals } as any));
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0]).toMatchObject({
@@ -114,7 +115,7 @@ describe('my-progress load (composition)', () => {
 
 		const locals = createMockLocals(STUDENT_ID, supabase);
 
-		const result = await load({ locals } as any);
+		const result = loadedData(await load({ locals } as any));
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0]).toMatchObject({
@@ -155,7 +156,7 @@ describe('my-progress load (composition)', () => {
 
 		const locals = createMockLocals(STUDENT_ID, supabase);
 
-		const result = await load({ locals } as any);
+		const result = loadedData(await load({ locals } as any));
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0].exercise.id).toBe(EXO_C);
@@ -184,7 +185,7 @@ describe('my-progress load (composition)', () => {
 
 		const locals = createMockLocals(STUDENT_ID, supabase);
 
-		const result = await load({ locals } as any);
+		const result = loadedData(await load({ locals } as any));
 
 		expect(result.rows[0].mastery_status).toBe('needs_review');
 	});
@@ -201,7 +202,7 @@ describe('my-progress load (composition)', () => {
 
 		const locals = createMockLocals(STUDENT_ID, supabase);
 
-		const result = await load({ locals } as any);
+		const result = loadedData(await load({ locals } as any));
 
 		expect(result.rows).toEqual([]);
 	});

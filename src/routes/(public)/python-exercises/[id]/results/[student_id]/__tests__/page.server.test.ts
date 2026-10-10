@@ -11,6 +11,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createMockSupabase, createMockLocals, mockSuccess } from '$tests/helpers';
+import { loadedData } from '$tests/helpers/load-helpers';
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const AUTHOR_ID = '550e8400-e29b-41d4-a716-446655440001';
@@ -129,10 +130,12 @@ describe('drill-down load (scope check)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
+				locals
+			} as any)
+		);
 
 		expect(result.student.id).toBe(STUDENT_IN_SCOPE);
 		expect(result.exercise.title).toBe('Loops');
@@ -153,10 +156,12 @@ describe('drill-down load (scope check)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
+				locals
+			} as any)
+		);
 
 		expect(result.student.id).toBe(STUDENT_IN_SCOPE);
 	});
@@ -201,10 +206,12 @@ describe('drill-down load (data)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID, student_id: STUDENT_IN_SCOPE },
+				locals
+			} as any)
+		);
 
 		expect(result.submissions).toHaveLength(2);
 		expect(result.submissions[0]).toMatchObject({

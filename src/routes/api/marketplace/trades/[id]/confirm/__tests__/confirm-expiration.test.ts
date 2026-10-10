@@ -54,22 +54,26 @@ function echangeExpire() {
  * 2e (mise à jour) rend `remiseAZero`. Les chaînes s'attendent avec `await`,
  * comme le constructeur de requêtes de supabase-js.
  */
+/** Une vraie promesse, enrichie des méthodes de chaînage que le handler appelle. */
+interface MockChain extends Promise<Resultat> {
+	eq: () => MockChain;
+	select: (...args: unknown[]) => MockChain;
+	single: () => Promise<Resultat>;
+}
+
 function clientSimule(remiseAZero: Resultat) {
 	const update = vi.fn();
 	const select = vi.fn();
 	const chaine = (resultat: Resultat) => {
 		// Une vraie promesse, enrichie des méthodes de chaînage utilisées.
-		const c: Promise<Resultat> & Record<string, unknown> = Object.assign(
-			Promise.resolve(resultat),
-			{
-				eq: () => c,
-				select: (...args: unknown[]) => {
-					select(...args);
-					return c;
-				},
-				single: () => Promise.resolve(resultat)
-			}
-		);
+		const c: MockChain = Object.assign(Promise.resolve(resultat), {
+			eq: () => c,
+			select: (...args: unknown[]) => {
+				select(...args);
+				return c;
+			},
+			single: () => Promise.resolve(resultat)
+		});
 		return c;
 	};
 	const supabase = {

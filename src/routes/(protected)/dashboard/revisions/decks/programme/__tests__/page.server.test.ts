@@ -20,8 +20,11 @@ vi.mock('$lib/server/middleware/auth', () => ({
 }));
 
 import { load } from '../+page.server';
+import type { PageServerData } from '../$types';
 
-type Loaded = Awaited<ReturnType<typeof load>>;
+// Ce que rend VRAIMENT le load (ProgrammeData) : SvelteKit l'infère via un proxy
+// sans l'annotation `PageServerLoad`, dont le type de retour admet `void`.
+type Loaded = PageServerData;
 
 function link(templateId: string, objectiveId: string, displayOrder: number, grade: string) {
 	return {

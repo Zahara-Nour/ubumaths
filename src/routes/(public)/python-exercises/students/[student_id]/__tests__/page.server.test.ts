@@ -12,6 +12,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createMockSupabase, createMockLocals, mockSuccess } from '$tests/helpers';
+import { loadedData } from '$tests/helpers/load-helpers';
 
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440000';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440010';
@@ -132,7 +133,7 @@ describe('per-student load (composition)', () => {
 
 		const locals = createMockLocals(TEACHER_ID, supabase);
 
-		const result = await load({ params: { student_id: STUDENT_ID }, locals } as any);
+		const result = loadedData(await load({ params: { student_id: STUDENT_ID }, locals } as any));
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0]).toMatchObject({
@@ -172,7 +173,7 @@ describe('per-student load (composition)', () => {
 
 		const locals = createMockLocals(TEACHER_ID, supabase);
 
-		const result = await load({ params: { student_id: STUDENT_ID }, locals } as any);
+		const result = loadedData(await load({ params: { student_id: STUDENT_ID }, locals } as any));
 
 		expect(result.rows.map((r: any) => r.exercise.id).sort()).toEqual([EXO_B, EXO_C].sort());
 		// assigned but never tried → not_started
@@ -221,7 +222,7 @@ describe('per-student load (composition)', () => {
 
 		const locals = createMockLocals(TEACHER_ID, supabase);
 
-		const result = await load({ params: { student_id: STUDENT_ID }, locals } as any);
+		const result = loadedData(await load({ params: { student_id: STUDENT_ID }, locals } as any));
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0].exercise.id).toBe(EXO_C);
@@ -244,7 +245,7 @@ describe('per-student load (composition)', () => {
 
 		const locals = createMockLocals(TEACHER_ID, supabase);
 
-		const result = await load({ params: { student_id: STUDENT_ID }, locals } as any);
+		const result = loadedData(await load({ params: { student_id: STUDENT_ID }, locals } as any));
 
 		expect(result.rows).toEqual([]);
 		expect(result.student.id).toBe(STUDENT_ID);

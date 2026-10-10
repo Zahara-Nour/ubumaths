@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
@@ -67,14 +67,18 @@ interface QueryConfig {
 	count: AnyResult;
 }
 
+// Espion appelable : `ReturnType<typeof vi.fn>` prend la dernière surcharge de
+// `vi.fn` (fonction OU constructeur), qu'on ne peut plus appeler.
+type Spy = Mock<(...args: unknown[]) => unknown>;
+
 // Mock type exposing the shared spy methods used in assertions
 type MockSupabaseClient = SupabaseClient<Database> & {
-	from: ReturnType<typeof vi.fn>;
-	select: ReturnType<typeof vi.fn>;
-	eq: ReturnType<typeof vi.fn>;
-	in: ReturnType<typeof vi.fn>;
-	order: ReturnType<typeof vi.fn>;
-	range: ReturnType<typeof vi.fn>;
+	from: Spy;
+	select: Spy;
+	eq: Spy;
+	in: Spy;
+	order: Spy;
+	range: Spy;
 };
 
 describe('GET /api/student/shared-materials', () => {
@@ -102,7 +106,7 @@ describe('GET /api/student/shared-materials', () => {
 		for (const name of chainMethods) {
 			builder[name] = vi.fn((...args: unknown[]) => {
 				// Mirror the call onto the shared client spy for assertions
-				(mockSupabase[name] as ReturnType<typeof vi.fn>)(...args);
+				mockSupabase[name](...args);
 				return builder;
 			});
 		}

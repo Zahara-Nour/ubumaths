@@ -12,7 +12,6 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { useCardSchema } from '$lib/server/validation/vip-cards';
 
@@ -24,13 +23,15 @@ import { useCardSchema } from '$lib/server/validation/vip-cards';
  * Creates a mock Supabase client with RPC method
  */
 function createMockSupabaseClient() {
-	const mockRpc = vi.fn();
+	// Ce client simulé ne sert qu’à `use_vip_card` : les paramètres sont ceux de
+	// la vraie fonction SQL, le résultat a la forme lue par ces tests.
+	const mockRpc = vi.fn<UseVipCardRpc>();
 	const mockFrom = vi.fn();
 
 	const mockClient = {
 		rpc: mockRpc,
 		from: mockFrom
-	} as unknown as SupabaseClient<Database>;
+	};
 
 	return { mockClient, mockRpc, mockFrom };
 }
@@ -74,6 +75,17 @@ interface UseCardResult {
 	isFullyConsumed?: boolean;
 	usedAt?: string | null;
 	error?: string;
+}
+
+type UseVipCardRpc = (
+	name: 'use_vip_card',
+	params: Database['public']['Functions']['use_vip_card']['Args']
+) => Promise<{ data: UseCardResult | null; error: null }>;
+
+/** Les données du résultat, ou l’échec du test si le rpc n’en a rendu aucune. */
+function useCardData(result: { data: UseCardResult | null }): UseCardResult {
+	if (!result.data) throw new Error('use_vip_card n’a rendu aucune donnée');
+	return result.data;
 }
 
 describe('VIP Card Consumable - Unit Tests', () => {
@@ -176,7 +188,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(true);
 			expect(data.usesRemaining).toBe(2);
 			expect(data.isFullyConsumed).toBe(false);
@@ -204,7 +216,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(true);
 			expect(data.usesRemaining).toBe(0);
 			expect(data.isFullyConsumed).toBe(true);
@@ -227,7 +239,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(false);
 			expect(data.error).toBe('Card has no remaining uses');
 		});
@@ -248,7 +260,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_instance_id: '123e4567-e89b-12d3-a456-426614174010'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(false);
 			expect(data.error).toBe('Card has already been used');
 		});
@@ -275,7 +287,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_instance_id: '123e4567-e89b-12d3-a456-426614174012'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(true);
 			expect(data.isFullyConsumed).toBe(true);
 			expect(data.usedAt).not.toBeNull();
@@ -309,7 +321,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_context: 'minesweeper'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(true);
 		});
 
@@ -330,7 +342,7 @@ describe('VIP Card Consumable - Unit Tests', () => {
 				p_context: 'wrong_context'
 			});
 
-			const data = result.data as UseCardResult;
+			const data = useCardData(result);
 			expect(data.success).toBe(false);
 			expect(data.error).toContain('cannot be used in the current context');
 		});

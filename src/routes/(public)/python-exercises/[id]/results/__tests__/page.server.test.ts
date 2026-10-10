@@ -12,6 +12,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createMockSupabase, createMockLocals, mockSuccess } from '$tests/helpers';
+import { loadedData } from '$tests/helpers/load-helpers';
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const AUTHOR_ID = '550e8400-e29b-41d4-a716-446655440001';
@@ -109,10 +110,12 @@ describe('load (auth/access)', () => {
 
 		const locals = createMockLocals(OTHER_TEACHER_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.exercise).toMatchObject({ id: EXERCISE_ID });
 		expect(result.rows).toHaveLength(1);
@@ -164,10 +167,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0]).toMatchObject({
@@ -214,10 +219,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows[0]).toMatchObject({
 			mastery_status: 'needs_review',
@@ -245,10 +252,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows[0].mastery_status).toBe('needs_review');
 		expect(result.rows[0].total_attempts).toBe(0);
@@ -283,10 +292,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows[0].mastery_status).toBe('mastered');
 	});
@@ -323,10 +334,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0].student.id).toBe(STUDENT_A);
@@ -350,10 +363,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows.map((r: any) => r.student.id)).toEqual([STUDENT_C]);
 	});
@@ -380,10 +395,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0].student.id).toBe(STUDENT_A);
@@ -402,10 +419,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.rows).toEqual([]);
 		expect(result.teacherClasses).toEqual([]);
@@ -436,10 +455,12 @@ describe('load (merge logic)', () => {
 
 		const locals = createMockLocals(AUTHOR_ID, supabase);
 
-		const result = await load({
-			params: { id: EXERCISE_ID },
-			locals
-		} as any);
+		const result = loadedData(
+			await load({
+				params: { id: EXERCISE_ID },
+				locals
+			} as any)
+		);
 
 		expect(result.exercise).toMatchObject({ id: EXERCISE_ID, title: 'Loops' });
 		expect(result.teacherClasses).toEqual([
