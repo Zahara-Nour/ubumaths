@@ -1,12 +1,12 @@
-# Syntaxe des commandes de Calcul : séparer les arguments sans espaces ambigus
+# Syntaxe des commandes de Calcul (atelier)
 
-> Proposition du 2026-10-08. **Décisions de David (2026-10-08)** : Q1 oui (variable devinée quand un seul choix), Q2 `en` ET `pour`, Q3 probabilités/statistiques inchangées. Liste complète validée le 2026-10-08 (incohérences corrigées : `.ajustement`, mots-clés sans accent).
+> **Référence en service** (proposée et validée le 2026-10-08, implémentée : `src/lib/atelier/commands.ts`, `src/lib/mathAST/cli/core/variable-argument.ts`, test `src/lib/atelier/__tests__/syntaxe-mots-cles.test.ts`). Vue d'ensemble de l'atelier : [atelier.md](atelier.md). **Décisions de David (2026-10-08)** : Q1 oui (variable devinée quand un seul choix), Q2 `en` ET `pour`, Q3 probabilités/statistiques inchangées. Liste complète validée le 2026-10-08 (incohérences corrigées : `.ajustement`, mots-clés sans accent).
 
-## Le problème
+## Pourquoi cette syntaxe (avant le 2026-10-08)
 
 Dans une expression, l'espace veut déjà dire « multiplié par ». Les commandes s'en servent aussi pour séparer leurs arguments, et doivent deviner où l'expression s'arrête :
 
-| Saisie                         | Voulu            | Lu aujourd'hui                |
+| Saisie                         | Voulu            | Lu avant                      |
 | ------------------------------ | ---------------- | ----------------------------- |
 | `.évaluer x^2 x=3`             | x² en x = 3      | x²·x = 3 (équation x³ = 3)    |
 | `.intégrer x 3 a`              | ∫₃ᵃ x dx         | ambigu avec ∫ 3ax dx          |
