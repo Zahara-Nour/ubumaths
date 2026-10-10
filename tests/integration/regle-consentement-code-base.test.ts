@@ -83,7 +83,7 @@ async function compteAncien(): Promise<string> {
 		   consent_grace_period_ends = null where id = $1`,
 		[e.id]
 	);
-	// Séparément : un changement de niveau retire la marque (la règle s'est appliquée).
+	// Séparément : le passage de « sans niveau » à 6e est un changement de niveau.
 	await pg.query('update profiles set consent_rule_pending = true where id = $1', [e.id]);
 	return e.id;
 }
@@ -148,6 +148,30 @@ describe('règle de consentement : la base fait foi', () => {
 			[classId, id]
 		);
 		expect(await etat(id)).toMatchObject({ consent_required: true, consent_rule_pending: false });
+	});
+
+	it('passage 6e → 5e puis entrée en classe (import) : toujours soumis', async () => {
+		const id = await compteAncien();
+		const pg = await getPostgresClient();
+		// L'import met le niveau à jour AVANT l'entrée en classe.
+		await pg.query(`update profiles set grade = '5' where id = $1`, [id]);
+		expect((await etat(id)).consent_rule_pending).toBe(true);
+		await pg.query(
+			`insert into class_members (class_id, student_id, status) values ($1, $2, 'active')`,
+			[classId, id]
+		);
+		expect(await etat(id)).toMatchObject({ consent_required: true, consent_rule_pending: false });
+	});
+
+	it('passage en 1re : la marque tombe, le retour en classe ne soumet pas', async () => {
+		const id = await compteAncien();
+		const pg = await getPostgresClient();
+		await pg.query(`update profiles set grade = '1_GEN' where id = $1`, [id]);
+		await pg.query(
+			`insert into class_members (class_id, student_id, status) values ($1, $2, 'active')`,
+			[classId, id]
+		);
+		expect(await etat(id)).toMatchObject({ consent_required: false, consent_rule_pending: false });
 	});
 
 	it('un élève dispensé (non marqué) qui rejoint une classe reste dispensé', async () => {

@@ -17,8 +17,11 @@
 --   * posée ici, une fois, sur les comptes anciens non soumis ;
 --   * appliquée quand l'élève rejoint une classe ou y redevient actif : consentement
 --     requis, 30 jours de grâce (comme un nouveau compte), marque retirée ;
---   * retirée dès que le prof change le consentement ou que le niveau change (la règle
---     s'est alors appliquée, ou le prof a décidé) ;
+--   * retirée dès que le prof change le consentement (il a décidé), ou que l'élève passe
+--     en 1re ou terminale (il n'est plus d'un niveau soumis). PAS sur un simple changement
+--     de niveau entre niveaux soumis (6e → 5e) : apply_consent_rule_by_grade n'y touche à
+--     rien, la marque doit survivre (security-auditor, 2026-10-10 : l'import met le niveau
+--     à jour AVANT l'entrée en classe — les 30 élèves de 6e y auraient échappé) ;
 --   * verrouillée comme les autres champs de consentement (un élève ne la retire pas).
 --
 -- Question d'accès en miroir — qui perdra ce qu'il avait ? Un de ces 33 élèves, s'il
@@ -29,7 +32,7 @@
 --
 -- ROLLBACK :
 --   DROP TRIGGER apply_pending_consent_rule_trg ON public.class_members;
---   DROP TRIGGER clear_consent_rule_pending_trg ON public.profiles;
+--   DROP TRIGGER consent_rule_pending_clear_trg ON public.profiles;
 --   DROP FUNCTION public.apply_pending_consent_rule(), public.clear_consent_rule_pending();
 --   recréer guard_profile_consent_fields sans la ligne consent_rule_pending ;
 --   ALTER TABLE public.profiles DROP COLUMN consent_rule_pending;  (perd la marque seule)
@@ -66,8 +69,10 @@ begin
 end;
 $function$;
 
--- La marque tombe quand la règle s'est appliquée autrement : le prof change le
--- consentement (dispense ou non), ou le niveau change (apply_consent_rule_by_grade).
+-- La marque tombe quand le consentement change (prof, ou règle par niveau qui vient de
+-- s'appliquer) ou quand l'élève passe en 1re / terminale. Le trigger est nommé pour
+-- s'exécuter APRÈS consent_rule_by_grade_trg (ordre alphabétique des triggers BEFORE) :
+-- il voit le consentement déjà recalculé par la règle par niveau.
 CREATE OR REPLACE FUNCTION public.clear_consent_rule_pending()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -76,14 +81,15 @@ AS $$
 BEGIN
 	IF NEW.consent_rule_pending
 		AND (NEW.consent_required IS DISTINCT FROM OLD.consent_required
-			OR NEW.grade IS DISTINCT FROM OLD.grade) THEN
+			OR NEW.grade = ANY (ARRAY['1_GEN', '1_SPE', '1_TECHNO', 'T_GEN', 'T_SPE',
+				'T_EXP', 'T_COMP', 'T_TECHNO'])) THEN
 		NEW.consent_rule_pending := false;
 	END IF;
 	RETURN NEW;
 END;
 $$;
 
-CREATE TRIGGER clear_consent_rule_pending_trg
+CREATE TRIGGER consent_rule_pending_clear_trg
 	BEFORE UPDATE ON public.profiles
 	FOR EACH ROW EXECUTE FUNCTION public.clear_consent_rule_pending();
 
@@ -104,7 +110,10 @@ BEGIN
 			consent_rule_pending = false
 		WHERE id = NEW.student_id
 		  AND consent_rule_pending
-		  AND consent_granted_at IS NULL;
+		  AND consent_granted_at IS NULL
+		  -- Par prudence : jamais un élève de 1re / terminale.
+		  AND (grade IS NULL OR NOT grade = ANY (ARRAY['1_GEN', '1_SPE', '1_TECHNO',
+			'T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_TECHNO']));
 	END IF;
 	RETURN NEW;
 END;
