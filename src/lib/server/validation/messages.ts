@@ -83,10 +83,33 @@ export const sentMessagesResponseSchema = z.object({
 });
 
 /**
+ * Un message du fil (GET /api/messages/thread) : les champs que lit la page
+ * /messages/thread/[id], tirés de get_message_thread (ordre, niveau) et de
+ * get_message_details (rôle, pièces jointes). Pas le schéma de la boîte de
+ * réception : ces RPC ne rendent ni sender_email ni created_at.
+ */
+export const threadMessageResponseSchema = z.object({
+	id: z.string().uuid(),
+	sender_id: z.string().uuid(),
+	sender_name: z.string().nullable(),
+	sender_avatar_url: z.string().nullable(),
+	sender_role: z.string().nullable(),
+	subject: z.string(),
+	// jsonb de l'éditeur, rendu tel quel par MessageContent
+	content: z.unknown(),
+	// Horodatage Postgres : décalage « +00:00 », que .datetime() refuse par défaut
+	sent_at: z.string().datetime({ offset: true }),
+	edited_at: z.string().datetime({ offset: true }).nullable(),
+	parent_message_id: z.string().uuid().nullable(),
+	level: z.number().int().nonnegative(),
+	attachments: z.array(z.record(z.string(), z.unknown())).nullable()
+});
+
+/**
  * Message thread response schema (GET /api/messages/thread)
  */
 export const messageThreadResponseSchema = z.object({
-	messages: z.array(messageResponseSchema)
+	messages: z.array(threadMessageResponseSchema)
 });
 
 /**

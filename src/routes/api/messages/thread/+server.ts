@@ -43,10 +43,43 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(500, 'Erreur lors de la récupération du fil de discussion');
 		}
 
+		// get_message_thread donne l'ordre et le niveau mais ni le rôle de
+		// l'expéditeur ni les pièces jointes : get_message_details les complète,
+		// message par message (mêmes droits : l'appelant a envoyé ou reçu chacun).
+		const threadRows = messages ?? [];
+		const detailed = await Promise.all(
+			threadRows.map(async (row) => {
+				const { data: details, error: detailsError } = await supabase.rpc('get_message_details', {
+					p_message_id: row.message_id,
+					p_user_id: user.id
+				});
+				// Jamais un fil partiel : un message illisible fait échouer la requête
+				if (detailsError || !details?.[0]) {
+					console.error('Error fetching thread message details:', detailsError);
+					throw error(500, 'Erreur lors de la récupération du fil de discussion');
+				}
+				const detail = details[0];
+				return {
+					id: row.message_id,
+					sender_id: row.sender_id,
+					sender_name: row.sender_name,
+					sender_avatar_url: row.sender_avatar_url,
+					sender_role: detail.sender_role,
+					subject: row.subject,
+					content: row.content,
+					sent_at: row.sent_at,
+					edited_at: row.edited_at,
+					parent_message_id: row.parent_message_id,
+					level: row.level,
+					attachments: detail.attachments
+				};
+			})
+		);
+
 		// Validate response
 		const validated = validateJsonResponse(
 			messageThreadResponseSchema,
-			{ messages: messages || [] },
+			{ messages: detailed },
 			'GET /api/messages/thread'
 		);
 
