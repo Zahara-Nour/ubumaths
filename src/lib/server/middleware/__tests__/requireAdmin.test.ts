@@ -129,4 +129,19 @@ describe('requireAdmin — denial', () => {
 			expect(err.status).toBe(401);
 		}
 	});
+
+	// Constat B4 : une élévation sans session (poste partagé après logout) ne vaut rien.
+	it('throws 401 for an active elevation when the caller has no session', async () => {
+		const supabase = createMockSupabase();
+		const locals = createMockLocals(undefined, supabase) as any;
+		locals.user = null;
+		locals.adminSupabase = createMockSupabase();
+		locals.adminElevation = {
+			active: true,
+			adminUserId: TEST_IDS.elevatedAdmin,
+			expiresAt: Date.now() + 3600_000
+		};
+
+		await expect(requireAdmin(locals)).rejects.toMatchObject({ status: 401 });
+	});
 });
