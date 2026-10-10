@@ -56,14 +56,16 @@ export function roundFraction(value: Fraction, places: number): { digits: string
 /**
  * Un flottant arrondi à `places` décimales, même règle. Le flottant est lu
  * comme le décimal qu'il écrit (12 chiffres significatifs : 1,005 et non
- * 1,00499…), puis arrondi en entiers par `roundFraction`.
+ * 1,00499…), puis arrondi en entiers par `roundFraction`. Au-delà de 12
+ * chiffres significatifs, la valeur est déjà tronquée à 12 (comme l'affichage
+ * de `formatStatNumber`) : sans effet sur des données d'élèves.
  */
 export function roundNumber(value: number, places: number): number {
 	const decimal = Fraction.parse(String(Number(value.toPrecision(12))));
 	// Écriture exponentielle (1e-7, 1e21) : pas de demi à départager à cette échelle
 	if (decimal === null) {
 		const scale = 10 ** places;
-		return (Math.sign(value) * Math.round(Math.abs(value) * scale)) / scale;
+		return (Math.sign(value) * Math.round(Math.abs(value) * scale)) / scale + 0;
 	}
 	return Number(roundFraction(decimal, places).digits) + 0;
 }

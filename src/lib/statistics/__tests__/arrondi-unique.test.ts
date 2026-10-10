@@ -53,6 +53,7 @@ describe('roundNumber : la même règle pour tout affichage de valeur', () => {
 		[-1.0005, 3, -1.001],
 		[-0.0004, 3, 0],
 		[1e-7, 2, 0],
+		[-1e-7, 2, 0],
 		[12345.675, 2, 12345.68]
 	])('roundNumber(%s, %s) = %s', (value, places, expected) => {
 		expect(roundNumber(value, places)).toBe(expected);
