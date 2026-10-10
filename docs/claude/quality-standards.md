@@ -6,7 +6,7 @@ Référence synthétique pour Claude : **linting/checks**, **validation Zod**, *
 
 ## Linting & checks
 
-> ⚠️ **Un seul gros process à la fois** (cf. `CLAUDE.md §Gros process`) : `pnpm check`, `pnpm build`, `pnpm lint` sont autorisés en local mais sous aucun verrou (plus gros process 4 à 6 Go, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` et `tsc --noEmit` meurent sur le tas par défaut de Node (~4 Go) : limite de Node, pas de la RAM.
+> ⚠️ **Un seul gros process à la fois** (cf. `CLAUDE.md §Gros process`) : `pnpm check`, `pnpm build`, `pnpm lint` sont autorisés en local, sous le verrou de `scripts/gros-process.sh` (le même que `check:incremental`) (plus gros process 4 à 6 Go, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` et `tsc --noEmit` meurent sur le tas par défaut de Node (~4 Go) : limite de Node, pas de la RAM.
 
 | Outil                        | Où                    | Détail                                                                                                                                           |
 | ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |

@@ -43,7 +43,7 @@
 - Le **hook pre-commit est léger** (`.lintstagedrc.js` → `oxlint` + `prettier` sur les fichiers staged, ~2 s — motif : la durée, un eslint complet prend 530 s) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants) ; prettier garde le job **Lint** CI (`prettier --check`) vert.
 - **Avant de pousser** : `pnpm check:incremental` (~45 s, **0 erreur exigée**).
 - **eslint complet** : en CI, et autorisé en local **en arrière-plan** (`pnpm lint`, 530 s). Le hook utilise `oxlint` (Rust) pour le feedback rapide ; `pnpm lint:fast` (~2,5 s) avant de pousser.
-- **Un seul gros process à la fois** : `pnpm check` / `pnpm build` / `pnpm lint` sont autorisés mais sous aucun verrou (4 à 6 Go chacun, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` meurt sur le tas par défaut de Node (~4 Go), quelle que soit la RAM.
+- **Un seul gros process à la fois** : `pnpm check` / `pnpm build` / `pnpm lint` sont autorisés, sous le verrou de `scripts/gros-process.sh` (le même que `check:incremental`) (4 à 6 Go chacun, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` meurt sur le tas par défaut de Node (~4 Go), quelle que soit la RAM.
 
 ## 5. Base de données / migrations (chemin à haut risque)
 

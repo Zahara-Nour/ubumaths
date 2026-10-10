@@ -5,7 +5,8 @@
  * `.claude/hooks/garde-commandes.py` tourne avant chaque commande Bash de
  * Claude Code. Il transforme les interdits de CLAUDE.md en garde-fous : un
  * refus (sortie 2, explication sur stderr, renvoyée au modèle) ou une demande
- * de confirmation à David (`permissionDecision: ask`) pour la mise en prod.
+ * de confirmation à David (`permissionDecision: ask`), qu'aucune règle
+ * n'utilise aujourd'hui.
  *
  * Gardé ici : chaque interdit est refusé, sa variante légitime passe, et une
  * commande ordinaire passe sans bruit.
@@ -68,14 +69,9 @@ describe('garde-commandes — refusé, avec la raison', () => {
 	});
 });
 
-describe('garde-commandes — la mise en prod demande confirmation', () => {
-	it('pnpm deploy:prod → demande à David', () => {
-		const r = hook('pnpm deploy:prod');
-		expect(r.status).toBe(0);
-		expect(JSON.parse(r.stdout).hookSpecificOutput.permissionDecision).toBe('ask');
-	});
-
-	it('pnpm deploy:prod --essai passe sans demande', () => {
+describe('garde-commandes — la mise en prod passe (décision de David, 2026-10-10)', () => {
+	it('pnpm deploy:prod et son essai passent sans demande', () => {
+		passe('pnpm deploy:prod');
 		passe('pnpm deploy:prod --essai');
 	});
 });

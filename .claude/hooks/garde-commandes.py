@@ -2,7 +2,8 @@
 """Garde-fou PreToolUse (Bash) : les interdits de CLAUDE.md, appliqués avant la commande.
 
 Sortie 2 + explication sur stderr : Claude Code refuse la commande et renvoie
-l'explication au modèle. JSON `permissionDecision: ask` : David confirme.
+l'explication au modèle. (`demander` rend la main à David pour confirmer ;
+aucune règle ne s'en sert aujourd'hui.)
 Tout le reste (sortie 0, rien sur stdout) passe sans bruit. Une entrée illisible
 ne bloque jamais : le garde-fou ne doit pas casser la session.
 
@@ -86,7 +87,8 @@ for brut in segments:
     if re.match(r"pnpm\s+(?:run\s+)?release(?::\w+)?\b", s):
         refuser("la version se crée avec la mise en prod : `pnpm deploy:prod`, sur demande explicite de David (ADR 0021).")
 
-    if re.match(r"pnpm\s+(?:run\s+)?deploy:prod\b", s) and "--essai" not in s:
-        demander("Mise en prod (version + branche production) : seulement sur demande explicite de David (ADR 0021).")
+    # `pnpm deploy:prod` n'est plus soumis à confirmation (décision de David,
+    # 2026-10-10) : la règle « seulement sur sa demande explicite » reste dans
+    # CLAUDE.md, la fenêtre de confirmation faisait doublon avec elle.
 
 sys.exit(0)
