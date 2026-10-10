@@ -11,6 +11,7 @@
  * `pnpm test:integration` invocation.
  */
 import { Client } from 'pg';
+import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -24,10 +25,22 @@ function makeClient(): Client {
 	});
 }
 
+/**
+ * La base contenait-elle la base locale remplie (`pnpm db:seed-riche`) ? Ses
+ * classes portent les codes `LOCAL…`. La suite la détruit (prof supprimé,
+ * toutes les classes purgées) : on la recrée en sortie.
+ */
+let seedRicheARefaire = false;
+
 export async function setup(): Promise<void> {
 	const client = makeClient();
 	await client.connect();
 	try {
+		const { rows } = await client.query(
+			`select exists (select 1 from public.classes where join_code like 'LOCAL%') as present`
+		);
+		seedRicheARefaire = !process.env.CI && rows[0]?.present === true;
+
 		// Deleting from auth.users cascades to profiles → classes → class_members,
 		// clearing the seeded demo teachers (and any leftover teacher from a prior run).
 		await client.query(
@@ -64,5 +77,16 @@ export async function teardown(): Promise<void> {
 		// Purement confortable : jamais au prix d'un échec de suite.
 	} finally {
 		await client.end();
+	}
+
+	// La base locale remplie avait été détruite par la suite : on la recrée (~10 s).
+	// Script appelé DIRECTEMENT : `pnpm db:seed-riche` reprendrait le verrou
+	// Supabase, que la suite tient déjà, et sortirait en exit 2.
+	if (seedRicheARefaire) {
+		console.log('\n↻ Base locale remplie détruite par la suite : pnpm db:seed-riche…');
+		const r = spawnSync('npx', ['tsx', 'scripts/db-seed-riche/index.ts'], { stdio: 'inherit' });
+		if (r.status !== 0) {
+			console.log('⚠️  Seed non refait : relancer `pnpm db:seed-riche` à la main.');
+		}
 	}
 }
