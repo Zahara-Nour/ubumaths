@@ -1038,7 +1038,7 @@ describe('RLS — scope élève', () => {
 		// Act
 		// Family A attempt (template-based): chk_attempt_family_regime requires
 		// skill_id to be NULL when template_id is set.
-		const { error } = await studentClient.from('skill_attempts' as never).insert({
+		const { error } = await studentClient.from('skill_attempts').insert({
 			student_id: student.id,
 			template_id: tpl,
 			success: true,
@@ -1105,15 +1105,16 @@ describe('RLS — scope élève', () => {
 		// Arrange
 		const student1 = await TestData.profile().withRole('student').create();
 		const student2 = await TestData.profile().withRole('student').create();
-		const skill = await getKnowledgeSkill(service, 'Nombres décimaux', 1);
 		const tpl = await createFakeTemplate(service, student2.id);
 
 		const student1Client = await createAuthenticatedClient(student1.email);
 
-		// Act: student1 tries to insert an attempt for student2
-		const { error } = await student1Client.from('skill_attempts' as never).insert({
+		// Act: student1 tries to insert an attempt for student2.
+		// Tentative de famille A valide (template_id + success, sans observable_id) :
+		// l'ancienne colonne `skill_id` faisait rejeter l'insertion par PostgREST
+		// (colonne inconnue), et le test passait sans que la RLS soit en jeu.
+		const { error } = await student1Client.from('skill_attempts').insert({
 			student_id: student2.id,
-			skill_id: skill.id,
 			template_id: tpl,
 			success: true,
 			source: 'auto'
@@ -1207,7 +1208,7 @@ describe('RLS — scope prof', () => {
 		const teacherClient = await createAuthenticatedClient(teacher.email);
 
 		// Act
-		const { error } = await teacherClient.from('skill_attempts' as never).insert({
+		const { error } = await teacherClient.from('skill_attempts').insert({
 			student_id: student.id,
 			observable_id: obsA1.id,
 			task_id: taskId,
@@ -1237,9 +1238,9 @@ describe('RLS — scope prof', () => {
 		const teacherBClient = await createAuthenticatedClient(teacherB.email);
 
 		// Act: teacherB tries to insert for a student not in their class
-		const { error } = await teacherBClient.from('skill_attempts' as never).insert({
+		const { error } = await teacherBClient.from('skill_attempts').insert({
 			student_id: student.id,
-			skill_id: obsA1.id,
+			observable_id: obsA1.id,
 			task_id: taskId,
 			code: 'plus',
 			source: 'teacher'

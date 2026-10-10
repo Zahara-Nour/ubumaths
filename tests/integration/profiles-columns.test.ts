@@ -18,8 +18,9 @@
  *
  * @vitest-environment node
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
+import type { Tables } from '$lib/types/database';
 
 const db = createServiceRoleClient();
 
@@ -59,7 +60,10 @@ describe('profiles — les requêtes des fiches résolvent', () => {
 
 	it('les anciens noms sont bien refusés', async () => {
 		// Sans quoi les tests ci-dessus pourraient passer pour la mauvaise raison.
-		// @ts-expect-error - colonnes volontairement inexistantes
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'profiles'>>().not.toHaveProperty('first_name');
+		expectTypeOf<Tables<'profiles'>>().not.toHaveProperty('last_name');
 		const parNom = await db.from('profiles').select('first_name, last_name').limit(1);
 		expect(parNom.error).not.toBeNull();
 
@@ -103,7 +107,7 @@ describe('profiles — embeds désambiguïsés par nom de contrainte', () => {
 	it('un embed non désambiguïsé est bien refusé', async () => {
 		const { error } = await db
 			.from('marketplace_trades')
-			// @ts-expect-error - embed volontairement ambigu
+			// embed volontairement ambigu (postgrest-js ne le refuse pas à la compilation)
 			.select('id, profiles(id)')
 			.limit(1);
 

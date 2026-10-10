@@ -17,11 +17,13 @@
  * @module tests/integration/vip-card-draw-global-flag
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, expectTypeOf, beforeAll, afterAll, beforeEach } from 'vitest';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData,
-	closeConnections
+	closeConnections,
+	TEST_SUPABASE_URL,
+	TEST_SERVICE_ROLE_KEY
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -32,7 +34,7 @@ describe('VIP Card draw - global flag only - Integration Tests', () => {
 	let service: SupabaseClient<Database>;
 	// These tests mutate the GLOBAL card state; snapshot + restore so sibling
 	// VIP-card suites keep the seeded defaults.
-	let originalCardStates: { id: string; is_enabled: boolean | null }[] = [];
+	let originalCardStates: { id: string; is_enabled: boolean }[] = [];
 
 	beforeAll(async () => {
 		service = createServiceRoleClient();
@@ -80,12 +82,19 @@ describe('VIP Card draw - global flag only - Integration Tests', () => {
 	}
 
 	it('the teacher_vip_card_overrides table no longer exists', async () => {
-		const { error } = await service.from('teacher_vip_card_overrides').select('id').limit(1);
-		// relation "teacher_vip_card_overrides" does not exist
-		expect(error).not.toBeNull();
-		expect(`${error?.message} ${error?.code}`).toMatch(
-			/does not exist|42P01|PGRST205|schema cache/i
+		// Absente des types générés : `from()` la refuserait à la compilation. On
+		// prouve l'absence côté types, puis on interroge PostgREST directement.
+		expectTypeOf<Database['public']['Tables']>().not.toHaveProperty('teacher_vip_card_overrides');
+		const response = await fetch(
+			`${TEST_SUPABASE_URL}/rest/v1/teacher_vip_card_overrides?select=id&limit=1`,
+			{
+				headers: { apikey: TEST_SERVICE_ROLE_KEY, Authorization: `Bearer ${TEST_SERVICE_ROLE_KEY}` }
+			}
 		);
+		const body = await response.text();
+		// relation "teacher_vip_card_overrides" does not exist
+		expect(response.ok).toBe(false);
+		expect(body).toMatch(/does not exist|42P01|PGRST205|schema cache/i);
 	});
 
 	it('a globally-disabled card (candy) is never drawn; globally-enabled cards are', async () => {

@@ -14,6 +14,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { present } from '../helpers/present';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -129,12 +130,12 @@ describe('Curriculum RLS — mono-teacher gating', () => {
 		)) as unknown as SupabaseClient<Database>;
 
 		const { data: inserted, error: insErr } = await client
-			.from('curriculum_themes' as never)
+			.from('curriculum_themes')
 			.insert({ grade: TEST_GRADE, name: 'Calcul', display_order: 0 } as never)
 			.select('id, name')
 			.single();
 		expect(insErr).toBeNull();
-		expect((inserted as { name: string }).name).toBe('Calcul');
+		expect(present(inserted, 'thème inséré').name).toBe('Calcul');
 
 		const { data: rows } = await client
 			.from('curriculum_themes' as never)

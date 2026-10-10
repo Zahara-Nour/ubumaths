@@ -119,20 +119,22 @@ describe('vue resources + recherche globale', () => {
 		await service.from('exercises').delete().in('id', EXERCISE_IDS);
 		await service.from('question_templates').delete().in('id', QUESTION_IDS);
 
-		const { error: exError } = await service.from('exercises').insert([
-			// @ts-expect-error - fixture minimale : les colonnes non listées ont un défaut
-			exercise(EX_PUBLIC, 'Algèbre — révisions publiques', true, teacherId),
-			exercise(EX_PRIVATE, 'Algèbre — brouillon privé', false, teacherId),
-			exercise(EX_NO_TITLE, null, true, teacherId),
-			exercise(EX_PERCENT, 'Pourcentages 100 % de réussite', true, teacherId)
-		]);
+		const { error: exError } = await service
+			.from('exercises')
+			.insert([
+				exercise(EX_PUBLIC, 'Algèbre — révisions publiques', true, teacherId),
+				exercise(EX_PRIVATE, 'Algèbre — brouillon privé', false, teacherId),
+				exercise(EX_NO_TITLE, null, true, teacherId),
+				exercise(EX_PERCENT, 'Pourcentages 100 % de réussite', true, teacherId)
+			]);
 		expect(exError).toBeNull();
 
-		const { error: qError } = await service.from('question_templates').insert([
-			// @ts-expect-error - fixture minimale : les colonnes non listées ont un défaut
-			question(Q_PUBLISHED, 'Fractions équivalentes', 'published', teacherId),
-			question(Q_DRAFT, 'Fractions — brouillon', 'draft', teacherId)
-		]);
+		const { error: qError } = await service
+			.from('question_templates')
+			.insert([
+				question(Q_PUBLISHED, 'Fractions équivalentes', 'published', teacherId),
+				question(Q_DRAFT, 'Fractions — brouillon', 'draft', teacherId)
+			]);
 		expect(qError).toBeNull();
 
 		// Une fiche contenant l'exercice public : c'est l'objet du type
@@ -291,7 +293,7 @@ describe('vue resources + recherche globale', () => {
 		const { data, error } = await teacher.rpc('search_resources', { p_query: 'ALGEBRE' });
 
 		expect(error).toBeNull();
-		const ids = (data ?? []).map((r: { id: string }) => r.id);
+		const ids = (data ?? []).map((r) => r.id);
 		// « ALGEBRE » doit trouver « Algèbre ».
 		expect(ids).toContain(EX_PUBLIC);
 	});
@@ -301,7 +303,7 @@ describe('vue resources + recherche globale', () => {
 		const { data, error } = await teacher.rpc('search_resources', { p_query: 'equivalence' });
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(Q_PUBLISHED);
+		expect((data ?? []).map((r) => r.id)).toContain(Q_PUBLISHED);
 	});
 
 	it('filtre par type', async () => {
@@ -311,7 +313,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		const kinds = new Set((data ?? []).map((r: { kind: string }) => r.kind));
+		const kinds = new Set((data ?? []).map((r) => r.kind));
 		expect(kinds.has('question')).toBe(true);
 		expect(kinds.has('exercise')).toBe(false);
 	});
@@ -320,7 +322,7 @@ describe('vue resources + recherche globale', () => {
 		const { data, error } = await teacher.rpc('search_resources', { p_query: '100 %' });
 
 		expect(error).toBeNull();
-		const ids = (data ?? []).map((r: { id: string }) => r.id);
+		const ids = (data ?? []).map((r) => r.id);
 		// Seul le titre contenant littéralement « 100 % » remonte.
 		expect(ids).toContain(EX_PERCENT);
 		expect(ids).not.toContain(EX_PUBLIC);
@@ -377,7 +379,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
+		expect((data ?? []).map((r) => r.id)).toContain(EX_PUBLIC);
 	});
 
 	it('borne tout de même un tableau de types déraisonnable', async () => {
@@ -394,7 +396,7 @@ describe('vue resources + recherche globale', () => {
 		const { data, error } = await student.rpc('search_resources', { p_query: 'algebre' });
 
 		expect(error).toBeNull();
-		const ids = (data ?? []).map((r: { id: string }) => r.id);
+		const ids = (data ?? []).map((r) => r.id);
 		expect(ids).not.toContain(EX_PRIVATE);
 	});
 
@@ -435,7 +437,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(WORKSHEET);
+		expect((data ?? []).map((r) => r.id)).toContain(WORKSHEET);
 	});
 
 	it("n'expose PAS la fiche à un élève à qui elle n'a pas été distribuée", async () => {
@@ -461,7 +463,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).not.toContain(WORKSHEET);
+		expect((data ?? []).map((r) => r.id)).not.toContain(WORKSHEET);
 	});
 
 	it('filtre par niveau : la 6ᵉ ne remonte pas dans une recherche de 1ʳᵉ spé', async () => {
@@ -473,7 +475,7 @@ describe('vue resources + recherche globale', () => {
 		expect(error).toBeNull();
 		// EX_PUBLIC est en 6ᵉ : il sort. Sans le filtre, il remonterait (test
 		// « est insensible aux accents et à la casse » ci-dessus).
-		expect((data ?? []).map((r: { id: string }) => r.id)).not.toContain(EX_PUBLIC);
+		expect((data ?? []).map((r) => r.id)).not.toContain(EX_PUBLIC);
 	});
 
 	it('une ressource SANS niveau reste toujours visible', async () => {
@@ -491,7 +493,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PERCENT);
+		expect((data ?? []).map((r) => r.id)).toContain(EX_PERCENT);
 
 		await service
 			.from('exercises')
@@ -503,7 +505,7 @@ describe('vue resources + recherche globale', () => {
 		const { data, error } = await teacher.rpc('search_resources', { p_query: 'algebre' });
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
+		expect((data ?? []).map((r) => r.id)).toContain(EX_PUBLIC);
 	});
 
 	it("n'expose pas non plus l'exercice sous-jacent d'une fiche non distribuée", async () => {
@@ -527,7 +529,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
+		expect((data ?? []).map((r) => r.id)).toContain(EX_PUBLIC);
 	});
 
 	it('compare le tag sur sa forme canonique, pas sur le libellé', async () => {
@@ -538,7 +540,7 @@ describe('vue resources + recherche globale', () => {
 		});
 
 		expect(error).toBeNull();
-		expect((data ?? []).map((r: { id: string }) => r.id)).toContain(EX_PUBLIC);
+		expect((data ?? []).map((r) => r.id)).toContain(EX_PUBLIC);
 	});
 
 	it('combine tag ET texte plutôt que de les additionner', async () => {

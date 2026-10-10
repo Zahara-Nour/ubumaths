@@ -981,15 +981,16 @@ describe('POST /api/skill-attempts — RLS enforcement via authenticated client'
 		// insert directly via the authenticated Supabase client.
 		const studentA = await TestData.profile().withRole('student').create();
 		const studentB = await TestData.profile().withRole('student').create();
-		const skill = await getKnowledgeSkill(service, 'Nombres entiers', 1);
 		const tpl = await createFakeTemplate(service, studentB.id);
 
 		const studentASupabase = await createAuthenticatedClient(studentA.email);
 
-		// studentA tries to insert a row with student_id=studentB.id directly
-		const { error: insertError } = await studentASupabase.from('skill_attempts' as never).insert({
+		// studentA tries to insert a row with student_id=studentB.id directly.
+		// Tentative de régime contenus valide (observable_id NULL) : avec un
+		// observable_id ET un template_id, la contrainte chk_attempt_regime
+		// rejetait la ligne, et le test passait sans que la RLS soit en jeu.
+		const { error: insertError } = await studentASupabase.from('skill_attempts').insert({
 			student_id: studentB.id, // NOT auth.uid()
-			observable_id: skill.id,
 			template_id: tpl,
 			success: true,
 			source: 'auto'
@@ -1002,17 +1003,19 @@ describe('POST /api/skill-attempts — RLS enforcement via authenticated client'
 	it('student cannot SELECT skill_attempts rows belonging to another student via authenticated client', async () => {
 		const studentA = await TestData.profile().withRole('student').create();
 		const studentB = await TestData.profile().withRole('student').create();
-		const skill = await getKnowledgeSkill(service, 'Fractions', 1);
 		const tpl = await createFakeTemplate(service, studentB.id);
 
-		// Insert an attempt for studentB via service role
-		await service.from('skill_attempts' as never).insert({
+		// Insert an attempt for studentB via service role.
+		// Régime contenus valide (observable_id NULL), et l'insertion est vérifiée :
+		// une ligne rejetée par chk_attempt_regime laissait la table vide, et le
+		// « zéro ligne » ci-dessous ne prouvait rien sur la RLS.
+		const { error: seedError } = await service.from('skill_attempts').insert({
 			student_id: studentB.id,
-			observable_id: skill.id,
 			template_id: tpl,
 			success: true,
 			source: 'auto'
 		});
+		expect(seedError, 'tentative de studentB non posée').toBeNull();
 
 		// studentA queries with their own authenticated client
 		const studentASupabase = await createAuthenticatedClient(studentA.email);

@@ -103,6 +103,8 @@ async function maintenantBase(chapitre: string): Promise<number> {
 	return new Date(sonde.created_at).getTime();
 }
 
+type ContenuCouvert = Exclude<ChapterContentType, 'series'>;
+
 describe('publier pose l’heure de la base, pas celle de Node', () => {
 	let enseignantId: string;
 	let classe: string;
@@ -110,7 +112,9 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 	let prof: SupabaseClient<Database>;
 	let eleve: SupabaseClient<Database>;
 
-	const liens: Record<ChapterContentType, string> = {
+	// Les séries (`series`, ajoutées depuis) n'ont pas de cas ici : seuls les
+	// quatre contenus d'origine sont couverts.
+	const liens: Record<ContenuCouvert, string> = {
 		document: '',
 		exercise: '',
 		checklist: '',
@@ -238,7 +242,7 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 		await cleanupAllTestData();
 	});
 
-	const CAS: { type: ChapterContentType; table: TableContenu }[] = [
+	const CAS: { type: ContenuCouvert; table: TableContenu }[] = [
 		{ type: 'document', table: 'chapter_documents' },
 		{ type: 'exercise', table: 'chapter_exercises' },
 		{ type: 'checklist', table: 'chapter_checklist_items' },

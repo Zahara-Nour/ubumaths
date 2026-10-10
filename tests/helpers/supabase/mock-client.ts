@@ -125,8 +125,12 @@ export interface MockAuth {
 
 /**
  * Mock Supabase client type with test utilities exposed
+ *
+ * Toutes les méthodes redéclarées ci-dessous en mocks sont retirées du type de
+ * base : un `vi.fn()` n'est pas compatible avec la signature typée de `from`.
  */
-export interface MockSupabaseClient extends Omit<SupabaseClient<Database>, 'auth' | 'rpc'> {
+export interface MockSupabaseClient
+	extends Omit<SupabaseClient<Database>, 'auth' | 'rpc' | 'from' | 'channel' | 'removeChannel'> {
 	/** Access to configure chain method mocks */
 	_mockChain: MockChain;
 

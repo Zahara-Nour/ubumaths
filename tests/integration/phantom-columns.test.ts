@@ -13,8 +13,9 @@
  *
  * @vitest-environment node
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
+import type { Tables } from '$lib/types/database';
 
 const db = createServiceRoleClient();
 
@@ -27,12 +28,13 @@ describe('exercises — ni description, ni tags, ni difficulty', () => {
 
 	it('les colonnes inventées sont bien refusées', async () => {
 		// Sans quoi le test ci-dessus passerait pour la mauvaise raison.
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'exercises'>>().not.toHaveProperty('description');
+		expectTypeOf<Tables<'exercises'>>().not.toHaveProperty('tags');
+		expectTypeOf<Tables<'exercises'>>().not.toHaveProperty('difficulty');
 		for (const colonne of ['description', 'tags', 'difficulty']) {
-			const { error } = await db
-				.from('exercises')
-				// @ts-expect-error - colonne volontairement inexistante
-				.select(`id, ${colonne}`)
-				.limit(1);
+			const { error } = await db.from('exercises').select(`id, ${colonne}`).limit(1);
 
 			expect(error, colonne).not.toBeNull();
 		}
@@ -52,12 +54,13 @@ describe('question_templates — le contenu vit dans variations', () => {
 	it('le modèle plat question / answer / explanation n’existe pas', async () => {
 		// Ce que lisait le quiz de chapitre : trois colonnes absentes depuis
 		// toujours, d'où un quiz qui n'a jamais rien affiché.
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'question_templates'>>().not.toHaveProperty('question');
+		expectTypeOf<Tables<'question_templates'>>().not.toHaveProperty('answer');
+		expectTypeOf<Tables<'question_templates'>>().not.toHaveProperty('explanation');
 		for (const colonne of ['question', 'answer', 'explanation']) {
-			const { error } = await db
-				.from('question_templates')
-				// @ts-expect-error - colonne volontairement inexistante
-				.select(`id, ${colonne}`)
-				.limit(1);
+			const { error } = await db.from('question_templates').select(`id, ${colonne}`).limit(1);
 
 			expect(error, colonne).not.toBeNull();
 		}
@@ -70,7 +73,9 @@ describe('marketplace — noms de colonnes effectifs', () => {
 
 		expect(error).toBeNull();
 
-		// @ts-expect-error - colonne volontairement inexistante
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'marketplace_trade_offers'>>().not.toHaveProperty('offer_by');
 		const ancien = await db.from('marketplace_trade_offers').select('id, offer_by').limit(1);
 		expect(ancien.error).not.toBeNull();
 	});
@@ -83,7 +88,9 @@ describe('marketplace — noms de colonnes effectifs', () => {
 
 		expect(error).toBeNull();
 
-		// @ts-expect-error - colonne volontairement inexistante
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'marketplace_proposals'>>().not.toHaveProperty('updated_at');
 		const ancien = await db.from('marketplace_proposals').select('id, updated_at').limit(1);
 		expect(ancien.error).not.toBeNull();
 	});
@@ -100,12 +107,13 @@ describe('worksheet_instances — pas de suivi de temps', () => {
 	});
 
 	it('accessed_at / submitted_at / time_spent_seconds n’existent pas', async () => {
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'worksheet_instances'>>().not.toHaveProperty('accessed_at');
+		expectTypeOf<Tables<'worksheet_instances'>>().not.toHaveProperty('submitted_at');
+		expectTypeOf<Tables<'worksheet_instances'>>().not.toHaveProperty('time_spent_seconds');
 		for (const colonne of ['accessed_at', 'submitted_at', 'time_spent_seconds']) {
-			const { error } = await db
-				.from('worksheet_instances')
-				// @ts-expect-error - colonne volontairement inexistante
-				.select(`id, ${colonne}`)
-				.limit(1);
+			const { error } = await db.from('worksheet_instances').select(`id, ${colonne}`).limit(1);
 
 			expect(error, colonne).not.toBeNull();
 		}
@@ -140,11 +148,10 @@ describe('marketplace_trade_offers — contrat d’insertion', () => {
 	});
 
 	it('`offer_by` n’existe pas', async () => {
-		const { error } = await db
-			.from('marketplace_trade_offers')
-			// @ts-expect-error - colonne volontairement inexistante
-			.select('id, offer_by')
-			.limit(1);
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'marketplace_trade_offers'>>().not.toHaveProperty('offer_by');
+		const { error } = await db.from('marketplace_trade_offers').select('id, offer_by').limit(1);
 
 		expect(error).not.toBeNull();
 	});

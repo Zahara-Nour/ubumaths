@@ -176,17 +176,13 @@ describe('clôture d’une année scolaire', () => {
 	});
 
 	it('l’administrateur clôture, et le compte rendu dit ce qui a changé', async () => {
-		const { data, error } = await admin.rpc(
-			'close_school_year' as never,
-			{
-				p_school_year_id: anneeClose
-			} as never
-		);
+		const { data, error } = await admin.rpc('close_school_year', {
+			p_school_year_id: anneeClose
+		});
 		expect(error).toBeNull();
 
-		const bilan = data as { classes_fermees: number; adhesions_archivees: number };
-		expect(bilan.classes_fermees).toBe(2);
-		expect(bilan.adhesions_archivees).toBe(2);
+		// Le compte rendu est du jsonb : on vérifie ses deux champs sans le typer.
+		expect(data).toMatchObject({ classes_fermees: 2, adhesions_archivees: 2 });
 	});
 
 	it('les classes de l’année sont fermées', async () => {
