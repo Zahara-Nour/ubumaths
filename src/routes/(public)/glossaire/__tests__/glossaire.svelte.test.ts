@@ -7,10 +7,16 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 import Glossaire from '../+page.svelte';
+import type { PageData } from '../$types';
 
-/** Le glossaire, avec les entrées que lui donne le serveur (ici, celles du fichier). */
+/** Le glossaire, avec les entrées que lui donne le serveur (ici, celles du fichier).
+ *  La page ne lit que `entries` : le reste de PageData (session, profil, venus du
+ *  layout) n'est pas fabriqué, mais `entries` reste vérifié par `satisfies`. */
 async function renderGlossaire() {
-	return await render(Glossaire, { props: { data: { entries: MATH_DICTIONARY } } });
+	const data = { entries: MATH_DICTIONARY } satisfies Pick<PageData, 'entries'>;
+	return await render(Glossaire, {
+		props: { params: {}, data: data as PageData, form: undefined }
+	});
 }
 
 async function openTerm(name: string) {
