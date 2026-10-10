@@ -22,6 +22,42 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
 
 // ============================================================================
+// CLIENT SERVICE (l'écriture du soft-delete)
+// ============================================================================
+//
+// La route vérifie elle-même les droits du prof, puis écrit par le client service : avec
+// le client du prof, la RLS refusait la nouvelle ligne (groupe : 42501) ou ne touchait
+// AUCUNE ligne sans erreur (1-1 entre élèves) — la route annonçait alors « supprimé »
+// (constaté le 2026-10-10). Chaque test règle ici ce que rend l'UPDATE.
+const ecriture = vi.hoisted(() => ({
+	resultat: { data: [{ id: 'message' }] as { id: string }[] | null, error: null as unknown },
+	appels: [] as Array<{ table: string; valeurs: unknown; id: unknown }>
+}));
+
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({
+		from: (table: string) => {
+			const appel = { table, valeurs: undefined as unknown, id: undefined as unknown };
+			const chaine = {
+				update: (valeurs: unknown) => ((appel.valeurs = valeurs), chaine),
+				eq: (_col: string, id: unknown) => ((appel.id = id), chaine),
+				is: () => chaine,
+				select: () => {
+					ecriture.appels.push(appel);
+					return Promise.resolve(ecriture.resultat);
+				}
+			};
+			return chaine;
+		}
+	})
+}));
+
+beforeEach(() => {
+	ecriture.resultat = { data: [{ id: 'message' }], error: null };
+	ecriture.appels = [];
+});
+
+// ============================================================================
 // TEST DATA
 // ============================================================================
 
@@ -739,15 +775,8 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 			error: null
 		});
 
-		// Mock message update failure
-		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
-			return Promise.resolve(
-				onFulfilled({
-					data: null,
-					error: { message: 'Update failed' }
-				})
-			);
-		});
+		// Échec de l'UPDATE (client service)
+		ecriture.resultat = { data: null, error: { message: 'Update failed' } };
 
 		const request = createMockRequest(
 			{
@@ -768,6 +797,90 @@ describe('DELETE /api/moderation/messages/[id] - Error Handling', () => {
 			expect(error.status).toBe(500);
 			expect(error.body.message).toBe('Failed to delete message');
 		}
+	});
+
+	it('aucune ligne supprimée : 500, jamais « supprimé »', async () => {
+		const { DELETE } = await import('../[id]/+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: mockMessages.classChannelMessage,
+			error: null
+		});
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { user_id: TEST_IDS.teacher },
+			error: null
+		});
+		ecriture.resultat = { data: [], error: null };
+		mockSupabase.rpc = vi.fn().mockResolvedValue({ data: null, error: null });
+
+		await expect(
+			DELETE({
+				request: createMockRequest({ reason: 'Test reason' }, 'DELETE'),
+				locals,
+				params: { id: TEST_IDS.message }
+			} as any)
+		).rejects.toMatchObject({ status: 500 });
+		// Rien n'est journalisé comme supprimé.
+		expect(mockSupabase.rpc).not.toHaveBeenCalled();
+	});
+
+	it('écrit par le client service, sur CE message, après les contrôles', async () => {
+		const { DELETE } = await import('../[id]/+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: mockMessages.classChannelMessage,
+			error: null
+		});
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { user_id: TEST_IDS.teacher },
+			error: null
+		});
+		mockSupabase.rpc = vi.fn().mockResolvedValue({ data: null, error: null });
+
+		const response = await DELETE({
+			request: createMockRequest({ reason: 'Test reason' }, 'DELETE'),
+			locals,
+			params: { id: TEST_IDS.message }
+		} as any);
+
+		expect(response.status).toBe(200);
+		expect(ecriture.appels).toEqual([
+			{
+				table: 'messages',
+				valeurs: { deleted_at: expect.any(String) },
+				id: TEST_IDS.message
+			}
+		]);
+	});
+
+	it('refus d’accès : le client service n’écrit rien', async () => {
+		const { DELETE } = await import('../[id]/+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: mockMessages.classChannelMessage,
+			error: null
+		});
+		// Pas participant, et conversation de groupe → 403
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: mockConversations.classChannel,
+			error: null
+		});
+
+		await expect(
+			DELETE({
+				request: createMockRequest({ reason: 'Test reason' }, 'DELETE'),
+				locals,
+				params: { id: TEST_IDS.message }
+			} as any)
+		).rejects.toMatchObject({ status: 403 });
+		expect(ecriture.appels).toEqual([]);
 	});
 
 	it('should still succeed even if moderation log fails', async () => {

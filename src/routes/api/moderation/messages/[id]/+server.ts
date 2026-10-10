@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { deleteMessageSchema } from '$lib/server/validation/moderation';
 import { z } from 'zod';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 /**
  * DELETE /api/moderation/messages/[id]
@@ -161,14 +162,24 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// If membership exists OR authorization checks passed, proceed to deletion
 	}
 
-	// 7. Soft delete the message (set deleted_at timestamp)
-	const { error: updateError } = await locals.supabase
+	// 7. Soft delete — par le client SERVICE, les droits ayant été vérifiés ci-dessus.
+	// Avec le client du prof, la RLS refusait la nouvelle ligne (groupe : policy SELECT
+	// `deleted_at IS NULL` → 42501) ou ne touchait AUCUNE ligne sans erreur (1-1 entre
+	// élèves : pas de policy UPDATE pour le prof) — la route annonçait alors « supprimé ».
+	// Constaté le 2026-10-10 ; d'où aussi la vérification du nombre de lignes.
+	const { data: deleted, error: updateError } = await createServiceRoleClient()
 		.from('messages')
 		.update({ deleted_at: new Date().toISOString() })
-		.eq('id', messageId);
+		.eq('id', messageId)
+		.is('deleted_at', null)
+		.select('id');
 
 	if (updateError) {
 		console.error('Failed to delete message:', updateError);
+		throw error(500, 'Failed to delete message');
+	}
+	if (!deleted || deleted.length !== 1) {
+		console.error('Soft delete touched no row:', { messageId });
 		throw error(500, 'Failed to delete message');
 	}
 
