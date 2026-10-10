@@ -70,6 +70,7 @@ Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un
 
 ⚠️ **Aucun test ne lit `docs/`** (2026-10-08 : un commit de doc a passé `docs/wip/arbre-notions/arbre-notions.json` en .15 sans CI, et le test du seed a cassé sur toutes les PR suivantes). Un fichier dont dépend un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` (copie figée, mise à jour avec la migration ou le code qui la justifie) ; garde : `src/lib/__tests__/tests-sans-lecture-de-docs.test.ts`. Les **données de travail** lues par des scripts et des tests (`data/corrections/`, `data/relecture/`) vivent sous `data/`, hors `docs/` : tout push qui touche `data/` déclenche la CI.
 
+- **Commandes qui perdent du travail** (reset, rebase, revert, restore, `push --force`, `stash drop`, `branch -D`, `rm`, `mv`…) : **la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi** — elle demande l'accord de David. Ne jamais la contourner par une variante (`-D` au lieu de `-d`, `--force`, options placées ailleurs). Carte des réglages : [.claude/README.md](.claude/README.md).
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
 - **Migrations** : additive → `db:migrate` au merge (la base peut précéder le code en prod) ; destructive → seulement après le `deploy:prod` qui livre le code qui n'en dépend plus. Uniquement depuis la branche mergée.

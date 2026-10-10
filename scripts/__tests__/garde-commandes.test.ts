@@ -5,8 +5,8 @@
  * `.claude/hooks/garde-commandes.py` tourne avant chaque commande Bash de
  * Claude Code. Il transforme les interdits de CLAUDE.md en garde-fous : un
  * refus (sortie 2, explication sur stderr, renvoyée au modèle) ou une demande
- * de confirmation à David (`permissionDecision: ask`), qu'aucune règle
- * n'utilise aujourd'hui.
+ * de confirmation à David (`permissionDecision: ask`) pour les variantes des
+ * commandes destructives que la liste `ask` de .claude/settings.json ne voit pas.
  *
  * Gardé ici : chaque interdit est refusé, sa variante légitime passe, et une
  * commande ordinaire passe sans bruit.
@@ -83,6 +83,38 @@ describe('garde-commandes — la mise en prod passe (décision de David, 2026-10
 	it('pnpm deploy:prod et son essai passent sans demande', () => {
 		passe('pnpm deploy:prod');
 		passe('pnpm deploy:prod --essai');
+	});
+});
+
+const demande = (command: string, motif: RegExp, cwd?: string) => {
+	const r = hook(command, cwd);
+	expect(r.status, `${command}\n${r.stderr}`).toBe(0);
+	const sortie = JSON.parse(r.stdout);
+	expect(sortie.hookSpecificOutput.permissionDecision).toBe('ask');
+	expect(sortie.hookSpecificOutput.permissionDecisionReason).toMatch(motif);
+};
+
+describe('garde-commandes — commandes qui perdent du travail : variantes que la liste `ask` ne voit pas', () => {
+	// La liste `ask` de .claude/settings.json ne reconnaît qu'un début de commande :
+	// `git push origin main --force` ne commence pas par `git push --force`.
+	it("demande pour un push forcé, où que soit l'option", () => {
+		demande('git push origin main --force', /push forcé/);
+		demande('git push -f origin main', /push forcé/);
+		demande('git push --force-with-lease origin feat/x', /push forcé/);
+		demande('git -C ../ubumaths-wt-x push origin x --force', /push forcé/);
+	});
+
+	it('demande pour une suppression forcée de branche', () => {
+		demande('git branch -D feat/x', /branche/);
+		demande('git branch --delete --force feat/x', /branche/);
+		demande('cd ../wt && git branch -D feat/x', /branche/);
+	});
+
+	it('laisse passer les variantes sûres', () => {
+		passe('git push origin main');
+		passe('git push -u origin feat/x');
+		passe('git branch -d feat/x');
+		passe('git commit -m "pas de --force ici, ni de branch -D"');
 	});
 });
 
