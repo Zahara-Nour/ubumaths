@@ -324,7 +324,7 @@ describe('Hash Stability Regression Tests', () => {
 // partageaient donc la leur (clé UNIQUE du suivi → #360 impossible à enregistrer).
 describe('generateStableQuestionHash — jumelles distinctes', () => {
 	const questions = JSON.parse(
-		readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+		readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 	) as Array<Record<string, unknown>>;
 	const hashOf = (i: number) => generateStableQuestionHash(questions[i]);
 

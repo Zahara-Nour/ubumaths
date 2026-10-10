@@ -15,7 +15,7 @@ import { transformQuestion } from '../question-transformer';
 import type { QuestionWithMigration } from '../old-question-types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 describe('result-type decimal', () => {

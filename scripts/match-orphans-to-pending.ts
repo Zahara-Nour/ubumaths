@@ -23,7 +23,7 @@ async function matchOrphansToPending() {
 	console.log('🔍 Recherche de correspondance entre questions orphelines et entrées pending\n');
 
 	// Load old questions to compute hashes
-	const oldQuestionsRaw = await fs.readFile('.claude/old-questions.json', 'utf-8');
+	const oldQuestionsRaw = await fs.readFile('data/tinymath/old-questions.json', 'utf-8');
 	const oldQuestions: OldQuestion[] = JSON.parse(oldQuestionsRaw);
 	console.log(`📚 Questions chargées: ${oldQuestions.length}`);
 

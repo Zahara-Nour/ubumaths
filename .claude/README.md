@@ -16,5 +16,5 @@ Hors dépôt : `settings.local.json` (permissions personnelles, ignoré par git)
 Les commandes de `.claude/commands/` ont été retirées le 2026-10-10 (voir
 [skills-claude.md](../docs/pratiques/skills-claude.md)).
 
-`old-questions.json`, `old-questions-debug.txt`, `migration-state.json` et
-`test-questions-sample.json` sont des restes de la migration TinyMath, en attente de décision.
+Les données de la migration TinyMath (`old-questions.json` et compagnie), lues par les scripts
+et les tests de migration, vivent sous [`data/tinymath/`](../data/tinymath/).

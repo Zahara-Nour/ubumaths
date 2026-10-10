@@ -23,7 +23,7 @@ async function identifyUntrackedIndices() {
 	console.log('🔍 Identification des indices non trackés\n');
 
 	// Load old questions
-	const oldQuestionsRaw = await fs.readFile('.claude/old-questions.json', 'utf-8');
+	const oldQuestionsRaw = await fs.readFile('data/tinymath/old-questions.json', 'utf-8');
 	const oldQuestions: OldQuestion[] = JSON.parse(oldQuestionsRaw);
 	console.log(`📚 Questions chargées: ${oldQuestions.length}`);
 

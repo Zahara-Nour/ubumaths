@@ -1,5 +1,5 @@
 /**
- * Niveaux : les 633 vraies questions TinyMath (`.claude/old-questions.json`)
+ * Niveaux : les 633 vraies questions TinyMath (`data/tinymath/old-questions.json`)
  * ==========================================================================
  *
  * La base exige `level ≥ 1` (contrainte `question_templates_level_positive`) ;
@@ -14,7 +14,7 @@ import { transformQuestion } from '../question-transformer';
 import type { QuestionWithMigration } from '../old-question-types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 describe('niveaux sur le jeu réel', () => {

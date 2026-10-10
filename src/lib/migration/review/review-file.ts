@@ -41,7 +41,7 @@ export interface ReviewFile {
 // CONSTANTS
 // ============================================================================
 
-/** Nombre total de questions TinyMath (`.claude/old-questions.json`) */
+/** Nombre total de questions TinyMath (`data/tinymath/old-questions.json`) */
 const OLD_QUESTION_COUNT = 633;
 
 const reviewFileSchema = z

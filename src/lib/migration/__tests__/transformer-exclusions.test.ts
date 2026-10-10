@@ -18,7 +18,7 @@ import { resolveVariables } from '$lib/ubumark/parameterization/resolver/variabl
 import { createRandomSource } from '$lib/utils/random';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 /** Variables tirées sur `seeds` graines (première variation) */

@@ -10,7 +10,7 @@
  * Usage:
  *   pnpm tsx scripts/migrate-questions-loader.ts
  *
- * This will create: .claude/old-questions.json
+ * This will create: data/tinymath/old-questions.json
  */
 
 import { promises as fs } from 'fs';
@@ -43,7 +43,7 @@ const OLD_QUESTIONS_PATH = path.resolve(
 	'../extern/new-tinymath/apps/ubumaths/src/lib/questions/questions.ts'
 );
 
-const OUTPUT_PATH = path.resolve(__dirname, '../.claude/old-questions.json');
+const OUTPUT_PATH = path.resolve(__dirname, '../data/tinymath/old-questions.json');
 
 /**
  * Grade constants mapping (unused - kept for reference)
@@ -240,7 +240,7 @@ async function extractQuestions() {
 		console.error('Please check the error above for details.');
 
 		// Save the attempted code for manual review
-		const debugPath = path.resolve(__dirname, '../.claude/old-questions-debug.txt');
+		const debugPath = path.resolve(__dirname, '../data/tinymath/old-questions-debug.txt');
 		await fs.writeFile(debugPath, jsCode, 'utf-8');
 		console.error(`\n💡 Code saved to: ${debugPath}`);
 		console.error('   Review this file to manually fix the issues.');

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { MigrationStateManager } from '../state-manager';
 
 // Le gestionnaire écrit un journal d'état sur le disque. Sans redirection, les
-// tests réécrivaient le VRAI `.claude/migration-state.json` du projet.
+// tests réécrivaient le VRAI `data/tinymath/migration-state.json` du projet.
 const dossierTemporaire = mkdtempSync(join(tmpdir(), 'migration-state-'));
 afterAll(() => rmSync(dossierTemporaire, { recursive: true, force: true }));
 

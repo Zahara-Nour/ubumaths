@@ -10,7 +10,7 @@ import type { QuestionWithMigration } from '../src/lib/migration/old-question-ty
 import { transformQuestion } from '../src/lib/migration/question-transformer';
 import type { ImageUrlMapping } from '../src/lib/migration/question-transformer';
 
-const INPUT_FILE = '.claude/old-questions.json';
+const INPUT_FILE = 'data/tinymath/old-questions.json';
 const IMAGE_MAPPING_FILE = 'scripts/image-url-mapping.json';
 
 async function main(): Promise<void> {
