@@ -26,6 +26,7 @@
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import { keepOutsideFocus } from '../outside-focus';
 	import { cn } from '$lib/utils';
+	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import { Lightbulb, AlertCircle, ExternalLink, FileText, Video } from '@lucide/svelte';
 
 	interface Props {
@@ -46,6 +47,9 @@
 
 	// Find the hint by ID
 	const hint = $derived(hints.find((h) => h.id === hintId));
+
+	// Lien posé dans la page : schéma en liste blanche, sinon '#' (jamais `javascript:`)
+	const safeUrl = $derived(sanitizeUrl(hint?.url));
 
 	// Indice fermé en touchant le champ de réponse : le curseur y reste
 	const outsideFocus = keepOutsideFocus();
@@ -136,7 +140,7 @@
 								</div>
 							{:else}
 								<a
-									href={hint.url}
+									href={safeUrl}
 									target="_blank"
 									rel="noopener noreferrer"
 									class="flex items-center gap-2 text-sm text-primary hover:underline"
@@ -148,7 +152,7 @@
 							{/if}
 						{:else}
 							<a
-								href={hint.url}
+								href={safeUrl}
 								target="_blank"
 								rel="noopener noreferrer"
 								class="flex items-center gap-2 text-sm text-primary hover:underline"
@@ -161,7 +165,7 @@
 					{:else if hint.type === 'pdf' && hint.url}
 						<!-- PDF link -->
 						<a
-							href={hint.url}
+							href={safeUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="flex items-center gap-2 text-sm text-primary hover:underline"
@@ -180,7 +184,7 @@
 					{:else if hint.type === 'geogebra' && hint.url}
 						<!-- GeoGebra link -->
 						<a
-							href={hint.url}
+							href={safeUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="flex items-center gap-2 text-sm text-primary hover:underline"
@@ -192,7 +196,7 @@
 					{:else if hint.type === 'link' && hint.url}
 						<!-- Generic link -->
 						<a
-							href={hint.url}
+							href={safeUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="flex items-center gap-2 text-sm text-primary hover:underline"
