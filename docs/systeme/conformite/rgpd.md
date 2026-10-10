@@ -387,7 +387,11 @@ CRON_SECRET                   # Secret taches planifiees
 
 - ~~Aucun logging des acces aux donnees sensibles~~ **CORRIGE** : Table `audit_logs` avec triggers
 - ~~Aucun logging des modifications de donnees pedagogiques~~ **CORRIGE** : Triggers sur `exercise_completions`, `student_exercise_mastery`
-- ~~Impossible de repondre a "qui a accede aux donnees de mon enfant ?"~~ **CORRIGE** : RLS permet aux parents/enseignants de voir les logs
+- "Qui a accede aux donnees de mon enfant ?" — **reponse partielle seulement** (realigne le
+  2026-10-11, decision de David, constat C9) : `audit_logs` trace les **modifications** (pas les
+  lectures), conservees **60 jours** ; il n'existe pas de role parent dans l'application. Un parent
+  adresse sa demande au professeur, qui extrait les modifications des 60 derniers jours. Les acces
+  en lecture ne sont pas journalises.
 
 > **Amelioration 2026-01-16** : Implementation complete de l'audit trail RGPD via migration `supabase/migrations_archive/20260116100000_create_audit_trail.sql`. Comprend :
 >
