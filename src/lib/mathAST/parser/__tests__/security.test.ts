@@ -6,6 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex, parseLatexSafe } from '../index';
+import { parseCustom } from '../../index';
 import { SecurityError, DEFAULT_SECURITY_OPTIONS } from '../security';
 import type { ParserSecurityOptions } from '../security';
 
@@ -216,5 +217,61 @@ describe('combined security options', () => {
 		};
 		const result = parseLatexSafe(input, { mode: 'strict', security });
 		expect(result.ast).not.toBeNull();
+	});
+});
+
+// =============================================================================
+// Profondeur contrôlée AVANT l'analyse (L5)
+// =============================================================================
+
+/**
+ * Le plafond de profondeur était mesuré sur l'AST, donc APRÈS l'analyse : une
+ * saisie de quelques milliers de parenthèses faisait déborder la pile du
+ * parseur récursif (`RangeError`) avant que le plafond ne soit consulté.
+ */
+describe('profondeur contrôlée avant l’analyse', () => {
+	const DEEP = 4000;
+	const nested = (open: string, close: string, depth: number) =>
+		open.repeat(depth) + 'x' + close.repeat(depth);
+
+	const deepInputs: Array<[string, string]> = [
+		['parenthèses', nested('(', ')', DEEP)],
+		['accolades', nested('{', '}', DEEP)],
+		['crochets', nested('[', ']', DEEP)],
+		[
+			'\\left( … \\right) (×700 : 4000 dépasseraient la longueur maximale)',
+			nested('\\left(', '\\right)', 700)
+		]
+	];
+
+	function expectTooDeep(parse: () => unknown): void {
+		try {
+			parse();
+			expect.unreachable('la saisie aurait dû être refusée');
+		} catch (e) {
+			expect(e).toBeInstanceOf(SecurityError);
+			expect((e as SecurityError).code).toBe('AST_TOO_DEEP');
+		}
+	}
+
+	it.each(deepInputs)('parseLatex : %s imbriquées → SecurityError', (_label, input) => {
+		expectTooDeep(() => parseLatex(input));
+	});
+
+	it.each(deepInputs)('parseLatexSafe : %s imbriquées → SecurityError', (_label, input) => {
+		expectTooDeep(() => parseLatexSafe(input));
+	});
+
+	it('parseCustom : parenthèses imbriquées ×4000 → SecurityError', () => {
+		expectTooDeep(() => parseCustom(nested('(', ')', DEEP)));
+	});
+
+	it('une imbrication ordinaire passe toujours', () => {
+		expect(() => parseLatex(nested('(', ')', 30))).not.toThrow();
+		expect(() => parseLatex('\\frac{\\frac{1}{2}}{\\left(\\frac{3}{4}\\right)}')).not.toThrow();
+	});
+
+	it('un délimiteur fermant en trop ne fausse pas le compte', () => {
+		expect(() => parseLatexSafe(')'.repeat(200) + nested('(', ')', 30))).not.toThrow(SecurityError);
 	});
 });

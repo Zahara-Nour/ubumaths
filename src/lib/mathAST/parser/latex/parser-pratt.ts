@@ -37,7 +37,12 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
-import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
+import {
+	SecurityError,
+	checkInputLength,
+	checkNestingDepth,
+	getEffectiveSecurityOptions
+} from '../security';
 import type { ParserSecurityOptions } from '../security';
 
 // =============================================================================
@@ -2701,6 +2706,7 @@ export function parsePratt(input: string, options?: Partial<ParserOptions>): Mat
 	// Security checks
 	const security = getEffectiveSecurityOptions(fullOptions.security);
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new PrattParser(input, fullOptions);
 	const result = parser.parse();
@@ -2742,6 +2748,7 @@ export function parsePrattSafe(input: string, options?: Partial<ParserOptions>):
 	// Security checks - rethrow SecurityError (not a parse error)
 	const security = getEffectiveSecurityOptions(fullOptions.security);
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new PrattParser(input, fullOptions);
 

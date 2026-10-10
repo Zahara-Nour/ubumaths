@@ -47,6 +47,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	checkNestingDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -1899,6 +1900,7 @@ export function parseRD(input: string, options?: Partial<ParserOptions>): MathNo
 
 	// Check input length BEFORE parsing (fail fast)
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new RDParser(input, fullOptions);
 	const result = parser.parse();
@@ -1943,6 +1945,7 @@ export function parseRDSafe(input: string, options?: Partial<ParserOptions>): Pa
 	// Check input length BEFORE parsing (fail fast)
 	// SecurityError is NOT caught - it propagates up
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new RDParser(input, fullOptions);
 

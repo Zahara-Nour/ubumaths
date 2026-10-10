@@ -119,6 +119,33 @@ export function checkInputLength(input: string, maxLength: number): void {
 }
 
 /**
+ * Refuse une saisie dont les délimiteurs `(`, `[`, `{` s'imbriquent plus
+ * profond que `maxDepth`, AVANT l'analyse.
+ *
+ * Le plafond `maxASTDepth` se mesure sur l'AST, donc après l'analyse : quelques
+ * milliers de parenthèses faisaient déborder la pile du parseur récursif
+ * (`RangeError`) avant qu'il soit consulté. Chaque délimiteur ouvrant ajoute au
+ * moins un niveau à l'AST : une imbrication plus profonde que le plafond
+ * l'aurait de toute façon dépassé. Un fermant en trop ne descend pas sous zéro.
+ */
+export function checkNestingDepth(input: string, maxDepth: number): void {
+	let depth = 0;
+	for (const char of input) {
+		if (char === '(' || char === '[' || char === '{') {
+			depth++;
+			if (depth > maxDepth) {
+				throw new SecurityError(
+					`Nesting depth exceeds maximum allowed ${maxDepth}`,
+					'AST_TOO_DEEP'
+				);
+			}
+		} else if (char === ')' || char === ']' || char === '}') {
+			depth = Math.max(0, depth - 1);
+		}
+	}
+}
+
+/**
  * Security context for tracking during parsing.
  */
 export interface SecurityContext {

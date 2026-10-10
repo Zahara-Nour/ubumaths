@@ -52,6 +52,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	checkNestingDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -2030,6 +2031,7 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
 
 	// Check input length BEFORE parsing (fail fast)
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomPrattParser(input, fullOptions);
 	const result = parser.parse();
@@ -2074,6 +2076,7 @@ export function parseCustomPrattSafe(input: string, options?: Partial<ParserOpti
 	// Check input length BEFORE parsing (fail fast)
 	// SecurityError is NOT caught - it propagates up
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomPrattParser(input, fullOptions);
 

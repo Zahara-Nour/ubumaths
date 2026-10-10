@@ -81,7 +81,8 @@ export {
  *
  * Note: The `simplify()` pipeline does NOT use these — arithmetic and power
  * rules are redundant with normalize (polynomial arithmetic handles x+0, x*1,
- * x^0, etc. implicitly). The pipeline uses `simplifyRules` instead.
+ * x^0, etc. implicitly). Le pipeline assemble ses propres jeux dans
+ * `buildSimplifyRules()` (`simplify/simplify.ts`).
  */
 export const allPatternRules: readonly Rule[] = [
 	...arithmeticRules,
@@ -94,13 +95,13 @@ export const allPatternRules: readonly Rule[] = [
 ] as const;
 
 /**
- * Rules used by the simplify() pipeline (Phase B).
- *
- * Only includes abs rules not already handled by normalize:
+ * Les règles `abs` que normalize ne couvre pas, pour un usage direct
+ * (`applyRules()`, API publique) :
  * - abs-even-pow / abs-pow-even: for variable n with TypeContext assumptions
  * - abs-positive / abs-negative: conditional, require TypeContext
  *
- * Trig/hyp/algebraic identity rules are added dynamically by
- * buildSimplifyRules() based on SimplifyOptions.
+ * ⚠️ `simplify()` ne lit PAS cette constante : `buildSimplifyRules()`
+ * (`simplify/simplify.ts`) assemble ses jeux selon `SimplifyOptions` —
+ * `absSimplifyRules` et les identités trig/hyp/algébriques.
  */
 export const simplifyRules: readonly Rule[] = [...absSimplifyRules] as const;

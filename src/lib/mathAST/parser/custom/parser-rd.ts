@@ -53,6 +53,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	checkNestingDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -1572,6 +1573,7 @@ export function parseCustomRD(input: string, options?: Partial<ParserOptions>): 
 
 	// Check input length BEFORE parsing (fail fast)
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomRDParser(input, fullOptions);
 	const result = parser.parse();
@@ -1616,6 +1618,7 @@ export function parseCustomRDSafe(input: string, options?: Partial<ParserOptions
 	// Check input length BEFORE parsing (fail fast)
 	// SecurityError is NOT caught - it propagates up
 	checkInputLength(input, security.maxInputLength);
+	checkNestingDepth(input, security.maxASTDepth);
 
 	const parser = new CustomRDParser(input, fullOptions);
 
