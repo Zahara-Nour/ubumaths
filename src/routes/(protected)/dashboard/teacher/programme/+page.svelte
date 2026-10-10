@@ -57,6 +57,11 @@
 		return branch.notions.reduce((sum, n) => sum + n.points.length, 0);
 	}
 
+	/** « 1 notion », « 2 notions » : le nom s'accorde au nombre. */
+	function plural(count: number, noun: string): string {
+		return `${count} ${noun}${count > 1 ? 's' : ''}`;
+	}
+
 	function changeGrade(value: string | string[]) {
 		if (typeof value !== 'string') return;
 		// Navigation sur la même route, query seule → relance le load serveur.
@@ -146,15 +151,16 @@
 	{#if archivedCount > 0}
 		<MyCheckbox
 			bind:checked={showArchived}
-			label="Afficher les {archivedCount} point{archivedCount > 1
-				? 's'
-				: ''} archivé{archivedCount > 1 ? 's' : ''}"
+			label={archivedCount === 1
+				? 'Afficher le point archivé'
+				: `Afficher les ${archivedCount} points archivés`}
 		/>
 	{/if}
 
 	{#if branches.length === 0}
 		<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
-			Aucun point pour ce programme
+			<!-- Tout archivé et case décochée : le programme existe, rien n'y est actif. -->
+			{archivedCount > 0 ? 'Aucun point actif pour ce programme' : 'Aucun point pour ce programme'}
 		</div>
 	{:else}
 		<div class="space-y-2">
@@ -172,8 +178,13 @@
 							<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 						{/if}
 						<span class="font-semibold">{branch.name}</span>
+						{#if branch.archived}
+							<Badge variant="outline" class="ml-1 align-middle text-[10px]" data-node-archived>
+								archivée
+							</Badge>
+						{/if}
 						<span class="text-xs text-muted-foreground">
-							{branch.notions.length} notions · {pointCount(branch)} points
+							{plural(branch.notions.length, 'notion')} · {plural(pointCount(branch), 'point')}
 						</span>
 					</button>
 
@@ -193,7 +204,18 @@
 											<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 										{/if}
 										<span class="font-medium">{notion.name}</span>
-										<span class="text-xs text-muted-foreground">{notion.points.length} points</span>
+										{#if notion.archived}
+											<Badge
+												variant="outline"
+												class="ml-1 align-middle text-[10px]"
+												data-node-archived
+											>
+												archivée
+											</Badge>
+										{/if}
+										<span class="text-xs text-muted-foreground">
+											{plural(notion.points.length, 'point')}
+										</span>
 									</button>
 
 									{#if openNotions[notion.id]}
@@ -214,6 +236,15 @@
 															<Badge variant="secondary" class="ml-2 align-middle text-[10px]">
 																{point.subnotionName}
 															</Badge>
+															{#if point.subnotionArchived}
+																<Badge
+																	variant="outline"
+																	class="ml-1 align-middle text-[10px]"
+																	data-node-archived
+																>
+																	archivée
+																</Badge>
+															{/if}
 														{/if}
 														{#if point.archived_at}
 															<Badge variant="outline" class="ml-1 align-middle text-[10px]">

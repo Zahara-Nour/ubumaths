@@ -27,18 +27,27 @@ export type ProgrammePointRow = Pick<
 	'id' | 'code' | 'name' | 'display_order' | 'rubrique' | 'archived_at' | 'node_id' | 'grade'
 >;
 
-/** Point affiché : la sous-notion est nommée quand le point y est posé. */
-export type ProgrammePointView = ProgrammePoint & { subnotionName: string | null };
+/**
+ * Point affiché : la sous-notion est nommée quand le point y est posé.
+ * `subnotionArchived` signale une sous-notion archivée qui porte encore ce point.
+ */
+export type ProgrammePointView = ProgrammePoint & {
+	subnotionName: string | null;
+	subnotionArchived: boolean;
+};
 
+/** `archived` : nœud archivé dans l'arbre, qui porte encore des points du niveau. */
 export interface ProgrammeNotion {
 	id: string;
 	name: string;
+	archived: boolean;
 	points: ProgrammePointView[];
 }
 
 export interface ProgrammeBranch {
 	id: string;
 	name: string;
+	archived: boolean;
 	notions: ProgrammeNotion[];
 }
 
@@ -85,11 +94,13 @@ export function buildProgrammeTree(
 
 		let notion: ClassificationNode;
 		let subnotionName: string | null = null;
+		let subnotionArchived = false;
 		if (target.kind === 'notion') {
 			notion = target;
 		} else if (target.kind === 'subnotion') {
 			notion = requireNode(target.parent_id, `notion de « ${target.name} »`);
 			subnotionName = target.name;
+			subnotionArchived = target.archived_at !== null;
 		} else {
 			// Interdit en base (trigger `curriculum_points_node_kind`, ADR 0020 point 5).
 			throw new Error(`Point ${row.code} posé sur une branche`);
@@ -104,7 +115,8 @@ export function buildProgrammeTree(
 			archived_at: row.archived_at,
 			node_id: row.node_id,
 			grade: row.grade,
-			subnotionName
+			subnotionName,
+			subnotionArchived
 		};
 		const list = pointsByNotion.get(notion.id) ?? [];
 		list.push(view);
@@ -126,9 +138,11 @@ export function buildProgrammeTree(
 		.map((branch) => ({
 			id: branch.id,
 			name: branch.name,
+			archived: branch.archived_at !== null,
 			notions: (notionsByBranch.get(branch.id) ?? []).sort(byTreeOrder).map((notion) => ({
 				id: notion.id,
 				name: notion.name,
+				archived: notion.archived_at !== null,
 				points: (pointsByNotion.get(notion.id) ?? []).sort(byBoOrder)
 			}))
 		}));

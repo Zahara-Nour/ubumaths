@@ -141,6 +141,26 @@ describe('buildProgrammeTree', () => {
 		expect(buildProgrammeTree([], NODES)).toEqual([]);
 	});
 
+	it('signale les nœuds archivés qui portent encore des points', () => {
+		const archivedAt = '2026-10-01T00:00:00Z';
+		const tree = buildProgrammeTree(
+			[point('p1', 's-arch', 1), point('p2', 'n-entiers', 2)],
+			[
+				{ ...node('b-nombres', 'branch', 'Nombres et calculs', null, 2), archived_at: archivedAt },
+				node('n-fractions', 'notion', 'Fractions', 'b-nombres', 2),
+				{ ...node('n-entiers', 'notion', 'Entiers', 'b-nombres', 1), archived_at: archivedAt },
+				{ ...node('s-arch', 'subnotion', 'ancienne', 'n-fractions', 0), archived_at: archivedAt }
+			]
+		);
+
+		expect(tree[0].archived).toBe(true);
+		const [entiers, fractions] = tree[0].notions;
+		expect(entiers.archived).toBe(true);
+		expect(fractions.archived).toBe(false);
+		expect(fractions.points[0].subnotionArchived).toBe(true);
+		expect(entiers.points[0].subnotionArchived).toBe(false);
+	});
+
 	it('refuse bruyamment un point dont le nœud est introuvable (pas de disparition silencieuse)', () => {
 		expect(() => buildProgrammeTree([point('p', 'inconnu', 1)], NODES)).toThrow(/introuvable/);
 	});

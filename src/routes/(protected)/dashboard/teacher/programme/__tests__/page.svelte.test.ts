@@ -49,6 +49,7 @@ function point(
 		node_id: 'n',
 		grade: '5',
 		subnotionName: null,
+		subnotionArchived: false,
 		...extra
 	};
 }
@@ -57,10 +58,12 @@ const TREE: ProgrammeBranch[] = [
 	{
 		id: 'b-geo',
 		name: 'Géométrie',
+		archived: false,
 		notions: [
 			{
 				id: 'n-tri',
 				name: 'Triangles',
+				archived: false,
 				points: [
 					point(POINT_ID, '5-010', 'Construire un triangle'),
 					point('p-arch', '5-011', 'Point retiré', { archived_at: '2026-10-10T00:00:00Z' })
@@ -71,10 +74,12 @@ const TREE: ProgrammeBranch[] = [
 	{
 		id: 'b-nombres',
 		name: 'Nombres et calculs',
+		archived: false,
 		notions: [
 			{
 				id: 'n-frac',
 				name: 'Fractions',
+				archived: false,
 				points: [
 					point('p-sub', '5-020', 'Simplifier une fraction', { subnotionName: 'simplifier' })
 				]
@@ -138,7 +143,7 @@ describe('Page Programme', () => {
 		expect(container.textContent).toContain('Construire un triangle');
 		expect(container.textContent).not.toContain('Point retiré');
 
-		const box = page.getByRole('checkbox', { name: /Afficher les 1 point archivé/ });
+		const box = page.getByRole('checkbox', { name: 'Afficher le point archivé' });
 		await box.click();
 		await expect.element(page.getByText('Point retiré')).toBeVisible();
 	});
@@ -183,5 +188,91 @@ describe('Page Programme', () => {
 		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
 		const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
 		expect(JSON.parse(String(init.body))).toEqual({ archived: true });
+	});
+
+	it('accorde les compteurs : « 1 notion » / « 2 notions », « 1 point » / « 2 points »', async () => {
+		const { container } = await renderPage(TREE);
+		const text = container.textContent ?? '';
+		expect(text).toContain('1 notion · 1 point');
+		expect(text).not.toContain('1 notions');
+		expect(text).not.toContain('1 points');
+
+		const two: ProgrammeBranch[] = [
+			{
+				...TREE[1],
+				notions: [
+					TREE[1].notions[0],
+					{ ...TREE[0].notions[0], id: 'n-autre', points: TREE[0].notions[0].points.slice(0, 1) }
+				]
+			}
+		];
+		document.body.innerHTML = '';
+		const second = await renderPage(two);
+		expect(second.container.textContent).toContain('2 notions · 2 points');
+	});
+
+	it('pluriel de la case : « Afficher les 2 points archivés »', async () => {
+		const tree: ProgrammeBranch[] = [
+			{
+				...TREE[0],
+				notions: [
+					{
+						...TREE[0].notions[0],
+						points: [
+							...TREE[0].notions[0].points,
+							point('p-arch2', '5-012', 'Autre retiré', { archived_at: '2026-10-10T00:00:00Z' })
+						]
+					}
+				]
+			}
+		];
+		await renderPage(tree);
+		await expect
+			.element(page.getByRole('checkbox', { name: 'Afficher les 2 points archivés' }))
+			.toBeVisible();
+	});
+
+	it('tous les points archivés, case décochée : « Aucun point actif pour ce programme »', async () => {
+		const tree: ProgrammeBranch[] = [
+			{
+				...TREE[0],
+				notions: [{ ...TREE[0].notions[0], points: [TREE[0].notions[0].points[1]] }]
+			}
+		];
+		const { container } = await renderPage(tree);
+		await expect.element(page.getByText('Aucun point actif pour ce programme')).toBeVisible();
+		expect(container.textContent).not.toContain('Aucun point pour ce programme');
+	});
+
+	it('restaurer un point archivé envoie { archived: false }', async () => {
+		const { container } = await renderPage(TREE);
+		await page.getByRole('checkbox', { name: 'Afficher le point archivé' }).click();
+		await expandAll(container);
+		await page.getByRole('button', { name: 'Restaurer « Point retiré »' }).click();
+
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+		const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+		expect(url).toBe('/api/teacher/curriculum/points/p-arch');
+		expect(JSON.parse(String(init.body))).toEqual({ archived: false });
+	});
+
+	it('marque « archivée » une branche, une notion ou une sous-notion archivée', async () => {
+		const tree: ProgrammeBranch[] = [
+			{
+				...TREE[1],
+				archived: true,
+				notions: [
+					{
+						...TREE[1].notions[0],
+						archived: true,
+						points: [{ ...TREE[1].notions[0].points[0], subnotionArchived: true }]
+					}
+				]
+			},
+			TREE[0]
+		];
+		const { container } = await renderPage(tree);
+		await expandAll(container);
+		expect(container.querySelectorAll('[data-node-archived]')).toHaveLength(3);
 	});
 });

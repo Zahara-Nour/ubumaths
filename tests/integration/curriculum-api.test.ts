@@ -25,6 +25,7 @@ import { getProgrammeTree } from '$lib/server/programme-tree';
 
 import {
 	createServiceRoleClient,
+	createAuthenticatedClient,
 	TestData,
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
@@ -319,5 +320,32 @@ describe('PATCH /points/[pointId] — génération neuve', () => {
 		await expect(
 			patch(point.id, { name: 'X' }, buildLocals({ id: s.id } as User))
 		).rejects.toMatchObject({ status: 403 });
+	});
+});
+
+// ============================================================================
+// PATCH avec un VRAI client prof (JWT authenticated, RLS active)
+// ============================================================================
+
+describe('PATCH /points/[pointId] — client prof authentifié (RLS)', () => {
+	it('renomme un point neuf : la ligne est rendue, le code ne bouge pas', async () => {
+		const branch = await svcNode('branch', 'TEST RLS', null, 9007);
+		const notion = await svcNode('notion', 'Notion', branch, 0);
+		const point = await svcNewPoint(notion, 1);
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const client = await createAuthenticatedClient(teacher.email);
+
+		const res = await patch(point.id, { name: 'Renommé sous RLS' }, {
+			...buildLocals({ id: teacher.id } as User),
+			supabase: client as unknown as App.Locals['supabase']
+		} as App.Locals);
+
+		expect(res.status).toBe(200);
+		const body = (await res.json()) as { point: { id: string; name: string; code: string } };
+		expect(body.point).toMatchObject({ id: point.id, name: 'Renommé sous RLS', code: point.code });
+		expect(await readPoint(point.id)).toMatchObject({
+			name: 'Renommé sous RLS',
+			code: point.code
+		});
 	});
 });

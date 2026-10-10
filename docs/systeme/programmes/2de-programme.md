@@ -8,7 +8,7 @@ couvre:
 # Programme de suivi seconde générale et technologique — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'2'`.
-> ⚠️ **Ce fichier ne fait plus foi une fois le niveau amorcé** : la page **Programme** (`/dashboard/teacher/programme`) prend le relais. Le corriger ici ne produit plus rien — cf. le référentiel de 1ʳᵉ, même règle.
+> ⚠️ **Ce fichier ne fait plus foi** : il a amorcé l'ANCIENNE génération (thème → objectif → point), retirée de la page **Programme** à la C5, étape 3. Cette page (`/dashboard/teacher/programme`) affiche désormais en consultation les points **neufs** (ADR 0020), créés par les seeds `202610*_seed_curriculum_points_*` et les migrations : un point se corrige par migration, pas ici.
 > **Source** : « Programme de mathématiques de la classe de seconde générale et technologique » — PDF fourni par David le 2026-08-31.
 >
 > **Statut** : rédaction complète, **en attente de relecture David**.

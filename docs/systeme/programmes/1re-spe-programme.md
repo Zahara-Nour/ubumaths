@@ -8,7 +8,7 @@ couvre:
 # Programme de suivi 1ʳᵉ spécialité maths — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'1_SPE'`.
-> ⚠️ **Ce fichier ne fait plus foi** depuis le 2026-08-31 : il a rempli la base une fois, et c'est désormais la page **Programme** (`/dashboard/teacher/programme`) qui fait autorité. Le corriger ici ne produit plus rien — cf. la section ci-dessous.
+> ⚠️ **Ce fichier ne fait plus foi** depuis le 2026-08-31 : il a amorcé l'ANCIENNE génération (thème → objectif → point), retirée de la page **Programme** à la C5, étape 3. Cette page (`/dashboard/teacher/programme`) affiche désormais en consultation les points **neufs** (ADR 0020), créés par les seeds `202610*_seed_curriculum_points_*` et les migrations : un point se corrige par migration, pas ici.
 > **Source** : « Programme de spécialité de mathématiques de la classe de première de la voie générale » — PDF fourni par David le 2026-08-29 (`Annexe – Programme d'enseignement de spécialité… -515408 (1).pdf`).
 > ⚠️ **Ce n'est PAS le programme de l'arrêté du 17 janvier 2019** que la spec Phase 0 mentionnait : c'est le programme en vigueur, qui introduit notamment une partie transversale **« Automatismes »**.
 >
@@ -136,8 +136,8 @@ répétition — « déterminer l'équation de la tangente en un point », par e
 
 `rang` reste **vide partout** : le programme ne propose aucune échelle de
 difficulté. Les objectifs s'afficheront donc en liste avec un compteur `n/m`.
-Une échelle 1-4 pourra être ajoutée plus tard, objectif par objectif, depuis la
-page Programme.
+(La page Programme ne modifie plus ces points depuis la C5, étape 3 ; l'échelle
+1-4 par rang est abandonnée avec les objectifs.)
 
 > ✅ **Acté (David, 2026-08-29)** — les « **Exemples d'algorithmes** » du BO sont
 > des illustrations proposées à l'enseignant, pas des attendus. Ils sont
