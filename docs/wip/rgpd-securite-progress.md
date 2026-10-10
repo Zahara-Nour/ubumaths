@@ -153,18 +153,18 @@ Reste : **2e PR** après `db:migrate` + `db:types` — la route `api/marketplace
 
 ## Point d'étape — 2026-10-10, fin de soirée
 
-| Constat                               | PR    | Mergée | En prod (base) | Reste                                                                                     |
-| ------------------------------------- | ----- | ------ | -------------- | ----------------------------------------------------------------------------------------- |
-| A1 suppression de compte              | #1034 | ✅     | ✅ migrée      | —                                                                                         |
-| B4 élévation admin                    | #1035 | ✅     | (code seul)    | `deploy:prod` par David — les cookies d'élévation en cours seront refusés (se ré-élever)  |
-| A2 lecture seule                      | #1042 | ✅     | ⏳             | migrer ; puis `db:types` et 2e PR (masquage des annonces dans la route)                   |
-| E19 récompenses tournoi / multijoueur | #1048 | ✅     | ⏳             | migrer après A2 ; décider `process_weekly_rewards` / `purchase_shop_item` (sans appelant) |
-| A3 règle de consentement              | #1050 | ✅     | ⏳             | migrer après E19                                                                          |
+| Constat                               | PR            | Mergée | En prod (base)          | Reste                                                                                              |
+| ------------------------------------- | ------------- | ------ | ----------------------- | -------------------------------------------------------------------------------------------------- |
+| A1 suppression de compte              | #1034         | ✅     | ✅                      | —                                                                                                  |
+| B4 élévation admin                    | #1035         | ✅     | (code seul)             | `deploy:prod` — les élévations en cours seront refusées (se ré-élever)                             |
+| A2 lecture seule                      | #1042 + #1054 | ✅     | ✅ (vérifié)            | —                                                                                                  |
+| E19 récompenses tournoi / multijoueur | #1048         | ✅     | ✅ (vérifié)            | décider `process_weekly_rewards` / `purchase_shop_item` (sans appelant ; suppression = destructif) |
+| A3 règle de consentement              | #1050         | ✅     | ✅ (33 comptes marqués) | —                                                                                                  |
 
-**Blocage des migrations** : `20261013120000_tags_modeles_points` (session tags) est mergée mais pas
-migrée, et datée avant A1 (déjà en prod) → `db push` exige `--include-all`. Décision de David :
-attendre que la session tags migre la sienne. Ordre ensuite : `20261014110000` (A2) →
-`20261014120000` (E19) → `20261015090100` (A3).
+Les migrations A2, E19 et A3 sont parties avec celle de la session tags (`--include-all`), vérifiées
+en prod le 2026-10-10. #1054 : `db:types` ; annonces d'un auteur en lecture seule masquées aux élèves
+(prof et admin les voient) ; `creator_id` validé et réservé à l'élève lui-même (il contournait le
+masquage — faille antérieure relevée par security-auditor) ; toast multijoueur sans « +0 ».
 
 ### Ordre proposé pour la suite (à valider par David)
 
