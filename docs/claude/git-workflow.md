@@ -68,7 +68,7 @@
 
 ## 7. Déploiement & vérification
 
-- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script avance `production` jusqu'au dernier commit à « CI Summary » vert ; `--essai` montre ce qui partirait.
+- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (`pnpm release` : numéro, CHANGELOG, tag) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait.
 - Ce qui attend la prod : `git log --first-parent origin/production..origin/main`.
 - **Previews OFF** : le **job Build CI** (+ garde TDZ Safari) valide le build.
 - Surveiller le déploiement (`get_deployment` → `READY`).

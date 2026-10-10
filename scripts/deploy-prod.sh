@@ -1,25 +1,33 @@
 #!/bin/bash
-# `pnpm deploy:prod` — mettre le site à jour (ADR 0021).
+# `pnpm deploy:prod` — mettre le site à jour, avec une nouvelle version (ADR 0021).
 #
-# Vercel ne déploie que la branche `production`. Ce script l'avance, en avance
-# rapide seulement, jusqu'au dernier commit de main vérifié par la CI
-# (« CI Summary » vert). Il est lancé par David, ou par Claude à sa demande
-# explicite : jamais de mise en prod à l'initiative de Claude.
+# Vercel ne déploie que la branche `production`. Ce script :
+#   1. choisit le dernier commit de main vérifié par la CI (« CI Summary » vert),
+#      en enjambant les commits de doc qui le suivent ;
+#   2. crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse
+#      sur main, sauf si ce commit est déjà une version ;
+#   3. attend que la CI de ce commit de version soit verte ;
+#   4. avance `production` jusqu'à lui, en avance rapide seulement.
+# Lancé par David, ou par Claude à sa demande explicite : jamais de mise en
+# prod — ni de version — à l'initiative de Claude.
 #
 # Pourquoi pas simplement la pointe de main ? Elle est souvent un commit de doc,
-# que la CI de push ignore (filtre `paths` de quality.yml) : il n'a pas de
-# « CI Summary », et les Deployment Checks de Vercel l'attendraient pour
-# toujours. Les commits de doc qui SUIVENT le dernier commit vérifié ne
-# changent rien au site (l'ignore step les saute) : on les enjambe. Tout le
-# reste arrête le script : CI en cours ou rouge, ou commit de code sans CI.
+# que la CI de push ignore (filtre `paths` de quality.yml) : sans « CI
+# Summary », les Deployment Checks de Vercel l'attendraient pour toujours. Les
+# commits de doc qui suivent le dernier commit vérifié ne changent rien au site
+# (l'ignore step les saute) : on les enjambe. Tout le reste arrête le script.
 #
-# Usage : pnpm deploy:prod            avance production et pousse
-#         pnpm deploy:prod --essai    montre ce qui partirait, sans pousser
+# Usage : pnpm deploy:prod            version + mise en prod
+#         pnpm deploy:prod --essai    montre ce qui partirait, sans rien créer
+# À lancer depuis le dépôt principal, sur main propre et à jour.
 # Tests : scripts/__tests__/deploy-prod.test.ts.
 set -euo pipefail
 
 CHECK="CI Summary"
 PROFONDEUR=50
+RELEASE="${DEPLOY_PROD_RELEASE:-pnpm -s release}"
+PAUSE="${DEPLOY_PROD_PAUSE:-30}"
+ATTENTE_MAX="${DEPLOY_PROD_ATTENTE_MAX:-1500}"
 essai=0
 [ "${1:-}" = "--essai" ] && essai=1
 
@@ -45,8 +53,20 @@ decrire() {
 	git log -1 --format='%h %s' "$1"
 }
 
-git fetch -q origin main
+arreter() {
+	echo "$1"
+	[ -n "${2:-}" ] && echo "   $2"
+	exit 1
+}
 
+# --- 0. main local propre et à jour -----------------------------------------
+[ "$(git branch --show-current)" = "main" ] || arreter "⛔ À lancer sur main (branche actuelle : $(git branch --show-current))."
+[ -z "$(git status --porcelain --untracked-files=no)" ] || arreter "⛔ main a des modifications non commitées."
+git fetch -q origin main
+[ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] ||
+	arreter "⛔ main local diffère de origin/main." "git pull --ff-only, puis relancer."
+
+# --- 1. le dernier commit vérifié -------------------------------------------
 cible=""
 for c in $(git rev-list --first-parent -n "$PROFONDEUR" origin/main); do
 	etat="$(etat_ci "$c")"
@@ -56,52 +76,66 @@ for c in $(git rev-list --first-parent -n "$PROFONDEUR" origin/main); do
 		break
 		;;
 	absent)
-		if sans_ci "$c"; then
-			echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
-			continue
-		fi
-		echo "⛔ Commit de code sans « $CHECK » : $(decrire "$c")"
-		echo "   La CI ne l'a pas vérifié. Rien n'est poussé."
-		exit 1
+		sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "La CI ne l'a pas vérifié. Rien n'est créé."
+		echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
 		;;
-	pending)
-		echo "⏳ CI en cours sur $(decrire "$c")"
-		echo "   Relancer quand « $CHECK » sera vert. Rien n'est poussé."
-		exit 1
-		;;
-	*)
-		echo "⛔ « $CHECK » = $etat sur $(decrire "$c")"
-		echo "   Rien n'est poussé."
-		exit 1
-		;;
+	pending) arreter "⏳ CI en cours sur $(decrire "$c")" "Relancer quand « $CHECK » sera vert. Rien n'est créé." ;;
+	*) arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé." ;;
 	esac
 done
-[ -n "$cible" ] || {
-	echo "⛔ Aucun commit vérifié par la CI dans les $PROFONDEUR derniers de main."
-	exit 1
-}
+[ -n "$cible" ] || arreter "⛔ Aucun commit vérifié par la CI dans les $PROFONDEUR derniers de main."
 
+prod=""
 if git ls-remote --exit-code origin refs/heads/production >/dev/null 2>&1; then
 	git fetch -q origin production
 	prod="$(git rev-parse origin/production)"
-	if [ "$prod" = "$cible" ]; then
+	[ "$prod" != "$cible" ] || {
 		echo "✅ production est déjà sur $(decrire "$cible") : rien à livrer."
 		exit 0
-	fi
-	if ! git merge-base --is-ancestor "$prod" "$cible"; then
-		echo "⛔ production ($(decrire "$prod")) n'est pas un ancêtre de $(decrire "$cible")."
-		echo "   Jamais de force-push : à examiner à la main."
-		exit 1
-	fi
-	echo "Livraison de $(git rev-list --count --first-parent "$prod..$cible") commit(s) de main :"
+	}
+	git merge-base --is-ancestor "$prod" "$cible" ||
+		arreter "⛔ production ($(decrire "$prod")) n'est pas un ancêtre de $(decrire "$cible")." "Jamais de force-push : à examiner à la main."
+	echo "À livrer, $(git rev-list --count --first-parent "$prod..$cible") commit(s) de main :"
 	git log --first-parent --format='  %h %s' "$prod..$cible"
 else
-	echo "Création de la branche production sur $(decrire "$cible")."
+	echo "Première mise en prod par la branche production : $(decrire "$cible")."
 fi
 
 if [ "$essai" = 1 ]; then
-	echo "(--essai : rien n'est poussé)"
+	echo "(--essai : rien n'est créé, rien n'est poussé)"
 	exit 0
 fi
-git push -q origin "$cible:refs/heads/production"
-echo "🚀 production → $(decrire "$cible"). Vercel construit ; suivi : vercel ls --prod"
+
+# --- 2. la version ------------------------------------------------------------
+if git tag --points-at "$cible" | grep -q '^v'; then
+	version="$cible"
+	echo "Déjà une version : $(git tag --points-at "$cible" | grep '^v' | head -1)."
+else
+	$RELEASE
+	version="$(git rev-parse HEAD)"
+	[ "$version" != "$cible" ] || arreter "⛔ pnpm release n'a créé aucun commit."
+	tag="$(git tag --points-at "$version" | grep '^v' | head -1)"
+	[ -n "$tag" ] || arreter "⛔ Le commit de version n'a pas de tag v…"
+	git push -q origin main "refs/tags/$tag" ||
+		arreter "⛔ Push de la version refusé (main a-t-il bougé ?)." "Version $tag locale, non publiée : à examiner."
+	echo "🏷  $tag poussée sur main : $(decrire "$version")"
+fi
+
+# --- 3. la CI de la version ---------------------------------------------------
+attendu=0
+while :; do
+	etat="$(etat_ci "$version")"
+	case "$etat" in
+	success) break ;;
+	failure | cancelled | timed_out) arreter "⛔ « $CHECK » = $etat sur la version $(decrire "$version")." "Rien n'est mis en prod." ;;
+	esac
+	[ "$attendu" -lt "$ATTENTE_MAX" ] ||
+		arreter "⏳ CI de la version toujours pas verte après ${ATTENTE_MAX} s." "Relancer pnpm deploy:prod plus tard : la version existe, seule la mise en prod reste."
+	echo "⏳ CI de la version : $etat… (${attendu} s)"
+	sleep "$PAUSE"
+	attendu=$((attendu + PAUSE))
+done
+
+# --- 4. la mise en prod -------------------------------------------------------
+git push -q origin "$version:refs/heads/production"
+echo "🚀 production → $(decrire "$version"). Vercel construit ; suivi : vercel ls --prod"

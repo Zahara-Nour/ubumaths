@@ -27,11 +27,19 @@ l'inverse.
 - **Vercel ne déploie que la branche `production`**
   (`git.deploymentEnabled = { "**": false, "production": true }`, branche de production du projet
   Vercel = `production`).
-- **`pnpm deploy:prod`** (`scripts/deploy-prod.sh`) avance `production`, en avance rapide seulement,
-  jusqu'au dernier commit de `main` dont « CI Summary » est vert :
-  - il enjambe les commits de doc sans CI qui le suivent ;
-  - il refuse CI en cours, CI rouge, commit de code sans CI et production divergente ;
-  - `--essai` montre ce qui partirait, sans rien pousser.
+- **`pnpm deploy:prod`** (`scripts/deploy-prod.sh`) fait une mise en prod complète, **toujours avec une
+  nouvelle version** (demande de David) :
+
+  1. il part du dernier commit de `main` dont « CI Summary » est vert, en enjambant les commits de
+     doc sans CI qui le suivent ;
+  2. il crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse sur `main` ;
+  3. il attend que la CI de ce commit de version soit verte ;
+  4. il avance `production` jusqu'à lui, en avance rapide seulement.
+
+  Il refuse : main local pas à jour, CI en cours ou rouge, code sans CI, production divergente.
+  Rien de nouveau : ni version, ni prod. CI de la version rouge : la version reste, la prod ne bouge
+  pas, et une relance réutilise ce commit déjà tagué. `--essai` montre sans rien créer.
+
 - **Qui lance `deploy:prod`** : David, ou Claude à sa **demande explicite**. Jamais Claude de sa
   propre initiative, même CI verte.
 - **Migrations** :

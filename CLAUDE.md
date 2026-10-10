@@ -43,7 +43,7 @@ pnpm test:integration               # intégration + DB (Supabase local)
 pnpm db:start / db:reset            # Supabase local (reset = recrée depuis le baseline)
 pnpm db:migrate / db:types          # push migrations → EU / régénère database.ts (cf. §Migrations)
 pnpm maintenance:on / :off          # mode maintenance prod (releases à risque)
-pnpm release                        # tag de version + CHANGELOG (sur main ; feat → mineur)
+pnpm deploy:prod                    # mise en prod : version (CHANGELOG, tag) + branche production (sur demande de David)
 ```
 
 ⚠️ **`pnpm dev -- --port 5175` ne marche pas** — le `--` en trop devient un argument que vite ignore, port compris : le serveur démarre sur **5173**, celui de David (mesuré le 2026-09-10). Sans `--strictPort`, un 5175 déjà pris fait dériver vite en silence.
@@ -71,7 +71,7 @@ Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
 - **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
 - **Migrations** : additive → `db:migrate` au merge (la base peut précéder le code en prod) ; destructive → seulement après le `deploy:prod` qui livre le code qui n'en dépend plus. Uniquement depuis la branche mergée.
-- ⛔ **Mise en prod = `pnpm deploy:prod`, UNIQUEMENT sur demande explicite de David** (ADR 0021). Un merge ne déploie plus rien : ne jamais lancer `deploy:prod` de sa propre initiative, même CI verte. `pnpm deploy:prod --essai` montre ce qui partirait.
+- ⛔ **Mise en prod = `pnpm deploy:prod`, UNIQUEMENT sur demande explicite de David** (ADR 0021). Un merge ne déploie plus rien : ne jamais lancer `deploy:prod` de sa propre initiative, même CI verte. Il crée aussi la version (`pnpm release`) : plus de `pnpm release` à part. `pnpm deploy:prod --essai` montre ce qui partirait.
 - **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
 - ⚠️ **La CI passe au vert → tu merges, immédiatement.** C'est un automatisme, pas une décision à réévaluer. Aucune exception inventée : ni « je préfère te laisser trancher », ni « je viens d'annoncer que je ne le ferais pas », ni « la PR est grosse ». Surveille la CI **dès l'ouverture de la PR** (tâche de fond). Annoncer la commande de merge à ma place au lieu de l'exécuter, c'est ne pas respecter la consigne.
 

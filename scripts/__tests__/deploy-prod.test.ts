@@ -2,16 +2,20 @@
  * `pnpm deploy:prod` — la seule porte vers la prod (ADR 0021)
  * ===========================================================
  *
- * Vercel ne déploie que la branche `production`. Le script l'avance jusqu'au
- * dernier commit de main vérifié par la CI. Ce qui est gardé ici :
- * - seul un commit au « CI Summary » vert part en prod ;
+ * Vercel ne déploie que la branche `production`. Le script part du dernier
+ * commit de main vérifié par la CI, crée la version (`pnpm release`), attend la
+ * CI de ce commit de version, puis avance `production` jusqu'à lui. Gardé ici :
+ * - seul un commit au « CI Summary » vert est livré, toujours avec une version ;
  * - les commits de doc qui le suivent sont enjambés (ils n'ont pas de CI) ;
- * - CI en cours, rouge, ou commit de code sans CI → rien n'est poussé ;
- * - jamais de force-push : une production qui a divergé arrête tout ;
- * - `--essai` ne pousse rien.
+ * - CI en cours, rouge, ou commit de code sans CI → ni version, ni prod ;
+ * - CI de la version rouge → la version reste, la prod ne bouge pas ;
+ * - rien de nouveau → ni version, ni prod ; jamais de force-push ;
+ * - `--essai` ne crée rien.
  *
  * Dépôts jetables (un dépôt nu tient lieu de GitHub) et `gh` remplacé par un
- * bouchon qui lit l'état de la CI de chaque commit dans un fichier. Comme dans
+ * bouchon qui lit l'état de la CI de chaque commit dans un fichier ; `pnpm
+ * release` aussi : il crée un commit de version tagué, dont la CI vaut
+ * $CI_VERSION. Comme dans
  * vercel-ignore-build.test.ts, git ne tourne jamais hors du dossier jetable.
  */
 
@@ -36,6 +40,7 @@ let github: string;
 let local: string;
 let etats: string;
 let numero = 0;
+let ciVersion = 'success';
 
 function env(): NodeJS.ProcessEnv {
 	return {
@@ -49,7 +54,11 @@ function env(): NodeJS.ProcessEnv {
 		GIT_AUTHOR_EMAIL: 'test@example.com',
 		GIT_COMMITTER_NAME: 'test',
 		GIT_COMMITTER_EMAIL: 'test@example.com',
-		ETATS_CI: etats
+		ETATS_CI: etats,
+		DEPLOY_PROD_RELEASE: `bash ${join(racine, 'bin/release')}`,
+		DEPLOY_PROD_PAUSE: '0',
+		DEPLOY_PROD_ATTENTE_MAX: '0',
+		CI_VERSION: ciVersion
 	};
 }
 
@@ -116,35 +125,65 @@ echo "\${etat:-absent}"
 `
 	);
 	chmodSync(join(racine, 'bin/gh'), 0o755);
+	// Bouchon de `pnpm release` : un commit de version tagué, et l'état de sa CI.
+	writeFileSync(
+		join(racine, 'bin/release'),
+		`#!/bin/bash
+set -e
+n=$(git tag | wc -l | tr -d ' ')
+echo "0.$n.0" > VERSION
+git add VERSION
+git commit -q -m "chore(release): 0.$n.0"
+git tag "v0.$n.0"
+echo "$(git rev-parse HEAD) $CI_VERSION" >> "$ETATS_CI"
+`
+	);
 	git(github, 'init', '-q', '--bare');
 	git(github, 'symbolic-ref', 'HEAD', 'refs/heads/main');
 	git(local, 'init', '-q');
 	git(local, 'symbolic-ref', 'HEAD', 'refs/heads/main');
 	git(local, 'remote', 'add', 'origin', `file://${github}`);
 	pousser('success', 'src/app.ts');
+	ciVersion = 'success';
 });
+
+/** Le commit de version poussé sur main, et son parent. */
+function version(): { sha: string; parent: string; tag: string } {
+	const sha = git(local, 'rev-parse', 'HEAD');
+	return {
+		sha,
+		parent: git(local, 'rev-parse', 'HEAD~1'),
+		tag: git(local, 'tag', '--points-at', 'HEAD')
+	};
+}
 
 afterEach(() => {
 	rmSync(racine, { recursive: true, force: true });
 });
 
 describe('deploy-prod.sh — ce qui part en prod', () => {
-	it('crée production sur le dernier commit vert', () => {
+	it('crée une version sur le dernier commit vert et la met en prod', () => {
 		const vert = pousser('success', 'src/a.ts');
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toContain('Création de la branche production');
-		expect(production()).toBe(vert);
+		expect(r.sortie).toContain('Première mise en prod');
+		const v = version();
+		expect(v.parent).toBe(vert);
+		expect(v.tag).toMatch(/^v0\.\d+\.0$/);
+		expect(git(github, 'rev-parse', 'refs/heads/main')).toBe(v.sha); // version poussée sur main
+		expect(production()).toBe(v.sha);
 	});
 
 	it('enjambe les commits de doc sans CI qui suivent le dernier commit vert', () => {
 		const vert = pousser('success', 'src/a.ts');
 		pousser(null, 'docs/wip/journal.md');
-		pousser(null, 'CLAUDE.md');
+		const doc = pousser(null, 'CLAUDE.md');
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(0);
 		expect(r.sortie).toContain('enjambé');
-		expect(production()).toBe(vert);
+		expect(r.sortie).toContain(vert.slice(0, 7));
+		expect(version().parent).toBe(doc); // la version se pose sur la pointe
+		expect(production()).toBe(version().sha);
 	});
 
 	it('avance production en avance rapide et liste ce qui est livré', () => {
@@ -153,29 +192,67 @@ describe('deploy-prod.sh — ce qui part en prod', () => {
 		const b = pousser('success', 'src/b.ts');
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toContain('Livraison de 1 commit(s)');
+		expect(r.sortie).toContain('À livrer');
 		expect(r.sortie).toContain('src/b.ts');
-		expect(production()).toBe(b);
+		expect(version().parent).toBe(b);
+		expect(production()).toBe(version().sha);
 	});
 
-	it('déjà à jour : rien à livrer', () => {
+	it('rien de nouveau : ni version, ni prod', () => {
 		pousser('success', 'src/a.ts');
 		deployer();
+		const tags = git(local, 'tag').split('\n').length;
+		pousser(null, 'docs/wip/journal.md');
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toContain('déjà');
+		expect(r.sortie).toContain('rien à livrer');
+		expect(git(local, 'tag').split('\n').length).toBe(tags);
+	});
+
+	it('un commit déjà tagué (relance après interruption) : pas de nouvelle version', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'pending'; // la CI de la version ne finit pas : la prod ne bouge pas
+		const r1 = deployer();
+		expect(r1.status, r1.sortie).toBe(1);
+		expect(production()).toBeNull();
+		const v = version();
+		appendFileSync(etats, `${v.sha} success\n`);
+		const r2 = deployer();
+		expect(r2.status, r2.sortie).toBe(0);
+		expect(r2.sortie).toContain('Déjà une version');
+		expect(git(local, 'tag').split('\n').length).toBe(1);
+		expect(production()).toBe(v.sha);
 	});
 
 	it('--essai montre la livraison sans rien pousser', () => {
 		pousser('success', 'src/a.ts');
 		const r = deployer('--essai');
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toContain("rien n'est poussé");
+		expect(r.sortie).toContain("rien n'est créé");
 		expect(production()).toBeNull();
+		expect(git(local, 'tag')).toBe('');
 	});
 });
 
-describe('deploy-prod.sh — ce qui arrête tout, sans rien pousser', () => {
+describe('deploy-prod.sh — ce qui arrête tout', () => {
+	it('CI de la version rouge : la version reste, la prod ne bouge pas', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'failure';
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('sur la version');
+		expect(production()).toBeNull();
+	});
+
+	it('main local en retard sur origin : rien ne se fait', () => {
+		pousser('success', 'src/a.ts');
+		git(local, 'reset', '-q', '--hard', 'HEAD~1');
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('diffère de origin/main');
+		expect(production()).toBeNull();
+	});
+
 	it('CI en cours sur la pointe', () => {
 		pousser('success', 'src/a.ts');
 		pousser('pending', 'src/b.ts');
