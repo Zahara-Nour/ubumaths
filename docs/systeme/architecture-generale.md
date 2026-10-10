@@ -1,148 +1,143 @@
-# Architecture
+# Architecture générale
 
-Référence synthétique pour Claude : **structure**, **routing & data fetching**, **SSR/hydratation** (dont la contrainte Safari TDZ). Détail : [docs/systeme/](.) · règles condensées dans [CLAUDE.md](../../CLAUDE.md).
+> Vérifié contre le code le 2026-10-10.
 
----
+## À quoi ça sert
 
-## Project Structure
+Vue d'ensemble pour s'orienter : où vit quoi, comment une requête traverse l'application
+(hooks → layouts → page ou endpoint), ce qui se joue entre SSR et hydratation (dont la contrainte
+Safari TDZ), et le motif « UI optimiste + envoi groupé ». **Chaque module de `src/lib` a sa doc** :
+la carte module → doc est dans [docs/README.md](../README.md#module-de-srclib--sa-doc) — ce
+document n'en redécrit aucun. Vocabulaire : [CONTEXT.md](../../CONTEXT.md). Règles : [CLAUDE.md](../../CLAUDE.md).
+
+## Carte du code
 
 ```
 src/
-├── hooks.server.ts          # handle = sequence(requestId, maintenance, supabase, …) → peuple locals
-├── hooks.client.ts          # error monitoring client
-├── app.d.ts                 # App.Locals (user, profile, supabase, safeGetSession…)
+├── hooks.server.ts     # handle = sequence(...) : peuple event.locals, une fois par requête
+├── hooks.client.ts     # surveillance d'erreurs, Web Vitals, détection de gel (navigateur)
+├── app.d.ts            # App.Locals : supabase, safeGetSession, user, profile, requestId, adminSupabase…
 ├── routes/
-│   ├── +layout.server.ts    # racine SSR : vérifie l'auth (getUser), expose cookies/user/profile
-│   ├── +layout.ts           # racine universel : crée le client Supabase (import DYNAMIQUE, cf. TDZ)
-│   ├── (public)/            # pages publiques (auth, legal, demos, glossaire, games…) — pas d'auth
-│   ├── (protected)/        # auth REQUISE (garde dans (protected)/+layout.server.ts)
-│   └── api/                 # endpoints REST (+server.ts), validés Zod
+│   ├── +layout.server.ts   # racine serveur : renvoie user/profile (lus dans locals), cookies sb-*
+│   ├── +layout.ts          # racine universelle : crée le client Supabase (imports DYNAMIQUES, cf. TDZ)
+│   ├── (public)/           # pages sans authentification
+│   ├── (protected)/        # authentification requise
+│   ├── api/                # endpoints +server.ts
+│   ├── slides/             # hors groupe (layout réinitialisé, page de test)
+│   └── sitemap.xml/        # +server.ts du plan du site
 └── lib/
-    ├── components/          # composants UI (ui/ = Shadcn, MySelect/MyCheckbox custom…)
-    ├── server/             # code server-only : auth.ts, middleware/, validation/ (Zod), errorMonitoring…
-    ├── stores/              # état partagé runes (toaster.svelte, caches…)
-    ├── utils/ · types/      # helpers · types (database.ts auto-généré, database-helpers.ts dérivés)
-    ├── questions/ · mathAST/ # système de questions & AST symbolique (cf. plus bas)
-    └── geometry-core/ · constructions-v2/ · games/ · srs/ · spreadsheet/ · whiteboard/ …
+    ├── components/         # ui/ = Shadcn ; MySelect, MyCheckbox…
+    ├── server/             # code serveur seulement → serveur.md
+    ├── stores/             # état partagé (.svelte.ts, runes), dont le temps réel → realtime.md
+    ├── types/              # database.ts (généré) + database-helpers.ts (types dérivés)
+    ├── utils/
+    └── <module>/           # mathAST, questions, geometry-core, srs, games… → docs/README.md
 ```
 
-**Ordre dans un fichier** : Imports → Types → Constantes → Variables → Functions → Component (cf. CLAUDE.md).
+Ordre dans un fichier : Imports → Types → Constantes → Variables → Functions → Components.
 
----
+## Une requête, de bout en bout
 
-## Route groups
+### 1. Les hooks serveur
 
-Les parenthèses créent des **layout groups** SvelteKit : elles n'apparaissent **pas** dans l'URL (`(protected)/dashboard/+page.svelte` → `/dashboard`).
+`src/hooks.server.ts` enchaîne, dans cet ordre : `requestIdHandle` → `maintenanceHandle` (avant
+Supabase, pour fonctionner base gelée) → `supabaseHandle` (`src/lib/server/supabase.ts` :
+`locals.supabase`, `locals.safeGetSession` vérifié par `getUser()`) → `redirectHandle` →
+`userProfileHandle` (`locals.user`, `locals.profile`) → `adminElevationHandle` →
+`csrfHandle` → `securityHeadersHandle` → `errorMonitoringHandle`. Détail de chaque maillon :
+[auth.md](auth.md#la-chaîne-de-handles) · ce que les hooks font pour tous les endpoints :
+[serveur.md](serveur.md#17-ce-que-les-hooks-font-pour-tous).
 
-| Groupe         | Sens                                   | Garde                                                                 |
-| -------------- | -------------------------------------- | --------------------------------------------------------------------- |
-| `(public)/`    | pas d'auth (login, legal, démos, jeux) | aucune                                                                |
-| `(protected)/` | **auth requise**                       | `(protected)/+layout.server.ts` : `requireAuth(user)` + statut profil |
-| `api/`         | endpoints REST `+server.ts`            | par endpoint (`requireRoles(locals, [...])`), validation **Zod**      |
+**`locals` est la source unique d'identité** : les `load` et les endpoints lisent
+`locals.user` / `locals.profile`, sans refaire la vérification.
 
-La garde `(protected)/+layout.server.ts` tourne **avant** toute route enfant, impossible à contourner : `requireAuth` (redirige `/login` si `user` null), profil obligatoire (sinon 500 + `logError`), puis **deny-by-default** sur `profile.status` (`pending` → `/auth/pending-approval` ; tout ce qui n'est pas `approved` → `signOut()` + redirect). Accès par rôle plus fin **dans** l'endpoint/la page via `requireRoles`.
+### 2. Les groupes de routes
 
-> Détail rôles/redirections : [docs/systeme/](.).
+Les parenthèses créent des groupes de layout SvelteKit, absents de l'URL
+(`(protected)/dashboard/+page.svelte` → `/dashboard`).
 
----
+| Groupe         | Garde                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| `(public)/`    | aucune                                                                                                    |
+| `(protected)/` | `src/routes/(protected)/+layout.server.ts`, avant toute route enfant                                      |
+| `api/`         | par endpoint : `requireAuth` / `requireRole` / `requireRoles` (`src/lib/server/middleware/auth.ts`) + Zod |
 
-## Routing & data fetching
+La garde de `(protected)/` : `requireAuth(user)` (`src/lib/server/auth.ts`, redirige vers
+`/auth/login`), profil obligatoire (sinon 500 + `logError`), puis **refus par défaut** sur
+`profile.status` (`pending` → `/auth/pending-approval` ; tout autre statut que `approved` →
+`signOut()` + `/auth/login?error=…`). Elle renvoie aussi l'état du consentement
+(`getConsentStatus`). Les rôles plus fins se vérifient dans la page ou l'endpoint. Statuts,
+rôles et élévation : [auth.md](auth.md).
 
-**`locals` est la source unique d'auth.** `hooks.server.ts` peuple `event.locals` une fois par requête (`userProfileHandle` charge `user` + `profile`). Les `load` lisent `locals` — **pas besoin de `await parent()`** dans les enfants.
+### 3. Les endpoints
 
-```typescript
-// (protected)/.../+page.server.ts
-export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals; // user/profile garantis sous (protected)
-	const { data, error: e } = await supabase
-		.from('schools')
-		.select('*')
-		.eq('id', profile.school_id)
-		.single();
-	if (e) throw error(500, 'Failed to load school');
-	return { school: data };
-};
-```
+Conventions (garde de rôle, validation Zod, choix du client Supabase, erreurs, limites de
+débit, journalisation) : [serveur.md](serveur.md#1-conventions-dun-endpoint-et-dune-action).
+`GET` lit ; `POST` / `PATCH` / `DELETE` écrivent. Zod : [qualite.md](../pratiques/qualite.md#input-validation-with-zod).
 
-**API endpoint** (`api/.../+server.ts`) : garde de rôle + Zod sur l'entrée, puis requête via `locals.supabase`.
+## SSR et hydratation
 
-```typescript
-import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+Deux `load` racine, dans l'ordre :
 
-export const GET: RequestHandler = async ({ locals }) => {
-	await requireRoles(locals, ['teacher', 'admin']);
-	const supabase = locals.supabase;
-	// … requête + json(...)
-};
-```
+1. **`src/routes/+layout.server.ts`** (serveur) : renvoie `user` et `profile` tels que les hooks
+   les ont posés dans `locals`, les seuls cookies `sb-*`, et le catalogue des cartes VIP si une
+   session existe.
+2. **`src/routes/+layout.ts`** (universel : SSR puis navigateur) : crée le client Supabase
+   (`createServerClient` à partir des cookies en SSR, `createBrowserClient` dans le navigateur),
+   `depends('supabase:auth')`. Les composants utilisent ce client (`data.supabase`).
 
-- `GET` = lecture ; mutations en `POST`/`PATCH`/`DELETE`. Toute entrée externe validée Zod (`safeParse` → `error(400)`) — cf. [quality-standards.md](../pratiques/qualite.md#input-validation-with-zod).
-- Le client Supabase utilisé par les composants vient de `+layout.ts` (`data.supabase`), authentifié par cookies en SSR / localStorage en navigateur.
+**Flux d'auth réactif** : `onAuthStateChange` ne consomme **jamais** la session du rappel (non
+vérifiée) ; il appelle `invalidate('supabase:auth')`, qui relance le `load` racine et la
+vérification serveur. `SIGNED_IN` du même utilisateur (HMR, retour sur l'onglet) est ignoré, et
+`TOKEN_REFRESHED` n'invalide que toutes les 30 min au plus (`REFRESH_INTERVAL_MS`), via
+`sessionStorage`.
 
----
+### ⚠️ Safari/WebKit TDZ — le chunk du layout racine
 
-## SSR & hydratation
+Le chunk du layout racine doit rester **< 100 Ko**, sinon iPad/Safari lève
+`Cannot access 'universal' before initialization`.
 
-Double `load` racine, dans l'ordre :
+- `@supabase/ssr` et `$app/navigation` sont importés **dynamiquement** dans
+  `src/routes/+layout.ts` (`await import(...)`). Jamais d'import statique lourd dans ce fichier.
+- Garde CI : `.github/workflows/quality.yml`, après le build, refuse un `nodes/0.*.js` de plus de
+  `102400` octets.
 
-1. **`+layout.server.ts`** (server only) : `safeGetSession()` → `getUser()` (vérifié), renvoie `cookies`, `user`, `profile`.
-2. **`+layout.ts`** (universel : SSR puis hydratation navigateur) : reçoit `data`, crée le client Supabase (`createServerClient` via cookies en SSR / `createBrowserClient` en navigateur), `depends('supabase:auth')`.
+Détail : [safari-webkit-tdz.md](../pratiques/safari-webkit-tdz.md).
 
-**Flux auth réactif** : `onAuthStateChange` (navigateur) ne consomme **jamais** la session du callback (non vérifiée) → il appelle `invalidate('supabase:auth')`, ce qui ré-exécute le `load` racine et re-vérifie côté serveur. `SIGNED_IN` même utilisateur (HMR/refocus) et `TOKEN_REFRESHED` < 30 min sont **throttlés** via `sessionStorage` pour éviter des reloads inutiles (3-5 requêtes DB chacun).
+## Motif : UI optimiste + envoi groupé
 
-### ⚠️ Contrainte critique — Safari/WebKit TDZ (root layout)
+Pour les mises à jour fréquentes (compteurs, quantités) : la mise à jour s'applique tout de suite
+à l'écran, les clics s'**accumulent** pendant 500 ms, puis un seul envoi part ; en cas d'échec,
+on retire le delta accumulé et on affiche un toast d'erreur. Référence vivante :
+`src/routes/(protected)/dashboard/teacher/gamification/rewards/+page.svelte`
+(`debouncedUpdateStudent`, `debouncedUpdateStudentBonus`, `debouncedUpdateClass`, cache prof
+`updateGidouillesOptimistic`). UI optimiste seule (sans regroupement), avec retour arrière :
+`src/routes/(protected)/dashboard/student/inventory/+page.svelte`.
 
-Le **chunk du root layout doit rester < 100 KB**, sinon iPad/Safari lève `Cannot access 'universal' before initialization` (WebKit bug [#242740](https://bugs.webkit.org/show_bug.cgi?id=242740), chaîne d'imports statiques trop complexe dans le module d'entrée de route).
+Réactivité : **événement → handler → mise à jour du state → mise à jour du DOM** ; `$effect`
+réservé aux effets de bord ([svelte-typescript.md](../pratiques/svelte-typescript.md)).
 
-- **`@supabase/ssr` est importé DYNAMIQUEMENT** dans `src/routes/+layout.ts` (`await import('@supabase/ssr')`), jamais en import statique. Idem `$app/navigation` (`invalidate`) chargé dynamiquement.
-- **Garde CI** (`.github/workflows/quality.yml`) : après `pnpm build`, vérifie `nodes/0.*.js` ≤ `102400` octets → **fail si dépassé**.
-- **NE JAMAIS** ajouter d'import statique de lib lourde dans `+layout.ts`.
+## Systèmes volumineux (pointeurs)
 
-> Détail : [docs/pratiques/safari-webkit-tdz.md](../pratiques/safari-webkit-tdz.md).
+- **Questions** (`src/lib/questions/`, API publique `src/lib/questions/index.ts` :
+  `generateInstance`, `resolveVariables`… ; génération dans `src/lib/questions/generator/`) →
+  [questions.md](questions.md). Agent : `pedagogy-expert`.
+- **mathAST** (`src/lib/mathAST/`) → [mathast/](mathast/README.md). Invariants structurels
+  stricts ; agent : `mathast-expert`.
 
----
+## Serveur de développement
 
-## Dev server
+`pnpm dev --port 5175 --strictPort` — **5175** toujours ; 5173 est celui de David. Les autres
+commandes : [commandes.md](../pratiques/commandes.md).
 
-**Toujours `--port 5175`** ; `5173` est réservé à l'utilisateur, **ne pas l'utiliser**.
+## Décisions
 
-```bash
-pnpm dev --port 5175 --strictPort
-```
+- Branche `production` et mise en prod manuelle : [ADR 0021](../adr/0021-branche-production-mise-en-prod-manuelle.md).
+- Autres décisions d'architecture : [docs/adr/](../adr/).
 
----
+## Écarts connus
 
-## Performance patterns
-
-**Optimistic UI + debouncing** — pour les updates serveur fréquentes (compteurs, quantités) : MAJ optimiste immédiate + envoi serveur batché (fenêtre de debounce ~500 ms), rollback sur erreur. Réel dans `src/routes/(protected)/dashboard/teacher/gamification/rewards/+page.svelte` (cache teacher + `debouncedUpdate*`), aussi `dashboard/student/inventory/`.
-
-```typescript
-function debouncedUpdate(id: string, delta: number) {
-	optimistic[id] = (optimistic[id] ?? 0) + delta; // 1. feedback UI instantané
-	clearTimeout(timers[id]);
-	timers[id] = setTimeout(async () => {
-		try {
-			await updateServer(id, optimistic[id]); // 2. envoi batché
-		} catch {
-			optimistic[id] = 0; // rollback
-			toaster.error('Échec de la mise à jour');
-		}
-	}, 500);
-}
-```
-
-Réactivité = **event → handler → maj du state → maj du DOM** (runes ; `$effect` réservé aux side-effects). Autres leviers : index DB sur les chemins chauds, élimination des N+1 (joins), RPC PostgreSQL pour les agrégations.
-
----
-
-## Question/template system (pointeur)
-
-Système métier volumineux — **ne pas deep-diver ici** :
-
-- **`src/lib/questions/`** (~70 fichiers) — banque de questions / templates. API publique : `src/lib/questions/index.ts` (`generateInstance`, `resolveVariables`, `random-generator`…) ; génération dans `generator/` (`instance-generator`, `variable-resolver`, `correction-generator`, `condition-evaluator`…). Agent dédié : **`pedagogy-expert`**.
-- **`src/lib/mathAST/`** (~700 fichiers) — AST symbolique : parsing, normalize, pattern matching (`P`/`tryMatch`/`parsePattern`), `cosmetic-transforms`, génération LaTeX, paliers pédagogiques. Invariants structurels stricts → agent dédié : **`mathast-expert`**.
-
----
-
-> Voir aussi : [best-practices.md](../pratiques/svelte-typescript.md) (Svelte 5, TS) · [database.md](../pratiques/base-de-donnees.md) · [ui-components.md](../pratiques/composants-ui.md) · [realtime.md](realtime.md) · [git-workflow.md](../pratiques/git-workflow.md).
+- L'en-tête de `src/routes/(protected)/+layout.server.ts` documente `/login` et conseille
+  `await parent()` ; la redirection réelle va vers `/auth/login`, et `locals` suffit.
+- `src/routes/slides/` est hors des groupes : sa page `test-transitions` est publique (page de
+  test, sans donnée).

@@ -67,7 +67,7 @@ servie. Ne pas conclure d'un journal vide que le code est sain.
 | --------------------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
 | `checkForTemplateUpdates` → `PGRST116`                                | 14 occurrences, 2 profs, depuis le 13/09       | **Corrigé** (`.maybeSingle()`) + test                             |
 | `game_leaderboard` → `42501 permission denied`                        | 3 occurrences, 3 utilisateurs, depuis le 06/09 | **Corrigé** — ce n'était pas une question d'accès (voir plus bas) |
-| `presques-evaluations` → `42501 permission denied for table profiles` | 2 utilisateurs, page **publique**              | ⏸️ **question d'accès** (voir plus bas)                           |
+| `presques-evaluations` → `42501 permission denied for table profiles` | 2 utilisateurs, page **publique**              | **Corrigé** — besoin retiré (voir plus bas)                       |
 
 ### Les deux questions d'accès qui restent
 
@@ -91,6 +91,8 @@ appellent une RPC ont été vérifiées une par une : toutes gardées.
 1. **La page publique « presques-évaluations » a besoin de `profiles`.** Depuis
    le durcissement, `anon` ne lit plus cette table. Même alternative : retirer le
    besoin, ou le servir par une fonction qui ne rend que le strict nécessaire.
+   **Tranché** : besoin retiré — la jointure `creator:created_by(…)` a été
+   supprimée (`(public)/presques-evaluations/+page.server.ts`, en-tête).
 
 ⚠️ Dans les deux cas, **ne pas re-`grant` à `anon`** sans mesurer ce que ça
 rouvre : c'est la cause racine de l'audit d'août.
@@ -137,3 +139,5 @@ vieille de neuf jours.
 
 Lié : [rls-echecs-silencieux.md](rls-echecs-silencieux.md) — pourquoi tant de
 choses échouent sans rien dire.
+
+Vérifié contre le code le 2026-10-10.

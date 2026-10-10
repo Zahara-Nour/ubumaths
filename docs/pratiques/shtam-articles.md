@@ -47,3 +47,5 @@ Un article mal formé fait échouer la CI, jamais la production.
 Sujets pas encore écrits. Un sujet écrit sort de la liste.
 
 _Vide : les seize idées du 2026-10-05 ont été rédigées (#843, parution du 3 décembre au 25 janvier)._
+
+Vérifié contre le code le 2026-10-10.

@@ -58,7 +58,7 @@ pnpm deploy:prod                    # mise en prod : version (CHANGELOG, tag) + 
 
 `main` = **branche de travail** ; la prod suit la branche `production`. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`**.
 
-**Changement 100 % documentaire : commit DIRECT sur `main`, sans branche ni PR — quel que soit le nombre de fichiers.** Ce n'est pas une permission, c'est une obligation : sur `pull_request` la CI n'a pas de `paths-ignore`, donc une PR pour du markdown relance les 12 jobs pour rien ; sur `push`, `paths-ignore` couvre `**/*.md` et `docs/**`.
+**Changement 100 % documentaire : commit DIRECT sur `main`, sans branche ni PR — quel que soit le nombre de fichiers.** Ce n'est pas une permission, c'est une obligation : sur `pull_request` la CI n'a pas de `paths-ignore`, donc une PR pour du markdown relance les 12 jobs pour rien ; sur `push`, le filtre `paths` de `quality.yml` exclut `**/*.md` et `docs/**` (mais réinclut `src/**`, `static/**` et `data/**`).
 
 ⚠️ **Le test est mécanique, pas une impression** — avant de commiter directement :
 

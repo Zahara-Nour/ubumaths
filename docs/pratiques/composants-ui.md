@@ -49,7 +49,7 @@ Référence synthétique pour Claude : **composants UI obligatoires**, imports S
 <MySelect type="single" bind:value={mode} {items} fitContent />
 ```
 
-Exemples réels : `AssessmentConfigForm.svelte` (single + triggerClass), `WorksheetAssignmentForm.svelte` (multiple), `src/routes/(protected)/dashboard/admin/users/+page.svelte` (variant invisible).
+Exemples réels : `ScheduleEntryModal.svelte` (single + triggerClass), `WorksheetAssignmentForm.svelte` (multiple), `src/routes/(protected)/dashboard/admin/users/+page.svelte` (variant invisible).
 
 ---
 
@@ -134,7 +134,7 @@ import * as Avatar from '$lib/components/ui/avatar'; import * as Accordion from 
 
 <!-- Dialog -->
 <Dialog.Root bind:open>
-	<Dialog.Trigger asChild let:builder>…</Dialog.Trigger>
+	<Dialog.Trigger>…</Dialog.Trigger>
 	<Dialog.Content>
 		<Dialog.Header><Dialog.Title>…</Dialog.Title></Dialog.Header>
 		…
@@ -245,3 +245,5 @@ import {cn} from '$lib/utils';
 ---
 
 > Voir aussi : [best-practices.md](svelte-typescript.md) · [quality-standards.md](qualite.md) · [architecture.md](../systeme/architecture-generale.md).
+
+Vérifié contre le code le 2026-10-10.

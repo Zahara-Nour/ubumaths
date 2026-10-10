@@ -310,3 +310,5 @@ l'action reste une restauration de répétition (base à part, ou staging).
   mêmes capacités qu'en local, via la propriété de la base et `supautils`. Seule
   différence : `public` appartient à `pg_database_owner` en prod → étape 1 de la
   restauration corrigée (`create schema public authorization pg_database_owner`).
+
+Vérifié contre le code le 2026-10-10.

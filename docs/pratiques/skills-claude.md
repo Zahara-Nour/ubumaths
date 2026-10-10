@@ -69,3 +69,7 @@ Le déroulé de référence est dans [CLAUDE.md](../../CLAUDE.md) et
 
 Elles restent dans l'historique git (`git log --diff-filter=D -- .claude/commands`) si l'une
 devait revenir.
+
+---
+
+Vérifié contre le code le 2026-10-10.

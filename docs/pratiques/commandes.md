@@ -30,26 +30,26 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 
 ## Qualité — types, lint, format
 
-| Commande                        | Effet                                                              | Notes                                                                                |
-| ------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `pnpm check:incremental`        | `svelte-check` avec cache, même scope que la CI — **le quotidien** | ~45 s (~80 s à froid, `FRESH=1`) ; rejoue le résultat si rien n'a changé (`FORCE=1`) |
-| `pnpm check`                    | **Le check CI** (`tsconfig.check.json`, heap 8 Go), verrouillé     | 82 s                                                                                 |
-| `pnpm check:watch`              | `svelte-check` en watch                                            |                                                                                      |
-| `pnpm check:changed`            | Check des fichiers modifiés (`scripts/check-changed.sh`)           | `check:staged` : fichiers stagés                                                     |
-| `pnpm lint:fast`                | Toutes les règles de niveau erreur, sans types                     | ~2,5 s ; lancé au `pre-push`                                                         |
-| `pnpm lint`                     | ESLint complet avec cache, verrouillé                              | 530 s à froid → **en arrière-plan**                                                  |
-| `pnpm lint:all`                 | `eslint .` avec cache, sans verrou                                 | Préférer `pnpm lint`                                                                 |
-| `pnpm format "<chemins>"`       | `prettier --write`                                                 | `format:all` : tout le dépôt (lourd)                                                 |
-| `pnpm format:check`             | Prettier `--check` sur les fichiers suivis                         | Lancé au `pre-push` ; `format:check:all` : tout                                      |
-| `pnpm svelte:autofix <fichier>` | Autofixer Svelte (MCP en CLI)                                      | **Après chaque `.svelte` créé ou modifié**                                           |
-| `pnpm check:css-tokens`         | Interdit `hsl(var(--x))`                                           | [css-color-tokens.md](css-color-tokens.md)                                           |
-| `pnpm check:barrels`            | Exports de barils orphelins                                        |                                                                                      |
-| `pnpm check:await-render`       | Tout `render` de vitest-browser-svelte est attendu                 |                                                                                      |
-| `pnpm check:ubumark`            | Vérifie la syntaxe ubumark des contenus                            |                                                                                      |
-| `pnpm check:integration-paths`  | Le filtre `paths` du nightly couvre-t-il la suite d'intégration ?  | ~5 s                                                                                 |
-| `pnpm docs:check-links`         | Liens internes des docs                                            |                                                                                      |
+| Commande                        | Effet                                                             | Notes                                                                                                               |
+| ------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:incremental`        | `svelte-check --tsgo`, même scope que la CI — **le quotidien**    | ~18 s (~20 s à froid, `FRESH=1`), `--tsgo` depuis le 2026-10-10 ; rejoue le résultat si rien n'a changé (`FORCE=1`) |
+| `pnpm check`                    | **Le check CI** (`tsconfig.check.json`, heap 8 Go), verrouillé    | 82 s                                                                                                                |
+| `pnpm check:watch`              | `svelte-check` en watch                                           |                                                                                                                     |
+| `pnpm check:changed`            | Check des fichiers modifiés (`scripts/check-changed.sh`)          | `check:staged` : fichiers stagés                                                                                    |
+| `pnpm lint:fast`                | Toutes les règles de niveau erreur, sans types                    | ~2,5 s ; lancé au `pre-push`                                                                                        |
+| `pnpm lint`                     | ESLint complet avec cache, verrouillé                             | 530 s à froid → **en arrière-plan**                                                                                 |
+| `pnpm lint:all`                 | `eslint .` avec cache, sans verrou                                | Préférer `pnpm lint`                                                                                                |
+| `pnpm format "<chemins>"`       | `prettier --write`                                                | `format:all` : tout le dépôt (lourd)                                                                                |
+| `pnpm format:check`             | Prettier `--check` sur les fichiers suivis                        | Lancé au `pre-push` ; `format:check:all` : tout                                                                     |
+| `pnpm svelte:autofix <fichier>` | Autofixer Svelte (MCP en CLI)                                     | **Après chaque `.svelte` créé ou modifié**                                                                          |
+| `pnpm check:css-tokens`         | Interdit `hsl(var(--x))`                                          | [css-color-tokens.md](css-color-tokens.md)                                                                          |
+| `pnpm check:barrels`            | Exports de barils orphelins                                       |                                                                                                                     |
+| `pnpm check:await-render`       | Tout `render` de vitest-browser-svelte est attendu                |                                                                                                                     |
+| `pnpm check:ubumark`            | Vérifie la syntaxe ubumark des contenus                           |                                                                                                                     |
+| `pnpm check:integration-paths`  | Le filtre `paths` du nightly couvre-t-il la suite d'intégration ? | ~5 s                                                                                                                |
+| `pnpm docs:check-links`         | Liens internes des docs                                           |                                                                                                                     |
 
-> Déconseillés : `npx tsc --noEmit` et `svelte-check` sans `--incremental` meurent sur le tas par défaut de Node (~4 Go, exit 134). `check:fast` a été retiré le 2026-10-10.
+> Déconseillés : `npx tsc --noEmit` et `svelte-check` classique (sans `--incremental` ni `--tsgo`) meurent sur le tas par défaut de Node (~4 Go, exit 134). `check:fast` a été retiré le 2026-10-10.
 
 ---
 
@@ -117,3 +117,5 @@ Historique (migrations de données ponctuelles, à ne relancer qu'en connaissanc
 ## Jeux
 
 `pnpm game:setup-assets` · `game:import-challenges` (navadra) · `game:seed-spells`.
+
+Vérifié contre le code le 2026-10-10.

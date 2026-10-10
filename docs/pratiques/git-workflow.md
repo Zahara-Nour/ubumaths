@@ -11,8 +11,8 @@
 1. **`main` toujours vert et déployable** (la prod en est un instantané, `production`). Jamais de commit de **code** directement sur `main`.
 2. Tout changement de code → **branche → PR → CI 100 % verte → merge commit → suppression de branche**.
 3. **Seule exception au PR** : changement **100 % documentaire** (`docs/**` et `**/*.md`, aucun fichier de code) → commit direct sur `main`, **quel que soit le nombre de fichiers**. Plafond de 2 fichiers levé le 2026-09-14.
-   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (voir le commentaire du fichier — les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown relance donc **les 12 jobs**, ~4 min, pour zéro vérification utile. Sur `push`, `paths-ignore` couvre les docs → commit direct = **aucune CI**.
-   - L'`ignoreCommand` Vercel exclut aussi `docs/**` et `**/*.md` → un commit docs-only **ne redéploie pas** la prod.
+   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (voir le commentaire du fichier — les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown relance donc **les 12 jobs**, ~4 min, pour zéro vérification utile. Sur `push`, le filtre `paths` exclut `docs/**` et `**/*.md` (mais réinclut `data/**`, `src/**`, `static/**`, `.md` compris) → commit direct de doc = **aucune CI**.
+   - L'`ignoreCommand` Vercel (`scripts/vercel-ignore-build.sh`) saute aussi un build qui ne change que `docs/**` et `**/*.md` (hors `src/`, `static/`) → un commit docs-only **ne redéploie pas** la prod.
    - ⚠️ Vérification **mécanique** avant de commiter, jamais à l'œil :
      ```bash
      git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
@@ -41,7 +41,7 @@
 ## 4. Checks locaux (un seul gros process à la fois)
 
 - Le **hook pre-commit est léger** (`.lintstagedrc.js` → `oxlint` + `prettier` sur les fichiers staged, ~2 s — motif : la durée, un eslint complet prend 530 s) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants) ; prettier garde le job **Lint** CI (`prettier --check`) vert.
-- **Avant de pousser** : `pnpm check:incremental` (~45 s, **0 erreur exigée**).
+- **Avant de pousser** : `pnpm check:incremental` (~18 s, moteur `--tsgo` depuis le 2026-10-10, **0 erreur exigée**).
 - **eslint complet** : en CI, et autorisé en local **en arrière-plan** (`pnpm lint`, 530 s). Le hook utilise `oxlint` (Rust) pour le feedback rapide ; `pnpm lint:fast` (~2,5 s) avant de pousser.
 - **Un seul gros process à la fois** : `pnpm check` / `pnpm build` / `pnpm lint` sont autorisés, sous le verrou de `scripts/gros-process.sh` (le même que `check:incremental`) (4 à 6 Go chacun, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` meurt sur le tas par défaut de Node (~4 Go), quelle que soit la RAM.
 
@@ -60,7 +60,7 @@
 
 ## 6. PR, revue & merge
 
-- `gh pr checks <n> --watch` → **tout vert** avant merge (Lint, Type Check, Build, Server/Client Tests, Analyze/CodeQL).
+- `gh pr checks <n> --watch` → **tout vert** avant merge (Lint, Type Check, Types des tests, Build, Server/Client Tests, Security Audit, Garde SECURITY DEFINER → CI Summary ; CodeQL à part).
 - Revue par agents :
   - `code-reviewer` sur tout changement substantiel.
   - **`security-auditor` OBLIGATOIRE** dès qu'il y a auth / RLS / API sensible / migration.
@@ -94,3 +94,7 @@ Même flux, expédié : `fix/<slug>` depuis `main` → fix **+ test de non-régr
 - ❌ Merger en CI rouge.
 - ❌ Pousser une migration que le code déployé ne supporte pas (ordre additive/destructive).
 - ❌ `pnpm db:migrate` depuis une branche non mergée.
+
+---
+
+Vérifié contre le code le 2026-10-10.

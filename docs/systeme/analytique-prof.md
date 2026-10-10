@@ -1,193 +1,120 @@
-# Teacher Analytics V2.0 — Référence
-
-Stats prof exploitant les données SRS/FSRS + famille B pour piloter une classe.
-
-> **Statut** : livré 2026-06-10, commits `4432b20a5` (Phase 1 backend), `33a951b82` (Phase 2 UI), `b1bb8f223` (Phase 3 P1 fixes).
-> **Page** : `/dashboard/teacher/classes/[classId]/analytics`
-
----
-
-## 1. Vue d'ensemble
-
-Le prof accède à une vue unifiée de l'**état d'acquisition** de sa classe sur **2 familles** :
-
-| Onglet           | Famille              | Données source                                                   | Widgets       |
-| ---------------- | -------------------- | ---------------------------------------------------------------- | ------------- |
-| 📘 Connaissances | A (FSRS knowledge)   | `srs_card_stats` + `skill_attempts` + `question_template_points` | A, B, C, D, E |
-| 🎯 Compétences   | B (compétences math) | `student_competence_level` + `student_observable_state`          | F, G          |
-
-**Sécurité** : la garde `requireTeacherOfClass` autorise **tout `teacher` ou `admin`** (role-based via `requireRoles(['teacher','admin'])`), puis vérifie l'existence de la classe (404 sinon). Mono-prof : les classes ne sont plus assignées à un prof — l'autorisation ne dépend d'aucun `teacher_id` de classe.
-
----
-
-## 2. Les 7 widgets
-
-### Widget A — Grille capacité × classe (`ClassCapacityGrid.svelte`)
-
-Tableau élève × capacité famille A, cellule = badge FSRS agrégé (🆘 / 🔁 / ⏳ / ✅ / ◯).
-
-- **Toggle "Tout le cycle"** : inclut les capacités non encore touchées (pour planification)
-- **Tri par % acquise descendant** : pivot pédagogique pour identifier les colonnes faibles
-- **Pied de colonne** : `% acquise / % à remédier` par capacité
-
-### Widget B — Courbe rétention par élève × thème (`StudentRetentionCurve.svelte`)
-
-SVG inline 8 semaines × retrievability moyenne. Source : parsing `srs_card_stats.review_history` JSONB en mémoire.
-
-- Affichage seulement si ≥ 3 reviews sur la période
-- Drill-down depuis sélecteur élève + sélecteur thème (page conteneur)
-
-### Widget C — Heatmap activité classe (`ClassActivityHeatmap.svelte`)
-
-Grille élève × jour (30 derniers jours), opacité ∝ count de reviews ce jour.
-
-- **Alerte "X jours sans review"** : seuil **5 jours** (paramétrable via query param)
-- Tooltip : `N reviews — N% succès`
-
-### Widget D — Histogramme grades par élève (`StudentGradeHistogram.svelte`)
-
-Bar chart SVG inline {Again=1, Hard=2, Good=3, Easy=4} sur 7 derniers jours.
-
-- Couleurs par grade (rouge → vert)
-- Tooltip : count + stability moyenne en sortie
-
-### Widget E — Top capacités à remédier (`TopCapacitiesToRemediate.svelte`)
-
-Liste triée par `% {🆘+🔁}` desc. Modal "élèves concernés" au clic.
-
-### Widget F — Grille compétences math × classe (`ClassCompetenceGrid.svelte`)
-
-Tableau élève × 6 compétences math (Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer).
-
-- Cellules : niveau visuel `◯ / 🟠 / 🟢 / ✨`
-- Chip de fraîcheur "dernière saisie il y a X jours" en header
-- Pied de colonne : `% satisfaisante+`
-
-### Widget G — Top observables à consolider (`TopObservablesToConsolidate.svelte`)
-
-Liste triée par `% minus` desc, observés ≥ 1 fois en classe. Modal "élèves concernés" au clic.
-
----
-
-## 3. Backend — Architecture
-
-### Helpers d'agrégation (`src/lib/server/stats/`)
-
-| Fichier                 | Fonctions exposées                                                                                                                            |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `class-knowledge.ts`    | `getClassCapacityGrid`, `getClassTopCapacitiesToRemediate`, `getStudentRetentionCurve`, `getClassActivityHeatmap`, `getStudentGradeHistogram` |
-| `class-competence.ts`   | `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`                                                                               |
-| `teacher-class-auth.ts` | `requireTeacherOfClass(locals, classId)` — garde 403/404                                                                                      |
-
-**Stratégie performance** : approche batchée (2-3 queries par fonction, pas N×queries). Réutilise `templateToBadge` et `BADGE_PRIORITY` de `src/lib/server/srs/capacity-badge.ts`.
-
-### Endpoints REST (`src/routes/api/teacher/classes/[classId]/analytics/`)
-
-```
-GET /knowledge-grid                        ?includeAllCycle=true
-GET /knowledge-top-remediate               ?topN=10
-GET /knowledge-retention/[studentId]       ?theme=NOM&weeks=8
-GET /knowledge-heatmap                     ?days=30&alertThresholdDays=5
-GET /knowledge-grades/[studentId]          ?days=7
-GET /competence-grid
-GET /competence-top-consolidate            ?topN=10
-```
-
-Tous : `requireTeacherOfClass(locals, classId)` + Zod sur params/query. Endpoints student-scoped (B/D) revérifient l'appartenance à la classe via `class_members`.
-
-### Schemas Zod (`src/lib/server/validation/teacher-analytics.ts`)
-
-6 schemas : `classIdParamSchema`, `classAndStudentParamSchema`, `knowledgeGridQuerySchema`, `retentionQuerySchema`, `heatmapQuerySchema`, `gradesQuerySchema`, `topNQuerySchema`.
-
----
-
-## 4. UI — Architecture
-
-### Page conteneur
-
-`src/routes/(protected)/dashboard/teacher/classes/[classId]/analytics/+page.{svelte,server.ts}`
-
-- 2 onglets `Tabs` (Connaissances / Compétences)
-- Header : toggle Mode projection + bouton Actualiser
-- Sélecteurs élève + thème pour drill-down B/D
-- `+page.server.ts` charge la classe + liste élèves + thèmes BO
-
-### Composants
-
-8 composants dans `src/lib/components/teacher/analytics/` :
-
-- `AnalyticsModal.svelte` — modal "élèves concernés" réutilisable (E, G)
-- 7 widgets (1 par diagramme + 1 grille famille B)
-
-**Pattern fetch unifié** :
-
-```svelte
-$effect(() => {
-  void classId; void refreshNonce; // deps explicites
-  void load();
-});
-```
-
-**`refreshNonce` pattern** : nombre incrémental dispatché du parent, déclenche refetch via `$effect`.
-
----
-
-## 5. Tests
-
-| Suite                                        | Tests  | Cible       |
-| -------------------------------------------- | ------ | ----------- |
-| `class-knowledge.test.ts`                    | 21     | ≥ 15 ✅     |
-| `class-competence.test.ts`                   | 12     | ≥ 10 ✅     |
-| `AnalyticsModal.svelte.test.ts`              | 5      | ≥ 4 ✅      |
-| `ClassCapacityGrid.svelte.test.ts`           | 6      | ≥ 5 ✅      |
-| `ClassCompetenceGrid.svelte.test.ts`         | 4      | ≥ 3 ✅      |
-| `TopCapacitiesToRemediate.svelte.test.ts`    | 3      | ≥ 3 ✅      |
-| `TopObservablesToConsolidate.svelte.test.ts` | 2      | ≥ 2 ✅      |
-| `ClassActivityHeatmap.svelte.test.ts`        | 3      | ≥ 3 ✅      |
-| `StudentRetentionCurve.svelte.test.ts`       | 3      | ≥ 3 ✅      |
-| `StudentGradeHistogram.svelte.test.ts`       | 3      | ≥ 3 ✅      |
-| **Total**                                    | **62** | **≥ 51** ✅ |
-
----
-
-## 6. Roadmap V2.1
-
-Analyse critique des items reportés (revue 2026-06-10) : sur 7 candidats, **1 seul vaut le coup**. Les autres sont gold-plating ou prématurés.
-
-| #   | Item                                                 | Verdict                          | Raison                                                                                                                                                                                        |
-| --- | ---------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Export CSV widgets A et F                            | ❌ Ne pas faire                  | Aucun prof réel ne l'a demandé. Copier-coller Excel depuis la grille HTML marche déjà. Inventé "au cas où".                                                                                   |
-| 2   | Comparatif inter-classes (split view CM2-A vs CM2-B) | ❌ Ne pas faire                  | Niche : minorité de profs ont 2 classes même niveau simultanément. Layout split-view casse le mobile (page déjà dense). 1 j d'effort pour ~5 % d'usage.                                       |
-| 3   | Drill-down click depuis cellule grille               | ✅ À faire si friction confirmée | Vraie friction probable : sélecteur "élève + thème" pour ouvrir B+D est à ~800 px de scroll de la cellule consultée. Lookup capacité → thème nécessaire. ~0.5 j.                              |
-| 4   | Hook `useFetch` factorisation 7 widgets              | ❌ Ne pas faire                  | Refactor cosmétique. Pattern actuel ($state/load/$effect, ~40 lignes/widget) est lisible. 62 tests verts, zéro bug. Aucun besoin métier.                                                      |
-| 5   | Helper `loadClassStudents` mutualisé                 | ❌ Ne pas faire                  | Extraction prématurée : non vérifié que les autres callsites ont les mêmes besoins (filtre `status='active'`, formatage `display_name`). À refactoriser **quand** vraie duplication observée. |
-| 6   | Cache HTTP `max-age=30` sur endpoints                | ❌ Ne pas faire                  | Gain quasi-nul : le pattern `$effect` ne re-fetch QUE sur changement `classId`/`refreshNonce`. Toggle onglet ≠ re-mount. Cache servirait uniquement au F5 navigateur (edge case).             |
-| 7   | Vue matérialisée `class_capacity_grid_mv`            | ❌ Ne pas faire                  | Premature optimization. Aucune mesure perf. Cible 30 élèves (max pratique classe FR) probablement OK avec l'approche batchée actuelle. Réévaluer si p99 > 200 ms mesuré.                      |
-
-**Recommandation** : ne rien faire de V2.1 tant que les vrais profs n'ont pas utilisé V2.0 en condition réelle (2-3 semaines). Adresser les frictions remontées, pas un backlog spéculatif.
-
----
-
-## 7. Vérification end-to-end (Phase 4)
-
-À effectuer manuellement par le prof :
-
-1. Connexion prof, sélection d'une classe peuplée
-2. Aller `/dashboard/teacher/classes/[classId]/analytics`
-3. **Onglet 📘 Connaissances** : vérifier les 5 widgets affichés
-4. Toggle **Mode projection** → vérifier que les noms deviennent "Élève 1", "Élève 2", …
-5. Sélecteurs élève + thème → Widgets B + D apparaissent dans la zone "Détail par élève"
-6. Bouton **Actualiser** → cache rechargé, indicateurs de chargement visibles
-7. Onglet **🎯 Compétences** : vérifier Widget F + G
-8. Clic "Voir" sur une ligne Widget E ou G → modal liste des élèves concernés
-9. Classe vide → message "Aucun élève dans cette classe"
-10. Tentative d'accès par un compte non-prof/non-admin (p.ex. élève) → 403 ; classe inexistante → 404
-
----
-
-## 8. Références
-
-- Progress : `docs/archive/wip/teacher-analytics-progress.md` (archivé)
-- SRS / FSRS architecture : `docs/systeme/srs.md`
-- Famille B saisie : `src/routes/(protected)/dashboard/teacher/evaluation-tasks/[id]/saisie/`
-- Pattern badge FSRS : `src/lib/server/srs/capacity-badge.ts`
+# Analytique prof — la page « analytics » d'une classe
+
+> Vérifié contre le code le 2026-10-10. Historique du chantier (V2.0, juin 2026) :
+> [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
+> pas le code actuel).
+
+## À quoi ça sert
+
+Une page par classe, `/dashboard/teacher/classes/[classId]/analytics`, ouverte depuis la liste des
+classes du prof. Elle montre l'état de la classe sous trois onglets :
+
+| Onglet           | Ce qu'il montre                                                                         | Sources                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 📘 Connaissances | Mémorisation (FSRS) des **points du programme** travaillés, activité, notes de révision | `skill_attempts`, `question_template_points` → `curriculum_points`, `srs_card_stats`      |
+| 🎯 Compétences   | Niveaux des six **compétences mathématiques** et observables à consolider               | `math_competences`, `student_competence_level`, `student_observable_state`, `observables` |
+| Surveillance     | Drapeaux anti-triche non résolus (badge = leur nombre)                                  | `srs_anti_fraud_flags` — voir [srs.md](srs.md) (anti-triche éteint en prod)               |
+
+Termes ([CONTEXT.md](../../CONTEXT.md)) : Point du programme, compétences mathématiques. ⚠️ Le code
+et l'interface disent encore « **capacité** » (`ClassCapacityGrid`, « Top capacités à remédier ») et
+les commentaires « famille A » : c'est le **vocabulaire du référentiel abandonné**
+([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)). Les colonnes sont aujourd'hui des
+`curriculum_points` ; seule la famille B (compétences) reste un référentiel vivant.
+
+**Accès** : `requireTeacherOfClass(locals, classId)` (`src/lib/server/stats/teacher-class-auth.ts`)
+= `requireRoles(['teacher','admin'])` puis existence de la classe (404 sinon) ; la page elle-même
+passe d'abord par le layout du tableau de bord prof, réservé au rôle `teacher`. Mono-prof : aucun
+`teacher_id` de classe n'entre en jeu ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md)).
+
+## Les widgets
+
+Onglet 📘 Connaissances :
+
+- **A — Grille élève × point** (`ClassCapacityGrid.svelte`) : une colonne par `curriculum_point`
+  tagué sur un modèle que la classe a tenté (via `question_template_points`, en ne gardant que les
+  points du **niveau de la classe** — `keepLinksOfGrade`). Cellule = badge FSRS agrégé
+  🆘 / 🔁 / ⏳ / ✅ / ◯ (`templateToBadge` + `BADGE_PRIORITY`, `src/lib/server/srs/capacity-badge.ts`).
+  Bascule « Tout le cycle » : ajoute les points non archivés du niveau de la classe, même non
+  touchés. Tri optionnel par % acquis ; pied de colonne `% acquise / % à remédier`.
+- **B — Courbe de rétention** (`StudentRetentionCurve.svelte`) : un élève × un thème
+  (`curriculum_themes.code`), retrievability moyenne par semaine (8 par défaut), lue dans
+  `srs_card_stats.review_history`. Rien n'est tracé sous 3 révisions.
+- **C — Heatmap d'activité** (`ClassActivityHeatmap.svelte`) : élève × jour (30 j), nombre de
+  tentatives ; alerte au-delà de 5 jours sans activité. Les cartes de cours comptent comme activité
+  mais pas dans le taux de réussite (`success_pct` à `null` un jour sans question notée).
+- **D — Histogramme des notes** (`StudentGradeHistogram.svelte`) : Again/Hard/Good/Easy sur 7 jours,
+  avec stabilité moyenne.
+- **E — Top à remédier** (`TopCapacitiesToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
+  `AnalyticsModal.svelte` (élèves concernés).
+
+Les widgets B et D apparaissent dans « Détail par élève », après choix d'un élève et d'un thème.
+
+Onglet 🎯 Compétences :
+
+- **F — Grille élève × compétence** (`ClassCompetenceGrid.svelte`) : niveau
+  ◯ insuffisante / 🟠 fragile / 🟢 satisfaisante / ✨ très bonne, lu dans `student_competence_level`
+  (colonnes = lignes de `math_competences`) ; date de dernière saisie ; pied `% satisfaisante+`.
+- **G — Observables à consolider** (`TopObservablesToConsolidate.svelte`) : observables vus au moins
+  une fois dans la classe, triés par part d'élèves dont `count_minus > count_plus`.
+
+En-tête : bouton **Export compétences** (→ [export-competences.md](export-competences.md)),
+**Mode projection** (noms anonymisés « Élève 1… »), **Actualiser** (incrémente `refreshNonce`, que
+chaque widget suit dans son `$effect` de chargement).
+
+## Carte du code
+
+- Page : `src/routes/(protected)/dashboard/teacher/classes/[classId]/analytics/+page.svelte` et
+  `+page.server.ts` (classe, élèves actifs, thèmes, compte des drapeaux non résolus). Les widgets
+  chargent leurs données eux-mêmes, côté client.
+- Agrégations (`src/lib/server/stats/`, barrel `index.ts`) :
+  - `class-knowledge.ts` : `getClassCapacityGrid`, `getClassTopCapacitiesToRemediate`,
+    `getStudentRetentionCurve`, `getClassActivityHeatmap`, `getStudentGradeHistogram` ;
+  - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
+    Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
+    `fetchInChunks`.
+- Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
+  (`?includeAllCycle`), `knowledge-top-remediate` (`?topN`), `knowledge-retention/[studentId]`
+  (`?theme&weeks`), `knowledge-heatmap` (`?days&alertThresholdDays`), `knowledge-grades/[studentId]`
+  (`?days`), `competence-grid`, `competence-top-consolidate` (`?topN`). Tous : Zod puis
+  `requireTeacherOfClass` ; les deux routes par élève vérifient en plus l'appartenance à la classe
+  dans `class_members`.
+- Zod : `src/lib/server/validation/teacher-analytics.ts` (7 schémas, bornes : `topN` 1-30,
+  `weeks` 1-26, `days` 1-60 / 1-30).
+- Composants : `src/lib/components/teacher/analytics/` (7 widgets + `AnalyticsModal`) ; onglet
+  Surveillance : `src/lib/components/teacher/anti-fraud/`.
+
+## Invariants
+
+- Lecture seule : la page n'écrit rien. Les niveaux de compétence viennent des caches tenus par le
+  trigger de `skill_attempts` ([base-de-donnees.md](base-de-donnees.md), « Programme et suivi par
+  compétences »).
+- Un élève hors classe ne passe pas par les routes par élève (contrôle `class_members`).
+- Carte partagée entre deux programmes : une seule colonne, celle du niveau de la classe.
+
+## Tests
+
+Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
+`class-competence.test.ts` (12). Composants : un `*.svelte.test.ts` par widget dans
+`src/lib/components/teacher/analytics/__tests__/` (29 au total). Aucun test d'intégration base.
+
+## Décisions
+
+- Revue du 2026-06-10 : pas d'export CSV des grilles, pas de comparatif inter-classes, pas de cache
+  HTTP ni de vue matérialisée tant qu'aucun prof n'en exprime le besoin ou qu'aucune mesure ne le
+  justifie. Seul candidat retenu « si friction confirmée » : ouvrir B + D depuis une cellule de la
+  grille A (non fait).
+- [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md) — famille A abandonnée.
+
+## Écarts connus
+
+- **Vocabulaire périmé** : « capacité » et « famille A » dans les noms (`ClassCapacityGrid`,
+  `getClassCapacityGrid`, `CapacityBadge`, `capacity-badge.ts`), les commentaires et l'interface,
+  alors que les données sont des points du programme. À renommer (non tranché).
+- **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
+  elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
+  peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second.
+- `+page.server.ts` compte `srs_anti_fraud_flags` sans tester l'erreur : un échec donne un badge à 0.
+- Accès asymétrique : la **page** est réservée au rôle `teacher` (le layout
+  `src/routes/(protected)/dashboard/teacher/+layout.server.ts` refuse tout autre rôle), alors que les
+  **endpoints** acceptent aussi `admin`. Sans conséquence aujourd'hui (l'élévation admin ne change pas
+  le rôle de session, voir [auth.md](auth.md)), mais la doc d'origine promettait l'accès admin.

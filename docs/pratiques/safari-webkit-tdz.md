@@ -109,3 +109,5 @@ wc -c .svelte-kit/output/client/_app/immutable/nodes/0.*.js
 - It does NOT appear in Vercel server logs (it's client-side)
 - To see the error: `src/hooks.client.ts` `handleError` displays it on the 500 page
 - To see the console on iPad: Settings > Safari > Advanced > Web Inspector, then connect via Mac Safari DevTools
+
+Vérifié contre le code le 2026-10-10.

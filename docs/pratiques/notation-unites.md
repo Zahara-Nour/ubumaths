@@ -84,6 +84,8 @@ Les deux formes sont acceptées et équivalentes :
 
 Refusés : `m2` (exposant sans `^`), `s^(-1)` (parenthèses), `m^{-}` et `m^{}` (exposant vide), `m^{2` (accolade non refermée).
 
+⚠️ Exception mesurée le 2026-10-10 : en notation custom, `3[s^(-1)]` n'est **pas** refusé — le `-` y suit une parenthèse, le crochet est lu comme un crochet de calcul (produit 3·s⁻¹ de la variable `s`). `\unit{s^(-1)}` est bien refusé.
+
 ⛔ **Pas d'exposant après le crochet.** `3[m]^2` est refusé : on y lisait (3 m)², soit 9 m², quand l'auteur voulait presque toujours 3 m². Écrire `3[m^2]` pour 3 m², `(3[m])^2` pour (3 m)². En LaTeX : `3~\unit{m^2}`, ou `\left(3~\unit{m}\right)^2`. Une grandeur élevée à une puissance par le code (tidy, calcul) est toujours écrite avec ses parenthèses.
 
 ### Espaces
@@ -152,3 +154,5 @@ Tests :
 - `src/lib/mathAST/units/__tests__/display.test.ts` : traduction, et rendu MathLive réel via `mathlive/ssr` ;
 - `src/lib/ubumark/generators/__tests__/unit-rendering.test.ts` : de l'énoncé ubumark aux trois sorties ;
 - `src/lib/mathAST/parser/custom/__tests__/unit-pieges.test.ts` : portée du `/`, exposant après une unité, espacements LaTeX.
+
+Vérifié contre le code le 2026-10-10.

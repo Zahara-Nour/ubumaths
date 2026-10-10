@@ -66,7 +66,7 @@ ensuite dans l'éditeur. Aucun mécanisme nouveau à l'exécution.
 ```bash
 pnpm corrections:generate pilote                  # lit les modèles en prod (lecture seule) → data/corrections/pilote/
 pnpm corrections:generate pilote --source x.json  # ou depuis un JSON local ; --source snapshot = instantané présent
-pnpm corrections:check pilote                     # 50 tirages par variation, rapport par modèle
+pnpm corrections:check pilote                     # domaine entier ou 5 000 graines, rapport par modèle
 pnpm corrections:preview pilote                   # APERCU.md, 3 tirages rendus par modèle
 pnpm corrections:import pilote                    # SIMULATION ; --publier écrit, après feu vert seulement
 ```
@@ -92,7 +92,10 @@ réponse`, et la valeur trouvée vérifie l'égalité posée ; plusieurs cases :
 - `corrections:import` écarte un modèle modifié en prod depuis l'instantané (`updated_at`), une
   variation qui a déjà une correction, une proposition rouge ; avec `--publier`, **une seule entrée
   écartée fait refuser le lot entier** (rien n'est écrit) ; l'écriture relit la ligne rendue.
-- Règles N rédigées : `lots/signes.ts` (N-SIGNES), `lots/numeration.ts` (N-DECOMP, N-FRACDEC :
+- Règles N rédigées : `lots/signes.ts` (N-SIGNES), `lots/numeration.ts` (briques des lots
+  `n-decomp.ts` et `n-fracdec.ts`, N-DECOMP, N-FRACDEC :
   tableau de numération, chiffre et valeur en orange, zéros ajoutés en bleu).
 - Stratégies générées : `R-PASS` (`lib/r-pass.ts`), `R-INV` (`lib/r-inv.ts` : `a + ? = s → ? = s − a`,
   `a × ? = s → ? = s : a`, `? : a = s → ? = s × a`…).
+
+Vérifié contre le code le 2026-10-10.

@@ -14,14 +14,14 @@ Référence synthétique pour Claude : **workflow migrations**, **règle des typ
 
 ## Workflow migrations
 
-| Étape               | Action                                                                                                                                                                       |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Créer            | `.sql` dans `supabase/migrations/`, nommé **`<timestamp>_<description>.sql`** (ex. `20260616240000_fix_private_messages_sender_fk.sql`). Le timestamp ordonne l'application. |
-| 2. Schéma **+** RLS | Mettre changement de schéma **ET** policies/triggers RLS associés **dans la même migration**.                                                                                |
-| 3. Tester en local  | `pnpm db:start` (Docker) → `pnpm test:integration` (cf. §Tests).                                                                                                             |
-| 4. Pousser          | **`pnpm db:migrate`** (= `supabase db push`) → applique vers la prod EU. **Uniquement depuis la branche mergée, avec accord explicite.**                                     |
-| 5. Régénérer types  | **`pnpm db:types`** → réécrit `src/lib/types/database.ts`. Commit.                                                                                                           |
-| 6. Documenter       | Mettre à jour [docs/systeme/base-de-donnees.md](../systeme/base-de-donnees.md) si cluster de tables feature-level.                                                           |
+| Étape               | Action                                                                                                                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Créer            | `.sql` dans `supabase/migrations/`, nommé **`<timestamp>_<description>.sql`** (ex. `20260616240000_fix_private_messages_sender_fk.sql`). Le timestamp ordonne l'application.                                                           |
+| 2. Schéma **+** RLS | Mettre changement de schéma **ET** policies/triggers RLS associés **dans la même migration**.                                                                                                                                          |
+| 3. Tester en local  | `pnpm db:start` (Docker) → `pnpm test:integration` (cf. §Tests).                                                                                                                                                                       |
+| 4. Pousser          | **`pnpm db:migrate`** (= `supabase db push`) → applique vers la prod EU. **Uniquement depuis la branche mergée**, aux 4 conditions de CLAUDE.md (§Migrations : preuves, pas approbation) ; destructive → arrêt et explication à David. |
+| 5. Régénérer types  | **`pnpm db:types`** → réécrit `src/lib/types/database.ts`. Commit.                                                                                                                                                                     |
+| 6. Documenter       | Mettre à jour [docs/systeme/base-de-donnees.md](../systeme/base-de-donnees.md) si cluster de tables feature-level.                                                                                                                     |
 
 **CLI Supabase** : devDependency du projet, version **exacte** dans `package.json` (2.118.0 depuis #512) — la même sur chaque poste et en CI (`nightly-integration.yml`). Aucune CLI globale (Homebrew désinstallée le 2026-09-29). Les scripts `pnpm db:*` la trouvent via `node_modules/.bin` ; pour une commande à la main : `pnpm exec supabase <commande>`.
 
@@ -35,7 +35,7 @@ pnpm db:status     # diagnostic : profiles manquants vs auth.users
 ```
 
 - ⛔ **JAMAIS modifier le schéma via le Dashboard Supabase.** Toute évolution passe par une migration versionnée (reproductible, reviewable).
-- ⚠️ **Prod / données locales** : ne pas lancer `db:migrate` / `db:reset` en agent ou sans accord (`db:migrate` touche la prod ; `db:reset` recrée la base locale).
+- ⚠️ **Prod / données locales** : `db:migrate` touche la prod (autonome seulement aux 4 conditions de CLAUDE.md) ; `db:reset` recrée la base locale (verrou `supabase` partagé entre worktrees).
 - État actuel des migrations : **1 baseline** (`20260616220000_baseline_schema.sql`, ~46 k lignes, schéma EU complet) **+ correctifs** post-baseline. Les **619** anciennes migrations sont archivées dans `supabase/migrations_archive/` (ne pas les rejouer).
 
 ### Timing additif vs destructif
@@ -110,14 +110,14 @@ pnpm test:integration    # vitest run --config vitest.integration.config.ts
 - Tests dans `tests/integration/` (ex. `single-teacher-rls.test.ts`, `kanban-rls.test.ts`, `game-leaderboards.test.ts`), helpers dans `tests/helpers/database/`.
 - Pattern : **vrais clients authentifiés** (`createAuthenticatedClient(email)`) → RLS réellement appliqué, pas un client service-role qui bypasse tout.
 - ⚠️ **JAMAIS valider une fonction `SECURITY DEFINER` par un smoke-test avec `auth.uid()` NULL** : la quasi-totalité de nos RPC ouvrent sur `IF auth.uid() IS NULL THEN RETURN error` → le garde **sort avant la vraie requête** → **faux positif** (a déjà laissé partir une RPC cassée en prod). Tester avec un contexte authentifié réel.
-- La suite a déjà attrapé des bugs prod (ex. `ORDER BY rank` → `rk` dans `game_leaderboard`, 0A000). ~285 tests d'intégration.
+- La suite a déjà attrapé des bugs prod (ex. `ORDER BY rank` → `rk` dans `game_leaderboard`, 0A000). ~190 fichiers de tests d'intégration.
 
 ---
 
 ## Auth (Supabase Auth)
 
-- Google OAuth restreint au domaine `@voltairedoha.com`.
-- Avatar : priorité `profile.avatar_url` → `user.user_metadata.picture` → `user.user_metadata.avatar_url` → fallback rôle/genre → initiales.
+- Google OAuth (domaine `voltairedoha.com`) **désactivé** : `GOOGLE_LOGIN_ENABLED = false` dans `src/lib/config/google-login.ts` (plomberie conservée).
+- Avatar (`UserAvatar.svelte`) : `avatar_url` → image par rôle (`getAvatarFallback`, sans genre) → initiales.
 - ⚠️ **Edge case import élève** : login **avant** import → insertion directe dans `class_members` (l'auto-enrollment ne s'est pas déclenché). Toujours considérer les deux flux (import→login vs login→import).
 - ⚠️ **Safari/WebKit TDZ** : pas d'import statique lourd dans `+layout.ts` ; `@supabase/ssr` en `await import()` dynamique (chunk root layout < 100 KB). Doc : [docs/pratiques/safari-webkit-tdz.md](safari-webkit-tdz.md).
 
@@ -125,9 +125,11 @@ pnpm test:integration    # vitest run --config vitest.integration.config.ts
 
 ## Interroger la prod
 
-- **MCP Supabase read-only** (EU, `--read-only --project-ref=cnevnzsvixxpnurautls` dans `.mcp.json`) : lecture seule pour inspecter le schéma/les données prod (`list_tables`, `execute_sql` SELECT, `get_advisors`, `get_logs`).
+- **MCP Supabase read-only** (EU, `--read-only --project-ref=cnevnzsvixxpnurautls` dans `.mcp.json`) : lecture seule pour inspecter le schéma/les données prod (`list_tables`, `execute_sql` SELECT, `get_advisors`, `query_logs`).
 - ⛔ **Ne JAMAIS appeler un outil MCP d'écriture** (`apply_migration`, `execute_sql` mutant, `create_branch`…). Toute écriture passe par une migration `.sql` + `db:migrate`.
 
 ---
 
 > Voir aussi : [quality-standards.md](qualite.md) · [best-practices.md](svelte-typescript.md) · [git-workflow.md](git-workflow.md) · schéma : [database-schema.md](../systeme/base-de-donnees.md).
+
+Vérifié contre le code le 2026-10-10.

@@ -186,8 +186,8 @@ Conséquence : livrer une nouvelle fonction SQL et le code qui l'utilise demande
 Rencontré trois fois dans la même session. Un test peut contourner
 (`const F = 'ma_fonction' as never`), du code de production ne devrait pas.
 
-⚠️ Si une migration doit partir AVANT d'autres déjà écrites, `db:push` les
-pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`
+⚠️ Si une migration doit partir AVANT d'autres déjà écrites, `pnpm db:migrate`
+(`supabase db push`) les pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`
 fonctionne, mais **compter les fichiers avant et après** : un oubli de
 restauration ne serait signalé par rien. Et les migrations suivantes hériteront
 d'un ordre non chronologique, ce qui exige `--include-all`.
@@ -215,3 +215,5 @@ Les fonctions laissées hors liste exprès (en attente de décision) sont nommé
 **Bloquant en CI (Q162 b)** : job `Garde SECURITY DEFINER` de `quality.yml`, sur toutes les PR, compté dans « CI Summary » (check obligatoire) — un rouge empêche le merge.
 Il ne démarre que Postgres (`supabase db start`, migrations appliquées), sans la suite d'intégration ; config `vitest.definer-guard.config.ts`.
 En local : `pnpm db:start` puis `pnpm test:definer-guard` (sous le verrou `supabase`, < 1 s).
+
+Vérifié contre le code le 2026-10-10.

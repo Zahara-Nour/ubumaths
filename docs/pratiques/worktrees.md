@@ -17,15 +17,15 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
 
 ## Ce qui est isolé, ce qui ne l'est pas
 
-| Ressource                                   | Isolée ?                        | Conséquence                                                                  |
-| ------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------- |
-| Répertoire de travail, fichiers non suivis  | ✅                              | Le piège « un fichier untracked suit la branche » disparaît                  |
-| Cache `.svelte-kit`, `node_modules`, `.env` | ✅                              | Changer de chantier n'invalide plus le cache du typecheck                    |
-| Branche courante                            | ✅ (git refuse le doublon)      | Garde-fou gratuit                                                            |
-| `git stash`, refs, hooks                    | ❌ (`.git` commun)              | Un stash de hook n'est pas attribuable à un chantier                         |
-| **RAM, CPU, cache de typecheck**            | ❌                              | Un seul gros process à la fois → verrou `typecheck` pour `check:incremental` |
-| **Supabase local**                          | ❌ (`project_id` + ports figés) | Une seule base pour tout le dépôt → verrou `supabase`                        |
-| **Ports dev (5173-5180)**                   | ❌                              | Collision, et `kill:servers` tue tout                                        |
+| Ressource                                   | Isolée ?                        | Conséquence                                                                                         |
+| ------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Répertoire de travail, fichiers non suivis  | ✅                              | Le piège « un fichier untracked suit la branche » disparaît                                         |
+| Cache `.svelte-kit`, `node_modules`, `.env` | ✅                              | Changer de chantier n'invalide plus le cache du typecheck                                           |
+| Branche courante                            | ✅ (git refuse le doublon)      | Garde-fou gratuit                                                                                   |
+| `git stash`, refs, hooks                    | ❌ (`.git` commun)              | Un stash de hook n'est pas attribuable à un chantier                                                |
+| **RAM, CPU, cache de typecheck**            | ❌                              | Un seul gros process à la fois → verrou `typecheck` (`check:incremental`, `check`, `build`, `lint`) |
+| **Supabase local**                          | ❌ (`project_id` + ports figés) | Une seule base pour tout le dépôt → verrou `supabase`                                               |
+| **Ports dev (5173-5180)**                   | ❌                              | Collision, et `kill:servers` tue tout                                                               |
 
 ---
 
@@ -64,7 +64,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local .
 pnpm install --prefer-offline
 ```
 
-- La base est **`origin/main`**, jamais le HEAD local : `main` est la production.
+- La base est **`origin/main`**, jamais le HEAD local, qui peut être en retard.
 - ⚠️ `.env`, `.env.local` et `node_modules` sont gitignorés : ils **ne suivent
   pas** le worktree. Sans eux, le hook pre-commit (oxlint + prettier) échoue.
 - Coût réel mesuré le 2026-09-15 : `pnpm install --prefer-offline` = **5,2 s**
@@ -76,12 +76,13 @@ pnpm install --prefer-offline
 ## Les deux verrous
 
 Implémentation : `scripts/lib/lock.py`, appelé par `scripts/check-incremental.sh`
-(qui se ré-exécute sous le verrou) et par `scripts/with-db-lock.sh`.
+(qui se ré-exécute sous le verrou), par `scripts/gros-process.sh` (`pnpm check`,
+`build`, `lint` ; pas de verrou en CI ni sur Vercel) et par `scripts/with-db-lock.sh`.
 
-| Verrou      | Pris par                                                                                            | Ce qu'il évite                                               |
-| ----------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `typecheck` | `pnpm check:incremental`                                                                            | Deux typechecks concurrents (un seul gros process à la fois) |
-| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:dev-accounts`, `db:fix-profiles`, `test:integration(:watch)` | Un `db:reset` au milieu d'une suite d'intégration            |
+| Verrou      | Pris par                                                                                                                | Ce qu'il évite                                               |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `typecheck` | `pnpm check:incremental`, `pnpm check`, `pnpm build`, `pnpm lint`                                                       | Deux typechecks concurrents (un seul gros process à la fois) |
+| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:seed-riche`, `db:dev-accounts`, `test:integration(:watch)`, `test:definer-guard` | Un `db:reset` au milieu d'une suite d'intégration            |
 
 **Où ils vivent** : `<répertoire git commun>/.locks/<nom>`, c'est-à-dire
 `.git/.locks/` du dépôt principal — le seul endroit que tous les worktrees
@@ -217,7 +218,7 @@ ne pas `--force` sans avoir regardé ce qui allait être détruit.
 ## Pourquoi pas le tool natif `EnterWorktree`
 
 Il crée les worktrees dans `.claude/worktrees/`, qui est **dans** le dépôt, et
-`.claude/` est **suivi** par git (135 fichiers) sans aucune règle d'exclusion.
+`.claude/` est **suivi** par git (23 fichiers au 2026-10-10) sans aucune règle d'exclusion.
 
 Mesuré le 2026-09-15 : un worktree créé là apparaît en `?? .claude/worktrees/`
 dans le `git status` du **dépôt principal** — donc balayable par un `git add -A`.
@@ -226,3 +227,7 @@ PR le 2026-09-12, et que les worktrees sont censés supprimer.
 
 Pour l'utiliser un jour, il faudrait d'abord ajouter `.claude/worktrees/` au
 `.gitignore`. En attendant : `git worktree add` en frère du dépôt.
+
+---
+
+Vérifié contre le code le 2026-10-10.

@@ -2,7 +2,7 @@
 
 Ce document recense l'usage de `svelte-ignore` dans le code source et catégorise ce qui est **légitime** (pattern Svelte recommandé) vs ce qui est **dette technique à rembourser**.
 
-État actuel : **0 warnings** dans le périmètre projet (tout filtré ou supprimé). Les seules erreurs restantes (9) sont dans `slides/demo*` et `extern/`, exclues du check.
+État actuel : **0 warnings** dans le périmètre projet (tout filtré ou supprimé). Les seules erreurs restantes sont dans `extern/` (présent en local, absent en CI), filtrées par `check:incremental` ; `slides/demo*` a été supprimé du dépôt.
 
 ---
 
@@ -35,7 +35,7 @@ Le `svelte-ignore` est **nécessaire** car la lecture de `template` (réactif) d
 
 ### Fichiers concernés
 
-~50 fichiers, tous des composants d'édition de formulaire (`*Form.svelte`, `*Editor.svelte`, `+page.svelte` initialisant des filtres depuis URL). La liste est trouvable avec :
+~108 fichiers (2026-10-10), tous des composants d'édition de formulaire (`*Form.svelte`, `*Editor.svelte`, `+page.svelte` initialisant des filtres depuis URL). La liste est trouvable avec :
 
 ```bash
 grep -rln "svelte-ignore state_referenced_locally" src/ --include="*.svelte"
@@ -148,14 +148,11 @@ Le double-disable est nécessaire car ESLint ne « voit » pas le warning émis 
 
 ---
 
-## 4. Filtre `slides/demo` et `extern/` (CONFIG ✅)
+## 4. Filtre `extern/` (CONFIG ✅)
 
-`scripts/check-incremental.sh` filtre les warnings provenant de `slides/demo*` (démos slides obsolètes) et `extern/` (dépendances tierces). C'est un compromis assumé pour ne pas bruiter la CI avec du code qu'on ne maintient pas.
+`scripts/check-incremental.sh` filtre les erreurs provenant de `extern/` (dépendances tierces) : le dossier existe en local mais est absent en CI, qui ne peut donc pas les voir — le filtre reproduit la CI en local. L'ancien filtre `slides/demo*` a disparu avec le dossier, supprimé du dépôt.
 
-Si on veut vraiment passer à 0 warning brut, il faut soit :
-
-- Supprimer `slides/demo*` du repo
-- Sortir `extern/` du workspace ou ajouter un `tsconfig.json` racine plus strict en `exclude`
+Si on veut vraiment passer à 0 erreur brute : sortir `extern/` du workspace ou ajouter un `tsconfig.json` racine plus strict en `exclude`.
 
 ---
 
@@ -169,3 +166,5 @@ grep -rn "svelte-ignore" src/          # Inspecter visuellement
 ```
 
 Si Svelte 6+ change la sémantique d'un warning, certains `svelte-ignore` peuvent devenir invalides (ESLint le signalera via `svelte/no-unused-svelte-ignore`).
+
+Vérifié contre le code le 2026-10-10.

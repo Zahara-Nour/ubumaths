@@ -396,3 +396,5 @@ const store = getStore();
 ---
 
 > Voir aussi : [quality-standards.md](qualite.md) · [database.md](base-de-donnees.md) · [architecture.md](../systeme/architecture-generale.md) · [ui-components.md](composants-ui.md).
+
+Vérifié contre le code le 2026-10-10.

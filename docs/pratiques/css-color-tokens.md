@@ -102,7 +102,7 @@ est souvent préférable à une règle CSS écrite à la main.
 
 ## Clair / sombre : un seul signal, le choix de l'utilisateur
 
-`<ModeWatcher defaultMode="system" />` (`src/routes/+layout.svelte`) pose sur `<html>`
+`<ModeWatcher track={true} defaultMode="system" />` (`src/routes/+layout.svelte`) pose sur `<html>`
 la classe `.dark` **et** `style.colorScheme`, d'après le choix de l'utilisateur (qui
 vaut le réglage de l'OS tant qu'il n'a rien choisi). Trois mécanismes en dépendent :
 
@@ -264,3 +264,5 @@ vrais fonds absents, par exemple :
 - `.splitter` (`PythonSplitter`) : poignée de redimensionnement invisible ;
 - `.choice-button`, `.ordering-item` : fonds des réponses d'exercice absents ;
 - les pouces d'ascenseur `::-webkit-scrollbar-thumb`, invisibles.
+
+Vérifié contre le code le 2026-10-10.

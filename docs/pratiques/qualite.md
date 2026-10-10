@@ -8,12 +8,12 @@ Référence synthétique pour Claude : **linting/checks**, **validation Zod**, *
 
 > ⚠️ **Un seul gros process à la fois** (cf. `CLAUDE.md §Gros process`) : `pnpm check`, `pnpm build`, `pnpm lint` sont autorisés en local, sous le verrou de `scripts/gros-process.sh` (le même que `check:incremental`) (plus gros process 4 à 6 Go, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` et `tsc --noEmit` meurent sur le tas par défaut de Node (~4 Go) : limite de Node, pas de la RAM.
 
-| Outil                        | Où                    | Détail                                                                                                                                           |
-| ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **oxlint** (Rust, rapide)    | pre-commit local      | `.lintstagedrc.js` : `oxlint --fix` sur `.{js,ts}` staged + `prettier`. Bloque sur **erreurs** seulement (warnings non bloquants).               |
-| **prettier**                 | pre-commit + CI       | `prettier --check .` en CI (job _Lint_) ; `--write` au commit.                                                                                   |
-| **eslint** (complet)         | CI + local en fond    | 530 s en local (mesuré le 2026-09-29) → en arrière-plan. Couvre `eslint-plugin-svelte` + la règle custom Zod. `lint:fast` (~2,5 s) au quotidien. |
-| **`pnpm check:incremental`** | local, **avant push** | TS + Svelte, ~45 s (heap 4096, `svelte-kit sync` conditionnel ; `FRESH=1` pour forcer après suppression/renommage). **0 erreur exigée**.         |
+| Outil                        | Où                    | Détail                                                                                                                                                                          |
+| ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **oxlint** (Rust, rapide)    | pre-commit local      | `.lintstagedrc.js` : `oxlint --fix` sur `.{js,ts}` staged + `prettier`. Bloque sur **erreurs** seulement (warnings non bloquants).                                              |
+| **prettier**                 | pre-commit + CI       | `prettier --check . --cache` en CI (job _Lint_) ; `pnpm format:check` (fichiers suivis) au pre-push ; `--write` au commit.                                                      |
+| **eslint** (complet)         | CI + local en fond    | 530 s en local (mesuré le 2026-09-29) → en arrière-plan. Couvre `eslint-plugin-svelte` + la règle custom Zod. `lint:fast` (~2,5 s) au quotidien.                                |
+| **`pnpm check:incremental`** | local, **avant push** | TS + Svelte, ~18 s (moteur `--tsgo` depuis le 2026-10-10 ; heap 4096, `svelte-kit sync` conditionnel ; `FRESH=1` pour forcer après suppression/renommage). **0 erreur exigée**. |
 
 - Le hook pre-commit est **léger** → `--no-verify` **n'est plus nécessaire**.
 - eslint complet en local : `pnpm lint` en arrière-plan (530 s) ; en ciblé : `npx eslint <fichiers>`.
@@ -27,16 +27,16 @@ Référence synthétique pour Claude : **linting/checks**, **validation Zod**, *
 
 **Application automatique** : la règle eslint custom **`custom/require-zod-validation`** est en **`error`** sur `src/routes/api/**/*.ts` (`eslint.config.js`). Une route API sans validation **casse la CI** (et `eslint-rules/require-zod-validation.js` a ses propres tests : `pnpm test:lint-rules`).
 
-**Lib** : `src/lib/server/validation/` — ~69 fichiers **par domaine** (`assessments.ts`, `classes.ts`, `auth.ts`, …) + `common.ts` (schémas partagés : `uuidSchema`, `dateSchema`, `hexColorSchema`…) + `response-utils.ts` + `__tests__/`. **Messages d'erreur en français.**
+**Lib** : `src/lib/server/validation/` — ~77 fichiers **par domaine** (`worksheets.ts`, `classes.ts`, `auth.ts`, …) + `common.ts` (schémas partagés : `uuidSchema`, `paginationSchema`, `roleSchema`…) + `response-utils.ts` + `__tests__/`. **Messages d'erreur en français.**
 
 **Pattern canonique** (`safeParse` → `error(400)`, jamais `.parse()` qui throw brut) :
 
 ```ts
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
-import { createAssessmentSchema } from '$lib/server/validation/assessments';
+import { createWorksheetSchema } from '$lib/server/validation/worksheets';
 
-const v = createAssessmentSchema.safeParse(await request.json());
+const v = createWorksheetSchema.safeParse(await request.json());
 if (!v.success) throw error(400, v.error.issues[0].message);
 const data = v.data; // typé, sûr
 ```
@@ -44,7 +44,7 @@ const data = v.data; // typé, sûr
 Query params — construire un objet depuis `url.searchParams` puis valider :
 
 ```ts
-const q = listAssessmentsQuerySchema.safeParse({ page: url.searchParams.get('page') ?? '1' });
+const q = listWorksheetsQuerySchema.safeParse({ page: url.searchParams.get('page') ?? '1' });
 if (!q.success) throw error(400, q.error.issues[0].message);
 ```
 
@@ -67,8 +67,10 @@ Rappel non négociable : RLS / `SECURITY DEFINER` / triggers / policies → test
 ## État qualité (repères)
 
 - `pnpm check` (CI, scope `tsconfig.check.json`) : **0 erreur** exigée.
-- Svelte : 0 erreur ; ~25 warnings a11y SVG masqués par `svelte-ignore` (dette connue → [docs/pratiques/warning-svelte.md](warning-svelte.md)).
+- Svelte : 0 erreur ; 56 `svelte-ignore a11y_*` dans `src/` au 2026-10-10 (dette connue → [docs/pratiques/warning-svelte.md](warning-svelte.md)).
 
 ---
 
 > Voir aussi : [best-practices.md](svelte-typescript.md) · [database.md](base-de-donnees.md) · [git-workflow.md](git-workflow.md).
+
+Vérifié contre le code le 2026-10-10.

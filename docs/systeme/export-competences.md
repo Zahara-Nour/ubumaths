@@ -1,98 +1,94 @@
-# Exporter les compétences vers votre ENT
+# Export des compétences vers l'ENT
 
-> Guide enseignant — page **Tableau de bord → Compétences → Export**
-> (`/dashboard/teacher/competences/export`).
+> Vérifié contre le code le 2026-10-10 (sauf les marches à suivre côté Pronote / EcoleDirecte /
+> Sacoche : elles décrivent des logiciels tiers, relevées en juin 2026, non vérifiables dans ce
+> dépôt). Étude et journal : [export-competences-study.md](../archive/wip/export-competences-study.md),
+> [export-competences-progress.md](../archive/wip/export-competences-progress.md) (archivés).
 
-UbuMaths vous permet d'**exporter en CSV** les niveaux de compétences (famille B :
-_chercher, calculer, raisonner, communiquer, modéliser, représenter_) de vos
-classes, pour les **reporter dans votre ENT** (Pronote, EcoleDirecte, Sacoche).
+## À quoi ça sert
 
-> ⚠️ **Important** : aucun ENT n'autorise un import automatisé fiable depuis un
-> outil tiers. L'export UbuMaths **réduit la ressaisie** mais ne la supprime pas :
-> selon votre ENT, vous **collez** un tableau ou vous **recopiez** les niveaux.
+Le prof télécharge en **CSV** les niveaux des six **compétences mathématiques** (chercher, modéliser,
+représenter, raisonner, calculer, communiquer — [CONTEXT.md](../../CONTEXT.md)) d'une classe, pour les
+reporter dans son ENT. Aucun ENT n'accepte un import automatisé fiable depuis un outil tiers :
+l'export **réduit la ressaisie**, il ne la supprime pas.
 
-## Échelle des niveaux
+Page : `/dashboard/teacher/competences/export`, atteinte par le bouton « Export compétences » de la
+page analytique d'une classe ([analytique-prof.md](analytique-prof.md)) — pas d'entrée dans le menu.
+La page montre un **aperçu** (le même tableau que le CSV) et des options ; le lien de téléchargement
+appelle `GET /api/teacher/competences/export`.
 
-Les niveaux suivent l'échelle officielle du socle commun (décret 2015-1929) :
+## Ce que contient le fichier
 
-| Interne UbuMaths | Chiffre LSU | Libellé officiel       | Sigle |
-| ---------------- | ----------- | ---------------------- | ----- |
-| `insuffisante`   | 1           | Maîtrise insuffisante  | MI    |
-| `fragile`        | 2           | Maîtrise fragile       | MF    |
-| `satisfaisante`  | 3           | Maîtrise satisfaisante | MS    |
-| `tres_bonne`     | 4           | Très bonne maîtrise    | TBM   |
+Niveaux lus dans `student_competence_level` (élèves **actifs** de la classe, colonnes = lignes de
+`math_competences`), échelle du socle commun (décret 2015-1929) :
 
-Une cellule **vide** signifie que l'élève n'a pas encore été évalué sur cette
-compétence.
+| Interne (`niveau`) | `numeric` (LSU) | `label`                | `short` |
+| ------------------ | --------------- | ---------------------- | ------- |
+| `insuffisante`     | 1               | Maîtrise insuffisante  | MI      |
+| `fragile`          | 2               | Maîtrise fragile       | MF      |
+| `satisfaisante`    | 3               | Maîtrise satisfaisante | MS      |
+| `tres_bonne`       | 4               | Très bonne maîtrise    | TBM     |
 
-> L'export reflète l'**état actuel** des compétences. La **période** que vous
-> choisissez sert uniquement d'étiquette (nom du fichier) pour votre classement —
-> elle ne filtre pas les niveaux affichés.
+Cellule vide = pas encore évalué. L'export reflète l'**état actuel** : la **période** choisie ne sert
+que d'étiquette dans le nom du fichier (`competences-<classe>[-<periode>]-<AAAA-MM-JJ>.csv`).
 
-## Choisir les options
+- **Disposition `large`** (défaut) : une ligne par élève — `nom ; prenom ; classe ; <compétences…>`.
+  Format du collage dans Pronote.
+- **Disposition `longue`** : une ligne par élève × compétence —
+  `nom ; prenom ; classe ; competence_code ; competence_nom ; niveau`, plus en option `socle_code`,
+  `task_count`, `derniere_observation` (ignorées en `large`).
+- Élèves triés par « Nom Prénom » (collation française). UTF-8 **avec BOM**, séparateur `;`, fins de
+  ligne CRLF, échappement RFC 4180.
+- `socle_code` : domaines du socle par compétence, table figée `COMPETENCE_SOCLE_MAPPING` (BO 2015,
+  cycle 4 ; domaine 1 rendu `D1.3`). Colonne de confort : aucun ENT ne l'exige.
 
-- **Disposition « Large »** (par défaut) : 1 ligne par élève, 1 colonne par
-  compétence. C'est le format adapté au **collage dans Pronote**.
-- **Disposition « Longue »** : 1 ligne par (élève × compétence), avec colonnes
-  optionnelles (code socle, nombre de tâches, dernière observation). Adaptée à
-  l'**archivage** ou au tri dans un tableur.
-- **Format des niveaux** : `1-4` (recommandé pour Pronote), libellé long, ou
-  sigle court.
+## Carte du code
 
-Le fichier est encodé en **UTF-8 (avec BOM)** : ouvrez-le directement dans Excel
-ou LibreOffice, les accents s'affichent correctement. Le séparateur est le
-point-virgule (`;`).
+- `src/routes/api/teacher/competences/export/+server.ts` — Zod sur la query (`class_id` UUID,
+  `disposition`, `niveau_format`, `socle` / `task_count` / `last_obs`, `period_label` ≤ 100), garde
+  `requireTeacherOfClass`, réponse `text/csv` en pièce jointe, `Cache-Control: no-store`. Journal :
+  `competences exported` (id du prof, de la classe, nombre d'élèves — pas de noms).
+- `src/lib/server/competences/load-export-data.ts` — `loadClassCompetenceExport`, partagé par
+  l'endpoint et la page : l'aperçu et le CSV ne peuvent pas diverger. Échoue bruyamment si une
+  lecture échoue (un export tronqué ressemblerait à un export complet).
+- `src/lib/server/competences/export-csv.ts` — `buildCompetencesCsv`, pur (aucun accès base).
+- `src/lib/competences/niveau-format.ts` — `formatNiveau` (les trois formats).
+- `src/lib/server/competences/socle-mapping.ts` — `COMPETENCE_SOCLE_MAPPING`, `formatSocleCell`.
+- Page : `src/routes/(protected)/dashboard/teacher/competences/export/+page.server.ts` (classes et
+  périodes viennent du layout prof ; `?class=<uuid>` choisit la classe) et `+page.svelte`
+  (`MySelect`, `MyCheckbox`).
 
----
+## Invariants
 
-## Pronote (Index Education)
+- Rien n'est stocké côté serveur : le fichier est produit à la volée.
+- Données nominatives d'élèves mineurs (nom, prénom, classe, niveaux) : accès prof/admin seulement ;
+  la RLS de `student_competence_level` s'applique (client `locals.supabase` de l'appelant).
 
-Pronote ne propose pas d'API d'import. La saisie des résultats se fait par
-**copier-coller** depuis un tableur.
+## Tests
 
-1. Téléchargez l'export en **disposition Large**, format **Chiffre LSU (1-4)**.
-2. Ouvrez le CSV dans Excel / LibreOffice.
-3. Dans Pronote : `Compétences → Évaluations`, ouvrez l'évaluation dont les
-   compétences correspondent (les colonnes doivent correspondre **exactement**
-   aux compétences de l'évaluation Pronote).
-4. Sélectionnez la grille élèves × compétences (valeurs 1-4) dans votre tableur,
-   copiez (`Ctrl+C`), puis dans Pronote utilisez
-   **« Récupérer les évaluations depuis le presse-papier »**.
+`src/lib/server/competences/__tests__/export-csv.test.ts` (13) et `load-export-data.test.ts` (3),
+unitaires avec base simulée. Pas de test de l'endpoint ni de la page.
 
-> 🍎 **Utilisateurs macOS** : le collage de compétences depuis le presse-papier
-> est connu pour mal fonctionner sur Mac. Si le collage échoue, effectuez
-> l'opération depuis un poste **Windows** (problème côté Pronote, pas UbuMaths).
+## Marche à suivre côté ENT (guide prof)
 
-> Le nombre de colonnes collées doit correspondre **au nombre exact** de
-> compétences associées à l'évaluation Pronote, sans quoi le collage est refusé.
+- **Pronote** : pas d'API d'import. Disposition `large`, format 1-4 ; ouvrir le CSV dans un tableur,
+  copier la grille élèves × compétences, puis dans l'évaluation Pronote « Récupérer les évaluations
+  depuis le presse-papier ». Le nombre de colonnes doit égaler exactement celui des compétences de
+  l'évaluation. Collage réputé peu fiable sur macOS (côté Pronote).
+- **EcoleDirecte** : pas d'import de compétences par fichier ; l'export sert de feuille de saisie à
+  recopier.
+- **Sacoche** : l'import attend un fichier produit par Sacoche, l'API est en lecture seule. Créer une
+  fois six items d'évaluation, exporter en `longue` / 1-4, saisir les niveaux à la main.
 
-## EcoleDirecte (Aplim)
+Rappeler au prof de supprimer le fichier de son poste une fois la saisie faite.
 
-EcoleDirecte ne propose **pas d'import de compétences par fichier**. L'export
-sert ici de **feuille de saisie** : gardez le CSV ouvert à l'écran (ou
-imprimez-le) et **recopiez** les niveaux dans Charlemagne / EcoleDirecte.
+## Écarts connus
 
-- Disposition **Large**, format **Libellé** ou **1-4** selon votre préférence.
-
-## Sacoche (Sésamath)
-
-L'import de livret Sacoche attend un fichier généré par Sacoche lui-même
-(identifiants internes), et son API est en lecture seule : un import direct
-depuis UbuMaths n'est pas possible.
-
-Marche à suivre côté Sacoche :
-
-1. Créez (une fois) **6 items d'évaluation** correspondant aux 6 compétences
-   mathématiques.
-2. Téléchargez l'export UbuMaths (disposition **Longue**, niveaux **1-4**) pour
-   disposer d'une liste élève / compétence / niveau lisible.
-3. Saisissez les niveaux sur les items Sacoche correspondants.
-
----
-
-## Confidentialité
-
-L'export contient des données scolaires nominatives (nom, prénom, classe,
-résultats). Seul un professeur ou un administrateur peut générer l'export
-(contrôle d'accès role-based — la classe n'est plus rattachée à un prof). Le fichier est produit à la volée et **n'est pas stocké** sur le
-serveur — pensez à le supprimer de votre poste une fois la saisie terminée.
+- **L'admin n'atteint pas la page** : le layout `src/routes/(protected)/dashboard/teacher/+layout.server.ts`
+  et `requireRole(locals, 'teacher')` du loader la réservent au rôle `teacher`, alors que l'endpoint
+  accepte aussi `admin`. L'ancienne doc annonçait l'accès admin.
+- Pas d'entrée de menu : la page n'est atteignable que depuis la page analytique d'une classe (ou par
+  URL). L'ancienne doc parlait de « Tableau de bord → Compétences → Export ».
+- Les commentaires du code citent encore « famille B » : le terme reste juste (seule famille vivante,
+  [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)), mais CONTEXT.md parle de
+  « compétences mathématiques ».

@@ -81,13 +81,13 @@ Détails qui comptent :
 
 ## 3. Ce qui tourne où
 
-| Où                                                      | Ce qui tourne                                                                                                                                                                                                                                    |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Local**                                               | Ce que tu lances : tests **ciblés** (contrainte RAM, cf. CLAUDE.md). Intégration sous verrou Supabase.                                                                                                                                           |
-| **Toute PR + push sur `main`** (`quality.yml`)          | `test-server` (**4 shards**), `test-client` (**2 shards**, hors `*-real`), `definer-guard` (Supabase `db start` + `pnpm test:definer-guard`) ; plus Lint (dont `check:await-render`), Type Check, Build, Audit. Tous agrégés par **CI Summary**. |
-| **PR filtrées par `paths`** (`nightly-integration.yml`) | **Integration tests (Supabase local)** : `pnpm test:integration` sur une pile Supabase complète, + job **Integration paths filter** (`pnpm check:integration-paths`).                                                                            |
-| **Nuit**                                                | Intégration (cron `17 2 * * *`, 02:17 UTC, `nightly-integration.yml`) ; Pyodide réel (cron `0 3 * * *`, `nightly-pyodide.yml`, `RUN_PYODIDE_REAL=1`, `vitest run --project client src/**/*-real.svelte.test.ts`).                                |
-| **Jamais en CI**                                        | `pnpm test:e2e` (build + preview, lancé à la demande — le `pnpm build` du `webServer` prend le verrou gros process) ; `pnpm test:lint-rules`.                                                                                                    |
+| Où                                                      | Ce qui tourne                                                                                                                                                                                                                                                               |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Local**                                               | Ce que tu lances : tests **ciblés** (contrainte RAM, cf. CLAUDE.md). Intégration sous verrou Supabase.                                                                                                                                                                      |
+| **Toute PR + push sur `main`** (`quality.yml`)          | `test-server` (**4 shards**), `test-client` (**2 shards**, hors `*-real`), `definer-guard` (Supabase `db start` + `pnpm test:definer-guard`) ; plus Lint (dont `check:await-render`), Type Check, Types des tests (cliquet), Build, Audit. Tous agrégés par **CI Summary**. |
+| **PR filtrées par `paths`** (`nightly-integration.yml`) | **Integration tests (Supabase local)** : `pnpm test:integration` sur une pile Supabase complète, + job **Integration paths filter** (`pnpm check:integration-paths`).                                                                                                       |
+| **Nuit**                                                | Intégration (cron `17 2 * * *`, 02:17 UTC, `nightly-integration.yml`) ; Pyodide réel (cron `0 3 * * *`, `nightly-pyodide.yml`, `RUN_PYODIDE_REAL=1`, `vitest run --project client src/**/*-real.svelte.test.ts`).                                                           |
+| **Jamais en CI**                                        | `pnpm test:e2e` (build + preview, lancé à la demande — le `pnpm build` du `webServer` prend le verrou gros process) ; `pnpm test:lint-rules`.                                                                                                                               |
 
 **Intégration : PR ou nightly ? Les deux.** Le workflow `nightly-integration.yml` se déclenche
 (1) chaque nuit, (2) sur toute PR qui touche un fichier de son filtre `paths` (`supabase/**`,
@@ -268,5 +268,7 @@ Accessibilité (`axe-core` dans les e2e, agent `accessibility-tester`), régress
 `geometry-core`).
 
 ---
+
+Vérifié contre le code le 2026-10-10.
 
 Vérifié contre le code le 2026-10-10.

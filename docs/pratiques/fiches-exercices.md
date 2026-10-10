@@ -735,3 +735,5 @@ Autres leçons :
   temporaire.
 - Un sous-agent qui dit avoir « tué » un test peut laisser un `vitest` orphelin à 100 % CPU :
   `ps -axo pid,ppid,etime,%cpu,command | grep "node .*ubumaths-wt-"`.
+
+Vérifié contre le code le 2026-10-10.
