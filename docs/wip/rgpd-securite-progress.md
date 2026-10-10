@@ -235,3 +235,29 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
   jeu pseudonymes en `using (true)` : `mathemo_scores`, `minesweeper_player_stats`,
   `minesweeper_student_achievements`, `marketplace_listing_views`). Aucun accès à un mineur. À
   proposer à David.
+
+## Point d'étape — 2026-10-11
+
+| Constat | PR | En prod |
+| ------- | -- | ------- |
+| B6 comptes non approuvés (garde du hook) | #1065 | code : au `deploy:prod` |
+| B7 inscription sans code → en attente | #1065 | ✅ migration `20261015090400` |
+| E20 suppressions SRS silencieuses | #1066 | code : au `deploy:prod` |
+| B5 élévation admin cassée (500) | #1067 | code : au `deploy:prod` |
+
+- E20 : une section inexistante reste une suppression idempotente (200, contrat de
+  `sections-crud`) ; 0 ligne sur une section existante → 403.
+- B5 : mesuré — le prof voyait 0 profil admin (policies identiques local/prod), l'élévation
+  répondait 500 à chaque tentative. Corrigé par le client service.
+
+### Questions ouvertes pour David
+
+- **B8** : limites de débit qui échouent ouvertes ; `api/google/auth/*` sans test de
+  `GOOGLE_CLASSROOM_ENABLED` ; `/auth/register` hors `ALLOWED_SERVICE_ROLE_PATHS` (simple
+  avertissement en dev). (Le cookie d'élévation non chiffré est une décision du 2026-06-18.)
+- **D17** : `anon` lit 11 exercices et 9 constructions `is_public` (aucune d'un élève ; seul
+  l'identifiant du prof auteur est visible) — voulu ?
+- **Base qui ignore `profiles.status`** (relevé pendant B6) : fermer en base aussi ?
+- **Classement des énigmes faux** (autres élèves à 0) ; **`get_2048_user_rank`** sans appelant,
+  rang toutes écoles ; **fonctions mortes** `process_weekly_rewards`, `purchase_shop_item`.
+- **C9 → C15** : point par point (aligner le code ou les documents).
