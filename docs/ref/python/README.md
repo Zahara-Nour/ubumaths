@@ -338,8 +338,8 @@ dans la trace (avant/arrière) via un scrubber.
 ### Progression
 
 - [progress/python-debugger-progress.md](./progress/python-debugger-progress.md) — Phases 1-6 (heap viz incluse)
-- [../../wip/python-debugger-scrubber-progress.md](../../wip/python-debugger-scrubber-progress.md) — scrubber + moteur settrace + mode live
-- [../../wip/python-debugger-improvements-roadmap.md](../../wip/python-debugger-improvements-roadmap.md) — **roadmap des améliorations** (#1→#7)
+- [../../wip/python-debugger-scrubber-progress.md](../../archive/wip/python-debugger-scrubber-progress.md) — scrubber + moteur settrace + mode live
+- [../../wip/python-debugger-improvements-roadmap.md](../../archive/wip/python-debugger-improvements-roadmap.md) — **roadmap des améliorations** (#1→#7)
 
 ### Dette / suites (settrace V1)
 

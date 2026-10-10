@@ -1,6 +1,6 @@
 # Débogueur Python — Layout du diagramme via elkjs (#5)
 
-> Amélioration **#5** de la [roadmap](./python-debugger-improvements-roadmap.md). Branche :
+> Amélioration **#5** de la [roadmap](python-debugger-improvements-roadmap.md). Branche :
 > `feat/python-debugger-elk-layout`. On fait #5 **avant** #2 (animation) pour que l'animation
 > soit « gratuite » sur une géométrie déclarative. **Rien ne se merge sans accord explicite.**
 

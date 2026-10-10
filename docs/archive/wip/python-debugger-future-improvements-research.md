@@ -1,6 +1,6 @@
 # Débogueur Python — État des lieux & recherches (améliorations futures)
 
-> Compagnon de la [roadmap](./python-debugger-improvements-roadmap.md). Capture (1) l'**état des
+> Compagnon de la [roadmap](python-debugger-improvements-roadmap.md). Capture (1) l'**état des
 > lieux livré** et (2) les **recherches faites** pour les améliorations pas encore construites
 > (#6, #7) — décisions, faits **vérifiés dans le code / les sources**, et points de départ — pour
 > qu'une future session reparte sans tout réinvestiguer.

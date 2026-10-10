@@ -229,7 +229,7 @@ en fin de Phase 7 stricte). 0 régression Mode B.
 - ✅ **`nodesEqual` structurel** → livré en V1.1-B.
 - 🔜 **Coefficients paramétriques + discussion sur paramètre** (`mx² + 2x + 1 = 0`,
   `(m−1)x² + 2x + m = 0` avec Δ paramétrique) → V2, prompt source
-  `docs/wip/quadratic-stepper-v2-prompt.md` (validé pour exécution dans
+  `docs/archive/wip/quadratic-stepper-v2-prompt.md` (validé pour exécution dans
   une session future).
 - 🔜 **Équations bicarrées** `ax⁴ + bx² + c = 0` → V2 (peut être bundled
   avec le V2 paramétrique ou prompt séparé).
@@ -241,7 +241,7 @@ en fin de Phase 7 stricte). 0 régression Mode B.
 ## Documents de référence
 
 - `docs/wip/quadratic-stepper-prompt.md` — source du plan V1, décisions Phase 0
-- `docs/wip/quadratic-stepper-v2-prompt.md` — prompt V2 (paramétriques + discussion)
+- `docs/archive/wip/quadratic-stepper-v2-prompt.md` — prompt V2 (paramétriques + discussion)
 - `docs/wip/pedagogical-steppers-mvp-progress.md` — vue d'ensemble (mise à jour en Phase 7)
 - `docs/wip/correction-integration-progress.md` — architecture Mode B (mise à jour en Phase 7)
 - `docs/wip/differentiation-stepper-progress.md` — modèle de doc de progression cloné ici

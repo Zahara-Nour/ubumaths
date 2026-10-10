@@ -2,7 +2,7 @@
 
 > Suivi crash-recovery du câblage du lexique pataphysique sur `src/lib/config/lore.ts`
 > (source unique — l'UI référence les clés, changer une valeur propage partout).
-> Spec Phase 0 : [`sprint1-lexique-spec.md`](./sprint1-lexique-spec.md). Branche : `feat/sprint1-lexique`.
+> Spec Phase 0 : [`sprint1-lexique-spec.md`](sprint1-lexique-spec.md). Branche : `feat/sprint1-lexique`.
 
 ## État global
 

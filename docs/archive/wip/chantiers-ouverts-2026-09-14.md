@@ -4,7 +4,7 @@
 > donne l'état **mesuré**, les décisions **déjà prises** (à ne pas re-litiger),
 > et ce qui reste.
 >
-> Voir aussi [bascule-annee-scolaire-etat-des-lieux.md](bascule-annee-scolaire-etat-des-lieux.md).
+> Voir aussi [bascule-annee-scolaire-etat-des-lieux.md](../../wip/bascule-annee-scolaire-etat-des-lieux.md).
 
 ## Contexte, en trois lignes
 
@@ -207,7 +207,7 @@ inter-écoles ci-dessus.
 
 Ce volet a désormais ses propres documents, tenus à jour et mesurés :
 
-- **[mon-cours-chapitres-progress.md](../archive/wip/mon-cours-chapitres-progress.md)** —
+- **[mon-cours-chapitres-progress.md](mon-cours-chapitres-progress.md)** —
   l'état complet de « Mon cours » : le modèle à deux étages (chapitre par
   CLASSE, modèle par NIVEAU), les fiches rattachées (livrées), le quiz
   (rebranché) et ce qu'un modèle emporte ou n'emporte pas.
@@ -244,7 +244,7 @@ reste inerte ; c'est la publication qui donne.
 
 **Publication au fur et à mesure** (✅ 2026-09-13, PR #250 à #256) : chaque
 contenu d'un chapitre porte sa date de mise à disposition. Voir
-[publication-progressive-progress.md](publication-progressive-progress.md).
+[publication-progressive-progress.md](../../wip/publication-progressive-progress.md).
 
 ## 4d. Objectifs
 

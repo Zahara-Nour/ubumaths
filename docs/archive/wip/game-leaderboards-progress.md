@@ -1,7 +1,7 @@
 # Game leaderboards — progress (crash-recovery)
 
 > Branche : **`refactor/single-teacher`** (même branche, cf. décision David 2026-06-16).
-> Spec + plan : `docs/wip/game-leaderboards.md` (§4 modèle, §6 décisions, §7 plan 5 phases).
+> Spec + plan : `docs/archive/wip/game-leaderboards.md` (§4 modèle, §6 décisions, §7 plan 5 phases).
 
 ## État global
 
@@ -100,7 +100,7 @@ prénom + avatar uniquement. D'où la **Migration A2** (`minesweeper_scoped_lead
 - `src/routes/(public)/games/{2048,mathemo,minesweeper}/+page.svelte` (liens nav)
 - `src/routes/(public)/leaderboards/**` — **supprimés**
 - `tests/integration/game-leaderboards.test.ts` (nouveau)
-- `docs/wip/game-leaderboards.md` (§7 plan) + `docs/wip/game-leaderboards-progress.md` (ce fichier)
+- `docs/archive/wip/game-leaderboards.md` (§7 plan) + `docs/wip/game-leaderboards-progress.md` (ce fichier)
 
 ## Reste à faire (Phase 5)
 

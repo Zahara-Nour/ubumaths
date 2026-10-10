@@ -1,6 +1,6 @@
 # Débogueur Python — Vue arbre d'appels / récursion (#4)
 
-> Amélioration **#4** de la [roadmap](./python-debugger-improvements-roadmap.md). Branche :
+> Amélioration **#4** de la [roadmap](python-debugger-improvements-roadmap.md). Branche :
 > `feat/python-debugger-recursion-tree`. Débloqué par le moteur settrace (vraies frames).
 > **Rien ne se merge sans accord explicite.**
 

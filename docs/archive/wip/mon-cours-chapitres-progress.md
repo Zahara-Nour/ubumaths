@@ -3,7 +3,7 @@
 > État au **2026-09-14**. Tous les chiffres de ce document sont **mesurés en
 > production** (MCP Supabase read-only, EU), pas déduits du code.
 >
-> Chantier voisin, **clos** : [cahier-texte-travaux-multiples-progress.md](../../wip/cahier-texte-travaux-multiples-progress.md).
+> Chantier voisin, **clos** : [cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md).
 >
 > Le prompt de reprise `prompts/prompt-mon-cours-quiz.md` a été **supprimé** : il
 > demandait de trancher le contrat du quiz, ce qui est fait (option 1, le
@@ -280,7 +280,7 @@ ne s'en sert pas — il n'existe aujourd'hui aucun moyen d'imposer une variation
 Les quatre phases de « plusieurs travaux par séance » sont livrées, phase 2
 comprise : les anciennes colonnes `homework_content` / `homework_due_date`
 n'existent plus, et rien ne les référence. Détail et pièges dans
-[cahier-texte-travaux-multiples-progress.md](../../wip/cahier-texte-travaux-multiples-progress.md).
+[cahier-texte-travaux-multiples-progress.md](cahier-texte-travaux-multiples-progress.md).
 
 ## Le programme — construit, non alimenté
 

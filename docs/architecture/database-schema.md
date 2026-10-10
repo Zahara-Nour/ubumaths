@@ -731,11 +731,11 @@ RLS : SELECT tout authenticated, écriture admin uniquement.
 > mais sont INERTES** : rien n'écrit dedans, le balai n'est pas planifié, et le code de re-check
 > (`recheck.ts`, câblage du submit) **n'est PAS sur `main`** (il vit sur la branche draft #83). Conservés
 > tels quels (coût ~nul, réactivables). ROI jugé insuffisant vs le coût de productionisation Vercel —
-> voir `docs/wip/python-server-recheck-progress.md`. Le reste de cette section décrit le schéma **tel
+> voir `docs/archive/wip/python-server-recheck-progress.md`. Le reste de cette section décrit le schéma **tel
 > qu'il est en prod**, pour référence.
 
 Migration `20260827120000_python_submission_server_verification.sql`. Contexte
-complet : `docs/wip/python-server-recheck-progress.md`. Le verdict Python est
+complet : `docs/archive/wip/python-server-recheck-progress.md`. Le verdict Python est
 aujourd'hui calculé **côté client** (Pyodide dans le navigateur de l'élève) →
 l'élève peut forger `valid: true`. On rejoue côté **serveur de confiance**
 (service_role, Pyodide-in-Node) les soumissions `is_correct=true` et on écrit un
