@@ -191,7 +191,10 @@ describe('actions avec une autre liste', () => {
 		) as HTMLButtonElement;
 		nuage.click();
 		await settle();
-		expect(atelier.get('L')?.plottedWith).toBe('N');
+		const list = atelier.get('L');
+		expect(list?.kind).toBe('list');
+		if (list?.kind !== 'list') throw new Error('L doit être une liste');
+		expect(list.plottedWith).toBe('N');
 	});
 
 	// Q48 : retenue par son nom dans la carte, la partenaire choisie revenait en

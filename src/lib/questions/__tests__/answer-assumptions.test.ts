@@ -26,7 +26,7 @@ import {
 } from '../answer-assumptions';
 import { questionTemplateSchema } from '../template-schema';
 import { validateTemplate } from '../validators/template-validator';
-import { mapDbTemplateToForm, type QuestionTemplate } from '../types';
+import { mapDbTemplateToForm, type GradeLevel, type QuestionTemplate } from '../types';
 import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
@@ -38,9 +38,11 @@ import { templateMarkdown } from '$lib/ubumark';
 // FIXTURES
 // ============================================================================
 
+const GRADES: GradeLevel[] = ['2'];
+
 const baseTemplate = {
 	title: 'Puissances',
-	grades: ['2'],
+	grades: GRADES,
 	theme: 'Algèbre',
 	domain: 'Puissances',
 	level: 1,

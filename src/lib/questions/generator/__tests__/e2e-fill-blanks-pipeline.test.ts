@@ -73,7 +73,7 @@ function transformAndPrepare(globalIndex: number): QuestionTemplate {
 /**
  * Lazy cache: transform + generate once per globalIndex.
  */
-const cache = new Map<number, { template: QuestionTemplate; instance: QuestionInstance }>();
+const cache = new Map<string, { template: QuestionTemplate; instance: QuestionInstance }>();
 
 function getTestData(
 	globalIndex: number,

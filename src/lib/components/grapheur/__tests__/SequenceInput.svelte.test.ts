@@ -27,6 +27,7 @@ describe('SequenceInput', () => {
 			usesIndex: parsed.usesIndex,
 			firstIndex: 0,
 			firstTerm: 8,
+			firstTermParameter: null,
 			firstTermMin: -10,
 			firstTermMax: 10,
 			representation: 'ranks',

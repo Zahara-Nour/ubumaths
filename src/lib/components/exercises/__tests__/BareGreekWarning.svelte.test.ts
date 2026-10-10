@@ -3,7 +3,7 @@
  * dans l'éditeur d'exercices (2026-09-24).
  */
 
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BareGreekWarning from '../BareGreekWarning.svelte';

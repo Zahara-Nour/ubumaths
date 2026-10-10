@@ -33,8 +33,11 @@ function instances(index: number, seeds = 20): QuestionInstance[] {
 	);
 }
 
-const valuesOf = (instance: QuestionInstance) =>
-	Object.fromEntries(instance.resolvedVariables.map((v) => [v.name, Number(v.value)]));
+function valuesOf(instance: QuestionInstance): Record<string, number> {
+	const variables = instance.resolvedVariables;
+	if (!variables) throw new Error('variables résolues attendues');
+	return Object.fromEntries(variables.map((v) => [v.name, Number(v.value)]));
+}
 
 describe('lot Entiers', () => {
 	it('#214 : le dernier chiffre rend le nombre divisible par 3 ou non (mod converti)', () => {

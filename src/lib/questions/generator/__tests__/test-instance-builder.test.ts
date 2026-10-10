@@ -52,9 +52,9 @@ describe('generateInstanceWithFixedVariables', () => {
 			statement: templateMarkdown('$2 \\times 3$ vaut ?'),
 			correctChoiceIndex: '1',
 			choices: [
-				{ content: '5', isCorrect: false },
-				{ content: '6', isCorrect: true },
-				{ content: '7', isCorrect: false }
+				{ content: templateMarkdown('5'), isCorrect: false },
+				{ content: templateMarkdown('6'), isCorrect: true },
+				{ content: templateMarkdown('7'), isCorrect: false }
 			]
 		});
 

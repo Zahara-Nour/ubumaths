@@ -20,7 +20,8 @@ import type { SignRow, VariationRow } from '$lib/ubumark/types/variation-table';
 
 function ast(source: string): MathNode {
 	const parsed = parseCustomSafe(source);
-	if (parsed.ast === undefined) throw new Error(`parse KO : ${source}`);
+	// `ast` vaut null (et non undefined) quand la lecture échoue
+	if (parsed.ast === null) throw new Error(`parse KO : ${source}`);
 	return parsed.ast;
 }
 

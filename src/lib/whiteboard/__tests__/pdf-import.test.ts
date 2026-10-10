@@ -8,6 +8,15 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import type { Page, PageBackground, BackgroundPdf } from '../types/document';
 import { createEmptyPage } from '../types/document';
 
+/**
+ * Le modèle de page que ces tests manipulent : un fond quelconque, PDF compris.
+ *
+ * ⚠️ Ce n'est PAS le modèle de l'application : `Page.background` n'y est qu'un
+ * fond uni, et un PDF importé vit dans `Page.overlay`. Ce fichier ne teste que
+ * ses propres fonctions d'aide, définies ci-dessous.
+ */
+type PageWithAnyBackground = Omit<Page, 'background'> & { readonly background: PageBackground };
+
 // =============================================================================
 // Constants
 // =============================================================================
@@ -91,7 +100,10 @@ function createPdfBackground(
 /**
  * Set background on a page
  */
-function setPageBackground(page: Page, background: PageBackground): Page {
+function setPageBackground(
+	page: Page | PageWithAnyBackground,
+	background: PageBackground
+): PageWithAnyBackground {
 	return {
 		...page,
 		background
@@ -107,7 +119,7 @@ function createPageWithPdfBackground(
 	totalPages: number,
 	pdfWidth: number,
 	pdfHeight: number
-): Page {
+): PageWithAnyBackground {
 	const page = createEmptyPage('A4');
 	const background = createPdfBackground(pdfData, pageIndex, totalPages, pdfWidth, pdfHeight);
 	return setPageBackground(page, background);
@@ -497,7 +509,7 @@ describe('PDF Background Serialization', () => {
 describe('Multi-page PDF Import', () => {
 	it('creates one whiteboard page per PDF page', () => {
 		const pdfPageCount = 5;
-		const pages: Page[] = [];
+		const pages: PageWithAnyBackground[] = [];
 
 		for (let i = 0; i < pdfPageCount; i++) {
 			pages.push(createPageWithPdfBackground(`pdf-data-page-${i}`, i, pdfPageCount, 612, 792));
@@ -505,14 +517,15 @@ describe('Multi-page PDF Import', () => {
 
 		expect(pages).toHaveLength(5);
 		pages.forEach((page, index) => {
-			const bg = page.background as BackgroundPdf;
+			const bg = page.background;
+			if (bg.type !== 'pdf') throw new Error('fond PDF attendu');
 			expect(bg.pageIndex).toBe(index);
 			expect(bg.totalPages).toBe(5);
 		});
 	});
 
 	it('each page has unique ID', () => {
-		const pages: Page[] = [];
+		const pages: PageWithAnyBackground[] = [];
 		for (let i = 0; i < 3; i++) {
 			pages.push(createPageWithPdfBackground('pdf-data', i, 3, 612, 792));
 		}
@@ -523,7 +536,7 @@ describe('Multi-page PDF Import', () => {
 	});
 
 	it('imported pages have empty elements', () => {
-		const pages: Page[] = [];
+		const pages: PageWithAnyBackground[] = [];
 		for (let i = 0; i < 3; i++) {
 			pages.push(createPageWithPdfBackground('pdf-data', i, 3, 612, 792));
 		}
@@ -547,7 +560,7 @@ describe('PDF Import Integration', () => {
 
 		if (validation.valid) {
 			// Simulate 3-page PDF import
-			const pages: Page[] = [];
+			const pages: PageWithAnyBackground[] = [];
 			for (let i = 0; i < 3; i++) {
 				pages.push(createPageWithPdfBackground('pdf-data', i, 3, 612, 792));
 			}

@@ -1235,9 +1235,13 @@ describe('generateExerciseInstance — choix de la variation', () => {
 		]
 	});
 
-	function variationOf(seed: number, variationIndex?: number): string | undefined {
+	function variationOf(seed: number, variationIndex?: number): string {
 		const result = generateExerciseInstance(exercise, { seed, variationIndex });
-		return result.success ? result.instance.statement_md : undefined;
+		// Affirmé : un échec rendait `undefined` des deux côtés, et « même graine →
+		// même variation » passait alors sans rien comparer
+		expect(result.success).toBe(true);
+		if (!result.instance) throw new Error('instance attendue');
+		return result.instance.statement_md;
 	}
 
 	it('même graine → même variation', () => {

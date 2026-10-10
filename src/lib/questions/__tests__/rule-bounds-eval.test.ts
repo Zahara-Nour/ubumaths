@@ -25,7 +25,7 @@ function template(rules: ValidationRule[]): QuestionTemplate {
 				blanks: [{ expectedAnswer: '2', rulesSuffice: true, validationRules: rules }]
 			}
 		],
-		grades: ['TLE_EXP'],
+		grades: ['T_EXP'],
 		theme: 'Arithmétique',
 		domain: 'Diophantiennes',
 		level: 3
