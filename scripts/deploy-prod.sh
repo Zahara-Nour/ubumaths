@@ -25,7 +25,8 @@ set -euo pipefail
 
 CHECK="CI Summary"
 PROFONDEUR=50
-RELEASE="${DEPLOY_PROD_RELEASE:-pnpm -s release}"
+# Sans `-s` : pnpm 12 ne connaît plus cette option (« unexpected argument »).
+RELEASE="${DEPLOY_PROD_RELEASE:-pnpm release}"
 PAUSE="${DEPLOY_PROD_PAUSE:-30}"
 ATTENTE_MAX="${DEPLOY_PROD_ATTENTE_MAX:-1500}"
 essai=0
