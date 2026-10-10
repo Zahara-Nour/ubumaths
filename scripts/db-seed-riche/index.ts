@@ -13,6 +13,8 @@
  *    supabase/seed/dev_accounts.sql. Aucun identifiant de la prod n'arrive en local.
  * 4. Crée 30 élèves fictifs (eleveNN@local.test / local-eleve) répartis dans
  *    les classes copiées, plus un élève hors classe.
+ * 5. Génère leur activité (./activite.ts), déclencheurs ACTIFS : l'historique
+ *    des récompenses se remplit comme si l'app avait tout fait.
  *
  * À lancer après `pnpm db:reset` (base repartie de zéro), sous le verrou
  * Supabase : `pnpm db:seed-riche`.
@@ -32,6 +34,7 @@ import {
 	verifierCibles,
 	type Ligne
 } from './regles';
+import { planActivite } from './activite';
 
 const PROF_LOCAL = '11111111-1111-4111-8111-111111111111';
 const ADMIN_LOCAL = '33333333-3333-4333-8333-333333333333';
@@ -167,6 +170,115 @@ async function creerEleves(db: pg.Client): Promise<number> {
 	return classes.length;
 }
 
+/** Insertion simple, déclencheurs actifs (contrairement au contenu). */
+async function ajouter(db: pg.Client, table: string, lignes: Record<string, unknown>[]) {
+	for (let i = 0; i < lignes.length; i += LOT) {
+		const lot = lignes.slice(i, i + LOT);
+		const cols = Object.keys(lot[0]);
+		const valeurs: unknown[] = [];
+		const tuples = lot.map((l) => {
+			const places = cols.map((c) => {
+				const v = l[c];
+				valeurs.push(v !== null && typeof v === 'object' ? JSON.stringify(v) : v);
+				return `$${valeurs.length}`;
+			});
+			return `(${places.join(', ')})`;
+		});
+		await db.query(
+			`insert into public."${table}" (${cols.map((c) => `"${c}"`).join(', ')}) values ${tuples.join(', ')}`,
+			valeurs
+		);
+	}
+}
+
+const FICTIFS = `'5eed0000-0000-4000-8000-0000000000%'`;
+
+async function genererActivite(db: pg.Client) {
+	// Un passage précédent est effacé d'abord : relancer ne double rien.
+	await db.query('begin');
+	const nettoyage = [
+		`delete from public.worksheet_assignments where created_by = '${PROF_LOCAL}'`,
+		`delete from public.evaluation_assignments where assigned_by = '${PROF_LOCAL}'`,
+		`delete from public.conversations where created_by = '${PROF_LOCAL}' and name = 'Discussion de classe'`
+	];
+	for (const t of [
+		'student_exercise_mastery',
+		'gidouilles_activity',
+		'bonus_history',
+		'student_warnings',
+		'reward_events'
+	]) {
+		nettoyage.push(`delete from public.${t} where student_id::text like ${FICTIFS}`);
+	}
+	nettoyage.push(`delete from public.friendships where requester_id::text like ${FICTIFS}`);
+	for (const q of nettoyage) await db.query(q);
+
+	const classes = (
+		await db.query(
+			`select c.id, coalesce(array_agg(m.student_id order by m.student_id) filter (where m.student_id is not null), '{}') eleves
+			   from public.classes c
+			   left join public.class_members m on m.class_id = c.id and m.student_id::text like ${FICTIFS}
+			  where c.join_code like 'LOCAL%'
+			  group by c.id order by c.id`
+		)
+	).rows as { id: string; eleves: string[] }[];
+	const feuilles = (
+		await db.query(
+			`select w.id, coalesce(array_agg(e.exercise_id order by e.exercise_id) filter (where e.exercise_id is not null), '{}') exercices
+			   from public.worksheets w left join public.worksheet_exercises e on e.worksheet_id = w.id
+			  group by w.id order by w.id`
+		)
+	).rows as { id: string; exercices: string[] }[];
+	const evaluation =
+		(await db.query('select id from public.evaluations order by id limit 1')).rows[0]?.id ?? null;
+	const periode =
+		(
+			await db.query(
+				`select id from public.academic_periods order by (current_date between start_date and end_date) desc, start_date desc limit 1`
+			)
+		).rows[0]?.id ?? null;
+
+	const plan = planActivite({
+		prof: PROF_LOCAL,
+		classes,
+		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
+		feuilles,
+		evaluation,
+		periode,
+		maintenant: new Date(),
+		graine: 20261010
+	});
+
+	await ajouter(db, 'worksheet_assignments', plan.assignations);
+	await ajouter(db, 'worksheet_assignment_classes', plan.assignationsClasses);
+	await ajouter(db, 'student_exercise_mastery', plan.maitrise);
+	await ajouter(db, 'gidouilles_activity', plan.gidouilles);
+	await ajouter(db, 'bonus_history', plan.bonus);
+	await ajouter(db, 'student_warnings', plan.avertissements);
+	// La conversation d'abord sans dernier message : le déclencheur des messages le renseigne.
+	await ajouter(
+		db,
+		'conversations',
+		plan.conversations.map(
+			({ last_message_id: _a, last_message_preview: _b, last_message_at: _c, ...c }) => c
+		)
+	);
+	await ajouter(db, 'conversation_participants', plan.participants);
+	await ajouter(db, 'messages', plan.messages);
+	await ajouter(db, 'friendships', plan.amities);
+	await ajouter(db, 'evaluation_assignments', plan.evaluationsAssignees);
+
+	// Compteurs dénormalisés que l'app tient à jour elle-même (update_student_gidouilles).
+	await db.query(
+		`update public.profiles p set
+		   gidouilles = greatest(0, coalesce((select sum(delta) from public.gidouilles_activity g where g.student_id = p.id), 0)),
+		   bonus = coalesce((select sum(delta) from public.bonus_history b where b.student_id = p.id), 0)
+		 where p.id::text like ${FICTIFS}`
+	);
+	await db.query('commit');
+	return plan;
+}
+
 async function main() {
 	const envProd = parse(readFileSync('.env'));
 	const envLocal = parse(readFileSync('.env.local'));
@@ -259,9 +371,13 @@ async function main() {
 		// le remplacement des tables, reviennent (on conflict do nothing).
 		await db.query(readFileSync('supabase/seed/dev_accounts.sql', 'utf8'));
 		const nbClasses = await creerEleves(db);
+		const plan = await genererActivite(db);
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`
+		);
+		console.log(
+			`✅ Activité : ${plan.assignations.length} feuille(s) assignée(s), ${plan.maitrise.length} progressions, ${plan.gidouilles.length} mouvements de Gidouilles, ${plan.bonus.length} bonus, ${plan.avertissements.length} avertissement(s), ${plan.messages.length} messages, ${plan.amities.length} amitiés, ${plan.evaluationsAssignees.length} évaluation assignée.`
 		);
 	} catch (e) {
 		await db.query('rollback').catch(() => {});
