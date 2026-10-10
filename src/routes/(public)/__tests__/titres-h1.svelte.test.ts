@@ -49,7 +49,13 @@ const PAGES: [string, Component<never>, Record<string, unknown>, RegExp][] = [
 	],
 	['attente d’approbation', PendingApproval as Component<never>, {}, /approbation/],
 	['2048', Game2048 as Component<never>, { data: gameData }, /2048/],
-	['Mathémo', Mathemo as Component<never>, { data: gameData }, /Mathémo/]
+	// Mathémo reçoit ses mots du serveur (dictionnaire en base, ADR 0022)
+	[
+		'Mathémo',
+		Mathemo as Component<never>,
+		{ data: { ...gameData, words: [{ term: 'carré', grade: '6' }] } },
+		/Mathémo/
+	]
 ];
 
 describe('titre de niveau 1 des pages publiques', () => {
