@@ -63,6 +63,13 @@ Constats remontés à David (non corrigés, décisions à prendre) :
 - [x] grapheur, statistiques, fiches et PDF (f39529abd)
 - [x] dictionnaire, univers-chiphre, outils-prof, serveur (b1eef1cff) — **plus aucun ❌ dans docs/README.md**
 
+## Doc à jour en continu (décidé le 2026-10-10)
+
+- [x] En-têtes `couvre:` / `indexe:` sur 52 docs (e27555cdf) ; garde `pnpm docs:check-a-jour` + skill `doc-a-jour` + Definition of Done (PR #1049).
+- [x] `--couverture` bloquant (0 fichier sans doc ; 763 fichiers en trous connus, 11 zones, `scripts/doc-a-jour.config.ts`).
+- [ ] **Le 2026-10-17 : bilan des avertissements `--depuis` de la semaine** (logs du job Lint des PR), ajuster les `couvre:` trop larges, puis **retirer `--avertir`** dans `quality.yml` et `.husky/pre-push` → garde bloquante.
+- [ ] Trous : « la doc d'abord quand on y touche » (règle à ajouter au skill si David la valide) ; zones prioritaires proposées : chapitres/cahier de texte, évaluations.
+
 ## Reste
 
 - [x] Vocabulaire tranché par David (CONTEXT.md) : « carte » seule bannie (carte de cours / de révision / VIP / d'objet) ; « capacité » bannie → point du programme ; `lexicon/` gardé ; types de question et dictionnaire corrigés. **Chantier à part** : renommer « capacité » dans le code et l'interface prof (52 fichiers, `getClassCapacityGrid`…).
