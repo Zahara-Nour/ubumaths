@@ -165,7 +165,7 @@ anonymise les emails avant insertion.
 
 Confrontation menée le 2026-06-15 via lecture du code et des migrations (4 axes : rétention/effacement/
 export, consentement, audit/error-logs, sous-traitants). Sources vérifiées :
-`supabase/migrations/20260524015516_*`, `20260524020331_*`, `20260115100000_*`, `20260116100000_*`,
+`supabase/migrations_archive/20260524015516_*`, `20260524020331_*`, `20260115100000_*`, `20260116100000_*`,
 `20260215184116_*` ; `src/routes/api/account/{delete,export}/`, `src/routes/api/consent/`,
 `src/lib/utils/consent.ts`, `src/lib/server/{errorMonitoring,email/brevo,google/oauth}.ts`,
 `src/routes/+layout.svelte`.

@@ -342,7 +342,7 @@ CRON_SECRET                   # Secret taches planifiees
 - ~~Aucunes CGU~~ **Cree** (`/legal/cgu`)
 - Aucun bandeau de consentement cookies (a implementer si cookies non-essentiels)
 
-> **Amelioration 2026-01-15** : Creation de la documentation legale complete accessible via le footer : Politique de Confidentialite (Art. 13-14), Conditions Generales d'Utilisation, et Mentions Legales. Documents sources dans `docs/legal/`.
+> **Amelioration 2026-01-15** : Creation de la documentation legale complete accessible via le footer : Politique de Confidentialite (Art. 13-14), Conditions Generales d'Utilisation, et Mentions Legales. Documents sources dans docs/legal/ (supprimé ; pages publiques aujourd'hui dans `src/routes/(public)/legal/`).
 
 ---
 
@@ -369,13 +369,13 @@ CRON_SECRET                   # Secret taches planifiees
 - ~~Aucun logging des modifications de donnees pedagogiques~~ **CORRIGE** : Triggers sur `exercise_completions`, `student_exercise_mastery`
 - ~~Impossible de repondre a "qui a accede aux donnees de mon enfant ?"~~ **CORRIGE** : RLS permet aux parents/enseignants de voir les logs
 
-> **Amelioration 2026-01-16** : Implementation complete de l'audit trail RGPD via migration `20260116100000_create_audit_trail.sql`. Comprend :
+> **Amelioration 2026-01-16** : Implementation complete de l'audit trail RGPD via migration `supabase/migrations_archive/20260116100000_create_audit_trail.sql`. Comprend :
 >
 > - **Table `audit_logs`** : Capture user_id, action, table_name, record_id, old/new values, timestamps
 > - **Triggers automatiques** : Sur `profiles`, `student_attempts`, `student_progress`
 > - **RLS granulaire** : Admins voient tout, users voient leurs propres logs, enseignants voient logs de leurs eleves
 > - **Fonction de retention** : `cleanup_old_audit_logs(days)` pour nettoyage (defaut 2 ans)
-> - **Documentation** : `docs/ref/audit-trail/database-schema.md`
+> - **Documentation** : `docs/systeme/conformite/audit-trail.md`
 
 ---
 
@@ -391,7 +391,7 @@ CRON_SECRET                   # Secret taches planifiees
 - Vercel (deploiement) - DPA disponible
 - Sentry (monitoring) - Optionnel, non utilise
 
-> **Amelioration 2026-01-16** : Creation du registre des sous-traitants `docs/legal/registre-sous-traitants.md` conformement a l'Art. 28. Documente tous les sous-traitants, leurs DPAs, les donnees traitees, et les mecanismes de transfert hors UE (SCCs).
+> **Amelioration 2026-01-16** : Creation du registre des sous-traitants `docs/systeme/conformite/registre-sous-traitants.md` conformement a l'Art. 28. Documente tous les sous-traitants, leurs DPAs, les donnees traitees, et les mecanismes de transfert hors UE (SCCs).
 >
 > **Actions restantes** :
 >
@@ -468,7 +468,7 @@ CRON_SECRET                   # Secret taches planifiees
 
 ### 7.1 Politique de retention
 
-**Implementation** : `supabase/migrations/20260115100000_pg_cron_rgpd_retention_cleanup.sql`
+**Implementation** : `supabase/migrations_archive/20260115100000_pg_cron_rgpd_retention_cleanup.sql`
 
 ```sql
 -- Fonction principale de nettoyage RGPD (implementee)
