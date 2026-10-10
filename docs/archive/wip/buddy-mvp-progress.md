@@ -2,7 +2,7 @@
 
 > Suivi d'implementation du MVP du systeme Palotin.
 > Plan : `~/.claude/plans/nifty-giggling-lecun.md`
-> Spec : `docs/wip/buddy-palotins-spec.md`
+> Spec : `docs/ref/buddy-palotins.md`
 
 ## Etat actuel
 
@@ -133,4 +133,4 @@ Integre dans les phases precedentes :
 ## Fichiers existants avant implementation
 
 - `src/lib/config/buddy-messages.ts` — 396 messages pre-ecrits (3 palotins x contextes + anecdotes + idle lore)
-- `docs/wip/buddy-palotins-spec.md` — spec complete
+- `docs/ref/buddy-palotins.md` — spec complete

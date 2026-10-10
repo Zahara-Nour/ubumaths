@@ -450,7 +450,7 @@ congruence.
 ## 7. Tranché — la phase 0 validée, puis livrée
 
 Les sept questions ouvertes ici ont été tranchées par David le 2026-09-20 en
-validant [tidy-phase0.md](../../wip/tidy-phase0.md) (§C, colonne « attendu ») : `x+x → 2x`
+validant [tidy-phase0.md](../../ref/mathast/tidy-spec.md) (§C, colonne « attendu ») : `x+x → 2x`
 et `√8 → 2√2` par une seconde forme canonique, **`tidy`**, qui regroupe sans
 développer ; `1/√2 → √2/2` ; `(x+1)(x−1) → x²−1` et `x(x+1) → x²+x`
 (développement seulement si moins cher) ; `−(x+2)` inchangé ;

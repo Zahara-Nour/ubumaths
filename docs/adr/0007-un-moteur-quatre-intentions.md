@@ -21,7 +21,7 @@ vocabulaire). `pattern/rule-sets/index.ts` le dit : « The `simplify()` pipeline
 | `auto`       | développer **seulement si moins cher** |
 | `factoriser` | jamais développer, et factoriser       |
 
-- `auto` ≠ `réduire` : sa spec case par case est `docs/wip/tidy-phase0.md` §C (colonne « attendu »).
+- `auto` ≠ `réduire` : sa spec case par case est `docs/ref/mathast/tidy-spec.md` §C (colonne « attendu »).
 - `auto` **ne factorise jamais** : garder `(x+1)²` est de la conservation, produire `(x+1)²` depuis
   `x²+2x+1` répond à une autre consigne.
 - `développer` contient `réduire` (« développer et réduire »), l'inverse est faux.

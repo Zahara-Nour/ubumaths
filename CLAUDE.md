@@ -16,7 +16,7 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 
 ## ⚠️ Gros process : un seul à la fois — LIRE
 
-Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout** (détail : [étape 5](docs/wip/etape5-mesures-mac-mini.md)) : `pnpm check` 82 s (plus gros process 5,3 Go) · `pnpm build` 64 s (5,7 Go) · `pnpm lint` 530 s (4,1 Go) · `check:incremental` 44 s à chaud, 82 s à cache froid · `test:integration` 180 s.
+Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout** (détail : [étape 5](docs/ref/mesures-mac-mini.md)) : `pnpm check` 82 s (plus gros process 5,3 Go) · `pnpm build` 64 s (5,7 Go) · `pnpm lint` 530 s (4,1 Go) · `check:incremental` 44 s à chaud, 82 s à cache froid · `test:integration` 180 s.
 
 - **`pnpm check`, `pnpm build`, `pnpm lint` : autorisés, UN SEUL gros process à la fois.** Ils passent sous le **même verrou** que `check:incremental` (`scripts/gros-process.sh`, depuis le 2026-10-10) : un second gros process sort en **exit 2** en nommant le détenteur, ça s'attend. Pas de verrou en CI ni sur Vercel.
 - **eslint complet autorisé en local, en arrière-plan** (`pnpm lint`, 530 s à froid : trop près de la coupure à 10 min du premier plan ; avec son cache ESLint, les passages suivants ne relisent que les fichiers changés).
