@@ -34,8 +34,19 @@ essai=0
 
 # success | failure | cancelled | pending | absent
 etat_ci() {
-	gh api "repos/{owner}/{repo}/commits/$1/check-runs?check_name=CI%20Summary" \
-		--jq '.check_runs[0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end'
+	local e
+	e="$(gh api "repos/{owner}/{repo}/commits/$1/check-runs?check_name=CI%20Summary" \
+		--jq '.check_runs[0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end')"
+	# « CI Summary » n'existe qu'une fois les autres jobs finis : pendant toute la
+	# CI il est absent. Un workflow encore en cours vaut donc « en cours », pas
+	# « commit sans CI » (vu le 2026-10-10 au premier deploy:prod).
+	if [ "$e" = absent ]; then
+		case "$(gh run list --workflow quality.yml --commit "$1" --json status --jq '.[0].status // "aucun"')" in
+		aucun | completed) ;;
+		*) e="pending" ;;
+		esac
+	fi
+	echo "$e"
 }
 
 # Vrai si la CI de push ignore ce commit (même filtre que quality.yml) : rien
@@ -132,7 +143,7 @@ while :; do
 	esac
 	[ "$attendu" -lt "$ATTENTE_MAX" ] ||
 		arreter "⏳ CI de la version toujours pas verte après ${ATTENTE_MAX} s." "Relancer pnpm deploy:prod plus tard : la version existe, seule la mise en prod reste."
-	echo "⏳ CI de la version : $etat… (${attendu} s)"
+	echo "⏳ CI de la version : ${etat}… (${attendu} s)"
 	sleep "$PAUSE"
 	attendu=$((attendu + PAUSE))
 done
