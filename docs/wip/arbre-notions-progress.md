@@ -948,3 +948,17 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     - déclaration dans le garde-fou CI des fonctions SECURITY DEFINER.
   - Les tests tournent avec les vrais rôles (prof, admin, élève). Le re-parentage concurrent est fermé par un verrou sur
     les nœuds.
+- **2026-10-10 — PR 2 (#1037) en prod.** Code livré par `deploy:prod` (v0.18.0), puis migration `20261013120000`
+  appliquée par David.
+  - Poussée depuis le worktree de la PR, avec `--project-ref` et `--include-all` : la prod avait déjà
+    `20261014100000_suppression_compte_art17`, et un `db:migrate` depuis `main` aurait aussi emporté quatre migrations
+    d'autres sessions (passées depuis).
+  - Vérifié en prod, en lecture seule :
+    - 473 tags neufs sur 420 modèles et 1 026 anciens ;
+    - 0 violation des règles 1, 2 et (a) ;
+    - contrainte `curriculum_points_one_generation` présente ;
+    - les 6 fonctions en DEFINER, propriétaire postgres, `search_path` fixé, garde présente, aucun EXECUTE pour public,
+      anon ou authenticated ;
+    - les 6 triggers activés.
+  - Reste : les 21 couples sans point (plus tard), étape 3 (bascule du code), étape 4 (nettoyage destructif), passe des
+    bornes.
