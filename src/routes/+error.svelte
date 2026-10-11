@@ -89,7 +89,7 @@
 		{#if occurrence}
 			<p class="text-balance">
 				Le nombre {status}
-				{copy.piVerb} à la
+				{copy.piVerb}
 				<strong>{frenchOrdinal(occurrence.position)} décimale</strong
 				>&nbsp;de&nbsp;π{copy.piTwist ?? ''}.
 			</p>
