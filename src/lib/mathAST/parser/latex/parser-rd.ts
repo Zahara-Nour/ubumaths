@@ -32,7 +32,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST, euler } from '../../factory';
+import { MathAST, complex, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
@@ -236,6 +236,12 @@ class RDParser {
 
 	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
 	private previousToken: Token | undefined;
+
+	/**
+	 * Profondeur d'indice : dans un indice, `i` est une variable (`u_i`,
+	 * `x_{i+1}`), jamais l'unité imaginaire — même règle que le parseur custom.
+	 */
+	private subscriptDepth: number = 0;
 
 	/**
 	 * Advance to the next token, skipping whitespace
@@ -668,6 +674,15 @@ class RDParser {
 	 * - If not braced, parse a single primary, then check for chained _
 	 */
 	private parseSubscriptOperand(): MathNode {
+		this.subscriptDepth++;
+		try {
+			return this.parseSubscriptOperandContent();
+		} finally {
+			this.subscriptDepth--;
+		}
+	}
+
+	private parseSubscriptOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}
@@ -854,11 +869,18 @@ class RDParser {
 	}
 
 	/**
-	 * La lettre déjà consommée : `e` est la constante d'Euler, sauf suivie d'un
-	 * indice (`e_1`, `e_n` : variable indicée), comme dans `parser-pratt`.
+	 * La lettre déjà consommée : `e` est la constante d'Euler et `i` l'unité
+	 * imaginaire `complex(0, 1)`, sauf suivies d'un indice (`e_1`, `i_n` :
+	 * variables indicées) ; `i` DANS un indice reste une variable (`u_i`).
+	 * Mêmes règles dans les quatre parseurs (LaTeX et custom, pratt et rd).
 	 */
 	private eulerOrVariable(letter: string): MathNode {
-		return letter === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(letter);
+		if (this.check('UNDERSCORE')) return MathAST.variable(letter);
+		if (letter === 'e') return euler();
+		if (letter === 'i' && this.subscriptDepth === 0) {
+			return complex(MathAST.number('0'), MathAST.number('1'));
+		}
+		return MathAST.variable(letter);
 	}
 
 	/**

@@ -70,7 +70,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `normal/`                                                                                                                           | `normalize` → `NormalForm` (forme normale rationnelle), `denormalize`, `equivalenceForm`, `hashMathNode`, `nodesEqual`                                                                                                              |
 | `pattern/`                                                                                                                          | motifs (`P`, `tryMatch`), règles, jeux de règles, `verifyForm` — voir [pattern-matching.md](pattern-matching.md)                                                                                                                    |
 | `transform/`                                                                                                                        | identités algébriques/trigo/hyperboliques en fonctions (`factorAlgebraic`…) — **aucun import hors de ses tests**                                                                                                                    |
-| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), refus de `e` comme variable (`common/euler-variable.ts`) |
+| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), `e`, `i` jamais variables (`common/reserved-letters.ts`) |
 | `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                                             |
 | **Calculer**                                                                                                                        |                                                                                                                                                                                                                                     |
 | `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateWithUnits`, `compile`/`createSafeEvaluator` (seule génération de code)                                                                                                                           |
@@ -221,11 +221,20 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
    - la lettre `e` est la **constante** `euler` dans les quatre parseurs (LaTeX et custom,
      pratt et rd), comme `\pi` est `constant` — **sauf suivie d'un indice** : `e_1`, `e_n`
      restent des variables indicées. `toLatex(euler())` écrit `\exponentialE` (MathLive et le
-     parseur le relisent), `toCustom` écrit `e`. Calculer « par rapport à `e` » (intégrer,
-     dériver, résoudre, limite, Taylor, variations, `; e` en CLI) est **refusé** : « e est la
-     constante d'Euler, pas une variable » (`refusesEulerVariable`, `common/euler-variable.ts`),
-     sauf si l'arbre contient une variable `e` (base indicée `e_1`) ;
-   - `i` reste une **variable** en LaTeX (`\imaginaryI` donne `complex(0, 1)`) ;
+     parseur le relisent), `toCustom` écrit `e` ;
+   - la lettre `i` est l'**unité imaginaire** `complex(0, 1)` (`imaginaryUnit()`,
+     `isImaginaryUnit`) dans les quatre parseurs, comme `\imaginaryI` et `\mathrm{i}` —
+     **sauf dans un indice** (`u_i`, `x_{i+1}`, `x_{2i}` : un rang) **ou suivie d'un indice**
+     (`i_1`, `i_{n}`) : là, une variable. `toLatex` écrit `\imaginaryI`, `toCustom` écrit `i`.
+     Une `variable('i')` est donc toujours une vraie variable : rien ne la lit comme l'imaginaire
+     (ni `normalize`, ni `evaluate`) ; `tidy` range `i` comme π et `e`, devant les lettres
+     (`x i` → `i x`, `\pi i` → `i\pi`). Le parseur LaTeX rd ne lit pas `\imaginaryI` (écart
+     connu) ;
+   - calculer « par rapport à `e` » ou « à `i` » (intégrer, dériver, résoudre, limite, Taylor,
+     variations, `; e` / `pour i` en CLI) est **refusé** : « e est la constante d'Euler, pas une
+     variable », « i est l'unité imaginaire, pas une variable » (`reservedVariableRefusal`,
+     `common/reserved-letters.ts`), sauf si l'arbre contient une variable de ce nom (base
+     indicée `e_1`, `i_1`, ou `i` dans un indice) ;
    - `\sin^2 x` est une `function` avec `power`, `(\sin x)^2` un `superscript` ;
    - la virgule : MathLive écrit `3{,}14` (lu `3.14`) ; la virgule nue passe par
      `decimal-comma.ts` ;
@@ -332,9 +341,12 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
   panel). La boucle s'arrête sans le signaler ; `applyRules`, lui, lève
   `RuleIterationLimitError`.
 - `solve` ne gère pas les inconnues indicées : `x_1+1=3` répond « pas de solution »
-  (`getVariables` rend la base `x`) ; `e_1+1=3` aussi (le refus « constante d'Euler » ne
-  s'applique pas quand l'arbre contient une variable `e`, base d'une variable indicée :
-  `refusesEulerVariable`).
+  (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
+  d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
+  ou `i`, base d'une variable indicée : `reservedVariableRefusal`).
+- Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
+  `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
+  ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.
 
 ## Décisions
 

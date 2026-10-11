@@ -822,12 +822,16 @@ class CustomRDParser {
 		const letter = token.value;
 
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
-		// `e_1`, `e_n` : variable indicée (même règle que les parseurs LaTeX)
+		// `e_1`, `i_n` : variables indicées (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
 			return this.applyColor(this.check('UNDERSCORE') ? MathAST.variable('e') : euler());
 		}
 		if (letter === 'i' && this.subscriptDepth === 0) {
-			return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
+			return this.applyColor(
+				this.check('UNDERSCORE')
+					? MathAST.variable('i')
+					: complex(MathAST.number('0'), MathAST.number('1'))
+			);
 		}
 
 		return this.applyColor(MathAST.variable(letter));

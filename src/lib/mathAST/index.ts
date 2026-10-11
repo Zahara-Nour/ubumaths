@@ -187,6 +187,7 @@ export {
 
 	// Complex numbers
 	complex,
+	imaginaryUnit,
 
 	// Boolean and logical
 	boolean,
@@ -261,6 +262,7 @@ export {
 	isHole,
 	isMathConstant,
 	isEulerConstant,
+	isImaginaryUnit,
 	isPiConstant,
 	isAddition,
 	isSubtraction,
