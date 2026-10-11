@@ -18,12 +18,12 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 
 ## Lots
 
-| Lot | Périmètre                                                                                          | Branche / PR             | État     |
-| --- | -------------------------------------------------------------------------------------------------- | ------------------------ | -------- |
-| 1   | `BackLink` + règle + espace prof (`dashboard/teacher/**`)                                          | `refactor/bouton-retour` | en cours |
-| 2   | Espace élève (`dashboard/student/**`, `dashboard/revisions/**`, `dashboard/navadra/**`)            | —                        | à faire  |
-| 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | —                        | à faire  |
-| 4   | Pages publiques + composants partagés (`components/test/`, `srs/`, `student/worksheets/`)          | —                        | à faire  |
+| Lot | Périmètre                                                                                          | Branche / PR                   | État    |
+| --- | -------------------------------------------------------------------------------------------------- | ------------------------------ | ------- |
+| 1   | `BackLink` + règle + espace prof (`dashboard/teacher/**`)                                          | `refactor/bouton-retour`       | fait    |
+| 2   | Espace élève (`dashboard/student/**`, `dashboard/revisions/**`, `dashboard/navadra/**`)            | `refactor/bouton-retour-eleve` | fait    |
+| 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | —                              | à faire |
+| 4   | Pages publiques + composants partagés (`components/test/`, `srs/`, `student/worksheets/`)          | —                              | à faire |
 
 ## Lot 1 — espace prof (fait)
 
