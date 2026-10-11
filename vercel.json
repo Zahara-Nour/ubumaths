@@ -16,6 +16,24 @@
 					"value": "public, max-age=2592000"
 				}
 			]
+		},
+		{
+			"source": "/fonts/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=2592000, stale-while-revalidate=31536000"
+				}
+			]
+		},
+		{
+			"source": "/((?!_app/|api/|fonts/|upsilon-simulator/).*)\\.(png|jpg|jpeg|webp|gif|svg|ico|mp3|ogg|wav|css)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
 		}
 	]
 }

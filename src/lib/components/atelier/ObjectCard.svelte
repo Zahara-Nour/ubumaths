@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	/**
 	 * Un objet de l'atelier : son nom, sa définition, son état, ses actions.
 	 *

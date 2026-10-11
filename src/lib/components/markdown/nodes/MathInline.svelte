@@ -19,6 +19,7 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { onMount } from 'svelte';
 	import type { MathfieldElement } from 'mathlive';
 
