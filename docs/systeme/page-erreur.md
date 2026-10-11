@@ -1,0 +1,107 @@
+---
+couvre:
+  - src/routes/+error.svelte
+  - 'src/lib/error-page/**'
+  - 'src/lib/components/error-page/**'
+---
+
+# Page d'erreur (404, 403, 500…)
+
+> Vérifié contre le code le 2026-10-11.
+
+## À quoi ça sert
+
+Une seule page pour toutes les erreurs du site, rendue par `src/routes/+error.svelte` (il n'y en a
+pas d'autre : toute erreur, même sous `/dashboard`, arrive ici). Elle reprend la page 404 de
+l'ancien site ubumaths.fr — la spirale des décimales de π qui tourne et sa question « As-tu
+regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
+
+- **la blague est devenue vraie.** La 2 567 241ᵉ décimale de π est un 9 (…0959 0848…), pas un 404.
+  La page cite désormais la **vraie** première apparition du code dans π : 404 commence à la
+  1 272ᵉ décimale (…684710**404**753464…), et ces trois chiffres sont colorés dans la spirale ;
+- **chaque code a son texte** : l'ancienne page disait « Page introuvable » même quand le serveur
+  plantait ;
+- **une sortie claire** : boutons d'action au lieu d'un lien caché dans l'image, et suggestions de
+  pages proches pour une 404.
+
+## Ce que voit l'utilisateur
+
+1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile.
+2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
+   (`describeError`, `src/lib/error-page/error-copy.ts`).
+3. Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`), **sauf** s'il répète le
+   titre ou n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…,
+   liste `GENERIC_MESSAGES`, comparée sans casse ni accents).
+4. Pour un code de la table : « Le nombre 404, lui, se trouve toujours : il apparaît pour la
+   première fois à la 1 272ᵉ décimale de π », et l'extrait des décimales autour.
+5. Pour une 404 : « Tu cherchais peut-être : » et jusqu'à trois pages proches.
+6. Les boutons : « Se connecter » (401), « Réessayer » (5xx, 408, 429), « Retour à l'accueil »
+   (toujours), « Page précédente » (seulement si elle ramène sur Chiphre).
+7. Repliés sous « Détails techniques » : le message et le début de la pile d'une erreur
+   inattendue côté client (`App.Error.detail`), ou le message d'une erreur 5xx — il peut venir
+   brut de la base (noms de tables) et n'a pas à s'afficher en grand devant un élève.
+
+Onglet : « Page introuvable | Chiphre », `noindex`. SvelteKit renvoie le bon code HTTP.
+
+## Carte du code
+
+| Fichier                                         | Rôle                                                                     |
+| ----------------------------------------------- | ------------------------------------------------------------------------ |
+| `src/routes/+error.svelte`                      | La page                                                                  |
+| `src/lib/error-page/error-copy.ts`              | Titre, explication, actions et détail selon le code                      |
+| `src/lib/error-page/pi-status.ts`               | Table code → première apparition dans π (rang, chiffres voisins)         |
+| `src/lib/error-page/pi-decimals.ts`             | 1 800 premières décimales, pour la spirale                               |
+| `src/lib/error-page/pi-spiral.ts`               | Géométrie de la spirale (pure, testée)                                   |
+| `src/lib/error-page/suggestions.ts`             | « Tu cherchais peut-être… »                                              |
+| `src/lib/components/error-page/PiSpiral.svelte` | Rendu SVG de la spirale                                                  |
+| `src/hooks.client.ts` (`handleError`)           | Remplit `detail` ; journalise une 404 de navigation en avertissement     |
+| `src/lib/seo/sitemap-pages.ts`                  | Pages candidates aux suggestions (leur `title` est le libellé du bouton) |
+
+## Invariants
+
+- **`+error.svelte` est préchargé sur toutes les pages** : SvelteKit importe le layout racine ET
+  l'erreur racine au démarrage (`default_error_loader`, `client.js`). Il doit rester léger. La
+  spirale et ses décimales sont donc importées **à la demande** (`import()` dans le composant), dans
+  une boîte carrée réservée d'avance : elle arrive sans décaler la page. Ne pas les importer
+  statiquement. Même raison pour la table de `pi-status.ts` : précalculée, pas calculée.
+- **Les boutons ne doivent jamais disparaître** : le layout racine masque en-tête et barre
+  latérale sous `/dashboard`, une erreur y est donc rendue sans aucune navigation.
+- **Tout chiffre affiché est vrai.** `pi-status.test.ts` recalcule π (formule de Machin, en
+  BigInt, 7 000 décimales) et vérifie chaque ligne de la table — rang de la **première**
+  apparition et chiffres voisins — ainsi que `PI_DECIMALS`. Le rang de 404 a aussi été vérifié
+  contre l'API pi.delivery de Google.
+- **Mouvement réduit** : avec `prefers-reduced-motion`, la spirale ne tourne pas.
+- **Couleurs** : la spirale est en `currentColor` (suit le thème), le code en ambre ; l'ancien PNG
+  (chiffres noirs sur fond transparent) était invisible en mode sombre.
+- **« Page précédente »** n'apparaît qu'après une navigation interne (`afterNavigate`, `from`) ou
+  une arrivée depuis une page du site (`document.referrer`) : `history.length` compte aussi
+  l'onglet neuf, et le bouton aurait fait quitter le site.
+
+## La spirale
+
+Spirale logarithmique : à chaque tour, le rayon est multiplié par 0,92 et la taille des chiffres
+suit le rayon. L'angle entre deux chiffres est donc constant et l'écart entre deux tours reste
+proportionnel aux chiffres : rien ne se chevauche. Réglages (`DEFAULT_SPIRAL_OPTIONS`) choisis pour
+que le 404 tombe vers la mi-rayon, encore lisible, et que la spirale s'arrête autour du disque
+de Père Ubu (~1 660 chiffres). Les codes situés au-delà (500 : 6 238ᵉ décimale) ne sont pas
+colorés dans la spirale ; la phrase et l'extrait restent affichés.
+
+## Comment étendre
+
+- **Un nouveau code dans la table** : calculer sa première apparition (le test donne la méthode),
+  ajouter la ligne dans `PI_STATUS_OCCURRENCES` ; le test la vérifie.
+- **Un nouveau texte pour un code** : `COPY_BY_STATUS` dans `error-copy.ts`.
+- **Une page à suggérer** : l'ajouter à `SITEMAP_PAGES` (publique et pérenne), avec son `title`.
+
+## Tests
+
+- `src/lib/error-page/__tests__/` : π (contre un calcul indépendant), spirale, suggestions,
+  textes.
+- `src/__tests__/hooks-client-erreurs.test.ts` : message affiché sans pile, `detail`, 404 en
+  avertissement.
+
+## Écarts connus
+
+- Des `error()` du projet portent encore des messages anglais (« Failed to load classes »,
+  « Failed to load questions »…). Les plus génériques sont masqués ; les autres s'affichent tels quels
+  sous le titre français.

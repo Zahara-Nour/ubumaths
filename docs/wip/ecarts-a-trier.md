@@ -18,30 +18,31 @@
 12 V (dont V12, plus vrai), 14 L, 20 M, 15 C, 11 D — plus **15 à transmettre** à la session RGPD.
 Mise à jour du 2026-10-10 : K2 fait (V7, L5, L6, C8 retirés) ; V13 et L15 ajoutés (relevés en
 le faisant). 2026-10-11 : L20 ajouté (revue de la PR « LaTeX sans notation scientifique », #1085) ; V14, V15,
-C16, C17, D12-D15 ajoutés et K19 ouvert (inventaire de la [carte des fonctionnalités](../systeme/carte-des-fonctionnalites.md)) ; V16, V17, V18 ajoutés (chantier écriture des primitives, #1098).
+C16, C17, D12-D15 ajoutés et K19 ouvert (inventaire de la [carte des fonctionnalités](../systeme/carte-des-fonctionnalites.md)) ; V16, V17, V18 ajoutés (chantier écriture des primitives, #1098) ; L21-L23 ajoutés et K20 ouvert (suite du moteur mathAST).
 
 ## Chantiers proposés
 
 Priorité : **1** = touche les copies ou les résultats des élèves · **2** = gêne le prof ·
 **3** = hygiène.
 
-| #   | Chantier                                             | Écarts                           | Taille     | Prio |
-| --- | ---------------------------------------------------- | -------------------------------- | ---------- | ---- |
-| K3  | **Fusion des moteurs (ADR 0007)** — projet existant  | V8                               | L          | 1    |
-| K4  | **Gras coupé par un marquage du lexique**            | L16                              | S          | 3    |
-| K7  | **Tableur**                                          | V3, V4                           | M          | 2    |
-| K8  | **Tableau blanc et Google éteint**                   | D5, M11                          | S          | 2    |
-| K9  | **Accès admin et entrées de menu prof**              | D1, D3, L1                       | S          | 2    |
-| K10 | **SRS : réglages sans effet, tables sans écran**     | L2, D2, D9, M14                  | M          | 2    |
-| K11 | **PDF : routes mortes, versions, polices**           | M5, M6, L9 (+ T10 côté RGPD)     | M          | 3    |
-| K12 | **Jeux hors catalogue** (Navadra, Evoland, économie) | V9, D10, L11, M13                | M          | 3    |
-| K13 | **Serveur : crons et journalisation**                | L7, L8, M12, C6, C7              | M (L8 : L) | 3    |
-| K14 | **Grapheur**                                         | L4, C2, M7, D6                   | M          | 3    |
-| K15 | **Atelier : dettes**                                 | L12, L13, D8, C12, C15           | M          | 3    |
-| K16 | **Dictionnaire, suite de l'ADR 0022**                | L14, M17, L10                    | M          | 3    |
-| K17 | **Ménage : code mort**                               | M1-M4, M8-M10, M15, M16, M18-M20 | M          | 3    |
-| K18 | **Ménage : commentaires et vocabulaire**             | C1, C3-C5, C9-C11, C13, C14, D11 | M          | 3    |
-| K19 | **Vitrine : ce que voit un visiteur**                | V14, V15, C16, C17, D12-D15      | S          | 3    |
+| #   | Chantier                                                  | Écarts                           | Taille     | Prio |
+| --- | --------------------------------------------------------- | -------------------------------- | ---------- | ---- |
+| K3  | **Fusion des moteurs (ADR 0007)** — projet existant       | V8                               | L          | 1    |
+| K4  | **Gras coupé par un marquage du lexique**                 | L16                              | S          | 3    |
+| K7  | **Tableur**                                               | V3, V4                           | M          | 2    |
+| K8  | **Tableau blanc et Google éteint**                        | D5, M11                          | S          | 2    |
+| K9  | **Accès admin et entrées de menu prof**                   | D1, D3, L1                       | S          | 2    |
+| K10 | **SRS : réglages sans effet, tables sans écran**          | L2, D2, D9, M14                  | M          | 2    |
+| K11 | **PDF : routes mortes, versions, polices**                | M5, M6, L9 (+ T10 côté RGPD)     | M          | 3    |
+| K12 | **Jeux hors catalogue** (Navadra, Evoland, économie)      | V9, D10, L11, M13                | M          | 3    |
+| K13 | **Serveur : crons et journalisation**                     | L7, L8, M12, C6, C7              | M (L8 : L) | 3    |
+| K14 | **Grapheur**                                              | L4, C2, M7, D6                   | M          | 3    |
+| K15 | **Atelier : dettes**                                      | L12, L13, D8, C12, C15           | M          | 3    |
+| K16 | **Dictionnaire, suite de l'ADR 0022**                     | L14, M17, L10                    | M          | 3    |
+| K17 | **Ménage : code mort**                                    | M1-M4, M8-M10, M15, M16, M18-M20 | M          | 3    |
+| K18 | **Ménage : commentaires et vocabulaire**                  | C1, C3-C5, C9-C11, C13, C14, D11 | M          | 3    |
+| K19 | **Vitrine : ce que voit un visiteur**                     | V14, V15, C16, C17, D12-D15      | S          | 3    |
+| K20 | **Moteur mathAST : suite des chantiers e, i, primitives** | V13, V16-V18, L15, L20-L22       | M          | 2    |
 
 Ordre suggéré : la priorité 1 est soldée, hors K3 (projet suivi à part) ; K7-K10 ensuite, après les décisions D attachées.
 
@@ -56,6 +57,9 @@ comme les autres lois, décision de David du 2026-10-11). **D4** (la fiche chois
 concis ou détaillé : lot 3 de l'ADR 0017, déjà décidé le 2026-10-02 — D11). **K1** (V1, V2 : une seule copie par affectation, niveau de guidage
 choisi par le prof, jamais tiré — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md), 2026-10-11). **V5** (tableau blanc : rien de Google quand
 le drapeau est éteint, 2026-10-11).
+Livrés hors tri, même famille que K2 : la lettre `e` est la constante d'Euler (#1061), plus de
+notation scientifique en LaTeX et `{{eval:…}}` sans chiffre faux (#1085), la lettre `i` est l'unité
+imaginaire (#1096), primitives écrites comme au lycée et valeurs définies calculées (#1098).
 K3 reste le projet « fusion simplify / pedagogical-simplify » déjà suivi. K7-K10 ensuite, après les
 décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 
@@ -98,6 +102,9 @@ décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 | L18 | Titres des encadrés de correction toujours en français à l'écran (`Blockquote.svelte`, `DETAIL_KIND_LABELS`) ; le PDF suit la langue (`detailKindLabel`).                                                                                                                                                 | [ubumark.md](../systeme/ubumark.md)                                                           | Une correction en anglais affichera « Méthode » ; aucune correction marquée aujourd'hui (0 en prod).                                                                       | S      | vérifié                                                   |
 | L19 | Typst : `==surligné==`, `*italique*`, `~~barré~~` s'écrivent `#highlight[…]`, `#emph[…]`, `#strike[…]` sans `;` final (`typst-generator.ts`, cas `text`) : un `(`, `[` ou `.lettre` collé après est lu comme la suite de l'appel → toute la fiche échoue. Corrigé pour les détails en ligne (2026-10-11). | [ubumark.md](../systeme/ubumark.md)                                                           | Fiche entière en erreur si un auteur écrit `==mot==(voir)`. Non mesuré en prod.                                                                                            | S      | prouvé (compilateur prod, revue)                          |
 | L20 | `{{eval:100000000000000.5}}` rend `100000000000001` : `formatNumber` (`mathAST/eval/evaluate-with-modifiers.ts`) garde 15 chiffres significatifs (`toExponential(14)`), et un décimal juste sous 10¹⁵ perd sa partie décimale, arrondie. Défaut antérieur à la PR « LaTeX sans notation scientifique ».   | [ubumark.md](../systeme/ubumark.md)                                                           | Aucun observé : il faut un décimal à 16 chiffres significatifs dans un modèle.                                                                                             | S      | mesuré (2026-10-11, sonde de revue)                       |
+| L21 | Le parseur LaTeX rd (option `parser: 'rd'`) ne lit ni `\imaginaryI` ni `\exponentialE` (« Unexpected token ») ; le parseur pratt, utilisé partout, les lit.                                                                                                                                               | [mathast/README.md](../systeme/mathast/README.md)                                             | Aucun : aucun appelant de production ne choisit rd.                                                                                                                        | S      | mesuré (2026-10-11, PR #1096)                             |
+| L22 | Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`, `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`) ne servent plus qu'à `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.                            | [mathast/README.md](../systeme/mathast/README.md)                                             | Une variable indicée `e_1` / `i_1` / `u_i` écartée de la détection d'inconnue (atelier, lecture de calcul).                                                                | S      | vérifié (2026-10-11, PR #1096)                            |
+| L23 | Test instable `scripts/__tests__/ci-version-seule.test.ts` : le nettoyage `rmSync(racine, { recursive: true })` de `afterEach` échoue parfois en CI (`ENOTEMPTY`, `rmdir …/depot`) — un processus git du dépôt temporaire écrit encore.                                                                   | [pratiques/git-workflow.md](../pratiques/git-workflow.md)                                     | CI rouge sans rapport avec la PR ; une relance du job suffit (PR #1098, run 38136779101).                                                                                  | S      | mesuré (2026-10-11)                                       |
 
 ## Code mort
 

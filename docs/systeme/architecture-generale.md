@@ -28,8 +28,9 @@ document n'en redécrit aucun. Vocabulaire : [CONTEXT.md](../../CONTEXT.md). Rè
 src/
 ├── hooks.server.ts     # handle = sequence(...) : peuple event.locals, une fois par requête
 ├── hooks.client.ts     # surveillance d'erreurs, Web Vitals, détection de gel (navigateur)
-├── app.d.ts            # App.Locals : supabase, safeGetSession, user, profile, requestId, adminSupabase…
+├── app.d.ts            # App.Locals : supabase, safeGetSession, user, profile, requestId, adminSupabase… ; App.Error.detail
 ├── routes/
+│   ├── +error.svelte       # page d'erreur de tout le site, préchargée partout (cf. page-erreur.md)
 │   ├── +layout.server.ts   # racine serveur : renvoie user/profile (lus dans locals), cookies sb-*
 │   ├── +layout.ts          # racine universelle : crée le client Supabase (imports DYNAMIQUES, cf. TDZ)
 │   ├── (public)/           # pages sans authentification
