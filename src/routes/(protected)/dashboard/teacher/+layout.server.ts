@@ -49,7 +49,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 
 	// Must be logged in as teacher
 	if (!user || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Mark this data as dependent on 'teacher:classes' for reactive invalidation

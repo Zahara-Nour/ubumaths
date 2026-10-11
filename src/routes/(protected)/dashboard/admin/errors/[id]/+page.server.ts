@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const result = await getErrorLog(supabase, id);
 
 	if (!result.success || !result.data) {
-		throw error(404, 'Error not found');
+		throw error(404, 'Erreur introuvable');
 	}
 
 	return {

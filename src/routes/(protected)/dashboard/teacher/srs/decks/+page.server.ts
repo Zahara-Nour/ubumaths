@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Check if user is teacher or admin
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	if (profileData.role !== 'teacher' && profileData.role !== 'admin') {
-		throw error(403, 'Forbidden. Only teachers can access this page.');
+		throw error(403, 'Page réservée aux professeurs');
 	}
 
 	try {

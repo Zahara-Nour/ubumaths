@@ -68,7 +68,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.single();
 
 	if (classError || !classData) {
-		throw error(404, 'Classe non trouvee');
+		throw error(404, 'Classe introuvable');
 	}
 
 	// Try to load existing entry for this class and date

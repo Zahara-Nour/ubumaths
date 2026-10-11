@@ -36,7 +36,7 @@ async function getLatestExportFolder(): Promise<string> {
 		.reverse();
 
 	if (exportFolders.length === 0) {
-		throw error(404, 'No export folder found in data/migration-output/');
+		throw error(404, 'Aucun dossier d’export dans data/migration-output/');
 	}
 
 	return join(baseDir, exportFolders[0]);

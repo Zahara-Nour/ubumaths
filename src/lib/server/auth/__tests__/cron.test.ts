@@ -65,7 +65,7 @@ describe('verifyCronAuth', () => {
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
 			expect((err as { body?: { message?: string } }).body?.message).toContain(
-				'Missing authentication'
+				'Authentification manquante'
 			);
 		}
 	});
@@ -96,7 +96,7 @@ describe('verifyCronAuth', () => {
 			} catch (err: unknown) {
 				expect((err as { status: number }).status).toBe(401);
 				expect((err as { body?: { message?: string } }).body?.message).toContain(
-					'Invalid Authorization header format'
+					'En-tête Authorization mal formé'
 				);
 			}
 		}
@@ -120,7 +120,7 @@ describe('verifyCronAuth', () => {
 			expect.fail('Should have thrown an error for short token');
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
-			expect((err as { body?: { message?: string } }).body?.message).toContain('Invalid token');
+			expect((err as { body?: { message?: string } }).body?.message).toContain('Jeton invalide');
 		}
 
 		// Test with longer token
@@ -134,7 +134,7 @@ describe('verifyCronAuth', () => {
 			expect.fail('Should have thrown an error for long token');
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
-			expect((err as { body?: { message?: string } }).body?.message).toContain('Invalid token');
+			expect((err as { body?: { message?: string } }).body?.message).toContain('Jeton invalide');
 		}
 	});
 
@@ -156,7 +156,7 @@ describe('verifyCronAuth', () => {
 			expect.fail('Should have thrown an error for wrong token');
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
-			expect((err as { body?: { message?: string } }).body?.message).toContain('Invalid token');
+			expect((err as { body?: { message?: string } }).body?.message).toContain('Jeton invalide');
 		}
 	});
 
