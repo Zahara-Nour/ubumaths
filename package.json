@@ -231,7 +231,7 @@
 		"lz-string": "^1.5.0",
 		"marked": "^16.4.2",
 		"mathjs": "^15.2.0",
-		"mathlive": "^0.110.0",
+		"mathlive": "^0.111.1",
 		"mode-watcher": "^1.1.0",
 		"pdf-parse": "^2.4.5",
 		"pdfjs-dist": "^6.2.108",
