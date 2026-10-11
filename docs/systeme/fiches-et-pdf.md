@@ -137,7 +137,8 @@ worksheets (type, status, config jsonb, translations, template_id, school_id)
 ```
 
 - **Types** : `worksheet`, `assessment`, `exam`, `quiz`, `homework` (`WORKSHEET_TYPES`) ; statut
-  `draft` / `published` / `archived`.
+  `draft` / `published` / `archived`. `assessment` s'affiche **« Contrôle »**, à l'écran comme sur le PDF
+  (garde : `src/lib/utils/__tests__/type-de-fiche-controle.test.ts`).
 - **Config** (`WorksheetConfig`, JSONB validé par `worksheetConfigSchema`) : `language`, options
   d'affichage `show_*` (absentes = affichées), `numbering_style`, `shuffle_*`, `page_layout`,
   `font_size`, `margins`.
@@ -377,5 +378,10 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
+9. **Libellés des types recopiés** : la table type → libellé existe en neuf exemplaires (constantes,
+   `getTypeLabel`, cartes et en-têtes élève, pages prof), avec des variantes (« Feuille d'exercices »,
+   « Fiche de travail », « Corvées Domestiques »). Seul « Contrôle » est tenu par un test.
+10. **Nom du modèle système « Evaluation »** : la liste des modèles le lit en base
+    (`worksheet_templates`), pas dans `default-templates.ts` ; il n'est pas renommé.
 
 Vérifié contre le code le 2026-10-11.
