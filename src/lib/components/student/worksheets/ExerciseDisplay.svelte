@@ -18,6 +18,7 @@
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 
 	interface Props {
 		exercise: StudentExerciseView;
@@ -108,7 +109,7 @@
 							class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 						>
 							<MarkdownRenderer
-								content={exercise.correction ?? ''}
+								content={detailedCorrection(exercise.correction ?? '')}
 								genericFunctions={exerciseFunctions}
 							/>
 						</div>

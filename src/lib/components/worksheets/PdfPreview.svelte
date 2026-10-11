@@ -41,6 +41,7 @@
 	import { localizedText, worksheetLocale } from '$lib/types/worksheets';
 	import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 	import JSZip from 'jszip';
+	import { correctionForPrint } from '$lib/questions/correction-detail';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
@@ -275,7 +276,10 @@
 				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
 				mdParts.push(ex.statement || '');
 				if (mode === 'correction' && ex.solution) {
-					mdParts.push(`\n### Solution\n${ex.solution}`);
+					// Comme le PDF : concise ou détaillée selon la fiche (D11)
+					mdParts.push(
+						`\n### Solution\n${correctionForPrint(ex.solution, worksheet.config?.correction_detail)}`
+					);
 				}
 				mdParts.push('\n');
 			});

@@ -457,3 +457,17 @@ export function splitCorrectionDetail(markdown: string): CorrectionVersions {
 export function detailedCorrection(markdown: string): string {
 	return splitCorrectionDetail(markdown).detailed;
 }
+
+/**
+ * Version à IMPRIMER selon le réglage de la fiche (D11, lot 3 ; écart D4,
+ * 2026-10-11) : jamais de marqueur brut, que Typst refuserait. Tout est
+ * détail : la concise serait vide, on imprime la détaillée (D6, jamais de
+ * corrigé vide).
+ */
+export function correctionForPrint(
+	markdown: string,
+	detail: 'concise' | 'detailed' = 'detailed'
+): string {
+	const versions = splitCorrectionDetail(markdown);
+	return detail === 'concise' && !versions.conciseEmpty ? versions.concise : versions.detailed;
+}

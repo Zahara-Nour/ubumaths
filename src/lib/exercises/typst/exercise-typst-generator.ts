@@ -30,6 +30,7 @@ import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import { generateTypst, escapeTypst } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
+import { detailedCorrection } from '$lib/questions/correction-detail';
 import { createLogger } from '$lib/utils/logger';
 import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
@@ -376,7 +377,8 @@ function generateSolution(
 	content += `#text(weight: "bold", fill: rgb("#166534"))[Correction]\n\n`;
 
 	logger.info('generateSolution: parsing markdown', { preview: markdown?.slice(0, 200) });
-	const ast = parseMarkdown(markdown);
+	// Pas de fiche, pas de réglage : la version détaillée (ADR 0017), comme les autres PDF
+	const ast = parseMarkdown(detailedCorrection(markdown));
 	logger.info('generateSolution: markdown parsed', {
 		astType: ast?.type,
 		childCount: ast?.children?.length
@@ -458,7 +460,8 @@ export async function generateStaticExerciseTypst(
 		typst += `#line(length: 100%, stroke: 0.5pt + gray)\n\n`;
 		typst += `#text(weight: "bold", fill: rgb("#166534"))[Correction]\n\n`;
 
-		const solutionAst = parseMarkdown(solutionMd);
+		// Version détaillée (ADR 0017), comme `generateSolution`
+		const solutionAst = parseMarkdown(detailedCorrection(solutionMd));
 		typst += generateTypst(solutionAst, { includeSetup: false });
 	}
 

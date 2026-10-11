@@ -88,3 +88,10 @@ Reste :
 - Hors lot 1 : interrupteur dans CorrectionCard et autres affichages + aperçu prof (lot 2), réglage
   concise / détaillée du PDF (lot 3 — le générateur Typst ignore pour l'instant `callout` / `detail`),
   mode B (lot 4).
+
+## Lot 3 — fiches PDF : FAIT (2026-10-11)
+
+Réglage `config.correction_detail` de la fiche (détaillée par défaut), appliqué à l'impression par
+`correctionForPrint` ; la série d'automatismes garde ses marqueurs ; écrans de corrigé d'exercice en
+version détaillée. Détail : [fiches-et-pdf.md](../systeme/fiches-et-pdf.md) invariant 9. Reste : mise
+en forme Typst des encadrés `[!méthode]`… (imprimés comme une citation simple), mode B (lot 4).
