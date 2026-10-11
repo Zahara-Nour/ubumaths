@@ -19,11 +19,19 @@ describe('describeError', () => {
 		expect(copy.technicalDetail).toBeNull();
 	});
 
-	it('401 : propose de se connecter', () => {
+	it('401 : propose de se connecter, sans explication, chute sur π', () => {
 		expect(describeError(401, 'Unauthorized')).toMatchObject({
 			title: 'Connexion requise',
+			explanation: null,
+			piVerb: 'est accessible',
+			piTwist: 'mais ta page, elle, se cache derrière la connexion',
 			offerLogin: true
 		});
+	});
+
+	it('phrase sur π : chute pour 404, aucune pour un code sans chute', () => {
+		expect(describeError(404, undefined).piTwist).toBe('mais la page, elle, reste introuvable');
+		expect(describeError(403, undefined)).toMatchObject({ piVerb: 'apparaît', piTwist: null });
 	});
 
 	it('un code sans texte propre retombe sur sa famille', () => {

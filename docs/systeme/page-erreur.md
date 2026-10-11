@@ -30,20 +30,22 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile. Sur grand écran (`lg`),
    deux colonnes — spirale à gauche, texte à droite — pour tout voir sans défiler.
 2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
-   (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 404 : le
-   titre, la phrase sur π et les suggestions suffisent.
+   (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 404 ni
+   une 401 : le titre, la phrase sur π et les actions suffisent.
 3. Pour une erreur 4xx, le message précis (`error(404, 'Exercice introuvable')`) **remplace le
    titre** (« Exercice introuvable » au lieu de « Page introuvable », onglet compris), sauf s'il
    n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…, liste
    `GENERIC_MESSAGES`, comparée sans casse ni accents) : le titre français reste alors.
 4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
-   elle, reste introuvable. » (la fin « mais la page… » pour une 404 seulement). Pas d'extrait des
-   décimales en clair : le code est déjà coloré dans la spirale.
+   elle, reste introuvable. » Le verbe et la chute viennent de `describeError` (`piVerb`,
+   `piTwist`) : 401 « est accessible […], mais ta page, elle, se cache derrière la connexion » ;
+   les codes sans chute finissent sur « de π. ». Pas d'extrait des décimales en clair : le code est
+   déjà coloré dans la spirale.
 5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
    en liens.
 6. Un seul bouton plein : « Se connecter » (401) ou « Réessayer » (5xx, 408, 429), sinon « Retour
-   à l'accueil » (toujours présent) ; « ← Page précédente » en simple lien, seulement s'il ramène
-   sur Chiphre.
+   à l'accueil ». Le reste en simples liens : « Retour à l'accueil » (toujours présent) et
+   « ← Page précédente » (seulement s'il ramène sur Chiphre).
 7. Repliés sous « Détails techniques » : le message et le début de la pile d'une erreur
    inattendue côté client (`App.Error.detail`), ou le message d'une erreur 5xx — il peut venir
    brut de la base (noms de tables) et n'a pas à s'afficher en grand devant un élève.

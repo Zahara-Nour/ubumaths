@@ -33,6 +33,10 @@
 	const suggestions = $derived(status === 404 ? suggestPages(page.url.pathname) : []);
 	const technicalDetail = $derived(page.error?.detail ?? copy.technicalDetail);
 
+	// Actions secondaires : simples liens, un seul bouton plein par page
+	const secondaryLinkClass =
+		'text-muted-foreground underline-offset-4 hover:text-foreground hover:underline';
+
 	// « A », « A ou B », « A, B ou C »
 	function separator(index: number): string {
 		if (index === 0) return '';
@@ -84,9 +88,11 @@
 
 		{#if occurrence}
 			<p class="text-balance">
-				Le nombre {status} apparaît à la
-				<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π{#if status === 404},
-					mais la page, elle, reste introuvable{/if}.
+				Le nombre {status}
+				{copy.piVerb} à la
+				<strong>{frenchOrdinal(occurrence.position)} décimale</strong
+				>&nbsp;de&nbsp;π{#if copy.piTwist},
+					{copy.piTwist}{/if}.
 			</p>
 		{/if}
 
@@ -109,18 +115,13 @@
 			{:else if copy.offerRetry}
 				<Button onclick={() => location.reload()}>Réessayer</Button>
 			{/if}
-			<Button
-				href={resolve('/')}
-				variant={copy.offerLogin || copy.offerRetry ? 'outline' : 'default'}
-			>
-				Retour à l’accueil
-			</Button>
+			{#if copy.offerLogin || copy.offerRetry}
+				<a href={resolve('/')} class={secondaryLinkClass}>Retour à l’accueil</a>
+			{:else}
+				<Button href={resolve('/')}>Retour à l’accueil</Button>
+			{/if}
 			{#if canGoBack}
-				<button
-					type="button"
-					class="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-					onclick={() => history.back()}
-				>
+				<button type="button" class={secondaryLinkClass} onclick={() => history.back()}>
 					← Page précédente
 				</button>
 			{/if}
