@@ -965,15 +965,37 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
+/** Le dernier facteur d'un produit (`2AN` → `AN`), l'expression elle-même sinon. */
+function rightmostFactor(node: MathNode): MathNode {
+	return node.type === 'multiplication' ? rightmostFactor(node.right) : node;
+}
+
+/** Le premier facteur d'un produit, ou la base d'une puissance (`AB^2` → `AB`). */
+function leftmostFactor(node: MathNode): MathNode {
+	if (node.type === 'multiplication') return leftmostFactor(node.left);
+	if (node.type === 'superscript') return leftmostFactor(node.base);
+	return node;
+}
+
 /**
  * Longueurs : l'ordre des points est libre (`BA` a la forme de `AB`, décision Q2 du
  * 2026-10-11) et des parenthèses autour d'une longueur seule (`(AB)^2`) ne sont pas une
- * faute — l'élève groupe les deux lettres pour dire « une longueur ». Notation, pas
- * forme : aucune pénalité.
+ * faute — l'élève groupe les deux lettres pour dire « une longueur » ; un `×` ou un `·`
+ * entre deux longueurs (`AN×AB`) non plus. Notation, pas forme : aucune pénalité.
  */
 export function unifySegmentNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (isSegmentLength(node)) return canonicalSegment(node);
+		// `AN×AB`, `AN·AB` : le signe entre deux longueurs est une notation (l'élève
+		// sépare deux noms de segments), écrit comme le produit implicite `AN AB`
+		if (
+			node.type === 'multiplication' &&
+			node.displayStyle !== 'implicit' &&
+			isSegmentLength(rightmostFactor(node.left)) &&
+			isSegmentLength(leftmostFactor(node.right))
+		) {
+			return multiply(node.left, node.right, 'implicit', { metadata: node.metadata });
+		}
 		if (
 			node.type === 'delimiter' &&
 			node.delimiters === 'parentheses' &&

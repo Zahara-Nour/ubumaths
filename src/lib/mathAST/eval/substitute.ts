@@ -12,7 +12,12 @@ import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 import { mapNode } from '../transforms';
 import { isVariable, isGreek, isSegmentLength } from '../guards';
-import { segmentBinding, segmentHasName, segmentName } from '../common/segment-names';
+import {
+	canonicalSegmentName,
+	segmentBinding,
+	segmentHasName,
+	segmentName
+} from '../common/segment-names';
 import { multiply } from '../factory';
 import { numericNode } from '../common/numeric';
 import { parseLatex } from '../parser';
@@ -288,6 +293,8 @@ export function substitute(
  */
 export function getVariables(node: MathNode): Set<string> {
 	const variables = new Set<string>();
+	// Longueurs déjà nommées, par paire triée : `AB` et `BA` sont UNE inconnue
+	const segmentsSeen = new Set<string>();
 
 	mapNode(node, (n) => {
 		if (isVariable(n)) {
@@ -295,8 +302,13 @@ export function getVariables(node: MathNode): Set<string> {
 		} else if (isGreek(n)) {
 			variables.add(n.letter);
 		} else if (isSegmentLength(n)) {
-			// Une longueur est une inconnue, nommée comme elle est écrite (`AB`)
-			variables.add(segmentName(n));
+			// Une longueur est une inconnue, nommée comme sa première écriture (`AB`) ;
+			// `substitute` accepte sa valeur sous `AB` comme sous `BA`
+			const canonical = canonicalSegmentName(n);
+			if (!segmentsSeen.has(canonical)) {
+				segmentsSeen.add(canonical);
+				variables.add(segmentName(n));
+			}
 		}
 		return n;
 	});

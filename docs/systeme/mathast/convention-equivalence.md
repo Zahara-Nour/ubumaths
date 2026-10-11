@@ -406,8 +406,9 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
 Une longueur est une inconnue dont l'identité est la **paire de points triée** : `BA` ≡ `AB`,
 `BA^2=CA^2+CB^2` ≡ `AB^2=AC^2+BC^2`, `\frac{MA}{BA}=\frac{NA}{CA}` ≡
 `\frac{AM}{AB}=\frac{AN}{AC}`. Une longueur n'est **pas** le produit de ses lettres :
-`AB` ≢ `A\times B`. Un **nom de figure** (`ABC`) n'est équivalent à rien, pas même à lui-même :
-c'est un refus (message de `figureNameRefusal`), pas une valeur. Sans l'option (défaut du
+`AB` ≢ `A\times B`. Un **nom de figure** (`ABC`) ne se calcule pas : une expression qui en contient
+n'est équivalente qu'à la **même écriture** (`ABC` ≡ `ABC`, `ABC` ≢ `ACB`) ; le calcul et la
+forme le refusent avec le message de `figureNameRefusal`. Sans l'option (défaut du
 parseur), `AB` reste le produit `A·B`, comme avant. Suivi : `docs/wip/longueurs-segments-progress.md`.
 
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)

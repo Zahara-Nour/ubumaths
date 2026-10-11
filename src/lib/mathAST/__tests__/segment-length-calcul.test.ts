@@ -108,7 +108,7 @@ describe('tidy : la longueur garde l’ordre de sa première écriture', () => {
 // =============================================================================
 
 describe('une longueur se nomme et se substitue sous AB ou BA', () => {
-	it('getVariables rend les longueurs sous leur nom écrit', () => {
+	it('getVariables rend les longueurs sous leur nom écrit (première écriture)', () => {
 		expect(getVariables(read('3AB^2+2x'))).toEqual(new Set(['AB', 'x']));
 	});
 
@@ -201,9 +201,9 @@ describe('nom de figure : refusé, avec un message', () => {
 		expect(figureNameRefusal(read('3AB'))).toBeNull();
 	});
 
-	it('ABC n’est équivalent à rien, pas même à ABC', () => {
-		expect(equivalent('ABC', 'ABC')).toBe(false);
+	it('ABC n’est équivalent à aucune autre écriture', () => {
 		expect(equivalent('2ABC', '2AB\\times C')).toBe(false);
+		expect(equivalent('ABC', 'A\\times B\\times C')).toBe(false);
 	});
 
 	it('evaluate refuse ABC avec le message', () => {
@@ -246,5 +246,112 @@ describe('analyse dimensionnelle : une longueur a l’unité déclarée sous AB 
 
 	it('une longueur sans unité déclarée est une erreur, comme une variable inconnue', () => {
 		expect(analyzeDimensions(read('3AC'), context).valid).toBe(false);
+	});
+});
+
+// =============================================================================
+// Corrections de revue du lot 2
+// =============================================================================
+
+/** Les solutions d'une équation, écrites en LaTeX et triées. */
+function solutionsOf(latex: string, variable?: string): string[] {
+	const result = solve(readEquation(latex), variable === undefined ? {} : { variable });
+	return result.solutions.map((s) => toLatex(s.value)).sort();
+}
+
+describe('solve : plusieurs longueurs, toutes des inconnues', () => {
+	it('Thalès littéral : AM×AC = AN×AB, en AM → AM = AN·AB / AC', () => {
+		const result = solve(readEquation('AM\\times AC=AN\\times AB'), { variable: 'AM' });
+		expect(result.status).not.toBe('no-solution');
+		expect(result.variable).toBe('AM');
+		expect(result.solutions).toHaveLength(1);
+		const [solution] = result.solutions;
+		expect(solution && areEquivalent(solution.value, read('\\frac{AN\\times AB}{AC}'))).toBe(true);
+	});
+
+	it('la solution écrit les longueurs dans l’ordre de l’élève (BA reste BA)', () => {
+		const [solution] = solutionsOf('2AM=3BA', 'AM');
+		expect(solution).toContain('BA');
+	});
+
+	it('Pythagore littéral : AB^2 = AC^2 + BC^2, en AB → ±√(AC²+BC²) (AC = 3, BC = 4 : ±5)', () => {
+		const result = solve(readEquation('AB^2=AC^2+BC^2'), { variable: 'AB' });
+		const values = result.solutions
+			.map((s) => decimalValue(substitute(s.value, { AC: 3, CB: 4 })))
+			.sort((a, b) => (a ?? 0) - (b ?? 0));
+		expect(values).toEqual([-5, 5]);
+	});
+
+	it('AB + BC = 10, en AB → AB = 10 - BC', () => {
+		const result = solve(readEquation('AB+BC=10'), { variable: 'AB' });
+		const [solution] = result.solutions;
+		expect(solution && areEquivalent(solution.value, read('10-BC'))).toBe(true);
+	});
+
+	it('x + AB = 3, en x → x = 3 - AB', () => {
+		const result = solve(readEquation('x+AB=3'), { variable: 'x' });
+		const [solution] = result.solutions;
+		expect(solution && areEquivalent(solution.value, read('3-AB'))).toBe(true);
+	});
+
+	it('2x = AB, en x → x = AB / 2', () => {
+		const result = solve(readEquation('2x=AB'), { variable: 'x' });
+		const [solution] = result.solutions;
+		expect(solution && areEquivalent(solution.value, read('\\frac{AB}{2}'))).toBe(true);
+	});
+
+	it('AB + BA = 10, sans variable : une seule inconnue, AB = 5', () => {
+		const result = solve(readEquation('AB+BA=10'));
+		expect(result.variable).toBe('AB');
+		expect(result.solutions.map((s) => decimalValue(s.value))).toEqual([5]);
+	});
+});
+
+describe('getVariables : une seule entrée par longueur', () => {
+	it('AB et BA sont la même inconnue, nommée comme sa première écriture', () => {
+		expect(getVariables(read('3AB+2BA+x'))).toEqual(new Set(['AB', 'x']));
+		expect(getVariables(read('2BA+3AB'))).toEqual(new Set(['BA']));
+	});
+});
+
+describe('checkForm : × entre deux longueurs, une notation', () => {
+	it('AM = (AN×AB)/AC identique à l’attendu : correct, sans faute « products »', () => {
+		const latex = 'AM=\\frac{AN\\times AB}{AC}';
+		const result = checkForm(latex, latex, {}, LENGTH);
+		expect(result.status).toBe('correct');
+	});
+
+	it('AN·AB a la forme de AN×AB', () => {
+		expect(checkForm('AN\\cdot AB', 'AN\\times AB', {}, LENGTH).status).toBe('correct');
+	});
+
+	it('2×AB garde sa faute « products » (un nombre devant une longueur)', () => {
+		const result = checkForm('2\\times AB', '2AB', {}, LENGTH);
+		expect(result.violations.map((v) => v.id)).toContain('products');
+	});
+
+	it('(AB) a la forme de AB (pas de droite dans ce chantier)', () => {
+		expect(checkForm('(AB)', 'AB', {}, LENGTH).status).toBe('correct');
+	});
+});
+
+describe('numtype : une hypothèse sur AB vaut pour BA', () => {
+	it('AB > 0 déclaré : BA est strictement positif', () => {
+		const ctx = { assumptions: new Map([['AB', { sign: 'positive' as const }]]) };
+		expect(inferType(read('BA'), ctx).sign).toBe('positive');
+		expect(inferType(read('AB'), ctx).sign).toBe('positive');
+	});
+});
+
+describe('noms de figure écrits à l’identique', () => {
+	it('ABC ≡ ABC, mais ABC ≢ ACB et ABC ≢ AB', () => {
+		expect(equivalent('ABC', 'ABC')).toBe(true);
+		expect(equivalent('ABC', 'ACB')).toBe(false);
+		expect(equivalent('ABC', 'AB')).toBe(false);
+	});
+
+	it('\\triangle ABC ≡ \\triangle ABC, mais 2ABC n’est pas calculé', () => {
+		expect(equivalent('\\triangle ABC', '\\triangle ABC')).toBe(true);
+		expect(equivalent('2ABC', 'ABC+ABC')).toBe(false);
 	});
 });

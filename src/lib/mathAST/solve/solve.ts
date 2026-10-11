@@ -48,7 +48,7 @@
  * @module mathAST/solve/solve
  */
 
-import type { MathNode, RelationNode } from '../types';
+import type { MathNode, RelationNode, SegmentLengthNode } from '../types';
 import type {
 	SolveResult,
 	SolveOptions,
@@ -126,7 +126,12 @@ import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode } from '../pattern/types';
-import { containsSegmentNamed, segmentAsVariable } from '../common/segment-names';
+import {
+	canonicalNameAmong,
+	segmentName,
+	segmentsAsVariables,
+	variablesAsSegments
+} from '../common/segment-names';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
@@ -1716,6 +1721,40 @@ function filterSolutionsByDomain(
 }
 
 // =============================================================================
+// Longueurs de segments
+// =============================================================================
+
+/**
+ * Le résultat d'une résolution menée sur des longueurs devenues variables
+ * (`segmentsAsVariables`) : chaque variable `AB` redevient la longueur, écrite comme
+ * l'élève (`BA` reste `BA`), dans les solutions et les étapes ; l'inconnue garde le nom
+ * demandé (`requested`), sinon le nom de sa première écriture.
+ */
+function withSegmentsRestored(
+	result: SolveResult,
+	segments: ReadonlyMap<string, SegmentLengthNode>,
+	requested: string | undefined
+): SolveResult {
+	const restore = (node: MathNode): MathNode => variablesAsSegments(node, segments);
+	const unknown = segments.get(result.variable);
+	return {
+		...result,
+		variable: requested ?? (unknown ? segmentName(unknown) : result.variable),
+		solutions: result.solutions.map((solution) => ({
+			...solution,
+			value: restore(solution.value),
+			...(solution.condition && { condition: restore(solution.condition) })
+		})),
+		steps: result.steps.map((step) => ({
+			...step,
+			before: restore(step.before),
+			after: restore(step.after),
+			...(step.operand && { operand: restore(step.operand) })
+		}))
+	};
+}
+
+// =============================================================================
 // Main Solve Function
 // =============================================================================
 
@@ -1743,20 +1782,6 @@ function filterSolutionsByDomain(
  * result.steps.forEach(step => console.log(step.description));
  * ```
  */
-/**
- * La longueur à chercher : celle que nomme `variable` si l'équation la contient, sinon,
- * sans variable imposée, la seule inconnue de l'équation si c'est une longueur. `null`
- * s'il n'y a pas de longueur à chercher.
- */
-function segmentUnknownOf(equation: RelationNode, variable: string | undefined): string | null {
-	if (variable !== undefined) return containsSegmentNamed(equation, variable) ? variable : null;
-	const unknowns = [...getVariables(equation)];
-	const [only] = unknowns;
-	return unknowns.length === 1 && only !== undefined && containsSegmentNamed(equation, only)
-		? only
-		: null;
-}
-
 export function solve(equation: RelationNode, options?: SolveOptions): SolveResult {
 	// Merge options with defaults
 	const opts = {
@@ -1777,14 +1802,15 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	// Équation en une longueur (`AB^2 = 25`, `3BA = 12`) : la longueur devient la
-	// variable cherchée, sous le nom demandé (`AB` ou `BA`), puis on résout
-	const segmentTarget = segmentUnknownOf(equation, opts.variable);
-	if (segmentTarget !== null) {
-		const asVariable = segmentAsVariable(equation, segmentTarget);
-		if (isRelation(asVariable)) {
-			return solve(asVariable, { ...options, variable: segmentTarget });
-		}
+	// Longueurs (`AB`, `BA`) : toutes deviennent des variables, nommées par leur paire
+	// triée, puis on résout et on rend les longueurs écrites comme l'élève. L'inconnue
+	// peut être une longueur (`AB^2 = 25` en AB) ou une autre lettre (`x + AB = 3` en x).
+	const lengths = segmentsAsVariables(equation);
+	if (lengths.segments.size > 0 && isRelation(lengths.node)) {
+		const variable =
+			opts.variable === undefined ? undefined : canonicalNameAmong(opts.variable, lengths.segments);
+		const result = solve(lengths.node, { ...options, ...(variable !== undefined && { variable }) });
+		return withSegmentsRestored(result, lengths.segments, opts.variable);
 	}
 
 	const refusal = reservedVariableRefusal(opts.variable, equation);

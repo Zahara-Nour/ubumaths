@@ -359,11 +359,12 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   l'identique). **Calcul** (lot 2, toujours en mode `'length'`) : la longueur
   est un facteur symbolique de `normalize` dont l'identité est la paire de points triée
   (`hashMathNode`) — `AB` = `BA`, `3AB+2BA` → `5AB` (ordre de la première écriture gardé) ;
-  `getVariables` la nomme comme elle est écrite, `substitute`/`containsVariable`/`differentiate`
-  et `solve` (`variable: 'AB'`) l'acceptent sous `AB` ou `BA` ; sans valeur, `evaluate()` la dit
-  `unevaluable` en français ; `checkForm` laisse libre l'ordre des points et les parenthèses
-  autour d'une longueur seule (`unifySegmentNotationAST`). Un nom de figure (`ABC`) est refusé
-  par `areEquivalent`, `evaluate()` et `checkForm`, avec le message de `figureNameRefusal`
+  `getVariables` la nomme une fois, comme sa première écriture ; `substitute`/`containsVariable`/
+  `differentiate` l'acceptent sous `AB` ou `BA` ; `solve` change toutes les longueurs en variables
+  (paire triée) puis les rend écrites comme l'élève (Thalès, Pythagore littéraux) ; sans valeur, `evaluate()` la dit
+  `unevaluable` en français ; `checkForm` laisse libre l'ordre des points, les parenthèses
+  autour d'une longueur seule et le `×` entre deux longueurs (`unifySegmentNotationAST`). Un nom de figure (`ABC`) n'est équivalent qu'à la même
+  écriture et est refusé par `evaluate()` et `checkForm`, avec le message de `figureNameRefusal`
   (`common/segment-names.ts`). **Pas encore** : la syntaxe maison (lit toujours un produit), la
   lecture française — lots suivants.
 

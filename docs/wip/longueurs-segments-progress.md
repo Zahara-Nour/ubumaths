@@ -466,6 +466,9 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
    liste par défaut de MathLive 0.111.1 et la mesurer dans Chromium). `pedagogy-expert` (Opus),
    `mathast-expert` en relecture, `frontend-developer` pour les champs. Pas de migration si
    Q-J = (a).
+   **Garde à la saisie de l'auteur** : en mode longueur, une réponse attendue qui contient un nom
+   de figure (`ABC`) est signalée dans l'éditeur de modèle (elle ne pourrait jamais être
+   acceptée au calcul).
 4. **Lot 4 — lecture** : `structure/` (« la longueur AB », « le carré de la longueur AB ») et la
    case « lire AB comme un produit » de `/test-structure` ; `mathast-expert` + `pedagogy-expert`
    (formulations) + `frontend-developer` (la case, `MyCheckbox`).
@@ -578,6 +581,36 @@ et restent comme gardes).
   `areEquivalent` est faux dès qu'un côté contient un nom de figure (même `ABC` contre `ABC`) ;
   `evaluate()` le refuse avec ce message ; `checkForm` aussi (`messages`).
 
+### Corrections de revue du lot 2 (2026-10-12)
+
+- **`solve` avec plusieurs longueurs** : TOUTES les longueurs deviennent des variables nommées
+  par leur paire triée (`segmentsAsVariables`), puis le résultat les rend écrites comme l'élève
+  (`variablesAsSegments` : solutions, conditions, étapes ; le domaine n'est pas renommé). Thalès
+  `AM×AC = AN×AB` en AM → `AN·AB/AC` ; `AB+BC=10` en AB → `10 − BC` ; `x+AB=3` en x → `3 − AB` ;
+  `2x=AB` en x → `AB/2` ; `AB+BA=10` sans variable → `AB = 5`. Pythagore littéral en AB rend
+  `±½√(4AC²+4BC²)` : juste (±5 pour AC = 3, BC = 4) mais pas écrit `±√(AC²+BC²)` — écriture
+  du solveur, préexistante pour un radicande littéral.
+- **`getVariables`** : **une seule entrée par longueur**, le nom de sa première écriture (`3AB+2BA`
+  → `AB` ; `2BA+3AB` → `BA`). Choix le plus sûr pour les appelants : une inconnue n'est jamais
+  demandée deux fois (génération de questions, atelier), et `substitute` accepte sa valeur sous
+  `AB` comme sous `BA`.
+- **`checkForm`** : un `×` ou un `·` entre deux longueurs (`AN×AB`) est une notation, écrite comme
+  le produit implicite par `unifySegmentNotationAST` — `AM=\frac{AN\times AB}{AC}` identique à
+  l'attendu est `correct` ; `2×AB` garde sa faute `products`.
+- **`checkForm('(AB)', 'AB')` = correct** : gardé. Ce chantier n'a pas de notion de droite :
+  `(AB)` est une longueur entre parenthèses. Quand la droite `(AB)` arrivera (notations « plus
+  tard »), cette règle sera à revoir.
+- **`numtype`** : une hypothèse posée sur `AB` vaut pour `BA` (comme l'analyse dimensionnelle).
+- **Noms de figure** : une expression qui en contient n'est équivalente qu'à la **même écriture**
+  (`ABC` ≡ `ABC`, `\triangle ABC` ≡ `\triangle ABC` ; `ABC` ≢ `ACB`, `2ABC` ≢ `ABC+ABC`) ; le
+  calcul (`evaluate`) et la forme (`checkForm`) les refusent toujours. `\triangle ABC` se lit
+  `symbole △ × nom de figure ABC` : raisonnable pour l'affichage et la comparaison à l'identique,
+  il n'est pas calculé.
+- **Sans option, rien ne change** : `segment-length-sans-option.test.ts` compare `tidy`,
+  `simplify`, `getVariables`, `solve` et `checkForm` à une empreinte calculée avec le code
+  d'AVANT le chantier (`4c1acc74c`) : 13 expressions, 6 équations, 10 paires de formes, dont les
+  mêmes chaînes à majuscules collées lues en produit.
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
@@ -597,3 +630,6 @@ et restent comme gardes).
   transmise par `areEquivalent` et `checkForm` ; raccourcis MathLive au plan du lot 3.
 - 2026-10-12 — lot 2 fait : calcul et correction des longueurs (équivalence, `solve`, `substitute`,
   `evaluate`, `checkForm`, refus de `ABC`) ; suites vertes.
+- 2026-10-12 — corrections de revue du lot 2 : `solve` à plusieurs longueurs, `getVariables`
+  dédoublonné, `×` entre longueurs, hypothèses `AB`/`BA`, noms de figure identiques, test
+  « sans option » contre le code d'avant le chantier.

@@ -12,6 +12,7 @@ import type { NormalizeAbortOptions } from './normal/normalize';
 import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
 import { areEquivalentCore } from './equivalence-core';
 import { figureNameRefusal } from './common/segment-names';
+import { nodesEqual } from './normal/hash';
 
 /**
  * Options du décideur : interruption (`signal`, `timeoutMs`) et hypothèses de
@@ -44,8 +45,12 @@ export interface EquivalenceOptions extends NormalizeAbortOptions {
  * areEquivalent(parse('x^a x^b'), parse('x^{a+b}'), { assumptions: { x: 'positive' } }) // true
  */
 export function areEquivalent(a: MathNode, b: MathNode, options?: EquivalenceOptions): boolean {
-	// Un nom de figure (`ABC`) n'est pas une valeur : refusé, jamais équivalent (Q-A)
-	if (figureNameRefusal(a) !== null || figureNameRefusal(b) !== null) return false;
+	// Un nom de figure (`ABC`) n'est pas une valeur (Q-A) : il ne se calcule pas, donc
+	// une expression qui en contient n'est équivalente qu'à la MÊME écriture
+	// (`ABC` ≡ `ABC`, `\triangle ABC` ≡ `\triangle ABC`, mais `ABC` ≢ `ACB`)
+	if (figureNameRefusal(a) !== null || figureNameRefusal(b) !== null) {
+		return nodesEqual(a, b);
+	}
 	// Liste blanche : une limite, un indice, une fonction inconnue… dans l'une des
 	// deux expressions, et les hypothèses sont ignorées (verdict sans hypothèse).
 	const assumptions =

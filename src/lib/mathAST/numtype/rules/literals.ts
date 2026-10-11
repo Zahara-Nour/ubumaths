@@ -24,7 +24,7 @@ import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/mat
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number, variable } from '../../factory';
 import { numericNode } from '../../common/numeric';
-import { segmentName } from '../../common/segment-names';
+import { segmentNameIn } from '../../common/segment-names';
 
 // =============================================================================
 // Helper: Sign deduction from bounds
@@ -276,6 +276,11 @@ export function inferGreekLetterType(node: GreekLetterNode, ctx: TypeContext): M
 // Inference Table for Literal Nodes
 // =============================================================================
 
+/** Les noms dont le contexte déclare un type ou une hypothèse. */
+function declaredNames(ctx: TypeContext): { has(name: string): boolean } {
+	return { has: (name) => Boolean(ctx.variables?.has(name) || ctx.assumptions?.has(name)) };
+}
+
 /**
  * Maps literal node types to their inference functions.
  */
@@ -297,10 +302,11 @@ export function inferLiteralType(node: MathNode, ctx: TypeContext): MathType | n
 		case 'symbol':
 			return UNKNOWN_TYPE;
 
-		// Une longueur est une inconnue réelle, typée comme la variable de son nom écrit
-		// (`AB`), hypothèses comprises ; sa positivité viendra plus tard (Q-F)
+		// Une longueur est une inconnue réelle, typée comme la variable de son nom : `AB`
+		// ou `BA`, celui que connaissent les types et les hypothèses déclarés (une
+		// hypothèse sur `AB` vaut pour `BA`) ; sa positivité viendra plus tard (Q-F)
 		case 'segmentLength':
-			return inferVariableType(variable(segmentName(node)), ctx);
+			return inferVariableType(variable(segmentNameIn(node, declaredNames(ctx))), ctx);
 
 		// Un nom de figure (`ABC`) n'est pas un nombre
 		case 'figureName':

@@ -107,16 +107,53 @@ export function figureNameRefusal(node: MathNode): string | null {
 	return `${formatPointNames(figure.points)} n’est pas une longueur : une longueur se nomme avec deux points (${pair}). Pour un produit, écris ${product}.`;
 }
 
-/**
- * La longueur nommée `name` (écrite `AB` ou `BA`) remplacée par la variable `name` :
- * pour résoudre une équation en `AB` avec les solveurs, qui cherchent une variable.
- * Les autres longueurs restent des longueurs.
- */
-export function segmentAsVariable(node: MathNode, name: string): MathNode {
-	return mapNode(node, (n) => (isSegmentLength(n) && segmentHasName(n, name) ? variable(name) : n));
+/** Le nom canonique d'une longueur : sa paire de points triée (`BA` → `AB`). */
+export function canonicalSegmentName(node: SegmentLengthNode): string {
+	return segmentName(canonicalSegment(node));
 }
 
-/** L'expression contient-elle une longueur nommée `name` (`AB` ou `BA`) ? */
-export function containsSegmentNamed(node: MathNode, name: string): boolean {
-	return findNodes(node, (n) => isSegmentLength(n) && segmentHasName(n, name)).length > 0;
+/** Des longueurs devenues des variables, et la longueur que désigne chaque variable. */
+export interface SegmentsAsVariables {
+	readonly node: MathNode;
+	/** Nom canonique (`AB`) → la longueur à sa PREMIÈRE écriture (`BA` si l'élève a écrit `BA`) */
+	readonly segments: ReadonlyMap<string, SegmentLengthNode>;
+}
+
+/**
+ * Toutes les longueurs d'une expression deviennent des variables, nommées par leur paire
+ * de points triée (`AB` et `BA` → la variable `AB`) : pour les solveurs, qui ne
+ * connaissent que des variables. `variablesAsSegments` fait le chemin inverse.
+ */
+export function segmentsAsVariables(node: MathNode): SegmentsAsVariables {
+	const segments = new Map<string, SegmentLengthNode>();
+	for (const segment of findNodes(node, isSegmentLength)) {
+		const name = canonicalSegmentName(segment);
+		if (!segments.has(name)) segments.set(name, segment);
+	}
+	const replaced = mapNode(node, (n) =>
+		isSegmentLength(n) ? variable(canonicalSegmentName(n)) : n
+	);
+	return { node: replaced, segments };
+}
+
+/** Les variables nommées comme une longueur (`AB`) redeviennent la longueur, écrite comme l'élève. */
+export function variablesAsSegments(
+	node: MathNode,
+	segments: ReadonlyMap<string, SegmentLengthNode>
+): MathNode {
+	return mapNode(node, (n) => (n.type === 'variable' ? (segments.get(n.name) ?? n) : n));
+}
+
+/**
+ * Le nom canonique de la longueur que désigne `name` (`BA` → `AB`) parmi ces longueurs,
+ * sinon `name` tel quel (`x`).
+ */
+export function canonicalNameAmong(
+	name: string,
+	segments: ReadonlyMap<string, SegmentLengthNode>
+): string {
+	for (const [canonical, segment] of segments) {
+		if (segmentHasName(segment, name)) return canonical;
+	}
+	return name;
 }
