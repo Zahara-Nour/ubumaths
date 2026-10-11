@@ -568,3 +568,16 @@ src/lib/mathAST` une fois à la fin : 462 fichiers, 19 310 tests verts (9 ignor�
   `domain` n'a toujours pas de borne sur ce calcul (inchangé, hors périmètre).
 - `normal/rules/trig-multiple-arcs.ts` garde un `absBigInt` local, doublon de celui de
   `normal/rational.ts` (non touché).
+
+## 6. Lot 2 — stratégies qui racontent (décisions de David, 2026-10-11)
+
+Enchaînement, la suivante si la précédente ne factorise pas : 1 facteur commun · 2 identité remarquable
+(coefficients compris) · 3 facteur commun puis identité · 4 racines du trinôme · 5 racine évidente puis
+division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, la stratégie raconte.
+
+- **Q1** : `college` → stratégies 1, 2, 3, 6 ; `lycee` → toutes (1re et terminale non distinguées,
+  chantier à part). Racines irrationnelles : lycée seulement (ADR 0024).
+- **Q2** : trinôme → deux lignes, `a(x-x_1)(x-x_2)` puis la forme à coefficients entiers.
+- **Q3** : un seul ordre des facteurs, celui du noyau, partout (`x^2-4` → `(x-2)(x+2)`).
+
+- [ ] tests rouges · [ ] implémentation · [ ] code-reviewer · [ ] PR
