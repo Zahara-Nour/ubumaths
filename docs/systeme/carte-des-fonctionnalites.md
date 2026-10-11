@@ -124,7 +124,7 @@ Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
 | `src/lib/kingdom-tour/tour.ts`                         | Le contenu : `PROVINCES`, `PLACES`, `STRENGTHS`, `FORM_DEMO`, `PARENT_FACTS`, liens d'entrée |
 | `src/lib/kingdom-tour/spiral.ts`                       | `buildSpiral` : la gidouille de Sandomir (tracé, étapes à intervalles réguliers, centre)     |
 | `src/lib/kingdom-tour/reveal.ts`                       | Action `use:reveal` : apparition au défilement                                               |
-| `src/lib/components/kingdom-tour/PereUbuFigure.svelte` | Père Ubu dans le halo du mois (partagé avec l'accueil ; taille : `--ubu-size`)               |
+| `src/lib/components/kingdom-tour/PereUbuFigure.svelte` | Père Ubu dans le halo du mois (partagé avec l’accueil ; taille : propriété `size`)           |
 | `src/lib/components/kingdom-tour/ProvinceMap.svelte`   | Spirale + fiches des Provinces ; la spirale se dessine jusqu'à la fiche lue (grand écran)    |
 | `src/lib/components/kingdom-tour/FormDemo.svelte`      | « La forme compte » : quatre réponses, quatre verdicts                                       |
 | `src/lib/components/kingdom-tour/CipherDemo.svelte`    | Le chiffre de César en direct (`caesarEncrypt`)                                              |
