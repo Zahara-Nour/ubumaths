@@ -23,8 +23,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
   1 272ᵉ décimale (…684710**404**753464…), et ces trois chiffres sont colorés dans la spirale ;
 - **chaque code a son texte** : l'ancienne page disait « Page introuvable » même quand le serveur
   plantait ;
-- **une sortie claire** : boutons d'action au lieu d'un lien caché dans l'image, et suggestions de
-  pages proches pour une 404.
+- **une sortie claire** : un bouton d'action au lieu d'un lien caché dans l'image, et suggestions
+  de pages proches pour une 404.
 
 ## Ce que voit l'utilisateur
 
@@ -69,21 +69,25 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
    inattendue côté client (`App.Error.detail`), ou le message d'une erreur 5xx — il peut venir
    brut de la base (noms de tables) et n'a pas à s'afficher en grand devant un élève.
 
-Onglet : « Page introuvable | Chiphre », `noindex`. SvelteKit renvoie le bon code HTTP.
+Onglet : « {titre} | Chiphre » (« Page introuvable | Chiphre », « Exercice introuvable |
+Chiphre »…), `noindex`. SvelteKit renvoie le bon code HTTP.
 
 ## Carte du code
 
-| Fichier                                         | Rôle                                                                     |
-| ----------------------------------------------- | ------------------------------------------------------------------------ |
-| `src/routes/+error.svelte`                      | La page                                                                  |
-| `src/lib/error-page/error-copy.ts`              | Titre, explication, actions et détail selon le code                      |
-| `src/lib/error-page/pi-status.ts`               | Table code → première apparition dans π (rang, chiffres voisins)         |
-| `src/lib/error-page/pi-decimals.ts`             | 1 800 premières décimales, pour la spirale                               |
-| `src/lib/error-page/pi-spiral.ts`               | Géométrie de la spirale (pure, testée)                                   |
-| `src/lib/error-page/suggestions.ts`             | « Tu cherchais peut-être… »                                              |
-| `src/lib/components/error-page/PiSpiral.svelte` | Rendu SVG de la spirale                                                  |
-| `src/hooks.client.ts` (`handleError`)           | Remplit `detail` ; journalise une 404 de navigation en avertissement     |
-| `src/lib/seo/sitemap-pages.ts`                  | Pages candidates aux suggestions (leur `title` est le libellé du bouton) |
+| Fichier                                         | Rôle                                                                 |
+| ----------------------------------------------- | -------------------------------------------------------------------- |
+| `src/routes/+error.svelte`                      | La page                                                              |
+| `src/lib/error-page/error-copy.ts`              | Titre, phrase sur π (`piVerb`, `piTwist`), actions, détail technique |
+| `src/lib/error-page/pi-status.ts`               | Table code → première apparition dans π (rang, chiffres voisins)     |
+| `src/lib/error-page/pi-decimals.ts`             | 1 800 premières décimales, pour la spirale                           |
+| `src/lib/error-page/pi-spiral.ts`               | Géométrie de la spirale (pure, testée)                               |
+| `src/lib/error-page/suggestions.ts`             | « Tu cherchais peut-être… »                                          |
+| `src/lib/components/error-page/PiSpiral.svelte` | Rendu SVG de la spirale                                              |
+| `src/lib/error-page/pi-spiral-svg.ts`           | La même spirale en texte SVG, pour la page de maintenance            |
+| `src/lib/server/maintenance.ts`                 | Page de maintenance (HTML autonome, même famille)                    |
+| `src/routes/(public)/test-erreur/`              | Démo : tous les cas, vraie erreur par code                           |
+| `src/hooks.client.ts` (`handleError`)           | Remplit `detail` ; journalise une 404 de navigation en avertissement |
+| `src/lib/seo/sitemap-pages.ts`                  | Pages candidates aux suggestions (leur `title` est le texte du lien) |
 
 ## Invariants
 
@@ -152,18 +156,23 @@ serveur sans pile. Exclue par `robots.txt`, `noindex`.
 
 - **Un nouveau code dans la table** : calculer sa première apparition (le test donne la méthode),
   ajouter la ligne dans `PI_STATUS_OCCURRENCES` ; le test la vérifie.
-- **Un nouveau texte pour un code** : `COPY_BY_STATUS` dans `error-copy.ts`.
+- **Un nouveau texte pour un code** : `COPY_BY_STATUS` dans `error-copy.ts` — `title`, `piTwist`
+  (obligatoire, ponctuation d'attache comprise) et `piVerb` si « apparaît à la » ne convient pas ;
+  une ligne dans le tableau ci-dessus et dans `error-copy.test.ts`.
 - **Une page à suggérer** : l'ajouter à `SITEMAP_PAGES` (publique et pérenne), avec son `title`.
 
 ## Tests
 
-- `src/lib/error-page/__tests__/` : π (contre un calcul indépendant), spirale, suggestions,
-  textes.
+- `src/lib/error-page/__tests__/` : π (contre un calcul indépendant), spirale et son texte SVG,
+  suggestions, textes (une ligne par code).
+- `src/lib/server/__tests__/maintenance.test.ts` : page de maintenance (503 coloré dans la
+  spirale, image intégrée, aucune ressource externe) et comportement du mode.
 - `src/__tests__/hooks-client-erreurs.test.ts` : message affiché sans pile, `detail`, 404 en
   avertissement.
 
 ## Écarts connus
 
-- Des `error()` du projet portent encore des messages anglais (« Failed to load classes »,
-  « Failed to load questions »…). Les plus génériques sont masqués ; les autres s'affichent tels quels
-  sous le titre français.
+- Des `error()` 4xx portent encore des messages anglais (« School not found », « Invalid document
+  path »…) ou sans accent (« Construction non trouvee ») : comme tout message précis d'une 4xx, ils
+  **deviennent le titre**. Les formules génériques (`GENERIC_MESSAGES`) restent masquées. Les
+  messages des 5xx, eux, sont repliés sous « Détails techniques ».
