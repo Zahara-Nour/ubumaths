@@ -16,8 +16,12 @@
 
 export interface ErrorCopy {
 	title: string;
-	/** Phrase sous le titre, ou `null` quand le titre suffit (404). */
+	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 404). */
 	explanation: string | null;
+	/** Verbe de la phrase sur π : « Le nombre 401 {verbe} à la 1 197ᵉ décimale de π ». */
+	piVerb: string;
+	/** Chute de la phrase sur π, après la virgule, ou `null` pour finir sur « de π. ». */
+	piTwist: string | null;
 	/**
 	 * Message d'une erreur serveur (5xx), à replier sous « Détails techniques » :
 	 * il peut citer une erreur brute de la base (noms de tables, de colonnes).
@@ -29,12 +33,15 @@ export interface ErrorCopy {
 	offerRetry: boolean;
 }
 
-type Copy = Pick<ErrorCopy, 'title' | 'explanation'>;
+type Copy = Pick<ErrorCopy, 'title' | 'explanation'> &
+	Partial<Pick<ErrorCopy, 'piVerb' | 'piTwist'>>;
 
 const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	401: {
 		title: 'Connexion requise',
-		explanation: 'Cette page est réservée aux membres : connecte-toi pour y accéder.'
+		explanation: null,
+		piVerb: 'est accessible',
+		piTwist: 'mais ta page, elle, se cache derrière la connexion'
 	},
 	403: {
 		title: 'Accès refusé',
@@ -42,7 +49,8 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	},
 	404: {
 		title: 'Page introuvable',
-		explanation: null
+		explanation: null,
+		piTwist: 'mais la page, elle, reste introuvable'
 	},
 	410: {
 		title: 'Page disparue',
@@ -102,6 +110,8 @@ export function describeError(status: number, message: string | undefined): Erro
 
 	return {
 		...copy,
+		piVerb: copy.piVerb ?? 'apparaît',
+		piTwist: copy.piTwist ?? null,
 		// Erreur 4xx : le message précis (« Exercice introuvable ») remplace le titre générique
 		title: status < 500 && specific !== null ? specific : copy.title,
 		technicalDetail: status >= 500 ? specific : null,
