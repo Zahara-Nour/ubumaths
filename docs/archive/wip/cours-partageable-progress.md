@@ -1,6 +1,6 @@
 # Cours partageable par lien — journal
 
-ADR : [0025](../adr/0025-cours-lisible-par-lien-sans-compte.md). Modèle : lien du cahier (#174).
+ADR : [0025](../../adr/0025-cours-lisible-par-lien-sans-compte.md). Modèle : lien du cahier (#174).
 
 ## Décisions de David (2026-10-12)
 
