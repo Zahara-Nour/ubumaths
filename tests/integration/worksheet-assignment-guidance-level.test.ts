@@ -155,8 +155,34 @@ describe('niveau de guidage d’une affectation', () => {
 		expect(rows).toEqual([{ id: guidedAssignment, guidance_level: 'guided' }]);
 	});
 
+	it('témoin : l’autre élève lit SA propre affectation, au niveau réglé par le prof', async () => {
+		const { rows, error } = await levelAs(autonomousStudent, autonomousAssignment);
+		expect(error).toBeNull();
+		expect(rows).toEqual([{ id: autonomousAssignment, guidance_level: 'autonomous' }]);
+	});
+
+	// `error` vérifié : sans la colonne, la lecture rendrait aussi `[]` (42703)
 	it('l’élève ne lit pas l’affectation de l’autre groupe, ni donc son niveau', async () => {
-		expect((await levelAs(guidedStudent, autonomousAssignment)).rows).toEqual([]);
-		expect((await levelAs(autonomousStudent, guidedAssignment)).rows).toEqual([]);
+		for (const [client, other] of [
+			[guidedStudent, autonomousAssignment],
+			[autonomousStudent, guidedAssignment]
+		] as const) {
+			const { rows, error } = await levelAs(client, other);
+			expect(error).toBeNull();
+			expect(rows).toEqual([]);
+		}
+	});
+
+	it('l’élève ne peut pas changer le niveau de sa propre affectation', async () => {
+		const { data, error } = await guidedStudent
+			.from('worksheet_assignments')
+			.update({ guidance_level: 'autonomous' } as never)
+			.eq('id', guidedAssignment)
+			.select('id');
+		// Refus RLS silencieux : zéro ligne, sans erreur
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
+		const { rows } = await levelAs(teacher, guidedAssignment);
+		expect(rows).toEqual([{ id: guidedAssignment, guidance_level: 'guided' }]);
 	});
 });
