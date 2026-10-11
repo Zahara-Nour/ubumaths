@@ -73,12 +73,27 @@ import { oddDenominatorExponent, realNthRoot } from './real-root';
 const MAX_EXACT_ROOT_INDEX = 1000n;
 
 /**
- * Exposant entier maximal d'une puissance calculée exactement (décision de David,
- * 2026-10-12 : 1000 → 10 000). Au-delà, par le flottant : `1.5^{2000}` y donnait
- * Infinity, `0.5^{2000}` « = 0 ». (1+1/10000)^10000 porte 40 000 chiffres, calculés
- * en millisecondes par la puissance native de BigInt (`powRational`).
+ * Un pôle de tan, sec (cos nul), csc, cot (sin nul) est refusé. Le flottant de
+ * π/2 n'annule pas exactement cos : `Math.tan(Math.PI / 2)` vaut 1,6331 × 10¹⁶, que
+ * le bouton ≈ affichait comme la valeur de tan(π/2) (revue, 2026-10-12). Le seuil
+ * suit l'erreur du flottant de l'argument, qui croît avec lui.
  */
-const MAX_EXACT_INTEGER_EXPONENT = 10_000;
+function refuseTrigPole(name: string, denominator: number, argument: number): void {
+	if (Math.abs(denominator) < 1e-14 * Math.max(1, Math.abs(argument))) {
+		throw new Error(`${name} n’est pas définie en cette valeur (division par zéro)`);
+	}
+}
+
+/**
+ * Exposant entier maximal d'une puissance calculée exactement. ⚠️ Pas plus haut
+ * tant que le pgcd est celui d'Euclide (décision de David, 2026-10-12) : à 10 000,
+ * la base d'un e ou d'un π (fraction de 16 chiffres tirée de son flottant) donnait
+ * des fractions de centaines de milliers de bits, réduites ensuite par pgcd —
+ * `.variations e^{-2x^2}` passait de 23 ms à 5,7 s, `e^{-5000}+1` à 71 s (revue).
+ * Au-delà, par le flottant ; la console lit l'arrondi sur le résultat exact, si
+ * bien que `1.5^{2000}` y vaut quand même ≈ 1,5224 × 10³⁵².
+ */
+const MAX_EXACT_INTEGER_EXPONENT = 1000;
 
 /** Le refus d'une puissance qui sort du flottant (0 ou ±Infinity pour une base non nulle). */
 const OUT_OF_SCALE =
@@ -109,6 +124,8 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 	if (baseNum < 0 && !Number.isInteger(expNum)) {
 		throw new Error('Cannot compute non-integer power of negative number');
 	}
+	// 0 à une puissance négative : une division par zéro, pas une valeur hors d'échelle
+	if (baseNum === 0 && expNum < 0) throw new Error('Division by zero');
 	const result = Math.pow(baseNum, expNum);
 	// Une base non nulle ne donne ni 0 ni l'infini : c'est le flottant qui en sort.
 	// Jamais « = 0 » ni « Cannot convert Infinity to Rational »
@@ -360,6 +377,7 @@ function evaluateFunctionToRational(
 			break;
 		case 'tan':
 			if (numArgs.length !== 1) throw new Error('tan requires exactly 1 argument');
+			refuseTrigPole('tan', Math.cos(numArgs[0]), numArgs[0]);
 			result = Math.tan(numArgs[0]);
 			break;
 		// Réciproques : leur définition (sec = 1/cos…). Le parseur maison les lit
@@ -372,6 +390,10 @@ function evaluateFunctionToRational(
 		case 'coth': {
 			if (numArgs.length !== 1) throw new Error(`${name} requires exactly 1 argument`);
 			const t = numArgs[0];
+			if (name.toLowerCase() === 'sec') refuseTrigPole('sec', Math.cos(t), t);
+			if (name.toLowerCase() === 'csc' || name.toLowerCase() === 'cot') {
+				refuseTrigPole(name.toLowerCase(), Math.sin(t), t);
+			}
 			const reciprocal: Record<string, number> = {
 				sec: 1 / Math.cos(t),
 				csc: 1 / Math.sin(t),

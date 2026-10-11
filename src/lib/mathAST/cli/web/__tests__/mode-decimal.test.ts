@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../web-repl-engine';
+import { toCustom } from '../../../index';
 
 function decimal(input: string) {
 	const engine = new WebReplEngine();
@@ -99,11 +100,39 @@ describe('hors de l’échelle : la notation scientifique', () => {
 		expect(decimal('0.5^20000').output).toBe('≈ 2.5124*10^-6021');
 		expect(new WebReplEngine().execute('1.5^2000').success).toBe(true);
 	});
+});
 
-	// Mesuré avant : 14 s, navigateur bloqué — la fraction était réduite à chaque multiplication
-	it('(1+1/10000)^10000 se calcule vite', () => {
-		const start = performance.now();
-		expect(decimal('(1+1/10000)^10000').output).toBe('≈ 2.7181');
-		expect(performance.now() - start).toBeLessThan(3000);
+// Revue de la reco 2 (2026-10-12)
+describe('ce que la console range et montre quand le flottant ne suit pas', () => {
+	it('« Garder » range la valeur exacte quand le flottant est sorti de sa plage', () => {
+		const big = decimal('e^{1000}');
+		const tiny = decimal('10^{-400}');
+
+		expect(big.output).toBe('≈ 1.9701*10^434');
+		expect(toCustom(big.quantityAst!)).not.toContain('Infinity');
+		expect(tiny.output).toBe('1*10^-400');
+		expect(toCustom(tiny.quantityAst!)).not.toBe('0');
+	});
+
+	it('une valeur ordinaire garde la pleine précision du moteur', () => {
+		expect(toCustom(decimal('\\pi^{20}').quantityAst!)).toMatch(/^8769956796\.08/);
+	});
+
+	// Le flottant de π/2 n'annule pas cos : le bouton ≈ affichait 1,6331 × 10¹⁶
+	it('tan(π/2) n’a pas de valeur approchée', () => {
+		const exact = new WebReplEngine().execute('\\tan(\\pi/2)');
+
+		expect(exact.approximateLatex).toBeUndefined();
+		expect(decimal('\\tan(\\pi/2)').success).toBe(false);
+		expect(decimal('\\tan(\\pi/4)').output).toBe('1');
+		expect(decimal('\\tan(1.5707963)').output).toBe('≈ 37320539.6344');
+	});
+
+	// Le calcul décimal du moteur refuse (nombres complexes, factorielle trop grande) :
+	// la valeur se lit désormais sur le résultat exact (avant : une erreur)
+	it('ce que le calcul décimal refusait se lit sur le résultat exact', () => {
+		expect(decimal('i^2').output).toBe('-1');
+		expect(decimal('(1+i)(1-i)').output).toBe('2');
+		expect(decimal('100!').output).toBe('≈ 9.3326*10^157');
 	});
 });

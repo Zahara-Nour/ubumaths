@@ -418,14 +418,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     `Number(n) / Number(d)`** (NaN dès que les termes dépassent 10³⁰⁸), toujours `rationalToNumber`
     (`normal/rational.ts`), qui calcule alors le quotient en entiers (mesuré le 2026-10-11 : la
     suite qui tend vers e, les intérêts composés et π²⁰ rendaient NaN ou Infinity).
-    Une puissance entière est exacte jusqu'à l'exposant 10 000 (`MAX_EXACT_INTEGER_EXPONENT`,
+    Une puissance entière est exacte jusqu'à l'exposant 1000 (`MAX_EXACT_INTEGER_EXPONENT`,
     `eval/evaluate.ts`) ; au-delà, par le flottant, et une valeur qui en sort (0 pour une base
     non nulle, ±Infinity) est refusée (« Valeur hors d'échelle… ») plutôt que rendue comme 0.
-    `powRational` calcule `nᵏ / dᵏ` par la puissance native de BigInt : une fraction irréductible
-    élevée à une puissance le reste — pas de pgcd à chaque multiplication ((101/100)¹⁰⁰⁰⁰⁰ :
-    194 s avant, 2 ms). ⚠️ Le pgcd (Euclide) de deux entiers de 40 000 chiffres coûte 1,5 s :
-    `normalize` (puissance par multiplications réduites), `tidy` et `rational()` en calculent
-    sur les grandes fractions (mesuré le 2026-10-12).
+    ⚠️ Ne pas relever ce plafond tant que le pgcd est celui d'Euclide : à 10 000, e et π (fractions
+    de 16 chiffres) donnaient des fractions de centaines de milliers de bits, puis des pgcd de
+    plusieurs secondes (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12). Le pgcd de deux
+    entiers de 40 000 chiffres coûte 1,5 s : `normalize` (puissance par multiplications réduites),
+    `tidy` et `rational()` en calculent sur les grandes fractions. `powRational` calcule `nᵏ / dᵏ`
+    par la puissance native de BigInt : une fraction irréductible élevée à une puissance le reste
+    ((101/100)¹⁰⁰⁰⁰⁰ : 194 s avant, 2 ms). Les pôles de tan, sec, csc, cot sont refusés (le
+    flottant de π/2 donnait tan = 1,6331 × 10¹⁶).
 
 ## Le moteur de réécriture et les étapes
 

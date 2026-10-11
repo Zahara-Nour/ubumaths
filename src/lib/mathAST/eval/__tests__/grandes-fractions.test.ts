@@ -36,15 +36,28 @@ describe('le mode décimal sur des fractions aux termes géants', () => {
 	});
 });
 
-// Décision d de David (2026-10-12) : plafond des puissances entières exactes 1000 → 10 000 ;
-// au-delà, par le flottant — mais jamais « 0 » ni « Cannot convert Infinity » pour une valeur
-// qui sort du flottant
+// Décision d de David (2026-10-12) : jamais « 0 » ni « Cannot convert Infinity » pour une
+// valeur qui sort du flottant. Plafond des puissances exactes gardé à 1000 (décision du même
+// jour, revue : à 10 000, `.variations e^{-2x^2}` prenait 5,7 s)
 describe('les puissances entières au-delà de 1000', () => {
-	it('1,5^2000 se calcule exactement (était : par le flottant, Infinity)', () => {
-		const value = evaluateNodeToRational(parseLatex('1.5^{2000}'));
+	it('1,5^1000 se calcule exactement ; 1,5^2000 passe par le flottant, qui en sort', () => {
+		const exact = evaluateNodeToRational(parseLatex('1.5^{1000}'));
+		const beyond = evaluate(parseLatex('1.5^{2000}'), { mode: 'decimal' });
 
-		expect(value.n).toBe(3n ** 2000n);
-		expect(value.d).toBe(2n ** 2000n);
+		expect(exact.n).toBe(3n ** 1000n);
+		expect(exact.d).toBe(2n ** 1000n);
+		expect(beyond.status === 'unevaluable' && beyond.reason).toMatch(/hors d’échelle/);
+	});
+
+	// Le cas de la revue : rapide, et la même valeur qu'avant
+	it('e^{-2x^2} en x = 70 : refusé vite (la valeur sort du flottant)', () => {
+		const start = performance.now();
+		const result = evaluate(parseLatex('-4 \\cdot 70 \\cdot e^{-2 \\cdot 70^2}'), {
+			mode: 'decimal'
+		});
+
+		expect(performance.now() - start).toBeLessThan(1000);
+		expect(result.status).not.toBe('value');
 	});
 
 	it('au-delà du plafond, une valeur hors du flottant est refusée en français', () => {
@@ -60,5 +73,22 @@ describe('les puissances entières au-delà de 1000', () => {
 		const value = evaluateNodeToApproximatedNumber(parseLatex('1.00001^{20000}'));
 
 		expect(relativeGap(value, 1.2214015367677653)).toBeLessThan(1e-9);
+	});
+});
+
+describe('les refus du calcul décimal', () => {
+	// Revue : Math.pow(0, -π) = Infinity était annoncé « hors d'échelle »
+	it('0 à une puissance négative : une division par zéro', () => {
+		const result = evaluate(parseLatex('0^{-\\pi}'), { mode: 'decimal' });
+
+		expect(result.status === 'unevaluable' && result.reason).toBe('Division by zero');
+	});
+
+	it('un pôle de tan est refusé, pas une valeur', () => {
+		for (const latex of ['\\tan(\\pi/2)', '\\tan(3\\pi/2)', '\\tan(101\\pi/2)']) {
+			const result = evaluate(parseLatex(latex), { mode: 'decimal' });
+
+			expect(result.status === 'unevaluable' && result.reason).toMatch(/n’est pas définie/);
+		}
 	});
 });

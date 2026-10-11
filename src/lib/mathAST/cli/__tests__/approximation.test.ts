@@ -9,6 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '$lib/mathAST/parser';
+import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { approximateValueLatex, approximateSolutionsLatex } from '../approximation';
 import { WebReplEngine } from '../web/web-repl-engine';
 
@@ -151,11 +152,22 @@ describe('hors de l’échelle : la notation scientifique', () => {
 		['e^{1000}', '\\approx 1.9701 \\times 10^{434}'],
 		['\\frac{1}{7000000}', '\\approx 1.4286 \\times 10^{-7}'],
 		['2^{64}', '\\approx 1.8447 \\times 10^{19}'],
-		['0.3^{1000}', '\\approx 1.3221 \\times 10^{-523}'],
-		['0.5^{2000}', '\\approx 8.7098 \\times 10^{-603}'],
-		['1.5^{2000}', '\\approx 1.5224 \\times 10^{352}']
+		['0.3^{1000}', '\\approx 1.3221 \\times 10^{-523}']
 	])('%s → %s', (latex, expected) => {
 		expect(approx(latex)).toBe(expected);
+	});
+
+	// Au-delà du plafond des puissances exactes (1000), l'expression tapée passe par le
+	// flottant, qui en sort : le bouton reçoit le RÉSULTAT EXACT, comme dans la console
+	it('au-delà du plafond : lue sur le résultat exact', () => {
+		const ofExact = (latex: string) => {
+			const result = evaluate(parseLatex(latex), { mode: 'exact' });
+			return result.status === 'value' ? approximateValueLatex(result.node) : null;
+		};
+
+		expect(ofExact('0.5^{2000}')).toBe('\\approx 8.7098 \\times 10^{-603}');
+		expect(ofExact('1.5^{2000}')).toBe('\\approx 1.5224 \\times 10^{352}');
+		expect(approx('1.5^{2000}')).toBeNull();
 	});
 
 	it('exacte : « = », zéros de la mantisse retirés', () => {
@@ -178,5 +190,22 @@ describe('hors de l’échelle : la notation scientifique', () => {
 		expect(approximateSolutionsLatex('x', [parseLatex('\\frac{1}{7000000}')], false)).toBe(
 			'x \\approx 1.4286 \\times 10^{-7}'
 		);
+	});
+});
+
+// Revue : l'exactitude se décidait à 10 décimales, l'écriture à 4 chiffres significatifs
+describe('entre 10⁻⁶ et 10⁻⁴ : 4 chiffres significatifs', () => {
+	it('arrondie : ≈, zéros gardés', () => {
+		expect(approx('\\frac{123456}{10^{10}}')).toBe('\\approx 0.00001235');
+		expect(approx('e^{-10}')).toBe('\\approx 0.00004540');
+	});
+
+	it('exacte : =, zéros retirés', () => {
+		expect(approx('\\frac{1}{20000}')).toBe('= 0.00005');
+		expect(approx('\\frac{1234}{10^{8}}')).toBe('= 0.00001234');
+	});
+
+	it('la retenue garde 4 chiffres : 9,99996 × 10⁻⁵ → 0,0001000', () => {
+		expect(approx('\\frac{999996}{10^{10}}')).toBe('\\approx 0.0001000');
 	});
 });

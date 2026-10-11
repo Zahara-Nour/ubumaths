@@ -31,7 +31,6 @@ import { multiply, number, opposite, power } from '../factory';
 import { findNodes } from '../transforms';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToRational } from '../eval/evaluate';
-import { rationalToNumber } from '../normal/rational';
 
 // =============================================================================
 // Types
@@ -66,9 +65,6 @@ const SCIENTIFIC_BELOW_INVERSE = 10n ** 6n;
 
 /** Un entier exact plus petit s'écrit en entier, sans `≈` (décision b : 15 chiffres). */
 const WHOLE_BELOW = 10n ** 15n;
-
-/** Sous 10⁻⁴, 4 décimales donneraient « ≈ 0 » : on garde 4 chiffres significatifs. */
-const BELOW_PLACES = 10 ** -PLACES;
 
 // =============================================================================
 // Fonctions
@@ -152,6 +148,34 @@ function scientific(n: bigint, d: bigint): ApproximateDigits {
 }
 
 /**
+ * Entre 10⁻⁶ et 10⁻⁴ : 4 chiffres significatifs, en entiers exacts (4 décimales
+ * donneraient « ≈ 0 »). Exacte si ces 4 chiffres disent toute la valeur — revue :
+ * l'exactitude se décidait à 10 décimales et l'écriture à 4 chiffres, si bien que
+ * 0,0000123456 s'écrivait « = 0.00001235 ».
+ */
+function fourSignificantDigits(n: bigint, d: bigint): ApproximateDigits {
+	const negative = n < 0n;
+	const size = negative ? -n : n;
+	// 10^k ⩽ valeur < 10^(k+1), k = −6 ou −5 : les 4 chiffres vont jusqu'à 10^(k−3)
+	let places = PLACES - 1 - decimalExponent(size, d);
+	const scaled = size * 10n ** BigInt(places);
+	const remainder = scaled % d;
+	let q = scaled / d + (2n * remainder >= d ? 1n : 0n);
+	// Retenue : 9,99996 × 10⁻⁵ s'arrondit à 1,000 × 10⁻⁴ (4 chiffres, pas 5)
+	if (q === 10n ** BigInt(PLACES)) {
+		q /= 10n;
+		places -= 1;
+	}
+	const text = `0.${q.toString().padStart(places, '0')}`;
+	const exact = remainder === 0n;
+	return {
+		digits: `${negative ? '-' : ''}${exact ? withoutTrailingZeros(text) : text}`,
+		exponent: null,
+		exact
+	};
+}
+
+/**
  * L'écriture décimale d'une expression numérique : arrondie à 4 décimales
  * (demi loin de zéro, en entiers exacts), ou exacte si elle y tient ; hors de
  * [10⁻⁶ ; 10⁹[, en notation scientifique. `null` pour une expression littérale,
@@ -167,19 +191,7 @@ export function approximateDigitsOf(node: MathNode): ApproximateDigits | null {
 	if (d === 1n && size < WHOLE_BELOW) return { digits: n.toString(), exponent: null, exact: true };
 	if (size >= d * SCIENTIFIC_FROM || size * SCIENTIFIC_BELOW_INVERSE < d) return scientific(n, d);
 
-	// Pas `Number(n) / Number(d)` : NaN dès que les termes dépassent 10³⁰⁸
-	// ((1001/1000)¹⁰⁰⁰ en porte 3001 chiffres, pour une valeur de 2,7169)
-	const value = rationalToNumber(rational);
-	if (Math.abs(value) < BELOW_PLACES) {
-		// Exacte si 10 décimales suffisent (1/20000 = 0.00005)
-		const exact = (n * 10n ** 10n) % d === 0n;
-		const significant = value.toPrecision(PLACES);
-		return {
-			digits: exact ? withoutTrailingZeros(significant) : significant,
-			exponent: null,
-			exact
-		};
-	}
+	if (size * SCALE < d) return fourSignificantDigits(n, d);
 
 	const scaled = n * SCALE;
 	const remainder = scaled % d;
