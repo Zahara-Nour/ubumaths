@@ -5,11 +5,14 @@ couvre:
   - 'src/routes/(public)/royaume/**'
   - 'src/lib/kingdom-tour/**'
   - 'src/lib/components/kingdom-tour/**'
+  - 'src/routes/(public)/eleves/**'
+  - 'src/routes/(public)/parents/**'
+  - 'src/routes/(public)/professeurs/**'
 ---
 
 # Carte des fonctionnalités : ce que Chiphre offre, à qui, par où
 
-> Vérifié contre le code le 2026-10-11 (branche `feat/tour-du-royaume`). Inventaire **vu de l'utilisateur** :
+> Vérifié contre le code le 2026-10-11 (branche `feat/roue-des-publics`). Inventaire **vu de l'utilisateur** :
 > chaque fonctionnalité sous son libellé réel, sa route, son accès, et la preuve de ses points forts.
 > Le fonctionnement de chaque système est dans sa propre doc (carte : [docs/README.md](../README.md)) ;
 > le lore utilisable en vitrine est dans [univers-chiphre.md](univers-chiphre.md#le-lore-en-vitrine).
@@ -104,13 +107,67 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 ## Comment un visiteur entre
 
-- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre, lien « Visiter le
-  Royaume », Père Ubu au centre, une dépêche du Shtam tirée au hasard. Le lien **et** Père Ubu
-  mènent au [Tour du Royaume](#le-tour-du-royaume-royaume). Le seul autre accès est le bouton
-  « Infos et confidentialité » (pages légales, `/a-propos`).
+- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre, Père Ubu au
+  centre, une dépêche du Shtam tirée au hasard. Pour un visiteur **anonyme**, la
+  [roue des publics](#la-roue-des-publics-et-les-trois-vues) dérive autour de Père Ubu et mène aux
+  trois vues. Père Ubu mène au [Tour du Royaume](#le-tour-du-royaume-royaume) (le lien texte
+  « Visiter le Royaume » a été retiré le 2026-10-11). Le bouton « Infos et confidentialité »
+  (pages légales, `/a-propos`) est dans le coin inférieur droit (`src/routes/+layout.svelte`).
 - **En-tête** (`src/lib/components/Header.svelte`) : « Connexion » en haut à droite ; l'inscription
   n'est atteinte que depuis la page de connexion (« Créer un compte »).
 - **Menu** : Accueil, Jeux, Upsilon, Atelier, Chiffrement, Géométrie, Zygomatics.
+
+## La roue des publics et les trois vues
+
+Décisions de David du 2026-10-11 (journal : `docs/wip/roue-des-publics-progress.md`). Un
+aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, `/parents`,
+`/professeurs` (au sitemap). Peu de texte, des phrases directes ; le lore détaillé reste au
+[Tour du Royaume](#le-tour-du-royaume-royaume).
+
+**Carte du code**
+
+| Fichier                                                | Rôle                                                                                               |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `src/lib/kingdom-tour/audiences.ts`                    | `AUDIENCES` : les trois publics, leur libellé et leur adresse                                      |
+| `src/lib/kingdom-tour/views.ts`                        | Le contenu des trois vues (`STUDENT_VIEW`, `PARENT_VIEW`, `TEACHER_VIEW`)                          |
+| `src/lib/kingdom-tour/drift.ts`                        | `driftGeometry`, `driftAt` : la dérive autour de Père Ubu (pures)                                  |
+| `src/lib/components/kingdom-tour/AudienceWheel.svelte` | La roue : la chandelle verte, sa lumière, ses trois choix ; `placement` `corner` (vues) ou `orbit` |
+| `src/lib/components/kingdom-tour/AudienceView.svelte`  | La mise en page d'une vue : Père Ubu, blocs, démos du Tour, portes d'entrée, autres vues en liens  |
+| `src/routes/(public)/{eleves,parents,professeurs}/`    | Une page par vue ; le serveur choisit l'ambiance du mois (jamais prérendue)                        |
+
+**Invariants**
+
+- **La roue** : sur l'accueil, **pour un visiteur anonyme seulement** (`data.user` absent) ; sur les
+  trois vues, pour tout le monde, fixée en bas à droite, le choix courant marqué (`aria-current`).
+  Un vrai bouton (`aria-expanded`) et trois liens ordinaires, inertes tant qu'elle est fermée ;
+  Échap la referme et rend le focus. **À la souris, le survol l'ouvre** (un clic ne la referme pas) ;
+  au doigt et au clavier, on clique. Sans JavaScript, chaque vue garde les deux autres en liens.
+- **L'emblème** : la chandelle verte à flamme verte (« Viridis Candela »), sans fond ni bord, sur un
+  bougeoir de laiton cerné d'encre comme le dessin de Père Ubu. Sa lumière lui est **propre**
+  (indépendante du halo du mois) et passe **devant** celui de Père Ubu (la roue est en `z-20`).
+- **La dérive** (accueil) : lente (≤ 50 px/s), irrégulière (sinus de périodes sans commune mesure),
+  avec des escales de durée aléatoire où l'invitation « Tu es… ? » revient. Le tour complet
+  seulement s'il y a la place au-dessus et au-dessous ; sinon elle longe le flanc droit sans mordre
+  sur le dessin. Elle s'arrête quand on la survole, la focalise ou l'ouvre. **Une seule fois**, elle
+  se dérobe quand la souris approche (glissement adouci, retour lent). Rien ne bouge en « moins
+  d'animations ».
+- **L'argent** : seulement ce qui restera vrai quand le site sera payant hors des classes de son
+  créateur — « Sans publicité », « En accès libre, sans compte » + la liste, « Pour les élèves des
+  classes de son créateur, Chiphre est entièrement gratuit ». Jamais « gratuit » seul ni « pour
+  toujours ». Le niveau est dit partout : du CM1 à la Terminale.
+- **Le registre** : élèves tutoyés ; parents et professeurs vouvoyés (les descriptions du Tour,
+  qui tutoient, sont réécrites pour les professeurs).
+- **Les parents** lisent franchement : pas de compte parent (le lien du cahier de textes, par le
+  professeur), et le tuteur passe par un prestataire aux États-Unis.
+
+**Comment étendre** : un bloc → une entrée de `blocks` dans `views.ts` (son icône dans `ViewIcon`
+et dans `AudienceView.svelte`) ; un lien → une page publique qui existe (le test le vérifie).
+
+**Tests** : `src/lib/kingdom-tour/__tests__/views.test.ts` (liens, registre, argent, niveau),
+`drift.test.ts` (zone libre, flanc, vitesse) ; `src/lib/components/kingdom-tour/__tests__/`
+(`AudienceWheel` : clavier, survol, invitation ; `AudienceView` : titre, roue, autres vues, pas de
+débord à 320, 375 et 1280 px) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (roue pour
+l'anonyme seulement, Père Ubu vers `/royaume`).
 
 ## Le Tour du Royaume (`/royaume`)
 
@@ -158,11 +215,11 @@ Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
 **Tests** : `src/lib/kingdom-tour/__tests__/` (Provinces fidèles au Compendium, liens vers des pages
 publiques existantes et non exclues par `robots.txt`, garde du lore, démo contre le correcteur,
 spirale, apparition) ; `src/routes/(public)/royaume/__tests__/` (chargement, rendu, démos, pas de
-débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (l'accueil mène à la visite).
+débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (Père Ubu mène à la visite).
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D18 ; chantier K19 ;
+Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D19 ; chantier K19 ;
 V15 corrigé par le Tour du Royaume) :
 
 - Le chat de `/pere-ubu` répond par une erreur à un visiteur, alors que la page est au sitemap.
@@ -173,3 +230,5 @@ V15 corrigé par le Tour du Royaume) :
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
   teintés (D17), pas de lien d'évitement (D18).
 - La description SEO de `/games` cite Navadra, retiré du catalogue.
+- Mouvement sans fin sur l'accueil (dérive de la roue, flamme qui vacille) : WCAG 2.2.2 demande un
+  moyen de l'arrêter au-delà de 5 s (D19).

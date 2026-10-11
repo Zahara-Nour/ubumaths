@@ -1,13 +1,11 @@
 <script lang="ts">
-	// ⚠️ Maquette : vue parent, contenu à venir
-	import AudienceWheel from '$lib/components/kingdom-tour/AudienceWheel.svelte';
+	// La vue de présentation, contenu dans $lib/kingdom-tour/views
+	import { MONTH_PALETTES } from '$lib/almanach/palettes';
+	import AudienceView from '$lib/components/kingdom-tour/AudienceView.svelte';
+	import { PARENT_VIEW } from '$lib/kingdom-tour/views';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 </script>
 
-<div
-	class="container mx-auto flex min-h-[60vh] flex-col items-center justify-center gap-3 px-4 text-center"
->
-	<h1 class="text-3xl font-bold">Vous êtes parent</h1>
-	<p class="text-muted-foreground">Maquette : le contenu de cette vue est à écrire.</p>
-</div>
-
-<AudienceWheel current="parent" />
+<AudienceView view={PARENT_VIEW} ambiance={MONTH_PALETTES[data.ambianceMonth]} />
