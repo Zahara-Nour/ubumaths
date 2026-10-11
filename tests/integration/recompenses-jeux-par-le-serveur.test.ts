@@ -12,7 +12,8 @@
  * Ce que le fichier prouve :
  *   1. un appel sans auth.uid() ni rôle service est refusé (rouge sans la migration) ;
  *   2. l'enregistrement par le client service (chemin des routes 2048 et Mathémo) marche ;
- *   3. un élève n'enregistre pas de récompense pour un autre.
+ *   3. un élève n'enregistre pas de récompense pour un autre ;
+ *   4. l'élève pour lui-même passe encore : l'étape 1 reste compatible avec le code en prod.
  *
  * @vitest-environment node
  */
@@ -119,6 +120,18 @@ describe('jeux : récompense du jour enregistrée par le serveur seulement', () 
 			p_theoretical_reward: 5,
 			p_school_id: schoolId
 		});
-		expect(error).not.toBeNull();
+		expect(error?.message).toMatch(/Unauthorized/);
+	});
+
+	it('l’élève qui s’enregistre lui-même passe encore (code en prod jusqu’au deploy)', async () => {
+		const client = await clientFor(autre.email);
+		const { error } = await client.rpc('record_game_reward', {
+			p_student_id: autre.id,
+			p_game_type: 'mathemo',
+			p_game_id: crypto.randomUUID(),
+			p_theoretical_reward: 5,
+			p_school_id: schoolId
+		});
+		expect(error).toBeNull();
 	});
 });
