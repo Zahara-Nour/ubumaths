@@ -815,8 +815,10 @@
 		height: var(--control-size);
 		border-radius: 50%;
 		border: none;
-		background: transparent;
-		color: rgba(255, 255, 255, 0.7);
+		/* Couleurs du thème, sur une pastille du fond du thème : la flèche reste visible
+		   sur le fond clair du thème (carnets, séries) comme sur une diapositive sombre */
+		background: color-mix(in srgb, var(--color-background) 70%, transparent);
+		color: color-mix(in srgb, var(--color-foreground) 70%, transparent);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -841,7 +843,7 @@
 	}
 
 	.control-btn.enabled:hover {
-		color: white;
+		color: var(--color-foreground);
 	}
 
 	.control-btn.enabled:active {
