@@ -1231,11 +1231,16 @@ function generateCallout(kind: CalloutKind, content: string, language?: string):
 	].join('\n');
 }
 
-/** Détail en ligne `[…]{.type}` : calcul en gris, les autres sur fond teinté */
+/**
+ * Détail en ligne `[…]{.type}` : calcul en gris, les autres sur fond teinté.
+ * `;` final : sans lui, un `(`, `[` ou `.lettre` collé après serait lu par
+ * Typst comme la suite de l'appel, et toute la fiche échouerait (revue du
+ * 2026-10-11, compilateur de la prod). Typst consomme le `;`.
+ */
 function wrapInlineDetail(content: string, kind: DetailKind | undefined): string {
 	if (!kind) return content;
-	if (kind === 'calculation') return `#text(fill: rgb("${CALCULATION_GRAY}"))[${content}]`;
-	return `#highlight(fill: rgb("${INLINE_DETAIL_FILL[kind]}"))[${content}]`;
+	if (kind === 'calculation') return `#text(fill: rgb("${CALCULATION_GRAY}"))[${content}];`;
+	return `#highlight(fill: rgb("${INLINE_DETAIL_FILL[kind]}"))[${content}];`;
 }
 
 // ============================================================================

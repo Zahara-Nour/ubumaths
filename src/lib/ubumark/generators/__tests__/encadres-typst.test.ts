@@ -77,6 +77,17 @@ describe('détails en ligne au PDF', () => {
 		expect(out).toMatch(/#highlight\(fill: rgb\("#[0-9a-f]{6}"\)\)\[une propriété\]/);
 	});
 
+	// Revue du 2026-10-11, prouvée au compilateur de la prod : sans `;`, Typst lit
+	// `(voir)`, `[y]` ou `.suite` collés comme la suite de l'appel → TOUTE la fiche
+	// échoue (« unknown variable: voir »). Le `;` termine l'appel et ne s'imprime pas.
+	it.each([
+		['[x]{.rappel}(voir page 3)', '(voir page 3)'],
+		['[x]{.calcul}[y]', '[y]'],
+		['[x]{.méthode}.suite', '.suite']
+	])('détail collé à la suite (%s) : appel terminé par « ; »', (md, after) => {
+		expect(typst(md)).toContain(`[x];${after}`);
+	});
+
 	it('texte hors détail : inchangé', () => {
 		expect(typst('Un texte simple.')).not.toMatch(/#highlight|#text\(fill/);
 	});
