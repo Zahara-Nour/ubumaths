@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowUp, ArrowDown, type Icon } from '@lucide/svelte';
+	import { ArrowUp, ArrowDown, type LucideIcon } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
 
@@ -9,7 +9,7 @@
 		value: number | string;
 		trend?: number;
 		status?: 'ok' | 'warning' | 'critical';
-		icon?: typeof Icon;
+		icon?: LucideIcon;
 		link?: string;
 	};
 
