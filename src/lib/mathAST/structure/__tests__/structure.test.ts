@@ -156,6 +156,11 @@ const SPEC_EXAMPLES = [
 	String.raw`y=-\frac{1}{2}x+3`,
 	'2+(-3)x',
 	'-3x',
+	String.raw`-6\div3+1`,
+	String.raw`-6\div3`,
+	String.raw`-\frac{1}{2}x`,
+	'-4(5-x)^2',
+	'(-3)x',
 	String.raw`90^\circ`,
 	String.raw`x+30^\circ`
 ];
@@ -292,16 +297,57 @@ describe('somme (A2-A4) : aplatie, le signe appartient à la somme', () => {
 		expect(describeChildren(structure, product)).toEqual(['parentheses', 'letter:x']);
 	});
 
-	it('hors somme, −3x reste un produit dont le premier facteur est l’opposé de 3', () => {
-		for (const [latex, pick] of [
-			['-3x', (s: ExpressionStructure) => root(s)],
-			['-3x=6', (s: ExpressionStructure) => childrenOf(s, root(s))[0]]
-		] as const) {
-			const structure = structureOf(latex);
-			const product = pick(structure);
-			expect(product.kind).toBe('product');
-			expect(describeChildren(structure, product)).toEqual(['opposite', 'letter:x']);
-		}
+	// Décision de David (2026-10-11) : `−3x` équivaut à `−(3x)`, `−6 ÷ 3` à `−(6 ÷ 3)`
+	it.each<[string, (s: ExpressionStructure) => StructureNode, string[]]>([
+		['-3x', (s) => root(s), ['number:3', 'letter:x']],
+		['-3x=6', (s) => childrenOf(s, root(s))[0], ['number:3', 'letter:x']],
+		[String.raw`-\frac{1}{2}x`, (s) => root(s), ['quotient', 'letter:x']],
+		[String.raw`-2\times5`, (s) => root(s), ['number:2', 'number:5']],
+		['-4(5-x)^2', (s) => root(s), ['number:4', 'power']]
+	])('hors somme, %s : opposé du produit entier', (latex, pick, factors) => {
+		const structure = structureOf(latex);
+		const node = pick(structure);
+		expect(node.kind).toBe('opposite');
+		expect(describeChildren(structure, node)).toEqual(['product']);
+		const product = childrenOf(structure, node)[0];
+		expect(product.role).toBe('operand');
+		expect(describeChildren(structure, product)).toEqual(factors);
+		// Le « − » est dans le marqueur de l'opposé, hors de celui du produit
+		expect(node.latex.startsWith(String.raw`-\class{`)).toBe(true);
+	});
+
+	it('hors somme, −6 ÷ 3 : opposé du quotient', () => {
+		const structure = structureOf(String.raw`-6\div3`);
+		const node = root(structure);
+		expect(node.kind).toBe('opposite');
+		expect(describeChildren(structure, node)).toEqual(['quotient']);
+		const quotient = childrenOf(structure, node)[0];
+		expect(describeChildren(structure, quotient)).toEqual(['number:6', 'number:3']);
+	});
+
+	it('−6 ÷ 3 + 1 : signes −, + ; termes 6 ÷ 3 et 1', () => {
+		const structure = structureOf(String.raw`-6\div3+1`);
+		const sum = root(structure);
+		expect(sum.kind === 'sum' && sum.signs).toEqual(['-', '+']);
+		expect(describeChildren(structure, sum)).toEqual(['quotient', 'number:1']);
+	});
+
+	it.each<[string, string[]]>([
+		['(-3)x', ['parentheses', 'letter:x']],
+		[String.raw`2\times(-3)`, ['number:2', 'parentheses']]
+	])('parenthèses visibles, %s : le facteur reste (−3)', (latex, factors) => {
+		const structure = structureOf(latex);
+		expect(root(structure).kind).toBe('product');
+		expect(describeChildren(structure, root(structure))).toEqual(factors);
+	});
+
+	it('−3 seul : opposé de 3 ; −3² : opposé de 3²', () => {
+		const alone = structureOf('-3');
+		expect(root(alone).kind).toBe('opposite');
+		expect(describeChildren(alone, root(alone))).toEqual(['number:3']);
+		const square = structureOf('-3^2');
+		expect(root(square).kind).toBe('opposite');
+		expect(describeChildren(square, root(square))).toEqual(['power']);
 	});
 });
 

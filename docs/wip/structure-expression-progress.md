@@ -116,3 +116,7 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
   `../ubumaths-wt-structure` (branche `feat/demo-structure-expression`).
 - 2026-10-11 — lot 1 : module `src/lib/mathAST/structure/` (arbre, LaTeX marqué, vide / non reconnue) ;
   la démo s'y branche, l'option « le signe − » disparaît (signe à la somme).
+- 2026-10-11 — décision de David : **`−3x` équivaut à `−(3x)`, `−6 ÷ 3 + 1` à `−(6 ÷ 3) + 1`**. Un
+  « − » en tête sans parenthèses visibles porte sur tout le produit ou le quotient en ligne qui suit
+  (le parseur rend `(−3)·x`, la structure réassocie). Hors somme : opposé du produit ; dans une
+  somme : signe à la somme. Inchangé : `(−3)x`, `2 × (−3)`, `−3`, `−3²` (opposé de 3²).

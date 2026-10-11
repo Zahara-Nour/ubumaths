@@ -21,7 +21,7 @@
  * `\htmlData` ; jamais `{base}^{…}` (accolades autour de la base) mais
  * `base^{…}`.
  */
-import { func, multiply } from '../factory';
+import { divide, func, multiply } from '../factory';
 import { flattenRelationChain, flipSign, type Sign } from '../flatten';
 import { isHole } from '../guards';
 import {
@@ -173,9 +173,18 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 			case 'opposite':
 				return buildSum(n, parent, role);
 			case 'multiplication':
-				return buildProduct(n, parent, role);
-			case 'division':
-				return buildQuotient(n, parent, role);
+			case 'division': {
+				// « − » en tête sans parenthèses : il porte sur tout le produit ou le
+				// quotient (décision de David, 2026-10-11 : `−3x` = `−(3x)`)
+				const unsigned = withoutLeadingOpposite(n);
+				if (unsigned) {
+					const id = register(parent, role, n, { kind: 'opposite' });
+					return mark(id, `-${build(unsigned, id, 'operand')}`);
+				}
+				return n.type === 'multiplication'
+					? buildProduct(n, parent, role)
+					: buildQuotient(n, parent, role);
+			}
 			case 'delimiter':
 				return buildParentheses(n, parent, role);
 			case 'superscript': {
@@ -372,8 +381,8 @@ function collectTerms(node: MathNode, sign: Sign, leading: boolean, out: Collect
 		});
 		return;
 	}
-	// Coefficient négatif en tête (`−3x² + 2`) : le « − » va à la somme (Q2), le
-	// terme est `3x²`. Ailleurs, toLatex parenthèse le facteur : `2 + (−3)x` reste.
+	// Coefficient négatif en tête (`−3x² + 2`, `−6 ÷ 3 + 1`) : le « − » va à la
+	// somme (Q2), le terme est `3x²`. Ailleurs, toLatex parenthèse le facteur : `2 + (−3)x` reste.
 	const unsigned = leading ? withoutLeadingOpposite(node) : null;
 	if (unsigned) {
 		out.push({ sign: flipSign(sign), term: unsigned, wrapped: false });
@@ -383,13 +392,15 @@ function collectTerms(node: MathNode, sign: Sign, leading: boolean, out: Collect
 }
 
 /**
- * Produit dont le facteur le plus à gauche est un opposé (`(−3)·x²`, forme du
- * parseur pour `-3x^2`) : le même produit sans ce signe, ou `null`. Seulement si
- * l'écriture est inchangée (`-` + toLatex du nouveau terme = toLatex du terme) :
- * le séparateur d'un produit implicite dépend de son facteur de gauche.
+ * Produit ou quotient en ligne qui commence par un opposé sans parenthèses
+ * (`(−3)·x²`, forme du parseur pour `-3x^2` ; `(−6) ÷ 3`) : le même sans ce
+ * signe, ou `null`. Le « − » porte alors sur le tout (décision de David,
+ * 2026-10-11). Seulement si l'écriture est inchangée (`-` + toLatex du nouveau
+ * nœud = toLatex du nœud) : le séparateur d'un produit implicite dépend de son
+ * facteur de gauche.
  */
 function withoutLeadingOpposite(node: MathNode): MathNode | null {
-	if (node.type !== 'multiplication') return null;
+	if (node.type !== 'multiplication' && !isInlineDivision(node)) return null;
 	const stripped = stripLeftmostOpposite(node);
 	if (!stripped || `-${toLatex(stripped)}` !== toLatex(node)) return null;
 	return stripped;
@@ -399,9 +410,18 @@ function stripLeftmostOpposite(node: MathNode): MathNode | null {
 	if (node.type === 'opposite') {
 		return needsParenthesesUnderOpposite(node.operand) ? null : node.operand;
 	}
+	if (node.type === 'division' && isInlineDivision(node) && !binaryOperandWraps(node)?.left) {
+		const numerator = stripLeftmostOpposite(node.numerator);
+		return numerator ? divide(numerator, node.denominator, node.displayStyle) : null;
+	}
 	if (node.type !== 'multiplication' || binaryOperandWraps(node)?.left) return null;
 	const left = stripLeftmostOpposite(node.left);
 	return left ? multiply(left, node.right, node.displayStyle) : null;
+}
+
+/** `6 ÷ 3`, `6 / 3` : le quotient s'écrit en ligne (une fraction ne commence pas par un signe) */
+function isInlineDivision(node: MathNode): boolean {
+	return node.type === 'division' && node.displayStyle !== 'fraction';
 }
 
 /** Aplatit un produit, avec le signe d'opération que `toLatex` écrit entre deux facteurs */
