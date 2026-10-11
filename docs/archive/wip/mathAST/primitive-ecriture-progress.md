@@ -30,7 +30,7 @@ Deuxième arbitrage (2026-10-11, après le constat que `tidy` écrit `\dfrac{e^{
 
 7. **Ordre de `tidy` gardé** : `3\sin x+2\cos x` → `2\sin x - 3\cos x`.
 
-Hors périmètre (écarts V16, V17 de [ecarts-a-trier.md](ecarts-a-trier.md)) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0 (V16) ; IPP cyclique rangée lourde, `\dfrac{-\cos x\,e^x+\sin x\,e^x}{2}` (V17).
+Hors périmètre (écarts V16, V17 de [ecarts-a-trier.md](../../../wip/ecarts-a-trier.md)) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0 (V16) ; IPP cyclique rangée lourde, `\dfrac{-\cos x\,e^x+\sin x\,e^x}{2}` (V17).
 
 ## Attendus (cas de la démo)
 
