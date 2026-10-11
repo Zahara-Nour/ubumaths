@@ -65,7 +65,9 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
-import { approximateValueLatex } from '../approximation';
+import { approximateDigitsOf, approximateValueLatex, isWrittenNumber } from '../approximation';
+import { hasDecimalLiteral } from '../../tidy/decimal';
+import { number, opposite } from '../../factory';
 import { tidy } from '../../tidy';
 
 // =============================================================================
@@ -99,6 +101,26 @@ function approximationFields(
 	return canToggle && approximateValueLatex(exact) !== null
 		? { exactLatex: toLatex(tidy(exact)) }
 		: {};
+}
+
+/**
+ * Un résultat exact mis au propre pour l'écrire (π/3, √2/2) : la forme de
+ * calcul d'`evaluate` (« coefficient × π ») passée par `tidy` — sauf avec une
+ * variable ou un décimal, que `tidy` simplifierait ou réécrirait en fraction
+ * (même règle que l'écran de l'atelier, `render.ts`).
+ */
+function readableExact(node: MathNode): MathNode {
+	if (getVariables(node).size > 0 || hasDecimalLiteral(node)) return node;
+	try {
+		return tidy(node);
+	} catch {
+		return node;
+	}
+}
+
+/** `-0.125` en arbre : l'opposé d'un nombre (un nombre ne porte pas de signe). */
+function decimalNodeOf(digits: string): MathNode {
+	return digits.startsWith('-') ? opposite(number(digits.slice(1))) : number(digits);
 }
 
 /**
@@ -912,17 +934,24 @@ export class WebReplEngine {
 				);
 			}
 
-			// Format exact result
-			const exactStr = toCustom(exactResult.node);
+			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
+			// forme de calcul `{1/3}\pi` d'`evaluate`
+			const exactStr = toCustom(readableExact(exactResult.node));
 			const exactOutput = exactStr;
 			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
-			// Format decimal result
-			const decimalStr = toCustom(decimalResult.node);
-			const decimalPrefix = decimalResult.exact ? '' : '≈ ';
+			// Format decimal result — la règle du bouton ≈ (décision Q3 de David) :
+			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`)
+			const digits = approximateDigitsOf(exactResult.node);
+			const decimalStr = digits?.digits ?? toCustom(decimalResult.node);
+			// Hors de l'échelle de l'arrondi (≥ 10⁹, < 10⁻⁶) : la valeur décimale du
+			// moteur, et `≈` seulement si elle est arrondie — pas devant 2⁴⁰ (revue)
+			const decimalIsExact =
+				digits?.exact ?? (decimalResult.exact || isWrittenNumber(exactResult.node));
+			const decimalPrefix = decimalIsExact ? '' : '≈ ';
 			const decimalOutput = `${decimalPrefix}${decimalStr}`;
 			let decimalOutputHtml: string;
-			if (decimalResult.exact) {
+			if (decimalIsExact) {
 				decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
 			} else {
 				decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
@@ -953,7 +982,15 @@ export class WebReplEngine {
 				success: true,
 				output,
 				outputHtml,
-				ast: currentMode === 'exact' ? exactResult.node : decimalResult.node,
+				// En mode décimal, l'arbre affiché porte la valeur arrondie ; « Garder »
+				// range la valeur pleine précision (`quantityAst`)
+				ast:
+					currentMode === 'exact'
+						? exactResult.node
+						: digits === null
+							? decimalResult.node
+							: decimalNodeOf(digits.digits),
+				...(currentMode === 'decimal' && digits !== null && { quantityAst: decimalResult.node }),
 				// Toggle support fields
 				exactOutput,
 				exactOutputHtml,

@@ -129,3 +129,8 @@ Une PR par lot : **A** (moteur, `.convertir`, erreurs, `.mode décimal` des gran
   SANS variable libre (π, √, e, ln) : `x/x` n'est pas simplifié en 1, `3-2x+x^2` garde son ordre,
   `3x/4` reste en ligne comme avant (la ligne `3x/4` empilée de la phase 0 est abandonnée). Corrigé :
   le bouton « Valeur exacte » en mode décimal écrivait ⅓ π.
+- 2026-10-11 — points mis de côté réglés sur `fix/calcul-mode-decimal` : `.mode décimal` des nombres
+  suit la règle du bouton ≈ (4 décimales, `≈` à l'écran seulement si arrondi ; hors de l'échelle
+  ≥ 10⁹ ou < 10⁻⁶, la valeur décimale du moteur, sans `≈` devant un entier exact — revue) ; le TEXTE
+  d'un résultat exact est mis au propre par `tidy` (`\pi/3`, plus `{1/3}\pi` — dans `/cas` et l'export
+  de Calcul ; l'écran de Calcul l'était depuis le lot B).
