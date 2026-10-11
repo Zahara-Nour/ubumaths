@@ -35,13 +35,16 @@
  *    (`superscript(euler(), u)`), le facteur 1/u′ venant de la forme composée.
  *
  * 4. La primitive brute (la méthode) est suivie d'une étape « On simplifie »
- *    (`tidyTerms`) sauf quand il n'y a rien à simplifier.
+ *    (`tidyTerms`) sauf quand il n'y a rien à simplifier. Quand tous les termes
+ *    portent la même exponentielle e^{u}, cette étape développe puis met e^{u}
+ *    en facteur, par les stratégies de `factoriser` (lot 4 de l'ADR 0024).
  *
  * @module mathAST/pedagogical-integration/pipeline
  */
 
 import type { MathNode } from '../types';
 import {
+	add,
 	cos,
 	divide,
 	euler,
@@ -72,6 +75,7 @@ import {
 	absRational,
 	isNegative as isNegativeRational,
 	isOne as isOneRational,
+	mulRational,
 	negRational,
 	ONE
 } from '../normal/rational';
@@ -79,6 +83,13 @@ import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
 import { linearFactorNode } from '../factor';
 import { tidyTerms } from '../tidy/terms';
+import { flattenProductShallow } from '../flatten';
+import { isEulerConstant } from '../guards';
+import { nodesEqual } from '../normal/hash';
+import { areEquivalent } from '../equivalence';
+import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyNotImplemented } from '../pedagogical-simplify/types';
+import { mapNode } from '../transforms';
 import {
 	buildStep,
 	checkAbort,
@@ -346,6 +357,20 @@ function pushSimplifyStep(
 ): MathNode {
 	const single = singleCoefficientTerm(raw);
 	if (single?.canonical) return raw;
+	const rewriting = single ? null : developAndFactor(raw, ctx);
+	if (rewriting) {
+		steps.push(
+			buildStep(ctx, {
+				rule: 'simplify-result',
+				before: raw,
+				after: rewriting.result,
+				variable: ctx.variable,
+				// `developed` : ligne montrée par le rendu ; `exponential` : nommée par l'explication
+				bindings: rewriting.bindings
+			})
+		);
+		return rewriting.result;
+	}
 	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
 	// en gardant la forme « k · fonction » ; sinon, `tidy`
 	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidyTerms(raw);
@@ -359,6 +384,167 @@ function pushSimplifyStep(
 		})
 	);
 	return tidied;
+}
+
+interface SimplifyRewriting {
+	readonly result: MathNode;
+	readonly bindings: IntegrationBindings;
+}
+
+/**
+ * Lot 4 de l'ADR 0024 (décision de David du 2026-10-11, V17-V18) : la primitive
+ * est développée (`developper` de pedagogical-simplify), puis l'exponentielle
+ * e^{u} que portent au moins deux termes est mise en facteur sur ces termes
+ * (`factoriser`) : `x^2e^x-2(xe^x-e^x)` → `(x^2-2x+2)e^x`, et
+ * `\dfrac{1}{2}x^2e^{2x}-(…)+\dfrac{x^2}{2}` → `(…)e^{2x}+\dfrac{x^2}{2}`. Sans
+ * exponentielle partagée, la forme développée et rangée (`tidy`) quand la
+ * primitive brute garde une parenthèse d'IPP (`-x^2\cos x+2(x\sin x+\cos x)`) ;
+ * sinon `null`, et la primitive passe par `tidy` seul. Pas de moteur propre.
+ */
+function developAndFactor(raw: MathNode, ctx: DispatchContext): SimplifyRewriting | null {
+	const developed = runSimplifyIntent(raw, 'developper', ctx);
+	if (!developed) return null;
+	const terms = flattenSum(developed);
+	const exponential = sharedExponential(terms.map(({ term }) => term));
+	if (exponential) {
+		const carries = (term: MathNode) =>
+			exponentialFactors(term).some((f) => sameExponential(f, exponential));
+		const carrying = terms.filter(({ term }) => carries(term));
+		const others = terms.filter(({ term }) => !carries(term));
+		const group = runSimplifyIntent(
+			others.length === 0 ? developed : signedSum(carrying),
+			'factoriser',
+			ctx
+		);
+		if (group && hasFactor(group, exponential)) {
+			const rest = others.map(({ term, sign }) => ({ term: tidyTerms(term), sign }));
+			// Une seule écriture de l'exposant dans l'étape : celle de la primitive brute
+			const result = withExponential(appendTerms(group, rest), exponential);
+			const shown = toLatex(developed) !== toLatex(raw);
+			return {
+				result,
+				bindings: shown
+					? { developed: withExponential(developed, exponential), exponential }
+					: { exponential }
+			};
+		}
+	}
+	if (!hasGroupedSum(raw)) return null;
+	return { result: tidyTerms(developed), bindings: {} };
+}
+
+/**
+ * Une intention de pedagogical-simplify ; `null` sur un refus attendu
+ * (`PedagogicalSimplifyNotImplemented`). Toute autre erreur remonte.
+ */
+function runSimplifyIntent(
+	node: MathNode,
+	intent: 'developper' | 'factoriser',
+	ctx: DispatchContext
+): MathNode | null {
+	try {
+		return generatePedagogicalSimplifySteps(node, { intent, schoolLevel: ctx.level }).result;
+	} catch (error) {
+		if (error instanceof PedagogicalSimplifyNotImplemented) return null;
+		throw error;
+	}
+}
+
+type SignedTerm = { readonly term: MathNode; readonly sign: 1 | -1 };
+
+/** La somme des termes signés, dans l'ordre. */
+function signedSum(terms: readonly SignedTerm[]): MathNode {
+	const [first, ...others] = terms;
+	return appendTerms(first.sign === 1 ? first.term : opposite(first.term), others);
+}
+
+function appendTerms(start: MathNode, terms: readonly SignedTerm[]): MathNode {
+	return terms.reduce<MathNode>(
+		(acc, { term, sign }) => (sign === 1 ? add(acc, term) : subtract(acc, term)),
+		start
+	);
+}
+
+/**
+ * Une somme entre parenthèses multipliée au plus par un nombre, termes et
+ * signes traversés : la parenthèse de `- ∫ v du` (`-2(x\sin x+\cos x)`). Pas
+ * celle d'un facteur littéral (`(2x+1)\cos x`), ni sous une puissance.
+ */
+function hasGroupedSum(node: MathNode): boolean {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+			// `a - (b - c)` : la somme de droite est entre parenthèses, nœud ou pas
+			return isSum(node.right) || hasGroupedSum(node.left) || hasGroupedSum(node.right);
+		case 'opposite':
+		case 'positive':
+		case 'delimiter': {
+			const inner = node.type === 'delimiter' ? node.content : node.operand;
+			return isSum(inner) || hasGroupedSum(inner);
+		}
+		case 'multiplication': {
+			const literal = flattenProductShallow(node)
+				.map(({ factor }) => factor)
+				.filter((factor) => extractExactRational(factor) === null);
+			return literal.length === 1 && (isSum(literal[0]) || hasGroupedSum(literal[0]));
+		}
+		default:
+			return false;
+	}
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
+}
+
+/** Remplace chaque e^{u} équivalente à `exponential` par elle (même exposant écrit). */
+function withExponential(node: MathNode, exponential: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'superscript' && isEulerConstant(n.base) && sameExponential(n, exponential)
+			? exponential
+			: n
+	);
+}
+
+/** Les facteurs e^{u} d'un terme (`\dfrac{1}{2} x e^{2x}`, `\dfrac{x e^x}{2}`). */
+function exponentialFactors(term: MathNode): MathNode[] {
+	const product = term.type === 'division' ? term.numerator : term;
+	return flattenProductShallow(product)
+		.map(({ factor }) => factor)
+		.filter((factor) => factor.type === 'superscript' && isEulerConstant(factor.base));
+}
+
+/** La première exponentielle que portent au moins deux termes. */
+function sharedExponential(terms: readonly MathNode[]): MathNode | null {
+	if (terms.length < 2) return null;
+	for (const candidate of terms.flatMap(exponentialFactors)) {
+		const count = terms.filter((term) =>
+			exponentialFactors(term).some((f) => sameExponential(f, candidate))
+		).length;
+		if (count >= 2) return candidate;
+	}
+	return null;
+}
+
+/** `factor` est un facteur du produit `node` (signe en tête compris). */
+function hasFactor(node: MathNode, factor: MathNode): boolean {
+	const { inner } = unwrapSign(node);
+	return flattenProductShallow(inner).some((f) => sameExponential(f.factor, factor));
+}
+
+/**
+ * Même exponentielle, quelle que soit l'écriture de l'exposant : `-2x` est
+ * `opposite(2)·x` ou `opposite(2·x)` selon qui l'a construit (README § Invariants, 4).
+ */
+function sameExponential(a: MathNode, b: MathNode): boolean {
+	if (nodesEqual(a, b)) return true;
+	return (
+		a.type === 'superscript' &&
+		b.type === 'superscript' &&
+		isEulerConstant(a.base) &&
+		isEulerConstant(b.base) &&
+		areEquivalent(a.superscript, b.superscript)
+	);
 }
 
 /**
@@ -928,7 +1114,7 @@ function integrateByParts(
 		);
 	}
 
-	const uv = simplifiedMultiply(u, v);
+	const uv = coefficientFirstProduct(u, v);
 	const antiderivative = subtract(uv, vduSub.antiderivative);
 
 	const identify = buildStep(ctx, {
@@ -955,6 +1141,30 @@ function integrateByParts(
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
+}
+
+/**
+ * Le produit u·v de l'IPP, coefficient numérique DEVANT : `\\dfrac{1}{2}xe^{2x}`,
+ * `-\\dfrac{3}{2}xe^{-2x}`, et non `x\\dfrac{1}{2}e^{2x}` ni `3x\\left(-\\dfrac{1}{2}e^{-2x}\\right)`
+ * (revue du lot 4 de l'ADR 0024 : l'IPP sur e^{ax+b} rendait v = \\dfrac{1}{a}e^{ax+b}).
+ * k = −1 met le signe devant (`-x^2e^{-x}`, pas `x^2\\left(-e^{-x}\\right)`) ; k = 1
+ * garde `simplifiedMultiply(u, v)`.
+ */
+function coefficientFirstProduct(u: MathNode, v: MathNode): MathNode {
+	let k: Rational = ONE;
+	const rest: MathNode[] = [];
+	for (const operand of [u, v]) {
+		const { sign, inner } = unwrapSign(operand);
+		if (sign === -1) k = negRational(k);
+		for (const { factor } of flattenProductShallow(inner)) {
+			const value = extractExactRational(factor);
+			if (value === null) rest.push(factor);
+			else k = mulRational(k, value);
+		}
+	}
+	if (isOneRational(k) || rest.length === 0) return simplifiedMultiply(u, v);
+	const product = rest.reduce((acc, factor) => simplifiedMultiply(acc, factor));
+	return withRationalCoefficient(k, product);
 }
 
 /**

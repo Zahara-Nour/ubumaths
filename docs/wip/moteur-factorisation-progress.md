@@ -771,3 +771,37 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
   `normal/rational.ts` ; hors de l'inventaire de la factorisation.
 - `pedagogical-solve/quadratic-inequality.ts:252-255` recopie toujours `buildCZeroCaseSteps`
   (B4).
+
+## 9. Lot 4 — V18, écriture des primitives (décision de David, 2026-10-11)
+
+« oui, go lot 4 » : quand tous les termes d'une primitive portent la même exponentielle, l'étape
+« On simplifie » développe puis met l'exponentielle en facteur, par les stratégies du lot 2
+(`(x^2-2x+2)e^x`, `(x-1)e^x`, `\dfrac{1}{2}(\sin x-\cos x)e^x` pour V17). Sans exponentielle
+commune, forme développée et rangée. Coefficients fractionnaires : `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}`
+accepté pour l'instant.
+
+- [x] **Tests d'abord** : `pedagogical-integration/__tests__/primitive-ecriture.test.ts`, bloc
+      « exponentielle commune » (entrées parsées, lycée et supérieur, rendu final + `toLatex` de la
+      primitive, F′ = f par `areEquivalent(differentiate(F), f)` sur la primitive, la ligne brute,
+      la développée et la factorisée, chaînage des étapes, ligne développée affichée, non-régressions
+      ∫x cos x, ∫3x cos x, ∫ln x, ∫e^{2x}, ∫3e^{2x}, intégrales définies ∫₀¹xeˣ = `1`,
+      ∫₀¹x²eˣ = `e - 2`, ∫₀¹3xe^{2x}). Vus rouges : **32 / 39** (les 7 verts sont les
+      non-régressions) ; ∫xe^{2x}, ∫xe^{-x}, ∫3xe^{-2x} levaient `NotImplemented`.
+- [x] **Implémentation** : `pushSimplifyStep` → `factorCommonExponential` (`developper` puis
+      `factoriser` de pedagogical-simplify ; exposants comparés par `areEquivalent`, car `-2x` est
+      `opposite(2)·x` ou `opposite(2·x)` selon l'auteur) ; rendu brute = développée = factorisée ;
+      explication « On développe, puis on met e^{u} en facteur. ». L'IPP accepte `e^{ax+b}`
+      (`isAffineOf`, `_helpers.ts`) — nécessaire pour ∫xe^{2x} et ∫xe^{-x}.
+- [x] **Relevés** : ∫x²eˣ → `(x^2-2x+2)e^x` ; ∫3x²eˣ → `3(x^2-2x+2)e^x` ; ∫xeˣ → `(x-1)e^x` ;
+      ∫xe^{2x} → `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}` ; ∫eˣ sin x (V17) →
+      `\left(\dfrac{\sin x}{2}-\dfrac{\cos x}{2}\right)e^x` (le ½ n'est pas sorti : V17 réduit,
+      pas retiré) ; ∫xe^{-x} → `-(x+1)e^{-x}` ; ∫3xe^{-2x} →
+      `-\left(\dfrac{3x}{2}+\dfrac{3}{4}\right)e^{-2x}` ; ∫x³eˣ → `(x^3-3x^2+6x-6)e^x` ;
+      ∫(2x+1)eˣ → `(2x-1)e^x`.
+- [x] **Snapshot changé** : démo `parts-simple` ∫xeˣ (×4 rendus) — nouvelle étape « On simplifie »,
+      primitive `(x-1)e^x`.
+- [x] Vérifications : pedagogical-integration, integration, pedagogical-simplify (44 fichiers,
+      2 083 tests), atelier (100 fichiers, 2 025 tests) ; `pnpm test:server src/lib/mathAST
+src/lib/questions/generator` une fois : 498 fichiers, 20 745 tests verts ;
+      `check:incremental` 0 ; `types:cliquet` tenu (0 erreur, fichier existant) ; `lint:fast` rien.
+- [ ] code-reviewer · [ ] PR

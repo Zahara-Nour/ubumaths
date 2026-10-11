@@ -193,7 +193,8 @@ du code mort → écriture des primitives (V18).
 **État au 2026-10-11 : lot 1 (le noyau), lot 2 (les stratégies, branchées sur l'intention
 `factoriser`, donc sur l'atelier), lot 3a (limites et intégration, voir
 [§ Les appelants](#les-appelants-migrés-lot-3a)) et lot 3b (le ménage, voir
-[§ Le ménage](#le-ménage-lot-3b)) écrits.** `normalize` et `solve` factorisent encore comme
+[§ Le ménage](#le-ménage-lot-3b)) écrits ; lot 4 (l'exponentielle commune d'une primitive mise
+en facteur, voir « Dérivées et primitives finissent par « On simplifie » » plus bas) écrit.** `normalize` et `solve` factorisent encore comme
 avant (ADR 0006 : `normalize` est sur le chemin du décideur).
 
 ### Carte du code
@@ -447,7 +448,18 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
   gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
   `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
-  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. L'étape d'IPP écrit `uv - \int v\,du`,
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Exponentielle commune** (lot 4 de
+  l'ADR 0024, `developAndFactor`) : l'étape développe (intention `developper`), puis met en
+  facteur, par `factoriser`, la `e^{u}` que portent au moins deux termes (exposants comparés par
+  `areEquivalent`, écrits partout comme dans la primitive brute) : ∫x²eˣ → `(x^2-2x+2)e^x`,
+  ∫xe^{-x} → `-(x+1)e^{-x}`, ∫xe^{2x} → `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}` (accepté
+  pour l'instant), ∫eˣ sin x → `\left(\dfrac{\sin x}{2}-\dfrac{\cos x}{2}\right)e^x`, ∫x²e^{2x}+x →
+  `(…)e^{2x}+\dfrac{x^2}{2}`. Le rendu montre brute = développée = factorisée, la ligne
+  développée omise (et le texte réduit à « On met eᵘ en facteur ») si elle égale la brute.
+  Sans exponentielle partagée, une parenthèse de `- ∫ v du` est développée puis rangée par `tidy`
+  (∫x² sin x) ; sinon `tidy` seul (∫x cos x, ∫ln x, la parenthèse de u dans ∫(2x+1) sin x). Seul
+  `PedagogicalSimplifyNotImplemented` fait revenir à `tidy` ; les autres erreurs remontent. L'IPP accepte `e^{ax+b}`
+  (`isAffineOf`, `_helpers.ts`), plus seulement `e^x`. L'étape d'IPP écrit `uv - \int v\,du`,
   l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
   (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
   (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).

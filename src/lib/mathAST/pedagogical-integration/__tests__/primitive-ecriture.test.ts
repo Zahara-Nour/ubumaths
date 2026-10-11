@@ -16,10 +16,16 @@
  * `\ln\left( \left| u \right| \right)`.
  */
 import { describe, expect, it } from 'vitest';
+import { containsVariable } from '../../common/contains-variable';
+import { extractExactRational } from '../../common/numeric';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import type { Verbosity } from '../../common/verbosity';
+import { differentiate } from '../../differentiation';
+import { flattenProductShallow } from '../../flatten';
+import { areEquivalent } from '../../equivalence';
 import { compile } from '../../eval/compile';
 import { toLatex as toLatexSafe } from '../../latex-generator';
+import { findNodes } from '../../transforms';
 import { parseLatex } from '../../parser';
 import type { MathNode } from '../../types';
 import { generatePedagogicalIntegrationSteps, PedagogicalIntegrationRenderer } from '..';
@@ -316,5 +322,263 @@ describe('« On simplifie » : une explication vraie même quand on ne fait que 
 		const simplify = rendered.find((s) => s.rule === 'simplify-result');
 		expect(simplify?.title).toBe('On simplifie');
 		expect(simplify?.explanation).toBe('On écrit le résultat sous une forme simplifiée.');
+	});
+});
+
+// =============================================================================
+// Lot 4 de l'ADR 0024 (V17, V18) : l'exponentielle commune mise en facteur
+// =============================================================================
+
+/**
+ * Décision de David du 2026-10-11 (journal moteur-factorisation §9) : quand
+ * TOUS les termes de la primitive portent la même exponentielle e^{u},
+ * « On simplifie » développe, puis met e^{u} en facteur, par les stratégies de
+ * `factoriser` (pedagogical-simplify). Sans exponentielle commune : forme
+ * développée et rangée, comme avant.
+ */
+const EXP_FACTOR_CASES: readonly Case[] = [
+	{ integrand: 'x^2e^x', expected: '\\left( x^2 - 2 x + 2 \\right) \\exponentialE^x' },
+	{ integrand: '3x^2e^x', expected: '3 \\left( x^2 - 2 x + 2 \\right) \\exponentialE^x' },
+	{ integrand: 'xe^x', expected: '\\left( x - 1 \\right) \\exponentialE^x' },
+	{ integrand: '3xe^x', expected: '3 \\left( x - 1 \\right) \\exponentialE^x' },
+	{
+		integrand: 'xe^{2x}',
+		// coefficients fractionnaires : forme acceptée « pour l'instant » (§9)
+		expected: '\\left( \\dfrac{x}{2} - \\dfrac{1}{4} \\right) \\exponentialE^{2 x}'
+	},
+	{
+		integrand: 'e^x\\sin(x)',
+		// V17 : la forme que donnent les stratégies (pas ½(sin x − cos x)eˣ)
+		expected:
+			'\\left( \\dfrac{\\sin\\left( x \\right)}{2} - \\dfrac{\\cos\\left( x \\right)}{2} \\right) \\exponentialE^x'
+	},
+	{ integrand: 'xe^{-x}', expected: '-\\left( x + 1 \\right) \\exponentialE^{-x}' },
+	{
+		integrand: '3xe^{-2x}',
+		expected: '-\\left( \\dfrac{3 x}{2} + \\dfrac{3}{4} \\right) \\exponentialE^{-2 x}'
+	},
+	{
+		integrand: 'x^3e^x',
+		expected: '\\left( x^3 - 3 x^2 + 6 x - 6 \\right) \\exponentialE^x'
+	},
+	{ integrand: '(2x+1)e^x', expected: '\\left( 2 x - 1 \\right) \\exponentialE^x' }
+];
+
+/** F′ = f exactement : la dérivée de F est équivalente à l'intégrande. */
+function expectExactDerivative(F: MathNode, integrand: string): void {
+	const derivative = differentiate(F, { variable: 'x' });
+	expect(areEquivalent(derivative, parseLatex(integrand))).toBe(true);
+}
+
+describe('exponentielle commune : développée puis mise en facteur', () => {
+	for (const level of LEVELS) {
+		it.each(EXP_FACTOR_CASES)(
+			`${level} — ∫ $integrand dx s'écrit $expected`,
+			({ integrand, expected }) => {
+				const { result, rendered } = run(integrand, level, 'summarized');
+				expect(finalPrimitiveLatex(rendered)).toBe(expected);
+				expect(toLatexSafe(result.antiderivative)).toBe(expected);
+				expectExactDerivative(result.antiderivative, integrand);
+			}
+		);
+	}
+
+	it.each(EXP_FACTOR_CASES)(
+		'∫ $integrand dx : « On simplifie » part de la méthode, F′ = f des deux côtés',
+		({ integrand }) => {
+			const { result, rendered } = run(integrand, 'lycee', 'detailed');
+			const simplify = rendered.find((s) => s.rule === 'simplify-result');
+			expect(simplify?.title).toBe('On simplifie');
+			expect(simplify?.explanation).toMatch(/en facteur/);
+			const top = result.steps;
+			const index = top.findIndex((s) => s.rule === 'simplify-result');
+			expect(index).toBeGreaterThan(0);
+			// Chaque étape part du résultat de la précédente
+			expect(toLatexSafe(top[index].before)).toBe(toLatexSafe(top[index - 1].after));
+			expect(toLatexSafe(top[index + 1].before)).toBe(toLatexSafe(top[index].after));
+			expectExactDerivative(top[index].before, integrand);
+			expectExactDerivative(top[index].after, integrand);
+			const developed = top[index].bindings?.developed;
+			if (developed) expectExactDerivative(developed, integrand);
+		}
+	);
+
+	it('∫ x²eˣ dx : la ligne développée est montrée entre la brute et la factorisée', () => {
+		const { rendered } = run('x^2e^x', 'lycee', 'summarized');
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		const latex = simplify?.expressionLatex ?? '';
+		expect(latex).toContain(
+			'x^2 \\exponentialE^x - 2 \\left( x \\exponentialE^x - \\exponentialE^x \\right)'
+		);
+		expect(latex).toContain('= x^2 \\exponentialE^x - 2 x \\exponentialE^x + 2 \\exponentialE^x');
+		expect(latex).toContain('= \\left( x^2 - 2 x + 2 \\right) \\exponentialE^x');
+	});
+
+	it.each([
+		['x \\cos(x)', 'x \\sin\\left( x \\right) + \\cos\\left( x \\right)'],
+		['\\ln(x)', 'x \\ln\\left( x \\right) - x'],
+		['3x \\cos(x)', '3 x \\sin\\left( x \\right) + 3 \\cos\\left( x \\right)']
+	])('sans exponentielle commune, ∫ %s dx reste développée : %s', (integrand, expected) => {
+		const { result, rendered } = run(integrand, 'lycee', 'detailed');
+		expect(finalPrimitiveLatex(rendered)).toBe(expected);
+		expectExactDerivative(result.antiderivative, integrand);
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(simplify?.explanation ?? '').not.toMatch(/en facteur/);
+	});
+
+	it.each([
+		['e^{2x}', '\\dfrac{1}{2} \\exponentialE^{2 x}'],
+		['3e^{2x}', '\\dfrac{3}{2} \\exponentialE^{2 x}']
+	])('un terme seul, ∫ %s dx, ne change pas : %s', (integrand, expected) => {
+		const { rendered } = run(integrand, 'lycee', 'summarized');
+		expect(finalPrimitiveLatex(rendered)).toBe(expected);
+	});
+
+	it.each([
+		['x e^x', '0', '1', '1', 1],
+		['x^2 e^x', '0', '1', '\\exponentialE - 2', Math.E - 2],
+		['3x e^{2x}', '0', '1', null, (3 * (Math.E ** 2 + 1)) / 4]
+	] as const)('∫ %s dx de %s à %s : valeur exacte %s', (integrand, lower, upper, latex, value) => {
+		for (const level of LEVELS) {
+			const result = generatePedagogicalIntegrationSteps(parseLatex(integrand), {
+				level,
+				definite: { lower: parseLatex(lower), upper: parseLatex(upper) }
+			});
+			const valueNode = result.value as MathNode;
+			expect(compile(valueNode)({})).toBeCloseTo(value, 9);
+			if (latex !== null) expect(toLatexSafe(valueNode)).toBe(latex);
+			expect(toLatexSafe(valueNode)).not.toMatch(UNCOMPUTED_EXPONENT);
+		}
+	});
+});
+
+// =============================================================================
+// Revue du lot 4 : le coefficient numérique devant, dans les lignes d'IPP
+// =============================================================================
+
+/** Un facteur qui COMMENCE par un nombre (`\\dfrac{1}{2}`, `-\\dfrac{1}{2}e^{u}`). */
+function startsWithNumber(factor: MathNode): boolean {
+	const inner =
+		factor.type === 'opposite' || factor.type === 'delimiter'
+			? factor.type === 'opposite'
+				? factor.operand
+				: factor.content
+			: factor;
+	if (inner !== factor) return startsWithNumber(inner);
+	const first = flattenProductShallow(inner)[0]?.factor ?? inner;
+	return !containsVariable(first, 'x') && extractExactRational(first) !== null;
+}
+
+/** Les produits où un nombre suit une lettre (`x \\dfrac{1}{2} e^{2x}`). */
+function numbersAfterLetters(node: MathNode): string[] {
+	return findNodes(node, (n) => n.type === 'multiplication')
+		.filter((product) => {
+			const factors = flattenProductShallow(product).map(({ factor }) => factor);
+			const firstLetter = factors.findIndex((f) => containsVariable(f, 'x'));
+			return firstLetter !== -1 && factors.slice(firstLetter + 1).some(startsWithNumber);
+		})
+		.map((product) => toLatexSafe(product));
+}
+
+describe('IPP : aucun nombre après une lettre (coefficient devant)', () => {
+	it.each(['xe^{2x}', '3xe^{-2x}', 'x^2e^{2x}', '3xe^x', 'x^2e^x'])('∫ %s dx', (integrand) => {
+		for (const level of LEVELS) {
+			const { result } = run(integrand, level, 'summarized');
+			for (const step of flattenRaw(result.steps)) {
+				const nodes = [step.before, step.after, ...Object.values(step.bindings ?? {})];
+				for (const node of nodes) {
+					expect(numbersAfterLetters(node), `${step.rule} : ${toLatexSafe(node)}`).toEqual([]);
+				}
+			}
+		}
+	});
+
+	it('∫ xe^{2x} dx : uv s’écrit \\dfrac{1}{2}xe^{2x}', () => {
+		const { rendered } = run('xe^{2x}', 'lycee', 'summarized');
+		const formula = rendered.find((s) => s.rule === 'apply-parts-formula');
+		expect(formula?.expressionLatex).toContain(
+			'& = \\dfrac{1}{2} x \\exponentialE^{2 x} - \\int \\dfrac{1}{2} \\exponentialE^{2 x}\\,dx'
+		);
+	});
+
+	it('∫ 3xe^{-2x} dx : uv s’écrit -\\dfrac{3}{2}xe^{-2x}', () => {
+		const { rendered } = run('3xe^{-2x}', 'lycee', 'summarized');
+		const formula = rendered.find((s) => s.rule === 'apply-parts-formula');
+		expect(formula?.expressionLatex).toContain(
+			'& = -\\dfrac{3}{2} x \\exponentialE^{-2 x} - \\int'
+		);
+	});
+});
+
+// =============================================================================
+// Revue du lot 4 (2) : parenthèse d'IPP développée, exposant stable, texte juste
+// =============================================================================
+
+describe('parenthèse d’IPP sans exponentielle commune à tous les termes', () => {
+	it.each([
+		[
+			'x^2e^{2x}+x',
+			'\\left( \\dfrac{x^2}{2} - \\dfrac{x}{2} + \\dfrac{1}{4} \\right) \\exponentialE^{2 x} + \\dfrac{x^2}{2}'
+		],
+		[
+			'x^2\\sin(x)',
+			'-x^2 \\cos\\left( x \\right) + 2 x \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)'
+		],
+		[
+			'x^2\\cos(x)+x',
+			// ordre de `tidy` (décision de David du 2026-10-11)
+			'x^2 \\sin\\left( x \\right) + 2 x \\cos\\left( x \\right) + \\dfrac{x^2}{2} - 2 \\sin\\left( x \\right)'
+		],
+		// parenthèse venue de u, pas de l'IPP : gardée
+		[
+			'(2x+1)\\sin(x)',
+			'-\\cos\\left( x \\right) \\left( 2 x + 1 \\right) + 2 \\sin\\left( x \\right)'
+		]
+	])('∫ %s dx s’écrit %s', (integrand, expected) => {
+		for (const level of LEVELS) {
+			const { result, rendered } = run(integrand, level, 'summarized');
+			expect(finalPrimitiveLatex(rendered)).toBe(expected);
+			expectExactDerivative(result.antiderivative, integrand);
+		}
+	});
+});
+
+describe('une seule écriture de l’exposant dans l’étape « On simplifie »', () => {
+	it.each([
+		['xe^{x/2}', '2 \\left( x - 2 \\right) \\exponentialE^{x / 2}', '\\dfrac{x}{2}'],
+		['3xe^{\\frac{x}{2}}', '6 \\left( x - 2 \\right) \\exponentialE^{\\dfrac{x}{2}}', 'x / 2']
+	])('∫ %s dx s’écrit %s, sans %s', (integrand, expected, foreign) => {
+		const { result, rendered } = run(integrand, 'lycee', 'detailed');
+		expect(finalPrimitiveLatex(rendered)).toBe(expected);
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(`${simplify?.explanation} ${simplify?.expressionLatex}`).not.toContain(foreign);
+		expectExactDerivative(result.antiderivative, integrand);
+	});
+});
+
+describe('le texte de « On simplifie » ne promet pas une ligne cachée', () => {
+	it.each([
+		['xe^x', 'On met \\exponentialE^x en facteur.'],
+		['3xe^x', 'On met \\exponentialE^x en facteur.'],
+		['x^2e^x', 'On développe, puis on met \\exponentialE^x en facteur.']
+	])('∫ %s dx : « %s »', (integrand, explanation) => {
+		const { rendered } = run(integrand, 'lycee', 'detailed');
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(simplify?.explanation).toBe(explanation);
+		const lines = (simplify?.expressionLatex ?? '').split('= ').length;
+		expect(lines).toBe(explanation.startsWith('On développe') ? 3 : 2);
+	});
+});
+
+describe('IPP : un signe moins devant, pas dans une parenthèse', () => {
+	it.each([
+		['x^2e^{-x}', '-x^2 \\exponentialE^{-x}', 'x^2 \\left( -\\exponentialE^{-x} \\right)'],
+		['x\\sin(x)', '-x \\cos\\left( x \\right)', 'x \\left( -\\cos\\left( x \\right) \\right)']
+	])('∫ %s dx : uv s’écrit %s', (integrand, uv, old) => {
+		const { result, rendered } = run(integrand, 'lycee', 'summarized');
+		const formula = rendered.find((s) => s.rule === 'apply-parts-formula');
+		expect(formula?.expressionLatex).toContain(`& = ${uv} - \\int`);
+		expect(formula?.expressionLatex).not.toContain(old);
+		expectExactDerivative(result.antiderivative, integrand);
 	});
 });

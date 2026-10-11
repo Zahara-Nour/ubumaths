@@ -112,7 +112,9 @@ function lookupExplanation(
  *   standard format. The pedagogical narrative around `u`, `dv`, `du`, `v`
  *   lives in the title and explanation.
  *
- * - `simplify-result` (« On simplifie ») : one line, `raw = tidied`.
+ * - `simplify-result` (« On simplifie ») : one line, `raw = tidied` ; quand
+ *   l'exponentielle est mise en facteur et que la forme développée diffère de la
+ *   brute, trois lignes : brute, `= développée`, `= factorisée`.
  *
  * - `add-constant` and `identify-integrand` : single-line render (no
  *   transformation, just narration).
@@ -176,6 +178,12 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 		case 'simplify-result': {
 			// Une ligne, comme « On simplifie » des dérivées : brute = rangée
 			const raw = toLatex(withExplicitNumberProducts(step.before));
+			// Exponentielle mise en facteur (lot 4 de l'ADR 0024) : brute = développée = factorisée
+			const developed = step.bindings?.developed;
+			if (developed && toLatex(developed) !== beforeLatex) {
+				const lines = [`  & ${raw}`, `  & = ${toLatex(developed)}`, `  & = ${afterLatex}`];
+				return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+			}
 			return `${raw} = ${afterLatex}`;
 		}
 
