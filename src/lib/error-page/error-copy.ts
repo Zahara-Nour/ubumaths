@@ -16,7 +16,7 @@
 
 export interface ErrorCopy {
 	title: string;
-	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 404). */
+	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 403, 404). */
 	explanation: string | null;
 	/** Verbe de la phrase sur π : « Le nombre 401 {verbe} à la 1 197ᵉ décimale de π ». */
 	piVerb: string;
@@ -48,7 +48,9 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	},
 	403: {
 		title: 'Accès refusé',
-		explanation: 'Cette page existe bien, mais elle ne t’est pas ouverte.'
+		explanation: null,
+		piVerb: 'a ses entrées',
+		piTwist: '\u00a0; ta page, elle, ne t’ouvre pas les siennes'
 	},
 	404: {
 		title: 'Page introuvable',
