@@ -3,7 +3,7 @@
  * s'ouvre seule ; au clavier, Entrée l'ouvre et Échap la referme en rendant le focus.
  */
 import { userEvent } from 'vitest/browser';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AudienceWheel from '../AudienceWheel.svelte';
 
@@ -71,5 +71,25 @@ describe('AudienceWheel', () => {
 		await userEvent.keyboard('{Enter}');
 		await expect.element(toggle).toHaveAttribute('aria-expanded', 'true');
 		expect(screen.container.textContent).not.toMatch(/Tu es… \?/);
+	});
+
+	describe('au bout d’une minute (WCAG 2.2.2)', () => {
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
+		it('la flamme cesse de vaciller : plus aucune animation sans fin', async () => {
+			vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+			const { screen } = await renderWheel();
+			const flame = screen.container.querySelector('.flamme') as SVGElement;
+			expect(getComputedStyle(flame).animationName).not.toBe('none');
+			vi.advanceTimersByTime(59_000);
+			await Promise.resolve();
+			expect(screen.container.querySelector('.still')).toBeNull();
+			vi.advanceTimersByTime(1_000);
+			await expect.poll(() => getComputedStyle(flame).animationName).toBe('none');
+			const light = screen.container.querySelector('.light') as HTMLElement;
+			expect(getComputedStyle(light).animationName).toBe('none');
+		});
 	});
 });

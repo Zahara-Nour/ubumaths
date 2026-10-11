@@ -34,6 +34,13 @@
 
 	const ICONS = { student: Backpack, parent: HeartHandshake, teacher: Presentation };
 
+	/**
+	 * Au bout d'une minute, tout se pose pour de bon : la dérive s'arrête, la flamme cesse de
+	 * vaciller (WCAG 2.2.2 : pas de mouvement sans fin de plus de 5 s ; décision de David,
+	 * 2026-10-11). Les effets de survol restent : c'est le visiteur qui les déclenche.
+	 */
+	const SETTLE_AFTER_S = 60;
+
 	/** Décalages des trois choix : un arc qui s'enroule vers la gauche en montant */
 	const OFFSETS = [
 		{ x: 0, y: 4.25 },
@@ -53,6 +60,8 @@
 	let sideways: 'left' | 'right' | null = $state(null);
 	/** Posée : elle a cessé de dériver d'elle-même (l'invitation revient) */
 	let landed = $state(false);
+	/** Au bout d'une minute : plus rien ne bouge de lui-même */
+	let still = $state(false);
 
 	/** Identifiants uniques des dégradés de la chandelle */
 	const uid = $props.id();
@@ -155,6 +164,12 @@
 		});
 	}
 
+	// La flamme et sa lumière cessent de vaciller au bout d'une minute
+	$effect(() => {
+		const timer = setTimeout(() => (still = true), SETTLE_AFTER_S * 1000);
+		return () => clearTimeout(timer);
+	});
+
 	// La dérive : une horloge qui ralentit jusqu'à l'arrêt quand on tient la roue
 	$effect(() => {
 		if (placement !== 'orbit' || !around || !root) return;
@@ -217,6 +232,12 @@
 			const dt = Math.min(0.1, (now - last) / 1000);
 			last = now;
 			elapsed += dt;
+			// Au bout d'une minute, une dernière escale, définitive ; elle ne se dérobe plus
+			if (elapsed > SETTLE_AFTER_S && legEnd !== Infinity) {
+				resting = true;
+				legEnd = Infinity;
+				dodged = true;
+			}
 			if (elapsed > legEnd) {
 				resting = !resting;
 				legEnd = elapsed + leg(resting);
@@ -237,6 +258,8 @@
 			place(time, offset);
 			const isLanded = resting && !held && !open && speed < 0.05;
 			if (isLanded !== landed) landed = isLanded;
+			// Posée pour de bon et immobile : l'horloge s'arrête
+			if (legEnd === Infinity && speed < 0.001 && !dodge) return;
 			frame = requestAnimationFrame(tick);
 		});
 		return () => {
@@ -254,6 +277,7 @@
 	class:open
 	class:held
 	class:landed
+	class:still
 	class:flip-x={flipX}
 	class:flip-y={flipY}
 	class:side-left={sideways === 'left'}
@@ -660,6 +684,14 @@
 			transform: scale(0.995) translate(0, 0.5px);
 		}
 	}
+	/* Au bout d'une minute, la flamme ne vacille plus et la lumière ne scintille plus */
+	.still .chandelle .flamme,
+	.still .chandelle .aura,
+	.still .light,
+	.still .toggle::before {
+		animation: none;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.chandelle .flamme,
 		.chandelle .aura,
