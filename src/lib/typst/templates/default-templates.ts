@@ -142,8 +142,8 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
  */
 export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 	id: DEFAULT_TEMPLATE_IDS.assessment,
-	name: 'Evaluation',
-	description: 'Mise en page formelle pour evaluation avec section notation',
+	name: 'Contrôle',
+	description: 'Mise en page formelle pour contrôle avec section notation',
 	type: 'assessment',
 	is_system: true,
 	placeholders: [
