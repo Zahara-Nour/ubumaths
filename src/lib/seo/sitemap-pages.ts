@@ -32,6 +32,7 @@ export interface SitemapPage {
  */
 export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/', priority: 1.0, changefreq: 'weekly' },
+	{ path: '/royaume', priority: 0.9, changefreq: 'monthly' },
 	{ path: '/automaths', priority: 0.9, changefreq: 'weekly' },
 	{ path: '/python', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/games', priority: 0.8, changefreq: 'monthly' },
