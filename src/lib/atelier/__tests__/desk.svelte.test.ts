@@ -11,6 +11,8 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
+import { historyToJson } from '../history-export';
+import { readHistory } from '../history-import';
 
 function desk(definition = 'x^2-3x+1') {
 	const atelier = new Atelier();
@@ -218,6 +220,8 @@ describe('le rappel des saisies', () => {
 		const d = typed('1+1');
 		d.atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		d.runFromPanel('derive', 'f');
+		// La ligne du bouton existe bien : sinon le test ne prouverait rien
+		expect(d.entries).toHaveLength(2);
 
 		d.recallPrevious();
 
@@ -259,6 +263,36 @@ describe('le rappel des saisies', () => {
 		expect(d.draft).toBe('2+2');
 		d.recallNext();
 		expect(d.draft).toBe('2+5');
+	});
+
+	// Revue : « Comparer » remettait le rappel à zéro, et ↓ perdait le brouillon
+	it('un clic sur « Comparer » en plein rappel ne fait pas perdre le brouillon', () => {
+		const d = typed('1+1', '3+3');
+		d.atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
+		d.atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5 ; 6' });
+		d.draft = '2x+';
+		d.recallPrevious();
+
+		d.runFromPanel('compare:M', 'L');
+		expect(d.draft).toBe('3+3');
+		d.recallNext();
+
+		expect(d.draft).toBe('2x+');
+	});
+
+	// Un rejeu est un chargement : comme au rechargement, rien à rappeler — et
+	// surtout pas « Comparer avec M », rejoué comme une saisie (revue)
+	it('un historique rejoué ne se rappelle pas', () => {
+		const source = typed('1+1', '2+2');
+		const read = readHistory(historyToJson(source.entries, new Date()));
+		if (!read.ok) throw new Error(read.message);
+		const d = new CalcDesk(new Atelier());
+
+		d.replay(read.history);
+		expect(d.entries).toHaveLength(2);
+		d.recallPrevious();
+
+		expect(d.draft).toBe('');
 	});
 
 	it('« Repartir de zéro » vide aussi ce qu’on peut rappeler', () => {

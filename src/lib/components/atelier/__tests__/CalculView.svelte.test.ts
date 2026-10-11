@@ -441,6 +441,24 @@ describe('le clavier de Calcul', () => {
 			expect(field.value).toBe('2+2');
 		});
 
+		// Revue : une ligne rappelée qui commence par un point rouvrait la liste,
+		// et `.pose` (aucune commande disponible) bloquait ↑ et ↓
+		it('une commande rappelée n’ouvre pas la liste, et ↑ continue de remonter', async () => {
+			const { field, submit, container } = await typing('');
+			await submit('1+1');
+			await submit('.pose');
+			await userEvent.click(field);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('.pose');
+			expect(container.querySelector('.commandes')).toBeNull();
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('1+1');
+		});
+
 		it('le curseur se place à la fin de la ligne rappelée', async () => {
 			const { field, submit } = await typing('');
 			await submit('12+345');
@@ -485,6 +503,32 @@ describe('le clavier de Calcul', () => {
 			expect(highlighted(container)!.id).toBe(available[0].id);
 		});
 
+		it('↑ depuis la première commande va à la dernière disponible', async () => {
+			const { container } = await typing('.d');
+			const available = [...container.querySelectorAll('.commandes [role="option"]')].filter(
+				(o) => o.getAttribute('aria-disabled') !== 'true'
+			);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+
+			expect(highlighted(container)!.id).toBe(available.at(-1)!.id);
+		});
+
+		it('retaper le début d’une commande surligne de nouveau la première', async () => {
+			const { container, type } = await typing('.d{ArrowDown}');
+			const first = container.querySelector(
+				'.commandes [role="option"]:not([aria-disabled="true"])'
+			);
+			expect(highlighted(container)!.id).not.toBe(first!.id);
+
+			await type('');
+			await userEvent.keyboard('.d');
+			await settle();
+
+			expect(highlighted(container)!.id).toBe(first!.id);
+		});
+
 		it('↑ dans la liste ne rappelle pas une saisie', async () => {
 			const { field, submit, container } = await typing('');
 			await submit('1+1');
@@ -518,6 +562,16 @@ describe('le clavier de Calcul', () => {
 
 			expect(field.value).toBe('.dériver ');
 			expect(document.activeElement).toBe(field);
+		});
+
+		it('Maj+Tab quitte le champ sans rien choisir', async () => {
+			const { field } = await typing('.dér');
+
+			await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+			await settle();
+
+			expect(field.value).toBe('.dér');
+			expect(document.activeElement).not.toBe(field);
 		});
 
 		it('Échap ferme la liste sans toucher au champ ; elle revient à la frappe suivante', async () => {
@@ -559,6 +613,13 @@ describe('le clavier de Calcul', () => {
 			expect(container.querySelector('.modele')?.textContent).toContain(taylor.example);
 
 			await type('');
+
+			expect(container.querySelector('.modele')).toBeNull();
+		});
+
+		// Sa raison est déjà dans la liste : l'appeler « modèle » serait faux
+		it('ne s’affiche pas pour une commande indisponible', async () => {
+			const { container } = await typing('.poser a');
 
 			expect(container.querySelector('.modele')).toBeNull();
 		});

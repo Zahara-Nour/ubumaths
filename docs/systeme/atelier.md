@@ -236,7 +236,7 @@ décisions de David du 2026-10-11) :
   `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par
   `submit` ; deux saisies identiques de suite rappelées une fois ; le brouillon d'avant le premier
   ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; « Repartir de zéro » vide
-  le rappel, et rien n'est conservé au rechargement ;
+  le rappel, et rien n'est rappelable après un rechargement ou un rejeu ;
 - une fois la commande choisie ou tapée avec son espace, son **modèle** (l'exemple du catalogue,
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
   d'élève disponible a un exemple (`commands.test.ts`).

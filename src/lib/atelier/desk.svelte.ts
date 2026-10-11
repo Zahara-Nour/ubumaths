@@ -321,9 +321,13 @@ export class CalcDesk {
 		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
 		this.#gesture = { kind: 'saisie', input: text };
-		this.#recalled = null;
-		// Deux saisies identiques de suite : rappelées une seule fois
-		if (typed && this.#typed.at(-1) !== text) this.#typed.push(text);
+		// Seule une saisie tapée clôt le rappel : « Comparer » rend le brouillon
+		// intact, ↓ doit encore pouvoir revenir à celui d'avant ↑ (revue)
+		if (typed) {
+			this.#recalled = null;
+			// Deux saisies identiques de suite : rappelées une seule fois
+			if (this.#typed.at(-1) !== text) this.#typed.push(text);
+		}
 
 		this.#push({
 			label: text,
@@ -396,7 +400,9 @@ export class CalcDesk {
 	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
 		switch (step.kind) {
 			case 'saisie':
-				this.submit(step.input);
+				// Un rejeu est un chargement : comme au rechargement, rien à rappeler
+				// par ↑ (« Comparer avec M » y est rejoué comme une saisie)
+				this.#submit(step.input, false);
 				return null;
 			case 'action':
 				if (step.action === 'image') this.image(step.name, step.value ?? '');

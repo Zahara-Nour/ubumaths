@@ -87,6 +87,8 @@
 		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
 	}
 
+	const catalog = $derived(commandCatalog(desk.session.engine));
+
 	/**
 	 * Les commandes à proposer, filtrées par ce qui est déjà tapé (§5 N1, N2).
 	 *
@@ -95,8 +97,6 @@
 	 * découverte et l'exécution n'étaient pas d'accord, et c'est la découverte
 	 * qui est le point de ce lot.
 	 */
-	const catalog = $derived(commandCatalog(desk.session.engine));
-
 	const suggestions = $derived.by(() => {
 		if (!desk.draft.startsWith('.')) return [] as AtelierCommand[];
 		// Un espace signifie que la commande est choisie : on ne propose plus rien.
@@ -109,12 +109,15 @@
 			.slice(0, 8);
 	});
 
+	/** Préfixe des ids : deux vues Calcul montées ne doivent pas se confondre. */
+	const uid = $props.id();
+
 	/**
 	 * La liste des commandes au clavier (phase 0 `atelier-cas-phase0.md`, PR 1).
 	 *
-	 * Échap la ferme jusqu'à la frappe suivante. Le surlignage est retenu par
-	 * NOM : quand la liste se refiltre, il reste sur la même commande si elle y
-	 * est encore, sinon il revient à la première disponible.
+	 * Échap la ferme jusqu'à la frappe suivante, comme un rappel par ↑ / ↓. Le
+	 * surlignage est retenu par NOM, et toute frappe le remet sur la première
+	 * commande disponible.
 	 */
 	let dismissed = $state(false);
 	let highlightedName = $state<string | null>(null);
@@ -125,14 +128,26 @@
 		available.find((c) => c.name === highlightedName) ?? available[0] ?? null
 	);
 	const activeId = $derived(
-		listOpen && active !== null ? `commande-${suggestions.indexOf(active)}` : undefined
+		listOpen && active !== null ? `${uid}-commande-${suggestions.indexOf(active)}` : undefined
 	);
 
 	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
 	const writing = $derived(commandBeingWritten(catalog, desk.draft));
 	const model = $derived(
-		writing === null ? null : (writing.unavailable ?? writing.example ?? writing.description)
+		writing === null || writing.unavailable !== undefined
+			? null
+			: (writing.example ?? writing.description)
 	);
+
+	/**
+	 * Une frappe rouvre la liste et remet le surlignage sur la première
+	 * commande disponible : sans ça, effacer puis retaper `.d` gardait la
+	 * commande surlignée avant (revue).
+	 */
+	function handleInput() {
+		dismissed = false;
+		highlightedName = null;
+	}
 
 	/** Déplacer le surlignage parmi les commandes disponibles, en boucle. */
 	function move(step: 1 | -1) {
@@ -149,7 +164,10 @@
 	 * ferait quitter le champ.
 	 */
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.isComposing || event.altKey || event.ctrlKey || event.metaKey) return;
+		// Safari envoie l'Entrée qui valide une saisie IME avec `isComposing`
+		// faux, mais le code 229
+		const composing = event.isComposing || event.keyCode === 229;
+		if (composing || event.altKey || event.ctrlKey || event.metaKey) return;
 
 		if (listOpen) {
 			if (event.key === 'Escape') {
@@ -173,10 +191,15 @@
 		// Le curseur se place seul à la fin de la ligne rappelée : la norme HTML
 		// l'y met quand un script change la valeur d'un champ (mesuré : un
 		// `setSelectionRange` ajouté ne changeait rien au test qui le vérifie)
-		if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+		// Maj+↑ / Maj+↓ sélectionnent le texte : on les laisse au navigateur
+		if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && !event.shiftKey) {
 			event.preventDefault();
 			if (event.key === 'ArrowUp') desk.recallPrevious();
 			else desk.recallNext();
+			// Une ligne rappelée qui commence par un point rouvrirait la liste, et
+			// ↑ / ↓ y resteraient pris (`.pose` : rien à surligner, revue) — elle
+			// revient à la frappe suivante
+			dismissed = true;
 		}
 	}
 
@@ -352,13 +375,13 @@
 			surligné est annoncé par `aria-activedescendant`. Les boutons gardent
 			le clic (et le toucher) ; `tabindex="-1"` les sort du parcours au Tab.
 		-->
-		<ul class="commandes" id="commandes-calcul" role="listbox" aria-label="Commandes disponibles">
+		<ul class="commandes" id="{uid}-commandes" role="listbox" aria-label="Commandes disponibles">
 			{#each suggestions as command, index (command.name)}
 				<li role="none">
 					<button
 						type="button"
 						role="option"
-						id="commande-{index}"
+						id="{uid}-commande-{index}"
 						tabindex="-1"
 						aria-selected={command === active}
 						aria-disabled={command.unavailable !== undefined}
@@ -376,7 +399,7 @@
 	{/if}
 
 	{#if model !== null}
-		<p class="modele" id="modele-calcul">Modèle : <code>{model}</code></p>
+		<p class="modele" id="{uid}-modele">Modèle : <code>{model}</code></p>
 	{/if}
 
 	<form onsubmit={submit}>
@@ -389,11 +412,11 @@
 			role="combobox"
 			aria-autocomplete="list"
 			aria-expanded={listOpen}
-			aria-controls={listOpen ? 'commandes-calcul' : undefined}
+			aria-controls={listOpen ? `${uid}-commandes` : undefined}
 			aria-activedescendant={activeId}
-			aria-describedby={model !== null ? 'modele-calcul' : undefined}
+			aria-describedby={model !== null ? `${uid}-modele` : undefined}
 			onkeydown={handleKeydown}
-			oninput={() => (dismissed = false)}
+			oninput={handleInput}
 			aria-label="Calcul, définition ou commande"
 			placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
 		/>

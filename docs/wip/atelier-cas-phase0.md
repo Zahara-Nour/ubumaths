@@ -116,3 +116,9 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   seulement, `#submit(text, typed)`), `commandBeingWritten` (`commands.ts`), combobox dans
   `CalculView.svelte`. Mesuré : le curseur se place seul à la fin d'une ligne rappelée (norme HTML) —
   un `setSelectionRange` ajouté ne changeait rien au test, retiré.
+- 2026-10-11 — revue `code-reviewer` de la PR 1 : corrigés une ligne rappelée commençant par un
+  point qui rouvrait la liste (`.pose` bloquait ↑/↓), « Comparer » en plein rappel qui perdait le
+  brouillon, un historique rejoué rappelable (« Comparer » compris), le surlignage gardé après
+  effacement, Maj+↑/↓, l'Entrée IME de Safari (code 229), les ids fixes (`$props.id()`), « Modèle »
+  affiché pour une commande indisponible. Ouvert pour David : les commandes sans argument (`.aide`,
+  `.exact`…) demandent deux Entrée.
