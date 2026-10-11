@@ -22,6 +22,7 @@ import {
 	getCorrectionReleaseStatus
 } from '$lib/server/worksheets/correction-release';
 import { CORRECTION_RELEASE_MODES } from '$lib/types/worksheets';
+import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -40,6 +41,8 @@ const updateAssignmentSchema = z.object({
 	correction_release_at: z.string().datetime().nullable().optional(),
 	show_corrections: z.boolean().optional(),
 	status: z.enum(['draft', 'active', 'completed', 'cancelled']).optional(),
+	// Niveau de guidage des versions distribuées (ADR 0023)
+	guidance_level: guidanceLevelSchema.optional(),
 	// Multi-class support: update assigned classes
 	class_ids: z.array(z.string().uuid()).max(50, 'Maximum 50 classes per assignment').optional(),
 	// Individual students support
@@ -422,6 +425,14 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 
 			if (updateError) {
 				console.error('Error updating assignment:', updateError);
+				throw error(500, "Erreur lors de la mise a jour de l'assignation");
+			}
+			// La RLS refuse en silence : la ligne rendue doit porter le niveau écrit
+			if (
+				updateData.guidance_level !== undefined &&
+				updatedData?.guidance_level !== updateData.guidance_level
+			) {
+				console.error('Niveau de guidage non écrit :', assignmentId);
 				throw error(500, "Erreur lors de la mise a jour de l'assignation");
 			}
 			updated = updatedData;

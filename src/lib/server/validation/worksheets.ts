@@ -30,6 +30,14 @@ export const worksheetStatusSchema = z.enum(['draft', 'published', 'archived'], 
 });
 
 /**
+ * Niveau de guidage d'une affectation (ADR 0023) : les étiquettes des
+ * versions d'un exercice (`GuidanceLevel`)
+ */
+export const guidanceLevelSchema = z.enum(['guided', 'intermediate', 'autonomous'], {
+	message: 'Niveau de guidage invalide'
+});
+
+/**
  * Variant mode enum
  */
 export const variantModeSchema = z.enum(['none', 'individual', 'n_versions', 'group'], {

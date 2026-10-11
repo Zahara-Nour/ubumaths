@@ -6,8 +6,6 @@
 
 	Features:
 	- Edit points for exercise
-	- Configure variant mode (none, individual, n_versions, group)
-	- Variant config options based on mode
 	- Custom instructions field
 	- Save button calls API
 
@@ -34,12 +32,7 @@
 	import type { ContentLocale } from '$lib/types/locale';
 	import { Loader2, Save, Star } from '@lucide/svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import type {
-		WorksheetExerciseWithExercise,
-		WorksheetSectionRow,
-		VariantMode,
-		VariantConfig
-	} from '$lib/types/worksheets';
+	import type { WorksheetExerciseWithExercise, WorksheetSectionRow } from '$lib/types/worksheets';
 
 	// Types
 	interface Props {
@@ -70,23 +63,12 @@
 	// Form state
 	let points = $state<number | null>(null);
 	let sectionId = $state<string>('');
-	let variantMode = $state<VariantMode>('none');
-	let nVersions = $state<number>(2);
-	let groupSize = $state<number>(2);
 	let customInstructions = $state('');
 	let customInstructionsEn = $state('');
 	let isEssential = $state(false);
 
 	// Saving state
 	let isSaving = $state(false);
-
-	// Variant mode options
-	const variantModeOptions = [
-		{ value: 'none', label: 'Aucune variante' },
-		{ value: 'individual', label: 'Individuel (unique par eleve)' },
-		{ value: 'n_versions', label: 'N versions (nombre fixe)' },
-		{ value: 'group', label: "Groupe (par groupe d'eleves)" }
-	];
 
 	// Section options (with "Sans section" option)
 	let sectionOptions = $derived([
@@ -114,29 +96,9 @@
 	function initializeForm(ex: WorksheetExerciseWithExercise) {
 		points = ex.points;
 		sectionId = ex.section_id || '';
-		variantMode = ex.variant_mode;
-		nVersions = ex.variant_config?.n_versions ?? 2;
-		groupSize = ex.variant_config?.group_size ?? 2;
 		customInstructions = ex.custom_instructions || '';
 		customInstructionsEn = ex.translations?.en?.custom_instructions ?? '';
 		isEssential = ex.is_essential ?? false;
-	}
-
-	/**
-	 * Build variant config from form state
-	 */
-	function buildVariantConfig(): VariantConfig {
-		const config: VariantConfig = {
-			mode: variantMode
-		};
-
-		if (variantMode === 'n_versions') {
-			config.n_versions = nVersions;
-		} else if (variantMode === 'group') {
-			config.group_size = groupSize;
-		}
-
-		return config;
 	}
 
 	/**
@@ -154,8 +116,6 @@
 				body: JSON.stringify({
 					points: points,
 					section_id: sectionId || null,
-					variant_mode: variantMode,
-					variant_config: buildVariantConfig(),
 					custom_instructions: customInstructions.trim() || null,
 					// Never an empty container: typed then cleared must look untranslated.
 					translations: customInstructionsEn.trim()
@@ -259,49 +219,6 @@
 					</p>
 				</div>
 			</div>
-
-			<!-- Variant mode -->
-			<div class="space-y-2">
-				<Label>Mode de variante</Label>
-				<MySelect
-					bind:value={variantMode}
-					items={variantModeOptions}
-					placeholder="Selectionner un mode"
-				/>
-				<p class="text-xs text-muted-foreground">
-					{#if variantMode === 'none'}
-						Tous les eleves recevront le meme {lore.learning.exercise}
-					{:else if variantMode === 'individual'}
-						Chaque eleve recevra une variante unique
-					{:else if variantMode === 'n_versions'}
-						La {lore.learning.exercise} aura un nombre fixe de versions differentes
-					{:else if variantMode === 'group'}
-						Les eleves d'un meme groupe recevront la meme variante
-					{/if}
-				</p>
-			</div>
-
-			<!-- N versions config -->
-			{#if variantMode === 'n_versions'}
-				<div class="space-y-2">
-					<Label for="n-versions">Nombre de versions</Label>
-					<Input id="n-versions" type="number" min={2} max={100} bind:value={nVersions} />
-					<p class="text-xs text-muted-foreground">
-						Nombre de versions differentes de la {lore.learning.exercise}
-					</p>
-				</div>
-			{/if}
-
-			<!-- Group size config -->
-			{#if variantMode === 'group'}
-				<div class="space-y-2">
-					<Label for="group-size">Taille des groupes</Label>
-					<Input id="group-size" type="number" min={2} max={50} bind:value={groupSize} />
-					<p class="text-xs text-muted-foreground">
-						Nombre d'eleves par groupe partageant la meme variante
-					</p>
-				</div>
-			{/if}
 
 			<!-- Custom instructions -->
 			<div class="space-y-2">

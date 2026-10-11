@@ -8,8 +8,9 @@
  * AUTH: Teacher (assignment creator) or Admin only
  *
  * QUERY PARAMS:
- * - studentId (optional): UUID of a student to simulate their view
- *   If not provided, uses a fixed seed for "teacher preview" mode
+ * - studentId (optional): UUID of a student to simulate their view —
+ *   EXACTEMENT sa copie, la même que celle de l'API élève (ADR 0023).
+ *   Absent : la copie de la classe (sans élève), au niveau de l'affectation.
  *
  * RESPONSE:
  * Same format as /api/student/worksheets/[assignmentId]:
@@ -44,9 +45,12 @@ import {
 	fetchAssignmentClasses,
 	formatClassNames
 } from '$lib/server/worksheets/assignment-classes';
-import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
-import { getExerciseContentSafe } from '$lib/exercises/types';
+import type { ExerciseResource } from '$lib/exercises/types';
+import {
+	assignmentCopyScope,
+	resolveWorksheetExerciseCopy,
+	type ExerciseContentRow
+} from '$lib/worksheets/worksheet-copy';
 import {
 	localizedText,
 	asRowTranslations,
@@ -54,9 +58,6 @@ import {
 	asWorksheetConfig,
 	type RowTranslations
 } from '$lib/types/worksheets';
-import type { ContentLocale } from '$lib/types/locale';
-import type { Variable } from '$lib/ubumark';
-import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
 	StudentExerciseView,
 	StudentSectionView,
@@ -77,114 +78,14 @@ const assignmentParamSchema = z.object({
 });
 
 // ============================================================================
-// SEED GENERATION (same as student API)
-// ============================================================================
-
-/**
- * Generates a deterministic seed based on worksheet ID and student ID.
- * Ensures each student gets consistent exercise variations.
- */
-function generateSeed(worksheetId: string, studentId: string): number {
-	const baseString = `${worksheetId}-${studentId}`;
-	let hash = 0;
-	for (let i = 0; i < baseString.length; i++) {
-		const char = baseString.charCodeAt(i);
-		hash = (hash << 5) - hash + char;
-		hash = hash & hash; // Convert to 32-bit integer
-	}
-	return Math.abs(hash);
-}
-
-// ============================================================================
 // TYPES (same as student API)
 // ============================================================================
 
-interface ExerciseData {
-	id: string;
+interface ExerciseData extends ExerciseContentRow {
 	title: string | null;
-	statement_md: string;
-	solution_md: string | null;
-	variables: Variable[] | null;
-	shared: SharedExerciseDefaults | null;
-	variations: ExerciseVariation[] | null;
 	resources: ExerciseResource[] | null;
 	generic_functions: string[] | null;
 	tags: string[] | null;
-}
-
-interface WorksheetExerciseData {
-	id: string;
-	position: number;
-	points: number | null;
-	custom_instructions: string | null;
-	correction_visible: boolean;
-	variation_index: number | null;
-	exercise: ExerciseData;
-}
-
-interface ResolvedExerciseResult {
-	statement: string;
-	correction: string | null;
-	hints?: ExerciseHint[];
-}
-
-// ============================================================================
-// EXERCISE RESOLUTION (same as student API)
-// ============================================================================
-
-function resolveExercise(
-	worksheetExercise: WorksheetExerciseData,
-	seed: number,
-	locale: ContentLocale
-): ResolvedExerciseResult {
-	const exercise = worksheetExercise.exercise;
-
-	const template: Exercise = {
-		id: exercise.id,
-		title: exercise.title ?? undefined,
-		shared: exercise.shared ?? undefined,
-		variations: exercise.variations ?? undefined,
-		distribution_mode: 'on_demand',
-		category: 'application',
-		tags: [],
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString(),
-		created_by: 'system'
-	};
-
-	const result = generateExerciseInstance(template, {
-		seed: seed + worksheetExercise.position,
-		parseAST: false,
-		variationIndex: worksheetExercise.variation_index ?? undefined,
-		locale
-	});
-
-	if (!result.success) {
-		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
-		console.error(`[Preview API] Failed to resolve exercise ${exercise.id}: ${errorMessage}`);
-		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template, 0, locale);
-		return {
-			statement: content.statement_md,
-			correction: content.solution_md
-		};
-	}
-
-	const instance = result.instance;
-	if (!instance) {
-		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template, 0, locale);
-		return {
-			statement: content.statement_md,
-			correction: content.solution_md
-		};
-	}
-
-	return {
-		statement: instance.statement_md,
-		correction: instance.solution_md || null,
-		hints: instance.resolvedHints
-	};
 }
 
 // ============================================================================
@@ -361,6 +262,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				`
 				id,
 				worksheet_id,
+				guidance_level,
+				individualized,
 				instructions,
 				available_from,
 				closes_at,
@@ -446,13 +349,14 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Non-blocking: sections are optional
 		}
 
-		// Determine preview mode and seed
 		const isTeacherMode = !studentId;
-		const seedId = studentId || 'teacher-preview';
-		const seed = generateSeed(worksheet.id, seedId);
 
 		// Language of the whole sheet: exercise content and PDF chrome alike.
 		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
+
+		// La copie de l'élève choisi, ou celle de la classe : le même calcul que
+		// l'API élève (ADR 0023)
+		const copyScope = assignmentCopyScope(fullAssignment, { studentId, locale });
 
 		// Get correction visibility map (for student mode)
 		const exerciseIds = (worksheetExercises ?? []).map((we) => we.id);
@@ -470,16 +374,15 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				continue;
 			}
 
-			const resolved = resolveExercise(
-				{
-					...we,
-					// `correction_visible` est nullable : masquée par défaut.
-					correction_visible: we.correction_visible ?? false,
-					exercise: exerciseData
-				},
-				seed,
-				locale
+			const copy = resolveWorksheetExerciseCopy(
+				{ id: we.id, variation_index: we.variation_index, exercise: exerciseData },
+				copyScope
 			);
+			const resolved = {
+				statement: copy.statement,
+				correction: copy.solution || null,
+				hints: copy.hints
+			};
 
 			// In teacher mode, always show corrections
 			// In student simulation mode, respect visibility settings
@@ -504,9 +407,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				is_essential: we.is_essential ?? false
 			};
 
-			// Fonctions déclarées : lues sur l'exercice (frais), pas sur l'instance
-			// stockée — les instances antérieures n'ont pas ce champ. Sans elles, le
-			// PDF imprime `C'(x)` en erreur.
+			// Fonctions déclarées, lues sur l'exercice : sans elles, le PDF imprime
+			// `C'(x)` en erreur.
 			if (exerciseData.generic_functions) {
 				exerciseView.generic_functions = exerciseData.generic_functions;
 			}

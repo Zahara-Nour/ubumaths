@@ -49,6 +49,12 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportView, WorksheetErrorReportInsert } from '$lib/types/worksheets';
+import {
+	assignmentCopyScope,
+	resolveWorksheetExerciseCopy,
+	worksheetExerciseSeed,
+	type ExerciseContentRow
+} from '$lib/worksheets/worksheet-copy';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Auth check: Must be a student
@@ -105,6 +111,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 				`
 				id,
 				worksheet_id,
+				guidance_level,
+				individualized,
 				worksheets!inner (
 					id,
 					title,
@@ -129,7 +137,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Step 3: Find the worksheet_exercise by exercise_id within this worksheet
 		const { data: worksheetExercise, error: weError } = await locals.supabase
 			.from('worksheet_exercises')
-			.select('id, position')
+			.select('id, position, variation_index, exercise:exercises (id, title, shared, variations)')
 			.eq('worksheet_id', worksheet.id)
 			.eq('exercise_id', exerciseId)
 			.single();
@@ -139,45 +147,22 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(404, 'Exercice non trouve dans ce devoir');
 		}
 
-		// Step 4: Get student's instance to retrieve variation_index and seed
-		let variationIndex: number | null = null;
-		let seed: number | null = null;
-
-		const { data: instanceData, error: instanceError } = await locals.supabase
-			.from('worksheet_instances')
-			.select('variant_seed, instance_data')
-			.eq('worksheet_id', worksheet.id)
-			.eq('student_id', user.id)
-			.single();
-
-		if (instanceError) {
-			// Log but continue - variation info is optional for backwards compatibility
-			console.warn(
-				`[API] Could not retrieve student instance for variation tracking: ${instanceError.message}`,
-				{ worksheetId: worksheet.id, studentId: user.id }
-			);
-		} else if (instanceData) {
-			seed = instanceData.variant_seed ?? null;
-
-			// Extract selectedVariationIndex from instance_data.exercises[position]
-			const exercises = (
-				instanceData.instance_data as { exercises?: Array<{ selectedVariationIndex?: number }> }
-			)?.exercises;
-
-			if (!exercises || !Array.isArray(exercises)) {
-				console.warn('[API] Instance data has no exercises array', {
-					worksheetId: worksheet.id,
-					studentId: user.id
-				});
-			} else if (worksheetExercise.position >= exercises.length) {
-				console.warn('[API] Exercise position out of bounds in instance data', {
-					position: worksheetExercise.position,
-					exercisesLength: exercises.length
-				});
-			} else {
-				variationIndex = exercises[worksheetExercise.position]?.selectedVariationIndex ?? null;
-			}
-		}
+		// Step 4: La version et la graine de la copie de l'élève (ADR 0023), par
+		// le même calcul que l'API élève : la page du prof montre ce qu'il a vu
+		const copyScope = assignmentCopyScope(assignment, { studentId: user.id });
+		const exerciseContent = worksheetExercise.exercise as unknown as ExerciseContentRow | null;
+		const variationIndex = exerciseContent
+			? resolveWorksheetExerciseCopy(
+					{
+						id: worksheetExercise.id,
+						variation_index: worksheetExercise.variation_index,
+						exercise: exerciseContent
+					},
+					copyScope
+				).variationIndex
+			: null;
+		// Graine de la copie : 31 bits, tient dans la colonne `integer`
+		const seed = worksheetExerciseSeed(worksheetExercise.id, copyScope);
 
 		// Step 5: Check report limit (max 10 per exercise per student)
 		const MAX_REPORTS_PER_EXERCISE = 10;

@@ -11,6 +11,7 @@ import type {
 	ExerciseResource
 } from '$lib/exercises/types';
 import type { GradeCode } from '$lib/types/grades';
+import type { GuidanceLevel } from '$lib/worksheets/student-copy';
 import {
 	DEFAULT_CONTENT_LOCALE,
 	isContentLocale,
@@ -349,6 +350,8 @@ export interface WorksheetAssignmentRow {
 	title: string | null;
 	instructions: string | null;
 	individualized: boolean;
+	/** Niveau de guidage des versions distribuées (ADR 0023) ; `GuidanceLevel` attendu */
+	guidance_level: string;
 	assigned_at: string;
 	available_from: string;
 	closes_at: string | null;
@@ -471,6 +474,8 @@ export interface WorksheetAssignmentInsert {
 	title?: string | null;
 	instructions?: string | null;
 	individualized?: boolean;
+	/** Niveau de guidage (ADR 0023) : guidé si absent */
+	guidance_level?: GuidanceLevel;
 	available_from?: string;
 	closes_at?: string | null;
 	correction_release_mode?: CorrectionReleaseMode;

@@ -86,6 +86,9 @@
 	let isReleasing = $state(false);
 	let isRevoking = $state(false);
 	let isPreviewing = $state(false);
+	// Rendu par le corrigé : les valeurs tirées varient d'un élève à l'autre
+	// (affectation individualisée), le corrigé de la classe ne vaut pour aucun
+	let perStudentValuesNotice = $state<string | null>(null);
 	let isLoadingExercises = $state(false);
 	let isTogglingExercise = $state<string | null>(null);
 	let isTypstLoaded = $state(false);
@@ -339,6 +342,8 @@
 			);
 			const data = await response.json();
 			if (!response.ok) throw new Error(data.message);
+			perStudentValuesNotice =
+				typeof data.per_student_values_notice === 'string' ? data.per_student_values_notice : null;
 			const typst = (window as { $typst?: TypstLibrary }).$typst;
 			if (!typst) throw new Error('Typst not loaded');
 			const pdfData = await typst.pdf({ mainContent: data.typst });
@@ -505,4 +510,11 @@
 			PDF
 		</Button>
 	</div>
+
+	{#if perStudentValuesNotice}
+		<p class="flex items-center gap-1.5 border-t px-4 py-2 text-xs text-muted-foreground">
+			<AlertTriangle class="h-3.5 w-3.5" />
+			{perStudentValuesNotice}
+		</p>
+	{/if}
 </div>
