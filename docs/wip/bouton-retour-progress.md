@@ -34,6 +34,14 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 - `confirmLeave` ajouté à `BackLink` : l'édition d'un deck SRS demandait déjà confirmation avant de partir avec des modifications non enregistrées ; le lien garde cette garde.
 - Hors règle, laissés tels quels : « Retour » d'un panneau interne (fiche → affectation sélectionnée), « Retour à l'édition » (bascule de mode), « Retour à la période actuelle », « Retour aux Bataillons » en fin d'envoi de l'email de bienvenue (action de fin).
 
+## Lot 2 — espace élève (fait)
+
+- 20 pages converties : contrôles, cahier de texte, compétences, objectifs, cours, échanges du marché, démineur (statistiques, tournoi), énigmes (énigme, archives, historique, classement), Navadra (combat, grimoire), révisions (création, deck, programme).
+- **« Quitter »** : exercice en cours (`student/exercises/[id]`), session de révision d'un deck et d'un chapitre. Le bouton de fin de session dans `ReviewSession` est hors règle et reste tel quel.
+- Fil d'Ariane retiré du cahier de texte élève ; le bouton du bas « Retour au cahier de texte » devient un vrai lien.
+- Démineur : « Retour au jeu », à droite du titre, devient « Retour au démineur » au-dessus du titre.
+- Hors règle, laissés tels quels : combat Navadra (« Abandonner le combat », « Retour au hub » après la victoire), pagination (`devoirs`, `materials`, `worksheets`).
+
 ## Cas douteux à soumettre à David
 
 - **Journal d'un élève** (`teacher/students/[id]/journal`) : s'ouvre depuis l'accueil, les récompenses et les classes. Le retour mène aux récompenses, comme avant. Faut-il un retour qui suit l'origine (paramètre dans l'adresse) ?
@@ -41,4 +49,6 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
   - `teacher/srs/decks` : ouverte depuis l'accueil seulement → « Retour à l'accueil » ?
   - `teacher/settings/google` : ouverte depuis les classes, la page Google, le tiroir de fichiers du tableau blanc → plusieurs parents.
   - `teacher/competences/export` : ouverte depuis les analytics d'une classe, mais le lien ne transmet pas la classe (la page accepte `?class=`).
+  - Espace élève, pages-carrefours sans retour : `student/assessments`, `exercises`, `riddles`, `worksheets`, `devoirs`, `materials`, `classroom`, `journal`, `reports`, `minesweeper/achievements`, `minesweeper/tournaments`, `revisions`, `navadra`. Elles s'ouvrent depuis l'accueil, « Mon travail » ou des notifications → « Retour à l'accueil » / « Retour à mon travail », ou rien ?
+  - **Énigme du jour** (`student/riddles/[id]`) : traitée comme une page de détail (« Retour aux énigmes »), pas comme une activité (« Quitter »).
   - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).

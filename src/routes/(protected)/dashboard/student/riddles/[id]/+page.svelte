@@ -5,11 +5,10 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto as _goto } from '$app/navigation';
 	import { syncGidouilles } from '$lib/utils/cache-sync';
@@ -76,11 +75,7 @@
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
 	<h1 class="sr-only">{data.riddle.title}</h1>
-	<!-- Back Button -->
-	<Button variant="ghost" href="/dashboard/student/riddles" class="mb-4">
-		<ArrowLeft class="mr-2 h-4 w-4" />
-		Retour aux énigmes
-	</Button>
+	<BackLink href="/dashboard/student/riddles" label="Retour aux énigmes" />
 
 	<!-- Riddle Card in Interactive Mode -->
 	<RiddleCard
