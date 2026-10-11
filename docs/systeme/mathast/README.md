@@ -325,15 +325,15 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
 
 ## Les nœuds
 
-29 variantes dans `types.ts`, discriminées par `type` :
+31 variantes dans `types.ts`, discriminées par `type` :
 
-| Famille    | `type`                                                                                                    |
-| ---------- | --------------------------------------------------------------------------------------------------------- |
-| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice)             |
-| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                           |
-| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                       |
-| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                           |
-| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise` |
+| Famille    | `type`                                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice), `segmentLength` (`AB`), `figureName` (`ABC`) |
+| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                                                             |
+| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                                                         |
+| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                                                             |
+| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise`                                   |
 
 - `multiplication.displayStyle` : `'implicit' | 'dot' | 'cross' | 'star'` ;
   `division.displayStyle` : `'fraction' | 'inline' | 'ratio'`. Le style ne change pas la
@@ -342,6 +342,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   mathématique ; rendues par `LatexGenerator` avec `renderMetadata: true`.
 - `function` porte `name`, `args`, et en option `power` (`\sin^2 x`) et `base`
   (indice de racine `\sqrt[3]{x}`, base de logarithme).
+- **Longueurs de segments** (2026-10-12, lot 1 de `docs/wip/longueurs-segments-progress.md`) :
+  `segmentLength` porte deux `PointName` (`{ letter, primes, index? }` : `A`, `A'`, `A_1`) dans
+  l'ordre écrit ; `figureName` (`ABC`, trois points ou plus) s'affiche tel quel et ne se calcule
+  pas. Le parseur LaTeX (Pratt et rd) les lit selon l'option **`capitalPairs`** :
+  `'length'` (défaut, `DEFAULT_CAPITAL_PAIRS`) — deux majuscules **collées dans la source**, primes
+  et indices compris (`AB`, `A'B'`, `A^{\prime}B^{\prime}`, `A_1B_1`) ; `A B` (espace), `x_{AB}`
+  (indice) et les minuscules restent des produits ; `'product'` — l'arbre d'avant, à l'identique
+  (empreinte de 4 122 saisies, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
+  sur les jetons : `parser/latex/point-names.ts`. `toLatex` écrit `AB`, `A'_{1}B` (relu à
+  l'identique). **Pas encore** : la syntaxe maison (lit toujours un produit), le calcul
+  (`normalize`, `AB` = `BA`, `evaluate`…), la lecture française — lots suivants.
 
 ## Invariants structurels non évidents
 

@@ -15,6 +15,7 @@ import type {
 	Rational
 } from './types';
 import type { MathNode } from '../types';
+import { formatPointNames } from '../common/point-names';
 import type { Unit } from '../units/types';
 
 // =============================================================================
@@ -100,6 +101,17 @@ export function hashMathNode(node: MathNode): string {
 
 		case 'hole':
 			return `H(${node.index})`;
+
+		// Longueur : ses deux points dans l'ordre canonique, donc `AB` et `BA` ont la
+		// même empreinte (décision Q2 du 2026-10-11 : même longueur pour la correction)
+		case 'segmentLength': {
+			const [from, to] = node.points.map((point) => formatPointNames([point])).sort();
+			return `SEG(${from}|${to})`;
+		}
+
+		// Nom de figure : les points dans l'ordre écrit (`ABC` n'est pas `ACB`)
+		case 'figureName':
+			return `FIG(${formatPointNames(node.points)})`;
 
 		case 'addition':
 			return `+(${hashMathNode(node.left)},${hashMathNode(node.right)})`;

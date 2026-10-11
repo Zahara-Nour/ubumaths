@@ -450,6 +450,44 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
    `\overrightarrow`, droite `(AB)` et segment `[AB]`. Terme « longueur (d'un segment) » à verser
    dans `CONTEXT.md` (attention : « point » y désigne déjà le **point du programme**).
 
+## Lot 1 — fait (2026-10-12)
+
+**API** : `SegmentLengthNode { type: 'segmentLength', points: [PointName, PointName] }`,
+`FigureNameNode { type: 'figureName', points: PointName[] }` (≥ 3), `PointName { letter, primes,
+index? }` ; fabrique `pointName`, `segmentLength`, `figureName` ; gardes `isSegmentLength`,
+`isFigureName` ; option `capitalPairs: 'length' | 'product'` de `parseLatex`/`parseLatexSafe`
+(défaut `DEFAULT_CAPITAL_PAIRS = 'length'`), lue par Pratt **et** rd (même coût : un scanner de
+jetons partagé, `parser/latex/point-names.ts`). `toLatex`/`toCustom`/`prettyPrint` écrivent `AB`,
+`A'_{1}B` (`common/point-names.ts`).
+
+**Écart à la spécification** : `AB'` et `A''B` ne sont plus des erreurs mais des longueurs entre
+points primés (conséquence de Q-D) ; `A'` seul reste une erreur.
+
+**Bogue trouvé et corrigé** : `hashMathNode` (`normal/hash.ts`) rendait `'UNKNOWN'` pour tout type
+inconnu, donc `AB ≡ AC` était vrai. Les longueurs s'empreintent par leurs points dans l'ordre
+canonique (`AB` = `BA`, décision Q2), les noms de figure dans l'ordre écrit. Même défaut,
+préexistant, pour `signed-zero` et `piecewise` (non corrigé, hors chantier).
+
+**Défaut retenu : `'length'`**. Avec ce défaut, toutes les suites restent vertes (mathAST
+20 242 tests, questions, exercises, geometry-core, utils, ubumark, atelier, grapheur, components,
+constructions, worksheets, math, extensions, migration, statistics : 40 638 tests), et aucune
+réponse attendue en base ne contient de longueur (enquête du 2026-10-11).
+
+**Renvoyé au lot 2** (traitements provisoires du lot 1, au plus sûr) :
+
+- `normalize` : longueur et nom de figure passent par `normalizeOpaqueNode` (facteur opaque) ;
+  à décider : variable polynomiale de clé canonique (Pythagore, `solve`).
+- `getVariables`/`containsVariable` : une longueur n'est pas une variable (`[]`) ; `substitute`
+  et `evaluate` ne la connaissent pas ; `differentiate` la traite en constante.
+- `numtype` : type inconnu (une longueur est un réel positif) ; `dimensional` : sans dimension.
+- `checkForm('BA', 'AB')` rend `bad_form` (l'ordre des points doit être libre) ; `isSimpleElement`
+  (`transforms.ts`) retire les parenthèses de `(AB)`.
+- `figureName` se compare et se calcule encore comme un atome : le refus avec message (Q-A) est à
+  écrire (`areEquivalent`, `evaluate`, `checkForm`).
+- `integration/classify` la classe en constante (`polynomial`).
+- Syntaxe maison (lot 5) : `toCustom` écrit `AB` et `{AB}/{CD}`, que `parseCustom` relit encore
+  comme un produit.
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
@@ -460,3 +498,5 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
   recommandée ; Q-A et Q-C ajustées, Q-B tranchée, Q-H à Q-L ajoutées ; spécification et plan
   mis à jour. Aucun code, aucun test.
 - 2026-10-12 — spécification et plan **validés par David** (Q-A à Q-L) ; lancement du lot 1.
+- 2026-10-12 — lot 1 fait : nœuds, option `capitalPairs` (Pratt et rd), écriture, empreinte de
+  4 122 saisies, bogue `hashMathNode` corrigé ; défaut `'length'`, suites vertes.

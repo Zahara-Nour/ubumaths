@@ -309,3 +309,33 @@ describe('fabrique des noms de points', () => {
 		expect(() => figureName([A, B])).toThrow();
 	});
 });
+
+// =============================================================================
+// Parseur rd : mêmes lectures que Pratt
+// =============================================================================
+
+describe('parseur rd : mêmes longueurs que Pratt', () => {
+	it.each([
+		'AB',
+		'AB^2',
+		'3AB',
+		'AB\\times CD',
+		'AB^2=AC^2+BC^2',
+		"A'B'",
+		'A^{\\prime}B^{\\prime}',
+		'A_1B_1',
+		'OM_n',
+		'ABC',
+		'A B',
+		'x_{AB}',
+		'kAB'
+	])('%s', (latex) => {
+		expect(parseLatex(latex, { parser: 'rd' })).toEqual(parseLatex(latex));
+	});
+
+	it("mode 'product' : AB reste le produit A·B", () => {
+		expect(parseLatex('AB', { parser: 'rd', capitalPairs: 'product' })).toEqual(
+			implicitMultiply(MathAST.variable('A'), MathAST.variable('B'))
+		);
+	});
+});
