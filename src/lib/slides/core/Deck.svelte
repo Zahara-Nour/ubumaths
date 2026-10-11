@@ -404,14 +404,26 @@
 	/**
 	 * La barre d'annotation disparaît quand on quitte la diapositive annotable. Si le
 	 * focus était sur un de ses boutons, il tomberait sur <body> et le clavier ne
-	 * piloterait plus le diaporama : on le rend au deck.
+	 * piloterait plus le diaporama : on le rend au deck (et seulement dans ce cas).
 	 */
 	function returnFocusOnRemove(node: HTMLElement) {
+		// Le focus est-il dans la barre, ou en est-il sorti vers nulle part (<body>) ?
+		// Suivi pendant que la barre est montée : au démontage, elle est déjà hors du
+		// document, et un bouton remplacé (bascule) perd le focus sans le donner à personne.
+		let ownsFocus = false;
+		const onFocusIn = () => (ownsFocus = true);
+		const onFocusOut = (event: FocusEvent) => {
+			ownsFocus = event.relatedTarget === null || node.contains(event.relatedTarget as Node);
+		};
+		node.addEventListener('focusin', onFocusIn);
+		node.addEventListener('focusout', onFocusOut);
 		return {
 			destroy() {
-				const hadFocus = node.contains(document.activeElement);
+				node.removeEventListener('focusin', onFocusIn);
+				node.removeEventListener('focusout', onFocusOut);
+				if (!ownsFocus) return;
 				queueMicrotask(() => {
-					if (hadFocus || document.activeElement === document.body) {
+					if (document.activeElement === document.body) {
 						wrapperElement?.focus({ preventScroll: true });
 					}
 				});

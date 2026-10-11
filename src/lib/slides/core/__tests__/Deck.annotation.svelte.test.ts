@@ -44,11 +44,28 @@ describe('barre d’annotation', () => {
 		await tick();
 		expect(deck.getIndices().h).toBe(1);
 		expect(container.querySelector('button[title="Activer annotations"]')).toBeNull();
+		expect(document.activeElement).toBe(container.querySelector('.deck-wrapper'));
 
 		// Le → suivant doit encore avancer
 		await userEvent.keyboard('{ArrowRight}');
 		flushSync();
 		await tick();
 		expect(deck.getIndices().h).toBe(2);
+	});
+
+	it('la barre disparaît sans avoir eu le focus : un champ hors du diaporama le garde', async () => {
+		const { deck, container } = await open();
+		expect(container.querySelector('button[title="Activer annotations"]')).not.toBeNull();
+		const field = container.querySelector<HTMLInputElement>('[data-testid="champ-hors-deck"]')!;
+		field.focus();
+
+		deck.next();
+		flushSync();
+		await tick();
+		await Promise.resolve();
+
+		expect(deck.getIndices().h).toBe(1);
+		expect(container.querySelector('button[title="Activer annotations"]')).toBeNull();
+		expect(document.activeElement).toBe(field);
 	});
 });

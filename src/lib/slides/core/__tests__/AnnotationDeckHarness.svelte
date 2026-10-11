@@ -13,6 +13,7 @@
 	let { onprobe }: Props = $props();
 </script>
 
+<input data-testid="champ-hors-deck" aria-label="Champ hors du diaporama" />
 <div style="width: 800px; height: 450px;">
 	<Deck config={{ hash: false }}>
 		<AnnotatableSlide>

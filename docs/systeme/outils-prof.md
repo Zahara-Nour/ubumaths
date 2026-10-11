@@ -150,7 +150,8 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 - Une touche tapée dans un champ éditable ne déplace jamais le diaporama
   (`isFromEditableField`, testé par `inputFilter.svelte.test.ts`).
 - Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
-  deck s'il était sur la barre ou retombé sur `<body>` : le clavier pilote toujours le diaporama
+  deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
+  le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
   (`returnFocusOnRemove`, testé par `Deck.annotation.svelte.test.ts`).
 - Pas de persistance : la position vit dans le store et l'URL.
 
