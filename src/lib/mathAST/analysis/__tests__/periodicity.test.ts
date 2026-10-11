@@ -4,6 +4,8 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 import { parseLatex } from '../../parser';
+import { parseCustom, toLatex } from '../../index';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { func, variable } from '../../factory';
 import {
 	detectPeriodicity,
@@ -776,5 +778,17 @@ describe('domain integration', () => {
 			const domainStep = result.steps!.find((s) => s.rule === 'domain_exclusion');
 			expect(domainStep).toBeUndefined();
 		});
+	});
+});
+
+describe('getPeriod — coefficient en notation scientifique (syntaxe custom)', () => {
+	// `sin(1e-7*x)` : période 2π/10⁻⁷. Le LaTeX de la période ne doit pas écrire
+	// `1e-7`, que le parseur LaTeX relirait 1·e − 7 (constante d'Euler).
+	it("la période s'écrit avec une puissance de 10 et se relit à la même valeur", () => {
+		const period = getPeriod(parseCustom('sin(1e-7*x)'), 'x');
+		expect(period).not.toBeNull();
+		const latex = toLatex(period!);
+		expect(latex).not.toMatch(/\de[+-]?\d/);
+		expect(evaluateNodeToApproximatedNumber(parseLatex(latex))).toBeCloseTo(TWO_PI * 1e7, 3);
 	});
 });

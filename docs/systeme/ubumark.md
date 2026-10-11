@@ -233,6 +233,33 @@ collée à un marqueur (`\dfrac{{{a}}…}`) est lue comme groupe LaTeX
 résolvent dans l'ordre de déclaration (`resolveVariables`) ; `detectCircularDependencies` et
 `validateVariables` refusent les cycles et références inconnues.
 
+**Écriture d'un nombre calculé** (`{{eval:…}}`, `evaluateAstWithModifiers` dans
+`src/lib/mathAST/eval/evaluate-with-modifiers.ts` ; décisions de David du 2026-10-11). Jamais la
+notation JS (`3e-7`, `1e+22`) : le parseur LaTeX lit `e` comme la constante d'Euler. Le séparateur
+décimal reste le point (la virgule est posée au rendu, `toFrenchDecimal`).
+
+Règle : **jamais un chiffre faux ; notation scientifique seulement si demandée par `;sci` ou si le
+résultat est approché et ≥ 10¹⁵** (`MAX_EXPANDED_MAGNITUDE`).
+
+| Modificateur | `0.0000001*3`      | `10^22`                   | `10^22/3`                         |
+| ------------ | ------------------ | ------------------------- | --------------------------------- |
+| aucun        | `0.0000003`        | `10000000000000000000000` | `3.33333333333333 \times 10^{21}` |
+| `;d`         | `0.0000003`        | `10000000000000000000000` | `3.33333333333333 \times 10^{21}` |
+| `;sci`       | `3 \times 10^{-7}` | `10^{22}`                 | `3.33333333333333 \times 10^{21}` |
+
+Un entier EXACT (calculé en rationnels : `10^22`, `2^80`, `factorial(18)` → `6402373705728000`)
+s'écrit toujours en entier, quelle que soit sa taille, avec ou sans `;d`. Un résultat approché
+≥ 10¹⁵ passe en notation scientifique (mantisse à 15 chiffres significatifs) : au-delà, les
+chiffres d'un flottant seraient inventés. Un petit nombre est toujours développé (`0.0000003`).
+Une fraction exacte reste une fraction ; `1 000 000` reste `1000000` (pas de détection de
+puissance simple) ; mantisse 1 : `10^{-7}`. Aucune dépendance au niveau du modèle. `;sci` sur une grandeur écrit le nombre en syntaxe
+maison (`0.0000003[m];sci` → `3*10^{-7}[m]`, `10^{-7}[m]`) ; avec `;hms` ou un calcul littéral,
+c'est une faute d'auteur (« ;sci : … »). Un résultat non fini (`10^400`) lève « Résultat non
+fini ». Un nombre JS réinjecté dans une expression relue (tirage `{{random:…}}`, règle de
+validation `custom`) passe par `numberToLatexSafe` (`mathAST/common/numeric.ts`), jamais
+`String(n)` (`String(3e-7)` = `3e-7`, relu 3e − 7). Tests :
+`src/lib/mathAST/eval/__tests__/evaluate-with-modifiers-sans-notation-js.test.ts`.
+
 ## Le pipeline
 
 ```

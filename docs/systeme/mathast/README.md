@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-10.**
+> **Vérifié contre le code le 2026-10-11.**
 
 ## À quoi ça sert
 
@@ -228,7 +228,18 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
    - `i` reste une **variable** en LaTeX (`\imaginaryI` donne `complex(0, 1)`) ;
    - `\sin^2 x` est une `function` avec `power`, `(\sin x)^2` un `superscript` ;
    - la virgule : MathLive écrit `3{,}14` (lu `3.14`) ; la virgule nue passe par
-     `decimal-comma.ts`.
+     `decimal-comma.ts` ;
+   - **pas de notation scientifique en LaTeX** (pratt et rd, tokenizer commun
+     `parser/latex/tokenizer.ts`) : `3e-2` se lit 3e − 2, `3E-2` 3E − 2 (variable `E`), et
+     `2e3` est refusé comme `2e 3` (« nombre écrit après un facteur »). La syntaxe custom la
+     garde : `parseCustom('1e5')` = 100 000. En sens inverse, `toLatex` d'un `number` dont la
+     chaîne est en notation scientifique JS (`String(1e-7)` = `'1e-7'`, `'1e+21'`) écrit
+     `10^{-7}`, `1.5 \times 10^{-7}` (réécriture avant rendu dans `latex-generator.ts`, les
+     parenthèses se décident sur la forme écrite : `\left( 10^{-7} \right)^2`, plus deux cas
+     posés par la passe — facteur de droite d'un produit implicite, `\pi \left( 10^{-7} \right)`,
+     et dénominateur d'une division en ligne, `\pi / \left( 1.5 \times 10^{-7} \right)`) ;
+     `toCustom` garde `1e-7`. `{{eval:…}}` (`evaluateAstWithModifiers`) n'écrit pas non plus la
+     notation JS : voir [ubumark.md](../ubumark.md#paramétrage-modèles-de-question).
      Toujours tester une règle ou une analyse **sur une entrée parsée**.
 7. **Plafonds du parseur** (`parser/security.ts`) : 10 000 caractères **avant** l'analyse ;
    profondeur d'AST 100 et 10 000 nœuds **après**. Une imbrication de quelques milliers de

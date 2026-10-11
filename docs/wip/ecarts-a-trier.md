@@ -17,7 +17,7 @@
 9 déjà dans les constats RGPD, 5 corrigés depuis (dont V12), 7 non retenus → **72 écarts classés** :
 12 V (dont V12, plus vrai), 14 L, 20 M, 15 C, 11 D — plus **15 à transmettre** à la session RGPD.
 Mise à jour du 2026-10-10 : K2 fait (V7, L5, L6, C8 retirés) ; V13 et L15 ajoutés (relevés en
-le faisant).
+le faisant). 2026-10-11 : L20 ajouté (revue de la PR « LaTeX sans notation scientifique », #1085).
 
 ## Chantiers proposés
 
@@ -92,6 +92,7 @@ décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 | L17 | Réponse de `GET /api/student/worksheets/[assignmentId]` : `studentWorksheetDetailResponseSchema` exige `available_from` non nul, alors que la colonne est nullable (« disponible tout de suite »).                                                                                                        | [fiches-et-pdf.md](../systeme/fiches-et-pdf.md) #7                                            | Une affectation sans date de début ferait répondre l'API élève en 500 ; 0 sur 11 en prod (mesuré le 2026-10-11).                                                           | S      | mesuré                                                    |
 | L18 | Titres des encadrés de correction toujours en français à l'écran (`Blockquote.svelte`, `DETAIL_KIND_LABELS`) ; le PDF suit la langue (`detailKindLabel`).                                                                                                                                                 | [ubumark.md](../systeme/ubumark.md)                                                           | Une correction en anglais affichera « Méthode » ; aucune correction marquée aujourd'hui (0 en prod).                                                                       | S      | vérifié                                                   |
 | L19 | Typst : `==surligné==`, `*italique*`, `~~barré~~` s'écrivent `#highlight[…]`, `#emph[…]`, `#strike[…]` sans `;` final (`typst-generator.ts`, cas `text`) : un `(`, `[` ou `.lettre` collé après est lu comme la suite de l'appel → toute la fiche échoue. Corrigé pour les détails en ligne (2026-10-11). | [ubumark.md](../systeme/ubumark.md)                                                           | Fiche entière en erreur si un auteur écrit `==mot==(voir)`. Non mesuré en prod.                                                                                            | S      | prouvé (compilateur prod, revue)                          |
+| L20 | `{{eval:100000000000000.5}}` rend `100000000000001` : `formatNumber` (`mathAST/eval/evaluate-with-modifiers.ts`) garde 15 chiffres significatifs (`toExponential(14)`), et un décimal juste sous 10¹⁵ perd sa partie décimale, arrondie. Défaut antérieur à la PR « LaTeX sans notation scientifique ».   | [ubumark.md](../systeme/ubumark.md)                                                           | Aucun observé : il faut un décimal à 16 chiffres significatifs dans un modèle.                                                                                             | S      | mesuré (2026-10-11, sonde de revue)                       |
 
 ## Code mort
 

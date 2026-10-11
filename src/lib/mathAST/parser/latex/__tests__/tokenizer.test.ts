@@ -117,45 +117,29 @@ describe('Number tokenization', () => {
 		});
 	});
 
-	describe('Scientific notation', () => {
-		it('should tokenize simple scientific notation', () => {
-			const tokens = tokenize('1e10');
-			expect(tokens[0]).toEqual({
-				type: 'NUMBER',
-				value: '1e10',
-				position: 0,
-				length: 4
-			});
+	// Pas de notation scientifique en LaTeX (décision de David, 2026-10-10) :
+	// `e` est la constante d'Euler, `3e-2` se lit 3e − 2. Ces tests enregistraient
+	// l'ancienne lecture (`1e10` = un seul NUMBER) ; ils disent maintenant que le
+	// nombre s'arrête au dernier chiffre. La syntaxe custom garde `1e5`.
+	describe('No scientific notation (e is a letter)', () => {
+		it.each([
+			['1e10', ['NUMBER', 'LETTER', 'NUMBER', 'EOF'], ['1', 'e', '10', '']],
+			['1E10', ['NUMBER', 'LETTER', 'NUMBER', 'EOF'], ['1', 'E', '10', '']],
+			['3e-2', ['NUMBER', 'LETTER', 'MINUS', 'NUMBER', 'EOF'], ['3', 'e', '-', '2', '']],
+			['1.5e+10', ['NUMBER', 'LETTER', 'PLUS', 'NUMBER', 'EOF'], ['1.5', 'e', '+', '10', '']],
+			['.5e3', ['NUMBER', 'LETTER', 'NUMBER', 'EOF'], ['.5', 'e', '3', '']],
+			['1.E5', ['NUMBER', 'LETTER', 'NUMBER', 'EOF'], ['1.', 'E', '5', '']],
+			['1{,}5e2', ['NUMBER', 'LETTER', 'NUMBER', 'EOF'], ['1.5', 'e', '2', '']]
+		])("%s : le nombre s'arrête avant e", (input, types, values) => {
+			const tokens = filterWhitespace(tokenize(input));
+			expect(getTypes(tokens)).toEqual(types);
+			expect(getValues(tokens)).toEqual(values);
 		});
 
-		it('should tokenize scientific notation with uppercase E', () => {
-			const tokens = tokenize('1E10');
-			expect(tokens[0].value).toBe('1E10');
-		});
-
-		it('should tokenize decimal with exponent', () => {
-			const tokens = tokenize('3.14e10');
-			expect(tokens[0].value).toBe('3.14e10');
-		});
-
-		it('should tokenize negative exponent', () => {
-			const tokens = tokenize('1.5e-10');
-			expect(tokens[0].value).toBe('1.5e-10');
-		});
-
-		it('should tokenize positive exponent with explicit sign', () => {
-			const tokens = tokenize('1.5e+10');
-			expect(tokens[0].value).toBe('1.5e+10');
-		});
-
-		it('should tokenize zero exponent', () => {
-			const tokens = tokenize('1e0');
-			expect(tokens[0].value).toBe('1e0');
-		});
-
-		it('should tokenize leading decimal with exponent', () => {
-			const tokens = tokenize('.5e10');
-			expect(tokens[0].value).toBe('.5e10');
+		it('tracks position and length: x+1.5e-10+y', () => {
+			const tokens = tokenize('x+1.5e-10+y');
+			expect(tokens[2]).toEqual({ type: 'NUMBER', value: '1.5', position: 2, length: 3 });
+			expect(tokens[3]).toEqual({ type: 'LETTER', value: 'e', position: 5, length: 1 });
 		});
 
 		it('should NOT include e without digits in number token', () => {
@@ -199,66 +183,12 @@ describe('Number tokenization', () => {
 			expect(tokens[2].type).toBe('PLUS');
 		});
 
-		it('should correctly tokenize scientific notation followed by operator', () => {
-			const tokens = filterWhitespace(tokenize('2e3+1'));
-			expect(tokens[0].value).toBe('2e3');
-			expect(tokens[1].type).toBe('PLUS');
-			expect(tokens[2].value).toBe('1');
-		});
-
-		it('should correctly tokenize scientific notation followed by letter', () => {
-			const tokens = tokenize('1e10x');
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].value).toBe('x');
-		});
-
 		it('should NOT treat variable e followed by number as scientific notation', () => {
 			// 'xe10' should be LETTER("x") + LETTER("e") + NUMBER("10")
 			const tokens = tokenize('xe10');
 			expect(tokens[0]).toEqual({ type: 'LETTER', value: 'x', position: 0, length: 1 });
 			expect(tokens[1]).toEqual({ type: 'LETTER', value: 'e', position: 1, length: 1 });
 			expect(tokens[2]).toEqual({ type: 'NUMBER', value: '10', position: 2, length: 2 });
-		});
-
-		// Additional edge cases
-		it('should tokenize zero mantissa with exponent', () => {
-			const tokens = tokenize('0e10');
-			expect(tokens[0].value).toBe('0e10');
-		});
-
-		it('should tokenize very large exponent', () => {
-			const tokens = tokenize('1e999');
-			expect(tokens[0].value).toBe('1e999');
-		});
-
-		it('should tokenize very small (negative) exponent', () => {
-			const tokens = tokenize('1e-999');
-			expect(tokens[0].value).toBe('1e-999');
-		});
-
-		it('should tokenize multi-digit exponent', () => {
-			const tokens = tokenize('1.5e123');
-			expect(tokens[0].value).toBe('1.5e123');
-		});
-
-		it('should tokenize exponent with leading zeros', () => {
-			const tokens = tokenize('1e007');
-			expect(tokens[0].value).toBe('1e007');
-		});
-
-		it('should tokenize trailing dot with exponent', () => {
-			const tokens = tokenize('1.e10');
-			expect(tokens[0].value).toBe('1.e10');
-		});
-
-		it('should tokenize zero decimal with exponent', () => {
-			const tokens = tokenize('0.0e5');
-			expect(tokens[0].value).toBe('0.0e5');
-		});
-
-		it('should tokenize leading zero decimal with exponent', () => {
-			const tokens = tokenize('.0e5');
-			expect(tokens[0].value).toBe('.0e5');
 		});
 
 		it('should correctly handle e-x pattern (not scientific)', () => {
@@ -279,52 +209,6 @@ describe('Number tokenization', () => {
 			expect(tokens[3].value).toBe('x');
 		});
 
-		it('should tokenize scientific notation followed by subtraction', () => {
-			const tokens = filterWhitespace(tokenize('1e10-5'));
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].type).toBe('MINUS');
-			expect(tokens[2].value).toBe('5');
-		});
-
-		it('should tokenize scientific notation followed by multiplication', () => {
-			const tokens = filterWhitespace(tokenize('1e10*2'));
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].type).toBe('STAR');
-			expect(tokens[2].value).toBe('2');
-		});
-
-		it('should tokenize scientific notation followed by division', () => {
-			const tokens = filterWhitespace(tokenize('1e10/2'));
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].type).toBe('SLASH');
-			expect(tokens[2].value).toBe('2');
-		});
-
-		it('should tokenize scientific notation followed by caret', () => {
-			const tokens = tokenize('1e10^2');
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].type).toBe('CARET');
-			expect(tokens[2].value).toBe('2');
-		});
-
-		it('should tokenize scientific notation followed by parenthesis', () => {
-			const tokens = tokenize('1e10(x)');
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].type).toBe('LPAREN');
-		});
-
-		it('should tokenize two consecutive scientific notation numbers', () => {
-			const tokens = filterWhitespace(tokenize('1e10 2e5'));
-			expect(tokens[0].value).toBe('1e10');
-			expect(tokens[1].value).toBe('2e5');
-		});
-
-		it('should tokenize scientific notation in fraction context', () => {
-			const tokens = filterWhitespace(tokenize('\\frac{1e10}{2e5}'));
-			expect(tokens[2].value).toBe('1e10');
-			expect(tokens[5].value).toBe('2e5');
-		});
-
 		it('should NOT consume e when followed by equals', () => {
 			// '1e=' should be NUMBER("1") + LETTER("e") + EQUALS
 			const tokens = tokenize('1e=');
@@ -339,16 +223,6 @@ describe('Number tokenization', () => {
 			expect(tokens[0].value).toBe('1');
 			expect(tokens[1].value).toBe('e');
 			expect(tokens[2].type).toBe('LESS');
-		});
-
-		it('should handle single digit mantissa and exponent', () => {
-			const tokens = tokenize('5e2');
-			expect(tokens[0].value).toBe('5e2');
-		});
-
-		it('should handle E after decimal point', () => {
-			const tokens = tokenize('1.E5');
-			expect(tokens[0].value).toBe('1.E5');
 		});
 
 		it('should NOT treat ee as scientific notation', () => {
@@ -367,20 +241,6 @@ describe('Number tokenization', () => {
 			expect(tokens[1].value).toBe('e');
 			expect(tokens[2].value).toBe('E');
 			expect(tokens[3].value).toBe('2');
-		});
-
-		it('should handle scientific notation at end of input', () => {
-			const tokens = tokenize('3.14e2');
-			expect(tokens[0].value).toBe('3.14e2');
-			expect(tokens[1].type).toBe('EOF');
-		});
-
-		it('should correctly track position and length for scientific notation', () => {
-			const tokens = tokenize('x+1.5e-10+y');
-			const sciToken = tokens[2]; // After x, +
-			expect(sciToken.value).toBe('1.5e-10');
-			expect(sciToken.position).toBe(2);
-			expect(sciToken.length).toBe(7);
 		});
 	});
 
@@ -423,11 +283,6 @@ describe('Number tokenization', () => {
 			expect(tokens[0].value).toBe('1.5');
 			expect(tokens[1].type).toBe('PLUS');
 			expect(tokens[2].value).toBe('2.3');
-		});
-
-		it('supports French comma in scientific notation: 1{,}5e2', () => {
-			const tokens = tokenize('1{,}5e2');
-			expect(tokens[0].value).toBe('1.5e2');
 		});
 
 		// --- Edge cases that must NOT be misinterpreted as decimal separators ---
