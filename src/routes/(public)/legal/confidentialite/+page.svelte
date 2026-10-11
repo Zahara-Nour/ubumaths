@@ -260,12 +260,20 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Profil utilisateur</td>
-							<td>Duree de la scolarite + 5 ans</td>
+							<td>Profil utilisateur (eleve)</td>
+							<td>Supprime 5 ans apres la derniere connexion</td>
 						</tr>
 						<tr>
 							<td>Donnees pedagogiques</td>
-							<td>5 ans apres la derniere activite</td>
+							<td>Supprimees avec le profil, 5 ans apres la derniere connexion</td>
+						</tr>
+						<tr>
+							<td>Conversations avec le tuteur IA</td>
+							<td>1 an apres le dernier message</td>
+						</tr>
+						<tr>
+							<td>Pre-inscriptions non activees</td>
+							<td>1 an</td>
 						</tr>
 						<tr>
 							<td>Messages</td>

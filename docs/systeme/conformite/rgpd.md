@@ -286,7 +286,17 @@ CRON_SECRET                   # Secret taches planifiees
 
 **Article RGPD** : Art. 5(1)(e) - Limitation de la conservation
 
-**Situation actuelle** :
+> ⚠️ **Realite mesuree le 2026-10-11 (C11)** : la liste ci-dessous etait fausse — rien ne purgeait
+> les profils inactifs ni la pedagogie. Decisions de David : `run_retention_c11()` (appelee par la
+> purge hebdomadaire `run_cleanup_expired_data`, migration `20261015090500`) supprime les comptes
+> **eleves sans connexion depuis 5 ans** (suppression complete, tracee dans
+> `account_deletion_audit`), les **conversations du tuteur 1 an apres leur dernier message**, les
+> **pre-inscriptions non activees apres 1 an**. Les fichiers du storage d'un compte purge ne sont
+> pas retires par le SQL (chemins consignes dans `cleanup_result`). Autres durees reelles :
+> `error_logs` 30 j, `audit_logs` 60 j, `user_presence` 30 j, `friendships` refusees 2 ans,
+> `messages` / `private_messages` 3 ans.
+
+**Situation actuelle** (historique, 2026-01) :
 
 - ~~`profiles` : Conservation indefinie~~ Profils actifs conserves, donnees nettoyees apres inactivite
 - ~~`student_attempts` : Conservation indefinie~~ **5 ans + user inactif 2 ans**
