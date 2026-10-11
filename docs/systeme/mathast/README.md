@@ -191,21 +191,23 @@ racine évidente) branchées sur l'intention `factoriser`. Livraison par lots : 
 migration des appelants internes (`limits`, `integration`, `domain`, `normalize`) et suppression
 du code mort → écriture des primitives (V18).
 
-**État au 2026-10-11 : lot 1 (le noyau) et lot 2 (les stratégies, branchées sur l'intention
-`factoriser`, donc sur l'atelier) écrits.** `limits`, `integration`, `domain` et `normalize`
-factorisent encore comme avant (lot 3).
+**État au 2026-10-11 : lot 1 (le noyau), lot 2 (les stratégies, branchées sur l'intention
+`factoriser`, donc sur l'atelier) et lot 3a (limites et intégration, voir
+[§ Les appelants](#les-appelants-migrés-lot-3a)) écrits.** `normalize` et `solve` factorisent
+encore comme avant ; `transform/`, les détecteurs morts et les doublons de PGCD attendent le
+lot 3b.
 
 ### Carte du code
 
-| Fichier              | Rôle                                                                                                                                                     |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `index.ts`           | point d'entrée du module                                                                                                                                 |
-| `factor.ts`          | `factorPolynomial` et ses types (`Factorization`, `IntegerFactor`, `SurdFactor`), les bornes                                                             |
-| `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                   |
-| `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts`          |
-| `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                         |
-| `quadratic.ts`       | `quadraticRootParts` : Δ, racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                 |
-| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` |
+| Fichier              | Rôle                                                                                                                                                                                                                                                           |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.ts`           | point d'entrée du module                                                                                                                                                                                                                                       |
+| `factor.ts`          | `factorPolynomial` et ses types (`Factorization`, `IntegerFactor`, `SurdFactor`), les bornes                                                                                                                                                                   |
+| `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                                                                                                                         |
+| `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts` ; `toPolynomial` (dénominateur constant exigé), `divideOutRoot` (division par (x − r) avec multiplicité)       |
+| `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                                                                                                                               |
+| `quadratic.ts`       | `quadraticRootParts` : Δ, racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                                                                       |
+| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels), `linearFactorNode` (`x - r`, `x + 3` si r = −3) |
 
 `factor.ts` exporte aussi `compareFactors` (l'ordre des facteurs, réutilisé par les stratégies) et
 `primitivePart` (contenu et partie primitive entière).
@@ -488,6 +490,34 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
 - Cas de démonstration de `pedagogical-simplify` par catégorie :
   `pedagogical-simplify/demo-cases/`.
 - Méthode générale (TDD, intégration) : [docs/pratiques/tests.md](../../pratiques/tests.md).
+
+### Les appelants migrés (lot 3a)
+
+Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
+
+- **`limits/algebraic.ts` `tryFactorization`** (stratégie 4, après L'Hôpital) : N et D lus par
+  `toPolynomial`, (x − a)^k sorti par `divideOutRoot`, k la plus petite des deux multiplicités ;
+  le point d'approche est un **rationnel exact** (`extractExactRational`), donc négatif compris
+  (`opposite`, invariant 1) ou fractionnaire. Tout polynôme de degré ≤ 8 qui a la racine, plus
+  seulement `x² − a²`.
+- **`pedagogical-limits`** (stratégies factorisation et rationalisation, `divideByCommonRoot`) :
+  une racine par passe, comme avant (mêmes étapes, mêmes titres) ; quotients exacts écrits en
+  soustractions (`x - 3`, plus `x + (-3)`), plus de `/1`, de `(x - 2)·1` ni de `1·(√x + 2)`. La
+  substitution directe, les limites à un côté et les gendarmes acceptent aussi un point négatif
+  ou fractionnaire.
+- **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
+  `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
+  `quadraticRootParts`. L'écriture du dénominateur factorisé reste unitaire,
+  `a(x - r₁)(x - r₂)` : la décomposition en éléments simples (`partial-fractions.ts`) ne lit que
+  des facteurs `x ± a`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
+- **`pedagogical-integration/_helpers.ts` `tryDetectPartialFractions`** : racines et
+  coefficients A, B exacts (`Rational`) au lieu de flottants « rationnels » ; la décomposition
+  s'écrit `\frac{3}{2(x - 1)} + \frac{1}{2(x + 1)}` (plus `\frac{1.5}{x - 1}`), le signe dehors.
+
+Tests : `limits/__tests__/factorisation-noyau.test.ts`,
+`pedagogical-limits/__tests__/factorisation-noyau.test.ts`,
+`integration/__tests__/denominateur-trinome-noyau.test.ts` (F′ = f par `areEquivalent`),
+`pedagogical-integration/__tests__/elements-simples-exacts.test.ts`.
 
 ## Points ouverts connus (mesurés le 2026-10-10)
 

@@ -33,7 +33,7 @@ import {
 	type Poly,
 	MAX_POLYNOMIAL_DEGREE,
 	integerCoefficients,
-	toRationalFunction,
+	toPolynomial,
 	trimPoly
 } from './polynomial';
 import { extractRationalRoots } from './rational-roots';
@@ -220,11 +220,8 @@ export function factorPolynomial(
 	options: FactorOptions = {}
 ): Factorization | null {
 	const field = options.field ?? 'Q';
-	const rf = toRationalFunction(node, variable);
-	if (rf === null) return null;
-	const den = trimPoly(rf.den);
-	if (den.length !== 1) return null; // fraction rationnelle : pas un polynôme
-	const poly = trimPoly(rf.num.map((c) => divRational(c, den[0])));
+	const poly = toPolynomial(node, variable);
+	if (poly === null) return null; // fraction rationnelle, autre lettre… : pas un polynôme
 
 	if (poly.length === 0) {
 		return { variable, field, constant: ZERO, factors: [], rest: null, complete: true };

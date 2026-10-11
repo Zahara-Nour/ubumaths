@@ -616,3 +616,64 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
     panel `x-x` (`x 0` → `0`) mis à jour ; `pnpm test:server src/lib/mathAST` : 463 fichiers,
     19 426 tests verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` rien.
 - [ ] PR
+
+## 7. Lot 3a — limites et intégration par le noyau (2026-10-11)
+
+> Worktree `ubumaths-wt-factorisation`, branche `refactor/factorisation-appelants` (base `7bf061329`).
+> Hors périmètre (lot 3b) : `transform/` et détecteurs morts, doublons de PGCD et d'extracteurs,
+> `normalize` (ADR 0006), `solve`.
+
+- [x] **Noyau, ajouts** : `toPolynomial` et `divideOutRoot` (`factor/polynomial.ts`),
+      `rationalPolynomialNode` et `linearFactorNode` (`factor/polynomial-node.ts`, ce dernier
+      déplacé de `integration/integrators/quadratic-denominator.ts`, où il s'appelait `linearFactor`) ;
+      `factorPolynomial` lit désormais par `toPolynomial`.
+- [x] **A7 `limits/algebraic.ts`** : `tryFactorization` sort (x − a)^k de N et D par
+      `divideOutRoot` (k = la plus petite multiplicité), a lu par `extractExactRational` : L26
+      corrigé, point fractionnaire accepté. Supprimés : `tryFactorLinear`, sa branche morte
+      (:167-172), `evaluateSimple`, le `variable()` qui fabriquait un littéral. La factorisation
+      passe désormais devant la porte `isNumber(approach)` (rationalisation et |·| restent derrière).
+- [x] **B3 limite pédagogique** : `divideByCommonRoot` (helpers) pour la factorisation ET la
+      rationalisation ; une racine par passe, mêmes étapes, mêmes titres. `syntheticDivide`,
+      `buildLinearFactor`, `isPolynomialRoot` supprimés ; `formatLinearFactor` prend un `Rational`
+      (`(x − 1/2)`). Substitution directe, limites à un côté, gendarmes : point négatif accepté
+      (`approachNumber`), sinon la récursion après factorisation échouait en −3.
+- [x] **A8 `quadratic-denominator.ts`** : `factorQuadratic` lit le trinôme par `toPolynomial` et
+      tranche par `quadraticRootParts` (plus de Δ ni de `bigintSqrt` à lui ; `rationalSqrt` passe
+      par `integerNthRoot`). `factoredDenominator` garde l'écriture unitaire `a(x − r₁)(x − r₂)`
+      (sur `linearFactorNode`) : `factorDenominator` (B1) ne lit pas `(2x − 1)`, la forme entière
+      de `factorizationToNode` aurait changé ou cassé la décomposition.
+- [x] **B2 `pedagogical-integration/_helpers.ts`** : même besoin (racines rationnelles d'un
+      trinôme), donc migré : `toPolynomial` + `quadraticRootParts`, A et B exacts par `evalPoly` ;
+      `quadraticCoefs` et `isRationalLike` supprimés. `PartialFractionsMatch` en `Rational`
+      (champ `aQ`, jamais lu, retiré). Écriture : `\frac{3}{2(x-1)}`, signe dehors, `x + 1`.
+- [x] **Tests d'abord** (4 fichiers, 40 tests) : vus rouges **23 / 40** contre les six fichiers
+      appelants d'origine (`git show HEAD:…`, copies restaurées ensuite) ; les 17 verts sont les
+      non-régressions (rendus figés des primitives, limites complètes déjà justes par L'Hôpital).
+      Verts après : 40 / 40.
+- [x] **Panel de non-régression** : les appels de `evaluateLimit`, `integrate`,
+      `generatePedagogicalLimitSteps`, `generatePedagogicalIntegrationSteps` faits par les tests de
+      `limits`, `pedagogical-limits`, `integration`, `pedagogical-integration` enregistrés
+      (`vi.mock` temporaire dans `vitest-setup-server.ts`, restauré d'une copie), 4 172 entrées
+      distinctes, rejouées avant / après (sortie déterministe vérifiée) : **35 différences**, aucune
+      sur `evaluateLimit` ni `integrate` ; valeurs, statuts et suites de règles identiques partout.
+      31 limites pédagogiques : `\dfrac{x + 2}{1}` → `x + 2`, `(x - 2) 1` → `x - 2`,
+      `\dfrac{1}{1(\sqrt{x+1}+1)}` → `\dfrac{1}{\sqrt{x+1}+1}` ; 4 intégrations pédagogiques :
+      décimaux → fractions, `x - (-1)` → `x + 1`, et une primitive qui s'écrivait
+      `\dfrac{16666666666666667 \ln|x-1|}{10^{16}}` → `\dfrac{5\ln|x-1|}{3}`.
+- [x] Vérifications : 4 dossiers + `factor`, `questions`, `atelier`, `domain`, `normal` : 359
+      fichiers verts ; `pnpm test:server src/lib/mathAST` une fois : 474 fichiers, 20 128 tests
+      verts ; `check:incremental` 0 ; `types:cliquet` tenu (0) ; `lint:fast` 0 erreur.
+- [x] Doc : README mathAST (§ Les appelants migrés, carte du code, état) ; L26 retiré de
+      `ecarts-a-trier.md`.
+
+**Écarts relevés en chemin (non corrigés)** :
+
+- `pedagogical-limits/renderer.ts` écrit `\lim_{x \to 2} x + 2` sans parenthèses (déjà le cas
+  pour `\lim_{x \to 3} x^2 + 2x` dans les démos) ; le `/1` retiré le rend visible sur les
+  factorisations.
+- `pedagogical-limits/helpers.ts` `isRootAt` : aucun appelant hors tests (mort avant ce lot).
+- `limits/algebraic.ts:656` (`tryAbsSimplification`) fabrique encore `{ type: 'number' }` à la
+  main.
+- La substitution directe pédagogique calcule en flottants : « La limite vaut 1.5 », `-0.25`.
+- `pedagogical-integration/descriptions-fr.ts` (`decompose-rational`) annonce
+  `Q(x) = (x − r₁)(x − r₂)` sans le coefficient dominant (faux pour `4x² − 1`).

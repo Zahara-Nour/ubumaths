@@ -28,6 +28,9 @@ export {
 	type Poly,
 	type RationalFunction,
 	MAX_POLYNOMIAL_DEGREE,
+	divideOutRoot,
+	evalPoly,
+	toPolynomial,
 	toRationalFunction
 } from './polynomial';
 export {
@@ -36,4 +39,4 @@ export {
 	type RationalRootSearch
 } from './rational-roots';
 export { quadraticRootParts, type QuadraticRootParts } from './quadratic';
-export { polynomialNode } from './polynomial-node';
+export { linearFactorNode, polynomialNode, rationalPolynomialNode } from './polynomial-node';
