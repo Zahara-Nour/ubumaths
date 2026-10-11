@@ -715,3 +715,159 @@ describe('le bouton valeur approchée', () => {
 		expect(first.querySelector('.reponse')!.textContent).not.toMatch(/1,4142/);
 	});
 });
+
+/**
+ * La complétion des fonctions et des lettres grecques (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 3). De VRAIES frappes : Tab ne doit pas
+ * quitter le champ, et Entrée doit CALCULER même liste ouverte (décision de
+ * David : `3ta` avec t et a dans le panneau donne 3·t·a, pas `3tan(`).
+ */
+describe('la complétion des fonctions et des lettres grecques', () => {
+	async function typing(keys: string) {
+		const opened = await open();
+		await userEvent.click(opened.field);
+		await userEvent.keyboard(keys);
+		await settle();
+		return opened;
+	}
+	const proposals = (container: HTMLElement) =>
+		[...container.querySelectorAll('.propositions [role="option"]')].map(
+			(o) => o.querySelector('.nom')?.textContent
+		);
+	const highlightedProposal = (container: HTMLElement) =>
+		container.querySelector('.propositions [aria-selected="true"] .nom')?.textContent;
+
+	it('`si` ouvre la liste, la première proposition surlignée', async () => {
+		const { container, field } = await typing('si');
+
+		expect(proposals(container)).toEqual(['sin(', 'sinh(', 'sign(', 'σ']);
+		expect(highlightedProposal(container)).toBe('sin(');
+		expect(field.getAttribute('aria-expanded')).toBe('true');
+	});
+
+	it('Tab insère, le curseur après, et le champ garde la main', async () => {
+		const { field, container } = await typing('2si{Tab}');
+
+		expect(field.value).toBe('2sin(');
+		expect(field.selectionStart).toBe(5);
+		expect(document.activeElement).toBe(field);
+		expect(container.querySelector('.propositions')).toBeNull();
+	});
+
+	it('↓ puis Tab insère la proposition suivante', async () => {
+		const { field } = await typing('si{ArrowDown}{Tab}');
+
+		expect(field.value).toBe('sinh(');
+	});
+
+	it('une lettre grecque s’insère en symbole', async () => {
+		const { field } = await typing('2al{Tab}');
+
+		expect(field.value).toBe('2α');
+	});
+
+	it('Entrée calcule, même liste ouverte', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 't', definition: '2' });
+		atelier.create({ kind: 'value', name: 'a', definition: '5' });
+		const opened = await open(atelier);
+		await userEvent.click(opened.field);
+		await userEvent.keyboard('3ta');
+		await settle();
+		expect(proposals(opened.container)).toContain('tan(');
+
+		await userEvent.keyboard('{Enter}');
+		await settle();
+
+		expect(opened.field.value).toBe('');
+		expect(opened.container.querySelector('.historique')?.textContent).toContain('30');
+	});
+
+	it('Échap ferme la liste ; elle revient à la frappe suivante', async () => {
+		const { container } = await typing('co{Escape}');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		await userEvent.keyboard('s');
+		await settle();
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('un clic insère aussi', async () => {
+		const { field, container } = await typing('2al');
+		const alpha = container.querySelector('.propositions [role="option"]') as HTMLElement;
+
+		await userEvent.click(alpha);
+		await settle();
+
+		expect(field.value).toBe('2α');
+	});
+
+	// Le mot en cours est celui du CURSEUR : déplacé au clavier, il doit suivre
+	it('au milieu du champ, le mot du curseur est complété', async () => {
+		const { field } = await typing('co + 1{Home}{ArrowRight}{ArrowRight}');
+
+		await userEvent.keyboard('{Tab}');
+		await settle();
+
+		expect(field.value).toBe('cos( + 1');
+		expect(field.selectionStart).toBe(4);
+	});
+
+	// Revue : Cmd+← (Mac) ne donne pas de relâchement de touche, une sélection
+	// à la souris peut finir hors du champ — le curseur RETENU était périmé, et
+	// Tab insérait à l'ancienne place. Le curseur déplacé sans frappe ni clic :
+	it('Tab complète le mot du curseur réel, même déplacé sans touche ni clic', async () => {
+		const { field } = await typing('co + si');
+
+		field.setSelectionRange(2, 2);
+		await userEvent.keyboard('{Tab}');
+		await settle();
+
+		expect(field.value).toBe('cos( + si');
+	});
+
+	it('la liste suit un curseur déplacé sans touche ni clic', async () => {
+		const { field, container } = await typing('co + 1');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		field.setSelectionRange(2, 2);
+		await settle();
+
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('Retour arrière rouvre la liste sur le mot raccourci', async () => {
+		const { container } = await typing('cox');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		await userEvent.keyboard('{Backspace}');
+		await settle();
+
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('après un clic sur une proposition, le champ a la main, curseur après l’insertion', async () => {
+		const { field, container } = await typing('co + 1{Home}{ArrowRight}{ArrowRight}');
+		const cos = container.querySelector('.propositions [role="option"]') as HTMLElement;
+
+		await userEvent.click(cos);
+		await settle();
+
+		expect(field.value).toBe('cos( + 1');
+		expect(document.activeElement).toBe(field);
+		expect(field.selectionStart).toBe(4);
+	});
+
+	it('dans le nom d’une commande, c’est la liste des commandes', async () => {
+		const { container } = await typing('.si');
+
+		expect(container.querySelector('.propositions')).toBeNull();
+		expect(container.querySelector('.commandes')).toBeTruthy();
+	});
+
+	it('rien pour une lettre seule', async () => {
+		const { container } = await typing('2x+a');
+
+		expect(container.querySelector('.propositions')).toBeNull();
+	});
+});
