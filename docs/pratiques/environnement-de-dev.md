@@ -138,6 +138,10 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - **Délai de 3 jours avant toute nouvelle version** (2026-10-11) : `cooldown` de Dependabot et
   `minimumReleaseAge` de pnpm (`pnpm-workspace.yaml`). Une version piégée est presque toujours
   retirée en quelques heures. Correctif urgent plus récent : `minimumReleaseAgeExclude`.
+  ⚠️ pnpm 12 vérifie **aussi le lockfile** contre ce délai, même avec `--frozen-lockfile` : une
+  version de moins de 3 jours entrée dans `pnpm-lock.yaml` fait échouer l'installation partout
+  (CI, worktrees, Vercel). Mesuré le 2026-10-11 : `mathlive@0.111.1` (#1081) a cassé
+  l'installation de `main`, débloquée par une exception datée.
 - **Routines cloud claude.ai** (agents sur cron, gérées sur claude.ai/code/routines) : tri des CI
   échouées chaque nuit (03:30 UTC, PR `ci-fix/*` ou issue), audit sécurité / dépendances le lundi (PR
   `deps/security-audit-<date>`), scan de secrets quotidien (issue sans valeur en clair), hygiène des
