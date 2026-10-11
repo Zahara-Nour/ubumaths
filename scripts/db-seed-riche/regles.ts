@@ -54,6 +54,8 @@ export const COPIE: readonly string[] = [
 	'construction_demo_scripts',
 	'whiteboard_templates',
 	'riddles',
+	// Copiée à part : le seed écrit en `replica`, le déclencheur de recopie ne tourne pas.
+	'riddle_solutions',
 	// Jeux : le contenu, pas les parties
 	'game_challenges',
 	'achievements',

@@ -379,7 +379,12 @@ celles de tous les élèves ; les classements passent par `game_leaderboard`, bo
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
 Une tentative d'énigme ne s'écrit que par le serveur (`submit_riddle_attempt` via le client
 service ; plus de policy d'insertion pour l'élève) et `riddle_progress` est fermée à anon et
-`authenticated` (migration `20261016090200`).
+`authenticated` (migration `20261016090200`). Réponse attendue et correction d'une énigme :
+`riddle_solutions`, lisible et modifiable par l'auteur de l'énigme et l'admin seulement
+(migration `20261016100500`, test `tests/integration/enigmes-solutions-a-part.test.ts`). En
+transition, `riddles.answer` / `riddles.correction` restent la source (déclencheur
+`trigger_sync_riddle_solution`) et sont encore lisibles par l'élève, jusqu'à leur suppression
+(étape C, après le deploy du code qui lit `riddle_solutions`).
 `mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
 `marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
 (migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).
