@@ -159,7 +159,10 @@ describe('privilèges par défaut du schéma public — aucun droit pour anon', 
 			'public.get_consent_info(uuid)',
 			'public.get_worksheet_by_share_token(text, uuid)',
 			'public.get_class_journal_by_share_token(text)',
-			'public.get_exercise_by_share_token(text)'
+			'public.get_exercise_by_share_token(text)',
+			'public.get_class_course_by_share_token(text)',
+			'public.get_course_worksheet_by_share_token(text, uuid)',
+			'public.get_course_document_by_share_token(text, uuid)'
 			// grant_parental_consent : réservée au serveur depuis 20261001150000
 			// (cf. consentement-parental-serveur.test.ts).
 		])('anon exécute toujours la RPC publique %s', async (signature) => {
