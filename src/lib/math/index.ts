@@ -8,7 +8,12 @@
  * @module math
  */
 
-import { parseLatex, parseLatexSafe, type GenericFunctionConfig } from '$lib/mathAST/parser';
+import {
+	parseLatex,
+	parseLatexSafe,
+	type CapitalPairs,
+	type GenericFunctionConfig
+} from '$lib/mathAST/parser';
 import { evaluate } from '$lib/mathAST/eval';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { normalize, denormalize } from '$lib/mathAST/normal';
@@ -17,6 +22,7 @@ import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
 import type { AnswerAssumptions } from '$lib/mathAST/assumptions';
 import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
+import { separateSpacedCapitals } from '$lib/mathAST/parser/latex/point-names';
 
 // Re-export evaluateWithModifiers from mathAST (already implemented there)
 export { evaluateWithModifiers } from '$lib/mathAST/eval';
@@ -42,7 +48,8 @@ export function stripLatexSpacing(
 	latex: string,
 	commas: 'decimal' | 'separator' = 'decimal'
 ): string {
-	const stripped = latex
+	// Deux majuscules séparées restent séparées : `A\,B` est un produit, pas la longueur AB
+	const stripped = separateSpacedCapitals(latex)
 		// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
 		.replace(/\\[,;:!]\s?/g, '')
 		.replace(/\\(?:quad|qquad|enspace|thinspace|medspace|thickspace)\s?/g, '')
@@ -139,6 +146,8 @@ export function evaluateExpression(latex: string): number | string {
  *                            sur le domaine déclaré. Absent ou vide : rien ne change.
  * @param options.genericFunctions - Fonctions génériques à reconnaître (`P'(2)` déclaré
  *                            par le modèle). Absent : défauts du parseur, rien ne change.
+ * @param options.capitalPairs - Sens de deux majuscules collées (`AB` : `'length'`, longueur
+ *                            du segment, ou `'product'`). Absent : produit, comme avant.
  */
 export function areEquivalent(
 	latex1: string,
@@ -148,6 +157,7 @@ export function areEquivalent(
 		timeoutMs?: number;
 		assumptions?: AnswerAssumptions;
 		genericFunctions?: GenericFunctionConfig;
+		capitalPairs?: CapitalPairs;
 	}
 ): boolean {
 	// La réponse attendue (latex2) décide du rôle des virgules nues : une
@@ -155,7 +165,10 @@ export function areEquivalent(
 	const commas = expectsSeparatorComma(latex2) ? 'separator' : 'decimal';
 	const cleaned1 = stripLatexSpacing(latex1, commas);
 	const cleaned2 = stripLatexSpacing(latex2, commas);
-	const parseOptions = { genericFunctions: options?.genericFunctions };
+	const parseOptions = {
+		genericFunctions: options?.genericFunctions,
+		capitalPairs: options?.capitalPairs
+	};
 	const result1 = parseLatexSafe(cleaned1, parseOptions);
 	const result2 = parseLatexSafe(cleaned2, parseOptions);
 

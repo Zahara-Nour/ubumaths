@@ -29,7 +29,13 @@ import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST, compose, matrix, complex, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
-import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
+import {
+	DEFAULT_CAPITAL_PAIRS,
+	FUNCTION_COMMANDS,
+	GREEK_COMMANDS,
+	RELATION_COMMANDS
+} from '../types';
+import { scanPointNames } from './point-names';
 import {
 	BINOM_COMMANDS,
 	DOUBLE_FACTORIAL_ERROR,
@@ -727,6 +733,12 @@ class PrattParser {
 		const token = this.currentToken;
 		const letter = token.value;
 
+		// Deux majuscules collées ou plus : longueur `AB`, nom de figure `ABC`
+		// (mode longueur, hors indice). Avant les fonctions génériques : `FG` est
+		// une longueur, `F(x)` reste une fonction.
+		const pointNames = this.parsePointNames();
+		if (pointNames) return pointNames;
+
 		// Check if this is a generic function name
 		if (this.isGenericFunctionName(letter)) {
 			return this.parseGenericFunction();
@@ -735,6 +747,30 @@ class PrattParser {
 		// Regular variable
 		this.advance();
 		return this.applyColor(this.eulerOrVariable(letter));
+	}
+
+	/**
+	 * Points nommés collés à partir du jeton courant (`AB`, `A'B'`, `ABC`) : la
+	 * longueur d'un segment pour deux points, un nom de figure au-delà. `null` en
+	 * mode produit, dans un indice (`x_{AB}`), ou s'il n'y a pas deux points collés.
+	 */
+	private parsePointNames(): MathNode | null {
+		const mode = this.options.capitalPairs ?? DEFAULT_CAPITAL_PAIRS;
+		if (mode !== 'length' || this.subscriptDepth > 0) return null;
+
+		const scan = scanPointNames((offset) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)
+		);
+		if (!scan) return null;
+
+		// Les jetons lus sont collés : aucune espace à sauter entre eux
+		for (let i = 0; i < scan.tokenCount; i++) this.advance();
+
+		const [from, to] = scan.points;
+		if (scan.points.length === 2 && from && to) {
+			return this.applyColor(MathAST.segmentLength(from, to));
+		}
+		return this.applyColor(MathAST.figureName(scan.points));
 	}
 
 	/**

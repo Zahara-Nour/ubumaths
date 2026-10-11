@@ -319,6 +319,8 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	symbol: 'Symbol',
 	hole: 'Hole',
 	constant: 'Constant',
+	segmentLength: 'SegmentLength',
+	figureName: 'FigureName',
 	addition: 'Addition',
 	subtraction: 'Subtraction',
 	multiplication: 'Multiplication',
@@ -367,6 +369,8 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return [];
 
 		// Complex has real and imaginary children
@@ -535,6 +539,8 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return original;
 
 		// Complex number

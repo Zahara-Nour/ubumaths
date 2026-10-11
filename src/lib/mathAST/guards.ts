@@ -13,6 +13,8 @@ import type {
 	SymbolNode,
 	HoleNode,
 	MathConstantNode,
+	SegmentLengthNode,
+	FigureNameNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -57,7 +59,9 @@ export function isLiteralNode(node: MathNode): node is LiteralNode {
 		node.type === 'greek' ||
 		node.type === 'symbol' ||
 		node.type === 'hole' ||
-		node.type === 'constant'
+		node.type === 'constant' ||
+		node.type === 'segmentLength' ||
+		node.type === 'figureName'
 	);
 }
 
@@ -103,6 +107,20 @@ export function isNumber(node: MathNode): node is NumberNode {
  */
 export function isVariable(node: MathNode): node is VariableNode {
 	return node.type === 'variable';
+}
+
+/**
+ * La longueur d'un segment (`AB`)
+ */
+export function isSegmentLength(node: MathNode): node is SegmentLengthNode {
+	return node.type === 'segmentLength';
+}
+
+/**
+ * Un nom de figure (`ABC`)
+ */
+export function isFigureName(node: MathNode): node is FigureNameNode {
+	return node.type === 'figureName';
 }
 
 /**
@@ -622,6 +640,8 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return false;
 
 		case 'addition':

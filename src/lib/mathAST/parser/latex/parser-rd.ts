@@ -35,7 +35,13 @@ import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST, complex, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
-import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
+import {
+	DEFAULT_CAPITAL_PAIRS,
+	FUNCTION_COMMANDS,
+	GREEK_COMMANDS,
+	RELATION_COMMANDS
+} from '../types';
+import { scanPointNames } from './point-names';
 import {
 	BINOM_COMMANDS,
 	DOUBLE_FACTORIAL_ERROR,
@@ -887,8 +893,36 @@ class RDParser {
 	 * Parse a variable (single letter).
 	 */
 	private parseVariable(): MathNode {
+		// Deux majuscules collées ou plus : longueur `AB`, nom de figure `ABC`
+		const pointNames = this.parsePointNames();
+		if (pointNames) return pointNames;
+
 		const token = this.advance();
 		return this.applyColor(this.eulerOrVariable(token.value));
+	}
+
+	/**
+	 * Points nommés collés à partir du jeton courant (`AB`, `A'B'`, `ABC`), comme
+	 * le parseur Pratt : la longueur d'un segment pour deux points, un nom de
+	 * figure au-delà. `null` en mode produit, dans un indice, ou sans deux points collés.
+	 */
+	private parsePointNames(): MathNode | null {
+		const mode = this.options.capitalPairs ?? DEFAULT_CAPITAL_PAIRS;
+		if (mode !== 'length' || this.subscriptDepth > 0) return null;
+
+		const scan = scanPointNames((offset) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)
+		);
+		if (!scan) return null;
+
+		// Les jetons lus sont collés : aucune espace à sauter entre eux
+		for (let i = 0; i < scan.tokenCount; i++) this.advance();
+
+		const [from, to] = scan.points;
+		if (scan.points.length === 2 && from && to) {
+			return this.applyColor(MathAST.segmentLength(from, to));
+		}
+		return this.applyColor(MathAST.figureName(scan.points));
 	}
 
 	/**
