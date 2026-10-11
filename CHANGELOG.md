@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.21.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.20.0...v0.21.0) (2026-10-11)
+
+### ✨ Features
+
+- **atelier:** bouton valeur approchée / valeur exacte sur chaque ligne de Calcul ([3706bde](https://github.com/Zahara-Nour/ubumaths/commit/3706bde54cb9eb26706c4419cae7838f5fe48bd6))
+- **atelier:** clavier de Calcul — ↑/↓ rappellent les saisies, liste des commandes, modèle ([426a4bf](https://github.com/Zahara-Nour/ubumaths/commit/426a4bf0ed6b76c5bc2cf52b71a8133361d8d184))
+- **atelier:** une commande sans argument tapée en entier se lance d'une Entrée ([b66cd9f](https://github.com/Zahara-Nour/ubumaths/commit/b66cd9f8de04e3182482fe3a0671a9fbb06d8d71))
+- **enigmes:** classement borné à l'école, prénom et score (fonction serveur) ([3d5dc7c](https://github.com/Zahara-Nour/ubumaths/commit/3d5dc7cbc63ff9cd7f4660e7064ddc1a80e1f972))
+- **seo:** logo dédié (gidouille 512 px) pour les données structurées ([6443f56](https://github.com/Zahara-Nour/ubumaths/commit/6443f569738ff41b0b638bd3bae4a40f302a1a5c))
+- **test-cadres:** page de test de l'encadrement des formules ([e5d2ca1](https://github.com/Zahara-Nour/ubumaths/commit/e5d2ca16f4db850d38fbebaf8ce83bcd84f80e8a))
+
+### 🐛 Bug Fixes
+
+- **atelier:** bouton ≈ — exactitude sur le rationnel, 4 décimales, solutions des étapes ([7367f7b](https://github.com/Zahara-Nour/ubumaths/commit/7367f7bd80aab140778cedc268e0f25244d4a472))
+- **atelier:** rappel et liste des commandes — suites de revue ([f77a3da](https://github.com/Zahara-Nour/ubumaths/commit/f77a3dadac75316d9e2e31faa4d0325f94e0a987))
+- **deps:** exception datée de minimumReleaseAge pour mathlive@0.111.1 ([9b6f255](https://github.com/Zahara-Nour/ubumaths/commit/9b6f25594d3031b9f871cc8f38cc01e5fd5253ba))
+- **enigmes:** classement sans annuaire, élève sans école couvert par le test ([3079e3d](https://github.com/Zahara-Nour/ubumaths/commit/3079e3deb2263fdce9f6b72df0e3c1fc6fae1469))
+- **enigmes:** l'identifiant des camarades ne part plus au navigateur ([f508472](https://github.com/Zahara-Nour/ubumaths/commit/f508472045ce215882ae0326e26aa1922b961df5))
+- **enigmes:** la page du classement lit la fonction bornée à l'école ([1b6de99](https://github.com/Zahara-Nour/ubumaths/commit/1b6de99124952f12888132a39858d00939bfb733))
+- **markdown:** \genfrac (MathLive 0.111) bloquée en mode restreint ([99b5eed](https://github.com/Zahara-Nour/ubumaths/commit/99b5eed388146554c14302d87d8e22d2ed4842b3))
+- **mathast:** le parseur LaTeX ne lit plus de notation scientifique ([69e8a5a](https://github.com/Zahara-Nour/ubumaths/commit/69e8a5af1eb050a941e048ac4480584cda012c34))
+- **questions:** nombre JS réinjecté sans notation scientifique ([044cf95](https://github.com/Zahara-Nour/ubumaths/commit/044cf95e3a2c4abb01e4ddad8fdded2e12835de4))
+- **ubumark:** eval n'écrit plus de notation JS ; modificateur ;sci ([5a8252a](https://github.com/Zahara-Nour/ubumaths/commit/5a8252acd6dfa8641d6b4419ac4c8c055f63a255))
+- **ubumark:** un entier exact s'écrit en entier, jamais un chiffre faux ([8cd8d91](https://github.com/Zahara-Nour/ubumaths/commit/8cd8d91990f95292c63d097fa692be0727d3a8f8))
+
+### 📚 Documentation
+
+- **adr:** 0023 — niveau de guidage choisi par affectation, jamais tiré ([31f42e4](https://github.com/Zahara-Nour/ubumaths/commit/31f42e4bcee2235178116a9fe4cf67f8213ebc20))
+- **atelier:** bouton valeur approchée dans la doc système, journal de la PR 2 ([9068bbe](https://github.com/Zahara-Nour/ubumaths/commit/9068bbe9878a4547fe6206d7fc843a7141e5b345))
+- **atelier:** clavier de Calcul dans la doc système, journal de la PR 1 ([a657d2e](https://github.com/Zahara-Nour/ubumaths/commit/a657d2e34dce755d56a5bea55e8cdfd2f3eb25ae))
+- **atelier:** inventaire /cas et phase 0 — rappel, bouton ≈, complétion, retrait ([5c83420](https://github.com/Zahara-Nour/ubumaths/commit/5c83420295e61a86c1dca840636d5abd193144bc))
+- **atelier:** retrait de /cas suspendu (décision de David) ([c19a250](https://github.com/Zahara-Nour/ubumaths/commit/c19a250e1997af71d36d30f91601671c1fef3f3e))
+- **base:** classement des énigmes borné à l'école ([001467c](https://github.com/Zahara-Nour/ubumaths/commit/001467c6c61ba374b27b6cff2bc0db8e144e2e71))
+- **context:** niveau de guidage d'un exercice de fiche, distinct de la variation ([d710dba](https://github.com/Zahara-Nour/ubumaths/commit/d710dbad55c0804d8ac8ad531943132b1e4ebc67))
+- **pratiques:** carte de l'environnement de dev, tenue à jour par la garde ([c426e56](https://github.com/Zahara-Nour/ubumaths/commit/c426e568d8960b47ea1dcb3ee3886b8fa11b5daa))
+- **questions:** nombre JS réinjecté sans notation scientifique ([a9910c7](https://github.com/Zahara-Nour/ubumaths/commit/a9910c740ab406e67a3cc4404282b49222c78931))
+- **wip:** journal du chantier notation scientifique en LaTeX ([47205cf](https://github.com/Zahara-Nour/ubumaths/commit/47205cff9a41a43b58d325f84e4f831b28566a8c))
+- **wip:** journaux de K2 et de la notation scientifique archivés ([#1061](https://github.com/Zahara-Nour/ubumaths/issues/1061), [#1085](https://github.com/Zahara-Nour/ubumaths/issues/1085)) ([8e6a95c](https://github.com/Zahara-Nour/ubumaths/commit/8e6a95c2f091219a8eb91f7f2f279f6c042b07b6))
+- **wip:** rgpd — classement des énigmes livré ([#1077](https://github.com/Zahara-Nour/ubumaths/issues/1077), [#1079](https://github.com/Zahara-Nour/ubumaths/issues/1079)) ([2b47ae6](https://github.com/Zahara-Nour/ubumaths/commit/2b47ae6e132d7438d19835c610eb8ef8633db198))
+
 ## [0.20.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.19.0...v0.20.0) (2026-10-11)
 
 ### ✨ Features
