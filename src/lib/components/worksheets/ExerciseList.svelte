@@ -8,8 +8,8 @@
 	- Display exercises grouped by section (or "Sans section" for ungrouped)
 	- Drag and drop to reorder exercises within section
 	- Drag and drop to move exercises between sections
-	- Show exercise: position number, title, points, variant mode badge
-	- Edit button for points and variant config (opens modal)
+	- Show exercise: position number, title, points
+	- Edit button for points, section and instructions (opens modal)
 	- Delete button (remove from worksheet, not from DB)
 
 	Usage:
@@ -28,17 +28,12 @@
 	import { lore } from '$lib/config/lore';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { GripVertical, Trash2, Loader2, Settings2, Star, Pencil } from '@lucide/svelte';
 	import { exerciseEditHref } from '$lib/worksheets/exercise-edit-link';
-	import type {
-		WorksheetExerciseWithExercise,
-		WorksheetSectionRow,
-		VariantMode
-	} from '$lib/types/worksheets';
+	import type { WorksheetExerciseWithExercise, WorksheetSectionRow } from '$lib/types/worksheets';
 
 	// Types
 	interface Props {
@@ -75,14 +70,6 @@
 
 	// Saving state
 	let isSaving = $state(false);
-
-	// Variant mode labels
-	const variantModeLabels: Record<VariantMode, string> = {
-		none: 'Aucune',
-		individual: 'Individuel',
-		n_versions: 'N versions',
-		group: 'Groupe'
-	};
 
 	// Group exercises by section
 	let groupedExercises = $derived.by(() => {
@@ -550,11 +537,6 @@
 													<span class="truncate font-medium">
 														{exercise.exercise?.title || '(Sans titre)'}
 													</span>
-													{#if exercise.variant_mode !== 'none'}
-														<Badge variant="outline" class="text-xs">
-															{variantModeLabels[exercise.variant_mode]}
-														</Badge>
-													{/if}
 												</div>
 											</div>
 

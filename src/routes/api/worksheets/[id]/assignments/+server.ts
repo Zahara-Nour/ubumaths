@@ -18,6 +18,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '$lib/types/worksheets';
 import { getCorrectionReleaseStatus } from '$lib/server/worksheets/correction-release';
+import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -51,6 +52,8 @@ const createAssignmentSchema = z
 		title: z.string().max(255).nullable().optional(),
 		instructions: z.string().max(5000).nullable().optional(),
 		individualized: z.boolean().optional().default(true),
+		// Niveau de guidage des versions distribuées (ADR 0023) : guidé par défaut
+		guidance_level: guidanceLevelSchema.optional().default('guided'),
 		available_from: z.string().datetime().optional(),
 		closes_at: z.string().datetime().nullable().optional(),
 		correction_release_mode: z.enum(CORRECTION_RELEASE_MODES).optional().default('manual'),
@@ -380,6 +383,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				title: data.title,
 				instructions: data.instructions,
 				individualized: data.individualized,
+				guidance_level: data.guidance_level,
 				available_from: data.available_from || new Date().toISOString(),
 				closes_at: data.closes_at,
 				correction_release_mode: data.correction_release_mode,
@@ -393,6 +397,12 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		if (createError) {
 			console.error('Error creating assignment:', createError);
+			throw error(500, "Erreur lors de la creation de l'assignation");
+		}
+
+		// La RLS refuse en silence : la ligne rendue doit porter ce qu'on a écrit
+		if (!assignment || assignment.guidance_level !== data.guidance_level) {
+			console.error('Affectation non écrite telle que demandée :', assignment?.id);
 			throw error(500, "Erreur lors de la creation de l'assignation");
 		}
 

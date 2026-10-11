@@ -12881,6 +12881,7 @@ export type Database = {
           correction_release_mode: string | null
           created_at: string
           created_by: string
+          guidance_level: string
           id: string
           individualized: boolean | null
           instructions: string | null
@@ -12898,6 +12899,7 @@ export type Database = {
           correction_release_mode?: string | null
           created_at?: string
           created_by: string
+          guidance_level?: string
           id?: string
           individualized?: boolean | null
           instructions?: string | null
@@ -12915,6 +12917,7 @@ export type Database = {
           correction_release_mode?: string | null
           created_at?: string
           created_by?: string
+          guidance_level?: string
           id?: string
           individualized?: boolean | null
           instructions?: string | null
