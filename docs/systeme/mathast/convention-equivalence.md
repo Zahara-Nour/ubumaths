@@ -329,13 +329,16 @@ leurs copies en brouillon en prod ; aucun modèle publié touché.
 
 ## Nombres complexes (décisions de David du 2026-10-05)
 
-La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Sondes sur les cartes de maths
+La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Depuis le 2026-10-11 (décision de
+David), les quatre parseurs la lisent `complex(0, 1)`, le même nœud que `\imaginaryI` et
+`\mathrm{i}` ; dans un indice (`u_i`) ou suivie d'un indice (`i_1`), elle reste une variable —
+qu'aucune équivalence ne lit comme l'imaginaire (`u_i` ≢ `u_1`). Sondes sur les cartes de maths
 expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
 
-- **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i), lu
-  `complex(0, 1)` par le parseur, est la même notation que `i` (`unifyEulerNotationAST`, qui
-  ramène aussi `e`, `\exponentialE` et `\exp(u)` à une forme unique, la constante `euler()`) : `2-3\imaginaryI` pour `2-3i` est juste (avant : « pas sous la
-  forme demandée ») ; `\mathrm{i}` l'était déjà. Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
+- **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i) est la même
+  notation que `i` : `2-3\imaginaryI` et `2-3i` donnent le même arbre (depuis le 2026-10-11 ;
+  avant, `unifyEulerNotationAST` les ramenait à la lettre). `2-3\imaginaryI` pour `2-3i` est
+  juste (avant le 2026-10-05 : « pas sous la forme demandée »). Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
   de prod en lecture + synthétiques) : 37 973 verdicts, 330 changés, tous des réponses contenant
   `\imaginaryI` (dont l'attendue recopiée du corrigé, qui l'écrit ainsi), mauvaise forme → juste,
   sur 11 brouillons ; aucun modèle publié.
@@ -393,8 +396,9 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   (`questions/intervals/complex-finite-set.ts`) : ordre libre, éléments appariés par
   équivalence de valeur (`\{1-i;1+i\}`, `\{1+\imaginaryI;1-\imaginaryI\}`,
   `\{\sqrt{2}e^{i\frac{\pi}{4}};1-i\}` justes) ; manquant, en trop ou faux : faux ; fraction
-  simplifiable dans un élément : ½ (`intervalForm`). Jamais d'intervalle complexe. Ensembles
-  réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
+  simplifiable dans un élément : ½ (`intervalForm`). Un élément ne contient aucune variable
+  (seule la base indicée `e_1` passe encore, écart connu) : `i` y est `complex(0, 1)`, `i_1` une
+  variable refusée. Jamais d'intervalle complexe. Ensembles réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
   (ensembles de complexes) ; 0 sur les cases intervalles réelles.
 
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)

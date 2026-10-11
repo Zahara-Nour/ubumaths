@@ -13,7 +13,7 @@
  * @module mathAST/limits/evaluate
  */
 
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 import type { MathNode, LimitNode, GreekLetterNode } from '../types';
 import type {
 	LimitResult,
@@ -343,8 +343,9 @@ export function evaluateLimit(
 	options: LimitOptions = {}
 ): LimitResult {
 	const requestedVariable = isLimit(expr) ? expr.variable : variable;
-	if (refusesEulerVariable(requestedVariable, expr)) {
-		throw new LimitError(EULER_NOT_A_VARIABLE, 'INVALID_VARIABLE');
+	const refusal = reservedVariableRefusal(requestedVariable, expr);
+	if (refusal !== null) {
+		throw new LimitError(refusal, 'INVALID_VARIABLE');
 	}
 	const greekResult = evaluateGreekVariableLimit(expr, variable, approach, direction, options);
 	if (greekResult !== null) return greekResult;

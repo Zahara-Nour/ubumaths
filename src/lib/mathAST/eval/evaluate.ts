@@ -1242,7 +1242,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 
 	// 2. Check for free variables (exclude known constants)
 	const variables = getVariables(processedNode);
-	const freeVars = [...variables].filter((v) => !['pi', 'i'].includes(v));
+	const freeVars = [...variables].filter((v) => v !== 'pi');
 
 	if (freeVars.length > 0) {
 		return {

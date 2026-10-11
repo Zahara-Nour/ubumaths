@@ -34,7 +34,7 @@ import {
 } from '../normal/rational';
 import { buildFactor } from './build';
 import { variable } from '../factory';
-import { isEulerConstant } from '../guards';
+import { isEulerConstant, isImaginaryUnit } from '../guards';
 import { mapNode } from '../transforms';
 
 // =============================================================================
@@ -60,6 +60,9 @@ const CATEGORY_OTHER = 2;
 /** La constante d'Euler dans une clé d'ordre (voir `writtenForm`). */
 const EULER_ORDER_KEY: MathNode = variable('\\euler');
 
+/** L'unité imaginaire dans une clé d'ordre (voir `writtenForm`). */
+const IMAGINARY_ORDER_KEY: MathNode = variable('\\i');
+
 // =============================================================================
 // Écriture d'un nœud
 // =============================================================================
@@ -73,16 +76,25 @@ const EULER_ORDER_KEY: MathNode = variable('\\euler');
  * constantes passent devant les lettres (`\pi a`, `e a`). `toCustom` l'écrit
  * `e`, qui la rangerait parmi les lettres (`a e`). Le nom `\euler` ne sert qu'à
  * la clé : il n'est jamais affiché ni relu.
+ *
+ * L'unité imaginaire de même, sous `\i` : devant les lettres (`i x`), après
+ * `e` et devant `\pi` et les lettres grecques (`i\pi`, `i\theta`, l'écriture
+ * de `e^{i\pi}`).
  */
 function writtenForm(node: MathNode): string {
 	try {
-		return toCustom(mapNode(node, (n) => (isEulerConstant(n) ? EULER_ORDER_KEY : n)));
+		return toCustom(
+			mapNode(node, (n) =>
+				isEulerConstant(n) ? EULER_ORDER_KEY : isImaginaryUnit(n) ? IMAGINARY_ORDER_KEY : n
+			)
+		);
 	} catch {
 		return hashMathNode(node);
 	}
 }
 
 function categoryOf(base: MathNode): number {
+	if (isImaginaryUnit(base)) return CATEGORY_SYMBOL;
 	switch (base.type) {
 		case 'variable':
 		case 'greek':

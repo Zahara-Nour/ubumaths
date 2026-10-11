@@ -23,6 +23,24 @@ Branche `fix/latex-lettre-i`, worktree `../ubumaths-wt-lettre-i`. Suite de #1061
 
 ## Fait
 
-- [ ] Tests vus rouges
-- [ ] Parseurs, nettoyage, refus
-- [ ] Doc, code-reviewer, PR
+- [x] Tests vus rouges (2026-10-11) : 57 échecs / 145 sur le code de HEAD (copie restaurée par
+      `git show HEAD:…`) — parseurs 19, équivalence/écriture/ordre 11, refus 13, notation de
+      `simplify/__tests__/unite-imaginaire.test.ts` 14 ; `complex-forms-lettre-i.test.ts` vert avant
+      comme après (garde de non-régression).
+- [x] Parseurs, nettoyage, refus : `subscriptDepth` dans les deux parseurs LaTeX, `i_1` variable
+      dans les quatre ; `common/reserved-letters.ts` (`reservedVariableRefusal`,
+      `reservedLetterMessage`, `IMAGINARY_NOT_A_VARIABLE`), `euler-variable.ts` garde son API ;
+      `imaginaryUnit()` / `isImaginaryUnit` ; `toCustom` écrit `i` ; `tidy` range `i` sous la
+      clé `\i` (après `e`, devant `π`) ; contournements retirés (normalize, evaluate, taylor,
+      euler-formula, cosmetic-transforms, complex-forms, complex-finite-set).
+- [x] Doc : mathast/README (invariant 6, écarts connus), convention-equivalence, tidy-spec,
+      questions, atelier-syntaxe.
+- [ ] code-reviewer, PR
+
+## Écarts relevés, non corrigés
+
+- Le parseur LaTeX rd ne lit ni `\imaginaryI` ni `\exponentialE` (avant comme après).
+- Filtres de noms `e`/`i` sur `getVariables` gardés comme pour `e` (#1061) : `atelier/solve-steps.ts`,
+  `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts` ;
+  ils ne visent plus que `e_1`, `i_1`, `u_i`.
+- `complex-finite-set.ts` admet encore la variable `e` (base de `e_1`) comme lettre constante.

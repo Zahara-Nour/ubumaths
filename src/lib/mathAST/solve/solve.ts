@@ -121,7 +121,7 @@ import {
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
@@ -1762,8 +1762,9 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	if (refusesEulerVariable(opts.variable, equation)) {
-		throw new SolveError(EULER_NOT_A_VARIABLE, 'unknown', 'variable: e');
+	const refusal = reservedVariableRefusal(opts.variable, equation);
+	if (refusal !== null) {
+		throw new SolveError(refusal, 'unknown', `variable: ${opts.variable}`);
 	}
 
 	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`

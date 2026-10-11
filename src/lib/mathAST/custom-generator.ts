@@ -50,6 +50,7 @@ import type {
 	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
+import { isImaginaryUnit } from './guards';
 import { GREEK_LETTERS } from './types';
 import { format } from './units/formatter';
 import {
@@ -190,6 +191,10 @@ function needsBracesForPower(node: MathNode): boolean {
 			// Holes and constants are atoms, don't need braces
 			return false;
 
+		case 'complex':
+			// L'unité imaginaire s'écrit `i` : un atome (x^i)
+			return !isImaginaryUnit(node);
+
 		case 'opposite':
 		case 'positive':
 			// Unary signs always need braces: x^{-2}, x^{+2}
@@ -233,6 +238,10 @@ function needsBracesForSubscript(node: MathNode): boolean {
 		case 'constant':
 			// Holes and constants are atoms, don't need braces
 			return false;
+
+		case 'complex':
+			// L'unité imaginaire s'écrit `i` : un atome
+			return !isImaginaryUnit(node);
 
 		default:
 			// All complex expressions need braces
@@ -292,7 +301,6 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'unit':
 		case 'composition':
 		case 'matrix':
-		case 'complex':
 		case 'limit':
 		case 'logical':
 		case 'logical-not':
@@ -302,6 +310,10 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'boolean':
 		case 'signed-zero':
 			return false;
+
+		// L'unité imaginaire s'écrit `i` (un atome) ; un autre complexe, `a + bi`
+		case 'complex':
+			return !isImaginaryUnit(node);
 
 		default: {
 			const exhaustive: never = node;
@@ -745,6 +757,11 @@ export class CustomGenerator {
 	 * Emits a complex number span.
 	 */
 	private visitComplexSpans(node: ComplexNode): void {
+		// L'unité imaginaire s'écrit `i`, que parseCustom relit `complex(0, 1)`
+		if (isImaginaryUnit(node)) {
+			this.emit('i', node.metadata);
+			return;
+		}
 		// Complex numbers are rendered as real + imaginary*i
 		this.visitWithSpans(node.real);
 		this.emit(' + ', undefined);
@@ -1238,6 +1255,8 @@ export class CustomGenerator {
 	}
 
 	private generateComplex(node: ComplexNode): string {
+		// L'unité imaginaire s'écrit `i`, que parseCustom relit `complex(0, 1)`
+		if (isImaginaryUnit(node)) return 'i';
 		const real = this.generateNode(node.real);
 		const imag = this.generateNode(node.imaginary);
 		return `${real} + ${imag}i`;

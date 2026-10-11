@@ -1258,6 +1258,14 @@ export function complex(real: MathNode, imaginary: MathNode, metadata?: NodeMeta
 	} as const;
 }
 
+/**
+ * L'unité imaginaire `i` = `complex(0, 1)` : ce que les parseurs lisent pour la
+ * lettre `i` (hors indice), `\mathrm{i}` et `\imaginaryI`.
+ */
+export function imaginaryUnit(metadata?: NodeMetadata): ComplexNode {
+	return complex(number('0'), number('1'), metadata);
+}
+
 // =============================================================================
 // Infinity Factories
 // =============================================================================
@@ -2016,6 +2024,7 @@ export const MathAST = {
 
 	// Complex numbers
 	complex,
+	imaginaryUnit,
 
 	// Infinity
 	infinity,
