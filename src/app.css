@@ -41,7 +41,8 @@
 	--color-ternary-foreground: light-dark(#ffffff, #ffffff);
 
 	--color-muted: light-dark(#f0f0f0, #333331);
-	--color-muted-foreground: light-dark(#737373, #9e9e9e);
+	/* Clair #666 : 5,0:1 sur bg-muted, 5,2:1 sur bg-muted/60 (D17, 2026-10-12 ; #737373 = 4,3:1) */
+	--color-muted-foreground: light-dark(#666666, #9e9e9e);
 
 	/* Accent = Yellow/Gold */
 	--color-accent: light-dark(#ffa000, #ffe266);
@@ -53,8 +54,9 @@
 	--color-border: light-dark(#e0e0e0, #3d3d3a);
 	--color-input: light-dark(#e0e0e0, #3d3d3a);
 
-	/* Ring = Accent color for focus states */
-	--color-ring: light-dark(#ffa000, #e0d5a6);
+	/* Ring = anneau de focus. Clair #b25f00 : 4,6:1 sur blanc, 4,4:1 sur le fond de page
+	   (WCAG 1.4.11 exige 3:1 ; l'ancien #ffa000 faisait 2:1 — D16, 2026-10-12) */
+	--color-ring: light-dark(#b25f00, #e0d5a6);
 	--radius: 0.625rem;
 
 	/* Secondary = Neutral light gray / dark gray */

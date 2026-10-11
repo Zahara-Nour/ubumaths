@@ -101,6 +101,17 @@
 	<meta name="sveltekit:preload-data" content="hover" />
 </svelte:head>
 
+<!-- Lien d'évitement (WCAG 2.4.1, D18) : premier élément focusable, hors de l'écran sauf au focus.
+     Caché par translation et non par `sr-only focus:not-sr-only` : la règle `.sr-only` de app.css,
+     hors couche, l'emporte sur toute variante Tailwind (`focus:not-sr-only` n'y fait rien).
+     L'ancre `contenu-principal` est portée par le <main> ci-dessous, ou, sur le tableau de bord,
+     par le <main> de dashboard/+layout.svelte (qui saute aussi son en-tête et sa barre latérale). -->
+<a
+	href="#contenu-principal"
+	class="fixed top-2 left-2 z-[300] -translate-y-[200%] rounded-md bg-background px-4 py-2 font-medium text-foreground shadow-lg ring-2 ring-ring transition-transform focus:translate-y-0"
+	>Aller au contenu</a
+>
+
 <!-- Mode Watcher for automatic dark/light mode syncing -->
 <!-- track={true} syncs with system preferences -->
 <ModeWatcher track={true} defaultMode="system" />
@@ -134,7 +145,9 @@
 		<!-- Main content -->
 		<!-- NOTE: Dashboard routes handle their own scroll via dashboard-content -->
 		<main
-			class="relative flex-1"
+			id={isDashboardRoute ? undefined : 'contenu-principal'}
+			tabindex="-1"
+			class="relative flex-1 focus:outline-none"
 			class:overflow-y-auto={!isWhiteboardRoute && !isDashboardRoute}
 			class:overflow-hidden={isWhiteboardRoute || isDashboardRoute}
 		>
