@@ -81,6 +81,21 @@ describe('du champ à la définition', () => {
 		expect(parseDefinition('value', definition, 'keyboard')).toEqual({ unit: 'km/h' });
 	});
 
+	// Lot C des grandeurs : l'espace tapée (`\,` dans MathLive) fait la grandeur
+	it('« 5 m » tapé avec une espace est une grandeur ; collé, un produit', () => {
+		expect(parseDefinition('value', definitionFromField('value', '5\\,m'), 'keyboard')).toEqual({
+			unit: 'm'
+		});
+		expect(definitionFromField('value', '5m')).toBe('5m');
+	});
+
+	// Revue du lot C : la virgule décimale de MathLive (`{,}`) cachait l'espace
+	it('« 2,5 km » tapé avec une espace est une grandeur', () => {
+		expect(
+			parseDefinition('value', definitionFromField('value', '2{,}5\\,km'), 'keyboard')
+		).toEqual({ unit: 'km' });
+	});
+
 	// ⚠️ Le secours « unité » ne doit jamais toucher ce qui se lit déjà :
 	// `normalizeStudentQuantity` ferait de `2b` le nombre 2 suivi de l'unité b
 	it('ne transforme pas une valeur algébrique en grandeur', () => {

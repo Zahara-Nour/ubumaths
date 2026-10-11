@@ -75,8 +75,8 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('1~\\unit{h} + 30~\\unit{min}');
 
 			expect(result.success).toBe(true);
-			// L'unité écrite où la valeur tombe juste : 1,5 h
-			expect(result.output).toBe('1.5 h');
+			// Deux unités de durée écrites : l'écriture composée (lot C, décision de David)
+			expect(result.output).toBe('1 h 30 min');
 		});
 	});
 

@@ -1015,6 +1015,8 @@ export class WebReplEngine {
 			output: outcome.answer.text,
 			outputHtml: html(outcome.answer.text),
 			ast: outcome.answer.node,
+			...(outcome.quantity !== null &&
+				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
 			// La bascule exact ⇄ décimal de `/cas`, comme pour un nombre
 			exactOutput: outcome.exact.text,
 			exactOutputHtml: html(outcome.exact.text),
