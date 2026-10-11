@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// ==========================================================================
@@ -207,9 +208,7 @@ style(c4, couleur="cyan")`;
 </script>
 
 <div class="mx-auto max-w-6xl space-y-4 p-8">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="text-3xl font-bold">Transformations geometriques</h1>
 

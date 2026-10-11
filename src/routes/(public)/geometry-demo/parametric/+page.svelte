@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// Note: \\pi and e (Euler) are now first-class DSL constants thanks to the
@@ -159,9 +160,7 @@ oc = cercle_osculateur(c, t)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="mt-4 mb-8 text-2xl font-bold">Courbes paramétriques — geometry-core</h1>
 

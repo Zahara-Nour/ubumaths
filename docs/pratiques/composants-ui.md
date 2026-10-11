@@ -124,6 +124,10 @@ Pourquoi : la destination écrite dans le lien est la même après un lien parta
 
 **Libellé** : « Retour à… » / « Retour aux… » + la page parente. Jamais « Retour » seul, jamais une flèche seule.
 
+**Modifications non enregistrées** : `confirmLeave="…"` demande confirmation avant de partir ; un refus annule la navigation, et le lien reste un vrai lien (pas de question sur un clic qui ouvre un nouvel onglet). Exemple : édition d'un deck SRS.
+
+**Garde** : `src/lib/__tests__/bouton-retour-sans-historique.test.ts` refuse tout `history.back()` hors de la page d'erreur.
+
 ```svelte
 <div>
 	<BackLink href="/dashboard/teacher/series" label="Retour aux séries" />
@@ -132,6 +136,13 @@ Pourquoi : la destination écrite dans le lien est la même après un lien parta
 
 <!-- Page en pleine activité -->
 <BackLink href="/automaths/panier" label="Quitter" kind="quit" />
+
+<!-- Modifications non enregistrées -->
+<BackLink
+	href="/dashboard/teacher/srs/decks"
+	label="Retour aux decks"
+	confirmLeave={hasChanges ? 'Vous avez des modifications non sauvegardées. Quitter ?' : undefined}
+/>
 ```
 
 ---

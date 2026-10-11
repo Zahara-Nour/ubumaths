@@ -16,6 +16,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Slider } from '$lib/components/ui/slider';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import { isVariationsExercise, getExerciseContentSafe } from '$lib/exercises/types';
@@ -35,7 +36,6 @@
 	// Icons
 	import Check from '@lucide/svelte/icons/check';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
-	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import Link from '@lucide/svelte/icons/link';
 	import Download from '@lucide/svelte/icons/download';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
@@ -354,12 +354,8 @@
 		<div class="w-[60%] overflow-y-auto border-r border-border">
 			<div class="mx-auto max-w-3xl px-6 py-8">
 				<!-- Header -->
-				<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<Button variant="ghost" href="/" class="self-start">
-						<ArrowLeft class="h-4 w-4 sm:mr-2" />
-						<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
-					</Button>
-
+				<BackLink href="/" label="Retour à l'accueil" />
+				<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
 					<!-- Action buttons -->
 					<div class="flex flex-wrap items-center gap-2">
 						{#if hasVariables}
@@ -533,12 +529,8 @@
 	<div class="lg:hidden">
 		<div class="container mx-auto max-w-4xl px-4 py-8">
 			<!-- Header -->
-			<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<Button variant="ghost" href="/" class="self-start">
-					<ArrowLeft class="h-4 w-4 sm:mr-2" />
-					<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
-				</Button>
-
+			<BackLink href="/" label="Retour à l'accueil" />
+			<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
 				<!-- Action buttons -->
 				<div class="flex flex-wrap items-center gap-2">
 					{#if hasVariables}
@@ -710,12 +702,8 @@
 	<!-- ========================================================================== -->
 	<div class="container mx-auto max-w-4xl px-4 py-8">
 		<!-- Header -->
-		<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<Button variant="ghost" href="/" class="self-start">
-				<ArrowLeft class="h-4 w-4 sm:mr-2" />
-				<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
-			</Button>
-
+		<BackLink href="/" label="Retour à l'accueil" />
+		<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
 			<!-- Action buttons -->
 			<div class="flex flex-wrap items-center gap-2">
 				{#if hasVariables}
