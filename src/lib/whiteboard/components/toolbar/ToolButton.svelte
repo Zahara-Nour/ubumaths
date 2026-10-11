@@ -7,13 +7,13 @@
 	 */
 
 	import { Button } from '$lib/components/ui/button';
-	// lucide-svelte v0.545 exports Svelte 4 class-based components (SvelteComponentTyped),
-	// not Svelte 5 Component<Props> interface. Use typeof to accept the class constructor.
-	import type { Icon as LucideIcon } from '@lucide/svelte';
+	// Type d'une icône Lucide (Component<LucideProps>) ; `Icon` est le composant de base,
+	// qui exige `icon`/`iconNode` et n'accepte donc pas une icône toute faite.
+	import type { LucideIcon } from '@lucide/svelte';
 
 	interface Props {
 		/** Lucide icon component */
-		icon: typeof LucideIcon;
+		icon: LucideIcon;
 		/** Whether the tool is currently active */
 		active?: boolean;
 		/** Tooltip label */

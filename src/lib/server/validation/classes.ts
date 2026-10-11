@@ -39,12 +39,14 @@ export const updateClassSchema = createClassSchema.partial();
  * Query parameter: full=true for complete profile data
  */
 export const getClassStudentsSchema = z.object({
+	// Pas de `.optional()` final : depuis Zod 4.5, un `.optional()` extérieur rend
+	// `undefined` sans exécuter la transformation (absent → undefined au lieu de false).
+	// Le `.optional()` intérieur suffit à rendre la clé facultative.
 	full: z
 		.string()
 		.optional()
 		.transform((val) => val === 'true')
 		.pipe(z.boolean())
-		.optional()
 });
 
 // ============================================================================

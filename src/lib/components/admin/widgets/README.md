@@ -35,7 +35,7 @@ Display a single metric with value, label, trend indicator, and optional alert b
 - `value: number | string` - Main value to display
 - `trend?: number` - Percentage change (positive = green ↑, negative = red ↓)
 - `status?: 'ok' | 'warning' | 'critical'` - Alert level (affects background gradient)
-- `icon?: typeof Icon` - Lucide icon component (optional)
+- `icon?: LucideIcon` - Lucide icon component (optional)
 - `link?: string` - Link to details page (makes card clickable)
 
 **Example:**
