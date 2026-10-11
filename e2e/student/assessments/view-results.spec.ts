@@ -33,7 +33,7 @@ const ASSESSMENTS_URL = '/dashboard/student/assessments';
  */
 async function _findCompletedAssessment(page: Page): Promise<string | null> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 	await page.waitForLoadState('networkidle');
 
 	// Look for "Terminées" section
@@ -63,7 +63,7 @@ async function _findCompletedAssessment(page: Page): Promise<string | null> {
  */
 async function navigateToResults(page: Page): Promise<boolean> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 	await page.waitForLoadState('networkidle');
 
 	// Look for "Voir les résultats" button

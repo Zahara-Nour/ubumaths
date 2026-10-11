@@ -20,7 +20,10 @@ export interface ErrorCopy {
 	explanation: string | null;
 	/** Verbe de la phrase sur π : « Le nombre 401 {verbe} à la 1 197ᵉ décimale de π ». */
 	piVerb: string;
-	/** Chute de la phrase sur π, après la virgule, ou `null` pour finir sur « de π. ». */
+	/**
+	 * Chute de la phrase sur π, ponctuation d'attache comprise (« , mais… »,
+	 * « ; … »), ou `null` pour finir sur « de π. ».
+	 */
 	piTwist: string | null;
 	/**
 	 * Message d'une erreur serveur (5xx), à replier sous « Détails techniques » :
@@ -40,8 +43,8 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	401: {
 		title: 'Connexion requise',
 		explanation: null,
-		piVerb: 'est accessible',
-		piTwist: 'mais ta page, elle, se cache derrière la connexion'
+		piVerb: 'se présente',
+		piTwist: '\u00a0; ta page, elle, voudrait que tu en fasses autant'
 	},
 	403: {
 		title: 'Accès refusé',
@@ -50,7 +53,7 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	404: {
 		title: 'Page introuvable',
 		explanation: null,
-		piTwist: 'mais la page, elle, reste introuvable'
+		piTwist: ', mais la page, elle, reste introuvable'
 	},
 	410: {
 		title: 'Page disparue',

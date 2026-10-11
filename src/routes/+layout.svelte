@@ -164,9 +164,10 @@
 		</main>
 	</div>
 
-	<!-- Pied de page réduit au bouton « Infos et confidentialité » : accueil seulement -->
+	<!-- Pied de page réduit au bouton « Infos et confidentialité » : accueil seulement, dans le
+	     coin inférieur droit (centré, il collait à la dépêche du Shtam) -->
 	{#if infoButtonShown}
-		<footer class="flex justify-center bg-background py-2">
+		<footer class="flex justify-end bg-background px-2 py-2">
 			<InfoPanel />
 		</footer>
 	{/if}

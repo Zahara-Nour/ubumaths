@@ -2,10 +2,10 @@
 	import { lore } from '$lib/config/lore';
 	import type { PageData, ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { goto } from '$app/navigation';
 	import { submitAction, refreshPageData } from '$lib/utils/form-action';
 	import {
 		formatPeriodTimes,
@@ -15,17 +15,7 @@
 		createDefaultTimetable,
 		type SchoolPeriod
 	} from '$lib/utils/timetable';
-	import {
-		ArrowLeft,
-		Plus,
-		Pencil,
-		Trash2,
-		MoveUp,
-		MoveDown,
-		Calendar,
-		Copy,
-		Check
-	} from '@lucide/svelte';
+	import { Plus, Pencil, Trash2, MoveUp, MoveDown, Calendar, Copy, Check } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
@@ -346,14 +336,6 @@
 	}
 
 	// ========================================
-	// Navigation
-	// ========================================
-
-	function handleGoBack() {
-		goto('/dashboard/admin/schools').then(() => {});
-	}
-
-	// ========================================
 	// Form Result Handling
 	// ========================================
 
@@ -379,12 +361,7 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<div class="mb-2 flex items-center gap-2">
-				<Button variant="ghost" size="sm" onclick={handleGoBack} class="gap-2">
-					<ArrowLeft class="h-4 w-4" />
-					Retour
-				</Button>
-			</div>
+			<BackLink href="/dashboard/admin/schools" label="Retour aux écoles" />
 			<h1 class="text-3xl font-bold text-foreground">Organisation de l'École</h1>
 			<p class="mt-2 text-muted-foreground">
 				{data.school.name}

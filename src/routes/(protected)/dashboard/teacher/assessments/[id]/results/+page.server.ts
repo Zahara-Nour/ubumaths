@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	try {
 		const evaluation = await getEvaluation(locals.supabase, id);
-		if (!evaluation) throw error(404, 'Évaluation introuvable');
+		if (!evaluation) throw error(404, 'Contrôle introuvable');
 		if (evaluation.created_by !== user.id && profile.role !== 'admin') {
 			throw error(403, 'Non autorisé');
 		}

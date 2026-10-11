@@ -24,7 +24,7 @@
 		BugReportStatus
 	} from '$lib/types/bug-reports';
 	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
-	import { Plus, Bug, Clock, CheckCircle, ArrowLeft } from '@lucide/svelte';
+	import { Plus, Bug, Clock, CheckCircle } from '@lucide/svelte';
 
 	let { data } = $props();
 
@@ -63,14 +63,6 @@
 </script>
 
 <div class="container mx-auto max-w-4xl py-6">
-	<!-- Back link -->
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" onclick={() => goto('/dashboard')}>
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour au tableau de bord
-		</Button>
-	</div>
-
 	<!-- Header -->
 	<div class="mb-6 flex items-center justify-between">
 		<div>

@@ -133,25 +133,42 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
   montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
 - `src/routes/slides/test-transitions/+page.svelte` — page de démonstration des transitions,
   sans lien.
+- `src/routes/slides/demo/+page.svelte` et `src/routes/slides/demo-embedded/+page.svelte` —
+  démonstrations de tout le moteur (transitions, fragments, arrière-plans, code, UbuMark, QCM en
+  `FlashCard`, annotation, tableau blanc), plein écran et embarquée dans une page ; sans lien.
 
-**Annotation des diapositives : complète, mais branchée nulle part.** `AnnotatableSlide` (couche
-de dessin sur n'importe quelle diapositive) et `WhiteboardSlide` (une page du tableau blanc en
-diapositive, annotable) sont les **seuls** à allumer la barre d'annotation
-(`slideAnnotationStore.setAvailable(true)`) ; `Deck.svelte` ne l'affiche que si elle est allumée.
-Leurs seuls consommateurs étaient les démos `/slides/demo` et `/slides/demo-embedded`, supprimées
-le 2026-06-13 (elles ne compilaient plus). Ce n'est **pas du code mort** : les retirer couperait
-l'unique point d'entrée de la barre, du store et de `SlideAnnotationLayer`.
+**Annotation des diapositives.** `AnnotatableSlide` (couche de dessin sur n'importe quelle
+diapositive) et `WhiteboardSlide` (une page du tableau blanc en diapositive, annotable) sont les
+**seuls** à allumer la barre d'annotation (`slideAnnotationStore.setAvailable(true)`) ;
+`Deck.svelte` ne l'affiche que si elle est allumée. Seules les deux démos les montent : ni les
+carnets ni les séries en classe ne proposent l'annotation. Ce n'est **pas du code mort** (décision
+de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la barre, du store et de
+`SlideAnnotationLayer`.
 
 ### Invariants
 
 - Une touche tapée dans un champ éditable ne déplace jamais le diaporama
   (`isFromEditableField`, testé par `inputFilter.svelte.test.ts`).
+- Les flèches de navigation du `Deck` suivent le thème : flèche `--color-foreground` sur une
+  pastille `--color-background`, visibles sur le fond du thème (carnets, séries en classe) comme
+  sur une diapositive sombre (testé par `Deck.fleches.svelte.test.ts`).
+- Le contenu d'une `UbuMarkSlide` a la couleur du thème (`--color-foreground`), comme ses
+  paragraphes : sur le fond du thème (présentation des carnets), une formule en bloc reste lisible
+  en clair comme en sombre. Un fond sombre imposé à une `UbuMarkSlide` rend donc le texte illisible
+  en thème clair (testé par `UbuMarkSlide.couleur.svelte.test.ts`).
+- Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
+  deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
+  le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
+  (`returnFocusOnRemove`, testé par `Deck.annotation.svelte.test.ts`).
 - Pas de persistance : la position vit dans le store et l'URL.
 
 ### Tests
 
 `src/lib/slides/stores/__tests__/` (`deckStore`, `autoSlideTimer`),
 `src/lib/slides/core/__tests__/Deck.autoSlide.svelte.test.ts`,
+`src/lib/slides/core/__tests__/Deck.annotation.svelte.test.ts`,
+`src/lib/slides/core/__tests__/UbuMarkSlide.couleur.svelte.test.ts`,
+`src/lib/slides/core/__tests__/Deck.fleches.svelte.test.ts`,
 `src/lib/slides/actions/__tests__/inputFilter.svelte.test.ts`.
 
 ---
@@ -378,5 +395,5 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    font) ; `class_google_classroom_links` n'est lue nulle part dans `src/`.
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
 6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
-   fonctionne mais n'est montée nulle part depuis la suppression des démos (2026-06-13). Fonctionnalité
-   dormante à garder, pas du code mort (décision de David, 2026-10-11) ; démos à remettre en place.
+   n'est montée que par les démos `/slides/demo{,-embedded}` (remises en place le 2026-10-11) ;
+   la brancher dans les carnets ou les séries en classe serait un choix de produit.

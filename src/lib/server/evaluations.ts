@@ -163,7 +163,7 @@ export async function getEvaluation(
 
 		if (error) {
 			console.error('[getEvaluation] Lecture impossible :', error);
-			throw new EvaluationError(500, "Impossible de charger l'évaluation");
+			throw new EvaluationError(500, 'Impossible de charger le contrôle');
 		}
 		if (data) return toEvaluationWithSeries(data as EvaluationRowWithSeries);
 	}
@@ -183,7 +183,7 @@ export async function getTeacherEvaluations(
 
 	if (error) {
 		console.error('[getTeacherEvaluations] Lecture impossible :', error);
-		throw new EvaluationError(500, 'Impossible de charger les évaluations');
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 
 	const rows = (data ?? []) as Array<
@@ -223,7 +223,7 @@ export async function updateEvaluation(
 		throw mapEvaluationWriteError(error);
 	}
 	if (!data || data.length === 0) {
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 	return toDbEvaluation(data[0]);
 }
@@ -245,7 +245,7 @@ export async function setEvaluationStatus(
 		throw new EvaluationError(500, 'Enregistrement impossible, réessaie dans un instant');
 	}
 	if (!data || data.length === 0) {
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 }
 
@@ -266,13 +266,13 @@ export async function assignEvaluation(
 	const teacherId = actor.id;
 	const evaluation = await getEvaluation(supabase, evaluationId);
 	if (!evaluation) {
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 	if (evaluation.created_by !== teacherId && !actor.isAdmin) {
-		throw new EvaluationError(403, 'Cette évaluation ne vous appartient pas');
+		throw new EvaluationError(403, 'Ce contrôle ne vous appartient pas');
 	}
 	if (evaluation.status !== 'published') {
-		throw new EvaluationError(400, "Publie l'évaluation avant de l'assigner");
+		throw new EvaluationError(400, "Publie le contrôle avant de l'assigner");
 	}
 
 	const rows = [
@@ -445,7 +445,7 @@ export async function validateAttempt(
 	studentId: string
 ): Promise<AttemptValidation> {
 	if (evaluation.status !== 'published') {
-		return refused("Cette évaluation n'est pas ouverte");
+		return refused("Ce contrôle n'est pas ouvert");
 	}
 	if (isDeadlinePassed(evaluation.deadline)) {
 		return refused('La date limite est dépassée', { deadline_passed: true });
@@ -489,7 +489,7 @@ export async function getStudentAssignments(
 	// évaluations affectées À LA CLASSE disparaissaient de l'écran de l'élève.
 	if (membershipsError) {
 		console.error('[getStudentAssignments] Classes illisibles :', membershipsError);
-		throw new EvaluationError(500, 'Impossible de charger vos évaluations');
+		throw new EvaluationError(500, 'Impossible de charger vos contrôles');
 	}
 	const classIds = (memberships ?? []).map((m) => m.class_id);
 
@@ -504,7 +504,7 @@ export async function getStudentAssignments(
 	const { data, error } = await query;
 	if (error) {
 		console.error('[getStudentAssignments] Assignations illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de charger vos évaluations');
+		throw new EvaluationError(500, 'Impossible de charger vos contrôles');
 	}
 
 	const assignments: Array<{
@@ -531,7 +531,7 @@ export async function getStudentAssignments(
 	// panne ne doit pas le ramener à zéro.
 	if (sessionsError) {
 		console.error('[getStudentAssignments] Tentatives illisibles :', sessionsError);
-		throw new EvaluationError(500, 'Impossible de charger vos évaluations');
+		throw new EvaluationError(500, 'Impossible de charger vos contrôles');
 	}
 
 	const attemptsByEvaluation = new Map<

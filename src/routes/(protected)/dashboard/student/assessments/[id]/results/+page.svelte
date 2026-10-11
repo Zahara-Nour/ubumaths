@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, TrendingUp, Target, Clock, Calendar } from '@lucide/svelte';
+	import { TrendingUp, Target, Clock, Calendar } from '@lucide/svelte';
 	import { formatGrade, formLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
@@ -41,10 +42,8 @@
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack}>
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/student/assessments" label="Retour aux contrôles" />
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.evaluation.series.title}</h1>
 			<p class="mt-2 text-muted-foreground">Mes résultats · {formLabel(data.evaluation.form)}</p>
@@ -116,7 +115,7 @@
 			{#if data.attempts.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
 					<p>Aucune tentative pour le moment</p>
-					<Button onclick={handleBack} class="mt-4">Commencer l'évaluation</Button>
+					<Button onclick={handleBack} class="mt-4">Commencer le contrôle</Button>
 				</div>
 			{:else}
 				<Table.Root>

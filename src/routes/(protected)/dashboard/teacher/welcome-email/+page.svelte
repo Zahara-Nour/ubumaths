@@ -14,6 +14,7 @@
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -91,6 +92,7 @@
 <div class="container mx-auto max-w-2xl space-y-6 p-6">
 	<!-- Page Header -->
 	<div class="space-y-2">
+		<BackLink href="/dashboard/teacher/classes" label={`Retour aux ${lore.entities.class}s`} />
 		<div class="flex items-center gap-3">
 			<Mail class="h-8 w-8 text-primary" />
 			<h1 class="text-3xl font-bold tracking-tight">Email de bienvenue</h1>

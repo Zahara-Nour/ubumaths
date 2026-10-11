@@ -91,8 +91,7 @@
 				Le nombre {status}
 				{copy.piVerb} à la
 				<strong>{frenchOrdinal(occurrence.position)} décimale</strong
-				>&nbsp;de&nbsp;π{#if copy.piTwist},
-					{copy.piTwist}{/if}.
+				>&nbsp;de&nbsp;π{copy.piTwist ?? ''}.
 			</p>
 		{/if}
 

@@ -254,15 +254,15 @@ export async function notifyNewAssessment(data: {
 			data.classIds && data.classIds.length > 0 ? 'classes' : 'users';
 
 		await createSystemNotification({
-			title: 'Nouvelle évaluation assignée',
-			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> vous a assigné une nouvelle évaluation : <strong>${escapeHtml(data.assessmentTitle)}</strong></p>`,
+			title: 'Nouveau contrôle assigné',
+			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> vous a assigné un nouveau contrôle : <strong>${escapeHtml(data.assessmentTitle)}</strong></p>`,
 			type: 'info',
 			priority: 'important',
 			system_event_type: 'assessment_assigned',
 			target_type: targetType,
 			target_class_ids: data.classIds,
 			target_user_ids: data.studentIds,
-			action_label: "Voir l'évaluation",
+			action_label: 'Voir le contrôle',
 			action_url: '/dashboard/student/assessments'
 		});
 	} catch (error) {

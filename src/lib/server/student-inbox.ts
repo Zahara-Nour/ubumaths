@@ -271,7 +271,7 @@ async function fetchAssessmentItems(
 			source: 'assessment' satisfies WorkSource,
 			itemId: evaluation.id,
 			assignmentId: assignment.id,
-			title: evaluation.series?.title ?? 'Évaluation',
+			title: evaluation.series?.title ?? 'Contrôle',
 			formLabel: formLabel(evaluation.form),
 			bestGrade: bestGradeByEvaluation.get(evaluation.id) ?? null,
 			resumable,

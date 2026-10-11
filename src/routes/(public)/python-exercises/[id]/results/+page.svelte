@@ -1,12 +1,11 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import {
-		ArrowLeft,
 		Users,
 		CheckCircle2,
 		Clock,
@@ -145,10 +144,11 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" href="/python-exercises/{data.exercise.id}">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink
+			href={`/python-exercises/${data.exercise.id}`}
+			label={`Retour à la ${lore.learning.exercise}`}
+		/>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.exercise.title}</h1>
 			<p class="mt-2 text-muted-foreground">Résultats des {lore.entities.student}s</p>

@@ -12,9 +12,10 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { ChevronLeft, RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
+	import { RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import ClassCapacityGrid from '$lib/components/teacher/analytics/ClassCapacityGrid.svelte';
@@ -73,12 +74,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-7xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/teacher/classes">
-			<ChevronLeft class="mr-1 h-4 w-4" />
-			Retour aux {lore.entities.class}s
-		</Button>
-	</div>
+	<BackLink href="/dashboard/teacher/classes" label={`Retour aux ${lore.entities.class}s`} />
 
 	<header class="mb-6 flex flex-wrap items-start justify-between gap-3">
 		<div>

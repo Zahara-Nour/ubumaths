@@ -38,7 +38,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
    `GENERIC_MESSAGES`, comparée sans casse ni accents) : le titre français reste alors.
 4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
    elle, reste introuvable. » Le verbe et la chute viennent de `describeError` (`piVerb`,
-   `piTwist`) : 401 « est accessible […], mais ta page, elle, se cache derrière la connexion » ;
+   `piTwist`, ponctuation comprise) : 401 « Le nombre 401 se présente à la 1 197ᵉ décimale de π ;
+   ta page, elle, voudrait que tu en fasses autant. » ;
    les codes sans chute finissent sur « de π. ». Pas d'extrait des décimales en clair : le code est
    déjà coloré dans la spirale.
 5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
