@@ -28,7 +28,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
    leur raison. Pas encore fait : l'inventaire de ce que `/cas` offre et que l'atelier n'offre pas, puis
    le retrait de la page. `/calc` existe aussi (et figure dans le sitemap) ; le cadrage visait la fusion
    `/calc` + `/cas`. **Inventaire fait le 2026-10-11** : [atelier-cas-phase0.md](atelier-cas-phase0.md)
-   (↑/↓, bouton exact ⇄ décimal, complétion, puis retrait — phase 0 en attente de validation).
+   (↑/↓, bouton exact ⇄ décimal, complétion — phase 0 en attente de validation ; retrait de `/cas` suspendu).
 2. **v2, puis v3** : phase 0 à écrire.
 
 ### Dettes encore ouvertes (vérifiées dans le code)

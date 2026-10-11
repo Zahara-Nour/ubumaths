@@ -23,10 +23,10 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
     donner 30, pas `3tan(`.
 - **Après le choix d'une commande, son modèle reste affiché sous le champ** (`.taylor sin(x) ordre 5 en 0`)
   pendant que l'élève tape la suite — plutôt qu'une complétion des mots-clés.
-- Encore ouvert : **`/cas` retiré → redirection vers `/atelier` (reco) ou 404 ?** À trancher avant la
-  PR de retrait.
+- **`/cas` n'est PAS retirée pour l'instant** (David, 2026-10-11). La PR 4 est suspendue ; le jour
+  venu, reste à trancher : redirection vers `/atelier` (reco) ou 404.
 
-## Trois PR, puis le retrait
+## Trois PR (le retrait est suspendu)
 
 ### PR 1 — le clavier de Calcul et le modèle de la commande
 
@@ -102,7 +102,7 @@ et exige que Calcul l'**accepte** ; une proposition refusée fait échouer le te
 complétion de `/cas` (`mathAST/cli/completion`) insère `\alpha` et `\pi` en LaTeX à côté de `sin(` en
 syntaxe maison — une saisie mêlée que Calcul refuse depuis #911.
 
-### PR 4 — le retrait de `/cas`
+### PR 4 — le retrait de `/cas` (⏸ suspendu : « pour l'instant on n'enlève pas /cas »)
 
 Part : la route `src/routes/(public)/cas/`, `src/lib/components/cas/` (dont `AstDrawer` et
 `AstTreeViewer`, jamais montés), `src/lib/stores/repl.svelte.ts`. Restent : `WebReplEngine` (moteur
