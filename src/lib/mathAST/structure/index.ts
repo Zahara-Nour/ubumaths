@@ -17,7 +17,6 @@ export type {
 	SumStructureNode
 } from './types';
 export {
-	needsParenthesesAdvice,
 	parenthesesAdvice,
 	type AdviceSegment,
 	type ParenthesesAdvice

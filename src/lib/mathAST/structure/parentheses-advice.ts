@@ -9,9 +9,8 @@
  * Spécification : `docs/wip/structure-expression-progress.md`, section C.
  *
  * `parenthesesAdvice` ne connaît pas le niveau : la page l'appelle seulement si
- * `needsParenthesesAdvice(niveau de l'élève)`.
+ * `needsParenthesesAdvice` (`$lib/lexicon/parentheses-advice-grade`) le dit.
  */
-import { GRADES, isGradeCode } from '../../types/grades';
 import { markLatex, stripMarkers } from './markers';
 import type { ExpressionStructure, StructureNode, SumStructureNode } from './types';
 
@@ -43,15 +42,8 @@ export type ParenthesesAdvice =
 
 // Constantes
 const NBSP = ' ';
-/** Dernière année sans somme algébrique ni nombres relatifs : la 6e (CP = 1) */
-const LAST_YEAR_WITHOUT_RELATIVES = GRADES['6'].schoolYear;
 
 // Fonctions
-/** Vrai pour un élève de 6e ou avant ; faux pour un visiteur, un niveau inconnu, la 5e et après */
-export function needsParenthesesAdvice(grade: string | null | undefined): boolean {
-	return isGradeCode(grade) && GRADES[grade].schoolYear <= LAST_YEAR_WITHOUT_RELATIVES;
-}
-
 /**
  * Message pour un élève de 6e ou avant, ou `null`. Toute sous-expression est
  * examinée, de l'extérieur vers l'intérieur puis de gauche à droite ; la
