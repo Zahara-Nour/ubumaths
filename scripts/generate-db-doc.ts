@@ -119,6 +119,7 @@ export const DOMAINS: Domain[] = [
 			'chapter_',
 			'class_chapters',
 			'class_journal_',
+			'class_course_',
 			'journal_entry_',
 			'student_checklist_progress'
 		]

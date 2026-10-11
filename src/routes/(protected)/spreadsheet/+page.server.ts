@@ -4,10 +4,10 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Fetch user's spreadsheets (most recent first)
 	const { data: spreadsheets, error } = await locals.supabase

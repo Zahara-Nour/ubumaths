@@ -26,7 +26,7 @@ import {
 import { toCustom, getVariables, hasAllBindings, evaluate, substitute, toLatex } from '../../index';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
-import type { EvalValue, ComplexValueResult } from '../../eval/types';
+import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
 import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
 import { isUnit, isVariable } from '../../guards';
@@ -65,9 +65,15 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
-import { approximateDigitsOf, approximateValueLatex, isWrittenNumber } from '../approximation';
+import {
+	approximateDigitsOf,
+	approximateValueLatex,
+	approximationNode,
+	approximationText,
+	isWrittenNumber,
+	type ApproximateDigits
+} from '../approximation';
 import { hasDecimalLiteral } from '../../tidy/decimal';
-import { number, opposite } from '../../factory';
 import { tidy } from '../../tidy';
 
 // =============================================================================
@@ -118,9 +124,21 @@ function readableExact(node: MathNode): MathNode {
 	}
 }
 
-/** `-0.125` en arbre : l'opposé d'un nombre (un nombre ne porte pas de signe). */
-function decimalNodeOf(digits: string): MathNode {
-	return digits.startsWith('-') ? opposite(number(digits.slice(1))) : number(digits);
+/**
+ * La valeur que « Garder » range en mode décimal : la pleine précision du moteur,
+ * sauf si son flottant est sorti de sa plage — `e^{1000}` y vaut Infinity et
+ * `10^{-400}` 0, alors que l'écran montre 1,9701 × 10⁴³⁴ et 1 × 10⁻⁴⁰⁰ (revue) :
+ * on range alors le résultat exact.
+ */
+function keptValue(
+	decimalResult: EvalResult,
+	digits: ApproximateDigits,
+	exact: MathNode
+): MathNode {
+	if (decimalResult.status !== 'value' || typeof decimalResult.value !== 'number') return exact;
+	const value = decimalResult.value;
+	const outOfRange = !Number.isFinite(value) || (value === 0 && digits.digits !== '0');
+	return outOfRange ? exact : decimalResult.node;
 }
 
 /**
@@ -926,14 +944,6 @@ export class WebReplEngine {
 						: exactResult.reason
 				);
 			}
-			if (decimalResult.status !== 'value') {
-				throw new Error(
-					decimalResult.status === 'indeterminate'
-						? `Indeterminate form: ${decimalResult.form}`
-						: decimalResult.reason
-				);
-			}
-
 			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
 			// forme de calcul `{1/3}\pi` d'`evaluate`
 			const exactStr = toCustom(readableExact(exactResult.node));
@@ -941,29 +951,52 @@ export class WebReplEngine {
 			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
 			// Format decimal result — la règle du bouton ≈ (décision Q3 de David) :
-			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`)
+			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`) ;
+			// hors de [10⁻⁶ ; 10⁹[, la notation scientifique, lue sur la fraction exacte
+			// (décisions a, b, c, 2026-10-12 — avant : le flottant du moteur, `e+30`, et
+			// 2⁶⁴ écrit `18446744073709552000`, chiffres faux, sans ≈).
+			// Le calcul décimal du moteur ne sert plus qu'à une valeur sans écriture
+			// décimale (non réelle) et à « Garder » : au-delà du plafond des puissances
+			// exactes, il refuse honnêtement, et la valeur se lit sur le résultat exact
 			const digits = approximateDigitsOf(exactResult.node);
-			const decimalStr = digits?.digits ?? toCustom(decimalResult.node);
-			// Hors de l'échelle de l'arrondi (≥ 10⁹, < 10⁻⁶) : la valeur décimale du
-			// moteur, et `≈` seulement si elle est arrondie — pas devant 2⁴⁰ (revue)
-			const decimalIsExact =
-				digits?.exact ?? (decimalResult.exact || isWrittenNumber(exactResult.node));
-			const decimalPrefix = decimalIsExact ? '' : '≈ ';
-			const decimalOutput = `${decimalPrefix}${decimalStr}`;
-			let decimalOutputHtml: string;
-			if (decimalIsExact) {
-				decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
-			} else {
-				decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
+			const currentMode = this.evalState.mode;
+			let decimal: { readonly str: string; readonly exact: boolean } | null = null;
+			if (digits !== null) {
+				decimal = { str: approximationText(digits), exact: digits.exact };
+			} else if (decimalResult.status === 'value') {
+				decimal = {
+					str: toCustom(decimalResult.node),
+					exact: decimalResult.exact || isWrittenNumber(exactResult.node)
+				};
+			} else if (currentMode === 'decimal') {
+				throw new Error(
+					decimalResult.status === 'indeterminate'
+						? `Indeterminate form: ${decimalResult.form}`
+						: decimalResult.reason
+				);
 			}
+			// Sans écriture décimale, le mode exact montre quand même son résultat (revue :
+			// `e^{-5000}+1` échouait en mode exact parce que le calcul décimal refusait)
+			const decimalOutput =
+				decimal === null ? undefined : `${decimal.exact ? '' : '≈ '}${decimal.str}`;
+			const decimalOutputHtml =
+				decimal === null
+					? undefined
+					: decimal.exact
+						? `<span class="text-cyan-400">${this.escapeHtml(decimal.str)}</span>`
+						: `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimal.str)}</span>`;
 
 			// Determine if toggle makes sense (results are different)
-			const canToggle = exactStr !== decimalStr;
+			const canToggle = decimal !== null && exactStr !== decimal.str;
 
-			// Use current mode to determine primary output
-			const currentMode = this.evalState.mode;
-			const output = currentMode === 'exact' ? exactOutput : decimalOutput;
-			let outputHtml = currentMode === 'exact' ? exactOutputHtml : decimalOutputHtml;
+			// Use current mode to determine primary output (le mode décimal a une
+			// écriture décimale : sinon il a levé plus haut)
+			const output =
+				currentMode === 'exact' || decimalOutput === undefined ? exactOutput : decimalOutput;
+			let outputHtml =
+				currentMode === 'exact' || decimalOutputHtml === undefined
+					? exactOutputHtml
+					: decimalOutputHtml;
 
 			// Add bindings info if variables were substituted
 			if (variables.size > 0) {
@@ -988,14 +1021,17 @@ export class WebReplEngine {
 					currentMode === 'exact'
 						? exactResult.node
 						: digits === null
-							? decimalResult.node
-							: decimalNodeOf(digits.digits),
-				...(currentMode === 'decimal' && digits !== null && { quantityAst: decimalResult.node }),
+							? decimalResult.status === 'value'
+								? decimalResult.node
+								: exactResult.node
+							: approximationNode(digits),
+				...(currentMode === 'decimal' &&
+					digits !== null && { quantityAst: keptValue(decimalResult, digits, exactResult.node) }),
 				// Toggle support fields
 				exactOutput,
 				exactOutputHtml,
-				decimalOutput,
-				decimalOutputHtml,
+				...(decimalOutput !== undefined && { decimalOutput }),
+				...(decimalOutputHtml !== undefined && { decimalOutputHtml }),
 				canToggle,
 				...approximationFields(currentMode, exactResult.node, canToggle)
 			};

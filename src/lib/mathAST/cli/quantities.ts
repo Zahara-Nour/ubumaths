@@ -50,7 +50,7 @@ import {
 import { addRational, divRational, mulRational, subRational } from '../normal/rational';
 import { decimalString } from '../tidy/decimal';
 import { rationalOf, valueIn } from '../eval/evaluate-with-modifiers';
-import { approximateDigitsOf } from './approximation';
+import { approximateDigitsOf, approximationNode, approximationText } from './approximation';
 
 // =============================================================================
 // Types
@@ -216,11 +216,13 @@ function decimalOf(node: MathNode): { node: MathNode; text: string; exact: boole
 	const value = quantity.negative ? opposite(quantity.unit.expression) : quantity.unit.expression;
 	const digits = approximateDigitsOf(value);
 	if (digits === null) return null;
-	const magnitude = digits.digits.replace(/^-/, '');
-	const written = withUnit(number(magnitude), quantity.unit.unit);
+	// Hors de [10⁻⁶ ; 10⁹[, la notation scientifique (`9.4607*10^15 m`, décision a)
+	const negative = digits.digits.startsWith('-');
+	const magnitude = approximationNode({ ...digits, digits: digits.digits.replace(/^-/, '') });
+	const written = withUnit(magnitude, quantity.unit.unit);
 	return {
-		node: digits.digits.startsWith('-') ? opposite(written) : written,
-		text: `${digits.digits} ${unitWriting(quantity.unit.unit)}`,
+		node: negative ? opposite(written) : written,
+		text: `${approximationText(digits)} ${unitWriting(quantity.unit.unit)}`,
 		exact: digits.exact
 	};
 }

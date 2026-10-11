@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = sellVipCardBodySchema.safeParse(body);
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[sell] RPC error:', rpcError);
-		throw error(500, `Failed to sell card: ${rpcError.message}`);
+		throw error(500, `Impossible de vendre la carte VIP : ${rpcError.message}`);
 	}
 
 	// `RETURNS jsonb` : forme validée, pas affirmée. Cette fonction crédite le
@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const result = sellResultSchema.parse(data);
 
 	if (!result.success) {
-		const errorMessage = result.error || 'Sale failed';
+		const errorMessage = result.error || 'La vente n’a pas pu se faire';
 
 		if (errorMessage.includes('not found')) {
 			throw error(404, errorMessage);

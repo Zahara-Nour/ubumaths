@@ -84,7 +84,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	if (cardsResult.error) {
 		console.error('[shop] Error fetching cards:', cardsResult.error);
-		throw error(500, `Failed to fetch shop cards: ${cardsResult.error.message}`);
+		throw error(
+			500,
+			`Impossible de charger les cartes VIP de la boutique : ${cardsResult.error.message}`
+		);
 	}
 
 	// Transform snake_case to camelCase for frontend consumption

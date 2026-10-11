@@ -1,6 +1,6 @@
 ---
 couvre:
-  - 'src/lib/server/{chapter*,chapters*,class-sessions,curriculum*,journal*,programme-tree}.ts'
+  - 'src/lib/server/{chapter*,chapters*,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
   - 'src/lib/components/{cours,journal,progression}/**'
@@ -14,6 +14,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
   - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression}/**'
   - 'src/routes/(public)/cahier/**'
+  - 'src/routes/(public)/cours/**'
 ---
 
 # Le cours : chapitres, cahier de texte, programme
@@ -65,14 +66,15 @@ Docs voisines, à lire plutôt que recopier :
 
 ### Mon cours — serveur (`src/lib/server/`)
 
-| Fichier                   | Rôle                                                                                                                                                                                               |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `chapters.ts`             | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getStudentChapters`, `getChapterWithContent`, `toggleChecklistItem`, `getMyChecklistProgress`. |
-| `chapters-publication.ts` | `setContentPublication` : écrit `published_at` sur un contenu, via la table de correspondance **fermée** `TABLES` (type de contenu → table) ; `listDistributedWorksheetIds`.                       |
-| `chapter-sections.ts`     | Sections : `listSections`, `createSection`, `renameSection`, `deleteSection`, `reorderSections`, `assignToSection`, `placeInSection`.                                                              |
-| `chapter-series.ts`       | Séries rattachées : `linkSeries`, `setSeriesForm`, `unlinkSeries`, `listChapterSeries`, `listAvailableSeries` ; erreurs typées `ChapterSeriesError` (→ 404 / 409 / 500).                           |
-| `chapter-plan.ts`         | `buildChapterPlan` : le plan du chapitre **tel que l'élève le voit** (sections dans l'ordre, `UNASSIGNED_SECTION_ID` pour le non-classé).                                                          |
-| `chapter-templates.ts`    | Modèles : CRUD, `publishTemplate`, `archiveTemplate`, versions (`createTemplateVersion`, `computeDiff`), `instantiateTemplate`, `migrateChapterToVersion`, `detachChapterFromTemplate`.            |
+| Fichier                   | Rôle                                                                                                                                                                                                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chapters.ts`             | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getStudentChapters`, `getChapterWithContent`, `toggleChecklistItem`, `getMyChecklistProgress`.                                                                        |
+| `chapters-publication.ts` | `setContentPublication` : écrit `published_at` sur un contenu, via la table de correspondance **fermée** `TABLES` (type de contenu → table) ; `listDistributedWorksheetIds`.                                                                                              |
+| `chapter-sections.ts`     | Sections : `listSections`, `createSection`, `renameSection`, `deleteSection`, `reorderSections`, `assignToSection`, `placeInSection`.                                                                                                                                     |
+| `chapter-series.ts`       | Séries rattachées : `linkSeries`, `setSeriesForm`, `unlinkSeries`, `listChapterSeries`, `listAvailableSeries` ; erreurs typées `ChapterSeriesError` (→ 404 / 409 / 500).                                                                                                  |
+| `chapter-plan.ts`         | `buildChapterPlan` : le plan du chapitre **tel que l'élève le voit** (sections dans l'ordre, `UNASSIGNED_SECTION_ID` pour le non-classé).                                                                                                                                 |
+| `course-share-tokens.ts`  | Lien du cours (ADR 0025) : `getActiveCourseShareToken`, `rotateCourseShareToken`, `revokeCourseShareToken` (rend le nombre de lignes relues), `resolveCourse{ShareToken,WorksheetByShareToken,DocumentByShareToken}` (charges validées par Zod), `buildPublicCourseView`. |
+| `chapter-templates.ts`    | Modèles : CRUD, `publishTemplate`, `archiveTemplate`, versions (`createTemplateVersion`, `computeDiff`), `instantiateTemplate`, `migrateChapterToVersion`, `detachChapterFromTemplate`.                                                                                   |
 
 Validation Zod : `src/lib/server/validation/{chapters,chapter-sections,chapter-series,chapter-templates}.ts`.
 Types : `src/lib/types/chapters.ts` (convertisseurs `dbChapterToApp`…, `ChapterContentType`) et
@@ -82,15 +84,19 @@ Types : `src/lib/types/chapters.ts` (convertisseurs `dbChapterToApp`…, `Chapte
 
 - Prof : `src/routes/(protected)/dashboard/teacher/cours/` — liste par classe, puis
   `[classId]/` (chapitres de la classe : actions `create`, `update`, `delete`, `reorder`,
-  `toggleVisibility`, `instantiateFromTemplate`), puis `[classId]/[chapterId]/` (éditeur :
+  `toggleVisibility`, `instantiateFromTemplate`, `shareCourseLink`, `revokeCourseLink`), puis `[classId]/[chapterId]/` (éditeur :
   actions `setPublication`, `linkExercise`, `linkWorksheet`, `linkSeries`, `setSeriesForm`,
   `createTemplate`, `migrateToVersion`, `detachFromTemplate`, objectifs…).
 - Élève : `src/routes/(protected)/dashboard/student/cours/` et `cours/[chapterId]/` (plan du
   chapitre, action `toggleChecklist`).
+- Sans compte (ADR 0025) : `src/routes/(public)/cours/[token]/` (tout le cours, chapitre par
+  chapitre), `fiche/[id]/` (PDF en lecture) et `document/[id]/+server.ts` (redirection 303).
 - Composants : `src/lib/components/cours/` (élève : `ChapterCard`, `ChecklistSection`,
   `ChapterSeriesCard`, `ChapterRevisionButton` → `/dashboard/revisions/chapitres/[chapterId]`) et
   `cours/teacher/` (`ChapterSectionsEditor` + `section-dnd.ts`, `DocumentUpload`,
-  `PublicationToggle`, `StudentProgressTable`). Modèles : `ChapterTemplateIndicator` dans
+  `PublicationToggle`, `StudentProgressTable`, `CourseShareLinkCard`). `DocumentCard` accepte des
+  adresses imposées (`hrefs`) et `ChapterSeriesCard` ne demande que titre, forme, nombre de
+  questions et lien : la page publique les réutilise. Modèles : `ChapterTemplateIndicator` dans
   `src/lib/components/templates/`.
 - API appelées par l'interface : `api/teacher/chapters/[id]/sections/**` (éditeur de sections),
   `api/teacher/chapters/[id]/document-upload-url` et `…/documents` (dépôt d'un fichier). Le reste
@@ -247,6 +253,33 @@ les RPC `get_class_journal_by_share_token` et `get_worksheet_by_share_token` ; e
 que les séances publiées, et seulement les fiches **citées** dans une séance visible. Jeton
 invalide, expiré ou révoqué → **même 404**.
 
+### Lien du cours
+
+[ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md). `class_course_share_tokens`, **calque
+distinct** de la table du cahier : le jeton du cahier n'ouvre pas le cours, et inversement. Mêmes
+règles de vie : un jeton actif par classe (`rotateCourseShareToken` révoque l'ancien), expiration
+au 31 août, révoquer = désactiver. Le professeur le gère sur la page Cours d'une classe
+(`CourseShareLinkCard` : copier, renouveler, révoquer ; consultations et expiration affichées).
+Révoquer relit ses lignes : zéro ligne désactivée → 404 « Aucun lien actif », pas un faux succès.
+
+Ce que lit un visiteur sans compte, par trois portes seulement :
+
+- `/cours/[token]` — RPC `get_class_course_by_share_token` (anon) : chapitres **visibles** d'une
+  classe **active**, et leurs contenus `published_at <= now()`. Le plan est rangé côté serveur par
+  `buildPublicCourseView`, avec les règles de `buildChapterPlan` (sections dans l'ordre, objectifs
+  groupés, « Non classé » à la fin sans titre). Objectifs en **texte seul**, séries vers
+  l'entraînement libre (`buildSeriesLink`, forme du rattachement). Jamais : exercices notés, quiz,
+  révisions, progression.
+- `/cours/[token]/fiche/[id]` — RPC `get_course_worksheet_by_share_token` : fiche publiée dans un
+  chapitre visible **et** distribuée à la classe ; PDF `reader`, sans correction.
+- `/cours/[token]/document/[id]` — RPC `get_course_document_by_share_token`, **réservée au service
+  role** (le chemin de stockage ne sort jamais vers le navigateur) ; fichier → URL signée de
+  **60 s** (téléchargement forcé hors PDF et images), Drive → l'URL Drive si elle est en `https:`.
+  Redirection 303, `noindex`, `no-store`. La table `chapter_documents` n'est jamais lue.
+
+Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null` de la base → le
+**même** 404. Toutes les pages sont en `noindex` et exclues du plan du site.
+
 ## Invariants
 
 1. **La garde d'accès élève est dans la policy**, pas dans le code : `chapters-publication.ts` ne
@@ -267,8 +300,8 @@ invalide, expiré ou révoqué → **même 404**.
    n'importe quelle date), pas seulement dans le sélecteur.
 7. **La couverture `manual` est intouchable** par le recalcul ; le recalcul tourne à chaque
    enregistrement, même sans activité.
-8. **Le jeton du cahier ne fait que lire.** Il ne se confond jamais avec `classes.join_code`, qui
-   inscrit dans la classe.
+8. **Les jetons du cahier et du cours ne font que lire.** Ils ne se confondent jamais avec
+   `classes.join_code`, qui inscrit dans la classe, ni entre eux.
 9. **Progression élève : une seule source**, `student-progression.ts`. Deux agrégations
    divergentes ont déjà affiché 0 sur le tableau de bord et 20/20 sur la page.
 10. **Lecture d'un programme à un niveau** : `keepLinksOfGrade` sur les liens carte → point, et
@@ -276,10 +309,13 @@ invalide, expiré ou révoqué → **même 404**.
 
 ## Comment étendre
 
+- **Nouvelle garde côté élève** (policy d'un contenu de chapitre) : la reporter dans les trois
+  fonctions du lien du cours, qui la refont à la main (ADR 0025).
 - **Nouveau type de contenu de chapitre** : l'ajouter à `ChapterContentType`, à `TABLES`
   (`chapters-publication.ts`, le `satisfies` casse sinon), à `CONTENT_TABLES`
   (`chapter-sections.ts`, rien ne casse sinon : le type ne serait jamais rangeable), à
-  `buildChapterPlan`, à la migration (colonnes `published_at`, `section_id`, `section_order` et
+  `buildChapterPlan`, au lien du cours s'il doit y être lisible (fonction SQL, schéma Zod et
+  `buildPublicCourseView` — sinon il n'y apparaît pas), à la migration (colonnes `published_at`, `section_id`, `section_order` et
   policy élève), et décider s'il entre dans `TemplateContentSnapshot`.
 - **Nouvelle sorte d'activité** : `validation/curriculum.ts` (union discriminée), puis
   `TAGGED_KINDS` dans `curriculum-coverage.ts` si elle porte des tags.
@@ -298,11 +334,15 @@ invalide, expiré ou révoqué → **même 404**.
 - Composants : `src/lib/components/cours/**/__tests__/`, `templates/__tests__/`,
   `src/lib/components/__tests__/ClassScheduleGrid.svelte.test.ts` ; routes :
   `dashboard/teacher/cours/[classId]/[chapterId]/__tests__/series-actions.test.ts`,
-  `api/teacher/chapters/[id]/sections/assign/__tests__/assign.test.ts`.
+  `api/teacher/chapters/[id]/sections/assign/__tests__/assign.test.ts`,
+  `dashboard/teacher/cours/[classId]/__tests__/share-course-actions.test.ts`,
+  `(public)/cours/[token]/__tests__/{page-server,page.svelte}.test.ts` ; serveur :
+  `course-share-tokens.test.ts`.
 - Intégration (`tests/integration/`, base locale) : `chapter-publication-rls`,
   `archived-member-chapter-access`, `chapter-sections`, `sections-crud`,
   `placer-dans-une-section`, `backfill-chapter-sections`, `chapter-documents-size-limit`,
   `chapter-template-instantiation-unique`, `chapter-decks`, `class-journal-share-token`,
+  `class-course-share-token`,
   `security-share-tokens`, `journal-entry-homework`, `journal-pending-activities`,
   `curriculum-api`, `curriculum-coverage`, `curriculum-tracking-rls`, `template-tags`.
 
@@ -312,6 +352,9 @@ invalide, expiré ou révoqué → **même 404**.
   élément ; accès élève hérité de la classe, résolu à la volée ; élève sorti de classe archivé
   (relit ce qu'il a reçu, ne reçoit plus rien) ; documents plafonnés à 25 Mo, téléversés
   directement du navigateur au storage (d'où `document-upload-url`).
+- [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md) — le cours d'une classe est lisible
+  par un lien distinct de celui du cahier ; portes `SECURITY DEFINER` seulement, contenus réservés
+  aux comptes masqués.
 - [ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md) — mono-professeur : la policy
   prof est un rôle, pas un propriétaire (`_teacherId` inutilisé dans `journal.ts`).
 - [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md) — l'arbre des notions devient

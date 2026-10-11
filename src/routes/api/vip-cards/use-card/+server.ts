@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = useCardSchema.safeParse(body);
@@ -53,17 +53,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} else if (profile.role === 'teacher' || profile.role === 'admin') {
 		// Teacher/admin: studentId required from body
 		if (!validation.data.studentId) {
-			throw error(400, 'studentId is required for teacher/admin');
+			throw error(400, 'Identifiant d’élève requis');
 		}
 		studentId = validation.data.studentId;
 
 		// Verify class relationship (admins bypass via verifyTeacherStudentWithRole)
 		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 		if (!hasAccess) {
-			throw error(403, 'You can only use cards for students in your classes');
+			throw error(403, 'Tu ne peux utiliser des cartes VIP que pour les élèves de tes classes');
 		}
 	} else {
-		throw error(403, 'Unauthorized role');
+		throw error(403, 'Action non autorisée pour ton rôle');
 	}
 
 	// Call unified use_vip_card RPC
@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[use-card] RPC error:', rpcError);
-		throw error(500, 'Failed to use card');
+		throw error(500, 'Impossible d’utiliser la carte VIP');
 	}
 
 	// `RETURNS jsonb` : forme validée, pas affirmée. Une carte consommable perd
@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const rpcResult = useCardResultSchema.parse(result);
 
 	if (!rpcResult.success) {
-		const errorMessage = rpcResult.error || 'Failed to use card';
+		const errorMessage = rpcResult.error || 'Impossible d’utiliser la carte VIP';
 
 		if (errorMessage.includes('not found') || errorMessage.includes('does not exist')) {
 			throw error(404, errorMessage);

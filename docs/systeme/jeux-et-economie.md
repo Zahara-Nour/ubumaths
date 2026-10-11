@@ -136,6 +136,12 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (`riddle_school_leaderboard`)                                                    | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
 
+Les scores qui nourrissent ces classements s'écrivent **par le serveur** : `upsert_2048_score`
+(lot 3, Q141) et `upsert_mathemo_score` (client service depuis `20261016100400` ; garde : client
+service ou l'élève lui-même, EXECUTE retiré à `authenticated` après le deploy — la fonction
+ajoute `p_score` au total sans borne, seule la route le calcule et le borne). Le score reste
+déclaré par le navigateur, puisque le jeu tourne côté client.
+
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
 
 ## Invariants
@@ -261,7 +267,7 @@ une 2ᵉ migration, après le `deploy:prod` qui livre la route. Test :
 les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
 (`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
 choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
-soumission. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`. La colonne
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`. La colonne
 `riddles.answer` reste lisible par la base pour l'élève (énigme du jour ou assignée) : la fermer
 demande une décision sur la lecture côté prof.
 

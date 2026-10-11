@@ -73,6 +73,7 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 | **Distribuer / affectation** | Donner une fiche à une classe ; l'affectation survit à la dépublication.                                                                                    | `worksheet_assignments`                                                 |
 | **Niveau de guidage**        | Version d'un exercice de fiche selon l'aide donnée : **guidé**, **intermédiaire** ou **autonome**. Choisi par le prof, jamais tiré au hasard (≠ variation). | `exercises.variations[].label` (`guided`, `intermediate`, `autonomous`) |
 | **Cahier de texte**          | Vue chronologique des séances et du travail donné.                                                                                                          |                                                                         |
+| **Lien de consultation**     | Rend lisible SANS COMPTE le cahier de texte ou le cours publié d'une classe (un lien chacun). Ne fait que LIRE (≠ code d'inscription).                      | `class_journal_share_tokens`, `class_course_share_tokens`               |
 
 ### ⚠️ « Publier » a TROIS sens — toujours préciser lequel
 

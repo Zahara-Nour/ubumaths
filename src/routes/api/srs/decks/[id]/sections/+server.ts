@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (!deck) {
-		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+		return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -52,7 +52,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	if (dbErr) {
 		console.error('[sections] GET failed:', dbErr);
-		return json({ error: 'Failed to fetch sections' }, { status: 500 });
+		return json({ error: 'Impossible de charger les sections' }, { status: 500 });
 	}
 
 	return json({ sections: data ?? [] });
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	try {
 		bodyRaw = await request.json();
 	} catch {
-		return json({ error: 'Invalid JSON body' }, { status: 400 });
+		return json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 
 	const validation = createSectionSchema.safeParse(bodyRaw);

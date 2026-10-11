@@ -64,7 +64,7 @@ export const rewardJournalQuerySchema = z.object({
 				const date = new Date(val);
 				return !isNaN(date.getTime());
 			},
-			{ message: 'Invalid date format for "from" parameter. Use ISO 8601 format.' }
+			{ message: 'Date de début invalide (format attendu : AAAA-MM-JJ)' }
 		)
 		.optional(),
 
@@ -75,7 +75,7 @@ export const rewardJournalQuerySchema = z.object({
 				const date = new Date(val);
 				return !isNaN(date.getTime());
 			},
-			{ message: 'Invalid date format for "to" parameter. Use ISO 8601 format.' }
+			{ message: 'Date de fin invalide (format attendu : AAAA-MM-JJ)' }
 		)
 		.optional(),
 
@@ -107,7 +107,7 @@ export const rewardJournalQuerySchema = z.object({
  * Schema for student ID path parameter (teacher endpoint)
  */
 export const studentIdParamSchema = z.object({
-	studentId: z.string().uuid('Invalid student ID format')
+	studentId: z.string().uuid('Identifiant d’élève invalide')
 });
 
 // ============================================================================
