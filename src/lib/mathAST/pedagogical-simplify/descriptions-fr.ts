@@ -67,6 +67,7 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'trinomial-roots': 'Factorisation par les racines du trinôme : a(x - x₁)(x - x₂)',
 	'trinomial-integer-form': 'Factorisation à coefficients entiers',
 	'evident-root': 'Factorisation par (x - r), r racine évidente',
+	'develop-to-factor': 'Développement et réduction, pour faire apparaître une forme connue',
 
 	// ---- valeur absolue -------------------------------------------------------
 	'abs-negation': 'Simplification : |-x| = |x|',
@@ -190,8 +191,12 @@ function identityTitle(before: MathNode): string | null {
 		'sum-cubes': 'a³ + b³',
 		'diff-cubes': 'a³ − b³'
 	};
-	const a = monomialText(identity.alpha, variable, identity.degree);
-	return `On reconnaît ${shapes[identity.kind]} avec a = ${a} et b = ${identity.beta}`;
+	const monomial = monomialText(identity.alpha, variable, identity.degree);
+	// Écrite constante devant (`9 − x²`) : a est la constante, b le monôme
+	const [a, b] = identity.reversed
+		? [`${identity.beta}`, monomial]
+		: [monomial, `${identity.beta}`];
+	return `On reconnaît ${shapes[identity.kind]} avec a = ${a} et b = ${b}`;
 }
 
 /** Le titre d'identité avec a et b, sinon le titre d'origine (motif symbolique, plusieurs lettres). */
@@ -251,6 +256,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'trinomial-roots': trinomialTitle,
 	'trinomial-integer-form': () => 'On écrit les facteurs avec des coefficients entiers',
 	'evident-root': evidentRootTitle,
+	'develop-to-factor': () => 'On développe et on réduit',
 	'common-factor-products': () => 'On met le facteur commun en évidence',
 	'common-factor-bare-term': () => 'On met le facteur commun en évidence',
 	'common-factor-content-add': () => 'On met le facteur commun en évidence',
@@ -358,6 +364,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'Quand Δ = b² − 4ac est positif ou nul, le trinôme ax² + bx + c s’écrit a(x − x₁)(x − x₂), où x₁ et x₂ sont ses racines.',
 	'trinomial-integer-form': () =>
 		'On multiplie un facteur par a, ou par un diviseur de a, pour que ses coefficients soient entiers.',
+	'develop-to-factor': () =>
+		'Aucun facteur commun ni identité n’apparaît tel quel : on développe pour faire apparaître une forme connue.',
 	'evident-root': () =>
 		'Si P(r) = 0, alors P(x) se factorise par (x − r) : le second facteur s’obtient par division (ou par identification).',
 	'common-factor-products': () =>

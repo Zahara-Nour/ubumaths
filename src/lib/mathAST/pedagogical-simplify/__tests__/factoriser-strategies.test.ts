@@ -242,6 +242,117 @@ describe('stratégie 6 — développer pour refactoriser, en dernier recours', (
 	});
 });
 
+describe('a² − b² écrit à l’envers (constante devant) : l’identité, jamais Δ', () => {
+	it.each(
+		BOTH.flatMap((level) => [
+			['9-x^2', '\\left( 3 - x \\right) \\left( 3 + x \\right)', 'a = 3 et b = x', level],
+			['1-x^2', '\\left( 1 - x \\right) \\left( 1 + x \\right)', 'a = 1 et b = x', level],
+			['-4x^2+9', '\\left( 3 - 2 x \\right) \\left( 3 + 2 x \\right)', 'a = 3 et b = 2x', level]
+		])
+	)('%s → %s (%s, %s)', (source, latex, names, level) => {
+		const run = expectFactored(source, level as Level, latex, ['diff-squares-numeric']);
+		expect(run.titles[0]).toBe(`On reconnaît a² − b² avec ${names}`);
+	});
+
+	it.each(BOTH)('-x³+x → x(1−x)(1+x), factorisation complète (%s)', (level) => {
+		const run = factoriser('-x^3+x', level);
+		expect(run.latex).toBe('x \\left( 1 - x \\right) \\left( 1 + x \\right)');
+		expect(areEquivalent(run.result, run.input)).toBe(true);
+		expect(run.rules.at(-1)).toBe('diff-squares-numeric');
+		expect(run.rules).not.toContain('trinomial-roots');
+	});
+});
+
+describe('chaque étape part de la précédente', () => {
+	it.each(BOTH)(
+		'(x+3)²−x² → 3(2x+3) : le facteur (x+3)−x est réduit DANS une étape (%s)',
+		(level) => {
+			expectFactored('(x+3)^2-x^2', level, '3 \\left( 2 x + 3 \\right)', [
+				'diff-squares-symbolic',
+				'reduce-factors'
+			]);
+		}
+	);
+
+	it.each(BOTH)('12x²−3 : pas de parenthèses doubles (%s)', (level) => {
+		const run = expectFactored(
+			'12x^2-3',
+			level,
+			'3 \\left( 2 x - 1 \\right) \\left( 2 x + 1 \\right)',
+			['common-factor-content-sub', 'diff-squares-numeric']
+		);
+		for (const step of run.steps) {
+			expect(toLatex(step.globalAfter!)).not.toContain('\\left( \\left(');
+		}
+	});
+
+	it.each(BOTH)('x−x → 0 (%s)', (level) => {
+		expect(factoriser('x-x', level).latex).toBe('0');
+	});
+
+	it.each(BOTH)('stratégie 6 : le développement est UNE étape (%s)', (level) => {
+		for (const [source, latex] of [
+			['x(x+2)+1', '\\left( x + 1 \\right)^2'],
+			['(x+1)(x+3)+1', '\\left( x + 2 \\right)^2']
+		]) {
+			const run = factoriser(source, level);
+			expect(run.latex).toBe(latex);
+			expect(run.rules).toEqual(['develop-to-factor', 'perfect-square-trinomial']);
+			expect(run.titles[0]).toBe('On développe et on réduit');
+			expect(toLatex(run.steps[0].globalBefore!)).toBe(toLatex(run.input));
+		}
+	});
+
+	const ALL = [
+		'6x+9',
+		'4x^2-25',
+		'9x^2-12x+4',
+		'x^2-4',
+		'(2x+1)^2-(x-3)^2',
+		'2x^2-8',
+		'x^2e^x-4e^x',
+		'2x^2+x-3',
+		'x^2-5x+6',
+		'3x^2-15x+18',
+		'2x^2-4x-2',
+		'x^2-2x-1',
+		'-x^2+5x-6',
+		'x^3-6x^2+11x-6',
+		'2x^3-12x^2+22x-12',
+		'x(x+1)-6',
+		'x(4x+4)+1',
+		'9-x^2',
+		'-4x^2+9',
+		'-x^3+x',
+		'(x+3)^2-x^2',
+		'12x^2-3',
+		'(2x+1)(x-3)+(2x+1)(x+5)',
+		'(x+1)(x+3)+1',
+		'x(x+2)+1',
+		'3(x+1)^2-6(x+1)',
+		'xe^x-e^x',
+		'x-x'
+	];
+	it.each(BOTH.flatMap((level) => ALL.map((source) => [source, level])))(
+		'invariant : avant(n+1) = après(n), après(dernière) = résultat — %s (%s)',
+		(source, level) => {
+			const run = factoriser(source, level as Level);
+			expect(areEquivalent(run.result, run.input)).toBe(true);
+			run.steps.forEach((step, i) => {
+				if (i > 0) {
+					expect(toLatex(step.globalBefore!), `étape ${i} (${step.rule})`).toBe(
+						toLatex(run.steps[i - 1].globalAfter!)
+					);
+				}
+			});
+			if (run.steps.length > 0) {
+				expect(toLatex(run.steps[0].globalBefore!)).toBe(toLatex(run.input));
+				expect(toLatex(run.steps.at(-1)!.globalAfter!)).toBe(run.latex);
+			}
+		}
+	);
+});
+
 describe('inchangés : pas de faux « ne se factorise pas »', () => {
 	it.each(BOTH.flatMap((level) => ['x^2+1', 'x+1', 'x^2+x+1', '2x^2+3'].map((s) => [s, level])))(
 		'%s (%s)',

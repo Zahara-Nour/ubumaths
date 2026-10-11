@@ -24,10 +24,20 @@ import { getBindingNode } from '../../pattern/types';
 import { applyRule, createRule } from '../../pattern/rule';
 import { P } from '../../pattern/builder';
 import { getVariables } from '../../eval/substitute';
-import { ONE, divRational, gcd, isZero } from '../../normal/rational';
+import { divRational, gcd, isZero } from '../../normal/rational';
 import { integerNthRoot } from '../../normal/radical';
 import { type Poly, toRationalFunction, trimPoly } from '../../factor/polynomial';
-import { factorizationToNode, type IntegerFactor } from '../../factor';
+import { type IntegerFactor, polynomialNode } from '../../factor';
+import { integerNode, monomialNode } from '../../factor/polynomial-node';
+import {
+	add,
+	multiply,
+	number,
+	parentheses,
+	power,
+	subtract,
+	variable as variableNode
+} from '../../factory';
 import { algebraicFactoringRules } from '../../pattern/rule-sets/algebraic-identities';
 
 // =============================================================================
@@ -127,7 +137,8 @@ export function readWrittenPolynomial(
 		poly,
 		coefficients,
 		developable,
-		reduced: !developable && writtenTermCount(node) === nonZero
+		// `0` écrit seul est réduit (un terme, aucun coefficient non nul)
+		reduced: !developable && writtenTermCount(node) === Math.max(nonZero, 1)
 	};
 }
 
@@ -146,6 +157,12 @@ export interface PolynomialIdentity {
 	/** Signe du terme du milieu (carré parfait) : `+` pour (a + b)², `−` pour (a − b)². */
 	readonly sign: 1 | -1;
 	readonly factors: readonly IntegerFactor[];
+	/**
+	 * Écrite à l'envers, constante devant : `9 − x² = 3² − x²`, donc a = 3 et
+	 * b = x (`alpha`, `degree` décrivent alors b). Les facteurs s'écrivent dans
+	 * le même sens : `(3 − x)(3 + x)`.
+	 */
+	readonly reversed: boolean;
 }
 
 /** `[c0, 0, …, 0, ck]` : le polynôme `c0 + ck·x^k`. */
@@ -159,16 +176,28 @@ function factor(coefficients: readonly bigint[], multiplicity = 1): IntegerFacto
 
 /**
  * Reconnaît a² − b², a² ± 2ab + b², a³ ± b³ sur des coefficients entiers
- * PRIMITIFS à coefficient dominant > 0 : le facteur commun passe d'abord
- * (stratégie 3), `4x² − 16` devient `4(x² − 4)` et non `(2x − 4)(2x + 4)`.
+ * PRIMITIFS : le facteur commun passe d'abord (stratégie 3), `4x² − 16`
+ * devient `4(x² − 4)` et non `(2x − 4)(2x + 4)`. Coefficient dominant > 0,
+ * sauf a² − b² écrit constante devant (`9 − x²`, `−4x² + 9`).
  */
 export function polynomialIdentity(coefficients: readonly bigint[]): PolynomialIdentity | null {
 	const n = coefficients.length - 1;
 	const lead = coefficients[n];
-	if (n < 2 || lead <= 0n || coefficients.reduce((g, c) => gcd(g, c), 0n) !== 1n) return null;
+	if (n < 2 || coefficients.reduce((g, c) => gcd(g, c), 0n) !== 1n) return null;
 	const c0 = coefficients[0];
 	const terms = coefficients.flatMap((c, i) => (c === 0n ? [] : [i]));
 	if (c0 === 0n) return null;
+
+	if (lead < 0n) {
+		// b² − a² écrit constante devant : (b − a)(b + a), une seule forme lisible en 3e
+		if (terms.length !== 2 || n % 2 !== 0 || c0 < 0n) return null;
+		const k = n / 2;
+		const alpha = integerNthRoot(-lead, 2n);
+		const beta = integerNthRoot(c0, 2n);
+		if (alpha === null || beta === null) return null;
+		const factors = [factor(binomial(beta, -alpha, k)), factor(binomial(beta, alpha, k))];
+		return { kind: 'diff-squares', alpha, degree: k, beta, sign: -1, factors, reversed: true };
+	}
 
 	if (terms.length === 2) {
 		if (n % 2 === 0 && c0 < 0n) {
@@ -177,7 +206,7 @@ export function polynomialIdentity(coefficients: readonly bigint[]): PolynomialI
 			const beta = integerNthRoot(-c0, 2n);
 			if (alpha !== null && beta !== null) {
 				const factors = [factor(binomial(-beta, alpha, k)), factor(binomial(beta, alpha, k))];
-				return { kind: 'diff-squares', alpha, degree: k, beta, sign: -1, factors };
+				return { kind: 'diff-squares', alpha, degree: k, beta, sign: -1, factors, reversed: false };
 			}
 		}
 		if (n % 3 === 0) {
@@ -196,7 +225,8 @@ export function polynomialIdentity(coefficients: readonly bigint[]): PolynomialI
 					degree: k,
 					beta,
 					sign: s < 0n ? -1 : 1,
-					factors: [factor(binomial(s * beta, alpha, k)), factor(quadratic)]
+					factors: [factor(binomial(s * beta, alpha, k)), factor(quadratic)],
+					reversed: false
 				};
 			}
 		}
@@ -212,7 +242,8 @@ export function polynomialIdentity(coefficients: readonly bigint[]): PolynomialI
 		if (middle !== 2n * alpha * beta && middle !== -2n * alpha * beta) return null;
 		const sign = middle > 0n ? 1 : -1;
 		const base = binomial(BigInt(sign) * beta, alpha, k);
-		return { kind: 'perfect-square', alpha, degree: k, beta, sign, factors: [factor(base, 2)] };
+		const factors = [factor(base, 2)];
+		return { kind: 'perfect-square', alpha, degree: k, beta, sign, factors, reversed: false };
 	}
 	return null;
 }
@@ -224,16 +255,37 @@ export function identityOfNode(node: MathNode): PolynomialIdentity | null {
 	return polynomialIdentity(written.coefficients);
 }
 
-/** Les facteurs d'une identité, écrits par le rendu du noyau. */
-export function identityNode(identity: PolynomialIdentity, variable: string): MathNode {
-	return factorizationToNode({
-		variable,
-		field: 'Q',
-		constant: ONE,
-		factors: identity.factors,
-		rest: null,
-		complete: true
+/** `3 + x`, `3 - 2x` : un polynôme entier écrit par degré CROISSANT. */
+export function ascendingPolynomialNode(coefficients: readonly bigint[], x: MathNode): MathNode {
+	let result: MathNode | null = null;
+	coefficients.forEach((c, degree) => {
+		if (c === 0n) return;
+		if (result === null) result = monomialNode(c, x, degree);
+		else if (c < 0n) result = subtract(result, monomialNode(-c, x, degree));
+		else result = add(result, monomialNode(c, x, degree));
 	});
+	return result ?? integerNode(0n);
+}
+
+/** L'écriture d'un facteur d'identité : dans le sens de l'identité reconnue. */
+export function identityFactorNode(
+	identity: PolynomialIdentity,
+	coefficients: readonly bigint[],
+	variable: string
+): MathNode {
+	const x = variableNode(variable);
+	return identity.reversed
+		? ascendingPolynomialNode(coefficients, x)
+		: polynomialNode(coefficients, x);
+}
+
+/** Le produit des facteurs d'une identité, dans l'ordre du noyau. */
+export function identityNode(identity: PolynomialIdentity, variable: string): MathNode {
+	const nodes: MathNode[] = identity.factors.map((f) => {
+		const base = parentheses(identityFactorNode(identity, f.coefficients, variable));
+		return f.multiplicity > 1 ? power(base, number(String(f.multiplicity))) : base;
+	});
+	return nodes.slice(1).reduce<MathNode>((acc, node) => multiply(acc, node, 'implicit'), nodes[0]);
 }
 
 // =============================================================================

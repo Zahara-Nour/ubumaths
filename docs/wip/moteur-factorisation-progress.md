@@ -605,4 +605,14 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
       (0 erreur) ; `lint:fast` rien ; `docs:check-links`, `docs:check-refs` 0.
 - [x] Doc : README mathAST (§ Les stratégies, état, point ouvert du cycle), panel, pattern-matching,
       atelier.
-- [ ] code-reviewer · [ ] PR
+- [x] code-reviewer (commit 7fc7dcd53), corrections :
+  - **bloquant** : a² − b² écrit constante devant (`9-x^2`, `1-x^2`, `-4x^2+9`, `-x^3+x`) ne se
+    factorisait plus au collège et passait par Δ au lycée → reconnu par `polynomialIdentity`
+    (`reversed`), rendu `(3-x)(3+x)` (a = 3, b = x), aux deux niveaux ;
+  - stratégie 6 résumée en une étape `develop-to-factor` ; chaque étape part de la précédente
+    (`reduce-factors` compris, facteur constant `(x+3)-x` réduit DANS l'étape) ; mise au propre
+    finale dans la dernière étape ; parenthèses doubles retirées ; `x-x` → `0` ;
+  - tests : 41 vus rouges (dont 27 invariants « avant(n+1) = après(n) ») sur 116 ; tous verts ;
+    panel `x-x` (`x 0` → `0`) mis à jour ; `pnpm test:server src/lib/mathAST` : 463 fichiers,
+    19 426 tests verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` rien.
+- [ ] PR

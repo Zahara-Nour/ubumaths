@@ -275,23 +275,31 @@ Le noyau trouve, la stratégie **raconte** : chaque étape porte un nom de règl
 
 **Enchaînement**, la suivante si la précédente ne factorise pas :
 
-1. **facteur commun**, 2. **identité remarquable** (coefficients compris : `4x^2-25` →
-   « On reconnaît a² − b² avec a = 2x et b = 5 » → `(2x-5)(2x+5)`), 3. **facteur commun puis
-   identité** (`2x^2-8` → `2(x^2-4)` → `2(x-2)(x+2)`) : d'abord sur l'expression telle
-   qu'écrite, par la passe de motifs (`commonFactorRules`, `factoriserIdentityRules`, contenu des
-   sommes maximales) ; puis sur chaque facteur polynomial du produit obtenu, **réduit** s'il le
-   faut (étape `reduce-factors`, « On réduit chaque facteur » : `(2x+1)^2-(x-3)^2` →
-   `(3x-2)(x+4)`) ;
-2. **racines du trinôme** (lycée) : « On calcule Δ = 25 : deux racines, x₁ = 1 et x₂ = −3/2 »
-   → `2(x-1)(x+3/2)` (`trinomial-roots`), puis `(x-1)(2x+3)` (`trinomial-integer-form`) ; une
-   seule ligne si les racines sont entières ; racines irrationnelles comprises
-   (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`) ;
-3. **racine évidente** (lycée, degré ≥ 3, essais ±1, ±2, ±3) puis division
-   (`evident-root`) : `x^3-6x^2+11x-6` → `(x-1)(x^2-5x+6)` → `(x-1)(x-2)(x-3)` ;
-4. **développer pour refactoriser**, en dernier recours, sur une somme qui contient un produit
-   de sommes : les étapes de `developper` sont gardées dans un tampon et **jetées** si rien ne
-   factorise ensuite (l'expression rendue est alors l'entrée). Au collège, seules 1 à 3 peuvent
-   conclure (`x(x+1)-6` reste inchangé ; `x(4x+4)+1` → `(2x+1)^2`).
+- **1 · facteur commun**, **2 · identité remarquable** (coefficients compris : `4x^2-25` →
+  « On reconnaît a² − b² avec a = 2x et b = 5 » → `(2x-5)(2x+5)`), **3 · facteur commun puis
+  identité** (`2x^2-8` → `2(x^2-4)` → `2(x-2)(x+2)`) : d'abord sur l'expression telle
+  qu'écrite, par la passe de motifs (`commonFactorRules`, `factoriserIdentityRules`, contenu des
+  sommes maximales) ; puis sur chaque facteur polynomial du produit obtenu, **réduit** s'il le
+  faut (étape `reduce-factors`, « On réduit chaque facteur » : `(2x+1)^2-(x-3)^2` →
+  `(3x-2)(x+4)`) ;
+- **4 · racines du trinôme** (lycée) : « On calcule Δ = 25 : deux racines, x₁ = 1 et x₂ = −3/2 »
+  → `2(x-1)(x+3/2)` (`trinomial-roots`), puis `(x-1)(2x+3)` (`trinomial-integer-form`) ; une
+  seule ligne si les racines sont entières ; racines irrationnelles comprises
+  (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`) ;
+- **5 · racine évidente** (lycée, degré ≥ 3, essais ±1, ±2, ±3) puis division
+  (`evident-root`) : `x^3-6x^2+11x-6` → `(x-1)(x^2-5x+6)` → `(x-1)(x-2)(x-3)` ;
+- **6 · développer pour refactoriser**, en dernier recours, sur une somme qui contient un produit
+  de sommes : le développement tient en **une** étape (`develop-to-factor`, « On développe et
+  on réduit »), jetée si rien ne factorise ensuite (l'expression rendue est alors l'entrée). Au
+  collège, seules 1 à 3 peuvent conclure (`x(x+1)-6` reste inchangé ; `x(4x+4)+1` →
+  `(2x+1)^2`).
+
+a² − b² se lit aussi écrit constante devant, aux deux niveaux et avant Δ : `9-x^2` → « a = 3 et
+b = x » → `(3-x)(3+x)` ; `-x^3+x` → `x(1-x)(1+x)`. **Chaque étape part exactement de la ligne
+précédente**, et la dernière ligne est le résultat (test d'invariant) : la réduction d'un facteur
+(`(x+3)-x` → 3) est une étape, la mise au propre finale (ordre du noyau, `tidy` des facteurs
+écrits) se fait dans la dernière étape, les parenthèses doubles `3((2x-1)(2x+1))` sont retirées
+(`flattenGroupedProducts`). `x-x` → `0`.
 
 **Niveau** : `college` → 1, 2, 3, 6 ; `lycee` et `superieur` → toutes (pas de distinction 1re /
 terminale). **Ordre des facteurs** : celui du noyau (`compareFactors`) partout où le produit

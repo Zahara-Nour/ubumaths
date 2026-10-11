@@ -27,6 +27,8 @@
  */
 
 import type { MathNode } from '../types';
+import { tidy } from '../tidy';
+import { nodesEqual } from '../pattern/match';
 import type { Rational } from '../normal/types';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import {
@@ -70,6 +72,8 @@ import {
 import { deflate, evalPoly } from '../factor/polynomial';
 import {
 	IDENTITY_RULE_NAMES,
+	ascendingPolynomialNode,
+	identityFactorNode,
 	polynomialIdentity,
 	readWrittenPolynomial,
 	soleVariable
@@ -103,7 +107,10 @@ export interface FactoriserContext {
 }
 
 export interface FactoriserOutcome extends Staged {
-	/** Rendu à ne pas repasser par `tidy` (facteurs irrationnels `x - 1 - √2`). */
+	/**
+	 * Rendu à ne pas repasser par `tidy` : il réordonnerait `x - 1 - √2` en
+	 * `√2 + x - 1` et `3 + x` en `x + 3`.
+	 */
 	readonly clean: boolean;
 }
 
@@ -131,6 +138,47 @@ interface ProductView {
 // Le produit en cours : lecture et rendu
 // =============================================================================
 
+/**
+ * Met au propre **sans réordonner** un produit déjà factorisé.
+ *
+ * `tidy` range les facteurs dans son ordre canonique : `(x+1)e^x` y devient
+ * `e^x(x+1)`. Les deux écritures sont justes, mais c'est la première qu'on
+ * écrit au tableau pour une dérivée, et l'ordre vient ici d'une factorisation
+ * que l'élève vient de suivre — le moteur n'a pas à la rebattre.
+ *
+ * On met donc chaque facteur au propre séparément, en gardant l'ordre. Tout ce
+ * qui n'est pas un produit passe par `tidy` entier : `√8` devient `2√2`,
+ * `2x + 3x` devient `5x`.
+ */
+export function tidyWithoutReordering(node: MathNode): MathNode {
+	// Un produit factorisé peut être sous un signe ou dans une fonction :
+	// `−(x+1)eˣ`, `sin((x−1)eˣ)`. Passés à `tidy` entiers, ils devenaient
+	// `−eˣ(x+1)` et `sin(eˣ(x−1))`. On ne descend que s'il y a un produit
+	// dessous : sinon `tidy` garde la main sur le nœud entier (`√8` → `2√2`).
+	if (node.type === 'opposite' && node.operand.type === 'multiplication') {
+		return { ...node, operand: tidyWithoutReordering(node.operand) };
+	}
+	if (node.type === 'function' && node.args.some((arg) => arg.type === 'multiplication')) {
+		return { ...node, args: node.args.map(tidyWithoutReordering) };
+	}
+	if (node.type !== 'multiplication') return tidy(node);
+	const left = tidyWithoutReordering(node.left);
+	const right = tidyWithoutReordering(node.right);
+	// Deux nombres côte à côte ne sont pas une factorisation à préserver : ils
+	// viennent d'une identité qui a rendu un nombre (`2\ln(e)` → `2 × 1`,
+	// `3\ln(e^2)` → `3 × 2`). Aucune règle de `factoriser` ne décompose un
+	// entier, donc on peut les calculer sans rien défaire.
+	if (left.type === 'number' && right.type === 'number') {
+		return tidy({ ...node, left, right });
+	}
+	return { ...node, left, right };
+}
+
+/** Écrit constante devant (`3 + x`, `3 - 2x`) : la forme d'une identité lue à l'envers. */
+function isWrittenAscending(node: MathNode, coefficients: readonly bigint[], v: string): boolean {
+	return nodesEqual(node, ascendingPolynomialNode(coefficients, variable(v)));
+}
+
 function viewOf(node: MathNode, v: string): ProductView {
 	let constant = ONE;
 	const parts: Part[] = [];
@@ -151,16 +199,21 @@ function viewOf(node: MathNode, v: string): ProductView {
 			if (Number.isInteger(e) && e >= 1) return visit(n.base, m * e);
 		}
 		const written = readWrittenPolynomial(n, v);
-		if (written !== null && !written.developable && written.poly.length <= 1) {
+		// Un nombre écrit seul rejoint la constante ; `(x + 3) - x` attend l'étape de réduction
+		if (written !== null && !written.developable && written.poly.length <= 1 && written.reduced) {
 			constant = mulRational(constant, powRational(written.poly[0] ?? ZERO, m));
 			return;
 		}
 		if (written !== null && !written.developable && written.coefficients !== null) {
 			const { coefficients, reduced } = written;
-			parts.push({ kind: 'poly', coefficients, multiplicity: m, reduced, node: n });
+			// Un facteur écrit est mis au propre ici (`-x + 2` → `2 - x`) ; ceux que
+			// les stratégies construisent ne passent jamais par `tidy`, qui écrirait
+			// `x + 3` pour le `3 + x` de `(3 - x)(3 + x)`
+			const node = !reduced || isWrittenAscending(n, coefficients, v) ? n : tidy(n);
+			parts.push({ kind: 'poly', coefficients, multiplicity: m, reduced, node });
 			return;
 		}
-		parts.push({ kind: 'other', node: n, multiplicity: m });
+		parts.push({ kind: 'other', node: tidyWithoutReordering(n), multiplicity: m });
 	};
 	visit(node, 1);
 	return { variable: v, constant, parts };
@@ -185,7 +238,7 @@ function multiplicityOf(part: Part): number {
 
 /** `constante × facteurs`, comme le rendu du noyau : −1 en signe devant le produit. */
 function productNode(constant: Rational, factors: readonly MathNode[]): MathNode {
-	if (factors.length === 0) return rationalToNode(constant);
+	if (factors.length === 0 || isZero(constant)) return rationalToNode(constant);
 	const chain = (nodes: readonly MathNode[]) =>
 		nodes.slice(1).reduce((acc, f) => multiply(acc, f, 'implicit'), nodes[0]);
 	if (isOne(constant)) return chain(factors);
@@ -296,8 +349,8 @@ interface Move {
 	readonly intermediate?: { readonly constant: Rational; readonly nodes: readonly MathNode[] };
 }
 
-function poly(coefficients: readonly bigint[], multiplicity: number): Part {
-	return { kind: 'poly', coefficients, multiplicity, reduced: true };
+function poly(coefficients: readonly bigint[], multiplicity: number, node?: MathNode): Part {
+	return { kind: 'poly', coefficients, multiplicity, reduced: true, ...(node && { node }) };
 }
 
 /** Stratégies 1 et 3 sur un facteur : contenu entier et plus petite puissance de x. */
@@ -349,14 +402,16 @@ function evidentRootMove(coefficients: readonly bigint[], m: number): Move | nul
 	return { rule: 'evident-root', replacement: [poly([-r, 1n], m), poly(quotient, m)] };
 }
 
-function moveFor(part: Part, lycee: boolean, x: MathNode): Move | null {
+function moveFor(part: Part, lycee: boolean, x: MathNode, v: string): Move | null {
 	if (part.kind !== 'poly' || !part.reduced) return null;
 	const { coefficients, multiplicity: m } = part;
 	const content = contentMove(coefficients, m);
 	if (content) return content;
 	const identity = polynomialIdentity(coefficients);
 	if (identity) {
-		const replacement = identity.factors.map((f) => poly(f.coefficients, f.multiplicity * m));
+		const replacement = identity.factors.map((f) =>
+			poly(f.coefficients, f.multiplicity * m, identityFactorNode(identity, f.coefficients, v))
+		);
 		return { rule: IDENTITY_RULE_NAMES[identity.kind], replacement };
 	}
 	if (!lycee) return null;
@@ -369,6 +424,51 @@ function moveFor(part: Part, lycee: boolean, x: MathNode): Move | null {
 // Orchestration
 // =============================================================================
 
+/** Une parenthèse de regroupement autour d'un produit facteur d'un produit. */
+function isGroupedProduct(node: MathNode): boolean {
+	return (
+		node.type === 'delimiter' &&
+		(node.semantic === undefined || node.semantic === 'grouping') &&
+		node.content.type === 'multiplication'
+	);
+}
+
+/**
+ * `3((2x − 1)(2x + 1))` → `3(2x − 1)(2x + 1)` : une identité appliquée DANS la
+ * parenthèse de `3(4x² − 1)` y laisse un produit entre parenthèses, que l'élève
+ * lirait comme des parenthèses doubles. Seul le regroupement d'un produit
+ * facteur d'un produit est retiré ; la valeur ne change pas.
+ */
+export function flattenGroupedProducts(node: MathNode): MathNode {
+	switch (node.type) {
+		case 'multiplication': {
+			const side = (child: MathNode): MathNode => {
+				const flat = flattenGroupedProducts(child);
+				return isGroupedProduct(flat) && flat.type === 'delimiter' ? flat.content : flat;
+			};
+			const left = side(node.left);
+			const right = side(node.right);
+			return left === node.left && right === node.right ? node : { ...node, left, right };
+		}
+		case 'opposite': {
+			const operand = flattenGroupedProducts(node.operand);
+			return operand === node.operand ? node : { ...node, operand };
+		}
+		case 'delimiter': {
+			const content = flattenGroupedProducts(node.content);
+			return content === node.content ? node : { ...node, content };
+		}
+		case 'addition':
+		case 'subtraction': {
+			const left = flattenGroupedProducts(node.left);
+			const right = flattenGroupedProducts(node.right);
+			return left === node.left && right === node.right ? node : { ...node, left, right };
+		}
+		default:
+			return node;
+	}
+}
+
 const MAX_MOVES = 16;
 
 /** Stratégies 1 à 5 sur le produit issu de la passe de motifs. */
@@ -377,22 +477,33 @@ function polynomialStage(tree: MathNode, v: string, ctx: FactoriserContext) {
 	const lycee = ctx.level === 'lycee' || ctx.level === 'superieur';
 	const steps: PedagogicalSimplifyStep[] = [];
 	let view = viewOf(tree, v);
+	// Chaque étape part exactement de la ligne précédente : d'abord l'arbre reçu
+	let current = tree;
 
 	if (view.parts.some((p) => p.kind === 'poly' && !p.reduced)) {
-		const reducedParts = view.parts.map((p) =>
-			p.kind === 'poly' && !p.reduced ? poly(p.coefficients, p.multiplicity) : p
-		);
-		const next = { ...view, parts: reducedParts };
-		const [before, after] = [renderView(view), renderView(next)];
-		steps.push(ctx.makeStep('reduce-factors', before, after, before, after));
+		let constant = view.constant;
+		const reducedParts: Part[] = [];
+		for (const p of view.parts) {
+			if (p.kind !== 'poly' || p.reduced) reducedParts.push(p);
+			else if (p.coefficients.length > 1) reducedParts.push(poly(p.coefficients, p.multiplicity));
+			// Un facteur qui se réduit à un nombre rejoint la constante : `(x + 3) - x` → 3
+			else {
+				const value = fromInteger(p.coefficients[0] ?? 0n);
+				constant = mulRational(constant, powRational(value, p.multiplicity));
+			}
+		}
+		const next = { ...view, constant, parts: reducedParts };
+		const after = renderView(next);
+		steps.push(ctx.makeStep('reduce-factors', current, after, current, after));
 		view = next;
+		current = after;
 	}
 
 	for (let moves = 0; moves < MAX_MOVES; moves++) {
-		const index = view.parts.findIndex((p) => moveFor(p, lycee, x) !== null);
+		const index = view.parts.findIndex((p) => moveFor(p, lycee, x, v) !== null);
 		if (index < 0) break;
 		const part = view.parts[index];
-		const move = moveFor(part, lycee, x)!;
+		const move = moveFor(part, lycee, x, v)!;
 		const parts = [...view.parts];
 		parts.splice(index, 1, ...move.replacement);
 		const next: ProductView = {
@@ -405,7 +516,7 @@ function polynomialStage(tree: MathNode, v: string, ctx: FactoriserContext) {
 			move.constant ?? ONE,
 			move.replacement.map((p) => wrapped(partNode(p, v), multiplicityOf(p), false))
 		);
-		const globalBefore = renderView(view);
+		const globalBefore = current;
 		if (move.intermediate) {
 			// Deux lignes : a(x − x₁)(x − x₂), puis la forme à coefficients entiers
 			const others = view.parts.filter((_, i) => i !== index);
@@ -422,6 +533,7 @@ function polynomialStage(tree: MathNode, v: string, ctx: FactoriserContext) {
 			steps.push(ctx.makeStep(move.rule, local, localAfter, globalBefore, renderView(next)));
 		}
 		view = next;
+		current = renderView(next);
 	}
 	return { view, steps };
 }
@@ -445,14 +557,10 @@ function factorWithStrategies(
 	const pattern = ctx.patternStage(node);
 	if (v === null) return { ...pattern, clean: false };
 	const { view, steps } = polynomialStage(pattern.result, v, ctx);
-	// Un produit nul (`x - x` → `x(1 - 1)`) : rien à raconter, la mise au propre conclut
-	if (isZero(view.constant)) return { ...pattern, clean: false };
 	const allSteps = [...pattern.steps, ...steps];
 	if (allSteps.length === 0) return { ...pattern, clean: false };
-	// `tidy` range les termes de chaque facteur (`-x + 2` → `2 - x`), mais
-	// réordonne `x - 1 - √2` en `√2 + x - 1` : il est sauté s'il y a un radical
-	const clean = view.parts.some((p) => p.kind === 'surd');
-	return { result: renderView(view), steps: allSteps, clean };
+	// Facteurs écrits déjà mis au propre à la lecture (`viewOf`)
+	return { result: renderView(view), steps: allSteps, clean: true };
 }
 
 /**
@@ -473,5 +581,8 @@ export function runFactoriserStrategies(node: MathNode, ctx: FactoriserContext):
 	const developed = ctx.develop(node);
 	const second = factorWithStrategies(developed.result, v, ctx);
 	if (!isFactored(second)) return first;
-	return { ...second, steps: [...developed.steps, ...second.steps] };
+	// Le développement tient en UNE étape : les `combine-like-terms` de
+	// `developper` partagent un même contexte figé et répètent la même ligne
+	const develop = ctx.makeStep('develop-to-factor', node, developed.result, node, developed.result);
+	return { ...second, steps: [develop, ...second.steps] };
 }
