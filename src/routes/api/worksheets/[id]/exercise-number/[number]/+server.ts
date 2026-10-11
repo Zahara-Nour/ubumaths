@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	if (exercisesError || sectionsError) {
 		console.error('[exercise-number] fiche illisible:', exercisesError ?? sectionsError);
-		throw error(500, 'Erreur lors de la lecture de la fiche');
+		throw error(500, 'Impossible de lire la fiche');
 	}
 
 	const ordered = orderExercisesForDisplay(exercises ?? [], sections ?? []);

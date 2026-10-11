@@ -49,7 +49,7 @@ export function validateResponse<T>(schema: z.ZodSchema<T>, data: unknown, endpo
 		});
 
 		// Throw generic 500 error (don't expose internal structure)
-		throw error(500, 'Internal server error: Invalid response format');
+		throw error(500, 'Erreur interne : réponse du serveur mal formée');
 	}
 
 	return validation.data;

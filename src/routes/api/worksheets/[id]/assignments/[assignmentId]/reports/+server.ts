@@ -39,12 +39,12 @@ async function verifyTeacherAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership (teachers can only access their own worksheets)
 	if (worksheet.created_by !== userId) {
-		throw error(403, 'Acces non autorise a cette feuille de travail');
+		throw error(403, 'Accès refusé à cette fiche');
 	}
 
 	// Fetch assignment and verify it belongs to this worksheet
@@ -56,7 +56,7 @@ async function verifyTeacherAccess(
 		.single();
 
 	if (assignmentError || !assignment) {
-		throw error(404, 'Devoir non trouve');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	return { worksheet, assignment };
@@ -93,7 +93,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		assignmentId: params.assignmentId
 	});
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	const { id: worksheetId, assignmentId } = paramsValidation.data;
@@ -118,7 +118,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (countError) {
 			console.error('[API] Error counting reports:', countError);
-			throw error(500, 'Erreur lors du comptage des signalements');
+			throw error(500, 'Impossible de compter les signalements');
 		}
 
 		// Calculate counts
@@ -175,7 +175,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (fetchError) {
 			console.error('[API] Error fetching reports:', fetchError);
-			throw error(500, 'Erreur lors de la recuperation des signalements');
+			throw error(500, 'Impossible de charger les signalements');
 		}
 
 		// Step 3: le NUMÉRO AFFICHÉ de chaque exercice signalé.
@@ -245,6 +245,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			'[API] Unexpected error in GET /api/worksheets/[id]/assignments/[assignmentId]/reports:',
 			err
 		);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

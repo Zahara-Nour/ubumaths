@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const assignmentId = validation.data.assignment_id;
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (viewError) {
 		console.error('Failed to track exercise view:', viewError);
-		return json({ error: 'Failed to track view' }, { status: 500 });
+		return json({ error: 'Impossible d’enregistrer la consultation' }, { status: 500 });
 	}
 
 	return json(completion);

@@ -34,15 +34,15 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (exerciseError && exerciseError.code !== 'PGRST116') {
 		console.error('Contrôle d’accès impossible :', exerciseError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	if (!exercise) {
-		return json({ error: 'Exercise not found' }, { status: 404 });
+		return json({ error: 'Exercice introuvable' }, { status: 404 });
 	}
 
 	if (exercise.created_by !== user.id) {
-		return json({ error: 'Not authorized to view statistics for this exercise' }, { status: 403 });
+		return json({ error: 'Accès refusé aux statistiques de cet exercice' }, { status: 403 });
 	}
 
 	// Fetch statistics
@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	if (statsError) {
 		console.error('Failed to fetch exercise statistics:', statsError);
-		return json({ error: 'Failed to fetch statistics' }, { status: 500 });
+		return json({ error: 'Impossible de charger les statistiques' }, { status: 500 });
 	}
 
 	return json(stats);

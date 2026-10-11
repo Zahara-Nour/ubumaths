@@ -70,7 +70,7 @@ describe('response validation utilities', () => {
 
 			expect(() => {
 				validateResponse(schema, invalidData, 'GET /api/test');
-			}).toThrow('Internal server error: Invalid response format');
+			}).toThrow('Erreur interne : réponse du serveur mal formée');
 		});
 
 		it('should log detailed error without exposing to client', () => {

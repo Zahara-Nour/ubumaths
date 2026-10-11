@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate ID parameter
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid template ID');
+		throw error(400, 'Identifiant de modèle invalide');
 	}
 
 	// Fetch template
@@ -42,15 +42,15 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (dbError) {
 		if (dbError.code === 'PGRST116') {
-			throw error(404, 'Template not found');
+			throw error(404, 'Modèle de fiche introuvable');
 		}
 		console.error('Failed to fetch template:', dbError);
-		throw error(500, 'Failed to fetch template');
+		throw error(500, 'Impossible de charger le modèle de fiche');
 	}
 
 	// Check access: must be owned by user (no inter-teacher sharing)
 	if (template.created_by !== user.id) {
-		throw error(403, 'Access denied to this template');
+		throw error(403, 'Accès refusé à ce modèle de fiche');
 	}
 
 	// Validate response
@@ -74,7 +74,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Validate ID parameter
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid template ID');
+		throw error(400, 'Identifiant de modèle invalide');
 	}
 
 	// First check if template exists and user has permission
@@ -86,15 +86,15 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fetchError) {
 		if (fetchError.code === 'PGRST116') {
-			throw error(404, 'Template not found');
+			throw error(404, 'Modèle de fiche introuvable');
 		}
 		console.error('Failed to fetch template:', fetchError);
-		throw error(500, 'Failed to fetch template');
+		throw error(500, 'Impossible de charger le modèle de fiche');
 	}
 
 	// Check ownership (admins can update any template)
 	if (existingTemplate.created_by !== user.id && profile.role !== 'admin') {
-		throw error(403, 'You can only update your own templates');
+		throw error(403, 'Seul l’auteur du modèle peut le modifier');
 	}
 
 	// Parse and validate request body
@@ -102,7 +102,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateUpdateTemplate(body);
@@ -110,7 +110,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -132,7 +132,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (dbError) {
 		console.error('Failed to update template:', dbError);
-		throw error(500, 'Failed to update template');
+		throw error(500, 'Impossible de modifier le modèle de fiche');
 	}
 
 	// Validate response
@@ -156,7 +156,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Validate ID parameter
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid template ID');
+		throw error(400, 'Identifiant de modèle invalide');
 	}
 
 	// First check if template exists and user has permission
@@ -168,15 +168,15 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError) {
 		if (fetchError.code === 'PGRST116') {
-			throw error(404, 'Template not found');
+			throw error(404, 'Modèle de fiche introuvable');
 		}
 		console.error('Failed to fetch template:', fetchError);
-		throw error(500, 'Failed to fetch template');
+		throw error(500, 'Impossible de charger le modèle de fiche');
 	}
 
 	// Check ownership (admins can delete any template)
 	if (existingTemplate.created_by !== user.id && profile.role !== 'admin') {
-		throw error(403, 'You can only delete your own templates');
+		throw error(403, 'Seul l’auteur du modèle peut le supprimer');
 	}
 
 	// Check if template is in use by any worksheets
@@ -187,13 +187,13 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (countError) {
 		console.error('Failed to check template usage:', countError);
-		throw error(500, 'Failed to check template usage');
+		throw error(500, 'Impossible de vérifier l’usage du modèle');
 	}
 
 	if (worksheetCount && worksheetCount > 0) {
 		throw error(
 			400,
-			`Cannot delete template: it is used by ${worksheetCount} worksheet(s). Remove the template from those worksheets first.`
+			`Impossible de supprimer ce modèle : des fiches l’utilisent (${worksheetCount}). Retirer d’abord le modèle de ces fiches.`
 		);
 	}
 
@@ -205,7 +205,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (dbError) {
 		console.error('Failed to delete template:', dbError);
-		throw error(500, 'Failed to delete template');
+		throw error(500, 'Impossible de supprimer le modèle de fiche');
 	}
 
 	// Validate response
@@ -213,7 +213,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		deleteTemplateResponseSchema,
 		{
 			success: true as const,
-			message: `Template "${existingTemplate.name}" deleted successfully`
+			message: `Modèle « ${existingTemplate.name} » supprimé`
 		},
 		'DELETE /api/worksheets/templates/[id]'
 	);

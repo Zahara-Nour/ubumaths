@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const result = await getExercise(locals.supabase, id);
 
 	if (result.error || !result.data) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	return json({ exercise: result.data });
@@ -61,7 +61,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data as Omit<ExerciseUpdate, 'id' | 'created_by' | 'created_at'>;
@@ -71,17 +71,17 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (result.error) {
 		if (result.error.message === 'Unauthorized') {
-			throw error(403, 'Forbidden - Not your exercise');
+			throw error(403, 'Seul l’auteur de l’exercice peut le modifier');
 		}
 		if (result.error.message === 'Exercise not found') {
-			throw error(404, 'Exercise not found');
+			throw error(404, 'Exercice introuvable');
 		}
 		// « Privé + Google » : refus métier ou contrainte de la base (23514)
 		if (isSearchIndexedViolation(result.error)) {
 			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
 		}
 		console.error('Failed to update exercise:', result.error);
-		throw error(500, 'Failed to update exercise');
+		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
 	return json({ exercise: result.data });
@@ -102,13 +102,13 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (result.error) {
 		if (result.error.message === 'Unauthorized') {
-			throw error(403, 'Forbidden - Not your exercise');
+			throw error(403, 'Seul l’auteur de l’exercice peut le supprimer');
 		}
 		if (result.error.message === 'Exercise not found') {
-			throw error(404, 'Exercise not found');
+			throw error(404, 'Exercice introuvable');
 		}
 		console.error('Failed to delete exercise:', result.error);
-		throw error(500, 'Failed to delete exercise');
+		throw error(500, 'Impossible de supprimer l’exercice');
 	}
 
 	return json({ success: true });

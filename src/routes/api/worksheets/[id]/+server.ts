@@ -34,7 +34,7 @@ async function getWorksheetWithAuth(
 	// Validate UUID format
 	const idValidation = uuidSchema.safeParse(worksheetId);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	// Fetch worksheet
@@ -45,16 +45,16 @@ async function getWorksheetWithAuth(
 		.single();
 
 	if (dbError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	return worksheet;
@@ -85,7 +85,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (sectionsError) {
 		console.error('Failed to fetch sections:', sectionsError);
-		throw error(500, 'Failed to fetch worksheet sections');
+		throw error(500, 'Impossible de charger les sections de la fiche');
 	}
 
 	// Fetch exercises with joined exercise data
@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (exercisesError) {
 		console.error('Failed to fetch exercises:', exercisesError);
-		throw error(500, 'Failed to fetch worksheet exercises');
+		throw error(500, 'Impossible de charger les exercices de la fiche');
 	}
 
 	// Fetch template if template_id exists
@@ -173,7 +173,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateUpdateWorksheet(body);
@@ -181,7 +181,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -216,7 +216,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	// Only proceed if there are fields to update
 	if (Object.keys(updateData).length === 0) {
-		throw error(400, 'No fields provided for update');
+		throw error(400, 'Aucune modification demandée');
 	}
 
 	// Update worksheet
@@ -229,7 +229,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (dbError) {
 		console.error('Failed to update worksheet:', dbError);
-		throw error(500, 'Failed to update worksheet');
+		throw error(500, 'Impossible de modifier la fiche');
 	}
 
 	// `undefined` signifie « champ absent de la requête » : on ne touche alors pas
@@ -264,7 +264,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot delete worksheet with status '${worksheet.status}'. Only draft worksheets can be deleted.`
+			`Impossible de supprimer cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être supprimé.`
 		);
 	}
 
@@ -273,7 +273,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (dbError) {
 		console.error('Failed to delete worksheet:', dbError);
-		throw error(500, 'Failed to delete worksheet');
+		throw error(500, 'Impossible de supprimer la fiche');
 	}
 
 	// Validate response
@@ -281,7 +281,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		deleteWorksheetResponseSchema,
 		{
 			success: true as const,
-			message: 'Worksheet deleted successfully'
+			message: 'Fiche supprimée'
 		},
 		'DELETE /api/worksheets/[id]'
 	);

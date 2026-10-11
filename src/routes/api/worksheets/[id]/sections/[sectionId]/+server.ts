@@ -32,12 +32,12 @@ async function verifyAccess(
 	// Validate UUID formats
 	const worksheetIdValidation = uuidSchema.safeParse(worksheetId);
 	if (!worksheetIdValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	const sectionIdValidation = uuidSchema.safeParse(sectionId);
 	if (!sectionIdValidation.success) {
-		throw error(400, 'Invalid section ID format');
+		throw error(400, 'Identifiant de section invalide');
 	}
 
 	// Fetch worksheet
@@ -48,16 +48,16 @@ async function verifyAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	// Fetch section
@@ -69,7 +69,7 @@ async function verifyAccess(
 		.single();
 
 	if (sectionError || !section) {
-		throw error(404, 'Section not found');
+		throw error(404, 'Section introuvable');
 	}
 
 	return { worksheet, section };
@@ -120,7 +120,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot modify sections in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de modifier les sections de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -129,7 +129,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateUpdateWorksheetSection(body);
@@ -137,7 +137,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -161,7 +161,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (dbError) {
 		console.error('Failed to update section:', dbError);
-		throw error(500, 'Failed to update section');
+		throw error(500, 'Impossible de modifier la section');
 	}
 
 	const validated = validateJsonResponse(
@@ -193,7 +193,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot delete sections in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de supprimer une section de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -206,7 +206,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (moveError) {
 		console.error('Failed to move exercises:', moveError);
-		throw error(500, 'Failed to move exercises to unsectioned');
+		throw error(500, 'Impossible de sortir les exercices de la section');
 	}
 
 	// Delete the section
@@ -218,8 +218,8 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (deleteError) {
 		console.error('Failed to delete section:', deleteError);
-		throw error(500, 'Failed to delete section');
+		throw error(500, 'Impossible de supprimer la section');
 	}
 
-	return json({ success: true, message: 'Section deleted' });
+	return json({ success: true, message: 'Section supprimée' });
 };

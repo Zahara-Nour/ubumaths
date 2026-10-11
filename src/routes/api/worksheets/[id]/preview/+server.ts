@@ -22,13 +22,13 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 	try {
 		// Authenticate user
 		if (!user) {
-			return error(401, 'Unauthorized');
+			return error(401, 'Connexion requise');
 		}
 
 		// Validate worksheet ID
 		const worksheetId = params.id;
 		if (!worksheetId) {
-			return error(400, 'Worksheet ID is required');
+			return error(400, 'Identifiant de fiche requis');
 		}
 
 		// Parse and validate request body
@@ -50,11 +50,11 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
 			console.error('Rôle illisible :', profileError);
-			return error(500, 'Impossible de vérifier vos droits');
+			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (!profile || profile.role !== 'teacher') {
-			return error(403, 'Only teachers can preview worksheet variants');
+			return error(403, 'Aperçu des variantes réservé aux professeurs');
 		}
 
 		// Fetch worksheet details
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.single();
 
 		if (worksheetError || !worksheet) {
-			return error(404, 'Worksheet not found');
+			return error(404, 'Fiche introuvable');
 		}
 
 		// Check if user has access to this worksheet
@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			(worksheet.school_id && profile.school_id === worksheet.school_id);
 
 		if (!hasAccess) {
-			return error(403, 'Access denied to this worksheet');
+			return error(403, 'Accès refusé à cette fiche');
 		}
 
 		// Fetch worksheet exercises with exercise details
@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 
 		if (exercisesError) {
 			console.error('Error fetching exercises:', exercisesError);
-			return error(500, 'Failed to fetch worksheet exercises');
+			return error(500, 'Impossible de charger les exercices de la fiche');
 		}
 
 		if (!worksheetExercises || worksheetExercises.length === 0) {
@@ -144,7 +144,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			if (student) {
 				studentInfo = {
 					id: student.id,
-					name: `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Unknown Student'
+					name: `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Élève inconnu'
 				};
 			}
 		}
@@ -180,6 +180,6 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		});
 	} catch (err) {
 		console.error('Error generating worksheet preview:', err);
-		return error(500, err instanceof Error ? err.message : 'Internal server error');
+		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };

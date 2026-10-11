@@ -28,11 +28,11 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Verify exercise exists and belongs to user
 	const exerciseResult = await getExercise(locals.supabase, exerciseId);
 	if (exerciseResult.error || !exerciseResult.data) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	if (exerciseResult.data.created_by !== user.id) {
-		throw error(403, 'You can only revoke share tokens for your own exercises');
+		throw error(403, 'Seul l’auteur de l’exercice peut révoquer ses liens de partage');
 	}
 
 	// Revoke the token
@@ -40,10 +40,10 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (revokeResult.error) {
 		if (revokeResult.error === 'Token not found') {
-			throw error(404, 'Token not found');
+			throw error(404, 'Lien de partage introuvable');
 		}
 		console.error('Failed to revoke share token:', revokeResult.error);
-		throw error(500, 'Failed to revoke share token');
+		throw error(500, 'Impossible de révoquer le lien de partage');
 	}
 
 	return json({ success: true });

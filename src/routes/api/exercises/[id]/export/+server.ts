@@ -27,12 +27,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Get exercise
 	const result = await getExercise(locals.supabase, id);
 	if (result.error || !result.data) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	// Verify user owns the exercise or it's public
 	if (result.data.created_by !== user.id && !(result.data as { is_public?: boolean }).is_public) {
-		throw error(403, 'Forbidden - Cannot export this exercise');
+		throw error(403, 'Export de cet exercice non autorisé');
 	}
 
 	// Validate and parse query params
@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Invalid query parameters: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { format, pretty: prettyPrint } = queryValidation.data;

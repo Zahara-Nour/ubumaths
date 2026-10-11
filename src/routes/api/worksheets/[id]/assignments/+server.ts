@@ -40,13 +40,13 @@ const createAssignmentSchema = z
 		// New multi-class support
 		class_ids: z
 			.array(z.string().uuid())
-			.max(50, 'Maximum 50 classes per assignment')
+			.max(50, '50 classes au maximum par affectation')
 			.optional()
 			.default([]),
 		// Individual students (in addition to class members)
 		student_ids: z
 			.array(z.string().uuid())
-			.max(500, 'Maximum 500 individual students per assignment')
+			.max(500, '500 élèves au maximum par affectation')
 			.optional()
 			.default([]),
 		title: z.string().max(255).nullable().optional(),
@@ -69,7 +69,7 @@ const createAssignmentSchema = z
 			return classIds.length > 0 || data.student_ids.length > 0;
 		},
 		{
-			message: 'Au moins une classe ou un eleve doit etre specifie',
+			message: 'Choisir au moins une classe ou un élève',
 			path: ['class_ids']
 		}
 	);
@@ -81,12 +81,12 @@ const createAssignmentSchema = z
 export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const worksheetId = params.id;
 	if (!worksheetId) {
-		throw error(400, 'ID de la feuille requis');
+		throw error(400, 'Identifiant de fiche requis');
 	}
 
 	// Optional filters
@@ -102,7 +102,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			.single();
 
 		if (worksheetError || !worksheet) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 
 		const { data: profile, error: profileError } = await locals.supabase
@@ -115,11 +115,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
 			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
-			throw error(403, 'Acces non autorise');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Build query - include multi-class data
@@ -176,7 +176,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		if (fetchError) {
 			console.error('[API] Fetch error:', fetchError);
-			throw error(500, 'Erreur lors de la recuperation des assignations');
+			throw error(500, 'Impossible de charger les affectations');
 		}
 
 		// Transform assignments to include classes array
@@ -249,7 +249,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la recuperation des assignations');
+		throw error(500, 'Impossible de charger les affectations');
 	}
 };
 
@@ -260,12 +260,12 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 export const POST: RequestHandler = async ({ params, locals, request }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const worksheetId = params.id;
 	if (!worksheetId) {
-		throw error(400, 'ID de la feuille requis');
+		throw error(400, 'Identifiant de fiche requis');
 	}
 
 	// Parse and validate body
@@ -293,7 +293,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (worksheetError || !worksheet) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 
 		const { data: profile, error: profileError } = await locals.supabase
@@ -306,16 +306,16 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
 			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
-			throw error(403, 'Acces non autorise');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Verify worksheet is published
 		if (worksheet.status !== 'published') {
-			throw error(400, 'La feuille doit etre publiee avant de pouvoir etre assignee');
+			throw error(400, 'La fiche doit être publiée avant d’être distribuée');
 		}
 
 		// Verify all classes exist and user has access to them
@@ -327,14 +327,14 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 			if (classesError) {
 				console.error('Error fetching classes:', classesError);
-				throw error(500, 'Erreur lors de la verification des classes');
+				throw error(500, 'Impossible de vérifier les classes');
 			}
 
 			// Verify all classes were found
 			const foundIds = new Set(classesData?.map((c) => c.id) || []);
 			const missingIds = classIds.filter((id) => !foundIds.has(id));
 			if (missingIds.length > 0) {
-				throw error(404, `Classes non trouvees: ${missingIds.length} classe(s) invalide(s)`);
+				throw error(404, `Classes introuvables : ${missingIds.length}`);
 			}
 
 			// Une classe fermée ne reçoit plus rien. Personne n'y est en cours
@@ -363,16 +363,13 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 			if (studentsError) {
 				console.error('Error fetching students:', studentsError);
-				throw error(500, 'Erreur lors de la verification des eleves');
+				throw error(500, 'Impossible de vérifier les élèves');
 			}
 
 			const foundStudentIds = new Set(studentsData?.map((s) => s.id) || []);
 			const invalidStudentIds = studentIds.filter((id) => !foundStudentIds.has(id));
 			if (invalidStudentIds.length > 0) {
-				throw error(
-					400,
-					`Eleves invalides: ${invalidStudentIds.length} eleve(s) non trouve(s) ou non eleves`
-				);
+				throw error(400, `Élèves introuvables : ${invalidStudentIds.length}`);
 			}
 		}
 
@@ -397,13 +394,13 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		if (createError) {
 			console.error('Error creating assignment:', createError);
-			throw error(500, "Erreur lors de la creation de l'assignation");
+			throw error(500, 'Impossible de créer l’affectation');
 		}
 
 		// La RLS refuse en silence : la ligne rendue doit porter ce qu'on a écrit
 		if (!assignment || assignment.guidance_level !== data.guidance_level) {
 			console.error('Affectation non écrite telle que demandée :', assignment?.id);
-			throw error(500, "Erreur lors de la creation de l'assignation");
+			throw error(500, 'Impossible de créer l’affectation');
 		}
 
 		// Insert into junction table: worksheet_assignment_classes
@@ -421,7 +418,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				console.error('Error inserting class assignments:', classInsertError);
 				// Rollback: delete the assignment
 				await locals.supabase.from('worksheet_assignments').delete().eq('id', assignment.id);
-				throw error(500, "Erreur lors de l'assignation aux classes");
+				throw error(500, 'Impossible d’affecter la fiche aux classes');
 			}
 		}
 
@@ -440,7 +437,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				console.error('Error inserting student assignments:', studentInsertError);
 				// Rollback: delete the assignment (cascade will clean up classes)
 				await locals.supabase.from('worksheet_assignments').delete().eq('id', assignment.id);
-				throw error(500, "Erreur lors de l'assignation aux eleves");
+				throw error(500, 'Impossible d’affecter la fiche aux élèves');
 			}
 		}
 
@@ -470,7 +467,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			// Assignment was created, just return basic data
 			return json({
 				success: true,
-				message: 'Assignation creee avec succes',
+				message: 'Affectation créée',
 				assignment
 			});
 		}
@@ -503,7 +500,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		return json({
 			success: true,
-			message: 'Assignation creee avec succes',
+			message: 'Affectation créée',
 			assignment: {
 				...rest,
 				classes,
@@ -519,6 +516,6 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de la creation de l'assignation");
+		throw error(500, 'Impossible de créer l’affectation');
 	}
 };
