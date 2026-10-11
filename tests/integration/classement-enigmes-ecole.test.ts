@@ -48,8 +48,7 @@ const ANON_KEY =
 	process.env.SUPABASE_TEST_ANON_KEY ||
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
-// Pas encore dans database.ts : `db:types` génère depuis la prod (deux PR).
-const CLASSEMENT = 'riddle_school_leaderboard' as never;
+const CLASSEMENT = 'riddle_school_leaderboard';
 
 const ECOLE_A = 'zz-école énigmes A';
 const ECOLE_B = 'zz-école énigmes B';

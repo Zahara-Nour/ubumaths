@@ -133,7 +133,7 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | **Classements unifiés** (2048, Mathémo, Démineur) | `src/routes/(protected)/games/leaderboards/+page.server.ts` → `game_leaderboard`, `minesweeper_scoped_leaderboard` ; constantes `src/lib/games/leaderboards.ts` | portée `class` / `grade` / `school`, toutes bornées par `my_school()` |
 | Tournoi                                           | `src/routes/api/games/minesweeper/tournaments/[id]/standings/+server.ts`                                                                                        | classes du tournoi                                                    |
-| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (vue `riddle_progress`)                                                          | voir Doutes                                                           |
+| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (`riddle_school_leaderboard`)                                                    | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
 
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
@@ -242,8 +242,8 @@ profils de ses camarades/amis et ses propres tentatives —, mais le classement 
 autres à 0). Correction décidée par David (2026-10-11) : `riddle_school_leaderboard(p_limit)`,
 SECURITY DEFINER bornée à `my_school()`, hors comptes de test, ne rend que prénom, gidouilles
 des énigmes, énigmes réussies, rang et `is_me` (migration `20261015090800`, test
-`tests/integration/classement-enigmes-ecole.test.ts`). La page la lira dans une PR suivante
-(`db:types` génère depuis la prod).
+`tests/integration/classement-enigmes-ecole.test.ts`). La page du classement la lit ; seuls les
+élèves qui ont tenté une énigme apparaissent, sans nom ni photo.
 
 ## Comment étendre
 
