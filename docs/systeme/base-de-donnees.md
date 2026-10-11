@@ -358,7 +358,8 @@ VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-econom
 [buddy-palotins.md](buddy-palotins.md). Pivots : `minesweeper_games`, `riddles` → `riddle_attempts`,
 `achievements` → `student_achievements`, `student_buddies`, `reward_events`, `gidouilles_activity`.
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
-celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école.
+celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
+(énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
 `mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
 `marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
 (migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).
