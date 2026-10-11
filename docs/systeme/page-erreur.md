@@ -26,7 +26,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 
 ## Ce que voit l'utilisateur
 
-1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile.
+1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile. Sur grand écran (`lg`),
+   deux colonnes — spirale à gauche, texte à droite — pour tout voir sans défiler.
 2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
    (`describeError`, `src/lib/error-page/error-copy.ts`).
 3. Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`), **sauf** s'il répète le
@@ -61,9 +62,12 @@ Onglet : « Page introuvable | Chiphre », `noindex`. SvelteKit renvoie le bon c
 
 - **`+error.svelte` est préchargé sur toutes les pages** : SvelteKit importe le layout racine ET
   l'erreur racine au démarrage (`default_error_loader`, `client.js`). Il doit rester léger. La
-  spirale et ses décimales sont donc importées **à la demande** (`import()` dans le composant), dans
-  une boîte carrée réservée d'avance : elle arrive sans décaler la page. Ne pas les importer
-  statiquement. Même raison pour la table de `pi-status.ts` : précalculée, pas calculée.
+  spirale y est importée **statiquement** malgré tout : rendue par le serveur, elle est visible dès
+  le HTML. Chargée à la demande (première version), elle apparaissait en retard. Coût mesuré au
+  build : chunk préchargé de 4,6 Ko à 6,2 Ko gzip (les 1 800 décimales se compressent bien). La
+  table de `pi-status.ts` reste précalculée, pas calculée.
+- **Rotation fluide** : la spirale est une couche à part (`will-change: transform`) — dessinée une
+  fois, puis seulement tournée, au lieu de redessiner ~1 660 chiffres à chaque image.
 - **Les boutons ne doivent jamais disparaître** : le layout racine masque en-tête et barre
   latérale sous `/dashboard`, une erreur y est donc rendue sans aucune navigation.
 - **Tout chiffre affiché est vrai.** `pi-status.test.ts` recalcule π (formule de Machin, en
