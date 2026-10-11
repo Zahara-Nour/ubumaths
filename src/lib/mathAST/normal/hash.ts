@@ -190,9 +190,24 @@ export function hashMathNode(node: MathNode): string {
 		case 'logical-not':
 			return `LNOT(${hashMathNode(node.operand)})`;
 
-		default:
-			// Exhaustive check - should never reach
-			return 'UNKNOWN';
+		case 'signed-zero':
+			return `Z0(${node.sign})`;
+
+		// Chaque morceau : condition et valeur ; puis le « sinon », s'il existe
+		case 'piecewise': {
+			const pieces = node.pieces
+				.map((piece) => `${hashMathNode(piece.condition)}=>${hashMathNode(piece.value)}`)
+				.join(';');
+			const otherwise = node.otherwise === undefined ? '' : `|${hashMathNode(node.otherwise)}`;
+			return `PW(${pieces}${otherwise})`;
+		}
+
+		default: {
+			// Un type de nœud ajouté sans empreinte ne compile plus : deux nœuds
+			// différents ne doivent jamais partager une empreinte
+			const exhaustive: never = node;
+			throw new Error(`Nœud sans empreinte : ${(exhaustive as MathNode).type}`);
+		}
 	}
 }
 

@@ -61,6 +61,7 @@ import {
 	unflattenProduct
 } from './flatten';
 import { parseLatexSafe, type GenericFunctionConfig } from './parser';
+import { separateSpacedCapitals } from './parser/latex/point-names';
 import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
 import { compareNodes } from './normal';
@@ -256,8 +257,9 @@ export function checkSpacesViolation(latex: string): boolean {
  * Removes regular spaces and LaTeX thin spaces (\,) that are used for digit grouping.
  */
 export function removeSpaces(latex: string): string {
+	// Deux majuscules séparées restent séparées : `A\,B` est un produit, pas la longueur AB
 	// Remove LaTeX thin spaces
-	let result = latex.replace(/\\,/g, '');
+	let result = separateSpacedCapitals(latex).replace(/\\,/g, '');
 	// Remove regular spaces between digits (grouping spaces)
 	result = result.replace(/(\d)\s+(\d)/g, '$1$2');
 	return result;

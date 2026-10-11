@@ -167,3 +167,26 @@ export function scanPointNames(at: TokenAt): PointNamesScan | null {
 	}
 	return points.length >= 2 ? { points, tokenCount } : null;
 }
+
+// =============================================================================
+// Espaces entre deux majuscules
+// =============================================================================
+
+/**
+ * Fin d'un point (majuscule, primes, indice) qui n'est pas la fin d'un nom de
+ * commande (`\LaTeX`), suivie d'espacements (`\,`, `\;`, `\ `, `~`, `\quad`, espaces),
+ * puis d'une majuscule.
+ */
+const SPACED_CAPITALS =
+	/(?<!\\[A-Za-z]*)([A-Z](?:'+|\^\{?(?:\\prime)+\}?|_\{?[a-z0-9]+\}?)*)(?:\s|~|\\[,;:!> ]|\\(?:quad|qquad|enspace|thinspace|medspace|thickspace)(?![A-Za-z]))+(?=[A-Z])/g;
+
+/**
+ * Deux majuscules SÉPARÉES par un espacement restent séparées par une espace
+ * ordinaire : `A\,B` → `A B` (un produit, décision Q-E du 2026-10-12), pour les
+ * nettoyages qui retirent ensuite les `\,` (groupement des chiffres). Sans cela,
+ * `A\,B` — ce qu'écrit MathLive quand l'élève tape « A espace B » (mesuré dans
+ * Chromium) — devenait `AB`, la longueur.
+ */
+export function separateSpacedCapitals(latex: string): string {
+	return latex.replace(SPACED_CAPITALS, '$1 ');
+}

@@ -349,10 +349,13 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `'length'` (défaut, `DEFAULT_CAPITAL_PAIRS`) — deux majuscules **collées dans la source**, primes
   et indices compris (`AB`, `A'B'`, `A^{\prime}B^{\prime}`, `A_1B_1`) ; `A B` (espace), `x_{AB}`
   (indice) et les minuscules restent des produits ; `'product'` — l'arbre d'avant, à l'identique
-  (empreinte de 4 122 saisies, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
-  sur les jetons : `parser/latex/point-names.ts`. `toLatex` écrit `AB`, `A'_{1}B` (relu à
+  (empreinte de 4 122 chaînes, dont environ 2 400 formules, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
+  sur les jetons : `parser/latex/point-names.ts`, qui fournit aussi `separateSpacedCapitals` :
+  `stripLatexSpacing` et `removeSpaces` gardent une espace entre deux majuscules (`A\,B` reste
+  un produit). `toLatex` écrit `AB`, `A'_{1}B` (relu à
   l'identique). **Pas encore** : la syntaxe maison (lit toujours un produit), le calcul
-  (`normalize`, `AB` = `BA`, `evaluate`…), la lecture française — lots suivants.
+  (la longueur reste un facteur opaque de `normalize` ; `AB` = `BA` ne tient que par l'empreinte
+  `hashMathNode`), la lecture française — lots suivants.
 
 ## Invariants structurels non évidents
 

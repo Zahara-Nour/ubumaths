@@ -32,6 +32,8 @@ import {
 	isHole,
 	isUnit,
 	isComposition,
+	isSegmentLength,
+	isFigureName,
 	isDerivativeFunction,
 	isInverseFunction,
 	isComplex,
@@ -40,6 +42,7 @@ import {
 	isLogicalNot
 } from '../guards';
 import { substituteFunction } from './function-bindings';
+import { formatPointNames } from '../common/point-names';
 import {
 	rational,
 	fromInteger,
@@ -741,6 +744,16 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 	// Boolean/Logical nodes - not numeric
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
 		throw new Error('Cannot evaluate boolean/logical expression to a numeric value');
+	}
+
+	// Longueur `AB`, nom de figure `ABC` : un message lisible par un élève, s'il remonte
+	if (isSegmentLength(node)) {
+		throw new Error(`On ne connaît pas la valeur de la longueur ${formatPointNames(node.points)}.`);
+	}
+	if (isFigureName(node)) {
+		throw new Error(
+			`${formatPointNames(node.points)} est le nom d’une figure, pas un nombre : on ne peut pas le calculer.`
+		);
 	}
 
 	// Unknown node type

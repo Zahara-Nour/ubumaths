@@ -27,7 +27,8 @@ describe('longueurs : deux segments différents ne sont jamais équivalents', ()
 		['AB^2=9', 'AC^2=9'],
 		["A'B'", 'AB'],
 		['A_1B_1', 'AB'],
-		['ABC', 'ABD']
+		['ABC', 'ABD'],
+		['ABC', 'ACB']
 	])('%s ≢ %s', (a, b) => {
 		expect(equivalent(a, b)).toBe(false);
 	});

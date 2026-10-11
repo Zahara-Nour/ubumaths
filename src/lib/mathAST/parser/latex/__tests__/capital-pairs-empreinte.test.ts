@@ -1,5 +1,5 @@
 /**
- * Non-régression des longueurs de segments sur un large corpus (4 122 saisies).
+ * Non-régression des longueurs de segments sur un large corpus (4 122 chaînes).
  *
  * L'empreinte (`fixtures/empreinte-majuscules-collees.json`) fige, le 2026-10-12 AVANT
  * l'introduction des longueurs, l'arbre rendu par `parseLatexSafe` pour chaque saisie :
@@ -7,6 +7,15 @@
  * `parseLatex(…)` des autres tests, le corpus de saisies d'élèves de `structure/`, et une
  * liste de cas à majuscules (géométrie, matrices, probabilités). Une saisie = son texte et
  * l'empreinte (sha1 tronqué) de `JSON.stringify({ ast, errors })`.
+ *
+ * Ce que contiennent vraiment les 4 122 chaînes (mesuré le 2026-10-12, en mode produit) :
+ * 3 315 se lisent sans erreur, dont environ 2 400 formules (les 200 saisies d'élèves du
+ * corpus, 79 cas à majuscules ajoutés à la main, des formules de tests) et environ 940
+ * titres de tests ou identifiants que le parseur lit comme des produits de lettres ;
+ * 807 sont en erreur (phrases, identifiants, saisies invalides des tests). 179 formules
+ * lues sans erreur ont deux majuscules collées. Les chaînes en erreur et les titres
+ * restent utiles : ils prouvent que le mode longueur ne change ni les erreurs ni la
+ * lecture des lettres en dehors des majuscules collées.
  *
  * Ce qui est prouvé :
  * 1. en mode `'product'`, le parseur rend EXACTEMENT l'arbre d'avant, partout ;
@@ -62,7 +71,7 @@ function fingerprint(input: string, options?: LatexParserOptions): string {
 // Tests
 // =============================================================================
 
-describe('empreinte des majuscules collées (corpus de 4 122 saisies)', () => {
+describe('empreinte des majuscules collées (corpus de 4 122 chaînes)', () => {
 	it('le corpus est complet et contient la classe visée', () => {
 		expect(FIXTURE.length).toBe(4122);
 		const withCapitals = FIXTURE.filter(([input]) => ADJACENT_CAPITALS.test(input));

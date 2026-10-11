@@ -176,11 +176,13 @@ function differentiateNode(
 
 		case 'hole':
 		case 'constant':
+			// Holes and mathematical constants are treated as constants
+			// Note: d/dx(e) = 0 and d/dx(π) = 0
+			return constantRule();
+
 		case 'segmentLength':
 		case 'figureName':
-			// Holes and mathematical constants are treated as constants
-			// (longueur `AB` et nom de figure : constantes pour la dérivation)
-			// Note: d/dx(e) = 0 and d/dx(π) = 0
+			// Longueur `AB` et nom de figure `ABC` : des constantes pour la dérivation
 			return constantRule();
 
 		case 'addition': {

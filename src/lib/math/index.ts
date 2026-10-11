@@ -17,6 +17,7 @@ import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
 import type { AnswerAssumptions } from '$lib/mathAST/assumptions';
 import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
+import { separateSpacedCapitals } from '$lib/mathAST/parser/latex/point-names';
 
 // Re-export evaluateWithModifiers from mathAST (already implemented there)
 export { evaluateWithModifiers } from '$lib/mathAST/eval';
@@ -42,7 +43,8 @@ export function stripLatexSpacing(
 	latex: string,
 	commas: 'decimal' | 'separator' = 'decimal'
 ): string {
-	const stripped = latex
+	// Deux majuscules séparées restent séparées : `A\,B` est un produit, pas la longueur AB
+	const stripped = separateSpacedCapitals(latex)
 		// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
 		.replace(/\\[,;:!]\s?/g, '')
 		.replace(/\\(?:quad|qquad|enspace|thinspace|medspace|thickspace)\s?/g, '')

@@ -473,12 +473,38 @@ préexistant, pour `signed-zero` et `piecewise` (non corrigé, hors chantier).
 constructions, worksheets, math, extensions, migration, statistics : 40 638 tests), et aucune
 réponse attendue en base ne contient de longueur (enquête du 2026-10-11).
 
+**Ce que contient l'empreinte** (`capital-pairs-empreinte.test.ts`) : 4 122 chaînes, dont 3 315 se
+lisent sans erreur — environ 2 400 formules (200 saisies d'élèves du corpus de `structure/`, 79
+cas à majuscules ajoutés à la main, formules des tests) et environ 940 titres de tests ou
+identifiants lus comme des produits de lettres — et 807 chaînes en erreur (phrases, identifiants,
+saisies invalides). 179 formules lues ont deux majuscules collées. Ce n'est donc pas « 4 122
+saisies » : les titres et les erreurs prouvent seulement que rien d'autre ne change.
+
+**Mesure Q-E dans Chromium** (2026-10-12, MathLive 0.111.1, Playwright, page locale) :
+
+| Frappe                  | Champ de réponse (`mathModeSpace = '\,'`) | Sans `mathModeSpace`   |
+| ----------------------- | ----------------------------------------- | ---------------------- |
+| A, B                    | `AB`                                      | `AB`                   |
+| A, espace, B            | `A\,B`                                    | `AB`                   |
+| A, 2 espaces, B         | `A\,\,B`                                  | `AB`                   |
+| 2, espace, A, espace, B | `2\,A\,B`                                 | `2AB`                  |
+| A, ', B, '              | `A^{\prime}B^{\prime}`                    | `A^{\prime}B^{\prime}` |
+
+Les champs de réponse des questions (`QuestionCard`, `FlashCard`) posent `mathModeSpace = '\,'`
+sauf quand la contrainte `spaces` est `off` : dans ce cas, l'espace tapée disparaît et « A espace
+B » devient la longueur `AB` (indiscernable dans la saisie). `stripLatexSpacing` (`math/index.ts`)
+et `removeSpaces` (`checkForm`) retiraient le `\,` et collaient les lettres : ils gardent
+désormais une espace entre deux majuscules (`separateSpacedCapitals`,
+`parser/latex/point-names.ts`), donc `A\,B` ≡ `A\times B` et `A\,B` ≢ `AB`.
+
 **Renvoyé au lot 2** (traitements provisoires du lot 1, au plus sûr) :
 
 - `normalize` : longueur et nom de figure passent par `normalizeOpaqueNode` (facteur opaque) ;
   à décider : variable polynomiale de clé canonique (Pythagore, `solve`).
 - `getVariables`/`containsVariable` : une longueur n'est pas une variable (`[]`) ; `substitute`
-  et `evaluate` ne la connaissent pas ; `differentiate` la traite en constante.
+  ne la connaît pas ; `evaluate()` la rend telle quelle (`status: 'value'`), alors qu'une
+  variable libre est `unevaluable` ; l'évaluation numérique lève un message français
+  (« On ne connaît pas la valeur de la longueur AB. ») ; `differentiate` la traite en constante.
 - `numtype` : type inconnu (une longueur est un réel positif) ; `dimensional` : sans dimension.
 - `checkForm('BA', 'AB')` rend `bad_form` (l'ordre des points doit être libre) ; `isSimpleElement`
   (`transforms.ts`) retire les parenthèses de `(AB)`.
@@ -499,4 +525,7 @@ réponse attendue en base ne contient de longueur (enquête du 2026-10-11).
   mis à jour. Aucun code, aucun test.
 - 2026-10-12 — spécification et plan **validés par David** (Q-A à Q-L) ; lancement du lot 1.
 - 2026-10-12 — lot 1 fait : nœuds, option `capitalPairs` (Pratt et rd), écriture, empreinte de
-  4 122 saisies, bogue `hashMathNode` corrigé ; défaut `'length'`, suites vertes.
+  4 122 chaînes, bogue `hashMathNode` corrigé ; défaut `'length'`, suites vertes.
+- 2026-10-12 — corrections de revue du lot 1 : Q-E sur le chemin des réponses (`A\,B` reste un
+  produit, mesure Chromium), `hashMathNode` exhaustif (`signed-zero`, `piecewise`), message
+  français d'`evaluate`, compte réel de l'empreinte.
