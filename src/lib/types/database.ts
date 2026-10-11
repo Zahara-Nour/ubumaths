@@ -1329,6 +1329,71 @@ export type Database = {
           },
         ]
       }
+      class_course_share_tokens: {
+        Row: {
+          access_count: number
+          class_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          last_accessed_at: string | null
+          token: string
+        }
+        Insert: {
+          access_count?: number
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token: string
+        }
+        Update: {
+          access_count?: number
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_course_share_tokens_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_course_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "class_course_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_course_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       class_google_classroom_links: {
         Row: {
           class_id: string
@@ -14817,6 +14882,10 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_class_course_by_share_token: {
+        Args: { p_token: string }
+        Returns: Json
+      }
       get_class_journal_by_share_token: {
         Args: { p_token: string }
         Returns: Json
@@ -14839,6 +14908,14 @@ export type Database = {
           lastname: string
           user_id: string
         }[]
+      }
+      get_course_document_by_share_token: {
+        Args: { p_document_id: string; p_token: string }
+        Returns: Json
+      }
+      get_course_worksheet_by_share_token: {
+        Args: { p_token: string; p_worksheet_id: string }
+        Returns: Json
       }
       get_cycle_for_grade: { Args: { p_grade: string }; Returns: string }
       get_database_stats: { Args: never; Returns: Json }

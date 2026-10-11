@@ -12,8 +12,11 @@ ADR : [0025](../adr/0025-cours-lisible-par-lien-sans-compte.md). Modèle : lien 
 
 ## Lots
 
-- [ ] **PR 1** — migration `20261016100300_class_course_share_tokens.sql` (table + 3 RPC), tests
+- [x] **PR 1** (#1150, migrée le 2026-10-12) — migration `20261016100300_class_course_share_tokens.sql` (table + 3 RPC), tests
       d'intégration (preuve rouge), liste DEFINER, `security-auditor`, merge, `db:migrate`, `db:types`.
-- [ ] **PR 2** — route `(public)/cours/[token]` (+ `fiche/[id]`), endpoint document (URL signée courte,
+- [x] **PR 2** — route `(public)/cours/[token]` (+ `fiche/[id]`), endpoint document (URL signée courte,
       service role), bloc prof sur la page Cours (copier, renouveler, révoquer), doc
       `docs/systeme/cours-et-chapitres.md`, versement de ce journal.
+      Branche `feat/cours-partageable-page` (2026-10-12) : code, tests (serveur 78, client 37),
+      `code-reviewer` (ordre à égalité corrigé) et `security-auditor` sans bloquant. Reste : PR,
+      CI, merge, versement de ce journal.
