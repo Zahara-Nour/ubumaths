@@ -771,3 +771,13 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
   `normal/rational.ts` ; hors de l'inventaire de la factorisation.
 - `pedagogical-solve/quadratic-inequality.ts:252-255` recopie toujours `buildCZeroCaseSteps`
   (B4).
+
+## 9. Lot 4 — V18, écriture des primitives (décision de David, 2026-10-11)
+
+« oui, go lot 4 » : quand tous les termes d'une primitive portent la même exponentielle, l'étape
+« On simplifie » développe puis met l'exponentielle en facteur, par les stratégies du lot 2
+(`(x^2-2x+2)e^x`, `(x-1)e^x`, `\dfrac{1}{2}(\sin x-\cos x)e^x` pour V17). Sans exponentielle
+commune, forme développée et rangée. Coefficients fractionnaires : `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}`
+accepté pour l'instant.
+
+- [ ] tests rouges · [ ] implémentation · [ ] code-reviewer · [ ] PR
