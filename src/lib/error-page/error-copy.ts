@@ -16,7 +16,7 @@
 
 export interface ErrorCopy {
 	title: string;
-	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 403, 404, 410, 429). */
+	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 403, 404, 410, 429, 503). */
 	explanation: string | null;
 	/**
 	 * Début de la phrase sur π, préposition comprise : « Le nombre 429 {a attendu
@@ -74,8 +74,9 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	},
 	503: {
 		title: 'Service indisponible',
-		explanation:
-			'Chiphre est momentanément indisponible (maintenance ou surcharge). Réessaie dans quelques minutes.'
+		explanation: null,
+		piVerb: 'est de service à la',
+		piTwist: '\u00a0; Chiphre, lui, est hors service pour quelques minutes'
 	}
 };
 

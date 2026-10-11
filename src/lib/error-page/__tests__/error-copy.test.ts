@@ -29,7 +29,7 @@ describe('describeError', () => {
 		});
 	});
 
-	it('phrase sur π : chute pour 403, 404, 410 et 429, aucune pour un code sans chute', () => {
+	it('phrase sur π : chute pour 403, 404, 410, 429 et 503, aucune pour un code sans chute', () => {
 		expect(describeError(404, undefined).piTwist).toBe(', mais la page, elle, reste introuvable');
 		expect(describeError(403, undefined)).toMatchObject({
 			explanation: null,
@@ -46,7 +46,12 @@ describe('describeError', () => {
 			piVerb: 'a attendu jusqu’à la',
 			piTwist: '\u00a0; toi, quelques secondes suffiront'
 		});
-		expect(describeError(503, undefined)).toMatchObject({ piVerb: 'apparaît à la', piTwist: null });
+		expect(describeError(503, undefined)).toMatchObject({
+			explanation: null,
+			piVerb: 'est de service à la',
+			piTwist: '\u00a0; Chiphre, lui, est hors service pour quelques minutes'
+		});
+		expect(describeError(502, undefined)).toMatchObject({ piVerb: 'apparaît à la', piTwist: null });
 	});
 
 	it('un code sans texte propre retombe sur sa famille', () => {

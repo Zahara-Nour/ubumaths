@@ -31,7 +31,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
    deux colonnes — spirale à gauche, texte à droite — pour tout voir sans défiler.
 2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
    (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 401,
-   une 403, une 404, une 410 ni une 429 : le titre, la phrase sur π et les actions suffisent.
+   une 403, une 404, une 410, une 429
+   ni une 503 : le titre, la phrase sur π et les actions suffisent.
 3. Pour une erreur 4xx, le message précis (`error(404, 'Exercice introuvable')`) **remplace le
    titre** (« Exercice introuvable » au lieu de « Page introuvable », onglet compris), sauf s'il
    n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…, liste
@@ -43,7 +44,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
    s'installer à la 723ᵉ décimale de π ; toi, sur cette page, tu ne l'es pas. » ;
    410 « Le nombre 410 a un bail éternel à la 162ᵉ décimale de π ; cette page, elle, a rendu les
    clés. » ; 429 « Le nombre 429 a attendu jusqu'à la 1 229ᵉ décimale de π ; toi, quelques
-   secondes suffiront. » (`piVerb` porte sa préposition : « jusqu'à la », « à la ») ;
+   secondes suffiront. » ; 503 « Le nombre 503 est de service à la 837ᵉ décimale de π ; Chiphre,
+   lui, est hors service pour quelques minutes. » (`piVerb` porte sa préposition : « jusqu'à la », « à la ») ;
    les codes sans chute finissent sur « de π. ». Pas d'extrait des décimales en clair : le code est
    déjà coloré dans la spirale.
 5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
