@@ -8,6 +8,7 @@
 
 import { z } from 'zod';
 import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
+import { SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE } from '$lib/server/exercise-search-indexed';
 
 // ============================================================================
 // RE-EXPORT EXISTING VALIDATION
@@ -236,7 +237,12 @@ const exerciseBaseSchema = z.object({
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
 		.optional()
 		.nullable(),
-	is_public: z.boolean().default(false).optional(),
+	// Visibilité et « Afficher sur Google » (refine plus bas, CHECK en base).
+	// Pas de `.default()` ici : sous `.partial()`, Zod 4 l'appliquerait aussi à
+	// une mise à jour qui ne parle pas de la case, et dépublierait / décocherait
+	// en silence. Les défauts de création sont posés par `createExerciseSchema`.
+	is_public: z.boolean().optional(),
+	search_indexed: z.boolean().optional(),
 	resources: z
 		.array(
 			z.object({
@@ -276,23 +282,40 @@ const exerciseBaseSchema = z.object({
 		.optional()
 });
 
-export const createExerciseSchema = exerciseBaseSchema.refine(
-	(data) => {
-		// Either use variations OR legacy fields (statement_md + solution_md)
-		const hasVariations = data.variations && data.variations.length > 0;
-		const hasLegacy = data.statement_md && data.solution_md;
+/** « Afficher sur Google » n'a de sens que pour un exercice public. */
+const searchIndexedRequiresPublic = {
+	check: (data: { is_public?: boolean; search_indexed?: boolean }) =>
+		data.search_indexed !== true || data.is_public === true,
+	params: { message: SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE, path: ['search_indexed'] }
+};
 
-		return hasVariations || hasLegacy;
-	},
-	{ message: 'Must provide either variations or statement_md/solution_md' }
-);
+export const createExerciseSchema = exerciseBaseSchema
+	.refine(
+		(data) => {
+			// Either use variations OR legacy fields (statement_md + solution_md)
+			const hasVariations = data.variations && data.variations.length > 0;
+			const hasLegacy = data.statement_md && data.solution_md;
+
+			return hasVariations || hasLegacy;
+		},
+		{ message: 'Must provide either variations or statement_md/solution_md' }
+	)
+	.refine(searchIndexedRequiresPublic.check, searchIndexedRequiresPublic.params)
+	// Non coché à la création tant que le professeur ne le demande pas.
+	.transform((data) => ({
+		...data,
+		is_public: data.is_public ?? false,
+		search_indexed: data.search_indexed ?? false
+	}));
 
 /**
  * Schema for updating an exercise (PUT /api/exercises/[id])
  * All fields are optional for partial updates
  * Note: Uses base schema without refinement (Zod v4 limitation)
  */
-export const updateExerciseSchema = exerciseBaseSchema.partial();
+export const updateExerciseSchema = exerciseBaseSchema
+	.partial()
+	.refine(searchIndexedRequiresPublic.check, searchIndexedRequiresPublic.params);
 
 /**
  * Schema for listing exercises query parameters (GET /api/exercises)
@@ -636,6 +659,7 @@ export const exerciseResponseSchema = z.object({
 	// Resources (images, files)
 	resources: z.unknown().nullable().optional(),
 	is_public: z.boolean(),
+	search_indexed: z.boolean(),
 	created_by: z.string().uuid(),
 	// Supabase returns datetime with +00:00 offset, not Z suffix
 	created_at: z.string(),

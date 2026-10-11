@@ -3435,6 +3435,7 @@ export type Database = {
           id: string
           is_public: boolean
           resources: Json | null
+          search_indexed: boolean
           shared: Json | null
           slug: string | null
           source: string | null
@@ -3455,6 +3456,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           resources?: Json | null
+          search_indexed?: boolean
           shared?: Json | null
           slug?: string | null
           source?: string | null
@@ -3475,6 +3477,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           resources?: Json | null
+          search_indexed?: boolean
           shared?: Json | null
           slug?: string | null
           source?: string | null
@@ -14884,6 +14887,7 @@ export type Database = {
           id: string
           is_public: boolean
           resources: Json | null
+          search_indexed: boolean
           shared: Json | null
           slug: string | null
           source: string | null

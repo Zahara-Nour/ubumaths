@@ -337,6 +337,10 @@ export async function importExerciseFromJSON(
 				...rowUpdate
 			} = cleanData;
 
+			// Ni `is_public` ni `search_indexed` ici : le format d'échange ne les porte
+			// pas (Zod les retire), donc remplacer garde la visibilité et la case
+			// « Afficher sur Google » de l'exercice existant — jamais de « privé +
+			// Google » (CHECK 23514), jamais de Google coché par un fichier.
 			const { data, error } = await supabase
 				.from('exercises')
 				.update({

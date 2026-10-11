@@ -70,6 +70,8 @@ export const exerciseBackupRecordSchema = z.object({
 	grades: z.array(z.string()).nullable(),
 	topic: z.string().nullable(),
 	is_public: z.boolean(),
+	// « Afficher sur Google » : absent des sauvegardes antérieures à la colonne.
+	search_indexed: z.boolean().optional(),
 	distribution_mode: z.string(),
 
 	// JSONB fields (stored as Json in DB)

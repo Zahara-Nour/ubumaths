@@ -383,6 +383,13 @@ export interface Exercise {
 	 */
 	is_public?: boolean;
 
+	/**
+	 * « Afficher sur Google » : listé dans le sitemap, sans balise noindex.
+	 * Exige `is_public` (contrainte en base).
+	 * @default false
+	 */
+	search_indexed?: boolean;
+
 	// Additional metadata
 	/** Applicable grade levels (e.g., ['3', '2', '1_SPE']) - uses GradeCode from unified system */
 	grades?: GradeCode[];
