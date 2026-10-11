@@ -236,17 +236,21 @@ résolvent dans l'ordre de déclaration (`resolveVariables`) ; `detectCircularDe
 notation JS (`3e-7`, `1e+22`) : le parseur LaTeX lit `e` comme la constante d'Euler. Le séparateur
 décimal reste le point (la virgule est posée au rendu, `toFrenchDecimal`).
 
-| Modificateur | `0.0000001*3`                    | `320000`            |
-| ------------ | -------------------------------- | ------------------- |
-| aucun        | exact, ou décimal (voir bornes)  | `320000`            |
-| `;d`         | `0.0000003` (toujours développé) | `320000`            |
-| `;sci`       | `3 \times 10^{-7}`               | `3.2 \times 10^{5}` |
+Règle : **jamais un chiffre faux ; notation scientifique seulement si demandée par `;sci` ou si le
+résultat est approché et ≥ 10¹⁵** (`MAX_EXPANDED_MAGNITUDE`).
 
-Sans modificateur, un résultat décimal s'écrit développé dans les bornes
-(`MIN_EXPANDED_MAGNITUDE` = 10⁻⁶ ≤ |x|, `MAX_EXPANDED_MAGNITUDE` = 10¹⁵ > |x|) ; hors bornes,
-notation scientifique si `scientificOutOfRange` (option d'écriture, prévue pour un modèle dont
-toutes les classes sont en 4e ou au-delà), développé sinon. Une fraction exacte reste une fraction ;
-`1 000 000` reste `1000000` (pas de détection de puissance simple). Mantisse 1 : `10^{-7}`. Tests :
+| Modificateur | `0.0000001*3`      | `10^22`                   | `10^22/3`                         |
+| ------------ | ------------------ | ------------------------- | --------------------------------- |
+| aucun        | `0.0000003`        | `10000000000000000000000` | `3.33333333333333 \times 10^{21}` |
+| `;d`         | `0.0000003`        | `10000000000000000000000` | `3.33333333333333 \times 10^{21}` |
+| `;sci`       | `3 \times 10^{-7}` | `10^{22}`                 | `3.33333333333333 \times 10^{21}` |
+
+Un entier EXACT (calculé en rationnels : `10^22`, `2^80`, `factorial(18)` → `6402373705728000`)
+s'écrit toujours en entier, quelle que soit sa taille, avec ou sans `;d`. Un résultat approché
+≥ 10¹⁵ passe en notation scientifique (mantisse à 15 chiffres significatifs) : au-delà, les
+chiffres d'un flottant seraient inventés. Un petit nombre est toujours développé (`0.0000003`).
+Une fraction exacte reste une fraction ; `1 000 000` reste `1000000` (pas de détection de
+puissance simple) ; mantisse 1 : `10^{-7}`. Aucune dépendance au niveau du modèle. Tests :
 `src/lib/mathAST/eval/__tests__/evaluate-with-modifiers-sans-notation-js.test.ts`.
 
 ## Le pipeline

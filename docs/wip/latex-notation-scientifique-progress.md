@@ -22,6 +22,7 @@ scientifique reste en syntaxe custom (`1e5`).
 - [x] Tokenizer LaTeX (bloc exposant retiré, 29 tests du tokenizer qui enregistraient l'ancienne
       lecture réécrits) ; `toLatex` réécrit `1e-7` en `10^{-7}` avant rendu.
 - [x] Doc : `docs/systeme/mathast/README.md` (invariant 6).
+- [x] Règle par l'exactitude : `formatNumber(numValue, ast)` dans `formatExact` ; 5 tests vus rouges.
 - [ ] code-reviewer, PR
 - `2e3` : refusé comme `2e 3` (« nombre écrit après un facteur »), pas 2·e·3 — aligné.
 - Régressions relevées par le coordinateur, corrigées : `\pi \cdot 3e-7` implicite et
@@ -45,13 +46,25 @@ scientifique reste en syntaxe custom (`1e5`).
    `;sci`, un nombre hors bornes (< 10⁻⁶ ou entier ≥ 10¹⁵) → refusé, message clair en français.
 6. Pas de détection de « puissance simple » (1 000 000 reste 1 000 000).
 
+### Simplification (David, 2026-10-11) — remplace les points 4 et 5
+
+Plus de dépendance au niveau, pas d'acheminement, pas de contrôle de publication. Raisons : le
+nouveau programme repousse la notation scientifique en 3e (`docs/wip/arbre-notions/programmes-ecarts-cycle4.md`),
+il fallait traverser ~30 appels pour faire arriver `template.grades`, et aucun modèle de prod n'est
+concerné. Règle, sans modificateur : |x| < 10⁻⁶ → toujours développé ; |x| ≥ 10¹⁵ → toujours
+notation scientifique ; entre les deux, inchangé. `;d` : développé, et au-delà de 10¹⁵ tous les
+chiffres d'un entier EXACT (rationnel), notation scientifique sinon. `;sci` : toujours scientifique.
+
+### Règle par l'exactitude (David, 2026-10-11) — remplace la règle simplifiée pour les grands
+
+Jamais un chiffre faux. Un entier EXACT s'écrit toujours en entier, quelle que soit sa taille, avec
+ou sans `;d` (`factorial(18)` → `6402373705728000`, `10^22` → 23 chiffres). Seul un résultat
+APPROCHÉ ≥ 10¹⁵ passe en notation scientifique. `;sci` la force toujours. Petits : développés.
+
 ### État (2026-10-11)
 
-- [x] 1, 2, 3, 6 + bornes de 4 : `evaluateAstWithModifiers(…, { scientificOutOfRange })`,
-      `;sci` (`EvalModifiers.scientific`), constantes `MIN_EXPANDED_MAGNITUDE` / `MAX_EXPANDED_MAGNITUDE`.
-      21 tests vus rouges. Résultat littéral (`toCustom`) qui porterait `1e-7` → `toLatex`.
-- [ ] Niveau du modèle jusqu'au formatage : ARRÊTÉ avant de coder (≈ 30 appels à traverser),
-      chemin à trancher. Défaut actuel : hors bornes → développé (comportement « petits »).
-- [ ] 5 (checkTemplate) : dépend du chemin retenu.
-- Référence trouvée : programme 2016 = notation scientifique en 4e ; nouveau programme de cycle 4
-  = repoussée en 3e (`docs/wip/arbre-notions/programmes-ecarts-cycle4.md`, `seed-cycle4.md` 3-006).
+- [x] 1, 2, 3, 6 : `;sci`, écriture sans notation JS (5a8252acd).
+- [x] Règle simplifiée : option `scientificOutOfRange` retirée, `MAX_EXPANDED_MAGNITUDE` seule
+      borne, entier exact sous `;d` (`exactIntegerWriting`). 6 tests vus rouges.
+- [x] Règle par l'exactitude : `formatNumber(numValue, ast)` dans `formatExact` ; 5 tests vus rouges.
+- [ ] code-reviewer, PR
