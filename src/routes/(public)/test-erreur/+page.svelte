@@ -77,33 +77,38 @@
 		{
 			title: 'Codes avec leur propre texte',
 			scenarios: [
+				{ href: '/test-erreur/400', label: '400', expected: '« Demande impossible », bien formé' },
 				{
 					href: '/test-erreur/401',
 					label: '401',
 					expected: '« Connexion requise » + bouton Se connecter'
 				},
-				{ href: '/test-erreur/403', label: '403', expected: '« Accès refusé »' },
-				{ href: '/test-erreur/410', label: '410', expected: '« Page disparue »' },
+				{ href: '/test-erreur/403', label: '403', expected: '« Accès refusé », autorisé' },
+				{ href: '/test-erreur/408', label: '408', expected: '« Délai dépassé » + Réessayer' },
+				{ href: '/test-erreur/410', label: '410', expected: '« Page disparue », bail éternel' },
 				{ href: '/test-erreur/429', label: '429', expected: '« Trop de demandes » + Réessayer' },
+				{
+					href: '/test-erreur/500',
+					label: '500',
+					expected: '« Le serveur a trébuché », tient bon (6 238ᵉ décimale, hors spirale)'
+				},
 				{ href: '/test-erreur/503', label: '503', expected: '« Service indisponible » + Réessayer' }
 			]
 		},
 		{
-			title: 'Codes sans texte propre (repli sur la famille)',
+			title: 'Codes rares (repli sur la famille)',
 			scenarios: [
-				{ href: '/test-erreur/400', label: '400', expected: '« Demande impossible »' },
-				{ href: '/test-erreur/408', label: '408', expected: '« Demande impossible » + Réessayer' },
+				{ href: '/test-erreur/413', label: '413', expected: 'Repli 4xx : « n’a pas abouti »' },
+				{
+					href: '/test-erreur/502',
+					label: '502',
+					expected: 'Repli 5xx : « a perdu le fil » ; 31ᵉ décimale, coloré près du bord'
+				},
 				{
 					href: '/test-erreur/418',
 					label: '418',
 					expected: 'Absent de la table π : pas de phrase sur π'
-				},
-				{
-					href: '/test-erreur/500',
-					label: '500',
-					expected: '« Le serveur a trébuché » (6 238ᵉ décimale, hors spirale)'
-				},
-				{ href: '/test-erreur/502', label: '502', expected: '31ᵉ décimale : coloré près du bord' }
+				}
 			]
 		},
 		{
