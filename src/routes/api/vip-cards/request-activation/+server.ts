@@ -32,8 +32,8 @@ import { requireConsent } from '$lib/server/middleware/consent';
 // ============================================================================
 
 const requestActivationSchema = z.object({
-	instanceId: z.string().uuid('Invalid instance ID format'),
-	studentId: z.string().uuid('Invalid student ID format')
+	instanceId: z.string().uuid('Identifiant de carte VIP invalide'),
+	studentId: z.string().uuid('Identifiant d’élève invalide')
 });
 
 // ============================================================================
@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Verify that the authenticated user is the student making the request
 	if (user.id !== studentId) {
-		throw error(403, 'You can only request activation for your own cards');
+		throw error(403, 'Tu ne peux demander l’activation que de tes propres cartes VIP');
 	}
 
 	// Call atomic RPC (FOR UPDATE + audit trail in one transaction)
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[request-activation] RPC error:', rpcError);
-		throw error(500, `Failed to request activation: ${rpcError.message}`);
+		throw error(500, `Impossible de demander l’activation : ${rpcError.message}`);
 	}
 
 	const result = rpcResult as {
@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!result.success) {
 		// Map RPC error messages to appropriate HTTP status codes
-		const msg = result.error || 'Failed to request activation';
+		const msg = result.error || 'Impossible de demander l’activation';
 		if (msg.includes('not found')) {
 			throw error(404, msg);
 		}
@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Build action description from action type returned by RPC
 	const actionDescription = result.actionType
 		? getActionDescriptionFromType(result.actionType)
-		: 'Action speciale';
+		: 'Action spéciale';
 
 	// Fetch updated instance for response
 	const { data: updatedProfile, error: updatedProfileError } = await supabase
@@ -123,7 +123,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	return json({
 		success: true,
-		message: 'Activation request submitted successfully',
+		message: 'Demande d’activation envoyée',
 		instance: updatedInstance,
 		cardName: result.cardName,
 		actionDescription
@@ -144,7 +144,7 @@ function getActionDescriptionFromType(actionType: string): string {
 		case 'remove_warnings':
 			return 'Enlever des avertissements';
 		case 'exchange_cards':
-			return 'Echanger des cartes';
+			return 'Échanger des cartes';
 		case 'add_gidouilles':
 			return 'Gagner des gidouilles';
 		case 'choose_card':
@@ -154,6 +154,6 @@ function getActionDescriptionFromType(actionType: string): string {
 		case 'undo':
 			return 'Annuler un coup';
 		default:
-			return 'Action speciale';
+			return 'Action spéciale';
 	}
 }

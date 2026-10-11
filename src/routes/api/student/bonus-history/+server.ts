@@ -44,12 +44,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	// Auth check: Must be logged in
 	if (!user || !profile) {
-		throw error(401, 'Authentication required');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Auth check: Must be a student
 	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
+		throw error(403, 'Réservé aux élèves');
 	}
 
 	// Validate query parameters
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		if (fetchError) {
 			console.error('[API] Error fetching bonus history:', fetchError);
-			throw error(500, 'Failed to fetch bonus history');
+			throw error(500, 'Impossible de charger l’historique des bonus');
 		}
 
 		// Transform data to include creator name
@@ -109,6 +109,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		}
 
 		console.error('[API] Unexpected error in GET /api/student/bonus-history:', err);
-		throw error(500, 'An unexpected error occurred');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
