@@ -288,7 +288,9 @@ connexion : aucune session n'est créée.
    jamais `profile.role` pour élever.
 5. **Le client service contourne la RLS** : seulement quand la base refuse légitimement
    l'écriture à l'utilisateur, **après** le contrôle d'identité de la route, et en
-   l'ajoutant à `ALLOWED_SERVICE_ROLE_PATHS`.
+   l'ajoutant à `ALLOWED_SERVICE_ROLE_PATHS`. Seule lecture anonyme : le document du lien du
+   cours (`(public)/cours/[token]/document/[id]`, ADR 0025), où la garde est le jeton, vérifiée
+   par une fonction SQL que seul le service role exécute.
 6. **Pas d'énumération** : login, inscription et reset rendent le même message que le compte
    existe ou non.
 7. **Les limites de débit échouent ouvertes** (`rateLimiter.ts` : erreur RPC → autorisé) —
