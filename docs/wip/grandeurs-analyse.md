@@ -1,7 +1,7 @@
 ---
 title: Les grandeurs (nombre + unité) — analyse et plan
 date: 2026-10-11
-status: analyse — décisions de David attendues (§6)
+status: décisions de David prises le 2026-10-11 (« je suis tes recos ») — phase 0 des lots A et B : grandeurs-phase0.md
 ---
 
 # Les grandeurs — pourquoi ça casse encore, et comment régler le problème
@@ -211,7 +211,12 @@ partout où l'on affiche (Calcul, cartes, énoncés). Aucune heuristique sur du 
 
 ---
 
-## 6. Décisions à prendre
+## 6. Décisions
+
+> **Tranchées par David le 2026-10-11 (« je suis tes recos »)** : Q1 = **A** (« un nombre, une
+> espace, une unité » ; collé ou `*` = produit ; aide ciblée pour `5km` ; une lettre déclarée
+> variable n'est jamais une unité) ; Q2 = **unité écrite d'abord** ; Q3 = **4 décimales pour les
+> grandeurs en `.mode décimal`, `.mode-unités` retirée** ; Q4 = **lots A et B, puis C, puis D**.
 
 ### Q1 — L'écriture naturelle dans l'atelier
 
