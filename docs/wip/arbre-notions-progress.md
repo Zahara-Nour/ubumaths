@@ -993,3 +993,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - R4 (refusée, recadrée par David) : les deux sous-notions « double et moitié » (sous Addition et sous Multiplication)
     restent. Elles distinguent un modèle dont l'énoncé ou la correction passe par une **somme** de celui qui passe par
     un **produit** : chaque modèle se range en lisant son contenu en détail, puis se tague selon la règle (a).
+- **2026-10-11 — Étape 2 bis : scission des points « dans les deux sens » validée par David.**
+  - CP-018, CE1-026, CE2-020 (tables d'addition) et CE1-027, CE2-021 (tables de multiplication) deviennent le sens
+    direct (« donner la somme / le produit ») ; nouveaux CP-073, CE1-090, CE2-084, CE1-091, CE2-085 = l'autre sens,
+    **uniquement l'opération à trou** (3 + ? = 7 ; 3 × ? = 12). Même nœud « tables », juste après dans l'ordre du BO.
+  - Règle de David : une soustraction ou une division est explicite, elle n'est PAS le sens inverse des tables → point
+    de calcul astucieux qui la décrit (après déplacement, R2), sinon pas de tag (R1). Les deux soustractions du CP
+    (73550ee8, fa57c725) passent en R1.
+  - Les 13 modèles dont les variations relèvent de plusieurs points sont sortis des parties 1 à 3 de la page à cocher :
+    choix « Scinder » / « Un seul tag » en partie 4.
