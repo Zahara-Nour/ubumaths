@@ -25,7 +25,7 @@ export interface SitemapPage {
  *
  * - tout ce qui vit sous `(protected)` — hors d'atteinte d'un robot ;
  * - les pages de démonstration et de mise au point (`demo`, `*-demo`,
- *   `test-font`, `blockly`) — sans intérêt pour un visiteur ;
+ *   `test-font`, `test-erreur`, `blockly`) — sans intérêt pour un visiteur ;
  * - `auth` et `consent` — des étapes de parcours, pas des destinations.
  *
  * ⚠️ Chaque chemin doit correspondre à une page réellement rendue. `/legal` et
