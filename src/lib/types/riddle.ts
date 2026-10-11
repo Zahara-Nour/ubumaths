@@ -360,6 +360,46 @@ export function asRiddleDifficulty(value: number | null | undefined): RiddleDiff
 }
 
 /**
+ * What a student needs to answer a riddle: the input kind and, for a QCM, the choices.
+ * Never the expected value — the server judges the answer.
+ */
+export interface StudentAnswerConfig {
+	type: AnswerType;
+	options?: {
+		choices?: string[];
+		multipleAnswers?: boolean;
+	};
+}
+
+/**
+ * A riddle as sent to a student's browser: no expected answer, no correction.
+ * Les deux se lisaient dans les données de la page (constat du 2026-10-12).
+ */
+export type StudentRiddle = Omit<DbRiddle, 'answer' | 'correction'> & {
+	answer: StudentAnswerConfig | null;
+};
+
+/**
+ * Strips from a riddle everything a student must not read before answering: the
+ * expected value (and its tolerance settings) and the written correction.
+ */
+export function toStudentRiddle(riddle: DbRiddle): StudentRiddle {
+	const { answer, correction: _correction, ...rest } = riddle;
+	return {
+		...rest,
+		answer: answer
+			? {
+					type: answer.type,
+					options: {
+						choices: answer.options?.choices,
+						multipleAnswers: answer.options?.multipleAnswers
+					}
+				}
+			: null
+	};
+}
+
+/**
  * Narrows a `riddles` row to {@link DbRiddle}.
  *
  * Postgres is looser than the domain type: `difficulty` is a plain integer,

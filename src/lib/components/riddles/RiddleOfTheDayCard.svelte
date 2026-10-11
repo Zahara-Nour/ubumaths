@@ -5,7 +5,7 @@
 -->
 
 <script lang="ts">
-	import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
+	import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
 	import { getDifficultyLabel, getDifficultyColor, calculateGidouilles } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -16,7 +16,7 @@
 	import { fr } from 'date-fns/locale';
 
 	interface Props {
-		riddle: DbRiddle;
+		riddle: StudentRiddle;
 		assignmentDate: string;
 		studentAttempt?: DbRiddleAttempt | null;
 		showArchiveLink?: boolean;
