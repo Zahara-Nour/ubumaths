@@ -13,14 +13,20 @@
 
 	// Constantes
 
+	// Réglage cherché par calcul (2026-10-11) : aucun nom ne chevauche une étape, un autre
+	// nom ou le Trône, et la spirale finit au centre exact du cadre
 	const SIZE = 400;
 	const SPIRAL = buildSpiral({
 		size: SIZE,
-		turns: 2.25,
-		innerRadius: 30,
-		outerRadius: 172,
+		turns: 1.5,
+		innerRadius: 0,
+		outerRadius: 160,
 		stops: PROVINCES.length
 	});
+
+	/** Largeur approchée d'un nom en Lora 15 px, pour le garder dans le cadre */
+	const CHAR_WIDTH = 8.4;
+	const LABEL_GAP = 20;
 
 	/** La fiche qui croise le milieu de l'écran est la Province lue */
 	const READING_LINE = '-50% 0px -50% 0px';
@@ -33,17 +39,18 @@
 
 	// Functions
 
-	/** Le nom d'une Province, posé à l'extérieur de son étape */
+	/**
+	 * Le nom d'une Province, à côté de son étape : du côté extérieur de la spirale, sauf
+	 * s'il sortirait du cadre (il passe alors de l'autre côté de l'étape).
+	 */
 	function labelOf(index: number): { x: number; y: number; anchor: 'start' | 'end' } {
 		const stop = SPIRAL.stops[index];
-		const dx = stop.x - SIZE / 2;
-		const dy = stop.y - SIZE / 2;
-		const norm = Math.hypot(dx, dy) || 1;
-		return {
-			x: stop.x + (dx / norm) * 18,
-			y: stop.y + (dy / norm) * 18 + 4,
-			anchor: dx >= 0 ? 'start' : 'end'
-		};
+		const width = PROVINCES[index].name.length * CHAR_WIDTH;
+		const outward = stop.x >= SIZE / 2 ? 'start' : 'end';
+		const fits =
+			outward === 'start' ? stop.x + LABEL_GAP + width <= SIZE : stop.x - LABEL_GAP - width >= 0;
+		const anchor = fits ? outward : outward === 'start' ? 'end' : 'start';
+		return { x: stop.x + (anchor === 'start' ? LABEL_GAP : -LABEL_GAP), y: stop.y + 5, anchor };
 	}
 
 	/** La fiche n° `index` devient la Province lue quand elle croise le milieu de l'écran */
@@ -91,13 +98,13 @@
 		{#each PROVINCES as province, i (province.id)}
 			<li id="province-{province.id}" class:current={i === active} use:watch={i}>
 				<article aria-labelledby="province-{province.id}-name">
-					<header>
+					<div class="card-head">
 						<span class="badge" aria-hidden="true">{i + 1}</span>
 						<div>
 							<h3 id="province-{province.id}-name">{province.name}</h3>
 							<span class="domain">{province.domain}</span>
 						</div>
-					</header>
+					</div>
 					<blockquote>
 						<span class="sr-only">Devise :</span> « {province.motto} »
 					</blockquote>
@@ -217,7 +224,7 @@
 	}
 
 	.provinces {
-		@apply flex flex-col gap-6 lg:gap-[18vh] lg:py-[12vh];
+		@apply flex flex-col gap-6 lg:gap-[14vh] lg:py-[10vh];
 	}
 	.provinces > li {
 		@apply rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-500 sm:p-6;
@@ -228,7 +235,8 @@
 	article {
 		@apply flex flex-col gap-3;
 	}
-	header {
+	/* Un <div>, pas un <header> : app.css impose 1rem à tout ce que contient un <header> */
+	.card-head {
 		@apply flex items-center gap-3;
 	}
 	.badge {

@@ -39,8 +39,17 @@ lien).
 ## Avancement
 
 - [x] Doc versée sur `main` (`73f9b0e02`)
-- [ ] Contenu (`src/lib/kingdom-tour/`) + tests
-- [ ] Page `/royaume` + composants + tests
-- [ ] Accueil : lien + Père Ubu
-- [ ] Sitemap, CONTEXT.md, carte des fonctionnalités, écarts (V15 corrigé)
+- [x] Contenu (`src/lib/kingdom-tour/`) + tests
+- [x] Page `/royaume` + composants + tests
+- [x] Accueil : lien + Père Ubu (dessin extrait dans `PereUbuFigure`)
+- [x] Sitemap, CONTEXT.md, carte des fonctionnalités, écarts (V15 corrigé)
 - [ ] Revue (`code-reviewer`, accessibilité), check, lint, PR
+
+## Pièges rencontrés
+
+- Le Prettier du dépôt (plugin Svelte 3.3.3) ne sait pas écrire `{@attach}` : actions `use:`.
+- `app.css` impose `1rem !important` à tout ce que contient un `<header>` : pas de `<header>`.
+- Spirale : réglage cherché par calcul (1,5 tour, rayon 160, fin au centre) pour qu'aucun nom ne
+  chevauche une étape ou le Trône ; vérifié sur captures, clair/sombre, téléphone/ordinateur.
+- Accueil rattaché à la carte des fonctionnalités (retiré des `trous`) plutôt que d'écrire la doc de
+  toute la zone « coquille de l'app » pour un lien.

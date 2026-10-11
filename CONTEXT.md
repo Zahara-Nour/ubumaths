@@ -13,13 +13,15 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 ## La plateforme
 
-| Terme        | Sens                                                                 | Code / note                                                  |
-| ------------ | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Chiphre**  | La plateforme (marque, **singulier**, domaine chiph.re).             | « ubumaths » = nom historique (dépôt, 3 résidus volontaires) |
-| chiphres     | « chiffres » à l'ubuesque — lexique du lore, **pas** la marque.      | `src/lib/config/lore.ts`                                     |
-| Mathres      | Les mathématiques, en wording interne (lore pataphysique Jarry/Ubu). | `docs/Chiphres/`                                             |
-| Shtam        | La gazette parodique du Royaume : fausses nouvelles mathresques.     | `/shtam`, `src/lib/server/shtam/` ; jamais « rubrique »      |
-| Vrai du faux | Encadré obligatoire en fin d'article du Shtam : le fait réel.        |                                                              |
+| Terme           | Sens                                                                                                              | Code / note                                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Chiphre**     | La plateforme (marque, **singulier**, domaine chiph.re).                                                          | « ubumaths » = nom historique (dépôt, 3 résidus volontaires) |
+| chiphres        | « chiffres » à l'ubuesque — lexique du lore, **pas** la marque.                                                   | `src/lib/config/lore.ts`                                     |
+| Mathres         | Les mathématiques, en wording interne (lore pataphysique Jarry/Ubu).                                              | `docs/Chiphres/`                                             |
+| Shtam           | La gazette parodique du Royaume : fausses nouvelles mathresques.                                                  | `/shtam`, `src/lib/server/shtam/` ; jamais « rubrique »      |
+| Vrai du faux    | Encadré obligatoire en fin d'article du Shtam : le fait réel.                                                     |                                                              |
+| Tour du Royaume | La page de présentation de Chiphre : une visite du Royaume guidée par Père Ubu. ≠ l'accueil.                      | `/royaume`, `src/lib/kingdom-tour/`                          |
+| Province        | Un grand domaine du programme, vu comme une région du Royaume (Nombrilie = nombres et calculs…). Compendium § II. | `PROVINCES`, `Province`                                      |
 
 ⛔ « Chiphres » (pluriel) comme nom de marque : faux.
 

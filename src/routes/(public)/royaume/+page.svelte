@@ -148,12 +148,12 @@
 				</div>
 				<span class="today">
 					Au Royaume, nous sommes le
-					<a href={resolve('/(public)/almanach')}>{data.almanachDate}</a>.
+					<a href={resolve('/(public)/almanach')}>{data.almanachDate}</a>
 				</span>
 			</div>
 			<div class="hero-ubu">
 				<span class="bubble">
-					Cornegidouille, un visiteur&nbsp;! Suis-Nous, Galopin&nbsp;: Nous allons te faire visiter
+					Cornegidouille, un visiteur&nbsp;! Suis‑Nous, Galopin&nbsp;: Nous allons te faire visiter
 					Notre Royaume.
 				</span>
 				<PereUbuFigure {ambiance} label="Père Ubu, Roi de Pologne" />
@@ -164,7 +164,7 @@
 	<!-- Le Royaume : les six Provinces -->
 	<section id="provinces" class="section" aria-labelledby="provinces-title">
 		<div class="wrap">
-			<header class="section-head" use:reveal>
+			<div class="section-head" use:reveal>
 				<span class="kicker">Le Royaume</span>
 				<h2 id="provinces-title">Six Provinces, un Royaume</h2>
 				<span class="intro">
@@ -172,7 +172,7 @@
 					gouverneur, sa capitale et sa devise. Elles s’enroulent autour de Sandomir, la ville en
 					spirale, et du Trône Royal en son centre.
 				</span>
-			</header>
+			</div>
 			<ProvinceMap />
 		</div>
 	</section>
@@ -180,11 +180,11 @@
 	<!-- Les lieux : tout ce qui s'ouvre sans compte -->
 	<section id="lieux" class="section alt" aria-labelledby="lieux-title">
 		<div class="wrap">
-			<header class="section-head" use:reveal>
+			<div class="section-head" use:reveal>
 				<span class="kicker">Sans compte</span>
 				<h2 id="lieux-title">Les lieux à visiter</h2>
 				<span class="intro">Tout ce qui suit s’ouvre sans compte. Entre, essaie, recommence.</span>
-			</header>
+			</div>
 
 			<div class="featured">
 				{#each FEATURED as place, i (place.id)}
@@ -218,11 +218,11 @@
 	<!-- Sous le décor, la rigueur -->
 	<section id="rigueur" class="section" aria-labelledby="rigueur-title">
 		<div class="wrap">
-			<header class="section-head" use:reveal>
+			<div class="section-head" use:reveal>
 				<span class="kicker">Sous le décor</span>
 				<h2 id="rigueur-title">Un décor savoureux, une pédagogie rigoureuse</h2>
 				<span class="intro"> Les maths, elles, ne sont jamais pataphysiques. Essaie plutôt. </span>
-			</header>
+			</div>
 
 			<div class="demos">
 				<div class="panel" use:reveal>
@@ -266,14 +266,14 @@
 	{#if data.shtam}
 		<section id="shtam" class="section alt" aria-labelledby="shtam-title">
 			<div class="wrap narrow">
-				<header class="section-head" use:reveal>
+				<div class="section-head" use:reveal>
 					<span class="kicker">La dépêche du jour</span>
 					<h2 id="shtam-title">Le Shtam</h2>
 					<span class="intro">
 						La gazette du Royaume. Ses nouvelles sont toutes fausses ; le vrai du faux, à la fin de
 						chaque article, ne l’est jamais.
 					</span>
-				</header>
+				</div>
 				<article class="dispatch" data-testid="tour-shtam" use:reveal>
 					<span class="masthead">Le Shtam</span>
 					<h3>{data.shtam.title}</h3>
@@ -417,8 +417,12 @@
 	.hero {
 		@apply relative isolate overflow-hidden py-14 sm:py-20 lg:py-24;
 	}
+	.aurora {
+		@apply pointer-events-none absolute inset-0 -z-10;
+		mask-image: linear-gradient(to bottom, black 55%, transparent);
+	}
 	.aurora span {
-		@apply absolute -z-10 rounded-full blur-3xl;
+		@apply absolute rounded-full blur-3xl;
 		animation: derive 18s ease-in-out infinite alternate;
 	}
 	.aurora span:nth-child(1) {
@@ -657,6 +661,7 @@
 		stroke-width: 6;
 		stroke-linecap: round;
 		animation: tourbillon 60s linear infinite;
+		mask-image: radial-gradient(circle, black 35%, transparent 70%);
 	}
 	@keyframes tourbillon {
 		to {

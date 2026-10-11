@@ -96,7 +96,7 @@
 		@apply min-h-12 rounded-lg bg-foreground px-4 py-3 font-mono text-xl tracking-widest break-all text-background;
 	}
 	.letter {
-		@apply inline-block;
+		@apply inline-block whitespace-pre;
 		animation: tourne 0.35s ease-out;
 	}
 	@keyframes tourne {
