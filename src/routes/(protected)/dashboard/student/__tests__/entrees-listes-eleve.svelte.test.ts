@@ -96,20 +96,23 @@ describe('L’accueil élève mène aux énigmes', () => {
 		};
 	}
 
-	it('invite à résoudre l’énigme du jour tant qu’aucune n’est résolue', async () => {
+	function riddlesTileText() {
+		return page.getByRole('link', { name: /Énigmes/ }).element().textContent ?? '';
+	}
+
+	it('invite à les découvrir tant qu’aucune n’est résolue', async () => {
 		await render(StudentDashboard, { props: { data: dashboardData(0) } as never });
 
 		expect(linkHref(/Énigmes/)).toBe('/dashboard/student/riddles');
-		expect(page.getByRole('link', { name: /Énigmes/ }).element().textContent).toContain(
-			"Résous l'énigme du jour"
-		);
+		expect(riddlesTileText()).toContain('Découvre les énigmes');
 	});
 
-	it('compte les énigmes résolues', async () => {
-		await render(StudentDashboard, { props: { data: dashboardData(3) } as never });
+	it('accorde le compte des énigmes résolues', async () => {
+		const screen = await render(StudentDashboard, { props: { data: dashboardData(1) } as never });
+		expect(riddlesTileText()).toMatch(/\b1 résolue\b/);
+		expect(riddlesTileText()).not.toContain('résolues');
 
-		expect(page.getByRole('link', { name: /Énigmes/ }).element().textContent).toContain(
-			'3 résolues'
-		);
+		await screen.rerender({ data: dashboardData(3) } as never);
+		expect(riddlesTileText()).toContain('3 résolues');
 	});
 });
