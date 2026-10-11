@@ -76,7 +76,7 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 		title: 'Service indisponible',
 		explanation: null,
 		piVerb: 'est de service à la',
-		piTwist: '\u00a0; Chiphre, lui, est hors service pour quelques minutes'
+		piTwist: '\u00a0; cette page, elle, est hors service pour quelques minutes'
 	}
 };
 

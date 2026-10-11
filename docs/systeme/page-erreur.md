@@ -44,8 +44,9 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
    s'installer à la 723ᵉ décimale de π ; toi, sur cette page, tu ne l'es pas. » ;
    410 « Le nombre 410 a un bail éternel à la 162ᵉ décimale de π ; cette page, elle, a rendu les
    clés. » ; 429 « Le nombre 429 a attendu jusqu'à la 1 229ᵉ décimale de π ; toi, quelques
-   secondes suffiront. » ; 503 « Le nombre 503 est de service à la 837ᵉ décimale de π ; Chiphre,
-   lui, est hors service pour quelques minutes. » (`piVerb` porte sa préposition : « jusqu'à la », « à la ») ;
+   secondes suffiront. » ; 503 « Le nombre 503 est de service à la 837ᵉ décimale de π ; cette
+   page, elle, est hors service pour quelques minutes. » — « cette page » et non « Chiphre » : une
+   503 de route (glossaire, Mathémo) laisse le reste du site debout (`piVerb` porte sa préposition : « jusqu'à la », « à la ») ;
    les codes sans chute finissent sur « de π. ». Pas d'extrait des décimales en clair : le code est
    déjà coloré dans la spirale.
 5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
