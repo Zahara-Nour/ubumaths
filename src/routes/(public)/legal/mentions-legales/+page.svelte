@@ -79,7 +79,7 @@
 			<h3>4.2 Politique de confidentialité</h3>
 			<p>
 				Pour plus d'informations sur la collecte et le traitement des données personnelles,
-				consultez notre <a href={resolve('/légal/confidentialité')}>Politique de confidentialité</a
+				consultez notre <a href={resolve('/legal/confidentialite')}>Politique de confidentialité</a
 				>.
 			</p>
 

@@ -126,7 +126,7 @@
 			<h2>6. Protection des données personnelles</h2>
 			<p>
 				Le traitement des données personnelles est décrit dans notre
-				<a href={resolve('/légal/confidentialité')}>Politique de confidentialité</a>.
+				<a href={resolve('/legal/confidentialite')}>Politique de confidentialité</a>.
 			</p>
 			<p>En résumé :</p>
 			<ul>
