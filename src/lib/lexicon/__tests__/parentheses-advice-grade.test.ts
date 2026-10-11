@@ -4,15 +4,20 @@
  * `docs/wip/structure-expression-progress.md`).
  */
 import { describe, expect, it } from 'vitest';
+import { GRADE_CODES } from '$lib/types/grades';
 import { needsParenthesesAdvice } from '../parentheses-advice-grade';
 
+// Constantes
+/** Les niveaux qui reçoivent le message : CP à 6e */
+const WITH_ADVICE = new Set(['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6']);
+
 describe('needsParenthesesAdvice — C4 : niveau de l’élève', () => {
-	it.each(['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6'])('%s : oui', (grade) => {
-		expect(needsParenthesesAdvice(grade)).toBe(true);
+	it('les 18 niveaux sont couverts', () => {
+		expect(GRADE_CODES).toHaveLength(18);
 	});
 
-	it.each(['5', '4', '3', '2', '1_SPE', 'T_EXP', '1_TECHNO'])('%s : non', (grade) => {
-		expect(needsParenthesesAdvice(grade)).toBe(false);
+	it.each(GRADE_CODES)('%s', (grade) => {
+		expect(needsParenthesesAdvice(grade)).toBe(WITH_ADVICE.has(grade));
 	});
 
 	it('visiteur (null, undefined) : non', () => {

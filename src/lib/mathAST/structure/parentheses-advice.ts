@@ -135,7 +135,8 @@ function leadingMinusAdvice(node: number, example: string | null): ParenthesesAd
 
 /**
  * Termes d'une somme tels qu'écrits, sans leur signe et sans marqueurs : avec
- * les parenthèses que `toLatex` pose hors du marqueur (`a + (−b)` construit).
+ * les parenthèses que `toLatex` pose hors du marqueur : ce sont celles que
+ * l'élève voit dans la formule, même s'il ne les a pas écrites.
  */
 function writtenTerms(structure: ExpressionStructure, sum: SumStructureNode): string[] {
 	return sum.children.map((id) => {
@@ -145,11 +146,13 @@ function writtenTerms(structure: ExpressionStructure, sum: SumStructureNode): st
 	});
 }
 
-/** Écrit entre parenthèses : sous-expression parenthésée, ou parenthèses posées par `toLatex` */
+/**
+ * Parenthèses ÉCRITES par l'élève. Celles que `toLatex` pose à l'affichage
+ * (`3\times-2` montré `3 × (−2)`) ne comptent pas : le « − » a été tapé sans
+ * elles (Q21).
+ */
 function isParenthesized(structure: ExpressionStructure, node: StructureNode): boolean {
-	if (node.parent === null) return false;
-	const parent = structure.nodes[node.parent];
-	return parent.kind === 'parentheses' || isWrappedBy(parent, node);
+	return node.parent !== null && structure.nodes[node.parent].kind === 'parentheses';
 }
 
 /** Le LaTeX du parent écrit l'enfant entre des parenthèses hors de son marqueur */

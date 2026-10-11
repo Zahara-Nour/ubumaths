@@ -21,6 +21,7 @@
  * `\htmlData` ; jamais `{base}^{…}` (accolades autour de la base) mais
  * `base^{…}`.
  */
+import { decimalPointToComma } from '../decimal-comma';
 import { divide, func, multiply } from '../factory';
 import { flattenRelationChain, flipSign, type Sign } from '../flatten';
 import { isHole } from '../guards';
@@ -345,7 +346,9 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		return mark(id, latex);
 	}
 
-	const latex = build(expression, null, null);
+	// Décimaux à la française à l'affichage (`2{,}5`) ; l'AST garde le point. Les
+	// marqueurs (`\class{ubs-n12}{…}`) n'ont jamais `chiffre.chiffre`.
+	const latex = decimalPointToComma(build(expression, null, null));
 	const nodes: StructureNode[] = drafts.map(({ info, id, parent, role, ast, children, latex }) => ({
 		...info,
 		id,
@@ -353,7 +356,7 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		role,
 		ast,
 		children,
-		latex
+		latex: decimalPointToComma(latex)
 	}));
 	return { latex, nodes, root: 0 };
 }

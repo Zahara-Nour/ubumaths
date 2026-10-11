@@ -138,16 +138,26 @@ describe('parenthesesAdvice — C2 (Q21, Q22) : un « − » sans parenthèses',
 		expect(render(advice.segments)).toBe(sumLeadingMinusMessage(example));
 	});
 
-	it.each(['-3', '-3x', '-x', '2x=-6', '\\frac{-3}{4}', '10^{-3}', '5\\times\\frac{-2}{7}'])(
-		'%s : ailleurs, message sans exemple',
-		(latex) => {
-			const advice = adviceOf(latex);
-			expect(advice?.reason).toBe('leading-minus');
-			if (advice?.reason !== 'leading-minus') return;
-			expect(advice.example).toBeNull();
-			expect(render(advice.segments)).toBe(MINUS_MESSAGE);
-		}
-	);
+	it.each([
+		'-3',
+		'-3x',
+		'-x',
+		'2x=-6',
+		'\\frac{-3}{4}',
+		'10^{-3}',
+		'5\\times\\frac{-2}{7}',
+		// Parenthèses non écrites par l'élève (toLatex les ajoute à l'affichage)
+		'3\\times-2',
+		'5\\times-x',
+		'2+3\\times-1',
+		'12\\div-3'
+	])('%s : ailleurs, message sans exemple', (latex) => {
+		const advice = adviceOf(latex);
+		expect(advice?.reason).toBe('leading-minus');
+		if (advice?.reason !== 'leading-minus') return;
+		expect(advice.example).toBeNull();
+		expect(render(advice.segments)).toBe(MINUS_MESSAGE);
+	});
 
 	it('node désigne le « − » visé : 2x = −6', () => {
 		const result = structureFromLatex('2x=-6');
@@ -170,8 +180,32 @@ describe('parenthesesAdvice — C3 : pas de message', () => {
 		'(5-3)+2x',
 		'5-(3+(x-2))',
 		'3\\times(4-2)',
-		'\\frac{8-2}{3}'
+		'\\frac{8-2}{3}',
+		// Miroirs écrits avec parenthèses
+		'3\\times(-2)',
+		'5\\times(-x)',
+		'2+3\\times(-1)',
+		'12\\div(-3)'
 	])('%s', (latex) => {
 		expect(adviceOf(latex)).toBeNull();
+	});
+});
+
+describe('parenthesesAdvice — virgule décimale', () => {
+	it('2,5 − 1,2 − 0,3 : propositions écrites avec la virgule', () => {
+		const advice = adviceOf('2{,}5-1{,}2-0{,}3');
+		expect(advice?.reason).toBe('chain');
+		if (advice?.reason !== 'chain') return;
+		expect(advice.proposals).toEqual([
+			'\\left( 2{,}5 - 1{,}2 \\right) - 0{,}3',
+			'2{,}5 - \\left( 1{,}2 - 0{,}3 \\right)'
+		]);
+	});
+
+	it('−2,5 + 1,2 : exemple écrit avec la virgule', () => {
+		const advice = adviceOf('-2{,}5+1{,}2');
+		expect(advice?.reason).toBe('leading-minus');
+		if (advice?.reason !== 'leading-minus') return;
+		expect(advice.example).toBe('\\left( -2{,}5 \\right) + 1{,}2');
 	});
 });

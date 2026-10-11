@@ -26,6 +26,7 @@
  */
 import { func } from '../factory';
 import { isFunction } from '../guards';
+import { decimalPointToComma } from '../decimal-comma';
 import { toLatex } from '../latex-generator';
 import type { FunctionNode, RelationType } from '../types';
 import { stripMarkers } from './markers';
@@ -159,11 +160,12 @@ export function readingOf(
 
 /**
  * Texte brut d'une lecture (tests, journaux, texte de secours) : les formules
- * y gardent leur LaTeX, avec `−` pour `-`. L'affichage, lui, rend les formules.
+ * y gardent leur LaTeX, avec `−` pour `-` et la virgule nue pour `{,}`.
+ * L'affichage, lui, rend les formules.
  */
 export function readingPlainText(reading: Reading): string {
 	return reading.segments
-		.map((s) => (s.kind === 'formula' ? s.latex.replace(/-/g, '−') : s.text))
+		.map((s) => (s.kind === 'formula' ? s.latex.replace(/-/g, '−').replaceAll('{,}', ',') : s.text))
 		.join('');
 }
 
@@ -340,17 +342,22 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 			if (!ast.power) return phrase;
 			// `\sin^2 x` : le carré du sinus de x ; `\sin^{-1}` (réciproque ou
 			// inverse ?) et les autres : en formule
-			return squareOrCube(toLatex(ast.power), phrase, id) ?? formula(latexOf(node), id);
+			return (
+				squareOrCube(decimalPointToComma(toLatex(ast.power)), phrase, id) ??
+				formula(latexOf(node), id)
+			);
 		}
 		if (isUserFunction(ast)) {
 			// B13 : « l'image de x par f » (f, f', f⁻¹ écrits par toLatex)
-			const head = toLatex(
-				func(ast.name, [], {
-					power: ast.power,
-					base: ast.base,
-					derivativeOrder: ast.derivativeOrder,
-					isInverse: ast.isInverse
-				})
+			const head = decimalPointToComma(
+				toLatex(
+					func(ast.name, [], {
+						power: ast.power,
+						base: ast.base,
+						derivativeOrder: ast.derivativeOrder,
+						isInverse: ast.isInverse
+					})
+				)
 			);
 			return headed(WORDS.image, id, [
 				text(' ', id),
