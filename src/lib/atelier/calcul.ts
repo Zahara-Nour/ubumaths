@@ -60,6 +60,7 @@ import {
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
+import { readNaturalQuantities, singleLetterHint } from './natural-quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
@@ -122,7 +123,13 @@ export interface Alternative {
 /** Ce qu'une saisie a produit. */
 export type CalcResult =
 	| { readonly kind: 'vide' }
-	| { readonly kind: 'definition'; readonly name: string; readonly object: AtelierObject }
+	| {
+			readonly kind: 'definition';
+			readonly name: string;
+			readonly object: AtelierObject;
+			/** Une aide sur l'écriture (`5 m` avec une valeur `m`, lot C des grandeurs) */
+			readonly note?: string;
+	  }
 	| {
 			readonly kind: 'calcul';
 			readonly input: string;
@@ -136,6 +143,8 @@ export type CalcResult =
 			 */
 			readonly ast?: MathNode;
 			readonly alternative?: Alternative;
+			/** Une aide sur l'écriture (`5km` collé, lot C des grandeurs) */
+			readonly note?: string;
 	  }
 	| {
 			readonly kind: 'commande';
@@ -458,11 +467,28 @@ function defineObject(
 	session: CalcSession,
 	name: string,
 	parameter: string | undefined,
-	body: string,
+	typedBody: string,
 	provenance: Provenance
 ): CalcResult {
 	const { atelier } = session;
 	const existing = atelier.get(name);
+	let body = typedBody;
+
+	// Une VALEUR tapée dans Calcul s'écrit naturellement : `d = 5 km` (lot C des
+	// grandeurs) — jamais une fonction ni une suite, où une lettre est une variable
+	let notes: readonly string[] = [];
+	if (
+		parameter === undefined &&
+		provenance === 'text' &&
+		kindOf(undefined, typedBody) === 'value'
+	) {
+		const reading = readNaturalQuantities(
+			body,
+			atelier.names.filter((n) => n !== name)
+		);
+		body = reading.text;
+		notes = reading.notes;
+	}
 
 	// Le type rangé ne change pas (règle de l'atelier) : une liste tapée sur le
 	// nom d'un autre objet le laissait en erreur, sans un mot (revue)
@@ -513,7 +539,12 @@ function defineObject(
 		// garde son état — retiré du graphique, il ne revient pas en douce.
 		if (tracedOnCreation(created.object.kind)) atelier.setPlotted(name, true);
 		// Relu APRÈS le tracé : l'objet rendu doit dire qu'il est tracé (revue)
-		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
+		return {
+			kind: 'definition',
+			name,
+			object: atelier.get(name) ?? created.object,
+			...notesOf(...notes)
+		};
 	}
 
 	// Seule une fonction a une lettre : `u(n) = …` ne la touche pas
@@ -524,7 +555,7 @@ function defineObject(
 		existing.kind === 'function' ? letter : undefined
 	);
 	if (!updated.ok) return { kind: 'refus', message: updated.message };
-	return { kind: 'definition', name, object: updated.object };
+	return { kind: 'definition', name, object: updated.object, ...notesOf(...notes) };
 }
 
 /**
@@ -1299,7 +1330,8 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 				...result,
 				output: decimalCommaText(result.output),
 				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
-				...alternativeWithDecimalComma(result.alternative)
+				...alternativeWithDecimalComma(result.alternative),
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
 			};
 		case 'commande':
 			return {
@@ -1467,12 +1499,17 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const rank = decimalRankMessage(session.atelier, withTerms.text);
 	if (rank !== null) return { kind: 'refus', message: rank };
 
-	const result = session.engine.execute(
-		expandInput(session.atelier, withPiCommand(decimalCommaInput(withTerms.text)))
-	);
-	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A)
+	// « un nombre, une espace, une unité » est une grandeur (lot C des grandeurs)
+	const reading = readNaturalQuantities(decimalCommaInput(withTerms.text), session.atelier.names);
+	const result = session.engine.execute(expandInput(session.atelier, withPiCommand(reading.text)));
+	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A),
+	// avec l'aide d'une lettre lue comme unité (`3 t + 2`)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
-		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND };
+		return {
+			kind: 'refus',
+			message: result.error?.message ?? UNREADABLE_COMMAND,
+			...notesOf(singleLetterHint(reading.singleLetters))
+		};
 	}
 	const rendered = renderResult(result);
 	return {
@@ -1480,8 +1517,13 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		input,
 		output: rendered.text,
 		...(rendered.latex && { latex: rendered.latex }),
-		...(result.success && result.ast !== undefined && { ast: result.ast }),
-		...calculationAlternative(result)
+		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`)
+		...(result.success &&
+			(result.quantityAst ?? result.ast) !== undefined && {
+				ast: result.quantityAst ?? result.ast
+			}),
+		...calculationAlternative(result),
+		...notesOf(...reading.notes)
 	};
 }
 

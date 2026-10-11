@@ -21,6 +21,8 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { tidy } from '$lib/mathAST/tidy';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { findNodes } from '$lib/mathAST/transforms';
+import { isUnit } from '$lib/mathAST/guards';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
@@ -141,6 +143,9 @@ function readable(ast: MathNode): MathNode {
 	// (faux en 0, et autre chose que ce que « Garder » range) et réordonnerait
 	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable
 	if (getVariables(ast).size > 0) return ast;
+	// Une grandeur est déjà mise au propre par la console (`quantities.ts`) :
+	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en h² (lot C)
+	if (findNodes(ast, isUnit).length > 0) return ast;
 	try {
 		return tidy(ast);
 	} catch {

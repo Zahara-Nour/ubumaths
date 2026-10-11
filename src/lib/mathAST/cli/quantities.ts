@@ -465,6 +465,47 @@ function namedDerived(node: MathNode): MathNode | null {
 	return value === null ? null : signedQuantity(rationalNode(value), derived);
 }
 
+/** Les unités d'une durée composée, de la plus grande à la plus petite. */
+const DURATION_PARTS: readonly (readonly [string, bigint])[] = [
+	['h', 3600n],
+	['min', 60n],
+	['s', 1n]
+];
+
+/**
+ * Une durée écrite en h, min, s : `2 h 30 min` (décision de David, lot C des
+ * grandeurs : « par défaut on garde l'unité écrite »). Seulement si l'élève a
+ * écrit au moins deux de ces unités, et que la durée tombe juste en secondes.
+ * L'arbre JUXTAPOSE les grandeurs : il sert à l'affichage — `.convert` et
+ * « Garder » reprennent la grandeur exacte.
+ */
+function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
+	const written = writtenUnits(ast);
+	const used = DURATION_PARTS.filter(([symbol]) => written.includes(symbol));
+	if (used.length < 2) return null;
+	const seconds = valueIn(quantity, 's');
+	if (seconds === null || seconds.d !== 1n) return null;
+	const negative = seconds.n < 0n;
+	let rest = negative ? -seconds.n : seconds.n;
+	const parts: MathNode[] = [];
+	const words: string[] = [];
+	for (const [symbol, size] of DURATION_PARTS) {
+		const count = rest / size;
+		rest %= size;
+		if (count === 0n) continue;
+		const unit = parseUnit(symbol);
+		if (unit === null) return null;
+		parts.push(withUnit(number(count.toString()), { ...unit, original: symbol }));
+		words.push(`${count} ${symbol}`);
+	}
+	if (parts.length < 2) return null;
+	const product = parts.reduce((left, right) => multiply(left, right, 'implicit'));
+	const node = negative ? opposite(delimiter('parentheses', product)) : product;
+	const text = `${negative ? '-' : ''}${words.join(' ')}`;
+	const shown = { node, text };
+	return { exact: shown, decimal: shown, approximate: null };
+}
+
 /** La réponse pour le mode demandé, avec la bascule et le bouton ≈. */
 function answered(shown: Shown, mode: QuantityMode, quantity: MathNode): QuantityOutcome {
 	return {
@@ -499,6 +540,8 @@ export function computeQuantity(ast: MathNode, mode: QuantityMode): QuantityOutc
 			? null
 			: expressedInWritten(ast, quantityOf(reduced)!.unit.unit);
 		const quantity = chosen?.decimal === true && chosen.written ? chosen.quantity : reduced;
+		const composite = compositeDuration(ast, quantity);
+		if (composite !== null) return answered(composite, mode, quantity);
 		const derived = namedDerived(quantity);
 		return answered(
 			derived === null ? both(quantity) : equality(quantity, derived),

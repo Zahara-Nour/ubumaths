@@ -128,6 +128,11 @@
 	});
 
 	onMount(() => {
+		// L'espace tapée dans une VALEUR fait la grandeur (lot C des grandeurs :
+		// « 5 m » est 5 mètres, « 5m » le produit) : MathLive l'ignore sinon
+		if (object.kind === 'value' && element) {
+			Object.assign(element, { mathModeSpace: '\\,' });
+		}
 		// C9 : une carte neuve est prête à taper
 		if (object.definition === '') element?.focus();
 		// ⚠️ Ce qui a été tapé juste avant de fermer la carte n'est pas perdu

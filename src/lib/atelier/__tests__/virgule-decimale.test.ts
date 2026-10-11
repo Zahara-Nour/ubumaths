@@ -147,10 +147,11 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 		expect(result.latex).toBe('3{,}14159265358979');
 	});
 
+	// Lot C des grandeurs : « 3.5 km » est une grandeur (avant : le produit 3,5·k·m)
 	it('calcul avec une unité : 3.5 km', () => {
 		const result = calcul(runInput(session(), '3.5 km'));
 
-		expect(result.output).toBe('3,5km');
+		expect(result.output).toBe('3,5 km');
 		expect(result.latex).toContain('3{,}5');
 	});
 
