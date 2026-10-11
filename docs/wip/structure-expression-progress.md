@@ -138,3 +138,8 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
   structurée en segments texte / formule / mot, chacun rattaché à l'id de sa sous-expression ; clé
   d'un mot = `termId` du dictionnaire (`carré (puissance)`, `image (fonction)`…), passée telle
   quelle à `LexiconTerm` au lot 4. B15 et précisions ajoutées à la section B.
+- 2026-10-11 — lot 3 : `structure/parentheses-advice.ts` (`parenthesesAdvice`, `needsParenthesesAdvice`).
+  Un message à la fois, première sous-expression en ordre préfixe ; `−` en tête avant la suite.
+  C1 appliqué selon ses exemples (`10 − 2 − 3` = message). À valider par David : message pour `−3x`
+  et `−3` seuls (et tout « − » sans parenthèses : `2x = −6`, `10^{−3}`), texte de C2, au-delà de 3
+  termes « tout à gauche ou tout à droite » (`((7 − 2) + 3x) − 5` ou `7 − (2 + (3x − 5))`).

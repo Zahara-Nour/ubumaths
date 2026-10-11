@@ -16,3 +16,9 @@ export type {
 	StructureRole,
 	SumStructureNode
 } from './types';
+export {
+	needsParenthesesAdvice,
+	parenthesesAdvice,
+	type AdviceSegment,
+	type ParenthesesAdvice
+} from './parentheses-advice';
