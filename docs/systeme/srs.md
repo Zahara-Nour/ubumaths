@@ -123,7 +123,10 @@ par `requireTeacherOfClass` (rôle `teacher` seul : le compte admin est refusé 
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
-  (0,9). `deck.config` n'est plus lu à la révision (décision du 2026-06-10).
+  (0,9). `deck.config` n'est plus lu à la révision (décision du 2026-06-10) : la mémoire d'une
+  question étant partagée entre paquets, une rétention par paquet n'aurait pas de sens. Aucun écran
+  ne propose donc de la régler (sélecteur retiré le 2026-10-12), et les schémas de création et de
+  modification d'un paquet ne déclarent pas `config`.
 
 ### Note ↔ réussite
 
@@ -303,9 +306,6 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 ## Écarts connus
 
 - **Anti-triche cassé** (voir plus haut) : à réparer avant tout rallumage.
-- **Rétention par paquet sans effet** : `create/` et `teacher/srs/decks/…` enregistrent un profil
-  de `RETENTION_PROFILES` dans `deck.config`, mais toutes les révisions utilisent `new FSRS()`
-  par défaut ; `fsrsConfigSchema` n'est plus importé hors de son fichier.
 - **Révision forcée sans bouton** : `api/srs/review/due` accepte `all=true`, mais aucun écran ne
   le passe (`decks/[id]/study` ne transmet que `states`).
 - **`chapter_decks` sans écran** : table, policies et tests d'intégration existent, aucune route
