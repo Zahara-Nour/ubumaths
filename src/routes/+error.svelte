@@ -101,7 +101,7 @@
 							href={suggestion.path}
 							class="font-semibold text-amber-600 underline-offset-4 hover:underline dark:text-amber-400"
 							>{suggestion.title}</a
-						>{/each}&nbsp;?
+						>{/each}{suggestions.at(-1)?.title.endsWith('?') ? '' : '\u00a0?'}
 				</p>
 			</nav>
 		{/if}
