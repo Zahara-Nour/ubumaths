@@ -258,7 +258,11 @@ function main(): void {
 			failed = true;
 		}
 
-		const holes = holesTouched(changed, docs, COVERAGE_CONFIG);
+		// Supprimer du code d'une zone sans doc ne demande pas d'écrire sa doc
+		const kept = git(root, ['diff', '--name-only', '--diff-filter=d', `${base}...HEAD`])
+			.split('\n')
+			.filter(Boolean);
+		const holes = holesTouched(kept, docs, COVERAGE_CONFIG);
 		if (holes.length === 0) {
 			console.log('🔍 Doc d’abord : aucune zone sans doc touchée.');
 		} else if (hasDocDeferral(messages)) {

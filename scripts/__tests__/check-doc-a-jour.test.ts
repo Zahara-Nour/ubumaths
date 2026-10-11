@@ -225,8 +225,13 @@ describe('holesTouched — doc d’abord : les zones sans doc qu’une PR touche
 	});
 
 	it('ignore les tests et le hors périmètre', () => {
+		// Un trou qui déborde du périmètre : seul le contrôle de `scope` écarte scripts/
+		const config = {
+			...HOLES_CONFIG,
+			trous: [...HOLES_CONFIG.trous, { glob: '**/legacy*', note: 'x' }]
+		};
 		expect(
-			holesTouched(['src/lib/legacy/__tests__/a.test.ts', 'scripts/legacy.ts'], DOCS, HOLES_CONFIG)
+			holesTouched(['src/lib/legacy/__tests__/a.test.ts', 'scripts/legacy.ts'], DOCS, config)
 		).toEqual([]);
 	});
 });
@@ -282,6 +287,16 @@ describe('COVERAGE_CONFIG — chaque trou nomme sa zone', () => {
 	it('porte une note, affichée quand une PR touche la zone', () => {
 		const sansNote = COVERAGE_CONFIG.trous.filter((t) => !t.note?.trim()).map((t) => t.glob);
 		expect(sansNote).toEqual([]);
+	});
+
+	it('range un fichier dans la zone précise quand un glob large la contient', () => {
+		// Le premier trou qui correspond gagne : trier `trous` rangerait ces fichiers
+		// sous la zone large. Aucune doc ici (aucun test ne lit docs/).
+		const noteOf = (file: string) => holesTouched([file], [], COVERAGE_CONFIG)[0]?.note;
+		expect(noteOf('src/routes/api/admin/exercises/x/+server.ts')).toMatch(/^exercices/);
+		expect(noteOf('src/routes/api/admin/users/+server.ts')).toMatch(/^classes, élèves/);
+		expect(noteOf('src/routes/api/students/s1/warnings/+server.ts')).toMatch(/^messagerie/);
+		expect(noteOf('src/routes/api/students/s1/+server.ts')).toMatch(/^classes, élèves/);
 	});
 });
 

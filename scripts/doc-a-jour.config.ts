@@ -52,8 +52,10 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'**/*.md',
 		'**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf,otf,mp3,wav,ogg}'
 	],
-	// Relevé du 2026-10-10 : 763 fichiers sans doc, en 11 zones + divers.
-	// Retirer une zone quand sa doc est écrite (et lui donner son `couvre:`).
+	// Zones de code sans doc, une `note` par zone (affichée par la règle « doc d'abord »).
+	// Retirer une zone quand sa doc est écrite (et lui donner son `couvre:`) : `--couverture`
+	// échoue sur un trou périmé. Ordre : un fichier appartient au PREMIER trou qui le
+	// désigne, un glob précis passe donc avant le glob large qui le contient.
 	trous: [
 		{
 			glob: 'src/lib/components/templates/{FiltersHelp,TagsInput,VariableAutocomplete}.svelte',
