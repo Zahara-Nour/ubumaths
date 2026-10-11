@@ -12,7 +12,7 @@ ADR : [0025](../adr/0025-cours-lisible-par-lien-sans-compte.md). Modèle : lien 
 
 ## Lots
 
-- [ ] **PR 1** — migration `20261016100300_class_course_share_tokens.sql` (table + 3 RPC), tests
+- [x] **PR 1** (#1150, migrée le 2026-10-12) — migration `20261016100300_class_course_share_tokens.sql` (table + 3 RPC), tests
       d'intégration (preuve rouge), liste DEFINER, `security-auditor`, merge, `db:migrate`, `db:types`.
 - [x] **PR 2** — route `(public)/cours/[token]` (+ `fiche/[id]`), endpoint document (URL signée courte,
       service role), bloc prof sur la page Cours (copier, renouveler, révoquer), doc
