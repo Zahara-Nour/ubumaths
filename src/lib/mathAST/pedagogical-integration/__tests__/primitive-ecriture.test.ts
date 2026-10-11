@@ -19,6 +19,7 @@ import { describe, expect, it } from 'vitest';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import type { Verbosity } from '../../common/verbosity';
 import { compile } from '../../eval/compile';
+import { toLatex as toLatexSafe } from '../../latex-generator';
 import { parseLatex } from '../../parser';
 import type { MathNode } from '../../types';
 import { generatePedagogicalIntegrationSteps, PedagogicalIntegrationRenderer } from '..';
@@ -207,5 +208,113 @@ describe('F′ = f : aucune réécriture ne change la valeur', () => {
 				expectDerivativeMatches(step.after, integrand);
 			}
 		}
+	});
+});
+
+// =============================================================================
+// Revue du 2026-10-11
+// =============================================================================
+
+interface DefiniteCase {
+	readonly integrand: string;
+	readonly lower: string;
+	readonly upper: string;
+	/** Valeur calculée à la main. */
+	readonly value: number;
+}
+
+const DEFINITE_CASES: readonly DefiniteCase[] = [
+	{ integrand: 'e^{2x}', lower: '0', upper: '1', value: (Math.E ** 2 - 1) / 2 },
+	{ integrand: '2x e^{x^2}', lower: '0', upper: '1', value: Math.E - 1 },
+	{ integrand: 'e^{-x}', lower: '0', upper: '1', value: 1 - 1 / Math.E },
+	{ integrand: 'e^x', lower: '0', upper: '\\ln(2)', value: 1 },
+	{ integrand: 'e^x', lower: '0', upper: '1', value: Math.E - 1 },
+	{ integrand: '\\dfrac{1}{2x + 1}', lower: '0', upper: '1', value: Math.log(3) / 2 },
+	{ integrand: '\\sin(2x)', lower: '0', upper: '\\dfrac{\\pi}{2}', value: 1 }
+];
+
+/** Un exposant laissé non calculé : `^{2 \times 1}`, `^{1^2}`, `e^0`, `e^1`. */
+const UNCOMPUTED_EXPONENT =
+	/\^\{[^}]*(\\times|\^)[^}]*\}|\\exponentialE\^(0|1)(?![0-9])|\\exponentialE\^\{(0|1)\}/;
+
+describe('intégrales définies : la valeur est calculée', () => {
+	for (const level of LEVELS) {
+		it.each(DEFINITE_CASES)(
+			`${level} — ∫_{$lower}^{$upper} $integrand dx`,
+			({ integrand, lower, upper, value }) => {
+				const result = generatePedagogicalIntegrationSteps(parseLatex(integrand), {
+					level,
+					definite: { lower: parseLatex(lower), upper: parseLatex(upper) }
+				});
+				expect(result.value).toBeDefined();
+				const valueNode = result.value as MathNode;
+				expect(compile(valueNode)({})).toBeCloseTo(value, 9);
+				const rendered = renderer.renderAll(result.steps, {
+					schoolLevel: level,
+					verbosity: 'summarized'
+				});
+				const last = rendered.at(-1);
+				expect(last?.rule).toBe('simplify-bounds-result');
+				const shown = (last?.expressionLatex ?? '').split('= ').at(-1) ?? '';
+				expect(shown).not.toMatch(UNCOMPUTED_EXPONENT);
+				expect(toLatexSafe(valueNode)).not.toMatch(UNCOMPUTED_EXPONENT);
+			}
+		);
+	}
+
+	it('∫_0^1 e^x dx vaut e − 1, écrit e - 1', () => {
+		const result = generatePedagogicalIntegrationSteps(parseLatex('e^x'), {
+			level: 'lycee',
+			definite: { lower: parseLatex('0'), upper: parseLatex('1') }
+		});
+		expect(toLatexSafe(result.value as MathNode)).toBe('\\exponentialE - 1');
+	});
+
+	it('∫_0^1 2x e^{x^2} dx vaut e − 1, écrit e - 1', () => {
+		const result = generatePedagogicalIntegrationSteps(parseLatex('2x e^{x^2}'), {
+			level: 'lycee',
+			definite: { lower: parseLatex('0'), upper: parseLatex('1') }
+		});
+		expect(toLatexSafe(result.value as MathNode)).toBe('\\exponentialE - 1');
+	});
+});
+
+describe('IPP : chaque « = » affiché est vrai', () => {
+	it.each(['x e^x', '\\ln(x)', 'x \\sin(x)', 'e^x \\sin(x)'])(
+		'∫ %s dx : la formule garde l’intégrale restante',
+		(integrand) => {
+			for (const level of LEVELS) {
+				const { rendered } = run(integrand, level, 'summarized');
+				const formulas = rendered.filter((s) => s.rule === 'apply-parts-formula');
+				expect(formulas.length).toBeGreaterThan(0);
+				for (const step of formulas) {
+					const latex = step.expressionLatex ?? '';
+					// Après le premier « = » : uv − ∫ v du, l'intégrale restante écrite
+					const rhs = latex.slice(latex.indexOf('= '));
+					expect(rhs).toContain('\\int');
+				}
+			}
+		}
+	);
+});
+
+describe('coefficient non réduit : il y a quelque chose à simplifier', () => {
+	it.each([
+		['\\dfrac{2}{4} e^x', '\\dfrac{1}{2} \\exponentialE^x'],
+		['\\dfrac{1}{1} \\sin(x)', '-\\cos\\left( x \\right)'],
+		['\\dfrac{6}{3} \\cos(x)', '2 \\sin\\left( x \\right)']
+	])('∫ %s dx s’écrit %s', (integrand, expected) => {
+		const { rendered, result } = run(integrand, 'lycee', 'summarized');
+		expect(finalPrimitiveLatex(rendered)).toBe(expected);
+		expectDerivativeMatches(result.antiderivative, integrand);
+	});
+});
+
+describe('« On simplifie » : une explication vraie même quand on ne fait que réordonner', () => {
+	it('∫ \\ln x dx', () => {
+		const { rendered } = run('\\ln(x)', 'lycee', 'detailed');
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(simplify?.title).toBe('On simplifie');
+		expect(simplify?.explanation).toBe('On écrit le résultat sous une forme simplifiée.');
 	});
 });

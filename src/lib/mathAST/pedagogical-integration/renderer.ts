@@ -22,6 +22,7 @@
  * @module mathAST/pedagogical-integration/renderer
  */
 
+import type { MathNode } from '../types';
 import { toLatex } from '../latex-generator';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
@@ -156,6 +157,22 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			);
 		}
 
+		case 'apply-parts-formula': {
+			// uv − ∫ v du, l'intégrale restante ÉCRITE ; puis, quand elle est
+			// calculée (`result`), la primitive. Sans cela, l'IPP cyclique
+			// affichait u₀v₀ − f₁, une égalité fausse (revue du 2026-10-11).
+			const uv = step.bindings?.uv;
+			const vdu = step.bindings?.vdu;
+			if (!uv || !vdu) return formatStandard(step, beforeLatex, afterLatex, dx);
+			const result = step.bindings?.result;
+			const lines = [
+				`  & \\textcolor{blue}{\\int ${beforeLatex}${dx}}`,
+				`  & = ${toLatex(uv)} - \\int ${integrandLatex(vdu)}${dx}`,
+				...(result ? [`  & = ${toLatex(result)}`] : [])
+			];
+			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+		}
+
 		case 'simplify-result': {
 			// Une ligne, comme « On simplifie » des dérivées : brute = rangée
 			const raw = toLatex(withExplicitNumberProducts(step.before));
@@ -180,19 +197,35 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			);
 		}
 
-		default: {
-			// Standard 2-line render : integral on top, antiderivative below.
-			const integralLhs = step.definite
-				? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
-				: `\\int ${beforeLatex}${dx}`;
-			return (
-				`\\begin{aligned}\n` +
-				`  & \\textcolor{blue}{${integralLhs}} \\\\\n` +
-				`  & = ${afterLatex}\n` +
-				`\\end{aligned}`
-			);
-		}
+		default:
+			return formatStandard(step, beforeLatex, afterLatex, dx);
 	}
+}
+
+/** Un intégrande somme ou opposé, entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx`. */
+function integrandLatex(node: MathNode): string {
+	const latex = toLatex(node);
+	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite'
+		? `\\left( ${latex} \\right)`
+		: latex;
+}
+
+/** Standard 2-line render : integral on top, antiderivative below. */
+function formatStandard(
+	step: PedagogicalIntegrationStep,
+	beforeLatex: string,
+	afterLatex: string,
+	dx: string
+): string {
+	const integralLhs = step.definite
+		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
+		: `\\int ${beforeLatex}${dx}`;
+	return (
+		`\\begin{aligned}\n` +
+		`  & \\textcolor{blue}{${integralLhs}} \\\\\n` +
+		`  & = ${afterLatex}\n` +
+		`\\end{aligned}`
+	);
 }
 
 // =============================================================================

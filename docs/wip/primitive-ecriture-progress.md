@@ -19,9 +19,15 @@ Deuxième arbitrage (2026-10-11, après le constat que `tidy` écrit `\dfrac{e^{
    « coefficient rationnel × une seule fonction » (k·e^u, k·ln|u|, k·sin u, k·cos u…) reste tel
    quel (`\dfrac{1}{2}\sin 2x`, `-\dfrac{1}{3}\cos(3x+1)` : extension sin/cos validée). Les
    sommes, et tout ce que `tidy` change vraiment, gardent l'étape. Règle retenue
-   (`isSingleCoefficientTerm`) : sous un `-` éventuel, une fonction seule (appel ou puissance) ou
+   (`singleCoefficientTerm`) : sous un `-` éventuel, une fonction seule (appel ou puissance) ou
    un rationnel littéral positif × une fonction seule ; un quotient ou un produit à l'intérieur
    (`\dfrac{1}{4}\dfrac{x^2}{2}`, `\dfrac{1}{2}\dfrac{(2x+1)^4}{4}`) passe par `tidy`.
+   Revue (2026-10-11) : `evaluate` exact calcule un exposant écrit comme un calcul
+   (`e^{2\times 1}` → `e^2`, sinon les valeurs d'intégrales définies restaient brutes) ; l'étape
+   d'IPP écrit `uv - \int v\,du` (l'IPP cyclique affichait une égalité fausse) ; un coefficient non
+   réduit (`\dfrac{2}{4}e^x`) passe par « On simplifie » ; explication : « On écrit le résultat sous
+   une forme simplifiée. » ; écart V16 (∫x²eˣ non développée).
+
 7. **Ordre de `tidy` gardé** : `3\sin x+2\cos x` → `2\sin x - 3\cos x`.
 
 Hors périmètre (écarts V14, V15 de [ecarts-a-trier.md](ecarts-a-trier.md)) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0 (V14) ; IPP cyclique rangée lourde, `\dfrac{-\cos x\,e^x+\sin x\,e^x}{2}` (V15).

@@ -287,10 +287,12 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
   (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant. Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
   `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
-  primitive est un seul terme « rationnel positif × une seule fonction » sous un `-`
-  éventuel (`isSingleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
-  gardé tel quel ; un coefficient pas encore calculé (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe
-  par `tidy`. Le facteur 1/u′ des formes composées est un rationnel exact
+  primitive est un seul terme « coefficient en chiffres × une seule fonction » sous un `-`
+  éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
+  gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
+  `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. L'étape d'IPP écrit `uv - \int v\,du`,
+  l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
   (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
   (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent

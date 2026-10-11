@@ -67,7 +67,9 @@ import { extractExactRational, numericNode, rationalToNode } from '../common/num
 import {
 	absRational,
 	isNegative as isNegativeRational,
-	isOne as isOneRational
+	isOne as isOneRational,
+	negRational,
+	ONE
 } from '../normal/rational';
 import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
@@ -329,7 +331,7 @@ function generateDefiniteSteps(
  * `withTidyStep` des dérivées) : les règles laissent la primitive brute
  * (`3\dfrac{x^3}{3}`, `\ln(x)\,x`) — c'est la méthode, qu'on garde visible ;
  * la ligne suivante l'écrit simplement avec `tidyTerms`. Aucune étape quand il
- * n'y a rien à simplifier (`isSingleCoefficientTerm`) ni quand la mise au
+ * n'y a rien à simplifier (`singleCoefficientTerm`) ni quand la mise au
  * propre ne change pas l'écriture. Rend la primitive à retenir.
  */
 function pushSimplifyStep(
@@ -337,8 +339,11 @@ function pushSimplifyStep(
 	raw: MathNode,
 	ctx: DispatchContext
 ): MathNode {
-	if (isSingleCoefficientTerm(raw)) return raw;
-	const tidied = tidyTerms(raw);
+	const single = singleCoefficientTerm(raw);
+	if (single?.canonical) return raw;
+	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
+	// en gardant la forme « k · fonction » ; sinon, `tidy`
+	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidyTerms(raw);
 	if (toLatex(tidied) === toLatex(raw)) return raw;
 	steps.push(
 		buildStep(ctx, {
@@ -742,21 +747,46 @@ function withRationalCoefficient(k: Rational, base: MathNode): MathNode {
  * simplifier, la primitive reste telle quelle (décision de David du 2026-10-11).
  *
  * Règle exacte : sous un signe `-` éventuel, soit une fonction seule, soit le
- * produit d'un rationnel littéral POSITIF (`3`, `\dfrac{1}{2}`) par une fonction
- * seule. « Fonction seule » = un appel (`\ln`, `\sin`, `\cos`…) ou une
- * puissance (`e^{u}`, `u^n`). Un quotient, un produit, une somme ou un
- * opposé à l'intérieur n'en est pas une : `\dfrac{1}{4}\dfrac{x^2}{2}` et
- * `\dfrac{1}{2}\dfrac{(2x+1)^4}{4}` ont un coefficient pas encore calculé, et
- * passent par `tidy`.
+ * produit d'un coefficient ÉCRIT EN CHIFFRES (entier `3`, ou fraction d'entiers
+ * `\dfrac{2}{4}`) par une fonction seule. « Fonction seule » = un appel (`\ln`,
+ * `\sin`, `\cos`…) ou une puissance (`e^{u}`, `u^n`). Un quotient, un produit,
+ * une somme ou un opposé à l'intérieur n'en est pas une :
+ * `\dfrac{1}{4}\dfrac{x^2}{2}` et `\dfrac{1}{2}\dfrac{(2x+1)^4}{4}` ont un
+ * coefficient pas encore calculé, et passent par `tidy` (rend `null`).
+ *
+ * Rend le terme décomposé ; `canonical` dit si le coefficient est déjà réduit
+ * (entier, ou fraction irréductible de dénominateur > 1) — sinon
+ * (`\dfrac{2}{4}`, `\dfrac{6}{3}`) il reste à le réduire (revue du 2026-10-11).
  */
-function isSingleCoefficientTerm(node: MathNode): boolean {
+interface SingleCoefficientTerm {
+	readonly k: Rational;
+	readonly fn: MathNode;
+	readonly canonical: boolean;
+}
+
+function isIntegerLiteral(n: MathNode): boolean {
+	return n.type === 'number' && /^\d+$/.test(n.value);
+}
+
+function singleCoefficientTerm(node: MathNode): SingleCoefficientTerm | null {
+	const negative = node.type === 'opposite';
 	const term = node.type === 'opposite' ? node.operand : node;
 	const isSingleFunction = (n: MathNode): boolean =>
 		n.type === 'function' || n.type === 'superscript';
-	if (isSingleFunction(term)) return true;
-	if (term.type !== 'multiplication') return false;
-	const k = extractExactRational(term.left);
-	return k !== null && !isNegativeRational(k) && isSingleFunction(term.right);
+	const sign = (r: Rational): Rational => (negative ? negRational(r) : r);
+	if (isSingleFunction(term)) return { k: sign(ONE), fn: term, canonical: true };
+	if (term.type !== 'multiplication' || !isSingleFunction(term.right)) return null;
+	const left = term.left;
+	const literal =
+		isIntegerLiteral(left) ||
+		(left.type === 'division' &&
+			isIntegerLiteral(left.numerator) &&
+			isIntegerLiteral(left.denominator));
+	if (!literal) return null;
+	const k = extractExactRational(left);
+	if (k === null || k.n === 0n) return null;
+	const canonical = toLatex(rationalToNode(k)) === toLatex(left) && !isOneRational(k);
+	return { k: sign(k), fn: term.right, canonical };
 }
 
 function integrateLinearity(integrand: MathNode, ctx: DispatchContext): DispatchResult {
@@ -915,7 +945,8 @@ function integrateByParts(
 		before: integrand,
 		after: antiderivative,
 		variable: ctx.variable,
-		bindings: { u, v, du },
+		// `uv` et `vdu` : le rendu écrit uv − ∫ v du avant de le calculer
+		bindings: { u, v, du, uv, vdu: vDu, result: antiderivative },
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
@@ -1080,7 +1111,9 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 		before: integrand,
 		after: subtract(u0v0, f1),
 		variable: ctx.variable,
-		bindings: { u: u0, v: v0, du: du0 }
+		// Pas de `result` : l'intégrale restante n'est pas calculée ici, le
+		// rendu écrit u₀v₀ − ∫ f₁ dx (et non u₀v₀ − f₁, qui serait faux)
+		bindings: { u: u0, v: v0, du: du0, uv: u0v0, vdu: f1 }
 	});
 	const choose2 = buildStep(ctx, {
 		rule: 'choose-u-dv',
