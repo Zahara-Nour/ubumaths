@@ -40,7 +40,7 @@ async function navigateToEditPage(page: Page, assessmentId: string): Promise<voi
  */
 async function getFirstDraftAssessmentId(page: Page): Promise<string | null> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 
 	// Switch to drafts tab
 	const draftsTab = page.locator('button:has-text("Brouillons")');
@@ -73,7 +73,7 @@ async function getFirstDraftAssessmentId(page: Page): Promise<string | null> {
  */
 async function getFirstPublishedAssessmentId(page: Page): Promise<string | null> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 
 	// Switch to published tab
 	const publishedTab = page.locator('button:has-text("Publiées")');
@@ -561,7 +561,7 @@ test.describe('Teacher Assessment Editing', () => {
 
 		// Should return to assessments list
 		await expect(page).toHaveURL(/\/dashboard\/teacher\/assessments\/?$/);
-		await expect(page.locator('h1:has-text("Mes Évaluations")')).toBeVisible();
+		await expect(page.locator('h1:has-text("Mes contrôles")')).toBeVisible();
 	});
 
 	// ========================================================================
@@ -607,7 +607,7 @@ test.describe('Teacher Assessment Editing', () => {
 
 		// Should either show warning or redirect
 		const warningMessage = page.locator(
-			"text=/Les modifications s'appliquent uniquement aux évaluations en brouillon|cannot edit published/i"
+			"text=/Les modifications s'appliquent uniquement aux contrôles en brouillon|cannot edit published/i"
 		);
 		const hasWarning = await warningMessage.isVisible({ timeout: 3000 });
 

@@ -44,7 +44,7 @@
 	let classId = $state<string | undefined>(data.class_id ?? undefined);
 
 	const classItems = $derived([
-		{ value: '', label: 'Aucune (tâche ad-hoc)' },
+		{ value: '', label: 'Aucune (observation ad hoc)' },
 		...data.classes.map((c) => ({ value: c.id, label: c.name }))
 	]);
 
@@ -72,14 +72,14 @@
 </script>
 
 <svelte:head>
-	<title>{data.name} | Tâches d'évaluation | Chiphre</title>
+	<title>{data.name} | Observations | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
 	<div class="mb-4">
 		<Button variant="ghost" size="sm" href="/dashboard/teacher/evaluation-tasks">
 			<ChevronLeft class="h-4 w-4" />
-			Tâches d'évaluation
+			Observations
 		</Button>
 	</div>
 
@@ -119,7 +119,7 @@
 						name="description"
 						maxlength={500}
 						value={data.description ?? ''}
-						placeholder="Contexte de la tâche, énoncé du problème ouvert…"
+						placeholder="Contexte de l'observation, énoncé du problème ouvert…"
 					/>
 				</div>
 				<div class="grid gap-4 sm:grid-cols-2">
@@ -148,8 +148,8 @@
 		<Card.Header>
 			<h2 class="text-lg font-semibold">Périmètre d'observation</h2>
 			<p class="text-sm text-muted-foreground">
-				Coche les observables que cette tâche permet d'observer. En séance, tu coches les réussites
-				— les non-cochés du périmètre deviennent « – », les hors-périmètre restent ∅.
+				Coche les observables que cette observation permet de repérer. En séance, tu coches les
+				réussites — les non-cochés du périmètre deviennent « – », les hors-périmètre restent ∅.
 			</p>
 		</Card.Header>
 		<Card.Content>
@@ -238,12 +238,12 @@
 				method="POST"
 				action="?/delete"
 				onsubmit={(e) => {
-					if (!confirm("Supprimer définitivement cette tâche d'évaluation ?")) e.preventDefault();
+					if (!confirm('Supprimer définitivement cette observation ?')) e.preventDefault();
 				}}
 			>
 				<Button type="submit" variant="destructive" class="gap-1">
 					<Trash2 class="h-4 w-4" />
-					Supprimer cette tâche
+					Supprimer cette observation
 				</Button>
 			</form>
 		</Card.Content>

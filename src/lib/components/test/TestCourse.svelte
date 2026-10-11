@@ -212,7 +212,7 @@
 								variant="ghost"
 								size="icon"
 								onclick={onBack}
-								aria-label={inEvaluation ? 'Mes évaluations' : 'Retour au panier'}
+								aria-label={inEvaluation ? 'Mes contrôles' : 'Retour au panier'}
 							>
 								<ArrowLeft class="h-5 w-5" />
 							</Button>

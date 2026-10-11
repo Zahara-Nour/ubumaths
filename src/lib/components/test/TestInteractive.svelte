@@ -69,7 +69,7 @@
 		showResults = true
 	}: Props = $props();
 
-	let backLabel = $derived(inEvaluation ? 'Mes évaluations' : 'Retour au panier');
+	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
 
 	// Variables
 	let currentIndex = $state(0);
@@ -203,7 +203,7 @@
 					<div>
 						<h1 class="text-2xl font-bold">
 							{#if assessmentTitle}
-								Évaluation : {assessmentTitle}
+								Contrôle : {assessmentTitle}
 							{:else}
 								Entraînement
 							{/if}

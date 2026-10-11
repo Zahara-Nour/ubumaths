@@ -97,7 +97,7 @@ describe('action « Modifier l’évaluation »', () => {
 			const { promise, fake } = post(status);
 			const result = (await promise) as { status: number; data: { message: string } };
 			expect(result.status).toBe(409);
-			expect(result.data.message).toBe('Seule une évaluation en brouillon se modifie');
+			expect(result.data.message).toBe('Seul un contrôle en brouillon se modifie');
 			expect(updates(fake)).toHaveLength(0);
 		});
 	}

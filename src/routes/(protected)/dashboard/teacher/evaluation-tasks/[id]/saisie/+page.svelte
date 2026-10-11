@@ -72,7 +72,7 @@
 	<div class="mb-4">
 		<Button variant="ghost" size="sm" href="/dashboard/teacher/evaluation-tasks/{data.task_id}">
 			<ChevronLeft class="h-4 w-4" />
-			Retour à la tâche
+			Retour à l'observation
 		</Button>
 	</div>
 
@@ -96,7 +96,7 @@
 	{:else if data.observables.length === 0}
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
-				<p class="mb-3">Aucun observable dans le périmètre de cette tâche.</p>
+				<p class="mb-3">Aucun observable dans le périmètre de cette observation.</p>
 				<Button href="/dashboard/teacher/evaluation-tasks/{data.task_id}">
 					Déclarer le périmètre
 				</Button>

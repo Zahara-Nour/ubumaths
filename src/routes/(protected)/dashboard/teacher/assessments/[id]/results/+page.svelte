@@ -28,7 +28,7 @@
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.evaluation.series.title}</h1>
 			<p class="mt-2 text-muted-foreground">
-				Résultats de l'évaluation · {formLabel(data.evaluation.form)}
+				Résultats du contrôle · {formLabel(data.evaluation.form)}
 			</p>
 		</div>
 	</div>
@@ -112,7 +112,7 @@
 				<div class="py-12 text-center text-muted-foreground">
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucun résultat disponible</p>
-					<p class="mt-2 text-sm">Les résultats apparaîtront une fois l'évaluation assignée</p>
+					<p class="mt-2 text-sm">Les résultats apparaîtront une fois le contrôle assigné</p>
 				</div>
 			{:else}
 				<EvaluationResultsTable results={data.results} />

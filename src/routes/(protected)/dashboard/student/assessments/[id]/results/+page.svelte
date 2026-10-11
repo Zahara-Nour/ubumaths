@@ -116,7 +116,7 @@
 			{#if data.attempts.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
 					<p>Aucune tentative pour le moment</p>
-					<Button onclick={handleBack} class="mt-4">Commencer l'évaluation</Button>
+					<Button onclick={handleBack} class="mt-4">Commencer le contrôle</Button>
 				</div>
 			{:else}
 				<Table.Root>

@@ -31,9 +31,9 @@
 			case 'one_of_codes':
 				return `Au moins 1 parmi ${item.codes.join(', ')}`;
 			case 'guard':
-				if (item.name === 'needs_more_tasks') return "Minimum 2 tâches d'observation requises";
+				if (item.name === 'needs_more_tasks') return 'Minimum 2 observations requises';
 				if (item.name === 'confirm_with_third_task')
-					return 'Confirme avec une 3ᵉ tâche pour atteindre Très bonne';
+					return 'Confirme avec une 3ᵉ observation pour atteindre Très bonne';
 				return item.name;
 		}
 	}
@@ -61,7 +61,7 @@
 				<div>
 					<div class="font-semibold">{formatMathCompetenceLevel(data.niveau)}</div>
 					<div class="text-xs text-muted-foreground">
-						{data.task_count} tâche{data.task_count > 1 ? 's' : ''} d'observation
+						{data.task_count} observation{data.task_count > 1 ? 's' : ''}
 					</div>
 				</div>
 			</div>

@@ -40,7 +40,7 @@
 				toaster.error(outcome.message);
 				return;
 			}
-			toaster.success('Évaluation mise à jour');
+			toaster.success('Contrôle mis à jour');
 			handleBack();
 		} finally {
 			isSubmitting = false;
@@ -49,24 +49,24 @@
 </script>
 
 <svelte:head>
-	<title>Modifier l'évaluation | Chiphre</title>
+	<title>Modifier le contrôle | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux évaluations">
+		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux contrôles">
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Modifier l'évaluation</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Modifier le contrôle</h1>
 			<p class="mt-2 text-muted-foreground">Série « {data.evaluation.series.title} »</p>
 		</div>
 	</div>
 
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Réglages de l'évaluation</Card.Title>
-			<Card.Description>Seules les évaluations en brouillon se modifient</Card.Description>
+			<Card.Title>Réglages du contrôle</Card.Title>
+			<Card.Description>Seuls les contrôles en brouillon se modifient</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<EvaluationConfigForm
