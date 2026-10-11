@@ -43,6 +43,17 @@ examiner une par une (cas réels des élèves d'abord).
 5. **Lecture** : `AB²` se lit « le carré de AB » ? `AB` seul, « la longueur AB » ou « AB » ?
 6. **Minuscules** : `ab` reste un produit (algèbre) ? (Proposé : oui.)
 
+## Décisions de David (2026-10-11)
+
+Recommandations validées : Q1 **partout** (deux majuscules collées = une longueur) ; Q2 **`AB` = `BA`**
+pour la correction ; Q3 **`ABC` refusé** avec un message ; Q4 `\overline`, `\widehat`,
+`\overrightarrow` **plus tard** ; Q6 **`ab` reste un produit**. Q5 : `AB²` → « le carré de la
+longueur AB », `AB` → « **la longueur AB** » (toujours préciser).
+
+État du code : `mathAST` n'a **aucun nœud longueur ni angle** (`MathNode`, `types.ts`) ; `\angle`
+n'existe que comme symbole. `geometry-core` (DSL de géométrie) connaît segments et angles, mais
+`mathAST` ne s'en sert pas.
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
