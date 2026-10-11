@@ -29,14 +29,19 @@ describe('describeError', () => {
 		});
 	});
 
-	it('phrase sur π : chute pour 403 et 404, aucune pour un code sans chute', () => {
+	it('phrase sur π : chute pour 403, 404 et 410, aucune pour un code sans chute', () => {
 		expect(describeError(404, undefined).piTwist).toBe(', mais la page, elle, reste introuvable');
 		expect(describeError(403, undefined)).toMatchObject({
 			explanation: null,
 			piVerb: 'a été autorisé à s’installer',
 			piTwist: '\u00a0; toi, sur cette page, tu ne l’es pas'
 		});
-		expect(describeError(410, undefined)).toMatchObject({ piVerb: 'apparaît', piTwist: null });
+		expect(describeError(410, undefined)).toMatchObject({
+			explanation: null,
+			piVerb: 'a un bail éternel',
+			piTwist: '\u00a0; cette page, elle, a rendu les clés'
+		});
+		expect(describeError(429, undefined)).toMatchObject({ piVerb: 'apparaît', piTwist: null });
 	});
 
 	it('un code sans texte propre retombe sur sa famille', () => {
