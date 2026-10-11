@@ -481,3 +481,90 @@ La mise en facteur **par motifs** (A1, A3) ne dépend d'aucune variable ; les li
 - Littéraux de nœuds construits à la main hors `factory.ts` (invariant 3) :
   `analysis/structures.ts:683-698`, `limits/algebraic.ts:182` et `:755`.
 - `algebraic-identities.ts:37` `squared()` calcule le carré d'un nombre par `parseFloat`.
+
+## 4. Décisions (ADR 0024)
+
+David a tranché le 2026-10-11 : [ADR 0024](../adr/0024-moteur-commun-de-factorisation.md),
+acceptée, amende l'ADR 0007 pour l'intention `factoriser`.
+
+- Un module `mathAST/factor/` en deux couches : un **noyau exact sur ℚ** sans étapes (contenu,
+  racines rationnelles, Horner, carrés parfaits, Δ), puis des **stratégies qui racontent**
+  (facteur commun, identités, racines du trinôme, racine évidente puis division) branchées sur
+  `factoriser`.
+- Racines irrationnelles au lycée seulement ; coefficients entiers dès que possible ; atteignable
+  selon le niveau (collège : facteur commun et identités ; 1re : racines du trinôme ; terminale :
+  racine évidente puis division) ; développer pour refactoriser en dernier recours, dans
+  `factoriser` seulement.
+- Lots, une PR chacun : noyau (aucun appelant changé) → stratégies sur `factoriser` → migration
+  des appelants internes et suppression du code mort → V18.
+
+## 5. Lot 1 — le noyau exact (2026-10-11)
+
+> Worktree `feat/moteur-factorisation`. La branche a divergé d'origin/main (le commit de ce journal,
+> `bfd07cedd`, n'y est pas) : `merge --ff-only origin/main` impossible, l'ADR 0024 a été lu par
+> `git show origin/main:…`. **À faire avant la PR : intégrer origin/main** (sinon les deux liens
+> vers l'ADR 0024 de `docs/systeme/mathast/README.md` sont cassés pour `docs:check-links`).
+
+- [x] **Tests d'abord** : `src/lib/mathAST/factor/__tests__/factor-core.test.ts`, entrées LaTeX
+      parsées, variable `x`, rendu LaTeX + `areEquivalent(rendu, entrée)` + aucun littéral négatif.
+      Vus rouges : **44 / 44** contre un squelette d'API qui lève « non implémenté » (le module
+      absent faisait échouer le fichier sans compter de test). Premier passage après
+      implémentation : 42 / 44, les deux écarts étant l'écriture `\dfrac` de `toLatex` (attendus
+      alignés). Trois cas ajoutés ensuite (47 au total) : Δ = 0 sur gros coefficients, radicande
+      au-delà de la borne dans ℝ, Δ < 0 dans ℝ en deux cas ; le radicande vu rouge par mutation.
+      La mutation du multiplicateur de la branche « racine double » ne rougit pas, et c'est
+      attendu : par le lemme de Gauss il vaut 1 (commenté dans `factor.ts`).
+- [x] **API** : `factorPolynomial(node, variable, { field?: 'Q' | 'R' }): Factorization | null`,
+      `factorizationToNode(f): MathNode` (`factor/index.ts`).
+- [x] **Réutilisé ou déplacé, aucune copie ajoutée** :
+  - de `domain/exact-roots.ts` vers `factor/polynomial.ts` : `Poly`, `RationalFunction`,
+    arithmétique, `deflate`, `integerCoefficients`, lecteur `toRationalFunction` (l'extracteur
+    exact `Rational` le plus sûr des six) — à l'identique, renommages `trim` → `trimPoly`,
+    `polyAdd` → `addPoly`… ;
+  - de `domain/exact-roots.ts` vers `factor/rational-roots.ts` : `divisors` et la boucle ±p/q
+    (`extractRationalRoots`), qui **garde les multiplicités** (l'ancien code les perdait au
+    `dedupeSorted`, qui reste dans `domain`). Candidats dédoublonnés et rangés par hauteur, borne
+    optionnelle : sans effet sur ce que rend `domain` (le quotient final et le multiset des
+    racines ne dépendent pas de l'ordre des essais) ;
+  - de `domain/exact-roots.ts` vers `factor/quadratic.ts` : l'analyse de Δ (`quadraticRootParts`
+    rend les parties exactes ; `domain` écrit toujours ses bornes `(1+√5)/2` avec `surdNode`) ;
+  - `squareFree` de `exact-roots.ts` **supprimé** au profit de `extractPerfectPower` et
+    `integerNthRoot` (`normal/radical.ts`) : décomposition k²·m unique, donc même résultat ;
+  - de `normal/rules/trig-multiple-arcs.ts` vers `factor/polynomial-node.ts` : `polynomialNode`,
+    `monomialNode`, `integerNode` (le seul constructeur de polynôme du moteur qui écrit les
+    négatifs en soustractions ; `pedagogical-limits/helpers.ts` `polyToNode` écrit `x + (-3)`) ;
+  - `rationalToNode` (`common/numeric.ts`) pour la constante.
+- [x] **`domain` strictement identique** : 19 fichiers de `domain/` + `trig-normal-form`,
+      877 tests verts avant et après ; comparaison différentielle ancien / nouveau
+      `exactRealRoots` (copie de l'ancien fichier hors dépôt, script `tsx`) sur 4 000 polynômes
+      aléatoires (racines rationnelles multiples, x, trinômes de Δ quelconque, degré ≤ 8) :
+      **0 différence**, nœuds LaTeX et valeurs compris.
+- [x] **Bornes** : degré 8 (`MAX_FACTOR_DEGREE`, celle du lecteur : `null` au-delà) ;
+      |a₀|, |aₙ| ≤ 10⁶ pour énumérer les diviseurs (`MAX_DIVISOR_SEARCH`) ; 1 000 candidats ±p/q
+      (`MAX_RATIONAL_ROOT_CANDIDATES`, rangés par hauteur) ; radicande ≤ 10¹⁰ pour scinder dans ℝ
+      (`MAX_RADICAND`). Au-delà : factorisation partielle, `complete = false`, jamais fausse. Un
+      reste de degré 2 est toujours tranché exactement par Δ. Mesure : `(720720x−1)(x²+720720)`,
+      plus de 7 000 candidats, coupé à 1 000 : 6 ms (test vitest, Mac mini M6) ; les 47 tests :
+      24 ms de calcul.
+- [x] **Ordre des facteurs** (pas une décision de produit, figé par les tests) : premier degré par
+      |racine| croissante, racine positive d'abord ; irrationnels ; degré 2 ; reste. Seul écart
+      avec le tableau du brief : `(2x+1)^2-(x-3)^2` → `(3x−2)(x+4)` (le brief écrivait `(x+4)(3x−2)`).
+- [x] Vérifications : `pnpm test:server src/lib/mathAST/factor` 47/47 ; `pnpm test:server
+  src/lib/mathAST` une fois à la fin : 462 fichiers, 19 310 tests verts (9 ignorés, 3 todo),
+      22 s ; `check:incremental` 0 erreur ; `types:cliquet` tenu (0 erreur, le nouveau test naît
+      typé) ; `lint:fast` rien à signaler ; prettier sur les fichiers touchés seulement.
+- [x] Doc : section « factor/ » de `docs/systeme/mathast/README.md` (carte, API, bornes, limites,
+      place dans l'ADR), ligne de la carte des sous-dossiers, ADR 0024 dans les décisions. Le glob
+      `src/lib/mathAST/**` couvre `factor/` ; `docs:check-a-jour --couverture` : 0.
+
+**Limites assumées** (dans la doc) : pas de facteur de degré 2 cherché dans un reste de degré ≥ 3
+(`x^8-1` → `(x−1)(x+1)(x⁶+x⁴+x²+1)`) ; pas de décomposition sans carré (`(x²+1)²` développé) ; dans
+ℝ seul le degré 2 se scinde.
+
+**Écarts code ↔ doc relevés en chemin (non corrigés)** :
+
+- `domain/exact-roots.ts` : le `squareFree` supprimé faisait une division d'essai en √Δ sans borne
+  (un Δ premier de l'ordre de 10¹⁴ = 10⁷ tours) ; `extractPerfectPower` est du même ordre (pas de 2).
+  `domain` n'a toujours pas de borne sur ce calcul (inchangé, hors périmètre).
+- `normal/rules/trig-multiple-arcs.ts` garde un `absBigInt` local, doublon de celui de
+  `normal/rational.ts` (non touché).

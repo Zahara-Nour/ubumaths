@@ -79,6 +79,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `limits/`                                                                                                                           | limites (dont `analyzeSign` unilatéral de `limits/one-sided.ts`)                                                                                                                                                                    |
 | `solve/`                                                                                                                            | `solve`, `solveEquation`                                                                                                                                                                                                            |
 | `domain/`                                                                                                                           | `computeDomain`, `findZeros`, intervalles                                                                                                                                                                                           |
+| `factor/`                                                                                                                           | noyau exact de factorisation (ADR 0024) : `factorPolynomial`, `factorizationToNode` ; lecture exacte des polynômes, racines ±p/q et Δ partagées avec `domain/` — voir [§ factor/](#factor--le-moteur-commun-de-factorisation)       |
 | `sign/`                                                                                                                             | `analyzeSign` (tableaux de signes)                                                                                                                                                                                                  |
 | `variations/`                                                                                                                       | `computeVariations`                                                                                                                                                                                                                 |
 | `taylor/`                                                                                                                           | développements de Taylor                                                                                                                                                                                                            |
@@ -177,6 +178,83 @@ livrée (#396, #397). Dans le code, `auto` passe toujours par `runNormalizePass`
 `auto` et `reduire` rendent `x²+2x+1` pour `(x+1)²`, là où `simplify` garde `(x+1)²`.
 Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
 Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
+
+## factor/ — le moteur commun de factorisation
+
+L'[ADR 0024](../../adr/0024-moteur-commun-de-factorisation.md) (2026-10-11) remplace la dizaine de
+lieux qui factorisent chacun à sa façon par un module en deux couches : un **noyau exact sur ℚ**,
+sans étapes, et des **stratégies qui racontent** (facteur commun, identités, racines du trinôme,
+racine évidente) branchées sur l'intention `factoriser`. Livraison par lots : noyau → stratégies →
+migration des appelants internes (`limits`, `integration`, `domain`, `normalize`) et suppression
+du code mort → écriture des primitives (V18).
+
+**État au 2026-10-11 : lot 1 (le noyau) écrit, aucun appelant branché.** L'intention
+`factoriser`, l'atelier, `limits` et `integration` factorisent encore comme avant.
+
+### Carte du code
+
+| Fichier              | Rôle                                                                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.ts`           | point d'entrée du module                                                                                                                                 |
+| `factor.ts`          | `factorPolynomial` et ses types (`Factorization`, `IntegerFactor`, `SurdFactor`), les bornes                                                             |
+| `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                   |
+| `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts`          |
+| `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                         |
+| `quadratic.ts`       | `quadraticRootParts` : Δ, racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                 |
+| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` |
+
+`domain/exact-roots.ts` et `normal/rules/trig-multiple-arcs.ts` importent désormais ces pièces de
+`factor/` : aucune copie n'a été ajoutée. Comportement inchangé (877 tests de `domain/` et de
+`trig-normal-form` verts avant et après ; ancien / nouveau `exactRealRoots` comparés sur 4 000
+polynômes : 0 différence).
+
+### Le noyau
+
+`factorPolynomial(node, variable, { field?: 'Q' | 'R' })` lit `node` comme un polynôme en
+`variable` à coefficients rationnels exacts (la forme d'entrée n'importe pas :
+`(2x+1)^2-(x-3)^2` est lu `3x² + 10x − 8`) et rend `P = constant × Π factors^multiplicité × rest` :
+
+- `constant` : le contenu, avec son signe (`Rational`) ;
+- `factors` : irréductibles dans le corps demandé, à coefficients **entiers primitifs**,
+  dominant > 0 (`IntegerFactor`, coefficients par degré croissant), ou, dans ℝ, `x − (c ± e√m)`
+  (`SurdFactor`) ;
+- `rest` : la partie de degré ≥ 3 **sans racine rationnelle**, non décomposée, ou `null` ;
+- `complete` : `false` quand une borne a coupé le travail (le produit reste exact).
+
+Corps : `Q` (défaut), racines rationnelles seulement ; `R`, un facteur de degré 2 à Δ > 0 non
+carré se scinde (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`, le dominant `a` en constante) ; Δ < 0 reste
+irréductible dans les deux.
+
+`factorizationToNode` écrit le produit par la fabrique, coefficients entiers dès que possible
+(`2x^2+x-3` → `(x-1)(2x+3)`, jamais `2(x+3/2)(x-1)`), sans littéral négatif, les sommes entre
+parenthèses de regroupement, la constante −1 en signe (`-(x-3)(x+3)`). Ordre des facteurs,
+déterministe et sans valeur de produit : premier degré par |racine| croissante, la racine
+positive d'abord (donc `x` en tête) ; puis les facteurs irrationnels ; puis le degré 2 ; le reste
+en dernier.
+
+**Hors champ → `null`, sans lever** : pas un polynôme en la variable (`xe^x-e^x`, `\sin x`,
+`\frac{1}{x}`), coefficient non rationnel ou symbolique (`\sqrt2 x`, `ax+ay` en x), degré au-delà
+de la borne. Ces cas relèvent des stratégies (lot 2).
+
+**Bornes** (constantes exportées) :
+
+| Borne                          | Valeur | Au-delà                                                                                              |
+| ------------------------------ | ------ | ---------------------------------------------------------------------------------------------------- |
+| `MAX_FACTOR_DEGREE`            | 8      | `null` (borne du lecteur `toRationalFunction`, `domain` aussi)                                       |
+| `MAX_DIVISOR_SEARCH`           | 10⁶    | \|a₀\| ou \|aₙ\| plus grand : pas de recherche ±p/q, `complete = false` si le reste est de degré ≥ 3 |
+| `MAX_RATIONAL_ROOT_CANDIDATES` | 1 000  | candidats rangés par hauteur, les suivants pas essayés, `complete = false`                           |
+| `MAX_RADICAND`                 | 10¹⁰   | ℝ seulement : le facteur de degré 2 n'est pas scindé, `complete = false`                             |
+
+Un reste de degré 2 est toujours tranché exactement par Δ (racine carrée entière de Newton),
+même au-delà de ces bornes : `10^{12}x^2-1` → `(10^6x-1)(10^6x+1)`.
+
+**Limites assumées du lot 1** : pas de recherche de facteur de degré 2 dans un reste de degré ≥ 3
+(`x^8-1` → `(x-1)(x+1)(x^6+x^4+x^2+1)`, `x^4+4` reste) ; pas de décomposition sans carré
+(`(x^2+1)^2` développé reste entier) ; dans ℝ, seul le degré 2 se scinde (ni `x^3-2`, ni le
+bicarré `x^4-5x^2+6`, que `domain` sait pourtant résoudre).
+
+Tests : `factor/__tests__/factor-core.test.ts` (panel de l'ADR, ℝ, hors champ, bornes ; chaque
+rendu comparé à l'entrée par `areEquivalent`).
 
 ## Les nœuds
 
@@ -372,6 +450,7 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
 | Réduire pour comparer (`equivalenceForm`), pas pour écrire | [ADR 0006](../../adr/0006-reduire-pour-comparer-pas-pour-ecrire.md)              |
 | Un moteur, quatre intentions                               | [ADR 0007](../../adr/0007-un-moteur-quatre-intentions.md)                        |
 | Les hypothèses de l'énoncé restreignent la comparaison     | [ADR 0012](../../adr/0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) |
+| Un moteur commun de factorisation (amende 0007)            | [ADR 0024](../../adr/0024-moteur-commun-de-factorisation.md)                     |
 
 Décisions de module, toujours en vigueur (ex-`decisions.md` de juin, revérifiées) :
 
