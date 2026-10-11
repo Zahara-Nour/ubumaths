@@ -793,9 +793,11 @@ Expression: x e^x
   \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x - \\int \\exponentialE^x\\,dx \\\\ & = x \\exponentialE^x - \\exponentialE^x \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
     \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exponentialE^x \\end{aligned}
+- [simplify-result] On simplifie
+  x \\exponentialE^x - \\exponentialE^x = \\left( x - 1 \\right) \\exponentialE^x
 - [add-constant] On ajoute la constante d'intégration C
-  \\textcolor{blue}{x \\exponentialE^x - \\exponentialE^x + C}
-Antiderivative: x \\exponentialE^x - \\exponentialE^x
+  \\textcolor{blue}{\\left( x - 1 \\right) \\exponentialE^x + C}
+Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
 
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
@@ -813,10 +815,13 @@ Antiderivative: x \\exponentialE^x - \\exponentialE^x
   - [apply-known-primitive] Primitive usuelle
     · On reconnaît une primitive de référence (table des primitives usuelles).
     \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exponentialE^x \\end{aligned}
+- [simplify-result] On simplifie
+  · On développe, puis on met \\exponentialE^x en facteur.
+  x \\exponentialE^x - \\exponentialE^x = \\left( x - 1 \\right) \\exponentialE^x
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
-  \\textcolor{blue}{x \\exponentialE^x - \\exponentialE^x + C}
-Antiderivative: x \\exponentialE^x - \\exponentialE^x
+  \\textcolor{blue}{\\left( x - 1 \\right) \\exponentialE^x + C}
+Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
 
 ========== SUPERIEUR (summarized) ==========
 - [identify-parts] \\int u\\,dv
@@ -827,7 +832,9 @@ Antiderivative: x \\exponentialE^x - \\exponentialE^x
   \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x - \\int \\exponentialE^x\\,dx \\\\ & = x \\exponentialE^x - \\exponentialE^x \\end{aligned}
   - [apply-known-primitive] Primitive
     \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exponentialE^x \\end{aligned}
-Antiderivative: x \\exponentialE^x - \\exponentialE^x
+- [simplify-result] Simplification
+  x \\exponentialE^x - \\exponentialE^x = \\left( x - 1 \\right) \\exponentialE^x
+Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
 
 ========== SUPERIEUR (detailed) ==========
 - [identify-parts] \\int u\\,dv
@@ -842,7 +849,10 @@ Antiderivative: x \\exponentialE^x - \\exponentialE^x
   - [apply-known-primitive] Primitive
     · On reconnaît une primitive de référence (table des primitives usuelles).
     \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exponentialE^x \\end{aligned}
-Antiderivative: x \\exponentialE^x - \\exponentialE^x
+- [simplify-result] Simplification
+  · On développe, puis on met \\exponentialE^x en facteur.
+  x \\exponentialE^x - \\exponentialE^x = \\left( x - 1 \\right) \\exponentialE^x
+Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
 "
 `;
 

@@ -35,7 +35,9 @@
  *    (`superscript(euler(), u)`), le facteur 1/u′ venant de la forme composée.
  *
  * 4. La primitive brute (la méthode) est suivie d'une étape « On simplifie »
- *    (`tidyTerms`) sauf quand il n'y a rien à simplifier.
+ *    (`tidyTerms`) sauf quand il n'y a rien à simplifier. Quand tous les termes
+ *    portent la même exponentielle e^{u}, cette étape développe puis met e^{u}
+ *    en facteur, par les stratégies de `factoriser` (lot 4 de l'ADR 0024).
  *
  * @module mathAST/pedagogical-integration/pipeline
  */
@@ -79,6 +81,11 @@ import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
 import { linearFactorNode } from '../factor';
 import { tidyTerms } from '../tidy/terms';
+import { flattenProductShallow } from '../flatten';
+import { isEulerConstant } from '../guards';
+import { nodesEqual } from '../normal/hash';
+import { areEquivalent } from '../equivalence';
+import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
 import {
 	buildStep,
 	checkAbort,
@@ -346,6 +353,20 @@ function pushSimplifyStep(
 ): MathNode {
 	const single = singleCoefficientTerm(raw);
 	if (single?.canonical) return raw;
+	const factoring = single ? null : factorCommonExponential(raw, ctx);
+	if (factoring) {
+		steps.push(
+			buildStep(ctx, {
+				rule: 'simplify-result',
+				before: raw,
+				after: factoring.result,
+				variable: ctx.variable,
+				// le rendu montre la ligne développée ; l'explication nomme e^{u}
+				bindings: { developed: factoring.developed, exponential: factoring.exponential }
+			})
+		);
+		return factoring.result;
+	}
 	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
 	// en gardant la forme « k · fonction » ; sinon, `tidy`
 	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidyTerms(raw);
@@ -359,6 +380,81 @@ function pushSimplifyStep(
 		})
 	);
 	return tidied;
+}
+
+interface ExponentialFactoring {
+	readonly developed: MathNode;
+	readonly exponential: MathNode;
+	readonly result: MathNode;
+}
+
+/**
+ * Lot 4 de l'ADR 0024 (décision de David du 2026-10-11, V17-V18) : quand tous
+ * les termes de la primitive développée portent la même exponentielle e^{u},
+ * on la met en facteur — `x^2e^x-2(xe^x-e^x)` → `(x^2-2x+2)e^x`. Pas de moteur
+ * propre : `developper` puis `factoriser` de pedagogical-simplify. Rend `null`
+ * (et la primitive passe par `tidy`) sans exponentielle commune, ou si
+ * `factoriser` ne la sort pas.
+ */
+function factorCommonExponential(raw: MathNode, ctx: DispatchContext): ExponentialFactoring | null {
+	const schoolLevel = ctx.level;
+	try {
+		const developed = generatePedagogicalSimplifySteps(raw, {
+			intent: 'developper',
+			schoolLevel
+		}).result;
+		const exponential = commonExponential(developed);
+		if (!exponential) return null;
+		const result = generatePedagogicalSimplifySteps(developed, {
+			intent: 'factoriser',
+			schoolLevel
+		}).result;
+		return hasFactor(result, exponential) ? { developed, exponential, result } : null;
+	} catch {
+		// Hors du champ de pedagogical-simplify : la mise au propre de `tidy`
+		return null;
+	}
+}
+
+/** Les facteurs e^{u} d'un terme (`\dfrac{1}{2} x e^{2x}`, `\dfrac{x e^x}{2}`). */
+function exponentialFactors(term: MathNode): MathNode[] {
+	const product = term.type === 'division' ? term.numerator : term;
+	return flattenProductShallow(product)
+		.map(({ factor }) => factor)
+		.filter((factor) => factor.type === 'superscript' && isEulerConstant(factor.base));
+}
+
+/** L'exponentielle que portent TOUS les termes d'une somme (au moins deux). */
+function commonExponential(sum: MathNode): MathNode | null {
+	const terms = flattenSum(sum).map(({ term }) => term);
+	if (terms.length < 2) return null;
+	const [first, ...others] = terms;
+	return (
+		exponentialFactors(first).find((candidate) =>
+			others.every((term) => exponentialFactors(term).some((f) => sameExponential(f, candidate)))
+		) ?? null
+	);
+}
+
+/** `factor` est un facteur du produit `node` (signe en tête compris). */
+function hasFactor(node: MathNode, factor: MathNode): boolean {
+	const { inner } = unwrapSign(node);
+	return flattenProductShallow(inner).some((f) => sameExponential(f.factor, factor));
+}
+
+/**
+ * Même exponentielle, quelle que soit l'écriture de l'exposant : `-2x` est
+ * `opposite(2)·x` ou `opposite(2·x)` selon qui l'a construit (README § Invariants, 4).
+ */
+function sameExponential(a: MathNode, b: MathNode): boolean {
+	if (nodesEqual(a, b)) return true;
+	return (
+		a.type === 'superscript' &&
+		b.type === 'superscript' &&
+		isEulerConstant(a.base) &&
+		isEulerConstant(b.base) &&
+		areEquivalent(a.superscript, b.superscript)
+	);
 }
 
 /**
