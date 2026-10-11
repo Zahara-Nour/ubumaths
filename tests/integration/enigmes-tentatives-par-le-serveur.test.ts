@@ -13,7 +13,9 @@
  * Ce que le fichier prouve :
  *   1. l'élève ne peut plus insérer lui-même une tentative ;
  *   2. un compte connecté ne lit plus `riddle_progress` ;
- *   3. la soumission par le client service (chemin de la route) fonctionne toujours.
+ *   3. la soumission par le client service (chemin de la route) fonctionne toujours ;
+ *   4. `submit_riddle_attempt` refuse tout autre appelant que le client service ou l'élève
+ *      lui-même — y compris un appel sans auth.uid(), que l'ancienne garde laissait passer.
  *
  * @vitest-environment node
  */
@@ -60,12 +62,14 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 describe('énigmes : tentatives écrites par le serveur seulement', () => {
 	let riddleId: string;
 	let eleve: { id: string; email: string };
+	let autre: { id: string; email: string };
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
 		const pg = await getPostgresClient();
 		const auteur = await TestData.profile().withRole('teacher').create();
 		eleve = await TestData.profile().withRole('student').create();
+		autre = await TestData.profile().withRole('student').create();
 		const { rows } = await pg.query<{ id: string }>(
 			`insert into riddles (title, difficulty, statement, correction, created_by, status)
 			 values ('zz-énigme triche', 1, 'zz', 'zz', $1, 'published') returning id`,
@@ -115,5 +119,33 @@ describe('énigmes : tentatives écrites par le serveur seulement', () => {
 		});
 		expect(error).toBeNull();
 		expect(data?.[0]?.attempt_id).toEqual(expect.any(String));
+	});
+
+	it('un élève ne soumet pas pour un autre', async () => {
+		const client = await clientFor(eleve.email);
+		const { error } = await client.rpc('submit_riddle_attempt', {
+			p_riddle_id: riddleId,
+			p_student_id: autre.id,
+			p_submitted_answer: { value: 'zz' },
+			p_is_correct: true
+		});
+		expect(error).not.toBeNull();
+	});
+
+	it('un appel sans auth.uid() ni rôle service est refusé', async () => {
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		try {
+			await pg.query(`set local role authenticated`);
+			await pg.query(`select set_config('request.jwt.claims', '{"role":"authenticated"}', true)`);
+			await expect(
+				pg.query(`select * from submit_riddle_attempt($1, $2, '{}'::jsonb, true)`, [
+					riddleId,
+					autre.id
+				])
+			).rejects.toThrow(/Unauthorized/);
+		} finally {
+			await pg.query('rollback');
+		}
 	});
 });
