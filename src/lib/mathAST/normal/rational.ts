@@ -513,9 +513,24 @@ export function isInteger(r: Rational): boolean {
 // Conversion
 // =============================================================================
 
+/** Les bits du quotient entier calculé quand les termes ne tiennent pas dans un flottant (53 suffisent). */
+const QUOTIENT_BITS = 64;
+
+/** Le nombre de bits d'un entier positif. */
+function bitLength(x: bigint): number {
+	return x === 0n ? 0 : x.toString(2).length;
+}
+
 /**
  * Converts a rational to an approximate floating-point number.
- * May lose precision for very large numerators/denominators.
+ *
+ * ⚠️ Des termes au-delà de 10³⁰⁸ ne se convertissent pas un à un : (1001/1000)¹⁰⁰⁰
+ * porte 3001 chiffres en haut et en bas, et `Number(n) / Number(d)` rendait
+ * Infinity / Infinity = NaN pour une valeur de 2,7169 (2026-10-11 : la suite qui
+ * tend vers e, les intérêts composés, π²⁰ en mode décimal). Dans ce cas, le
+ * quotient est calculé en entiers sur 64 bits, puis remis à l'échelle par des
+ * puissances de 2 (exactes). Un vrai débordement reste un débordement :
+ * Infinity au-delà du plus grand flottant, 0 en deçà du plus petit.
  *
  * @param r - A rational
  * @returns Approximate floating-point value
@@ -524,7 +539,24 @@ export function isInteger(r: Rational): boolean {
  * rationalToNumber({ n: 1n, d: 3n }) // 0.3333333333333333
  */
 export function rationalToNumber(r: Rational): number {
-	return Number(r.n) / Number(r.d);
+	const quotient = Number(r.n) / Number(r.d);
+	// Cas ordinaire : les deux termes tiennent dans un flottant (division par zéro : inchangée)
+	if ((Number.isFinite(quotient) && (quotient !== 0 || r.n === 0n)) || r.d === 0n) {
+		return quotient;
+	}
+
+	const negative = r.n < 0n !== r.d < 0n;
+	const n = absBigInt(r.n);
+	const d = absBigInt(r.d);
+	// La valeur vaut environ 2^magnitude ; q = n·2^shift / d porte environ QUOTIENT_BITS bits
+	const magnitude = bitLength(n) - bitLength(d);
+	const shift = QUOTIENT_BITS - magnitude;
+	const q = shift >= 0 ? (n << BigInt(shift)) / d : n / (d << BigInt(-shift));
+	// valeur = q · 2^-shift, en deux facteurs : 2^-shift seul déborderait pour une
+	// valeur proche des limites du flottant
+	const half = Math.trunc(-shift / 2);
+	const value = Number(q) * 2 ** half * 2 ** (-shift - half);
+	return negative ? -value : value;
 }
 
 /**

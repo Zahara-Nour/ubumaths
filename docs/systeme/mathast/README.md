@@ -407,6 +407,16 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
 9. **Ne pas ré-exporter `rewriting-engine.ts` ni `technical-renderer.ts` depuis
    `common/index.ts`** : un ordre de chargement casse des dizaines de tests de continuité.
    Les importer par leur chemin (commentaire en tête de `common/index.ts`).
+10. **Le mode décimal calcule en fractions exactes, pas en flottants.** `evaluateToRational`
+    (`eval/evaluate.ts`, derrière `evaluate` en mode décimal, `evaluateNodeToApproximatedNumber` et
+    `evaluateNodeToRational`) rend un `Rational` en BigInt : `0.1 + 0.2` vaut exactement 3/10. π, e,
+    les fonctions transcendantes et les puissances non entières y entrent **par leur flottant**
+    (`floatToRational`, environ 16 chiffres significatifs : π = 3141592653589793/10¹⁵) ; le
+    résultat n'est exact que si aucun d'eux n'est entré. Les termes peuvent être géants pour une
+    valeur ordinaire ((1001/1000)¹⁰⁰⁰ : 3001 chiffres en haut et en bas, pour 2,7169) : **jamais
+    `Number(n) / Number(d)`** (NaN dès que les termes dépassent 10³⁰⁸), toujours `rationalToNumber`
+    (`normal/rational.ts`), qui calcule alors le quotient en entiers (mesuré le 2026-10-11 : la
+    suite qui tend vers e, les intérêts composés et π²⁰ rendaient NaN ou Infinity).
 
 ## Le moteur de réécriture et les étapes
 

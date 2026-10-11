@@ -557,6 +557,12 @@ function evaluateFunctionToRational(
  * Transcendental functions (sin, cos, exp, etc.) use Math.* and then
  * convert the result back to Rational via floatToRational.
  *
+ * Contrat : le résultat est exact seulement si aucun flottant n'y est entré
+ * (π, e, fonction transcendante, puissance non entière : environ 16 chiffres
+ * significatifs). Ses termes peuvent dépasser 10³⁰⁸ pour une valeur ordinaire
+ * ((1001/1000)¹⁰⁰⁰ : 3001 chiffres, π²⁰ : 310) — le convertir par
+ * `rationalToNumber`, jamais par `Number(n) / Number(d)`.
+ *
  * @param node - The MathNode to evaluate
  * @param depth - Current recursion depth (for stack overflow protection)
  * @returns The computed value as a Rational
