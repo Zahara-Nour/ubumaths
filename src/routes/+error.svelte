@@ -75,7 +75,9 @@
 				Erreur {status}
 			</p>
 			<h1 class="text-3xl font-bold text-balance sm:text-4xl">{copy.title}</h1>
-			<p class="text-balance text-muted-foreground">{copy.explanation}</p>
+			{#if copy.explanation}
+				<p class="text-balance text-muted-foreground">{copy.explanation}</p>
+			{/if}
 			{#if copy.detail}
 				<p class="rounded-md bg-muted px-3 py-1">{copy.detail}</p>
 			{/if}

@@ -5,6 +5,7 @@ describe('describeError', () => {
 	it('404 : page introuvable, sans action particulière', () => {
 		expect(describeError(404, 'Not Found')).toMatchObject({
 			title: 'Page introuvable',
+			explanation: null,
 			detail: null,
 			offerLogin: false,
 			offerRetry: false

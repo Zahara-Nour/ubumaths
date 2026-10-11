@@ -16,7 +16,8 @@
 
 export interface ErrorCopy {
 	title: string;
-	explanation: string;
+	/** Phrase sous le titre, ou `null` quand le titre suffit (404). */
+	explanation: string | null;
 	/** Message précis de l'erreur, ou `null` s'il ne dit rien de plus que le titre. */
 	detail: string | null;
 	/**
@@ -43,8 +44,7 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	},
 	404: {
 		title: 'Page introuvable',
-		explanation:
-			'L’adresse ne mène nulle part : elle a peut-être été mal tapée, ou la page a déménagé.'
+		explanation: null
 	},
 	410: {
 		title: 'Page disparue',

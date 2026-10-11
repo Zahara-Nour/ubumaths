@@ -29,7 +29,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile. Sur grand écran (`lg`),
    deux colonnes — spirale à gauche, texte à droite — pour tout voir sans défiler.
 2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
-   (`describeError`, `src/lib/error-page/error-copy.ts`).
+   (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 404 : le
+   titre, la phrase sur π et les suggestions suffisent.
 3. Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`), **sauf** s'il répète le
    titre ou n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…,
    liste `GENERIC_MESSAGES`, comparée sans casse ni accents).
