@@ -97,7 +97,8 @@ import {
 	add,
 	multiply,
 	opposite,
-	parentheses
+	parentheses,
+	subtract
 } from '../factory';
 import { numericNode } from '../common/numeric';
 import {
@@ -562,6 +563,48 @@ function tryCommonFactorDecomposition(
 }
 
 /**
+ * a² − b², et k·a² − k·b² (même coefficient numérique k). Construits à
+ * l'appel, pas au chargement du module : `solve` est dans un cycle d'imports
+ * où `P` peut ne pas être encore défini.
+ */
+function differenceOfSquaresPatterns() {
+	const square = (name: string) => P.pow(P._(name), P.num(2));
+	return {
+		bare: P.sub(square('a'), square('b')),
+		scaled: P.sub(P.mul(P._('k', P.isType('number')), square('a')), P.mul(P._('k'), square('b')))
+	};
+}
+
+/**
+ * Différence de deux carrés, puis produit nul : `sin²x − cos²x = 0` devient
+ * `(sin x + cos x)(sin x − cos x) = 0`, et chaque facteur est résolu par
+ * `solve` (V20, chantier K21). Mesuré avant : « Type d'equation
+ * transcendante non supporte ». Repli, comme la mise en facteur commun : une
+ * équation déjà résolue garde sa résolution (`x² − 4 = 0` ne passe pas ici).
+ */
+function tryDifferenceOfSquaresDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (commonFactorDepth >= MAX_COMMON_FACTOR_DEPTH) return null;
+	const patterns = differenceOfSquaresPatterns();
+	const scaled = tryMatch(patterns.scaled, expr);
+	const bindings = scaled ?? tryMatch(patterns.bare, expr);
+	if (bindings === undefined) return null;
+	const a = getBindingNode(bindings, 'a');
+	const b = getBindingNode(bindings, 'b');
+	if (!a || !b) return null;
+	const factors = multiply(parentheses(add(a, b)), parentheses(subtract(a, b)), 'implicit');
+	const k = scaled === undefined ? null : getBindingNode(scaled, 'k');
+	const product = k ? multiply(k, factors, 'implicit') : factors;
+	return solveFactoredProduct(expr, product, variable, opts, 'difference-of-squares');
+}
+
+/**
  * La mise en facteur commun, ou `null` si les règles ne trouvent pas de point
  * fixe (`RuleIterationLimitError`) : la tentative est abandonnée et le solveur
  * passe aux autres stratégies, au lieu de faire échouer toute la résolution.
@@ -586,7 +629,8 @@ function solveFactoredProduct(
 	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
 		domain?: Domain;
-	}
+	},
+	rule: 'common-factor' | 'difference-of-squares' = 'common-factor'
 ): SolveResult | null {
 	let productResult: SolveResult | null;
 	commonFactorDepth++;
@@ -598,13 +642,7 @@ function solveFactoredProduct(
 	if (productResult === null) return null;
 
 	const recorder = createStepRecorder();
-	recorder.recordStep(
-		'common-factor',
-		getRuleDescription('common-factor'),
-		expr,
-		product,
-		'summarized'
-	);
+	recorder.recordStep(rule, getRuleDescription(rule), expr, product, 'summarized');
 
 	return {
 		...productResult,
@@ -2005,6 +2043,10 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);
 		if (factored) result = factored;
+	}
+	if (isSolverFailure(result)) {
+		const squares = tryDifferenceOfSquaresDecomposition(expr, variable, opts);
+		if (squares) result = squares;
 	}
 	// Une équation qui ne devient affine (ou d'un degré moindre) qu'une fois
 	// développée et réduite : `x² + 5 = (x + 1)²`, `x² − x² + 2x = 4`. Le

@@ -81,7 +81,7 @@ import {
 } from '../normal/rational';
 import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
-import { linearFactorNode } from '../factor';
+import { factorPolynomial, factorizationToNode, linearFactorNode } from '../factor';
 import { tidyTerms } from '../tidy/terms';
 import { flattenProductShallow } from '../flatten';
 import { isEulerConstant } from '../guards';
@@ -1386,6 +1386,14 @@ function integratePartialFractions(
 	const result2 = simplifiedMultiply(BNd, ln2);
 	const antiderivative = simplifiedAdd(result1, result2);
 
+	// Q factorisé par le noyau, coefficient dominant compris : `4x² − 1 =
+	// (2x − 1)(2x + 1)`, jamais `(x − 1/2)(x + 1/2)` qui serait faux (V22)
+	const factorization = factorPolynomial(match.denominator, ctx.variable);
+	const factoredDenominator =
+		factorization === null
+			? multiply(parentheses(xMinusR1), parentheses(xMinusR2), 'implicit')
+			: factorizationToNode(factorization);
+
 	const decomposeStep = buildStep(ctx, {
 		rule: 'decompose-rational',
 		before: integrand,
@@ -1394,6 +1402,9 @@ function integratePartialFractions(
 		bindings: {
 			numerator: match.numerator,
 			denominator: match.denominator,
+			factoredDenominator,
+			factor1: xMinusR1,
+			factor2: xMinusR2,
 			r1: r1Nd,
 			r2: r2Nd,
 			A: ANd,

@@ -37,6 +37,7 @@
 
 import type { LimitsSchoolLevel } from './types';
 import type { PedagogicalLimitRule, PedagogicalLimitStep } from './types';
+import { formatValueShort } from './helpers';
 
 // =============================================================================
 // Function signatures
@@ -57,20 +58,11 @@ type RuleFnMap<F> = Partial<Record<PedagogicalLimitRule, F>>;
  * `formatExpressionLatex`.)
  */
 function approachLabel(step: PedagogicalLimitStep): string {
-	const a = step.approach;
-	if (a.type === 'infinity') return a.sign === 'positive' ? '+∞' : '−∞';
-	if (a.type === 'number') return a.value;
-	if (a.type === 'variable') return a.name;
-	if (a.type === 'opposite' && a.operand.type === 'number') return `−${a.operand.value}`;
-	return '?';
+	return formatValueShort(step.approach);
 }
 
 function valueLabel(step: PedagogicalLimitStep): string {
-	const v = step.after;
-	if (v.type === 'number') return v.value;
-	if (v.type === 'opposite' && v.operand.type === 'number') return `−${v.operand.value}`;
-	if (v.type === 'infinity') return v.sign === 'positive' ? '+∞' : '−∞';
-	return '…';
+	return formatValueShort(step.after);
 }
 
 // =============================================================================
@@ -184,9 +176,9 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		`L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.`,
 	'apply-known-limit': () => `On reconnaît une limite de référence du cours.`,
 	'factor-numerator': () =>
-		`Si le numérateur s'annule au point étudié, alors (${'(x − a)'}) en est un facteur. On factorise pour préparer la simplification.`,
+		`Si le numérateur s'annule au point étudié, alors (x − a) en est un facteur. On factorise pour préparer la simplification.`,
 	'factor-denominator': () =>
-		`Si le dénominateur s'annule au point étudié, alors (${'(x − a)'}) en est un facteur. On factorise pour préparer la simplification.`,
+		`Si le dénominateur s'annule au point étudié, alors (x − a) en est un facteur. On factorise pour préparer la simplification.`,
 	'simplify-common-factor': () =>
 		`Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.`,
 	'identify-dominant-term': () =>

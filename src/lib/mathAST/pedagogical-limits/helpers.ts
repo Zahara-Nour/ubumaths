@@ -36,9 +36,10 @@ import {
 	variable as makeVariable
 } from '../factory';
 import { extractExactRational, numericNode } from '../common/numeric';
+import { readableText } from '../variations/display';
 import type { Rational } from '../normal/types';
-import { absRational, isNegative, isZero } from '../normal/rational';
-import { divideOutRoot, rationalPolynomialNode, toPolynomial } from '../factor';
+import { absRational, isNegative } from '../normal/rational';
+import { divideOutRoot, linearFactorText, rationalPolynomialNode, toPolynomial } from '../factor';
 
 // =============================================================================
 // Approach classification
@@ -385,13 +386,26 @@ export function formatApproachShort(approach: MathNode): string {
 }
 
 /**
- * Le facteur `(x − a)` (ou `(x + |a|)` quand a < 0) pour les titres :
- * `(x − 2)`, `(x + 3)`, `(x − 1/2)`.
+ * Une valeur en texte pour les titres (prose, pas de LaTeX) : `3/2`, `−1/4`,
+ * `+∞`, sinon l'écriture lisible de `readableText`, racines et π en symboles
+ * (`3√2`, `√(x+1)`, `π/4`).
+ */
+export function formatValueShort(node: MathNode): string {
+	const short = formatApproachShort(node);
+	if (short !== '?') return short;
+	return readableText(node)
+		.replace(/sqrt\((\w+)\)/g, '√$1')
+		.replace(/sqrt\(/g, '√(')
+		.replace(/\bpi\b/g, 'π')
+		.replace(/^-/, '−');
+}
+
+/**
+ * Le facteur entier de la racine a pour les titres, comme un élève l'écrit :
+ * `(x − 2)`, `(x + 3)`, `(2x − 1)` en 1/2 (V23).
  */
 export function formatLinearFactor(varName: string, a: Rational): string {
-	if (isZero(a)) return varName;
-	const text = formatRational(absRational(a));
-	return isNegative(a) ? `(${varName} + ${text})` : `(${varName} − ${text})`;
+	return linearFactorText(varName, a);
 }
 
 function formatRational(r: Rational): string {

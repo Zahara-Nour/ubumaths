@@ -34,7 +34,7 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
-import { infinity } from '../factory';
+import { infinity, variable as makeVariable } from '../factory';
 import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import {
@@ -46,6 +46,7 @@ import {
 	findConjugate,
 	formatApproachShort,
 	formatLinearFactor,
+	formatValueShort,
 	isAtInfinity,
 	isDivision,
 	isNumber,
@@ -56,8 +57,16 @@ import {
 	polyToNode
 } from './helpers';
 import { extractExactRational } from '../common/numeric';
+import { tryEvaluateLimitExact, resultToNode } from '../limits/exact-evaluation';
+import { compile } from '../eval/compile';
+import { normalize, denormalize } from '../normal';
 import { rationalToNumber } from '../normal/rational';
-import { linearFactorNode } from '../factor';
+import {
+	divideOutCommonRoot,
+	polynomialNode,
+	rationalPolynomialNode,
+	toPolynomial
+} from '../factor';
 import { PedagogicalLimitNotImplemented, STRATEGIES_LIMITS } from './types';
 import type {
 	LimitBindings,
@@ -312,7 +321,7 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 	const value = evaluateAtPoint(expression, ctx.variable, aValue);
 	if (value === null || !Number.isFinite(value)) return null;
 
-	const valueNode = numericNode(value);
+	const valueNode = exactValueAt(expression, ctx, value) ?? numericNode(value);
 
 	const step = makeStep(ctx, {
 		rule: 'apply-direct-substitution',
@@ -332,6 +341,26 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 		status: 'exact',
 		indeterminateForm: 'none'
 	};
+}
+
+/**
+ * La valeur EXACTE de l'expression au point, par l'évaluation exacte de
+ * `limits/` (`\\dfrac{3}{2}`, `\\sqrt{2}`), ou `null` si elle échoue ou ne
+ * retombe pas sur la valeur flottante (V21 : « La limite vaut 1.5 »).
+ */
+function exactValueAt(expression: MathNode, ctx: PipelineContext, value: number): MathNode | null {
+	const result = tryEvaluateLimitExact(expression, ctx.variable, ctx.approach, 'both');
+	const raw = result === null ? null : resultToNode(result);
+	if (raw === null || raw.type === 'infinity') return null;
+	try {
+		// Forme réduite : `\\dfrac{2}{6}` → `\\dfrac{1}{3}`, `\\dfrac{-1}{4}` → `-\\dfrac{1}{4}`
+		const node = denormalize(normalize(raw));
+		const exact = compile(node)({});
+		const tolerance = 1e-9 * Math.max(1, Math.abs(value));
+		return Math.abs(exact - value) <= tolerance ? node : null;
+	} catch {
+		return null;
+	}
 }
 
 // =============================================================================
@@ -380,17 +409,19 @@ function tryFactorisation(
 	const a = extractExactRational(ctx.approach);
 	if (a === null) return null;
 
-	// Both must have `a` as a root (consistent with 0/0 indForm).
-	const quotients = divideByCommonRoot(
-		expression.numerator,
-		expression.denominator,
-		ctx.variable,
-		a
-	);
-	if (quotients === null) return null;
+	// Both must have `a` as a root (consistent with 0/0 indForm). Le facteur
+	// est le facteur ENTIER du noyau (`2x − 1` en 1/2, comme un élève) et la
+	// fraction restante est réduite (`(2x + 2)/2` → `x + 1`) : V23.
+	const num = toPolynomial(expression.numerator, ctx.variable);
+	const den = toPolynomial(expression.denominator, ctx.variable);
+	if (num === null || den === null) return null;
+	const division = divideOutCommonRoot(num, den, a);
+	if (division === null) return null;
 
-	const { numerator: numAfter, denominator: denAfter } = quotients;
-	const factor = linearFactorNode(ctx.variable, a);
+	const x = makeVariable(ctx.variable);
+	const factor = polynomialNode(division.factor, x);
+	const numAfter = rationalPolynomialNode(division.numerator, x);
+	const denAfter = rationalPolynomialNode(division.denominator, x);
 
 	// Sub-step: factor the numerator
 	const factorNumStep = makeStep(ctx, {
@@ -423,7 +454,10 @@ function tryFactorisation(
 	});
 
 	// Parent: simplify-common-factor
-	const simplified = overDenominator(numAfter, denAfter);
+	const simplified = overDenominator(
+		rationalPolynomialNode(division.reducedNumerator, x),
+		rationalPolynomialNode(division.reducedDenominator, x)
+	);
 	const parentStep = makeStep(ctx, {
 		rule: 'simplify-common-factor',
 		description: `Simplification : on divise numérateur et dénominateur par ${formatLinearFactor(ctx.variable, a)}`,
@@ -446,9 +480,14 @@ function tryFactorisation(
 	};
 }
 
-/** (x − a)·q, sans le facteur 1 */
+/** (x − a)·q, sans le facteur 1 ; un nombre s'écrit DEVANT : `3(2x − 1)`, jamais `(2x − 1)3` */
 function timesFactor(factor: MathNode, quotient: MathNode): MathNode {
-	return isOneNode(quotient) ? factor : multiply(factor, quotient, 'implicit');
+	if (isOneNode(quotient)) return factor;
+	const isConstant =
+		isNumber(quotient) || (quotient.type === 'opposite' && isNumber(quotient.operand));
+	return isConstant
+		? multiply(quotient, factor, 'implicit')
+		: multiply(factor, quotient, 'implicit');
 }
 
 /** n/d, sans le dénominateur 1 */
@@ -1189,10 +1228,7 @@ function makeConclusionStep(
 }
 
 function formatNodeShort(node: MathNode): string {
-	if (isNumber(node)) return node.value;
-	if (node.type === 'opposite' && isNumber(node.operand)) return `−${node.operand.value}`;
-	if (node.type === 'infinity') return formatApproachShort(node);
-	return '…';
+	return formatValueShort(node);
 }
 
 function inferStatusFromValue(value: MathNode | null): PedagogicalLimitStatus {

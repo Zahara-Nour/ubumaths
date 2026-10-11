@@ -36,13 +36,13 @@ const CASES: readonly Case[] = [
 		latex: '\\lim_{x\\to 1}\\frac{x^3-1}{x^2-1}',
 		value: '\\frac{3}{2}',
 		simplified: '\\dfrac{x^2 + x + 1}{x + 1}',
-		factor: '(x - 1)'
+		factor: '(x − 1)'
 	},
 	{
 		latex: '\\lim_{x\\to 2}\\frac{x^2-5x+6}{x^2-4}',
 		value: '-\\frac{1}{4}',
 		simplified: '\\dfrac{x - 3}{x + 2}',
-		factor: '(x - 2)'
+		factor: '(x − 2)'
 	},
 	{
 		latex: '\\lim_{x\\to -1}\\frac{2x^2+x-1}{x+1}',
@@ -55,21 +55,28 @@ const CASES: readonly Case[] = [
 		latex: '\\lim_{x\\to 1}\\frac{2x^3-6x+4}{x^2-2x+1}',
 		value: '6',
 		simplified: '2 x + 4',
-		factor: '(x - 1)^2'
+		factor: '(x − 1)²'
 	},
 	{
 		// Racine double au numérateur seulement : on n'en sort qu'une
 		latex: '\\lim_{x\\to 1}\\frac{x^3-3x+2}{3x^2-3}',
 		value: '0',
 		simplified: '\\dfrac{x^2 + x - 2}{3 x + 3}',
-		factor: '(x - 1)'
+		factor: '(x − 1)'
 	},
 	{
 		// Point d'approche rationnel non entier
 		latex: '\\lim_{x\\to \\frac{1}{2}}\\frac{4x^2-1}{2x-1}',
 		value: '2',
-		simplified: '\\dfrac{4 x + 2}{2}',
-		factor: '(x - \\dfrac{1}{2})'
+		simplified: '2 x + 1',
+		factor: '(2x − 1)'
+	},
+	{
+		// V23 : facteur entier (2x − 1), fraction restante réduite, texte sans LaTeX
+		latex: '\\lim_{x\\to \\frac{1}{2}}\\frac{2x^2+x-1}{2x-1}',
+		value: '\\frac{3}{2}',
+		simplified: 'x + 1',
+		factor: '(2x − 1)'
 	}
 ];
 

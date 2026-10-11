@@ -78,6 +78,7 @@ export type SolvingRule =
 	// Product decomposition (zero-product property)
 	| 'zero-product-property'
 	| 'common-factor'
+	| 'difference-of-squares'
 	| 'solve-factor'
 	// Trig recursive decomposition
 	| 'trig-recursive-decomposition'
@@ -175,6 +176,7 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'zero-product-property': 'Par la propriete du produit nul: si A × B = 0 alors A = 0 ou B = 0',
 	'solve-factor': 'On resout chaque facteur separement',
 	'common-factor': 'On factorise par le facteur commun à tous les termes',
+	'difference-of-squares': 'On factorise avec l’identité a² − b² = (a + b)(a − b)',
 
 	// Trig recursive decomposition
 	'trig-recursive-decomposition':
@@ -385,8 +387,9 @@ export function describeCubicDiscriminant(delta: MathNode, numericValue?: number
 /**
  * Create a description for factoring out a common root (x = 0).
  */
-export function describeFactorCommonRoot(variable: string): string {
-	return `On factorise par ${variable} (racine evidente: ${variable} = 0)`;
+export function describeFactorCommonRoot(variable: string, power: 1 | 2 = 1): string {
+	const factor = power === 1 ? variable : `${variable}^2`;
+	return `On factorise par ${factor} (racine evidente: ${variable} = 0)`;
 }
 
 // =============================================================================

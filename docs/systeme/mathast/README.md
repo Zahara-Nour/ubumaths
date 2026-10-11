@@ -199,17 +199,25 @@ sur l'intention `factoriser`, donc sur l'atelier (#1134) ; lot 3a, limites et in
 leurs doublons sont rattachés à K3. Journal :
 [moteur-factorisation-progress.md](../../archive/wip/mathAST/moteur-factorisation-progress.md).
 
+Suites (K21, 2026-10-12) : `solve` ne rend plus la racine 0 en double (`4x³ − 2x² = 0` →
+`{0 ; 1/2}`, « On factorise par x^2 », `solvers/polynomial.ts`), et résout en repli une
+**différence de deux carrés** de même coefficient (`sin²x − cos²x = 0`, `2sin²x = 2cos²x` →
+`(a + b)(a − b) = 0`, puis produit nul : π/4 + kπ/2), règle `difference-of-squares` de
+`solve.ts`, motifs `P.*` construits à l'appel (cycle d'imports). Tests :
+`solve/__tests__/{racine-nulle-sans-doublon,difference-de-carres}.test.ts`.
+
 ### Carte du code
 
-| Fichier              | Rôle                                                                                                                                                                                                                                                           |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `index.ts`           | point d'entrée du module                                                                                                                                                                                                                                       |
-| `factor.ts`          | `factorPolynomial` et ses types (`Factorization`, `IntegerFactor`, `SurdFactor`), les bornes                                                                                                                                                                   |
-| `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                                                                                                                         |
-| `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts` ; `toPolynomial` (dénominateur constant exigé), `divideOutRoot` (division par (x − r) avec multiplicité)       |
-| `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                                                                                                                               |
-| `quadratic.ts`       | `discriminant` (Δ exact, partagé avec les stratégies) ; `quadraticRootParts` : racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                  |
-| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels), `linearFactorNode` (`x - r`, `x + 3` si r = −3) |
+| Fichier              | Rôle                                                                                                                                                                                                                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.ts`           | point d'entrée du module                                                                                                                                                                                                                                          |
+| `factor.ts`          | `factorPolynomial` et ses types (`Factorization`, `IntegerFactor`, `SurdFactor`), les bornes                                                                                                                                                                      |
+| `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                                                                                                                            |
+| `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts` ; `toPolynomial` (dénominateur constant exigé), `divideOutRoot` (division par (x − r) avec multiplicité)          |
+| `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                                                                                                                                  |
+| `quadratic.ts`       | `discriminant` (Δ exact, partagé avec les stratégies) ; `quadraticRootParts` : racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                     |
+| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels), `linearFactorNode` (`x - r`, `x + 3` si r = −3)    |
+| `common-root.ts`     | `divideOutCommonRoot` : sortir de N et D le facteur **entier** `q·x − p` de la racine p/q (`2x − 1`, pas `x − 1/2`), fraction restante réduite de son contenu (`(2x + 2)/2` → `x + 1`) ; `linearFactorText` (`(2x − 1)`, `(x − 1)²`, texte sans LaTeX) — K21, V23 |
 
 `factor.ts` exporte aussi `compareFactors` (l'ordre des facteurs, réutilisé par les stratégies) et
 `primitivePart` (contenu et partie primitive entière).
@@ -519,15 +527,21 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
 Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
 
 - **`limits/algebraic.ts` `tryFactorization`** (stratégie 4, après L'Hôpital) : N et D lus par
-  `toPolynomial`, (x − a)^k sorti par `divideOutRoot`, k la plus petite des deux multiplicités ;
-  le point d'approche est un **rationnel exact** (`extractExactRational`), donc négatif compris
-  (`opposite`, invariant 1) ou fractionnaire. Tout polynôme de degré ≤ 8 qui a la racine, plus
-  seulement `x² − a²`.
-- **`pedagogical-limits`** (stratégies factorisation et rationalisation, `divideByCommonRoot`) :
-  une racine par passe, comme avant (mêmes étapes, mêmes titres) ; quotients exacts écrits en
-  soustractions (`x - 3`, plus `x + (-3)`), plus de `/1`, de `(x - 2)·1` ni de `1·(√x + 2)`. La
-  substitution directe, les limites à un côté et les gendarmes acceptent aussi un point négatif
-  ou fractionnaire.
+  `toPolynomial`, (q·x − p)^k sorti par `divideOutCommonRoot`, k la plus petite des deux
+  multiplicités ; le point d'approche est un **rationnel exact** (`extractExactRational`), donc
+  négatif compris (`opposite`, invariant 1) ou fractionnaire. Tout polynôme de degré ≤ 8 qui a la
+  racine, plus seulement `x² − a²`. Description en texte, sans LaTeX : « Factorisation par
+  (2x − 1) » (K21, V23).
+- **`pedagogical-limits`** : la stratégie factorisation sort une racine par passe par
+  `divideOutCommonRoot` (K21, V23) : facteur entier comme un élève (`(2x - 1)(x + 1)`, pas
+  `(x - 1/2)(2x + 2)`), constante écrite DEVANT la parenthèse (`3(2x - 1)`), fraction restante
+  réduite (`x + 1`, plus `\dfrac{2x+2}{2}`). La rationalisation garde `divideByCommonRoot`
+  (`helpers.ts`). Quotients exacts écrits en soustractions (`x - 3`, plus `x + (-3)`), plus de
+  `/1`, de `(x - 2)·1` ni de `1·(√x + 2)`. La substitution directe, les limites à un côté et les
+  gendarmes acceptent aussi un point négatif ou fractionnaire. La **substitution directe rend la
+  valeur exacte** de `limits/exact-evaluation.ts` (`tryEvaluateLimitExact`, réduite par
+  `normalize`) quand elle retombe sur la valeur flottante : `\dfrac{3}{2}`, `3\sqrt{2}`, plus
+  `1.5` (K21, V21) ; titres en texte (`formatValueShort` : « La limite vaut 3/2 », « 3√2 »).
 - **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
   `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
   `quadraticRootParts`. L'écriture du dénominateur factorisé reste unitaire,
@@ -536,11 +550,16 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
 - **`pedagogical-integration/_helpers.ts` `tryDetectPartialFractions`** : racines et
   coefficients A, B exacts (`Rational`) au lieu de flottants « rationnels » ; la décomposition
   s'écrit `\frac{3}{2(x - 1)} + \frac{1}{2(x + 1)}` (plus `\frac{1.5}{x - 1}`), le signe dehors.
+  L'explication de `decompose-rational` écrit le dénominateur factorisé par
+  `factorizationToNode` : `4x^2 - 1 = (2x - 1)(2x + 1)`, une égalité vraie (K21, V22 : elle
+  annonçait `(x − r₁)(x − r₂)` sans le coefficient dominant).
 
 Tests : `limits/__tests__/factorisation-noyau.test.ts`,
 `pedagogical-limits/__tests__/factorisation-noyau.test.ts`,
 `integration/__tests__/denominateur-trinome-noyau.test.ts` (F′ = f par `areEquivalent`),
-`pedagogical-integration/__tests__/elements-simples-exacts.test.ts`.
+`pedagogical-integration/__tests__/elements-simples-exacts.test.ts` ; K21 :
+`pedagogical-limits/__tests__/{valeur-exacte,point-fractionnaire}.test.ts`,
+`pedagogical-integration/__tests__/explications-exactes.test.ts`.
 
 ### Le ménage (lot 3b)
 

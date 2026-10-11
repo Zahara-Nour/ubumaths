@@ -51,6 +51,29 @@ function bind(bindings: IntegrationBindings, key: string): string {
 	return toLatex(node);
 }
 
+/**
+ * Une différentielle `f dx` : `dx` pour f = 1, `-dx` pour f = −1, une somme
+ * entre parenthèses (`(2x + 1) dx`) — jamais « 1 dx » (V24).
+ */
+function differential(bindings: IntegrationBindings, key: string): string {
+	const node = bindings[key];
+	if (!node) return '?';
+	if (node.type === 'number' && node.value === '1') return 'dx';
+	if (node.type === 'opposite' && node.operand.type === 'number' && node.operand.value === '1') {
+		return '-dx';
+	}
+	const isSum = node.type === 'addition' || node.type === 'subtraction';
+	return isSum ? `\\left( ${toLatex(node)} \\right) dx` : `${toLatex(node)} dx`;
+}
+
+/** `c·x` sans le facteur 1 : `x`, `-x`, `3·x` (jamais « 1·x ») */
+function constantTimesX(bindings: IntegrationBindings): string {
+	const dx = differential(bindings, 'c');
+	if (dx === 'dx') return 'x';
+	if (dx === '-dx') return '-x';
+	return `${bind(bindings, 'c')}·x`;
+}
+
 // =============================================================================
 // TITLES
 // =============================================================================
@@ -88,7 +111,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'apply-cyclic-ipp': () =>
 		"IPP cyclique : on retrouve l'intégrale de départ, on résout l'équation",
 	'decompose-rational': (b) =>
-		`Décomposition en éléments simples : on cherche A et B tels que la fraction se décompose en A/(x − ${bind(b, 'r1')}) + B/(x − ${bind(b, 'r2')})`,
+		`Décomposition en éléments simples : on cherche A et B tels que la fraction se décompose en A/(${bind(b, 'factor1')}) + B/(${bind(b, 'factor2')})`,
 	'apply-partial-fractions': () => 'Intégration de chaque terme : ∫A/(x − r) dx = A·ln|x − r|',
 	// ---- Final ----
 	'add-constant': () => "On ajoute la constante d'intégration C",
@@ -144,7 +167,7 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'apply-power-rule': (b) =>
 		`(x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = ${bind(b, 'n')} (et n ≠ -1).`,
 	'apply-constant-rule': (b) =>
-		`Une constante c admet la primitive c·x : ∫${bind(b, 'c')} dx = ${bind(b, 'c')}·x.`,
+		`Une constante c admet la primitive c·x : ∫${differential(b, 'c')} = ${constantTimesX(b)}.`,
 	'apply-known-primitive': () =>
 		'On reconnaît une primitive de référence (table des primitives usuelles).',
 	'apply-linearity-sum': () =>
@@ -170,13 +193,13 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'identify-parts': () =>
 		"L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.",
 	'choose-u-dv': (b) =>
-		`On pose u = ${bind(b, 'u')} et dv = ${bind(b, 'dv')}, d'où du = ${bind(b, 'du')} dx et v = ${bind(b, 'v')}.`,
+		`On pose u = ${bind(b, 'u')} et dv = ${bind(b, 'dv')}, d'où du = ${differential(b, 'du')} et v = ${bind(b, 'v')}.`,
 	'apply-parts-formula': () =>
 		"On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.",
 	'apply-cyclic-ipp': () =>
 		"Après deux IPP successives, l'intégrale de départ I réapparaît dans le second membre. On obtient une équation du type I = expression − k·I, qu'on résout pour I : I = expression / (1 − k).",
 	'decompose-rational': (b) =>
-		`On factorise le dénominateur : Q(x) = (x − ${bind(b, 'r1')})(x − ${bind(b, 'r2')}). Puis on décompose P(x)/Q(x) = A/(x − ${bind(b, 'r1')}) + B/(x − ${bind(b, 'r2')}). On trouve A = ${bind(b, 'A')} et B = ${bind(b, 'B')} (méthode des racines : substituer x = ${bind(b, 'r1')} et x = ${bind(b, 'r2')}).`,
+		`On factorise le dénominateur : ${bind(b, 'denominator')} = ${bind(b, 'factoredDenominator')}. Puis on décompose P(x)/Q(x) = A/(${bind(b, 'factor1')}) + B/(${bind(b, 'factor2')}). On trouve A = ${bind(b, 'A')} et B = ${bind(b, 'B')} (méthode des racines : substituer x = ${bind(b, 'r1')} et x = ${bind(b, 'r2')}).`,
 	'apply-partial-fractions': () =>
 		"Chaque terme A/(x − r) s'intègre en A·ln|x − r|. La somme des deux logarithmes donne la primitive cherchée.",
 	'simplify-result': (b) =>
