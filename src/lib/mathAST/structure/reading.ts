@@ -20,9 +20,10 @@
  * Les clés des mots sont les identifiants du dictionnaire (`termId` de
  * `lexicon/linker.ts` : le nom, suivi du sens pour un homonyme) : la page
  * les passe telles quelles à `LexiconTerm` (`ids`). Une clé absente du
- * dictionnaire donne un mot affiché sans lien : `racine cubique`, `racine n-ième`,
- * `logarithme décimal`, `différent` (définitions à proposer, lot 5). Garde :
- * `reading.test.ts`, toute nouvelle clé absente le casse.
+ * dictionnaire donne un mot affiché sans lien. `racine cubique`, `racine n-ième`,
+ * `logarithme décimal` et `différent`, absentes du jeu de référence figé, ont été
+ * ajoutées en base le 2026-10-11 (migration 20261016090300_dictionnaire_mots_lecture).
+ * Garde : `reading.test.ts`, toute nouvelle clé absente le casse.
  */
 import { func } from '../factory';
 import { isFunction } from '../guards';
