@@ -118,6 +118,61 @@ de 250 fichiers l'importent.
 - **Un terme d'interface** : l'ajouter à `lore` (en accord avec le Compendium et
   `docs/Chiphres/lexique-pataphysique.md` ; en cas de divergence, le Compendium prime).
 
+## Le lore en vitrine
+
+Pour une page de présentation, un texte d'accueil, une description SEO : ce qu'on peut reprendre du
+Compendium (`docs/Chiphres/lore-pataphysique.md`, § = ses sections), et ce qu'on ne reprend pas.
+Les fonctionnalités à présenter, et ce qu'il ne faut pas en promettre :
+[carte-des-fonctionnalites.md](carte-des-fonctionnalites.md). Relevé du 2026-10-11.
+
+**Utilisable** (canon 🟢, ou 🟡 décidé par David) :
+
+- **Le Royaume** (§ II) : « La scène se passe en Pologne, c'est-à-dire nulle part » (Jarry). Capitale
+  **Sandomir**, ville **en spirale**, le Trône Royal au centre « comme le cœur d'une gidouille »
+  (décision du 2026-10-06).
+- **Les six Provinces** (§ II, fiches détaillées), une par domaine du programme :
+
+  | Province    | Domaine                      | Capitale              | Gouverneur         | Devise                                                      |
+  | ----------- | ---------------------------- | --------------------- | ------------------ | ----------------------------------------------------------- |
+  | Nombrilie   | Nombres et calculs           | Empoche-les-Bains     | Mère Ubu           | « Patron, la soustraction ! »                               |
+  | Bedonstan   | Géométrie                    | Lobatchevsk           | Professeur Achras  | « La route est droite, mais la courbe est forte »           |
+  | Yoyolande   | Fonctions                    | Sinusborg             | Bougrelas          | « Plus ça monte, moins ça descend »                         |
+  | Pifométrie  | Probabilités et statistiques | Bonneteau-sur-Vistule | Cheval à Phynances | « Jamais trois sans deux »                                  |
+  | Glitchistan | Algorithmique                | Turingrad             | Bosse-de-Nage      | « Aux grands maux les grands Reset ! »                      |
+  | Patatovie   | Logique et ensembles         | Cracovenn             | Docteur Faustroll  | « L'infini n'en finit pas d'en finir, surtout vers la fin » |
+
+  Turingrad est aussi la ville du **Cabinet Noir** (nom tenu par CONTEXT.md, absent du Compendium).
+
+- **Les personnages et leurs voix** (§ III, § IX « La règle des cinq voix ») : Père Ubu (« Merdre ! »,
+  « Cornegidouille ! », « De par ma chandelle verte ! », « Tudieu ! »), Mère Ubu, Capitaine Bordure,
+  Bougrelas, Conscience, Monsieur Prudhomme, Tristan Bernard, le Czar Alexis (« Galopinski »), la
+  Rédaction du Shtam (Cotice, Giron, Pile, Merdranpo). Une voix par paragraphe, jamais mélangées.
+- **« Chaque page du site est un lieu du Royaume »** (§ IV) : l'idée d'une visite. Les noms de lieux
+  du tableau du § IV que l'interface **n'emploie pas** (Arène des Polonais, Cabaret des Mots
+  Tordus…) ne s'introduisent pas sur une vitrine seule : le visiteur ne les retrouverait nulle part.
+- **Formules** : sous-titre canon « les Chiphres de la Chandelle Verte » (§ V, repris par
+  `/a-propos`) ; slogan canon « l'Académie Pataphysique des Chiphres, sise au Royaume de Pologne »
+  (§ XI, inemployé au 2026-10-11) ; « Un décor savoureux ; une pédagogie rigoureuse. » (manifeste,
+  `/a-propos`). « Les maths de la chandelle verte » (titre de l'accueil) est un héritage d'Ubumaths,
+  absent du Compendium.
+
+**Interdit** :
+
+- **« Mathres »** sur une vitrine, une page légale, un certificat (`src/lib/config/lore.ts:77-80`),
+  même si le § IX le recommande ailleurs : dire « maths » ou « mathématiques ».
+- **Rien du Collège de ’Pataphysique** (calendrier de 13 mois, Satrapes, easter egg
+  « pataphysique », carte du Crocodile Vice-Curateur, Ordre de la Gidouille).
+- **§ IX « Ce qu'il NE faut JAMAIS écrire »** : « Bravo », XP, level, boss, score, streak,
+  leaderboard, émojis 🔥💯🚀, le « mauvais Disney » (« Le voyage de tes rêves commence ici »).
+- **Le Czar** n'est jamais rattaché à un pays réel (ni Russie, ni Moscou, ni « russe »).
+- **Le Shtam** ne parodie ni personne vivante ni institution réelle nommée.
+- **Les jurons hors canon** du code (« Hornphynance », « Hornstrompe », « palotron ») : écart D15.
+
+**En suspens dans le Compendium** (ne pas s'en servir avant décision) : les « Patanautes Yllustres »
+(présentés comme remplaçants des Patacesseurs, mais classés « non libre » plus loin), Mousched-Gogh
+et Quatrezoneilles (Palotins « à définir »), les huit Axiomes (un seul écrit), le trait du corps d'Ubu
+pour la Patatovie, les seuils de l'Ordre de la Grande Passoire, « Madame la Financière ».
+
 ## Tests
 
 | Test                                              | Prouve                                                                                |
