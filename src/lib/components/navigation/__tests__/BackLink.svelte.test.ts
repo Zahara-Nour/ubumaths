@@ -80,6 +80,32 @@ describe('BackLink', () => {
 			expect(clickIsCancelled(link)).toBe(false);
 		});
 
+		it("clic avec Ctrl/Cmd (nouvel onglet) : aucune question, le lien s'ouvre", async () => {
+			const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+			const screen = await render(BackLink, {
+				props: {
+					href: '/dashboard/teacher/srs/decks',
+					label: 'Retour aux decks',
+					confirmLeave: 'Modifications non enregistrées. Quitter ?'
+				}
+			});
+			const link = screen.getByRole('link', { name: 'Retour aux decks' }).element() as HTMLElement;
+			let cancelledByLink = false;
+			link.ownerDocument.addEventListener(
+				'click',
+				(e) => {
+					cancelledByLink = e.defaultPrevented;
+					e.preventDefault();
+				},
+				{ once: true }
+			);
+			link.dispatchEvent(
+				new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true, metaKey: true })
+			);
+			expect(cancelledByLink).toBe(false);
+			expect(confirmSpy).not.toHaveBeenCalled();
+		});
+
 		it('sans confirmLeave : aucune question posée', async () => {
 			const confirmSpy = vi.spyOn(window, 'confirm');
 			const screen = await render(BackLink, {

@@ -2,7 +2,7 @@
 @component
 Lien de retour vers la page parente, posé au-dessus du titre de la page.
 
-Règle (docs/pratiques/composants-ui.md#bouton-retour) : la destination est la page
+Règle (docs/pratiques/composants-ui.md#backlink--bouton-retour-obligatoire) : la destination est la page
 parente, lue dans l'adresse de la page — jamais l'historique du navigateur. Une page
 qui a deux parents possibles le dit dans son adresse (`?fiche=<uuid>`).
 
@@ -33,6 +33,8 @@ Props :
 	} = $props();
 
 	function handleClick(event: MouseEvent) {
+		// Ouverture dans un nouvel onglet : rien n'est perdu, aucune question à poser
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
 		if (confirmLeave && !confirm(confirmLeave)) event.preventDefault();
 	}
 </script>
