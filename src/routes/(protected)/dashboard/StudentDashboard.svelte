@@ -48,7 +48,8 @@
 		CheckCircle2,
 		Circle,
 		LifeBuoy,
-		ChevronRight
+		ChevronRight,
+		Puzzle
 	} from '@lucide/svelte';
 	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
 	// import { Button } from '$lib/components/ui/button';
@@ -206,6 +207,27 @@
 		studentId={data.profile.id}
 		periodId={currentPeriodId}
 	/>
+
+	<!-- TUILE « ÉNIGMES » : seule entrée vers les énigmes (#1121) -->
+	<a
+		href="/dashboard/student/riddles"
+		class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
+	>
+		<Card.Root>
+			<Card.Content class="flex items-center gap-2 p-4">
+				<Puzzle class="h-5 w-5 text-primary" />
+				<h3 class="font-semibold">Énigmes</h3>
+				<span class="text-sm text-muted-foreground">
+					{#if data.riddlesSolved > 0}
+						{data.riddlesSolved} résolue{data.riddlesSolved > 1 ? 's' : ''}
+					{:else}
+						Résous l'énigme du jour
+					{/if}
+				</span>
+				<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
+			</Card.Content>
+		</Card.Root>
+	</a>
 
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->

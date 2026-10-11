@@ -132,13 +132,13 @@
 		if (href === '/dashboard/teacher/moderation') {
 			return page.url.pathname.startsWith('/dashboard/teacher/moderation');
 		}
-		// For "Mon travail", highlight on the inbox page itself AND on any
-		// downstream page the inbox links to (worksheets is the only one whose
-		// student-facing list lives under /dashboard/student/*).
+		// « Mon travail » reste surligné sur les listes complètes de fiches et de
+		// contrôles : elles s'ouvrent depuis lui et y reviennent (#1121)
 		if (href === '/dashboard/student/work') {
 			return (
 				page.url.pathname.startsWith('/dashboard/student/work') ||
-				page.url.pathname.startsWith('/dashboard/student/worksheets')
+				page.url.pathname.startsWith('/dashboard/student/worksheets') ||
+				page.url.pathname.startsWith('/dashboard/student/assessments')
 			);
 		}
 		// For bug reports page, match /dashboard/bug-reports
