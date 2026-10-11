@@ -32,10 +32,12 @@
 	const occurrence = $derived(piOccurrence(status));
 	const suggestions = $derived(status === 404 ? suggestPages(page.url.pathname) : []);
 	const technicalDetail = $derived(page.error?.detail ?? copy.technicalDetail);
-	// Début de l'extrait : « 3, » quand le code suit presque la virgule (415), « … » sinon
-	const excerptStart = $derived(
-		occurrence && occurrence.position - 1 <= occurrence.before.length ? '3,' : '…'
-	);
+
+	// « A », « A ou B », « A, B ou C »
+	function separator(index: number): string {
+		if (index === 0) return '';
+		return index === suggestions.length - 1 ? ' ou ' : ', ';
+	}
 
 	// « Page précédente » seulement si elle ramène sur Chiphre : navigation interne
 	// (`from`), ou arrivée par un lien du site. `history.length` compte aussi
@@ -75,48 +77,36 @@
 				Erreur {status}
 			</p>
 			<h1 class="text-3xl font-bold text-balance sm:text-4xl">{copy.title}</h1>
-			<p class="text-balance text-muted-foreground">{copy.explanation}</p>
-			{#if copy.detail}
-				<p class="rounded-md bg-muted px-3 py-1">{copy.detail}</p>
+			{#if copy.explanation}
+				<p class="text-balance text-muted-foreground">{copy.explanation}</p>
 			{/if}
 		</div>
 
 		{#if occurrence}
-			<div class="flex flex-col items-center gap-2 lg:items-start">
-				<p class="text-balance">
-					Le nombre {status}, lui, se trouve toujours : il apparaît pour la première fois à la
-					<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π.
-				</p>
-				<!-- Redit visuellement la phrase précédente : masqué aux lecteurs d'écran -->
-				<p class="font-mono tracking-wider tabular-nums" aria-hidden="true">
-					π = {excerptStart}{occurrence.before}<span
-						class="font-bold text-amber-600 dark:text-amber-400">{status}</span
-					>{occurrence.after}…
-				</p>
-			</div>
+			<p class="text-balance">
+				Le nombre {status} apparaît à la
+				<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π{#if status === 404},
+					mais la page, elle, reste introuvable{/if}.
+			</p>
 		{/if}
 
 		{#if suggestions.length > 0}
-			<nav
-				aria-labelledby="suggestions-title"
-				class="flex flex-col items-center gap-2 lg:items-start"
-			>
-				<p id="suggestions-title" class="font-semibold">Tu cherchais peut-être :</p>
-				<ul class="flex flex-wrap justify-center gap-2 lg:justify-start">
-					{#each suggestions as suggestion (suggestion.path)}
-						<li>
-							<Button href={suggestion.path} variant="outline" size="sm">{suggestion.title}</Button>
-						</li>
-					{/each}
-				</ul>
+			<nav aria-label="Pages proches">
+				<p class="text-balance">
+					Tu cherchais peut-être
+					{#each suggestions as suggestion, i (suggestion.path)}{separator(i)}<a
+							href={suggestion.path}
+							class="font-semibold text-amber-600 underline-offset-4 hover:underline dark:text-amber-400"
+							>{suggestion.title}</a
+						>{/each}{suggestions.at(-1)?.title.endsWith('?') ? '' : '\u00a0?'}
+				</p>
 			</nav>
 		{/if}
 
-		<div class="flex flex-wrap justify-center gap-3 lg:justify-start">
+		<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
 			{#if copy.offerLogin}
 				<Button href={resolve('/auth/login')}>Se connecter</Button>
-			{/if}
-			{#if copy.offerRetry}
+			{:else if copy.offerRetry}
 				<Button onclick={() => location.reload()}>Réessayer</Button>
 			{/if}
 			<Button
@@ -126,7 +116,13 @@
 				Retour à l’accueil
 			</Button>
 			{#if canGoBack}
-				<Button variant="outline" onclick={() => history.back()}>Page précédente</Button>
+				<button
+					type="button"
+					class="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+					onclick={() => history.back()}
+				>
+					← Page précédente
+				</button>
 			{/if}
 		</div>
 

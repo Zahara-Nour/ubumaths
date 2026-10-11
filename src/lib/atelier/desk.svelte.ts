@@ -349,9 +349,7 @@ export class CalcDesk {
 			result.alternative !== undefined
 				? { alternative: result.alternative }
 				: {}),
-			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
-				? { note: result.note }
-				: {}),
+			...('note' in result && result.note !== undefined ? { note: result.note } : {}),
 			failed: result.kind === 'refus',
 			result
 		});

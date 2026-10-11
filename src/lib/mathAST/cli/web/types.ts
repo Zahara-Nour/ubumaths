@@ -105,6 +105,12 @@ export interface ReplExecutionResult {
 	/** La valeur exacte d'un calcul fait en mode décimal, en LaTeX. */
 	readonly exactLatex?: string;
 
+	/**
+	 * La grandeur EXACTE d'une réponse, quand l'arbre affiché en est une autre
+	 * écriture (`2 h 30 min` juxtaposées) : c'est elle que « Garder » range.
+	 */
+	readonly quantityAst?: MathNode;
+
 	// =========================================================================
 	// Export Support
 	// =========================================================================

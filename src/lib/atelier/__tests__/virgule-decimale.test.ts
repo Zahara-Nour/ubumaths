@@ -135,8 +135,9 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('calcul direct (mode décimal) : 0.1+0.2', () => {
 		const result = calcul(runInput(decimalSession(), '0.1+0.2'));
 
-		expect(result.output).toBe('≈ 0,300000000000000');
-		expect(result.latex).toBe('0{,}300000000000000');
+		// 0,1 + 0,2 vaut exactement 0,3 : ni ≈ ni zéros (règle du bouton ≈, décision Q3)
+		expect(result.output).toBe('0,3');
+		expect(result.latex).toBe('0{,}3');
 		// L'arbre gardé reste un nombre lisible par le moteur
 		expect(result.ast).toBeDefined();
 	});
@@ -144,13 +145,14 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('calcul direct (mode décimal) : \\pi approché', () => {
 		const result = calcul(runInput(decimalSession(), '\\pi'));
 
-		expect(result.latex).toBe('3{,}14159265358979');
+		expect(result.latex).toBe('\\approx 3{,}1416');
 	});
 
+	// Lot C des grandeurs : « 3.5 km » est une grandeur (avant : le produit 3,5·k·m)
 	it('calcul avec une unité : 3.5 km', () => {
 		const result = calcul(runInput(session(), '3.5 km'));
 
-		expect(result.output).toBe('3,5km');
+		expect(result.output).toBe('3,5 km');
 		expect(result.latex).toContain('3{,}5');
 	});
 
@@ -271,8 +273,9 @@ describe('les actions des cartes, affichées dans la même vue', () => {
 
 		const outcome = runAction(s, 'image', 'f', '0.3');
 
-		expect(outcome.ok && outcome.output).toBe('≈ -1,45500000000000');
-		expect(outcome.ok && outcome.latex).toBe('-1{,}45500000000000');
+		// -1,455 exactement : ni ≈ ni zéros (règle du bouton ≈, décision Q3)
+		expect(outcome.ok && outcome.output).toBe('-1,455');
+		expect(outcome.ok && outcome.latex).toBe('-1{,}455');
 	});
 });
 

@@ -441,6 +441,16 @@ export function generatePedagogicalSimplifySteps(
  * `2x + 3x` devient `5x`.
  */
 function tidyWithoutReordering(node: MathNode): MathNode {
+	// Un produit factorisé peut être sous un signe ou dans une fonction :
+	// `−(x+1)eˣ`, `sin((x−1)eˣ)`. Passés à `tidy` entiers, ils devenaient
+	// `−eˣ(x+1)` et `sin(eˣ(x−1))`. On ne descend que s'il y a un produit
+	// dessous : sinon `tidy` garde la main sur le nœud entier (`√8` → `2√2`).
+	if (node.type === 'opposite' && node.operand.type === 'multiplication') {
+		return { ...node, operand: tidyWithoutReordering(node.operand) };
+	}
+	if (node.type === 'function' && node.args.some((arg) => arg.type === 'multiplication')) {
+		return { ...node, args: node.args.map(tidyWithoutReordering) };
+	}
 	if (node.type !== 'multiplication') return tidy(node);
 	const left = tidyWithoutReordering(node.left);
 	const right = tidyWithoutReordering(node.right);

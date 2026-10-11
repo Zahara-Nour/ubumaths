@@ -162,7 +162,9 @@ Il y a aujourd'hui **deux moteurs** qui ne partagent pas leurs règles :
 - `generatePedagogicalSimplifySteps` (`pedagogical-simplify/pipeline.ts`) — une boucle de
   règles de motifs choisies par intention (`selectRulesForIntent`), puis une passe
   `normalize` enregistrée (`runNormalizePass`), sauf pour `factoriser` qui finit par la mise
-  en facteur du contenu et `tidy`. Il a **le vocabulaire** (les étapes nommées).
+  en facteur du contenu et `tidy`. Le contenu est numérique, monôme **ou non polynomial**
+  depuis le 2026-10-11 (`xe^x - e^x` → `(x-1)e^x`, `(x+1)^2-(x+1)` → `x(x+1)` ; le facteur
+  non polynomial s'écrit après la parenthèse). Il a **le vocabulaire** (les étapes nommées).
 
 L'ADR 0007 (acceptée le 2026-09-21) décide **un seul moteur, quatre politiques sur
 « faut-il développer ? »** : `réduire` jamais (= `tidy`), `développer` toujours, `auto`

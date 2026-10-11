@@ -23,7 +23,8 @@ describe('une grandeur calculée garde son unité écrite', () => {
 		['90[km/h]*2[h]', '180 km'],
 		['100[g]/2[L]', '50 g/L'],
 		['12[km]+300[m]', '12.3 km'],
-		['3[h]+20[min]', '200 min'],
+		// Lot C (décision de David) : deux unités de durée écrites, l'écriture composée
+		['3[h]+20[min]', '3 h 20 min'],
 		['10[km]/3', '10/3 km'],
 		['(3[h]+20[min])*1[km/h]', '10/3 km'],
 		['(3[m])^2', '9 m^2'],

@@ -1,11 +1,15 @@
 ---
 couvre:
   - src/lib/seo/sitemap-pages.ts
+  - 'src/routes/(public)/+page.svelte'
+  - 'src/routes/(public)/royaume/**'
+  - 'src/lib/kingdom-tour/**'
+  - 'src/lib/components/kingdom-tour/**'
 ---
 
 # Carte des fonctionnalités : ce que Chiphre offre, à qui, par où
 
-> Vérifié contre le code le 2026-10-11 (commit `6928c5056`). Inventaire **vu de l'utilisateur** :
+> Vérifié contre le code le 2026-10-11 (branche `feat/tour-du-royaume`). Inventaire **vu de l'utilisateur** :
 > chaque fonctionnalité sous son libellé réel, sa route, son accès, et la preuve de ses points forts.
 > Le fonctionnement de chaque système est dans sa propre doc (carte : [docs/README.md](../README.md)) ;
 > le lore utilisable en vitrine est dans [univers-chiphre.md](univers-chiphre.md#le-lore-en-vitrine).
@@ -92,7 +96,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 ## Ne pas mettre en avant
 
 - Démos et pages de mise au point : `/demo/*`, `/geometry-demo/*`, `/construction-demo`,
-  `/test-font`, `/test-cadres`, `/api-docs`, `/blockly/playground`, `/slides/*`.
+  `/test-font`, `/test-cadres`, `/test-erreur`, `/api-docs`, `/blockly/playground`, `/slides/*`.
 - Héritages remplacés par l'Atelier : `/calc`, `/cas` ([atelier.md](atelier.md)).
 - Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra,
   `/spreadsheet` ([jeux-et-economie.md](jeux-et-economie.md), [outils-prof.md](outils-prof.md)).
@@ -100,22 +104,72 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 ## Comment un visiteur entre
 
-- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre, Père Ubu au centre,
-  une dépêche du Shtam tirée au hasard. Le seul autre accès est le bouton « Infos et
-  confidentialité » (pages légales, `/a-propos`).
+- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre, lien « Visiter le
+  Royaume », Père Ubu au centre, une dépêche du Shtam tirée au hasard. Le lien **et** Père Ubu
+  mènent au [Tour du Royaume](#le-tour-du-royaume-royaume). Le seul autre accès est le bouton
+  « Infos et confidentialité » (pages légales, `/a-propos`).
 - **En-tête** (`src/lib/components/Header.svelte`) : « Connexion » en haut à droite ; l'inscription
   n'est atteinte que depuis la page de connexion (« Créer un compte »).
 - **Menu** : Accueil, Jeux, Upsilon, Atelier, Chiffrement, Géométrie, Zygomatics.
 
+## Le Tour du Royaume (`/royaume`)
+
+La page de présentation de Chiphre (décisions de David du 2026-10-11 ; terme : [CONTEXT.md](../../CONTEXT.md)).
+Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
+
+**Carte du code**
+
+| Fichier                                                | Rôle                                                                                         |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `src/lib/kingdom-tour/tour.ts`                         | Le contenu : `PROVINCES`, `PLACES`, `STRENGTHS`, `FORM_DEMO`, `PARENT_FACTS`, liens d'entrée |
+| `src/lib/kingdom-tour/spiral.ts`                       | `buildSpiral` : la gidouille de Sandomir (tracé, étapes à intervalles réguliers, centre)     |
+| `src/lib/kingdom-tour/reveal.ts`                       | Action `use:reveal` : apparition au défilement                                               |
+| `src/lib/components/kingdom-tour/PereUbuFigure.svelte` | Père Ubu dans le halo du mois (partagé avec l’accueil ; taille : propriété `size`)           |
+| `src/lib/components/kingdom-tour/ProvinceMap.svelte`   | Spirale + fiches des Provinces ; la spirale se dessine jusqu'à la fiche lue (grand écran)    |
+| `src/lib/components/kingdom-tour/FormDemo.svelte`      | « La forme compte » : quatre réponses, quatre verdicts                                       |
+| `src/lib/components/kingdom-tour/CipherDemo.svelte`    | Le chiffre de César en direct (`caesarEncrypt`)                                              |
+| `src/routes/(public)/royaume/+page.server.ts`          | Date du jour (Almanach, Paris), ambiance du mois, dépêche du Shtam parue                     |
+| `src/routes/(public)/royaume/+page.svelte`             | La mise en scène : ouverture, Provinces, lieux, rigueur, dépêche, parents, entrée            |
+
+**Invariants**
+
+- **Rien n'est promis sans preuve** : une ligne de `tour.ts` s'appuie sur ce document. Les parents
+  sont vouvoyés, les élèves tutoyés ; jamais « Mathres », ni les mots bannis du Compendium (§ IX).
+- **La démo de la forme ne ment pas** : statuts, points et remarques sont ceux du correcteur
+  (`gradeQuestion`, `validateAnswer`), sur le cas réel #553. Les remarques sont recopiées (importer
+  `REQUIRED_FORM_FEEDBACK` tirerait le moteur de calcul dans la page) ; le test vérifie qu'elles
+  n'ont pas divergé.
+- **Lisible sans JavaScript** : seul `reveal` cache un bloc, et seulement s'il est sous l'écran,
+  hors « moins d'animations ». La spirale est un décor (`aria-hidden`) : tout est dans les fiches.
+- **Jamais prérendue** (`prerender = false`) : date et dépêche suivent le jour de la requête.
+- **Contrastes mesurés au pire pixel, sur les halos des 7 mois** (audit du 2026-10-11) : texte
+  d'accent en orange brûlé `--accent-text` en clair (l'orange du thème est à 2,2:1), halo atténué
+  en sombre ; anneaux de focus en couleur du texte (`ring-foreground`), bordures de contrôle
+  `border-foreground/50` (≥ 3:1). Pas de mouvement sans fin : le halo dérive une fois, la gidouille
+  ne tourne qu'au survol.
+- **Démo de la forme : un groupe radio** (flèches, une tabulation) ; César : le résultat n'est pas
+  annoncé à chaque frappe (`aria-live="off"`, nom accessible), un émoji reste un caractère.
+- `app.css` impose sa taille à `main h1…h6, p, li` et à **tout ce que contient un `<header>`** :
+  la page n'emploie pas `<header>`, et surcharge ses titres par classe, en gardant `--font-scale`.
+
+**Comment étendre** : un lieu → une entrée de `PLACES` (+ son icône dans la page) et une ligne dans
+« Sans compte » ci-dessus ; un point fort → `STRENGTHS`, avec `access: 'account'` s'il exige un compte.
+
+**Tests** : `src/lib/kingdom-tour/__tests__/` (Provinces fidèles au Compendium, liens vers des pages
+publiques existantes et non exclues par `robots.txt`, garde du lore, démo contre le correcteur,
+spirale, apparition) ; `src/routes/(public)/royaume/__tests__/` (chargement, rendu, démos, pas de
+débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (l'accueil mène à la visite).
+
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, V15, C16, C17, D12-D15 ; chantier K19) :
+Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D18 ; chantier K19 ;
+V15 corrigé par le Tour du Royaume) :
 
-- Père Ubu, sur l'accueil, mène à `/dashboard/chat` (connexion forcée pour un visiteur ; c'est la
-  messagerie entre élèves, pas un chat avec Ubu).
 - Le chat de `/pere-ubu` répond par une erreur à un visiteur, alors que la page est au sitemap.
 - `/a-propos` promet un suivi « accessible aux parents ».
 - Automaths, Glossaire, Shtam, Almanach : absents du menu ; l'Atelier, absent du sitemap.
 - « Géométrie » au menu mène à `/geometry-demo`, exclue par `robots.txt` et titrée en anglais.
 - `/test-cadres` et `/slides` ne sont pas exclus par `robots.txt`.
+- Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
+  teintés (D17), pas de lien d'évitement (D18).
 - La description SEO de `/games` cite Navadra, retiré du catalogue.

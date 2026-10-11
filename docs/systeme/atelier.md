@@ -255,7 +255,10 @@ au-delà de 10⁹, ni pour un nombre déjà écrit (`3`, `2,5`), une expression 
 déjà sa valeur approchée). Quand les ÉTAPES donnent la réponse, le bouton approche leurs solutions
 (`SolvedSteps.approximate`), dans leur ordre et leur forme — pas celles du moteur, triées. Mêmes
 boutons sur l'image d'un nombre et « Résoudre f(x) = 0 » des cartes.
-⚠️ `.mode décimal` écrit encore 15 chiffres : l'aligner sur cette règle est une PR à part.
+`.mode décimal` suit la même règle (2026-10-11) : 4 décimales, `≈` à l'écran comme dans le texte
+seulement si la valeur est arrondie (`≈ 0,7071`, `0,25`) ; « Garder » range la valeur pleine
+précision (`quantityAst`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
+plus `{1/3}\pi`) — `/cas` compris.
 
 **Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
 règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu
@@ -348,16 +351,17 @@ L'état « en attente » reste pour un nom cité _avant_ d'être défini ; seule
 L'atelier ne calcule presque rien lui-même : il choisit le bon module et met la réponse en forme.
 Doc du moteur : [mathast/README.md](mathast/README.md).
 
-| Geste de l'élève                        | Module appelé                                                                                                                 |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                |
-| calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` |
-| `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                               |
-| `.factoriser`                           | même pipeline, intention `factoriser` ; aucun repli moteur : « je n'ai pas su » se dit                                        |
-| `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                    |
-| `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                      |
-| `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                           |
-| syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                               |
+| Geste de l'élève                        | Module appelé                                                                                                                          |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                         |
+| écrire une grandeur (`5 km`)            | `readNaturalQuantities` (`src/lib/atelier/natural-quantities.ts`) : « un nombre, une espace, une unité », calculs et valeurs seulement |
+| calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}`          |
+| `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                        |
+| `.factoriser`                           | même pipeline, intention `factoriser` ; aucun repli moteur : « je n'ai pas su » se dit                                                 |
+| `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                             |
+| `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                               |
+| `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                    |
+| syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                        |
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et

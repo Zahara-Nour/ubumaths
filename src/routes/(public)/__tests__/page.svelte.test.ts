@@ -40,6 +40,22 @@ describe('/+page.svelte', () => {
 		await expect.element(heading).toBeInTheDocument();
 	});
 
+	it('mène au Tour du Royaume : un lien sous le titre, et Père Ubu lui-même', async () => {
+		const screen = await renderWith(5);
+		await expect
+			.element(screen.getByRole('link', { name: /Visiter le Royaume/ }))
+			.toHaveAttribute('href', expect.stringMatching(/\/royaume$/));
+		const ubu = screen.container.querySelector('figure a');
+		expect(ubu?.getAttribute('href')).toMatch(/\/royaume$/);
+		expect(ubu?.getAttribute('aria-label')).toMatch(/Royaume/);
+	});
+
+	it('Père Ubu ne mène plus à la messagerie entre élèves (écart V15)', async () => {
+		const screen = await renderWith(5);
+		const hrefs = [...screen.container.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+		expect(hrefs.some((h) => /dashboard/.test(h ?? ''))).toBe(false);
+	});
+
 	it('le mot « verte » reste en couleur primaire', async () => {
 		const screen = await renderWith(5);
 		const verte = screen.container.querySelector('h1 .text-primary');

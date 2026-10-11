@@ -25,7 +25,7 @@ export interface SitemapPage {
  *
  * - tout ce qui vit sous `(protected)` — hors d'atteinte d'un robot ;
  * - les pages de démonstration et de mise au point (`demo`, `*-demo`,
- *   `test-font`, `blockly`) — sans intérêt pour un visiteur ;
+ *   `test-font`, `test-erreur`, `blockly`) — sans intérêt pour un visiteur ;
  * - `auth` et `consent` — des étapes de parcours, pas des destinations.
  *
  * ⚠️ Chaque chemin doit correspondre à une page réellement rendue. `/legal` et
@@ -34,6 +34,7 @@ export interface SitemapPage {
  */
 export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/', title: 'Accueil', priority: 1.0, changefreq: 'weekly' },
+	{ path: '/royaume', title: 'Le Tour du Royaume', priority: 0.9, changefreq: 'monthly' },
 	{ path: '/automaths', title: 'Automaths', priority: 0.9, changefreq: 'weekly' },
 	{ path: '/python', title: 'Python', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/games', title: 'Jeux', priority: 0.8, changefreq: 'monthly' },

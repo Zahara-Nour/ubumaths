@@ -1,7 +1,7 @@
 ---
 title: Grandeurs — phase 0 du lot C (écrire « 5 km » dans l'atelier)
 date: 2026-10-11
-status: phase 0 — deux décisions de David intégrées (2026-10-11), validation finale attendue
+status: phase 0 validée par David (« je valide », 2026-10-11) — en cours sur `feat/grandeurs-ecriture`
 ---
 
 # Lot C — écrire une grandeur naturellement dans l'atelier
@@ -71,3 +71,25 @@ collé à sa lettre). Les crochets (`5[km]`) et `\unit{km}` restent acceptés.
 Un **champ hybride** dans Calcul, comme l'onglet « Hybride » de `/cas` : du texte mêlé à des champs
 mathématiques (MathLive). Une fraction tapée dans un champ mathématique lèverait l'ambiguïté de
 `1/2 m` à la source. C'est un changement de la saisie de Calcul : phase 0 séparée.
+
+## Journal
+
+- 2026-10-11 — lot C codé sur `feat/grandeurs-ecriture` : `readNaturalQuantities` (calculs et valeurs
+  de Calcul), aides en note (`5km`, `5 m` avec une valeur `m`, `3 t + 2` refusé) ; durées composées
+  (`compositeDuration`, `quantities.ts`) : deux unités de durée écrites → réponse en h, min, s, arbre
+  juxtaposé pour l'affichage, grandeur exacte transmise à part (`quantityAst`) pour « Garder » et
+  `.convertir` ; `render.ts` ne repasse plus une grandeur par `tidy` (qui recalculait `2 h · 30 min`
+  en h²). Cartes : `mathModeSpace = '\,'` sur une valeur, `5\,m` relu en grandeur.
+  Conséquences sur le lot A : `3[h]+20[min]` → « 3 h 20 min » (était « 200 min »), `1 h + 30 min` →
+  « 1 h 30 min ».
+- 2026-10-11 — revue `code-reviewer` du lot C, corrigés : **bloquant** — une durée composée n'était
+  pas parenthésée (`1 h 30 min * 2` → 2 h ; désormais `(1[h]+30[min])`, c'est UN nombre) ; une valeur
+  `d = 3 t + 2` était rangée sans erreur ; l'aide d'une lettre s'affichait pour un refus d'une autre
+  cause (`5 kg + 3 m`) — seulement quand le refus parle d'un nombre sans unité ; `3 a + 2 b` rendait
+  des crochets bruts — refusé (« Une grandeur ne se combine pas avec une lettre. ») avec l'aide ;
+  `2{,}5\,km` dans une carte ; aides en double ; « nom du panneau » (pas « valeur »). Une durée
+  écrite en h et min reste composée même avec une seule partie (`1 h 30 min / 2` → 45 min).
+- Laissés pour plus tard (mineurs) : une carte rangée `(2[h]+30[min])` ou `(1/2)[m]` ne se relit
+  pas après retouche dans le champ MathLive ; `2\,h\,30\,min` tapé dans une carte ; le membre gauche
+  de `.convertir` après une durée composée s'écrit `2,5 h`. Rejeu : un historique exporté avant ce lot
+  qui contient de l'algèbre écrite avec des espaces (`5 s + 1`) s'arrête désormais sur un refus.

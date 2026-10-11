@@ -29,6 +29,14 @@ S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF. 
 
 Une unité **se déclare**, elle ne se devine pas : `~12 km~` sans crochets est le produit `12·k·m`, pas une grandeur.
 
+**Exception : l'atelier** (lot C des grandeurs, décisions de David du 2026-10-11) — dans un calcul
+ou une valeur de l'atelier, **« un nombre, une espace, une unité » est une grandeur** : `5 km`,
+`12 km + 300 m`, `90 km/h`, `1/2 m` = (1/2) m, `2 h 30 min` (deux grandeurs collées s'ajoutent, et
+la réponse garde l'écriture en h et min). Collé (`5m`) ou avec `*`, c'est un produit ; une aide le
+dit quand les lettres collées forment une unité (`5km`). Jamais dans une définition de fonction ni
+dans une commande. Lecteur : `src/lib/atelier/natural-quantities.ts` ; cartes : l'espace tapée
+arrive `\,` (`mathModeSpace`).
+
 ⚠️ `[cm]` seul, sans nombre, n'est **pas** une unité : en début d'expression, un crochet est un crochet de calcul (c × m). En LaTeX, `\unit{cm}` seul devient « 1 cm ».
 
 ### Crochet d'unité ou crochet de calcul ?
