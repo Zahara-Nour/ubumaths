@@ -34,6 +34,7 @@ const ANON_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 const SUCCES = 'zz-succes-lectures';
+const ECOLE = 'zz-école lectures ouvertes';
 
 // ============================================================================
 // HELPERS
@@ -63,6 +64,7 @@ describe('lectures ouvertes fermées', () => {
 	let a: { id: string; email: string };
 	let b: { id: string; email: string };
 	let constructionId: string;
+	let listingId: string;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -85,6 +87,23 @@ describe('lectures ouvertes fermées', () => {
 				[e.id]
 			);
 		}
+		const ecole = await pg.query<{ id: string }>(
+			`insert into schools (name, city, country) values ($1, 'zz', 'zz') returning id`,
+			[ECOLE]
+		);
+		const annonce = await pg.query<{ id: string }>(
+			`insert into marketplace_listings
+			   (creator_id, school_id, listing_type, offered_gidouilles, expires_at)
+			 values ($1, $2, 'sell', 1, now() + interval '1 day') returning id`,
+			[a.id, ecole.rows[0].id]
+		);
+		listingId = annonce.rows[0].id;
+		for (const e of [a, b]) {
+			await pg.query(
+				`insert into marketplace_listing_views (listing_id, user_id) values ($1, $2)`,
+				[listingId, e.id]
+			);
+		}
 		const { rows } = await pg.query<{ id: string }>(
 			`insert into constructions (title, script, is_public, author_id)
 			 values ('zz-construction publique', '{}', true, $1) returning id`,
@@ -97,6 +116,8 @@ describe('lectures ouvertes fermées', () => {
 		const pg = await getPostgresClient();
 		await pg.query('delete from constructions where id = $1', [constructionId]);
 		await pg.query('delete from minesweeper_player_stats where season = $1', ['zz-saison']);
+		await pg.query('delete from marketplace_listings where id = $1', [listingId]);
+		await pg.query('delete from schools where name = $1', [ECOLE]);
 		await cleanupAllTestData();
 		await pg.query('delete from minesweeper_achievements where id = $1', [SUCCES]);
 	});
@@ -115,6 +136,10 @@ describe('lectures ouvertes fermées', () => {
 		[
 			'minesweeper_player_stats',
 			(c, id) => c.from('minesweeper_player_stats').select('student_id').eq('student_id', id)
+		],
+		[
+			'marketplace_listing_views',
+			(c, id) => c.from('marketplace_listing_views').select('user_id').eq('user_id', id)
 		]
 	];
 

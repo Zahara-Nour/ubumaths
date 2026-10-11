@@ -17,7 +17,8 @@
 --
 -- Décision de David (2026-10-11) : chacun ne lit que ses données de jeu ; les
 -- constructions publiques sont réservées aux comptes connectés. En miroir — qui perd
--- quoi : tout compte perd la lecture des données de jeu d'autrui ; anon perd la lecture
+-- quoi : tout compte connecté (élève, prof ou admin : aucune policy prof n'existait,
+-- aucun code ne lit ces données d'autrui) perd la lecture des données de jeu d'autrui ; anon perd la lecture
 -- des constructions publiques. Chacun garde ses propres données.
 --
 -- Aucune donnée touchée (policies seulement : règle de David du 2026-10-11 sur les
