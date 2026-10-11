@@ -1,7 +1,7 @@
 <!--
 	Student Riddles Leaderboard Page
 	==================================
-	Global leaderboard for riddle achievements
+	Classement des énigmes de l'école : prénom et score (riddle_school_leaderboard)
 -->
 
 <script lang="ts">
@@ -27,11 +27,6 @@
 		if (rank === 2) return 'text-gray-400';
 		if (rank === 3) return 'text-amber-600 dark:text-amber-500';
 		return 'text-muted-foreground';
-	}
-
-	// `riddle_progress` est une vue d'agrégats : `student_id` y est nullable.
-	function isCurrentUser(studentId: string | null) {
-		return studentId === data.currentUserId;
 	}
 </script>
 
@@ -81,13 +76,12 @@
 			<div class="order-1 flex flex-col items-center">
 				<div class="mb-1 text-2xl sm:mb-2 sm:text-4xl">🥈</div>
 				<UserAvatar
-					avatar_url={data.leaderboard[1].profile.avatar_url}
 					role="student"
-					firstname={data.leaderboard[1].profile.firstname}
+					firstname={data.leaderboard[1].firstname}
 					class="h-10 w-10 border-2 border-gray-400 sm:h-16 sm:w-16 sm:border-4"
 				/>
 				<p class="mt-1 line-clamp-1 text-center text-xs font-medium sm:mt-2 sm:text-sm">
-					{data.leaderboard[1].profile.firstname || ''}
+					{data.leaderboard[1].firstname || ''}
 				</p>
 				<p class="text-base font-bold text-yellow-600 sm:text-lg dark:text-yellow-400">
 					{data.leaderboard[1].riddles_gidouilles}
@@ -101,13 +95,12 @@
 			<div class="order-2 flex flex-col items-center">
 				<div class="mb-1 text-3xl sm:mb-2 sm:text-5xl">🥇</div>
 				<UserAvatar
-					avatar_url={data.leaderboard[0].profile.avatar_url}
 					role="student"
-					firstname={data.leaderboard[0].profile.firstname}
+					firstname={data.leaderboard[0].firstname}
 					class="h-14 w-14 border-2 border-yellow-500 sm:h-20 sm:w-20 sm:border-4"
 				/>
 				<p class="mt-1 line-clamp-1 text-center text-sm font-bold sm:mt-2">
-					{data.leaderboard[0].profile.firstname || ''}
+					{data.leaderboard[0].firstname || ''}
 				</p>
 				<p class="text-xl font-bold text-yellow-600 sm:text-2xl dark:text-yellow-400">
 					{data.leaderboard[0].riddles_gidouilles}
@@ -121,13 +114,12 @@
 			<div class="order-3 flex flex-col items-center">
 				<div class="mb-1 text-2xl sm:mb-2 sm:text-4xl">🥉</div>
 				<UserAvatar
-					avatar_url={data.leaderboard[2].profile.avatar_url}
 					role="student"
-					firstname={data.leaderboard[2].profile.firstname}
+					firstname={data.leaderboard[2].firstname}
 					class="h-10 w-10 border-2 border-amber-600 sm:h-16 sm:w-16 sm:border-4"
 				/>
 				<p class="mt-1 line-clamp-1 text-center text-xs font-medium sm:mt-2 sm:text-sm">
-					{data.leaderboard[2].profile.firstname || ''}
+					{data.leaderboard[2].firstname || ''}
 				</p>
 				<p class="text-base font-bold text-yellow-600 sm:text-lg dark:text-yellow-400">
 					{data.leaderboard[2].riddles_gidouilles}
@@ -147,11 +139,11 @@
 		<Card.Content>
 			{#if data.leaderboard.length > 0}
 				<div class="space-y-2">
-					{#each data.leaderboard as entry (entry.student_id)}
+					{#each data.leaderboard as entry, index (index)}
 						<div
 							class={cn(
 								'flex items-center justify-between rounded-lg border p-3 transition-colors',
-								isCurrentUser(entry.student_id) && 'border-primary bg-primary/5'
+								entry.is_me && 'border-primary bg-primary/5'
 							)}
 						>
 							<div class="flex items-center gap-3">
@@ -165,26 +157,21 @@
 								</div>
 
 								<!-- Avatar -->
-								<UserAvatar
-									avatar_url={entry.profile.avatar_url}
-									role="student"
-									firstname={entry.profile.firstname}
-									lastname={entry.profile.lastname}
-								/>
+								<UserAvatar role="student" firstname={entry.firstname} />
 
 								<!-- Info -->
 								<div>
 									<p class="font-medium">
-										{entry.profile.firstname || ''}
-										{entry.profile.lastname || ''}
-										{#if isCurrentUser(entry.student_id)}
+										{entry.firstname || ''}
+										{#if entry.is_me}
 											<Badge variant="outline" class="ml-2">Toi</Badge>
 										{/if}
 									</p>
 									<p class="text-sm text-muted-foreground">
-										{entry.riddles_completed ?? 0} énigme{(entry.riddles_completed ?? 0) > 1
+										{entry.riddles_completed} énigme{entry.riddles_completed > 1 ? 's' : ''} réussie{entry.riddles_completed >
+										1
 											? 's'
-											: ''} réussie{(entry.riddles_completed ?? 0) > 1 ? 's' : ''}
+											: ''}
 									</p>
 								</div>
 							</div>
