@@ -13,7 +13,7 @@
  * @module mathAST/taylor
  */
 
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 import type { MathNode } from '../types';
 import type { TaylorOptions } from './types';
 import type { FunctionBindings } from '../eval/function-bindings';
@@ -343,10 +343,10 @@ const PARAMETER_PROBES = [0.7319, -0.7319, 2.31, -2.31] as const;
 
 /**
  * Constantes que `getVariables` rend comme des lettres : jamais des
- * paramètres. `i` surtout : le prendre pour un paramètre réel donnerait un
- * développement faux d'une fonction à valeurs complexes.
+ * paramètres. (`e` et `i` n'en font plus partie : les parseurs les lisent
+ * constante d'Euler et `complex(0, 1)`, que `getVariables` ne rend pas.)
  */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi', 'i']);
+const CONSTANT_NAMES: ReadonlySet<string> = new Set(['pi']);
 
 // =============================================================================
 // Main Taylor Expansion Function
@@ -397,8 +397,9 @@ export function taylorExpand(
 	const center = options?.center ?? DEFAULT_TAYLOR_OPTIONS.center;
 	const order = options?.order ?? DEFAULT_TAYLOR_OPTIONS.order;
 
-	if (refusesEulerVariable(varName, expr)) {
-		throw new TaylorError(EULER_NOT_A_VARIABLE, undefined, 'variable: e');
+	const refusal = reservedVariableRefusal(varName, expr);
+	if (refusal !== null) {
+		throw new TaylorError(refusal, undefined, `variable: ${varName}`);
 	}
 
 	// L'ordre est le degré maximal : 0 rend la constante f(a)

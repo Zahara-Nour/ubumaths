@@ -2662,14 +2662,8 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 		}
 
 		case 'variable': {
-			// Special case: 'i' is the imaginary unit
-			if (node.name === 'i') {
-				const term: NormalTerm = {
-					coefficient: ALGEBRAIC_IMAGINARY,
-					monomial: []
-				};
-				return normalFormFromPolynomial(polynomialFromTerm(term));
-			}
+			// La lettre `i` hors indice arrive ici en `complex(0, 1)` (parseurs) :
+			// une variable `i` est une vraie variable (base indicée `i_1`)
 			const term = termFromVariable(node.name);
 			return normalFormFromPolynomial(polynomialFromTerm(term));
 		}
