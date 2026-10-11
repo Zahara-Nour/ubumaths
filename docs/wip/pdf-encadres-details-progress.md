@@ -7,6 +7,6 @@ lisible en noir et blanc. Détails en ligne : calcul en gris, les autres sur fon
 Branche `feat/pdf-encadres-details`, worktree `../ubumaths-wt-encadres`.
 
 - [x] Tests rouges : `src/lib/ubumark/generators/__tests__/encadres-typst.test.ts`.
-- [ ] Générateur Typst (`typst-generator.ts`), titres EN (`detail-kinds.ts`).
-- [ ] Compilation réelle d'une fiche marquée (`pnpm fiche:verifier`), regard sur le rendu.
-- [ ] Doc (`ubumark.md`, écart des titres écran en français), revue, PR.
+- [x] Générateur Typst (`typst-generator.ts`), titres EN (`detail-kinds.ts`).
+- [x] Compilation réelle (FR et EN, compilateur de la prod ; rendu relu) d'une fiche marquée (`pnpm fiche:verifier`), regard sur le rendu.
+- [x] Doc (`ubumark.md`, écart des titres écran en français), revue, PR.

@@ -14,7 +14,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-11.
 
 ## À quoi ça sert
 
@@ -259,6 +259,13 @@ Points à retenir :
   (texte intact) ; les blocs ` ```courbe `, ` ```figure `, statistiques et de code sont
   repérés dans les deux et **appariés par rang** — une formule `$$` sur plusieurs lignes placée
   avant décalerait sinon les indices.
+- **Détails d'une correction au PDF** (ADR 0017, D8 ; 2026-10-11) : un encadré `> [!méthode|rappel|attention]`
+  devient un `#block` à bord gauche coloré, fond pâle et titre dans la langue du document
+  (`detailKindLabel` : Méthode / Rappel / Attention, Method / Reminder / Warning) ; le rappel est
+  imprimé un peu plus petit, **à sa place** (pas en marge, contrairement au grand écran). Détails en
+  ligne `[…]{.type}` : calcul en gris, les autres sur fond teinté (`wrapInlineDetail`). Le bord et le
+  titre portent l'information : une photocopie en noir et blanc reste lisible. Une citation `>`
+  ordinaire reste un `#quote`. Test : `src/lib/ubumark/generators/__tests__/encadres-typst.test.ts`.
 - **Cellule de tableau** : une chaîne (`TableCellNode.content`), relue à l'affichage. `$…$` et
   `~…~` y sont des formules, lues de gauche à droite (`$…$` d'abord : le `~` d'espace insécable
   d'un `$…$` n'ouvre rien ; `~~…~~` non plus). Un `\~` d'auteur, dés-échappé par l'extraction,
@@ -393,6 +400,9 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
 
 ## Doutes et écarts connus
 
+- **Titres des encadrés toujours en français à l'écran** (`Blockquote.svelte` lit
+  `DETAIL_KIND_LABELS`) : une correction en anglais affiche « Méthode », là où le PDF écrit
+  « Method » (`detailKindLabel`, 2026-10-11).
 - `latex-generator.ts` (export `.tex`) et ses générateurs `*-latex.ts` n'ont pas d'appelant hors
   du module ni de leurs tests (grep du 2026-10-10) : export en sommeil ou mort, à trancher.
 - `src/lib/components/markdown/nodes/MathInlineOld.svelte` et `MathBlockOld.svelte` ne sont
