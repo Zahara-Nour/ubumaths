@@ -27,6 +27,7 @@
  */
 
 import { json } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { getAuthUrl } from '$lib/server/google/oauth';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -39,6 +40,8 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Returns authorization URL for frontend to redirect user
  */
 export const POST: RequestHandler = async ({ locals, cookies }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can connect Google Classroom
 	await requireRole(locals, 'teacher');
 

@@ -30,6 +30,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { fullSync } from '$lib/server/google/sync';
@@ -42,6 +43,8 @@ import { fullSync } from '$lib/server/google/sync';
  * Returns sync results with counts and errors
  */
 export const POST: RequestHandler = async ({ locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can trigger sync
 	const { user } = await requireRole(locals, 'teacher');
 

@@ -268,8 +268,10 @@ Un élève reçoit 403.
 
 ## Processus 2 — l'autorisation Google Classroom
 
-Désactivée (`GOOGLE_CLASSROOM_ENABLED = false` : points d'entrée de l'interface masqués),
-plomberie conservée. `api/google/auth/connect` (prof) crée un `state` et un vérificateur PKCE,
+Désactivée (`GOOGLE_CLASSROOM_ENABLED = false` : points d'entrée de l'interface masqués, et
+toute route `/api/google/**` répond 403 par `assertGoogleClassroomEnabled()` — sauf
+`auth/disconnect`, pour révoquer, et `auth/status`, en lecture ; B8, test
+`src/routes/api/google/__tests__/interrupteur-google.test.ts`), plomberie conservée. `api/google/auth/connect` (prof) crée un `state` et un vérificateur PKCE,
 stockés en cookies `httpOnly` (`google_oauth_state`, `google_code_verifier`) ; `callback`
 vérifie le `state`, échange le code, chiffre les jetons (`encryptToken`, AES-256-GCM, clé
 `GOOGLE_TOKEN_ENCRYPTION_KEY`) et les range dans `google_integrations`. Ce n'est **pas** une
@@ -359,7 +361,8 @@ test unitaire ne couvre `(protected)/+layout.server.ts` ni `userProfileHandle`.
   distinct joint par élévation, école = frontière sociale.
 - [ADR 0003](../adr/0003-donnees-hebergees-en-ue.md) — données (dont Auth) hébergées en UE.
 - Décisions sans ADR, toujours en vigueur : `getUser()` seul ; rôle lu en base ; import
-  dynamique de `@supabase/ssr` ; limites de débit fail-open ; élévation sans jeton de
+  dynamique de `@supabase/ssr` ; limites de débit fail-open, sauf l'élévation admin, fermée en cas de panne de la base
+  ou d'IP / e-mail absent (B8 : une panne n'ouvre pas le forçage du mot de passe admin) ; élévation sans jeton de
   rafraîchissement, fuite ≤ 1 h acceptée ; connexion Google et Classroom coupées par drapeau,
   plomberie gardée. Historique : [élévation](../archive/wip/admin-elevation-progress.md),
   [mono-prof](../archive/wip/single-teacher-refactor.md),

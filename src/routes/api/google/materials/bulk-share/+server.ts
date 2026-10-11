@@ -21,6 +21,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { bulkShareMaterialsSchema } from '$lib/server/validation';
@@ -30,6 +31,8 @@ import { bulkShareMaterialsSchema } from '$lib/server/validation';
  * Share multiple course work materials with multiple classes
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
