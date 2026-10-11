@@ -26,11 +26,11 @@ Deuxième arbitrage (2026-10-11, après le constat que `tidy` écrit `\dfrac{e^{
    (`e^{2\times 1}` → `e^2`, sinon les valeurs d'intégrales définies restaient brutes) ; l'étape
    d'IPP écrit `uv - \int v\,du` (l'IPP cyclique affichait une égalité fausse) ; un coefficient non
    réduit (`\dfrac{2}{4}e^x`) passe par « On simplifie » ; explication : « On écrit le résultat sous
-   une forme simplifiée. » ; écart V16 (∫x²eˣ non développée).
+   une forme simplifiée. » ; écart V18 (∫x²eˣ non développée).
 
 7. **Ordre de `tidy` gardé** : `3\sin x+2\cos x` → `2\sin x - 3\cos x`.
 
-Hors périmètre (écarts V14, V15 de [ecarts-a-trier.md](ecarts-a-trier.md)) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0 (V14) ; IPP cyclique rangée lourde, `\dfrac{-\cos x\,e^x+\sin x\,e^x}{2}` (V15).
+Hors périmètre (écarts V16, V17 de [ecarts-a-trier.md](ecarts-a-trier.md)) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0 (V16) ; IPP cyclique rangée lourde, `\dfrac{-\cos x\,e^x+\sin x\,e^x}{2}` (V17).
 
 ## Attendus (cas de la démo)
 
