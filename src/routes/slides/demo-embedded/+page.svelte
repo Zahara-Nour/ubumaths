@@ -63,6 +63,8 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 		domain: 'Puissances',
 		level: 1,
 		generatedAt: new Date().toISOString(),
+		// Indice dans l'ordre d'origine des choix ($8$)
+		correctChoiceIndex: '1',
 		shuffledChoices: [
 			{ content: resolvedMarkdown('$6$'), originalIndex: 0 },
 			{ content: resolvedMarkdown('$8$'), originalIndex: 1 },
@@ -418,15 +420,15 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 				<!-- UBUMARK / MARKDOWN -->
 				<!-- ============================================ -->
 
-				<UbuMarkSlide content={markdownExample} background="#0f3460" transition="fade" />
+				<UbuMarkSlide content={markdownExample} transition="fade" />
 
-				<UbuMarkSlide content={mathExample} background="#16213e" transition="fade" />
+				<UbuMarkSlide content={mathExample} transition="fade" />
 
 				<!-- ============================================ -->
 				<!-- ANNOTATIONS -->
 				<!-- ============================================ -->
 
-				<AnnotatableSlide transition="fade">
+				<AnnotatableSlide transition="fade" background="#1a1a2e">
 					{#snippet content()}
 						<h2>Annotations</h2>
 						<p>Les enseignants peuvent annoter les slides en direct !</p>
