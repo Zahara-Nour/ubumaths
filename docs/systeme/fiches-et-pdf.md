@@ -262,8 +262,8 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
    transmis par l'API élève, et par l'API d'aperçu de l'affectation pour le PDF du prof). Le PDF d'un
    exercice seul (`exercise-typst-generator.ts`, sans fiche) imprime la version détaillée. Une série d'automatismes **garde** ses marqueurs de détail ; les
    écrans qui affichent un corrigé d'exercice montrent la version détaillée (`detailedCorrection`).
-   Aucun marqueur brut n'atteint Typst. Les encadrés `> [!méthode]`… s'impriment encore comme une
-   citation simple, sans titre. Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
+   Aucun marqueur brut n'atteint Typst. Encadrés et détails en ligne mis en forme au PDF : voir
+   [ubumark.md](ubumark.md) (« Détails d'une correction au PDF »). Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
 
 ## Comment étendre
 
