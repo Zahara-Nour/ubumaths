@@ -194,7 +194,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		evaluationOptions = (evals ?? [])
 			.map((e) => ({
 				value: e.id,
-				label: `${e.series?.title ?? 'Évaluation'} (${formLabel(e.form)})`
+				label: `${e.series?.title ?? 'Contrôle'} (${formLabel(e.form)})`
 			}))
 			.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
 	}

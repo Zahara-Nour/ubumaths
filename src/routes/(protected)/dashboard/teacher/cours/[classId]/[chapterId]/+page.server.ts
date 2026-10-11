@@ -417,7 +417,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 /** Q129 (b) : le texte exact de l'avertissement, décidé par David. */
 const ONGOING_EVALUATION_WARNING =
-	'Cette série est aussi celle d’une évaluation en cours : tes élèves pourront s’entraîner dessus avant.';
+	'Cette série est aussi celle d’un contrôle en cours : tes élèves pourront s’entraîner dessus avant.';
 
 /**
  * Le code HTTP d'un échec du module des séries de chapitre : introuvable ou

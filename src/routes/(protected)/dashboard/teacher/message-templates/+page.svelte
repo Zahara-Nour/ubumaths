@@ -100,7 +100,7 @@
 
 	const triggerTypeOptions = [
 		{ value: 'general', label: 'Message général' },
-		{ value: 'assessment_question', label: 'Question sur évaluation' },
+		{ value: 'assessment_question', label: 'Question sur un contrôle' },
 		{ value: 'srs_help', label: 'Aide SRS' },
 		{ value: 'system_notification', label: 'Notification système' },
 		{ value: 'enigma_answer', label: 'Réponse énigme (futur)' }

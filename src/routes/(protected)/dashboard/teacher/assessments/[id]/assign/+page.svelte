@@ -44,7 +44,7 @@
 			}
 
 			toaster.success(
-				`Évaluation assignée à ${selectedClassIds.length} classe${selectedClassIds.length > 1 ? 's' : ''}`
+				`Contrôle assigné à ${selectedClassIds.length} classe${selectedClassIds.length > 1 ? 's' : ''}`
 			);
 			selectedClassIds = [];
 			await refreshPageData();
@@ -72,7 +72,7 @@
 </script>
 
 <svelte:head>
-	<title>Assigner l'Évaluation | Chiphre</title>
+	<title>Assigner le contrôle | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl px-4 py-8">
@@ -82,7 +82,7 @@
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Assigner l'Évaluation</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Assigner le contrôle</h1>
 			<p class="mt-2 text-muted-foreground">{data.evaluation.series.title}</p>
 		</div>
 	</div>

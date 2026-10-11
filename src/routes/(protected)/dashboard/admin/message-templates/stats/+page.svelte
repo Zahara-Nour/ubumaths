@@ -150,7 +150,7 @@
 	function getTriggerTypeLabel(type: string): string {
 		const labels: Record<string, string> = {
 			general: 'Message général',
-			assessment_question: 'Question sur évaluation',
+			assessment_question: 'Question sur un contrôle',
 			srs_help: 'Aide SRS',
 			system_notification: 'Notification système',
 			enigma_answer: 'Réponse énigme'

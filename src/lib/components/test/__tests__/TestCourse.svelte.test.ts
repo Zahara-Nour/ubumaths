@@ -58,7 +58,7 @@ describe('TestCourse — fin de la course', () => {
 			inEvaluation: true
 		});
 		expect(container.querySelector('[aria-label="Retour au panier"]')).toBeNull();
-		expect(container.querySelector('[aria-label="Mes évaluations"]')).not.toBeNull();
+		expect(container.querySelector('[aria-label="Mes contrôles"]')).not.toBeNull();
 	});
 });
 

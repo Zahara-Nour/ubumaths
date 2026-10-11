@@ -158,11 +158,11 @@ describe('POST /api/tests/save — plus aucune évaluation', () => {
 	});
 
 	it.each(['interactive', 'course'] as const)(
-		'%s + assignation : 400 « passe par l’envoi de l’évaluation », RIEN n’est écrit ni lu',
+		'%s + assignation : 400 « passe par l’envoi du contrôle », RIEN n’est écrit ni lu',
 		async (mode) => {
 			const { response, fake } = await enregistrer({ mode, form: mode, assignmentId: ASSIGNMENT });
 			expect(response.status).toBe(400);
-			expect((await response.json()).error).toMatch(/envoi de l.évaluation/);
+			expect((await response.json()).error).toMatch(/envoi du contrôle/);
 			expect(fake.on('test_sessions')).toHaveLength(0);
 			expect(fake.on('test_answers')).toHaveLength(0);
 			expect(fake.on('evaluation_assignments')).toHaveLength(0);

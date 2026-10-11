@@ -306,7 +306,7 @@
 							<div class="text-center">
 								<div class="font-semibold">Enregistrer comme série</div>
 								<div class="text-xs font-normal opacity-80">
-									Pour en faire une évaluation pour vos {lore.entities.class}s
+									Pour en faire un contrôle pour vos {lore.entities.class}s
 								</div>
 							</div>
 						</Button>
