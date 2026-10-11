@@ -30,7 +30,6 @@ Priorité : **1** = touche les copies ou les résultats des élèves · **2** = 
 | K3  | **Fusion des moteurs (ADR 0007)** — projet existant                                        | V8                                  | L          | 1    |
 | K4  | **Gras coupé par un marquage du lexique**                                                  | L16                                 | S          | 3    |
 | K7  | **Tableur**                                                                                | V3, V4                              | M          | 2    |
-| K8  | **Tableau blanc et Google éteint**                                                         | M11                                 | S          | 2    |
 | K9  | **Accès admin et entrées de menu prof**                                                    | D1, D3, L1                          | S          | 2    |
 | K10 | **SRS : réglages sans effet, tables sans écran**                                           | L2, D2, D9, M14                     | M          | 2    |
 | K11 | **PDF : routes mortes, versions, polices**                                                 | M5, M6, L9 (+ T10 côté RGPD)        | M          | 3    |
@@ -58,7 +57,11 @@ comme les autres lois, décision de David du 2026-10-11). **D4** (la fiche chois
 concis ou détaillé : lot 3 de l'ADR 0017, déjà décidé le 2026-10-02 — D11). **K1** (V1, V2 : une seule copie par affectation, niveau de guidage
 choisi par le prof, jamais tiré — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md), 2026-10-11). **V5** (tableau blanc : rien de Google quand
 le drapeau est éteint, 2026-10-11). **D5** (tableau blanc réservé au prof : décision de David,
-2026-10-11 ; un tableau partagé en direct pour les élèves rejoint le projet visio).
+2026-10-11 ; un tableau partagé en direct pour les élèves rejoint le projet visio). **K8 / M11** (l'annotation des diapositives est dormante, pas morte : démos
+`/slides/demo{,-embedded}` remises en place, #1113 ; défauts trouvés en route et corrigés : focus
+perdu après la barre d'annotation, formules en bloc et flèches invisibles en thème clair, y compris
+dans les carnets, #1113, #1119, #1120, 2026-10-11 ; reste la table `class_google_classroom_links`,
+gardée : la supprimer serait destructif).
 Livrés hors tri, même famille que K2 : la lettre `e` est la constante d'Euler (#1061), plus de
 notation scientifique en LaTeX et `{{eval:…}}` sans chiffre faux (#1085), la lettre `i` est l'unité
 imaginaire (#1096), primitives écrites comme au lycée et valeurs définies calculées (#1098).
