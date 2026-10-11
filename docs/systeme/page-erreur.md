@@ -4,6 +4,7 @@ couvre:
   - 'src/lib/error-page/**'
   - 'src/lib/components/error-page/**'
   - 'src/routes/(public)/test-erreur/**'
+  - src/lib/server/maintenance.ts
 ---
 
 # Page d'erreur (404, 403, 500…)
@@ -29,22 +30,36 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 
 1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile. Sur grand écran (`lg`),
    deux colonnes — spirale à gauche, texte à droite — pour tout voir sans défiler.
-2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
-   (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 401,
-   une 403, une 404 ni une 410 : le titre, la phrase sur π et les actions suffisent.
+2. « Erreur 404 » et le titre (`<h1>`) propre au code (`describeError`,
+   `src/lib/error-page/error-copy.ts`). Aucune explication dessous : le titre, la phrase sur π et
+   les actions suffisent.
 3. Pour une erreur 4xx, le message précis (`error(404, 'Exercice introuvable')`) **remplace le
    titre** (« Exercice introuvable » au lieu de « Page introuvable », onglet compris), sauf s'il
    n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…, liste
    `GENERIC_MESSAGES`, comparée sans casse ni accents) : le titre français reste alors.
-4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
-   elle, reste introuvable. » Le verbe et la chute viennent de `describeError` (`piVerb`,
-   `piTwist`, ponctuation comprise) : 401 « Le nombre 401 se présente à la 1 197ᵉ décimale de π ;
-   ta page, elle, voudrait que tu en fasses autant. » ; 403 « Le nombre 403 a été autorisé à
-   s'installer à la 723ᵉ décimale de π ; toi, sur cette page, tu ne l'es pas. » ;
-   410 « Le nombre 410 a un bail éternel à la 162ᵉ décimale de π ; cette page, elle, a rendu les
-   clés. » ;
-   les codes sans chute finissent sur « de π. ». Pas d'extrait des décimales en clair : le code est
-   déjà coloré dans la spirale.
+4. Pour un code de la table π : « Le nombre {code} {`piVerb`} Nᵉ décimale de π{`piTwist`}. » — le
+   verbe porte sa préposition (« à la », « jusqu'à la », « dès la »), la chute sa ponctuation
+   d'attache. Pas d'extrait des décimales en clair : le code est déjà coloré dans la spirale. Les
+   phrases, choisies par David :
+
+   | Code | Titre                 | Phrase                                                                                                           |
+   | ---- | --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+   | 400  | Demande impossible    | Le nombre 400 est bien formé à la 1 174ᵉ décimale de π ; ta demande, elle, ne l'est pas.                         |
+   | 401  | Connexion requise     | Le nombre 401 se présente à la 1 197ᵉ décimale de π ; ta page, elle, voudrait que tu en fasses autant.           |
+   | 403  | Accès refusé          | Le nombre 403 a été autorisé à s'installer à la 723ᵉ décimale de π ; toi, sur cette page, tu ne l'es pas.        |
+   | 404  | Page introuvable      | Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page, elle, reste introuvable.                         |
+   | 408  | Délai dépassé         | Le nombre 408 arrive dès la 145ᵉ décimale de π ; ta demande, elle, a mis trop de temps.                          |
+   | 410  | Page disparue         | Le nombre 410 a un bail éternel à la 162ᵉ décimale de π ; cette page, elle, a rendu les clés.                    |
+   | 429  | Trop de demandes      | Le nombre 429 a attendu jusqu'à la 1 229ᵉ décimale de π ; toi, quelques secondes suffiront.                      |
+   | 500  | Le serveur a trébuché | Le nombre 500 tient bon jusqu'à la 6 238ᵉ décimale de π ; le serveur, lui, a trébuché bien avant.                |
+   | 503  | Service indisponible  | Le nombre 503 est de service à la 837ᵉ décimale de π ; cette page, elle, est hors service pour quelques minutes. |
+   | 4xx  | Demande impossible    | Le nombre 413 apparaît à la 1 075ᵉ décimale de π ; ta demande, elle, n'a pas abouti.                             |
+   | 5xx  | Le serveur a trébuché | Le nombre 502 apparaît à la 31ᵉ décimale de π ; le serveur, lui, a perdu le fil.                                 |
+
+   503 dit « cette page » et non « Chiphre » : une 503 de route (glossaire, Mathémo) laisse le reste
+   du site debout. Les deux dernières lignes sont les replis des codes rares (405, 413, 415, 422 ;
+   501, 502, 504). Un code absent de la table π (418…) n'a pas de phrase.
+
 5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
    en liens.
 6. Un seul bouton plein : « Se connecter » (401) ou « Réessayer » (5xx, 408, 429), sinon « Retour
@@ -106,6 +121,22 @@ proportionnel aux chiffres : rien ne se chevauche. Réglages (`DEFAULT_SPIRAL_OP
 que le 404 tombe vers la mi-rayon, encore lisible, et que la spirale s'arrête autour du disque
 de Père Ubu (~1 660 chiffres). Les codes situés au-delà (500 : 6 238ᵉ décimale) ne sont pas
 colorés dans la spirale ; la phrase reste affichée.
+
+## Page de maintenance
+
+Le mode maintenance (`pnpm maintenance:on`, `src/lib/server/maintenance.ts`) ne passe **pas** par
+`+error.svelte` : il coupe la requête avant Supabase et l'authentification, et doit tenir pendant
+qu'on fige la base. Sa page est donc du HTML autonome — ni JS, ni base, ni ressource externe —
+mais de la même famille : spirale de π avec le 503 en ambre (`piSpiralSvg`,
+`src/lib/error-page/pi-spiral-svg.ts`, même géométrie que `PiSpiral.svelte`), Père Ubu intégré
+dans la page (`?inline`, ~45 Ko), « Erreur 503 », « Maintenance en cours », « Le nombre 503 est de
+service à la 837ᵉ décimale de π ; Chiphre, lui, est hors service le temps d'une mise à jour. »,
+l'heure de retour prévue si `MAINTENANCE_UNTIL` est fixé, et « Réessayer » (simple lien vers la
+même adresse). Poids : ~175 Ko, ~64 Ko compressés.
+
+Un élève déjà sur le site au début de la maintenance, qui navigue, voit en revanche la page
+d'erreur 503 de l'application (« …cette page, elle, est hors service pour quelques minutes »),
+sans l'heure de retour.
 
 ## Page de démonstration
 

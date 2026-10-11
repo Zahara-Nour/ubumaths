@@ -16,15 +16,16 @@
 
 export interface ErrorCopy {
 	title: string;
-	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 403, 404, 410). */
-	explanation: string | null;
-	/** Verbe de la phrase sur π : « Le nombre 401 {verbe} à la 1 197ᵉ décimale de π ». */
+	/**
+	 * Début de la phrase sur π, préposition comprise : « Le nombre 429 {a attendu
+	 * jusqu’à la} 1 229ᵉ décimale de π ».
+	 */
 	piVerb: string;
 	/**
 	 * Chute de la phrase sur π, ponctuation d'attache comprise (« , mais… »,
-	 * « ; … »), ou `null` pour finir sur « de π. ».
+	 * « ; … ») : « …décimale de π ; ta demande, elle, n'a pas abouti. »
 	 */
-	piTwist: string | null;
+	piTwist: string;
 	/**
 	 * Message d'une erreur serveur (5xx), à replier sous « Détails techniques » :
 	 * il peut citer une erreur brute de la base (noms de tables, de colonnes).
@@ -36,52 +37,66 @@ export interface ErrorCopy {
 	offerRetry: boolean;
 }
 
-type Copy = Pick<ErrorCopy, 'title' | 'explanation'> &
-	Partial<Pick<ErrorCopy, 'piVerb' | 'piTwist'>>;
+type Copy = Pick<ErrorCopy, 'title' | 'piTwist'> & Partial<Pick<ErrorCopy, 'piVerb'>>;
 
+// Pas d'explication sous le titre : le titre, la phrase sur π et les actions suffisent
 const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
+	400: {
+		title: 'Demande impossible',
+		piVerb: 'est bien formé à la',
+		piTwist: '\u00a0; ta demande, elle, ne l’est pas'
+	},
 	401: {
 		title: 'Connexion requise',
-		explanation: null,
-		piVerb: 'se présente',
+		piVerb: 'se présente à la',
 		piTwist: '\u00a0; ta page, elle, voudrait que tu en fasses autant'
 	},
 	403: {
 		title: 'Accès refusé',
-		explanation: null,
-		piVerb: 'a été autorisé à s’installer',
+		piVerb: 'a été autorisé à s’installer à la',
 		piTwist: '\u00a0; toi, sur cette page, tu ne l’es pas'
 	},
 	404: {
 		title: 'Page introuvable',
-		explanation: null,
 		piTwist: ', mais la page, elle, reste introuvable'
+	},
+	408: {
+		title: 'Délai dépassé',
+		piVerb: 'arrive dès la',
+		piTwist: '\u00a0; ta demande, elle, a mis trop de temps'
 	},
 	410: {
 		title: 'Page disparue',
-		explanation: null,
-		piVerb: 'a un bail éternel',
+		piVerb: 'a un bail éternel à la',
 		piTwist: '\u00a0; cette page, elle, a rendu les clés'
 	},
 	429: {
 		title: 'Trop de demandes',
-		explanation: 'Le serveur reçoit trop de demandes d’un coup. Patiente un instant, puis réessaie.'
+		piVerb: 'a attendu jusqu’à la',
+		piTwist: '\u00a0; toi, quelques secondes suffiront'
+	},
+	500: {
+		title: 'Le serveur a trébuché',
+		piVerb: 'tient bon jusqu’à la',
+		piTwist: '\u00a0; le serveur, lui, a trébuché bien avant'
 	},
 	503: {
 		title: 'Service indisponible',
-		explanation:
-			'Chiphre est momentanément indisponible (maintenance ou surcharge). Réessaie dans quelques minutes.'
+		piVerb: 'est de service à la',
+		piTwist: '\u00a0; cette page, elle, est hors service pour quelques minutes'
 	}
 };
 
+/** Repli des codes 4xx sans texte propre (405, 413, 415, 422…). */
 const CLIENT_ERROR: Copy = {
 	title: 'Demande impossible',
-	explanation: 'La demande n’a pas pu être traitée. Vérifie l’adresse ou reviens en arrière.'
+	piTwist: '\u00a0; ta demande, elle, n’a pas abouti'
 };
 
+/** Repli des codes 5xx sans texte propre (501, 502, 504…). */
 const SERVER_ERROR: Copy = {
 	title: 'Le serveur a trébuché',
-	explanation: 'Une erreur inattendue s’est produite de notre côté. Réessaie dans un instant.'
+	piTwist: '\u00a0; le serveur, lui, a perdu le fil'
 };
 
 /**
@@ -117,8 +132,7 @@ export function describeError(status: number, message: string | undefined): Erro
 
 	return {
 		...copy,
-		piVerb: copy.piVerb ?? 'apparaît',
-		piTwist: copy.piTwist ?? null,
+		piVerb: copy.piVerb ?? 'apparaît à la',
 		// Erreur 4xx : le message précis (« Exercice introuvable ») remplace le titre générique
 		title: status < 500 && specific !== null ? specific : copy.title,
 		technicalDetail: status >= 500 ? specific : null,

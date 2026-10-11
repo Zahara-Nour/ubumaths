@@ -7,23 +7,32 @@
 
 ## Décisions de David (2026-10-11)
 
-| #   | Question                     | Décision                                                                                                                                                                               |
-| --- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Q1  | Où                           | d'abord un **outil dédié** (page), puis l'**Atelier**. Pas dans les formules des énoncés.                                                                                              |
-| Q2  | Signe « − »                  | **à l'écran, le signe appartient à la somme** (comme la démo, case « le signe − » décochée).                                                                                           |
-| Q3  | Nombre, lettre seuls         | **encadrés**.                                                                                                                                                                          |
-| Q4  | Sous-expressions englobantes | **en option** (réglage, décoché par défaut).                                                                                                                                           |
-| Q5  | Ce qui est affiché           | une **lecture en français** : `2+3y` → « la somme de 2 et du produit de 3 par y », mots en **mots cliquables** vers le dictionnaire.                                                   |
-| Q6  | Glisser-déposer              | **pas en v1** (phase 0 à part).                                                                                                                                                        |
-| Q7  | Fonctions                    | **argument explorable** (`\sin(2x+1)` : `2x+1` s'encadre).                                                                                                                             |
-| Q8  | Vocabulaire                  | **sous-expression** ; outil : **Structure d'une expression**.                                                                                                                          |
-| Q9  | Somme mêlant `+` et `−`      | à l'écran : somme aplatie, signe à la somme. **Lecture** : somme aplatie avec ses signes, « la somme de 5, −3 et x ». Parenthéser pour les classes sans somme algébrique : à l'auteur. |
-| Q10 | Où la lecture                | celle de la sous-expression survolée, celle de l'expression entière en permanence, et **en sens inverse** : survoler un mot encadre sa sous-expression.                                |
-| Q11 | Formulations                 | le tableau ci-dessous.                                                                                                                                                                 |
-| Q12 | Mots cliquables              | la **même fiche que dans les énoncés** (niveau de l'élève) ; définitions manquantes proposées par Claude, validées par David.                                                          |
-| Q13 | Deux termes avec « − »       | « la différence de 5 et 3 » (exactement deux termes), à tous les niveaux.                                                                                                              |
-| Q14 | Élève de 6e ou avant         | message si une suite **mêle `+` et `−` sur 3 termes ou plus**, ou commence par **`−`** ; structure et lecture **masquées** tant que le message est là.                                 |
-| Q15 | Accès                        | page **publique** ; niveau = celui de l'élève connecté (`readReaderGrade`) ; visiteur : pas de message.                                                                                |
+| #   | Question                     | Décision                                                                                                                                                                                                                                                                                                        |
+| --- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1  | Où                           | d'abord un **outil dédié** (page), puis l'**Atelier**. Pas dans les formules des énoncés.                                                                                                                                                                                                                       |
+| Q2  | Signe « − »                  | **à l'écran, le signe appartient à la somme** (comme la démo, case « le signe − » décochée).                                                                                                                                                                                                                    |
+| Q3  | Nombre, lettre seuls         | **encadrés**.                                                                                                                                                                                                                                                                                                   |
+| Q4  | Sous-expressions englobantes | **en option** (réglage, décoché par défaut).                                                                                                                                                                                                                                                                    |
+| Q5  | Ce qui est affiché           | une **lecture en français** : `2+3y` → « la somme de 2 et du produit de 3 par y », mots en **mots cliquables** vers le dictionnaire.                                                                                                                                                                            |
+| Q6  | Glisser-déposer              | **pas en v1** (phase 0 à part).                                                                                                                                                                                                                                                                                 |
+| Q7  | Fonctions                    | **argument explorable** (`\sin(2x+1)` : `2x+1` s'encadre).                                                                                                                                                                                                                                                      |
+| Q8  | Vocabulaire                  | **sous-expression** ; outil : **Structure d'une expression**.                                                                                                                                                                                                                                                   |
+| Q9  | Somme mêlant `+` et `−`      | à l'écran : somme aplatie, signe à la somme. **Lecture** : somme aplatie avec ses signes, « la somme de 5, −3 et x ». Parenthéser pour les classes sans somme algébrique : à l'auteur.                                                                                                                          |
+| Q10 | Où la lecture                | celle de la sous-expression survolée, celle de l'expression entière en permanence, et **en sens inverse** : survoler un mot encadre sa sous-expression.                                                                                                                                                         |
+| Q11 | Formulations                 | le tableau ci-dessous.                                                                                                                                                                                                                                                                                          |
+| Q12 | Mots cliquables              | la **même fiche que dans les énoncés** (niveau de l'élève) ; définitions manquantes proposées par Claude, validées par David.                                                                                                                                                                                   |
+| Q13 | Deux termes avec « − »       | « la différence de 5 et 3 » (exactement deux termes), à tous les niveaux.                                                                                                                                                                                                                                       |
+| Q14 | Élève de 6e ou avant         | message si une suite **mêle `+` et `−` sur 3 termes ou plus**, ou commence par **`−`** ; structure et lecture **masquées** tant que le message est là.                                                                                                                                                          |
+| Q15 | Accès                        | page **publique** ; niveau = celui de l'élève connecté (`readReaderGrade`) ; visiteur : pas de message.                                                                                                                                                                                                         |
+| Q16 | Puissance d'un groupe        | base composée OU exposant composé, exposant ≠ 2, 3 : « la puissance 4 de la somme de a et b », « la puissance n + 1 de 2 », « la puissance 2x de e » (exposant en formule, accord au féminin). Base et exposant nombre ou lettre seuls : forme simple, « x puissance 4 », « x puissance n », « e puissance x ». |
+| Q17 | Base 10                      | jamais carré ni cube : « le produit de 3 par 10 puissance 2 », « 10 puissance −3 ».                                                                                                                                                                                                                             |
+| Q18 | `AB²` lu comme un produit    | rien dans la lecture : chantier séparé (parseur).                                                                                                                                                                                                                                                               |
+| Q19 | `−1 × x`                     | inchangé : « l'opposé du produit de 1 par x ».                                                                                                                                                                                                                                                                  |
+| Q20 | « par » emboîtés             | facteur dont la lecture contient « par » : « le produit de A et de B » (« de A, de B et de C ») ; quotient : « le quotient dont le numérateur est A et le dénominateur B » (mots du dictionnaire).                                                                                                              |
+| Q21 | Message « 6e ou avant »      | tout « − » sans parenthèses devant un nombre ou une lettre déclenche le message (relatifs = 5e).                                                                                                                                                                                                                |
+| Q22 | Texte du message             | dans une somme : « Le signe − devant un nombre ou une lettre s'apprend en 5e : écris-le entre parenthèses, par exemple (−x) + 3. » (exemple tiré de l'expression de l'élève) ; ailleurs : « Le signe − devant un nombre ou une lettre s'apprend en 5e. »                                                        |
+| Q23 | « − » devant une parenthèse  | `−(3 + 2) + 1`, `2 × −(x + 1)` : « Le signe − devant une parenthèse s'apprend en 5e. », sans exemple.                                                                                                                                                                                                           |
+| Q24 | Suite de plus de 3 termes    | avec une soustraction (`1 + 2 − 3 + 4 − 5`) : « Ajoute des parenthèses pour montrer ce que tu calcules d'abord. », sans propositions ; 3 termes : inchangé (deux propositions).                                                                                                                                 |
 
 Programmes (points en base) : relatifs, opposé, priorités opératoires et enchaînement d'additions et
 soustractions de relatifs arrivent en **5e** (5-007, 5-012, 5-013, 5-023) ; avant, calculs avec
@@ -67,9 +76,23 @@ parenthèses (CM1-049, CM2-054). D'où la frontière « 6e ou avant ».
 | B12 | `2x + 3 = 7`              | la somme du produit de 2 par x et de 3 est égale à 7             |
 | B13 | `f(x)`, `\sin x`, `\ln x` | l'image de x par f ; le sinus de x ; le logarithme népérien de x |
 | B14 | `(2 + x)²`                | le carré de la somme de 2 et x                                   |
+| B15 | `−3y + x`                 | la somme de l'opposé du produit de 3 par y et de x               |
 
+- B15 (décision de David, 2026-10-11) : dans une somme, un terme précédé de « − » se lit
+  « l'opposé de <terme> », SAUF un nombre seul, lu signé (B4, B5). `−3x` seul : « l'opposé du
+  produit de 3 par x ». Un nombre négatif hors somme se lit signé aussi (`2 × (−3)` : « le produit
+  de 2 par −3 »).
 - Nombres en chiffres, rendus comme formules ; contractions gérées (« du », « des », « de la »,
-  « de l' »).
+  « de l' », « au », « aux »). Énumération : dès qu'un élément commence par un article, chacun est
+  introduit par « de » (B1 « de 2 et du produit », B12 « du produit … et de 3 ») ; sinon seul le
+  premier (B2 « de a, b et c »).
+- Inégalités : « est strictement inférieur(e) à », « est inférieur(e) ou égal(e) à », idem
+  supérieur ; « est différent(e) de ». Encadrement : « 1 est strictement inférieur à x, qui est
+  strictement inférieur à 3 ». Autres relations (∈, ≈…) : la relation entière en formule.
+- Bloc sans lecture prévue (`90°`, `n!`, limite, `max`, `\log_2`, `\sin^{-1}`…) : lu comme
+  formule, sans mot.
+- Puissance : 2 → carré, 3 → cube, sinon « x puissance n », exposant en formule (négatif compris) ;
+  `(−1)ⁿ` garde ses parenthèses (« (−1) puissance n », sinon confondu avec `−1ⁿ`).
 - Accord : « la somme … est **égale** à », « le produit … est **égal** à ».
 - Lecture de la sous-expression survolée dans le panneau, lecture de l'expression entière en
   permanence ; survoler un mot de la lecture encadre sa sous-expression.
@@ -114,3 +137,44 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
 - 2026-10-11 — démo validée ; Q1-Q15 tranchées ; glossaire à jour (a81a98d56).
 - 2026-10-11 — spécification validée ; page = `/test-structure`. Lot 1 lancé dans le worktree
   `../ubumaths-wt-structure` (branche `feat/demo-structure-expression`).
+- 2026-10-11 — lot 1 : module `src/lib/mathAST/structure/` (arbre, LaTeX marqué, vide / non reconnue) ;
+  la démo s'y branche, l'option « le signe − » disparaît (signe à la somme).
+- 2026-10-11 — décision de David : **`−3x` équivaut à `−(3x)`, `−6 ÷ 3 + 1` à `−(6 ÷ 3) + 1`**. Un
+  « − » en tête sans parenthèses visibles porte sur tout le produit ou le quotient en ligne qui suit
+  (le parseur rend `(−3)·x`, la structure réassocie). Hors somme : opposé du produit ; dans une
+  somme : signe à la somme. Inchangé : `(−3)x`, `2 × (−3)`, `−3`, `−3²` (opposé de 3²).
+- 2026-10-11 — lot 2 : `structure/reading.ts` (`readingOf`, `readingPlainText`). Lecture
+  structurée en segments texte / formule / mot, chacun rattaché à l'id de sa sous-expression ; clé
+  d'un mot = `termId` du dictionnaire (`carré (puissance)`, `image (fonction)`…), passée telle
+  quelle à `LexiconTerm` au lot 4. B15 et précisions ajoutées à la section B.
+- 2026-10-11 — lot 3 : `structure/parentheses-advice.ts` (`parenthesesAdvice`, `needsParenthesesAdvice`).
+  Un message à la fois, première sous-expression en ordre préfixe ; `−` en tête avant la suite.
+  C1 appliqué selon ses exemples (`10 − 2 − 3` = message). À valider par David : message pour `−3x`
+  et `−3` seuls (et tout « − » sans parenthèses : `2x = −6`, `10^{−3}`), texte de C2, au-delà de 3
+  termes « tout à gauche ou tout à droite » (`((7 − 2) + 3x) − 5` ou `7 − (2 + (3x − 5))`).
+- 2026-10-11 — lot 2, décisions Q16, Q17, Q20 appliquées à la lecture (`reading.ts`). Q16
+  précisée : un exposant lettre seule garde la forme simple (`x^n` → « x puissance n »,
+  `e^x` → « e puissance x ») ; Q21, Q22 consignées.
+- 2026-10-11 — lot 4 : page `/test-structure` branchée sur la lecture. `StructureExplorer.svelte`
+  (formule, lecture de l'expression entière en permanence, lecture de la dernière sous-expression
+  survolée, message « 6e ou avant » qui remplace encadré et lecture), `StructureReading.svelte`
+  (formules en `math-span`, mots en `LexiconTerm`, sens inverse au survol ou au focus),
+  `StructureFormula` accepte une sous-expression imposée (`highlightId`) ; corpus : lecture courte
+  sous chaque expression ; `structure-latex.ts` (anciens intitulés) supprimé. Visiteur : fiches du
+  dictionnaire lues au niveau 5e (`structure-lexicon.svelte.ts`).
+- 2026-10-11 — lots 1 à 4 livrés : PR #1125 mergée (revues de code à chaque lot, CI verte). Reste
+  le lot 5 : quatre définitions à valider par David (différent, racine cubique, racine n-ième,
+  logarithme décimal) et Q25 (saisie par la page d'administration ou migration). Limite connue :
+  `AB²` lu comme un produit par le parseur (Q18, chantier séparé).
+
+## Lot 5 — définitions proposées (à valider par David)
+
+Mots produits par la lecture et absents du dictionnaire (ils s'affichent sans lien). Niveaux non
+vérifiés dans les programmes.
+
+| Mot                | Définition proposée                                                                                                                                | Niveau proposé            |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| différent          | Se dit de deux quantités qui n'ont pas la même valeur. Symbole : $\neq$. Ex : $3 + 4 \neq 8$.                                                      | 6e                        |
+| racine cubique     | $\sqrt[3]{a}$ est le nombre dont le cube vaut $a$. Ex : $\sqrt[3]{8} = 2$ car $2^3 = 8$.                                                           | Terminale, maths complém. |
+| racine n-ième      | Pour $a \geq 0$ et $n$ entier non nul, $\sqrt[n]{a}$ est le nombre positif dont la puissance $n$ vaut $a$. Ex : $\sqrt[4]{81} = 3$ car $3^4 = 81$. | Terminale, maths complém. |
+| logarithme décimal | Fonction notée $\log$, définie par $\log(x) = \dfrac{\ln x}{\ln 10}$. Elle vérifie $\log(10^n) = n$. Ex : $\log(1000) = 3$.                        | Terminale, spécialité     |

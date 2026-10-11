@@ -81,17 +81,13 @@
 				Erreur {status}
 			</p>
 			<h1 class="text-3xl font-bold text-balance sm:text-4xl">{copy.title}</h1>
-			{#if copy.explanation}
-				<p class="text-balance text-muted-foreground">{copy.explanation}</p>
-			{/if}
 		</div>
 
 		{#if occurrence}
 			<p class="text-balance">
 				Le nombre {status}
-				{copy.piVerb} à la
-				<strong>{frenchOrdinal(occurrence.position)} décimale</strong
-				>&nbsp;de&nbsp;π{copy.piTwist ?? ''}.
+				{copy.piVerb}
+				<strong>{frenchOrdinal(occurrence.position)} décimale</strong>&nbsp;de&nbsp;π{copy.piTwist}.
 			</p>
 		{/if}
 

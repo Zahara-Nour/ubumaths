@@ -26,6 +26,9 @@
 // CONSTANTES
 // ============================================================================
 
+/** Point décimal écrit par `toLatex` : entre deux chiffres */
+const DECIMAL_POINT_BETWEEN_DIGITS = /(\d)\.(\d)/g;
+
 /** Virgule collée entre deux chiffres (un chiffre avant : ni `\,` ni `{,}`) */
 const DECIMAL_COMMA_BETWEEN_DIGITS = /(\d),(\d)/g;
 
@@ -47,6 +50,14 @@ const SET_WITH_COMMA = /\\\{[^}]*(?<![\\{]),(?!\})/;
 // ============================================================================
 // FONCTIONS
 // ============================================================================
+
+/**
+ * AFFICHAGE : du LaTeX de `toLatex` à la française, `2.5` → `2{,}5` (écriture
+ * de MathLive). Ne touche que `chiffre . chiffre`. Le moteur, lui, garde le point.
+ */
+export function decimalPointToComma(latex: string): string {
+	return latex.replace(DECIMAL_POINT_BETWEEN_DIGITS, '$1{,}$2');
+}
 
 /** Contexte NOMBRE : `3,14` → `3.14`, `1\,200,5` → `1\,200.5` */
 export function bareDecimalCommaToPoint(latex: string): string {

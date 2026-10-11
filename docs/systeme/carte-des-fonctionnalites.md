@@ -154,6 +154,10 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
   sur le dessin. Elle s'arrête quand on la survole, la focalise ou l'ouvre. **Une seule fois**, elle
   se dérobe quand la souris approche (glissement adouci, retour lent). Rien ne bouge en « moins
   d'animations ».
+- **Au bout d'une minute, tout se pose pour de bon** (WCAG 2.2.2, décision de David du 2026-10-11) :
+  la dérive s'arrête (une dernière escale, l'horloge `requestAnimationFrame` s'éteint), la flamme
+  ne vacille plus et la lumière ne scintille plus, sur l'accueil comme sur les vues. Les effets de
+  survol restent : c'est le visiteur qui les déclenche.
 - **L'argent** : seulement ce qui restera vrai quand le site sera payant hors des classes de son
   créateur — « Sans publicité », « En accès libre, sans compte » + la liste, « Pour les élèves des
   classes de son créateur, Chiphre est entièrement gratuit ». Jamais « gratuit » seul ni « pour
@@ -222,8 +226,8 @@ débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (Père Ubu mène 
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D19 ; chantier K19 ;
-V15 corrigé par le Tour du Royaume) :
+Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D18 ; chantier K19 ;
+V15 corrigé par le Tour du Royaume, D19 par la chandelle qui se pose au bout d'une minute) :
 
 - Le chat de `/pere-ubu` répond par une erreur à un visiteur, alors que la page est au sitemap.
 - `/a-propos` promet un suivi « accessible aux parents ».
@@ -233,5 +237,3 @@ V15 corrigé par le Tour du Royaume) :
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
   teintés (D17), pas de lien d'évitement (D18).
 - La description SEO de `/games` cite Navadra, retiré du catalogue.
-- Mouvement sans fin sur l'accueil (dérive de la roue, flamme qui vacille) : WCAG 2.2.2 demande un
-  moyen de l'arrêter au-delà de 5 s (D19).
