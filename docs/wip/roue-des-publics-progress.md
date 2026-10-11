@@ -27,7 +27,19 @@
 - **Qui est derrière** : reprendre ce que disent déjà les pages du panneau « Infos » — « un
   enseignant agrégé de mathématiques et ingénieur en informatique, passionné de littérature et
   d'illusionnisme » (`/a-propos`), sans nom ; contact@chiph.re (mentions légales).
-- **Niveau visé : du CM1 à la Terminale** (la description SEO de l'accueil dit « de la 6ᵉ » : à corriger).
+- **Niveau visé : du CM1 à la Terminale** (description SEO de l'accueil corrigée).
+- **Argent** (le site deviendra payant pour les élèves hors de ses classes ; suivi personnalisé
+  payant, contenu pas entièrement ouvert aux anonymes) : n'écrire que ce qui restera vrai —
+  « Sans publicité. » ; « En accès libre, sans compte : » + la liste des outils libres ;
+  « Pour les élèves de ses classes, Chiphre est entièrement gratuit. » Jamais « gratuit » seul,
+  « tout est accessible », « pour toujours ». Pas d'annonce de l'offre payante avant qu'elle existe.
+  ⚠️ Le pacte du Compendium (§ Phynance, « l'argent réel n'achète jamais d'avantage
+  pédagogique ») sera à réécrire quand l'offre sera définie.
+- **Adresses** : `/eleves`, `/parents`, `/professeurs` (confirmées).
+- **Suivi des parents** : dire franchement qu'il n'y a pas de compte parent ; le professeur peut
+  donner le lien du cahier de textes.
+- **`/royaume`** : Père Ubu reste cliquable vers `/royaume` sur l'accueil ; la vue élève y renvoie
+  (« Découvrir le Royaume en détail »).
 
 ## Fait (maquette, non poussée)
 
@@ -38,9 +50,10 @@
 
 ## Reste à faire
 
-- [ ] Contenu des trois vues (questions ouvertes : « gratuit », qui est derrière, suivi des
-      parents, enseignants extérieurs, images) ; liens de secours dans chaque vue (sans JS).
-- [ ] Père Ubu reste-t-il la porte de `/royaume` ? Lien vers `/royaume` depuis la vue élève.
+- [ ] Contenu des trois vues (plans à valider) ; liens de secours dans chaque vue (sans JS).
+- [ ] Mentions légales : éditeur « [A COMPLETER] » (responsable, statut, adresse), en prod —
+      à remplir par David avant la mise en ligne des vues.
+- [ ] Lien vers `/royaume` depuis la vue élève.
 - [ ] Mouvement continu (dérive, flamme) et critère WCAG 2.2.2 : arbitrage de David en attente.
 - [ ] Tests : `drift.ts` (bornes, flanc vs tour complet), roue (survol, clic, clavier, tactile,
       Échap, anonyme seulement sur l'accueil), accueil (test « Visiter le Royaume » à remplacer).

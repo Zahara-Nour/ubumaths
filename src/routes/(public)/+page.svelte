@@ -36,7 +36,7 @@
 
 <SeoHead
 	title="Chiphre - Les maths de la chandelle verte"
-	description="Chiphre, les maths de la chandelle verte : exercices interactifs, automatismes, jeux et outils de mathématiques pour les élèves, de la 6ᵉ à la Terminale."
+	description="Chiphre, les maths de la chandelle verte : exercices interactifs, automatismes, jeux et outils de mathématiques pour les élèves, du CM1 à la Terminale."
 />
 <JsonLd data={HOME_JSON_LD} />
 
