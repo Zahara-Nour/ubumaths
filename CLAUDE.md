@@ -252,6 +252,7 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 | [notation-unites.md](docs/pratiques/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
 | [fiches-exercices.md](docs/pratiques/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF |
 | [observabilite-erreurs-prod.md](docs/pratiques/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
+| [core-web-vitals.md](docs/pratiques/core-web-vitals.md)                       | **Vitesse réelle** : relevé mensuel, diagnostic    |
 | [warning-svelte.md](docs/pratiques/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
 | [css-color-tokens.md](docs/pratiques/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
 | [architecture-generale.md](docs/systeme/architecture-generale.md)             | Structure, routing, perf                           |
