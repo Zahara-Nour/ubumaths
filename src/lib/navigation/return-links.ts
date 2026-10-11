@@ -58,13 +58,20 @@ export function studySessionReturnHref(deckId: string, searchParams: URLSearchPa
  *
  * En contrôle, partir garde la tentative ouverte : à la reprise, mêmes questions
  * mais réponses à retaper, et le chrono d'une course a continué de tourner.
- * D'où une confirmation, qui ne parle du temps que s'il y en a un.
+ * D'où une confirmation, qui ne parle du temps que s'il y en a un — et seulement
+ * quand une tentative est ouverte : l'aperçu du prof n'en a pas.
  */
-export function automathsQuitLink(options: { inEvaluation: boolean; timed: boolean }): {
+export function automathsQuitLink(options: {
+	inEvaluation: boolean;
+	attemptOpen: boolean;
+	timed: boolean;
+}): {
 	href: string;
 	confirmLeave: string | undefined;
 } {
 	if (!options.inEvaluation) return { href: '/automaths/panier', confirmLeave: undefined };
+	if (!options.attemptOpen)
+		return { href: '/dashboard/student/assessments', confirmLeave: undefined };
 	const consequence = options.timed
 		? 'Tes réponses tapées seront perdues et le temps continue de courir.'
 		: 'Tes réponses tapées seront perdues.';

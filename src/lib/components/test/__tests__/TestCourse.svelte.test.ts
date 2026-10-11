@@ -45,9 +45,7 @@ async function finish(inEvaluation: boolean) {
 
 /** Clique le lien « Quitter » ; rend true si le lien a annulé la navigation */
 function clickQuit(container: HTMLElement): boolean {
-	const link = [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
-		(candidate) => candidate.textContent?.trim() === 'Quitter'
-	);
+	const link = quitLink(container);
 	if (!link) throw new Error('lien « Quitter » introuvable');
 	let cancelledByLink = false;
 	// Écouteur posé après celui du lien : relève sa décision, puis bloque la vraie navigation
@@ -184,7 +182,8 @@ describe('TestCourse — quitter en cours de route', () => {
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
-			inEvaluation: true
+			inEvaluation: true,
+			collectOnly: true
 		});
 		expect(clickQuit(container)).toBe(true);
 		expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining('le temps continue de courir'));

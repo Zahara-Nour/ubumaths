@@ -58,7 +58,7 @@
 	}: Props = $props();
 
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
-	const quit = $derived(automathsQuitLink({ inEvaluation, timed: true }));
+	const quit = $derived(automathsQuitLink({ inEvaluation, attemptOpen: collectOnly, timed: true }));
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());

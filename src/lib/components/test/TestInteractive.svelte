@@ -73,7 +73,9 @@
 
 	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
-	const quit = $derived(automathsQuitLink({ inEvaluation, timed: false }));
+	const quit = $derived(
+		automathsQuitLink({ inEvaluation, attemptOpen: collectOnly, timed: false })
+	);
 
 	// Variables
 	let currentIndex = $state(0);

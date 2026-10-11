@@ -42,7 +42,12 @@ function item(statement: string, delaySeconds: number): ClassroomItem {
 	return { instance: qcm(statement), delaySeconds, categoryKey: 'x' };
 }
 
-async function open(items: ClassroomItem[], isLoggedIn = true, inEvaluation = false) {
+async function open(
+	items: ClassroomItem[],
+	isLoggedIn = true,
+	inEvaluation = false,
+	collectOnly = false
+) {
 	const onComplete = vi.fn<(result: TestResult) => void>();
 	const onRestart = vi.fn();
 	const onBack = vi.fn();
@@ -52,7 +57,8 @@ async function open(items: ClassroomItem[], isLoggedIn = true, inEvaluation = fa
 		onComplete,
 		onRestart,
 		onBack,
-		inEvaluation
+		inEvaluation,
+		collectOnly
 	});
 	flushSync();
 	await tick();
@@ -245,7 +251,7 @@ describe('TestInteractive — Entraînement', () => {
 	it('contrôle : « Quitter » demande confirmation (réponses perdues) ; entraînement : non', async () => {
 		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
-		const evaluation = await open([item('Énoncé A', 10)], true, true);
+		const evaluation = await open([item('Énoncé A', 10)], true, true, true);
 		expect(clickQuit(evaluation.container)).toBe(true);
 		expect(confirmSpy).toHaveBeenCalledWith(
 			expect.stringContaining('réponses tapées seront perdues')

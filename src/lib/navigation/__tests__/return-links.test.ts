@@ -42,12 +42,12 @@ describe('session de révision', () => {
 	});
 
 	it('lancée depuis le Programme : « Quitter » ramène au Programme, filtre conservé dans le lien', () => {
-		expect(studySessionHref('d1', { states: 'new', from: 'programme' })).toBe(
-			'/dashboard/revisions/decks/d1/study?states=new&depuis=programme'
+		expect(studySessionHref('d1', { states: 'learning,relearning', from: 'programme' })).toBe(
+			'/dashboard/revisions/decks/d1/study?states=learning%2Crelearning&depuis=programme'
 		);
-		expect(studySessionReturnHref('d1', params('states=new&depuis=programme'))).toBe(
-			'/dashboard/revisions/decks/programme'
-		);
+		expect(
+			studySessionReturnHref('d1', params('states=learning%2Crelearning&depuis=programme'))
+		).toBe('/dashboard/revisions/decks/programme');
 	});
 
 	it('origine inconnue : la page du deck', () => {
@@ -59,21 +59,28 @@ describe('session de révision', () => {
 
 describe('« Quitter » un test d’automatismes', () => {
 	it('entraînement : le panier, sans confirmation', () => {
-		expect(automathsQuitLink({ inEvaluation: false, timed: true })).toEqual({
+		expect(automathsQuitLink({ inEvaluation: false, attemptOpen: false, timed: true })).toEqual({
 			href: '/automaths/panier',
 			confirmLeave: undefined
 		});
 	});
 
 	it('contrôle chronométré : « Mes contrôles », confirmation qui prévient du temps qui court', () => {
-		const link = automathsQuitLink({ inEvaluation: true, timed: true });
+		const link = automathsQuitLink({ inEvaluation: true, attemptOpen: true, timed: true });
 		expect(link.href).toBe('/dashboard/student/assessments');
 		expect(link.confirmLeave).toContain('réponses tapées seront perdues');
 		expect(link.confirmLeave).toContain('le temps continue de courir');
 	});
 
+	it('aperçu du prof (contrôle sans tentative ouverte) : « Mes contrôles », sans confirmation', () => {
+		expect(automathsQuitLink({ inEvaluation: true, attemptOpen: false, timed: true })).toEqual({
+			href: '/dashboard/student/assessments',
+			confirmLeave: undefined
+		});
+	});
+
 	it('contrôle sans chrono : confirmation, sans parler du temps', () => {
-		const link = automathsQuitLink({ inEvaluation: true, timed: false });
+		const link = automathsQuitLink({ inEvaluation: true, attemptOpen: true, timed: false });
 		expect(link.href).toBe('/dashboard/student/assessments');
 		expect(link.confirmLeave).toContain('réponses tapées seront perdues');
 		expect(link.confirmLeave).not.toContain('temps');
