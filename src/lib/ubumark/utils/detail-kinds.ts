@@ -24,6 +24,19 @@ export const DETAIL_KIND_LABELS: Record<DetailKind, string> = {
 	warning: 'Attention'
 };
 
+/** Libellés en anglais, pour un document en anglais (PDF ; 2026-10-11). */
+export const DETAIL_KIND_LABELS_EN: Record<DetailKind, string> = {
+	calculation: 'Calculation',
+	reminder: 'Reminder',
+	method: 'Method',
+	warning: 'Warning'
+};
+
+/** Libellé d'un type de détail dans la langue du document (français par défaut). */
+export function detailKindLabel(kind: DetailKind, language?: string): string {
+	return (language === 'en' ? DETAIL_KIND_LABELS_EN : DETAIL_KIND_LABELS)[kind];
+}
+
 // Mots d'auteur (sans accent, en minuscules) → type
 const AUTHOR_WORDS: Record<string, DetailKind> = {
 	calcul: 'calculation',

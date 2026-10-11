@@ -59,7 +59,9 @@ describe('encadrés typés au PDF', () => {
 	it('un encadré avec une formule et plusieurs paragraphes', () => {
 		const out = typst('> [!méthode] On pose $u=2x$.\n>\n> Puis on dérive.');
 		expect(out).toContain('[Méthode]');
-		expect(out).toContain('$u = 2 x$');
+		// La formule sort comme dans un paragraphe ordinaire
+		const math = /\$[^$]+\$/.exec(typst('On pose $u=2x$.'))![0];
+		expect(out).toContain(math);
 		expect(out).toContain('Puis on dérive.');
 	});
 });
