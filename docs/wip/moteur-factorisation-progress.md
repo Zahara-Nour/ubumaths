@@ -668,9 +668,13 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
 
 **Écarts relevés en chemin (non corrigés)** :
 
-- `pedagogical-limits/renderer.ts` écrit `\lim_{x \to 2} x + 2` sans parenthèses (déjà le cas
-  pour `\lim_{x \to 3} x^2 + 2x` dans les démos) ; le `/1` retiré le rend visible sur les
-  factorisations.
+- ~~`pedagogical-limits/renderer.ts` écrit `\lim_{x \to 2} x + 2` sans parenthèses~~ : corrigé
+  dans ce lot (une somme sous `\lim` est parenthésée ; test vu rouge 2 / 3, snapshot de la démo,
+  6 cas). Le `toLatex` commun (`latex-generator.ts` `generateLimit`) a le même défaut sur un
+  `LimitNode` : `\lim_{x\to 2}x+2` est rendu `\lim_{x \to 2} x + 2` (non corrigé, rayon large).
+  `limits/` n'écrit aucun `\lim` lui-même.
+- Reportés dans `ecarts-a-trier.md` sous K21 : V21 (substitution en flottants), V22 (phrase
+  `decompose-rational`), L28 (nœud fabriqué à la main), M21 (`isRootAt`).
 - `pedagogical-limits/helpers.ts` `isRootAt` : aucun appelant hors tests (mort avant ce lot).
 - `limits/algebraic.ts:656` (`tryAbsSimplification`) fabrique encore `{ type: 'number' }` à la
   main.

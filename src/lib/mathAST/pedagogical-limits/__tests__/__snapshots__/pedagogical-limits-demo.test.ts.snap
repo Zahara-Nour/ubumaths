@@ -8,32 +8,32 @@ Expression: 3*x^2-x+1, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [apply-direct-substitution] Substitution directe : on remplace x par 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 - [conclude] La limite vaut 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== LYCEE (detailed) ==========
 - [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 3 \\times x^2 - x + 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 3 \\times x^2 - x + 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 0
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 - [conclude] La limite vaut 1
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 "
 `;
@@ -84,32 +84,32 @@ Expression: x^2+2*x, x → 3 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [apply-direct-substitution] Substitution directe : on remplace x par 3
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 - [conclude] La limite vaut 15
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 
 ========== LYCEE (detailed) ==========
 - [identify-limit] On veut calculer la limite de l'expression quand x tend vers 3
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = x^2 + 2 \\times x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = x^2 + 2 \\times x \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 3
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 - [conclude] La limite vaut 15
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 "
 `;
@@ -124,9 +124,9 @@ Expression: (x^2-4)/(x-2), x → 2 (variable: x)
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = x + 2 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 2
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x + 2} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 - [conclude] La limite vaut 4
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x + 2} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 
 ========== LYCEE (detailed) ==========
@@ -147,17 +147,17 @@ Status: exact, Value: 4
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 2
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x + 2} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 - [conclude] La limite vaut 4
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x + 2} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = x + 2 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x + 2} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 
 ========== SUPERIEUR (detailed) ==========
@@ -175,7 +175,7 @@ Status: exact, Value: 4
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x + 2} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 "
 `;
@@ -190,9 +190,9 @@ Expression: (x^2-x-6)/(x-3), x → 3 (variable: x)
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = x + 2 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 3
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x + 2} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 - [conclude] La limite vaut 5
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x + 2} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 
 ========== LYCEE (detailed) ==========
@@ -213,17 +213,17 @@ Status: exact, Value: 5
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = x - 3 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 3
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x + 2} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 - [conclude] La limite vaut 5
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x + 2} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = x + 2 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x + 2} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 
 ========== SUPERIEUR (detailed) ==========
@@ -241,7 +241,7 @@ Status: exact, Value: 5
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = x - 3 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x + 2} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 "
 `;
@@ -256,9 +256,9 @@ Expression: (x^3-1)/(x-1), x → 1 (variable: x)
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = x^2 + x + 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} x^2 + x + 1} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 - [conclude] La limite vaut 3
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} x^2 + x + 1} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== LYCEE (detailed) ==========
@@ -279,17 +279,17 @@ Status: exact, Value: 3
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = x - 1 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 1
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} x^2 + x + 1} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 - [conclude] La limite vaut 3
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} x^2 + x + 1} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = x^2 + x + 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} x^2 + x + 1} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== SUPERIEUR (detailed) ==========
@@ -307,7 +307,7 @@ Status: exact, Value: 3
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = x - 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} x^2 + x + 1} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 "
 `;
@@ -322,9 +322,9 @@ Expression: (x^3-8)/(x-2), x → 2 (variable: x)
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = x^2 + 2 x + 4 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 2
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x^2 + 2 x + 4} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 - [conclude] La limite vaut 12
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x^2 + 2 x + 4} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 
 ========== LYCEE (detailed) ==========
@@ -345,17 +345,17 @@ Status: exact, Value: 12
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace x par 2
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x^2 + 2 x + 4} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 - [conclude] La limite vaut 12
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x^2 + 2 x + 4} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = x^2 + 2 x + 4 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x^2 + 2 x + 4} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 
 ========== SUPERIEUR (detailed) ==========
@@ -373,7 +373,7 @@ Status: exact, Value: 12
     \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = x - 2 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} x^2 + 2 x + 4} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 "
 `;

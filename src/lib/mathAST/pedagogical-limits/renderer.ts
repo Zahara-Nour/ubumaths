@@ -27,6 +27,7 @@
  */
 
 import { toLatex } from '../latex-generator';
+import { isAddition, isSubtraction } from '../guards';
 import type { LimitDirection } from '../limits/types';
 import type { MathNode } from '../types';
 import type {
@@ -119,10 +120,13 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
 		);
 	}
 
+	// Une somme sous `\\lim` est parenthésée : `\\lim (x + 2)`, jamais lu (lim x) + 2
+	const isSum = isAddition(step.before) || isSubtraction(step.before);
+	const body = isSum ? `\\left( ${beforeLatex} \\right)` : beforeLatex;
 	const limitSub = formatLimitSubscript(step.variable, step.approach, step.direction);
 	return (
 		`\\begin{aligned}\n` +
-		`  & \\textcolor{blue}{\\lim_{${limitSub}} ${beforeLatex}} \\\\\n` +
+		`  & \\textcolor{blue}{\\lim_{${limitSub}} ${body}} \\\\\n` +
 		`  & = ${afterLatex}\n` +
 		`\\end{aligned}`
 	);

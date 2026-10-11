@@ -11,6 +11,7 @@ import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { areEquivalent } from '../../equivalence';
 import { generatePedagogicalLimitSteps } from '../pipeline';
+import { PedagogicalLimitRenderer } from '../renderer';
 import type { PedagogicalLimitStep } from '../types';
 
 interface Case {
@@ -120,5 +121,32 @@ describe('limite pédagogique — factorisation par le noyau exact', () => {
 				}
 			}
 		}
+	});
+});
+
+describe('rendu — une somme sous \\lim est parenthésée', () => {
+	const renderer = new PedagogicalLimitRenderer();
+	const rendered = (latex: string) =>
+		renderer
+			.renderAll(run(latex).steps, { schoolLevel: 'lycee', verbosity: 'detailed' })
+			.flatMap((s) => [s, ...(s.subSteps ?? [])])
+			.map((s) => s.expressionLatex);
+
+	it('(x² − 4)/(x − 2) en 2 : \\lim (x + 2), jamais (\\lim x) + 2', () => {
+		const all = rendered('\\lim_{x\\to 2}\\frac{x^2-4}{x-2}');
+		expect(all.some((l) => l.includes('\\lim_{x \\to 2} \\left( x + 2 \\right)}'))).toBe(true);
+		expect(all.some((l) => /\\lim_\{x \\to 2\} x \+ 2/.test(l))).toBe(false);
+	});
+
+	it('somme directe x² + 2x en 3 : parenthésée', () => {
+		const all = rendered('\\lim_{x\\to 3}x^2+2x');
+		expect(all.some((l) => l.includes('\\lim_{x \\to 3} \\left( x^2 + 2 x \\right)}'))).toBe(true);
+	});
+
+	it('une fraction ou un produit ne sont pas parenthésés', () => {
+		const all = rendered('\\lim_{x\\to 1}\\frac{x^3-1}{x^2-1}');
+		expect(all.some((l) => l.includes('\\lim_{x \\to 1} \\dfrac{x^3 - 1}{x^2 - 1}}'))).toBe(true);
+		const product = rendered('\\lim_{x\\to 3}2x^2');
+		expect(product.some((l) => l.includes('\\lim_{x \\to 3} 2 x^2}'))).toBe(true);
 	});
 });
