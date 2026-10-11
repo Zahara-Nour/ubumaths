@@ -217,7 +217,7 @@ describe('helpers — approach formatting', () => {
 		expect(formatLinearFactor('x', fromInteger(0))).toBe('x');
 		expect(formatLinearFactor('x', fromInteger(2))).toBe('(x − 2)');
 		expect(formatLinearFactor('x', fromInteger(-3))).toBe('(x + 3)');
-		expect(formatLinearFactor('x', rational(1n, 2n))).toBe('(x − 1/2)');
+		expect(formatLinearFactor('x', rational(1n, 2n))).toBe('(2x − 1)');
 	});
 });
 

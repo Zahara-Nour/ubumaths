@@ -37,9 +37,14 @@ import {
 } from '../factory';
 import { limitByGeneralizedDegree } from './generalized-degree';
 import { extractExactRational, numericNode } from '../common/numeric';
-import { divideOutRoot, linearFactorNode, rationalPolynomialNode, toPolynomial } from '../factor';
+import {
+	divideOutCommonRoot,
+	divideOutRoot,
+	linearFactorText,
+	rationalPolynomialNode,
+	toPolynomial
+} from '../factor';
 import { substitute } from '../eval/substitute';
-import { toLatex } from '../latex-generator';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
@@ -95,15 +100,19 @@ export function tryFactorization(
 	const k = Math.min(divideOutRoot(num, a).multiplicity, divideOutRoot(den, a).multiplicity);
 	if (k === 0) return { success: false };
 
+	// Facteur entier (2x − 1, pas x − 1/2) et fraction réduite ((2x + 2)/2 → x + 1) : V23
+	const division = divideOutCommonRoot(num, den, a, k);
+	if (division === null) return { success: false };
 	const x = variable(varName);
-	const numQuotient = rationalPolynomialNode(divideOutRoot(num, a, k).quotient, x);
-	const denQuotient = divideOutRoot(den, a, k).quotient;
+	const numQuotient = rationalPolynomialNode(division.reducedNumerator, x);
+	const denQuotient = division.reducedDenominator;
 	const isOne = denQuotient.length === 1 && denQuotient[0].n === denQuotient[0].d;
 	const simplified = isOne
 		? numQuotient
 		: divide(numQuotient, rationalPolynomialNode(denQuotient, x), 'fraction');
 
-	const factorText = `(${toLatex(linearFactorNode(varName, a))})${k === 1 ? '' : `^${k}`}`;
+	// Texte sans LaTeX, comme les autres descriptions : « Factorisation par (2x − 1) »
+	const factorText = linearFactorText(varName, a, k);
 	recorder.recordStep(
 		'factorization',
 		`Factorisation par ${factorText}`,

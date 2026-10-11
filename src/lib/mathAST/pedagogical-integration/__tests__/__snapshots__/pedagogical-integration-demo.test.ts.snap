@@ -733,7 +733,7 @@ Antiderivative: x \\ln\\left( x \\right) - x
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - \\int 1\\,dx \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
   - [apply-constant-rule] Primitive d'une constante
-    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    · Une constante c admet la primitive c·x : ∫dx = x.
     \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
 - [simplify-result] On simplifie
   · On écrit le résultat sous une forme simplifiée.
@@ -767,7 +767,7 @@ Antiderivative: x \\ln\\left( x \\right) - x
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - \\int 1\\,dx \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
   - [apply-constant-rule] \\int c\\,dx = cx
-    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    · Une constante c admet la primitive c·x : ∫dx = x.
     \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
 - [simplify-result] Simplification
   · On écrit le résultat sous une forme simplifiée.
@@ -807,7 +807,7 @@ Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
   · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [choose-u-dv] Choix : u = x, dv = \\exponentialE^x
-  · On pose u = x et dv = \\exponentialE^x, d'où du = 1 dx et v = \\exponentialE^x.
+  · On pose u = x et dv = \\exponentialE^x, d'où du = dx et v = \\exponentialE^x.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
@@ -841,7 +841,7 @@ Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
   · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [choose-u-dv] u = x,\\ dv = \\exponentialE^x
-  · On pose u = x et dv = \\exponentialE^x, d'où du = 1 dx et v = \\exponentialE^x.
+  · On pose u = x et dv = \\exponentialE^x, d'où du = dx et v = \\exponentialE^x.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
@@ -889,7 +889,7 @@ Antiderivative: -x \\cos\\left( x \\right) + \\sin\\left( x \\right)
   · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [choose-u-dv] Choix : u = x, dv = \\sin\\left( x \\right)
-  · On pose u = x et dv = \\sin\\left( x \\right), d'où du = 1 dx et v = -\\cos\\left( x \\right).
+  · On pose u = x et dv = \\sin\\left( x \\right), d'où du = dx et v = -\\cos\\left( x \\right).
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
@@ -928,7 +928,7 @@ Antiderivative: -x \\cos\\left( x \\right) + \\sin\\left( x \\right)
   · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [choose-u-dv] u = x,\\ dv = \\sin\\left( x \\right)
-  · On pose u = x et dv = \\sin\\left( x \\right), d'où du = 1 dx et v = -\\cos\\left( x \\right).
+  · On pose u = x et dv = \\sin\\left( x \\right), d'où du = dx et v = -\\cos\\left( x \\right).
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
@@ -1093,7 +1093,7 @@ Antiderivative: x^3 + x^2 + x
       · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
       \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
   - [apply-constant-rule] Primitive d'une constante
-    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    · Une constante c admet la primitive c·x : ∫dx = x.
     \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
 - [simplify-result] On simplifie
   · On écrit le résultat sous une forme simplifiée.
@@ -1137,7 +1137,7 @@ Antiderivative: x^3 + x^2 + x
       · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
       \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
   - [apply-constant-rule] \\int c\\,dx = cx
-    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    · Une constante c admet la primitive c·x : ∫dx = x.
     \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
 - [simplify-result] Simplification
   · On écrit le résultat sous une forme simplifiée.

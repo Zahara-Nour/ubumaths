@@ -30,6 +30,7 @@ import {
 	variable
 } from '../../factory';
 import type { MathNode } from '../../types';
+import { toLatex } from '../../latex-generator';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitNotImplemented } from '../types';
 import type { PedagogicalLimitStep } from '../types';
@@ -235,8 +236,8 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		// 1/2 numeric — value formatting: numericNode(0.5) → number('0.5')
-		expect(result.value).toMatchObject({ type: 'number', value: '0.5' });
+		// Valeur exacte (V21) : \dfrac{1}{2}, plus number('0.5')
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{2}');
 
 		const rules = flatRules(result.steps);
 		expect(rules).toContain('detect-indeterminate-form');
@@ -257,7 +258,7 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{4}');
 	});
 
 	it('(2 − √x)/(4 − x) at x = 4 → 1/4 (b − √a form)', () => {
@@ -272,7 +273,7 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{4}');
 	});
 
 	it('simplify-after-rationalization nests under multiply-by-conjugate', () => {
@@ -328,7 +329,7 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{4}');
 		const rules = flatRules(result.steps);
 		expect(rules).toContain('multiply-by-conjugate');
 	});
