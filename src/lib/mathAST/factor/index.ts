@@ -10,7 +10,9 @@
  */
 
 export {
+	compareFactors,
 	factorPolynomial,
+	primitivePart,
 	MAX_FACTOR_DEGREE,
 	MAX_RATIONAL_ROOT_CANDIDATES,
 	MAX_RADICAND,

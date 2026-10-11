@@ -25,7 +25,16 @@
 
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getRuleDescription as getNormalizeRuleDescription } from '../normal/step-recorder';
+import type { MathNode } from '../types';
+import type { Rational } from '../normal/types';
+import { isNegative, isZero } from '../normal/rational';
 import type { PedagogicalSimplifyStep } from './types';
+import {
+	identityOfNode,
+	readWrittenPolynomial,
+	type PolynomialIdentity
+} from './pedagogical-rules/polynomial-identities';
+import { analyzeTrinomial, evidentRoot } from './factor-strategies';
 
 /**
  * Default French descriptions for the pattern rules used by the pedagogical
@@ -53,6 +62,12 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	// Le contenu : facteur numérique, monôme, ou non polynomial (eˣ, (x+1)…).
 	'common-factor-content-add': 'Factorisation par facteur commun : k·a + k·b = k(a+b)',
 	'common-factor-content-sub': 'Factorisation par facteur commun : k·a - k·b = k(a-b)',
+	// Stratégies qui racontent (ADR 0024, `factor-strategies.ts`)
+	'reduce-factors': 'Réduction de chaque facteur',
+	'trinomial-roots': 'Factorisation par les racines du trinôme : a(x - x₁)(x - x₂)',
+	'trinomial-integer-form': 'Factorisation à coefficients entiers',
+	'evident-root': 'Factorisation par (x - r), r racine évidente',
+	'develop-to-factor': 'Développement et réduction, pour faire apparaître une forme connue',
 
 	// ---- valeur absolue -------------------------------------------------------
 	'abs-negation': 'Simplification : |-x| = |x|',
@@ -143,6 +158,79 @@ export function getPedagogicalSimplifyRuleDescription(name: string): string {
 export type TitleFn = (step: PedagogicalSimplifyStep) => string;
 export type ExplainFn = (step: PedagogicalSimplifyStep) => string | undefined;
 
+// =============================================================================
+// Titres qui nomment a et b, Δ et les racines (stratégies de `factoriser`)
+// =============================================================================
+
+const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+
+function superscriptText(n: number): string {
+	return [...String(n)].map((d) => SUPERSCRIPT_DIGITS[Number(d)]).join('');
+}
+
+/** `−3/2`, `25` : signe moins typographique. */
+function rationalText(r: Rational): string {
+	const magnitude = `${r.n < 0n ? -r.n : r.n}${r.d === 1n ? '' : `/${r.d}`}`;
+	return isNegative(r) ? `−${magnitude}` : magnitude;
+}
+
+/** `2x`, `x²`, `3x²`. */
+function monomialText(coefficient: bigint, variable: string, degree: number): string {
+	const power = degree === 1 ? '' : superscriptText(degree);
+	return `${coefficient === 1n ? '' : coefficient}${variable}${power}`;
+}
+
+/** La phrase d'une identité lue par coefficients, ou `null` hors de ce domaine. */
+function identityTitle(before: MathNode): string | null {
+	const identity: PolynomialIdentity | null = identityOfNode(before);
+	const variable = readWrittenPolynomial(before)?.variable;
+	if (identity === null || variable === undefined) return null;
+	const shapes = {
+		'diff-squares': 'a² − b²',
+		'perfect-square': identity.sign > 0 ? 'a² + 2ab + b²' : 'a² − 2ab + b²',
+		'sum-cubes': 'a³ + b³',
+		'diff-cubes': 'a³ − b³'
+	};
+	const monomial = monomialText(identity.alpha, variable, identity.degree);
+	// Écrite constante devant (`9 − x²`) : a est la constante, b le monôme
+	const [a, b] = identity.reversed
+		? [`${identity.beta}`, monomial]
+		: [monomial, `${identity.beta}`];
+	return `On reconnaît ${shapes[identity.kind]} avec a = ${a} et b = ${b}`;
+}
+
+/** Le titre d'identité avec a et b, sinon le titre d'origine (motif symbolique, plusieurs lettres). */
+function withIdentityTitle(fallback: string): TitleFn {
+	return (step) => identityTitle(step.before) ?? fallback;
+}
+
+/** Δ et les racines, lus sur le trinôme de l'étape. */
+function trinomialTitle(step: PedagogicalSimplifyStep): string {
+	const written = readWrittenPolynomial(step.before);
+	if (written?.coefficients?.length !== 3) return step.description;
+	const { delta, parts, roots } = analyzeTrinomial(written.coefficients);
+	const deltaText = `On calcule Δ = ${rationalText(delta)}`;
+	if (parts.kind === 'surd') {
+		const center = isZero(parts.center) ? '' : `${rationalText(parts.center)} `;
+		const offset = `${parts.offset.n === 1n ? '' : parts.offset.n}√${parts.radicand}${parts.offset.d === 1n ? '' : `/${parts.offset.d}`}`;
+		const root = (sign: string) =>
+			center === '' ? `${sign === '+' ? '' : '−'}${offset}` : `${center}${sign} ${offset}`;
+		return `${deltaText} : deux racines, x₁ = ${root('+')} et x₂ = ${root('−')}`;
+	}
+	if (parts.kind === 'double')
+		return `${deltaText} : une racine double, x₀ = ${rationalText(roots[0])}`;
+	return `${deltaText} : deux racines, x₁ = ${rationalText(roots[0])} et x₂ = ${rationalText(roots[1])}`;
+}
+
+/** « 1 est racine évidente : on factorise par (x − 1) ». */
+function evidentRootTitle(step: PedagogicalSimplifyStep): string {
+	const written = readWrittenPolynomial(step.before);
+	const r = written?.coefficients ? evidentRoot(written.coefficients) : null;
+	if (written === null || r === null) return step.description;
+	const factor = `(${written.variable} ${r > 0n ? '−' : '+'} ${r > 0n ? r : -r})`;
+	return `${r < 0n ? `−${-r}` : r} est racine évidente : on factorise par ${factor}`;
+}
+
 type RuleFnMap<F> = Partial<Record<string, F>>;
 
 /**
@@ -158,10 +246,17 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'distribute-binomial-product': () => 'On distribue le produit des deux binômes',
 	// factorisation
 	'diff-squares-symbolic': () => 'On factorise avec a² - b² = (a+b)(a-b)',
-	'diff-squares-numeric': () => 'On factorise avec a² - b² = (a+b)(a-b)',
-	'perfect-square-trinomial': () => 'On reconnaît un trinôme carré parfait',
+	'diff-squares-numeric': withIdentityTitle('On factorise avec a² - b² = (a+b)(a-b)'),
+	'perfect-square-trinomial': withIdentityTitle('On reconnaît un trinôme carré parfait'),
 	'sum-cubes-symbolic': () => 'On factorise a³ + b³',
 	'diff-cubes-symbolic': () => 'On factorise a³ - b³',
+	'sum-cubes-numeric': withIdentityTitle('On factorise a³ + b³'),
+	'diff-cubes-numeric': withIdentityTitle('On factorise a³ - b³'),
+	'reduce-factors': () => 'On réduit chaque facteur',
+	'trinomial-roots': trinomialTitle,
+	'trinomial-integer-form': () => 'On écrit les facteurs avec des coefficients entiers',
+	'evident-root': evidentRootTitle,
+	'develop-to-factor': () => 'On développe et on réduit',
 	'common-factor-products': () => 'On met le facteur commun en évidence',
 	'common-factor-bare-term': () => 'On met le facteur commun en évidence',
 	'common-factor-content-add': () => 'On met le facteur commun en évidence',
@@ -203,8 +298,8 @@ const COLLEGE_TITLES: RuleFnMap<TitleFn> = {
 	'expand-diff-squared': () => 'On utilise (a-b)² = a² - 2ab + b²',
 	'product-to-diff-squares': () => 'On utilise (a+b)(a-b) = a² - b²',
 	'distribute-binomial-product': () => 'On distribue chaque terme',
-	'diff-squares-numeric': () => 'On factorise avec l’identité a² - b²',
-	'perfect-square-trinomial': () => 'On reconnaît a² ± 2ab + b² = (a±b)²',
+	'diff-squares-numeric': withIdentityTitle('On factorise avec l’identité a² - b²'),
+	'perfect-square-trinomial': withIdentityTitle('On reconnaît a² ± 2ab + b² = (a±b)²'),
 	'common-factor-products': () => 'On met en facteur ce qui est commun',
 	'common-factor-bare-term': () => 'On met en facteur ce qui est commun',
 	'common-factor-content-add': () => 'On met en facteur ce qui est commun',
@@ -263,6 +358,16 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'On reconnaît une différence de deux carrés : a² - b² = (a+b)(a-b).',
 	'perfect-square-trinomial': () =>
 		'On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.',
+	'reduce-factors': () =>
+		'Dans chaque facteur, on supprime les parenthèses et on regroupe les termes semblables.',
+	'trinomial-roots': () =>
+		'Quand Δ = b² − 4ac est positif ou nul, le trinôme ax² + bx + c s’écrit a(x − x₁)(x − x₂), où x₁ et x₂ sont ses racines.',
+	'trinomial-integer-form': () =>
+		'On multiplie un facteur par a, ou par un diviseur de a, pour que ses coefficients soient entiers.',
+	'develop-to-factor': () =>
+		'Aucun facteur commun ni identité n’apparaît tel quel : on développe pour faire apparaître une forme connue.',
+	'evident-root': () =>
+		'Si P(r) = 0, alors P(x) se factorise par (x − r) : le second facteur s’obtient par division (ou par identification).',
 	'common-factor-products': () =>
 		'Les deux termes ont un facteur commun : on l’écrit une seule fois, devant la somme de ce qui reste — a·c + b·c = (a+b)·c.',
 	'common-factor-bare-term': () =>
@@ -303,7 +408,9 @@ const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'common-factor-content-add': () =>
 		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.',
 	'common-factor-content-sub': () =>
-		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.'
+		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.',
+	'reduce-factors': () =>
+		'Dans chaque parenthèse, on enlève les parenthèses intérieures et on regroupe les termes en x.'
 };
 
 const PRIMAIRE_EXPLANATIONS: RuleFnMap<ExplainFn> = {

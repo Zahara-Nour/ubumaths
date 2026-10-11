@@ -136,7 +136,7 @@ export const MAX_RADICAND = 10_000_000_000n;
 // =============================================================================
 
 /** Contenu (signe du coefficient dominant) et partie primitive entière, dominant > 0. */
-function primitivePart(poly: Poly): { content: Rational; primitive: bigint[] } {
+export function primitivePart(poly: Poly): { content: Rational; primitive: bigint[] } {
 	const p = trimPoly(poly);
 	const lcmOfDenominators = p.reduce((acc, c) => lcm(acc, c.d), 1n);
 	const ints = integerCoefficients(p);
@@ -158,8 +158,11 @@ function linearRoot(coefficients: readonly bigint[]): Rational {
 	return rational(-coefficients[0], coefficients[1]);
 }
 
-/** Ordre des facteurs : premier degré par |racine| puis signe, irrationnels, degré ≥ 2. */
-function compareFactors(a: PolynomialFactor, b: PolynomialFactor): number {
+/**
+ * Ordre des facteurs : premier degré par |racine| puis signe, irrationnels, degré ≥ 2.
+ * Exporté : les stratégies de `factoriser` rangent leurs facteurs dans CET ordre (décision Q3).
+ */
+export function compareFactors(a: PolynomialFactor, b: PolynomialFactor): number {
 	const rank = (f: PolynomialFactor): number =>
 		f.kind === 'surd' ? 1 : f.coefficients.length === 2 ? 0 : 2;
 	const ra = rank(a);

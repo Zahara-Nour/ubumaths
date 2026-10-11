@@ -568,3 +568,51 @@ src/lib/mathAST` une fois à la fin : 462 fichiers, 19 310 tests verts (9 ignor�
   `domain` n'a toujours pas de borne sur ce calcul (inchangé, hors périmètre).
 - `normal/rules/trig-multiple-arcs.ts` garde un `absBigInt` local, doublon de celui de
   `normal/rational.ts` (non touché).
+
+## 6. Lot 2 — stratégies qui racontent (décisions de David, 2026-10-11)
+
+Enchaînement, la suivante si la précédente ne factorise pas : 1 facteur commun · 2 identité remarquable
+(coefficients compris) · 3 facteur commun puis identité · 4 racines du trinôme · 5 racine évidente puis
+division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, la stratégie raconte.
+
+- **Q1** : `college` → stratégies 1, 2, 3, 6 ; `lycee` → toutes (1re et terminale non distinguées,
+  chantier à part). Racines irrationnelles : lycée seulement (ADR 0024).
+- **Q2** : trinôme → deux lignes, `a(x-x_1)(x-x_2)` puis la forme à coefficients entiers.
+- **Q3** : un seul ordre des facteurs, celui du noyau, partout (`x^2-4` → `(x-2)(x+2)`).
+
+- [x] **Tests d'abord** : `pedagogical-simplify/__tests__/factoriser-strategies.test.ts`, entrées
+      parsées, collège et lycée, rendu LaTeX + `areEquivalent` (résultat ET chaque étape) + suite
+      des règles + titres, atelier (`factorSteps` sur `4x^2-25`, `2x^2+x-3`). Vus rouges :
+      **22 / 41** (les 19 verts sont les non-régressions : inchangés, plusieurs lettres, facteur
+      commun). Deux cas ajoutés en chemin (`x^2e^x-4e^x`, `-x^2+5x-6`), vus rouges par mutation
+      (3 échecs), restaurés d'une copie : 44 / 44.
+- [x] **Implémentation** : `pedagogical-simplify/factor-strategies.ts` (enchaînement, produit en
+      cours, réduction, Δ, racine évidente, stratégie 6 à tampon jeté) et
+      `pedagogical-rules/polynomial-identities.ts` (identités par coefficients ; les quatre
+      règles numériques remplacées, mêmes noms, dans `factoriser` seulement). `factor/` exporte
+      `compareFactors` et `primitivePart`. ~680 lignes de code hors commentaires et tests
+      (budget visé 600).
+- [x] **Tests et snapshots changés (ordre du noyau, décision Q3)** : `atelier/…/factoriser-commande`
+      (×3 + titre), `panel-simplifications` (`x^2-1`, et `x+x` → `2 x`), `facteur-commun-et-tidy`
+      (`x^2-1`), `facteur-commun-non-polynomial` (×3 : `(x+1)(x+4)`, `(x+1)(x+2)`,
+      `2(x+1)(x+3)`), `pipeline.test` (`x^2-4`), snapshot démo (4 titres qui nomment a et b,
+      ordre de `x^2-4`).
+- [x] **Corrigé en chemin** : le cycle `x(1-1)` / `x(1+1)` de `runPatternLoop` (README, points
+      ouverts) pour `factoriser` — un nombre seul n'est plus « factorisé ».
+- [x] Vérifications : tests ciblés ; `pedagogical-simplify`, `pattern`, `factor`, `atelier`,
+      `questions/generator`, panel : 156 + 126 fichiers verts ; `pnpm test:server src/lib/mathAST`
+      une fois : 463 fichiers, 19 354 tests verts ; `check:incremental` 0 ; `types:cliquet` tenu
+      (0 erreur) ; `lint:fast` rien ; `docs:check-links`, `docs:check-refs` 0.
+- [x] Doc : README mathAST (§ Les stratégies, état, point ouvert du cycle), panel, pattern-matching,
+      atelier.
+- [x] code-reviewer (commit 7fc7dcd53), corrections :
+  - **bloquant** : a² − b² écrit constante devant (`9-x^2`, `1-x^2`, `-4x^2+9`, `-x^3+x`) ne se
+    factorisait plus au collège et passait par Δ au lycée → reconnu par `polynomialIdentity`
+    (`reversed`), rendu `(3-x)(3+x)` (a = 3, b = x), aux deux niveaux ;
+  - stratégie 6 résumée en une étape `develop-to-factor` ; chaque étape part de la précédente
+    (`reduce-factors` compris, facteur constant `(x+3)-x` réduit DANS l'étape) ; mise au propre
+    finale dans la dernière étape ; parenthèses doubles retirées ; `x-x` → `0` ;
+  - tests : 41 vus rouges (dont 27 invariants « avant(n+1) = après(n) ») sur 116 ; tous verts ;
+    panel `x-x` (`x 0` → `0`) mis à jour ; `pnpm test:server src/lib/mathAST` : 463 fichiers,
+    19 426 tests verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` rien.
+- [ ] PR

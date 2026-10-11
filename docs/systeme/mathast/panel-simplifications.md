@@ -7,7 +7,7 @@ couvre:
 # Panel de référence des simplifications
 
 > **Mesuré le 2026-09-21** sur `main` à `006873aad`, remis à jour le 2026-10-10 (lettre `e`
-> = constante d'Euler), et **pinné** par
+> = constante d'Euler) et le 2026-10-11 (colonne `factoriser` : ordre du noyau, ADR 0024), et **pinné** par
 > `src/lib/mathAST/__tests__/panel-simplifications.test.ts`. Si vous modifiez le
 > moteur, le test rougit : mettez les deux à jour **ensemble**, sinon ce
 > document pourrit en silence comme l'a fait le §1 de
@@ -15,13 +15,13 @@ couvre:
 
 ## Ce que chaque colonne veut dire
 
-| colonne      | ce qui est appelé                                                                                                                                                                                                                                                                  |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                               |
-| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                                                                                                                        |
-| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                                                                                                                                  |
-| `developper` | règles de développement + identités, puis `normalize`                                                                                                                                                                                                                              |
-| `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
+| colonne      | ce qui est appelé                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                                                                                                                                                                                                    |
+| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                                                                                                                                                                                                                                                                                             |
+| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                                                                                                                                                                                                                                                                                                       |
+| `developper` | règles de développement + identités, puis `normalize`                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis les stratégies de l'ADR 0024 (facteurs réduits, racines du trinôme, racine évidente — lycée —, développer en dernier recours ; facteurs dans l'ordre du noyau), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
 
 ⚠️ **Les quatre intentions sont mesurées à `schoolLevel: 'lycee'`.** Les
 identités trigonométriques et exponentielles sont coupées en dessous — c'est un
@@ -62,8 +62,8 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 | entrée      | `simplify` | `auto`    | `reduire` | `developper` | `factoriser` |
 | ----------- | ---------- | --------- | --------- | ------------ | ------------ |
 | `2x+3x`     | `5 x`      | `5 x`     | `5 x`     | `5 x`        | `5 x`        |
-| `x+x`       | `2 x`      | `2 x`     | `2 x`     | `2 x`        | `x 2`        |
-| `x-x`       | `0`        | `0`       | `0`       | `0`          | `x 0`        |
+| `x+x`       | `2 x`      | `2 x`     | `2 x`     | `2 x`        | `2 x`        |
+| `x-x`       | `0`        | `0`       | `0`       | `0`          | `0`          |
 | `3x+2y+x-y` | `4 x + y`  | `4 x + y` | `4 x + y` | `4 x + y`    | `4 x + y`    |
 
 ## Développement
@@ -79,7 +79,7 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 | entrée         | `simplify`                            | `auto`                                | `reduire`                             | `developper`                          | `factoriser`                                |
 | -------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------------- |
-| `x^2-1`        | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `\left( x + 1 \right) \left( x - 1 \right)` |
+| `x^2-1`        | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `\left( x - 1 \right) \left( x + 1 \right)` |
 | `x^2+2x+1`     | `\left( x + 1 \right)^2`              | `x^2 + 2 x + 1`                       | `x^2 + 2 x + 1`                       | `x^2 + 2 x + 1`                       | `\left( x + 1 \right)^2`                    |
 | `2x+4`         | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 \left( x + 2 \right)`                    |
 | `x^2+2x`       | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x \left( x + 2 \right)`                    |

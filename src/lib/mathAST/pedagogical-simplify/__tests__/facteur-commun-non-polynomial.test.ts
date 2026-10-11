@@ -64,15 +64,15 @@ describe('une puissance de même base', () => {
 	it('(x+1)² − (x+1) → x(x+1)', () => {
 		const { input, result, latex } = factoriser('(x+1)^2-(x+1)');
 
-		// L'ordre est celui de la mise en facteur symbolique : (reste) × facteur.
+		// Polynôme en x : l'ordre est celui du noyau (ADR 0024, décision Q3).
 		expect(latex).toBe('x \\left( x + 1 \\right)');
 		expect(areEquivalent(result, input)).toBe(true);
 	});
 
-	it('(x+1)² + 3(x+1) → (x+4)(x+1)', () => {
+	it('(x+1)² + 3(x+1) → (x+1)(x+4)', () => {
 		const { input, result, latex } = factoriser('(x+1)^2+3(x+1)');
 
-		expect(latex).toBe('\\left( x + 4 \\right) \\left( x + 1 \\right)');
+		expect(latex).toBe('\\left( x + 1 \\right) \\left( x + 4 \\right)');
 		expect(areEquivalent(result, input)).toBe(true);
 	});
 });
@@ -93,7 +93,7 @@ describe('rien à sortir : inchangé', () => {
 describe('non-régression : les facteurs polynomiaux', () => {
 	it.each([
 		['3x^2+6x', '3 x \\left( x + 2 \\right)'],
-		['x(x+1)+2(x+1)', '\\left( x + 2 \\right) \\left( x + 1 \\right)'],
+		['x(x+1)+2(x+1)', '\\left( x + 1 \\right) \\left( x + 2 \\right)'],
 		['xe^x+e^x', '\\left( x + 1 \\right) \\exponentialE^x'],
 		['2x-4', '2 \\left( x - 2 \\right)'],
 		['3x^2+6x+3', '3 \\left( x + 1 \\right)^2']
@@ -138,7 +138,7 @@ describe('l’étape se dit en français', () => {
 describe('une somme en facteur n’est jamais redéveloppée', () => {
 	it.each([
 		['3(x+1)^2-6(x+1)', '3 \\left( x - 1 \\right) \\left( x + 1 \\right)'],
-		['2(x+1)^2+4(x+1)', '2 \\left( x + 3 \\right) \\left( x + 1 \\right)'],
+		['2(x+1)^2+4(x+1)', '2 \\left( x + 1 \\right) \\left( x + 3 \\right)'],
 		['(x+1)^2-(x+1)^3', '-x \\left( x + 1 \\right)^2']
 	])('%s → %s', (source, attendu) => {
 		const { input, result, latex } = factoriser(source);

@@ -164,9 +164,11 @@ Il y a aujourd'hui **deux moteurs** qui ne partagent pas leurs règles :
 - `generatePedagogicalSimplifySteps` (`pedagogical-simplify/pipeline.ts`) — une boucle de
   règles de motifs choisies par intention (`selectRulesForIntent`), puis une passe
   `normalize` enregistrée (`runNormalizePass`), sauf pour `factoriser` qui finit par la mise
-  en facteur du contenu et `tidy`. Le contenu est numérique, monôme **ou non polynomial**
-  depuis le 2026-10-11 (`xe^x - e^x` → `(x-1)e^x`, `(x+1)^2-(x+1)` → `x(x+1)` ; le facteur
-  non polynomial s'écrit après la parenthèse). Il a **le vocabulaire** (les étapes nommées).
+  en facteur du contenu, puis les **stratégies qui racontent** de l'ADR 0024 (voir
+  [§ Les stratégies](#les-stratégies-de-factoriser-lot-2)) et `tidy`. Le contenu est numérique,
+  monôme **ou non polynomial** depuis le 2026-10-11 (`xe^x - e^x` → `(x-1)e^x`,
+  `(x+1)^2-(x+1)` → `x(x+1)` ; le facteur non polynomial s'écrit après la parenthèse). Il a
+  **le vocabulaire** (les étapes nommées).
 
 L'ADR 0007 (acceptée le 2026-09-21) décide **un seul moteur, quatre politiques sur
 « faut-il développer ? »** : `réduire` jamais (= `tidy`), `développer` toujours, `auto`
@@ -189,8 +191,9 @@ racine évidente) branchées sur l'intention `factoriser`. Livraison par lots : 
 migration des appelants internes (`limits`, `integration`, `domain`, `normalize`) et suppression
 du code mort → écriture des primitives (V18).
 
-**État au 2026-10-11 : lot 1 (le noyau) écrit, aucun appelant branché.** L'intention
-`factoriser`, l'atelier, `limits` et `integration` factorisent encore comme avant.
+**État au 2026-10-11 : lot 1 (le noyau) et lot 2 (les stratégies, branchées sur l'intention
+`factoriser`, donc sur l'atelier) écrits.** `limits`, `integration`, `domain` et `normalize`
+factorisent encore comme avant (lot 3).
 
 ### Carte du code
 
@@ -203,6 +206,9 @@ du code mort → écriture des primitives (V18).
 | `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                         |
 | `quadratic.ts`       | `quadraticRootParts` : Δ, racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                 |
 | `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` |
+
+`factor.ts` exporte aussi `compareFactors` (l'ordre des facteurs, réutilisé par les stratégies) et
+`primitivePart` (contenu et partie primitive entière).
 
 `domain/exact-roots.ts` et `normal/rules/trig-multiple-arcs.ts` importent désormais ces pièces de
 `factor/` : aucune copie n'a été ajoutée. Comportement inchangé (877 tests de `domain/` et de
@@ -235,7 +241,8 @@ en dernier.
 
 **Hors champ → `null`, sans lever** : pas un polynôme en la variable (`xe^x-e^x`, `\sin x`,
 `\frac{1}{x}`), coefficient non rationnel ou symbolique (`\sqrt2 x`, `ax+ay` en x), degré au-delà
-de la borne. Ces cas relèvent des stratégies (lot 2).
+de la borne. Ces cas relèvent de la passe de motifs de `factoriser` (facteur commun non
+polynomial, plusieurs lettres).
 
 **Bornes** (constantes exportées) :
 
@@ -256,6 +263,63 @@ bicarré `x^4-5x^2+6`, que `domain` sait pourtant résoudre).
 
 Tests : `factor/__tests__/factor-core.test.ts` (panel de l'ADR, ℝ, hors champ, bornes ; chaque
 rendu comparé à l'entrée par `areEquivalent`).
+
+### Les stratégies de `factoriser` (lot 2)
+
+Le noyau trouve, la stratégie **raconte** : chaque étape porte un nom de règle, un titre français
+(`pedagogical-simplify/descriptions-fr.ts`) et l'expression avant / après. Deux fichiers :
+
+| Fichier (`pedagogical-simplify/`)            | Rôle                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `factor-strategies.ts`                       | `runFactoriserStrategies` : l'enchaînement, le produit en cours (`ProductView`), la réduction des facteurs, Δ (`analyzeTrinomial`), la racine évidente (`evidentRoot`), la stratégie 6                                                                                                                       |
+| `pedagogical-rules/polynomial-identities.ts` | lecture d'un polynôme **tel qu'écrit** (`readWrittenPolynomial` : réduit ? développable ?), identités par coefficients (`polynomialIdentity`), et `factoriserIdentityRules` : les quatre règles numériques de `algebraicFactoringRules` relues par coefficients, **mêmes noms**, pour `factoriser` seulement |
+
+**Enchaînement**, la suivante si la précédente ne factorise pas :
+
+- **1 · facteur commun**, **2 · identité remarquable** (coefficients compris : `4x^2-25` →
+  « On reconnaît a² − b² avec a = 2x et b = 5 » → `(2x-5)(2x+5)`), **3 · facteur commun puis
+  identité** (`2x^2-8` → `2(x^2-4)` → `2(x-2)(x+2)`) : d'abord sur l'expression telle
+  qu'écrite, par la passe de motifs (`commonFactorRules`, `factoriserIdentityRules`, contenu des
+  sommes maximales) ; puis sur chaque facteur polynomial du produit obtenu, **réduit** s'il le
+  faut (étape `reduce-factors`, « On réduit chaque facteur » : `(2x+1)^2-(x-3)^2` →
+  `(3x-2)(x+4)`) ;
+- **4 · racines du trinôme** (lycée) : « On calcule Δ = 25 : deux racines, x₁ = 1 et x₂ = −3/2 »
+  → `2(x-1)(x+3/2)` (`trinomial-roots`), puis `(x-1)(2x+3)` (`trinomial-integer-form`) ; une
+  seule ligne si les racines sont entières ; racines irrationnelles comprises
+  (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`) ;
+- **5 · racine évidente** (lycée, degré ≥ 3, essais ±1, ±2, ±3) puis division
+  (`evident-root`) : `x^3-6x^2+11x-6` → `(x-1)(x^2-5x+6)` → `(x-1)(x-2)(x-3)` ;
+- **6 · développer pour refactoriser**, en dernier recours, sur une somme qui contient un produit
+  de sommes : le développement tient en **une** étape (`develop-to-factor`, « On développe et
+  on réduit »), jetée si rien ne factorise ensuite (l'expression rendue est alors l'entrée). Au
+  collège, seules 1 à 3 peuvent conclure (`x(x+1)-6` reste inchangé ; `x(4x+4)+1` →
+  `(2x+1)^2`).
+
+a² − b² se lit aussi écrit constante devant, aux deux niveaux et avant Δ : `9-x^2` → « a = 3 et
+b = x » → `(3-x)(3+x)` ; `-x^3+x` → `x(1-x)(1+x)`. **Chaque étape part exactement de la ligne
+précédente**, et la dernière ligne est le résultat (test d'invariant) : la réduction d'un facteur
+(`(x+3)-x` → 3) est une étape, la mise au propre finale (ordre du noyau, `tidy` des facteurs
+écrits) se fait dans la dernière étape, les parenthèses doubles `3((2x-1)(2x+1))` sont retirées
+(`flattenGroupedProducts`). `x-x` → `0`.
+
+**Niveau** : `college` → 1, 2, 3, 6 ; `lycee` et `superieur` → toutes (pas de distinction 1re /
+terminale). **Ordre des facteurs** : celui du noyau (`compareFactors`) partout où le produit
+n'a que des facteurs polynomiaux réduits ; les facteurs non polynomiaux suivent, dans l'ordre
+écrit (`x^2e^x-4e^x` → `(x-2)(x+2)e^x`). Une entrée déjà produit sans étape n'est pas réordonnée
+(`(x+1)(x-1)` reste tel quel).
+
+**Champ** : un polynôme d'**une** lettre (`soleVariable` ; `e` est une constante). Plusieurs
+lettres (`x^2-y^2`, `ax+ay`) : la seule passe de motifs, comme avant. « Factorisé » veut dire une
+étape de factorisation **et** un résultat qui n'est plus une somme. Aucune stratégie ne conclut
+« ne se factorise pas » : rien ne bouge, sans phrase.
+
+**Limites** : la stratégie 6 ne s'applique qu'à l'expression entière (`2x(x+1)-12` → `2(x(x+1)-6)`,
+pas développé dans la parenthèse) ; un facteur à coefficients non entiers (`x/2 - 1/4`) n'est pas
+repris par les stratégies ; une identité ne se lit que sur une partie primitive (`4x^2-16` passe
+d'abord par `4(x^2-4)`).
+
+Tests : `pedagogical-simplify/__tests__/factoriser-strategies.test.ts` (rendu, `areEquivalent` de
+chaque étape avec l'entrée, suite des règles, titres, collège et lycée, atelier).
 
 ## Les nœuds
 
@@ -431,10 +495,11 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
 - `ParseCache` exporté, jamais branché ; `transform/` sans consommateur ;
   `pedagogical-evaluate/` réduit à des types.
 - Cycle dans `runPatternLoop` (`pedagogical-simplify/pipeline.ts`) : sur `x(1+1)` et
-  `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tire jusqu'à la limite de
-  20 itérations sans point fixe (mesuré par instrumentation sur la suite serveur, cas du
-  panel). La boucle s'arrête sans le signaler ; `applyRules`, lui, lève
-  `RuleIterationLimitError`.
+  `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tirait jusqu'à la limite de
+  20 itérations sans point fixe. **Corrigé pour `factoriser` le 2026-10-11** : ses règles
+  d'identité ne touchent plus un nombre seul (`factoriserIdentityRules`, mesuré : `x(1-1)` →
+  0 étape). Les règles d'origine gardent ce défaut là où elles servent encore (`simplify`, sous
+  barrière de coût) ; la boucle s'arrête toujours sans le signaler.
 - `solve` ne gère pas les inconnues indicées : `x_1+1=3` répond « pas de solution »
   (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
   d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
