@@ -3,6 +3,7 @@ couvre:
   - src/routes/+error.svelte
   - 'src/lib/error-page/**'
   - 'src/lib/components/error-page/**'
+  - 'src/routes/(public)/test-erreur/**'
 ---
 
 # Page d'erreur (404, 403, 500…)
@@ -94,6 +95,16 @@ proportionnel aux chiffres : rien ne se chevauche. Réglages (`DEFAULT_SPIRAL_OP
 que le 404 tombe vers la mi-rayon, encore lisible, et que la spirale s'arrête autour du disque
 de Père Ubu (~1 660 chiffres). Les codes situés au-delà (500 : 6 238ᵉ décimale) ne sont pas
 colorés dans la spirale ; la phrase reste affichée.
+
+## Page de démonstration
+
+`/test-erreur` (`src/routes/(public)/test-erreur/`) liste tous les cas, chacun avec ce qu'on doit
+voir : fautes de frappe et suggestions, message précis en titre, chaque code de la table, repli
+sur la famille, message brut d'une 5xx. `/test-erreur/<code>?message=…` lève une vraie erreur
+HTTP (code 400-599 et message validés par Zod). `/test-erreur/plantage` lève une exception
+inattendue, **en dev seulement** (404 en prod, pour ne pas polluer le journal des erreurs) : suivi
+depuis la démo, il montre la pile sous « Détails techniques » ; en chargement complet, le rendu
+serveur sans pile. Exclue par `robots.txt`, `noindex`.
 
 ## Comment étendre
 
