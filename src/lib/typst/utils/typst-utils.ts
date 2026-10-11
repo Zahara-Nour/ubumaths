@@ -112,7 +112,7 @@ export function formatDateFR(date?: Date): string {
 export function getTypeLabel(type: string): string {
 	const labels: Record<string, string> = {
 		worksheet: "Feuille d'exercices",
-		assessment: 'Evaluation',
+		assessment: 'Contrôle',
 		exam: 'Examen',
 		quiz: 'Quiz',
 		homework: 'Devoirs'
