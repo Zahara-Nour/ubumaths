@@ -239,12 +239,15 @@ ne le lit **pas**, il assemble ses jeux dans `buildSimplifyRules` (voir plus bas
   `trigSimplifyRules`, `hypSimplifyRules`, `algebraicSimplifyRules` — l'arithmétique et les
   puissances y sont faites par `tidy`/`normalize`, pas par ces règles.
 - `pedagogical-simplify` (`intent-rules.ts`, `selectRulesForIntent`) : un mélange par
-  intention — `factoriser` = `commonFactorRules` + `algebraicFactoringRules` + identités, puis
-  `commonContentFactorRules` (appliquées par le pipeline aux sommes maximales) ;
-  `developper` = `algebraicExpandingRules` + `distributeBinomialProduct` + identités ;
-  `reduire` = identités + `powerRules` + `sqrtRules` ; `auto` = `reduire` + factorisations
-  symboliques. Les identités (trig, log/exp, abs, hyperboliques) sont coupées selon le
-  niveau scolaire.
+  intention — `factoriser` = `commonFactorRules` + `factoriserIdentityRules` (les règles de
+  `algebraicFactoringRules`, les quatre numériques relues par coefficients et rangées dans
+  l'ordre du noyau : `pedagogical-simplify/pedagogical-rules/polynomial-identities.ts`, ADR 0024)
+  - identités, puis `commonContentFactorRules` (appliquées par le pipeline aux sommes
+    maximales), puis les stratégies de `factor-strategies.ts` ;
+    `developper` = `algebraicExpandingRules` + `distributeBinomialProduct` + identités ;
+    `reduire` = identités + `powerRules` + `sqrtRules` ; `auto` = `reduire` + factorisations
+    symboliques. Les identités (trig, log/exp, abs, hyperboliques) sont coupées selon le
+    niveau scolaire.
 
 ## Pièges connus
 

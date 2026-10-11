@@ -128,7 +128,7 @@ exports[`pedagogical-simplify-demo — snapshots > factorisation > x² + 2x + 1 
 "# x² + 2x + 1 — intent=factoriser — x^2 + 2x + 1
 
 ## lycee (verbosity=detailed)
-- [perfect-square-trinomial] On reconnaît un trinôme carré parfait
+- [perfect-square-trinomial] On reconnaît a² + 2ab + b² avec a = x et b = 1
   · On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.
   \\begin{aligned} \\textcolor{blue}{x^2 + 2 x + 1} & \\\\ = \\left( x + 1 \\right)^2 \\end{aligned}
 => \\left( x + 1 \\right)^2"
@@ -138,7 +138,7 @@ exports[`pedagogical-simplify-demo — snapshots > factorisation > x² + 6x + 9 
 "# x² + 6x + 9 — intent=factoriser — x^2 + 6x + 9
 
 ## lycee (verbosity=detailed)
-- [perfect-square-trinomial] On reconnaît un trinôme carré parfait
+- [perfect-square-trinomial] On reconnaît a² + 2ab + b² avec a = x et b = 3
   · On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.
   \\begin{aligned} \\textcolor{blue}{x^2 + 6 x + 9} & \\\\ = \\left( x + 3 \\right)^2 \\end{aligned}
 => \\left( x + 3 \\right)^2"
@@ -148,17 +148,17 @@ exports[`pedagogical-simplify-demo — snapshots > factorisation > x² - 4 1`] =
 "# x² - 4 — intent=factoriser — x^2 - 4
 
 ## lycee (verbosity=detailed)
-- [diff-squares-numeric] On factorise avec a² - b² = (a+b)(a-b)
+- [diff-squares-numeric] On reconnaît a² − b² avec a = x et b = 2
   · On reconnaît une différence de deux carrés : a² - b² = (a+b)(a-b).
-  \\begin{aligned} \\textcolor{blue}{x^2 - 4} & \\\\ = \\left( x + 2 \\right) \\left( x - 2 \\right) \\end{aligned}
-=> \\left( x + 2 \\right) \\left( x - 2 \\right)"
+  \\begin{aligned} \\textcolor{blue}{x^2 - 4} & \\\\ = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
+=> \\left( x - 2 \\right) \\left( x + 2 \\right)"
 `;
 
 exports[`pedagogical-simplify-demo — snapshots > factorisation > x³ - 8 1`] = `
 "# x³ - 8 — intent=factoriser — x^3 - 8
 
 ## lycee (verbosity=detailed)
-- [diff-cubes-numeric] Factorisation : a³ - b³ = (a-b)(a² + ab + b²)
+- [diff-cubes-numeric] On reconnaît a³ − b³ avec a = x et b = 2
   \\begin{aligned} \\textcolor{blue}{x^3 - 8} & \\\\ = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
 => \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right)"
 `;

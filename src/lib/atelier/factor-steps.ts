@@ -125,8 +125,9 @@ export function factorSteps(expression: string): FactoredOutcome {
 		if (result.steps.length === 0 || latex.trim() === '') {
 			// ⚠️ Deux silences très différents, et l'élève a besoin de savoir
 			// lequel il a devant lui. `(x+1)(x-1)` n'a rien à factoriser ;
-			// `3x + 6` en aurait besoin — le module ne sait simplement pas
-			// extraire un facteur commun NUMÉRIQUE (mesuré le 2026-09-19).
+			// `x^2 + 1` est une somme qu'aucune stratégie ne factorise. On dit
+			// alors « je ne sais pas », jamais « ne se factorise pas » : le
+			// module ne le prouve pas (ADR 0024).
 			return isSum(result.result)
 				? { kind: 'inchangee', message: `Je ne sais pas factoriser « ${plain} ».` }
 				: {

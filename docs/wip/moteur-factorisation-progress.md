@@ -580,4 +580,29 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
 - **Q2** : trinôme → deux lignes, `a(x-x_1)(x-x_2)` puis la forme à coefficients entiers.
 - **Q3** : un seul ordre des facteurs, celui du noyau, partout (`x^2-4` → `(x-2)(x+2)`).
 
-- [ ] tests rouges · [ ] implémentation · [ ] code-reviewer · [ ] PR
+- [x] **Tests d'abord** : `pedagogical-simplify/__tests__/factoriser-strategies.test.ts`, entrées
+      parsées, collège et lycée, rendu LaTeX + `areEquivalent` (résultat ET chaque étape) + suite
+      des règles + titres, atelier (`factorSteps` sur `4x^2-25`, `2x^2+x-3`). Vus rouges :
+      **22 / 41** (les 19 verts sont les non-régressions : inchangés, plusieurs lettres, facteur
+      commun). Deux cas ajoutés en chemin (`x^2e^x-4e^x`, `-x^2+5x-6`), vus rouges par mutation
+      (3 échecs), restaurés d'une copie : 44 / 44.
+- [x] **Implémentation** : `pedagogical-simplify/factor-strategies.ts` (enchaînement, produit en
+      cours, réduction, Δ, racine évidente, stratégie 6 à tampon jeté) et
+      `pedagogical-rules/polynomial-identities.ts` (identités par coefficients ; les quatre
+      règles numériques remplacées, mêmes noms, dans `factoriser` seulement). `factor/` exporte
+      `compareFactors` et `primitivePart`. ~680 lignes de code hors commentaires et tests
+      (budget visé 600).
+- [x] **Tests et snapshots changés (ordre du noyau, décision Q3)** : `atelier/…/factoriser-commande`
+      (×3 + titre), `panel-simplifications` (`x^2-1`, et `x+x` → `2 x`), `facteur-commun-et-tidy`
+      (`x^2-1`), `facteur-commun-non-polynomial` (×3 : `(x+1)(x+4)`, `(x+1)(x+2)`,
+      `2(x+1)(x+3)`), `pipeline.test` (`x^2-4`), snapshot démo (4 titres qui nomment a et b,
+      ordre de `x^2-4`).
+- [x] **Corrigé en chemin** : le cycle `x(1-1)` / `x(1+1)` de `runPatternLoop` (README, points
+      ouverts) pour `factoriser` — un nombre seul n'est plus « factorisé ».
+- [x] Vérifications : tests ciblés ; `pedagogical-simplify`, `pattern`, `factor`, `atelier`,
+      `questions/generator`, panel : 156 + 126 fichiers verts ; `pnpm test:server src/lib/mathAST`
+      une fois : 463 fichiers, 19 354 tests verts ; `check:incremental` 0 ; `types:cliquet` tenu
+      (0 erreur) ; `lint:fast` rien ; `docs:check-links`, `docs:check-refs` 0.
+- [x] Doc : README mathAST (§ Les stratégies, état, point ouvert du cycle), panel, pattern-matching,
+      atelier.
+- [ ] code-reviewer · [ ] PR

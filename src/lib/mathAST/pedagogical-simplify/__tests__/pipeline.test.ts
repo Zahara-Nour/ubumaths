@@ -82,13 +82,13 @@ describe('pipeline — developper intent', () => {
 // =============================================================================
 
 describe('pipeline — factoriser intent', () => {
-	it('x²-4 → (x+2)(x-2) via diff-squares-numeric, no normalize', () => {
+	it('x²-4 → (x-2)(x+2) via diff-squares-numeric, no normalize (ordre du noyau, ADR 0024)', () => {
 		const node = parseLatex('x^2 - 4');
 		const { result, steps } = generatePedagogicalSimplifySteps(node, {
 			intent: 'factoriser',
 			schoolLevel: 'college'
 		});
-		expect(tex(result)).toBe('(x+2)(x-2)');
+		expect(tex(result)).toBe('(x-2)(x+2)');
 		expect(steps.map((s) => s.rule)).toContain('diff-squares-numeric');
 	});
 
