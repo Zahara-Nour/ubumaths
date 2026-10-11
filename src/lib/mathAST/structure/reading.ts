@@ -272,9 +272,10 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 	}
 
 	/**
-	 * Exposant 2 : carré ; 3 : cube (B9), sauf en base 10 (Q17). Base nombre ou
-	 * lettre seul, exposant nombre (signé) : « x puissance 4 » (B9). Sinon :
-	 * « la puissance 4 de la somme de a et b » (Q16). Exposant en formule.
+	 * Exposant 2 : carré ; 3 : cube (B9), sauf en base 10 (Q17). Base et
+	 * exposant nombre (signé pour l'exposant) ou lettre seuls : « x puissance 4 »,
+	 * « x puissance n » (B9). Sinon : « la puissance 4 de la somme de a et b »,
+	 * « la puissance n + 1 de 2 » (Q16). Exposant en formule.
 	 */
 	function powerOf(baseNode: StructureNode, exponent: StructureNode, owner: number): Phrase {
 		const latex = latexOf(exponent);
@@ -283,9 +284,9 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 		const named = baseTen ? null : squareOrCube(latex, base, owner);
 		if (named) return named;
 		const exponentFormula: ReadingSegment = { kind: 'formula', latex, node: exponent.id };
-		const simpleBase = baseNode.kind === 'number' || baseNode.kind === 'letter';
+		const simpleBase = isSingle(baseNode);
 		const simpleExponent =
-			exponent.kind === 'number' ||
+			isSingle(exponent) ||
 			(exponent.kind === 'opposite' && nodes[exponent.children[0]].kind === 'number');
 		if (simpleBase && simpleExponent) {
 			return {
@@ -396,6 +397,11 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 function squareOrCube(exponent: string, base: Phrase, owner: number): Phrase | null {
 	const w = exponent === '2' ? WORDS.square : exponent === '3' ? WORDS.cube : null;
 	return w ? headed(w, owner, [text(' ', owner), ...introduce('de', base, owner)]) : null;
+}
+
+/** Nombre ou lettre seul (`e`, `π` compris) */
+function isSingle(node: StructureNode): boolean {
+	return node.kind === 'number' || node.kind === 'letter' || node.kind === 'constant';
 }
 
 /** Fonction définie par l'élève ou l'auteur : une lettre (`f`, `g`, `h`) */

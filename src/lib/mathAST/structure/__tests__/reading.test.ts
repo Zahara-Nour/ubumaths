@@ -199,9 +199,9 @@ describe('lecture : blocs, fonctions, racines', () => {
 		expect(read('\\sin^{-1}(x)')).toBe('\\sin^{−1}\\left( x \\right)');
 	});
 
-	it('Q16 : base −1 entre parenthèses ou exposant lettre : « la puissance n de »', () => {
+	it('Q16 : base composée (−1 entre parenthèses) : « la puissance n de » ; base simple : forme simple', () => {
 		expect(read('(-1)^n')).toBe('la puissance n de −1');
-		expect(read('-1^n')).toBe("l'opposé de la puissance n de 1");
+		expect(read('-1^n')).toBe("l'opposé de 1 puissance n");
 		expect(read('(-3)^2')).toBe('le carré de −3');
 	});
 
@@ -236,7 +236,11 @@ describe('lecture : puissances (Q16, Q17)', () => {
 		['(x+1)^{-1}', 'la puissance −1 de la somme de x et 1'],
 		['\\left(\\frac12\\right)^n', 'la puissance n du quotient de 1 par 2'],
 		['2^{n+1}', 'la puissance n + 1 de 2'],
-		['x^n', 'la puissance n de x'],
+		// Exposant lettre seule : forme simple (correction du brief, 2026-10-11)
+		['x^n', 'x puissance n'],
+		['e^x', '\\exponentialE puissance x'],
+		['3q^n', 'le produit de 3 par q puissance n'],
+		['(5y)^n', 'la puissance n du produit de 5 par y'],
 		['(a+b)^4=1', 'la puissance 4 de la somme de a et b est égale à 1'],
 		['x^4', 'x puissance 4'],
 		['x^{-1}', 'x puissance −1'],
