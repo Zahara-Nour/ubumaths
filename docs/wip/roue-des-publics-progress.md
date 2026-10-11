@@ -24,6 +24,7 @@
 - Pas d'effet quand elle se pose ; **une seule fois**, elle **se dérobe** quand la souris
   approche pour l'attraper (glissement adouci, retour lent), puis se laisse prendre.
 - ✅ **Bouton chandelle validé par David** (2026-10-11).
+- **Niveau visé : du CM1 à la Terminale** (la description SEO de l'accueil dit « de la 6ᵉ » : à corriger).
 
 ## Fait (maquette, non poussée)
 
