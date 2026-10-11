@@ -33,12 +33,30 @@ describe('une réponse s’écrit depuis l’arbre, mise au propre par tidy', ()
 		expect(latexOf(runInput(session(), input))).toBe(latex);
 	});
 
+	// Revue du lot B : en mode décimal, le bouton « Valeur exacte » réaffichait ⅓ π
+	it('en mode décimal, le bouton « Valeur exacte » écrit aussi π/3', () => {
+		const s = session();
+		runInput(s, '.mode décimal');
+		const result = runInput(s, 'π/3');
+
+		expect(result.kind === 'calcul' && result.alternative?.latex).toBe('\\dfrac{\\pi}{3}');
+	});
+
+	// Revue du lot B : `tidy` simplifiait `x/x` en 1 (faux en 0) et réordonnait
+	// `3-2x+x^2` — une expression à variables reste écrite comme le moteur la rend
+	it('une expression à variables n’est ni simplifiée ni réordonnée', () => {
+		expect(latexOf(runInput(session(), 'x/x'))).not.toBe('1');
+		expect(latexOf(runInput(session(), '3-2x+x^2'))).toMatch(/^3/);
+	});
+
+	// Non-régression (déjà juste avant ce lot : l'unité passe par l'arbre depuis le lot A)
 	it('une grandeur garde son unité, traduite pour l’écran', () => {
 		expect(latexOf(runInput(session(), '5[km]'))).toBe('5~\\mathrm{km}');
 		expect(latexOf(runInput(session(), '10[km]/3'))).toBe('\\dfrac{10}{3}~\\mathrm{km}');
 	});
 });
 
+// Non-régression : déjà juste depuis le lot A (#1099)
 describe('« Garder… » une grandeur', () => {
 	it('crée une valeur qui garde son unité', () => {
 		const s = session();

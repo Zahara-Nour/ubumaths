@@ -874,7 +874,8 @@ describe('la complétion des fonctions et des lettres grecques', () => {
 
 /**
  * L'écriture d'une réponse à l'écran (phase 0 `docs/wip/grandeurs-phase0.md`,
- * lot B) : mesuré avant, `π/3` s'affichait « 1/3π » en ligne et `5[km]` « 5 ».
+ * lot B) : mesuré avant, `π/3` s'affichait « 1/3π » en ligne ; `5[km]` est une
+ * non-régression (son unité passe par l'arbre depuis le lot A).
  */
 describe('une réponse s’écrit comme en mathématiques', () => {
 	const lastAnswer = (container: HTMLElement) =>

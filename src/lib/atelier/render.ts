@@ -20,6 +20,7 @@ import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { tidy } from '$lib/mathAST/tidy';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
+import { getVariables } from '$lib/mathAST/eval/substitute';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
@@ -129,6 +130,25 @@ function cleanText(output: string): string {
 }
 
 /**
+ * La forme de LECTURE d'un résultat : `evaluate` rend une forme de calcul
+ * (« coefficient × π » : ⅓ π), `tidy` la remet au propre (π/3, √2/2).
+ */
+function readable(ast: MathNode): MathNode {
+	// Un décimal (mode décimal, `0.1+0.2`, `3.5`) reste tel quel : `tidy` le
+	// réécrirait en fraction (`3/10`)
+	if (hasDecimalLiteral(ast)) return ast;
+	// Une expression à variables libres aussi : `tidy` y simplifierait `x/x` en 1
+	// (faux en 0, et autre chose que ce que « Garder » range) et réordonnerait
+	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable
+	if (getVariables(ast).size > 0) return ast;
+	try {
+		return tidy(ast);
+	} catch {
+		return ast;
+	}
+}
+
+/**
  * Rendre un résultat du moteur.
  *
  * ⚠️ `fromCommand` n'est pas un détail : pour une **expression**, `result.ast`
@@ -137,21 +157,6 @@ function cleanText(output: string): string {
  * afficherait donc `x^2` là où `.dériver x^2` répond `2x` — un résultat faux,
  * joliment composé.
  */
-/**
- * La forme de LECTURE d'un résultat : `evaluate` rend une forme de calcul
- * (« coefficient × π » : ⅓ π), `tidy` la remet au propre (π/3, √2/2).
- */
-function readable(ast: MathNode): MathNode {
-	// Un décimal (mode décimal, `0.1+0.2`, `3.5`) reste tel quel : `tidy` le
-	// réécrirait en fraction (`3/10`)
-	if (hasDecimalLiteral(ast)) return ast;
-	try {
-		return tidy(ast);
-	} catch {
-		return ast;
-	}
-}
-
 export function renderResult(
 	result: ReplExecutionResult,
 	options?: { readonly fromCommand?: boolean }
