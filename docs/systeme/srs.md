@@ -106,7 +106,7 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 `index.ts`. Validation : `src/lib/server/validation/anti-fraud.ts`. Routes :
 `api/admin/anti-fraud/run` (POST, admin), `api/teacher/classes/[classId]/anti-fraud/flags`
 (GET), `…/flags/[flagId]` (PATCH, « Marquer comme OK »), `…/anti-fraud/count` (GET), gardées
-par `requireTeacherOfClass`. UI : `src/lib/components/teacher/anti-fraud/`
+par `requireTeacherOfClass` (rôle `teacher` seul : le compte admin est refusé depuis le 2026-10-11). UI : `src/lib/components/teacher/anti-fraud/`
 (`AntiFraudFlagsList`, `FlagDetailsDialog`, `AntiFraudFilters`), onglet « Surveillance » de
 `dashboard/teacher/classes/[classId]/analytics`.
 

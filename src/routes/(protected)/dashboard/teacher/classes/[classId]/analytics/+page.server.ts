@@ -1,5 +1,5 @@
 /**
- * Analytics page — load class header + verify access (role-based: teacher/admin).
+ * Analytics page — load class header + verify access (role-based: teacher only).
  *
  * Les widgets fetchent leurs données via les endpoints `/api/teacher/...`
  * en client-side (lazy). On charge ici juste le nom de la classe pour le header.
@@ -60,15 +60,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.map((t) => ({ name: t.name, code: t.code as string }));
 
 	// Compteur des flags anti-fraud non-résolus pour le badge de l'onglet Surveillance.
-	let unresolvedFlagsCount = 0;
+	// null = compteur illisible : le badge le dit, au lieu d'afficher un 0 rassurant.
+	let unresolvedFlagsCount: number | null = 0;
 	const studentIds = students.map((s) => s.id);
 	if (studentIds.length > 0) {
-		const { count } = await locals.supabase
+		const { count, error: flagsCountError } = await locals.supabase
 			.from('srs_anti_fraud_flags')
 			.select('id', { count: 'exact', head: true })
 			.in('student_id', studentIds)
 			.eq('resolved', false);
-		unresolvedFlagsCount = count ?? 0;
+		if (flagsCountError) {
+			console.error('Compteur de signalements illisible :', flagsCountError);
+			unresolvedFlagsCount = null;
+		} else {
+			unresolvedFlagsCount = count ?? 0;
+		}
 	}
 
 	return {

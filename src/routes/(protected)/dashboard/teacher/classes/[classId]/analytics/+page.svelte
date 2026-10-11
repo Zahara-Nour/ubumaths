@@ -35,7 +35,8 @@
 	let refreshNonce = $state(0);
 	let activeTab = $state<'knowledge' | 'competence' | 'surveillance'>('knowledge');
 	// svelte-ignore state_referenced_locally
-	let unresolvedCount = $state<number>(data.unresolvedFlagsCount ?? 0);
+	// null = compteur illisible côté serveur : le badge affiche « ? ».
+	let unresolvedCount = $state<number | null>(data.unresolvedFlagsCount);
 	let showResolved = $state(false);
 	// svelte-ignore state_referenced_locally
 	let selectedStudentId = $state<string>(data.students[0]?.id ?? '');
@@ -118,7 +119,13 @@
 			<Tabs.Trigger value="competence">🎯 Compétences</Tabs.Trigger>
 			<Tabs.Trigger value="surveillance">
 				🚨 Surveillance
-				{#if unresolvedCount > 0}
+				{#if unresolvedCount === null}
+					<Badge
+						variant="outline"
+						class="ml-2 text-[0.65rem]"
+						title="Nombre de signalements indisponible">?</Badge
+					>
+				{:else if unresolvedCount > 0}
 					<Badge variant="destructive" class="ml-2 text-[0.65rem]">{unresolvedCount}</Badge>
 				{/if}
 			</Tabs.Trigger>
