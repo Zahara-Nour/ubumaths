@@ -126,4 +126,5 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
   alors que les données sont des points du programme. À renommer (non tranché).
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
   elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
-  peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second.
+  peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second. Tranché le
+  2026-10-12 : on ne change rien tant que `student_point_state` est vide en prod.
