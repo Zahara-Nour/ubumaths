@@ -284,3 +284,28 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 - **À faire avant 2030** : une tâche qui retire du storage les fichiers d'un compte purgé (chemins
   dans `account_deletion_audit.cleanup_result`, aucun consommateur aujourd'hui).
 - Le bloc C est clos : C9, C10, C15 (documents), C11, C12, C13 (code), C14 (réglé par A1).
+
+## Questions ouvertes tranchées (David, 2026-10-11) — toutes les recommandations retenues
+
+| Point                                     | Décision                                      | État                                                    |
+| ----------------------------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| Données de jeu en `using (true)`          | lecture par soi seul (prof et admin compris)  | ✅ #1075, migration `20261015090600` en prod (vérifiée) |
+| Base qui ignore `profiles.status`         | documenter seulement                          | ✅ #1075 (auth.md)                                      |
+| D17 exercices / constructions `is_public` | exercices publics ; constructions → connectés | ✅ #1075 (constructions `TO authenticated`)             |
+| Fonctions mortes                          | DROP (accord explicite)                       | ✅ #1075, migration `20261015090700` en prod (vérifiée) |
+| B8 limites de débit                       | élévation fermée en panne, le reste ouvert    | ✅ #1076 (code : au `deploy:prod`)                      |
+| B8 interrupteur Google                    | 403 côté API sauf `disconnect` / `status`     | ✅ #1076, + `whiteboard/export-to-classroom` (audit)    |
+| B8 `/auth/register`                       | dans `ALLOWED_SERVICE_ROLE_PATHS`             | ✅ #1076                                                |
+| Classement des énigmes                    | fonction bornée à l'école, prénom + score     | ⏳ #1077 (migration) ; 2ᵉ PR : page + `db:types`        |
+
+- #1077 : seuls les élèves ayant tenté une énigme apparaissent (pas d'annuaire de l'école).
+- **Nouveau constat (audit #1077), à soumettre à David** : `submit_riddle_attempt` prend
+  `p_is_correct` de l'appelant et reste exécutable par `authenticated` ; la policy
+  « Students can create own attempts » laisse aussi l'élève insérer une tentative à sa guise.
+  Un élève peut donc s'attribuer des gidouilles d'énigme (et la tête du classement). Intégrité,
+  pas confidentialité ; prod : `riddle_attempts` vide.
+- **Drive du tableau blanc** (`api/whiteboard/drive/*`) : utilise le jeton Google sans le garde
+  Classroom ; bouton volontairement hors du `{#if}`. À trancher : Drive = Classroom, ou
+  interrupteur distinct à documenter.
+- `db:types` à régénérer (3 fonctions supprimées, `riddle_school_leaderboard`) : avec la 2ᵉ PR
+  des énigmes.
