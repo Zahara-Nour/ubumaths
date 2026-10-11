@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: phase 0 — en attente de validation de David
+status: phase 0 validée par David (2026-10-11) ; PR 1 en cours (branche feat/atelier-calcul-clavier)
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -28,7 +28,7 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 
 ## Trois PR (le retrait est suspendu)
 
-### PR 1 — le clavier de Calcul et le modèle de la commande
+### PR 1 — le clavier de Calcul et le modèle de la commande (en cours)
 
 **Rappel des saisies**
 
@@ -108,3 +108,20 @@ Part : la route `src/routes/(public)/cas/`, `src/lib/components/cas/` (dont `Ast
 `AstTreeViewer`, jamais montés), `src/lib/stores/repl.svelte.ts`. Restent : `WebReplEngine` (moteur
 de l'atelier) et `mathAST/cli/completion` (utilisé par la PR 3). Aucun lien ne pointe vers `/cas`,
 absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inventaire à part.
+
+## Journal
+
+- 2026-10-11 — phase 0 validée par David (« je valide »). PR 1 codée sur
+  `feat/atelier-calcul-clavier` : `CalcDesk.recallPrevious` / `recallNext` (saisies tapées
+  seulement, `#submit(text, typed)`), `commandBeingWritten` (`commands.ts`), combobox dans
+  `CalculView.svelte`. Mesuré : le curseur se place seul à la fin d'une ligne rappelée (norme HTML) —
+  un `setSelectionRange` ajouté ne changeait rien au test, retiré.
+- 2026-10-11 — revue `code-reviewer` de la PR 1 : corrigés une ligne rappelée commençant par un
+  point qui rouvrait la liste (`.pose` bloquait ↑/↓), « Comparer » en plein rappel qui perdait le
+  brouillon, un historique rejoué rappelable (« Comparer » compris), le surlignage gardé après
+  effacement, Maj+↑/↓, l'Entrée IME de Safari (code 229), les ids fixes (`$props.id()`), « Modèle »
+  affiché pour une commande indisponible.
+- 2026-10-11 — DÉCISION DE DAVID (« oui ») : une commande sans argument tapée en entier se lance
+  d'une seule Entrée. Marqueur explicite `runsAlone` dans le catalogue (aide, valeurs, fonctions,
+  exact, décimal, auto, exporter) : « sans exemple » ne suffisait pas, `.arbre` n'en a pas et attend
+  une expression. Garde : chacune répond tapée seule.
