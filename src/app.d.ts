@@ -7,7 +7,15 @@ import type { Database } from '$lib/types/database';
 
 declare global {
 	namespace App {
-		// interface Error {}
+		interface Error {
+			message: string;
+			/**
+			 * Détail technique d'une erreur inattendue côté client (message d'origine et
+			 * début de pile), replié sous « Détails techniques » par la page d'erreur :
+			 * utile pour déboguer d'après une capture d'écran, sans l'imposer à l'élève.
+			 */
+			detail?: string;
+		}
 		interface Locals {
 			supabase: SupabaseClient<Database>;
 			safeGetSession: () => Promise<{ user: User | null }>;
