@@ -20,8 +20,9 @@ représenter, raisonner, calculer, communiquer — [CONTEXT.md](../../CONTEXT.md
 reporter dans son ENT. Aucun ENT n'accepte un import automatisé fiable depuis un outil tiers :
 l'export **réduit la ressaisie**, il ne la supprime pas.
 
-Page : `/dashboard/teacher/competences/export`, atteinte par le bouton « Export compétences » de la
-page analytique d'une classe ([analytique-prof.md](analytique-prof.md)) — pas d'entrée dans le menu.
+Page : `/dashboard/teacher/competences/export`, atteinte par l'entrée « Export des compétences » du
+menu prof (`src/lib/config/dashboard-nav.ts`) ou par le bouton « Export compétences » de la page
+analytique d'une classe ([analytique-prof.md](analytique-prof.md)).
 La page montre un **aperçu** (le même tableau que le CSV) et des options ; le lien de téléchargement
 appelle `GET /api/teacher/competences/export`.
 
@@ -69,7 +70,8 @@ que d'étiquette dans le nom du fichier (`competences-<classe>[-<periode>]-<AAAA
 ## Invariants
 
 - Rien n'est stocké côté serveur : le fichier est produit à la volée.
-- Données nominatives d'élèves mineurs (nom, prénom, classe, niveaux) : accès prof/admin seulement ;
+- Données nominatives d'élèves mineurs (nom, prénom, classe, niveaux) : accès prof seulement (le compte
+  admin est refusé, page comme endpoint, décision du 2026-10-11) ;
   la RLS de `student_competence_level` s'applique (client `locals.supabase` de l'appelant).
 
 ## Tests
@@ -92,11 +94,6 @@ Rappeler au prof de supprimer le fichier de son poste une fois la saisie faite.
 
 ## Écarts connus
 
-- **L'admin n'atteint pas la page** : le layout `src/routes/(protected)/dashboard/teacher/+layout.server.ts`
-  et `requireRole(locals, 'teacher')` du loader la réservent au rôle `teacher`, alors que l'endpoint
-  accepte aussi `admin`. L'ancienne doc annonçait l'accès admin.
-- Pas d'entrée de menu : la page n'est atteignable que depuis la page analytique d'une classe (ou par
-  URL). L'ancienne doc parlait de « Tableau de bord → Compétences → Export ».
 - Les commentaires du code citent encore « famille B » : le terme reste juste (seule famille vivante,
   [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)), mais CONTEXT.md parle de
   « compétences mathématiques ».
