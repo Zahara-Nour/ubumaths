@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
@@ -54,6 +55,10 @@
 
 <div class="container mx-auto py-6">
 	<div class="mb-6">
+		<BackLink
+			href="/dashboard/teacher/contenu/exercices"
+			label={`Retour aux ${lore.learning.exercise}s`}
+		/>
 		<h1 class="text-3xl font-bold">Nouvelle {lore.learning.exercise}</h1>
 		<p class="text-muted-foreground">
 			Créez un nouvelle {lore.learning.exercise} avec support LaTeX

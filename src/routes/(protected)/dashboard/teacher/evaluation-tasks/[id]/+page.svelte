@@ -9,11 +9,12 @@
 
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ChevronLeft, ClipboardList, Save, Trash2, PenLine } from '@lucide/svelte';
+	import { ClipboardList, Save, Trash2, PenLine } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -76,12 +77,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/teacher/evaluation-tasks">
-			<ChevronLeft class="h-4 w-4" />
-			Observations
-		</Button>
-	</div>
+	<BackLink href="/dashboard/teacher/evaluation-tasks" label="Retour aux observations" />
 
 	<div class="mb-6 flex items-center gap-3">
 		<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">

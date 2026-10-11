@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -13,7 +14,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatUserError } from '$lib/utils/errors';
 	import { formatDeadlineFull } from '$lib/utils/dates';
-	import { ArrowLeft, Users, User, Globe, X, Calendar } from '@lucide/svelte';
+	import { Users, User, Globe, X, Calendar } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -43,13 +44,6 @@
 	// Confirm dialog state
 	let deleteDialogOpen = $state(false);
 	let assignmentToDelete = $state<string | null>(null);
-
-	/**
-	 * Navigate back to exercise detail
-	 */
-	function handleBack() {
-		goto(`/dashboard/teacher/contenu/exercices/${data.exercise.id}`);
-	}
 
 	/**
 	 * Toggle student selection
@@ -256,10 +250,11 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack}>
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink
+			href={`/dashboard/teacher/contenu/exercices/${data.exercise.id}`}
+			label={`Retour à la ${lore.learning.exercise}`}
+		/>
 		<div class="flex-1">
 			<h1 class="text-3xl font-bold tracking-tight">Assigner la {lore.learning.exercise}</h1>
 			<p class="mt-2 text-muted-foreground">{data.exercise.title || '(Sans titre)'}</p>

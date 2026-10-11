@@ -1,9 +1,8 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import EvaluationConfigForm from '$lib/components/assessments/EvaluationConfigForm.svelte';
@@ -53,10 +52,8 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux contrôles">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/assessments" label="Retour aux contrôles" />
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Modifier le contrôle</h1>
 			<p class="mt-2 text-muted-foreground">Série « {data.evaluation.series.title} »</p>

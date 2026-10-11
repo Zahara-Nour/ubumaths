@@ -26,6 +26,7 @@
 	import { resolve } from '$app/paths';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
@@ -41,7 +42,7 @@
 	import { ChapterTemplateIndicator } from '$lib/components/templates';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getChapterColorClasses } from '$lib/types/chapters';
-	import { ArrowLeft, BookMarked, Copy, Eye, EyeOff } from '@lucide/svelte';
+	import { BookMarked, Copy, Eye, EyeOff } from '@lucide/svelte';
 	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
 	import type { PageData, ActionData } from './$types';
 
@@ -274,13 +275,12 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
-	<!-- Breadcrumb -->
-	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/teacher/cours/{data.classData?.id}" class="mb-2 -ml-2">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour a {data.classData?.name}
-		</Button>
-	</div>
+	<BackLink
+		href={data.classData
+			? `/dashboard/teacher/cours/${data.classData.id}`
+			: '/dashboard/teacher/cours'}
+		label={data.classData ? `Retour à ${data.classData.name}` : 'Retour aux cours'}
+	/>
 
 	<!-- Chapter Header -->
 	<Card.Root class="mb-6 {colorClasses.border} border-2">

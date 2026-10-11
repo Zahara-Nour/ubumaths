@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, Users, Check, X } from '@lucide/svelte';
+	import { Users, Check, X } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction, refreshPageData } from '$lib/utils/form-action';
 	import type { PageData } from './$types';
@@ -14,10 +14,6 @@
 
 	let selectedClassIds = $state<string[]>([]);
 	let isSubmitting = $state(false);
-
-	function handleBack() {
-		goto('/dashboard/teacher/assessments').then(() => {});
-	}
 
 	function setClassSelected(classId: string, isChecked: boolean) {
 		const others = selectedClassIds.filter((id) => id !== classId);
@@ -77,10 +73,8 @@
 
 <div class="container mx-auto max-w-5xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack}>
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/assessments" label="Retour aux contrôles" />
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Assigner le contrôle</h1>
 			<p class="mt-2 text-muted-foreground">{data.evaluation.series.title}</p>
