@@ -117,7 +117,7 @@ describe('lecture : le « − » en tête et les termes soustraits', () => {
 
 describe('lecture : contractions', () => {
 	it('« de le » → « du »', () => {
-		expect(read('5\\times(2x)')).toBe('le produit de 5 par le produit de 2 par x');
+		expect(read('5\\times(2x)')).toBe('le produit de 5 et du produit de 2 par x');
 		expect(read('(4x)^2')).toBe('le carré du produit de 4 par x');
 	});
 
@@ -186,7 +186,8 @@ describe('lecture : blocs, fonctions, racines', () => {
 		expect(read('|3x|')).toBe('la valeur absolue du produit de 3 par x');
 		// e = Euler (\exponentialE) : e^x est lu comme une puissance de e, volontairement
 		// PAS « l'exponentielle de x » (réservé à la notation \exp)
-		expect(read('e^{2x}')).toBe('\\exponentialE puissance 2 x');
+		// Exposant composé (Q16) : « la puissance 2x de e »
+		expect(read('e^{2x}')).toBe('la puissance 2 x de \\exponentialE');
 	});
 
 	it('racine cubique, puissance d’un sinus', () => {
@@ -198,9 +199,9 @@ describe('lecture : blocs, fonctions, racines', () => {
 		expect(read('\\sin^{-1}(x)')).toBe('\\sin^{−1}\\left( x \\right)');
 	});
 
-	it('nombre négatif entre parenthèses élevé à une puissance : parenthèses gardées', () => {
-		expect(read('(-1)^n')).toBe('\\left( −1 \\right) puissance n');
-		expect(read('-1^n')).toBe("l'opposé de 1 puissance n");
+	it('Q16 : base −1 entre parenthèses ou exposant lettre : « la puissance n de »', () => {
+		expect(read('(-1)^n')).toBe('la puissance n de −1');
+		expect(read('-1^n')).toBe("l'opposé de la puissance n de 1");
 		expect(read('(-3)^2')).toBe('le carré de −3');
 	});
 
@@ -225,6 +226,76 @@ describe('lecture : mots du dictionnaire', () => {
 		expect(keys('\\ln x')).toEqual(['logarithme']);
 		expect(keys('-2a')).toEqual(['opposé', 'produit']);
 		expect(keys('2a=6')).toEqual(['produit', 'égal']);
+	});
+});
+
+describe('lecture : puissances (Q16, Q17)', () => {
+	it.each([
+		['(a+b)^4', 'la puissance 4 de la somme de a et b'],
+		['(2x)^5', 'la puissance 5 du produit de 2 par x'],
+		['(x+1)^{-1}', 'la puissance −1 de la somme de x et 1'],
+		['\\left(\\frac12\\right)^n', 'la puissance n du quotient de 1 par 2'],
+		['2^{n+1}', 'la puissance n + 1 de 2'],
+		['x^n', 'la puissance n de x'],
+		['(a+b)^4=1', 'la puissance 4 de la somme de a et b est égale à 1'],
+		['x^4', 'x puissance 4'],
+		['x^{-1}', 'x puissance −1'],
+		['(a+b)^2', 'le carré de la somme de a et b'],
+		['3\\times10^{2}', 'le produit de 3 par 10 puissance 2'],
+		['10^{3}', '10 puissance 3'],
+		['10^{-3}', '10 puissance −3'],
+		['5^{3}', 'le cube de 5']
+	])('%s → %s', (latex, expected) => {
+		expect(read(latex)).toBe(expected);
+	});
+
+	it('le mot « puissance » désigne la puissance, l’exposant sa formule', () => {
+		const structure = structureOf('(a+b)^4');
+		const reading = readingOf(structure);
+		const power = wordSegment(reading, 'puissance');
+		if (power.kind !== 'word') throw new Error('mot attendu');
+		expect(power.key).toBe('puissance');
+		expect(nodeOf(structure, power).kind).toBe('power');
+		expect(nodeOf(structure, formulaSegment(reading, '4')).role).toBe('exponent');
+	});
+});
+
+describe('lecture : « par » emboîtés (Q20)', () => {
+	it.each([
+		[
+			'\\frac{a}{b}\\times\\frac{c}{d}',
+			'le produit du quotient de a par b et du quotient de c par d'
+		],
+		['(3y)\\times(2x)', 'le produit du produit de 3 par y et du produit de 2 par x'],
+		// Produit aplati par la structure : trois facteurs 3, y, (2x)
+		['3y\\times(2x)', 'le produit de 3, de y et du produit de 2 par x'],
+		['5\\times\\frac{2}{7}', 'le produit de 5 et du quotient de 2 par 7'],
+		['2\\times\\frac{a}{b}\\times c', 'le produit de 2, du quotient de a par b et de c'],
+		[
+			'\\frac{2x+1}{x-3}',
+			'le quotient dont le numérateur est la somme du produit de 2 par x et de 1 et le dénominateur la différence de x et 3'
+		],
+		['2x\\div3', 'le quotient dont le numérateur est le produit de 2 par x et le dénominateur 3'],
+		[
+			'\\frac{1}{4y}',
+			'le quotient dont le numérateur est 1 et le dénominateur le produit de 4 par y'
+		],
+		['3y', 'le produit de 3 par y'],
+		['\\frac{a}{b}', 'le quotient de a par b'],
+		['\\frac{x+1}{x-1}', 'le quotient de la somme de x et 1 par la différence de x et 1']
+	])('%s → %s', (latex, expected) => {
+		expect(read(latex)).toBe(expected);
+	});
+
+	it('« numérateur » et « dénominateur » désignent leurs sous-expressions', () => {
+		const structure = structureOf('\\frac{2x+1}{x-3}');
+		const reading = readingOf(structure);
+		const numerator = wordSegment(reading, 'numérateur');
+		const denominator = wordSegment(reading, 'dénominateur');
+		expect(numerator.kind === 'word' && numerator.key).toBe('numérateur');
+		expect(denominator.kind === 'word' && denominator.key).toBe('dénominateur');
+		expect(nodeOf(structure, numerator).role).toBe('numerator');
+		expect(nodeOf(structure, denominator).role).toBe('denominator');
 	});
 });
 

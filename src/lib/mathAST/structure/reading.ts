@@ -93,7 +93,9 @@ const WORDS = {
 	cubeRoot: { text: 'racine cubique', key: 'racine cubique', gender: 'f' },
 	// L'entrée « racine » du dictionnaire est la racine carrée : clé dédiée
 	root: { text: 'racine', key: 'racine n-ième', gender: 'f' },
-	image: { text: 'image', key: 'image (fonction)', gender: 'f' }
+	image: { text: 'image', key: 'image (fonction)', gender: 'f' },
+	numerator: { text: 'numérateur', key: 'numérateur', gender: 'm' },
+	denominator: { text: 'dénominateur', key: 'dénominateur', gender: 'm' }
 } as const satisfies Record<string, Word>;
 
 /** Fonctions usuelles lues par leur nom : « le sinus de x » */
@@ -198,9 +200,9 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 				// B3, Q13 : exactement deux termes, le second soustrait, lu sans signe
 				return headed(WORDS.difference, id, [text(' ', id), ...enumerate(children.map(read), id)]);
 			case 'product':
-				return headed(WORDS.product, id, [text(' ', id), ...byOrEnumerate(children, id)]);
+				return readProduct(children, id);
 			case 'quotient':
-				return headed(WORDS.quotient, id, [text(' ', id), ...byOrEnumerate(children, id)]);
+				return readQuotient(children, id);
 			case 'power': {
 				const [base, exponent] = children.map((child) => nodes[child]);
 				return powerOf(base, exponent, id);
@@ -222,10 +224,46 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 		return headed(WORDS.opposite, id, [text(' ', id), ...introduce('de', read(id), id)]);
 	}
 
-	/** « de a par b » pour deux facteurs, « de a, b et c » au-delà (B6) */
-	function byOrEnumerate(children: readonly number[], owner: number): ReadingSegment[] {
-		if (children.length !== 2) return enumerate(children.map(read), owner);
-		const [left, right] = children.map(read);
+	/**
+	 * « le produit de a par b » pour deux facteurs, « de a, b et c » au-delà
+	 * (B6). Un facteur dont la lecture contient déjà « par » : « le produit de A
+	 * et de B », « de A, de B et de C » (Q20).
+	 */
+	function readProduct(children: readonly number[], id: number): Phrase {
+		const factors = children.map(read);
+		const nested = factors.some(containsBy);
+		const body =
+			factors.length === 2 && !nested
+				? byPhrase(factors[0], factors[1], id)
+				: enumerate(factors, id, nested);
+		return headed(WORDS.product, id, [text(' ', id), ...body]);
+	}
+
+	/**
+	 * « le quotient de a par b » (B7). Un numérateur ou un dénominateur dont la
+	 * lecture contient déjà « par » : « le quotient dont le numérateur est A et
+	 * le dénominateur B » (Q20).
+	 */
+	function readQuotient(children: readonly number[], id: number): Phrase {
+		const [numeratorId, denominatorId] = children;
+		const [numerator, denominator] = [read(numeratorId), read(denominatorId)];
+		if (!containsBy(numerator) && !containsBy(denominator)) {
+			return headed(WORDS.quotient, id, [text(' ', id), ...byPhrase(numerator, denominator, id)]);
+		}
+		return headed(WORDS.quotient, id, [
+			text(' dont ', id),
+			...introduce(null, headed(WORDS.numerator, numeratorId, []), id),
+			text(' est ', id),
+			...introduce(null, numerator, id),
+			text(' et ', id),
+			...introduce(null, headed(WORDS.denominator, denominatorId, []), id),
+			text(' ', id),
+			...introduce(null, denominator, id)
+		]);
+	}
+
+	/** « de a par b » */
+	function byPhrase(left: Phrase, right: Phrase, owner: number): ReadingSegment[] {
 		return [
 			...introduce('de', left, owner),
 			text(' par ', owner),
@@ -233,27 +271,40 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 		];
 	}
 
-	/** Exposant 2 : carré ; 3 : cube ; sinon « x puissance n » (B9), exposant en formule */
+	/**
+	 * Exposant 2 : carré ; 3 : cube (B9), sauf en base 10 (Q17). Base nombre ou
+	 * lettre seul, exposant nombre (signé) : « x puissance 4 » (B9). Sinon :
+	 * « la puissance 4 de la somme de a et b » (Q16). Exposant en formule.
+	 */
 	function powerOf(baseNode: StructureNode, exponent: StructureNode, owner: number): Phrase {
 		const latex = latexOf(exponent);
-		const baseReading = read(baseNode.id);
-		const named = squareOrCube(latex, baseReading, owner);
+		const base = read(baseNode.id);
+		const baseTen = baseNode.kind === 'number' && latexOf(baseNode) === '10';
+		const named = baseTen ? null : squareOrCube(latex, base, owner);
 		if (named) return named;
-		// `(−1)ⁿ` : « −1 puissance n » se lirait comme `−1ⁿ` ; les parenthèses restent
-		const base =
-			isSignedNumber(baseReading) && baseNode.kind === 'parentheses'
-				? formula(latexOf(baseNode), baseNode.id)
-				: baseReading;
-		return {
-			...base,
-			body: [
-				...base.body,
-				text(' ', owner),
-				word(WORDS.power, owner),
-				text(' ', owner),
-				{ kind: 'formula', latex, node: exponent.id }
-			]
-		};
+		const exponentFormula: ReadingSegment = { kind: 'formula', latex, node: exponent.id };
+		const simpleBase = baseNode.kind === 'number' || baseNode.kind === 'letter';
+		const simpleExponent =
+			exponent.kind === 'number' ||
+			(exponent.kind === 'opposite' && nodes[exponent.children[0]].kind === 'number');
+		if (simpleBase && simpleExponent) {
+			return {
+				...base,
+				body: [
+					...base.body,
+					text(' ', owner),
+					word(WORDS.power, owner),
+					text(' ', owner),
+					exponentFormula
+				]
+			};
+		}
+		return headed(WORDS.power, owner, [
+			text(' ', owner),
+			exponentFormula,
+			text(' ', owner),
+			...introduce('de', base, owner)
+		]);
 	}
 
 	function readRoot(node: StructureNode): Phrase {
@@ -347,12 +398,6 @@ function squareOrCube(exponent: string, base: Phrase, owner: number): Phrase | n
 	return w ? headed(w, owner, [text(' ', owner), ...introduce('de', base, owner)]) : null;
 }
 
-/** Formule seule d'un nombre signé (`−3`) */
-function isSignedNumber(phrase: Phrase): boolean {
-	const [first] = phrase.body;
-	return phrase.body.length === 1 && first.kind === 'formula' && first.latex.startsWith('-');
-}
-
 /** Fonction définie par l'élève ou l'auteur : une lettre (`f`, `g`, `h`) */
 function isUserFunction(ast: FunctionNode): boolean {
 	return /^[a-zA-Z]$/.test(ast.name);
@@ -408,14 +453,23 @@ function introduce(
  * « de a, b et c » ; dès qu'un élément commence par un article, chacun est
  * introduit par « de » (B1 : « de 2 et du produit », B12 : « du produit … et de 3 »).
  */
-function enumerate(phrases: readonly Phrase[], owner: number): ReadingSegment[] {
-	const everyDe = phrases.some((p) => p.article !== null);
+function enumerate(
+	phrases: readonly Phrase[],
+	owner: number,
+	forceDe: boolean = false
+): ReadingSegment[] {
+	const everyDe = forceDe || phrases.some((p) => p.article !== null);
 	const segments: ReadingSegment[] = [];
 	phrases.forEach((phrase, i) => {
 		if (i > 0) segments.push(text(i === phrases.length - 1 ? ' et ' : ', ', owner));
 		segments.push(...introduce(i === 0 || everyDe ? 'de' : null, phrase, owner));
 	});
 	return segments;
+}
+
+/** La lecture contient déjà « par » (produit, quotient, image) : Q20 */
+function containsBy(phrase: Phrase): boolean {
+	return phrase.body.some((s) => s.kind === 'text' && s.text.includes(' par '));
 }
 
 /** Fusionne deux morceaux de texte voisins rattachés à la même sous-expression */
