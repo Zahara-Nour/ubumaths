@@ -166,3 +166,15 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
   le lot 5 : quatre définitions à valider par David (différent, racine cubique, racine n-ième,
   logarithme décimal) et Q25 (saisie par la page d'administration ou migration). Limite connue :
   `AB²` lu comme un produit par le parseur (Q18, chantier séparé).
+
+## Lot 5 — définitions proposées (à valider par David)
+
+Mots produits par la lecture et absents du dictionnaire (ils s'affichent sans lien). Niveaux non
+vérifiés dans les programmes.
+
+| Mot                | Définition proposée                                                                                                                                | Niveau proposé            |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| différent          | Se dit de deux quantités qui n'ont pas la même valeur. Symbole : $\neq$. Ex : $3 + 4 \neq 8$.                                                      | 6e                        |
+| racine cubique     | $\sqrt[3]{a}$ est le nombre dont le cube vaut $a$. Ex : $\sqrt[3]{8} = 2$ car $2^3 = 8$.                                                           | Terminale, maths complém. |
+| racine n-ième      | Pour $a \geq 0$ et $n$ entier non nul, $\sqrt[n]{a}$ est le nombre positif dont la puissance $n$ vaut $a$. Ex : $\sqrt[4]{81} = 3$ car $3^4 = 81$. | Terminale, maths complém. |
+| logarithme décimal | Fonction notée $\log$, définie par $\log(x) = \dfrac{\ln x}{\ln 10}$. Elle vérifie $\log(10^n) = n$. Ex : $\log(1000) = 3$.                        | Terminale, spécialité     |
