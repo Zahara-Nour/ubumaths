@@ -6,6 +6,7 @@
 	import { page } from '$app/state';
 	import { privateMessages } from '$lib/stores/privateMessages.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import {
 		Loader2,
 		Reply,
@@ -13,7 +14,6 @@
 		Archive,
 		Trash2,
 		Download,
-		ArrowLeft,
 		MessageSquare,
 		Eye,
 		EyeOff,
@@ -127,10 +127,8 @@
 	<div class="border-b border-border bg-card p-4">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox').then(() => {})}>
-					<ArrowLeft class="h-4 w-4" />
-				</Button>
 				<div>
+					<BackLink href="/messages/inbox" label="Retour à la boîte de réception" class="mb-0" />
 					<h1 class="text-lg font-bold text-foreground">Message</h1>
 				</div>
 			</div>
@@ -182,9 +180,7 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					Ce message n'existe pas ou vous n'y avez pas accès
 				</p>
-				<Button onclick={() => goto('/messages/inbox').then(() => {})} class="mt-4">
-					Retour à la boîte de réception
-				</Button>
+				<Button href="/messages/inbox" class="mt-4">Retour à la boîte de réception</Button>
 			</div>
 		{:else}
 			<div class="mx-auto max-w-4xl p-6">

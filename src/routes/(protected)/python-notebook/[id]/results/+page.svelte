@@ -1,20 +1,11 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
-	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import {
-		ArrowLeft,
-		Users,
-		CheckCircle2,
-		XCircle,
-		CircleDashed,
-		Sparkles,
-		Lightbulb
-	} from '@lucide/svelte';
+	import { Users, CheckCircle2, XCircle, CircleDashed, Sparkles, Lightbulb } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { CheckpointDetail } from '$lib/types/database-helpers';
 
@@ -190,18 +181,12 @@
 	function checkpointLabel(cp: { cell_id: string; title: string | null; mode: string }): string {
 		return cp.title ?? `Checkpoint (${cp.mode})`;
 	}
-
-	function handleBack(): void {
-		void goto(`/python-notebook/${data.notebook.id}`);
-	}
 </script>
 
 <div class="container mx-auto max-w-7xl px-4 py-6">
 	<!-- Header -->
+	<BackLink href={`/python-notebook/${data.notebook.id}`} label="Retour au notebook" />
 	<div class="mb-6 flex items-center gap-3">
-		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour au notebook">
-			<ArrowLeft class="size-5" />
-		</Button>
 		<div class="flex-1">
 			<h1 class="text-2xl font-bold">Résultats : {data.notebook.title}</h1>
 			<p class="text-sm text-muted-foreground">

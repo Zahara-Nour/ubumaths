@@ -3,11 +3,11 @@
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
-	import { ArrowLeft } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -75,11 +75,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
-	<Button variant="ghost" href="/constructions/{data.construction.id}" class="mb-4 w-fit">
-		<ArrowLeft class="mr-2 h-4 w-4" />
-		Retour a la construction
-	</Button>
-
+	<BackLink href={`/constructions/${data.construction.id}`} label="Retour à la construction" />
 	<h1 class="mb-6 text-2xl font-bold">Modifier la construction</h1>
 
 	<!-- Metadata form -->

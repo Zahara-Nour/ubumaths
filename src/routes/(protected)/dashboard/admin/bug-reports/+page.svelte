@@ -53,7 +53,6 @@
 		Clock,
 		Calendar,
 		Loader2,
-		ArrowLeft,
 		Trash2,
 		X,
 		CheckSquare
@@ -281,14 +280,6 @@
 </script>
 
 <div class="container mx-auto py-8">
-	<!-- Back link -->
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" onclick={() => goto('/dashboard/admin')}>
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour à l'admin
-		</Button>
-	</div>
-
 	<!-- Header -->
 	<div class="mb-8">
 		<h1 class="mb-2 text-3xl font-bold">Rapports de bugs</h1>
