@@ -20,7 +20,9 @@
  * Les clés des mots sont les identifiants du dictionnaire (`termId` de
  * `lexicon/linker.ts` : le nom, suivi du sens pour un homonyme) : la page
  * les passe telles quelles à `LexiconTerm` (`ids`). Une clé absente du
- * dictionnaire donne un mot sans lien.
+ * dictionnaire donne un mot affiché sans lien : `racine cubique`, `racine n-ième`,
+ * `logarithme décimal`, `différent` (définitions à proposer, lot 5). Garde :
+ * `reading.test.ts`, toute nouvelle clé absente le casse.
  */
 import { func } from '../factory';
 import { isFunction } from '../guards';
@@ -44,7 +46,7 @@ export interface Reading {
 	readonly segments: readonly ReadingSegment[];
 }
 
-type Article = 'le' | 'la' | "l'" | 'les';
+type Article = 'le' | 'la' | "l'";
 type Gender = 'm' | 'f';
 
 /** Groupe nominal : un article (ou aucun, pour une formule), puis le reste */
@@ -89,7 +91,8 @@ const WORDS = {
 	power: { text: 'puissance', key: 'puissance', gender: 'f' },
 	squareRoot: { text: 'racine carrée', key: 'racine carrée', gender: 'f' },
 	cubeRoot: { text: 'racine cubique', key: 'racine cubique', gender: 'f' },
-	root: { text: 'racine', key: 'racine', gender: 'f' },
+	// L'entrée « racine » du dictionnaire est la racine carrée : clé dédiée
+	root: { text: 'racine', key: 'racine n-ième', gender: 'f' },
 	image: { text: 'image', key: 'image (fonction)', gender: 'f' }
 } as const satisfies Record<string, Word>;
 
@@ -114,6 +117,16 @@ const DIFFERENT: Adjective = {
 	feminine: 'différente',
 	key: 'différent'
 };
+
+/** Toutes les clés que la lecture peut produire (garde contre le dictionnaire) */
+export const READING_WORD_KEYS: readonly string[] = [
+	...Object.values(WORDS),
+	...Object.values(FUNCTION_WORDS),
+	EQUAL,
+	LOWER,
+	GREATER,
+	DIFFERENT
+].flatMap((w) => (w ? [w.key] : []));
 
 /** Relations lues ; les autres (∈, ⊂, ≈…) : la relation entière en formule */
 const RELATIONS: Partial<Record<RelationType, RelationReading>> = {
@@ -372,8 +385,8 @@ function headed(w: Word, node: number, rest: readonly ReadingSegment[]): Phrase 
 }
 
 /**
- * Le groupe précédé de « de » ou « à », contractions faites : « du », « des »,
- * « au », « aux », « de la », « de l' ». L'article (contracté ou non) appartient
+ * Le groupe précédé de « de » ou « à », contractions faites : « du », « au »,
+ * « de la », « de l' ». L'article (contracté ou non) appartient
  * au groupe ; la préposition seule, à `owner`.
  */
 function introduce(
@@ -385,7 +398,6 @@ function introduce(
 	const articleText = article === "l'" ? article : article ? `${article} ` : '';
 	if (preposition === null) return article ? [text(articleText, node), ...body] : [...body];
 	if (article === 'le') return [text(preposition === 'de' ? 'du ' : 'au ', node), ...body];
-	if (article === 'les') return [text(preposition === 'de' ? 'des ' : 'aux ', node), ...body];
 	const prepositionSegment = text(`${preposition} `, owner);
 	return article
 		? [prepositionSegment, text(articleText, node), ...body]

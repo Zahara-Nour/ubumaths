@@ -11,6 +11,9 @@
  * Entrées PARSÉES (invariant 4 du module), coefficients ≠ 1.
  */
 import { describe, expect, it } from 'vitest';
+import { termId } from '$lib/lexicon/linker';
+import { REFERENCE_DICTIONARY } from '../../../../../tests/fixtures/lexique/dictionnaire-reference';
+import { READING_WORD_KEYS } from '../reading';
 import {
 	readingOf,
 	readingPlainText,
@@ -181,7 +184,8 @@ describe('lecture : blocs, fonctions, racines', () => {
 		expect(read('\\cos(2x)')).toBe('le cosinus du produit de 2 par x');
 		expect(read('\\tan x')).toBe('la tangente de x');
 		expect(read('|3x|')).toBe('la valeur absolue du produit de 3 par x');
-		// e = Euler (\exponentialE), exposant en formule
+		// e = Euler (\exponentialE) : e^x est lu comme une puissance de e, volontairement
+		// PAS « l'exponentielle de x » (réservé à la notation \exp)
 		expect(read('e^{2x}')).toBe('\\exponentialE puissance 2 x');
 	});
 
@@ -221,6 +225,23 @@ describe('lecture : mots du dictionnaire', () => {
 		expect(keys('\\ln x')).toEqual(['logarithme']);
 		expect(keys('-2a')).toEqual(['opposé', 'produit']);
 		expect(keys('2a=6')).toEqual(['produit', 'égal']);
+	});
+});
+
+describe('lecture : clés des mots et dictionnaire de référence', () => {
+	/** Clés absentes du dictionnaire, connues : leur mot s'affiche sans lien (lot 5) */
+	const KNOWN_MISSING = ['racine cubique', 'racine n-ième', 'logarithme décimal', 'différent'];
+
+	it('chaque clé existe dans le dictionnaire, sauf les absentes connues', () => {
+		const ids = new Set(REFERENCE_DICTIONARY.map(termId));
+		const missing = [...new Set(READING_WORD_KEYS)].filter((key) => !ids.has(key));
+		expect(missing.sort()).toEqual([...KNOWN_MISSING].sort());
+	});
+
+	it("racine d'indice n : clé dédiée, pas la fiche de la racine carrée", () => {
+		const reading = readingOf(structureOf('\\sqrt[4]{x}'));
+		expect(readingPlainText(reading)).toBe("la racine d'indice 4 de x");
+		expect(words(reading).map((w) => w.kind === 'word' && w.key)).toEqual(['racine n-ième']);
 	});
 });
 
