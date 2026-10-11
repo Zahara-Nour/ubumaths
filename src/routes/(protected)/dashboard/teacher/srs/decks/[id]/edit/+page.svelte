@@ -5,7 +5,7 @@
 	Teacher page to edit an existing SRS deck.
 
 	Features:
-	- Edit deck name, description, config
+	- Edit deck name, description
 	- Add/remove cards
 	- Save changes
 -->
@@ -20,13 +20,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Save, Plus, Trash2, Sparkles, BookOpen } from '@lucide/svelte';
-	import { RETENTION_PROFILES } from '$lib/srs/config';
-	import type { FSRSConfig } from '$lib/srs/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 
 	interface DeckCard {
@@ -44,7 +41,6 @@
 				name: string;
 				description?: string;
 				deckType: 'official' | 'personal';
-				config?: FSRSConfig;
 			};
 			cards: DeckCard[];
 		};
@@ -60,9 +56,6 @@
 	let deckName = $state(initialData.deck.name);
 	let deckDescription = $state(initialData.deck.description || '');
 	let deckType = $state<'official' | 'personal'>(initialData.deck.deckType);
-	let retentionProfile = $state<keyof typeof RETENTION_PROFILES>(
-		getRetentionProfile(initialData.deck.config?.desiredRetention || 0.9)
-	);
 
 	let isSaving = $state(false);
 	let showCustomCardEditor = $state(false);
@@ -74,21 +67,8 @@
 		deckName !== data.deck.name ||
 			deckDescription !== (data.deck.description || '') ||
 			deckType !== data.deck.deckType ||
-			RETENTION_PROFILES[retentionProfile] !== (data.deck.config?.desiredRetention || 0.9) ||
 			cards.length !== data.cards.length
 	);
-
-	/**
-	 * Get retention profile from value
-	 */
-	function getRetentionProfile(value: number): keyof typeof RETENTION_PROFILES {
-		const entries = Object.entries(RETENTION_PROFILES) as [
-			keyof typeof RETENTION_PROFILES,
-			number
-		][];
-		const found = entries.find(([_, v]) => Math.abs(v - value) < 0.01);
-		return found ? found[0] : 'balanced';
-	}
 
 	/**
 	 * Save deck changes
@@ -105,10 +85,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					name: deckName.trim(),
-					description: deckDescription.trim() || undefined,
-					config: {
-						desiredRetention: RETENTION_PROFILES[retentionProfile]
-					}
+					description: deckDescription.trim() || undefined
 				})
 			});
 
@@ -220,9 +197,9 @@
 	</div>
 
 	<!-- Deck Configuration -->
-	<div class="mb-6 grid gap-6 lg:grid-cols-3">
+	<div class="mb-6">
 		<!-- Main Form -->
-		<div class="lg:col-span-2">
+		<div>
 			<Card.Root>
 				<Card.Header>
 					<Card.Title>Informations du deck</Card.Title>
@@ -262,35 +239,6 @@
 							{/if}
 							<Badge variant="outline" class="ml-auto">Non modifiable</Badge>
 						</div>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-
-		<!-- Settings -->
-		<div>
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Paramètres FSRS</Card.Title>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<div class="space-y-2">
-						<Label for="retention-profile">Profil de rétention</Label>
-						<MySelect
-							type="single"
-							bind:value={retentionProfile}
-							items={[
-								{ value: 'relaxed', label: 'Détendu (80%)' },
-								{ value: 'balanced', label: 'Équilibré (90%)' },
-								{ value: 'high', label: 'Élevé (95%)' },
-								{ value: 'expert', label: 'Expert (97%)' }
-							]}
-							placeholder="Sélectionnez un profil"
-							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-						/>
-						<p class="text-xs text-muted-foreground">
-							Taux de rétention souhaité : {RETENTION_PROFILES[retentionProfile] * 100}%
-						</p>
 					</div>
 				</Card.Content>
 			</Card.Root>

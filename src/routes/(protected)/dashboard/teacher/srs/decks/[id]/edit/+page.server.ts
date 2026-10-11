@@ -59,7 +59,6 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			ownerId: deck.owner_id,
 			deckType: deck.deck_type,
 			isAssigned: deck.is_assigned,
-			config: deck.config,
 			createdAt: deck.created_at,
 			updatedAt: deck.updated_at
 		};
