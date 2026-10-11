@@ -294,14 +294,16 @@ function containsScientificNumber(value: unknown): boolean {
  *
  * L'écriture réécrite doit se relire à la même valeur dans TOUT contexte. Les
  * règles de parenthèses du générateur (base d'une puissance, facteur qui
- * commence par un signe…) s'appliquent seules à la forme réécrite ; deux
+ * commence par un signe…) s'appliquent seules à la forme réécrite ; trois
  * contextes restent, où l'ancienne écriture `1.5e-7` était un atome et la
  * nouvelle ne l'est plus :
  * - facteur de DROITE d'un produit implicite : `\pi 10^{-7}` serait refusé
  *   (« nombre écrit après un facteur ») → `\pi \left( 10^{-7} \right)` ;
+ * - facteur de GAUCHE d'un produit implicite dont le droit commence par un chiffre :
+ *   `10^{-7} 2` serait refusé → `10^{-7} \times 2` ;
  * - dénominateur d'une division EN LIGNE : `\pi / 1.5 \times 10^{-7}` se
  *   relirait (π/1,5)·10⁻⁷ → `\pi / \left( 1.5 \times 10^{-7} \right)`.
- * Ces parenthèses ne sont posées que sur un nombre réécrit : le reste de
+ * Ces retouches ne portent que sur un nombre réécrit : le reste de
  * l'arbre garde exactement son écriture.
  */
 function withoutScientificNumbers(node: MathNode): MathNode {
@@ -314,7 +316,16 @@ function withoutScientificNumbers(node: MathNode): MathNode {
 			return written;
 		},
 		leaveMultiplication: (n) => {
-			if (n.displayStyle !== 'implicit' || !expanded.has(n.right)) return undefined;
+			if (n.displayStyle !== 'implicit') return undefined;
+			// Réécrit à GAUCHE, nombre à droite : `10^{-7} 2` serait refusé → `10^{-7} \times 2`
+			const leftCore = n.left.type === 'opposite' ? n.left.operand : n.left;
+			if (expanded.has(leftCore) && startsWithNumber(n.right)) {
+				return multiply(n.left, n.right, 'cross', {
+					operatorMetadata: n.operatorMetadata,
+					metadata: n.metadata
+				});
+			}
+			if (!expanded.has(n.right)) return undefined;
 			return multiply(n.left, parentheses(n.right), n.displayStyle, {
 				operatorMetadata: n.operatorMetadata,
 				metadata: n.metadata

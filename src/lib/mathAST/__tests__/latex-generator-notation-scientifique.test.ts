@@ -86,6 +86,10 @@ const CONTEXTS: Array<{ name: string; build: (n: MathNode) => MathNode; smallOnl
 	{ name: 'facteur implicite de droite', build: (n) => multiply(PI, n, 'implicit') },
 	{ name: 'facteur implicite après un nombre', build: (n) => multiply(number('2'), n, 'implicit') },
 	{ name: 'facteur implicite de gauche', build: (n) => multiply(n, PI, 'implicit') },
+	{
+		name: 'facteur implicite de gauche, nombre à droite',
+		build: (n) => multiply(n, number('2'), 'implicit')
+	},
 	{ name: 'facteur × de droite', build: (n) => multiply(PI, n, 'cross') },
 	{ name: 'facteur · de droite', build: (n) => multiply(PI, n, 'dot') },
 	{ name: 'dénominateur d’une division en ligne', build: (n) => divide(PI, n, 'inline') },

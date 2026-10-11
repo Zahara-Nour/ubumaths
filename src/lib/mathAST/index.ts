@@ -212,7 +212,7 @@ export type {
 
 // Signed-literal-safe factory (handles negatives via opposite() wrapping).
 // Use this instead of `number()` when the input value may be negative.
-export { numericNode } from './common/numeric';
+export { numericNode, numberToLatexSafe } from './common/numeric';
 
 // =============================================================================
 // Transformation Helpers

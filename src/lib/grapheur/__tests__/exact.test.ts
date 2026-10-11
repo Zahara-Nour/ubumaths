@@ -10,7 +10,8 @@ import { describe, it, expect } from 'vitest';
 import { computeSequenceTerms, parseSequence } from '$lib/grapheur/sequence';
 import { exactTermValue, exactTermValues } from '$lib/grapheur/exact';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { parseLatex } from '$lib/mathAST/parser';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
@@ -239,9 +240,19 @@ describe('exactTermValue — accord avec le point tracé', () => {
 describe('exactTermValues — premier terme minuscule ou énorme', () => {
 	// Le parseur LaTeX ne lit plus `1e-7` (e = constante d'Euler) : le LaTeX
 	// rendu ne doit jamais contenir de notation scientifique.
-	it.each([1e-7, 1e21])('u_0 = %s : écrit sans notation scientifique', (firstTerm) => {
-		const latex = latexOf(exactOf('2u_n', 0, { mode: 'recurrence', firstTerm }));
-		expect(latex).not.toBeNull();
-		expect(latex).not.toMatch(/\de[+-]?\d/);
+	it.each([1e-7, 1e21])(
+		'u_0 = %s : écrit sans notation scientifique, relu à sa valeur',
+		(firstTerm) => {
+			const latex = latexOf(exactOf('2u_n', 0, { mode: 'recurrence', firstTerm }));
+			expect(latex).not.toBeNull();
+			expect(latex).not.toMatch(/\de[+-]?\d/);
+			const back = evaluateNodeToApproximatedNumber(parseLatex(latex!));
+			expect(Math.abs(back - firstTerm)).toBeLessThanOrEqual(firstTerm * 1e-12);
+		}
+	);
+
+	it('u_1 = 2·u_0 avec u_0 = 10⁻⁷ : relu à 2·10⁻⁷', () => {
+		const latex = latexOf(exactOf('2u_n', 1, { mode: 'recurrence', firstTerm: 1e-7 }));
+		expect(evaluateNodeToApproximatedNumber(parseLatex(latex!))).toBeCloseTo(2e-7, 20);
 	});
 });

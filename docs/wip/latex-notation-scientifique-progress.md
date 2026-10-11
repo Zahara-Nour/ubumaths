@@ -23,7 +23,12 @@ scientifique reste en syntaxe custom (`1e5`).
       lecture réécrits) ; `toLatex` réécrit `1e-7` en `10^{-7}` avant rendu.
 - [x] Doc : `docs/systeme/mathast/README.md` (invariant 6).
 - [x] Règle par l'exactitude : `formatNumber(numValue, ast)` dans `formatExact` ; 5 tests vus rouges.
-- [ ] code-reviewer, PR
+- [x] Revue (2026-10-11) : `numberToLatexSafe` (`mathAST/common/numeric.ts`) dans les règles
+      `custom` (`substitutedValue`, `substituteVariable`), les tirages (`variable-resolver.ts`),
+      `composite-duration.ts` ; `evalResultToNumber` relit `10^{-7}` ; résultat non fini → erreur ;
+      `;sci` sur grandeur / `;hms` / littéral ; `10^{-7} \times 2` à gauche ; L17 dans
+      `ecarts-a-trier.md`. 20 tests vus rouges.
+- [ ] PR
 - `2e3` : refusé comme `2e 3` (« nombre écrit après un facteur »), pas 2·e·3 — aligné.
 - Régressions relevées par le coordinateur, corrigées : `\pi \cdot 3e-7` implicite et
   `\pi / 2.5e-8` en ligne → parenthèses posées par la passe (table contextes × valeurs, 5 rouges).
@@ -67,4 +72,9 @@ APPROCHÉ ≥ 10¹⁵ passe en notation scientifique. `;sci` la force toujours. 
 - [x] Règle simplifiée : option `scientificOutOfRange` retirée, `MAX_EXPANDED_MAGNITUDE` seule
       borne, entier exact sous `;d` (`exactIntegerWriting`). 6 tests vus rouges.
 - [x] Règle par l'exactitude : `formatNumber(numValue, ast)` dans `formatExact` ; 5 tests vus rouges.
-- [ ] code-reviewer, PR
+- [x] Revue (2026-10-11) : `numberToLatexSafe` (`mathAST/common/numeric.ts`) dans les règles
+      `custom` (`substitutedValue`, `substituteVariable`), les tirages (`variable-resolver.ts`),
+      `composite-duration.ts` ; `evalResultToNumber` relit `10^{-7}` ; résultat non fini → erreur ;
+      `;sci` sur grandeur / `;hms` / littéral ; `10^{-7} \times 2` à gauche ; L17 dans
+      `ecarts-a-trier.md`. 20 tests vus rouges.
+- [ ] PR

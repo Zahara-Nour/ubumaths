@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { evaluateAstWithModifiers } from '../evaluate-with-modifiers';
+import { evaluateAstWithModifiers, evalResultToNumber } from '../evaluate-with-modifiers';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { parseLatex } from '$lib/mathAST/parser';
 import { evaluateNodeToApproximatedNumber } from '../evaluate';
@@ -164,5 +164,59 @@ describe('tableau de la doc (docs/systeme/ubumark.md)', () => {
 		['0.0000001*3', { scientific: true }, '3 \\times 10^{-7}']
 	] as Array<[string, EvalModifiers, string]>)('%s %o → %s', (expression, modifiers, expected) => {
 		expect(run(expression, modifiers)).toBe(expected);
+	});
+});
+
+describe('résultat non fini : erreur explicite', () => {
+	it.each([
+		['10^400/3', {}],
+		['10^400', { decimal: true }],
+		['10^400', { scientific: true }]
+	] as Array<[string, EvalModifiers]>)('%s %o', (expression, modifiers) => {
+		expect(() => run(expression, modifiers)).toThrow(/non fini/);
+	});
+});
+
+describe('evalResultToNumber relit une puissance de 10', () => {
+	it.each([
+		['10^{-7}', 1e-7],
+		['3.2 \\times 10^{5}', 320000],
+		['-3 \\times 10^{-7}', -3e-7],
+		['\\dfrac{9}{2}', 4.5],
+		['2.5', 2.5]
+	])('%s → %s', (value, expected) => {
+		expect(evalResultToNumber(value)).toBeCloseTo(expected, 20);
+	});
+
+	it('une valeur illisible rend NaN', () => {
+		expect(evalResultToNumber('abc')).toBeNaN();
+	});
+});
+
+describe(';sci avec une grandeur, ;hms ou un résultat littéral', () => {
+	it('0.0000001[m];sci → 10^{-7}[m], relu à la même grandeur', () => {
+		const out = run('0.0000001[m]', { scientific: true });
+		expect(out).toBe('10^{-7}[m]');
+		expect(run(out, { unit: 'nm' })).toBe('100[nm]');
+	});
+
+	it('0.0000003[m];sci → 3*10^{-7}[m]', () => {
+		const out = run('0.0000003[m]', { scientific: true });
+		expect(out).toBe('3*10^{-7}[m]');
+		expect(run(out, { unit: 'nm' })).toBe('300[nm]');
+	});
+
+	it(';[unité] et ;sci : 320[km] en m → 3.2*10^{5}[m]', () => {
+		expect(run('320[km]', { unit: 'm', scientific: true })).toBe('3.2*10^{5}[m]');
+	});
+
+	it(';hms et ;sci : erreur d’auteur', () => {
+		expect(() => run('135[min]', { hms: true, scientific: true })).toThrow(/^;sci : /);
+	});
+
+	it('résultat littéral et ;sci : erreur d’auteur', () => {
+		expect(() =>
+			evaluateAstWithModifiers(parseCustom('0.0000001*a'), { scientific: true }, new Set(['a']))
+		).toThrow(/^;sci : /);
 	});
 });

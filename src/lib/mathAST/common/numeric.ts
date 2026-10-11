@@ -42,6 +42,31 @@ export function getNumericValue(node: MathNode): number | null {
 }
 
 /**
+ * Écriture décimale d'un nombre JS, relue à l'identique par `parseLatex` ET `parseCustom`.
+ *
+ * `String(3e-7)` = '3e-7' et `String(1e21)` = '1e+21' : notation JS, que le parseur LaTeX
+ * relit 3e − 7 (e = constante d'Euler) et que l'élève n'a jamais apprise. Ici, tous les
+ * chiffres de `String(n)` sont gardés (aller-retour exact), seule la virgule bouge :
+ * `0.0000003`, `1000000000000000000000`, `-2.5`. À utiliser partout où un nombre JS devient
+ * une chaîne relue par un parseur. Un nombre non fini (`Infinity`, `NaN`) est rendu tel
+ * que `String` l'écrit : l'appelant décide de son sort.
+ */
+export function numberToLatexSafe(value: number): string {
+	const text = String(value);
+	if (!Number.isFinite(value) || !/e/i.test(text)) return text;
+	const negative = text.startsWith('-');
+	const [mantissa, exponentText] = (negative ? text.slice(1) : text).split(/e/i);
+	const pointIndex = mantissa.indexOf('.');
+	const digits = mantissa.replace('.', '');
+	const point = (pointIndex === -1 ? mantissa.length : pointIndex) + Number(exponentText);
+	let written: string;
+	if (point <= 0) written = `0.${'0'.repeat(-point)}${digits}`;
+	else if (point >= digits.length) written = digits + '0'.repeat(point - digits.length);
+	else written = `${digits.slice(0, point)}.${digits.slice(point)}`;
+	return negative ? `-${written}` : written;
+}
+
+/**
  * Create a MathNode from a numeric value (or pre-formatted numeric string).
  * Negative values (or strings starting with '-') are wrapped in opposite().
  * Strings starting with '+' have the prefix stripped.

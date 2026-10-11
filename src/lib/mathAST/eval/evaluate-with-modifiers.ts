@@ -189,17 +189,23 @@ export function evalResultToCustom(value: string): string {
 }
 
 /**
- * Valeur numérique d'un résultat d'évaluation : `3.5`, mais aussi `\dfrac{9}{2}` ou
- * `2 \sqrt{2}` (que `parseFloat` lirait NaN ou 2). NaN si ce n'est pas un nombre.
+ * Valeur numérique d'un résultat d'évaluation : `3.5`, mais aussi `\dfrac{9}{2}`,
+ * `2 \sqrt{2}` ou `3 \times 10^{-7}` (que `parseFloat` lirait NaN, 2 ou 3). NaN si ce
+ * n'est pas un nombre.
  */
 export function evalResultToNumber(value: string): number {
-	if (!value.includes('\\')) return parseFloat(value);
+	// Nombre écrit en entier ou en décimal : lu directement
+	if (PLAIN_NUMBER.test(value)) return parseFloat(value);
+	// Toute autre écriture passe par le parseur : `10^{-7}` (`;sci`) valait 10 par `parseFloat`
 	try {
 		return evaluateNodeToApproximatedNumber(parseLatex(value));
 	} catch {
 		return NaN;
 	}
 }
+
+/** `12`, `-2.5`, `0.0000003` : un nombre écrit sans autre signe */
+const PLAIN_NUMBER = /^\s*-?\d+(\.\d+)?\s*$/;
 
 const TRIGONOMETRIC_FUNCTIONS: ReadonlySet<string> = new Set(['cos', 'sin', 'tan']);
 
@@ -535,9 +541,16 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 			`Produit de durées : ${toCustom(ast)} (une durée écrite par ;hms ne se réutilise pas dans un calcul)`
 		);
 	}
-	if (modifiers.hms) return hmsWriting(ast);
-	if (modifiers.unit !== undefined)
-		return withSignModifiers(expressedIn(ast, modifiers.unit), modifiers);
+	if (modifiers.hms) {
+		if (modifiers.scientific) {
+			throw new Error(`;sci : une durée écrite par ;hms n'a pas de notation scientifique`);
+		}
+		return hmsWriting(ast);
+	}
+	if (modifiers.unit !== undefined) {
+		const expressed = expressedIn(ast, modifiers.unit);
+		return withSignModifiers(withScientificQuantity(expressed, modifiers), modifiers);
+	}
 	const reduced = tidy(ast, { unitChoice: 'written' });
 	if (!hasQuantity(reduced)) {
 		const value = rationalOf(reduced);
@@ -545,7 +558,28 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 		if (zeroUnit !== null) return `0[${zeroUnit}]`;
 		return evaluateAstWithModifiers(reduced, modifiers);
 	}
-	return withSignModifiers(quantityWriting(reduced, ast), modifiers);
+	return withSignModifiers(
+		withScientificQuantity(quantityWriting(reduced, ast), modifiers),
+		modifiers
+	);
+}
+
+/** Grandeur écrite en syntaxe maison : `-0.0000003[m]` → signe, nombre, unité */
+const QUANTITY_WRITING = /^(-?)(\d+(?:\.\d+)?)\[([^\]]+)\]$/;
+
+/**
+ * `;sci` sur une grandeur : le nombre en notation scientifique, en syntaxe maison
+ * (`3*10^{-7}[m]`, `10^{-7}[m]`), que le parseur maison relit à la même grandeur.
+ */
+function withScientificQuantity(writing: string, modifiers: EvalModifiers): string {
+	if (!modifiers.scientific) return writing;
+	const match = QUANTITY_WRITING.exec(writing);
+	if (!match) throw new Error(`;sci : grandeur non reconnue : ${writing}`);
+	const [, sign, magnitude, unit] = match;
+	const { digits, exponent } = decimalParts(Number(magnitude));
+	const mantissa = digits.length === 1 ? digits : `${digits[0]}.${digits.slice(1)}`;
+	const power = `10^{${exponent}}`;
+	return `${sign}${mantissa === '1' ? power : `${mantissa}*${power}`}[${unit}]`;
 }
 
 // =============================================================================
@@ -635,6 +669,9 @@ export function evaluateAstWithModifiers(
 		// frappe (`{{eval:invalid}}`) ou d'une variable non définie reste une erreur
 		const letters = [...getVariables(ast)];
 		if (letters.length > 0 && letters.every((letter) => literalLetters.has(letter))) {
+			if (modifiers.scientific) {
+				throw new Error(`;sci : ${toCustom(ast)} n'est pas un nombre (calcul littéral)`);
+			}
 			const reduced = tidy(ast);
 			// `a/(b-c)` avec b = c : dénominateur nul, comme dans un calcul numérique
 			if (hasZeroDenominator(reduced)) throw new Error('Division by zero');
@@ -660,6 +697,10 @@ export function evaluateAstWithModifiers(
 	}
 
 	// Format the output : exact par défaut (comme TinyMath), décimal avec `;d`
+	if (!Number.isFinite(numValue)) {
+		throw new Error(`Résultat non fini : ${toCustom(ast)} (trop grand ou non défini)`);
+	}
+
 	// `;sci` : toujours la notation scientifique ; `;d` : décimal ; sinon exact, ou décimal.
 	// Un entier exact s'écrit toujours en entier (voir `formatNumber`)
 	let formattedOutput = modifiers.scientific
