@@ -324,7 +324,9 @@ rediriger vers `/dashboard` les pages `dashboard/teacher/settings/google`,
 `/dashboard/teacher/google` redirige vers les réglages (`src/hooks.server.ts`). Les routes
 `/api/google/**` et `api/whiteboard/export-to-classroom` répondent 403
 (`assertGoogleClassroomEnabled()`), sauf `auth/disconnect` et
-`auth/status` (B8 ; une intégration reste enregistrée en prod). Tables, routes et dialogues
+`auth/status` (B8 ; une intégration reste enregistrée en prod). **Drive n'en fait pas partie**
+(décision de David, 2026-10-11) : les routes `api/whiteboard/drive/*` et le bouton Drive du
+`FileDrawer` restent actifs, interrupteur coupé ou non. Tables, routes et dialogues
 `src/lib/components/google/` sont conservés : remettre le drapeau à `true` rallume tout. La connexion Google (`GOOGLE_LOGIN_ENABLED`, autre drapeau)
 est décrite dans [auth.md](auth.md).
 
