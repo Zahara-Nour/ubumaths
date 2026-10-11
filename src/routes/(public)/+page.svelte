@@ -4,6 +4,7 @@
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import JsonLd from '$lib/seo/JsonLd.svelte';
 	import PereUbuFigure from '$lib/components/kingdom-tour/PereUbuFigure.svelte';
+	import AudienceWheel from '$lib/components/kingdom-tour/AudienceWheel.svelte';
 	import { SITE_LOGO, SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
 	import type { PageProps } from './$types';
 
@@ -23,7 +24,11 @@
 		]
 	};
 
+	/** Père Ubu est plus haut que large : largeur du dessin (viewBox) sur celle de sa boîte */
+	const UBU_BODY_RATIO = 449.341 / 757.362;
+
 	let { data }: PageProps = $props();
+	let ubu: HTMLElement | undefined = $state();
 
 	// Le serveur choisit le mois (un jour hors-mois prend celui qui le précède, cf. palettes.ts)
 	const ambiance = $derived(MONTH_PALETTES[data.ambianceMonth]);
@@ -44,17 +49,20 @@
 		<h1 class="titre text-3xl font-bold sm:text-4xl">
 			Les maths de la chandelle <span class="text-primary">verte</span>
 		</h1>
-		<a href={resolve('/(public)/royaume')} class="visite" data-testid="home-tour">
-			Visiter le Royaume <span aria-hidden="true">→</span>
-		</a>
 	</div>
 
-	<PereUbuFigure
-		{ambiance}
-		href={resolve('/(public)/royaume')}
-		label="Père Ubu : visiter le Royaume avec lui"
-		size="var(--home-ubu)"
-	/>
+	<!-- Père Ubu, et la roue des publics qui dérive autour de lui (visiteur anonyme seulement) -->
+	<div class="ubu" bind:this={ubu}>
+		<PereUbuFigure
+			{ambiance}
+			href={resolve('/(public)/royaume')}
+			label="Père Ubu : visiter le Royaume avec lui"
+			size="var(--home-ubu)"
+		/>
+		{#if !data.user}
+			<AudienceWheel placement="orbit" around={ubu} bodyRatio={UBU_BODY_RATIO} invite />
+		{/if}
+	</div>
 
 	{#if data.shtam}
 		<!-- Dépêche discrète : tout en bas, juste au-dessus du bouton « Infos et confidentialité » -->
@@ -82,8 +90,8 @@
 	.zone :global(figure) {
 		--home-ubu: clamp(5rem, calc(100cqh - 15rem), 15rem);
 	}
-	.visite {
-		@apply rounded-md px-2 py-0.5 text-sm text-foreground underline decoration-primary decoration-2 underline-offset-4 transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+	.ubu {
+		@apply relative;
 	}
 	.depeche {
 		@apply flex max-w-xs items-baseline gap-2 self-end rounded-md px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none dark:text-foreground;
