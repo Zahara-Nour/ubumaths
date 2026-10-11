@@ -72,8 +72,35 @@ import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
 import { oddDenominatorExponent, realNthRoot } from './real-root';
 
-/** Indice maximal d'une racine entière exacte (comme l'exposant entier, ≤ 1000). */
+/** Indice maximal d'une racine entière exacte. */
 const MAX_EXACT_ROOT_INDEX = 1000n;
+
+/**
+ * Un pôle de tan, sec (cos nul), csc, cot (sin nul) est refusé. Le flottant de
+ * π/2 n'annule pas exactement cos : `Math.tan(Math.PI / 2)` vaut 1,6331 × 10¹⁶, que
+ * le bouton ≈ affichait comme la valeur de tan(π/2) (revue, 2026-10-12). Le seuil
+ * suit l'erreur du flottant de l'argument, qui croît avec lui.
+ */
+function refuseTrigPole(name: string, denominator: number, argument: number): void {
+	if (Math.abs(denominator) < 1e-14 * Math.max(1, Math.abs(argument))) {
+		throw new Error(`${name} n’est pas définie en cette valeur (division par zéro)`);
+	}
+}
+
+/**
+ * Exposant entier maximal d'une puissance calculée exactement. ⚠️ Pas plus haut
+ * tant que le pgcd est celui d'Euclide (décision de David, 2026-10-12) : à 10 000,
+ * la base d'un e ou d'un π (fraction de 16 chiffres tirée de son flottant) donnait
+ * des fractions de centaines de milliers de bits, réduites ensuite par pgcd —
+ * `.variations e^{-2x^2}` passait de 23 ms à 5,7 s, `e^{-5000}+1` à 71 s (revue).
+ * Au-delà, par le flottant ; la console lit l'arrondi sur le résultat exact, si
+ * bien que `1.5^{2000}` y vaut quand même ≈ 1,5224 × 10³⁵².
+ */
+const MAX_EXACT_INTEGER_EXPONENT = 1000;
+
+/** Le refus d'une puissance qui sort du flottant (0 ou ±Infinity pour une base non nulle). */
+const OUT_OF_SCALE =
+	'Valeur hors d’échelle : cette puissance sort des nombres que le calcul approché représente';
 
 /**
  * base^{exp} pour un exposant non entier : racine exacte si la base est un
@@ -89,7 +116,7 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 		const exactRoot = integerNthRoot(base.n, exp.d);
 		if (exactRoot !== null) {
 			const pNum = Number(exp.n);
-			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
+			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= MAX_EXACT_INTEGER_EXPONENT) {
 				return powRational(fromInteger(exactRoot), pNum);
 			}
 		}
@@ -100,7 +127,15 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 	if (baseNum < 0 && !Number.isInteger(expNum)) {
 		throw new Error('Cannot compute non-integer power of negative number');
 	}
-	return floatToRational(Math.pow(baseNum, expNum));
+	// 0 à une puissance négative : une division par zéro, pas une valeur hors d'échelle
+	if (baseNum === 0 && expNum < 0) throw new Error('Division by zero');
+	const result = Math.pow(baseNum, expNum);
+	// Une base non nulle ne donne ni 0 ni l'infini : c'est le flottant qui en sort.
+	// Jamais « = 0 » ni « Cannot convert Infinity to Rational »
+	if (!Number.isFinite(result) || (result === 0 && baseNum !== 0)) {
+		throw new Error(OUT_OF_SCALE);
+	}
+	return floatToRational(result);
 }
 
 // =============================================================================
@@ -345,6 +380,7 @@ function evaluateFunctionToRational(
 			break;
 		case 'tan':
 			if (numArgs.length !== 1) throw new Error('tan requires exactly 1 argument');
+			refuseTrigPole('tan', Math.cos(numArgs[0]), numArgs[0]);
 			result = Math.tan(numArgs[0]);
 			break;
 		// Réciproques : leur définition (sec = 1/cos…). Le parseur maison les lit
@@ -357,6 +393,10 @@ function evaluateFunctionToRational(
 		case 'coth': {
 			if (numArgs.length !== 1) throw new Error(`${name} requires exactly 1 argument`);
 			const t = numArgs[0];
+			if (name.toLowerCase() === 'sec') refuseTrigPole('sec', Math.cos(t), t);
+			if (name.toLowerCase() === 'csc' || name.toLowerCase() === 'cot') {
+				refuseTrigPole(name.toLowerCase(), Math.sin(t), t);
+			}
 			const reciprocal: Record<string, number> = {
 				sec: 1 / Math.cos(t),
 				csc: 1 / Math.sin(t),
@@ -672,7 +712,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		// For integer exponent, use exact Rational power
 		if (isIntegerRational(exp)) {
 			const expNum = Number(exp.n);
-			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= 1000) {
+			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= MAX_EXACT_INTEGER_EXPONENT) {
 				return powRational(base, expNum);
 			}
 		}

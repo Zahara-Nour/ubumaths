@@ -89,6 +89,12 @@ describe('le mode décimal', () => {
 	it('sinon 4 décimales, avec ≈', () => {
 		expect(decimal('10[km]/3').output).toBe('≈ 3.3333 km');
 	});
+
+	// Décision a de David (2026-10-12) : hors de l'échelle, la notation scientifique
+	it('hors de l’échelle : la notation scientifique', () => {
+		expect(decimal('9.4607*10^15[m]').output).toBe('9.4607*10^15 m');
+		expect(decimal('10^10[km]/3').output).toBe('≈ 3.3333*10^9 km');
+	});
 });
 
 describe('.convert', () => {

@@ -1,7 +1,7 @@
 ---
 title: Mode décimal — conversion des grandes fractions et règle d'écriture unique
 date: 2026-10-11
-status: reco 1 livrée (#1138) ; reco 2 — décisions a, b, c, d validées par David (2026-10-12), phase 0 à valider
+status: reco 1 livrée (#1138) ; reco 2 sur `feat/mode-decimal-scientifique` (PR) ; lot « lenteur des grandes fractions » à ouvrir (décision de David)
 ---
 
 # Mode décimal — progression
@@ -135,3 +135,35 @@ relisent dans la console. Bouton ≈ en mode exact : `\approx 8.7700 \times 10^{
   mode exact (la console lève l'erreur du calcul décimal) ; dans la console, `0.5^2000` donne
   « ≈ 0.0000 » (le « = 0 » de la revue venait d'`evaluate` appelé directement) ; `powRational`
   réduit la fraction à chaque multiplication (194 s pour 1,01¹⁰⁰⁰⁰⁰, 1,9 ms en puissance native).
+- 2026-10-12 — phase 0 validée (« oui »). Reco 2 codée sur `feat/mode-decimal-scientifique` :
+  `approximateDigitsOf` rend `exponent` (notation scientifique en BigInt, retenue comprise),
+  `approximationText` / `approximationLatex` / `approximationNode` ; console sans repli sur le
+  flottant, tolérante à un échec du calcul décimal ; grandeurs ; `isScientificNotation` dans
+  `render.ts` ; `powRational` natif ; plafond 10 000 ; refus « hors d'échelle ». 34 tests rouges
+  d'abord, pour la bonne raison. Suite serveur complète verte **sauf un test**.
+- ⚠️ 2026-10-12 — **clause de la phase 0 non tenue** : « `(1+1/10000)^10000` en moins d'une
+  seconde ». La puissance native ne suffit pas : 11,7 s (14 s avant). Mesuré : 14 pgcd (Euclide)
+  de nombres de 40 000 chiffres, 1 à 1,5 s chacun — la puissance du mode exact (`normalize`, par
+  multiplications réduites, sans `powRational`), `tidy` (×2), la lecture de l'arrondi (×2), et la
+  console évalue le mode exact deux fois. `(1+1/3000)^3000` : 0,45 s ; `(1+1/100000)^100000` :
+  bloqué plus de 200 s (chemin `normalize`, non touché ici — non mesuré sur `main`). Question posée
+  à David : traiter ici (pgcd plus rapide + calculs en double) ou dans un lot à part.
+- 2026-10-12 — **décision de David : lot à part** pour la lenteur des grandes fractions (pgcd plus
+  rapide, puissance du mode exact, calcul exact en double dans la console, garde-fou contre le
+  blocage de `(1+1/100000)^100000`). Le test de lenteur de la console est retiré de cette PR ;
+  celui de `powRational` reste.
+- 2026-10-12 — revue `code-reviewer` de la reco 2 : notation scientifique juste (3 620 cas comparés
+  à `Fraction`, 0 écart). **Bloquant** : le plafond à 10 000 figeait le navigateur
+  (`.variations e^{-2x^2}` 23 ms → 5,7 s, `e^{-5000}+1` 4 ms → 71 s : e et π entrent en fractions de
+  16 chiffres, puis pgcd). **Décision de David : plafond gardé à 1000** ; sa hausse passe dans le lot
+  de lenteur. Mesuré : les lignes de la phase 0 restent vraies dans la console (elle lit l'arrondi
+  sur le résultat exact) ; `.variations`/`.signe` (12 commandes) et 16 limites + 8 tableaux de signes
+  identiques à `main`. Seul écart : `e^{-5000}+1` en mode décimal répond « Valeur hors d'échelle »
+  (était `1`). Corrigés aussi : le mode exact ne dépend plus du calcul décimal (`e^{-5000}+1`
+  échouait) ; « Garder » range le résultat exact quand le flottant est sorti de sa plage
+  (`e^{1000}` rangeait Infinity, `10^{-400}` 0) ; pôles de tan/sec/csc/cot refusés (le bouton ≈
+  montrait tan(π/2) ≈ 1,6331 × 10¹⁶) ; `0^{-π}` = division par zéro ; entre 10⁻⁶ et 10⁻⁴,
+  l'exactitude se décide sur les 4 chiffres écrits (`0,0000123456` s'écrivait « = 0.00001235 ») ;
+  JSDoc orphelin. Consigné : `i^2`, `(1+i)(1-i)`, `100!` en mode décimal donnent désormais une
+  valeur (avant : une erreur du calcul décimal) — tests ajoutés. Six des nouveaux tests échouent
+  sur le commit précédent.

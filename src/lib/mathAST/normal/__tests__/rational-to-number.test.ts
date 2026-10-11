@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { rationalToNumber, rational } from '../rational';
+import { rationalToNumber, rational, powRational } from '../rational';
 import { algebraicToNumber, algebraicCoefficient, algebraicTerm } from '../algebraic';
 import type { Rational, SimplifiedRadical } from '../types';
 
@@ -100,5 +100,26 @@ describe('algebraicToNumber : un coefficient rationnel géant', () => {
 		const value = algebraicToNumber(algebraicCoefficient([algebraicTerm(huge, [sqrt2])]));
 
 		expect(relativeGap(value, 2.7169239322358925 * Math.SQRT2)).toBeLessThan(1e-14);
+	});
+});
+
+// Décision d de David (2026-10-12) — mesuré : (101/100)^100000 prenait 194 s, la fraction étant
+// réduite à chaque multiplication ; une fraction irréductible élevée à une puissance reste
+// irréductible : nᵏ / dᵏ par la puissance native de BigInt
+describe('powRational : la puissance native', () => {
+	it('même résultat, réduit, signe compris', () => {
+		expect(powRational(rational(2n, 4n), 3)).toEqual({ n: 1n, d: 8n });
+		expect(powRational({ n: 2n, d: 4n }, 3)).toEqual({ n: 1n, d: 8n });
+		expect(powRational(rational(-3n, 2n), 3)).toEqual({ n: -27n, d: 8n });
+		expect(powRational(rational(-3n, 2n), -2)).toEqual({ n: 4n, d: 9n });
+		expect(powRational(rational(-3n, 2n), -3)).toEqual({ n: -8n, d: 27n });
+	});
+
+	it('(101/100)^100000 en moins d’une seconde', () => {
+		const start = performance.now();
+		const value = powRational(rational(101n, 100n), 100000);
+
+		expect(performance.now() - start).toBeLessThan(1000);
+		expect(value.d).toBe(100n ** 100000n);
 	});
 });

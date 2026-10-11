@@ -387,26 +387,17 @@ export function powRational(base: Rational, exp: number): Rational {
 	if (isOne(base)) return ONE;
 	if (exp === -1) return reciprocal(base);
 
-	// Handle negative exponent
+	// Une fraction irréductible élevée à une puissance reste irréductible : nᵏ / dᵏ par
+	// la puissance native de BigInt, la base réduite une seule fois. ⚠️ Pas de
+	// multiplications successives réduites chacune par un pgcd : (101/100)^100000
+	// prenait 194 s (2 ms ainsi), (1+1/10000)^10000 bloquait Calcul 14 s (2026-10-12)
+	let reduced = rational(base.n, base.d);
 	if (exp < 0) {
-		base = reciprocal(base);
+		reduced = reciprocal(reduced);
 		exp = -exp;
 	}
-
-	// Compute power using repeated squaring
-	let result = ONE;
-	let current = base;
-	let e = BigInt(exp);
-
-	while (e > 0n) {
-		if (e % 2n === 1n) {
-			result = mulRational(result, current);
-		}
-		current = mulRational(current, current);
-		e = e / 2n;
-	}
-
-	return result;
+	const e = BigInt(exp);
+	return { n: reduced.n ** e, d: reduced.d ** e };
 }
 
 // =============================================================================
