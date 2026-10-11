@@ -226,6 +226,21 @@ Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 6. la réponse du moteur est rendue (`renderResult`), et les **étapes** pédagogiques s'y ajoutent
    quand elles savent faire — elles remplacent le formateur de terminal, jamais la réponse.
 
+**Au clavier** (`CalculView.svelte`, phase 0 [atelier-cas-phase0.md](../wip/atelier-cas-phase0.md),
+décisions de David du 2026-10-11) :
+
+- après un point, la liste des commandes (8 au plus) est un **combobox** : ↑ / ↓ surlignent (les
+  indisponibles sont sautées, la liste boucle), **Entrée ou Tab choisit** (`.dériver `), Échap ferme
+  jusqu'à la frappe suivante. Une liste sans commande disponible (`.pose`) laisse Entrée calculer ;
+- liste fermée, **↑ / ↓ rappellent les saisies tapées** (`CalcDesk.recallPrevious` /
+  `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par
+  `submit` ; deux saisies identiques de suite rappelées une fois ; le brouillon d'avant le premier
+  ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; « Repartir de zéro » vide
+  le rappel, et rien n'est conservé au rechargement ;
+- une fois la commande choisie ou tapée avec son espace, son **modèle** (l'exemple du catalogue,
+  `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
+  d'élève disponible a un exemple (`commands.test.ts`).
+
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
 (fonction : Tracer, Dériver, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
