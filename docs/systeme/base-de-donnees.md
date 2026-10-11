@@ -220,6 +220,14 @@ dans la classe (`is_class_student`) et si le contenu est publié. `chapter_works
 parallèle. L'élève lit les séances publiées et passées des classes dont il est membre ; les activités
 et la couverture d'une séance sont réservées au professeur.
 
+**Lecture par lien, sans compte** : le cahier (`class_journal_share_tokens`) et le cours
+(`class_course_share_tokens`, [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md)) ont
+chacun leur jeton, un seul actif par classe. `anon` ne lit aucune de ces tables : il passe par des
+fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
+`get_class_course_by_share_token` (plan, documents sans chemin, checklists, séries, fiches publiées
+**et** distribuées à la classe) et `get_course_worksheet_by_share_token` ;
+`get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
+
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
 s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par ses
