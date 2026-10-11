@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// Curve transformation — y = x² rotated 45°
@@ -122,9 +123,7 @@ style(c3, couleur="vert")`;
 
 <div class="container mx-auto max-w-6xl p-8">
 	<h1 class="sr-only">Coniques</h1>
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<hr class="my-8" />
 

@@ -18,12 +18,12 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 
 ## Lots
 
-| Lot | Périmètre                                                                                          | Branche / PR                   | État    |
-| --- | -------------------------------------------------------------------------------------------------- | ------------------------------ | ------- |
-| 1   | `BackLink` + règle + espace prof (`dashboard/teacher/**`)                                          | `refactor/bouton-retour`       | fait    |
-| 2   | Espace élève (`dashboard/student/**`, `dashboard/revisions/**`, `dashboard/navadra/**`)            | `refactor/bouton-retour-eleve` | fait    |
-| 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | `refactor/bouton-retour-admin` | fait    |
-| 4   | Pages publiques + composants partagés (`components/test/`, `srs/`, `student/worksheets/`)          | —                              | à faire |
+| Lot | Périmètre                                                                                          | Branche / PR                    | État |
+| --- | -------------------------------------------------------------------------------------------------- | ------------------------------- | ---- |
+| 1   | `BackLink` + règle + espace prof (`dashboard/teacher/**`)                                          | `refactor/bouton-retour`        | fait |
+| 2   | Espace élève (`dashboard/student/**`, `dashboard/revisions/**`, `dashboard/navadra/**`)            | `refactor/bouton-retour-eleve`  | fait |
+| 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | `refactor/bouton-retour-admin`  | fait |
+| 4   | Pages publiques + composants partagés (`components/test/`, `srs/`, `student/worksheets/`)          | `refactor/bouton-retour-public` | fait |
 
 ## Lot 1 — espace prof (fait)
 
@@ -49,6 +49,13 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 - **Fil d'Ariane gardé** (arborescence profonde), boutons retour en double retirés : migration admin (sous-domaine, édition d'une question), documentation admin. Sur la doc, « ← Précédent » (`history.back()`) est retiré ; « Retour à l'index » devient un vrai lien.
 - Messages : « Retour à la boîte de réception » sur un message introuvable devient un vrai lien.
 
+## Lot 4 — pages publiques et composants partagés (fait)
+
+- **« Quitter »** dans l'en-tête des tests d'automatismes et des contrôles (`TestInteractive`, `TestCourse`, `ClassroomSeries`) et de la fiche en cours (`WorksheetHeader`). Destination calculée par le composant : « Mes contrôles » en contrôle, le panier sinon (même destination qu'avant). Les boutons de fin de série gardent `onBack`. Tests ajoutés (preuve rouge faite).
+- Converties : panier, cahier de texte public (fiche), exercice public (trois mises en page), exercices Python (élève, résultats, résultat d'un élève, édition, création), démos (17 pages).
+- Garde `src/lib/__tests__/bouton-retour-sans-historique.test.ts` : aucun `history.back()` hors page d'erreur.
+- Hors règle, laissés tels quels : retour mobile du chat (bascule d'affichage), « Quitter (Échap) » de la présentation de notebook, fenêtres de fin de tournoi, `ReviewSession` (fin de session), pages d'authentification (« Retour à la connexion » dans la carte), annuler/jouer dans 2048 et Mathémo, démo des cartes VIP (page au style propre).
+
 ## Cas douteux à soumettre à David
 
 - **Journal d'un élève** (`teacher/students/[id]/journal`) : s'ouvre depuis l'accueil, les récompenses et les classes. Le retour mène aux récompenses, comme avant. Faut-il un retour qui suit l'origine (paramètre dans l'adresse) ?
@@ -59,5 +66,12 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
   - Espace élève, pages-carrefours sans retour : `student/assessments`, `exercises`, `riddles`, `worksheets`, `devoirs`, `materials`, `classroom`, `journal`, `reports`, `minesweeper/achievements`, `minesweeper/tournaments`, `revisions`, `navadra`. Elles s'ouvrent depuis l'accueil, « Mon travail » ou des notifications → « Retour à l'accueil » / « Retour à mon travail », ou rien ?
   - Admin et outils sans retour : pages de débogage (`admin/debug/*`), `admin/backup`, `admin/friendships`, `admin/import-students`, `admin/notifications`, `admin/message-templates`, `admin/classes/composer`, `admin/errors`, `admin/migration`, `elevate`, `tutor-stats`, et les outils (`calculatrice`, `whiteboard`, `tuteur`, `organisation/pomodoro`, `games/leaderboards`, `test-exercises`). Parent = le tableau de bord admin / l'accueil ?
   - **Notebook Python** (`python-notebook/[id]`) : « Retour aux notebooks », y compris pour l'élève qui le remplit. Faut-il « Quitter » côté élève ?
+  - **Liens de retour au style éditorial** : « ← Le Shtam » (article de la gazette) et « ← Le Cabinet Noir de Turingrad » (chiffrement) gardent leur typographie propre. Les passer en `BackLink` ?
+  - **Exercice Python partagé** (`python-exercises/[id]`) : ouvert par un lien partagé, pas de page parente → aucun retour.
+  - **Session de révision d'un deck** (`revisions/decks/[id]/study`) : « Quitter » mène à `/dashboard/revisions`, comme avant. La session part de la page du deck ou du Programme : faut-il revenir au deck (et passer l'origine dans l'adresse) ?
+  - **Tournoi de démineur** (élève) : « Retour aux tournois » devient « Quitter » pendant une partie (#1117).
+  - **Quitter un contrôle noté** ne demande aucune confirmation (déjà le cas avant). `confirmLeave` le permettrait : le veux-tu ?
+  - **Flash-cards** (`FlashSeries`) : aucune sortie pendant l'activité, alors que les trois autres formes d'automatismes ont « Quitter ». En ajouter une ?
+  - **Création d'un exercice Python** (`python-exercises/new`) : retour vers « Mes exercices Python » (entrée de la navigation), alors que `/python-exercises` y mène aussi.
   - **Énigme du jour** (`student/riddles/[id]`) : traitée comme une page de détail (« Retour aux énigmes »), pas comme une activité (« Quitter »).
   - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).

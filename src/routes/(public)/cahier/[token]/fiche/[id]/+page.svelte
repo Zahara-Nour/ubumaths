@@ -15,9 +15,8 @@
 	onglets de source n'ont aucun sens pour une famille.
 -->
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
 	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
 	import type { WorksheetWithRelations } from '$lib/types/worksheets';
 	import type { PageData } from './$types';
@@ -36,10 +35,7 @@
 
 <div class="mx-auto w-full max-w-4xl space-y-6 p-4">
 	<header class="space-y-3">
-		<Button variant="ghost" size="sm" href="/cahier/{data.token}">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour au cahier de texte
-		</Button>
+		<BackLink href={`/cahier/${data.token}`} label="Retour au cahier de texte" class="mb-0" />
 		<div>
 			<h1 class="text-2xl font-bold">{worksheet.title}</h1>
 			{#if worksheet.description}
