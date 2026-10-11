@@ -73,9 +73,10 @@ Ce qu'`anon` peut lire, d'après les policies des migrations (relevé statique, 
 les `question_templates` publiés (réponses comprises : `/automaths` génère dans le navigateur) ; tout
 `curriculum_points`, `curriculum_point_automatismes`, `grade_predecessors`, `classification_nodes`,
 `source_types` (contenu public des programmes, ADR 0020) et le rangement des exercices lisibles
-(`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises`,
-`constructions` ; `parody_evaluations` et leurs `resource_tags`, `tags`, `schools`,
-`riddle_of_the_day` ; les parties terminées de `minesweeper_games`.
+(`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
+`parody_evaluations` et leurs `resource_tags`, `tags`, `schools`, `riddle_of_the_day`. Les
+constructions publiques sont réservées aux comptes connectés, et les parties de `minesweeper_games`
+à leur joueur (2026-10-15).
 
 ---
 
@@ -359,6 +360,9 @@ VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-econom
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
 celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
+`mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
+`marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
+(migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).
 Code : `src/lib/server/games/`, `src/lib/server/achievements/`, `src/routes/api/games`,
 `src/routes/api/riddles`, `src/routes/api/rewards`.
 
@@ -376,7 +380,7 @@ l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` 
   `_column`. Code : `src/lib/server/kanban.ts`, `src/routes/api/organisation/kanban`. Test :
   `tests/integration/kanban-rls.test.ts`.
 - `spreadsheets`, `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
-  tous). `whiteboard_templates` : modèles publics, de l'auteur ou système.
+  tout compte connecté). `whiteboard_templates` : modèles publics, de l'auteur ou système.
 
 ### Tuteur et recherche documentaire (RAG)
 

@@ -166,9 +166,11 @@ Routes :
   le chemin brut (SvelteKit route sur le chemin décodé : `/%61pi/…` atteint `/api/…`). Restent
   ouverts : déconnexion, connexion, inscription, `update-password`, `/consent/[token]`,
   `/api/errors/log`, `/api/account/export` et `/api/account/delete` (droits RGPD).
-- ⚠️ **La base, elle, ignore le statut** : avec son jeton, un compte en attente garde via PostgREST
-  ce qu'a un élève sans école ni classe (écrire ses propres données, écrire au prof, lire des
-  statistiques de jeu pseudonymes en `using (true)`). Aucun accès à un mineur. Constat ouvert.
+- **La base ignore le statut, par décision** (David, 2026-10-11) : avec son jeton, un compte en
+  attente garde via PostgREST ce qu'a un élève sans école ni classe — écrire ses propres données,
+  écrire au prof. Aucun accès à un mineur (amitiés et conversations bornées à l'école ; données de
+  jeu privées depuis le 2026-10-11). Garder le statut dans chaque policy coûterait cher pour un gain
+  faible ; le garde du hook ferme l'application.
 - Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
   `api/admin/users/[id]/status` (motif dans `rejection_reason`).
 
