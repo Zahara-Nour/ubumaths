@@ -16,12 +16,16 @@
  * `\ln\left( \left| u \right| \right)`.
  */
 import { describe, expect, it } from 'vitest';
+import { containsVariable } from '../../common/contains-variable';
+import { extractExactRational } from '../../common/numeric';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import type { Verbosity } from '../../common/verbosity';
 import { differentiate } from '../../differentiation';
+import { flattenProductShallow } from '../../flatten';
 import { areEquivalent } from '../../equivalence';
 import { compile } from '../../eval/compile';
 import { toLatex as toLatexSafe } from '../../latex-generator';
+import { findNodes } from '../../transforms';
 import { parseLatex } from '../../parser';
 import type { MathNode } from '../../types';
 import { generatePedagogicalIntegrationSteps, PedagogicalIntegrationRenderer } from '..';
@@ -445,5 +449,63 @@ describe('exponentielle commune : développée puis mise en facteur', () => {
 			if (latex !== null) expect(toLatexSafe(valueNode)).toBe(latex);
 			expect(toLatexSafe(valueNode)).not.toMatch(UNCOMPUTED_EXPONENT);
 		}
+	});
+});
+
+// =============================================================================
+// Revue du lot 4 : le coefficient numérique devant, dans les lignes d'IPP
+// =============================================================================
+
+/** Un facteur qui COMMENCE par un nombre (`\\dfrac{1}{2}`, `-\\dfrac{1}{2}e^{u}`). */
+function startsWithNumber(factor: MathNode): boolean {
+	const inner =
+		factor.type === 'opposite' || factor.type === 'delimiter'
+			? factor.type === 'opposite'
+				? factor.operand
+				: factor.content
+			: factor;
+	if (inner !== factor) return startsWithNumber(inner);
+	const first = flattenProductShallow(inner)[0]?.factor ?? inner;
+	return !containsVariable(first, 'x') && extractExactRational(first) !== null;
+}
+
+/** Les produits où un nombre suit une lettre (`x \\dfrac{1}{2} e^{2x}`). */
+function numbersAfterLetters(node: MathNode): string[] {
+	return findNodes(node, (n) => n.type === 'multiplication')
+		.filter((product) => {
+			const factors = flattenProductShallow(product).map(({ factor }) => factor);
+			const firstLetter = factors.findIndex((f) => containsVariable(f, 'x'));
+			return firstLetter !== -1 && factors.slice(firstLetter + 1).some(startsWithNumber);
+		})
+		.map((product) => toLatexSafe(product));
+}
+
+describe('IPP : aucun nombre après une lettre (coefficient devant)', () => {
+	it.each(['xe^{2x}', '3xe^{-2x}', 'x^2e^{2x}', '3xe^x', 'x^2e^x'])('∫ %s dx', (integrand) => {
+		for (const level of LEVELS) {
+			const { result } = run(integrand, level, 'summarized');
+			for (const step of flattenRaw(result.steps)) {
+				const nodes = [step.before, step.after, ...Object.values(step.bindings ?? {})];
+				for (const node of nodes) {
+					expect(numbersAfterLetters(node), `${step.rule} : ${toLatexSafe(node)}`).toEqual([]);
+				}
+			}
+		}
+	});
+
+	it('∫ xe^{2x} dx : uv s’écrit \\dfrac{1}{2}xe^{2x}', () => {
+		const { rendered } = run('xe^{2x}', 'lycee', 'summarized');
+		const formula = rendered.find((s) => s.rule === 'apply-parts-formula');
+		expect(formula?.expressionLatex).toContain(
+			'& = \\dfrac{1}{2} x \\exponentialE^{2 x} - \\int \\dfrac{1}{2} \\exponentialE^{2 x}\\,dx'
+		);
+	});
+
+	it('∫ 3xe^{-2x} dx : uv s’écrit -\\dfrac{3}{2}xe^{-2x}', () => {
+		const { rendered } = run('3xe^{-2x}', 'lycee', 'summarized');
+		const formula = rendered.find((s) => s.rule === 'apply-parts-formula');
+		expect(formula?.expressionLatex).toContain(
+			'& = -\\dfrac{3}{2} x \\exponentialE^{-2 x} - \\int'
+		);
 	});
 });

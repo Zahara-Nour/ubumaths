@@ -74,6 +74,7 @@ import {
 	absRational,
 	isNegative as isNegativeRational,
 	isOne as isOneRational,
+	mulRational,
 	negRational,
 	ONE
 } from '../normal/rational';
@@ -1024,7 +1025,7 @@ function integrateByParts(
 		);
 	}
 
-	const uv = simplifiedMultiply(u, v);
+	const uv = coefficientFirstProduct(u, v);
 	const antiderivative = subtract(uv, vduSub.antiderivative);
 
 	const identify = buildStep(ctx, {
@@ -1051,6 +1052,29 @@ function integrateByParts(
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
+}
+
+/**
+ * Le produit u·v de l'IPP, coefficient numérique DEVANT : `\\dfrac{1}{2}xe^{2x}`,
+ * `-\\dfrac{3}{2}xe^{-2x}`, et non `x\\dfrac{1}{2}e^{2x}` ni `3x\\left(-\\dfrac{1}{2}e^{-2x}\\right)`
+ * (revue du lot 4 de l'ADR 0024 : l'IPP sur e^{ax+b} rendait v = \\dfrac{1}{a}e^{ax+b}).
+ * Sans coefficient autre que ±1, le produit reste `simplifiedMultiply(u, v)`.
+ */
+function coefficientFirstProduct(u: MathNode, v: MathNode): MathNode {
+	let k: Rational = ONE;
+	const rest: MathNode[] = [];
+	for (const operand of [u, v]) {
+		const { sign, inner } = unwrapSign(operand);
+		if (sign === -1) k = negRational(k);
+		for (const { factor } of flattenProductShallow(inner)) {
+			const value = extractExactRational(factor);
+			if (value === null) rest.push(factor);
+			else k = mulRational(k, value);
+		}
+	}
+	if (isOneRational(absRational(k)) || rest.length === 0) return simplifiedMultiply(u, v);
+	const product = rest.reduce((acc, factor) => simplifiedMultiply(acc, factor));
+	return withRationalCoefficient(k, product);
 }
 
 /**
