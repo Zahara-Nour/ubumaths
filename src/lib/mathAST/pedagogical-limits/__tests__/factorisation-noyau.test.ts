@@ -130,7 +130,7 @@ describe('rendu — une somme sous \\lim est parenthésée', () => {
 		renderer
 			.renderAll(run(latex).steps, { schoolLevel: 'lycee', verbosity: 'detailed' })
 			.flatMap((s) => [s, ...(s.subSteps ?? [])])
-			.map((s) => s.expressionLatex);
+			.map((s) => s.expressionLatex ?? '');
 
 	it('(x² − 4)/(x − 2) en 2 : \\lim (x + 2), jamais (\\lim x) + 2', () => {
 		const all = rendered('\\lim_{x\\to 2}\\frac{x^2-4}{x-2}');
