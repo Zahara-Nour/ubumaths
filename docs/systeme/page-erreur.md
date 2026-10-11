@@ -34,8 +34,9 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 3. Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`), **sauf** s'il répète le
    titre ou n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…,
    liste `GENERIC_MESSAGES`, comparée sans casse ni accents).
-4. Pour un code de la table : « Le nombre 404, lui, se trouve toujours : il apparaît pour la
-   première fois à la 1 272ᵉ décimale de π », et l'extrait des décimales autour.
+4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
+   elle, reste introuvable. » (la fin « mais la page… » pour une 404 seulement). Pas d'extrait des
+   décimales en clair : le code est déjà coloré dans la spirale.
 5. Pour une 404 : « Tu cherchais peut-être : » et jusqu'à trois pages proches.
 6. Les boutons : « Se connecter » (401), « Réessayer » (5xx, 408, 429), « Retour à l'accueil »
    (toujours), « Page précédente » (seulement si elle ramène sur Chiphre).
@@ -89,7 +90,7 @@ suit le rayon. L'angle entre deux chiffres est donc constant et l'écart entre d
 proportionnel aux chiffres : rien ne se chevauche. Réglages (`DEFAULT_SPIRAL_OPTIONS`) choisis pour
 que le 404 tombe vers la mi-rayon, encore lisible, et que la spirale s'arrête autour du disque
 de Père Ubu (~1 660 chiffres). Les codes situés au-delà (500 : 6 238ᵉ décimale) ne sont pas
-colorés dans la spirale ; la phrase et l'extrait restent affichés.
+colorés dans la spirale ; la phrase reste affichée.
 
 ## Comment étendre
 

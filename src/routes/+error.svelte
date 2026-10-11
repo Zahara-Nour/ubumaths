@@ -32,10 +32,6 @@
 	const occurrence = $derived(piOccurrence(status));
 	const suggestions = $derived(status === 404 ? suggestPages(page.url.pathname) : []);
 	const technicalDetail = $derived(page.error?.detail ?? copy.technicalDetail);
-	// Début de l'extrait : « 3, » quand le code suit presque la virgule (415), « … » sinon
-	const excerptStart = $derived(
-		occurrence && occurrence.position - 1 <= occurrence.before.length ? '3,' : '…'
-	);
 
 	// « Page précédente » seulement si elle ramène sur Chiphre : navigation interne
 	// (`from`), ou arrivée par un lien du site. `history.length` compte aussi
@@ -84,18 +80,11 @@
 		</div>
 
 		{#if occurrence}
-			<div class="flex flex-col items-center gap-2 lg:items-start">
-				<p class="text-balance">
-					Le nombre {status}, lui, se trouve toujours : il apparaît pour la première fois à la
-					<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π.
-				</p>
-				<!-- Redit visuellement la phrase précédente : masqué aux lecteurs d'écran -->
-				<p class="font-mono tracking-wider tabular-nums" aria-hidden="true">
-					π = {excerptStart}{occurrence.before}<span
-						class="font-bold text-amber-600 dark:text-amber-400">{status}</span
-					>{occurrence.after}…
-				</p>
-			</div>
+			<p class="text-balance">
+				Le nombre {status} apparaît à la
+				<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π{#if status === 404},
+					mais la page, elle, reste introuvable{/if}.
+			</p>
 		{/if}
 
 		{#if suggestions.length > 0}
