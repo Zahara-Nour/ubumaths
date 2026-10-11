@@ -260,7 +260,7 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
   `authenticated`, `service_role` seul.
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
-  compte connecté d'écrire une session d'évaluation (`evaluation_id`, note, points) : c'est le serveur
+  compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
 - `evaluation_tasks` / `evaluation_task_perimeter` : tâches évaluées par compétences (observables).
 - `parody_evaluations` : les « presques-évaluations », publiques.

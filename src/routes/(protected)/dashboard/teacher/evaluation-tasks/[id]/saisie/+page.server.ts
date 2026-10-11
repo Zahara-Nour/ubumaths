@@ -59,14 +59,14 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		.eq('id', params.id)
 		.maybeSingle();
 
-	if (taskErr) throw error(500, `Erreur tâche : ${taskErr.message}`);
-	if (!task) throw error(404, 'Tâche introuvable');
+	if (taskErr) throw error(500, `Erreur observation : ${taskErr.message}`);
+	if (!task) throw error(404, 'Observation introuvable');
 
 	const cls = Array.isArray(task.class) ? task.class[0] : task.class;
 	if (!task.class_id) {
 		throw error(
 			400,
-			"Cette tâche n'est rattachée à aucune classe. Édite-la d'abord pour en choisir une."
+			"Cette observation n'est rattachée à aucune classe. Édite-la d'abord pour en choisir une."
 		);
 	}
 
@@ -208,12 +208,12 @@ export const actions: Actions = {
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		if (!task) {
-			return fail(404, { message: 'Tâche introuvable' });
+			return fail(404, { message: 'Observation introuvable' });
 		}
 
 		// `class_id` est nullable : une tâche sans classe n'a aucun élève à noter.
 		if (!task.class_id) {
-			return fail(400, { message: "Cette tâche n'est rattachée à aucune classe." });
+			return fail(400, { message: "Cette observation n'est rattachée à aucune classe." });
 		}
 		const classId = task.class_id;
 

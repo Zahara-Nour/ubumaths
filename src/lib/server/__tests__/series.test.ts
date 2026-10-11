@@ -192,7 +192,7 @@ describe('updateSeries — description', () => {
 describe('deleteSeries (Q31)', () => {
 	it('le message d’une série utilisée propose une action qui existe (dupliquer)', () => {
 		expect(SERIES_IN_USE_MESSAGE).toBe(
-			'Cette série est utilisée par une évaluation : elle ne peut pas être supprimée. Duplique-la pour en faire une autre.'
+			'Cette série est utilisée par un contrôle : elle ne peut pas être supprimée. Duplique-la pour en faire une autre.'
 		);
 	});
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { enhance } from '$app/forms';
 	import MonsterCard from '$lib/components/game/combat/MonsterCard.svelte';
 	import type { PageData } from './$types';
@@ -12,9 +13,7 @@
 <div class="combat-selection mx-auto max-w-6xl p-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<div class="mb-4">
-			<Button href="/dashboard/navadra" variant="ghost" class="gap-2">← Retour au hub</Button>
-		</div>
+		<BackLink href="/dashboard/navadra" label="Retour au hub" />
 		<h1 class="mb-2 text-4xl font-bold text-foreground">Choisis ton adversaire</h1>
 		<p class="text-lg text-muted-foreground">
 			Affronte un monstre et résous des défis mathématiques pour gagner de l'XP et des récompenses !

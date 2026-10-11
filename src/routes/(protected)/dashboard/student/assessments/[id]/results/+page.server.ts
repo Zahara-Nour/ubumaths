@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	try {
 		const found = await getAssignmentWithEvaluation(locals.supabase, id);
-		if (!found) throw error(404, 'Évaluation introuvable');
+		if (!found) throw error(404, 'Contrôle introuvable');
 
 		// La RLS le garantit déjà ; on ne s'en remet pas à elle seule
 		if (!(await isAssignmentRecipient(locals.supabase, found.assignment, user.id))) {

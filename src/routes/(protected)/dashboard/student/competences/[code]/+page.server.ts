@@ -4,7 +4,7 @@
  *
  * Vue détail d'une compétence math : niveau du socle + transparence du
  * verdict (validated_observables + missing_for_next) + observables groupés
- * par sous-dimension A/B/C/D avec leur état acquis/non.
+ * par composante A/B/C/D avec leur état acquis/non.
  *
  * Spec : docs/archive/wip/skills-referentiel-design.md §6.1ter + §8
  */
@@ -62,7 +62,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 	const code = params.code as MathCompetenceCode;
 	if (!VALID_CODES.includes(code)) throw error(404, 'Compétence inconnue');
 
-	// 1. Compétence + sous-dimensions + observables
+	// 1. Compétence + composantes + observables
 	const { data: comp, error: cErr } = await locals.supabase
 		.from('math_competences')
 		.select(

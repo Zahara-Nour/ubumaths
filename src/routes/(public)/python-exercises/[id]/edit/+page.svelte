@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
@@ -37,6 +38,10 @@
 
 <div class="container mx-auto max-w-3xl p-4">
 	<header class="mb-6">
+		<BackLink
+			href={`/python-exercises/${data.exercise.id}`}
+			label={`Retour à la ${lore.learning.exercise}`}
+		/>
 		<h1 class="text-2xl font-bold">Modifier la {lore.learning.exercise}</h1>
 		<p class="mt-1 text-sm text-muted-foreground">
 			Modifie le formulaire, vérifie que la solution passe toujours, puis enregistre.

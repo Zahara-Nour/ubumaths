@@ -3,6 +3,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
@@ -188,13 +189,12 @@
 	<div class="space-y-4">
 		<div class="flex flex-wrap items-center justify-between gap-4">
 			<div>
-				<a
+				<!-- Partie en cours : « Quitter » dit qu'on interrompt la partie -->
+				<BackLink
 					href="/dashboard/student/minesweeper/tournaments"
-					class="mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-				>
-					<span aria-hidden="true">←</span>
-					Retour aux tournois
-				</a>
+					label={isGameInProgress ? 'Quitter' : 'Retour aux tournois'}
+					kind={isGameInProgress ? 'quit' : 'back'}
+				/>
 				<h1 class="text-3xl font-bold text-foreground">{tournament.name}</h1>
 				{#if tournament.description}
 					<p class="mt-1 text-muted-foreground">{tournament.description}</p>

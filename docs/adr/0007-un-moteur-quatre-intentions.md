@@ -1,6 +1,6 @@
 # 0007 — Un moteur de simplification, quatre intentions
 
-- **Statut** : acceptée — mise en œuvre en cours (voir `docs/wip/tidy-*-progress.md`)
+- **Statut** : acceptée — mise en œuvre en cours (voir `docs/wip/tidy-*-progress.md`) ; intention `factoriser` amendée par [0024](0024-moteur-commun-de-factorisation.md)
 - **Date** : 2026-09-21 · **Décidée par** : David
 
 ## Contexte

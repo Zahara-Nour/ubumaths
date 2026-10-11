@@ -74,14 +74,14 @@ describe('Page Séries (C17)', () => {
 
 	it('chaque série propose Dupliquer, Supprimer, Copier le lien et Créer une évaluation', async () => {
 		await renderPage([series({})]);
-		for (const label of ['Dupliquer', 'Supprimer', 'Copier le lien', 'Créer une évaluation']) {
+		for (const label of ['Dupliquer', 'Supprimer', 'Copier le lien', 'Créer un contrôle']) {
 			await expect.element(page.getByRole('button', { name: label })).toBeVisible();
 		}
 	});
 
 	it('« Créer une évaluation » ouvre le formulaire sur CETTE série', async () => {
 		await renderPage([series({ id: 'serie-42' })]);
-		await page.getByRole('button', { name: 'Créer une évaluation' }).click();
+		await page.getByRole('button', { name: 'Créer un contrôle' }).click();
 		expect(goto).toHaveBeenCalledWith('/dashboard/teacher/assessments/new?series=serie-42');
 	});
 

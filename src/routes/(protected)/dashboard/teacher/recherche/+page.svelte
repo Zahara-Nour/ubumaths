@@ -60,7 +60,7 @@
 	<div>
 		<h1 class="text-2xl font-bold">Recherche</h1>
 		<p class="text-sm text-muted-foreground">
-			Cherche par titre, par métadonnées ou par tag dans tes exercices, questions, évaluations,
+			Cherche par titre, par métadonnées ou par tag dans tes exercices, questions, contrôles,
 			chapitres et documents. Un tag seul suffit.
 		</p>
 	</div>

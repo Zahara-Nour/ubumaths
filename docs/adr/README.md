@@ -32,6 +32,7 @@ contourner en silence.
 | 0021 | [La prod se met à jour à la main, par la branche `production`](0021-branche-production-mise-en-prod-manuelle.md)                         | 2026-10-10 |
 | 0022 | [Le dictionnaire vit en base, l'admin le modifie](0022-dictionnaire-en-base-admin.md)                                                    | 2026-10-10 |
 | 0023 | [Copie d'une fiche : niveau de guidage choisi par affectation, jamais tiré](0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md) | 2026-10-11 |
+| 0024 | [Un moteur commun de factorisation : noyau exact, stratégies qui racontent](0024-moteur-commun-de-factorisation.md)                      | 2026-10-11 |
 
 ## Écrire un ADR
 

@@ -12,10 +12,10 @@
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { resolvedMarkdown } from '$lib/ubumark';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft } from '@lucide/svelte';
 
 	// Sample question instances
 	const numericalQuestion: QuestionInstance = {
@@ -144,14 +144,7 @@
 <div class="container mx-auto min-h-screen py-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<a
-			href="/demo"
-			data-sveltekit-preload-data="hover"
-			class="mb-4 inline-flex items-center gap-2 text-primary hover:underline"
-		>
-			<ArrowLeft class="h-4 w-4" />
-			Retour aux démos
-		</a>
+		<BackLink href="/demo" label="Retour aux démos" />
 		<h1 class="text-4xl font-bold">QuestionDisplay Component Demo</h1>
 		<p class="mt-2 text-muted-foreground">
 			Test the QuestionDisplay component in both flashcard and interactive modes

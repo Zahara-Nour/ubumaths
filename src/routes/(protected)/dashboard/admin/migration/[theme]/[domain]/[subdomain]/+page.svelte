@@ -32,7 +32,6 @@
 		ChevronLeft,
 		ChevronRight,
 		Home,
-		Layers,
 		XCircle,
 		X,
 		Edit3
@@ -215,11 +214,6 @@
 		}
 	}
 
-	// Navigate back
-	async function navigateBack() {
-		await goto('/dashboard/admin/migration');
-	}
-
 	// Handle approve
 	async function handleApprove() {
 		if (!selectedQuestion || isSubmitting) return;
@@ -332,11 +326,6 @@
 				{data.theme} → {data.domain}
 			</p>
 		</div>
-
-		<Button variant="outline" onclick={navigateBack}>
-			<Layers class="mr-2 h-4 w-4" />
-			Retour à la vue d'ensemble
-		</Button>
 	</div>
 
 	<!-- Statistics -->

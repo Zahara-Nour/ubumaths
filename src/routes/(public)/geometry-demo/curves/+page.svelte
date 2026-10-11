@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	const courbeDsl = `d1 = courbe("y = 2*x + 1", couleur="bleu")
@@ -65,9 +66,7 @@ c4 = courbe("x^2*y - y^3 - x^2 + y = 0", couleur="violet")`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="mt-4 mb-8 text-2xl font-bold">Courbes — geometry-core</h1>
 

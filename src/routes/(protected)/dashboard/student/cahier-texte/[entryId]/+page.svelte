@@ -9,10 +9,9 @@
 	 * - Back navigation
 	 */
 
-	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { Badge } from '$lib/components/ui/badge';
 	import { transformMathHtml } from '$lib/utils/sanitize';
 	import { linkifyResourceReferences } from '$lib/resources/linkify';
@@ -95,13 +94,6 @@
 		return { text: `Dans ${diffDays} jours`, isUrgent: false };
 	}
 
-	/**
-	 * Navigate back to main view
-	 */
-	function goBack() {
-		goto('/dashboard/student/cahier-texte');
-	}
-
 	// Transformed content for safe rendering.
 	//
 	// La transformation des références vient APRÈS l'assainissement : elle
@@ -137,24 +129,9 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-8">
-	<!-- Breadcrumb -->
-	<Breadcrumb.Root class="mb-6">
-		<Breadcrumb.List>
-			<Breadcrumb.Item>
-				<Breadcrumb.Link href="/dashboard/student/cahier-texte">Cahier de Texte</Breadcrumb.Link>
-			</Breadcrumb.Item>
-			<Breadcrumb.Separator />
-			<Breadcrumb.Item>
-				<Breadcrumb.Page>{formatDateLong(data.entry.entryDate)}</Breadcrumb.Page>
-			</Breadcrumb.Item>
-		</Breadcrumb.List>
-	</Breadcrumb.Root>
-
 	<!-- Header -->
+	<BackLink href="/dashboard/student/cahier-texte" label="Retour au cahier de texte" />
 	<div class="mb-8 flex items-start gap-4">
-		<Button variant="ghost" size="icon" onclick={goBack} title="Retour">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
 		<div class="flex items-center gap-3">
 			<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
 				<BookOpen class="h-6 w-6 text-primary" />
@@ -243,7 +220,7 @@
 
 	<!-- Back button -->
 	<div class="mt-8">
-		<Button variant="outline" onclick={goBack}>
+		<Button variant="outline" href="/dashboard/student/cahier-texte">
 			<ArrowLeft class="mr-2 h-4 w-4" />
 			Retour au cahier de texte
 		</Button>

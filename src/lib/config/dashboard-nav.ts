@@ -129,11 +129,11 @@ export function getNavLinks(
 			{ href: '/dashboard/teacher/recherche', label: 'Recherche', icon: Search },
 			{
 				href: '/dashboard/teacher/evaluation-tasks',
-				label: "Tâches d'évaluation",
+				label: 'Observations',
 				icon: ClipboardList
 			},
 			{ href: '/dashboard/teacher/series', label: 'Séries', icon: ListOrdered },
-			{ href: '/dashboard/teacher/assessments', label: 'Évaluations en ligne', icon: FileCheck },
+			{ href: '/dashboard/teacher/assessments', label: 'Contrôles en ligne', icon: FileCheck },
 			{ href: '/python-exercises/mine', label: 'Mes exercices Python', icon: Code },
 			{
 				href: '/dashboard/teacher/gamification',

@@ -206,7 +206,7 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError || !existing) {
-			return fail(404, { action: 'update', error: 'Évaluation introuvable' });
+			return fail(404, { action: 'update', error: 'Presque évaluation introuvable' });
 		}
 
 		if (existing.created_by !== user.id) {
@@ -256,7 +256,7 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError || !existing) {
-			return fail(404, { action: 'delete', error: 'Évaluation introuvable' });
+			return fail(404, { action: 'delete', error: 'Presque évaluation introuvable' });
 		}
 
 		if (existing.created_by !== user.id) {

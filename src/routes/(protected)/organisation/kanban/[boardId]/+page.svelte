@@ -38,9 +38,10 @@
 	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { resolve } from '$app/paths';
-	import { ArrowLeft, Plus, Users, User } from '@lucide/svelte';
+	import { Plus, Users, User } from '@lucide/svelte';
 	import { Filter, Tag } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -670,13 +671,13 @@
 <div class="flex h-full flex-col gap-4">
 	<h1 class="sr-only">{boardTitle}</h1>
 	<!-- Header -->
+	<BackLink
+		href={resolve('/organisation/kanban')}
+		label="Retour aux tableaux"
+		class="mb-0 self-start"
+	/>
 	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 		<div class="flex min-w-0 flex-1 items-center gap-3">
-			<Button variant="ghost" size="sm" href={resolve('/organisation/kanban')} class="gap-2">
-				<ArrowLeft class="h-4 w-4" aria-hidden="true" />
-				Tableaux
-			</Button>
-
 			<div class="flex min-w-0 flex-1 items-center gap-2">
 				{#if isRenamingBoard}
 					<Input

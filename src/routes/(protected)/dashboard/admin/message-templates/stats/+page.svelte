@@ -42,12 +42,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Loader2, TrendingUp, Users, CheckCircle, BarChart3, ArrowLeft } from '@lucide/svelte';
+	import { Loader2, TrendingUp, Users, CheckCircle, BarChart3 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { goto } from '$app/navigation';
 
 	// Types
 	interface TemplateStats {
@@ -150,7 +150,7 @@
 	function getTriggerTypeLabel(type: string): string {
 		const labels: Record<string, string> = {
 			general: 'Message général',
-			assessment_question: 'Question sur évaluation',
+			assessment_question: 'Question sur un contrôle',
 			srs_help: 'Aide SRS',
 			system_notification: 'Notification système',
 			enigma_answer: 'Réponse énigme'
@@ -163,14 +163,8 @@
 	<!-- Header -->
 	<div class="mb-6 flex items-center justify-between">
 		<div>
-			<Button
-				variant="ghost"
-				onclick={() => goto('/dashboard/admin/message-templates').then(() => {})}
-			>
-				<ArrowLeft class="mr-2 h-4 w-4" />
-				Retour aux templates
-			</Button>
-			<h1 class="mt-2 text-3xl font-bold">Statistiques des Templates</h1>
+			<BackLink href="/dashboard/admin/message-templates" label="Retour aux templates" />
+			<h1 class="text-3xl font-bold">Statistiques des Templates</h1>
 			<p class="text-muted-foreground">Analysez l'utilisation et les performances des templates</p>
 		</div>
 
