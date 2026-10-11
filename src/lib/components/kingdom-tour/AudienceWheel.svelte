@@ -155,7 +155,7 @@
 
 		// Une seule fois : quand la souris approche pour l'attraper, elle se dérobe d'un bond,
 		// puis revient doucement sur sa route. Ensuite, elle se laisse prendre.
-		const DODGE = { reach: 90, jump: 85, out: 0.35, hold: 0.5, back: 2.5 };
+		const DODGE = { reach: 90, jump: 85, out: 0.6, hold: 0.4, back: 2.8 };
 		let dodge: { x: number; y: number; t: number } | null = null;
 		let dodged = false;
 		const onpointermove = (event: PointerEvent) => {
@@ -169,10 +169,11 @@
 			dodge = { x: dx / distance, y: dy / distance, t: 0 };
 		};
 		window.addEventListener('pointermove', onpointermove);
-		const ease = (u: number) => u * u * (3 - 2 * u);
-		/** Le décalage du bond à l'instant `t` : départ vif, un temps d'arrêt, retour lent */
+		/** Démarre et s'arrête en douceur (vitesse et accélération nulles aux deux bouts) */
+		const ease = (u: number) => u * u * u * (u * (6 * u - 15) + 10);
+		/** Le décalage du bond à l'instant `t` : un glissement, un temps d'arrêt, un retour lent */
 		const dodgeOffset = (t: number) => {
-			if (t < DODGE.out) return 1 - (1 - t / DODGE.out) ** 3;
+			if (t < DODGE.out) return ease(t / DODGE.out);
 			if (t < DODGE.out + DODGE.hold) return 1;
 			return 1 - ease(Math.min(1, (t - DODGE.out - DODGE.hold) / DODGE.back));
 		};
