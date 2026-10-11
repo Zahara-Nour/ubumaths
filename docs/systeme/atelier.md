@@ -242,6 +242,18 @@ décisions de David du 2026-10-11) :
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
   d'élève disponible a un exemple (`commands.test.ts`).
 
+**Valeur approchée ⇄ valeur exacte** (PR 2 de la même phase 0) : une ligne dont la réponse a une
+autre écriture porte un bouton qui bascule, ligne par ligne, sans rien sauvegarder ni exporter
+(`Alternative` dans `calcul.ts`, `Entry.alternative`). Règle unique, `mathAST/cli/approximation.ts`
+(décisions de David du 2026-10-11) : **4 décimales** (`≈ 0,7071`) ; **=** sans zéros inutiles quand
+l'écriture décimale tient dans l'arrondi (1/4 → `= 0,25`) ; 4 chiffres significatifs sous 10⁻⁴ ;
+rien pour un nombre déjà écrit (`3`, `2,5`), une expression littérale, une grandeur (le moteur la
+calcule par une autre branche). Le moteur fournit `approximateLatex` (mode exact) ou `exactLatex`
+(mode décimal) pour un calcul, et `approximateLatex` pour `.solve` (`solutionsApproximationLatex` :
+`S ≈ {−1,4142 ; 1,4142}`, rien pour une famille périodique, une inéquation, un seuil en ln qui dit
+déjà sa valeur approchée). Mêmes boutons sur l'image d'un nombre et « Résoudre f(x) = 0 » des cartes.
+⚠️ `.mode décimal` écrit encore 15 chiffres : l'aligner sur cette règle est une PR à part.
+
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
 (fonction : Tracer, Dériver, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
