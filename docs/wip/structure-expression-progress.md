@@ -162,3 +162,7 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
   `StructureFormula` accepte une sous-expression imposée (`highlightId`) ; corpus : lecture courte
   sous chaque expression ; `structure-latex.ts` (anciens intitulés) supprimé. Visiteur : fiches du
   dictionnaire lues au niveau 5e (`structure-lexicon.svelte.ts`).
+- 2026-10-11 — lots 1 à 4 livrés : PR #1125 mergée (revues de code à chaque lot, CI verte). Reste
+  le lot 5 : quatre définitions à valider par David (différent, racine cubique, racine n-ième,
+  logarithme décimal) et Q25 (saisie par la page d'administration ou migration). Limite connue :
+  `AB²` lu comme un produit par le parseur (Q18, chantier séparé).
