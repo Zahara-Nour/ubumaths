@@ -156,15 +156,20 @@ export function resolveWorksheetExerciseCopy(
 ): CopyExercise {
 	return resolveCopyExercise(toExerciseTemplate(row.exercise), {
 		level: scope.level,
-		seed: copySeed({
-			assignmentId: scope.assignmentId,
-			worksheetId: scope.worksheetId,
-			worksheetExerciseId: row.id,
-			studentId: scope.studentId,
-			individualized: scope.individualized
-		}),
+		seed: worksheetExerciseSeed(row.id, scope),
 		locale: scope.locale,
 		forcedVariationIndex: row.variation_index
+	});
+}
+
+/** La graine des valeurs d'un exercice de la copie (`worksheet_exercises.id`) */
+export function worksheetExerciseSeed(worksheetExerciseId: string, scope: CopyScope): number {
+	return copySeed({
+		assignmentId: scope.assignmentId,
+		worksheetId: scope.worksheetId,
+		worksheetExerciseId,
+		studentId: scope.studentId,
+		individualized: scope.individualized
 	});
 }
 
@@ -238,6 +243,7 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 export function hasPerStudentValues(worksheet: WorksheetForCopy, scope: CopyScope): boolean {
 	if (!scope.individualized || !scope.assignmentId) return false;
 	return sortedWorksheetExercises(worksheet).some(
-		(we) => we.exercise !== undefined && hasDrawnValues(we.exercise)
+		// `!= null` : la jointure PostgREST rend `null` pour un exercice orphelin
+		(we) => we.exercise != null && hasDrawnValues(we.exercise)
 	);
 }

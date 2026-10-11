@@ -59,7 +59,8 @@ describe('copySeed : la graine d’une copie', () => {
 	it('déterministe, entier positif', () => {
 		const seed = copySeed({ ...base, individualized: false });
 		expect(seed).toBe(copySeed({ ...base, individualized: false }));
-		expect(Number.isInteger(seed) && seed >= 0).toBe(true);
+		// Entier positif sur 31 bits : tient dans une colonne `integer` Postgres
+		expect(Number.isInteger(seed) && seed >= 0 && seed < 2 ** 31).toBe(true);
 	});
 
 	it('non individualisée : la même pour tous les élèves de l’affectation', () => {

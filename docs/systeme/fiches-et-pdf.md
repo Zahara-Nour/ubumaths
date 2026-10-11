@@ -187,6 +187,8 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   cahier public). Le lot ZIP de la page de la fiche donne donc la même copie à chaque élève, à son nom.
 - Le corrigé du prof est la copie commune ; affectation individualisée avec variables : la réponse
   porte `per_student_values_notice`, affiché par `CorrectionManager`.
+- Le signalement d'erreur d'un élève enregistre la version et la graine de SA copie
+  (`worksheetExerciseSeed`, 31 bits, tient dans `worksheet_error_reports.seed`).
 - Groupes de niveau : la même fiche affectée plusieurs fois, chaque affectation visant ses élèves
   nommément ; un élève ne lit pas l'affectation d'un autre groupe.
 - Le réglage par exercice « Mode de variante » (`variant_mode`) est retiré de l'interface et n'est
@@ -358,8 +360,7 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    (`src/lib/server/worksheets/instance-generator.ts`, lit `variant_mode`), routes
    `api/worksheets/[id]/instances`, `[id]/preview`, `[id]/pdf*`, `VariantPreview.svelte`. Ménage à part.
 3. **`worksheet_instances` vide (0 ligne) et sans écrivain**, encore lue par `correction-release.ts`
-   (décompte, toujours 0) et le signalement d'erreur (`variant_seed`, toujours nul). Sa suppression
-   est destructive : décision de David.
+   (décompte, toujours 0). Sa suppression est destructive : décision de David.
 4. **Routes PDF serveur mortes** : `src/routes/api/worksheets/[id]/pdf/+server.ts` exige le Typst
    CLI (`exec`) et répond 501 en son absence ; `pdf/batch/+server.ts` importe typst.ts avec des WASM
    non épinglés. Aucun appelant dans `src/`.

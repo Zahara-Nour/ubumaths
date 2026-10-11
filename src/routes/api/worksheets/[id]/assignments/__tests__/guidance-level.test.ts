@@ -111,4 +111,13 @@ describe('PATCH /api/worksheets/assignments/[assignmentId] — niveau de guidage
 			status: 500
 		});
 	});
+
+	it('sans niveau : le niveau n’est pas réécrit (absent de l’update)', async () => {
+		// Un défaut côté Zod remettrait « guidé » à chaque modification du titre
+		const mock = supabase({ id: AFFECTATION, created_by: PROF, guidance_level: 'autonomous' });
+		await update(mock, { title: 'Groupe B' });
+		const values = written(mock, 'update');
+		expect(values?.title).toBe('Groupe B');
+		expect(values).not.toHaveProperty('guidance_level');
+	});
 });

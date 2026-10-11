@@ -9,6 +9,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
+	selectedColumns,
 	tableMock,
 	twoLevelExercise,
 	type TableMock
@@ -168,5 +169,14 @@ describe('API élève : la copie suit l’affectation', () => {
 		const mock = supabase('guided', true);
 		await fetchCopy(mock, STUDENTS[0]);
 		expect(mock.tablesRead).not.toContain('worksheet_instances');
+	});
+
+	it('l’affectation est lue AVEC son niveau et sa case « individualisés »', async () => {
+		// Sans ces colonnes, le mock les fournit quand même : seul le select le dit
+		const mock = supabase('autonomous', true);
+		await fetchCopy(mock, STUDENTS[0]);
+		const columns = selectedColumns(mock, 'worksheet_assignments');
+		expect(columns).toMatch(/\bguidance_level\b/);
+		expect(columns).toMatch(/\bindividualized\b/);
 	});
 });

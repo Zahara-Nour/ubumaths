@@ -223,4 +223,14 @@ describe('hasPerStudentValues : le corrigé de la classe vaut-il pour tous ?', (
 			})
 		).toBe(false);
 	});
+
+	it('exercice orphelin (`exercise: null`, jointure PostgREST vide) : ignoré, sans erreur', () => {
+		const orphan = worksheetOf([row()]);
+		const exercises = (orphan as unknown as { worksheet_exercises: Array<{ exercise: unknown }> })
+			.worksheet_exercises;
+		exercises[0].exercise = null;
+		const individual = assignmentCopyScope({ ...ASSIGNMENT, individualized: true });
+		expect(hasPerStudentValues(orphan, individual)).toBe(false);
+		expect(buildWorksheetCopy(orphan, individual).exercises[0].statement).toBe('');
+	});
 });

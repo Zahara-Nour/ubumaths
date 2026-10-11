@@ -10,11 +10,26 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import {
+	selectedColumns,
 	tableMock,
 	twoLevelExercise,
 	type TableMock
 } from '$lib/server/worksheets/__tests__/table-mock';
 import { assignmentCopyScope, resolveWorksheetExerciseCopy } from '$lib/worksheets/worksheet-copy';
+import type { InstanceData } from '$lib/types/worksheets';
+
+// Le rendu Typst réel est passé, la copie qu'il reçoit est captée
+const rendered = vi.hoisted(() => ({ instances: [] as InstanceData[] }));
+vi.mock('$lib/worksheets/typst-generator', async (importOriginal) => {
+	const original = await importOriginal<typeof import('$lib/worksheets/typst-generator')>();
+	return {
+		...original,
+		generateWorksheetTypst: (options: Parameters<typeof original.generateWorksheetTypst>[0]) => {
+			rendered.instances.push(options.instance);
+			return original.generateWorksheetTypst(options);
+		}
+	};
+});
 
 vi.mock('$lib/server/worksheets/assignment-classes', () => ({
 	fetchAssignmentClasses: async () => [],
@@ -170,5 +185,13 @@ describe('Corrigé du prof : la copie de la classe', () => {
 			access: true
 		});
 		await expect(correction(mock)).rejects.toMatchObject({ status: 404 });
+	});
+
+	it("les fonctions déclarées de l’exercice sont lues et passées au rendu (sinon `C'(x)` en erreur)", async () => {
+		rendered.instances = [];
+		const mock = supabase('guided', false, { ...twoLevelExercise(), generic_functions: ['C'] });
+		await correction(mock, 'typst');
+		expect(selectedColumns(mock, 'worksheet_assignments')).toMatch(/\bgeneric_functions\b/);
+		expect(rendered.instances[0].exercises[0].generic_functions).toEqual(['C']);
 	});
 });

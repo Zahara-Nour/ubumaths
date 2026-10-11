@@ -16,6 +16,8 @@ import type { Database } from '$lib/types/database';
 export interface TableResponse {
 	data: unknown;
 	error: { code?: string; message: string } | null;
+	/** Pour `select(..., { count: 'exact', head: true })` */
+	count?: number | null;
 }
 
 export interface TableMock {
@@ -24,6 +26,8 @@ export interface TableMock {
 	/** Arguments de `.insert()` / `.update()`, par table */
 	writes: Array<{ table: string; kind: 'insert' | 'update'; values: unknown }>;
 	rpcCalls: string[];
+	/** Colonnes demandées à chaque `.select()`, par table (avant ou après écriture) */
+	selects: Array<{ table: string; columns: string }>;
 }
 
 export function tableMock(
@@ -33,14 +37,19 @@ export function tableMock(
 	const tablesRead: string[] = [];
 	const writes: TableMock['writes'] = [];
 	const rpcCalls: string[] = [];
+	const selects: TableMock['selects'] = [];
 
 	function chain(table: string) {
 		const response = (): TableResponse =>
 			responses[table] ?? { data: null, error: { message: `table inattendue : ${table}` } };
 		const query: Record<string, unknown> = {};
-		for (const method of ['select', 'eq', 'in', 'order', 'limit', 'neq', 'is', 'delete']) {
+		for (const method of ['eq', 'in', 'order', 'limit', 'neq', 'is', 'delete']) {
 			query[method] = () => query;
 		}
+		query.select = (columns = '*') => {
+			selects.push({ table, columns: String(columns) });
+			return query;
+		};
 		query.insert = (values: unknown) => {
 			writes.push({ table, kind: 'insert', values });
 			return query;
@@ -51,6 +60,8 @@ export function tableMock(
 		};
 		query.single = () => Promise.resolve(response());
 		query.maybeSingle = () => Promise.resolve(response());
+		// Thenable voulu : le constructeur de requêtes de Supabase s'attend avec `await`
+		// oxlint-disable-next-line unicorn/no-thenable
 		query.then = (resolve: (value: TableResponse) => unknown, reject?: (e: unknown) => unknown) =>
 			Promise.resolve(response()).then(resolve, reject);
 		return query;
@@ -67,7 +78,7 @@ export function tableMock(
 		}
 	} as unknown as SupabaseClient<Database>;
 
-	return { client, tablesRead, writes, rpcCalls };
+	return { client, tablesRead, writes, rpcCalls, selects };
 }
 
 /** Exercice de la forme réelle : deux niveaux de guidage, une variable tirée */
@@ -98,4 +109,9 @@ export function twoLevelExercise(id = '550e8400-e29b-41d4-a716-4466554400e1') {
 		generic_functions: null,
 		tags: null
 	};
+}
+
+/** Les colonnes du premier `.select()` lu sur une table */
+export function selectedColumns(mock: TableMock, table: string): string {
+	return mock.selects.find((s) => s.table === table)?.columns ?? '';
 }

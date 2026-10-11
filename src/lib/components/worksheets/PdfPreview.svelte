@@ -183,7 +183,10 @@
 		});
 	}
 
-	/** Changer le niveau à imprimer refait l'aperçu */
+	/**
+	 * Changer le niveau à imprimer (onglet Aperçu ou Lot) refait l'aperçu. Une
+	 * génération en cours le rattrape en finissant (voir `generatePreview`).
+	 */
 	function handlePrintLevelChange(level: string) {
 		niveauChoisi = level;
 		generatePreview();
@@ -198,6 +201,8 @@
 
 		isGenerating = true;
 		svgContent = '';
+		// Le niveau de CETTE génération : changé entre-temps, on recommence
+		const levelAtStart = printLevel;
 
 		// Clean up previous PDF
 		if (pdfUrl) {
@@ -286,6 +291,10 @@
 			toaster.error('Erreur lors de la generation du PDF');
 		} finally {
 			isGenerating = false;
+		}
+		// Niveau changé pendant la génération : le changement n'est pas perdu
+		if (printLevel !== levelAtStart) {
+			generatePreview();
 		}
 	}
 
@@ -643,6 +652,7 @@ INFORMATIONS
 									type="single"
 									bind:value={niveauChoisi}
 									items={GUIDANCE_LEVEL_ITEMS}
+									triggerAriaLabel="Niveau à imprimer"
 									onValueChange={handlePrintLevelChange}
 								/>
 							</div>
@@ -823,7 +833,13 @@ INFORMATIONS
 
 						<div class="space-y-2">
 							<Label>Niveau à imprimer</Label>
-							<MySelect type="single" bind:value={niveauChoisi} items={GUIDANCE_LEVEL_ITEMS} />
+							<MySelect
+								type="single"
+								bind:value={niveauChoisi}
+								items={GUIDANCE_LEVEL_ITEMS}
+								triggerAriaLabel="Niveau à imprimer"
+								onValueChange={handlePrintLevelChange}
+							/>
 						</div>
 
 						<!-- Batch actions -->

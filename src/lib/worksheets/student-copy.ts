@@ -99,14 +99,17 @@ export function guidanceVariationIndex(
 	return 0;
 }
 
-/** Empreinte 32 bits (FNV-1a) d'une chaîne, entier positif */
-function hash32(text: string): number {
+/**
+ * Empreinte (FNV-1a) d'une chaîne, bornée à 31 bits : entier positif qui tient
+ * dans un `integer` Postgres (`worksheet_error_reports.seed`).
+ */
+function hash31(text: string): number {
 	let hash = 0x811c9dc5;
 	for (let i = 0; i < text.length; i++) {
 		hash ^= text.charCodeAt(i);
 		hash = Math.imul(hash, 0x01000193);
 	}
-	return hash >>> 0;
+	return (hash >>> 0) & 0x7fffffff;
 }
 
 /** Graine des valeurs tirées d'un exercice de la copie */
@@ -115,7 +118,7 @@ export function copySeed(parts: CopySeedParts): number {
 		? `affectation:${parts.assignmentId}`
 		: `fiche:${parts.worksheetId}`;
 	const student = parts.individualized && parts.studentId ? `:eleve:${parts.studentId}` : '';
-	return hash32(`${scope}${student}:exercice:${parts.worksheetExerciseId}`);
+	return hash31(`${scope}${student}:exercice:${parts.worksheetExerciseId}`);
 }
 
 /**

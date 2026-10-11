@@ -8,6 +8,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { page } from 'vitest/browser';
 import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
 import PdfPreview from '../PdfPreview.svelte';
 
@@ -15,18 +16,28 @@ import PdfPreview from '../PdfPreview.svelte';
 // MOCKS — le compilateur Typst et le générateur : on capte la copie
 // ============================================================================
 
-const captured = vi.hoisted(() => ({ instances: [] as InstanceData[] }));
+const captured = vi.hoisted(() => ({
+	instances: [] as InstanceData[],
+	// Compilation retenue tant que le test ne la relâche pas (null : immédiate)
+	gate: null as Promise<void> | null
+}));
 
+// Le « Typst » factice est le texte des énoncés : le SVG de l'aperçu le montre,
+// le test lit donc ce qui est RENDU, pas seulement la copie calculée.
 vi.mock('$lib/worksheets/typst-generator', () => ({
 	generateWorksheetTypst: (options: { instance: InstanceData }) => {
 		captured.instances.push(options.instance);
-		return '= fiche';
+		return options.instance.exercises.map((exercise) => exercise.statement).join(' | ');
 	}
 }));
 
 vi.mock('$lib/worksheets/typst-compiler', () => ({
 	getTypstCompiler: async () => ({
-		svg: async () => '<svg></svg>',
+		svg: async ({ mainContent }: { mainContent: string }) => {
+			if (captured.gate) await captured.gate;
+			const text = mainContent.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+			return `<svg xmlns="http://www.w3.org/2000/svg"><text>${text}</text></svg>`;
+		},
 		pdf: async () => new Uint8Array([37, 80, 68, 70]),
 		mapShadow: () => {},
 		resetShadow: () => {}
@@ -93,6 +104,7 @@ const worksheet = {
 describe('PdfPreview — copie hors affectation', () => {
 	beforeEach(() => {
 		captured.instances = [];
+		captured.gate = null;
 	});
 
 	it.each([['editor' as const], ['reader' as const]])(
@@ -116,5 +128,54 @@ describe('PdfPreview — copie hors affectation', () => {
 	it('éditeur : le choix « Niveau à imprimer » est proposé', async () => {
 		const screen = await render(PdfPreview, { props: { worksheet } });
 		await expect.poll(() => screen.container.textContent).toContain('Niveau à imprimer');
+	});
+
+	it('choisir « Autonome » : l’aperçu RENDU montre la version autonome', async () => {
+		const screen = await render(PdfPreview, { props: { worksheet } });
+		const preview = () => screen.container.querySelector('#pdf-svg-preview')?.textContent ?? '';
+		await expect.poll(preview).toMatch(/Guidé : calcule \d+ fois 3\./);
+
+		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('option', { name: 'Autonome' }).click();
+
+		await expect.poll(preview).toMatch(/Autonome : triple de \d+ \?/);
+		expect(preview()).not.toContain('{{');
+	});
+
+	it('onglet Lot : le même choix refait l’aperçu', async () => {
+		const screen = await render(PdfPreview, {
+			props: { worksheet, students: [{ id: 'e1', first_name: 'Ada', last_name: 'L.' }] }
+		});
+		const preview = () => screen.container.querySelector('#pdf-svg-preview')?.textContent ?? '';
+		await expect.poll(preview).toMatch(/^Guidé/);
+
+		await page.getByRole('tab', { name: 'Lot' }).click();
+		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('option', { name: 'Autonome' }).click();
+		await page.getByRole('tab', { name: 'Apercu' }).click();
+
+		await expect.poll(preview).toMatch(/^Autonome/);
+	});
+
+	it('niveau changé PENDANT une génération : pas perdu, l’aperçu le rattrape', async () => {
+		const screen = await render(PdfPreview, { props: { worksheet } });
+		const preview = () => screen.container.querySelector('#pdf-svg-preview')?.textContent ?? '';
+		await expect.poll(preview).toMatch(/^Guidé/);
+
+		// Une génération en cours, retenue
+		let release: () => void = () => {};
+		captured.gate = new Promise<void>((resolve) => (release = resolve));
+		const before = captured.instances.length;
+		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('option', { name: 'Intermédiaire' }).click();
+		await expect.poll(() => captured.instances.length).toBeGreaterThan(before);
+
+		// Changement pendant qu'elle tourne
+		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('option', { name: 'Autonome' }).click();
+		captured.gate = null;
+		release();
+
+		await expect.poll(preview).toMatch(/^Autonome/);
 	});
 });

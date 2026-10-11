@@ -165,4 +165,15 @@ describe('Aperçu d’affectation : la copie de l’élève', () => {
 		expect(view.exercises[0].statement).toMatch(/^Autonome/);
 		expect(view.exercises[0].statement).not.toContain('{{');
 	});
+
+	it('l’affectation est lue AVEC son niveau et sa case « individualisés »', async () => {
+		const mock = supabase('autonomous', true);
+		await preview(mock, STUDENTS[0]);
+		const columns = mock.selects
+			.filter((select) => select.table === 'worksheet_assignments')
+			.map((select) => select.columns);
+		expect(columns.some((c) => /\bguidance_level\b/.test(c) && /\bindividualized\b/.test(c))).toBe(
+			true
+		);
+	});
 });
