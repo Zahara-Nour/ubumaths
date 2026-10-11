@@ -212,7 +212,7 @@
 					<div class="flex flex-wrap items-center justify-between gap-4">
 						<!-- Left: Back button and title -->
 						<div>
-							<BackLink href={quitHref} label="Quitter" kind="quit" />
+							<BackLink href={quitHref} label="Quitter" kind="quit" class="mb-0" />
 							<div>
 								<h1 class="font-bold">Course aux nombres</h1>
 								<p class="text-sm text-muted-foreground">

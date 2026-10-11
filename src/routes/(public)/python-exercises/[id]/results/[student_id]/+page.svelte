@@ -70,8 +70,8 @@
 
 <div class="container mx-auto max-w-5xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8">
-		<BackLink href={`/python-exercises/${data.exercise.id}/results`} label="Retour aux résultats" />
+	<BackLink href={`/python-exercises/${data.exercise.id}/results`} label="Retour aux résultats" />
+	<div class="mb-8 flex items-start gap-4">
 		<div class="flex-1">
 			<p class="text-sm text-muted-foreground">{data.exercise.title}</p>
 			<h1 class="text-3xl font-bold tracking-tight">{fullName()}</h1>

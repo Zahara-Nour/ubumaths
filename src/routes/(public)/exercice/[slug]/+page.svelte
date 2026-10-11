@@ -354,8 +354,8 @@
 		<div class="w-[60%] overflow-y-auto border-r border-border">
 			<div class="mx-auto max-w-3xl px-6 py-8">
 				<!-- Header -->
-				<BackLink href="/" label="Retour à l'accueil" />
-				<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+				<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<BackLink href="/" label="Retour à l'accueil" class="mb-0 self-start" />
 					<!-- Action buttons -->
 					<div class="flex flex-wrap items-center gap-2">
 						{#if hasVariables}
@@ -529,8 +529,8 @@
 	<div class="lg:hidden">
 		<div class="container mx-auto max-w-4xl px-4 py-8">
 			<!-- Header -->
-			<BackLink href="/" label="Retour à l'accueil" />
-			<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+			<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<BackLink href="/" label="Retour à l'accueil" class="mb-0 self-start" />
 				<!-- Action buttons -->
 				<div class="flex flex-wrap items-center gap-2">
 					{#if hasVariables}
@@ -702,8 +702,8 @@
 	<!-- ========================================================================== -->
 	<div class="container mx-auto max-w-4xl px-4 py-8">
 		<!-- Header -->
-		<BackLink href="/" label="Retour à l'accueil" />
-		<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+		<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+			<BackLink href="/" label="Retour à l'accueil" class="mb-0 self-start" />
 			<!-- Action buttons -->
 			<div class="flex flex-wrap items-center gap-2">
 				{#if hasVariables}

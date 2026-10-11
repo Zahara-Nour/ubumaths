@@ -39,6 +39,8 @@
 
 	let { worksheet }: Props = $props();
 
+	let readOnly = $derived(worksheet.read_only === true);
+
 	// PDF download state
 	let isPdfLoading = $state(false);
 	let showPdfDialog = $state(false);
@@ -173,7 +175,13 @@
 </script>
 
 <div class="space-y-4">
-	<BackLink href="/dashboard/student/worksheets" label="Quitter" kind="quit" class="mb-0" />
+	<!-- Fiche en cours : « Quitter » ; consultation seule : simple retour -->
+	<BackLink
+		href="/dashboard/student/worksheets"
+		label={readOnly ? 'Retour aux fiches' : 'Quitter'}
+		kind={readOnly ? 'back' : 'quit'}
+		class="mb-0"
+	/>
 
 	<!-- Header Card -->
 	<Card.Root>

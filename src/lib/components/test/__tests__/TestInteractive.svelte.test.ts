@@ -224,14 +224,18 @@ describe('TestInteractive — Entraînement', () => {
 
 	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {
 		const { container } = await open([item('Énoncé A', 1)], true, true);
-		expect(container.querySelector('[aria-label="Retour au panier"]')).toBeNull();
 
 		elapse(1200);
 		await tick();
 
+		// Le lien « Quitter » de l'en-tête mène aussi à « Mes contrôles » : on cible
+		// le lien de l'écran de fin par son texte
+		const myAssessments = [...container.querySelectorAll<HTMLAnchorElement>('a')].find((link) =>
+			link.textContent?.includes('Mes contrôles')
+		);
+		expect(myAssessments?.getAttribute('href')).toBe('/dashboard/student/assessments');
 		expect(container.textContent).not.toContain(RESTART);
 		expect(container.textContent).not.toContain('Retour au panier');
-		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 	});
 
 	it('visiteur non connecté : averti que ses réponses ne comptent pas', async () => {

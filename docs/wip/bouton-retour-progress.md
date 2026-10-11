@@ -52,7 +52,7 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 ## Lot 4 — pages publiques et composants partagés (fait)
 
 - **« Quitter »** dans l'en-tête des tests d'automatismes et des contrôles (`TestInteractive`, `TestCourse`, `ClassroomSeries`) et de la fiche en cours (`WorksheetHeader`). Destination calculée par le composant : « Mes contrôles » en contrôle, le panier sinon (même destination qu'avant). Les boutons de fin de série gardent `onBack`. Tests ajoutés (preuve rouge faite).
-- Converties : panier, cahier de texte public (fiche), exercice public (trois mises en page), exercices Python (élève, résultats, résultat d'un élève, édition, création), démos (16 pages).
+- Converties : panier, cahier de texte public (fiche), exercice public (trois mises en page), exercices Python (élève, résultats, résultat d'un élève, édition, création), démos (17 pages).
 - Garde `src/lib/__tests__/bouton-retour-sans-historique.test.ts` : aucun `history.back()` hors page d'erreur.
 - Hors règle, laissés tels quels : retour mobile du chat (bascule d'affichage), « Quitter (Échap) » de la présentation de notebook, fenêtres de fin de tournoi, `ReviewSession` (fin de session), pages d'authentification (« Retour à la connexion » dans la carte), annuler/jouer dans 2048 et Mathémo, démo des cartes VIP (page au style propre).
 
@@ -70,5 +70,8 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
   - **Exercice Python partagé** (`python-exercises/[id]`) : ouvert par un lien partagé, pas de page parente → aucun retour.
   - **Session de révision d'un deck** (`revisions/decks/[id]/study`) : « Quitter » mène à `/dashboard/revisions`, comme avant. La session part de la page du deck ou du Programme : faut-il revenir au deck (et passer l'origine dans l'adresse) ?
   - **Tournoi de démineur** (élève) : « Retour aux tournois » devient « Quitter » pendant une partie (#1117).
+  - **Quitter un contrôle noté** ne demande aucune confirmation (déjà le cas avant). `confirmLeave` le permettrait : le veux-tu ?
+  - **Flash-cards** (`FlashSeries`) : aucune sortie pendant l'activité, alors que les trois autres formes d'automatismes ont « Quitter ». En ajouter une ?
+  - **Création d'un exercice Python** (`python-exercises/new`) : retour vers « Mes exercices Python » (entrée de la navigation), alors que `/python-exercises` y mène aussi.
   - **Énigme du jour** (`student/riddles/[id]`) : traitée comme une page de détail (« Retour aux énigmes »), pas comme une activité (« Quitter »).
   - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).
