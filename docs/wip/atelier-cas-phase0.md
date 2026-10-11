@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: phase 0 validée par David (2026-10-11) ; PR 1 livrée (#1080) ; PR 2 en cours (branche feat/atelier-bouton-approche)
+status: phase 0 validée par David (2026-10-11) ; PR 1 (#1080) et PR 2 (#1086) livrées ; PR 3 en cours (branche feat/atelier-completion)
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -78,7 +78,7 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 | `.mode décimal` actif                        | la ligne arrive en décimal ; le bouton montre la valeur exacte                                                     |
 | Export, rejeu, « Garder »                    | ignorent le bouton : on exporte et on garde la valeur EXACTE                                                       |
 
-### PR 3 — la complétion des noms et des fonctions
+### PR 3 — la complétion des fonctions et des lettres grecques (en cours)
 
 **Règle unique** : la liste s'ouvre quand le mot en cours (lettres seulement) a **au moins 2 lettres**, est
 le **début** d'une proposition, et que choisir cette proposition **changerait** le champ.
@@ -144,6 +144,14 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   (`≈ 5,099` → `≈ 5,0990`, décision « 4 décimales »), l'ordre et la forme des solutions (le bouton
   approche les solutions que les ÉTAPES affichent, `SolvedSteps.approximate`, pas celles du moteur
   triées : `-x^2+x+1=0`, `(x-√2)^2=0`), `.résoudre … dans [a ; b]` sans bouton.
+- 2026-10-11 — PR 2 mergée (#1086).
+- 2026-10-11 — PR 3, mesuré avant de coder : un nom d'objet fait UNE lettre (`aire = 12` n'est pas
+  un nom, `aire*2` se lit a·i·r·e·2) — la ligne « `ai` propose `aire` » de la phase 0 était fausse,
+  il n'y a aucun nom du panneau à compléter. Calcul accepte les 19 fonctions de `SHOWN_FUNCTIONS` et
+  les lettres grecques tapées en symbole (`2α`, `sin(α)`). PR 3 codée sur `feat/atelier-completion` :
+  `atelier/completion.ts` (règle, propositions, insertion), liste « Fonctions et lettres grecques »
+  dans `CalculView.svelte`. Preuves rouges par mutation : curseur au milieu, Entrée qui insérerait,
+  proposition refusée (`lim(`).
 
 ## Mis de côté (David, 2026-10-11 : « on verra après »)
 

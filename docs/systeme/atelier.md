@@ -257,6 +257,17 @@ déjà sa valeur approchée). Quand les ÉTAPES donnent la réponse, le bouton a
 boutons sur l'image d'un nombre et « Résoudre f(x) = 0 » des cartes.
 ⚠️ `.mode décimal` écrit encore 15 chiffres : l'aligner sur cette règle est une PR à part.
 
+**Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
+règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement) a au moins
+2 lettres, est le début d'une proposition, et que la choisir changerait le champ (`si` → `sin(`,
+`sinh(`, `sign(`, `σ` ; `al` → `α` ; `pi` → `π`). Propositions tirées des listes uniques du moteur :
+`SHOWN_FUNCTIONS` (tokenizer) et `GREEK_LETTERS` (variantes exceptées), insérées en symbole — pas le
+module de complétion de `/cas`, qui insère `\alpha`. Rien dans le nom d'une commande (liste des
+commandes), ni derrière `\`. Pas de nom du panneau : un nom d'objet fait une lettre. Clavier : ↑ / ↓
+surlignent, **Tab ou un clic insère**, **Entrée calcule** même liste ouverte (`3ta` = 3·t·a, décision
+de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition, tapée dans un calcul,
+est acceptée par Calcul (`completion.test.ts`).
+
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
 (fonction : Tracer, Dériver, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
