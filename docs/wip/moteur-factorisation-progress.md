@@ -550,7 +550,7 @@ acceptée, amende l'ADR 0007 pour l'intention `factoriser`.
       |racine| croissante, racine positive d'abord ; irrationnels ; degré 2 ; reste. Seul écart
       avec le tableau du brief : `(2x+1)^2-(x-3)^2` → `(3x−2)(x+4)` (le brief écrivait `(x+4)(3x−2)`).
 - [x] Vérifications : `pnpm test:server src/lib/mathAST/factor` 47/47 ; `pnpm test:server
-  src/lib/mathAST` une fois à la fin : 462 fichiers, 19 310 tests verts (9 ignorés, 3 todo),
+src/lib/mathAST` une fois à la fin : 462 fichiers, 19 310 tests verts (9 ignorés, 3 todo),
       22 s ; `check:incremental` 0 erreur ; `types:cliquet` tenu (0 erreur, le nouveau test naît
       typé) ; `lint:fast` rien à signaler ; prettier sur les fichiers touchés seulement.
 - [x] Doc : section « factor/ » de `docs/systeme/mathast/README.md` (carte, API, bornes, limites,
