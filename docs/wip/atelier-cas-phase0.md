@@ -132,6 +132,18 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   une valeur dont l'écriture décimale tient dans l'arrondi s'écrit avec **=** sans zéros inutiles
   (1/4 → `= 0,25`) ; pas de bouton sur un résultat déjà entier ou décimal ; **aligner `.mode décimal`
   sur la même règle, dans une PR à part**.
+- 2026-10-11 — PR 2 codée sur `feat/atelier-bouton-approche` : règle unique
+  `mathAST/cli/approximation.ts` ; le moteur rend `approximateLatex` / `exactLatex` (calcul) et
+  `approximateLatex` (`.solve`, `solutionsApproximationLatex`) ; `Alternative` dans `calcul.ts`, sur
+  les calculs, `.résoudre`, l'image et « Résoudre » des cartes ; bouton « Valeur approchée / Valeur
+  exacte » dans `CalculView.svelte`. Mesuré : une grandeur ne reçoit jamais de valeur approchée du
+  moteur (branche des unités) — la garde « rendu depuis l'arbre » ajoutée ne changeait rien, retirée.
+- 2026-10-11 — revue `code-reviewer` de la PR 2 : corrigés un « = » faux pour un grand irrationnel
+  (`= 485165195,4098` pour e²⁰ : l'exactitude se décide désormais sur le RATIONNEL,
+  `evaluateNodeToRational`, et rien au-delà de 10⁹), les zéros retirés d'une valeur approchée
+  (`≈ 5,099` → `≈ 5,0990`, décision « 4 décimales »), l'ordre et la forme des solutions (le bouton
+  approche les solutions que les ÉTAPES affichent, `SolvedSteps.approximate`, pas celles du moteur
+  triées : `-x^2+x+1=0`, `(x-√2)^2=0`), `.résoudre … dans [a ; b]` sans bouton.
 
 ## Mis de côté (David, 2026-10-11 : « on verra après »)
 
@@ -139,9 +151,3 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   « accolades dans Calcul » (`{1/3}x^3`).
 - Aligner `.mode décimal` sur la règle du bouton ≈ (4 décimales, `=` quand c'est exact) — PR à part,
   après la PR 2.
-- 2026-10-11 — PR 2 codée sur `feat/atelier-bouton-approche` : règle unique
-  `mathAST/cli/approximation.ts` ; le moteur rend `approximateLatex` / `exactLatex` (calcul) et
-  `approximateLatex` (`.solve`, `solutionsApproximationLatex`) ; `Alternative` dans `calcul.ts`, sur
-  les calculs, `.résoudre`, l'image et « Résoudre » des cartes ; bouton « Valeur approchée / Valeur
-  exacte » dans `CalculView.svelte`. Mesuré : une grandeur ne reçoit jamais de valeur approchée du
-  moteur (branche des unités) — la garde « rendu depuis l'arbre » ajoutée ne changeait rien, retirée.

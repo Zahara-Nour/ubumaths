@@ -51,6 +51,7 @@ import { toLatex } from '../../latex-generator';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
 import { evaluate } from '../../eval/evaluate';
+import { approximateSolutionsLatex } from '../approximation';
 import {
 	bareFunctionMessage,
 	bareFunctionName,
@@ -1218,7 +1219,13 @@ export class SolveCommand extends BaseCommand {
 								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
 						)
 						.join(' ou ');
-		return { success: true, output, latex };
+		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier — sauf une solution
+		// en ln, qui donne déjà la sienne
+		const approximateLatex =
+			only !== null && logarithmicValueLatex(only.value, only.approximate) !== null
+				? null
+				: approximateSolutionsLatex(variable, values, values.length > 1);
+		return { success: true, output, latex, ...(approximateLatex !== null && { approximateLatex }) };
 	}
 
 	/**

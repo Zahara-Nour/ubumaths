@@ -22,6 +22,22 @@ describe('la valeur approchée d’un nombre exact', () => {
 		expect(approx('1000\\sqrt{2}')).toBe('\\approx 1414.2136');
 	});
 
+	// Décision de David : 4 décimales — les zéros ne tombent que si c'est exact (revue)
+	it('une valeur approchée garde ses 4 décimales, zéros compris', () => {
+		expect(approx('\\sqrt{26}')).toBe('\\approx 5.0990');
+		expect(approx('\\frac{19999}{20000}')).toBe('\\approx 1.0000');
+	});
+
+	// Revue : un seuil d'exactitude relatif donnait « = 485165195.4098 »
+	it('un grand irrationnel n’est jamais « = »', () => {
+		expect(approx('e^{20}')).toBe('\\approx 485165195.4098');
+		expect(approx('\\frac{1000000}{3}')).toBe('\\approx 333333.3333');
+	});
+
+	it('rien au-delà du milliard : les 4 décimales n’y sont plus sûres', () => {
+		expect(approx('10^{10}\\sqrt{2}')).toBeNull();
+	});
+
 	it('garde le signe', () => {
 		expect(approx('-\\sqrt{2}')).toBe('\\approx -1.4142');
 	});
@@ -38,7 +54,7 @@ describe('la valeur approchée d’un nombre exact', () => {
 
 	// Arrondi à 4 décimales, e^{-10} vaudrait « ≈ 0 » : faux pour un élève
 	it('un nombre trop petit pour 4 décimales garde 4 chiffres significatifs', () => {
-		expect(approx('e^{-10}')).toBe('\\approx 0.0000454');
+		expect(approx('e^{-10}')).toBe('\\approx 0.00004540');
 	});
 
 	it('rien pour un résultat déjà entier ou décimal', () => {
@@ -65,6 +81,19 @@ describe('la valeur approchée des solutions de .solve', () => {
 	it('une solution unique', () => {
 		expect(solved('x^3=2').approximateLatex).toBe('x \\approx 1.2599');
 		expect(solved('2x=1').approximateLatex).toBe('x = 0.5');
+	});
+
+	it('4 décimales, zéros compris, pour le nombre d’or', () => {
+		expect(solved('x^2-3x+1=0').approximateLatex).toBe(
+			'S \\approx \\left\\{ 0.3820 \\,;\\, 2.6180 \\right\\}'
+		);
+	});
+
+	// Revue : `dans [a ; b]`, là où la valeur approchée sert le plus, n'en avait pas
+	it('dans un intervalle aussi', () => {
+		expect(solved('x^2-3=0 dans [-5 ; 5]').approximateLatex).toBe(
+			'S \\approx \\left\\{ -1.7321 \\,;\\, 1.7321 \\right\\}'
+		);
 	});
 
 	it('rien quand les solutions sont déjà des entiers', () => {

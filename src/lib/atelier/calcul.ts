@@ -58,7 +58,7 @@ import {
 } from './law-commands';
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
-import { solveSteps } from './solve-steps';
+import { solveSteps, type SolvedSteps } from './solve-steps';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
@@ -750,7 +750,13 @@ function randomSeed(): number {
 	return 1000 + Math.floor(Math.random() * 9000);
 }
 
-/** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
+/** Les valeurs approchées des solutions que montrent les étapes, s'il y en a. */
+function stepsAlternative(solved: SolvedSteps): { alternative?: Alternative } {
+	return solved.approximate === undefined
+		? {}
+		: { alternative: { label: 'Valeur approchée', latex: solved.approximate } };
+}
+
 /** Les valeurs approchées des solutions que le moteur a trouvées, s'il y en a. */
 function solutionsAlternative(result: ReplExecutionResult): { alternative?: Alternative } {
 	return result.success && result.approximateLatex !== undefined
@@ -774,6 +780,7 @@ function calculationAlternative(result: ReplExecutionResult): { alternative?: Al
 	return {};
 }
 
+/** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
 	const resolved = resolveCommand(input);
@@ -1135,7 +1142,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			output: rendered.text,
 			latex: solved.answer,
 			steps: solved.steps,
-			...solutionsAlternative(result),
+			...stepsAlternative(solved),
 			...noted
 		};
 	}
@@ -1623,7 +1630,7 @@ function computeAction(
 				output: rendered.text,
 				latex: solved.answer,
 				steps: solved.steps,
-				...solutionsAlternative(result)
+				...stepsAlternative(solved)
 			};
 		}
 		// Pas d'étapes : les solutions du moteur en LaTeX, comme `.résoudre`

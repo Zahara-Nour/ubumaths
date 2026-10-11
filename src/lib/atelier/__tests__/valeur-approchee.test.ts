@@ -82,6 +82,34 @@ describe('les valeurs approchées des solutions', () => {
 		});
 	});
 
+	// Revue : les étapes écrivaient les solutions dans leur ordre, le bouton les
+	// triait — la ligne et le bouton ne se correspondaient plus
+	it('les valeurs approchées suivent l’ordre et la forme de la ligne', () => {
+		const result = runInput(session(), '.résoudre -x^2+x+1=0');
+		expect(result.kind === 'commande' && result.latex).toMatch(/^S = /);
+
+		expect(alternativeOf(result)?.latex).toBe(
+			'S \\approx \\left\\{ 1{,}6180 \\,;\\, -0{,}6180 \\right\\}'
+		);
+	});
+
+	it('une solution double écrite en ensemble reste un ensemble', () => {
+		const result = runInput(session(), '.résoudre (x-\\sqrt{2})^2=0');
+		expect(result.kind === 'commande' && result.latex).toMatch(/^S = /);
+
+		expect(alternativeOf(result)?.latex).toBe('S \\approx \\left\\{ 1{,}4142 \\right\\}');
+	});
+
+	it('`.résoudre … dans [0 ; 2π]` a son bouton', () => {
+		const alternative = alternativeOf(
+			runInput(session(), '.résoudre \\cos(x)=0,3 dans [0 ; 2\\pi]')
+		);
+
+		expect(alternative?.latex).toMatch(
+			/^S \\approx \\left\\{ 1{,}2661 \\,;\\, 5{,}0171 \\right\\}$/
+		);
+	});
+
 	it('rien quand les solutions sont entières', () => {
 		const result = runInput(session(), '.résoudre x^2=4');
 		expect(result.kind).toBe('commande');

@@ -83,6 +83,12 @@
 	 */
 	let unfolded = $state<number[]>([]);
 
+	/**
+	 * Les lignes qui montrent leur autre écriture (phase 0 `atelier-cas-phase0.md`,
+	 * PR 2). Affichage seul, ligne par ligne : ni sauvegardé, ni exporté.
+	 */
+	let toggled = $state<number[]>([]);
+
 	function toggleSteps(id: number) {
 		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
 	}
@@ -234,12 +240,6 @@
 			return null;
 		}
 	}
-
-	/**
-	 * Les lignes qui montrent leur autre écriture (phase 0 `atelier-cas-phase0.md`,
-	 * PR 2). Affichage seul, ligne par ligne : ni sauvegardé, ni exporté.
-	 */
-	let toggled = $state<number[]>([]);
 
 	function toggleAlternative(id: number) {
 		toggled = toggled.includes(id) ? toggled.filter((x) => x !== id) : [...toggled, id];

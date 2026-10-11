@@ -31,7 +31,8 @@ import {
 } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
-import { conclusionAgrees } from './solve-steps-check';
+import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
+import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
 
 // =============================================================================
 // Constantes
@@ -81,6 +82,12 @@ export interface SolvedSteps {
 	readonly steps: readonly RenderedStep[];
 	/** La réponse en LaTeX, jamais vide — la ligne d'historique l'affiche. */
 	readonly answer: string;
+	/**
+	 * Les MÊMES solutions en valeurs approchées, pour le bouton ≈ : dans l'ordre
+	 * et sous la forme de `answer` (revue : celles du moteur, triées, ne
+	 * correspondaient plus à la ligne quand a < 0).
+	 */
+	readonly approximate?: string;
 }
 
 /** Le membre de gauche est-il l'inconnue toute seule ? */
@@ -201,7 +208,12 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		// conclusion que les nombres démentent n'est jamais montrée : repli.
 		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
 
-		return { steps: rendered, answer };
+		const solutions = concludedSolutions(steps[steps.length - 1]);
+		const approximate =
+			solutions === null
+				? null
+				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
+		return { steps: rendered, answer, ...(approximate !== null && { approximate }) };
 	} catch {
 		// Degré ≥ 3, non-polynomial, coefficients paramétriques, inconnue
 		// introuvable (`b*x+5=14` → « cannot detect a single variable », une

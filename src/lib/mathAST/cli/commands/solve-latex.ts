@@ -37,7 +37,7 @@ import { getVariables } from '../../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
-import { approximateDigits, isWrittenNumber } from '../approximation';
+import { approximateSolutionsLatex } from '../approximation';
 
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
@@ -376,24 +376,10 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 	if (result.solutions.length === 0 || result.periodicSolutions !== undefined) return null;
 	if (periodicLatex(result) !== null) return null;
 
+	// Dans l'ordre et la forme de `solutionsLatex` : la ligne qu'elles accompagnent
 	const values = sorted(result.solutions).map((s) => tidyValue(s.value));
-	if (values.every(isWrittenNumber)) return null;
 	if (values.length === 1 && logarithmicValueLatex(values[0]) !== null) return null;
-
-	const digits: { digits: string; exact: boolean }[] = [];
-	for (const value of values) {
-		if (getVariables(value).size > 0) return null;
-		const number = numericValue(value);
-		const approximation = number === null ? null : approximateDigits(number);
-		if (approximation === null) return null;
-		digits.push(approximation);
-	}
-	const exact = digits.every((d) => d.exact);
-	if (digits.length === 1) {
-		return `${result.variable} ${exact ? '=' : '\\approx'} ${digits[0].digits}`;
-	}
-	const set = `\\left\\{ ${digits.map((d) => d.digits).join(' \\,;\\, ')} \\right\\}`;
-	return `S ${exact ? '=' : '\\approx'} ${set}`;
+	return approximateSolutionsLatex(result.variable, values, values.length > 1);
 }
 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */
