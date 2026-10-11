@@ -29,7 +29,7 @@ couvre:
 
 > Six outils périphériques, sans doc jusqu'ici. Écrit depuis le code, le schéma
 > (`supabase/migrations/20260616220000_baseline_schema.sql` et suivantes) et un comptage
-> en lecture seule de la prod. Vérifié contre le code le 2026-10-10.
+> en lecture seule de la prod. Vérifié contre le code le 2026-10-11.
 
 ## État d'un coup d'œil
 
@@ -67,7 +67,7 @@ annotations, export PNG / SVG / PDF, modèles de page.
 | `src/lib/whiteboard/utils/`                            | `file-operations.ts` (`.ubw`), `pdf-loader.ts`, `image-loader.ts`, `sync-state.ts` (état Drive)                                                                                                                                                                 |
 | `src/lib/whiteboard/services/`                         | `template-service.ts` (modèles), `drive-sync.ts` (Google Drive)                                                                                                                                                                                                 |
 | `src/lib/whiteboard/components/InstrumentLayer.svelte` | Instruments — **importés de l'ancien `src/lib/constructions/`** (voir §5)                                                                                                                                                                                       |
-| `src/lib/whiteboard/components/FileDrawer.svelte`      | Tiroir de fichiers : local, Drive, export Classroom (masqué par le drapeau)                                                                                                                                                                                     |
+| `src/lib/whiteboard/components/FileDrawer.svelte`      | Tiroir de fichiers : local, Drive et export Classroom (tous deux masqués par le drapeau, sans appel aux routes Google)                                                                                                                                          |
 | `src/routes/api/whiteboard/`                           | `templates/` (modèles, favoris), `drive/` (list, load, save, folder, autosave, thumbnail), `classes-for-drawer`, `classes-with-course`, `export-to-classroom`                                                                                                   |
 
 ### Modèle et persistance
@@ -364,8 +364,9 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 2. **Tableur — alias sans fonction** : `FUNCTION_ALIASES` nomme COUNTBLANK, STDEV, VAR,
    MEDIAN, MODE, TODAY, NOW, YEAR, MONTH, DAY, VLOOKUP, HLOOKUP, INDEX, MATCH, qu'aucun
    fichier n'implémente → `#NAME?`.
-3. **Tableau blanc** : la route admet les élèves, le lien n'est montré qu'au prof ; le
-   panneau Drive reste visible alors que la connexion Google est éteinte.
+3. **Tableau blanc** : la route admet les élèves, le lien n'est montré qu'au prof (D5, à trancher).
+   Le panneau de fichiers, lui, ne propose plus rien de Google quand le drapeau est éteint
+   (V5, corrigé le 2026-10-11 : test `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`).
 4. **Google** : les routes `/api/google/**` ne testent pas le drapeau (seules les pages le
    font) ; `class_google_classroom_links` n'est lue nulle part dans `src/`.
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
