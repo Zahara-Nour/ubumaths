@@ -134,8 +134,13 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 - `src/routes/slides/test-transitions/+page.svelte` — page de démonstration des transitions,
   sans lien.
 
-`AnnotatableSlide`, `WhiteboardSlide` et `slideAnnotationStore` ne sont montés par **aucun**
-consommateur hors du module.
+**Annotation des diapositives : complète, mais branchée nulle part.** `AnnotatableSlide` (couche
+de dessin sur n'importe quelle diapositive) et `WhiteboardSlide` (une page du tableau blanc en
+diapositive, annotable) sont les **seuls** à allumer la barre d'annotation
+(`slideAnnotationStore.setAvailable(true)`) ; `Deck.svelte` ne l'affiche que si elle est allumée.
+Leurs seuls consommateurs étaient les démos `/slides/demo` et `/slides/demo-embedded`, supprimées
+le 2026-06-13 (elles ne compilaient plus). Ce n'est **pas du code mort** : les retirer couperait
+l'unique point d'entrée de la barre, du store et de `SlideAnnotationLayer`.
 
 ### Invariants
 
@@ -372,5 +377,6 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 4. **Google** : les routes `/api/google/**` ne testent pas le drapeau (seules les pages le
    font) ; `class_google_classroom_links` n'est lue nulle part dans `src/`.
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
-6. **Diaporamas** : `AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore` exportés
-   mais sans consommateur.
+6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
+   fonctionne mais n'est montée nulle part depuis la suppression des démos (2026-06-13). Fonctionnalité
+   dormante à garder, pas du code mort (décision de David, 2026-10-11) ; démos à remettre en place.
