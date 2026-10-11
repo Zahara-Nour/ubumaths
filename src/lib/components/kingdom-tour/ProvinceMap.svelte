@@ -9,24 +9,23 @@
 	import type { Action } from 'svelte/action';
 	import { Crown } from '@lucide/svelte';
 	import { PROVINCES } from '$lib/kingdom-tour/tour';
-	import { buildSpiral } from '$lib/kingdom-tour/spiral';
+	import {
+		buildSpiral,
+		placeLabel,
+		PROVINCE_MAP,
+		type SpiralLabel
+	} from '$lib/kingdom-tour/spiral';
 
 	// Constantes
 
-	// Réglage cherché par calcul (2026-10-11) : aucun nom ne chevauche une étape, un autre
-	// nom ou le Trône, et la spirale finit au centre exact du cadre
-	const SIZE = 400;
+	const { size: SIZE, turns, innerRadius, outerRadius } = PROVINCE_MAP;
 	const SPIRAL = buildSpiral({
 		size: SIZE,
-		turns: 1.5,
-		innerRadius: 0,
-		outerRadius: 160,
+		turns,
+		innerRadius,
+		outerRadius,
 		stops: PROVINCES.length
 	});
-
-	/** Largeur approchée d'un nom en Lora 15 px, pour le garder dans le cadre */
-	const CHAR_WIDTH = 8.4;
-	const LABEL_GAP = 20;
 
 	/** La fiche qui croise le milieu de l'écran est la Province lue */
 	const READING_LINE = '-50% 0px -50% 0px';
@@ -39,26 +38,32 @@
 
 	// Functions
 
-	/**
-	 * Le nom d'une Province, à côté de son étape : du côté extérieur de la spirale, sauf
-	 * s'il sortirait du cadre (il passe alors de l'autre côté de l'étape).
-	 */
-	function labelOf(index: number): { x: number; y: number; anchor: 'start' | 'end' } {
-		const stop = SPIRAL.stops[index];
-		const width = PROVINCES[index].name.length * CHAR_WIDTH;
-		const outward = stop.x >= SIZE / 2 ? 'start' : 'end';
-		const fits =
-			outward === 'start' ? stop.x + LABEL_GAP + width <= SIZE : stop.x - LABEL_GAP - width >= 0;
-		const anchor = fits ? outward : outward === 'start' ? 'end' : 'start';
-		return { x: stop.x + (anchor === 'start' ? LABEL_GAP : -LABEL_GAP), y: stop.y + 5, anchor };
+	/** Le nom d'une Province, posé à côté de son étape */
+	function labelOf(index: number): SpiralLabel {
+		return placeLabel(SPIRAL.stops[index], PROVINCES[index].name, SIZE);
 	}
 
-	/** La fiche n° `index` devient la Province lue quand elle croise le milieu de l'écran */
+	/** JavaScript actif : la spirale peut suivre la lecture (sans lui, elle reste tracée) */
+	let live = $state(false);
+
+	/**
+	 * La fiche n° `index` devient la Province lue quand elle croise le milieu de l'écran.
+	 * Remonté au-dessus de la première fiche : plus aucune Province n'est lue.
+	 */
 	const watch: Action<HTMLElement, number> = (element, index) => {
 		if (typeof IntersectionObserver === 'undefined') return;
+		live = true;
 		const observer = new IntersectionObserver(
 			(entries) => {
-				if (entries.some((entry) => entry.isIntersecting)) active = index;
+				for (const entry of entries) {
+					if (entry.isIntersecting) active = index;
+					else if (
+						index === 0 &&
+						entry.rootBounds &&
+						entry.boundingClientRect.top > entry.rootBounds.bottom
+					)
+						active = -1;
+				}
 			},
 			{ rootMargin: READING_LINE }
 		);
@@ -67,7 +72,7 @@
 	};
 </script>
 
-<div class="map" data-testid="province-map">
+<div class="map" class:live data-testid="province-map">
 	<div class="spiral" aria-hidden="true">
 		<svg viewBox="0 0 {SIZE} {SIZE}">
 			<path d={SPIRAL.d} class="track" />
@@ -108,7 +113,7 @@
 					<blockquote>
 						<span class="sr-only">Devise :</span> « {province.motto} »
 					</blockquote>
-					<span class="scenery">{province.scenery}</span>
+					<p class="scenery">{province.scenery}</p>
 					<dl>
 						<div>
 							<dt>Capitale</dt>
@@ -216,9 +221,9 @@
 		color: var(--color-primary-foreground);
 	}
 
-	/* Grand écran : la spirale se dessine au fil de la lecture */
+	/* Grand écran, JavaScript actif : la spirale se dessine au fil de la lecture */
 	@media (min-width: 1024px) {
-		.ink {
+		.live .ink {
 			stroke-dashoffset: calc(1 - var(--progress, 0));
 		}
 	}
@@ -243,23 +248,28 @@
 		@apply grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary font-bold text-primary-foreground;
 	}
 	.domain {
-		@apply text-sm font-medium tracking-wide text-muted-foreground uppercase;
+		@apply font-medium tracking-wide text-foreground/75 uppercase;
+		font-size: calc(0.875rem * var(--font-scale, 1));
 	}
 	blockquote {
 		font-family: 'Lora', Georgia, serif;
-		@apply text-xl leading-snug italic sm:text-2xl;
+		font-size: calc(clamp(1.25rem, 1rem + 1vw, 1.5rem) * var(--font-scale, 1));
+		@apply leading-snug italic;
 	}
+	/* `main p` impose 1rem : une classe l'emporte, en gardant l'échelle A−/A+ */
 	.scenery {
-		@apply text-muted-foreground;
+		@apply text-foreground/75;
+		font-size: calc(1rem * var(--font-scale, 1)) !important;
 	}
 	dl {
-		@apply flex flex-wrap gap-x-6 gap-y-1 text-sm;
+		@apply flex flex-wrap gap-x-6 gap-y-1;
+		font-size: calc(0.875rem * var(--font-scale, 1));
 	}
 	dl div {
 		@apply flex gap-1.5;
 	}
 	dt {
-		@apply text-muted-foreground;
+		@apply text-foreground/75;
 	}
 	dt::after {
 		content: ' :';
@@ -271,7 +281,7 @@
 		@apply flex flex-wrap gap-2;
 	}
 	.tools a {
-		@apply inline-flex min-h-11 items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+		@apply inline-flex min-h-11 items-center gap-1 rounded-full border border-foreground/40 px-4 py-2 font-medium transition-colors hover:border-primary hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

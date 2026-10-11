@@ -1,7 +1,7 @@
 /**
  * Le Tour du Royaume, rendu dans un vrai <main> (les règles de taille d'app.css s'y appliquent).
  */
-import { userEvent } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
@@ -106,13 +106,22 @@ describe('/royaume', () => {
 		expect(screen.container.textContent ?? '').not.toMatch(FORBIDDEN);
 	});
 
+	// La fenêtre, pas seulement <main> : les points de rupture (sm:, lg:) suivent la fenêtre
 	it.each([
+		['petit téléphone', 320],
 		['téléphone', 375],
 		['ordinateur', 1280]
 	])('ne déborde pas en largeur (%s)', async (_name, width) => {
+		await page.viewport(width, 900);
 		const screen = await renderTour(BASE_DATA, width);
 		const main = screen.container.closest('main') as HTMLElement;
 		expect(main.scrollWidth).toBeLessThanOrEqual(width);
+	});
+
+	it('« Commencer la visite » amène le focus aux Provinces', async () => {
+		const screen = await renderTour();
+		await screen.getByRole('link', { name: 'Commencer la visite' }).click();
+		expect(document.activeElement?.id).toBe('provinces');
 	});
 });
 
@@ -120,16 +129,31 @@ describe('/royaume — la démo de la forme', () => {
 	it('chaque réponse donne son verdict, ses points et la remarque du correcteur', async () => {
 		const screen = await renderTour();
 		const demo = screen.getByTestId('form-demo');
-		await demo.getByRole('button', { name: '(x − 7)(x − 7)' }).click();
+		await demo.getByRole('radio', { name: '(x − 7)(x − 7)' }).click();
 		await expect.element(demo).toHaveTextContent('½ point');
 		await expect
 			.element(demo)
 			.toHaveTextContent('La réponse est juste, mais pas écrite sous la forme demandée.');
-		await demo.getByRole('button', { name: '(x + 7)²' }).click();
+		await demo.getByRole('radio', { name: '(x + 7)²' }).click();
 		await expect.element(demo).toHaveTextContent('Pataphysique');
 		await expect
-			.element(demo.getByRole('button', { name: '(x + 7)²' }))
-			.toHaveAttribute('aria-pressed', 'true');
+			.element(demo.getByRole('radio', { name: '(x + 7)²' }))
+			.toHaveAttribute('aria-checked', 'true');
+	});
+
+	it('se parcourt aux flèches, comme un groupe radio', async () => {
+		const screen = await renderTour();
+		const demo = screen.getByTestId('form-demo');
+		const first = demo.getByRole('radio', { name: '(x − 7)²' });
+		(first.element() as HTMLElement).focus();
+		await userEvent.keyboard('{ArrowRight}');
+		const second = demo.getByRole('radio', { name: '(x − 7)(x − 7)' });
+		await expect.element(second).toHaveAttribute('aria-checked', 'true');
+		expect(document.activeElement).toBe(second.element());
+		await userEvent.keyboard('{ArrowLeft}{ArrowLeft}');
+		await expect
+			.element(demo.getByRole('radio', { name: '(x + 7)²' }))
+			.toHaveAttribute('aria-checked', 'true');
 	});
 });
 
@@ -144,6 +168,18 @@ describe('/royaume — le Cabinet Noir en direct', () => {
 		await demo.getByRole('button', { name: 'Avancer d’un rang' }).click();
 		await expect.element(demo.getByTestId('cipher-shift')).toHaveTextContent('4');
 		await expect.element(demo.getByTestId('cipher-output')).toHaveTextContent('YFY');
+	});
+
+	it('un émoji reste un seul caractère (pas de moitiés cassées)', async () => {
+		const screen = await renderTour();
+		const demo = screen.getByTestId('cipher-demo');
+		const input = demo.getByRole('textbox', { name: 'Ton message' });
+		// Collé d'un bloc, comme le fait un clavier de téléphone (la frappe simulée coupe l'émoji)
+		await userEvent.fill(input, 'Ubu 😀');
+		const output = demo.getByTestId('cipher-output').element();
+		expect(output.textContent).toContain('😀');
+		expect(output.textContent).not.toContain('\uFFFD');
+		expect([...output.querySelectorAll('.letter')].map((l) => l.textContent)).toContain('😀');
 	});
 
 	it('accents et ponctuation : ceux du vrai module du Cabinet Noir', async () => {

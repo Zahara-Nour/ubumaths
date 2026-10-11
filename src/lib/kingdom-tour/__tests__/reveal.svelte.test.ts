@@ -40,6 +40,27 @@ describe('reveal', () => {
 		action?.destroy?.();
 	});
 
+	it('atteint au clavier avant d’être à l’écran : il se montre aussitôt', () => {
+		const element = block(window.innerHeight + 2000);
+		const link = element.appendChild(document.createElement('a'));
+		link.href = '#';
+		reveal(element);
+		expect(element.dataset.reveal).toBe('pending');
+		link.focus({ preventScroll: true });
+		expect(element.dataset.reveal).toBe('shown');
+	});
+
+	it('une fois apparu, il rend la main à ses transitions (plus d’attribut ni de retard)', () => {
+		const element = block(window.innerHeight + 2000);
+		const link = element.appendChild(document.createElement('a'));
+		link.href = '#';
+		reveal(element, 90);
+		link.focus({ preventScroll: true });
+		element.dispatchEvent(new Event('transitionend'));
+		expect(element.dataset.reveal).toBeUndefined();
+		expect(element.style.getPropertyValue('--reveal-delay')).toBe('');
+	});
+
 	it('moins d’animations demandé : rien ne se cache', () => {
 		vi.spyOn(window, 'matchMedia').mockImplementation(
 			(query: string) => ({ matches: query.includes('reduce'), media: query }) as MediaQueryList

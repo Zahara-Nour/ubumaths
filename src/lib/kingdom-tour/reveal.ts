@@ -6,7 +6,8 @@
  * des deux états. Trois garanties :
  * - sans JavaScript (rendu serveur, robots), rien n'est jamais caché : seul ce code cache ;
  * - « moins d'animations » demandé par le système : rien ne se cache ;
- * - un élément déjà visible à l'ouverture ne disparaît pas pour réapparaître.
+ * - un élément déjà visible à l'ouverture ne disparaît pas pour réapparaître ;
+ * - un élément atteint au clavier se montre aussitôt (focus jamais sur un bloc invisible).
  *
  * @module kingdom-tour/reveal
  */
@@ -39,14 +40,33 @@ export const reveal: Action<HTMLElement, number | undefined> = (element, delayMs
 	element.dataset.reveal = 'pending';
 	if (delayMs > 0) element.style.setProperty('--reveal-delay', `${delayMs}ms`);
 
+	/** Apparu : l'élément rend la main à ses propres transitions (survol des cartes) */
+	const settle = () => {
+		delete element.dataset.reveal;
+		element.style.removeProperty('--reveal-delay');
+	};
+	const show = () => {
+		if (element.dataset.reveal !== 'pending') return;
+		element.dataset.reveal = 'shown';
+		observer.disconnect();
+		element.addEventListener('transitionend', settle, { once: true });
+	};
+
 	const observer = new IntersectionObserver(
 		(entries) => {
-			if (!entries.some((entry) => entry.isIntersecting)) return;
-			element.dataset.reveal = 'shown';
-			observer.disconnect();
+			if (entries.some((entry) => entry.isIntersecting)) show();
 		},
 		{ rootMargin: ROOT_MARGIN }
 	);
 	observer.observe(element);
-	return { destroy: () => observer.disconnect() };
+	// Atteint au clavier avant d'avoir défilé jusqu'à lui : il se montre tout de suite
+	element.addEventListener('focusin', show);
+
+	return {
+		destroy: () => {
+			observer.disconnect();
+			element.removeEventListener('focusin', show);
+			element.removeEventListener('transitionend', settle);
+		}
+	};
 };

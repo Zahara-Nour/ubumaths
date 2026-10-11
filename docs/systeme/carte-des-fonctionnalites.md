@@ -141,6 +141,13 @@ Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
 - **Lisible sans JavaScript** : seul `reveal` cache un bloc, et seulement s'il est sous l'écran,
   hors « moins d'animations ». La spirale est un décor (`aria-hidden`) : tout est dans les fiches.
 - **Jamais prérendue** (`prerender = false`) : date et dépêche suivent le jour de la requête.
+- **Contrastes mesurés au pire pixel, sur les halos des 7 mois** (audit du 2026-10-11) : texte
+  d'accent en orange brûlé `--accent-text` en clair (l'orange du thème est à 2,2:1), halo atténué
+  en sombre ; anneaux de focus en couleur du texte (`ring-foreground`), bordures de contrôle
+  `border-foreground/50` (≥ 3:1). Pas de mouvement sans fin : le halo dérive une fois, la gidouille
+  ne tourne qu'au survol.
+- **Démo de la forme : un groupe radio** (flèches, une tabulation) ; César : le résultat n'est pas
+  annoncé à chaque frappe (`aria-live="off"`, nom accessible), un émoji reste un caractère.
 - `app.css` impose sa taille à `main h1…h6, p, li` et à **tout ce que contient un `<header>`** :
   la page n'emploie pas `<header>`, et surcharge ses titres par classe, en gardant `--font-scale`.
 
@@ -154,7 +161,7 @@ débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (l'accueil mène 
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D15 ; chantier K19 ;
+Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D18 ; chantier K19 ;
 V15 corrigé par le Tour du Royaume) :
 
 - Le chat de `/pere-ubu` répond par une erreur à un visiteur, alors que la page est au sitemap.
@@ -162,4 +169,6 @@ V15 corrigé par le Tour du Royaume) :
 - Automaths, Glossaire, Shtam, Almanach : absents du menu ; l'Atelier, absent du sitemap.
 - « Géométrie » au menu mène à `/geometry-demo`, exclue par `robots.txt` et titrée en anglais.
 - `/test-cadres` et `/slides` ne sont pas exclus par `robots.txt`.
+- Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
+  teintés (D17), pas de lien d'évitement (D18).
 - La description SEO de `/games` cite Navadra, retiré du catalogue.

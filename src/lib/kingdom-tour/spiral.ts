@@ -96,3 +96,36 @@ export function buildSpiral(options: SpiralOptions): Spiral {
 	const last = points[points.length - 1];
 	return { d, stops: stopList, center: { x: round(last.x), y: round(last.y) } };
 }
+
+// Carte des Provinces
+
+/** Réglage de la carte, cherché par calcul (2026-10-11) : voir `spiral.test.ts` */
+export const PROVINCE_MAP = {
+	size: 400,
+	turns: 1.5,
+	innerRadius: 0,
+	outerRadius: 160,
+	/** Largeur approchée d'une lettre en Lora 15 px */
+	charWidth: 8.4,
+	/** Écart entre une étape et son nom */
+	labelGap: 20
+} as const;
+
+export interface SpiralLabel {
+	x: number;
+	y: number;
+	anchor: 'start' | 'end';
+}
+
+/**
+ * Le nom d'une étape, à côté d'elle : du côté extérieur de la spirale, sauf s'il sortirait
+ * du cadre (il passe alors de l'autre côté de l'étape).
+ */
+export function placeLabel(stop: SpiralPoint, name: string, size: number): SpiralLabel {
+	const width = name.length * PROVINCE_MAP.charWidth;
+	const gap = PROVINCE_MAP.labelGap;
+	const outward = stop.x >= size / 2 ? 'start' : 'end';
+	const fits = outward === 'start' ? stop.x + gap + width <= size : stop.x - gap - width >= 0;
+	const anchor = fits ? outward : outward === 'start' ? 'end' : 'start';
+	return { x: stop.x + (anchor === 'start' ? gap : -gap), y: stop.y + 5, anchor };
+}

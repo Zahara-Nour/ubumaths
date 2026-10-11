@@ -99,13 +99,18 @@
 
 	// Functions
 
-	/** « Commencer la visite » : défilement doux, sauf si l'élève demande moins d'animations */
-	function startTour(event: MouseEvent) {
-		const target = document.getElementById('provinces');
+	/**
+	 * Lien vers une ancre de la page (« Commencer la visite ») : défilement doux, sauf si
+	 * l'élève demande moins d'animations, et le focus suit (la tabulation reprend là).
+	 */
+	function followAnchor(event: MouseEvent, href: string) {
+		if (!href.startsWith('#')) return;
+		const target = document.getElementById(href.slice(1));
 		if (!target) return;
 		event.preventDefault();
 		const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 		target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+		target.focus({ preventScroll: true });
 	}
 </script>
 
@@ -135,21 +140,27 @@
 				<h1 id="tour-title" class="hero-title">
 					Bienvenue au Royaume de Pologne, <em>c’est-à-dire nulle part.</em>
 				</h1>
-				<span class="lede">
+				<p class="lede">
 					Chiphre est l’Académie Pataphysique des Chiphres, sise au Royaume de Pologne. On y fait
 					des maths du collège au lycée, pour de vrai, dans un décor qui ne l’est pas du tout.
-				</span>
+				</p>
 				<div class="calls">
-					<a href={HERO_CALLS[0].href} class="call primary" onclick={startTour}>
-						{HERO_CALLS[0].label}
-						<ArrowDown size={18} aria-hidden="true" />
-					</a>
-					<a href={HERO_CALLS[1].href} class="call">{HERO_CALLS[1].label}</a>
+					{#each HERO_CALLS as call, i (call.href)}
+						<a
+							href={call.href}
+							class="call"
+							class:primary={i === 0}
+							onclick={(event) => followAnchor(event, call.href)}
+						>
+							{call.label}
+							{#if call.href.startsWith('#')}<ArrowDown size={18} aria-hidden="true" />{/if}
+						</a>
+					{/each}
 				</div>
-				<span class="today">
+				<p class="today">
 					Au Royaume, nous sommes le
 					<a href={resolve('/(public)/almanach')}>{data.almanachDate}</a>
-				</span>
+				</p>
 			</div>
 			<div class="hero-ubu">
 				<span class="bubble">
@@ -162,16 +173,16 @@
 	</section>
 
 	<!-- Le Royaume : les six Provinces -->
-	<section id="provinces" class="section" aria-labelledby="provinces-title">
+	<section id="provinces" class="section" aria-labelledby="provinces-title" tabindex="-1">
 		<div class="wrap">
 			<div class="section-head" use:reveal>
 				<span class="kicker">Le Royaume</span>
 				<h2 id="provinces-title">Six Provinces, un Royaume</h2>
-				<span class="intro">
+				<p class="intro">
 					Le Royaume compte six Provinces, une par grand domaine des maths, chacune avec son
 					gouverneur, sa capitale et sa devise. Elles s’enroulent autour de Sandomir, la ville en
 					spirale, et du Trône Royal en son centre.
-				</span>
+				</p>
 			</div>
 			<ProvinceMap />
 		</div>
@@ -183,7 +194,7 @@
 			<div class="section-head" use:reveal>
 				<span class="kicker">Sans compte</span>
 				<h2 id="lieux-title">Les lieux à visiter</h2>
-				<span class="intro">Tout ce qui suit s’ouvre sans compte. Entre, essaie, recommence.</span>
+				<p class="intro">Tout ce qui suit s’ouvre sans compte. Entre, essaie, recommence.</p>
 			</div>
 
 			<div class="featured">
@@ -192,8 +203,8 @@
 					<article class="place big" use:reveal={i * 90}>
 						<span class="icon"><Icon size={28} aria-hidden="true" /></span>
 						<h3><a href={place.href} class="stretched">{place.title}</a></h3>
-						<span class="tagline">{place.tagline}</span>
-						<span class="description">{place.description}</span>
+						<p class="tagline">{place.tagline}</p>
+						<p class="description">{place.description}</p>
 						<span class="enter" aria-hidden="true">Entrer <ArrowRight size={16} /></span>
 					</article>
 				{/each}
@@ -206,8 +217,8 @@
 						<span class="icon small"><Icon size={22} aria-hidden="true" /></span>
 						<div class="place-body">
 							<h3><a href={place.href} class="stretched">{place.title}</a></h3>
-							<span class="tagline">{place.tagline}</span>
-							<span class="description">{place.description}</span>
+							<p class="tagline">{place.tagline}</p>
+							<p class="description">{place.description}</p>
 						</div>
 					</article>
 				{/each}
@@ -221,23 +232,23 @@
 			<div class="section-head" use:reveal>
 				<span class="kicker">Sous le décor</span>
 				<h2 id="rigueur-title">Un décor savoureux, une pédagogie rigoureuse</h2>
-				<span class="intro"> Les maths, elles, ne sont jamais pataphysiques. Essaie plutôt. </span>
+				<p class="intro">Les maths, elles, ne sont jamais pataphysiques. Essaie plutôt.</p>
 			</div>
 
 			<div class="demos">
 				<div class="panel" use:reveal>
 					<h3>La forme compte</h3>
-					<span class="panel-intro">
+					<p class="panel-intro">
 						Une réponse juste mais mal écrite n’est pas une réponse finie. Choisis une réponse : le
 						correcteur de Chiphre te dit ce qu’il en pense.
-					</span>
+					</p>
 					<FormDemo />
 				</div>
 				<div class="panel" use:reveal={120}>
 					<h3>Le Cabinet Noir, en direct</h3>
-					<span class="panel-intro">
+					<p class="panel-intro">
 						Écris un message : le chiffre de César le rend illisible, lettre par lettre.
-					</span>
+					</p>
 					<CipherDemo />
 				</div>
 			</div>
@@ -249,7 +260,7 @@
 						<span class="icon small"><Icon size={22} aria-hidden="true" /></span>
 						<div>
 							<h3>{strength.title}</h3>
-							<span class="description">{strength.text}</span>
+							<p class="description">{strength.text}</p>
 							{#if strength.access === 'account'}
 								<span class="badge-account"
 									><Lock size={12} aria-hidden="true" /> Avec ton compte</span
@@ -269,16 +280,16 @@
 				<div class="section-head" use:reveal>
 					<span class="kicker">La dépêche du jour</span>
 					<h2 id="shtam-title">Le Shtam</h2>
-					<span class="intro">
+					<p class="intro">
 						La gazette du Royaume. Ses nouvelles sont toutes fausses ; le vrai du faux, à la fin de
 						chaque article, ne l’est jamais.
-					</span>
+					</p>
 				</div>
 				<article class="dispatch" data-testid="tour-shtam" use:reveal>
 					<span class="masthead">Le Shtam</span>
 					<h3>{data.shtam.title}</h3>
-					<span class="dispatch-lede">{data.shtam.lede}</span>
-					<span class="byline">{data.shtam.byline}</span>
+					<p class="dispatch-lede">{data.shtam.lede}</p>
+					<p class="byline">{data.shtam.byline}</p>
 					<div class="dispatch-links">
 						<a
 							href={resolve('/(public)/shtam/[slug]', { slug: data.shtam.slug })}
@@ -323,10 +334,10 @@
 		</svg>
 		<div class="wrap narrow final-body" use:reveal>
 			<h2 id="entrer-title">Entre dans le Royaume</h2>
-			<span class="ubu-says">
+			<p class="ubu-says">
 				« De par ma chandelle verte, Galopin, qu’attends-tu&nbsp;? »
 				<span class="who">— Père Ubu</span>
-			</span>
+			</p>
 			<div class="calls center">
 				{#each FINAL_CALLS as call, i (call.href)}
 					<a href={call.href} class="call" class:primary={i === 0}>{call.label}</a>
@@ -341,13 +352,17 @@
 
 	/* Ambiance du mois (Almanach), comme le halo de l'accueil : teintes claires et sombres
 	   séparées, choisies par la classe .dark (light-dark() relu dans un @keyframes casse Safari) */
+	/* --accent-text : l'orange du thème est à 2,2:1 sur fond clair ; en texte, un orange brûlé
+	   (≈ 6,9:1 sur #fafafa). En sombre, le jaune du thème suffit (8:1). */
 	.tour {
+		--accent-text: #8f4000;
 		--glow-1: var(--glow-1-light);
 		--glow-2: var(--glow-2-light);
 		--glow-3: var(--glow-3-light);
 		@apply relative;
 	}
 	:global(.dark) .tour {
+		--accent-text: var(--color-primary);
 		--glow-1: var(--glow-1-dark);
 		--glow-2: var(--glow-2-dark);
 		--glow-3: var(--glow-3-dark);
@@ -375,7 +390,7 @@
 		@apply font-bold tracking-tight text-balance;
 	}
 	.hero-title em {
-		@apply text-primary;
+		color: var(--accent-text);
 	}
 	h2 {
 		font-size: calc(clamp(1.75rem, 1.1rem + 2.4vw, 2.75rem) * var(--font-scale, 1)) !important;
@@ -383,14 +398,20 @@
 		@apply font-bold text-balance;
 	}
 	.kicker {
-		@apply text-sm font-semibold tracking-[0.18em] text-primary uppercase;
+		@apply font-semibold tracking-[0.18em] uppercase;
+		color: var(--accent-text);
+		font-size: calc(0.875rem * var(--font-scale, 1));
 	}
 	.section-head {
 		@apply mb-10 flex max-w-3xl flex-col gap-3 sm:mb-14;
 	}
+	/* Textes en <p> : `main p` impose 1rem ; une classe l'emporte, en gardant l'échelle A−/A+.
+	   text-foreground/75 plutôt que muted-foreground (4,4:1 sur les fonds teintés). */
 	.intro,
 	.lede {
-		@apply text-lg text-muted-foreground;
+		@apply text-foreground/75;
+		font-size: calc(1.125rem * var(--font-scale, 1)) !important;
+		line-height: 1.6 !important;
 	}
 
 	/* Avancement de la lecture : barre fine, liée au défilement de <main> */
@@ -398,10 +419,12 @@
 		@apply pointer-events-none sticky top-0 z-30 -mb-[3px] hidden h-[3px] origin-left bg-primary;
 	}
 	@supports (animation-timeline: scroll()) {
-		.reading {
-			display: block;
-			animation: lecture linear both;
-			animation-timeline: scroll(nearest block);
+		@media (prefers-reduced-motion: no-preference) {
+			.reading {
+				display: block;
+				animation: lecture linear both;
+				animation-timeline: scroll(nearest block);
+			}
 		}
 	}
 	@keyframes lecture {
@@ -421,9 +444,18 @@
 		@apply pointer-events-none absolute inset-0 -z-10;
 		mask-image: linear-gradient(to bottom, black 55%, transparent);
 	}
+	/* Sombre : halo atténué, sinon le kicker jaune tombe sous 4,5:1 sur le halo jaune (mesuré,
+	   7 mois) */
+	:global(.dark) .aurora {
+		opacity: 0.55;
+	}
+	:global(.dark) .hero .kicker {
+		color: var(--color-accent);
+	}
 	.aurora span {
 		@apply absolute rounded-full blur-3xl;
-		animation: derive 18s ease-in-out infinite alternate;
+		/* Une seule dérive, puis immobile : pas de mouvement sans fin à côté du texte (WCAG 2.2.2) */
+		animation: derive 4s ease-out both;
 	}
 	.aurora span:nth-child(1) {
 		@apply top-[-10%] left-[-10%] h-[28rem] w-[28rem];
@@ -432,18 +464,16 @@
 	.aurora span:nth-child(2) {
 		@apply top-[20%] right-[-12%] h-[24rem] w-[24rem];
 		background-color: var(--glow-2);
-		animation-duration: 22s;
-		animation-delay: -6s;
+		animation-duration: 4.5s;
 	}
 	.aurora span:nth-child(3) {
 		@apply bottom-[-20%] left-[30%] h-[22rem] w-[22rem];
 		background-color: var(--glow-3);
-		animation-duration: 26s;
-		animation-delay: -12s;
+		animation-duration: 5s;
 	}
 	@keyframes derive {
-		to {
-			transform: translate(6%, 8%) scale(1.15);
+		from {
+			transform: translate(-6%, -8%) scale(0.85);
 		}
 	}
 	.hero-grid {
@@ -453,10 +483,11 @@
 		@apply flex flex-col items-start gap-5;
 	}
 	.today {
-		@apply text-sm text-muted-foreground;
+		@apply text-foreground/75;
+		font-size: calc(0.875rem * var(--font-scale, 1)) !important;
 	}
 	.today a {
-		@apply rounded-sm font-medium text-foreground italic underline decoration-primary underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+		@apply rounded-sm font-medium text-foreground italic underline decoration-primary underline-offset-4 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none;
 	}
 	.hero-ubu {
 		@apply flex flex-col items-center gap-4;
@@ -486,7 +517,7 @@
 		@apply justify-center;
 	}
 	.call {
-		@apply inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-foreground/15 bg-card px-5 py-2.5 font-semibold transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none;
+		@apply inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-foreground/50 bg-card px-5 py-2.5 font-semibold transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:outline-none;
 	}
 	.call.primary {
 		@apply border-primary bg-primary text-primary-foreground;
@@ -502,15 +533,17 @@
 	.place {
 		@apply relative flex gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-lg;
 	}
-	.place:focus-within {
-		@apply ring-2 ring-ring;
+	/* Anneau au clavier seulement (pas après un clic), en couleur du texte (≥ 3:1) */
+	.place:has(:focus-visible) {
+		@apply ring-2 ring-foreground ring-offset-2;
 	}
+	/* isolate : le halo (-z-10) reste derrière le texte de la carte */
 	.place.big {
-		@apply flex-col overflow-hidden p-6;
+		@apply isolate flex-col overflow-hidden p-6;
 	}
 	.place.big::before {
 		content: '';
-		@apply absolute -top-16 -right-16 -z-0 h-40 w-40 rounded-full opacity-70 blur-2xl transition-opacity duration-500;
+		@apply absolute -top-16 -right-16 -z-10 h-40 w-40 rounded-full opacity-70 blur-2xl transition-opacity duration-500;
 		background-color: var(--glow-1);
 	}
 	.place.big:hover::before {
@@ -548,12 +581,17 @@
 	.tagline {
 		font-family: 'Lora', Georgia, serif;
 		@apply text-foreground/80 italic;
+		font-size: calc(1rem * var(--font-scale, 1)) !important;
 	}
 	.description {
-		@apply text-sm text-muted-foreground;
+		@apply text-foreground/75;
+		font-size: calc(0.875rem * var(--font-scale, 1)) !important;
+		line-height: 1.5 !important;
 	}
 	.enter {
-		@apply mt-auto inline-flex items-center gap-1 pt-2 text-sm font-semibold text-primary;
+		@apply mt-auto inline-flex items-center gap-1 pt-2 font-semibold;
+		color: var(--accent-text);
+		font-size: calc(0.875rem * var(--font-scale, 1));
 	}
 	.icon {
 		@apply relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary/15 text-foreground;
@@ -563,17 +601,19 @@
 	}
 
 	/* Rigueur */
+	/* minmax(0, 1fr) et min-w-0 : la ligne d'alphabet du César (sans retour à la ligne)
+	   défile dans son cadre au lieu d'élargir la page (débord à 320 px sinon) */
 	.demos {
-		@apply grid gap-6 lg:grid-cols-2;
+		@apply grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2;
 	}
 	.panel {
-		@apply flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6;
+		@apply flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6;
 	}
 	.panel h3 {
 		font-size: calc(1.375rem * var(--font-scale, 1)) !important;
 	}
 	.panel-intro {
-		@apply text-muted-foreground;
+		@apply text-foreground/75;
 	}
 	.strengths {
 		@apply mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3;
@@ -584,11 +624,9 @@
 	.strength h3 {
 		font-size: calc(1.125rem * var(--font-scale, 1)) !important;
 	}
-	.strength .description {
-		@apply block;
-	}
 	.badge-account {
-		@apply mt-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground;
+		@apply mt-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 font-medium text-foreground/80;
+		font-size: calc(0.75rem * var(--font-scale, 1));
 	}
 
 	/* La dépêche */
@@ -605,10 +643,12 @@
 	}
 	.dispatch-lede {
 		font-family: 'Lora', Georgia, serif;
-		@apply text-lg;
+		font-size: calc(1.125rem * var(--font-scale, 1)) !important;
+		line-height: 1.55 !important;
 	}
 	.byline {
-		@apply text-sm text-muted-foreground italic;
+		@apply text-foreground/75 italic;
+		font-size: calc(0.875rem * var(--font-scale, 1)) !important;
 	}
 	.dispatch-links {
 		@apply mt-2 flex flex-wrap gap-3;
@@ -637,7 +677,7 @@
 		@apply flex flex-wrap gap-x-6 gap-y-2;
 	}
 	.parent-links a {
-		@apply rounded-sm font-medium underline decoration-primary decoration-2 underline-offset-4 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
+		@apply inline-flex min-h-11 items-center rounded-sm font-medium underline decoration-primary decoration-2 underline-offset-4 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none;
 	}
 
 	/* Entrer */
@@ -649,10 +689,13 @@
 	}
 	.ubu-says {
 		font-family: 'Lora', Georgia, serif;
-		@apply text-xl italic sm:text-2xl;
+		@apply italic;
+		font-size: calc(clamp(1.25rem, 1rem + 1vw, 1.5rem) * var(--font-scale, 1)) !important;
+		line-height: 1.4 !important;
 	}
 	.who {
-		@apply mt-1 block text-base text-muted-foreground not-italic;
+		@apply mt-1 block text-foreground/75 not-italic;
+		font-size: calc(1rem * var(--font-scale, 1));
 	}
 	.gidouille {
 		@apply absolute top-1/2 left-1/2 -z-10 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 opacity-15;
@@ -660,8 +703,12 @@
 		stroke: var(--color-primary);
 		stroke-width: 6;
 		stroke-linecap: round;
-		animation: tourbillon 60s linear infinite;
+		/* Tourne seulement quand on s'attarde sur la section (pas de mouvement sans fin imposé) */
+		animation: tourbillon 60s linear infinite paused;
 		mask-image: radial-gradient(circle, black 35%, transparent 70%);
+	}
+	.final:hover .gidouille {
+		animation-play-state: running;
 	}
 	@keyframes tourbillon {
 		to {
@@ -669,7 +716,7 @@
 		}
 	}
 
-	/* Apparition au défilement (attachment `reveal`) */
+	/* Apparition au défilement (action `reveal`) */
 	.tour :global([data-reveal]) {
 		transition:
 			opacity 0.7s ease,
@@ -691,6 +738,9 @@
 		.call {
 			@apply transition-none hover:translate-y-0;
 		}
+	}
+	#provinces:focus {
+		outline: none;
 	}
 	@media print {
 		.tour :global([data-reveal='pending']) {
