@@ -300,8 +300,12 @@ autres à 0). Bug fonctionnel, à traiter à part.
   frontière sociale »).
 - **Classement des énigmes** : vue `riddle_progress` lue avec les droits de l'élève — pas de fuite,
   mais classement faux (les autres à 0).
-- **Sans appelant applicatif** : `process_weekly_rewards`, `award_weekly_reward`,
-  `purchase_shop_item`, `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés).
+- **Sans appelant applicatif** : `award_weekly_reward`, `calculate_daily_challenge_gidouilles`
+  (défis quotidiens supprimés). `process_weekly_rewards`, `purchase_shop_item` et
+  `get_2048_user_rank` ont été **supprimées** le 2026-10-11 (migration `20261015090700`).
+- **Données de jeu privées** (2026-10-11, migration `20261015090600`) : `mathemo_scores`,
+  `minesweeper_student_achievements`, `minesweeper_player_stats`, `marketplace_listing_views` —
+  chacun ne lit que les siennes (avant : `using (true)` pour tout compte, toutes écoles).
 - **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
   hors journal. **Evoland** : page sans lien.
 - `scripts/simulate-vip-economy.ts` simule l'ancienne économie (cap partagé) : périmé.
