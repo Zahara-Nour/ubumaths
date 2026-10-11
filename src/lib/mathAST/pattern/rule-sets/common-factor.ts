@@ -62,6 +62,7 @@ import { flattenSumShallow } from '../../flatten';
 import {
 	ONE as RATIONAL_ONE,
 	absBigInt,
+	addRational,
 	absRational,
 	divRational,
 	fromInteger,
@@ -467,13 +468,33 @@ function isNegativeRational(r: Rational): boolean {
  * `x + y` reste `x + y`.
  */
 function factorCommonContent(node: MathNode): MathNode | null {
-	// D'abord en développant les sommes d'un seul facteur (`2(x+1)` → `2x + 2`),
-	// ce qui permet de factoriser au bon niveau ; sinon en les gardant comme
-	// facteurs, ce qui sort `(x+1)` de `(x+1)² − (x+1)`.
-	return factorCommonContentWith(node, false) ?? factorCommonContentWith(node, true);
+	// Deux lectures : en développant les sommes d'un seul facteur (`2(x+1)` →
+	// `2x + 2`), ce qui permet de factoriser au bon niveau ; ou en les gardant
+	// comme facteurs, ce qui sort `(x+1)` de `(x+1)² − (x+1)`.
+	//
+	// ⚠️ La seconde l'emporte dès qu'elle sort au moins autant de facteurs non
+	// polynomiaux, et au moins un. Prendre la première dès qu'elle réussit
+	// redéveloppait la somme : `3(x+1)² − 6(x+1)` rendait `3((x+1)² − 2x − 2)`,
+	// moins factorisé que l'entrée. À égalité, seule la seconde réduit son
+	// reste : `(x+1)² − (x+1)³` donne `−x(x+1)²`.
+	const expanded = factorCommonContentWith(node, false);
+	const kept = factorCommonContentWith(node, true);
+	if (
+		kept !== null &&
+		(expanded === null || (kept.atomCount > 0 && kept.atomCount >= expanded.atomCount))
+	) {
+		return kept.node;
+	}
+	return expanded?.node ?? null;
 }
 
-function factorCommonContentWith(node: MathNode, sumsAsAtoms: boolean): MathNode | null {
+/** Une mise en facteur, et le nombre de facteurs non polynomiaux sortis. */
+interface ContentFactoring {
+	readonly node: MathNode;
+	readonly atomCount: number;
+}
+
+function factorCommonContentWith(node: MathNode, sumsAsAtoms: boolean): ContentFactoring | null {
 	const terms = flattenSumShallow(node);
 	if (terms.length < 2) return null;
 
@@ -506,7 +527,22 @@ function factorCommonContentWith(node: MathNode, sumsAsAtoms: boolean): MathNode
 		? { ...content, coefficient: negRational(content.coefficient) }
 		: content;
 
-	const remainder = monomials.map((m) => divideByContent(m, signedContent));
+	const divided = monomials.map((m) => divideByContent(m, signedContent));
+	const remainder = sumsAsAtoms ? collectRemainder(divided) : divided;
+	let atomCount = 0;
+	for (const atom of content.atoms.values()) atomCount += atom.exponent;
+
+	// Le reste se réduit à un seul terme : il n'y a plus de parenthèse à écrire.
+	// `(x+1)² − (x+1)³` donne `−x(x+1)²`, pas `(1 − (x+1))(x+1)²`.
+	if (remainder.length === 1) {
+		const total = mulMonomial(signedContent, remainder[0]);
+		const factors = factorsNode(total) ?? number('1');
+		return {
+			node: isNegativeRational(total.coefficient) ? opposite(factors) : factors,
+			atomCount
+		};
+	}
+
 	const inner = parentheses(monomialsNode(remainder));
 
 	// Un contenu dont la valeur absolue vaut 1 et qui ne porte aucune variable
@@ -518,7 +554,51 @@ function factorCommonContentWith(node: MathNode, sumsAsAtoms: boolean): MathNode
 	const front = bare ? inner : multiply(monomialNode(lead), inner, 'implicit');
 	const product = joinFactors(front, atomsNode(content.atoms)) ?? front;
 
-	return allNegative ? opposite(product) : product;
+	return { node: allNegative ? opposite(product) : product, atomCount };
+}
+
+/**
+ * Le reste, quand les sommes ont été gardées en facteurs, relu en développant
+ * celles qui y restent seules puis réduit : `(x+1) − 2` devient `x − 1`.
+ *
+ * C'est un développement À L'INTÉRIEUR de la parenthèse du reste, jamais du
+ * facteur sorti. Si la relecture échoue, ou si tout s'annule, le reste est
+ * gardé tel quel.
+ */
+function collectRemainder(remainder: readonly Monomial[]): readonly Monomial[] {
+	const expanded = toMonomials(monomialsNode(remainder), false);
+	if (expanded === null) return remainder;
+
+	const byKey = new Map<string, Monomial>();
+	for (const m of expanded) {
+		const key = monomialKey(m);
+		const existing = byKey.get(key);
+		byKey.set(
+			key,
+			existing === undefined
+				? m
+				: { ...existing, coefficient: addRational(existing.coefficient, m.coefficient) }
+		);
+	}
+	const collected = [...byKey.values()].filter((m) => !isZero(m.coefficient));
+	return collected.length === 0 ? remainder : collected;
+}
+
+/** La partie littérale d'un monôme, pour reconnaître deux termes semblables. */
+function monomialKey(m: Monomial): string {
+	const powers = [...m.powers].map(([name, e]) => `${name}^${e}`).sort();
+	const atoms = [...m.atoms].map(([key, atom]) => `${key}^${atom.exponent}`).sort();
+	return [...powers, '|', ...atoms].join(',');
+}
+
+/**
+ * Le monôme écrit en produit, valeur absolue du coefficient : le nombre et les
+ * variables devant, les facteurs non polynomiaux derrière. `null` pour 1.
+ */
+function factorsNode(m: Monomial): MathNode | null {
+	const lead: Monomial = { ...m, atoms: NO_ATOMS };
+	const bare = isOne(absRational(m.coefficient)) && m.powers.size === 0;
+	return joinFactors(bare ? null : monomialNode(lead), atomsNode(m.atoms));
 }
 
 /** Le nœud lié à ce nom, ou `null` si c'est une séquence. */

@@ -36,7 +36,17 @@ refactoriser » (point 3, pour K3) attendent.
       (facteurs non polynomiaux, clé `hashMathNode`) ; deuxième essai où une somme entre
       parenthèses est un facteur (`(x+1)² − (x+1)`). Le facteur non polynomial s'écrit après la
       parenthèse. Descriptions FR ajoutées (`descriptions-fr.ts`).
-- [ ] code-reviewer
+- [x] code-reviewer — 3 points corrigés (5 tests vus rouges sur c6a1be7d1) :
+  1. une somme en facteur n'est plus redéveloppée : la lecture « sommes gardées en facteurs »
+     l'emporte dès qu'elle sort au moins autant de facteurs non polynomiaux (≥ 1) ;
+     `3(x+1)^2-6(x+1)` → `3(x-1)(x+1)`, `2(x+1)^2+4(x+1)` → `2(x+3)(x+1)` (main : inchangés) ;
+  2. eˣ reste derrière sous un signe ou une fonction (`tidyWithoutReordering` descend dans
+     `opposite` et `function` quand un produit est dessous) : `-xe^x-e^x` → `-(x+1)e^x`,
+     `\sin(xe^x-e^x)` → `\sin((x-1)e^x)` ;
+  3. le reste est réduit (termes semblables), et un reste d'un seul terme rentre dans le
+     facteur : `(x+1)^2-(x+1)^3` → `-x(x+1)^2`.
+     Écarts notés par le coordinateur, non traités : `x^2(x+1)-x(x+1)` → `x(x^2-1)` (comme main) ;
+     somme de 30 termes.
 - [ ] PR
 
 ## Mesure d'arrivée (intention `factoriser`, lycée)

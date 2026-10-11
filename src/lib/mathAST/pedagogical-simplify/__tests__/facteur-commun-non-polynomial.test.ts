@@ -124,3 +124,38 @@ describe('l’étape se dit en français', () => {
 		expect(last.explanation).toContain('facteur commun');
 	});
 });
+
+/**
+ * Suites de revue (2026-10-11). Mesuré sur c6a1be7d1 :
+ *
+ * | entrée | rendait |
+ * | --- | --- |
+ * | `3(x+1)²−6(x+1)` | `3((x+1)²−2x−2)` — MOINS factorisé que l'entrée |
+ * | `−xeˣ−eˣ` | `−eˣ(x+1)` — eˣ devant |
+ * | `sin(xeˣ−eˣ)` | `sin(eˣ(x−1))` |
+ * | `(x+1)²−(x+1)³` | `(1−(x+1))(x+1)²` |
+ */
+describe('une somme en facteur n’est jamais redéveloppée', () => {
+	it.each([
+		['3(x+1)^2-6(x+1)', '3 \\left( x - 1 \\right) \\left( x + 1 \\right)'],
+		['2(x+1)^2+4(x+1)', '2 \\left( x + 3 \\right) \\left( x + 1 \\right)'],
+		['(x+1)^2-(x+1)^3', '-x \\left( x + 1 \\right)^2']
+	])('%s → %s', (source, attendu) => {
+		const { input, result, latex } = factoriser(source);
+
+		expect(latex).toBe(attendu);
+		expect(areEquivalent(result, input)).toBe(true);
+	});
+});
+
+describe('le facteur non polynomial reste derrière la parenthèse', () => {
+	it.each([
+		['-xe^x-e^x', '-\\left( x + 1 \\right) \\exponentialE^x'],
+		['\\sin(xe^x-e^x)', '\\sin\\left( \\left( x - 1 \\right) \\exponentialE^x \\right)']
+	])('%s → %s', (source, attendu) => {
+		const { input, result, latex } = factoriser(source);
+
+		expect(latex).toBe(attendu);
+		expect(areEquivalent(result, input)).toBe(true);
+	});
+});
