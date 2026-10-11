@@ -8,6 +8,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 /**
  * Submit riddle attempt
@@ -52,8 +53,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		isCorrect = null;
 	}
 
-	// Submit attempt using RPC function (now returns table with reward info)
-	const { data: rpcResult, error: submitError } = await locals.supabase.rpc(
+	// Soumission par le client SERVICE : la justesse vient de la correction ci-dessus, jamais
+	// du navigateur. Un élève qui appelait la RPC lui-même pouvait se déclarer juste et
+	// toucher les gidouilles (audit de #1077) ; EXECUTE lui est retiré par la migration
+	// qui suit le `deploy:prod`. `p_student_id` vient de la session.
+	const { data: rpcResult, error: submitError } = await createServiceRoleClient().rpc(
 		'submit_riddle_attempt',
 		{
 			p_riddle_id: riddleId,

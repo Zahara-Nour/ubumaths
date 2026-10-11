@@ -72,6 +72,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/moderation/messages/[id]/+server',
 	// Élévation admin : e-mail du compte admin, invisible au prof par la RLS (B5)
 	'/api/admin/elevate/+server',
+	// Énigmes : la justesse d'une tentative est calculée par le serveur, jamais par l'élève
+	'/api/riddles/[id]/submit/+server',
 	// Marché : verrous des cartes d'une proposition et compteur de l'annonce
 	'lib/server/marketplace/proposal-locks.ts',
 	'lib/server/marketplace/acceptance.ts',

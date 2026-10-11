@@ -128,7 +128,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'submit_riddle_attempt(p_riddle_id uuid, p_student_id uuid, p_submitted_answer jsonb, p_is_correct boolean)':
 		{
 			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_student_id'
+			justification:
+				'refuse sauf client service ou auth.uid() = p_student_id (20261016090200) ; EXECUTE retiré à authenticated après le deploy'
 		},
 	'toggle_message_star(p_message_id uuid, p_user_id uuid)': {
 		categorie: 'compte-appelant',

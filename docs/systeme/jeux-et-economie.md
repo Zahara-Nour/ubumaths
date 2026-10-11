@@ -243,7 +243,16 @@ autres à 0). Correction décidée par David (2026-10-11) : `riddle_school_leade
 SECURITY DEFINER bornée à `my_school()`, hors comptes de test, ne rend que prénom, gidouilles
 des énigmes, énigmes réussies, rang et `is_me` (migration `20261015090800`, test
 `tests/integration/classement-enigmes-ecole.test.ts`). La page du classement la lit ; seuls les
-élèves qui ont tenté une énigme apparaissent, sans nom ni photo.
+élèves qui ont tenté une énigme apparaissent, sans nom ni photo. La vue `riddle_progress` n'a
+plus de lecteur : fermée à anon et `authenticated` (migration `20261016090200`), pas supprimée.
+
+⚠️ **Tentatives d'énigme écrites par le serveur seulement** (audit de #1077, décision de David du
+2026-10-11) : la justesse est calculée par `api/riddles/[id]/submit` (`validateRiddleAnswer`), qui
+appelle `submit_riddle_attempt` par le client service — la RPC prend `p_is_correct` de son
+appelant, un élève qui l'appelait lui-même pouvait se déclarer juste. La policy d'insertion
+directe de l'élève est supprimée (`20261016090200`) ; EXECUTE sera retiré à `authenticated` par
+une 2ᵉ migration, après le `deploy:prod` qui livre la route. Test :
+`tests/integration/enigmes-tentatives-par-le-serveur.test.ts`.
 
 ## Comment étendre
 
