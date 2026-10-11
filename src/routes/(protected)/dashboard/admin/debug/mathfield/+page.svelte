@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type { MathfieldElement } from 'mathlive';
 	import * as Card from '$lib/components/ui/card';

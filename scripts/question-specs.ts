@@ -6,8 +6,8 @@
  *
  * Usage :
  *   pnpm question:specs --index 120                  transformation actuelle de l'ancienne question #120
- *   pnpm question:specs --file docs/relecture/relatifs/120.json   fichier de verdict (ou template brut)
- *   pnpm question:specs --lot docs/relecture/relatifs             tous les verdicts d'un lot (résumé)
+ *   pnpm question:specs --file data/relecture/relatifs/120.json   fichier de verdict (ou template brut)
+ *   pnpm question:specs --lot data/relecture/relatifs             tous les verdicts d'un lot (résumé)
  *   pnpm question:specs --template <uuid>            template en base (question_templates)
  *
  * Options :

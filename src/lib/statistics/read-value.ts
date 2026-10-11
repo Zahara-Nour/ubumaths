@@ -40,7 +40,9 @@ const INTEGER_FRACTION = /^\s*([-+]?\d+)\s*\/\s*(\d+)\s*$/;
  * aucune expression générale (`2^3`, `sqrt(2)`) n'est lue ici.
  */
 export function readListValue(raw: string): number | null {
-	const text = raw.replaceAll('−', '-');
+	// `1{,}5` : la virgule décimale qu'écrit MathLive (carte « + Liste »). Sans
+	// elle, `1{,}5;2;3{,}5` gardait la seule valeur 2, en silence
+	const text = raw.replaceAll('−', '-').replaceAll('{,}', ',');
 	const fraction = INTEGER_FRACTION.exec(text);
 	if (fraction) {
 		const denominator = Number(fraction[2]);

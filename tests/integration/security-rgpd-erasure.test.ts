@@ -1,7 +1,7 @@
 /**
  * Security — RGPD erasure (needs a running DB)
  * ============================================
- * Vague-1 guards (docs/wip/security-audit-2026-08.md):
+ * Vague-1 guards (docs/archive/wip/security-audit-2026-08.md):
  *   - H14: pending_students PII is removed once a real profile exists for that email.
  *   - H15: deleting a staff member who moderated no longer fails on the FK, and the
  *          moderation log is preserved with an anonymized (null) moderator.

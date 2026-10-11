@@ -24,6 +24,7 @@ import {
 	flattenSumShallow,
 	unflattenProduct,
 	isDivision,
+	isEulerConstant,
 	isFunction,
 	isMultiplication,
 	isNumber,
@@ -50,8 +51,11 @@ const RADICAL_FUNCTIONS: ReadonlySet<string> = new Set(['sqrt', 'root', 'nthroot
 /** Aucune lettre (ni `i`, ni `e`, ni variable) et aucune fonction hors radicaux (`cos`, `exp`…) */
 function isPlainRealConstant(node: MathNode): boolean {
 	return (
-		findNodes(node, (n) => isVariable(n) || (isFunction(n) && !RADICAL_FUNCTIONS.has(n.name)))
-			.length === 0
+		findNodes(
+			node,
+			(n) =>
+				isVariable(n) || isEulerConstant(n) || (isFunction(n) && !RADICAL_FUNCTIONS.has(n.name))
+		).length === 0
 	);
 }
 
@@ -80,14 +84,9 @@ function isImaginaryExponent(exponent: MathNode): boolean {
 	return isMultiplication(core) || isVariable(core);
 }
 
-/** `e^{iθ}` (lettre e : `\exponentialE` et `\exp` y sont déjà ramenés) */
+/** `e^{iθ}` (constante d'Euler : `\exp` y est déjà ramené) */
 function isUnitExponential(node: MathNode): boolean {
-	return (
-		isSuperscript(node) &&
-		isVariable(node.base) &&
-		node.base.name === 'e' &&
-		isImaginaryExponent(node.superscript)
-	);
+	return isSuperscript(node) && isEulerConstant(node.base) && isImaginaryExponent(node.superscript);
 }
 
 function isExponentialForm(node: MathNode): boolean {

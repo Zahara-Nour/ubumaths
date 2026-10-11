@@ -1,8 +1,8 @@
 ---
-title: Turingrad — une machine affirme que 0,1 + 0,2 font 0,30000000000000004, le Cabinet des Phynances réclame le reste
+title: La machine de Turingrad ne sait plus additionner, Mère Ubu sait toujours soustraire… de l'argent à ses clients
 date: 2026-11-19
 author: pile
-lede: Pour la première fois, une calculatrice a rendu plus que ce qu'on lui avait confié. Mère Ubu exige les 0,00000000000000004 gidouille manquants, « avec les intérêts ».
+lede: À cause d'une erreur d'arrondi, la Banque de Turingrad a versé à un client une somme minuscule en trop. Mère Ubu exige qu'il la rende, « avec les intérêts ».
 ---
 
 L'incident s'est produit mardi, à la Banque Centrale du Glitchistan. Chargée d'additionner deux dépôts de 0,1 et 0,2 gidouille, la grande machine de Turingrad a affiché un solde de 0,30000000000000004 gidouille. Le guichetier, consciencieux, a versé la somme au client.
@@ -11,7 +11,7 @@ Il n'en fallait pas davantage pour alerter Mère Ubu. « Quelqu'un a reçu 0,000
 
 Les ingénieurs de la Banque se défendent. « La machine ne se trompe pas, elle arrondit. Elle compte en base deux, et en base deux, 0,1 n'a pas de fin. » L'explication n'a pas convaincu les huissiers, qui ont saisi la machine, la loupe, et par erreur le guichetier.
 
-Le client, lui, a décidé de placer ses 0,00000000000000004 gidouille sur un livret d'épargne. Selon ses calculs, il sera riche dans environ dix-sept milliards d'années.
+Le client, lui, a décidé de placer ses 0,00000000000000004 gidouille sur un livret à 5 % par an. Selon ses calculs, il possédera une gidouille entière dans environ 775 ans. Il se dit prêt à attendre.
 
 ## Le vrai du faux
 

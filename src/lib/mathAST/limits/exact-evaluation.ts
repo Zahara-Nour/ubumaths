@@ -18,6 +18,7 @@ import { zeroPlus, zeroMinus, number } from '../factory';
 import { mapNode } from '../transforms';
 import { isSubtraction, isAddition, isVariable, isOpposite, isInfinity } from '../guards';
 import { getNumericValue, numericNode } from '../common/numeric';
+import { exactConstantNode } from './generalized-degree';
 
 // =============================================================================
 // Result Type Predicates
@@ -517,7 +518,11 @@ export function resultToFiniteNode(result: ExtendedNormalizeResult): MathNode | 
 				if (Math.abs(numValue - intValue) < 1e-10) {
 					return numericNode(intValue);
 				}
-				// Otherwise return the numeric value with precision
+				// Rationnel exact (2/3, pas 0.6666666667) lu sur la forme
+				// dénormalisée ; sinon (√2, π…) la valeur approchée
+				const denormalized = resultToNode(result);
+				const exact = denormalized === null ? null : exactConstantNode(denormalized);
+				if (exact !== null) return exact;
 				return numericNode(numValue.toPrecision(10).replace(/\.?0+$/, ''));
 			}
 			// Fallback to denormalized form

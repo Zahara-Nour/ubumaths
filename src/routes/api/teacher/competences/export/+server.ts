@@ -3,7 +3,7 @@
  *
  * Streams a UTF-8 (BOM) CSV of a class's competence levels for the teacher to
  * re-key / paste into their ENT (Pronote...). Generated on the fly — nothing is
- * stored server-side (cf. docs/wip/export-competences-study.md §6 E13).
+ * stored server-side (cf. docs/archive/wip/export-competences-study.md §6 E13).
  *
  * Query params:
  *   - class_id       (uuid, required)

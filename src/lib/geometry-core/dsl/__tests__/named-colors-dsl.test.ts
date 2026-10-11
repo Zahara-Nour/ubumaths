@@ -4,7 +4,7 @@
  * Avant : `couleur=rouge` devenait `#dc2626` dès l'interprétation, et la figure
  * ne pouvait plus suivre le thème. Le nom canonique est conservé ; l'écran le
  * traduit en variable du thème, les exports en sa variante claire.
- * Spécification : docs/wip/palette-figures-progress.md (1, 2, 3, 5).
+ * Spécification : docs/archive/wip/palette-figures-progress.md (1, 2, 3, 5).
  */
 
 import { describe, it, expect } from 'vitest';

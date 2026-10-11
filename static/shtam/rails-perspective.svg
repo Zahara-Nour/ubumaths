@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 420" width="660" height="420" font-family="Helvetica, Arial, sans-serif">
+<title>Les rails en perspective</title>
+<desc>Les deux rails gardent le même écartement, mais vus du quai ils semblent se rejoindre en un point de l'horizon, le point de fuite.</desc>
+<rect x="0" y="0" width="660" height="420" rx="18" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a73e8"/></marker></defs>
+<rect x="12" y="120" width="636" height="288" fill="#f1f3f4"/>
+<line x1="12" y1="120" x2="648" y2="120" stroke="#5f6368" stroke-width="2"/>
+<text x="636" y="110" text-anchor="end" font-size="15" fill="#5f6368">horizon</text>
+<line x1="127.5" y1="390.0" x2="532.5" y2="390.0" stroke="#a1887f" stroke-width="9.0"/>
+<line x1="180.0" y1="320.0" x2="480.0" y2="320.0" stroke="#a1887f" stroke-width="6.7"/>
+<line x1="218.9" y1="268.1" x2="441.1" y2="268.1" stroke="#a1887f" stroke-width="4.9"/>
+<line x1="247.7" y1="229.7" x2="412.3" y2="229.7" stroke="#a1887f" stroke-width="3.7"/>
+<line x1="269.0" y1="201.3" x2="391.0" y2="201.3" stroke="#a1887f" stroke-width="2.7"/>
+<line x1="284.8" y1="180.2" x2="375.2" y2="180.2" stroke="#a1887f" stroke-width="2.0"/>
+<line x1="296.5" y1="164.6" x2="363.5" y2="164.6" stroke="#a1887f" stroke-width="1.5"/>
+<line x1="305.2" y1="153.0" x2="354.8" y2="153.0" stroke="#a1887f" stroke-width="1.1"/>
+<line x1="311.6" y1="144.5" x2="348.4" y2="144.5" stroke="#a1887f" stroke-width="1.0"/>
+<line x1="180.0" y1="390" x2="305.0" y2="165.0" stroke="#3c4043" stroke-width="5"/>
+<line x1="305.0" y1="165.0" x2="330" y2="120" stroke="#3c4043" stroke-width="2.5"/>
+<line x1="480.0" y1="390" x2="355.0" y2="165.0" stroke="#3c4043" stroke-width="5"/>
+<line x1="355.0" y1="165.0" x2="330" y2="120" stroke="#3c4043" stroke-width="2.5"/>
+<circle cx="330" cy="120" r="7" fill="none" stroke="#d93025" stroke-width="3"/>
+<text x="330" y="80" text-anchor="middle" font-size="16" fill="#d93025">point de fuite :</text>
+<text x="330" y="100" text-anchor="middle" font-size="16" fill="#d93025">les rails semblent s'y rejoindre</text>
+<line x1="180.0" y1="412.0" x2="480.0" y2="412.0" stroke="#1a73e8" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+<line x1="267.5" y1="246.5" x2="392.5" y2="246.5" stroke="#1a73e8" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+<text x="330" y="404.0" text-anchor="middle" font-size="15" fill="#1a73e8" stroke="#f1f3f4" stroke-width="4" paint-order="stroke">même écartement</text>
+<text x="420" y="251" text-anchor="start" font-size="13" fill="#1a73e8" stroke="#f1f3f4" stroke-width="4" paint-order="stroke">même écartement</text>
+</svg>

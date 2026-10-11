@@ -2,7 +2,7 @@
  * Éditeurs des blocs droite graduée et tableau de variations : leur habillage lisait
  * `hsl(var(--border))`, `hsl(var(--ring))`… qui n'existent pas. La déclaration était
  * jetée en silence : pas de bordure du tout (`border-style: none`), couleur retombée
- * sur `currentColor`. On lit la couleur RENDUE en sombre (cf. docs/ref/css-color-tokens.md).
+ * sur `currentColor`. On lit la couleur RENDUE en sombre (cf. docs/pratiques/css-color-tokens.md).
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { Editor } from '@tiptap/core';

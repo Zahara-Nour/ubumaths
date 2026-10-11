@@ -19,6 +19,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { present } from '../helpers/present';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
@@ -290,14 +291,10 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 				locked_entity_id: entite
 			});
 
-		const statut = async (table: string, id: string) => {
-			const { data, error } = await service
-				.from(table as never)
-				.select('status')
-				.eq('id' as never, id as never)
-				.single();
+		const statut = async (table: 'marketplace_listings' | 'marketplace_proposals', id: string) => {
+			const { data, error } = await service.from(table).select('status').eq('id', id).single();
 			expect(error).toBeNull();
-			return (data as { status: string }).status;
+			return present(data, `${table} ${id}`).status;
 		};
 
 		beforeAll(async () => {

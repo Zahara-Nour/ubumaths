@@ -11,6 +11,8 @@ Dans la salle des machines de Turingrad, la grande calculatrice à vapeur du Gli
 
 Une proposition de débrancher la machine a été rejetée en conseil. « Et s'il était sur le point de finir ? », a objecté un ministre. Depuis, un Palotin de garde est chargé de vérifier chaque matin que la machine dit toujours « ha ha ». Elle le dit toujours.
 
+Mardi, un Galopin de Syz'esme en visite scolaire a lu le programme, qui tient en deux lignes, et a affirmé qu'il ne s'arrêterait jamais. Les ingénieurs ont salué « une hypothèse audacieuse ».
+
 Bosse-de-Nage, sollicité par le Shtam pour une déclaration, a répondu : « ha ha ».
 
 ## Le vrai du faux
@@ -24,5 +26,6 @@ while True:
 
 C'est une **boucle infinie** : la condition `True` est toujours vraie, donc la boucle ne s'arrête jamais. Ici, on le voit en lisant le programme.
 
-- Mais en général, c'est **impossible à savoir à coup sûr** : Alan Turing (1912-1954) a démontré en 1936 qu'**aucun** programme ne peut décider, pour **tous** les programmes, s'ils finiront par s'arrêter. C'est le **problème de l'arrêt**.
+- **Attendre ne prouve rien** : un programme peut tourner cent vingt-huit ans, puis s'arrêter. Tant qu'il tourne, on ne sait pas s'il s'arrêtera.
+- **Lire le programme ne suffit pas toujours** : ici, c'est facile, mais en général c'est **impossible à savoir à coup sûr**. Alan Turing (1912-1954) a démontré en 1936 qu'**aucun** programme ne peut décider, pour **tous** les programmes, s'ils finiront par s'arrêter. C'est le **problème de l'arrêt**.
 - Ce résultat est l'un des fondements de l'informatique : il existe des questions précises auxquelles aucun ordinateur, si puissant soit-il, ne pourra jamais répondre.

@@ -34,6 +34,13 @@ import {
 // This circular dependency is resolved at runtime since both modules are fully loaded
 // before any actual integration occurs
 import { integrate } from '../integrate';
+import { hashMathNode } from '../../normal/hash';
+import {
+	factorQuadratic,
+	factoredDenominator,
+	negativeDiscriminantAntiderivative,
+	residueAntiderivative
+} from './quadratic-denominator';
 
 // =============================================================================
 // Type Definitions
@@ -281,6 +288,24 @@ function unwrapDelimiter(node: MathNode): MathNode {
 }
 
 /**
+ * xⁿ DANS un produit (x²(x+1)) : racine 0 de multiplicité n. Seul au
+ * dénominateur (1/x²), xⁿ reste à la règle des puissances.
+ */
+function powerOfVariable(node: MathNode, variable: string): PolynomialFactor[] | null {
+	const poly = unwrapDelimiter(node);
+	if (
+		poly.type === 'superscript' &&
+		isVariable(poly.base) &&
+		poly.base.name === variable &&
+		isNumber(poly.superscript) &&
+		/^[1-9]\d*$/.test(poly.superscript.value)
+	) {
+		return [{ type: 'linear', root: number('0'), multiplicity: Number(poly.superscript.value) }];
+	}
+	return null;
+}
+
+/**
  * Factor a polynomial into linear and irreducible quadratic factors.
  * This is a simplified implementation that handles common cases.
  */
@@ -372,8 +397,10 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 
 	// Case 3: Product of factors (x-a)(x-b)
 	if (poly.type === 'multiplication') {
-		const leftFactors = factorDenominator(poly.left, variable);
-		const rightFactors = factorDenominator(poly.right, variable);
+		const leftFactors =
+			powerOfVariable(poly.left, variable) ?? factorDenominator(poly.left, variable);
+		const rightFactors =
+			powerOfVariable(poly.right, variable) ?? factorDenominator(poly.right, variable);
 		if (leftFactors && rightFactors) {
 			return [...leftFactors, ...rightFactors];
 		}
@@ -618,13 +645,9 @@ function evaluateAt(expr: MathNode, variable: string, value: number): number | n
  * Get numeric value from a MathNode root.
  */
 function getRootValue(root: MathNode): number | null {
-	if (isNumber(root)) {
-		return parseFloat(root.value);
-	}
-	if (root.type === 'opposite' && isNumber(root.operand)) {
-		return -parseFloat(root.operand.value);
-	}
-	return null;
+	// Racine purement numérique (−(−1), 1/2…) ; un paramètre littéral rend null
+	const value = evaluateAt(root, '', 0);
+	return value !== null && Number.isFinite(value) ? value : null;
 }
 
 /**
@@ -657,107 +680,6 @@ function createCoeffNode(value: number): MathNode {
 		// Use decimal approximation
 		return numericNode(value.toFixed(6));
 	}
-}
-
-/**
- * Solve for coefficients with repeated factors using extended Heaviside method.
- *
- * For 1/((x-a)^m * (x-b)^n * ...):
- * - The coefficient of highest power 1/(x-a)^m is found by evaluating
- *   numerator * other_factors at x=a, divided by product of (a-other_roots)^power
- * - Lower power coefficients require derivatives
- */
-function solveRepeatedFactors(
-	numerator: MathNode,
-	_terms: PartialFractionTerm[],
-	variable: string,
-	rootGroups: Map<number, PartialFractionTerm[]>
-): PartialFractionTerm[] {
-	const solvedTerms: PartialFractionTerm[] = [];
-
-	// Process each root group
-	for (const [rootValue, groupTerms] of rootGroups.entries()) {
-		// Sort by power (highest first)
-		groupTerms.sort((a, b) => b.power - a.power);
-
-		// Get all other roots and their powers
-		const otherRoots: { root: number; power: number }[] = [];
-		for (const [otherRoot, otherTerms] of rootGroups.entries()) {
-			if (otherRoot !== rootValue) {
-				const totalPower = otherTerms.reduce((sum, t) => sum + t.power, 0);
-				otherRoots.push({ root: otherRoot, power: totalPower });
-			}
-		}
-
-		// Evaluate numerator at x = rootValue
-		const numValue = evaluateAt(numerator, variable, rootValue);
-		if (numValue === null) {
-			// Can't evaluate - return placeholders
-			solvedTerms.push(...groupTerms);
-			continue;
-		}
-
-		// Compute product of (rootValue - otherRoot)^power for all other roots
-		let denomProduct = 1;
-		for (const { root, power } of otherRoots) {
-			denomProduct *= Math.pow(rootValue - root, power);
-		}
-
-		if (Math.abs(denomProduct) < 1e-10) {
-			// Division by zero - return placeholders
-			solvedTerms.push(...groupTerms);
-			continue;
-		}
-
-		// Coefficient for highest power term
-		const highestCoeff = numValue / denomProduct;
-
-		// For single factor case with power >= 2: P(x)/(x-r)^n = A_n/(x-r)^n + A_{n-1}/(x-r)^{n-1} + ... + A_1/(x-r)
-		// We need to find all coefficients via polynomial expansion
-		// P(x) = A_n + A_{n-1}(x-r) + A_{n-2}(x-r)^2 + ... + A_1(x-r)^{n-1}
-
-		if (groupTerms.length === 2 && otherRoots.length === 0) {
-			// Common case: two terms from one repeated factor, e.g., A/(x+1) + B/(x+1)^2
-			// For P(x)/(x-r)^2: P(x) = B + A(x-r)
-			// B = P(r), and A is the coefficient of (x-r) in the expansion
-
-			// Extract polynomial coefficients from numerator
-			const p0 = evaluateAt(numerator, variable, 0) ?? 0;
-			const p1 = evaluateAt(numerator, variable, 1) ?? 0;
-
-			// For linear numerator P(x) = ax + b:
-			// p0 = b, p1 = a + b => a = p1 - p0
-			const constCoeff = p0;
-			const linearCoeff = p1 - p0;
-
-			// P(x) = linearCoeff * x + constCoeff
-			// P(x) = A(x - root) + B where:
-			// - linearCoeff * x + constCoeff = Ax - A*root + B
-			// - linearCoeff = A => A = linearCoeff
-			// - constCoeff = -A*root + B => B = constCoeff + A*root = constCoeff + linearCoeff*root
-			const A = linearCoeff;
-			const B = constCoeff + linearCoeff * rootValue;
-
-			// groupTerms[0] is power 2, groupTerms[1] is power 1
-			solvedTerms.push({ ...groupTerms[0], coefficient: createCoeffNode(B) }); // /(x-r)^2
-			solvedTerms.push({ ...groupTerms[1], coefficient: createCoeffNode(A) }); // /(x-r)
-		} else {
-			// General case: use Heaviside for highest, set others to 0 (TODO: implement derivatives)
-			for (let i = 0; i < groupTerms.length; i++) {
-				const term = groupTerms[i];
-				if (i === 0) {
-					// Highest power term
-					solvedTerms.push({ ...term, coefficient: createCoeffNode(highestCoeff) });
-				} else {
-					// For lower power terms, we need derivatives
-					// For now, set to 0 as an approximation
-					solvedTerms.push({ ...term, coefficient: number('0') });
-				}
-			}
-		}
-	}
-
-	return solvedTerms;
 }
 
 /**
@@ -936,18 +858,9 @@ function solveMixedFactors(
  */
 function getNumericValue(node: MathNode | undefined): number | null {
 	if (!node) return null;
-	if (isNumber(node)) return parseFloat(node.value);
-	if (node.type === 'opposite' && isNumber(node.operand)) {
-		return -parseFloat(node.operand.value);
-	}
-	if (node.type === 'division') {
-		const num = getNumericValue(node.numerator);
-		const den = getNumericValue(node.denominator);
-		if (num !== null && den !== null && den !== 0) {
-			return num / den;
-		}
-	}
-	return null;
+	// −(1/4), 3/2… ; un paramètre littéral rend null
+	const value = evaluateAt(node, '', 0);
+	return value !== null && Number.isFinite(value) ? value : null;
 }
 
 /**
@@ -956,9 +869,10 @@ function getNumericValue(node: MathNode | undefined): number | null {
  */
 function solveCoefficients(
 	numerator: MathNode,
+	denominator: MathNode,
 	terms: PartialFractionTerm[],
 	variable: string
-): PartialFractionTerm[] {
+): PartialFractionTerm[] | null {
 	if (terms.length === 0) {
 		return terms;
 	}
@@ -984,190 +898,150 @@ function solveCoefficients(
 		return solveMixedFactors(numerator, terms, variable);
 	}
 
-	// Group terms by their root (for repeated factor handling)
-	const rootGroups = new Map<number, PartialFractionTerm[]>();
-	const invalidRoots: PartialFractionTerm[] = [];
+	// Facteurs tous linéaires : système linéaire sur les coefficients A_{r,j}
+	// de A_{r,j}/(x − r)^j, pour CHAQUE racine r et chaque j ≤ multiplicité
+	return solveLinearFactors(numerator, denominator, terms, variable);
+}
 
+/**
+ * Coefficients d'une décomposition à facteurs tous LINÉAIRES (racines
+ * numériques, répétées ou non) : N(t)/D(t) = Σ A_{r,j}/(t − r)^j écrit en
+ * autant de points t (hors racines) qu'il y a d'inconnues, résolu par
+ * élimination de Gauss. D est le VRAI dénominateur (facteur constant compris).
+ * Rend null si une racine ou une valeur n'est pas numérique (paramètre
+ * littéral) ou si un coefficient n'est pas un rationnel simple : la méthode
+ * REFUSE alors, elle ne rend jamais un coefficient « en attente » nul.
+ */
+function solveLinearFactors(
+	numerator: MathNode,
+	denominator: MathNode,
+	terms: PartialFractionTerm[],
+	variable: string
+): PartialFractionTerm[] | null {
+	const roots: number[] = [];
 	for (const term of terms) {
-		const rootVal = getRootValue(term.factor.root!);
-		if (rootVal === null) {
-			invalidRoots.push(term);
-		} else {
-			const key = rootVal;
-			if (!rootGroups.has(key)) {
-				rootGroups.set(key, []);
-			}
-			rootGroups.get(key)!.push(term);
+		const root = getRootValue(term.factor.root!);
+		if (root === null) return null;
+		roots.push(root);
+	}
+	// Points d'échantillonnage : au-delà de toutes les racines, irréguliers
+	const start = Math.max(0, ...roots.map(Math.abs)) + 1;
+	const samples = terms.map((_, i) => start + 0.731 * (i + 1));
+	const matrix: number[][] = [];
+	const rhs: number[] = [];
+	for (const t of samples) {
+		const value = rationalValueAt(numerator, denominator, variable, t);
+		if (value === null) return null;
+		matrix.push(terms.map((term, j) => 1 / Math.pow(t - roots[j], term.power)));
+		rhs.push(value);
+	}
+	const solution = solveLinearSystem(matrix, rhs);
+	if (solution === null) return null;
+	const solved: PartialFractionTerm[] = [];
+	for (const [i, term] of terms.entries()) {
+		const coefficient = exactCoefficient(solution[i]);
+		if (coefficient === null) return null;
+		// Un coefficient nul ne produit aucun terme
+		if (Math.abs(solution[i]) < 1e-12) continue;
+		solved.push({ ...term, coefficient });
+	}
+	return solved;
+}
+
+/** N(t)/D(t), ou null (valeur non numérique ou pôle) */
+function rationalValueAt(
+	numerator: MathNode,
+	denominator: MathNode,
+	variable: string,
+	t: number
+): number | null {
+	const n = evaluateAt(numerator, variable, t);
+	const d = evaluateAt(denominator, variable, t);
+	if (n === null || d === null || d === 0 || !Number.isFinite(n / d)) return null;
+	return n / d;
+}
+
+/** Élimination de Gauss à pivot partiel ; null si le système est singulier */
+function solveLinearSystem(matrix: number[][], rhs: number[]): number[] | null {
+	const size = rhs.length;
+	const a = matrix.map((row, i) => [...row, rhs[i]]);
+	for (let col = 0; col < size; col++) {
+		let pivot = col;
+		for (let row = col + 1; row < size; row++) {
+			if (Math.abs(a[row][col]) > Math.abs(a[pivot][col])) pivot = row;
+		}
+		if (Math.abs(a[pivot][col]) < 1e-14) return null;
+		[a[col], a[pivot]] = [a[pivot], a[col]];
+		for (let row = 0; row < size; row++) {
+			if (row === col) continue;
+			const factor = a[row][col] / a[col][col];
+			for (let k = col; k <= size; k++) a[row][k] -= factor * a[col][k];
 		}
 	}
+	return a.map((row, i) => row[size] / row[i]);
+}
 
-	// If we have invalid roots, return placeholder
-	if (invalidRoots.length > 0) {
-		return terms;
+/** Le rationnel p/q (q ≤ 1000) égal à value à 1e-9 près, en nœud ; sinon null */
+function exactCoefficient(value: number): MathNode | null {
+	for (let q = 1; q <= 1000; q++) {
+		const p = Math.round(value * q);
+		if (Math.abs(value * q - p) < 1e-9 * Math.max(1, q)) {
+			const magnitude =
+				q === 1
+					? number(String(Math.abs(p)))
+					: divide(number(String(Math.abs(p))), number(String(q)), 'fraction');
+			return p < 0 ? { type: 'opposite', operand: magnitude } : magnitude;
+		}
 	}
+	return null;
+}
 
-	// Special case: Single factor group (e.g., 1/(x-1)^2 or x/(x+1)^2)
-	// For P(x)/(x-r)^n = A_1/(x-r) + A_2/(x-r)^2 + ... + A_n/(x-r)^n
-	// We expand: P(x) = A_n + A_{n-1}(x-r) + A_{n-2}(x-r)^2 + ... + A_1(x-r)^{n-1}
-	if (rootGroups.size === 1) {
-		const [rootValue, groupTerms] = [...rootGroups.entries()][0];
-		// Sort by power (highest first)
-		groupTerms.sort((a, b) => b.power - a.power);
-
-		// Evaluate numerator at the root
-		const numValue = evaluateAt(numerator, variable, rootValue);
-
-		const solvedTerms: PartialFractionTerm[] = [];
-
-		if (groupTerms.length === 1) {
-			// Single power term - just use the numerator value
-			const term = groupTerms[0];
-			let coeffNode: MathNode;
-			if (numValue !== null) {
-				coeffNode = createCoeffNode(numValue);
-			} else {
-				coeffNode = numerator;
-			}
-			solvedTerms.push({ ...term, coefficient: coeffNode });
-		} else if (groupTerms.length === 2) {
-			// Two terms: A/(x-r) + B/(x-r)^2
-			// P(x) = B + A(x-r) = B + Ax - Ar
-			// For P(x) = px + q: A = p, B = q + Ar = q + pr
-
-			// Extract polynomial coefficients from numerator: P(x) = px + q
-			const p0 = evaluateAt(numerator, variable, 0) ?? 0;
-			const p1 = evaluateAt(numerator, variable, 1) ?? 0;
-
-			const constCoeff = p0;
-			const linearCoeff = p1 - p0;
-
-			// A = linearCoeff, B = constCoeff + linearCoeff * rootValue
-			const A = linearCoeff;
-			const B = constCoeff + linearCoeff * rootValue;
-
-			// groupTerms[0] is power 2, groupTerms[1] is power 1
-			solvedTerms.push({ ...groupTerms[0], coefficient: createCoeffNode(B) }); // /(x-r)^2
-			solvedTerms.push({ ...groupTerms[1], coefficient: createCoeffNode(A) }); // /(x-r)
-		} else {
-			// More than 2 powers - fall back to simple approach (highest gets value, others 0)
-			for (let i = 0; i < groupTerms.length; i++) {
-				const term = groupTerms[i];
-				if (i === 0) {
-					let coeffNode: MathNode;
-					if (numValue !== null) {
-						coeffNode = createCoeffNode(numValue);
-					} else {
-						coeffNode = numerator;
-					}
-					solvedTerms.push({ ...term, coefficient: coeffNode });
-				} else {
-					solvedTerms.push({ ...term, coefficient: number('0') });
-				}
-			}
-		}
-
-		return solvedTerms;
+/** Valeur numérique d'un élément simple en t, ou null (non numérique) */
+function termValueAt(term: PartialFractionTerm, variable: string, t: number): number | null {
+	if (term.factor.type === 'linear') {
+		const root = getRootValue(term.factor.root!);
+		const coefficient = getNumericValue(term.coefficient);
+		if (root === null || coefficient === null) return null;
+		return coefficient / Math.pow(t - root, term.power);
 	}
-
-	// Multiple distinct roots - use extended Heaviside method
-	// Only apply Heaviside cover-up for simple linear factors (multiplicity 1)
-	const allSimpleLinear = terms.every(
-		(t) => t.factor.type === 'linear' && t.factor.multiplicity === 1 && t.power === 1
-	);
-
-	if (!allSimpleLinear) {
-		// For mixed simple/repeated factors, we need more complex solving
-		// For now, handle the case where we have one repeated factor and some simple ones
-		return solveRepeatedFactors(numerator, terms, variable, rootGroups);
+	const coeffs = term.factor.quadraticCoeffs;
+	if (!coeffs) return null;
+	const a = evaluateAt(coeffs.a, variable, t);
+	const b = evaluateAt(coeffs.b, variable, t);
+	const c = evaluateAt(coeffs.c, variable, t);
+	if (a === null || b === null || c === null) return null;
+	const quadratic = Math.pow(a * t * t + b * t + c, term.power);
+	const extended = term as PartialFractionTerm & { xCoeff?: number; constCoeff?: number };
+	if (extended.xCoeff !== undefined || extended.constCoeff !== undefined) {
+		return ((extended.xCoeff ?? 0) * t + (extended.constCoeff ?? 0)) / quadratic;
 	}
+	const coefficient = getNumericValue(term.coefficient);
+	return coefficient === null ? null : coefficient / quadratic;
+}
 
-	// Heaviside cover-up method:
-	// For 1/((x-a)(x-b)(x-c)...) = A/(x-a) + B/(x-b) + C/(x-c) + ...
-	// A = numerator evaluated at x=a, divided by product of (a-b)(a-c)...
-
-	const solvedTerms: PartialFractionTerm[] = [];
-
-	for (let i = 0; i < terms.length; i++) {
-		const currentTerm = terms[i];
-		const currentRoot = getRootValue(currentTerm.factor.root!);
-
-		if (currentRoot === null) {
-			// Can't get numeric root value
-			solvedTerms.push(currentTerm);
-			continue;
+/**
+ * Garde-fou : la somme des éléments simples vaut N/D en quelques points.
+ * Faux dès qu'un coefficient est resté « en attente » (0 par défaut) ou
+ * qu'une valeur n'est pas numérique.
+ */
+function decompositionMatches(
+	numerator: MathNode,
+	denominator: MathNode,
+	terms: readonly PartialFractionTerm[],
+	variable: string
+): boolean {
+	for (const t of [-7.31, 3.17, 11.43]) {
+		const expected = rationalValueAt(numerator, denominator, variable, t);
+		if (expected === null) return false;
+		let sum = 0;
+		for (const term of terms) {
+			const value = termValueAt(term, variable, t);
+			if (value === null) return false;
+			sum += value;
 		}
-
-		// Evaluate numerator at x = root
-		const numValue = evaluateAt(numerator, variable, currentRoot);
-		if (numValue === null) {
-			solvedTerms.push(currentTerm);
-			continue;
-		}
-
-		// Evaluate product of other (root - otherRoot) terms
-		let denomProduct = 1;
-		let valid = true;
-
-		for (let j = 0; j < terms.length; j++) {
-			if (i === j) continue;
-
-			const otherRoot = getRootValue(terms[j].factor.root!);
-			if (otherRoot === null) {
-				valid = false;
-				break;
-			}
-			denomProduct *= currentRoot - otherRoot;
-		}
-
-		if (!valid || denomProduct === 0) {
-			solvedTerms.push(currentTerm);
-			continue;
-		}
-
-		// Coefficient = numerator / denomProduct
-		const coeffValue = numValue / denomProduct;
-
-		// Convert to MathNode (fraction if not integer)
-		let coeffNode: MathNode = numericNode(coeffValue.toFixed(6)); // Default fallback
-		if (Number.isInteger(coeffValue)) {
-			if (coeffValue >= 0) {
-				coeffNode = number(coeffValue.toString());
-			} else {
-				coeffNode = { type: 'opposite', operand: number((-coeffValue).toString()) };
-			}
-		} else {
-			// Express as fraction
-			// Find a reasonable denominator (try small integers)
-			let found = false;
-			for (const d of [2, 3, 4, 5, 6, 8, 10, 12]) {
-				const n = coeffValue * d;
-				if (Math.abs(n - Math.round(n)) < 1e-10) {
-					const numInt = Math.round(n);
-					if (numInt >= 0) {
-						coeffNode = divide(number(numInt.toString()), number(d.toString()), 'fraction');
-					} else {
-						coeffNode = {
-							type: 'opposite',
-							operand: divide(number((-numInt).toString()), number(d.toString()), 'fraction')
-						};
-					}
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				// Use decimal approximation
-				coeffNode = numericNode(coeffValue.toFixed(6));
-			}
-		}
-
-		solvedTerms.push({
-			...currentTerm,
-			coefficient: coeffNode
-		});
+		if (!(Math.abs(sum - expected) <= 1e-9 * Math.max(1, Math.abs(expected)))) return false;
 	}
-
-	return solvedTerms;
+	return true;
 }
 
 // =============================================================================
@@ -1217,6 +1091,10 @@ function integratePartialFraction(
 		) {
 			const cValue = parseFloat(coeffs.c.value);
 			const sqrtC = Math.sqrt(cValue);
+			// √c exacte : 1/(x² + 2) → arctan(x/√2)/√2, jamais 1,4142… (valeur approchée)
+			const sqrtCNode = Number.isInteger(sqrtC)
+				? number(sqrtC.toString())
+				: func('sqrt', [coeffs.c]);
 			const xVar: MathNode = { type: 'variable', name: variable };
 
 			// Check if we have extended coefficients (xCoeff, constCoeff) from solveMixedFactors
@@ -1246,8 +1124,8 @@ function integratePartialFraction(
 					if (sqrtC === 1) {
 						atanPart = func('arctan', [xVar]);
 					} else {
-						const atanArg = divide(xVar, number(sqrtC.toString()), 'fraction');
-						atanPart = divide(func('arctan', [atanArg]), number(sqrtC.toString()), 'fraction');
+						const atanArg = divide(xVar, sqrtCNode, 'fraction');
+						atanPart = divide(func('arctan', [atanArg]), sqrtCNode, 'fraction');
 					}
 					atanPart = implicitMultiply(createCoeffNode(C), atanPart);
 
@@ -1269,8 +1147,8 @@ function integratePartialFraction(
 			if (sqrtC === 1) {
 				atanTerm = func('arctan', [xVar]);
 			} else {
-				const atanArg = divide(xVar, number(sqrtC.toString()), 'fraction');
-				atanTerm = divide(func('arctan', [atanArg]), number(sqrtC.toString()), 'fraction');
+				const atanArg = divide(xVar, sqrtCNode, 'fraction');
+				atanTerm = divide(func('arctan', [atanArg]), sqrtCNode, 'fraction');
 			}
 
 			// Multiply by the coefficient (handles cases like -1/(x²+1) → -arctan(x))
@@ -1299,6 +1177,72 @@ function integratePartialFraction(
  *
  * Priority: 30 (after parts, before trig substitution)
  */
+/**
+ * Dénominateur trinôme non factorisé : racines rationnelles → réécrit
+ * a(x − r₁)(x − r₂) et ré-intégré ; racines ±t littérales → résidus ;
+ * Δ < 0 → (α/2a)·ln|D| + terme en arctan. null : autre cas.
+ */
+function integrateQuadraticDenominator(
+	expr: MathNode & { type: 'division' },
+	remainder: MathNode,
+	quotient: MathNode | null,
+	variable: string,
+	options: ResolvedIntegrateOptions,
+	recorder: IntegrateStepRecorder,
+	depth: number
+): IntegrateResult | null {
+	const denominator = expr.denominator;
+	const factorization = factorQuadratic(denominator, variable);
+	if (factorization === null) return null;
+	let fractionPart: MathNode | null;
+	if (factorization.kind === 'negative-discriminant') {
+		// Décision de David (2026-10-08) : Δ < 0 accepté, ln(D) + terme en arctan
+		fractionPart = negativeDiscriminantAntiderivative(
+			remainder,
+			denominator,
+			factorization,
+			variable
+		);
+		if (fractionPart === null) return null;
+	} else if (factorization.kind === 'rational-roots') {
+		const factored = factoredDenominator(variable, factorization.leading, factorization.roots);
+		recorder.recordCustomStep(
+			'factor-denominator',
+			expr,
+			divide(remainder, factored, 'fraction'),
+			'detailed',
+			undefined,
+			'Factorisation du dénominateur par ses racines'
+		);
+		const inner = integrate(divide(remainder, factored, 'fraction'), {
+			...options,
+			variable,
+			_depth: depth + 1
+		});
+		if (inner.status !== 'exact' || inner.antiderivative === null) return null;
+		fractionPart = inner.antiderivative;
+	} else {
+		fractionPart = residueAntiderivative(remainder, denominator, factorization.roots, variable);
+		if (fractionPart === null) return null;
+	}
+
+	let antiderivative = fractionPart;
+	if (quotient && !isZero(quotient)) {
+		const quotientResult = integrate(quotient, { ...options, variable, _depth: depth + 1 });
+		if (quotientResult.status !== 'exact' || quotientResult.antiderivative === null) return null;
+		antiderivative = add(antiderivative, quotientResult.antiderivative);
+	}
+	return {
+		variable,
+		status: 'exact',
+		antiderivative,
+		integrandType: 'rational',
+		technique: 'partial-fractions',
+		steps: recorder.getSteps(),
+		constantNote: CONSTANT_OF_INTEGRATION_NOTE
+	};
+}
+
 export const partialFractionsIntegrator: Integrator = {
 	name: 'partial-fractions',
 	priority: 30,
@@ -1329,6 +1273,29 @@ export const partialFractionsIntegrator: Integrator = {
 
 		const numerator = expr.numerator;
 		const denominator = expr.denominator;
+
+		// N / (c·D) = (1/c) · N/D : la factorisation ignore le facteur constant c,
+		// la décomposition doit donc porter sur N/D seul
+		const unwrapped = unwrapDelimiter(denominator);
+		if (unwrapped.type === 'multiplication') {
+			const leftConstant = !containsVariable(unwrapped.left, variable);
+			const rightConstant = !containsVariable(unwrapped.right, variable);
+			if (leftConstant !== rightConstant) {
+				const constant = leftConstant ? unwrapped.left : unwrapped.right;
+				const rest = leftConstant ? unwrapped.right : unwrapped.left;
+				const inner = integrate(divide(numerator, rest, 'fraction'), {
+					...options,
+					variable,
+					_depth: depth + 1
+				});
+				if (inner.status !== 'exact' || inner.antiderivative === null) return inner;
+				return {
+					...inner,
+					antiderivative: divide(inner.antiderivative, constant, 'fraction'),
+					steps: recorder.getSteps()
+				};
+			}
+		}
 
 		// Step 1: Check if polynomial division is needed
 		const numDegree = getPolynomialDegree(numerator, variable);
@@ -1435,8 +1402,8 @@ export const partialFractionsIntegrator: Integrator = {
 						const part2 = divide(constTerm, denominator, 'fraction');
 
 						// Integrate both parts
-						const result1 = integrate(part1, { variable, ...options, _depth: depth + 1 });
-						const result2 = integrate(part2, { variable, ...options, _depth: depth + 1 });
+						const result1 = integrate(part1, { ...options, variable, _depth: depth + 1 });
+						const result2 = integrate(part2, { ...options, variable, _depth: depth + 1 });
 
 						if (result1.status === 'exact' && result2.status === 'exact') {
 							let antiderivative = add(result1.antiderivative!, result2.antiderivative!);
@@ -1444,8 +1411,9 @@ export const partialFractionsIntegrator: Integrator = {
 							// Add quotient integral if needed
 							if (quotient && !isZero(quotient)) {
 								const quotientResult = integrate(quotient, {
-									variable,
 									...options,
+									// la variable d'intégration COURANTE prime sur celle des options
+									variable,
 									_depth: depth + 1
 								});
 								if (quotientResult.status === 'exact' && quotientResult.antiderivative) {
@@ -1480,6 +1448,16 @@ export const partialFractionsIntegrator: Integrator = {
 
 		const factors = factorDenominator(denominator, variable);
 		if (!factors) {
+			const trinomial = integrateQuadraticDenominator(
+				expr,
+				remainder,
+				quotient,
+				variable,
+				options,
+				recorder,
+				depth
+			);
+			if (trinomial !== null) return trinomial;
 			return {
 				variable,
 				status: 'unsupported',
@@ -1524,7 +1502,58 @@ export const partialFractionsIntegrator: Integrator = {
 			'Résolution des coefficients'
 		);
 
-		const solvedTerms = solveCoefficients(remainder, terms, variable);
+		const solvedTerms = solveCoefficients(remainder, denominator, terms, variable);
+		// Une décomposition non résolue (paramètre littéral, coefficient « en
+		// attente ») ou fausse est REFUSÉE : jamais de terme oublié ni de F = 0
+		if (
+			solvedTerms === null ||
+			!decompositionMatches(remainder, denominator, solvedTerms, variable)
+		) {
+			// Racines simples littérales (1/((x − a)(x − b))) : formule des résidus
+			const roots = factors.flatMap((f) =>
+				f.type === 'linear' && f.multiplicity === 1 && f.root ? [f.root] : []
+			);
+			const simpleRoots =
+				roots.length >= 2 &&
+				roots.length === factors.length &&
+				new Set(roots.map(hashMathNode)).size === roots.length &&
+				getPolynomialDegree(denominator, variable) === roots.length &&
+				getPolynomialDegree(remainder, variable) < roots.length;
+			const residues = simpleRoots
+				? residueAntiderivative(remainder, denominator, roots, variable)
+				: null;
+			if (residues !== null && (quotient === null || isZero(quotient))) {
+				return {
+					variable,
+					status: 'exact',
+					antiderivative: residues,
+					integrandType: 'rational',
+					technique: 'partial-fractions',
+					steps: recorder.getSteps(),
+					constantNote: CONSTANT_OF_INTEGRATION_NOTE
+				};
+			}
+			// Trinôme irréductible seul (x³/(x² + 1)) : ln + arctan
+			const trinomial = integrateQuadraticDenominator(
+				expr,
+				remainder,
+				quotient,
+				variable,
+				options,
+				recorder,
+				depth
+			);
+			if (trinomial !== null) return trinomial;
+			return {
+				variable,
+				status: 'unsupported',
+				antiderivative: null,
+				integrandType: 'rational',
+				technique: 'partial-fractions',
+				steps: recorder.getSteps(),
+				error: 'Décomposition en éléments simples non résolue'
+			};
+		}
 
 		// Step 5: Integrate each term
 		let result: MathNode | null = null;
@@ -1549,12 +1578,12 @@ export const partialFractionsIntegrator: Integrator = {
 		// Step 6: Add quotient integral if polynomial division was performed
 		if (quotient && !isZero(quotient)) {
 			// Integrate the quotient (polynomial) using recursive call
-			const quotientResult = integrate(quotient, { variable, ...options });
-			if (quotientResult.status === 'exact' && quotientResult.antiderivative) {
-				result = result
-					? add(result, quotientResult.antiderivative)
-					: quotientResult.antiderivative;
+			const quotientResult = integrate(quotient, { ...options, variable });
+			// Quotient non intégré : refus, jamais un terme oublié
+			if (quotientResult.status !== 'exact' || !quotientResult.antiderivative) {
+				return { ...quotientResult, steps: recorder.getSteps() };
 			}
+			result = result ? add(result, quotientResult.antiderivative) : quotientResult.antiderivative;
 		}
 
 		return {

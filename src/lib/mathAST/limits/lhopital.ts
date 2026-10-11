@@ -7,17 +7,26 @@
  */
 
 import type { MathNode, DivisionNode } from '../types';
+import type { ExtendedNormalizeResult } from '../normal/types';
 import type { LimitDirection, LimitOptions, IndeterminateForm } from './types';
-import { isDivision } from '../guards';
+import { isDivision, isInfinity } from '../guards';
+import { compile } from '../eval/compile';
 import { differentiate } from '../differentiation';
 import { detectIndeterminateForm, classifyLimitValue } from './indeterminate';
 import type { LimitStepRecorder } from './step-recorder';
+import { numericNode } from '../common/numeric';
 import {
 	tryEvaluateLimitExact,
 	isZeroResult,
 	isInfinityResult,
-	resultToFiniteNode
+	isIndeterminateResult,
+	resultToNode,
+	resultToNumber
 } from './exact-evaluation';
+import { exactConstantNode } from './generalized-degree';
+import { divide } from '../factory';
+import { normalize, denormalize } from '../normal';
+import { nodesEqual } from '../pattern/match';
 
 // =============================================================================
 // L'Hôpital's Rule
@@ -44,6 +53,13 @@ export interface LhopitalResult {
 
 	/** Error message if not applicable */
 	readonly error?: string;
+
+	/**
+	 * Valeur tirée du repli NUMÉRIQUE (évaluation en un point proche, pas un
+	 * calcul exact) : x/√x en +∞ donnait « 200000 ». L'appelant ne doit pas la
+	 * présenter comme une limite exacte.
+	 */
+	readonly approximate?: boolean;
 }
 
 /**
@@ -137,26 +153,87 @@ export function applyLhopital(
 		// Check if the new form is still indeterminate
 		const newForm = detectIndeterminateForm(newExpr, varName, approach, direction);
 
+		// Valeur approchée (repli numérique) : rendue en dernier recours, après
+		// la forme réduite de f'/g'.
+		let approximateEvaluation: MathNode | null = null;
 		if (newForm === 'none') {
 			// We can try direct evaluation
-			const result = tryDirectEvaluation(newExpr, varName, approach, direction);
-			if (result !== null) {
+			const evaluation = tryDirectEvaluation(newExpr, varName, approach, direction);
+			if (evaluation !== null && !evaluation.approximate) {
 				recorder.recordStep(
 					'lhopital',
 					"Limite trouvée après application de la règle de L'Hôpital",
 					newExpr,
-					result,
+					evaluation.value,
 					'summarized'
 				);
-
 				return {
 					applicable: true,
-					value: result,
+					value: evaluation.value,
 					transformedExpr: newExpr,
 					iterations,
 					resolvedForm: form
 				};
 			}
+			approximateEvaluation = evaluation?.value ?? null;
+		}
+
+		// f'/g' non conclu exactement : sa forme réduite (module normal/) peut
+		// l'être. (1/x)/(2x/(x²+1)) = (x²+1)/(2x²) en +∞, 12x²/(4x³/√(x⁴)) = 3x
+		// en 0 — sans elle, ln x / ln(x²+1) restait sans limite exacte.
+		const reduced = reduceQuotient(newExpr);
+		if (reduced !== null) {
+			const reducedLimit = exactLimitOfReduced(reduced, varName, approach, direction);
+			if (reducedLimit !== null) {
+				recorder.recordStep(
+					'lhopital',
+					"Limite trouvée après application de la règle de L'Hôpital",
+					reduced,
+					reducedLimit,
+					'summarized'
+				);
+				return {
+					applicable: true,
+					value: reducedLimit,
+					transformedExpr: reduced,
+					iterations,
+					resolvedForm: form
+				};
+			}
+			if (isDivision(reduced) && newForm !== 'none') {
+				const reducedForm = detectIndeterminateForm(reduced, varName, approach, direction);
+				if (reducedForm === '0/0' || reducedForm === '∞/∞') {
+					currentExpr = reduced;
+					continue;
+				}
+			}
+		}
+
+		// Garde-fou : la valeur approchée doit être confirmée par f elle-même
+		// près de la borne. Sinon refus honnête (x^{1/5}/x^{1/3} en 0 rendait
+		// « ≈ 60 », pour +∞ : f′/g′ mal classée « non indéterminée »).
+		if (
+			approximateEvaluation !== null &&
+			!confirmedNumerically(expr, varName, approach, direction, approximateEvaluation)
+		) {
+			approximateEvaluation = null;
+		}
+		if (approximateEvaluation !== null) {
+			recorder.recordStep(
+				'lhopital',
+				"Valeur approchée après application de la règle de L'Hôpital",
+				newExpr,
+				approximateEvaluation,
+				'summarized'
+			);
+			return {
+				applicable: true,
+				value: approximateEvaluation,
+				transformedExpr: newExpr,
+				iterations,
+				resolvedForm: form,
+				approximate: true
+			};
 		}
 
 		if (newForm === '0/0' || newForm === '∞/∞') {
@@ -186,6 +263,41 @@ export function applyLhopital(
 	};
 }
 
+/** Forme normale réduite d'un quotient, ou null si inchangée ou impossible. */
+function reduceQuotient(expr: DivisionNode): MathNode | null {
+	try {
+		const reduced = denormalize(normalize(expr));
+		return nodesEqual(reduced, expr) ? null : reduced;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Limite EXACTE de la forme réduite de f'/g' : évaluation exacte directe si
+ * elle n'est plus un quotient (3x en 0), sinon quotient déterminé évalué
+ * exactement. Null si rien ne conclut exactement.
+ */
+function exactLimitOfReduced(
+	reduced: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): MathNode | null {
+	if (isDivision(reduced)) {
+		if (detectIndeterminateForm(reduced, varName, approach, direction) !== 'none') return null;
+		return tryDirectEvaluationExact(reduced, varName, approach, direction);
+	}
+	const result = tryEvaluateLimitExact(reduced, varName, approach, direction);
+	if (result === null || isIndeterminateResult(result)) return null;
+	// 0⁺ / 0⁻ : la limite est 0 (le signe ne sert qu'aux quotients)
+	if (isZeroResult(result)) return { type: 'number', value: '0' };
+	const node = resultToNode(result);
+	if (node === null) return null;
+	// Constante rationnelle sous forme canonique : −2/3, pas (−2)/3
+	return isInfinityResult(result) ? node : (exactConstantNode(node) ?? node);
+}
+
 /**
  * Check if L'Hôpital's rule is applicable to an expression.
  */
@@ -210,21 +322,25 @@ export function isLhopitalApplicable(
 /**
  * Try to evaluate a division directly at the limit point.
  * Uses exact evaluation first, with fallback to numeric heuristics.
+ *
+ * Le repli numérique est marqué `approximate` : il évalue en un point
+ * proche, et 1/(1/(2√x)) en +∞ y vaut « 200000 », pas +∞.
  */
 function tryDirectEvaluation(
 	expr: DivisionNode,
 	varName: string,
 	approach: MathNode,
 	direction: LimitDirection
-): MathNode | null {
+): { value: MathNode; approximate: boolean } | null {
 	// Try exact evaluation first
 	const exactResult = tryDirectEvaluationExact(expr, varName, approach, direction);
 	if (exactResult !== null) {
-		return exactResult;
+		return { value: exactResult, approximate: false };
 	}
 
 	// Fallback to numeric heuristics
-	return tryDirectEvaluationNumeric(expr, varName, approach, direction);
+	const numericResult = tryDirectEvaluationNumeric(expr, varName, approach, direction);
+	return numericResult === null ? null : { value: numericResult, approximate: true };
 }
 
 /**
@@ -239,16 +355,24 @@ function tryDirectEvaluationExact(
 	const numResult = tryEvaluateLimitExact(expr.numerator, varName, approach, direction);
 	const denResult = tryEvaluateLimitExact(expr.denominator, varName, approach, direction);
 
-	// Need both results
+	// Need both results. Un opérande « indéterminé » n'est pas un fini non nul :
+	// (1/x)/(2x/(x²+1)) en +∞ concluait 0 (« 0/fini »), au lieu de laisser le
+	// moteur lever la forme.
 	if (!numResult || !denResult) {
+		return null;
+	}
+	if (isIndeterminateResult(numResult) || isIndeterminateResult(denResult)) {
 		return null;
 	}
 
 	// Handle infinity/finite case → infinity
 	if (isInfinityResult(numResult) && !isInfinityResult(denResult) && !isZeroResult(denResult)) {
 		// Get denominator sign to determine final sign
-		const denNode = resultToFiniteNode(denResult);
-		const denNegative = denNode && denNode.type === 'number' && parseFloat(denNode.value) < 0;
+		// Valeur négative = nœud `opposite` (jamais de littéral négatif)
+		// Lu sur la forme normale : une fraction exacte (−1/2) n'est pas un
+		// littéral que getNumericValue saurait lire
+		const denValue = resultToNumber(denResult);
+		const denNegative = denValue !== null && denValue < 0;
 
 		const numSign = numResult.sign;
 		let finalSign: 'positive' | 'negative';
@@ -272,23 +396,35 @@ function tryDirectEvaluationExact(
 
 	// Handle finite/finite case
 	if (!isInfinityResult(numResult) && !isInfinityResult(denResult)) {
-		const numNode = resultToFiniteNode(numResult);
-		const denNode = resultToFiniteNode(denResult);
+		// Valeurs lues sur la forme normale (−2 comme 2/3) : sinon x → −1 de
+		// 2x/1 retombait sur le repli numérique
+		const numVal = resultToNumber(numResult);
+		const denVal = resultToNumber(denResult);
 
-		if (numNode && denNode && numNode.type === 'number' && denNode.type === 'number') {
-			const numVal = parseFloat(numNode.value);
-			const denVal = parseFloat(denNode.value);
-
-			if (denVal !== 0 && Number.isFinite(numVal) && Number.isFinite(denVal)) {
-				const result = numVal / denVal;
-				if (Number.isFinite(result)) {
-					return { type: 'number', value: cleanNumberString(result) };
-				}
+		if (numVal !== null && denVal !== null && denVal !== 0) {
+			// Quotient EXACT lu sur les formes dénormalisées (jamais sur les
+			// chaînes déjà arrondies) : 3/2, pas 1.5
+			const exact = exactQuotient(numResult, denResult);
+			if (exact !== null) return exact;
+			const result = numVal / denVal;
+			if (Number.isFinite(result)) {
+				return numericNode(cleanNumberString(result));
 			}
 		}
 	}
 
 	return null;
+}
+
+/** Quotient exact de deux limites finies à valeurs rationnelles, sinon null. */
+function exactQuotient(
+	numResult: ExtendedNormalizeResult,
+	denResult: ExtendedNormalizeResult
+): MathNode | null {
+	const numNode = resultToNode(numResult);
+	const denNode = resultToNode(denResult);
+	if (numNode === null || denNode === null) return null;
+	return exactConstantNode(divide(numNode, denNode, 'fraction'));
 }
 
 /**
@@ -303,15 +439,18 @@ function tryDirectEvaluationNumeric(
 	const numClass = classifyLimitValue(expr.numerator, varName, approach, direction);
 	const denClass = classifyLimitValue(expr.denominator, varName, approach, direction);
 
-	// Both have finite values
+	// Both have finite values — classes FINIES exigées : une valeur échantillonnée
+	// près d'un infini (x^{-4/5} / x^{-2/3} en 0) donnait « ≈ 60 » pour +∞
 	if (
+		isFiniteClass(numClass.class) &&
+		isFiniteClass(denClass.class) &&
 		numClass.numericValue !== undefined &&
 		denClass.numericValue !== undefined &&
 		denClass.numericValue !== 0
 	) {
 		const result = numClass.numericValue / denClass.numericValue;
 		if (Number.isFinite(result)) {
-			return { type: 'number', value: cleanNumberString(result) };
+			return numericNode(cleanNumberString(result));
 		}
 	}
 
@@ -423,4 +562,59 @@ export function convertToLhopitalForm(
 
 	// For other forms, return null (not yet implemented)
 	return null;
+}
+
+/**
+ * La valeur `value` est-elle confirmée par f près de la borne ? Échantillons
+ * à h = 10⁻⁴, 10⁻⁶, 10⁻⁸ (ou ±10⁴, 10⁶, 10⁸ à l'infini), côté(s) demandé(s) :
+ * valeur finie → les trois proches de value (écart relatif ≤ 10⁻³) ; ±∞ → |f|
+ * croissante, du bon signe. Non calculable : non confirmée.
+ */
+function confirmedNumerically(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection,
+	value: MathNode
+): boolean {
+	let f: (scope: Record<string, number>) => unknown;
+	let target: number;
+	let point: number;
+	try {
+		f = compile(expr);
+		target = isInfinity(value)
+			? value.sign === 'positive'
+				? Infinity
+				: -Infinity
+			: Number(compile(value)({}));
+		point = isInfinity(approach)
+			? approach.sign === 'positive'
+				? Infinity
+				: -Infinity
+			: Number(compile(approach)({}));
+	} catch {
+		return false;
+	}
+	const steps = [1e-4, 1e-6, 1e-8];
+	const sides: number[] = direction === 'left' ? [-1] : direction === 'right' ? [1] : [-1, 1];
+	for (const side of sides) {
+		const xs = Number.isFinite(point)
+			? steps.map((h) => point + side * h)
+			: steps.map((h) => Math.sign(point) / h);
+		const ys = xs.map((x) => {
+			const y = f({ [varName]: x });
+			return typeof y === 'number' ? y : Number.NaN;
+		});
+		if (ys.some((y) => Number.isNaN(y))) return false;
+		if (Number.isFinite(target)) {
+			const tolerance = 1e-3 * Math.max(1, Math.abs(target));
+			if (ys.some((y) => !(Math.abs(y - target) <= tolerance))) return false;
+		} else {
+			const last = ys[ys.length - 1];
+			if (Math.sign(last) !== Math.sign(target)) return false;
+			if (!(Math.abs(last) > Math.abs(ys[0]))) return false;
+		}
+		if (!Number.isFinite(point)) break;
+	}
+	return true;
 }

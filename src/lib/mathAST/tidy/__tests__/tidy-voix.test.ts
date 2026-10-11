@@ -1,7 +1,7 @@
 /**
  * `tidy` raconte ce qu'il fait — lot 1.
  *
- * Spécification : `docs/wip/tidy-voix-phase0.md`, validée par David le
+ * Spécification : `docs/archive/wip/tidy-voix-phase0.md`, validée par David le
  * 2026-09-21. Les attendus sont en syntaxe maison, telle que `toCustom`
  * l'imprime — même convention que `tidy.test.ts`.
  *

@@ -1,7 +1,7 @@
 /**
  * Figures interactives en thème clair / sombre (lot 2, 2026-10-03)
  *
- * Spécification : docs/wip/figures-interactives-theme-progress.md. On lit la
+ * Spécification : docs/archive/wip/figures-interactives-theme-progress.md. On lit la
  * couleur RENDUE (`getComputedStyle`) en basculant `color-scheme` sur <html>,
  * dont dépendent les tokens `light-dark()` d'app.css. Rendu dans <main> :
  * décor réel de l'application.

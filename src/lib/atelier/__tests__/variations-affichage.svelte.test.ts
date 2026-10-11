@@ -64,10 +64,11 @@ describe('la ligne ne répète plus le tableau', () => {
 });
 
 describe('sans tableau, le bloc reste', () => {
-	it('une fonction à asymptote garde le texte du moteur', () => {
-		const texte = afficherVariations('1/x').textContent ?? '';
+	it('un domaine troué : la ligne dit les sens de variation', () => {
+		const texte = afficherVariations('sqrt(x^2-1)').textContent ?? '';
 
-		// ⚠️ Là, le bloc EST la réponse : le supprimer laisserait la ligne vide.
-		expect(texte).toContain('Domaine');
+		// ⚠️ Là, la ligne EST la réponse : réduite à la dérivée, elle ne dirait
+		// rien des variations (1/x a désormais son tableau, 2026-10-09).
+		expect(texte).toContain('croissante');
 	});
 });

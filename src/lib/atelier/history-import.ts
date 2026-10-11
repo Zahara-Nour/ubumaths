@@ -5,7 +5,7 @@
  * par Zod et borné avant que le moindre geste ne soit rejoué. Une seule issue
  * pour tout ce qui n'est pas un historique, en français (E1 à E3).
  *
- * Phase 0 : `docs/wip/atelier-suppression-export-phase0.md`, lot C2.
+ * Phase 0 : `docs/archive/wip/atelier-suppression-export-phase0.md`, lot C2.
  *
  * @module atelier/history-import
  */
@@ -48,6 +48,7 @@ const shown = {
 	label: z.string().max(MAX_TEXT_LENGTH),
 	text: z.string().max(MAX_TEXT_LENGTH),
 	latex: z.string().max(MAX_TEXT_LENGTH).optional(),
+	note: z.string().max(MAX_TEXT_LENGTH).optional(),
 	failed: z.boolean()
 };
 

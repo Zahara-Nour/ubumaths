@@ -474,19 +474,21 @@ export function denormalizeTerm(term: NormalTerm): MathNode {
 		return coeffNode;
 	}
 
-	// If coefficient is 1, return just the monomial
+	// If coefficient is 1, return just the monomial (`i` n'est pas 1 : `a i` ≠ `a`)
 	if (
 		term.coefficient.terms.length === 1 &&
 		term.coefficient.terms[0].radicals.length === 0 &&
+		term.coefficient.terms[0].hasImaginaryUnit !== true &&
 		isOneRational(term.coefficient.terms[0].rational)
 	) {
 		return monomialNode;
 	}
 
-	// If coefficient is -1, return negated monomial
+	// If coefficient is -1, return negated monomial (`-i` n'est pas -1)
 	if (
 		term.coefficient.terms.length === 1 &&
 		term.coefficient.terms[0].radicals.length === 0 &&
+		term.coefficient.terms[0].hasImaginaryUnit !== true &&
 		term.coefficient.terms[0].rational.n === -1n &&
 		term.coefficient.terms[0].rational.d === 1n
 	) {

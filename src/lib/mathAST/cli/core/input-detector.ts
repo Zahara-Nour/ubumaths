@@ -6,6 +6,11 @@
  */
 
 import type { DetectionResult } from '../types';
+import {
+	FUNCTION_ALIASES,
+	KNOWN_FUNCTION_NAMES,
+	readFunctionCall
+} from '../../parser/custom/tokenizer';
 
 /**
  * LaTeX-specific patterns that indicate LaTeX input
@@ -51,17 +56,57 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// nth root: sqrt[3](x)
 	/sqrt\[\d+\]/,
 	// Absolute value in custom syntax: \|x\|
-	/\\\|.*\\\|/,
+	/\\\|.*\\\|/
 	// Functions without backslash: sqrt(, sin(, cos(, tan(, ln(, log(, exp(, abs(
 	// These are custom syntax - LaTeX requires \sqrt, \sin, etc.
 	// Also includes statistical functions: mean, median, variance, stdev, min, max, sum
 	//
-	// Pas de frontière de mot en tête : `2sqrt(2)`, `xsin(x)`, `3ln(x)` sont de
-	// la syntaxe maison (un nom de fonction collé à un nombre ou à une lettre).
-	// Et `[(^]` en queue : `sin^2(x)` aussi. Une entrée LaTeX porte un backslash
-	// et a déjà été reconnue plus haut.
-	/(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs|mean|median|variance|stdev|min|max|sum)\s*[(^]/
+	// (voir BARE_FUNCTION_CALL, testé à part : il l'emporte sur le LaTeX)
 ];
+
+/**
+ * Un nom de fonction SANS antislash, suivi de son argument : `sin(`, `sin^2(`,
+ * `log_2(`. Le parseur LaTeX le lirait lettre par lettre (`s·i·n`) : sa
+ * présence désigne la syntaxe maison, même si l'entrée porte aussi du LaTeX.
+ *
+ * Pas de frontière de mot en tête : `2sqrt(2)`, `xsin(x)`, `3ln(x)` sont de la
+ * syntaxe maison (un nom de fonction collé à un nombre ou à une lettre). Mais
+ * pas derrière une commande : `\sin(`, `\arcsin(` (dont `sin(` est la fin)
+ * restent du LaTeX — d'où le regard arrière sur `\lettres`.
+ *
+ * ⚠️ Une saisie MÊLÉE l'emporte côté maison : `cos(3x+\pi/4)` (l'atelier
+ * conseille `\pi`, #896) ou `e^{sin(x)}` (l'écriture de sa substitution) — le
+ * parseur maison lit `\pi` et les accolades. Envoyés au parseur LaTeX, ils
+ * devenaient `c·o·s` et `e^{s·i·n·x}` (révélé par l'oracle des dérivées, #910).
+ */
+const BARE_FUNCTION_CALL = new RegExp(
+	`(?<!\\\\[a-zA-Z]*)(${[...KNOWN_FUNCTION_NAMES]
+		.filter((name) => !(name in FUNCTION_ALIASES))
+		.sort((a, b) => b.length - a.length)
+		.join('|')})\\s*[(^_]`
+);
+
+/**
+ * Une suite de lettres collée à `(` que la notation maison lit AUTREMENT que
+ * le LaTeX : un alias (`acos(`, `tg(`) ou un nom inconnu (`racine(`), qu'elle
+ * refuse. Envoyés au parseur LaTeX, ils devenaient des produits de lettres,
+ * sans erreur.
+ */
+function hasFunctionCallReading(input: string): boolean {
+	for (let i = 0; i < input.length; i++) {
+		if (readFunctionCall(input, i) !== null) return true;
+	}
+	return false;
+}
+
+/**
+ * Un nom de fonction sans antislash suivi de son argument (`sin(`, `log_2(`) :
+ * la marque de la syntaxe maison. L'atelier s'en sert pour reconnaître une
+ * saisie mêlée de LaTeX que le parseur maison ne lit pas (`\frac{1}{2}sin(x)`).
+ */
+export function hasBareFunctionCall(input: string): boolean {
+	return BARE_FUNCTION_CALL.test(input) || hasFunctionCallReading(input);
+}
 
 /**
  * Detect the input format of a mathematical expression.
@@ -86,6 +131,13 @@ export function detectInputFormat(input: string): DetectionResult {
 
 	if (trimmed.length === 0) {
 		return { format: 'unknown', confidence: 0 };
+	}
+
+	// Un nom de fonction sans antislash : la syntaxe maison, même mêlée de LaTeX.
+	// `√` aussi : le parseur LaTeX le lisait comme une lettre (√(x+1) = 3
+	// rendait x = (−√+3)/√) ; la syntaxe maison le lit comme sqrt.
+	if (hasBareFunctionCall(trimmed) || trimmed.includes('√')) {
+		return { format: 'custom', confidence: 0.9 };
 	}
 
 	// Check for LaTeX-specific patterns (high confidence)

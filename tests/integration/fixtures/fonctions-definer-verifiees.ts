@@ -104,11 +104,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id, dossier de l’appelant'
 	},
-	'purchase_shop_item(p_student_id uuid, p_template_id uuid, p_quantity integer, p_purchase_context jsonb)':
-		{
-			categorie: 'compte-appelant',
-			justification: 'refuse si p_student_id <> auth.uid()'
-		},
 	'purchase_vip_card(p_student_id uuid, p_card_id text)': {
 		categorie: 'compte-appelant',
 		justification: 'auth.uid() requis et égal à p_student_id'
@@ -201,10 +196,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'duplicate_template(p_template_id uuid, p_user_id uuid, p_new_title text)': {
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'exige p_user_id = auth.uid() ET is_teacher_or_admin'
-	},
-	'get_2048_user_rank(p_user_id uuid)': {
-		categorie: 'compte-appelant-ou-prof',
-		justification: 'garde auth.uid() = p_user_id ou is_teacher_or_admin (lot 4)'
 	},
 	'get_allowed_recipients(p_user_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
@@ -542,10 +533,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 			categorie: 'prof',
 			justification: 'rôle prof/admin de auth.uid() exigé, auteur = auth.uid()'
 		},
-	'process_weekly_rewards(p_week_start date, p_week_end date, p_class_ids uuid[])': {
-		categorie: 'prof',
-		justification: 'rôle admin ou teacher de auth.uid() exigé'
-	},
 	'redistribute_tournament_rewards(p_tournament_id uuid)': {
 		categorie: 'prof',
 		justification: 'créateur du tournoi (auth.uid()) ou admin'
@@ -814,6 +801,10 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'classement',
 		justification: 'auth.uid() requis, borné à my_school() (classe, niveau, école)'
 	},
+	'riddle_school_leaderboard(p_limit integer)': {
+		categorie: 'classement',
+		justification: 'auth.uid() requis, borné à my_school() ; prénom et score seulement'
+	},
 	'minesweeper_scoped_leaderboard(p_scope text, p_limit integer)': {
 		categorie: 'classement',
 		justification: 'auth.uid() requis, borné à my_school() (classe, niveau, école)'
@@ -880,5 +871,38 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'shared_coursework_is_restricted(p_shared_coursework_id uuid)': {
 		categorie: 'non-personnel',
 		justification: 'booléen : un partage est-il restreint, sans dire à qui'
+	}
+};
+
+// ============================================================================
+// FONCTIONS DE TRIGGER SECURITY DEFINER
+// ============================================================================
+
+/**
+ * Une fonction de trigger ne s'appelle pas en RPC (« can only be called as triggers ») : elle
+ * sort de la liste ci-dessus. Celles qui sont déclarées ici sont vérifiées une à une par le
+ * garde-fou (d) : SECURITY DEFINER, propriétaire postgres, EXECUTE retiré à PUBLIC, anon et
+ * authenticated, garde d'appelant lue dans le corps (`auth.role()` et
+ * `public.is_teacher_or_admin()`, ou `public.is_admin()`, plus stricte).
+ */
+export interface DeclencheurDefinerVerifie {
+	/** Une ligne, en français : ce que fait la fonction, et pourquoi DEFINER. */
+	justification: string;
+}
+
+/** Règles de tag (migration 20261013120000_tags_modeles_points, choix (A) de David, 2026-10-10). */
+const REGLES_DE_TAG =
+	'validation des règles de tag sur une vue complète ; garde d’appelant (ni prof ni admin : non évalué) ; aucune écriture, aucune donnée renvoyée';
+
+export const DECLENCHEURS_DEFINER_VERIFIES: Record<string, DeclencheurDefinerVerifie> = {
+	'question_template_points_check_rules()': { justification: REGLES_DE_TAG },
+	'question_templates_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'curriculum_points_guard_tags()': { justification: REGLES_DE_TAG },
+	'classification_nodes_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'exercise_curriculum_points_check_rules()': { justification: REGLES_DE_TAG },
+	'exercise_classifications_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'dictionary_entries_keep_version()': {
+		justification:
+			'historique du dictionnaire : seule voie d’écriture des versions (plus d’INSERT direct) ; garde d’appelant admin ; auteur = auth.uid()'
 	}
 };

@@ -16,6 +16,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { present } from '../../helpers/present';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData,
@@ -468,7 +469,8 @@ describe('Exercise Completion Tracking Triggers', () => {
 
 			// Assert: completed_at should remain unchanged (compare as instants; the DB
 			// returns '+00:00' while toISOString() returns 'Z' for the same time).
-			expect(new Date(updated!.completed_at).getTime()).toBe(new Date(completedAt).getTime());
+			const completedAfter = present(updated?.completed_at, 'completed_at après mise à jour');
+			expect(new Date(completedAfter).getTime()).toBe(new Date(completedAt).getTime());
 			expect(updated!.view_count).toBe(6);
 
 			// But last_viewed_at should update

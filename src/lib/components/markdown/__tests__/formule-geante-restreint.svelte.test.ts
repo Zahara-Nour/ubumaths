@@ -121,7 +121,7 @@ describe('Rendu restreint — formule hors bornes : texte, jamais MathLive', () 
 		const screen = await render(CellOutputs, {
 			target: mainElement(),
 			props: {
-				outputs: [{ output_type: 'display_data', data: { 'text/plain': latex }, metadata: {} }],
+				outputs: [{ output_type: 'display_data', data: { 'text/plain': latex } }],
 				restricted: true
 			}
 		});
@@ -153,9 +153,7 @@ describe('Rendu restreint — formules légitimes : toujours rendues', () => {
 		const screen = await render(CellOutputs, {
 			target: mainElement(),
 			props: {
-				outputs: [
-					{ output_type: 'display_data', data: { 'text/plain': '\\frac{1}{2}' }, metadata: {} }
-				],
+				outputs: [{ output_type: 'display_data', data: { 'text/plain': '\\frac{1}{2}' } }],
 				restricted: true
 			}
 		});
@@ -179,9 +177,7 @@ describe('Hors mode restreint (contenu du prof) — inchangé', () => {
 		const screen = await render(CellOutputs, {
 			target: mainElement(),
 			props: {
-				outputs: [
-					{ output_type: 'display_data', data: { 'text/plain': FIVE_LEFTS }, metadata: {} }
-				],
+				outputs: [{ output_type: 'display_data', data: { 'text/plain': FIVE_LEFTS } }],
 				restricted: false
 			}
 		});

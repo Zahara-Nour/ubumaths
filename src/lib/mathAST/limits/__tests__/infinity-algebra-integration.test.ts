@@ -75,13 +75,13 @@ describe('Infinity Algebra Integration', () => {
 
 	describe('Multiplication at infinity', () => {
 		it('2x at x→+∞ is +∞', () => {
-			const expr = multiply(number('2'), variable('x'));
+			const expr = multiply(number('2'), variable('x'), 'implicit');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectInfinity(result, 'positive');
 		});
 
 		it('-3x at x→+∞ is -∞', () => {
-			const expr = multiply(opposite(number('3')), variable('x'));
+			const expr = multiply(opposite(number('3')), variable('x'), 'implicit');
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectInfinity(result, 'negative');
 		});

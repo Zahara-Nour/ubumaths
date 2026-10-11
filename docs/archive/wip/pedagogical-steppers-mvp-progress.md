@@ -216,7 +216,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - 245 tests spécifiques au feature (29 types + 66 pipeline avec V1.1 + 29 renderer + 19 dispatcher + 23 demos + 30 correction-generator + 8 generated-steps-demo + 41 ajustements/V1.1)
   - **V1.1 raffinements livrés** : `nodesEqual` structurel (B), `factor-gcd` nouveau kind (C, count 30 → 31), `smartNegate` collapse `--N` (D), pretty-print CLI, fix `formatZeroProduct` `(A) · (B) = 0`
   - Limitations V1 : coefficients paramétriques (`mx²+…`), équations bicarrées, cubiques/quartiques (hors scope, throw NotImplemented → fallback Mode A)
-  - **V2 prompt rédigé** : `docs/wip/quadratic-stepper-v2-prompt.md` (paramétriques + discussion sur paramètre, ~14-16h tunnel)
+  - **V2 prompt rédigé** : `docs/archive/wip/quadratic-stepper-v2-prompt.md` (paramétriques + discussion sur paramètre, ~14-16h tunnel)
 
 - **Stepper pédagogique pour différentiation** (`kind: 'differentiate'`) → livré, voir `differentiation-stepper-progress.md`. Inclut :
 

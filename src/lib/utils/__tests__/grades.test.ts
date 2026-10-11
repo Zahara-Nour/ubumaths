@@ -154,20 +154,20 @@ describe('getAccessibleGrades', () => {
 		});
 	});
 
-	describe('high school STMG track', () => {
-		it('should return 1ere STMG and all lower grades', () => {
-			const result = getAccessibleGrades('1_STMG');
+	describe('high school techno track', () => {
+		it('should return 1ère techno and all lower grades', () => {
+			const result = getAccessibleGrades('1_TECHNO');
 			expect(result).toHaveLength(11);
-			expect(result[0]).toBe('1_STMG');
+			expect(result[0]).toBe('1_TECHNO');
 			expect(result).toContain('2');
 			expect(result).toContain('CP');
 		});
 
-		it('should return T_STMG and all lower grades through STMG track', () => {
-			const result = getAccessibleGrades('T_STMG');
+		it('should return T_TECHNO and all lower grades through techno track', () => {
+			const result = getAccessibleGrades('T_TECHNO');
 			expect(result).toHaveLength(12);
-			expect(result[0]).toBe('T_STMG');
-			expect(result).toContain('1_STMG');
+			expect(result[0]).toBe('T_TECHNO');
+			expect(result).toContain('1_TECHNO');
 			expect(result).toContain('2');
 		});
 	});
@@ -227,12 +227,12 @@ describe('getReachableGrades', () => {
 		expect(result).toContain('2');
 		expect(result).toContain('1_GEN');
 		expect(result).toContain('1_SPE');
-		expect(result).toContain('1_STMG');
+		expect(result).toContain('1_TECHNO');
 		expect(result).toContain('T_GEN');
 		expect(result).toContain('T_SPE');
 		expect(result).toContain('T_EXP');
 		expect(result).toContain('T_COMP');
-		expect(result).toContain('T_STMG');
+		expect(result).toContain('T_TECHNO');
 	});
 
 	it('should use caching', () => {
@@ -293,7 +293,7 @@ describe('formatGradeForDisplay', () => {
 		});
 
 		it('should return 1ere generale for 1_GEN', () => {
-			expect(formatGradeForDisplay('1_GEN')).toBe('1ère générale');
+			expect(formatGradeForDisplay('1_GEN')).toBe('1ère générale (maths spécifiques)');
 		});
 
 		it('should return Terminale generale for T_GEN', () => {
@@ -316,12 +316,12 @@ describe('formatGradeForDisplay', () => {
 			expect(formatGradeForDisplay('T_COMP')).toBe('Terminale maths complémentaires');
 		});
 
-		it('should return 1ere STMG for 1_STMG', () => {
-			expect(formatGradeForDisplay('1_STMG')).toBe('1ère STMG');
+		it('should return 1ère technologique for 1_TECHNO', () => {
+			expect(formatGradeForDisplay('1_TECHNO')).toBe('1ère technologique');
 		});
 
-		it('should return Terminale STMG for T_STMG', () => {
-			expect(formatGradeForDisplay('T_STMG')).toBe('Terminale STMG');
+		it('should return Terminale technologique for T_TECHNO', () => {
+			expect(formatGradeForDisplay('T_TECHNO')).toBe('Terminale technologique');
 		});
 	});
 
@@ -353,7 +353,7 @@ describe('formatGradeShort', () => {
 		expect(formatGradeShort('2')).toBe('2nde');
 		expect(formatGradeShort('1_GEN')).toBe('1ère G');
 		expect(formatGradeShort('T_SPE')).toBe('Term Spé');
-		expect(formatGradeShort('T_STMG')).toBe('Term STMG');
+		expect(formatGradeShort('T_TECHNO')).toBe('Term techno');
 	});
 });
 
@@ -471,13 +471,18 @@ describe('parseGradeCode', () => {
 			expect(parseGradeCode('premiere specialite maths')).toBe('1_SPE');
 		});
 
-		it('should parse 1ere STMG variations', () => {
-			expect(parseGradeCode('1_stmg')).toBe('1_STMG');
-			expect(parseGradeCode('1stmg')).toBe('1_STMG');
-			expect(parseGradeCode('1ère stmg')).toBe('1_STMG');
-			expect(parseGradeCode('1ere stmg')).toBe('1_STMG');
-			expect(parseGradeCode('première stmg')).toBe('1_STMG');
-			expect(parseGradeCode('premiere stmg')).toBe('1_STMG');
+		it('should parse 1ere techno variations (legacy stmg compris)', () => {
+			expect(parseGradeCode('1_techno')).toBe('1_TECHNO');
+			expect(parseGradeCode('1techno')).toBe('1_TECHNO');
+			expect(parseGradeCode('1ère techno')).toBe('1_TECHNO');
+			expect(parseGradeCode('1ere techno')).toBe('1_TECHNO');
+			expect(parseGradeCode('première technologique')).toBe('1_TECHNO');
+			expect(parseGradeCode('1_stmg')).toBe('1_TECHNO');
+			expect(parseGradeCode('1stmg')).toBe('1_TECHNO');
+			expect(parseGradeCode('1ère stmg')).toBe('1_TECHNO');
+			expect(parseGradeCode('1ere stmg')).toBe('1_TECHNO');
+			expect(parseGradeCode('première stmg')).toBe('1_TECHNO');
+			expect(parseGradeCode('premiere stmg')).toBe('1_TECHNO');
 		});
 	});
 
@@ -522,12 +527,18 @@ describe('parseGradeCode', () => {
 			expect(parseGradeCode('term comp')).toBe('T_COMP');
 		});
 
-		it('should parse terminale STMG variations', () => {
-			expect(parseGradeCode('t_stmg')).toBe('T_STMG');
-			expect(parseGradeCode('tstmg')).toBe('T_STMG');
-			expect(parseGradeCode('terminale stmg')).toBe('T_STMG');
-			expect(parseGradeCode('term stmg')).toBe('T_STMG');
-			expect(parseGradeCode('tle stmg')).toBe('T_STMG');
+		it('should parse terminale techno variations (legacy stmg compris)', () => {
+			expect(parseGradeCode('t_techno')).toBe('T_TECHNO');
+			expect(parseGradeCode('ttechno')).toBe('T_TECHNO');
+			expect(parseGradeCode('terminale techno')).toBe('T_TECHNO');
+			expect(parseGradeCode('terminale technologique')).toBe('T_TECHNO');
+			expect(parseGradeCode('term techno')).toBe('T_TECHNO');
+			expect(parseGradeCode('tle techno')).toBe('T_TECHNO');
+			expect(parseGradeCode('t_stmg')).toBe('T_TECHNO');
+			expect(parseGradeCode('tstmg')).toBe('T_TECHNO');
+			expect(parseGradeCode('terminale stmg')).toBe('T_TECHNO');
+			expect(parseGradeCode('term stmg')).toBe('T_TECHNO');
+			expect(parseGradeCode('tle stmg')).toBe('T_TECHNO');
 		});
 	});
 
@@ -695,8 +706,8 @@ describe('getGradesByLevel', () => {
 			'T_SPE',
 			'T_EXP',
 			'T_COMP',
-			'1_STMG',
-			'T_STMG'
+			'1_TECHNO',
+			'T_TECHNO'
 		]);
 	});
 
@@ -791,12 +802,12 @@ describe('getGradeSelectItemsByTrack', () => {
 		expect(values).not.toContain('T_GEN');
 	});
 
-	it('should return STMG track grades (including 2nde)', () => {
-		const result = getGradeSelectItemsByTrack('stmg');
+	it('should return techno track grades (including 2nde)', () => {
+		const result = getGradeSelectItemsByTrack('techno');
 		const values = result.map((item) => item.value);
 		expect(values).toContain('2');
-		expect(values).toContain('1_STMG');
-		expect(values).toContain('T_STMG');
+		expect(values).toContain('1_TECHNO');
+		expect(values).toContain('T_TECHNO');
 		expect(values).not.toContain('1_SPE');
 		expect(values).not.toContain('1_GEN');
 	});
@@ -844,8 +855,8 @@ describe('getNextGrade', () => {
 			expect(getNextGrade('T_COMP')).toBe(null);
 		});
 
-		it('should return null for T_STMG', () => {
-			expect(getNextGrade('T_STMG')).toBe(null);
+		it('should return null for T_TECHNO', () => {
+			expect(getNextGrade('T_TECHNO')).toBe(null);
 		});
 	});
 
@@ -858,8 +869,8 @@ describe('getNextGrade', () => {
 			expect(getNextGrade('1_SPE')).toBe('T_SPE');
 		});
 
-		it('should return T_STMG for 1_STMG', () => {
-			expect(getNextGrade('1_STMG')).toBe('T_STMG');
+		it('should return T_TECHNO for 1_TECHNO', () => {
+			expect(getNextGrade('1_TECHNO')).toBe('T_TECHNO');
 		});
 	});
 });
@@ -898,8 +909,8 @@ describe('getPreviousGrade', () => {
 			expect(getPreviousGrade('1_SPE')).toBe('2');
 		});
 
-		it('should return 2nde for 1_STMG', () => {
-			expect(getPreviousGrade('1_STMG')).toBe('2');
+		it('should return 2nde for 1_TECHNO', () => {
+			expect(getPreviousGrade('1_TECHNO')).toBe('2');
 		});
 
 		it('should return 1_GEN for T_GEN', () => {
@@ -977,7 +988,7 @@ describe('compareGrades', () => {
 		// All terminale grades have schoolYear 12
 		expect(compareGrades('T_GEN', 'T_SPE')).toBe(0);
 		expect(compareGrades('T_SPE', 'T_EXP')).toBe(0);
-		expect(compareGrades('T_COMP', 'T_STMG')).toBe(0);
+		expect(compareGrades('T_COMP', 'T_TECHNO')).toBe(0);
 	});
 
 	it('should be usable for sorting', () => {
@@ -1015,11 +1026,11 @@ describe('getGradeRange', () => {
 	it('should include all grades at same schoolYear', () => {
 		// Range from 1ere to terminale includes all grades at those years
 		const result = getGradeRange('1_GEN', 'T_GEN');
-		// Year 11: 1_GEN, 1_SPE, 1_STMG
-		// Year 12: T_GEN, T_SPE, T_EXP, T_COMP, T_STMG
+		// Year 11: 1_GEN, 1_SPE, 1_TECHNO
+		// Year 12: T_GEN, T_SPE, T_EXP, T_COMP, T_TECHNO
 		expect(result).toContain('1_GEN');
 		expect(result).toContain('1_SPE');
-		expect(result).toContain('1_STMG');
+		expect(result).toContain('1_TECHNO');
 		expect(result).toContain('T_GEN');
 		expect(result).toContain('T_SPE');
 	});
@@ -1084,7 +1095,7 @@ describe('integration tests', () => {
 	});
 
 	it('should have all grades accessible from at least one terminus grade', () => {
-		const terminalGrades: GradeCode[] = ['T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_STMG'];
+		const terminalGrades: GradeCode[] = ['T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_TECHNO'];
 		const allAccessible = new Set<GradeCode>();
 
 		terminalGrades.forEach((grade) => {

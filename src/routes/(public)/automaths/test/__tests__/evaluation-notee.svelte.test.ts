@@ -30,6 +30,14 @@ vi.mock('$app/navigation', async (importOriginal) => ({
 import Page from '../+page.svelte';
 import { goto, replaceState } from '$app/navigation';
 
+// Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
+vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+	const { REFERENCE_DICTIONARY: entries } = await import(
+		'../../../../../../tests/fixtures/lexique/dictionnaire-reference'
+	);
+	return { fetchDictionary: async () => entries };
+});
+
 const ASSIGNMENT = '44444444-4444-4444-8444-444444444444';
 const ATTEMPT = '99999999-9999-4999-8999-999999999999';
 

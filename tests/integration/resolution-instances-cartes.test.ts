@@ -35,10 +35,7 @@ const ANON_KEY =
 	process.env.SUPABASE_TEST_ANON_KEY ||
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
-/** Pas encore dans `database.ts` : la fonction est générée après sa mise en prod. */
-const RESOUDRE = 'resolve_card_instances' as never;
-
-type LigneResolue = { instance_id: string; card_id: string };
+const RESOUDRE = 'resolve_card_instances';
 
 async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
@@ -140,7 +137,7 @@ describe('résoudre une instance de carte', () => {
 		});
 		expect(error).toBeNull();
 
-		const lignes = (data ?? []) as LigneResolue[];
+		const lignes = data ?? [];
 		expect(lignes, 'l’instance du vendeur n’a pas été résolue').toHaveLength(1);
 		expect(lignes[0].instance_id).toBe(INSTANCE_VENDEUR);
 		expect(lignes[0].card_id).toBe(modeleId);
@@ -153,7 +150,7 @@ describe('résoudre une instance de carte', () => {
 	 */
 	it('elle ne rend AUCUNE colonne de profil', async () => {
 		const { data } = await serveur.rpc(RESOUDRE, { p_instance_ids: [INSTANCE_VENDEUR] });
-		const ligne = ((data ?? []) as LigneResolue[])[0];
+		const ligne = (data ?? [])[0];
 
 		expect(ligne).toBeDefined();
 		expect(

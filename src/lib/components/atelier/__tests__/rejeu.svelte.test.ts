@@ -1,6 +1,6 @@
 /**
  * Rejouer un historique depuis la vue Calcul — lot C2 de
- * `docs/wip/atelier-suppression-export-phase0.md` (R1, R2, E1).
+ * `docs/archive/wip/atelier-suppression-export-phase0.md` (R1, R2, E1).
  */
 
 import { describe, it, expect, afterEach } from 'vitest';

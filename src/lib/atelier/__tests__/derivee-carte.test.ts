@@ -2,7 +2,7 @@
  * « Dériver » crée la carte `f′` — lot 3a du passage de `/grapheur` par
  * l'atelier.
  *
- * Phase 0 `docs/wip/atelier-grapheur-phase0.md` §2 (D1 à D7, L1 à L4, E1 à
+ * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §2 (D1 à D7, L1 à L4, E1 à
  * E3), décisions G6 et G7 de David : la dérivée s'appelle `f′`, jamais `g`,
  * et elle SUIT `f` (dérivée vivante : le parseur lit `f'` comme la dérivée de
  * `f`, mesuré avant ce lot — `g(x) = f'(x)` valait déjà `2x-3`).
@@ -401,6 +401,7 @@ describe('revue du lot 3a', () => {
 		const result = runInput({ atelier, engine: new WebReplEngine() }, '.dériver f');
 
 		expect(atelier.names).toEqual(['f']);
-		expect(JSON.stringify(result)).toContain('ne se calcule pas');
+		// Le moteur dit POURQUOI : plus « ne se calcule pas » générique
+		expect(JSON.stringify(result)).toContain("la valeur absolue n'est pas dérivable");
 	});
 });

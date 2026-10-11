@@ -61,6 +61,6 @@ describe('ce que l eleve lit reste lisible', () => {
 		const rendu = run('.variations x^2-3x+1').text;
 
 		expect(rendu).toContain('3/2');
-		expect(rendu).toContain('Derivee');
+		expect(rendu).toContain('Dérivée');
 	});
 });

@@ -14,6 +14,13 @@ function pos(
 	return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
 }
 
+// Identifiant de figure d'un symbole : il doit exister, sinon le test échoue ici.
+function idOf(symbols: ReturnType<typeof runDsl>['symbols'], name: string): string {
+	const entry = symbols.get(name);
+	if (!entry?.figureId) throw new Error(`Symbol "${name}" not found or has no figureId`);
+	return entry.figureId;
+}
+
 function dist(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
 	return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 }
@@ -29,7 +36,7 @@ describe('cercle(A, B, C) — circle through 3 points', () => {
 		);
 		expect(symbols.get('c')!.type).toBe('cercle');
 		// The circumcircle of a right triangle at origin has center (2, 2) and radius 2*sqrt(2)
-		const el = figure.getElementById(symbols.get('c')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'c'))!;
 		expect(el.type).toBe('circleBy3Points');
 	});
 
@@ -44,7 +51,7 @@ describe('cercle(A, B, C) — circle through 3 points', () => {
 			].join('\n')
 		);
 		// Points on circle x² + y² = 9, center (0, 0), radius 3
-		const r = figure.getScalarValue(symbols.get('r')!.figureId);
+		const r = figure.getScalarValue(idOf(symbols, 'r'));
 		expect(r).toBeCloseTo(3, 5);
 	});
 
@@ -52,10 +59,10 @@ describe('cercle(A, B, C) — circle through 3 points', () => {
 		const { figure, symbols } = runDsl(
 			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 4)', 'c = cercle(A, B, C)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('c')!.figureId)!;
-		expect(el.dependsOn).toContain(symbols.get('A')!.figureId);
-		expect(el.dependsOn).toContain(symbols.get('B')!.figureId);
-		expect(el.dependsOn).toContain(symbols.get('C')!.figureId);
+		const el = figure.getElementById(idOf(symbols, 'c'))!;
+		expect(el.dependsOn).toContain(idOf(symbols, 'A'));
+		expect(el.dependsOn).toContain(idOf(symbols, 'B'));
+		expect(el.dependsOn).toContain(idOf(symbols, 'C'));
 	});
 
 	it('throws for collinear points', () => {
@@ -83,7 +90,7 @@ describe('cercle(A, B, C) — edge cases', () => {
 			].join('\n')
 		);
 		// Circumradius of equilateral triangle with side 2 = 2/sqrt(3)
-		const r = figure.getScalarValue(symbols.get('r')!.figureId);
+		const r = figure.getScalarValue(idOf(symbols, 'r'));
 		expect(r).toBeCloseTo(2 / Math.sqrt(3), 4);
 	});
 
@@ -131,7 +138,7 @@ describe('cercle(A, B, C) — edge cases', () => {
 				'r = rayon(c)'
 			].join('\n')
 		);
-		const r = figure.getScalarValue(symbols.get('r')!.figureId);
+		const r = figure.getScalarValue(idOf(symbols, 'r'));
 		expect(r).toBeDefined();
 		expect(r!).toBeGreaterThan(0);
 	});
@@ -148,7 +155,7 @@ describe('cercle(A, B, C) — edge cases', () => {
 			].join('\n')
 		);
 		// Circle centered at (0,0) r=3, P at (5,0) → 25-9=16
-		const val = figure.getScalarValue(symbols.get('p')!.figureId);
+		const val = figure.getScalarValue(idOf(symbols, 'p'));
 		expect(val).toBeCloseTo(16, 5);
 	});
 
@@ -182,7 +189,7 @@ describe('secteur() — circular sector', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 'A = point(3, 0)', 'B = point(0, 3)', 's = secteur(O, A, B)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('s')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 's'))!;
 		expect(el.type).toBe('sectorByPoints');
 	});
 
@@ -190,7 +197,7 @@ describe('secteur() — circular sector', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 'A = point(3, 0)', 'B = point(0, 3)', 's = secteur(O, A, B)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('s')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 's'))!;
 		expect(el.style?.fillColor).toBeDefined();
 		expect(el.style?.fillOpacity).toBeGreaterThan(0);
 	});
@@ -199,10 +206,10 @@ describe('secteur() — circular sector', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 'A = point(3, 0)', 'B = point(0, 3)', 's = secteur(O, A, B)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('s')!.figureId)!;
-		expect(el.dependsOn).toContain(symbols.get('O')!.figureId);
-		expect(el.dependsOn).toContain(symbols.get('A')!.figureId);
-		expect(el.dependsOn).toContain(symbols.get('B')!.figureId);
+		const el = figure.getElementById(idOf(symbols, 's'))!;
+		expect(el.dependsOn).toContain(idOf(symbols, 'O'));
+		expect(el.dependsOn).toContain(idOf(symbols, 'A'));
+		expect(el.dependsOn).toContain(idOf(symbols, 'B'));
 	});
 });
 
@@ -215,7 +222,7 @@ describe('secteur() — edge cases', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 's = secteur(O, rayon=3, debut=0, fin=90)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('s')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 's'))!;
 		expect(el.type).toBe('sectorByAngles');
 	});
 
@@ -227,8 +234,8 @@ describe('secteur() — edge cases', () => {
 				's = secteur(O, rayon=r, debut=0, fin=90)'
 			].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('s')!.figureId)!;
-		expect(el.dependsOn).toContain(symbols.get('r')!.figureId);
+		const el = figure.getElementById(idOf(symbols, 's'))!;
+		expect(el.dependsOn).toContain(idOf(symbols, 'r'));
 	});
 
 	it('sector with 270 degree sweep (reflex angle)', () => {
@@ -260,7 +267,7 @@ describe('secteur() — edge cases', () => {
 				'style(s, remplissage="vert", opacite_fond=0.8)'
 			].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('s')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 's'))!;
 		expect(el.style?.fillColor).toBe('vert');
 		expect(el.style?.fillOpacity).toBe(0.8);
 	});
@@ -280,7 +287,7 @@ describe('couronne() — annulus', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 'a = couronne(O, r1=2, r2=4)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('a')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'a'))!;
 		expect(el.type).toBe('annulus');
 	});
 
@@ -288,7 +295,7 @@ describe('couronne() — annulus', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 'a = couronne(O, r1=2, r2=4)'].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('a')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'a'))!;
 		expect(el.style?.fillColor).toBeDefined();
 		expect(el.style?.fillOpacity).toBeGreaterThan(0);
 	});
@@ -303,8 +310,8 @@ describe('couronne() — annulus', () => {
 				'\n'
 			)
 		);
-		const el = figure.getElementById(symbols.get('a')!.figureId)!;
-		expect(el.dependsOn).toContain(symbols.get('r')!.figureId);
+		const el = figure.getElementById(idOf(symbols, 'a'))!;
+		expect(el.dependsOn).toContain(idOf(symbols, 'r'));
 	});
 });
 
@@ -335,7 +342,7 @@ describe('couronne() — edge cases', () => {
 				'style(a, remplissage="violet", opacite_fond=0.5)'
 			].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('a')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'a'))!;
 		expect(el.style?.fillColor).toBe('violet');
 		expect(el.style?.fillOpacity).toBe(0.5);
 	});
@@ -432,7 +439,7 @@ describe('puissance() — power of a point', () => {
 				'\n'
 			)
 		);
-		const val = figure.getScalarValue(symbols.get('p')!.figureId);
+		const val = figure.getScalarValue(idOf(symbols, 'p'));
 		// d² - r² = 25 - 9 = 16
 		expect(val).toBeCloseTo(16, 5);
 	});
@@ -443,7 +450,7 @@ describe('puissance() — power of a point', () => {
 				'\n'
 			)
 		);
-		const val = figure.getScalarValue(symbols.get('p')!.figureId);
+		const val = figure.getScalarValue(idOf(symbols, 'p'));
 		// d² - r² = 1 - 9 = -8
 		expect(val).toBeCloseTo(-8, 5);
 	});
@@ -454,7 +461,7 @@ describe('puissance() — power of a point', () => {
 				'\n'
 			)
 		);
-		const val = figure.getScalarValue(symbols.get('p')!.figureId);
+		const val = figure.getScalarValue(idOf(symbols, 'p'));
 		expect(val).toBeCloseTo(0, 5);
 	});
 
@@ -464,9 +471,9 @@ describe('puissance() — power of a point', () => {
 				'\n'
 			)
 		);
-		const el = figure.getElementById(symbols.get('p')!.figureId)!;
-		expect(el.dependsOn).toContain(symbols.get('P')!.figureId);
-		expect(el.dependsOn).toContain(symbols.get('c')!.figureId);
+		const el = figure.getElementById(idOf(symbols, 'p'))!;
+		expect(el.dependsOn).toContain(idOf(symbols, 'P'));
+		expect(el.dependsOn).toContain(idOf(symbols, 'c'));
 	});
 });
 
@@ -486,7 +493,7 @@ describe('puissance() — edge cases', () => {
 			].join('\n')
 		);
 		// d²-r² = 25-16 = 9
-		const val = figure.getScalarValue(symbols.get('p')!.figureId);
+		const val = figure.getScalarValue(idOf(symbols, 'p'));
 		expect(val).toBeCloseTo(9, 5);
 	});
 
@@ -495,7 +502,7 @@ describe('puissance() — edge cases', () => {
 			['O = point(0, 0)', 'c = cercle(O, rayon=4)', 'p = puissance(O, c)'].join('\n')
 		);
 		// d²-r² = 0-16 = -16
-		const val = figure.getScalarValue(symbols.get('p')!.figureId);
+		const val = figure.getScalarValue(idOf(symbols, 'p'));
 		expect(val).toBeCloseTo(-16, 5);
 	});
 
@@ -519,7 +526,7 @@ describe('DSL style — remplissage / opacite_fond', () => {
 				'style(p, remplissage="bleu")'
 			].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('p')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'p'))!;
 		expect(el.style?.fillColor).toBe('bleu');
 	});
 
@@ -533,7 +540,7 @@ describe('DSL style — remplissage / opacite_fond', () => {
 				'style(p, opacite_fond=0.5)'
 			].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('p')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'p'))!;
 		expect(el.style?.fillOpacity).toBe(0.5);
 	});
 
@@ -545,7 +552,7 @@ describe('DSL style — remplissage / opacite_fond', () => {
 				'style(c, remplissage="rouge", opacite_fond=0.3)'
 			].join('\n')
 		);
-		const el = figure.getElementById(symbols.get('c')!.figureId)!;
+		const el = figure.getElementById(idOf(symbols, 'c'))!;
 		expect(el.style?.fillColor).toBe('rouge');
 		expect(el.style?.fillOpacity).toBe(0.3);
 	});

@@ -17,7 +17,7 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		templateId: 'test-composite-duration',
 		statement: 'Durée ?' as ResolvedMarkdown,
 		blanks,
-		grades: ['6e'],
+		grades: ['6'],
 		theme: 'Grandeurs',
 		domain: 'Durées',
 		level: 1,
@@ -180,6 +180,7 @@ describe('runTestSpec — gabarit de durée', () => {
 		['135\\,\\min', 'correct', []]
 	] as const)('%s → %s', (answer, status, constraintViolations) => {
 		const result = runTestSpec(template, {
+			description: `${answer} → ${status}`,
 			variables: { a: '2', b: '15' },
 			answers: [answer],
 			expected: { status, constraintViolations: [...constraintViolations] }

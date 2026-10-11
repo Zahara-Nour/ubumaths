@@ -33,7 +33,25 @@ export type ErrorCode =
 	| 'UNSUPPORTED_FORMAT'
 	| 'UNKNOWN_UNIT'
 	| 'DIMENSION_MISMATCH'
-	| 'MATH_ERROR';
+	| 'MATH_ERROR'
+	/** Ce qui suit le « ; » n'est pas une variable : message en français, destiné à l'élève */
+	| 'AMBIGUOUS_VARIABLE'
+	/** Mots-clés d'une commande mal écrits (`de … à`, `en x=3`, `ordre`…) : message en français, destiné à l'élève */
+	| 'COMMAND_SYNTAX'
+	/** Fonction usuelle sans parenthèses (`sin x`) : message en français, destiné à l'élève */
+	| 'BARE_FUNCTION'
+	/** `.taylor` : ordre au-delà de la limite — message en français, destiné à l'élève */
+	| 'TAYLOR_ORDER'
+	/** Dérivée refusée (`floor`, `abs`…) : message en français, destiné à l'élève */
+	| 'NOT_DIFFERENTIABLE'
+	/** Intégrale définie refusée (pôle dans [a ; b]) : message en français, destiné à l'élève */
+	| 'INTEGRAL_UNDEFINED'
+	/** Domaine : contrainte non résolue (refus plutôt qu'un domaine faux) — message en français, destiné à l'élève */
+	| 'DOMAIN_UNRESOLVED'
+	/** Inéquation lue mais pas résolue (signe inconnu) : message en français, destiné à l'élève */
+	| 'INEQUALITY_UNSOLVED'
+	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
+	| 'EQUATION_UNSOLVED';
 
 /**
  * Structured error for command execution
@@ -79,6 +97,12 @@ export interface CommandResult {
 	readonly success: boolean;
 	readonly error?: CommandError;
 	readonly ast?: MathNode;
+	/**
+	 * La réponse en LaTeX, quand la commande sait l'écrire depuis ses données
+	 * structurées (`.solve` : toutes les solutions, que `ast` ne porte pas —
+	 * il n'en garde que la première).
+	 */
+	readonly latex?: string;
 	/** Optional HTML-formatted output for web display */
 	readonly outputHtml?: string;
 

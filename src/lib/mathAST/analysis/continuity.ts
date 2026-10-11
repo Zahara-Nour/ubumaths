@@ -973,6 +973,19 @@ function detectSourceFromExpression(
 		if (name === 'ceil') return 'ceil';
 	}
 
+	// Puissance d'exposant non entier (x^{2/3}) : borne du domaine comme une
+	// racine (convention x^a = e^{a ln x}, base ≥ 0), pas une discontinuité
+	const fractionalPowers = findNodes(
+		expr,
+		(node) =>
+			node.type === 'superscript' &&
+			findNodes(node.superscript, (n) => n.type === 'variable').length === 0 &&
+			!Number.isInteger(tryEvaluateNumeric(node.superscript) ?? 0)
+	);
+	if (fractionalPowers.length > 0) {
+		return 'sqrt';
+	}
+
 	// Check for divisions in subexpressions
 	const divisions = findNodes(expr, (node) => node.type === 'division');
 	if (divisions.length > 0) {

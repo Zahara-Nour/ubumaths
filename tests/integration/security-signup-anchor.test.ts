@@ -1,7 +1,7 @@
 /**
  * Security — self-registration anchored on the class code (needs a running DB)
  * ============================================================================
- * Vague-1 findings H9/H10 (docs/wip/security-audit-2026-08.md):
+ * Vague-1 findings H9/H10 (docs/archive/wip/security-audit-2026-08.md):
  *   - H9: handle_new_user must NOT enroll on a client-supplied class_id — a direct
  *         GoTrue signup with a bare class UUID (no code) must not get into a class.
  *         Enrollment requires the join CODE (re-resolved in the trigger).

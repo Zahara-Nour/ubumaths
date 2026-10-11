@@ -498,7 +498,7 @@ describe('Unit Expression Parsing', () => {
 	// --- Parentheses ---
 
 	describe('Parentheses', () => {
-		// Décision du 2026-09-24 (docs/ref/notation-unites.md) : une seule règle
+		// Décision du 2026-09-24 (docs/pratiques/notation-unites.md) : une seule règle
 		// d'écriture pour toute l'application. Les parenthèses ne servent qu'au
 		// dénominateur (`kg/(m.s)`) ; une unité entière entre parenthèses, au carré
 		// ou imbriquée, est refusée — pour m²/s², écrire `m^2/s^2`.

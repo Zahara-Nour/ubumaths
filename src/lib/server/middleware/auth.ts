@@ -24,7 +24,7 @@
  * MIGRATION FROM DUPLICATED CODE:
  * - Before: 10 lines of auth boilerplate per endpoint + 1 DB query
  * - After: 1 line of middleware call (reuses profile from session)
- * - See: docs/guides/auth-middleware-migration.md for migration guide
+ * - See: docs/systeme/auth-middleware-migration.md for migration guide
  */
 
 import { error } from '@sveltejs/kit';
@@ -371,17 +371,18 @@ export interface AdminAuthResult {
  * ```
  */
 export async function requireAdmin(locals: App.Locals): Promise<AdminAuthResult> {
+	// 0) Pas de session → 401, élévation ou non : un cookie d'élévation resté sur un
+	//    poste partagé après le logout ne vaut rien sans compte connecté (constat B4).
+	if (!locals.user) {
+		throw error(401, 'Non autorisé - Authentification requise');
+	}
+
 	// 1) Active step-up elevation wins — use the admin-context client.
 	if (locals.adminElevation?.active && locals.adminSupabase) {
 		return {
 			supabase: locals.adminSupabase,
 			adminUserId: locals.adminElevation.adminUserId
 		};
-	}
-
-	// 2) Not authenticated at all → 401.
-	if (!locals.user) {
-		throw error(401, 'Non autorisé - Authentification requise');
 	}
 
 	// 3) Genuine admin login → use the caller's own client.

@@ -1,6 +1,6 @@
 /**
  * Retouches ciblées (lib/retouches.ts), sur l'instantané des lignes de prod
- * (`docs/corrections/retouches/_modeles.json`, lu en lecture seule le 2026-09-30).
+ * (`data/corrections/retouches/_modeles.json`, lu en lecture seule le 2026-09-30).
  * Chaque retouche : le défaut disparaît, le reste est intact, et une ligne déjà
  * retouchée (ou changée depuis) est refusée au lieu d'être retouchée à l'aveugle.
  */

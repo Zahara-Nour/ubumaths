@@ -116,7 +116,14 @@
 				<tbody>
 					{#each rows as row (row.studentId)}
 						<tr class="border-b last:border-b-0">
-							<td class="px-4 py-2 font-medium">{row.displayName}</td>
+							<td class="px-4 py-2 font-medium">
+								{row.displayName}
+								{#if row.masteryHidden}
+									<span class="block text-xs font-normal text-muted-foreground">
+										Hors classe : auto-évaluation non visible
+									</span>
+								{/if}
+							</td>
 							<td class="px-4 py-2">
 								<div class="flex items-center gap-2">
 									<div class="h-2 w-24 overflow-hidden rounded-full bg-muted">

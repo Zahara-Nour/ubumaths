@@ -5,7 +5,7 @@
  * 2. PDF : un objet qui dépasse de la `fenetre:` sortait du cadre (écran : découpé).
  * 3. `texte(…, "n⃗")` (flèche combinante U+20D7) : deux carrés vides au PDF.
  * 5. Nom de point `Ω` refusé par le DSL.
- * Spécification : `docs/wip/figures-pdf-progress.md`.
+ * Spécification : `docs/archive/wip/figures-pdf-progress.md`.
  */
 import { describe, it, expect } from 'vitest';
 import { parseFigureContent } from '../../parser/figure-parser';

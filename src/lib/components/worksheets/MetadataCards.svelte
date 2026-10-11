@@ -228,6 +228,12 @@
 		{ value: 'roman', label: 'Romain (i, ii, iii)' }
 	];
 
+	// Corrigé imprimé (ADR 0017, D11) : détaillé par défaut
+	const correctionDetailOptions = [
+		{ value: 'detailed', label: 'Détaillée' },
+		{ value: 'concise', label: 'Concise' }
+	];
+
 	const layoutOptions = [
 		{ value: 'A4', label: 'A4' },
 		{ value: 'Letter', label: 'Letter' }
@@ -572,6 +578,14 @@
 								<span class="text-muted-foreground">Format:</span>
 								<span class="font-medium">{worksheet.config?.page_layout ?? 'A4'}</span>
 							</span>
+							<span>
+								<span class="text-muted-foreground">Correction :</span>
+								<span class="font-medium"
+									>{worksheet.config?.correction_detail === 'concise'
+										? 'concise'
+										: 'détaillée'}</span
+								>
+							</span>
 							{#if worksheet.config?.shuffle_exercises || worksheet.config?.shuffle_within_sections}
 								<span class="text-muted-foreground">
 									Melange:
@@ -648,6 +662,15 @@
 								onchange={(v: string) => handleConfigChange('page_layout', v)}
 								items={layoutOptions}
 								placeholder="Format"
+							/>
+						</div>
+						<div>
+							<p class="mb-1 text-xs text-muted-foreground">Correction imprimée</p>
+							<MySelect
+								value={worksheet.config?.correction_detail ?? 'detailed'}
+								onchange={(v: string) => handleConfigChange('correction_detail', v)}
+								items={correctionDetailOptions}
+								placeholder="Correction"
 							/>
 						</div>
 						<MyCheckbox

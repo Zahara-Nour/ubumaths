@@ -27,6 +27,12 @@ function curve(latex: string, id = latex): ExplicitFunction {
 		ast: parsed.ast ?? undefined,
 		parseError: parsed.error ?? undefined,
 		variable: 'x',
+		// Aucune analyse affichée : défauts du schéma `explicitFunctionStateSchema`
+		showDerivative: false,
+		tangentAt: null,
+		integral: null,
+		showOsculating: false,
+		showArcLength: false,
 		color: '#0000ff',
 		visible: true,
 		lineWidth: 2,

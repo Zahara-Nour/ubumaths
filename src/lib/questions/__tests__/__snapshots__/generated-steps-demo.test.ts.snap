@@ -108,6 +108,14 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
     ],
     "title": "La constante a une dérivée nulle",
   },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "simplify",
+    "schoolLevel": "lycee",
+    "title": "On simplifie",
+  },
 ]
 `;
 
@@ -556,6 +564,14 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
       },
     ],
     "title": "Dérivée de sinus",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "simplify",
+    "schoolLevel": "lycee",
+    "title": "On simplifie",
   },
 ]
 `;

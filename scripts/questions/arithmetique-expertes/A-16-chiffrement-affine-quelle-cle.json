@@ -1,0 +1,230 @@
+{
+	"title": "Chiffrement affine : clé valable et formule de déchiffrement",
+	"description": "Reconnaître la condition PGCD(a, 26) = 1 pour qu'un chiffrement affine se déchiffre, ce qui se passe sinon, et la formule de déchiffrement x ≡ a'(y − b) [26] (pièges : « a premier » ou « a impair » au lieu de « premier avec 26 », division par a, a' appliqué avant de retrancher b)",
+	"grades": ["T_EXP"],
+	"points": ["TEXP-080", "TEXP-077", "TEXP-086"],
+	"theme": "Arithmétique",
+	"domain": "Congruences",
+	"subdomain": "Chiffrement",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + {{b}} \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..25"
+				}
+			],
+			"choices": [
+				{
+					"content": "Lorsque $a$ et $26$ sont premiers entre eux"
+				},
+				{
+					"content": "Lorsque $a$ est un nombre premier"
+				},
+				{
+					"content": "Lorsque $a$ est impair"
+				},
+				{
+					"content": "Lorsque ${{b}}$ et $26$ sont premiers entre eux"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Si $\\mathrm{PGCD}(a \\,;\\, 26) = 1$, $a$ a un inverse $a'$ modulo $26$ et $x \\equiv a'(y - {{b}}) \\,[26]$ : $x$ est déterminé par $y$.",
+					"Sinon, $a = 13$ ou $a$ pair, et deux lettres ont le même chiffré ($13 \\times 0 \\equiv 13 \\times 2 \\,[26]$, ou $a \\times 0 \\equiv a \\times 13 \\,[26]$ pour $a$ pair). $13$ est premier et impair : c'est la condition $\\textcolor{{{color:primary.0}}}{\\mathrm{PGCD}(a \\,;\\, 26) = 1}$ qui compte ; $b$ ne joue aucun rôle."
+				]
+			}
+		},
+		{
+			"statement": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv {{a}}x + {{b}} \\,[26]$.\n\nQue peut-on affirmer ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|6|8|10|12|13|14|16"
+				},
+				{
+					"name": "b",
+					"expression": "1..25"
+				}
+			],
+			"choices": [
+				{
+					"content": "Deux lettres différentes peuvent être chiffrées par la même lettre"
+				},
+				{
+					"content": "Le message se déchiffre avec un inverse de ${{a}}$ modulo $26$"
+				},
+				{
+					"content": "Deux lettres différentes ont toujours des chiffrés différents"
+				},
+				{
+					"content": "Le chiffrement ne dépend pas de ${{b}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$\\mathrm{PGCD}({{a}} \\,;\\, 26) = {{eval:gcd(a,26)}} \\neq 1$ : ${{a}}$ n'a pas d'inverse modulo $26$.",
+					"${{a}} \\times {{eval:26/gcd(a,26)}} = {{eval:a*26/gcd(a,26)}} \\equiv 0 \\,[26]$ : les lettres de rangs $0$ et ${{eval:26/gcd(a,26)}}$ sont chiffrées par la même lettre (de rang ${{b}}$). $\\textcolor{{{color:primary.0}}}{\\text{Deux lettres peuvent avoir le même chiffré}}$ : on ne peut pas déchiffrer."
+				]
+			}
+		},
+		{
+			"statement": "Un message est chiffré par $y \\equiv {{a}}x + {{b}} \\,[26]$. On sait que ${{a}} \\times {{inv}} \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3|5|7|9|11|15|17|19|21|23"
+				},
+				{
+					"name": "b",
+					"expression": "1..25"
+				},
+				{
+					"name": "inv",
+					"expression": "eval:mod(mod(a^5,26)^2*a,26)"
+				}
+			],
+			"choices": [
+				{
+					"content": "$x \\equiv {{inv}}(y - {{b}}) \\,[26]$"
+				},
+				{
+					"content": "$x = \\dfrac{y - {{b}}}{{{a}}}$"
+				},
+				{
+					"content": "$x \\equiv {{inv}}y - {{b}} \\,[26]$"
+				},
+				{
+					"content": "$x \\equiv {{a}}(y - {{b}}) \\,[26]$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$y \\equiv {{a}}x + {{b}} \\,[26]$ donne ${{a}}x \\equiv y - {{b}} \\,[26]$ : on retranche d'abord ${{b}}$.",
+					"On multiplie par l'inverse ${{inv}}$ de ${{a}}$ (on ne divise pas : $\\dfrac{y - {{b}}}{{{a}}}$ n'est en général pas entier) : $\\textcolor{{{color:primary.0}}}{x \\equiv {{inv}}(y - {{b}}) \\,[26]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : premiers entre eux",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a premier (13 ne convient pas)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a impair",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a = 4, deux lettres de même chiffré",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : déchiffrable par l'inverse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : a' (y − b)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : division par a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : a'y − b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : multiplié par a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"inv": "21"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"shuffleChoices": true
+	}
+}

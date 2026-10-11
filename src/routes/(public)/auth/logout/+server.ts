@@ -31,10 +31,15 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import {
+	ADMIN_ELEVATION_COOKIE,
+	createAdminClient,
+	decodeElevationCookie
+} from '$lib/server/adminElevation';
 
 const logger = createLogger('auth/logout');
 
-export const POST: RequestHandler = async ({ locals: { supabase } }) => {
+export const POST: RequestHandler = async ({ locals: { supabase }, cookies }) => {
 	// Get user email before signing out for logging purposes
 	const {
 		data: { user }
@@ -44,6 +49,20 @@ export const POST: RequestHandler = async ({ locals: { supabase } }) => {
 	// The server Supabase client will clear cookies via the cookie handlers
 	// defined in src/lib/server/supabase.ts
 	await supabase.auth.signOut();
+
+	// L'élévation admin part avec la session (constat B4) : sinon, sur un poste partagé,
+	// le jeton admin (≤ 1 h) restait dans le navigateur après le logout. Révocation
+	// côté GoTrue au mieux, comme /api/admin/elevate/revoke ; le cookie est effacé
+	// quoi qu'il arrive.
+	const elevation = decodeElevationCookie(cookies.get(ADMIN_ELEVATION_COOKIE) ?? '');
+	if (elevation) {
+		try {
+			await createAdminClient(elevation.accessToken).auth.signOut();
+		} catch {
+			// Le cookie effacé ci-dessous suffit à retirer l'autorité dans l'app.
+		}
+	}
+	cookies.delete(ADMIN_ELEVATION_COOKIE, { path: '/', sameSite: 'strict' });
 
 	// Log successful logout
 	if (user?.email) {

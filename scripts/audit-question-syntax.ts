@@ -185,7 +185,7 @@ async function auditQuestionSyntax(): Promise<AuditResult> {
 	} else if (stats.oldSyntax < 50) {
 		recommendations.push('⚠️  Moderate old syntax usage detected');
 		recommendations.push('🔄 Batch migration script recommended');
-		recommendations.push('📋 Review migration plan in docs/claude/syntax-migration-strategy.md');
+		recommendations.push('📋 Review migration plan in docs/pratiques/syntax-migration-strategy.md');
 	} else {
 		recommendations.push('⚠️  Significant old syntax usage detected');
 		recommendations.push('🐌 Gradual migration strategy recommended');
@@ -296,7 +296,7 @@ function displayResults(result: AuditResult): void {
 	console.log('═'.repeat(80));
 	console.log();
 	console.log('For detailed migration strategy, see:');
-	console.log('  docs/claude/syntax-migration-strategy.md');
+	console.log('  docs/pratiques/syntax-migration-strategy.md');
 	console.log();
 }
 

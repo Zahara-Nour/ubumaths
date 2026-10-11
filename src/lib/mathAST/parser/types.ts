@@ -9,6 +9,7 @@
  */
 
 import type { MathNode } from '../types';
+import { GREEK_LETTERS } from '../types';
 import type { ParserSecurityOptions } from './security';
 
 // =============================================================================
@@ -601,31 +602,7 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
  *
  * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
-export const GREEK_COMMANDS: ReadonlySet<string> = new Set<string>([
-	'alpha',
-	'beta',
-	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega'
-]);
+export const GREEK_COMMANDS: ReadonlySet<string> = new Set<string>([...GREEK_LETTERS, 'pi']);
 
 /**
  * Commands that are binary operators

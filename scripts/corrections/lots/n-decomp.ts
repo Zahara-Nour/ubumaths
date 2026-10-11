@@ -2,7 +2,7 @@
  * Lot « n-decomp » : décomposition / recomposition selon les rangs (13 modèles)
  * ============================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, tous les modèles
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, tous les modèles
  * `N-DECOMP` (entiers et décimaux). Idée : le tableau de numération, le chiffre
  * et sa valeur en orange, les zéros en bleu.
  *

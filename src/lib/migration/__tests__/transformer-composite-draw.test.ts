@@ -16,7 +16,7 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate } from '$lib/questions/types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 /** Valeurs tirées d'une variable sur `seeds` graines (première variation) */
@@ -26,7 +26,9 @@ function drawn(index: number, name: string, seeds = 40): string[] {
 	return Array.from({ length: seeds }, (_, seed) => {
 		const generated = generateInstance(single, seed + 1);
 		if (!generated.success) throw new Error(generated.errors.join(' ; '));
-		return generated.instance.resolvedVariables.find((v) => v.name === name)!.value;
+		const variables = generated.instance.resolvedVariables;
+		if (!variables) throw new Error('variables résolues attendues');
+		return variables.find((v) => v.name === name)!.value;
 	});
 }
 

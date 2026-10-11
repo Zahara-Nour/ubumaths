@@ -231,7 +231,7 @@ export async function insertKnowledgeAttempt(
 		throw new Error(`insertKnowledgeAttempt tag failed: ${tagErr.message}`);
 	}
 
-	const { error } = await service.from('skill_attempts' as never).insert({
+	const { error } = await service.from('skill_attempts').insert({
 		student_id: params.studentId,
 		template_id: params.templateId,
 		success: params.success,
@@ -254,7 +254,7 @@ export async function insertCompetenceAttempt(
 		source?: 'auto' | 'teacher' | 'student_self';
 	}
 ): Promise<void> {
-	const { error } = await service.from('skill_attempts' as never).insert({
+	const { error } = await service.from('skill_attempts').insert({
 		student_id: params.studentId,
 		observable_id: params.skillId,
 		task_id: params.taskId,
@@ -394,7 +394,7 @@ export async function createEvaluationTask(
 	// Mono-teacher: evaluation_tasks.teacher_id was dropped (role-based ownership).
 	void params.teacherId;
 	const { data, error } = await service
-		.from('evaluation_tasks' as never)
+		.from('evaluation_tasks')
 		.insert({
 			class_id: params.classId ?? null,
 			name: params.name ?? 'Test task',

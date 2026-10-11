@@ -238,6 +238,8 @@ describe('DebugSnapshot', () => {
 				}
 			],
 			loops: [],
+			// Rien que des valeurs primitives : elles s'affichent en ligne, pas sur le tas
+			heap: [],
 			stdout: 'Hello, World!\n',
 			event: 'line'
 		};
@@ -279,6 +281,8 @@ describe('DebugSnapshot', () => {
 			],
 			globals: [],
 			loops: [],
+			// Rien que des valeurs primitives : elles s'affichent en ligne, pas sur le tas
+			heap: [],
 			stdout: '',
 			event: 'line'
 		};
@@ -312,6 +316,8 @@ describe('DebugSnapshot', () => {
 					lineNumber: 7
 				}
 			],
+			// Rien que des valeurs primitives : elles s'affichent en ligne, pas sur le tas
+			heap: [],
 			stdout: '0\n1\n2\n',
 			event: 'line'
 		};

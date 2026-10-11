@@ -3,7 +3,7 @@
  * =========================================================
  *
  * `parseUnitExpression` (correction des réponses) doit lire les unités comme
- * `mathAST/units/parser.ts` (référence : `docs/ref/notation-unites.md`), après
+ * `mathAST/units/parser.ts` (référence : `docs/pratiques/notation-unites.md`), après
  * conversion des exposants Unicode (`m²` → `m^2`). En particulier `kg/m.s`,
  * ambigu, est refusé partout.
  */

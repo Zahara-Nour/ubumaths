@@ -17,11 +17,9 @@
 		     umamathsprod.supabase.co — a host this project does not control (neither the
 		     current EU project nor the previous one), leaking a DNS/TLS handshake per visit. -->
 
-		<!-- Mathlive fonts - switchable between KaTeX and Shantell -->
-		<link id="mathlive-fonts-css" rel="stylesheet" href="/mathlive-fonts-katex.css" />
-		<!-- Mathlive static rendering styles (ML__* classes) — needed by convertLatexToMarkup()
-		     output used in GeometryCanvas for flicker-free math text during drag operations -->
-		<link rel="stylesheet" href="/mathlive-static.css" />
+		<!-- Polices et styles MathLive : plus chargés ici. Les composants qui rendent des
+		     maths importent `$lib/utils/mathlive-styles` (CSS haché par Vite, seulement sur
+		     les pages qui en ont besoin) ; avant, deux CSS bloquantes sur toutes les pages. -->
 
 		%sveltekit.head%
 	</head>

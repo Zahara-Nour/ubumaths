@@ -53,6 +53,8 @@ export type EquationOperation =
 	| {
 			readonly kind: 'identify-equation';
 			readonly equationType: 'linear' | 'quadratic' | 'rational';
+			/** L'inconnue de la résolution, que l'explication nomme (`t`, pas toujours `x`). */
+			readonly variable?: string;
 	  }
 	/** Simplify a side (collecting like terms, evaluating arithmetic). */
 	| { readonly kind: 'simplify'; readonly side: 'left' | 'right' | 'both' }

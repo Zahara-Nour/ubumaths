@@ -26,7 +26,7 @@ function createInstance(
 		templateId: 'test-accept-decimal',
 		statement: 'Donne la valeur' as ResolvedMarkdown,
 		blanks,
-		grades: ['2nde'],
+		grades: ['2'],
 		theme: 'Fonctions',
 		domain: 'Affines',
 		level: 1,

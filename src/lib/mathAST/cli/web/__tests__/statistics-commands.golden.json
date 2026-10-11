@@ -49,7 +49,7 @@
 		"latex": "y = -2x + 8"
 	},
 	{
-		"command": ".linreg 0.1,0.1,0.1 : 1,2,3",
+		"command": ".linreg 0.1 ; 0.1 ; 0.1 : 1 ; 2 ; 3",
 		"success": false,
 		"output": "Erreur: les valeurs X sont toutes identiques (regression impossible)",
 		"outputHtml": "<span class=\"repl-error\">Error [MATH_ERROR]:</span> Les valeurs X sont toutes identiques",

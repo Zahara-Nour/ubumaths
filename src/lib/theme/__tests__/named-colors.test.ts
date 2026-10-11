@@ -1,7 +1,7 @@
 /**
  * Les 12 couleurs que les auteurs nomment dans une figure, une courbe ou un graphique.
  *
- * Spécification : docs/wip/palette-figures-progress.md (1, 2, 4, 5, 6).
+ * Spécification : docs/archive/wip/palette-figures-progress.md (1, 2, 4, 5, 6).
  */
 
 import { readFileSync } from 'node:fs';

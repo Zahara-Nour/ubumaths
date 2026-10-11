@@ -4,7 +4,7 @@
  * Un fichier SVG exporté ne connaît ni app.css ni ses variables : une `var()`
  * laissée dedans se peint en noir chez celui qui l'ouvre. Décision 1b de David :
  * l'export est clair même si l'élève est en mode sombre.
- * Spécification : docs/wip/grapheur-couleurs-theme-progress.md (6).
+ * Spécification : docs/archive/wip/grapheur-couleurs-theme-progress.md (6).
  */
 
 import { afterEach, describe, expect, it } from 'vitest';

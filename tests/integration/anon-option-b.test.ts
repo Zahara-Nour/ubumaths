@@ -63,8 +63,6 @@ const RELATIONS_FERMEES = [
 	'coursework_categories',
 	'coursework_materials',
 	'curriculum_objectives',
-	'curriculum_point_automatismes',
-	'curriculum_points',
 	'curriculum_themes',
 	'daily_summaries',
 	'evaluation_task_perimeter',
@@ -341,7 +339,12 @@ const TABLES_LUES_PAR_ANON = [
 	'question_templates',
 	'resource_tags',
 	'parody_evaluations',
-	'tags'
+	'tags',
+	// Ouverture B6 (schéma cible ADR 0020, 2026-10-07) : le référentiel est la
+	// copie des BO, documents publics — lecture anonyme voulue.
+	'curriculum_points',
+	'curriculum_point_automatismes',
+	'grade_predecessors'
 ] as const;
 
 /** Échantillon : authenticated et service_role doivent garder ces droits. */
@@ -378,8 +381,8 @@ function anonClient(): SupabaseClient<Database> {
 
 describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	it('l’inventaire compte 141 relations et 143 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(141);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(141);
+		expect(RELATIONS_FERMEES).toHaveLength(139);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(139);
 		expect(FONCTIONS_REVOQUEES).toHaveLength(143);
 		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(143);
 	});

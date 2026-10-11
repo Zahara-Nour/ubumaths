@@ -8,28 +8,30 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
+import type { SymbolTable } from '../symbol-table';
 import { serializeDsl } from '../index';
 import { numeric } from '../../types/geo-value';
 import { traceToSVG } from '../../rendering/svg-primitives';
-import type { CoordinateTransformer } from '../../viewport/types';
+import { createTransformer, type CoordinateTransformer } from '../../viewport/viewport';
 
 function run(script: string) {
 	const program = parse(script);
 	return interpret(program);
 }
 
-function getId(symbols: Map<string, { figureId?: string }>, name: string): string {
+function getId(symbols: SymbolTable, name: string): string {
 	const sym = symbols.get(name);
 	if (!sym?.figureId) throw new Error(`Symbol "${name}" not found`);
 	return sym.figureId;
 }
 
-/** Minimal transformer for SVG rendering tests. */
+/**
+ * Transformateur des tests de rendu SVG, construit comme dans l'app
+ * (createTransformer) : fenêtre [-5, 5]² sur 400 × 400 px, soit 40 px par unité,
+ * origine au pixel (200, 200).
+ */
 function makeTransformer(): CoordinateTransformer {
-	return {
-		mathToSvg: (x: number, y: number) => ({ x: x * 40 + 200, y: -y * 40 + 200 }),
-		svgToMath: (x: number, y: number) => ({ x: (x - 200) / 40, y: -(y - 200) / 40 })
-	};
+	return createTransformer({ xMin: -5, xMax: 5, yMin: -5, yMax: 5 }, 400, 400);
 }
 
 // =============================================================================

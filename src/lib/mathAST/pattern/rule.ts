@@ -419,6 +419,31 @@ export function applyRuleDeep(rule: Rule, node: MathNode, ctx?: TypeContext): Ma
 	});
 }
 
+/** Nombre de règles appliquées en dernier citées par `RuleIterationLimitError`. */
+const LAST_RULES_REPORTED = 6;
+
+/**
+ * `applyRules` a atteint sa limite d'itérations sans point fixe.
+ *
+ * Avant, l'arbre du moment était rendu comme s'il était le résultat : un cycle
+ * de règles inverses (`a → b`, `b → a`) passait inaperçu. Mesuré sur la suite
+ * serveur complète (2026-10-10) : aucune entrée n'atteint la limite. Le
+ * message cite les dernières règles appliquées, pour que le cycle se lise.
+ */
+export class RuleIterationLimitError extends Error {
+	readonly maxIterations: number;
+	readonly lastRules: readonly string[];
+
+	constructor(maxIterations: number, lastRules: readonly string[]) {
+		super(
+			`applyRules : ${maxIterations} itérations sans point fixe (dernières règles : ${lastRules.join(' → ')})`
+		);
+		this.name = 'RuleIterationLimitError';
+		this.maxIterations = maxIterations;
+		this.lastRules = lastRules;
+	}
+}
+
 /**
  * Applies multiple rules until no more changes occur (fixpoint).
  * Rules are sorted by priority (higher priority first) and applied in order.
@@ -428,6 +453,7 @@ export function applyRuleDeep(rule: Rule, node: MathNode, ctx?: TypeContext): Ma
  * @param node - The node to transform
  * @param maxIterations - Maximum iterations to prevent infinite loops (default 100)
  * @returns The fully transformed node
+ * @throws RuleIterationLimitError when `maxIterations` is reached without a fixpoint
  *
  * @example
  * const rules = [
@@ -452,9 +478,9 @@ export function applyRules(
 	});
 
 	let current = node;
-	let iterations = 0;
+	const lastRules: string[] = [];
 
-	while (iterations < maxIterations) {
+	for (let iterations = 0; iterations < maxIterations; iterations++) {
 		let changed = false;
 
 		for (const rule of sortedRules) {
@@ -463,19 +489,25 @@ export function applyRules(
 			if (!nodesEqual(transformed, current)) {
 				current = transformed;
 				changed = true;
+				lastRules.push(rule.name);
+				if (lastRules.length > LAST_RULES_REPORTED) lastRules.shift();
 				break; // Restart from beginning with new tree
 			}
 		}
 
 		if (!changed) {
 			// No rule produced a change - we've reached fixpoint
-			break;
+			return current;
 		}
-
-		iterations++;
 	}
 
-	return current;
+	// Le budget est épuisé : point fixe tout de même si plus aucune règle ne
+	// change l'arbre (la dernière itération a pu y mener).
+	const stillChanging = sortedRules.some(
+		(rule) => !nodesEqual(applyRuleDeep(rule, current, ctx), current)
+	);
+	if (!stillChanging) return current;
+	throw new RuleIterationLimitError(maxIterations, lastRules);
 }
 
 // =============================================================================

@@ -11,6 +11,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { load } from '../+page.server';
+import type { PageServerData } from '../$types';
 
 // ============================================================================
 // TYPES
@@ -18,7 +19,9 @@ import { load } from '../+page.server';
 
 type Row = Record<string, unknown>;
 type LoadEvent = Parameters<typeof load>[0];
-type LoadResult = Exclude<Awaited<ReturnType<typeof load>>, void>;
+// Ce que rend VRAIMENT le load : SvelteKit l'infère via un proxy sans l'annotation
+// `PageServerLoad`, dont le type de retour lâche (`Record<string, any>`) ne dit rien.
+type LoadResult = PageServerData;
 
 // ============================================================================
 // CONSTANTS

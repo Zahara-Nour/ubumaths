@@ -37,7 +37,7 @@ const FORBIDDEN_KEYS = [
 
 // Functions
 function template(path: string, id: string): QuestionTemplate {
-	const raw = JSON.parse(readFileSync(`docs/relecture/${path}.json`, 'utf-8')).template;
+	const raw = JSON.parse(readFileSync(`tests/fixtures/relecture/${path}.json`, 'utf-8')).template;
 	return { ...raw, id } as QuestionTemplate;
 }
 

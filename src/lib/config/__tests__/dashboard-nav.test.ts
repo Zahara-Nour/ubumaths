@@ -103,11 +103,18 @@ describe('getNavLinks', () => {
 	describe('admin', () => {
 		it('ne touche pas aux items techniques (Schools, Users, etc.)', () => {
 			const lbls = labels(getNavLinks('admin'));
-			['Schools', 'Users', 'Classes', 'VIP Cards', 'CRON Jobs', 'Debug', 'Settings'].forEach(
-				(label) => {
-					expect(lbls).toContain(label);
-				}
-			);
+			[
+				'Schools',
+				'Users',
+				'Classes',
+				'Dictionnaire',
+				'VIP Cards',
+				'CRON Jobs',
+				'Debug',
+				'Settings'
+			].forEach((label) => {
+				expect(lbls).toContain(label);
+			});
 		});
 
 		it('inclut Tableau de bord en premier et footer en dernier', () => {

@@ -46,8 +46,11 @@ function call(body: unknown, userId = 'eleve-1') {
 	} as never);
 }
 
-async function statusOf(promise: Promise<Response>): Promise<number> {
-	return promise.then((r) => r.status).catch((e: { status?: number }) => e.status ?? 0);
+// Un handler SvelteKit rend un MaybePromise<Response>.
+async function statusOf(promise: Response | Promise<Response>): Promise<number> {
+	return Promise.resolve(promise)
+		.then((r) => r.status)
+		.catch((e: { status?: number }) => e.status ?? 0);
 }
 
 describe('POST submit', () => {

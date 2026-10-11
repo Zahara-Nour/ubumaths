@@ -32,6 +32,9 @@ function numMatrix(rows: number[][]): MatrixNode {
 // Helper to convert a MathNode to a number using evaluate
 function toNum(node: MathNode): number {
 	const result = evaluate(node, { mode: 'decimal' });
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
 	if (typeof result.value !== 'number') {
 		throw new Error(`Expected numeric result, got ${typeof result.value}`);
 	}

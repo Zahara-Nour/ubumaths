@@ -1,7 +1,7 @@
 /**
  * Les suites — lot 5a du passage de `/grapheur` par l'atelier (modèle + Calcul).
  *
- * Phase 0 `docs/wip/atelier-grapheur-phase0.md` §5 et décisions S1 à S4 de
+ * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §5 et décisions S1 à S4 de
  * David (2026-10-04). Mesuré avant : une suite explicite marchait déjà
  * (`u(5)` = 11 pour `2n+1`) ; une récurrence répondait par une erreur en
  * anglais (« free variables: u », « Unknown function: u ») ; `u(n+1) = …`

@@ -30,7 +30,7 @@ constructeurs + dette tech) avec **3 features pédagogiques** :
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
 - Progress V2 (référence pour structure et style) : [`docs/wip/geometry/angle-v2-progress.md`](./angle-v2-progress.md)
 - Progress V1 : [`docs/wip/geometry/angle-v1-progress.md`](./angle-v1-progress.md)
-- Reference DSL : [`docs/ref/geometry/dsl-builtins.md`](../../ref/geometry/dsl-builtins.md)
+- Reference DSL : [`docs/systeme/geometrie/dsl-builtins.md`](../../../systeme/geometrie/dsl-builtins.md)
 
 ## Statut des phases
 
@@ -289,7 +289,7 @@ régression. Le dispatch ne modifie le comportement que pour la forme 1-argument
 - `src/lib/geometry-core/rendering/__tests__/angle-canonical-cases.test.ts` :
   - 2 tests `transporte` (rotation d'angle 60° au point V' = (5,0)) — vérifier mesure égale, position vertex.
   - 2 tests `fill` rendering (path fill présent dans SVG export pour arc + arcs2).
-- `docs/ref/geometry/dsl-builtins.md` :
+- `docs/systeme/geometrie/dsl-builtins.md` :
   - Nouvelle section `transporte()` avec exemples DSL.
   - Section « Rendu » mise à jour pour `fill` (convention + ignored carre).
   - Section chorégraphies : ajout `bissectrice(GeoAngle)`.

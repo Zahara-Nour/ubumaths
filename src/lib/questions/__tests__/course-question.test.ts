@@ -35,7 +35,7 @@ function question(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 				correctChoiceIndex: '0'
 			}
 		],
-		grades: ['1'],
+		grades: ['1_SPE'],
 		theme: 'Algèbre',
 		domain: 'Polynômes',
 		level: 1,

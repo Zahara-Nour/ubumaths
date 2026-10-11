@@ -29,8 +29,15 @@ import type {
 	LogicalOperator,
 	NodeMetadata
 } from '../../types';
+import { GREEK_LETTERS } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
-import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
+import {
+	CustomTokenizer,
+	KNOWN_FUNCTION_NAMES,
+	unknownFunctionMessage,
+	type CustomToken,
+	type CustomTokenType
+} from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
@@ -45,6 +52,7 @@ import {
 	SecurityError,
 	getEffectiveSecurityOptions,
 	checkInputLength,
+	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
 
@@ -81,30 +89,9 @@ const enum BP {
  * Map custom syntax symbol names to MathAST GreekLetter type
  * Note: 'pi' is NOT here - it's a MathConstant, not a GreekLetter
  */
-const GREEK_SYMBOL_MAP: Record<string, GreekLetter> = {
-	alpha: 'alpha',
-	beta: 'beta',
-	gamma: 'gamma',
-	delta: 'delta',
-	epsilon: 'epsilon',
-	zeta: 'zeta',
-	eta: 'eta',
-	theta: 'theta',
-	iota: 'iota',
-	kappa: 'kappa',
-	lambda: 'lambda',
-	mu: 'mu',
-	nu: 'nu',
-	xi: 'xi',
-	rho: 'rho',
-	sigma: 'sigma',
-	tau: 'tau',
-	upsilon: 'upsilon',
-	phi: 'phi',
-	chi: 'chi',
-	psi: 'psi',
-	omega: 'omega'
-};
+const GREEK_SYMBOL_MAP: Readonly<Record<string, GreekLetter>> = Object.fromEntries(
+	GREEK_LETTERS.map((letter) => [letter, letter])
+);
 
 /**
  * Map custom syntax symbol names to MathAST MathSymbol type
@@ -735,9 +722,10 @@ class CustomPrattParser {
 		const letter = token.value;
 
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
+		// `e_1`, `e_n` : variable indicée (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
 			this.advance();
-			return this.applyColor(euler());
+			return this.applyColor(this.check('UNDERSCORE') ? MathAST.variable('e') : euler());
 		}
 		if (letter === 'i' && this.subscriptDepth === 0) {
 			this.advance();
@@ -841,7 +829,9 @@ class CustomPrattParser {
 		}
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
-		return this.applyColor(MathAST.variable(name));
+		return this.applyColor(
+			name === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(name)
+		);
 	}
 
 	/**
@@ -1655,6 +1645,17 @@ class CustomPrattParser {
 		const funcToken = this.advance(); // consume FUNC token
 		const name = funcToken.value;
 
+		// `racine(x)`, `acoss(x)` : un nom inconnu se REFUSE — lu en produit de
+		// lettres, il donnait un résultat faux sans aucune erreur
+		if (!KNOWN_FUNCTION_NAMES.includes(name)) {
+			this.error(
+				unknownFunctionMessage(name),
+				funcToken.position,
+				funcToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+
 		// Check for power BEFORE arguments: sin^2
 		let power: MathNode | undefined;
 		if (this.check('CARET')) {
@@ -1704,6 +1705,12 @@ class CustomPrattParser {
 		// Create function node with power/base if present
 		if (name === 'sqrt' && nthRoot) {
 			return this.applyColor(MathAST.func('sqrt', args, { power, base: nthRoot }));
+		}
+
+		// cbrt(x) = ∛x : le même nœud que sqrt[3](x), sans quoi l'arbre aurait une
+		// fonction que ni la dérivation ni la normalisation ne connaissent
+		if (name === 'cbrt') {
+			return this.applyColor(MathAST.func('sqrt', args, { power, base: MathAST.number('3') }));
 		}
 
 		const funcNode = MathAST.func(name, args, { power, base });
@@ -2017,6 +2024,11 @@ function checkASTSecurity(ast: MathNode | null, security: Required<ParserSecurit
  * @throws SecurityError if security limits are exceeded
  */
 export function parseCustomPratt(input: string, options?: Partial<ParserOptions>): MathNode {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomPrattUnguarded(input, options));
+}
+
+function parseCustomPrattUnguarded(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
@@ -2060,6 +2072,14 @@ export function parseCustomPratt(input: string, options?: Partial<ParserOptions>
  * @throws SecurityError if security limits are exceeded (not caught)
  */
 export function parseCustomPrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+	// Débordement de pile → SecurityError (voir `guardStackDepth`)
+	return guardStackDepth(() => parseCustomPrattSafeUnguarded(input, options));
+}
+
+function parseCustomPrattSafeUnguarded(
+	input: string,
+	options?: Partial<ParserOptions>
+): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options

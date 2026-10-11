@@ -2,7 +2,7 @@
  * `{{eval:sqrt(21/25)}}` : racine exacte écrite comme au tableau
  * ==============================================================
  *
- * Relevé en rédigeant les modèles (docs/ref/fiches-exercices.md, « Pièges de l'écriture
+ * Relevé en rédigeant les modèles (docs/pratiques/fiches-exercices.md, « Pièges de l'écriture
  * d'un modèle ») : la forme exacte sortait `\dfrac{1}{5} \sqrt{21}` et `-\dfrac{1}{2} \sqrt{2}`.
  * Utilisée comme réponse attendue, la bonne réponse de l'élève `\frac{\sqrt{21}}{5}` était
  * alors jugée « mauvaise forme ». Attendu : `\dfrac{\sqrt{21}}{5}`, `-\dfrac{\sqrt{2}}{2}`.

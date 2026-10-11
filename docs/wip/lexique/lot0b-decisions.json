@@ -1,0 +1,1005 @@
+{
+	"5": {
+		"a": "R",
+		"g": "CE2"
+	},
+	"7": {
+		"a": "R",
+		"g": "6",
+		"note": "Le BO de cycle 3 ne nomme pas le quotient de la division euclidienne ; « quotient » arrive en 6e (définition exigible). Le sens « quotient exact a/b » manque : lot 0c."
+	},
+	"8": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Ce qu'il reste quand on enlève une partie. Ex : j'ai $10$ €, j'en dépense $7$, il me reste $3$ €.",
+		"current": "CM1"
+	},
+	"11": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Calcul qui permet de compter vite des paquets identiques. Ex : $3$ paquets de $4$ billes, c'est $3$ fois $4$ billes : $4 + 4 + 4 = 12$.",
+		"current": "CE1"
+	},
+	"14": {
+		"a": "R",
+		"g": "6"
+	},
+	"15": {
+		"a": "R",
+		"g": "5",
+		"note": "Le BO emploie « opérateur » au sens de la fraction-opérateur (5e) ; la définition actuelle (symbole + − × ÷) est à réécrire au lot 0c."
+	},
+	"16": {
+		"a": "R",
+		"g": "CE2"
+	},
+	"17": {
+		"a": "K",
+		"note": "Le mot apparaît dans un objectif de CE1, mais le BO le donne à apprendre en CE2 (« Comprendre et utiliser les mots « facteur », « produit » et « multiple » »)."
+	},
+	"25": {
+		"a": "R",
+		"g": "CM1",
+		"note": "Le BO exclut la calculatrice au cycle 2."
+	},
+	"26": {
+		"a": "H",
+		"note": "Absent des programmes : gardé au niveau 4."
+	},
+	"28": {
+		"a": "R",
+		"g": "6",
+		"note": "Au cycle 2, « aucune formule n'est enseignée »."
+	},
+	"29": {
+		"a": "R",
+		"g": "CM1",
+		"note": "Au cycle 2, le mot ne figure que dans les titres de domaine."
+	},
+	"31": {
+		"a": "A0",
+		"g": "5"
+	},
+	"36": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Façon de ranger des nombres : dans l'ordre croissant, du plus petit au plus grand ; dans l'ordre décroissant, du plus grand au plus petit.",
+		"current": "CE1"
+	},
+	"40": {
+		"a": "A0",
+		"g": "CP"
+	},
+	"42": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Ce que vaut quelque chose. Ex : dans $35$, le chiffre $3$ vaut $3$ dizaines ; un billet de $10$ € a une valeur de $10$ euros.",
+		"current": "5"
+	},
+	"43": {
+		"a": "R",
+		"g": "4"
+	},
+	"45": {
+		"a": "R",
+		"g": "CE1"
+	},
+	"50": {
+		"a": "A",
+		"g": "CE2",
+		"simple": "Les multiples d'un nombre sont les résultats de sa table de multiplication. Ex : $12$ est un multiple de $3$, car $3 \\times 4 = 12$.",
+		"current": "5"
+	},
+	"52": {
+		"a": "K",
+		"note": "Les critères de divisibilité par 2, 5 et 10 sont au programme de CM1 : le mot y est employé."
+	},
+	"54": {
+		"a": "R",
+		"g": "3"
+	},
+	"55": {
+		"a": "R",
+		"g": "T_EXP",
+		"tranche": "BO suivi : le PGCD n'est plus au programme du collège."
+	},
+	"56": {
+		"a": "H",
+		"g": "T_EXP",
+		"tranche": "BO suivi, rangé avec le PGCD."
+	},
+	"57": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"58": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Division « avec reste » de deux nombres entiers. Ex : $17$ divisé par $5$ : le quotient est $3$ et le reste est $2$, car $17 = 5 \\times 3 + 2$ et $2$ est plus petit que $5$.",
+		"current": "5"
+	},
+	"59": {
+		"a": "R",
+		"g": "CM2"
+	},
+	"60": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"64": {
+		"a": "R",
+		"g": "5",
+		"note": "Ni le cycle 2 ni le cycle 3 n'emploient « triple »."
+	},
+	"66": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"68": {
+		"a": "R",
+		"g": "5"
+	},
+	"69": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Écriture d'un nombre en plusieurs morceaux. Ex : $35 = 30 + 5$, ou $35$ = $3$ dizaines et $5$ unités.",
+		"current": "3"
+	},
+	"73": {
+		"a": "R",
+		"g": "5"
+	},
+	"75": {
+		"a": "R",
+		"g": "CE2",
+		"note": "Corrigé à la main : « unités de numération » (point CE2-003), manqué par la relecture."
+	},
+	"78": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Signe qui sépare les euros des centimes dans l'écriture d'un prix. Ex : $3{,}50$ € se lit « trois euros cinquante ».",
+		"current": "CM1"
+	},
+	"80": {
+		"a": "H",
+		"note": "Absent des programmes (le BO dit « partie entière ») : gardé au CM1."
+	},
+	"81": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Une part d'un tout partagé en dix parts égales.",
+		"current": "CM1"
+	},
+	"85": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"89": {
+		"a": "H",
+		"note": "Absent des programmes : gardé en 6e."
+	},
+	"90": {
+		"a": "R",
+		"g": "6",
+		"tranche": "Usage en classe : le mot qui regroupe arrondi et troncature (6e)."
+	},
+	"91": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Encadrer un nombre, c'est trouver un nombre plus petit et un nombre plus grand que lui. Ex : $23$ est entre $20$ et $30$.",
+		"current": "5"
+	},
+	"92": {
+		"a": "A0",
+		"g": "CP"
+	},
+	"93": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Nombre qui sert à parler de parts égales d'un tout. Ex : $\\frac{1}{2}$ (un demi) : on partage en $2$ parts égales et on en prend $1$ ; $\\frac{3}{4}$ : on partage en $4$ et on en prend $3$.",
+		"current": "5"
+	},
+	"94": {
+		"a": "A0",
+		"g": "CE1"
+	},
+	"95": {
+		"a": "A0",
+		"g": "CE1"
+	},
+	"96": {
+		"a": "R",
+		"g": "3"
+	},
+	"97": {
+		"a": "R",
+		"g": "4"
+	},
+	"98": {
+		"a": "A0",
+		"g": "CE2"
+	},
+	"99": {
+		"a": "A0",
+		"g": "CM2"
+	},
+	"102": {
+		"a": "A0",
+		"g": "6"
+	},
+	"108": {
+		"a": "A",
+		"g": "5",
+		"simple": "Distance d'un nombre à zéro sur une droite graduée. Ex : la valeur absolue de $-3$ et celle de $3$ valent toutes deux $3$.",
+		"current": "2",
+		"note": "La notation $|a|$ n'arrive qu'en 2de."
+	},
+	"109": {
+		"a": "K",
+		"tranche": "Usage en classe : vocabulaire des nombres relatifs (5e)."
+	},
+	"110": {
+		"a": "K",
+		"tranche": "Usage en classe : la valeur absolue se définit en 5e comme la distance à zéro."
+	},
+	"117": {
+		"a": "A0",
+		"g": "5"
+	},
+	"118": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Nombre qu'on ne connaît pas encore et qu'on cherche. On peut le représenter par un symbole ($\\square$, $?$) ou par une lettre.",
+		"current": "5"
+	},
+	"119": {
+		"a": "A0",
+		"g": "5"
+	},
+	"120": {
+		"a": "A0",
+		"g": "5"
+	},
+	"121": {
+		"a": "A0",
+		"g": "5"
+	},
+	"123": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Propriété qui permet de calculer un produit en le découpant. Ex : $7 \\times 12 = 7 \\times 10 + 7 \\times 2 = 70 + 14 = 84$.",
+		"current": "5"
+	},
+	"126": {
+		"a": "H",
+		"g": "1_SPE",
+		"note": "Absent des programmes : rangé avec « polynôme »."
+	},
+	"127": {
+		"a": "R",
+		"g": "1_SPE"
+	},
+	"128": {
+		"a": "A",
+		"g": "4",
+		"simple": "Une équation du premier degré est une équation où l'inconnue n'est jamais élevée au carré ni à une autre puissance. Ex : $3x + 2 = 8$.",
+		"current": "1_SPE"
+	},
+	"129": {
+		"a": "R",
+		"g": "3"
+	},
+	"130": {
+		"a": "R",
+		"g": "T_SPE",
+		"note": "Ni le cycle 4 de 2026 ni la 2de ne nomment les systèmes."
+	},
+	"132": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"134": {
+		"a": "A0",
+		"g": "5"
+	},
+	"135": {
+		"a": "A0",
+		"g": "5"
+	},
+	"136": {
+		"a": "K",
+		"note": "Le texte de 2de dit que les inégalités ont été étudiées au cycle 4."
+	},
+	"140": {
+		"a": "R",
+		"g": "CE2"
+	},
+	"145": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Ce qui permet de dire si un objet est lourd ou léger. On compare des masses avec une balance.",
+		"current": "CE1"
+	},
+	"146": {
+		"a": "R",
+		"g": "5",
+		"note": "Au cycle 2 et au cycle 3, le BO dit « contenance » (à ajouter au lot 0d)."
+	},
+	"148": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"149": {
+		"a": "A0",
+		"g": "5"
+	},
+	"150": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Coin formé par deux traits droits qui partent d'un même point. Ex : l'angle droit, comme le coin d'une feuille.",
+		"current": "6"
+	},
+	"152": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Angle plus petit qu'un angle droit.",
+		"current": "6"
+	},
+	"153": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Angle plus grand qu'un angle droit.",
+		"current": "6"
+	},
+	"154": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Unité pour mesurer des longueurs, notée $\\text{cm}$. Il faut $100$ centimètres pour faire $1$ mètre.",
+		"current": "CM1"
+	},
+	"155": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"158": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"159": {
+		"a": "R+",
+		"g": "CE2",
+		"simple": "Unité de longueur, notée $\\text{dm}$. $1\\,\\text{m} = 10\\,\\text{dm}$ et $1\\,\\text{dm} = 10\\,\\text{cm}$.",
+		"current": "CM1"
+	},
+	"161": {
+		"a": "A0",
+		"g": "CP"
+	},
+	"163": {
+		"a": "A0",
+		"g": "CP"
+	},
+	"164": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"166": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Mesure d'un objet d'un bord à l'autre, souvent la plus petite de ses dimensions. Ex : la largeur de la classe.",
+		"current": "CE2"
+	},
+	"170": {
+		"a": "R+",
+		"g": "CE2",
+		"simple": "Unité de longueur, notée $\\text{mm}$. $1\\,\\text{cm} = 10\\,\\text{mm}$.",
+		"current": "CM1"
+	},
+	"173": {
+		"a": "R",
+		"g": "5"
+	},
+	"174": {
+		"a": "R",
+		"g": "6",
+		"note": "Le BO l'exclut au cours moyen."
+	},
+	"175": {
+		"a": "R",
+		"g": "6",
+		"note": "Le livret de 6e : les pourcentages ne sont « plus abordés au cours moyen »."
+	},
+	"176": {
+		"a": "R",
+		"g": "6"
+	},
+	"177": {
+		"a": "H",
+		"g": "4",
+		"tranche": "Hors programme, d'usage courant au cycle 4 ; sorti de la 6e."
+	},
+	"178": {
+		"a": "K",
+		"note": "Le texte de 2de dit que les taux d'évolution ont été travaillés au cycle 4."
+	},
+	"181": {
+		"a": "A0",
+		"g": "4"
+	},
+	"182": {
+		"a": "R",
+		"g": "6"
+	},
+	"183": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Deux grandeurs sont proportionnelles quand, si l'une est multipliée par $2$, $3$, $10$…, l'autre l'est aussi. Ex : $1$ cahier coûte $2$ €, $3$ cahiers coûtent $6$ €.",
+		"current": "6"
+	},
+	"185": {
+		"a": "R",
+		"g": "4"
+	},
+	"186": {
+		"a": "A",
+		"g": "5",
+		"simple": "Le carré d'un nombre est ce nombre multiplié par lui-même : $5^2 = 5 \\times 5 = 25$ ; son cube : $2^3 = 2 \\times 2 \\times 2 = 8$. Ce sont des puissances.",
+		"current": "4"
+	},
+	"188": {
+		"a": "H",
+		"note": "Le BO ne nomme pas la base d'une puissance : gardé en 4e."
+	},
+	"189": {
+		"a": "R",
+		"g": "5"
+	},
+	"190": {
+		"a": "R",
+		"g": "5"
+	},
+	"191": {
+		"a": "R",
+		"g": "3"
+	},
+	"193": {
+		"a": "R",
+		"g": "3"
+	},
+	"194": {
+		"a": "A0",
+		"g": "4"
+	},
+	"196": {
+		"a": "R",
+		"g": "4",
+		"note": "Le BO n'emploie « radical » qu'en Maths expertes, dans un autre sens ; rangé avec la racine carrée (4e)."
+	},
+	"197": {
+		"a": "A0",
+		"g": "4"
+	},
+	"203": {
+		"a": "R",
+		"g": "2"
+	},
+	"205": {
+		"a": "R",
+		"g": "2"
+	},
+	"210": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Ligne qui relie des points dans un graphique pour montrer comment une quantité évolue. Ex : la courbe des températures de la semaine.",
+		"current": "3"
+	},
+	"212": {
+		"a": "A",
+		"g": "6",
+		"simple": "Nombre qui repère un point sur une droite graduée.",
+		"current": "5"
+	},
+	"213": {
+		"a": "K",
+		"tranche": "Usage en classe : les coordonnées d'un point sont au programme de 5e."
+	},
+	"214": {
+		"a": "R",
+		"g": "2"
+	},
+	"215": {
+		"a": "R",
+		"g": "2"
+	},
+	"216": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Deux axes gradués qui permettent de placer des points, par exemple dans un graphique.",
+		"current": "5"
+	},
+	"217": {
+		"a": "A",
+		"g": "5",
+		"simple": "Tableau qui donne la valeur d'une expression pour plusieurs valeurs de la lettre. Ex : $3x + 1$ vaut $1$, $4$, $7$ pour $x = 0$, $1$, $2$.",
+		"current": "3"
+	},
+	"220": {
+		"a": "A0",
+		"g": "3"
+	},
+	"226": {
+		"a": "R",
+		"g": "1_SPE"
+	},
+	"227": {
+		"a": "A0",
+		"g": "2"
+	},
+	"228": {
+		"a": "A0",
+		"g": "1_SPE"
+	},
+	"236": {
+		"a": "A0",
+		"g": "1_SPE"
+	},
+	"239": {
+		"a": "A0",
+		"g": "1_SPE"
+	},
+	"242": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Liste d'objets, de formes ou de nombres rangés les uns après les autres, souvent selon une règle. Ex : $2$, $4$, $6$, $8$… (on ajoute $2$ à chaque fois).",
+		"current": "1_SPE"
+	},
+	"243": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Chacun des nombres d'une suite. Ex : dans la suite $3$, $6$, $9$, $12$…, le deuxième terme est $6$.",
+		"current": "1_SPE"
+	},
+	"244": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Place occupée dans une file ou une liste : premier, deuxième, troisième… Ex : Léa est au troisième rang de la file.",
+		"current": "1_SPE"
+	},
+	"245": {
+		"a": "K",
+		"note": "Le texte de 1re ne nomme pas la raison, mais la définition des suites arithmétiques et géométriques (1re) la contient."
+	},
+	"248": {
+		"a": "K",
+		"note": "1re spé : « Sens de variation d'une suite »."
+	},
+	"249": {
+		"a": "K",
+		"note": "1re spé : « Sens de variation d'une suite »."
+	},
+	"255": {
+		"a": "H",
+		"note": "Somme des termes d'une suite : hors programme ; gardé en Tle spé. Le sens « série statistique » manque (lot 0c)."
+	},
+	"256": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "La probabilité d'un évènement dit s'il a beaucoup ou peu de chances de se produire. Ex : avec une pièce, on a une chance sur deux d'obtenir pile.",
+		"current": "5"
+	},
+	"257": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"258": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"259": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Ce qui peut arriver ou non lors d'une expérience aléatoire. Ex : « obtenir un nombre pair » en lançant un dé.",
+		"current": "4"
+	},
+	"260": {
+		"a": "A",
+		"g": "6",
+		"simple": "Toutes les issues possibles d'une expérience aléatoire. Ex : pour un dé, les issues $1$, $2$, $3$, $4$, $5$, $6$.",
+		"current": "2"
+	},
+	"261": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"262": {
+		"a": "R",
+		"g": "4"
+	},
+	"263": {
+		"a": "R",
+		"g": "2"
+	},
+	"264": {
+		"a": "A0",
+		"g": "6"
+	},
+	"270": {
+		"a": "R",
+		"g": "5"
+	},
+	"271": {
+		"a": "R",
+		"g": "4"
+	},
+	"272": {
+		"a": "R",
+		"g": "4"
+	},
+	"273": {
+		"a": "A",
+		"g": "CE2",
+		"simple": "Nombre de personnes ou d'objets dans un groupe. Ex : l'effectif des élèves qui viennent à vélo.",
+		"current": "5"
+	},
+	"274": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Dessin qui présente des données, par exemple avec des barres de hauteurs différentes : un diagramme en barres.",
+		"current": "CM1"
+	},
+	"277": {
+		"a": "R",
+		"g": "1_SPE"
+	},
+	"282": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Ligne droite qui a un point de départ mais pas de fin. Ex : la demi-droite graduée sur laquelle on place les nombres.",
+		"current": "6"
+	},
+	"283": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"284": {
+		"a": "R",
+		"g": "CM1"
+	},
+	"288": {
+		"a": "H",
+		"note": "Absent des programmes de 2026 : gardé en 4e."
+	},
+	"289": {
+		"a": "H",
+		"note": "Absent des programmes de 2026 : gardé en 3e."
+	},
+	"292": {
+		"a": "H",
+		"note": "Le mot n'est plus dans le cycle 4 de 2026 : gardé en 4e, avec le théorème de Pythagore."
+	},
+	"294": {
+		"a": "R",
+		"g": "3"
+	},
+	"298": {
+		"a": "R",
+		"g": "CE2"
+	},
+	"299": {
+		"a": "R",
+		"g": "CE2"
+	},
+	"304": {
+		"a": "R",
+		"g": "5"
+	},
+	"305": {
+		"a": "R",
+		"g": "CM2"
+	},
+	"306": {
+		"a": "R",
+		"g": "CE2"
+	},
+	"307": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Pointe d'une figure, là où deux côtés se rejoignent. Ex : un triangle a $3$ sommets.",
+		"current": "CE2"
+	},
+	"308": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Chacun des traits droits qui forment le bord d'une figure. Ex : un carré a $4$ côtés.",
+		"current": "CE2"
+	},
+	"309": {
+		"a": "A",
+		"g": "CE2",
+		"simple": "Dans un quadrilatère, segment qui relie deux sommets opposés. Ex : un rectangle a deux diagonales.",
+		"current": "CM1"
+	},
+	"310": {
+		"a": "A0",
+		"g": "CE1"
+	},
+	"315": {
+		"a": "A0",
+		"g": "3"
+	},
+	"320": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Se dit d'un angle plus petit qu'un angle droit.",
+		"current": "6"
+	},
+	"321": {
+		"a": "A0",
+		"g": "CP"
+	},
+	"323": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Bord droit d'un solide, là où deux faces se rejoignent. Ex : un cube a $12$ arêtes.",
+		"current": "CM1"
+	},
+	"324": {
+		"a": "A0",
+		"g": "CE1"
+	},
+	"325": {
+		"a": "A0",
+		"g": "2"
+	},
+	"327": {
+		"a": "A0",
+		"g": "CE1"
+	},
+	"331": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Solide qui a une base ronde et une pointe. Ex : un cornet de glace.",
+		"current": "CM1"
+	},
+	"332": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Solide qui a la forme d'un tube fermé par deux disques. Ex : une boîte de conserve.",
+		"current": "CM1"
+	},
+	"334": {
+		"a": "H",
+		"note": "Absent de la voie générale (seulement en STD2A) : gardé en 2de."
+	},
+	"338": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"339": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Bout d'un objet ou d'un trait.",
+		"current": "CE1"
+	},
+	"340": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Chacune des surfaces plates d'un solide. Ex : un cube a $6$ faces carrées.",
+		"current": "CM1"
+	},
+	"341": {
+		"a": "A0",
+		"g": "CP"
+	},
+	"343": {
+		"a": "A0",
+		"g": "CE2"
+	},
+	"344": {
+		"a": "K",
+		"tranche": "Usage en classe : courbe de la fonction inverse (2de), sinon invisible des élèves de spécialité."
+	},
+	"347": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Se dit d'un angle plus grand qu'un angle droit.",
+		"current": "6"
+	},
+	"348": {
+		"a": "H",
+		"note": "Absent des programmes : gardé au CM1."
+	},
+	"349": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Point de départ d'une demi-droite graduée, là où est placé le nombre $0$.",
+		"current": "6"
+	},
+	"351": {
+		"a": "A0",
+		"g": "3"
+	},
+	"352": {
+		"a": "A0",
+		"g": "CE2"
+	},
+	"353": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Solide qui a la forme d'une boîte : ses $6$ faces sont des rectangles. Ex : une boîte à chaussures.",
+		"current": "CM1"
+	},
+	"354": {
+		"a": "A0",
+		"g": "CE2"
+	},
+	"355": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"356": {
+		"a": "K",
+		"note": "Le cycle 4 rappelle que les élèves ont rencontré « le nombre π » au cycle 3 (périmètre du disque en 6e)."
+	},
+	"357": {
+		"a": "R",
+		"g": "5",
+		"note": "Corrigé à la main : la relecture avait pris « figure plane » ; le plan (géométrie) apparaît en 5e (« Repérage sur une droite et dans le plan »). Le « plan de la classe » (CP) est un autre sens."
+	},
+	"359": {
+		"a": "A0",
+		"g": "CM1"
+	},
+	"360": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Solide qui a une base et des faces en forme de triangles qui se rejoignent en un sommet. Ex : les pyramides d'Égypte.",
+		"current": "CM1"
+	},
+	"363": {
+		"a": "R",
+		"g": "5"
+	},
+	"364": {
+		"a": "R",
+		"g": "1_SPE"
+	},
+	"365": {
+		"a": "R",
+		"g": "6",
+		"note": "Le BO renvoie le rapporteur au collège."
+	},
+	"367": {
+		"a": "R",
+		"g": "2"
+	},
+	"369": {
+		"a": "A0",
+		"g": "CM2"
+	},
+	"370": {
+		"a": "R",
+		"g": "T_SPE"
+	},
+	"371": {
+		"a": "R",
+		"g": "T_SPE"
+	},
+	"372": {
+		"a": "A",
+		"g": "CP",
+		"simple": "Objet en trois dimensions qu'on peut prendre en main, comme un cube, une boule ou un cône.",
+		"current": "CM1"
+	},
+	"373": {
+		"a": "R",
+		"g": "3"
+	},
+	"375": {
+		"a": "A",
+		"g": "CE2",
+		"simple": "Une figure présente une symétrie quand elle a un axe de symétrie : en la pliant le long de cette droite, les deux moitiés se superposent exactement.",
+		"current": "6"
+	},
+	"379": {
+		"a": "A",
+		"g": "CM1",
+		"simple": "Groupe d'objets ou de points réunis parce qu'ils ont quelque chose en commun. Ex : le cercle est l'ensemble des points situés à la même distance du centre.",
+		"current": "2"
+	},
+	"380": {
+		"a": "R",
+		"g": "2"
+	},
+	"382": {
+		"a": "A0",
+		"g": "4"
+	},
+	"383": {
+		"a": "A0",
+		"g": "4"
+	},
+	"384": {
+		"a": "A",
+		"g": "6",
+		"simple": "La réciproque d'une propriété, c'est la même propriété « dans l'autre sens ». Elle n'est pas toujours vraie.",
+		"current": "4"
+	},
+	"385": {
+		"a": "A0",
+		"g": "4"
+	},
+	"386": {
+		"a": "A0",
+		"g": "5"
+	},
+	"389": {
+		"a": "A0",
+		"g": "5"
+	},
+	"391": {
+		"a": "R",
+		"g": "2"
+	},
+	"392": {
+		"a": "K",
+		"note": "Le cycle 4 emploie « hypothèse » (« L'équiprobabilité est une hypothèse qui ne se démontre pas »)."
+	},
+	"393": {
+		"a": "R",
+		"g": "2"
+	},
+	"394": {
+		"a": "A0",
+		"g": "5"
+	},
+	"395": {
+		"a": "R",
+		"g": "3"
+	},
+	"397": {
+		"a": "A",
+		"g": "CE1",
+		"simple": "Ce qui est toujours vrai pour une figure ou un nombre. Ex : un carré a toujours ses $4$ côtés de même longueur.",
+		"current": "6"
+	},
+	"399": {
+		"a": "H"
+	},
+	"400": {
+		"a": "H"
+	},
+	"401": {
+		"a": "H"
+	},
+	"402": {
+		"a": "H"
+	},
+	"403": {
+		"a": "H"
+	},
+	"404": {
+		"a": "H"
+	},
+	"405": {
+		"a": "H"
+	},
+	"406": {
+		"a": "H"
+	},
+	"407": {
+		"a": "H"
+	},
+	"408": {
+		"a": "H"
+	},
+	"414": {
+		"a": "H"
+	},
+	"415": {
+		"a": "H"
+	},
+	"416": {
+		"a": "H"
+	}
+}

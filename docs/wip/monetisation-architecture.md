@@ -254,7 +254,7 @@ Le contenu est **fragmenté et en pleine migration** — aucune taxonomie n'est 
 ## Fichiers & tables clés
 
 - Rôles/types : `src/lib/types/database-helpers.ts:159`, `database.ts` (enum `user_role`, `user_status`)
-- Consentement : `src/lib/utils/consent.ts`, table `parental_consents`, `docs/ref/conformite/`
+- Consentement : `src/lib/utils/consent.ts`, table `parental_consents`, `docs/systeme/conformite/`
 - Import/roster : `src/routes/(protected)/dashboard/admin/import-students/+page.server.ts`, table `pending_students`
 - Auth/OAuth : `src/routes/(public)/auth/login/+page.server.ts`, `auth/callback/+server.ts`
 - Contenu : `question_templates` (theme/domain/grade), `exercises` (legacy), `src/lib/migration/question-transformer.ts`

@@ -1,7 +1,7 @@
 /**
  * La carte modifiable — lot 2a du passage de `/grapheur` par l'atelier.
  *
- * Phase 0 `docs/wip/atelier-grapheur-phase0.md` §1 (C1 à C11). La frappe est
+ * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §1 (C1 à C11). La frappe est
  * RÉELLE (`userEvent.keyboard` dans le champ MathLive) : un `setValue` ne passe
  * ni par les raccourcis de MathLive ni par l'événement `input` (mesuré).
  */

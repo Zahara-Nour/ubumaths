@@ -855,7 +855,8 @@ describe('Helper Functions', () => {
 			const snapshot = {
 				documents: [],
 				checklistItems: [mockContentSnapshot.checklistItems[0]],
-				exercises: []
+				exercises: [],
+				worksheets: []
 			};
 
 			expect(hasContent(snapshot)).toBe(true);
@@ -865,7 +866,8 @@ describe('Helper Functions', () => {
 			const snapshot = {
 				documents: [],
 				checklistItems: [],
-				exercises: [mockContentSnapshot.exercises[0]]
+				exercises: [mockContentSnapshot.exercises[0]],
+				worksheets: []
 			};
 
 			expect(hasContent(snapshot)).toBe(true);
@@ -1592,7 +1594,7 @@ describe('Template CRUD Functions', () => {
 				.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
 
 			const result = await templates.createTemplateFromChapter(
-				{ chapterId: mockChapterId, title: 'Le second degré' },
+				{ chapterId: mockChapterId, title: 'Le second degré', grades: [] },
 				mockUserId,
 				supabase
 			);
@@ -1614,7 +1616,7 @@ describe('Template CRUD Functions', () => {
 			});
 
 			const result = await templates.createTemplateFromChapter(
-				{ chapterId: mockChapterId, title: 'Le second degré' },
+				{ chapterId: mockChapterId, title: 'Le second degré', grades: [] },
 				mockUserId,
 				supabase
 			);

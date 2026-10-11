@@ -12,26 +12,26 @@
  * import { func, variable } from '$lib/mathAST/factory';
  * import { toCustom } from '$lib/mathAST';
  *
- * // Maclaurin series of sin(x), 5 terms
+ * // Maclaurin series of sin(x), order 5
  * const sinExpr = func('sin', [variable('x')]);
- * const taylor = taylorExpand(sinExpr, { terms: 5 });
+ * const taylor = taylorExpand(sinExpr, { order: 5 });
  * console.log(toCustom(taylor)); // "x - x^3/6 + x^5/120"
  *
- * // Taylor series of exp(x) at x=0, 4 terms
+ * // Taylor series of exp(x) at x=0, order 3
  * const expExpr = func('exp', [variable('x')]);
- * const taylor = maclaurin(expExpr, 4);
+ * const taylor = maclaurin(expExpr, 3);
  * // Result: 1 + x + x^2/2 + x^3/6
  *
  * // Taylor series of ln(x) centered at x=1
  * const lnExpr = func('ln', [variable('x')]);
- * const taylor = taylorExpand(lnExpr, { center: 1, terms: 4 });
+ * const taylor = taylorExpand(lnExpr, { center: 1, order: 3 });
  * // Result: (x-1) - (x-1)^2/2 + (x-1)^3/3 - ...
  *
  * // With user-defined function
  * const functions = {
  *   f: { expression: parseLatex('x^2'), parameters: ['x'] }
  * };
- * const result = taylorExpand(func('f', [variable('x')]), { terms: 3 }, functions);
+ * const result = taylorExpand(func('f', [variable('x')]), { order: 2 }, functions);
  * // Result: x^2 (polynomial stays as polynomial)
  * ```
  */
@@ -41,7 +41,7 @@
 // =============================================================================
 
 export type { TaylorOptions } from './types';
-export { DEFAULT_TAYLOR_OPTIONS, MAX_TAYLOR_TERMS, TaylorError } from './types';
+export { DEFAULT_TAYLOR_OPTIONS, MAX_TAYLOR_ORDER, TaylorError } from './types';
 
 // =============================================================================
 // Main Functions

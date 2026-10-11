@@ -28,7 +28,7 @@ import { toLatex } from '../latex-generator';
 
 function sorted(source: string): string {
 	const parsed = parseCustomSafe(source);
-	if (parsed.ast === undefined) throw new Error(`parse KO : ${source}`);
+	if (parsed.ast === null) throw new Error(`parse KO : ${source}`);
 	return toLatex(sortTermsAndFactorsAST(parsed.ast)).replace(/\s+/g, ' ').trim();
 }
 
@@ -129,7 +129,7 @@ describe('la normalisation reste une normalisation', () => {
 		// deuxième passage jetait).
 		for (const source of ['1+2x+3x^2', 'x*2', '2-3x+x^2', '2x-3']) {
 			const parsed = parseCustomSafe(source);
-			if (parsed.ast === undefined) throw new Error(`parse KO : ${source}`);
+			if (parsed.ast === null) throw new Error(`parse KO : ${source}`);
 
 			const once = sortTermsAndFactorsAST(parsed.ast);
 			const twice = sortTermsAndFactorsAST(once);

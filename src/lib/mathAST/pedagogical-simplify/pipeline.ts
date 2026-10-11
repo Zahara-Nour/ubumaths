@@ -442,11 +442,16 @@ export function generatePedagogicalSimplifySteps(
  */
 function tidyWithoutReordering(node: MathNode): MathNode {
 	if (node.type !== 'multiplication') return tidy(node);
-	return {
-		...node,
-		left: tidyWithoutReordering(node.left),
-		right: tidyWithoutReordering(node.right)
-	};
+	const left = tidyWithoutReordering(node.left);
+	const right = tidyWithoutReordering(node.right);
+	// Deux nombres côte à côte ne sont pas une factorisation à préserver : ils
+	// viennent d'une identité qui a rendu un nombre (`2\ln(e)` → `2 × 1`,
+	// `3\ln(e^2)` → `3 × 2`). Aucune règle de `factoriser` ne décompose un
+	// entier, donc on peut les calculer sans rien défaire.
+	if (left.type === 'number' && right.type === 'number') {
+		return tidy({ ...node, left, right });
+	}
+	return { ...node, left, right };
 }
 
 /**

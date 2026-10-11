@@ -1,6 +1,6 @@
 /**
  * Réponse « vecteur » : lecture d'un vecteur dans UNE case et jugement exact ou
- * colinéaire. Comportements : docs/wip/reponse-vecteur-premier-progress.md.
+ * colinéaire. Comportements : docs/archive/wip/reponse-vecteur-premier-progress.md.
  */
 
 import { describe, it, expect } from 'vitest';

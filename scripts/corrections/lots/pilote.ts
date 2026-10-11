@@ -2,7 +2,7 @@
  * Lot « pilote » : R-PASS (4 modèles) + N-SIGNES (11 modèles)
  * ==========================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md (décisions du
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md (décisions du
  * 2026-09-29 : les trous × et : chez les relatifs, 0b6d749f et a5d4c3ee, passent
  * de R-INV à N-SIGNES ; les trous + et − vont à N-REL-ADD, hors de ce lot).
  *

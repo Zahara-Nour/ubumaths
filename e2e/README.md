@@ -2,7 +2,7 @@
 
 End-to-end tests for UbuMaths (Playwright), organisés par rôle.
 
-> **Architecture des tests & règles** : [docs/ref/tests/architecture.md](/docs/ref/tests/architecture.md)
+> **Architecture des tests & règles** : [docs/pratiques/tests.md](/docs/pratiques/tests.md)
 > Les e2e (`*.spec.ts`) tournent en local / à la demande (build + preview), pas dans la boucle de push.
 
 ---
@@ -17,7 +17,7 @@ End-to-end tests for UbuMaths (Playwright), organisés par rôle.
    npx playwright install
    ```
 
-2. **Create test users** in Supabase (voir docs/ref/tests/architecture.md)
+2. **Create test users** in Supabase (voir docs/pratiques/tests.md)
 
 3. **Set environment variables** in `.env.test` (git-ignored — never commit real
    credentials). Use dedicated **test** accounts, not real staff/student logins:
@@ -78,7 +78,7 @@ Chaque sous-dossier par rôle a un `README.md` court. Les fichiers se terminent 
 
 ## 📖 Documentation Links
 
-- [Architecture des tests](/docs/ref/tests/architecture.md) - Types, conventions, runners, CI
+- [Architecture des tests](/docs/pratiques/tests.md) - Types, conventions, runners, CI
 - [CLAUDE.md](/CLAUDE.md) - Development guide
 
 ---
@@ -107,4 +107,4 @@ Chaque sous-dossier par rôle a un `README.md` court. Les fichiers se terminent 
 
 ---
 
-**Voir [docs/ref/tests/architecture.md](/docs/ref/tests/architecture.md) pour l'architecture des tests.**
+**Voir [docs/pratiques/tests.md](/docs/pratiques/tests.md) pour l'architecture des tests.**

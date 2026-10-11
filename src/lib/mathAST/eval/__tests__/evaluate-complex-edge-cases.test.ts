@@ -16,6 +16,21 @@ import { complex, number, func, power, multiply, divide, add, opposite } from '.
 import { numericNode } from '../../common/numeric';
 import { parsePratt } from '../../parser/latex/parser-pratt';
 import { toLatex } from '../../latex-generator';
+import type { EvalResult } from '../types';
+
+/** Résultat d'évaluation rétréci au cas « valeur ». */
+type EvalValueResult = Extract<EvalResult, { status: 'value' }>;
+
+/**
+ * Affirme que l'évaluation a abouti à une valeur, puis rétrécit le résultat.
+ */
+function expectValue(result: EvalResult): EvalValueResult {
+	expect(result.status).toBe('value');
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
+	return result;
+}
 
 // =============================================================================
 // Helper Functions
@@ -24,7 +39,8 @@ import { toLatex } from '../../latex-generator';
 /**
  * Assert symbolic result matches expected latex
  */
-function expectLatex(result: ReturnType<typeof evaluate>, expected: string | RegExp) {
+function expectLatex(evalResult: EvalResult, expected: string | RegExp) {
+	const result = expectValue(evalResult);
 	const latex = toLatex(result.node);
 	if (typeof expected === 'string') {
 		expect(latex).toBe(expected);
@@ -36,7 +52,8 @@ function expectLatex(result: ReturnType<typeof evaluate>, expected: string | Reg
 /**
  * Assert result stays as function (exact mode doesn't evaluate complex functions)
  */
-function expectFunction(result: ReturnType<typeof evaluate>, name: string) {
+function expectFunction(evalResult: EvalResult, name: string) {
+	const result = expectValue(evalResult);
 	expect(result.node.type).toBe('function');
 	if (result.node.type === 'function') {
 		expect(result.node.name).toBe(name);

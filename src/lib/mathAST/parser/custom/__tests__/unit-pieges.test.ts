@@ -1,5 +1,5 @@
 /**
- * Trois pièges de la notation des unités (2026-09-24, docs/ref/notation-unites.md).
+ * Trois pièges de la notation des unités (2026-09-24, docs/pratiques/notation-unites.md).
  *
  * 1. `kg/m.s` se lisait kg·m⁻¹·s — alors que le formateur écrit kg·m⁻¹·s⁻¹
  *    `g/m.s`. Désormais refusé comme ambigu ; `kg/(m.s)` est accepté, et le

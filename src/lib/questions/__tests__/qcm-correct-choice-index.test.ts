@@ -60,7 +60,7 @@ describe('validateTemplate — QCM', () => {
 describe('#314 « Quel est le plus petit de ces 2 nombres ? » (TinyMath)', () => {
 	it('génère, et seul le plus petit nombre est juste', () => {
 		const questions = JSON.parse(
-			readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+			readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 		) as QuestionWithMigration[];
 		const result = transformQuestion(questions[314], 314);
 		const template = { ...result.template!, id: 't' } as QuestionTemplate;

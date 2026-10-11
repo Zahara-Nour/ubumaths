@@ -25,8 +25,12 @@ function tableOf(counts: number[][], mode: CrossTableMode = 'effectifs') {
 	return outcome.value;
 }
 
-function percent(values: readonly number[]) {
-	return values.map((v) => Math.round(v * 1000) / 10);
+/** En pourcentage arrondi au dixième ; une fréquence non définie (`null`) est une erreur ici */
+function percent(values: readonly (number | null)[]): number[] {
+	return values.map((v) => {
+		if (v === null) throw new Error('fréquence non définie inattendue');
+		return Math.round(v * 1000) / 10;
+	});
 }
 
 // =============================================================================

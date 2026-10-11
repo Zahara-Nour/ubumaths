@@ -145,6 +145,7 @@ describe('detectDomainMistakes', () => {
 		it('should detect forgot denominator for 1/x when student uses universal', () => {
 			const expr: MathNode = {
 				type: 'division',
+				displayStyle: 'fraction',
 				numerator: { type: 'number', value: '1' },
 				denominator: { type: 'variable', name: 'x' }
 			};
@@ -164,6 +165,7 @@ describe('detectDomainMistakes', () => {
 		it('should not detect mistake when domain is correct', () => {
 			const expr: MathNode = {
 				type: 'division',
+				displayStyle: 'fraction',
 				numerator: { type: 'number', value: '1' },
 				denominator: { type: 'variable', name: 'x' }
 			};
@@ -253,6 +255,7 @@ describe('detectDomainMistakes', () => {
 		it('should detect when student forgot to exclude a point', () => {
 			const expr: MathNode = {
 				type: 'division',
+				displayStyle: 'fraction',
 				numerator: { type: 'number', value: '1' },
 				denominator: {
 					type: 'subtraction',

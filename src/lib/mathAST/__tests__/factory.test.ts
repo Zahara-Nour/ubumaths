@@ -162,8 +162,9 @@ describe('factory', () => {
 		});
 
 		it('includes metadata when provided', () => {
-			const node = greek('pi', { annotation: 'constant' });
-			expect(node.metadata?.annotation).toBe('constant');
+			// π n'est pas une lettre grecque de l'AST (c'est une constante) : on prend θ
+			const node = greek('theta', { annotation: 'angle' });
+			expect(node.metadata?.annotation).toBe('angle');
 		});
 	});
 

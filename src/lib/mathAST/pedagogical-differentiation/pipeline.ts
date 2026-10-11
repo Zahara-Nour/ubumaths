@@ -72,10 +72,14 @@ import {
 	lnRule,
 	logRule,
 	negationRule,
+	nthRootOfPowerRule,
+	nthRootPowerRadicand,
+	nthRootRule,
 	one,
 	powerRuleConstantExp,
 	productRule,
 	quotientRule,
+	rootIndexOf,
 	simplifiedDivide,
 	simplifiedMultiply,
 	sinhRule,
@@ -88,6 +92,7 @@ import {
 	zero
 } from '../differentiation/rules';
 import { number, power } from '../factory';
+import { inverseNotationAsFunction } from '../common/function-power';
 import { getDefaultDescription } from './descriptions-fr';
 import type {
 	DifferentiationBindings,
@@ -815,9 +820,17 @@ function dispatchSuperscript(node: SuperscriptNode, ctx: DispatchContext): Dispa
  * `PedagogicalDifferentiationNotImplemented`.
  */
 function dispatchFunction(node: FunctionNode, ctx: DispatchContext): DispatchResult {
+	// `\cos^{-1}(x)` (exposant −1 ou drapeau `isInverse`) est la RÉCIPROQUE,
+	// pas `1/cos x` : on dérive `arccos(x)`, comme le moteur (#884). Une
+	// réciproque sans définition connue (`\ln^{-1}`) garde `isInverse` et est
+	// refusée juste en dessous.
+	const reciprocal = inverseNotationAsFunction(node);
+	if (reciprocal !== null && reciprocal.isInverse !== true) {
+		return dispatchFunction(reciprocal, ctx);
+	}
 	// `f^{-1}(x)` (functional inverse) is out of V1 scope — refuse explicitly so
 	// the caller can fall back to Mode A rather than receive a wrong derivative.
-	if (node.isInverse) {
+	if (node.isInverse || reciprocal !== null) {
 		throw new PedagogicalDifferentiationNotImplemented(`inverse function "${node.name}^{-1}"`);
 	}
 	// `\sin^2(x)`, `\cos^3(x)`, … parse as a function with `power` set, NOT as
@@ -956,6 +969,9 @@ function dispatchSqrt(node: FunctionNode, ctx: DispatchContext): DispatchResult 
 	}
 	const arg = node.args[0];
 
+	const rootIndex = rootIndexOf(node);
+	if (rootIndex !== null) return dispatchNthRoot(node, arg, rootIndex, ctx);
+
 	if (isExactVariable(arg, ctx.variable)) {
 		const derivative = sqrtRule(arg, one(), ctx.simplify);
 		const step = buildStep(ctx, {
@@ -975,6 +991,52 @@ function dispatchSqrt(node: FunctionNode, ctx: DispatchContext): DispatchResult 
 		after: derivative,
 		variable: ctx.variable,
 		bindings: { u: arg },
+		subSteps: sub.steps
+	});
+	return { derivative, steps: [step] };
+}
+
+/**
+ * `ⁿ√u` (indice dans `base`) — (ⁿ√u)′ = u′ / (n · ⁿ√(u^{n−1})) :
+ * - `ⁿ√x` → raccourci terminal `derivative-of-nth-root` : 1/(n · ⁿ√(x^{n−1})) ;
+ * - sinon → règle `nth-root`, sous-étapes de la dérivée de u. Pour un
+ *   radicande `v^p` (0 < p < n), la réponse prend la forme courte
+ *   p·v′ / (n · ⁿ√(v^{n−p})) — voir `nthRootPowerRadicand`.
+ */
+function dispatchNthRoot(
+	node: FunctionNode,
+	arg: MathNode,
+	index: MathNode,
+	ctx: DispatchContext
+): DispatchResult {
+	if (isExactVariable(arg, ctx.variable)) {
+		const derivative = nthRootRule(arg, index, one(), ctx.simplify);
+		const step = buildStep(ctx, {
+			rule: 'derivative-of-nth-root',
+			before: node,
+			after: derivative,
+			variable: ctx.variable,
+			bindings: { n: index }
+		});
+		return { derivative, steps: [step] };
+	}
+
+	const sub = differentiateNode(arg, ctx);
+	const powerRadicand = nthRootPowerRadicand(arg, index);
+	const derivative =
+		powerRadicand === null
+			? nthRootRule(arg, index, sub.derivative, ctx.simplify)
+			: nthRootOfPowerRule(
+					powerRadicand,
+					differentiateNode(powerRadicand.v, ctx).derivative,
+					ctx.simplify
+				);
+	const step = buildStep(ctx, {
+		rule: 'nth-root',
+		before: node,
+		after: derivative,
+		variable: ctx.variable,
+		bindings: { u: arg, n: index },
 		subSteps: sub.steps
 	});
 	return { derivative, steps: [step] };

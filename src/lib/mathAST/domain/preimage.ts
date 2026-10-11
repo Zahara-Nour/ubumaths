@@ -24,6 +24,8 @@ import {
 } from './factory';
 import { numericNode } from '../common/numeric';
 import { ZERO_TOLERANCE } from '../common';
+import { findNodes } from '../transforms';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // Expression Classification
@@ -45,6 +47,18 @@ export function classifyExpression(expr: MathNode, variable: string): Expression
 }
 
 function classifyExpressionRec(expr: MathNode, variable: string): ExpressionKind {
+	// Constante sans la variable (√2, 1/3, π/4) : sa valeur numérique
+	if (
+		(expr.type === 'function' || expr.type === 'division') &&
+		findNodes(expr, (n) => n.type === 'variable').length === 0
+	) {
+		try {
+			const value = evaluateNodeToApproximatedNumber(expr);
+			return Number.isFinite(value) ? { kind: 'constant', value } : { kind: 'complex' };
+		} catch {
+			return { kind: 'complex' };
+		}
+	}
 	switch (expr.type) {
 		case 'number':
 			return { kind: 'constant', value: parseFloat(expr.value) };
@@ -176,6 +190,16 @@ function classifyExpressionRec(expr: MathNode, variable: string): ExpressionKind
 
 		case 'delimiter':
 			return classifyExpressionRec(expr.content, variable);
+
+		case 'division': {
+			// (a·x + b)/k : division par une constante non nulle
+			const den = classifyExpressionRec(expr.denominator, variable);
+			if (den.kind !== 'constant' || Math.abs(den.value) < ZERO_TOLERANCE) {
+				return { kind: 'complex' };
+			}
+			const num = classifyExpressionRec(expr.numerator, variable);
+			return multiplyClassified(num, { kind: 'constant', value: 1 / den.value });
+		}
 
 		default:
 			return { kind: 'complex' };

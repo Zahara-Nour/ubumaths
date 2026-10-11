@@ -12,10 +12,8 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType } from '$lib/questions/types';
-import { validateTemplate } from '$lib/questions';
 import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { detectCircularDependencies } from '$lib/questions';
-import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/category-validation';
+import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
 import {
 	createQuestionTemplateSchema,
 	validateRequest,
@@ -26,6 +24,7 @@ import {
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { toJson } from '$lib/types/database-helpers';
+import { templatePublicationErrors } from '$lib/server/template-publication';
 
 /**
  * GET /api/questions/templates
@@ -152,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const templateData = validation.data;
 
 		// QCM (V1) : jamais plusieurs bonnes réponses sans « plusieurs réponses », même
-		// en brouillon ; « aucune » n'est refusée qu'à la publication (validateTemplate)
+		// en brouillon ; « aucune » n'est refusée qu'à la publication (templatePublicationErrors)
 		if (templateData.status !== 'published') {
 			const countErrors = choiceAnswerCountErrors(templateData as QuestionTemplate, {
 				draft: true
@@ -162,66 +161,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		// Only validate if status is 'published'
+		// Même contrôle que le PUT et la publication par lot ; `type` est recalculé
+		// à l'insertion, le schéma strict le refuserait
 		if (templateData.status === 'published') {
-			// Validate template structure
-			const validationErrors: string[] = validateTemplate(templateData as QuestionTemplate);
-			if (validationErrors.length > 0) {
-				return json(
-					{
-						success: false,
-						errors: validationErrors
-					},
-					{ status: 400 }
-				);
-			}
-
-			// Detect circular dependencies in each variation
-			const allCircularErrors: string[] = [];
-			if (templateData.variations) {
-				templateData.variations.forEach((variation, index) => {
-					const circularResult = detectCircularDependencies(variation.variables || []);
-					if (!circularResult.valid && circularResult.errors.length > 0) {
-						allCircularErrors.push(
-							...circularResult.errors.map((err) => `Variation ${index + 1}: ${err.message}`)
-						);
-					}
-				});
-			}
-
-			if (allCircularErrors.length > 0) {
-				return json(
-					{
-						success: false,
-						errors: allCircularErrors
-					},
-					{ status: 400 }
-				);
+			const { type: _ignoredType, ...candidate } = templateData;
+			const errors = templatePublicationErrors(candidate as QuestionTemplate);
+			if (errors.length > 0) {
+				return json({ success: false, errors }, { status: 400 });
 			}
 		}
 
-		// Category uniqueness validation and auto-adjustment (only for published templates)
-		let adjustedLevel = templateData.level;
-		let levelAdjusted = false;
-
+		// Catégorie occupée : refus, comme le PUT et le lot — jamais de décalage
+		// automatique du niveau (l'éditeur propose un niveau libre avant l'envoi)
 		if (templateData.status === 'published') {
-			const categoryCheck = await checkCategoryUniqueness(locals.supabase, {
-				theme: templateData.theme!,
-				domain: templateData.domain!,
+			const category = {
+				theme: templateData.theme,
+				domain: templateData.domain,
 				subdomain: templateData.subdomain,
-				level: templateData.level!
-			});
-
+				level: templateData.level
+			};
+			const categoryCheck = await checkCategoryUniqueness(locals.supabase, category);
 			if (!categoryCheck.isUnique) {
-				// Category exists - auto-adjust level to next available (max + 1)
-				const nextLevel = await getNextAvailableLevel(locals.supabase, {
-					theme: templateData.theme!,
-					domain: templateData.domain!,
-					subdomain: templateData.subdomain
-				});
-
-				adjustedLevel = nextLevel;
-				levelAdjusted = true;
+				return json({ success: false, errors: [categoryTakenMessage(category)] }, { status: 400 });
 			}
 		}
 
@@ -252,7 +213,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				theme: templateData.theme,
 				domain: templateData.domain,
 				subdomain: templateData.subdomain || null,
-				level: adjustedLevel,
+				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				multiple_answers: templateData.multipleAnswers ?? null,
@@ -272,9 +233,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			createQuestionTemplateResponseSchema,
 			{
 				success: true,
-				template,
-				levelAdjusted,
-				adjustedLevel: levelAdjusted ? adjustedLevel : undefined
+				template
 			},
 			'POST /api/questions/templates'
 		);

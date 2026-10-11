@@ -66,7 +66,7 @@ describe('One-Sided Limits', () => {
 			const expr = divide(number('1'), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 
-			expect(result.status).toBe('exact');
+			expect(result.status).toBe('infinite');
 			expect(result.direction).toBe('right');
 			expect(result.value).not.toBeNull();
 			expect(result.value && isInfinity(result.value)).toBe(true);
@@ -79,7 +79,7 @@ describe('One-Sided Limits', () => {
 			const expr = divide(number('1'), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'left');
 
-			expect(result.status).toBe('exact');
+			expect(result.status).toBe('infinite');
 			expect(result.direction).toBe('left');
 			expect(result.value).not.toBeNull();
 			expect(result.value && isInfinity(result.value)).toBe(true);
@@ -92,7 +92,7 @@ describe('One-Sided Limits', () => {
 			const expr = func('ln', [variable('x')]);
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 
-			expect(result.status).toBe('exact');
+			expect(result.status).toBe('infinite');
 			expect(result.value).not.toBeNull();
 			expect(result.value && isInfinity(result.value)).toBe(true);
 			if (result.value?.type === 'infinity') {

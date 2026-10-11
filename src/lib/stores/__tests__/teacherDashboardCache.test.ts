@@ -109,7 +109,6 @@ function _createMockWarnings(studentIds: string[]): Map<string, StudentWarningCo
 function createMockClassInfo(): ClassInfo {
 	return {
 		id: 'class-123',
-		teacher_id: 'teacher-1',
 		name: 'Math 101',
 		description: 'Algebra class',
 		join_code: 'ABC123',
@@ -122,7 +121,6 @@ function createMockClassInfo(): ClassInfo {
 			{
 				id: 'schedule-1',
 				class_id: 'class-123',
-				teacher_id: 'teacher-1',
 				day_of_week: 1,
 				period_number: 1,
 				start_time: '08:00',
@@ -148,6 +146,7 @@ function createMockSchoolInfo(): SchoolInfo {
 			logo_url: null,
 			timetable: null,
 			timezone: 'Europe/Paris',
+			uai: null,
 			is_active: true,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()

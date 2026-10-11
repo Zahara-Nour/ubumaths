@@ -16,6 +16,7 @@ import { figureToSvg } from '../../utils/figure-svg';
 import { generateFigureTypst } from '../../generators/figure-typst';
 import { resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
 import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
+import { templateMarkdown } from '$lib/ubumark';
 import { resolveNamedColor } from '$lib/theme/named-colors';
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
@@ -89,7 +90,9 @@ describe('figure — nombres non finis (point 2)', () => {
 	it('variante tirée qui donne NaN : cadre neutre au PDF, pas de NaN', () => {
 		const md = String(
 			resolveMarkdownContent(
-				'```figure\nfenetre: -1 ; 8 ; -1 ; 6\n---\nA = point({{a}}/{{b}}, 0)\n```',
+				templateMarkdown(
+					'```figure\nfenetre: -1 ; 8 ; -1 ; 6\n---\nA = point({{a}}/{{b}}, 0)\n```'
+				),
 				[
 					{ name: 'a', value: '0' },
 					{ name: 'b', value: '0' }

@@ -23,7 +23,7 @@
 #   wrong:  background: hsl(var(--primary) / 0.1);
 #   right:  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 #
-# Full reference: docs/ref/css-color-tokens.md
+# Full reference: docs/pratiques/css-color-tokens.md
 #
 # A baseline file records the debt that predates this guard, so it can land
 # without turning CI red. The guard fails when a file exceeds its baseline, or
@@ -75,7 +75,7 @@ while read -r file count; do
 	if [ "$count" -gt "$allowed" ]; then
 		status=1
 		if [ "$allowed" -eq 0 ]; then
-			echo "::error file=$file::$count occurrence(s) de 'hsl(var(--…))' — utiliser var(--color-*) (voir docs/ref/css-color-tokens.md)"
+			echo "::error file=$file::$count occurrence(s) de 'hsl(var(--…))' — utiliser var(--color-*) (voir docs/pratiques/css-color-tokens.md)"
 		else
 			echo "::error file=$file::$count occurrence(s) de 'hsl(var(--…))' pour une référence de $allowed — utiliser var(--color-*)"
 		fi

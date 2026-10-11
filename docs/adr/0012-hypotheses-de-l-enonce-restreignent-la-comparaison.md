@@ -5,7 +5,7 @@
 
 ## Contexte
 
-La convention d'équivalence (`docs/ref/convention-equivalence.md`, décision du 2026-09-20) compare
+La convention d'équivalence (`docs/systeme/mathast/convention-equivalence.md`, décision du 2026-09-20) compare
 deux expressions **sur l'intersection de leurs domaines** : `(x²−y²)/(x−y) ≡ x+y` et `x/x ≡ 1` sont
 justes. Le décideur ne calcule pas cette intersection : c'est le sens de la règle, que chaque
 réduction doit respecter.

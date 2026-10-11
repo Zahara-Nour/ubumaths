@@ -18,6 +18,7 @@ import { readListValue } from './parse';
 import { nextName } from './names';
 import { Fraction } from '$lib/statistics/fraction';
 import { formatFraction, formatStatNumber } from '$lib/statistics/format';
+import { roundNumber } from '$lib/statistics/rounding';
 import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
 import { createRandomSource } from '$lib/utils/random';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
@@ -143,9 +144,9 @@ function readCount(written: string): number {
 	return /^\d+$/.test(written) ? Number(written) : Number.NaN;
 }
 
-/** Un réel au millième, à la française */
+/** Un réel au millième, à la française (règle unique : `roundNumber`) */
 function thousandth(value: number): string {
-	return formatStatNumber(Number(value.toFixed(3)), 'fr');
+	return formatStatNumber(roundNumber(value, 3), 'fr');
 }
 
 /**

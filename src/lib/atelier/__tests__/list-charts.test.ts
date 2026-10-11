@@ -3,7 +3,7 @@
  * statistiques, lot 5).
  *
  * Spécification validée par David le 2026-10-01
- * (`docs/wip/outils-statistiques-progress.md`, Q35 à Q39).
+ * (`docs/archive/wip/outils-statistiques-progress.md`, Q35 à Q39).
  */
 
 import { describe, it, expect } from 'vitest';

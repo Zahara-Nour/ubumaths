@@ -47,7 +47,7 @@ cosmétiques EXISTANTES de mathAST.
 - [x] Sélection exposée : `coefficientCleanupSteps()` filtre `buildASTPipeline()`
 - [x] Module `src/lib/questions/clean-coefficients.ts` + câblage générateur
 - [x] Schéma strict, type, route serveur (refine), éditeur (`MyCheckbox`)
-- [x] Doc `docs/ref/fiches-exercices.md`
+- [x] Doc `docs/pratiques/fiches-exercices.md`
 - [x] Non-régression : suites questions/utils/mathAST/ubumark 610 fichiers verts ;
       `question:specs` 195 JSON, sortie identique à main ; prod 801 modèles / 7075 specs,
       verdicts identiques (0 modèle avec l'option) ; simulation 195 modèles × 30 tirages

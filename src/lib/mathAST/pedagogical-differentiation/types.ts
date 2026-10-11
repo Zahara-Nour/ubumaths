@@ -91,6 +91,8 @@ export type PedagogicalDifferentiationRule =
 	// ---- Radical ----
 	| 'sqrt'
 	| 'derivative-of-sqrt' // `√x` simple → `1/(2√x)`
+	| 'nth-root' // `ⁿ√u` (indice dans `base`) → `u′/(n·ⁿ√(u^{n−1}))`
+	| 'derivative-of-nth-root' // `ⁿ√x` simple → `1/(n·ⁿ√(x^{n−1}))`
 	// ---- Hyperbolic ----
 	| 'sinh'
 	| 'cosh'
@@ -135,6 +137,8 @@ export const TRIVIAL_RULES: ReadonlySet<PedagogicalDifferentiationRule> = new Se
  * - `exp`, `ln`, `sqrt`              : `{ u }`
  * - `log`                            : `{ u, base }`
  * - `derivative-of-sqrt`             : `{}`
+ * - `nth-root`                       : `{ u, n }`
+ * - `derivative-of-nth-root`         : `{ n }`
  * - `constant`                       : `{ value }`
  * - `variable`                       : `{ name }` (variable node)
  * - `greek-letter`                   : `{ letter }`

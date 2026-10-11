@@ -8,7 +8,7 @@
 
 ## 📚 Full Documentation
 
-**[Student Assessment E2E Tests →](/docs/ref/tests/architecture.md)**
+**[Student Assessment E2E Tests →](/docs/pratiques/tests.md)**
 
 Complete documentation with test details, helper functions, and troubleshooting.
 
@@ -66,8 +66,8 @@ pnpm test:e2e e2e/student/assessments --grep "should start assessment successful
 - At least one assessment assigned to test student
 - Mix of assessment states (not started, in-progress, completed)
 
-See [full documentation](/docs/ref/tests/architecture.md) for details.
+See [full documentation](/docs/pratiques/tests.md) for details.
 
 ---
 
-**For complete documentation, see [Student E2E Tests →](/docs/ref/tests/architecture.md)**
+**For complete documentation, see [Student E2E Tests →](/docs/pratiques/tests.md)**

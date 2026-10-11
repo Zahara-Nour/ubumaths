@@ -53,7 +53,7 @@
 	async function handleSave(
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>,
 		options?: { silent?: boolean }
-	) {
+	): Promise<boolean> {
 		isSubmitting = true;
 
 		try {
@@ -75,13 +75,18 @@
 				if (!options?.silent) {
 					goto('/dashboard/admin/questions').then(() => {});
 				}
-			} else {
-				toaster.error('Erreur lors de la mise à jour');
-				console.error('Validation errors:', result.errors);
+				return true;
 			}
+			// Raisons du refus (contrôle de publication : spec rouge, tirage en échec…)
+			const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+			toaster.error('Erreur lors de la mise à jour', {
+				description: errors.slice(0, 5).join('\n') || undefined
+			});
+			return false;
 		} catch (error) {
 			toaster.error('Erreur serveur');
 			console.error('Server error:', error);
+			return false;
 		} finally {
 			isSubmitting = false;
 		}

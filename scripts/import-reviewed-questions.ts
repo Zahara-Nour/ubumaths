@@ -9,8 +9,8 @@
  * `migrate-questions-phase1.ts --publier` (qui ignorent les corrections).
  *
  * Usage :
- *   pnpm relecture:import --lot docs/relecture/relatifs            (simulation)
- *   pnpm relecture:import --lot docs/relecture/relatifs --publier  (écrit)
+ *   pnpm relecture:import --lot data/relecture/relatifs            (simulation)
+ *   pnpm relecture:import --lot data/relecture/relatifs --publier  (écrit)
  *   pnpm relecture:import --index 0,1,2 --publier
  *
  * Sélection : `review_status = 'approved'` et pas de `new_template_id`,

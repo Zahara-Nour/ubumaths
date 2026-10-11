@@ -1,6 +1,6 @@
 # `kind: 'arithmetic-from-blank'` — Progression
 
-> Source : `docs/wip/mode-b-elargissement-prompt.md` (Track B minimal)
+> Source : `docs/archive/wip/mode-b-elargissement-prompt.md` (Track B minimal)
 > Plan : `/Users/david/.claude/plans/quirky-sleeping-popcorn.md`
 > Date : 2026-05-06
 > Commit : `02af36796`

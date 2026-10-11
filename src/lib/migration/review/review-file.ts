@@ -1,5 +1,5 @@
 /**
- * Fichier de verdict de relecture (`docs/relecture/<lot>/<globalIndex>.json`)
+ * Fichier de verdict de relecture (`data/relecture/<lot>/<globalIndex>.json`)
  * ==========================================================================
  *
  * Un fichier par question relue. Il reste dans le dépôt (lisible par David)
@@ -41,7 +41,7 @@ export interface ReviewFile {
 // CONSTANTS
 // ============================================================================
 
-/** Nombre total de questions TinyMath (`.claude/old-questions.json`) */
+/** Nombre total de questions TinyMath (`data/tinymath/old-questions.json`) */
 const OLD_QUESTION_COUNT = 633;
 
 const reviewFileSchema = z

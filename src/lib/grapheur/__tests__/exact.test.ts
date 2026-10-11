@@ -223,7 +223,10 @@ describe('exactTermValue — accord avec le point tracé', () => {
 			const exact = exactTermValue(spec, term.n);
 			if (!exact) continue;
 
-			const asNumber = Number(evaluate(exact, { mode: 'decimal' }).value);
+			const evaluated = evaluate(exact, { mode: 'decimal' });
+			expect(evaluated.status).toBe('value');
+			if (evaluated.status !== 'value') throw new Error('valeur exacte non évaluable');
+			const asNumber = Number(evaluated.value);
 			expect(asNumber).toBeCloseTo(term.value, 10);
 		}
 	});

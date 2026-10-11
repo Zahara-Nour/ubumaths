@@ -2,7 +2,7 @@
  * Vague 4 : règles d'écriture littérale, puissances, valeur absolue, affine, limites
  * ==================================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, codes N-OPPOSE-EXPR,
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, codes N-OPPOSE-EXPR,
  * N-PUISS-DEF, N-IDREM, N-ECRIT-PRODUIT, N-NEUTRE-ABS, N-FACT-COMMUN, N-VOCAB-OP,
  * N-ABS, N-PUISS-NEG, N-PUISS10, N-PARENTH, N-RACINE-AFF, N-SIGNE-AFF, N-VOCAB-AFF,
  * N-NOTSCI, N-LIM-OPS (28 modèles). Rappel de la règle, puis application à

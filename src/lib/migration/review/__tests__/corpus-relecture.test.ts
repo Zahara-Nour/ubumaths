@@ -3,7 +3,7 @@
  * =====================================================
  *
  * Les 632 questions TinyMath relues et importées en brouillon vivent aussi,
- * versionnées, dans `docs/relecture/<lot>/<n>.json`. Chacune n'a été importée
+ * versionnées, dans `data/relecture/<lot>/<n>.json`. Chacune n'a été importée
  * que si elle passait `checkTemplate` : structure, schéma strict, specs vertes,
  * une spec « correct » par variation, 50 tirages par variation sans échec.
  *
@@ -24,7 +24,7 @@ import { draftTemplate, parseReviewFile } from '../review-file';
 
 // Une question lourde (#626 : 42 variations, 2100 tirages) prend quelques secondes
 const TIMEOUT_MS = 60_000;
-const CORPUS_DIR = join(process.cwd(), 'docs/relecture');
+const CORPUS_DIR = join(process.cwd(), 'data/relecture');
 /** Garde contre un corpus vide ou déplacé : le test passerait sans rien vérifier. */
 const MINIMUM_EXPECTED = 600;
 
@@ -47,7 +47,7 @@ const corpus = reviewFilePaths().flatMap((path) => {
 	return template ? [{ source, template }] : [];
 });
 
-describe('corpus des questions relues (docs/relecture)', () => {
+describe('corpus des questions relues (data/relecture)', () => {
 	it(`contient au moins ${MINIMUM_EXPECTED} modèles`, () => {
 		expect(corpus.length).toBeGreaterThanOrEqual(MINIMUM_EXPECTED);
 	});

@@ -30,6 +30,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { updateSharedMaterialByIdSchema, uuidSchema } from '$lib/server/validation';
@@ -43,6 +44,8 @@ import type { TablesUpdate } from '$lib/types/database';
  * Deletes a single shared_materials record (idempotent)
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -97,6 +100,8 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
  * Updates visibility, category, topic, or description override
  */
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 

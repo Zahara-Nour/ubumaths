@@ -11,7 +11,7 @@ import type { ExplicitFunction, Viewport } from '$lib/grapheur/types';
  *
  * On lit la couleur RENDUE (getComputedStyle) : une identité de palette n'a de
  * valeur qu'une fois le thème appliqué, et une variable absente du CSS se peint
- * en noir sans erreur. Spécification : docs/wip/grapheur-couleurs-theme-progress.md (4, 10).
+ * en noir sans erreur. Spécification : docs/archive/wip/grapheur-couleurs-theme-progress.md (4, 10).
  */
 describe('FunctionCurve — couleur et thème', () => {
 	const viewport: Viewport = { xMin: -5, xMax: 5, yMin: -5, yMax: 5 };

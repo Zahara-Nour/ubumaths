@@ -66,8 +66,8 @@ describe('la ligne porte la dérivée, et rien d’autre', () => {
 	});
 });
 
-describe('sans tableau, rien ne change', () => {
-	it('une fonction à asymptote garde le bloc du moteur', () => {
+describe('sans tableau, la ligne dit les sens de variation', () => {
+	it('une fonction à valeur interdite a désormais son tableau (1/x, double barre)', () => {
 		const s = session();
 		runInput(s, 'h(x) = 1/x');
 
@@ -75,11 +75,22 @@ describe('sans tableau, rien ne change', () => {
 
 		expect(outcome.ok).toBe(true);
 		if (!outcome.ok) return;
+		expect(outcome.table).toBeDefined();
+	});
+
+	it('un domaine troué se replie : la ligne n’est jamais réduite à la dérivée', () => {
+		const s = session();
+		runInput(s, 'h(x) = sqrt(x^2-1)');
+
+		const outcome = runAction(s, 'variations', 'h');
+
+		expect(outcome.ok).toBe(true);
+		if (!outcome.ok) return;
 		expect(outcome.table).toBeUndefined();
-		// ⚠️ La ligne ne doit surtout pas devenir vide : sans tableau, le bloc
-		// texte est la SEULE réponse que l'élève reçoit.
-		expect(outcome.latex).toBeUndefined();
-		expect(outcome.output).toContain('Domaine');
+		// ⚠️ La ligne ne doit surtout pas se réduire à h′ : sans tableau, les
+		// sens de variation sont la réponse, et le détail est replié.
+		expect(outcome.latex).toContain('\\text{décroissante}');
+		expect(outcome.latex).toContain('\\text{croissante}');
 	});
 });
 

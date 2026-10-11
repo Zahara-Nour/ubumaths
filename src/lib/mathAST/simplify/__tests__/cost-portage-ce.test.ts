@@ -46,8 +46,8 @@ describe('les poids sont ceux du Compute Engine', () => {
 	it('addition 3, soustraction 4, multiplication 7, division 8', () => {
 		expect(computeCost(add(x(), y()))).toBe(3 + 1 + 1);
 		expect(computeCost(subtract(x(), y()))).toBe(4 + 1 + 1);
-		expect(computeCost(multiply(x(), y()))).toBe(7 + 1 + 1);
-		expect(computeCost(divide(x(), y()))).toBe(8 + 1 + 1);
+		expect(computeCost(multiply(x(), y(), 'implicit'))).toBe(7 + 1 + 1);
+		expect(computeCost(divide(x(), y(), 'fraction'))).toBe(8 + 1 + 1);
 	});
 
 	it('l’opposé coûte comme une soustraction : 4', () => {
@@ -105,8 +105,8 @@ describe('la puissance : le seul poids qu’on ne porte pas', () => {
 	 */
 	it('leur BUT est quand même atteint : `2x²` coûte moins que `2·x·x`', () => {
 		// Grâce aux poids généraux portés : une multiplication coûte 7.
-		const deuxXCarre = multiply(number('2'), power(x(), number('2')));
-		const deuxXX = multiply(number('2'), multiply(x(), x()));
+		const deuxXCarre = multiply(number('2'), power(x(), number('2')), 'implicit');
+		const deuxXX = multiply(number('2'), multiply(x(), x(), 'implicit'), 'implicit');
 
 		expect(computeCost(deuxXCarre)).toBeLessThan(computeCost(deuxXX));
 	});
@@ -133,7 +133,7 @@ describe('`cheapest` porte le biais en faveur du nouveau', () => {
 		// ancien : x + y  → 3 + 1 + 1 = 5.  Seuil : 6.
 		const ancien = add(x(), y());
 		const aPeinePlusCher = sqrt(x()); // 5 + 1 = 6  → gardé
-		const tropCher = multiply(x(), y()); // 7 + 1 + 1 = 9  → refusé
+		const tropCher = multiply(x(), y(), 'implicit'); // 7 + 1 + 1 = 9  → refusé
 
 		expect(cheapest(ancien, aPeinePlusCher)).toBe(aPeinePlusCher);
 		expect(cheapest(ancien, tropCher)).toBe(ancien);

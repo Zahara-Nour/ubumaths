@@ -2,7 +2,7 @@
  * Conversion des `testAnswerss` TinyMath
  * ======================================
  *
- * Fixtures : questions RÉELLES de `.claude/old-questions.json` (index 209, 216,
+ * Fixtures : questions RÉELLES de `data/tinymath/old-questions.json` (index 209, 216,
  * 481, 611), recopiées sans leur correction détaillée.
  *
  * Avant le correctif : variables écrites `d` au lieu de `{{d}}` (même la bonne
@@ -115,7 +115,9 @@ const Q481 = {
 function transform(q: QuestionBase): QuestionTemplate {
 	const result = transformQuestion(q, 0);
 	expect(result.success, JSON.stringify(result.errors)).toBe(true);
-	return result.template!;
+	if (!result.template) throw new Error('modèle transformé attendu');
+	// Le transformeur ne pose pas d'identifiant (c'est la base qui le fait)
+	return { ...result.template, id: 'test' };
 }
 
 function divisorsOf(n: number): number[] {

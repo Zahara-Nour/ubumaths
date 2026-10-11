@@ -1,6 +1,6 @@
 /**
  * Exporter l'historique de Calcul — lot C1 de
- * `docs/wip/atelier-suppression-export-phase0.md` (décisions de David du
+ * `docs/archive/wip/atelier-suppression-export-phase0.md` (décisions de David du
  * 2026-10-05 : deux formats, JSON pour rejouer, ubumark pour lire).
  *
  * Chaque ligne garde le GESTE qui l'a produite (saisie, action de carte,

@@ -29,6 +29,8 @@ function makeItem(source: WorkSource, overrides: Partial<WorkItem> = {}): WorkIt
 		title: `Devoir ${source}`,
 		classId: null,
 		className: null,
+		// Sans classe : affectation individuelle
+		via: 'direct',
 		dueAt,
 		status: 'todo',
 		viewed: false,

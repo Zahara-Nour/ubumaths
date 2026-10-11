@@ -104,7 +104,7 @@ describe('là où elles sont inutiles, on ne les pose pas', () => {
 
 describe('ce que l’élève voit dans une dérivée', () => {
 	it('le numérateur de la dérivée d’un quotient est lisible', () => {
-		const rendu = toLatex(differentiate(parseLatex('\\frac{x^2+1}{x-1}'), 'x'));
+		const rendu = toLatex(differentiate(parseLatex('\\frac{x^2+1}{x-1}'), { variable: 'x' }));
 		expect(rendu).not.toContain('2 x x - 1');
 		expect(rendu).toContain('\\left( x - 1 \\right)');
 	});

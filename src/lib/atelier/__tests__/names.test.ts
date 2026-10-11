@@ -2,7 +2,7 @@
  * Nommage des objets de l'atelier — comportements du §1 et du §2.2.
  *
  * Chaque `it` porte le numéro du cas de la spécification
- * (`docs/wip/atelier-recherche-eleve-phase0.md`).
+ * (`docs/archive/wip/atelier-recherche-eleve-phase0.md`).
  */
 
 import { describe, it, expect } from 'vitest';

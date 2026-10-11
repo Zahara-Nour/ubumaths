@@ -11,7 +11,7 @@ Mère Ubu, qui assurait sa propre défense, a demandé au plaignant de montrer l
 
 Après trois jours de délibération, la Cour a rendu son verdict : le petit bout n'existe pas, $0{,}999\ldots$ et $1$ sont un seul et même nombre, et le Galopin a été condamné aux dépens, soit $0{,}999\ldots$ gidouille.
 
-« J'ai payé exactement ce que je réclamais », a constaté le plaignant à la sortie du tribunal, « et pourtant j'ai l'impression d'avoir perdu. » Mère Ubu, elle, s'est déclarée satisfaite : « Une gidouille est une gidouille, même quand elle est écrite avec beaucoup de 9. »
+« Il me manquait un petit bout », a constaté le plaignant à la sortie du tribunal. « Maintenant, il me manque tout. » Mère Ubu, elle, s'est déclarée satisfaite : « Une gidouille est une gidouille, même quand elle est écrite avec une infinité de 9. »
 
 ## Le vrai du faux
 
@@ -19,4 +19,4 @@ C'est vrai : $0{,}999\ldots = 1$, si les 9 continuent **à l'infini**. Ce sont d
 
 - On sait que $\frac{1}{3} = 0{,}333\ldots$. En multipliant par 3 : $3 \times \frac{1}{3} = 1$ d'un côté, et $3 \times 0{,}333\ldots = 0{,}999\ldots$ de l'autre.
 - Autre façon de voir : si deux nombres sont différents, il existe un nombre **entre** les deux. Or aucun nombre ne se glisse entre $0{,}999\ldots$ et $1$.
-- Le « dernier 9 » n'existe pas : c'est justement ce que veulent dire les points de suspension.
+- Le « petit bout » s'écrirait $0{,}000\ldots$ avec un 1 tout au bout. Mais il n'y a pas de bout ! Ce petit bout serait plus petit que $0{,}1$, que $0{,}01$, que $0{,}001$, et ainsi de suite : le seul nombre positif ou nul plus petit que tous ceux-là, c'est $0$.

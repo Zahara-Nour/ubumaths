@@ -21,7 +21,6 @@ import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 import { createStepRecorder } from '../step-recorder';
 import { selectIntegrator } from './select';
 import { variable as variableFactory, number, divide, power, fraction } from '../../factory';
-import { numericNode } from '../../common/numeric';
 import { simplifiedMultiply } from '../../differentiation/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
@@ -32,7 +31,11 @@ import {
 	isFunction,
 	isSuperscript
 } from '../../guards';
-import { findProportionalityConstant } from '../patterns';
+import { findProportionalityRatio } from '../patterns';
+import type { Rational } from '../../normal/types';
+import { reciprocal, isOne as isOneRational } from '../../normal/rational';
+import { extractExactRational, rationalToNode } from '../../common/numeric';
+import { containsVariable } from '../rules';
 import { isEulerConstant } from '../../guards';
 import { mapNode } from '../../transforms';
 
@@ -73,9 +76,10 @@ function structuralSubstitute(expr: MathNode, target: MathNode, replacement: Mat
  */
 function normalizeForIntegration(expr: MathNode): MathNode {
 	return mapNode(expr, (node) => {
-		// sqrt(x) -> x^(1/2)
+		// sqrt(x) -> x^(1/2) ; racine n-ième (indice dans `base`) -> x^(1/n)
 		if (isFunction(node) && node.name === 'sqrt' && node.args.length === 1) {
-			return power(node.args[0], fraction(number('1'), number('2')));
+			const index = node.base ?? number('2');
+			return power(node.args[0], fraction(number('1'), index));
 		}
 
 		// 1/x^n -> x^(-n)
@@ -183,7 +187,7 @@ export const uSubstitutionIntegrator: Integrator = {
 			options,
 			recorder,
 			depth,
-			match.constantFactor
+			match.constantRatio
 		);
 	}
 };
@@ -208,7 +212,7 @@ export const uSubstitutionIntegrator: Integrator = {
  * @param options - Integration options
  * @param recorder - Step recorder
  * @param depth - Current recursion depth
- * @param matchedConstantFactor - Constant factor detected by pattern matching (optional)
+ * @param matchedRatio - Constant factor detected by pattern matching (optional, exact)
  * @returns Integration result
  */
 function performUSubstitution(
@@ -218,8 +222,25 @@ function performUSubstitution(
 	options: ResolvedIntegrateOptions,
 	recorder: IntegrateStepRecorder,
 	depth: number,
-	matchedConstantFactor?: number
+	matchedRatio?: Rational
 ): IntegrateResult {
+	// Variable de substitution FRAÎCHE : si l'on intègre déjà en u (intégrale
+	// en u issue d'une substitution précédente), poser « u = sin(u) » puis
+	// substituer en retour emboîtait sin(sin(…(u))) — résultat faux et arbre
+	// qui enfle à chaque niveau (boucle apparente sur ln(sin(2x+1)))
+	const uVariable = pickSubstitutionVariable(integrand, variable);
+	if (uVariable === null) {
+		return {
+			variable,
+			status: 'unsupported',
+			antiderivative: null,
+			integrandType: classifyIntegrand(integrand, variable),
+			technique: 'u-substitution',
+			steps: recorder.getSteps(),
+			error: 'Aucune variable de substitution libre'
+		};
+	}
+
 	// Step 1: Identify the substitution
 	recorder.recordStepByRule(
 		'identify-substitution',
@@ -227,7 +248,7 @@ function performUSubstitution(
 		integrand,
 		'detailed',
 		u,
-		`On pose u = ${toCustom(u)}`
+		`On pose ${uVariable} = ${toCustom(u)}`
 	);
 
 	// Step 2: Compute du/dx
@@ -247,7 +268,7 @@ function performUSubstitution(
 	}
 
 	// Technical note about u and du
-	const technicalNote = `u = ${toCustom(u)}, du = ${toCustom(du)} d${variable}`;
+	const technicalNote = `${uVariable} = ${toCustom(u)}, d${uVariable} = ${toCustom(du)} d${variable}`;
 	recorder.recordStepByRule('identify-substitution', integrand, u, 'summarized', du, technicalNote);
 
 	// Step 3: Perform the substitution
@@ -258,7 +279,6 @@ function performUSubstitution(
 	// 1. Replace all occurrences of u with a temporary variable 'u'
 	// 2. Try to simplify the integrand by factoring out du
 
-	const uVar = variableFactory('u');
 	let transformedIntegrand: MathNode;
 	let constantFactor: MathNode | null = null;
 
@@ -266,17 +286,24 @@ function performUSubstitution(
 		const duHash = hashMathNode(du);
 		const integrandHash = hashMathNode(integrand);
 
-		// Simple case: integrand is exactly du
+		// Simple case: integrand is exactly du → ∫ 1 du
 		if (duHash === integrandHash) {
-			transformedIntegrand = uVar;
+			transformedIntegrand = number('1');
 			constantFactor = null;
 		} else {
 			// More complex case: need to factor out du from integrand
-			const result = tryFactorDu(integrand, u, du, variable, matchedConstantFactor);
+			const result = tryFactorDu(integrand, u, du, variable, uVariable, matchedRatio);
 			transformedIntegrand = result.transformedIntegrand;
-			if (result.constantFactor !== null) {
-				constantFactor = numericNode(result.constantFactor);
+			if (result.constantNode !== undefined) {
+				constantFactor = result.constantNode;
+			} else if (result.constantFactor !== null && !isOneRational(result.constantFactor)) {
+				constantFactor = rationalToNode(result.constantFactor);
 			}
+		}
+		// La substitution doit faire disparaître la variable : sinon l'intégrale
+		// « en u » mélangerait u et x, et sa primitive serait fausse
+		if (containsVariable(transformedIntegrand, variable)) {
+			throw new Error(`la variable ${variable} subsiste après la substitution`);
 		}
 	} catch (error) {
 		return {
@@ -301,7 +328,19 @@ function performUSubstitution(
 
 	// Step 4: Integrate with respect to u
 	const uRecorder = createStepRecorder();
-	const uVariable = 'u';
+
+	// k/f(u) avec k constant (paramètre littéral) : k sort de l'intégrale en u
+	if (
+		isDivision(transformedIntegrand) &&
+		!containsVariable(transformedIntegrand.numerator, uVariable) &&
+		!(isNumberGuard(transformedIntegrand.numerator) && transformedIntegrand.numerator.value === '1')
+	) {
+		const numeratorFactor = transformedIntegrand.numerator;
+		constantFactor = constantFactor
+			? simplifiedMultiply(constantFactor, numeratorFactor)
+			: numeratorFactor;
+		transformedIntegrand = divide(number('1'), transformedIntegrand.denominator, 'fraction');
+	}
 
 	// Normalize for integration: sqrt(u) -> u^(1/2), 1/u^n -> u^(-n)
 	const normalizedIntegrand = normalizeForIntegration(transformedIntegrand);
@@ -358,7 +397,12 @@ function performUSubstitution(
 	// Step 5: Back-substitute u = g(x)
 	let finalAntiderivative: MathNode;
 	try {
-		finalAntiderivative = substitute(uResult.antiderivative, { u });
+		// Une seule passe : u = g(x) ne doit pas être re-substitué dans g
+		finalAntiderivative = substitute(
+			uResult.antiderivative,
+			{ [uVariable]: u },
+			{ maxIterations: 1 }
+		);
 	} catch (error) {
 		return {
 			variable,
@@ -382,7 +426,7 @@ function performUSubstitution(
 		finalAntiderivative,
 		'summarized',
 		u,
-		`On remplace u par ${toCustom(u)}`
+		`On remplace ${uVariable} par ${toCustom(u)}`
 	);
 
 	return {
@@ -400,12 +444,29 @@ function performUSubstitution(
 // Helper Functions
 // =============================================================================
 
+/** Candidats pour la variable de substitution, par ordre de préférence */
+const SUBSTITUTION_VARIABLES: readonly string[] = ['u', 'v', 'w', 't', 's', 'z'];
+
+/**
+ * Nom de la variable de substitution : `u` sauf si c'est la variable
+ * d'intégration ou un paramètre déjà présent dans l'intégrande.
+ */
+function pickSubstitutionVariable(integrand: MathNode, variable: string): string | null {
+	const free = SUBSTITUTION_VARIABLES.find(
+		(name) => name !== variable && !containsVariable(integrand, name)
+	);
+	return free ?? null;
+}
+
 /**
  * Result of tryFactorDu function.
  */
 interface FactorDuResult {
 	transformedIntegrand: MathNode;
-	constantFactor: number | null;
+	/** k tel que integrand dx = k · f(u) du (exact) ; null = 1 */
+	constantFactor: Rational | null;
+	/** k non rationnel (1/π, 1/√2, 1/a) : prime sur `constantFactor` */
+	constantNode?: MathNode;
 }
 
 /**
@@ -419,7 +480,7 @@ interface FactorDuResult {
  * @param u - The u expression
  * @param du - The du/dx expression
  * @param _variable - Original variable
- * @param matchedConstantFactor - Pre-computed constant factor from pattern matching
+ * @param matchedRatio - Pre-computed constant factor from pattern matching (exact)
  * @returns Transformed integrand and constant factor
  */
 function tryFactorDu(
@@ -427,9 +488,10 @@ function tryFactorDu(
 	u: MathNode,
 	du: MathNode,
 	_variable: string,
-	matchedConstantFactor?: number
+	uName: string,
+	matchedRatio?: Rational
 ): FactorDuResult {
-	const uVar = variableFactory('u');
+	const uVar = variableFactory(uName);
 	const uHash = hashMathNode(u);
 
 	// Special case: Division patterns like x/(1+x²) or x/sqrt(1-x²)
@@ -439,8 +501,7 @@ function tryFactorDu(
 		if (denomHash === uHash) {
 			// Denominator is exactly u
 			// Check if numerator is proportional to du
-			const propConst =
-				matchedConstantFactor ?? findProportionalityConstant(integrand.numerator, du);
+			const propConst = matchedRatio ?? findProportionalityRatio(integrand.numerator, du);
 			if (propConst !== null) {
 				// Transform to 1/u with constant factor
 				return {
@@ -452,7 +513,7 @@ function tryFactorDu(
 
 		// Check if numerator is proportional to du and denominator contains u
 		// Example: x/sqrt(1-x²) with u = 1-x², du = -2x → -0.5 * 1/sqrt(u)
-		const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.numerator, du);
+		const propConst = matchedRatio ?? findProportionalityRatio(integrand.numerator, du);
 		if (propConst !== null) {
 			// Transform denominator by substituting u, result is 1/transformedDenom
 			const denomTransformed = structuralSubstitute(integrand.denominator, u, uVar);
@@ -474,7 +535,7 @@ function tryFactorDu(
 		) {
 			const denomHash = hashMathNode(integrand.right.denominator);
 			if (denomHash === uHash) {
-				const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.left, du);
+				const propConst = matchedRatio ?? findProportionalityRatio(integrand.left, du);
 				if (propConst !== null) {
 					return {
 						transformedIntegrand: divide(number('1'), uVar, 'fraction'),
@@ -492,7 +553,7 @@ function tryFactorDu(
 		) {
 			const denomHash = hashMathNode(integrand.left.denominator);
 			if (denomHash === uHash) {
-				const propConst = matchedConstantFactor ?? findProportionalityConstant(integrand.right, du);
+				const propConst = matchedRatio ?? findProportionalityRatio(integrand.right, du);
 				if (propConst !== null) {
 					return {
 						transformedIntegrand: divide(number('1'), uVar, 'fraction'),
@@ -506,7 +567,7 @@ function tryFactorDu(
 		// Example: x * e^(x²) with u = x², du = 2x
 		// Left = x is proportional to du with factor 1/2
 		// Right = e^(x²) transforms to e^u
-		const leftProp = findProportionalityConstant(integrand.left, du);
+		const leftProp = findProportionalityRatio(integrand.left, du);
 		if (leftProp !== null) {
 			// Transform the right factor by substituting u structurally
 			const rightTransformed = structuralSubstitute(integrand.right, u, uVar);
@@ -516,7 +577,7 @@ function tryFactorDu(
 			};
 		}
 
-		const rightProp = findProportionalityConstant(integrand.right, du);
+		const rightProp = findProportionalityRatio(integrand.right, du);
 		if (rightProp !== null) {
 			// Transform the left factor by substituting u structurally
 			const leftTransformed = structuralSubstitute(integrand.left, u, uVar);
@@ -527,11 +588,25 @@ function tryFactorDu(
 		}
 	}
 
-	// Default: structural substitution replacing u expression with u variable
+	// Default: structural substitution replacing u expression with u variable.
+	// L'intégrande est alors f(u) SEUL : si u' = c est constant, dx = du / c,
+	// donc ∫ f(ax+b) dx = F(ax+b) / a (le facteur 1/a était oublié)
 	const result = structuralSubstitute(integrand, u, uVar);
+	if (matchedRatio !== undefined) {
+		return { transformedIntegrand: result, constantFactor: matchedRatio };
+	}
+	const duConstant = extractExactRational(du);
+	if (duConstant === null && !containsVariable(du, _variable)) {
+		// du = π, √2, a… : dx = du / u′
+		return {
+			transformedIntegrand: result,
+			constantFactor: null,
+			constantNode: divide(number('1'), du, 'fraction')
+		};
+	}
 	return {
 		transformedIntegrand: result,
-		constantFactor: matchedConstantFactor ?? null
+		constantFactor: duConstant !== null && duConstant.n !== 0n ? reciprocal(duConstant) : null
 	};
 }
 

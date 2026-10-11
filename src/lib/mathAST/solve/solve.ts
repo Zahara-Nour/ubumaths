@@ -56,7 +56,11 @@ import type {
 	SolvingStrategy,
 	EquationSolver
 } from './types';
-import { DEFAULT_SOLVE_OPTIONS, SolveError } from './types';
+import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
+import { trySubstitution } from './substitution';
+import { trySinCosRatio } from './sin-cos-ratio';
+import { tryTrigEquality } from './trig-equality';
+import { mergePeriodicFamilies } from './periodic';
 import { isDelimiter, isMultiplication, isRelation } from '../guards';
 import {
 	classifyEquation,
@@ -76,7 +80,12 @@ import {
 	computeUSolutions
 } from './solvers/transcendental';
 import { extractLinearForm } from '../analysis/coefficient-utils';
+import { expandOddRootPowers } from '../common/odd-root-power';
+import { solveByPowerSubstitution } from './power-substitution';
+import { containsDecimal, solveConstantBaseExponential } from './constant-base-exponential';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { compile } from '../eval/compile';
+import { findFirst } from '../transforms';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
 import {
 	number,
@@ -91,23 +100,29 @@ import {
 	parentheses
 } from '../factory';
 import { numericNode } from '../common/numeric';
-import { flattenSumShallow, flattenProductShallow, unflattenSum } from '../flatten';
+import {
+	flattenSumShallow,
+	flattenProductShallow,
+	unflattenSum,
+	unflattenProduct
+} from '../flatten';
 import { getVariables } from '../eval/substitute';
 import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
-import { promoteEulerInRelation, promoteStandaloneEulerInRelation } from './promote-euler';
 import { tryRationalDecomposition, createRationalDepthState } from './rational';
 import type { Domain } from '../domain/types';
 import {
 	containsNode,
+	containsValue,
 	isUniversal,
 	isEmpty as isDomainEmpty,
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
-import { applyRules } from '../pattern/rule';
+import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode } from '../pattern/types';
@@ -322,13 +337,32 @@ const MAX_PRODUCT_DECOMPOSITION_DEPTH = 5;
  * If the standard-form expression is a product A·B·...= 0, solve each
  * variable-dependent factor independently and merge solutions.
  *
- * **Limitation**: When multiple factors produce periodic solution families
- * (e.g., sin(x)·cos(x) = 0), only the first periodic family is attached.
- * For complete zero enumeration in sign analysis, each factor may need
- * to be solved independently.
+ * Plusieurs familles périodiques (sin(x)·cos(x) = 0) sont réunies sur une
+ * période commune ; sans période commune, on rend `null` (pas de famille
+ * partielle). Les solutions isolées restent dans `solutions`, à côté de la
+ * famille.
  *
  * @returns SolveResult if decomposition applies, null otherwise
  */
+/**
+ * La famille périodique d'une décomposition qui a résolu des sous-équations
+ * (`e^{sin²x} = 1` → `sin²x = 0`), ou `'incomplete'`.
+ *
+ * ⚠️ Recopier les SEULES solutions de base sans leur famille rendait
+ * `e^{sin²x} = 1` → « x = 0 », complet en apparence, au lieu de x = kπ.
+ * Si une sous-équation a des solutions sans famille et une autre une famille,
+ * aucune famille ne décrit tout : `'incomplete'`, l'appelant rend la main.
+ */
+function familyOfSubResults(
+	subResults: readonly SolveResult[]
+): PeriodicSolutionFamily | null | 'incomplete' {
+	const withSolutions = subResults.filter((r) => r.solutions.length > 0);
+	const families = withSolutions.flatMap((r) => (r.periodicSolutions ? [r.periodicSolutions] : []));
+	if (families.length === 0) return null;
+	if (families.length !== withSolutions.length) return 'incomplete';
+	return mergePeriodicFamilies(families) ?? 'incomplete';
+}
+
 function tryProductDecomposition(
 	expr: MathNode,
 	variable: string,
@@ -367,6 +401,11 @@ function tryProductDecomposition(
 			const factorEq = equals(unwrapped, number('0'));
 			const factorResult = solve(factorEq, { variable, verbosity: opts.verbosity });
 
+			// Un facteur NON RÉSOLU n'est pas un facteur sans solution : le
+			// sauter rendait `x(sin²x − 1/4) = 0` → « x = 0 », complet en
+			// apparence. On rend la main ; l'échec reste un échec.
+			if (isSolverFailure(factorResult)) return null;
+
 			if (factorResult.status === 'no-solution' || factorResult.status === 'no-real-solution') {
 				continue;
 			}
@@ -392,19 +431,29 @@ function tryProductDecomposition(
 		};
 	}
 
+	// Plusieurs familles (sin x · cos x) : on les RÉUNIT — n'attacher que la
+	// première faisait perdre des zéros au module de signe. Sans période
+	// commune, on rend la main : jamais de famille partielle.
+	const family =
+		periodicFamilies.length === 0
+			? null
+			: periodicFamilies.length === 1
+				? periodicFamilies[0]
+				: mergePeriodicFamilies(periodicFamilies);
+	if (periodicFamilies.length > 0 && family === null) return null;
+
 	const deduplicated = deduplicateSolutions(allSolutions);
 	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		// Une famille périodique, c'est une infinité de solutions.
+		status: deduplicated.length === 1 && family === null ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: 'mixed',
 		strategy: 'algebraic',
 		steps: recorder.getStepsFiltered(opts.verbosity),
-		// If there are periodic families, attach the first one
-		// (multiple periodic families would need a more complex merge)
-		...(periodicFamilies.length > 0 ? { periodicSolutions: periodicFamilies[0] } : {})
+		...(family ? { periodicSolutions: family } : {})
 	};
 }
 
@@ -494,7 +543,8 @@ function tryCommonFactorDecomposition(
 	if (sum === null) return null;
 
 	// 1. La somme telle qu'elle est écrite (comportement de #852, inchangé).
-	const direct = applyRules(commonFactorRules, sum);
+	const direct = factorCommon(sum);
+	if (direct === null) return null;
 	const fromWrittenSum = nodesEqual(direct, sum)
 		? null
 		: solveFactoredProduct(expr, tidySumFactors(direct), variable, opts);
@@ -505,9 +555,24 @@ function tryCommonFactorDecomposition(
 	//    factorisent.
 	const exposed = sumWithExposedCommonFactor(expr, variable);
 	if (exposed === null) return null;
-	const factored = applyRules(commonFactorRules, exposed.sum);
+	const factored = factorCommon(exposed.sum);
+	if (factored === null) return null;
 	if (!isMultiplication(factored) || !nodesEqual(factored.right, exposed.factor)) return null;
 	return solveFactoredProduct(expr, tidySumFactors(factored), variable, opts);
+}
+
+/**
+ * La mise en facteur commun, ou `null` si les règles ne trouvent pas de point
+ * fixe (`RuleIterationLimitError`) : la tentative est abandonnée et le solveur
+ * passe aux autres stratégies, au lieu de faire échouer toute la résolution.
+ */
+function factorCommon(sum: MathNode): MathNode | null {
+	try {
+		return applyRules(commonFactorRules, sum);
+	} catch (error) {
+		if (error instanceof RuleIterationLimitError) return null;
+		throw error;
+	}
 }
 
 /**
@@ -669,6 +734,9 @@ function tryPowerDecomposition(
 		powerDecompositionDepth--;
 	}
 
+	// La base non résolue : un échec, pas une absence de solution.
+	if (isSolverFailure(baseResult)) return null;
+
 	if (baseResult.solutions.length === 0) {
 		return {
 			variable,
@@ -778,6 +846,9 @@ function tryTrigRecursiveDecomposition(
 			// Solve: argument = uSol.symbolic
 			const subEquation = equals(argument, uSol.symbolic);
 			const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+			// Sous-équation non résolue : un échec, jamais « pas de solution ».
+			if (isSolverFailure(subResult)) return null;
 
 			if (subResult.status === 'no-solution' || subResult.status === 'no-real-solution') {
 				continue;
@@ -1006,6 +1077,7 @@ function tryExpLogRecursiveDecomposition(
 	);
 
 	const allSolutions: Solution[] = [];
+	const subResults: SolveResult[] = [];
 
 	expLogRecursiveDepth++;
 	try {
@@ -1013,6 +1085,10 @@ function tryExpLogRecursiveDecomposition(
 			// Solve: argument = uVal.symbolic
 			const subEquation = equals(argument, uVal.symbolic);
 			const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+			// Sous-équation non résolue : un échec, jamais « pas de solution ».
+			if (isSolverFailure(subResult)) return null;
+			subResults.push(subResult);
 
 			if (subResult.status === 'no-solution' || subResult.status === 'no-real-solution') {
 				continue;
@@ -1059,16 +1135,20 @@ function tryExpLogRecursiveDecomposition(
 		};
 	}
 
+	const family = familyOfSubResults(subResults);
+	if (family === 'incomplete') return null;
+
 	const deduplicated = deduplicateSolutions(allSolutions);
 	deduplicated.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		status: deduplicated.length === 1 && !family ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: kind === 'exp' ? 'exponential' : 'logarithmic',
 		strategy: 'algebraic',
-		steps: recorder.getStepsFiltered(opts.verbosity)
+		steps: recorder.getStepsFiltered(opts.verbosity),
+		...(family ? { periodicSolutions: family } : {})
 	};
 }
 
@@ -1146,10 +1226,20 @@ function extractRadicalEquation(expr: MathNode, variable: string): RadicalEquati
 
 		// c = -b/a
 		const constantNumeric = -bNumeric / aNumeric;
+		// c gardé EXACT quand il l'est : √x = √2 rendait x = 7999…/4·10²⁸ (le
+		// flottant 1,41421… élevé au carré). La forme symbolique −b/a, réduite,
+		// n'est retenue que si elle vaut bien c.
+		const signedCoeff = sign === '-' ? opposite(matched.coeffNode) : matched.coeffNode;
+		const minusB = remainingTerms.length > 0 ? unflattenSum(remainingTerms) : null;
+		const exact =
+			minusB === null
+				? number('0')
+				: exactConstant(divide(opposite(minusB), signedCoeff, 'fraction'), constantNumeric);
 		const constantNode =
-			Math.abs(constantNumeric - Math.round(constantNumeric)) < 1e-12
+			exact ??
+			(Math.abs(constantNumeric - Math.round(constantNumeric)) < 1e-12
 				? numericNode(Math.round(constantNumeric))
-				: numericNode(constantNumeric);
+				: numericNode(constantNumeric));
 
 		return {
 			argument: matched.argument,
@@ -1171,6 +1261,23 @@ interface RadicalPatternMatch {
 	readonly expNumerator: number;
 	readonly expDenominator: number;
 	readonly coeffNumeric: number;
+	/** Le coefficient a de a·√u, sous forme exacte (`1` sans facteur). */
+	readonly coeffNode: MathNode;
+}
+
+/**
+ * La forme réduite de `node`, si elle vaut bien `expected` — sinon `null`
+ * (une réduction qui échoue ou s'écarte ne remplace jamais le nombre).
+ */
+function exactConstant(node: MathNode, expected: number): MathNode | null {
+	try {
+		const reduced = denormalize(normalize(node));
+		const value = evaluateNodeToApproximatedNumber(reduced);
+		const tolerance = 1e-9 * Math.max(1, Math.abs(expected));
+		return Math.abs(value - expected) <= tolerance ? reduced : null;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -1210,7 +1317,8 @@ function tryRadicalPatterns(term: MathNode, variable: string): RadicalPatternMat
 			}
 
 			if (allConstant) {
-				return { ...radical, coeffNumeric };
+				const others = factors.filter((_, j) => j !== i);
+				return { ...radical, coeffNumeric, coeffNode: unflattenProduct(others) ?? number('1') };
 			}
 		}
 		return null;
@@ -1218,7 +1326,7 @@ function tryRadicalPatterns(term: MathNode, variable: string): RadicalPatternMat
 
 	// Single term (no product)
 	const radical = matchSingleRadical(term, variable);
-	if (radical) return { ...radical, coeffNumeric: 1 };
+	if (radical) return { ...radical, coeffNumeric: 1, coeffNode: number('1') };
 
 	return null;
 }
@@ -1230,6 +1338,16 @@ function matchSingleRadical(
 	node: MathNode,
 	variable: string
 ): { argument: MathNode; expNumerator: number; expDenominator: number } | null {
+	// Pattern 1b: root(u, n) — écriture que rend `denormalize` pour n ≥ 4
+	// (1/⁵√x devient ⁵√(x⁴)/x : sans ce cas, 1/⁵√x = 0 restait « non supporté »)
+	if (node.type === 'function' && node.name === 'root' && node.args.length === 2) {
+		const [arg, index] = node.args;
+		if (!getVariables(arg).has(variable) || index.type !== 'number') return null;
+		const rootIndex = Number(index.value);
+		if (!Number.isInteger(rootIndex) || rootIndex < 2) return null;
+		return { argument: arg, expNumerator: 1, expDenominator: rootIndex };
+	}
+
 	// Pattern 1: sqrt(u) or sqrt[n](u)
 	if (node.type === 'function' && (node.name === 'sqrt' || node.name === 'cbrt')) {
 		if (node.args.length !== 1) return null;
@@ -1357,11 +1475,17 @@ function tryRadicalDecomposition(
 
 	// Now solve: argument = uSymbolic
 	const allSolutions: Solution[] = [];
+	let family: PeriodicSolutionFamily | null | 'incomplete' = null;
 
 	radicalDecompositionDepth++;
 	try {
 		const subEquation = equals(argument, uSymbolic);
 		const subResult = solve(subEquation, { variable, verbosity: opts.verbosity });
+
+		// Sous-équation non résolue : un échec, jamais « pas de solution ».
+		if (isSolverFailure(subResult)) return null;
+		family = familyOfSubResults([subResult]);
+		if (family === 'incomplete') return null;
 
 		if (subResult.status !== 'no-solution' && subResult.status !== 'no-real-solution') {
 			for (const sol of subResult.solutions) {
@@ -1397,12 +1521,150 @@ function tryRadicalDecomposition(
 
 	return {
 		variable,
-		status: deduplicated.length === 1 ? 'unique' : 'multiple',
+		status: deduplicated.length === 1 && !family ? 'unique' : 'multiple',
 		solutions: deduplicated,
 		equationType: 'unknown',
 		strategy: 'algebraic',
-		steps: recorder.getStepsFiltered(opts.verbosity)
+		steps: recorder.getStepsFiltered(opts.verbosity),
+		...(family ? { periodicSolutions: family } : {})
 	};
+}
+
+/** Le nœud contient-il une racine (√, ∛, ᵑ√, puissance fractionnaire) de la variable ? */
+function containsRadicalOf(node: MathNode, variable: string): boolean {
+	return findFirst(node, (n) => matchSingleRadical(n, variable) !== null) !== undefined;
+}
+
+/** Garde de récursion du repli sur la forme réduite. */
+let reducedFormDepth = 0;
+
+/**
+ * Résoudre `normalize(expr) = 0` quand la forme réduite DIFFÈRE de l'écriture
+ * (des termes se sont annulés ou regroupés). `null` sinon, ou en cas d'échec.
+ */
+function tryReducedForm(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (reducedFormDepth > 0) return null;
+	let reduced: MathNode;
+	try {
+		reduced = denormalize(normalize(expr));
+	} catch {
+		return null;
+	}
+	if (nodesEqual(reduced, expr)) return null;
+	reducedFormDepth++;
+	try {
+		const result = solve(equals(reduced, number('0')), {
+			variable,
+			verbosity: opts.verbosity
+		});
+		return isSolverFailure(result) ? null : result;
+	} finally {
+		reducedFormDepth--;
+	}
+}
+
+/**
+ * √u = v, v dépendant de x — la méthode du lycée : √u = v ⇔ v ≥ 0 et u = v².
+ *
+ * Mesuré le 2026-10-08 : `√x = x − 2` revenait « Type d'equation non
+ * supporte » — `tryRadicalDecomposition` exige un membre constant. On isole
+ * donc la racine (a·√u + R = 0 → √u = −R/a), on résout u = v², et on ne garde
+ * que les solutions où v ≥ 0 (u = v² ≥ 0 suit). Une seule racine carrée : une
+ * deuxième dans v (√x + √(x+1) = 1) n'est pas du lycée, et la mise au carré
+ * ne l'éliminerait pas.
+ */
+function trySquareRootIsolation(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (radicalDecompositionDepth >= MAX_RADICAL_DECOMPOSITION_DEPTH) return null;
+	const terms = flattenSumShallow(expr);
+	for (let i = 0; i < terms.length; i++) {
+		const { sign, term } = terms[i];
+		const matched = tryRadicalPatterns(term, variable);
+		if (!matched || matched.expNumerator !== 1 || matched.expDenominator !== 2) continue;
+
+		const rest = unflattenSum(terms.filter((_, j) => j !== i));
+		if (rest === null || !getVariables(rest).has(variable)) continue;
+		if (containsRadicalOf(rest, variable)) continue;
+
+		// a·√u + R = 0 → √u = v = −R/a
+		const signedCoeff = sign === '-' ? opposite(matched.coeffNode) : matched.coeffNode;
+		const v = denormalize(normalize(divide(opposite(rest), signedCoeff, 'fraction')));
+		const u = matched.argument;
+
+		const recorder = createStepRecorder();
+		recorder.recordStep(
+			'square-root-isolation',
+			'On isole la racine, puis on élève au carré en gardant la condition v ≥ 0',
+			expr,
+			equals(u, superscript(parentheses(v), number('2'))),
+			'summarized'
+		);
+
+		radicalDecompositionDepth++;
+		let subResult: SolveResult;
+		try {
+			subResult = solve(equals(u, superscript(parentheses(v), number('2'))), {
+				variable,
+				verbosity: opts.verbosity
+			});
+		} finally {
+			radicalDecompositionDepth--;
+		}
+		if (isSolverFailure(subResult) || subResult.periodicSolutions) return null;
+		if (subResult.status === 'infinite') return null;
+
+		let vAt: (x: number) => number;
+		try {
+			const compiled = compile(v);
+			vAt = (x) => compiled({ [variable]: x });
+		} catch {
+			return null;
+		}
+		const kept: Solution[] = [];
+		for (const sol of subResult.solutions) {
+			let approx = sol.approximate;
+			if (approx === undefined) {
+				try {
+					approx = evaluateNodeToApproximatedNumber(sol.value);
+				} catch {
+					return null;
+				}
+			}
+			const vValue = vAt(approx);
+			if (!Number.isFinite(vValue)) return null;
+			if (vValue >= -1e-9 * Math.max(1, Math.abs(approx)))
+				kept.push({ ...sol, approximate: approx });
+		}
+
+		const solutions = deduplicateSolutions(kept).sort(
+			(a, b) => (a.approximate ?? 0) - (b.approximate ?? 0)
+		);
+		return {
+			variable,
+			status:
+				solutions.length === 0 ? 'no-solution' : solutions.length === 1 ? 'unique' : 'multiple',
+			solutions,
+			equationType: 'unknown',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(opts.verbosity),
+			conclusive: true
+		};
+	}
+
+	return null;
 }
 
 // =============================================================================
@@ -1425,6 +1687,10 @@ function filterSolutionsByDomain(
 	recorder: import('./types').SolveStepRecorder
 ): SolveResult {
 	if (isUniversal(domain)) return { ...result, domain };
+	// ⚠️ Une identité (`x²/x = x` se ramène à 0 = 0) n'a pas de liste à
+	// filtrer : ses solutions sont TOUT le domaine. Le statut recalculé
+	// ci-dessous la changeait en « aucune solution » (2026-10-08).
+	if (result.status === 'infinite') return { ...result, domain };
 
 	const kept: Solution[] = [];
 	for (const sol of result.solutions) {
@@ -1496,22 +1762,23 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	// Promote bare `e` (parsed as variable) to `euler()` in superscript bases.
-	// Without this, `detectVariable(e^x - 1 = 0)` would see `{e, x}` and return
-	// null, falling into the constant-equation path even though x is the obvious
-	// unknown. See `solve/promote-euler.ts` for the rationale.
-	//
+	if (refusesEulerVariable(opts.variable, equation)) {
+		throw new SolveError(EULER_NOT_A_VARIABLE, 'unknown', 'variable: e');
+	}
+
 	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`
 	// est `2x-3 = 0`. Sinon `flattenSumShallow`, qui s'arrête aux délimiteurs,
 	// voit un seul terme et chaque solveur se trompe à sa façon (linéaire :
 	// x = 0 ; exponentiel, logarithmique, trigonométrique, quartique : aucune
 	// solution). L'atelier envoie ces entrées : `f(x)` y devient `(expression)`.
-	//
-	// Le `e` SEUL (`e^x = e`) est lui aussi la constante dès qu'il ne peut pas
-	// être l'inconnue — sinon « contradictoire », réponse fausse et assurée.
-	const promotedEq = unwrapGroupingMembers(
-		promoteStandaloneEulerInRelation(promoteEulerInRelation(equation), opts.variable)
-	);
+	const unwrapped = unwrapGroupingMembers(equation);
+	// x^{p/q}, q impair : définie pour x < 0 (décision du 2026-10-08), résolue
+	// sous la forme ᵠ√(x^p) — x^{2/3} = 4 rendait {8}, ∛(x²) = 4 rend {±8}
+	const promotedEq: RelationNode = {
+		...unwrapped,
+		left: expandOddRootPowers(unwrapped.left),
+		right: expandOddRootPowers(unwrapped.right)
+	};
 
 	// Convert to standard form: f(x) = 0
 	const expr = toStandardForm(promotedEq);
@@ -1564,6 +1831,22 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		};
 	}
 
+	// x seulement en puissances rationnelles de x (x^{2/3} = x, x^{0.5} = 2) :
+	// changement de variable x = u^L (voir `power-substitution.ts`), solutions
+	// gardées dans le domaine (de définition et de recherche)
+	const bySubstitution = solveByPowerSubstitution(expr, variable, solve);
+	if (bySubstitution !== null) {
+		const kept = bySubstitution.solutions.filter(
+			(sol) => sol.approximate === undefined || containsValue(domain, sol.approximate)
+		);
+		return {
+			...bySubstitution,
+			solutions: kept,
+			status: kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : 'multiple',
+			domain
+		};
+	}
+
 	// Record domain steps
 	const domainRecorder = createStepRecorder();
 	if (options?.domain) {
@@ -1601,6 +1884,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		result = tryTrigRecursiveDecomposition(expr, variable, opts);
 	}
 
+	// aⁿ = b, base constante autre que e (suites géométriques : 2^n = 1024)
+	if (!result) {
+		// Base e aussi quand l'élève a tapé un décimal : e^x = 0.5 → ln(0,5)
+		result = solveConstantBaseExponential(expr, variable, solve, opts, containsDecimal(expr));
+	}
+
 	// Try exp/log recursive decomposition for non-linear exp/log arguments
 	// e^A = e^B → A = B, avant la décomposition (qui exige UN terme exponentiel)
 	if (!result) {
@@ -1614,6 +1903,11 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Try radical decomposition (√x, ∛x, x^(p/q))
 	if (!result) {
 		result = tryRadicalDecomposition(expr, variable, opts);
+	}
+
+	// √u = v, v dépendant de x : v ≥ 0 et u = v²
+	if (!result) {
+		result = trySquareRootIsolation(expr, variable, opts);
 	}
 
 	// Try rational decomposition (P(x)/Q(x) = 0). Runs after the polynomial-
@@ -1652,6 +1946,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		}
 	}
 
+	// Dernier recours avant la classification : e^u = c, u affine, que le
+	// solveur transcendant ne sait pas faire (`e^(-x) = 0.5`, revue 2026-10-09)
+	if (!result) {
+		result = solveConstantBaseExponential(expr, variable, solve, opts, true);
+	}
+
 	// Classification-based solver path
 	if (!result) {
 		const classification = classifyEquation(equation, variable);
@@ -1683,9 +1983,36 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Une somme dont les termes partagent un facteur non constant : on le met
 	// en évidence, puis produit nul. En DERNIER recours seulement — voir
 	// `tryCommonFactorDecomposition`.
-	if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
+	//
+	// Avant elle, le changement de variable (u = sin x, cos x, tan x, ln x,
+	// eˣ) : `sin²x = 1/4` revenait « non supporte ». Lui aussi en repli : une
+	// équation déjà résolue garde sa résolution.
+	if (isSolverFailure(result)) {
+		const substituted = trySubstitution(expr, variable, opts, solve);
+		if (substituted) result = substituted;
+	}
+	// a·sin(u) + b·cos(u) = 0 → tan(u) = −b/a (`sin x = cos x`, revue 2026-10-09)
+	if (isSolverFailure(result)) {
+		const ratio = trySinCosRatio(expr, variable, opts, solve);
+		if (ratio) result = ratio;
+	}
+	// cos a = cos b, sin a = sin b, tan a = tan b (`cos 2x = cos x`, revue 2026-10-09)
+	if (isSolverFailure(result)) {
+		const equality = tryTrigEquality(expr, variable, opts, solve);
+		if (equality) result = equality;
+	}
+	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);
 		if (factored) result = factored;
+	}
+	// Une équation qui ne devient affine (ou d'un degré moindre) qu'une fois
+	// développée et réduite : `x² + 5 = (x + 1)²`, `x² − x² + 2x = 4`. Le
+	// classement lit l'écriture (« quadratique ») et le solveur du second degré
+	// échoue, a = 0 — mesuré le 2026-10-08 : `√(x² + 5) = x + 1` (u = v² en
+	// arrive là) revenait « non supporte ». En repli : on résout la forme réduite.
+	if (isSolverFailure(result)) {
+		const reduced = tryReducedForm(expr, variable, opts);
+		if (reduced) result = reduced;
 	}
 
 	// --- Apply domain filtering (single exit point) ---

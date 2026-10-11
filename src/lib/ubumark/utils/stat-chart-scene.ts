@@ -28,7 +28,8 @@ import type {
 	SimulatedNamedLaw,
 	StatChartIndicator,
 	StatChartSpec,
-	StatChartUnit
+	StatChartUnit,
+	QueryInterval
 } from '../types/stat-chart';
 import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
@@ -47,6 +48,7 @@ import { crossTable } from '$lib/statistics/cross-table';
 import {
 	formatApproxValue,
 	formatFraction,
+	formatLawApproxValue,
 	formatLawIndicators,
 	formatStatNumber
 } from '$lib/statistics/format';
@@ -65,6 +67,7 @@ import {
 	discreteSampler,
 	exponentialSampler,
 	geometricSampler,
+	normalSampler,
 	simulateCounts,
 	simulateDraws,
 	simulateLawRunningMean,
@@ -98,9 +101,9 @@ import {
 	binomialMoments,
 	binomialProbability,
 	binomialThreshold,
-	roundExact,
 	type BinomialDistribution
 } from '$lib/statistics/binomial';
+import { roundExact, roundNumber } from '$lib/statistics/rounding';
 import {
 	geometricConditional,
 	geometricMoments,
@@ -114,6 +117,9 @@ import {
 	exponentialDensity,
 	exponentialMoments,
 	exponentialProbability,
+	normalDensity,
+	normalMoments,
+	normalProbability,
 	uniformDensityMoments,
 	uniformDensityProbability
 } from '$lib/statistics/density';
@@ -1718,7 +1724,7 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 		...binomial.queries.map((query) =>
 			queryLine(
 				query.display,
-				binomialProbability(distribution, (k) => k >= query.low && k <= query.high),
+				conditional((contains) => binomialProbability(distribution, contains), query),
 				binomial.places,
 				locale
 			)
@@ -1755,6 +1761,44 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 }
 
 /** Une ligne de `probabilités:` : le texte normalisé selon la langue, = ou ≈ */
+/** `P(|X − m| > a)` : la probabilité contraire de l'intervalle (2026-10-09) */
+function contrary(
+	value: { num: bigint; den: bigint },
+	complement: boolean | undefined
+): { num: bigint; den: bigint } {
+	return complement === true ? { num: value.den - value.num, den: value.den } : value;
+}
+
+/** P(X ∈ E) pour X ~ U(a ; b) : le nombre de valeurs de E sur b − a + 1 */
+function uniformCount(
+	a: number,
+	b: number,
+	contains: (k: number) => boolean
+): { num: bigint; den: bigint } {
+	let count = 0n;
+	for (let k = a; k <= b; k++) if (contains(k)) count++;
+	return { num: count, den: BigInt(b - a + 1) };
+}
+
+/**
+ * La probabilité d'une requête d'une loi discrète : P(low ⩽ X ⩽ high),
+ * éventuellement contraire, ou P(A ∩ B) / P(B) si elle est conditionnelle
+ * (le parseur a refusé P(B) = 0)
+ */
+function conditional(
+	probability: (contains: (k: number) => boolean) => { num: bigint; den: bigint },
+	query: QueryInterval
+): { num: bigint; den: bigint } {
+	const inEvent = (k: number) => k >= query.low && k <= query.high;
+	const given = query.condition;
+	if (given === undefined) return contrary(probability(inEvent), query.complement);
+	const inGiven = (k: number) => k >= given.low && k <= given.high;
+	return {
+		num: probability((k) => inEvent(k) && inGiven(k)).num,
+		den: probability(inGiven).num
+	};
+}
+
 function queryLine(
 	display: string,
 	{ num, den }: { num: bigint; den: bigint },
@@ -1791,7 +1835,12 @@ function namedMomentLines(
 		const name = indicator === 'esperance' ? 'E' : 'V';
 		if (!value.isDecimal()) {
 			// Toujours ≈ : formatApproxValue dirait « = 8,1 » pour 8,1000000000006
-			return `${name}(${law.variable}) ≈ ${formatStatNumber(Math.round(value.toNumber() * 100) / 100, locale)}`;
+			// Sous 0,01 : deux chiffres significatifs, jamais « ≈ 0 » (revue du 2026-10-09)
+			const small = Math.abs(value.toNumber()) < 0.01 && !value.equals(Fraction.ZERO);
+			const shown = small
+				? formatLawApproxValue(value.toNumber(), locale).slice(2)
+				: formatStatNumber(roundNumber(value.toNumber(), 2), locale);
+			return `${name}(${law.variable}) ≈ ${shown}`;
 		}
 		return `${name}(${law.variable}) = ${exactDecimal(value, locale)}`;
 	});
@@ -1828,7 +1877,12 @@ function buildGeometricScene(spec: StatChartSpec, law: LawData, locale: ContentL
 				? geometricProbability(p, query.low, query.high)
 				: // P(X ⩾ low | X ⩾ given) = q^(low − given) : la loi est sans mémoire
 					geometricConditional(p, query.low, query.given);
-		return queryLine(query.display, exactValue, geometric.places, locale);
+		return queryLine(
+			query.display,
+			contrary(exactValue, query.complement),
+			geometric.places,
+			locale
+		);
 	});
 	const ellipsis: SceneCell = { text: '…', hidden: false, srText: null };
 	return {
@@ -1902,7 +1956,7 @@ function buildUniformScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 			...uniform.queries.map((query) =>
 				queryLine(
 					query.display,
-					uniformProbability(uniform.a, uniform.b, query.low, query.high),
+					conditional((contains) => uniformCount(uniform.a, uniform.b, contains), query),
 					uniform.places,
 					locale
 				)
@@ -2075,6 +2129,41 @@ function exponentialCdf(lambdaText: string, locale: ContentLocale): string {
 	return shown.includes('/') ? `−(${shown})x` : `−${shown}x`;
 }
 
+/** μ et σ d'une loi normale, en flottants (σ² > 0 : contrôlé par le parseur) */
+function normalParameters(law: { mu: string; variance: string }): { mu: number; sigma: number } {
+	const mu = Fraction.parse(law.mu)?.toNumber() ?? 0;
+	const variance = Fraction.parse(law.variance)?.toNumber() ?? 1;
+	return { mu, sigma: Math.sqrt(variance) };
+}
+
+/**
+ * Une probabilité d'une loi normale : toujours approchée (Φ n'a pas de forme
+ * exacte), « ≈ 1,000 » plutôt que « = 1 » pour P(X ⩽ 10) ; « = 0 » pour P(X = x)
+ */
+function normalValueText(value: number, places: number, locale: ContentLocale): string {
+	const text = Math.min(Math.max(value, 0), 1).toFixed(places);
+	return `≈ ${locale === 'en' ? text : text.replace('.', ',')}`;
+}
+
+/** La valeur d'un événement d'une loi normale ; la conditionnelle P(A ∩ B)/P(B) */
+function normalQueryValue(law: { mu: string; variance: string }, query: DensityQuery): number {
+	const { mu, sigma } = normalParameters(law);
+	const read = (value: string | null) =>
+		value === null ? null : (Fraction.parse(value)?.toNumber() ?? null);
+	if (query.given !== null) {
+		// P(X > a | X > b), a > b : P(X > a)/P(X > b)
+		const given = normalProbability(mu, sigma, read(query.given), null);
+		return given === 0 ? 0 : normalProbability(mu, sigma, read(query.low), null) / given;
+	}
+	const inside = normalProbability(mu, sigma, read(query.low), read(query.high));
+	return query.complement === true ? 1 - inside : inside;
+}
+
+/** L'écriture d'un événement de loi normale : vrai signe moins (« P(−1,96 ⩽ Y) ») */
+function normalEvent(display: string, locale: ContentLocale): string {
+	return shownEvent(display, locale).replace(/-/g, '−');
+}
+
 /**
  * L'événement hachuré et sa valeur, pour le lecteur d'écran : une
  * conditionnelle hachure {X > a} (« P(X > 5) ≈ 0,082 », revue)
@@ -2088,18 +2177,24 @@ function areaEvent(density: NonNullable<LawData['density']>, locale: ContentLoca
 	);
 	if (area.point) return `${display} = 0`;
 	const read = (value: string | null) => (value === null ? null : Fraction.parse(value));
+	if (density.law.family === 'normal') {
+		const value = normalQueryValue(density.law, event);
+		return `${display.replace(/-/g, '−')} ${normalValueText(value, density.places, locale)}`;
+	}
 	if (density.law.family === 'uniform') {
 		const a = Fraction.parse(density.law.a) ?? Fraction.ZERO;
 		const b = Fraction.parse(density.law.b) ?? Fraction.ONE;
-		const value = uniformDensityProbability(a, b, read(event.low), read(event.high));
+		const inside = uniformDensityProbability(a, b, read(event.low), read(event.high));
+		const value = event.complement === true ? Fraction.ONE.sub(inside) : inside;
 		return `${display} ${exactProbabilityText(value, density.places, locale)}`;
 	}
 	const lambda = Fraction.parse(density.law.lambda)?.toNumber() ?? 1;
-	const value = exponentialProbability(
+	const inside = exponentialProbability(
 		lambda,
 		read(event.low)?.toNumber() ?? null,
 		read(event.high)?.toNumber() ?? null
 	);
+	const value = event.complement === true ? 1 - inside : inside;
 	return `${display} ${approxText(value, density.places, locale)}`;
 }
 
@@ -2137,6 +2232,18 @@ function densityChart(
 		];
 		support = { low: a, high: b };
 		curve = () => top;
+	} else if (law.family === 'normal') {
+		const { mu, sigma } = normalParameters(law);
+		top = normalDensity(mu, sigma, mu);
+		// μ ± 4σ : il reste moins de 0,01 % de chaque côté
+		xMin = mu - 4 * sigma;
+		xMax = mu + 4 * sigma;
+		points = Array.from({ length: DENSITY_SAMPLES + 1 }, (_, i) => {
+			const x = xMin + (i / DENSITY_SAMPLES) * (xMax - xMin);
+			return { x, y: normalDensity(mu, sigma, x) };
+		});
+		support = { low: -Infinity, high: Infinity };
+		curve = (x) => normalDensity(mu, sigma, x);
 	} else {
 		const lambda = Fraction.parse(law.lambda)?.toNumber() ?? 1;
 		top = lambda;
@@ -2165,13 +2272,23 @@ function densityChart(
 		const { low, high } = eventBounds(density.area);
 		const from = Math.max(low, support.low, xMin);
 		const to = Math.min(high, support.high, xMax);
-		if (to > from) {
-			const count = law.family === 'uniform' ? 1 : Math.ceil(DENSITY_SAMPLES / 2);
-			const edge = Array.from({ length: count + 1 }, (_, i) => {
-				const x = from + ((to - from) * i) / count;
+		const count = law.family === 'uniform' ? 1 : Math.ceil(DENSITY_SAMPLES / 2);
+		/** Le bord supérieur de l'aire sous la courbe entre `left` et `right` */
+		const edge = (left: number, right: number) =>
+			Array.from({ length: count + 1 }, (_, i) => {
+				const x = left + ((right - left) * i) / count;
 				return { x, y: curve(x) };
 			});
-			area = [{ x: from, y: 0 }, ...edge, { x: to, y: 0 }];
+		if (density.area.complement === true) {
+			// `P(|X − m| > a)` : les deux queues, reliées par l'axe (aire nulle entre elles)
+			const left = Math.max(support.low, xMin);
+			const right = Math.min(support.high, xMax);
+			const tails: ScenePoint[] = [];
+			if (from > left) tails.push({ x: left, y: 0 }, ...edge(left, from), { x: from, y: 0 });
+			if (right > to) tails.push({ x: to, y: 0 }, ...edge(to, right), { x: right, y: 0 });
+			area = tails.length > 0 ? tails : null;
+		} else if (to > from) {
+			area = [{ x: from, y: 0 }, ...edge(from, to), { x: to, y: 0 }];
 		}
 	}
 
@@ -2226,7 +2343,8 @@ function buildDensityScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 		lines = density.queries.map((query) => {
 			const display = shownEvent(query.display, locale);
 			if (query.point) return `${display} = 0 (${text.pointZero(law.variable)})`;
-			const event = uniformDensityProbability(a, b, read(query.low), read(query.high));
+			const inside = uniformDensityProbability(a, b, read(query.low), read(query.high));
+			const event = query.complement === true ? Fraction.ONE.sub(inside) : inside;
 			const value =
 				query.given === null
 					? event
@@ -2237,6 +2355,21 @@ function buildDensityScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 						);
 			return `${display} ${exactProbabilityText(value, density.places, locale)}`;
 		});
+	} else if (density.law.family === 'normal') {
+		const { mu: muText, variance: varianceText } = density.law;
+		const mu = Fraction.parse(muText) ?? Fraction.ZERO;
+		const variance = Fraction.parse(varianceText) ?? Fraction.ONE;
+		name = text.normal(asWritten(muText, locale), asWritten(varianceText, locale));
+		moments = normalMoments(mu, variance);
+		decimal = /[.,]/.test(muText + varianceText);
+		// Le parseur refuse `répartition: oui` : F n'a pas de formule
+		cdf = '';
+		const normal = density.law;
+		lines = density.queries.map((query) => {
+			const display = normalEvent(query.display, locale);
+			if (query.point) return `${display} = 0 (${text.pointZero(law.variable)})`;
+			return `${display} ${normalValueText(normalQueryValue(normal, query), density.places, locale)}`;
+		});
 	} else {
 		const lambdaText = density.law.lambda;
 		const lambda = Fraction.parse(lambdaText) ?? Fraction.ONE;
@@ -2244,9 +2377,18 @@ function buildDensityScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 		moments = exponentialMoments(lambda);
 		decimal = /[.,%]/.test(lambdaText);
 		cdf = text.cdfExponential(exponentialCdf(lambdaText, locale));
-		lines = density.queries.map((query) =>
-			exponentialLine(query, lambdaText, law.variable, density.places, locale)
-		);
+		lines = density.queries.map((query) => {
+			// `P(|T − 2| > 1)` : 1 − P(1 ⩽ T ⩽ 3), valeur approchée seule
+			if (query.complement === true) {
+				const inside = exponentialProbability(
+					lambda.toNumber(),
+					Fraction.parse(query.low ?? '')?.toNumber() ?? null,
+					Fraction.parse(query.high ?? '')?.toNumber() ?? null
+				);
+				return `${shownEvent(query.display, locale)} ${approxText(1 - inside, density.places, locale)}`;
+			}
+			return exponentialLine(query, lambdaText, law.variable, density.places, locale);
+		});
 	}
 	const title = text.title(law.variable, name);
 	const indicators = [
@@ -2441,8 +2583,8 @@ function groupedCount(value: number, locale: ContentLocale): string {
 
 /** Un réel au millième, écrit selon la langue (moyennes, σ, marge) */
 function thousandth(value: number, locale: ContentLocale): string {
-	// `Math.round`, pas `toFixed` : 287/80 = 3,5875 donnait 3,587 (revue)
-	return formatStatNumber(Math.round(value * 1000) / 1000, locale);
+	// Règle unique (`roundNumber`) : 287/80 = 3,5875 → 3,588 ; −3,5875 → −3,588
+	return formatStatNumber(roundNumber(value, 3), locale);
 }
 
 /**
@@ -2557,6 +2699,8 @@ function namedSampler(named: SimulatedNamedLaw): LawSampler {
 			return uniformDensitySampler(read(named.a, Fraction.ZERO), read(named.b, Fraction.ONE));
 		case 'exponential':
 			return exponentialSampler(read(named.lambda, Fraction.ONE));
+		case 'normal':
+			return normalSampler(read(named.mu, Fraction.ZERO), read(named.variance, Fraction.ONE));
 	}
 }
 
@@ -2649,7 +2793,7 @@ function namedDiscreteTable(
 }
 
 /**
- * U([a ; b]) et E(λ) en mode `tirages` (manche 14) : l'histogramme des tirages
+ * U([a ; b]), E(λ) (manche 14) et N(μ ; σ²) (2026-10-11) en mode `tirages` : l'histogramme des tirages
  * EN DENSITÉ (fréquence / amplitude, aire totale 1), en classes égales — U : de
  * a à b ; E : de 0 à la borne de l'axe de la courbe, la dernière classe prenant
  * tout ce qui dépasse — et la courbe de densité du bloc ```loi par-dessus.
@@ -2657,7 +2801,7 @@ function namedDiscreteTable(
 function buildDensityDrawsScene(
 	spec: StatChartSpec,
 	simulation: SimulationData,
-	named: Extract<SimulatedNamedLaw, { family: 'uniform-density' | 'exponential' }>,
+	named: Extract<SimulatedNamedLaw, { family: 'uniform-density' | 'exponential' | 'normal' }>,
 	sampler: LawSampler,
 	locale: ContentLocale
 ): HistogramScene {
@@ -2670,9 +2814,12 @@ function buildDensityDrawsScene(
 	const curve = densityChart(
 		spec,
 		{
-			law: uniform
-				? { family: 'uniform', a: named.a, b: named.b }
-				: { family: 'exponential', lambda: named.lambda },
+			law:
+				named.family === 'uniform-density'
+					? { family: 'uniform', a: named.a, b: named.b }
+					: named.family === 'normal'
+						? { family: 'normal', mu: named.mu, variance: named.variance }
+						: { family: 'exponential', lambda: named.lambda },
 			places: 3,
 			queries: [],
 			chart: true,
@@ -2682,8 +2829,20 @@ function buildDensityDrawsScene(
 		simulation.variable,
 		locale
 	);
-	const low = uniform ? (Fraction.parse(named.a)?.toNumber() ?? 0) : 0;
-	const high = uniform ? (Fraction.parse(named.b)?.toNumber() ?? 1) : curve.xMax;
+	// U : de a à b ; E : de 0 au bord de la courbe ; N : μ ± 3σ (il reste ≈ 0,13 %
+	// de chaque côté), les deux classes du bord prenant ce qui dépasse
+	let low = 0;
+	let high = curve.xMax;
+	if (named.family === 'uniform-density') {
+		low = Fraction.parse(named.a)?.toNumber() ?? 0;
+		high = Fraction.parse(named.b)?.toNumber() ?? 1;
+	} else if (named.family === 'normal') {
+		const mu = Fraction.parse(named.mu)?.toNumber() ?? 0;
+		const sigma = Math.sqrt(Fraction.parse(named.variance)?.toNumber() ?? 1);
+		low = Number((mu - 3 * sigma).toPrecision(12));
+		high = Number((mu + 3 * sigma).toPrecision(12));
+	}
+	const normal = named.family === 'normal';
 	const classes = named.classes;
 	const width = (high - low) / classes;
 	const counts = new Array<number>(classes).fill(0);
@@ -2699,8 +2858,10 @@ function buildDensityDrawsScene(
 			: uniform
 				? `${shownReal(upper, locale)}]`
 				: '+∞[';
+		// N : la première classe s'ouvre sur −∞
+		const opening = normal && i === 0 ? ']−∞' : `[${shownReal(lower, locale)}`;
 		return {
-			label: `[${shownReal(lower, locale)} ; ${closing}`,
+			label: `${opening} ; ${closing}`,
 			lower,
 			upper,
 			// Hauteur = fréquence / amplitude : l'aire du rectangle est la fréquence
@@ -2728,6 +2889,21 @@ function buildDensityDrawsScene(
 	const text = STAT_TEXT[locale];
 	const mean = draws.reduce((sum, x) => sum + x, 0) / n;
 	const beyond = draws.filter((x) => x > high).length;
+	const below = draws.filter((x) => x < low).length;
+	const overflow = uniform
+		? []
+		: normal
+			? [
+					// `shownReal`, comme les étiquettes des classes : μ ± 3σ peut être
+					// irrationnel (σ² = 2), `formatTick` en écrirait 12 chiffres
+					text.simulation.overflowBoth(
+						shownReal(low, locale),
+						String(below),
+						shownReal(high, locale),
+						String(beyond)
+					)
+				]
+			: [text.simulation.overflow(formatTick(high, locale), String(beyond))];
 	return {
 		kind: 'histogramme',
 		title: spec.title,
@@ -2745,7 +2921,7 @@ function buildDensityDrawsScene(
 				simulation.variable,
 				fractionText(sampler.law.expectation, locale)
 			),
-			...(uniform ? [] : [text.simulation.overflow(formatTick(high, locale), String(beyond))]),
+			...overflow,
 			seedLine(simulation.seed, locale)
 		],
 		xMin: curve.xMin,

@@ -37,6 +37,7 @@
 	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 
 	interface Props {
 		exercise: Exercise;
@@ -167,8 +168,9 @@
 		currentInstance ? currentInstance.statement_md : exerciseContent.statement_md
 	);
 
+	// Marqueurs de détail (ADR 0017) : version détaillée, jamais de `\detail{` brut
 	let displaySolutionMd = $derived(
-		currentInstance ? currentInstance.solution_md : exerciseContent.solution_md
+		detailedCorrection(currentInstance ? currentInstance.solution_md : exerciseContent.solution_md)
 	);
 
 	// Hints from resolved variation (if available)

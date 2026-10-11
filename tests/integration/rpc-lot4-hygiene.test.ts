@@ -142,7 +142,6 @@ describe('RPC lot 4 : hygiène', () => {
 		['get_deck_stats', { p_user_id: id, p_deck_id: paquetA }],
 		['count_user_notebooks', { p_user_id: id }],
 		['count_user_python_files', { p_user_id: id }],
-		['get_2048_user_rank', { p_user_id: id }],
 		['has_proposal_on_listing', { p_listing_id: ANNONCE, p_user_id: id }],
 		['record_listing_views_batch', { p_listing_ids: [], p_user_id: id }]
 	];
@@ -173,8 +172,7 @@ describe('RPC lot 4 : hygiène', () => {
 		for (const [nom, args] of [
 			['get_deck_stats', { p_user_id: bId, p_deck_id: paquetProf }],
 			['get_user_status', { user_id: bId }],
-			['count_user_notebooks', { p_user_id: bId }],
-			['get_2048_user_rank', { p_user_id: bId }]
+			['count_user_notebooks', { p_user_id: bId }]
 		] as [string, Record<string, unknown>][]) {
 			const { error } = await rpc(prof, nom, args);
 			expect(error, `${nom} refusé au prof`).toBeNull();
@@ -318,6 +316,15 @@ describe('RPC lot 4 : hygiène', () => {
 			return (await response.json()) as Record<string, unknown>;
 		};
 
+		// D18 (2026-10-10) : l'appariement est borné à l'école — les deux élèves en
+		// partagent une, le temps de ce cas.
+		const { error: ecoleMajError } = await service
+			.from('profiles')
+			.update({ school_id: ecoleId })
+			.in('id', [aId, bId])
+			.select('id');
+		expect(ecoleMajError).toBeNull();
+
 		const premier = await rejoindre(eleveA, aId);
 		expect(premier).toMatchObject({ matched: false, waiting: true });
 
@@ -332,6 +339,8 @@ describe('RPC lot 4 : hygiène', () => {
 			.single();
 		expect(error).toBeNull();
 		expect(match).toEqual({ player1_id: aId, player2_id: bId, status: 'countdown' });
+
+		await service.from('profiles').update({ school_id: null }).in('id', [aId, bId]).select('id');
 	});
 
 	// ===========================================================================

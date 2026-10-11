@@ -1,8 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../index';
 import { geoToNumber } from '../../compute/to-number';
+import {
+	isScalarRef,
+	isInfinityParam,
+	type GeoValue,
+	type ScalarParam
+} from '../../types/geo-value';
 import type { GeoComposition } from '../../types/elements';
 import { serialize } from '../serializer';
+
+// Paramètre littéral (ni référence à un curseur, ni infini) : on l'affirme, puis
+// on rétrécit ScalarParam en GeoValue pour pouvoir le convertir en nombre.
+function fixedValue(param: ScalarParam): GeoValue {
+	expect(isScalarRef(param)).toBe(false);
+	expect(isInfinityParam(param)).toBe(false);
+	if (isScalarRef(param) || isInfinityParam(param)) throw new Error('paramètre non littéral');
+	return param;
+}
 
 describe('Similitude — syntactic sugar over compose(homothetie, rotation)', () => {
 	it('similitude(centre=O, angle=45, rapport=2) creates a composition with sourceBuiltin', () => {
@@ -19,8 +34,10 @@ describe('Similitude — syntactic sugar over compose(homothetie, rotation)', ()
 		// sourceBuiltin metadata
 		expect(el.sourceBuiltin).toBeDefined();
 		expect(el.sourceBuiltin!.name).toBe('similitude');
-		expect(geoToNumber(el.sourceBuiltin!.params.angle)).toBeCloseTo((45 * Math.PI) / 180);
-		expect(geoToNumber(el.sourceBuiltin!.params.rapport)).toBeCloseTo(2);
+		expect(geoToNumber(fixedValue(el.sourceBuiltin!.params.angle))).toBeCloseTo(
+			(45 * Math.PI) / 180
+		);
+		expect(geoToNumber(fixedValue(el.sourceBuiltin!.params.rapport))).toBeCloseTo(2);
 	});
 
 	it('similitude(A, centre=O, angle=60, rapport=3) applies directly to a point', () => {

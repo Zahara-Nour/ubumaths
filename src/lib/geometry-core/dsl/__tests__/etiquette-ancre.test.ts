@@ -2,7 +2,7 @@
  * DSL — position du nom d'un point (`etiquette=`), ancrage des textes
  * (`ancre=`), `visible=faux` à la création, alias `style=` de `trait=`.
  *
- * Chantier `docs/wip/figure-etiquettes-progress.md` (2026-10-02).
+ * Chantier `docs/archive/wip/figure-etiquettes-progress.md` (2026-10-02).
  */
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../index';

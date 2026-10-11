@@ -77,7 +77,10 @@ describe('distribute-binomial-product — sign combinations', () => {
 		// construisait `(ac − ad) − (bc − bd)` : mathématiquement juste, mais
 		// l'élève y lisait une parenthèse au moment même où on lui demande de
 		// développer. Décision de David, 2026-09-21.
-		expect(tex(result)).toBe('xy-x2-1y+12');
+		// Le dernier terme 1 × 2 s'écrivait `1 2` (relu « 12 ») : entre deux
+		// chiffres, le générateur pose désormais la croix (oracle des dérivées,
+		// 2026-10-06).
+		expect(tex(result)).toBe('xy-x2-1y+1\\times2');
 	});
 });
 
@@ -181,10 +184,10 @@ describe('les quatre combinaisons de signes, vérifiées numériquement', () => 
  */
 describe('les quatre combinaisons donnent quatre termes plats', () => {
 	it.each([
-		['(x+1)(y+2)', 'xy+x2+1y+12'],
-		['(x+1)(y-2)', 'xy-x2+1y-12'],
-		['(x-1)(y+2)', 'xy+x2-1y-12'],
-		['(x-1)(y-2)', 'xy-x2-1y+12']
+		['(x+1)(y+2)', 'xy+x2+1y+1\\times2'],
+		['(x+1)(y-2)', 'xy-x2+1y-1\\times2'],
+		['(x-1)(y+2)', 'xy+x2-1y-1\\times2'],
+		['(x-1)(y-2)', 'xy-x2-1y+1\\times2']
 	])('%s → %s', (source, attendu) => {
 		const { result } = applyRulesDeepOnceTracked([distributeBinomialProduct], parseLatex(source));
 		expect(tex(result)).toBe(attendu);

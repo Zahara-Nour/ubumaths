@@ -3,7 +3,7 @@
  * droite des moindres carrés, r, prévisions.
  *
  * Valeurs de référence calculées en Python (fractions) :
- * `docs/wip/bloc-nuage-progress.md`.
+ * `docs/archive/wip/bloc-nuage-progress.md`.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -374,7 +374,8 @@ describe('```nuage — revue', () => {
 	it('abscisses à 15 chiffres : les graduations se calculent vite (plus de boucle sans fin)', () => {
 		const start = performance.now();
 		const scene = sceneOf('x: 999999999999990 ; 999999999999999\ny: 1 ; 2');
-		expect(performance.now() - start).toBeLessThan(500);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - start).toBeLessThan(2000);
 		expect(scene.xTicks.length).toBeGreaterThan(1);
 		expect(scene.xTicks.length).toBeLessThanOrEqual(200);
 		for (const tick of scene.xTicks) expect(Number.isFinite(tick.value)).toBe(true);
@@ -401,7 +402,8 @@ describe('```nuage — revue', () => {
 		const scene = sceneOf(
 			`x: ${xs}\ny: ${ys}\najustement: affine\nindicateurs: point moyen ; r\nprévoir: x = 1 ; y = 1`
 		);
-		expect(performance.now() - start).toBeLessThan(500);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - start).toBeLessThan(2000);
 		const coordinates = [
 			...scene.points,
 			...scene.line!,

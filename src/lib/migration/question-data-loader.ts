@@ -18,7 +18,7 @@ import { loadImageUrlMapping } from './image-url-mapping';
 // CONSTANTS
 // ============================================================================
 
-const OLD_QUESTIONS_PATH = join(process.cwd(), '.claude', 'old-questions.json');
+const OLD_QUESTIONS_PATH = join(process.cwd(), 'data', 'tinymath', 'old-questions.json');
 
 // ============================================================================
 // TYPES

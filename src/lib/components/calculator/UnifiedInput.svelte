@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import type { MathfieldElement } from 'mathlive';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';

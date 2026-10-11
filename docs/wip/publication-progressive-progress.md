@@ -4,7 +4,7 @@
 > (PR #250, #251, #252, #253, #254, #256, plus #255 pour la sortie de classe). Décisions prises par David ce jour-là, en
 > réponse à une étude : voir la section « Ce qui est tranché ».
 >
-> Contexte amont : [mon-cours-chapitres-progress.md](mon-cours-chapitres-progress.md).
+> Contexte amont : [mon-cours-chapitres-progress.md](../archive/wip/mon-cours-chapitres-progress.md).
 
 ## Le problème
 

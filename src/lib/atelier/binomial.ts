@@ -18,7 +18,7 @@ import {
 	lawOptions,
 	lawUsageError,
 	normalizeLawArgument,
-	runLawBlock,
+	runAndRememberLaw,
 	thresholdOption,
 	type LawCommandResult
 } from './law-commands';
@@ -43,7 +43,7 @@ const HEAD = /^([A-Z])\s+(\S+)\s+(\S+)(?:\s+(.*))?$/;
 // =============================================================================
 
 /** `.binomiale X 10 0,3 [P(X ⩽ 4) ; intervalle 0,95 ; seuil P(X > k) ⩽ 0,05]` */
-export function binomialCommand(_atelier: Atelier, argument: string): BinomialResult {
+export function binomialCommand(atelier: Atelier, argument: string): BinomialResult {
 	const written = normalizeLawArgument(argument);
 	// Un saut de ligne glisserait une ligne dans le bloc (revue : injection)
 	if (written === null) return { ok: false, message: 'Écris la commande sur une seule ligne' };
@@ -84,5 +84,6 @@ export function binomialCommand(_atelier: Atelier, argument: string): BinomialRe
 	if (queries.length > 0) lines.push(`probabilités: ${queries.join(' ; ')}`);
 
 	// Le texte reste « X suit B(n ; p) », même pour B(1 ; p) (le titre dit « Bernoulli »)
-	return runLawBlock(lines, variable, `${variable} suit B(${n} ; ${p})`, EXAMPLE);
+	// La loi est RETENUE : `P(X ⩽ 3)` tapé seul la relit (2026-10-09)
+	return runAndRememberLaw(atelier, lines, variable, `${variable} suit B(${n} ; ${p})`, EXAMPLE);
 }

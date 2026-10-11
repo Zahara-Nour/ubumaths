@@ -1,0 +1,74 @@
+name: Core Web Vitals
+
+# Le 2026-10-11, Speed Insights montrait un FCP p75 de 3,4 s sur l'accueil pour
+# un TTFB de 0,5 s (94 chunks JS préchargés volaient la bande passante aux CSS,
+# corrigé par #1073). Personne ne l'avait vu : il fallait aller le chercher.
+#
+# Ce job relève chaque mois les mesures RÉELLES des visiteurs (Speed Insights,
+# 28 jours, 75ᵉ centile), les classe selon les seuils de Google et publie le
+# rapport dans une issue. Il ne diagnostique rien : une page au rouge se
+# diagnostique à la main (docs/pratiques/core-web-vitals.md).
+#
+# Mensuel : ~150 mesures par mois, un relevé plus serré ne serait que du bruit.
+#
+# Secret requis : VERCEL_TOKEN (jeton Vercel, portée : l'équipe du projet).
+# Les identifiants ci-dessous ne sont pas secrets (ils figurent dans .vercel/).
+
+on:
+  schedule:
+    - cron: '0 6 1 * *' # le 1er du mois, 06:00 UTC
+  workflow_dispatch: # déclenchement manuel
+
+permissions:
+  contents: read
+  issues: write # pour publier le relevé
+
+env:
+  VERCEL_ORG_ID: team_gn9W4dSrGih1EsxVMNUg3fZt
+  VERCEL_PROJECT_ID: prj_7AcalefMmOpS5jANEfVh4LF4t6Hr
+
+jobs:
+  releve:
+    name: Relevé mensuel
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Version épinglée : la sortie JSON de `vercel metrics` est récente.
+      - name: Install Vercel CLI
+        run: npm install --global vercel@63.1.0
+
+      - name: Relevé Speed Insights
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx tsx scripts/releve-web-vitals.ts 28 > releve.md
+
+      # Une issue par mois ; la précédente est refermée en pointant vers la
+      # nouvelle, pour qu'un seul relevé reste ouvert.
+      - name: Publier le relevé
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MOIS=$(date -u +%Y-%m)
+          TITRE="Core Web Vitals — relevé $MOIS"
+          PRECEDENTS=$(gh issue list --state open --search "Core Web Vitals — relevé in:title" --json number --jq '.[].number')
+          URL=$(gh issue create --title "$TITRE" --body-file releve.md)
+          for N in $PRECEDENTS; do
+            gh issue close "$N" --comment "Remplacé par le relevé suivant : $URL"
+          done
+          cat releve.md >> "$GITHUB_STEP_SUMMARY"

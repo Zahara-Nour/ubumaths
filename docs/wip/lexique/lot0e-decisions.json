@@ -1,0 +1,303 @@
+[
+	{
+		"cat": "verbe",
+		"term": "calculer",
+		"makePrincipal": true,
+		"grade": "CE1",
+		"tags": ["transversal", "operations"],
+		"forms": ["calcule", "calculez"],
+		"bo": "Calculer le produit d'un nombre compris entre 11 et 19 par un nombre inférieur à 10 (CE1)",
+		"why": "Renvoyait à « calcul ». David : « calculer » demande un résultat numérique, « exprimer » une expression littérale ; la nuance mérite une définition propre.",
+		"defs": [
+			[
+				"CE1",
+				"Trouver le résultat d'une ou de plusieurs opérations : calculer $7 + 5$, c'est trouver $12$."
+			],
+			[
+				"5",
+				"Calculer, c'est obtenir un résultat numérique. On calcule le périmètre d'un carré de $3$ cm de côté : $12$ cm ; on exprime le périmètre d'un carré de côté $c$ : $4c$."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "exprimer",
+		"grade": "CE1",
+		"tags": ["calcul-littéral", "grandeurs"],
+		"forms": ["exprime", "exprimez"],
+		"bo": "Choisir l'unité la mieux adaptée pour exprimer une longueur (CE1) ; « en fonction de » (5e)",
+		"why": "Demandé par David. Le BO l'emploie dès le CE1 pour une mesure dans une unité ; en 5e, pour une expression littérale « en fonction de ».",
+		"defs": [
+			[
+				"CE1",
+				"Exprimer une mesure dans une unité, c'est l'écrire avec cette unité : $1$ m s'exprime aussi $100$ cm."
+			],
+			[
+				"5",
+				"Exprimer une grandeur en fonction d'une autre, c'est l'écrire avec une expression littérale : le périmètre d'un rectangle de largeur $L$ et de longueur $2L$ s'exprime par $6L$. À la différence de « calculer », le résultat contient une lettre."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "déterminer",
+		"grade": "CP",
+		"tags": ["transversal"],
+		"forms": ["détermine", "déterminez"],
+		"bo": "Déterminer la moitié d'un nombre pair (CP)",
+		"why": "Demandé par David ; c'est l'un des verbes les plus employés par le BO (80 points) et par les énoncés.",
+		"defs": [
+			["CP", "Trouver ce qui est demandé : déterminer la moitié de $14$, c'est trouver $7$."],
+			[
+				"5",
+				"Trouver ce qui est demandé (un nombre, une expression, un point…) en montrant comment on l'a obtenu : déterminer l'image de $3$ par une fonction, déterminer les solutions d'une équation."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "justifier",
+		"grade": "5",
+		"tags": ["logique"],
+		"forms": ["justifie", "justifiez"],
+		"bo": "Connaitre et justifier les situations dans lesquelles des parenthèses sont indispensables (5e)",
+		"why": "Consigne de raisonnement, à distinguer de « vérifier » et de « démontrer ».",
+		"defs": [
+			[
+				"5",
+				"Donner les raisons qui montrent qu'une réponse est vraie : un calcul, une propriété, une mesure ou un contre-exemple."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "vérifier",
+		"grade": "CP",
+		"tags": ["transversal"],
+		"forms": ["vérifie", "vérifiez"],
+		"bo": "Utiliser la règle pour repérer ou vérifier des alignements (CP)",
+		"why": "Consigne fréquente, à distinguer de « justifier » et de « démontrer ».",
+		"defs": [
+			[
+				"CP",
+				"S'assurer qu'une réponse est juste : vérifier avec la règle que des points sont alignés, ou refaire un calcul autrement."
+			],
+			[
+				"5",
+				"Vérifier qu'un nombre est solution d'une équation, c'est le remplacer dans l'équation et constater que l'égalité est vraie."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "tracer",
+		"grade": "CE2",
+		"tags": ["géométrie"],
+		"forms": ["trace", "tracez"],
+		"bo": "Tracer un segment de longueur donnée (CE2)",
+		"why": "Consigne de géométrie, à distinguer de « construire ».",
+		"defs": [
+			[
+				"CE2",
+				"Dessiner une ligne ou une figure avec la règle, l'équerre ou le compas : tracer un segment de $5$ cm."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "estimer",
+		"grade": "CE1",
+		"tags": ["transversal", "grandeurs"],
+		"forms": ["estime", "estimez"],
+		"bo": "Estimer la longueur d'un objet du quotidien (CE1)",
+		"why": "Consigne du BO dès le CE1, à distinguer de « calculer » et de « mesurer ».",
+		"defs": [
+			[
+				"CE1",
+				"Donner une valeur approchée sans calcul exact ni mesure précise : estimer la longueur de la classe, ou que $298 + 403$ fait environ $700$."
+			]
+		]
+	},
+	{
+		"cat": "verbe",
+		"term": "comparer",
+		"grade": "CP",
+		"tags": ["entiers", "transversal"],
+		"forms": ["compare", "comparez"],
+		"bo": "Comparer et dénombrer des collections en les organisant (CP)",
+		"why": "Consigne du BO dès le CP (52 points).",
+		"defs": [
+			[
+				"CP",
+				"Dire lequel de deux nombres, de deux longueurs ou de deux collections est le plus grand, ou s'ils sont égaux ; on écrit $<$, $>$ ou $=$."
+			]
+		]
+	},
+	{
+		"cat": "formes",
+		"term": "résoudre",
+		"forms": ["résous", "résolvez"],
+		"bo": "100 points du BO, dès le CP ; 28 énoncés en prod",
+		"why": "Renvoi vers « solution »."
+	},
+	{
+		"cat": "formes",
+		"term": "réduire",
+		"forms": ["réduis", "réduisez"],
+		"bo": "21 énoncés en prod",
+		"why": "Entrée existante."
+	},
+	{
+		"cat": "formes",
+		"term": "convertir",
+		"forms": ["convertis", "convertissez"],
+		"bo": "17 énoncés en prod",
+		"why": "Renvoi vers « conversion »."
+	},
+	{
+		"cat": "formes",
+		"term": "décomposer",
+		"forms": ["décompose", "décomposez"],
+		"bo": "15 énoncés en prod",
+		"why": "Renvoi vers « décomposition »."
+	},
+	{
+		"cat": "formes",
+		"term": "développer",
+		"forms": ["développe", "développez"],
+		"bo": "11 énoncés en prod",
+		"why": "Entrée existante."
+	},
+	{
+		"cat": "formes",
+		"term": "simplifier",
+		"forms": ["simplifie", "simplifiez"],
+		"bo": "10 énoncés en prod",
+		"why": "Renvoi vers « simplification »."
+	},
+	{
+		"cat": "formes",
+		"term": "factoriser",
+		"forms": ["factorise", "factorisez"],
+		"bo": "9 énoncés en prod",
+		"why": "Entrée existante."
+	},
+	{
+		"cat": "formes",
+		"term": "arrondir",
+		"forms": ["arrondis", "arrondissez"],
+		"bo": "BO, dès le cycle 3",
+		"why": "Renvoi vers « arrondi »."
+	},
+	{
+		"cat": "formes",
+		"term": "démontrer",
+		"forms": ["démontre", "démontrez"],
+		"bo": "14 points du BO, dès la 5e",
+		"why": "Renvoi vers « démonstration »."
+	},
+	{
+		"cat": "formes",
+		"term": "encadrer",
+		"newDerived": {
+			"derivedFrom": "encadrement",
+			"grade": "CP",
+			"tags": ["entiers", "décimaux"]
+		},
+		"forms": ["encadre", "encadrez"],
+		"bo": "17 points du BO, dès le CP ; 3 énoncés en prod",
+		"why": "Nouveau renvoi vers « encadrement », dont la définition commence par « Encadrer un nombre, c'est… »."
+	},
+	{
+		"cat": "formes",
+		"term": "ordonner",
+		"forms": ["ordonne", "ordonnez", "range", "rangez"],
+		"synonyms": ["ranger"],
+		"bo": "Ordonner des nombres (CP) ; ranger dans l'ordre croissant (5e)",
+		"why": "Renvoi vers « ordre » ; « ranger » est ajouté comme synonyme."
+	},
+	{
+		"cat": "formes",
+		"term": "construire",
+		"forms": ["construis", "construisez"],
+		"bo": "42 points du BO, dès le CP",
+		"why": "Renvoi vers « construction »."
+	},
+	{
+		"cat": "formes",
+		"term": "représenter",
+		"forms": ["représente", "représentez"],
+		"bo": "30 points du BO, dès le CE1 ; 6 énoncés en prod",
+		"why": "Entrée existante (définition propre depuis le lot 0c)."
+	},
+	{
+		"cat": "exclu",
+		"term": "nombre",
+		"why": "68 énoncés et 151 corrections : le souligner partout serait du bruit."
+	},
+	{
+		"cat": "exclu",
+		"term": "chiffre",
+		"why": "70 corrections."
+	},
+	{
+		"cat": "exclu",
+		"term": "calcul",
+		"why": "Omniprésent dans les corrections ; « Calcule » reste reconnu par « calculer »."
+	},
+	{
+		"cat": "exclu",
+		"term": "résultat",
+		"why": "Omniprésent dans les corrections."
+	},
+	{
+		"cat": "exclu",
+		"term": "valeur",
+		"why": "Omniprésent dans les corrections."
+	},
+	{
+		"cat": "exclu",
+		"term": "opération",
+		"why": "Omniprésent dans les corrections."
+	},
+	{
+		"cat": "exclu",
+		"term": "plus",
+		"why": "Mot de liaison : « 3 de plus », « plus grand »."
+	},
+	{
+		"cat": "exclu",
+		"term": "moins",
+		"why": "Mot de liaison : « 3 de moins », « au moins »."
+	},
+	{
+		"cat": "exclu",
+		"term": "égal",
+		"why": "Mot de liaison : « est égal à »."
+	},
+	{
+		"cat": "exclu",
+		"term": "forme",
+		"why": "« Sous la forme… » : 49 énoncés."
+	},
+	{
+		"cat": "exclu",
+		"term": "problème",
+		"why": "Trop fréquent dans les consignes."
+	},
+	{
+		"cat": "exclu",
+		"term": "figure",
+		"why": "Trop fréquent en géométrie."
+	},
+	{
+		"cat": "exclu",
+		"term": "point",
+		"why": "Trop fréquent en géométrie (« le point A »)."
+	},
+	{
+		"cat": "exclu",
+		"term": "droite",
+		"why": "Ambigu avec « à droite »."
+	}
+]

@@ -1,6 +1,6 @@
 # Relecture des questions TinyMath — progression
 
-> Prompt de départ : `docs/wip/relecture-questions-tinymath-prompt.md`.
+> Prompt de départ : `docs/archive/wip/relecture-questions-tinymath-prompt.md`.
 
 ## Décisions de David
 
@@ -73,7 +73,7 @@ Après relecture (`code-reviewer`) :
 - Simulation par défaut : `import-questions-to-db`, `validate-phase1-questions` **et
   `rollback-migration`** (il supprimait par défaut ; même décision appliquée).
 - `pnpm question:specs` (vérifier / prévisualiser), `pnpm relecture:verdicts` (reporter les verdicts
-  d'un lot), `pnpm relecture:import` (importer en brouillon). Circuit : `docs/relecture/README.md`.
+  d'un lot), `pnpm relecture:import` (importer en brouillon). Circuit : `data/relecture/README.md`.
 - Importable ⇔ structure + schéma strict OK, ≥ 1 spec « correct » PAR variation, toutes les specs
   vertes, 50 tirages par variation sans échec, niveau ≥ 1.
 - Garde-fous (relecture `code-reviewer`) : verdict déjà rendu et différent → refus sans
@@ -119,7 +119,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot pilote Relatifs — TERMINÉ (2026-09-26)
 
-- 36/36 importées en brouillon après feu vert de David (rapport : `docs/relecture/relatifs/RAPPORT.md`).
+- 36/36 importées en brouillon après feu vert de David (rapport : `data/relecture/relatifs/RAPPORT.md`).
 - Arbitrages : #330 → `additionOnly` ; #335 → termes signés. Les 8 défauts de conversion du lot corrigés
   (#464 parenthèses après « : », #465 validateur, #466 transformateur).
 - Génération du corpus : 198 → 507/633 sur la journée (#457-#466).
@@ -127,7 +127,7 @@ Après relecture (`code-reviewer`) :
 
 ## Phase 2 — les 41 de David : TERMINÉE (2026-09-26)
 
-- 41/41 importées en brouillon (`docs/relecture/david/RAPPORT.md`) : 33 telles quelles (+ specs, niveau +1),
+- 41/41 importées en brouillon (`data/relecture/david/RAPPORT.md`) : 33 telles quelles (+ specs, niveau +1),
   7 corrigées selon ses décisions (#1, #3, #6, #9, #10, #11, #12), #20 corrigée (19 réponses fausses héritées
   de TinyMath, CP → CE1).
 - Ses specs ont révélé 2 défauts de code corrigés (#467) : « \* » ≠ « × » au contrôle de forme (bonne réponse
@@ -136,7 +136,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Fractions — TERMINÉ (2026-09-26)
 
-- 57/58 importées en brouillon (feu vert d'import donné d'avance ; rapport `docs/relecture/fractions/RAPPORT.md`).
+- 57/58 importées en brouillon (feu vert d'import donné d'avance ; rapport `data/relecture/fractions/RAPPORT.md`).
 - **#360 non importée** : même empreinte que #356 alors que les questions sont distinctes → pas de ligne de
   suivi possible (clé UNIQUE). Décision de David attendue (même cas : #439).
 - #468 : `pgcd`, `10^$e[a;b]`, variables mixtes, accolade LaTeX devant un marqueur (analyseur en prod,
@@ -170,7 +170,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Entiers — TERMINÉ (2026-09-27)
 
-- 187/187 importées en brouillon (`docs/relecture/entiers/RAPPORT.md`) : 115 approuvées, 72 corrigées.
+- 187/187 importées en brouillon (`data/relecture/entiers/RAPPORT.md`) : 115 approuvées, 72 corrigées.
 - Décisions de David : copies Additionner/Multiplier gardées (corrections additives / multiplicatives,
   #476 ; même décision pour #629/#630) ; quotient en `:`, `÷` ou fraction (#477) ; #24 à 6 chiffres ;
   #48 CE2, #49-#50 CM1 ; #183-#188 facteur 2..9 ; #139/#77 « sauf 10 ».
@@ -180,7 +180,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Décimaux — TERMINÉ (2026-09-27)
 
-- 83/83 importées en brouillon (`docs/relecture/decimaux/RAPPORT.md`) : 23 approuvées, 60 corrigées.
+- 83/83 importées en brouillon (`data/relecture/decimaux/RAPPORT.md`) : 23 approuvées, 60 corrigées.
 - #478 : statut des réponses à plusieurs cases ; conditions converties `mod(a, 3)`.
 - 4 points « à regarder » pour David (espace dans la partie décimale, 0 en tête, fractions non
   simplifiées, niveau de #248).
@@ -188,7 +188,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Calcul littéral — TERMINÉ (2026-09-27)
 
-- 68/68 relues (`docs/relecture/calcul-litteral/RAPPORT.md`) : 9 approuvées, 59 corrigées.
+- 68/68 relues (`data/relecture/calcul-litteral/RAPPORT.md`) : 9 approuvées, 59 corrigées.
   68/68 importées en brouillon (#553 après le merge de #482).
 - Moteur : #480 (calcul littéral réduit par `tidy`), #481 (lettre tirée homonyme d'une variable :
   substitution simultanée), #482 (`requiredForm.acceptable` → perfectible).
@@ -198,7 +198,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Grandeurs — 41/45 IMPORTÉES (2026-09-27)
 
-- 41 relues et importées en brouillon (`docs/relecture/grandeurs/RAPPORT.md`) : 1 approuvée,
+- 41 relues et importées en brouillon (`data/relecture/grandeurs/RAPPORT.md`) : 1 approuvée,
   40 corrigées ; 4 choix des relecteurs validés par David.
 - Moteur : chantier `docs/wip/grandeurs-eval-progress.md` (#483 tidy unité écrite, #484 `{{eval}}`
   avec grandeurs, #485 convertisseur, #486 affichage).
@@ -208,7 +208,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Fonctions — 37/39 IMPORTÉES (2026-09-27)
 
-- `docs/relecture/fonctions/RAPPORT.md` : 4 approuvées, 33 corrigées, #617 rejetée (cours à réponse
+- `data/relecture/fonctions/RAPPORT.md` : 4 approuvées, 33 corrigées, #617 rejetée (cours à réponse
   rédigée), #609 en attente (forme canonique : le moteur de motifs impose l'ordre d'une somme de deux
   termes et ne voit pas le coefficient implicite ±1 — PR proposée).
 - Convertisseur : #487 (`&1x`, variable de fonction `x`).
@@ -218,7 +218,7 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Proportionnalité — 27/28 IMPORTÉES (2026-09-28)
 
-- `docs/relecture/proportionnalite/RAPPORT.md` : 2 approuvées, 25 corrigées, #510 rejetée (source
+- `data/relecture/proportionnalite/RAPPORT.md` : 2 approuvées, 25 corrigées, #510 rejetée (source
   incohérente) ; décisions de David toutes validées (#491 : 1/2 perfectible pour 50 %).
 - Moteur : #491 pourcentages dans mathAST ; Fonctions : #488 `acceptDecimal`, #489/#490 motif de
   forme canonique (#609 importée, 38/39 Fonctions en base).
@@ -226,12 +226,12 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Puissances — 21/21 IMPORTÉES (2026-09-28)
 
-- `docs/relecture/puissances/RAPPORT.md` : 3 approuvées, 18 corrigées ; choix des relecteurs validés.
+- `data/relecture/puissances/RAPPORT.md` : 3 approuvées, 18 corrigées ; choix des relecteurs validés.
 - Base : 602 templates, tous brouillons.
 
 ## Lot Suites — 15/15 IMPORTÉES (2026-09-28)
 
-- `docs/relecture/suites/RAPPORT.md` : 2 approuvées, 13 corrigées, 0 à arbitrer ; 3 choix à valider
+- `data/relecture/suites/RAPPORT.md` : 2 approuvées, 13 corrigées, 0 à arbitrer ; 3 choix à valider
   (#621 formes, #625 niveau, #629/#630) validés par David. Base : 621 templates, tous brouillons.
 - Défauts du moteur vérifiés : `{{eval:a*(b)^x}}` perd les parenthèses d'une base négative (faux sans
   erreur) ; `brackets` juge inutiles les parenthèses de `\left(\frac{1}{5}\right)^n`. Correction
@@ -242,12 +242,12 @@ Après relecture (`code-reviewer`) :
 
 ## Lot Racines — 10/10 IMPORTÉES (2026-09-28)
 
-- `docs/relecture/racines/RAPPORT.md` : 10 corrigées ; décisions de David : thème « Racines carrées »,
+- `data/relecture/racines/RAPPORT.md` : 10 corrigées ; décisions de David : thème « Racines carrées »,
   #471 gardée en 5e, #478 b sans facteur carré. Base : 631 templates, tous brouillons.
 
 ## Lot Probabilités — 2/2 IMPORTÉES (2026-09-28)
 
-- `docs/relecture/probabilites/RAPPORT.md` : 2 corrigées ; décisions de David : 6e gardée, #481 sous
+- `data/relecture/probabilites/RAPPORT.md` : 2 corrigées ; décisions de David : 6e gardée, #481 sous
   « Probabilité simple », majuscules initiales. Base : 633 templates, tous brouillons.
 
 ## Prochaine étape

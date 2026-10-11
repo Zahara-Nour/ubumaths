@@ -6,7 +6,7 @@
 	 * UI élève Phase 3.2 — Détail d'un objectif (tableau 4 colonnes desktop /
 	 * 4 lignes mobile, style PDF référentiel 2016 de David).
 	 *
-	 * Spec : docs/wip/skills-referentiel-design.md §8
+	 * Spec : docs/archive/wip/skills-referentiel-design.md §8
 	 */
 
 	import * as Card from '$lib/components/ui/card';

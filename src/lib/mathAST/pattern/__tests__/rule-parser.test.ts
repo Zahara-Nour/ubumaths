@@ -310,7 +310,12 @@ describe('parseRule', () => {
 			const rule = parseRule('a * (b + c) -> a * b + a * c');
 
 			expect(rule.pattern.type).toBe('multiplication-pattern');
-			expect(rule.replacement.type).toBe('addition-pattern');
+			const replacement = rule.replacement;
+			// Une règle parsée remplace par un motif, jamais par une fonction
+			if (typeof replacement === 'function') {
+				throw new Error('attendu un motif de remplacement, pas une fonction');
+			}
+			expect(replacement.type).toBe('addition-pattern');
 		});
 
 		it('parses rule with nested powers', () => {
@@ -414,7 +419,7 @@ describe('parseRule', () => {
 
 		it('parsed rule applies correctly (multiplicative identity)', () => {
 			const rule = parseRule('x * 1 -> x');
-			const expr = multiply(varNode('b'), num(1));
+			const expr = multiply(varNode('b'), num(1), 'cross');
 
 			const result = applyRule(rule, expr);
 
@@ -427,14 +432,14 @@ describe('parseRule', () => {
 			const rule = parseRule('x / x -> 1 ; x:nonzero');
 
 			// Should apply when x is nonzero
-			const expr1 = divide(num(5), num(5));
+			const expr1 = divide(num(5), num(5), 'fraction');
 			const result1 = applyRule(rule, expr1);
 			expect(result1).not.toBeNull();
 			expect(result1?.type).toBe('number');
 			expect((result1 as { value: string }).value).toBe('1');
 
 			// Should not apply when x is zero
-			const expr2 = divide(num(0), num(0));
+			const expr2 = divide(num(0), num(0), 'fraction');
 			const result2 = applyRule(rule, expr2);
 			expect(result2).toBeNull();
 		});

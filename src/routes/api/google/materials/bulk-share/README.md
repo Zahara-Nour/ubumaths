@@ -107,4 +107,4 @@ const result = await response.json();
 
 Uses the `shared_materials` table with unique constraint on `(material_id, class_id)`.
 
-See [docs/architecture/database-schema.md](../../../../../docs/architecture/database-schema.md#shared_materials) for details.
+See [docs/systeme/base-de-donnees.md](../../../../../docs/systeme/base-de-donnees.md#shared_materials) for details.

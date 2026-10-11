@@ -21,6 +21,8 @@
  * @module mathAST/parser/custom/tokenizer
  */
 
+import { GREEK_LETTERS } from '../../types';
+
 // =============================================================================
 // Token Types
 // =============================================================================
@@ -121,32 +123,7 @@ export interface CustomToken {
 /**
  * Valid symbol names that can appear after backslash
  */
-export const VALID_SYMBOLS: ReadonlySet<string> = new Set([
-	'alpha',
-	'beta',
-	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega',
-	'infty'
-]);
+export const VALID_SYMBOLS: ReadonlySet<string> = new Set([...GREEK_LETTERS, 'pi', 'infty']);
 
 /**
  * Function names that are recognized as FUNC tokens.
@@ -164,6 +141,8 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'log',
 	'exp',
 	'sqrt',
+	// Racine cubique : cbrt(x) = sqrt[3](x)
+	'cbrt',
 	// Inverse trigonometric functions
 	'arcsin',
 	'arccos',
@@ -233,6 +212,7 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'sech', // 4 chars — avant 'sec'
 	'csch', // 4 chars — avant 'csc'
 	'sqrt', // 4 chars
+	'cbrt', // 4 chars — racine cubique, lue sqrt[3]
 	'mean', // 4 chars
 	'ceil', // 4 chars
 	'sin', // 3 chars
@@ -252,6 +232,112 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'mod', // 3 chars
 	'ln' // 2 chars
 ];
+
+// =============================================================================
+// Noms de fonction : alias et noms inconnus
+// =============================================================================
+
+/**
+ * Les alias usuels d'une fonction, lus sous le nom du MOTEUR.
+ *
+ * ⚠️ Sans eux, `acos(3x)` se lisait a·cos(3x) et `tg(3x)` t·g(3x), sans
+ * aucune erreur. Un alias n'est reconnu que s'il forme TOUTE la suite de
+ * lettres et qu'il est collé à `(` : `chx` ou `th` seuls restent des produits.
+ */
+export const FUNCTION_ALIASES: Readonly<Record<string, string>> = {
+	acos: 'arccos',
+	asin: 'arcsin',
+	atan: 'arctan',
+	Arccos: 'arccos',
+	Arcsin: 'arcsin',
+	Arctan: 'arctan',
+	sh: 'sinh',
+	ch: 'cosh',
+	th: 'tanh',
+	tg: 'tan'
+};
+
+/** Ce qu'est une suite de lettres collée à `(` : un alias ou un nom inconnu. */
+export type FunctionCallReading =
+	| { readonly kind: 'alias'; readonly name: string; readonly canonical: string }
+	| { readonly kind: 'unknown'; readonly name: string };
+
+function isAsciiLetter(char: string | undefined): boolean {
+	return char !== undefined && /^[A-Za-z]$/.test(char);
+}
+
+/**
+ * Lire la suite de lettres qui COMMENCE en `start`, si elle est collée à `(`.
+ *
+ * Règle (aucun nom de fonction lu en silence comme autre chose) :
+ * - toute la suite est un alias (`acos`, `sh`, `tg`…) → `alias` ;
+ * - elle commence par une fonction connue (`sin(`, `sqrt(`) → `null`, lecture habituelle ;
+ * - deux lettres (`ab(x+1)`, `ax(x-2)`) → `null` : un produit, l'écriture courante ;
+ * - UNE lettre puis une fonction connue (`xsin(x)`, `3bcos(x)`) → `null` : un produit ;
+ * - sinon (`racine(`, `acoss(`, `arcos(`, `abc(`) → `unknown` : refusé, le
+ *   message propose `a*b*c*(…)` pour un produit voulu.
+ *
+ * `null` aussi au milieu d'une suite (lettre avant) ou derrière `\` (commande).
+ */
+export function readFunctionCall(input: string, start: number): FunctionCallReading | null {
+	if (!isAsciiLetter(input[start])) return null;
+	const before = input[start - 1];
+	if (isAsciiLetter(before) || before === '\\') return null;
+	let end = start;
+	while (isAsciiLetter(input[end])) end++;
+	if (input[end] !== '(') return null;
+	const name = input.slice(start, end);
+
+	const canonical = FUNCTION_ALIASES[name];
+	if (canonical !== undefined) return { kind: 'alias', name, canonical };
+	if (FUNCTION_NAMES_BY_LENGTH.some((f) => name.startsWith(f))) return null;
+	if (name.length <= 2) return null;
+	if (FUNCTION_NAMES_BY_LENGTH.includes(name.slice(1))) return null;
+	return { kind: 'unknown', name };
+}
+
+/** La première suite de lettres collée à `(` qui n'est ni une fonction ni un produit lisible. */
+export function findUnknownFunctionCall(input: string): string | null {
+	for (let i = 0; i < input.length; i++) {
+		const reading = readFunctionCall(input, i);
+		if (reading?.kind === 'unknown') return reading.name;
+	}
+	return null;
+}
+
+/** Les noms de fonction de la notation maison, alias compris. */
+export const KNOWN_FUNCTION_NAMES: readonly string[] = [
+	...FUNCTION_NAMES_BY_LENGTH,
+	...Object.keys(FUNCTION_ALIASES)
+];
+
+/** Les fonctions citées par le message d'un nom inconnu. */
+const SHOWN_FUNCTIONS = [
+	'sqrt',
+	'cbrt',
+	'exp',
+	'ln',
+	'log',
+	'sin',
+	'cos',
+	'tan',
+	'arcsin',
+	'arccos',
+	'arctan',
+	'sinh',
+	'cosh',
+	'tanh',
+	'abs',
+	'floor',
+	'ceil',
+	'round',
+	'sign'
+];
+
+/** Le message d'un nom de fonction inconnu, en français. */
+export function unknownFunctionMessage(name: string): string {
+	return `Fonction inconnue : ${name}. Fonctions disponibles : ${SHOWN_FUNCTIONS.join(', ')}. Pour un produit, écris ${name.split('').join('*')}*(…).`;
+}
 
 // =============================================================================
 // Tokenizer Class
@@ -298,6 +384,11 @@ export class CustomTokenizer {
 	private openers: Array<'call' | 'group'> = [];
 	/** Type du dernier jeton produit (une parenthèse qui suit un FUNC ouvre un appel) */
 	private lastTokenType: CustomTokenType | null = null;
+	/**
+	 * Jetons déjà lus, à rendre avant tout nouveau scan : les parenthèses
+	 * implicites de `√x` (voir `scanBareRootArgument`).
+	 */
+	private pendingTokens: CustomToken[] = [];
 
 	constructor(input: string) {
 		// Keep original input (don't strip whitespace)
@@ -362,6 +453,7 @@ export class CustomTokenizer {
 		this.matrixDepth = 0;
 		this.openers = [];
 		this.lastTokenType = null;
+		this.pendingTokens = [];
 	}
 
 	/**
@@ -386,7 +478,7 @@ export class CustomTokenizer {
 	 * Scans the next token and keeps track of the opened parentheses / braces.
 	 */
 	private scanToken(): CustomToken {
-		const token = this.scanRawToken();
+		const token = this.pendingTokens.shift() ?? this.scanRawToken();
 		if (token.type === 'LPAREN') {
 			this.openers.push(this.lastTokenType === 'FUNC' ? 'call' : 'group');
 		} else if (token.type === 'LBRACE') {
@@ -445,6 +537,18 @@ export class CustomTokenizer {
 		if (char === '<' && this.peekChar(1) === '-') {
 			return this.scanMultiChar('ARROW', '<-', 2);
 		}
+
+		// ≤ ≥ ≠ tapés tels quels (clavier, copier-coller) : les mêmes relations que
+		// <= >= != — `sqrt(x)≤3` répondait « Unexpected token » (2026-10-08)
+		// √ tapé tel quel : la fonction sqrt — `√(x+1)` est `sqrt(x+1)`
+		if (char === '√') {
+			const func = this.scanMultiChar('FUNC', 'sqrt', 1);
+			this.scanBareRootArgument();
+			return func;
+		}
+		if (char === '≤') return this.scanMultiChar('LESS_EQUAL', '<=', 1);
+		if (char === '≥') return this.scanMultiChar('GREATER_EQUAL', '>=', 1);
+		if (char === '≠') return this.scanMultiChar('NOT_EQUAL', '!=', 1);
 
 		// <=
 		if (char === '<' && this.peekChar(1) === '=') {
@@ -664,6 +768,19 @@ export class CustomTokenizer {
 			}
 		}
 
+		// Alias (`acos(` → arccos) ou nom inconnu (`racine(`) : un FUNC, que le
+		// parseur refuse s'il n'est pas connu — jamais une suite de lettres muette
+		const call = readFunctionCall(this.input, startPos);
+		if (call !== null) {
+			this.position = startPos + call.name.length;
+			return {
+				type: 'FUNC',
+				value: call.kind === 'alias' ? call.canonical : call.name,
+				position: startPos,
+				length: call.name.length
+			};
+		}
+
 		// Check if any function name is a prefix of (or equals) this identifier
 		// We check longest functions first to ensure greedy matching
 		for (const funcName of FUNCTION_NAMES_BY_LENGTH) {
@@ -687,6 +804,84 @@ export class CustomTokenizer {
 			position: startPos,
 			length: 1
 		};
+	}
+
+	/**
+	 * `√` tapé SANS parenthèses : la racine porte sur l'ATOME qui suit, un
+	 * nombre ou une lettre, comme sur une calculatrice — `√x` = sqrt(x),
+	 * `√2x` = sqrt(2)·x, `√x+1` = sqrt(x)+1 (décision de David, 2026-10-08 ;
+	 * l'élève recevait « Function sqrt requires parentheses »). L'atome est
+	 * mis en file entre deux parenthèses implicites (longueur 0).
+	 *
+	 * Tout autre suite (`√(`, `√-x`, un nom de fonction `√ln(x)`) ne change
+	 * pas : le parseur exige ses parenthèses, comme avant.
+	 */
+	private scanBareRootArgument(): void {
+		if (this.position >= this.length) return;
+		const next = this.input[this.position];
+		let atom: CustomToken | null = null;
+		if (this.isDigit(next)) {
+			atom = this.scanNumber();
+		} else if (this.isLetter(next)) {
+			const start = this.position;
+			const scanned = this.scanIdentifier();
+			if (scanned.type === 'LETTER') atom = scanned;
+			else this.position = start;
+		}
+		if (atom === null) return;
+		// L'indice fait partie de l'atome : `√u_n` = sqrt(u_n), `√x_1`,
+		// `√u_{n+1}` (suites : u_{n+1} = √u_n + 2) — sans lui, `√u_n` donnait
+		// sqrt(u)·n et « Plusieurs lettres (n, u) » (revue, 2026-10-08)
+		const atomTokens: CustomToken[] = [atom];
+		if (atom.type === 'LETTER') atomTokens.push(...this.scanBareRootSubscript());
+		const lastToken = atomTokens[atomTokens.length - 1];
+		const end = lastToken.position + lastToken.length;
+		this.pendingTokens.push(
+			{ type: 'LPAREN', value: '(', position: atom.position, length: 0 },
+			...atomTokens,
+			{ type: 'RPAREN', value: ')', position: end, length: 0 }
+		);
+	}
+
+	/**
+	 * L'indice d'une lettre sous `√` : `_n`, `_1`, `_{n+1}` (accolades
+	 * équilibrées) — ou rien. Sans indice lisible, la position est rendue.
+	 */
+	private scanBareRootSubscript(): CustomToken[] {
+		if (this.input[this.position] !== '_') return [];
+		const start = this.position;
+		const tokens: CustomToken[] = [this.scanMultiChar('UNDERSCORE', '_', 1)];
+		const next = this.input[this.position];
+		if (next === undefined) {
+			this.position = start;
+			return [];
+		}
+		if (this.isDigit(next)) {
+			tokens.push(this.scanNumber());
+			return tokens;
+		}
+		if (this.isLetter(next)) {
+			const letter = this.scanIdentifier();
+			if (letter.type === 'LETTER') return [...tokens, letter];
+			this.position = start;
+			return [];
+		}
+		if (next === '{') {
+			let depth = 0;
+			do {
+				const token = this.scanRawToken();
+				if (token.type === 'EOF') {
+					this.position = start;
+					return [];
+				}
+				if (token.type === 'LBRACE') depth++;
+				else if (token.type === 'RBRACE') depth--;
+				tokens.push(token);
+			} while (depth > 0);
+			return tokens;
+		}
+		this.position = start;
+		return [];
 	}
 
 	/**

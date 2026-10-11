@@ -6,7 +6,7 @@
  *   - getClassTopObservablesToConsolidate → Widget G (top observables % minus)
  *
  * Performance : approche batchée (1-3 queries par fonction).
- * Cf. `docs/ref/teacher-analytics.md` §4.
+ * Cf. `docs/systeme/analytique-prof.md` §4.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

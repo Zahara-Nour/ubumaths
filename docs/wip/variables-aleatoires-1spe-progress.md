@@ -46,7 +46,7 @@ fixe, index piloté par le signe de E(G) ; cas équitable 29 à 34 % des tirages
 18/18, 450 tirages chacun recalculés en Python (0 écart), PDF 4/4. Correction du QCM : le raccourci
 « sommes reçues − mise » (juste mais non expliqué) a été retiré.
 
-## Défauts moteur relevés (non corrigés, contournés ; cf. `docs/ref/fiches-exercices.md`)
+## Défauts moteur relevés (non corrigés, contournés ; cf. `docs/pratiques/fiches-exercices.md`)
 
 `%` et `or` refusés dans une condition ; `{{eval:E;();d}}` fait échouer la génération ; variable
 calculée sans `eval` substituée sans parenthèses ; `{{eval:sqrt(21/25)}}` rendu `\dfrac{1}{5}\sqrt{21}` ;

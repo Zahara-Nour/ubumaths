@@ -1,28 +1,34 @@
 ---
-title: Courrier des lecteurs — « Je suis un nombre premier, seuls 1 et moi-même me divisons, et 1 ne m'appelle jamais »
+title: Courrier des lecteurs — « Mes 97 Palotins refusent de rentrer dans le rang »
 date: 2026-12-03
 author: cotice
-lede: Le nombre 97, habitant d'Empoche-les-Bains, confie au Shtam sa profonde solitude. La Rédaction a tenté de le réconforter. Avec un succès mitigé.
+lede: Un capitaine de Palotins n'arrive pas à ranger ses hommes pour le grand défilé de Sandomir. La Rédaction lui a trouvé une solution. Elle ne plaira pas à tout le monde.
 ---
 
 « Chère Rédaction,
 
-Je m'appelle 97. J'habite Empoche-les-Bains depuis toujours, entre 96 et 98, deux voisins très entourés. 96 se divise par 2, par 3, par 4, par 6, par 8, par 12, par 16, par 24, par 32, par 48. Il reçoit du monde tous les soirs. Moi, seuls 1 et moi-même me divisons. Et 1, je dois le dire, ne m'appelle jamais. Il est très pris : il divise tout le monde.
+Je commande un bataillon de 97 Palotins, à la caserne d'Empoche-les-Bains. Chaque année, pour le grand défilé de Sandomir, il faut ranger le bataillon en rangs égaux. Et chaque année, c'est le même cauchemar.
 
-Quand je sors, on me regarde de travers. Les enfants me cherchent dans les tables de multiplication et ne me trouvent pas. On dit de moi que je suis "indivisible", comme si c'était un compliment. Je voudrais simplement qu'on me partage, de temps en temps.
+En 2 rangs, il en reste un. En 3 rangs, il en reste un. En 4 rangs, encore un. En 5 rangs, il en reste deux. J'ai tout essayé : il y en a toujours qui dépassent.
 
-Que dois-je faire ? »
+Il ne me reste que deux solutions. Soit je fais défiler mes hommes en une seule file de 97, qui n'en finit pas de passer devant la tribune. Soit je les aligne sur un seul rang de 97 de large, qui ne passe pas entre les maisons.
+
+Mon voisin de caserne commande 96 Palotins. Lui les range comme il veut, en 2, 3, 4, 6, 8 ou 12 rangs. Il a même été décoré pour l'élégance de son défilé.
+
+Que dois-je faire ?
+
+Un capitaine désespéré »
 
 **La réponse de la Rédaction**
 
-Cher 97, nous avons transmis votre lettre à 1, qui nous a répondu qu'il passerait « dès qu'il aurait fini de diviser tous les autres nombres ». Nous ne pouvons pas vous garantir de délai.
+Cher capitaine, la solution est simple : renvoyez un Palotin chez lui. À 96, vous défilerez aussi bien que votre voisin.
 
-Sachez toutefois que vous n'êtes pas seul. Vous êtes même une infinité. Et 2, le seul nombre premier pair, nous écrit chaque semaine pour se plaindre d'être « le seul de son espèce ». Vous pourriez lui répondre.
+Ne vous désolez pas trop, vous n'êtes pas le seul dans ce cas. Les capitaines de 89, de 101 ou de 103 Palotins nous écrivent pour la même raison, et il en existe une infinité. Seul le capitaine de 2 Palotins ne se plaint jamais : il n'a jamais compris où était le problème.
 
 ## Le vrai du faux
 
-Un **nombre premier** est un entier qui a **exactement deux diviseurs** : 1 et lui-même. Les premiers sont 2, 3, 5, 7, 11, 13, … et 97 en fait bien partie.
+Ranger 97 Palotins en rangs égaux, c'est chercher les **diviseurs** de 97. Or 97 est un **nombre premier** : il a **exactement deux diviseurs**, 1 et lui-même. On ne peut donc faire qu'un seul rang de 97, ou 97 rangs d'un seul Palotin.
 
+- 96, lui, a beaucoup de diviseurs : 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48 et 96. Autant de façons de faire défiler le bataillon.
 - **1 n'est pas premier** : il n'a qu'un seul diviseur. Et 2 est le seul nombre premier pair.
 - Il existe une **infinité** de nombres premiers. Euclide l'a démontré il y a plus de 2 300 ans : si on en avait une liste finie, on multiplierait tous ces nombres et on ajouterait 1 ; le résultat ne serait divisible par aucun d'entre eux, ce qui oblige à trouver un premier qui manquait à la liste.
-- Tout entier supérieur à 1 se décompose en **produit de nombres premiers**, d'une seule façon : $96 = 2^5 \times 3$.

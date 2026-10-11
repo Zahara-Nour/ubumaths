@@ -19,6 +19,14 @@ import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 // Types
 // =============================================================================
 
+/**
+ * La rubrique de `.aide` où l'élève trouve la commande.
+ *
+ * Absente = commande de développeur : listée par `.aide dev` seulement
+ * (décision de David, 2026-10-09).
+ */
+export type HelpSection = 'calculer' | 'analyser' | 'statistiques' | 'probabilites' | 'reglages';
+
 /** Une commande telle que l'atelier la présente. */
 export interface AtelierCommand {
 	/** Le nom que comprend le moteur (`diff`). */
@@ -48,6 +56,8 @@ export interface AtelierCommand {
 	 * graphique sans citer de liste.
 	 */
 	readonly exampleSetup?: Readonly<Record<string, string>>;
+	/** La rubrique de `.aide` ; absente = commande de développeur. */
+	readonly section?: HelpSection;
 }
 
 // =============================================================================
@@ -62,6 +72,7 @@ interface Translation {
 	readonly advanced?: boolean;
 	readonly unavailable?: string;
 	readonly exampleSetup?: Readonly<Record<string, string>>;
+	readonly section?: HelpSection;
 }
 
 /**
@@ -76,6 +87,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'simplify',
 		{
 			french: 'simplifier',
+			section: 'calculer',
 			description: 'Simplifier une expression',
 			example: '.simplifier (x^2-1)/(x+1)'
 		}
@@ -84,15 +96,25 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'factor',
 		{
 			french: 'factoriser',
+			section: 'calculer',
 			description: 'Factoriser une expression',
 			example: '.factoriser x^2-4'
 		}
 	],
-	['diff', { french: 'dériver', description: 'Dériver une expression', example: '.dériver x^2' }],
+	[
+		'diff',
+		{
+			french: 'dériver',
+			section: 'analyser',
+			description: 'Dériver une expression (pour t : une autre variable)',
+			example: '.dériver x^2'
+		}
+	],
 	[
 		'simulate',
 		{
 			french: 'simuler',
+			section: 'probabilites',
 			description: 'Simuler n tirages d’une loi : valeurs, probabilités, n',
 			example: '.simuler L M 100',
 			// L'exemple cite deux listes : il se joue dans cet atelier (Q79)
@@ -103,6 +125,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'binomial',
 		{
 			french: 'binomiale',
+			section: 'probabilites',
 			description: 'Loi binomiale B(n ; p) : tableau, E, V, σ, probabilités, intervalle, seuil',
 			example: '.binomiale X 10 0,3',
 			// Aucune liste à citer : un décor VIDE, déclaré pour que le tableau
@@ -114,6 +137,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'geometric',
 		{
 			french: 'géométrique',
+			section: 'probabilites',
 			description: 'Loi géométrique G(p) : tableau, E, V, σ, diagramme, probabilités',
 			example: '.geometrique X 0,2 P(X ⩽ 3)',
 			// Aucune liste à citer : un décor VIDE (Q79, Q80), comme `.binomiale`
@@ -124,6 +148,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'uniform',
 		{
 			french: 'uniforme',
+			section: 'probabilites',
 			description: 'Loi uniforme sur {a, …, b} ou à densité sur [a ; b] : E, V, σ, diagramme',
 			example: '.uniforme X 1 6',
 			// Aucune liste à citer : un décor VIDE (Q79, Q80), comme `.binomiale`
@@ -134,6 +159,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'exponential',
 		{
 			french: 'exponentielle',
+			section: 'probabilites',
 			description: 'Loi exponentielle E(λ) : courbe, E, V, σ, F(x), probabilités',
 			example: '.exponentielle T 0,5 P(T ⩽ 2)',
 			// Aucune liste à citer : un décor VIDE (Q79, Q80), comme `.binomiale`
@@ -141,9 +167,21 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		// Loi normale (2026-10-09) : le nom `normal` est pris par la forme normale du moteur
+		'gaussian',
+		{
+			french: 'normale',
+			description: 'Loi normale N(μ ; σ²), avec μ et σ : courbe, E, V, σ, probabilités',
+			example: '.normale Y 0 1 P(-1,96 ⩽ Y ⩽ 1,96)',
+			exampleSetup: {},
+			section: 'probabilites'
+		}
+	],
+	[
 		'compare',
 		{
 			french: 'comparer',
+			section: 'statistiques',
 			description: 'Comparer deux séries de nombres : un tableau d’indicateurs',
 			example: '.comparer L M',
 			exampleSetup: { L: '12 ; 15 ; 9 ; 14', M: '8 ; 17 ; 11 ; 13 ; 16' }
@@ -153,6 +191,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'cross',
 		{
 			french: 'croiser',
+			section: 'statistiques',
 			description: 'Tableau croisé de deux listes de mots, une entrée par individu',
 			example: '.croiser L M',
 			exampleSetup: { L: 'fille ; garçon ; fille', M: 'oui ; oui ; non' }
@@ -162,6 +201,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'filter',
 		{
 			french: 'filtrer',
+			section: 'statistiques',
 			description: 'Compter (ou garder) les individus qui vérifient un critère : et, ou, non',
 			example: '.filtrer L = fille et M = oui',
 			exampleSetup: { L: 'fille ; garçon ; fille', M: 'oui ; oui ; non' }
@@ -171,6 +211,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'frequency',
 		{
 			french: 'fréquence',
+			section: 'probabilites',
 			description: 'Moyenne des tirages selon leur nombre : la loi des grands nombres',
 			example: '.fréquence L M 1000',
 			exampleSetup: { L: '1 ; 0', M: '1/2 ; 1/2' }
@@ -180,6 +221,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'samples',
 		{
 			french: 'échantillons',
+			section: 'probabilites',
 			description: 'N échantillons de taille n, et l’écart de leur moyenne à μ',
 			example: '.échantillons L M 50 100',
 			exampleSetup: { L: '1 ; 2 ; 3 ; 4 ; 5 ; 6', M: '1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6' }
@@ -187,38 +229,56 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 	],
 	[
 		'solve',
-		{ french: 'résoudre', description: 'Résoudre une équation', example: '.résoudre x^2-3x+1=0' }
+		{
+			french: 'résoudre',
+			section: 'analyser',
+			description: 'Résoudre une équation',
+			example: '.résoudre x^2-3x+1=0'
+		}
 	],
 	[
 		'variations',
 		{
 			french: 'variations',
+			section: 'analyser',
 			description: 'Étudier le sens de variation',
 			example: '.variations x^2-3x+1'
 		}
 	],
 	[
 		'domain',
-		{ french: 'domaine', description: 'Trouver le domaine de définition', example: '.domaine 1/x' }
+		{
+			french: 'domaine',
+			section: 'analyser',
+			description: 'Trouver le domaine de définition',
+			example: '.domaine 1/x'
+		}
 	],
 	[
 		'integrate',
-		{ french: 'intégrer', description: 'Calculer une intégrale', example: '.intégrer x^2' }
+		{
+			french: 'intégrer',
+			section: 'analyser',
+			description: 'Calculer une intégrale (bornes : de … à …)',
+			example: '.intégrer x^2 de 0 à 1'
+		}
 	],
 	[
 		'eval',
 		{
 			french: 'évaluer',
-			description: 'Évaluer une expression en remplaçant les lettres',
-			example: '.évaluer x^2 x=3'
+			section: 'calculer',
+			description: 'Évaluer une expression en remplaçant une lettre (en x=…)',
+			example: '.évaluer x^2 en x=3'
 		}
 	],
 	[
 		'equiv',
 		{
 			french: 'équivalent',
+			section: 'calculer',
 			description: 'Vérifier si deux écritures sont égales',
-			example: '.équivalent (x+1)^2 x^2+2x+1'
+			example: '.équivalent (x+1)^2 et x^2+2x+1'
 		}
 	],
 	// Réparée le 2026-09-16 : le dispatch parsait TOUT l'argument comme une
@@ -230,8 +290,9 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'taylor',
 		{
 			french: 'taylor',
-			description: 'Développement limité au voisinage d’un point',
-			example: '.taylor sin(x) 5 0'
+			section: 'analyser',
+			description: 'Développement limité : ordre n, en un point (0 par défaut)',
+			example: '.taylor sin(x) ordre 5 en 0'
 		}
 	],
 	[
@@ -303,6 +364,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'mode',
 		{
 			french: 'mode',
+			section: 'reglages',
 			description: 'Choisir entre valeurs exactes et décimales',
 			example: '.mode exact'
 		}
@@ -353,7 +415,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'binomial',
 	'geometric',
 	'uniform',
-	'exponential'
+	'exponential',
+	'gaussian'
 ]);
 
 /**
@@ -365,12 +428,18 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 	[
 		'convert',
-		{ french: 'convertir', description: 'Convertir dans une autre unité', example: '.convertir km' }
+		{
+			french: 'convertir',
+			section: 'reglages',
+			description: 'Convertir le dernier résultat dans une autre unité',
+			example: '.convertir km'
+		}
 	],
 	[
 		'stats',
 		{
 			french: 'stats',
+			section: 'statistiques',
 			description: 'Statistiques d’une série de nombres',
 			// ⚠️ Un séparateur est obligatoire : mesuré le 2026-09-16,
 			// « .stats 12 15 9 » réussit en ne lisant que « 12 » et annonce un
@@ -384,10 +453,11 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 		'linreg',
 		{
 			french: 'ajustement',
+			section: 'statistiques',
 			// PR c (Q173-Q177) : mêmes calculs et mêmes textes que le bloc ```nuage
 			description:
-				'Ajustement affine de deux séries : droite, point moyen G, r ; après « ; », prévisions (x = 10, y = 7) ou changement de variable (z = ln(y), t = x²…)',
-			example: '.ajustement 1,2,3,4,5,6 : 12,15,19,22,27,30 ; x = 8'
+				'Ajustement affine de deux séries : droite, point moyen G, r ; prévisions après « en » (x = 10, y = 7), changement de variable après « ; » (z = ln(y), t = x²…)',
+			example: '.ajustement 1 ; 2 ; 3 ; 4 ; 5 ; 6 : 12 ; 15 ; 19 ; 22 ; 27 ; 30 en x = 8'
 		}
 	],
 	['exact', { french: 'exact', description: 'Passer aux valeurs exactes' }],
@@ -453,7 +523,8 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 			...(t.example && { example: t.example }),
 			...(t.advanced && { advanced: true }),
 			...(t.unavailable && { unavailable: t.unavailable }),
-			...(t.exampleSetup && { exampleSetup: t.exampleSetup })
+			...(t.exampleSetup && { exampleSetup: t.exampleSetup }),
+			...(t.section && { section: t.section })
 		});
 	};
 

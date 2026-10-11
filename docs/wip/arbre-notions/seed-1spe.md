@@ -1,0 +1,479 @@
+# Seed 1re spécialité — points du programme ET références d'automatismes (architecture points → nœuds)
+
+> 2026-10-10 : nœuds mis à jour pour l'arbre .16 (nettoyage des facettes, #1002).
+
+> **Statut : VALIDÉ INTÉGRALEMENT par David le 2026-10-08 (« je valide tout » : scissions,
+> discutables 1-5, S1, V2, E1 = (a), V1 = références). Livraison en cours.** ⚠️ Niveau à soin
+> maximal (classes réelles de lycée). Source : « Programme d'enseignement de spécialité
+> de mathématiques de la classe de première de la voie générale » (11 p., refourni par
+> David le 2026-10-07), relu **puce par puce** — c'est le texte qui fait foi, pas
+> l'ancien seed. Ancien découpage (`docs/systeme/programmes/1re-spe-programme.md`,
+> `1SPE-001`…`1SPE-173`, en prod) : repris pour les libellés et la **traçabilité
+> « ex- »**, car il porte **342 liens de modèles de questions sur 109 points**
+> (transfert C5). Mapping des nœuds : [programmes-ecarts-1re-spe.md](programmes-ecarts-1re-spe.md)
+> (U1-U5 tranchées le 2026-10-07). Arbre `2026-10-07.15`, **aucun changement d'arbre**.
+> Règles déjà tranchées appliquées sans être redemandées : critère de scission du lycée,
+> puces trop larges non retenues (ex-2-099/100), bloc Algorithmique en `algorithme` (L1),
+> Approfondissements en savoir-faire `approfondissement` (L3), duplication de la liste
+> d'automatismes de 2de (C16).
+
+## Attributs communs
+
+| Attribut               | Valeur                                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `grade`                | `1_SPE`                                                                                                                      |
+| `code`                 | **`1SPE-201` à `1SPE-365`** (code = 200 + display_order). L'ancien seed occupe `1SPE-001`…`1SPE-173` jusqu'à l'étape 4 de C5 |
+| `objective_id`, `rang` | `NULL`                                                                                                                       |
+| `rubrique`             | « thème > section » du BO (C11) ; le Vocabulaire ensembliste et logique n'a pas de section → le thème seul                   |
+| `kind`                 | conn. (Contenus) / s-f (Capacités) / dém. (Démonstrations) / algo. (bloc Algorithmique + Exemples d'algorithme)              |
+| `exigence`             | `attendu` ; **⁺** = Approfondissement possible → `approfondissement` ; Exemples d'algorithme → **question E1**               |
+| `regime_acquisition`   | `diversite` partout                                                                                                          |
+
+**165 points** et des **références d'automatismes** (lignes propres de la 1re + reprise
+de la liste de 2de, C16). Colonne « ex- » : ancien code `1SPE-xxx` (✂ = issu d'une
+scission, `+` = deux anciens points fusionnés, — = sans ancien équivalent).
+
+---
+
+## ⚠️ Les puces multi-parties : scindées ou non, une par une
+
+> Critère (2de, validé) : on scinde quand les parties visent **des notions ou
+> sous-notions différentes** OU sont **traitées à des moments différents de l'année** ;
+> on ne scinde pas les variantes d'un même geste.
+
+### Scindées (11 puces → 24 points)
+
+| Puce du BO                                                                                                                                 | Décision                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| « Générer une liste (en extension, par ajouts successifs ou en compréhension) »                                                            | **×2** : extension/ajouts (`Listes > créer une liste`) ≠ compréhension (`> liste en compréhension`) — même raison que les boucles bornée/non bornée de 2de.                                          |
+| « Pour une suite arithmétique ou géométrique, calculer le terme général, la somme de termes consécutifs, déterminer le sens de variation » | **×6** (l'ancien seed en faisait 3) : trois gestes × **deux notions** (`Suites arithmétiques` / `Suites géométriques`), traitées dans deux chapitres distincts.                                      |
+| [D] « Calcul du terme général d'une suite arithmétique, d'une suite géométrique »                                                          | **×2** : deux démonstrations, deux notions (comme « variations carré, inverse » en 2de).                                                                                                             |
+| [Algo] « Calcul de termes d'une suite, de sommes de termes, de seuil »                                                                     | **×2** : termes et sommes (`Suites et modélisation > algorithmes`) ≠ seuil (`> seuil`, famille à part, liée aux limites).                                                                            |
+| « Fonction polynôme du second degré donnée sous forme factorisée. Racines, signe, expression de la somme et du produit des racines »       | **×2** : forme factorisée, racines, signe (notion `Second degré`) / somme et produit des racines (`> somme et produit des racines`) — rétablit l'ancien découpage 051/057.                           |
+| « Forme canonique… Discriminant. Factorisation éventuelle. Résolution d'une équation du second degré. Signe. »                             | **×3** : **deux notions** — forme canonique (`Fonctions › Second degré > formes`), discriminant et résolution (`Algèbre › Équations : second degré > discriminant`), signe (`Second degré > signe`). |
+| « Exploiter les variations d'une fonction pour établir une inégalité. Étudier la position relative de deux courbes représentatives. »      | **×2** : deux sous-notions (`Dérivation > variations` / `> position relative de deux courbes`), deux gestes réussissables séparément.                                                                |
+| « Espérance, variance, écart type d'une variable aléatoire »                                                                               | **×2** : `Variables aléatoires > espérance` / `> variance et écart-type` (sous-notions distinctes ; U4 y range déjà linéarité et König-Huygens).                                                     |
+| « Calculer une espérance, une variance, un écart type »                                                                                    | **×2** : même critère.                                                                                                                                                                               |
+
+### Examinées et NON scindées (variantes d'un même geste, ou un seul nœud)
+
+| Puce du BO                                                                                                                             | Pourquoi UN point                                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| « Modéliser un phénomène discret à croissance linéaire par une suite arithmétique, à croissance exponentielle par une géométrique »    | Le geste est le CHOIX du modèle → `Suites et modélisation` (notion), qui couvre les deux.                                                                                                                                                                                                            |
+| « Factoriser… en diversifiant les stratégies : racine évidente, somme et produit, identité remarquable, formules générales »           | Un geste (factoriser), stratégies = gradation `level` (comme les formes d'équations de 2de).                                                                                                                                                                                                         |
+| « Fonction dérivée des fonctions carré, cube, inverse, racine carrée » ; [D] « dérivée de la fonction carrée, de la fonction inverse » | Une seule sous-notion (`fonctions dérivées`) : la table des dérivées de référence s'apprend d'un bloc.                                                                                                                                                                                               |
+| « Étudier les variations d'une fonction. Déterminer les extrémums. »                                                                   | Un geste (étude de fonction) → `Dérivation > étude de fonction`.                                                                                                                                                                                                                                     |
+| « Étudier, en lien avec la dérivation, une fonction du second degré : variations, extrémum, allure »                                   | Une étude → `Second degré > variations`.                                                                                                                                                                                                                                                             |
+| « Signe, sens de variation et courbe représentative de la fonction exponentielle. Lien avec les suites géométriques. »                 | Non scindée **au-delà de l'ancien découpage** (099 / 100, déjà deux points) : signe-variations-courbe d'un bloc sur la notion.                                                                                                                                                                       |
+| « Cosinus et sinus d'un nombre réel. Lien avec le triangle rectangle. Valeurs remarquables. »                                          | Le contenu est cos/sin d'un réel ; le « lien » est un rappel, pas un second contenu.                                                                                                                                                                                                                 |
+| « Succession de deux épreuves indépendantes. Représentation par un arbre ou un tableau » (+ la capacité associée)                      | ⚠️ Diffère de 2de (où « arbre ou tableau » a été scindé) : en 2de les sous-notions ÉTAIENT les registres (`arbres pondérés` / `tableaux croisés`) ; ici le contenu est la succession d'épreuves (`épreuves indépendantes successives`), le registre est secondaire — scinder disperserait le filtre. |
+| [Algo] « Monte-Carlo : aire sous la parabole, nombre π »                                                                               | Une méthode, deux exemples.                                                                                                                                                                                                                                                                          |
+
+## ⚠️ Puces trop larges (règle 2de : « résous comme tu veux » = évaluation par compétence)
+
+| Puce                                                                                                                                                                                                                | Décision                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| « Utiliser le produit scalaire pour résoudre un problème géométrique » (ex-1SPE-129, 2 liens)                                                                                                                       | ⛔ **non retenue** — jumelle d'ex-2-099 (« la représentation la plus adaptée des vecteurs »). Liens → 1SPE-321. |
+| « Utiliser un repère pour étudier une configuration » (ex-1SPE-142, 3 liens)                                                                                                                                        | ⛔ **non retenue** — jumelle d'ex-2-100 (« méthodes diverses »). Liens → 1SPE-330.                              |
+| « …utiliser les registres langue naturelle / algébrique / graphique et passer de l'un à l'autre » (suites)                                                                                                          | ✅ gardée : un geste précis sur un objet précis (changer de registre pour une suite), cochable.                 |
+| « Passer du registre de la langue naturelle au registre symbolique et inversement » (variables aléatoires)                                                                                                          | ✅ gardée — même choix qu'en 2de (2-395, probabilités conditionnelles).                                         |
+| « Choisir une forme adaptée… » · « calculer le produit scalaire en choisissant une méthode adaptée » · « Résoudre un problème d'optimisation » · « Utiliser la notion d'espérance dans une résolution de problème » | ✅ gardées : le problème est circonscrit à UN outil et UN geste (mêmes choix qu'en 2de : 2-275, 2-353).         |
+
+## Points trop vagues : spécifier ou retirer — V2 TRANCHÉE (David, 2026-10-08)
+
+> Règle de David : « des points trop vagues mériteraient d'être spécifiés pour être
+> questionnables, à moins que ce soit un point relevant de l'évaluation par
+> compétence ». Contrainte : **ne rien ajouter au BO**. Les titres d'approfondissements
+> et d'exemples d'algorithme (« Loi des sinus », « Calcul de seuil »…) ne sont pas vagues
+> — on sait de quoi il s'agit, le kind et la rubrique précisent le reste : libellés du BO
+> conservés.
+
+| Puce (ancien code)                                                                                                                         | Décision                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ex-033 « Proposer, modéliser une situation permettant de générer une suite de nombres » (0 lien)                                           | ⛔ **retirée** — compétence « modéliser » ; sa part questionnable est portée par les points « relation pour un motif, un dénombrement » et « croissance linéaire / exponentielle ».                                                                                        |
+| ex-012a « Utiliser les quantificateurs (∀, ∃ non exigibles) »                                                                              | ⛔ **pas un point de 1re** — précisé, il redevient le point de 2de 2-215 (« lire et écrire des propositions contenant une quantification ») → référence d'entretien (V1). Seule nouveauté de 1re : repérer les quantifications implicites (ex-012, 1 lien, y est reporté). |
+| ex-161 + ex-162 « Interpréter en situation et utiliser les notations… / Passer du registre de la langue naturelle au registre symbolique » | 🔗 **refusionnées** — c'est UNE puce du BO, que l'ancien seed avait coupée ; le libellé du BO nomme les notations, il est précis. ex-162 : 0 lien.                                                                                                                         |
+| ex-032 « …utiliser le registre de la langue naturelle, algébrique, graphique, et passer de l'un à l'autre » (7 liens, tous graphiques)     | ✏️ « Passer d'un registre à l'autre pour une suite : de l'énoncé en langage naturel à l'expression algébrique, de l'expression algébrique à la représentation graphique (nuage de points) et inversement » → `représentation graphique`                                    |
+| ex-163 « Modéliser une situation à l'aide d'une variable aléatoire » (2 liens)                                                             | ✏️ « Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles »                                                                                                                                                                             |
+| ex-172 « Étudier sur des exemples la distance entre la moyenne d'un échantillon simulé… et l'espérance »                                   | ✏️ « Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire »                                                                                                       |
+
+⚠️ La 2de (en prod) n'a pas eu cette passe : à faire en une PR dédiée après la 1re.
+
+## Anciens points absents du texte littéral du BO — S1 TRANCHÉE (David, 2026-10-08)
+
+L'ancien seed contient des libellés ajoutés à la relecture du 2026-08-30, absents du
+texte **littéral** du BO. David : « ils existent sûrement car des modèles de questions
+les questionnent » — vérifié en prod, ce sont de vrais gestes avec leurs familles de
+modèles, et ils sont **dans le BO, noyés dans d'autres puces**. Décision : les garder
+comme points (explicitation d'une puce du BO, même principe que les scissions), avec
+leur ancien code → transfert des liens **un pour un**.
+
+| Ancien point                                                          | Liens | Devient                                                                                                     | Contenu du BO qui le porte                                                    |
+| --------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1SPE-050 « Forme développée… Coefficients »                           | 4     | ✅ **1SPE-243** (`Second degré > formes`)                                                                   | « Choisir une forme adaptée (**développée réduite**, canonique, factorisée) » |
+| 1SPE-054 « Sommet d'une parabole. Axe de symétrie »                   | 5     | ✅ **1SPE-247** (`Second degré > parabole`)                                                                 | « …variations, **extrémum**, **allure** » ; forme canonique                   |
+| 1SPE-056 « Résolution d'une inéquation du second degré »              | 3     | ✅ **1SPE-250** (`Inéquations : second degré > inéquations du second degré`)                                | « Choisir une forme adaptée… (équation, **inéquation**…) » ; « Signe »        |
+| 1SPE-062 « Résoudre ces problèmes à l'aide du discriminant… »         | 1     | ⛔ non repris — son seul modèle (« Résoudre une inéquation du second degré ») est déjà lié à 056 → 1SPE-250 | —                                                                             |
+| 1SPE-017 « Génération des listes… en lien avec la notion d'ensemble » | 0     | ⛔ non repris — phrase de présentation, redondante avec 1SPE-206/208                                        | —                                                                             |
+
+------------------------------------------------------------------------------------------------------ | ----- | --------------------------------------------------------------------------------- |
+| 1SPE-050 « Forme développée… Coefficients » | 4 | 1SPE-254 (choisir une forme adaptée) |
+| 1SPE-054 « Calcul des coordonnées du sommet d'une parabole. Axe de symétrie » | 5 | 1SPE-287 (second degré en lien avec la dérivation : variations, extrémum, allure) |
+| 1SPE-056 « Résolution d'une inéquation du second degré » | 3 | 1SPE-249 (signe d'une fonction polynôme du second degré) |
+| 1SPE-062 « Résoudre ces problèmes à l'aide du discriminant… » | 1 | 1SPE-248 (discriminant, résolution) |
+| 1SPE-017 « Génération des listes en extension et en compréhension, en lien avec la notion d'ensemble » | 0 | — (phrase de présentation, redondante avec 1SPE-206/208) |
+
+---
+
+## Transfert C5 : liens des anciens points de vocabulaire repris de la 2de
+
+Conséquence mécanique de U5 + V1 (constatée par le contrôle de traçabilité du
+générateur) : 11 anciens points de 1re (vocabulaire repris mot pour mot de la 2de) ne
+deviennent pas des points de 1re ; leur contenu vit dans les points de 2de, visés par les
+références d'entretien. Leurs **22 liens** de modèles sont à reporter, au transfert C5,
+sur ces points de 2de :
+
+| Ancien point                                 | Liens | Report vers   |
+| -------------------------------------------- | ----- | ------------- |
+| 1SPE-001 (notions d'ensembles)               | 4     | 2-201 · 2-202 |
+| 1SPE-002 (symboles, complémentaire)          | 1     | 2-203 · 2-206 |
+| 1SPE-003 (ensembles de nombres, intervalles) | 4     | 2-204         |
+| 1SPE-004 (couple, produit cartésien)         | 2     | 2-205         |
+| 1SPE-005 (Card)                              | 1     | 2-207         |
+| 1SPE-006 (connecteurs)                       | 3     | 2-210         |
+| 1SPE-007 (contre-exemple)                    | 3     | 2-212         |
+| 1SPE-008 (implication, équivalence)          | 1     | 2-213         |
+| 1SPE-009 (réciproque, contraposée)           | 1     | 2-214         |
+| 1SPE-014 (disjonction des cas)               | 1     | 2-216         |
+| 1SPE-015 (absurde)                           | 1     | 2-217         |
+
+## Les 165 points
+
+### Vocabulaire ensembliste et logique (rubrique = le thème)
+
+> La 1re **reprend mot pour mot** une grande partie du vocabulaire de 2de. Décision U5
+> (2026-10-07) : « points de 1re seulement là où la 1re dépasse la 2de, le reste est
+> entretien » → 5 points ici ; l'entretien → **question V1**.
+
+| Code     | ex- | Énoncé                                                                                                                     | kind | nœud                                                                              |
+| -------- | --- | -------------------------------------------------------------------------------------------------------------------------- | ---- | --------------------------------------------------------------------------------- |
+| 1SPE-201 | 010 | Employer les expressions « condition nécessaire », « condition suffisante »                                                | s-f  | `Logique` Implication et équivalence > condition nécessaire, condition suffisante |
+| 1SPE-202 | 011 | Identifier le statut des égalités (identité, équation) et celui des lettres utilisées (variable, inconnue, paramètre)      | s-f  | `Logique` Proposition mathématique > statut des lettres et des égalités           |
+| 1SPE-203 | 012 | Repérer les quantifications implicites dans certaines propositions, particulièrement dans les propositions conditionnelles | s-f  | `Logique` Quantificateurs et négation > pour tout, il existe                      |
+| 1SPE-204 | 013 | Formuler la négation de propositions quantifiées                                                                           | s-f  | `Logique` Quantificateurs et négation > négation d'une proposition                |
+| 1SPE-205 | 016 | Produire un raisonnement par contraposée                                                                                   | s-f  | `Logique` Raisonnements > par contraposée                                         |
+
+### Algorithmique et programmation > Notion de liste (kind `algorithme`, L1)
+
+| Code     | ex-    | Énoncé                                                                         | kind  | nœud                                            |
+| -------- | ------ | ------------------------------------------------------------------------------ | ----- | ----------------------------------------------- |
+| 1SPE-206 | ✂018a | Générer une liste en extension ou par ajouts successifs                        | algo. | `Algorithmique` Listes > créer une liste        |
+| 1SPE-207 | ✂018b | Générer une liste en compréhension                                             | algo. | `Algorithmique` Listes > liste en compréhension |
+| 1SPE-208 | 019    | Manipuler des éléments d'une liste (ajouter, supprimer, etc.) et leurs indices | algo. | `Algorithmique` Listes > éléments et indices    |
+| 1SPE-209 | 020    | Parcourir une liste                                                            | algo. | `Algorithmique` Listes > parcourir une liste    |
+| 1SPE-210 | 021    | Itérer sur les éléments d'une liste                                            | algo. | `Algorithmique` Listes > parcourir une liste    |
+
+### Algèbre > Suites numériques, modèles discrets (branche `Suites`)
+
+| Code     | ex-    | Énoncé                                                                                                                                                                                              | kind  | nœud                                                                       |
+| -------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------- |
+| 1SPE-211 | 022    | Exemples de modes de génération d'une suite : explicite $u_n = f(n)$, par une relation de récurrence $u_{n+1} = f(u_n)$, par un algorithme, par des motifs géométriques                             | conn. | Généralités sur les suites (notion)                                        |
+| 1SPE-212 | 023    | Notations : $u(n)$, $u_n$, $(u(n))$, $(u_n)$                                                                                                                                                        | conn. | Généralités sur les suites (notion)                                        |
+| 1SPE-213 | 024    | Suites arithmétiques : exemples, définition, calcul du terme général                                                                                                                                | conn. | Suites arithmétiques (notion)                                              |
+| 1SPE-214 | 025    | Suites arithmétiques : lien avec l'étude d'évolutions successives à accroissements constants ; lien avec les fonctions affines                                                                      | conn. | Suites arithmétiques (notion)                                              |
+| 1SPE-215 | 026    | Suites arithmétiques : calcul de $1 + 2 + \cdots + n$                                                                                                                                               | conn. | Suites arithmétiques > somme des termes                                    |
+| 1SPE-216 | 027    | Suites géométriques : exemples, définition, calcul du terme général                                                                                                                                 | conn. | Suites géométriques (notion)                                               |
+| 1SPE-217 | 028    | Suites géométriques : lien avec l'étude d'évolutions successives à taux constant ; lien avec la fonction exponentielle                                                                              | conn. | Suites géométriques (notion)                                               |
+| 1SPE-218 | 029    | Suites géométriques : calcul de $1 + q + \cdots + q^n$                                                                                                                                              | conn. | Suites géométriques > somme des termes                                     |
+| 1SPE-219 | 030    | Sens de variation d'une suite                                                                                                                                                                       | conn. | Généralités sur les suites > sens de variation                             |
+| 1SPE-220 | 031    | Sur des exemples, introduction intuitive de la notion de limite, finie ou infinie, ou de l'absence de limite d'une suite                                                                            | conn. | Limites de suites > définition                                             |
+| 1SPE-221 | 032    | Passer d'un registre à l'autre pour une suite : de l'énoncé en langage naturel à l'expression algébrique, de l'expression algébrique à la représentation graphique (nuage de points) et inversement | s-f   | Généralités sur les suites > représentation graphique                      |
+| 1SPE-222 | 034    | Déterminer une relation explicite ou une relation de récurrence pour une suite définie par un motif géométrique, par une question de dénombrement                                                   | s-f   | Généralités sur les suites > explicite ou par récurrence                   |
+| 1SPE-223 | 035    | Calculer des termes d'une suite définie explicitement, par récurrence ou par un algorithme                                                                                                          | s-f   | Généralités sur les suites > explicite ou par récurrence                   |
+| 1SPE-224 | ✂036a | Pour une suite arithmétique, calculer le terme général                                                                                                                                              | s-f   | Suites arithmétiques > terme général                                       |
+| 1SPE-225 | ✂036b | Pour une suite géométrique, calculer le terme général                                                                                                                                               | s-f   | Suites géométriques > terme général                                        |
+| 1SPE-226 | ✂037a | Pour une suite arithmétique, calculer la somme de termes consécutifs                                                                                                                                | s-f   | Suites arithmétiques > somme des termes                                    |
+| 1SPE-227 | ✂037b | Pour une suite géométrique, calculer la somme de termes consécutifs                                                                                                                                 | s-f   | Suites géométriques > somme des termes                                     |
+| 1SPE-228 | ✂038a | Pour une suite arithmétique, déterminer le sens de variation                                                                                                                                        | s-f   | Suites arithmétiques (notion)                                              |
+| 1SPE-229 | ✂038b | Pour une suite géométrique, déterminer le sens de variation                                                                                                                                         | s-f   | Suites géométriques (notion)                                               |
+| 1SPE-230 | 039    | Modéliser un phénomène discret à croissance linéaire par une suite arithmétique, un phénomène discret à croissance exponentielle par une suite géométrique                                          | s-f   | Modèles d'évolution (notion)                                               |
+| 1SPE-231 | 040    | Conjecturer, dans des cas simples, la limite éventuelle d'une suite                                                                                                                                 | s-f   | Limites de suites > définition                                             |
+| 1SPE-232 | ✂041a | Calcul du terme général d'une suite arithmétique                                                                                                                                                    | dém.  | Suites arithmétiques > terme général                                       |
+| 1SPE-233 | ✂041b | Calcul du terme général d'une suite géométrique                                                                                                                                                     | dém.  | Suites géométriques > terme général                                        |
+| 1SPE-234 | 042    | Calcul de $1 + 2 + \cdots + n$                                                                                                                                                                      | dém.  | Suites arithmétiques > somme des termes                                    |
+| 1SPE-235 | 043    | Calcul de $1 + q + \cdots + q^n$                                                                                                                                                                    | dém.  | Suites géométriques > somme des termes                                     |
+| 1SPE-236 | ✂044a | Calcul de termes d'une suite, de sommes de termes                                                                                                                                                   | algo. | Généralités sur les suites (notion)                                        |
+| 1SPE-237 | ✂044b | Calcul de seuil                                                                                                                                                                                     | algo. | Modèles d'évolution > seuil                                                |
+| 1SPE-238 | 045    | Calcul de factorielle                                                                                                                                                                               | algo. | `Dénombrement` Arrangements et permutations > factorielle _(discutable 1)_ |
+| 1SPE-239 | 046    | Liste des premiers termes d'une suite : suites de Syracuse, suite de Fibonacci                                                                                                                      | algo. | Généralités sur les suites (notion)                                        |
+| 1SPE-240 | 047    | Tour de Hanoï                                                                                                                                                                                       | s-f ⁺ | Généralités sur les suites > explicite ou par récurrence                   |
+| 1SPE-241 | 048    | Somme des $n$ premiers carrés, des $n$ premiers cubes                                                                                                                                               | s-f ⁺ | Généralités sur les suites (notion)                                        |
+| 1SPE-242 | 049    | Remboursement d'un emprunt par annuités constantes                                                                                                                                                  | s-f ⁺ | Modèles d'évolution (notion)                                               |
+
+### Algèbre > Équations, fonctions polynômes du second degré (branches `Fonctions` / `Algèbre`)
+
+| Code     | ex-       | Énoncé                                                                                                                                                                                                             | kind  | nœud                                                                  |
+| -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | --------------------------------------------------------------------- |
+| 1SPE-243 | 050       | Forme développée d'une fonction polynôme du second degré ; coefficients                                                                                                                                            | conn. | `Fonctions` Second degré > formes                                     |
+| 1SPE-244 | ✂051     | Fonction polynôme du second degré donnée sous forme factorisée ; racines, signe                                                                                                                                    | conn. | `Fonctions` Second degré (notion)                                     |
+| 1SPE-245 | ✂057     | Expression de la somme et du produit des racines                                                                                                                                                                   | conn. | `Fonctions` Second degré > somme et produit des racines               |
+| 1SPE-246 | ✂052     | Forme canonique d'une fonction polynôme du second degré                                                                                                                                                            | conn. | `Fonctions` Second degré > formes                                     |
+| 1SPE-247 | 054       | Calcul des coordonnées du sommet d'une parabole ; axe de symétrie                                                                                                                                                  | conn. | `Fonctions` Second degré > parabole                                   |
+| 1SPE-248 | ✂053+055 | Discriminant ; factorisation éventuelle ; résolution d'une équation du second degré                                                                                                                                | conn. | `Algèbre` Équations : second degré > discriminant                     |
+| 1SPE-249 | ✂—       | Signe d'une fonction polynôme du second degré                                                                                                                                                                      | conn. | `Fonctions` Second degré > signe                                      |
+| 1SPE-250 | 056       | Résolution d'une inéquation du second degré                                                                                                                                                                        | conn. | `Algèbre` Inéquations : second degré (notion)                         |
+| 1SPE-251 | 058       | Étudier le signe d'une fonction polynôme du second degré donnée sous forme factorisée                                                                                                                              | s-f   | `Fonctions` Second degré > signe                                      |
+| 1SPE-252 | 059       | Déterminer les fonctions polynômes du second degré s'annulant en deux nombres réels distincts                                                                                                                      | s-f   | `Fonctions` Second degré > racines                                    |
+| 1SPE-253 | 060       | Factoriser une fonction polynôme du second degré, en diversifiant les stratégies : racine évidente, détection des racines par leur somme et leur produit, identité remarquable, application des formules générales | s-f   | `Fonctions` Second degré (notion)                                     |
+| 1SPE-254 | 061       | Choisir une forme adaptée (développée réduite, canonique, factorisée) d'une fonction polynôme du second degré dans le cadre de la résolution d'un problème (équation, inéquation, optimisation, variations)        | s-f   | `Fonctions` Second degré > formes                                     |
+| 1SPE-255 | 063       | Résolution de l'équation du second degré                                                                                                                                                                           | dém.  | `Algèbre` Équations : second degré > discriminant                     |
+| 1SPE-256 | 064       | Factorisation d'un polynôme du troisième degré admettant une racine et résolution de l'équation associée                                                                                                           | s-f ⁺ | `Nombres complexes` Équations polynomiales > degré 3 et factorisation |
+| 1SPE-257 | 065       | Factorisation de $x^n - 1$ par $x - 1$, de $x^n - a^n$ par $x - a$                                                                                                                                                 | s-f ⁺ | `Algèbre` Calcul littéral > factorisation                             |
+| 1SPE-258 | 066       | Déterminer deux nombres réels connaissant leur somme $s$ et leur produit $p$ comme racines de la fonction polynôme $x \mapsto x^2 - sx + p$                                                                        | s-f ⁺ | `Fonctions` Second degré > somme et produit des racines               |
+
+### Analyse > Dérivation (branche `Fonctions`)
+
+| Code     | ex- | Énoncé                                                                                                                                     | kind  | nœud                                     |
+| -------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----- | ---------------------------------------- |
+| 1SPE-259 | 067 | Taux de variation ; sécantes à la courbe représentative d'une fonction en un point donné                                                   | conn. | Dérivation > taux de variation           |
+| 1SPE-260 | 068 | Nombre dérivé d'une fonction en un point, comme limite du taux de variation ; notation $f'(a)$                                             | conn. | Dérivation > nombre dérivé               |
+| 1SPE-261 | 069 | Tangente à la courbe représentative d'une fonction en un point, comme « limite des sécantes » ; pente ; équation $y = f(a) + f'(a)(x - a)$ | conn. | Dérivation > tangente                    |
+| 1SPE-262 | 070 | Approximation linéaire : fonction affine tangente $x \mapsto f(a) + f'(a)(x - a)$ et approximation de $f(a + h)$ par $f(a) + f'(a)h$       | conn. | Dérivation > approximation affine        |
+| 1SPE-263 | 071 | Fonction dérivable sur un intervalle ; fonction dérivée                                                                                    | conn. | Dérivation > fonctions dérivées          |
+| 1SPE-264 | 072 | Fonction dérivée des fonctions carré, cube, inverse, racine carrée                                                                         | conn. | Dérivation > fonctions dérivées          |
+| 1SPE-265 | 073 | Opérations sur les fonctions dérivables : somme, produit, inverse, quotient                                                                | conn. | Dérivation > opérations sur les dérivées |
+| 1SPE-266 | 074 | Pour $n$ dans $\mathbb{Z}$, fonction dérivée de la fonction $x \mapsto x^n$                                                                | conn. | Dérivation > fonctions dérivées          |
+| 1SPE-267 | 075 | Fonction valeur absolue : étude de la dérivabilité en 0                                                                                    | conn. | Dérivation > dérivabilité en un point    |
+| 1SPE-268 | 076 | Calculer un taux de variation, la pente d'une sécante                                                                                      | s-f   | Dérivation > taux de variation           |
+| 1SPE-269 | 077 | Interpréter le nombre dérivé en contexte : pente d'une tangente, vitesse instantanée, cout marginal, etc.                                  | s-f   | Dérivation > nombre dérivé               |
+| 1SPE-270 | 078 | Déterminer graphiquement un nombre dérivé par la pente de la tangente                                                                      | s-f   | Dérivation > nombre dérivé               |
+| 1SPE-271 | 079 | Construire la tangente en un point à une courbe représentative connaissant le nombre dérivé                                                | s-f   | Dérivation > tangente                    |
+| 1SPE-272 | 080 | Déterminer l'équation de la tangente en un point à la courbe représentative d'une fonction                                                 | s-f   | Dérivation > tangente                    |
+| 1SPE-273 | 081 | Calculer une valeur approchée de $f(a + h)$                                                                                                | s-f   | Dérivation > approximation affine        |
+| 1SPE-274 | 082 | Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables                | s-f   | Dérivation > opérations sur les dérivées |
+| 1SPE-275 | 083 | Équation de la tangente en un point à une courbe représentative                                                                            | dém.  | Dérivation > tangente                    |
+| 1SPE-276 | 084 | La fonction racine carrée n'est pas dérivable en 0                                                                                         | dém.  | Dérivation > dérivabilité en un point    |
+| 1SPE-277 | 085 | Fonction dérivée de la fonction carrée, de la fonction inverse                                                                             | dém.  | Dérivation > fonctions dérivées          |
+| 1SPE-278 | 086 | Fonction dérivée d'un produit                                                                                                              | dém.  | Dérivation > opérations sur les dérivées |
+| 1SPE-279 | 087 | Écrire la liste des coefficients directeurs des sécantes pour un pas donné                                                                 | algo. | Dérivation > taux de variation           |
+
+### Analyse > Variations et courbes représentatives des fonctions (branche `Fonctions`)
+
+| Code     | ex-    | Énoncé                                                                                                                                                   | kind  | nœud                                                  |
+| -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------- |
+| 1SPE-280 | 088    | Représentation algébrique et graphique de fonctions paires, impaires ; traduction géométrique                                                            | conn. | Généralités sur les fonctions > parité                |
+| 1SPE-281 | 089    | Lien entre le sens de variation d'une fonction dérivable sur un intervalle et le signe de sa fonction dérivée ; caractérisation des fonctions constantes | conn. | Dérivation > variations et extremums                  |
+| 1SPE-282 | 090    | Nombre dérivé en un extrémum, tangente à la courbe représentative                                                                                        | conn. | Dérivation > variations et extremums                  |
+| 1SPE-283 | 091    | Étudier les variations d'une fonction ; déterminer les extrémums                                                                                         | s-f   | Dérivation > variations et extremums                  |
+| 1SPE-284 | 092    | Résoudre un problème d'optimisation                                                                                                                      | s-f   | Dérivation > variations et extremums                  |
+| 1SPE-285 | ✂093a | Exploiter les variations d'une fonction pour établir une inégalité                                                                                       | s-f   | Dérivation > variations et extremums _(discutable 2)_ |
+| 1SPE-286 | ✂093b | Étudier la position relative de deux courbes représentatives                                                                                             | s-f   | Dérivation > position relative de deux courbes        |
+| 1SPE-287 | 094    | Étudier, en lien avec la dérivation, une fonction polynôme du second degré : variations, extrémum, allure selon le signe du coefficient de $x^2$         | s-f   | Second degré (notion)                                 |
+| 1SPE-288 | 095    | Méthode de Newton, en se limitant à des cas favorables                                                                                                   | algo. | Dérivation > tangente _(discutable 3)_                |
+
+### Analyse > Fonction exponentielle (branche `Fonctions`)
+
+| Code     | ex- | Énoncé                                                                                                                                                                        | kind  | nœud                                                               |
+| -------- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------ |
+| 1SPE-289 | 096 | Définition de la fonction exponentielle comme unique fonction dérivable sur $\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$ (existence et unicité admises) ; notation $\exp(x)$ | conn. | Fonction exponentielle (notion)                                    |
+| 1SPE-290 | 097 | Pour tous réels $x$ et $y$, $\exp(x + y) = \exp(x)\exp(y)$ et $\exp(x)\exp(-x) = 1$                                                                                           | conn. | Fonction exponentielle > propriétés algébriques                    |
+| 1SPE-291 | 098 | Nombre $e$ ; notation $e^x$                                                                                                                                                   | conn. | Fonction exponentielle > propriétés algébriques                    |
+| 1SPE-292 | 099 | Signe, sens de variation et courbe représentative de la fonction exponentielle                                                                                                | conn. | Fonction exponentielle (notion)                                    |
+| 1SPE-293 | 100 | Lien avec les suites géométriques                                                                                                                                             | conn. | Fonction exponentielle > croissance et décroissance exponentielles |
+| 1SPE-294 | 101 | Transformer une expression en utilisant les propriétés algébriques de la fonction exponentielle                                                                               | s-f   | Fonction exponentielle > propriétés algébriques                    |
+| 1SPE-295 | 102 | Pour $a$ réel, dérivée de la fonction $t \mapsto e^{at}$                                                                                                                      | s-f   | Fonction exponentielle > dérivée                                   |
+| 1SPE-296 | 103 | Pour une valeur numérique strictement positive de $k$, représenter graphiquement les fonctions $t \mapsto e^{-kt}$ et $t \mapsto e^{kt}$                                      | s-f   | Fonction exponentielle > courbe                                    |
+| 1SPE-297 | 104 | Modéliser une situation par une croissance, une décroissance exponentielle (évolution d'un capital à taux fixe, décroissance radioactive)                                     | s-f   | Fonction exponentielle > croissance et décroissance exponentielles |
+| 1SPE-298 | 105 | Construction de l'exponentielle par la méthode d'Euler                                                                                                                        | algo. | Fonction exponentielle (notion) _(discutable 3)_                   |
+| 1SPE-299 | 106 | Détermination d'une valeur approchée de $e$ à l'aide de la suite $\left(\left(1 + \tfrac{1}{n}\right)^n\right)$                                                               | algo. | Fonction exponentielle (notion)                                    |
+| 1SPE-300 | 107 | Unicité d'une fonction $f$ dérivable sur $\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$                                                                                        | s-f ⁺ | Fonction exponentielle (notion)                                    |
+| 1SPE-301 | 108 | Pour tous réels $x$ et $y$, $\exp(x + y) = \exp(x)\exp(y)$                                                                                                                    | s-f ⁺ | Fonction exponentielle > propriétés algébriques                    |
+| 1SPE-302 | 109 | La fonction exponentielle est strictement positive et croissante                                                                                                              | s-f ⁺ | Fonction exponentielle > variations                                |
+
+### Analyse > Trigonométrie (branche `Fonctions`)
+
+| Code     | ex- | Énoncé                                                                                                                                               | kind  | nœud                                                    |
+| -------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------- |
+| 1SPE-303 | 110 | Cercle trigonométrique ; longueur d'arc ; radian                                                                                                     | conn. | Fonctions trigonométriques > cercle et radians          |
+| 1SPE-304 | 111 | Enroulement de la droite sur le cercle trigonométrique ; image d'un nombre réel                                                                      | conn. | Fonctions trigonométriques > cercle et radians          |
+| 1SPE-305 | 112 | Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle ; valeurs remarquables                               | conn. | Fonctions trigonométriques > cosinus et sinus d'un réel |
+| 1SPE-306 | 113 | Placer un point sur le cercle trigonométrique                                                                                                        | s-f   | Fonctions trigonométriques > cercle et radians          |
+| 1SPE-307 | 114 | Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de $x$, les cosinus et sinus d'angles associés à $x$                | s-f   | Fonctions trigonométriques > angles associés            |
+| 1SPE-308 | 115 | Calcul de $\cos\left(\tfrac{\pi}{4}\right)$, $\sin\left(\tfrac{\pi}{4}\right)$, $\cos\left(\tfrac{\pi}{3}\right)$, $\sin\left(\tfrac{\pi}{3}\right)$ | dém.  | Fonctions trigonométriques > cosinus et sinus d'un réel |
+| 1SPE-309 | 116 | Approximation de $\pi$ par la méthode d'Archimède                                                                                                    | algo. | Fonctions trigonométriques > cercle et radians          |
+
+### Géométrie > Calcul vectoriel et produit scalaire (branche `Géométrie`)
+
+| Code     | ex- | Énoncé                                                                                                                                                                                 | kind  | nœud                                               |
+| -------- | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------- |
+| 1SPE-310 | 117 | Produit scalaire à partir de la projection orthogonale et de la formule avec le cosinus                                                                                                | conn. | Produit scalaire > expressions du produit scalaire |
+| 1SPE-311 | 118 | Caractérisation de l'orthogonalité                                                                                                                                                     | conn. | Produit scalaire > propriétés                      |
+| 1SPE-312 | 119 | Bilinéarité, symétrie                                                                                                                                                                  | conn. | Produit scalaire > propriétés                      |
+| 1SPE-313 | 120 | En base orthonormée, expression du produit scalaire et de la norme, critère d'orthogonalité                                                                                            | conn. | Produit scalaire > expressions du produit scalaire |
+| 1SPE-314 | 121 | Expression des coordonnées dans une base orthonormée en termes de produits scalaires avec les vecteurs de la base                                                                      | conn. | Produit scalaire > expressions du produit scalaire |
+| 1SPE-315 | 122 | Développement de $\lVert\vec{u} + \vec{v}\rVert^2$ et $\lVert\vec{u} - \vec{v}\rVert^2$                                                                                                | conn. | Produit scalaire > angles et longueurs             |
+| 1SPE-316 | 123 | Formule d'Al-Kashi                                                                                                                                                                     | conn. | Produit scalaire > angles et longueurs             |
+| 1SPE-317 | 124 | Transformation de l'expression $\vec{MA} \cdot \vec{MB}$                                                                                                                               | conn. | Produit scalaire > lieux de points                 |
+| 1SPE-318 | 125 | Utiliser le produit scalaire pour démontrer une orthogonalité                                                                                                                          | s-f   | Produit scalaire > propriétés                      |
+| 1SPE-319 | 126 | Utiliser le produit scalaire pour calculer un angle                                                                                                                                    | s-f   | Produit scalaire > angles et longueurs             |
+| 1SPE-320 | 127 | Utiliser le produit scalaire pour calculer une longueur dans le plan                                                                                                                   | s-f   | Produit scalaire > angles et longueurs             |
+| 1SPE-321 | 128 | En vue de la résolution d'un problème, calculer le produit scalaire de deux vecteurs en choisissant une méthode adaptée (projection orthogonale, coordonnées, normes et angle, normes) | s-f   | Produit scalaire > expressions du produit scalaire |
+| 1SPE-322 | 130 | Formule d'Al-Kashi (démonstration avec le produit scalaire)                                                                                                                            | dém.  | Produit scalaire > angles et longueurs             |
+| 1SPE-323 | 131 | Ensemble des points $M$ tels que $\vec{MA} \cdot \vec{MB} = 0$ (démonstration avec le produit scalaire)                                                                                | dém.  | Produit scalaire > lieux de points                 |
+| 1SPE-324 | 132 | Loi des sinus                                                                                                                                                                          | s-f ⁺ | Produit scalaire > angles et longueurs             |
+| 1SPE-325 | 133 | Concourance des hauteurs d'un triangle                                                                                                                                                 | s-f ⁺ | Produit scalaire (notion) _(discutable 4)_         |
+| 1SPE-326 | 134 | Les médianes d'un triangle concourent au centre de gravité                                                                                                                             | s-f ⁺ | Vecteurs (notion) _(discutable 4)_                 |
+
+### Géométrie > Géométrie repérée (branche `Géométrie`)
+
+| Code     | ex- | Énoncé                                                                                                                    | kind  | nœud                                                     |
+| -------- | --- | ------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------- |
+| 1SPE-327 | 135 | Vecteur normal à une droite ; le vecteur de coordonnées $(a\,;\,b)$ est normal à la droite d'équation $ax + by + c = 0$   | conn. | Géométrie repérée > vecteur normal et équation de droite |
+| 1SPE-328 | 136 | Projection orthogonale d'un point sur une droite                                                                          | conn. | Géométrie repérée > projeté orthogonal                   |
+| 1SPE-329 | 137 | Équation de cercle                                                                                                        | conn. | Géométrie repérée > équation de cercle                   |
+| 1SPE-330 | 138 | Déterminer une équation cartésienne d'une droite connaissant un point et un vecteur normal                                | s-f   | Géométrie repérée > vecteur normal et équation de droite |
+| 1SPE-331 | 139 | Déterminer les coordonnées du projeté orthogonal d'un point sur une droite                                                | s-f   | Géométrie repérée > projeté orthogonal                   |
+| 1SPE-332 | 140 | Déterminer et utiliser l'équation d'un cercle donné par son centre et son rayon                                           | s-f   | Géométrie repérée > équation de cercle                   |
+| 1SPE-333 | 141 | Reconnaitre une équation de cercle, déterminer centre et rayon                                                            | s-f   | Géométrie repérée > équation de cercle                   |
+| 1SPE-334 | 143 | Recherche de l'ensemble des points équidistants de l'axe des abscisses et d'un point donné                                | s-f ⁺ | Géométrie repérée (notion)                               |
+| 1SPE-335 | 144 | Déterminer l'intersection d'un cercle ou d'une parabole d'équation $y = ax^2 + bx + c$ avec une droite parallèle à un axe | s-f ⁺ | Géométrie repérée (notion)                               |
+
+### Probabilités et statistiques > Probabilités conditionnelles et indépendance (branches `Probabilités` / `Statistiques`)
+
+| Code     | ex- | Énoncé                                                                                                                                                       | kind  | nœud                                                              |
+| -------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | ----------------------------------------------------------------- |
+| 1SPE-336 | 145 | Indépendance de deux évènements                                                                                                                              | conn. | Probabilités conditionnelles > indépendance                       |
+| 1SPE-337 | 146 | Partition de l'univers (systèmes complets d'évènements) ; formule des probabilités totales                                                                   | conn. | Probabilités conditionnelles > probabilités totales               |
+| 1SPE-338 | 147 | Succession de deux épreuves indépendantes ; représentation par un arbre ou un tableau                                                                        | conn. | Probabilités conditionnelles > épreuves indépendantes successives |
+| 1SPE-339 | 148 | Pour $n \leqslant 4$, répétition de $n$ épreuves de Bernoulli indépendantes et identiques                                                                    | conn. | Probabilités conditionnelles > épreuves indépendantes successives |
+| 1SPE-340 | 149 | Dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales                                                               | s-f   | Probabilités conditionnelles > probabilités totales               |
+| 1SPE-341 | 150 | Savoir utiliser ou justifier l'indépendance de deux évènements                                                                                               | s-f   | Probabilités conditionnelles > indépendance                       |
+| 1SPE-342 | 151 | Représenter la succession de deux épreuves indépendantes par un arbre ou un tableau                                                                          | s-f   | Probabilités conditionnelles > épreuves indépendantes successives |
+| 1SPE-343 | 152 | Pour $n \leqslant 4$, représenter l'arbre associé à la répétition de $n$ épreuves de Bernoulli indépendantes et identiques afin de calculer des probabilités | s-f   | Probabilités conditionnelles > épreuves indépendantes successives |
+| 1SPE-344 | 153 | Méthode de Monte-Carlo : estimation de l'aire sous la parabole, estimation du nombre $\pi$                                                                   | algo. | `Statistiques` Échantillonnage > simulation                       |
+| 1SPE-345 | 154 | Exemples de succession de plusieurs épreuves indépendantes                                                                                                   | s-f ⁺ | Probabilités conditionnelles > épreuves indépendantes successives |
+| 1SPE-346 | 155 | Exemples de marches aléatoires                                                                                                                               | s-f ⁺ | Probabilités conditionnelles > épreuves indépendantes successives |
+
+### Probabilités et statistiques > Variables aléatoires réelles
+
+| Code     | ex-     | Énoncé                                                                                                                                                                                                | kind  | nœud                                                                              |
+| -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------------------------- |
+| 1SPE-347 | 156     | Variable aléatoire réelle : modélisation du résultat numérique d'une expérience aléatoire ; formalisation comme fonction définie sur l'univers et à valeurs réelles                                   | conn. | Variables aléatoires (notion)                                                     |
+| 1SPE-348 | 157     | Loi d'une variable aléatoire                                                                                                                                                                          | conn. | Variables aléatoires > loi d'une variable aléatoire                               |
+| 1SPE-349 | ✂158a  | Espérance d'une variable aléatoire                                                                                                                                                                    | conn. | Variables aléatoires > espérance                                                  |
+| 1SPE-350 | ✂158b  | Variance, écart type d'une variable aléatoire                                                                                                                                                         | conn. | Variables aléatoires > variance et écart-type                                     |
+| 1SPE-351 | 159     | Linéarité de l'espérance                                                                                                                                                                              | conn. | Variables aléatoires > espérance                                                  |
+| 1SPE-352 | 160     | Formule de König-Huygens                                                                                                                                                                              | conn. | Variables aléatoires > variance et écart-type                                     |
+| 1SPE-353 | 161+162 | Interpréter en situation et utiliser les notations $\{X = a\}$, $\{X \leqslant a\}$, $P(X = a)$, $P(X \leqslant a)$ ; passer du registre de la langue naturelle au registre symbolique et inversement | s-f   | Variables aléatoires > loi d'une variable aléatoire                               |
+| 1SPE-354 | 163     | Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles                                                                                                               | s-f   | Variables aléatoires (notion)                                                     |
+| 1SPE-355 | 164     | Déterminer la loi de probabilité d'une variable aléatoire                                                                                                                                             | s-f   | Variables aléatoires > loi d'une variable aléatoire                               |
+| 1SPE-356 | ✂165a  | Calculer une espérance                                                                                                                                                                                | s-f   | Variables aléatoires > espérance                                                  |
+| 1SPE-357 | ✂165b  | Calculer une variance, un écart type                                                                                                                                                                  | s-f   | Variables aléatoires > variance et écart-type                                     |
+| 1SPE-358 | 166     | Utiliser la notion d'espérance dans une résolution de problème (mise pour un jeu équitable, etc.)                                                                                                     | s-f   | Variables aléatoires > espérance                                                  |
+| 1SPE-359 | 167     | Algorithme renvoyant l'espérance, la variance ou l'écart type d'une variable aléatoire                                                                                                                | algo. | Variables aléatoires (notion)                                                     |
+| 1SPE-360 | 168     | Fréquence d'apparition des lettres d'un texte donné, en français, en anglais                                                                                                                          | algo. | `Statistiques` Représenter des données > effectifs et fréquences _(discutable 5)_ |
+| 1SPE-361 | 169     | Pour $X$ variable aléatoire, étude de la fonction du second degré $x \mapsto E\big((X - x)^2\big)$                                                                                                    | s-f ⁺ | Variables aléatoires > variance et écart-type                                     |
+
+### Probabilités et statistiques > Expérimentations
+
+| Code     | ex- | Énoncé                                                                                                                                                                                                                                                                                                | kind | nœud                                         |
+| -------- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------------------------------------------- |
+| 1SPE-362 | 170 | Simuler une variable aléatoire avec Python ou un tableur                                                                                                                                                                                                                                              | s-f  | `Statistiques` Échantillonnage > simulation  |
+| 1SPE-363 | 171 | Lire, comprendre et écrire une fonction Python renvoyant la moyenne d'un échantillon de taille $n$ d'une variable aléatoire                                                                                                                                                                           | s-f  | `Statistiques` Échantillonnage > simulation  |
+| 1SPE-364 | 172 | Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire                                                                                                                                         | s-f  | `Statistiques` Échantillonnage > fluctuation |
+| 1SPE-365 | 173 | Simuler, avec Python ou un tableur, $N$ échantillons de taille $n$ d'une variable aléatoire d'espérance $\mu$ et d'écart type $\sigma$ ; si $m$ désigne la moyenne d'un échantillon, calculer la proportion des cas où l'écart entre $m$ et $\mu$ est inférieur ou égal à $\tfrac{2\sigma}{\sqrt{n}}$ | s-f  | `Statistiques` Échantillonnage > fluctuation |
+
+---
+
+## Les références d'automatismes (`curriculum_point_automatismes`, grade `1_SPE`)
+
+### A. Lignes propres de la 1re (partie « Automatismes » du BO)
+
+| Ligne d'Automatismes de la 1re (résumé fidèle)                                       | Cible(s)                                      |
+| ------------------------------------------------------------------------------------ | --------------------------------------------- |
+| Appliquer un taux d'évolution pour calculer une valeur finale ou initiale            | 2-377                                         |
+| Calculer un taux d'évolution, l'exprimer en pourcentage                              | 2-367 · 2-377                                 |
+| Calculer le taux d'évolution équivalent à plusieurs évolutions successives           | 2-378                                         |
+| Calculer un taux d'évolution réciproque                                              | 2-379                                         |
+| Déterminer les solutions d'une équation produit nul                                  | 2-267                                         |
+| Signe d'une expression du premier degré, d'une expression factorisée du second degré | 2-328 · 2-330 · 1SPE-251 (auto-réf)           |
+| Développer, factoriser, réduire une expression algébrique simple                     | 3-016 · 4-022 · 4-070 · 5-039                 |
+| Résoudre graphiquement $f(x) = k$, $f(x) < k$                                        | 2-336                                         |
+| Déterminer graphiquement le signe d'une fonction ou son tableau de variations        | 2-329 · 2-349                                 |
+| Tracer une droite (équation réduite, ou point et coefficient directeur)              | 2-316                                         |
+| Lire graphiquement l'équation réduite d'une droite                                   | 2-315                                         |
+| Coefficient directeur d'une droite à partir de deux de ses points                    | 2-314                                         |
+| Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…   | 5-077 · 5-110 · 5-111 · 2-372 · 3-030         |
+| Passer du graphique aux données et vice-versa                                        | 5-077 · 5-110 · 5-111 · 5-096                 |
+| Calculer et interpréter des indicateurs statistiques                                 | 2-382 · 2-370 · 3-029 · 3-056 · 4-039 · 4-040 |
+| Probabilités conditionnelles sur tableau croisé d'effectifs ou arbre pondéré         | 2-396 · 2-397                                 |
+| Distinguer $P(A \cap B)$, $P_A(B)$, $P_B(A)$                                         | 2-399 · 2-400                                 |
+
+### B. Reprise de la liste de 2de (C16 : « s'ajoute la liste des automatismes de seconde »)
+
+Les **58 cibles** (66 depuis les passes des cycles 3 et 4 : + 6-199, 6-201, 5-108, 5-110, 5-111, 4-070, 3-052, 3-056) de la liste de 2de (`seed-2de.md`), reprises **telles quelles** avec le
+grade `1_SPE` (dédoublonnées avec A).
+
+### C. Entretien du vocabulaire ensembliste et logique — question V1
+
+Si V1 = oui : 14 références vers les points de 2de que la 1re reprend mot pour mot —
+2-201, 2-202, 2-203, 2-204, 2-205, 2-206, 2-207, 2-210, 2-212, 2-213, 2-214, 2-215
+(« utiliser les quantificateurs », V2), 2-216, 2-217.
+
+---
+
+## Rattachements discutables — TRANCHÉS (David, 2026-10-08 : « ok pour les discutables », recos retenues)
+
+1. **« Calcul de factorielle »** (1SPE-238) → `Dénombrement > Arrangements et permutations >
+factorielle`. Le doc d'écarts l'avait classé « [T] simple exemple » ; mais la règle
+   2de garde les exemples d'algorithme comme points, et le nœud existe (l'arbre est sans
+   niveaux, ADR 0020). Alternative : `Suites et modélisation > algorithmes`.
+2. **« Exploiter les variations pour établir une inégalité »** (1SPE-285) → `Dérivation >
+variations` (c'est l'usage des variations qui est visé). Alternative : `Algèbre >
+Inégalités > comparer et encadrer`.
+3. **Méthode de Newton** (1SPE-288) → `Dérivation > tangente` (elle itère des tangentes) ;
+   **méthode d'Euler** (1SPE-298) → `Fonction exponentielle` (notion) (elle construit
+   exp). Alternative pour Euler : `Dérivation > approximation affine` (son mécanisme).
+4. **Concourance des hauteurs** (1SPE-325) → `Produit scalaire` (notion, l'outil de la
+   section) ; **médianes et centre de gravité** (1SPE-326) → `Vecteurs : sans coordonnées`
+   (notion), comme l'isobarycentre de 2de (2-309). En 2de, « hauteurs concourantes »
+   (2-307) est sous `Géométrie repérée` — chaque programme la démontre avec son outil.
+5. **Fréquence d'apparition des lettres d'un texte** (1SPE-360) → `Statistiques >
+Représenter des données > effectifs et fréquences` (c'est une distribution de
+   fréquences). Alternative : `Variables aléatoires` (notion), sa section dans le BO.
+
+## Questions — TOUTES TRANCHÉES (David, 2026-10-08 : « je valide tout »)
+
+> **E1 = (a)** : Exemples d'algorithme en `approfondissement` (12 en 1re) ET correction
+> des 10 de 2de dans la même migration. **V1 = oui** : 14 références d'entretien.
+
+- **E1 — ⚠️ l'exigence des Exemples d'algorithme (et correction de la 2de).** Le
+  **2026-08-29**, tu avais acté (ancien doc 1re spé) : « les Exemples d'algorithmes du BO
+  sont des illustrations proposées à l'enseignant, pas des attendus » → conservés comme
+  points, en `approfondissement`. En 2de (L2, 2026-10-08), je t'ai présenté ce choix
+  comme un simple effet du tag `[SF+]` de l'ancien référentiel — **c'était faux**, c'était
+  ta décision ; tu as validé `attendu` sur cette base. Il faut trancher en connaissance de
+  cause :
+  - **(a) `approfondissement`** (ta décision d'août) — pour les 12 exemples de 1re, ET
+    correction des 10 de 2de déjà en prod (simple `UPDATE` de l'exigence, aucune perte) ;
+  - (b) `attendu` partout (L2), 1re comprise.
+    **Reco : (a)** — le BO dit « exemples », ton raisonnement d'août tient, et le kind
+    `algorithme` permet déjà de les filtrer.
+- **V1 — l'entretien du vocabulaire de 2de** (14 lignes reprises mot pour mot, quantificateurs compris) : en
+  **références** de la liste de 1re (reco : c'est exactement le rôle de la table — un
+  contenu d'une année antérieure que ce programme demande d'entretenir ; sans elles, la
+  page Programme de 1re ne montre pas ce vocabulaire) ou rien.
+- **S1 — TRANCHÉE** : ex-050, ex-054, ex-056 gardés comme points (1SPE-243, 249, 252) ; 062 et 017 non repris.
+- **V2 — TRANCHÉE** (2026-10-08) : 1 retrait (compétence), 1 point devenu référence (quantificateurs), 1 refusion (notations des variables aléatoires), 3 reformulations ; titres d'approfondissements et d'exemples d'algorithme conservés.
+- **Validation d'ensemble** : les 11 scissions (24 points), les non-scissions, les 2 puces
+  larges non retenues, les 5 discutables, les références (A + B).
+
+## Après validation (plan de livraison)
+
+1. (si E1 = a) correction des 10 exemples d'algorithme de 2de dans la même migration.
+2. Migration additive générée depuis ce document : 165 points (`1SPE-201`…`1SPE-365`),
+   références A + B (+ C si V1), auto-référence 1SPE-251 ; bloc DO auto-vérifiant (comptes,
+   kinds, 0 sans nœud, anciens `1SPE-001`…`173` INTACTS) ; rollback scopé, mises en
+   garde RGPD.
+3. Test d'intégration intégral (lecture anonyme), preuve rouge, audit, PR, CI, merge,
+   `db:migrate`, vérification prod.

@@ -6,7 +6,7 @@
  *   seules la prod (projet EU) et une base locale sont acceptées ;
  * - relecteur = l'unique profil admin (modèle mono-professeur : David) ;
  * - sauvegarde JSON des lignes visées AVANT toute écriture (dossier ignoré par git) ;
- * - lecture des fichiers de verdict `docs/relecture/<lot>/*.json`.
+ * - lecture des fichiers de verdict `data/relecture/<lot>/*.json`.
  */
 
 import 'dotenv/config';

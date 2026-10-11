@@ -32,8 +32,10 @@ describe('les commandes à arguments multiples aboutissent', () => {
 		expect(run('.taylor sin(x) 5').success).toBe(true);
 	});
 
+	// Variable après « ; », plus après un espace (décision de David,
+	// 2026-10-06) : `x^2 x 0 1` se lit désormais x²·x, de 0 à 1
 	it('calcule une intégrale définie', () => {
-		const result = run('.integrate x^2 x 0 1');
+		const result = run('.integrate x^2 ; x 0 1');
 
 		expect(result.success).toBe(true);
 		// ∫₀¹ x² dx = 1/3
@@ -41,7 +43,7 @@ describe('les commandes à arguments multiples aboutissent', () => {
 	});
 
 	it('accepte une option en tirets', () => {
-		expect(run('.solve x^2-1=0 --verbose').success).toBe(true);
+		expect(run('.solve --verbose x^2-1=0').success).toBe(true);
 	});
 });
 
@@ -51,7 +53,7 @@ describe('ce qui marchait doit continuer de marcher', () => {
 	});
 
 	it('dérive selon une variable nommée', () => {
-		expect(run('.diff x^2 x').success).toBe(true);
+		expect(run('.diff x^2 ; x').success).toBe(true);
 	});
 
 	it('intègre sans bornes', () => {

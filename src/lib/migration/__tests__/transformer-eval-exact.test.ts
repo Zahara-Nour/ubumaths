@@ -17,7 +17,7 @@ import { generateInstanceWithFixedVariables } from '$lib/questions/generator/tes
 import type { QuestionTemplate } from '$lib/questions/types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 function expectedAnswer(index: number, variables: Record<string, string>): string | undefined {
@@ -39,14 +39,14 @@ describe('conversion des marques de calcul', () => {
 	it('result-type decimal : la réponse calculée depuis l’expression est décimale', () => {
 		// #352 « Forme décimale d'une fraction » : &1/10
 		const template = transformQuestion(questions[352], 352).template!;
-		const blanks = template.variations[0].blanks ?? template.shared?.blanks;
+		const blanks = template.variations[0].blanks;
 		expect(blanks?.[0].expectedAnswer).toBe('{{eval:{{expression1}};d}}');
 	});
 
 	it('sans result-type, la réponse calculée reste exacte', () => {
 		// #383 « Additionner des fractions »
 		const template = transformQuestion(questions[383], 383).template!;
-		const blanks = template.variations[0].blanks ?? template.shared?.blanks;
+		const blanks = template.variations[0].blanks;
 		expect(blanks?.[0].expectedAnswer).toBe('{{eval:{{expression1}}}}');
 	});
 });

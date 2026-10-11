@@ -6,6 +6,10 @@
  * T_SPE ne doit couvrir que le point T_SPE : sinon le point de l'autre
  * programme entre dans la couverture de la classe, et `coveredCount` du cahier
  * de texte est gonflé.
+ *
+ * Depuis l'étape 2 de C5, les mêmes cartes portent aussi des tags de points
+ * NEUFS (un nœud de l'arbre, pas d'objectif) : la couverture, qui compte les
+ * points de l'ancien référentiel, les ignore jusqu'à la bascule du code.
  */
 import { describe, it, expect } from 'vitest';
 import { evaluationCurriculumPoints, reconcileAutoCoverage } from '../curriculum-coverage';
@@ -15,22 +19,38 @@ const ENTRY = 'entry-1';
 const EVALUATION = '55555555-5555-4555-8555-555555555555';
 const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
 
+/** Tag d'un point d'ANCIENNE génération : il porte un objectif, qui porte le niveau. */
 function tag(templateId: string, pointId: string, grade: string) {
 	return {
 		template_id: templateId,
 		point_id: pointId,
-		curriculum_points: { curriculum_objectives: { curriculum_themes: { grade } } }
+		curriculum_points: {
+			objective_id: `objectif-${grade}`,
+			curriculum_objectives: { curriculum_themes: { grade } }
+		}
+	};
+}
+
+/** Tag d'un point NEUF (étape 2 de C5) : ni objectif ni thème. */
+function freshTag(templateId: string, pointId: string) {
+	return {
+		template_id: templateId,
+		point_id: pointId,
+		curriculum_points: { objective_id: null, curriculum_objectives: null }
 	};
 }
 
 /**
  * `t-partagee` : un point T_SPE et un point T_COMP (le cas visé).
  * `t-seule` : un seul point, de T_COMP (non-régression).
+ * Chacune porte en plus un point neuf, que la couverture ne doit jamais retenir.
  */
 const TAGS = [
 	tag('t-partagee', 'p-spe', 'T_SPE'),
 	tag('t-partagee', 'p-comp', 'T_COMP'),
-	tag('t-seule', 'p-comp-seul', 'T_COMP')
+	tag('t-seule', 'p-comp-seul', 'T_COMP'),
+	freshTag('t-partagee', 'p-neuf-partagee'),
+	freshTag('t-seule', 'p-neuf-seule')
 ];
 
 function tagsFor(calls: Call[]) {
@@ -38,8 +58,8 @@ function tagsFor(calls: Call[]) {
 	return { data: TAGS.filter((t) => ids.includes(t.template_id)) };
 }
 
-/** Points que la réconciliation insère pour une séance citant les deux cartes. */
-async function reconciledPoints(classGrade: string | null): Promise<string[]> {
+/** Réconciliation d'une séance citant les deux cartes. */
+async function reconcile(classGrade: string | null) {
 	const fake = createFakeSupabase((table, calls) => {
 		switch (table) {
 			case 'journal_entry_activities':
@@ -73,7 +93,12 @@ async function reconciledPoints(classGrade: string | null): Promise<string[]> {
 	});
 
 	await reconcileAutoCoverage(fake.client as never, ENTRY);
+	return fake;
+}
 
+/** Points que la réconciliation insère pour une séance citant les deux cartes. */
+async function reconciledPoints(classGrade: string | null): Promise<string[]> {
+	const fake = await reconcile(classGrade);
 	const upsert = fake
 		.on('journal_entry_points')
 		.flatMap((q) => q.calls)
@@ -82,6 +107,19 @@ async function reconciledPoints(classGrade: string | null): Promise<string[]> {
 	return rows.map((r) => r.point_id).sort();
 }
 
+describe('reconcileAutoCoverage — points neufs (étape 2 de C5)', () => {
+	it('la requête lit `objective_id` du point : sans lui, tout tag serait écarté', async () => {
+		const fake = await reconcile(null);
+		const select = fake
+			.on('question_template_points')
+			.flatMap((q) => q.calls)
+			.find((c) => c.method === 'select');
+		expect(String(select?.args[0])).toMatch(/curriculum_points\(objective_id,/);
+	});
+});
+
+// Comparaisons INTÉGRALES : chaque carte porte aussi un point neuf (TAGS), que le filtre
+// provisoire de la C5 écarte. Sans lui, « T_SPE » et « sans niveau » gagnent leurs points neufs.
 describe('reconcileAutoCoverage — niveau de la classe', () => {
 	it('classe de T_SPE : la carte partagée ne couvre que son point T_SPE', async () => {
 		expect(await reconciledPoints('T_SPE')).toEqual(['p-comp-seul', 'p-spe']);

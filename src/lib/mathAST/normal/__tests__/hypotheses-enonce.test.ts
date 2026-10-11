@@ -3,7 +3,7 @@
  *
  * Le décideur compare sur l'intersection des domaines ∩ le domaine DÉCLARÉ.
  * Sans hypothèse, rien ne change (convention du 2026-09-20). Les numéros
- * renvoient à la spécification validée (`docs/wip/hypotheses-enonce-progress.md`,
+ * renvoient à la spécification validée (`docs/archive/wip/hypotheses-enonce-progress.md`,
  * sections C et D).
  */
 

@@ -51,12 +51,25 @@ const ANON_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 const PAST = new Date(Date.now() - 3600_000).toISOString();
 
-const CAT_A = { theme: 'Thème PRC', domain: 'Domaine A PRC', subdomain: 'Méthode', level: 1 };
+/** Une catégorie de question : le sous-domaine est facultatif. */
+type Category = { theme: string; domain: string; subdomain: string | null; level: number };
+
+const CAT_A: Category = {
+	theme: 'Thème PRC',
+	domain: 'Domaine A PRC',
+	subdomain: 'Méthode',
+	level: 1
+};
 /** Une seule question PUBLIÉE par catégorie (index unique partiel) : A2 porte la seconde. */
-const CAT_A2 = { theme: 'Thème PRC', domain: 'Domaine A PRC', subdomain: 'Méthode', level: 2 };
-const CAT_B = { theme: 'Thème PRC', domain: 'Domaine B PRC', subdomain: null, level: 2 };
-const CAT_C = { theme: 'Thème PRC', domain: 'Domaine C PRC', subdomain: null, level: 1 };
-const CAT_D = { theme: 'Thème PRC', domain: 'Domaine D PRC', subdomain: null, level: 1 };
+const CAT_A2: Category = {
+	theme: 'Thème PRC',
+	domain: 'Domaine A PRC',
+	subdomain: 'Méthode',
+	level: 2
+};
+const CAT_B: Category = { theme: 'Thème PRC', domain: 'Domaine B PRC', subdomain: null, level: 2 };
+const CAT_C: Category = { theme: 'Thème PRC', domain: 'Domaine C PRC', subdomain: null, level: 1 };
+const CAT_D: Category = { theme: 'Thème PRC', domain: 'Domaine D PRC', subdomain: null, level: 1 };
 const FUTURE = new Date(Date.now() + 86_400_000).toISOString();
 
 /** Modèles du décor (identifiants fixes, supprimés avant et après). */
@@ -120,7 +133,9 @@ function buildLocals(person: Person | null): App.Locals {
 }
 
 /** Statut HTTP d'une route : `error()` de SvelteKit est levé, pas rendu. */
-async function call(run: () => Promise<Response>): Promise<{ status: number; body: unknown }> {
+async function call(
+	run: () => Response | Promise<Response>
+): Promise<{ status: number; body: unknown }> {
 	try {
 		const response = await run();
 		return { status: response.status, body: await response.json() };
@@ -178,7 +193,7 @@ async function insertRow(table: string, row: Record<string, unknown>): Promise<s
 	return (data as { id: string }).id;
 }
 
-function templateRow(id: string, category: typeof CAT_A, status: string, options = {}) {
+function templateRow(id: string, category: Category, status: string, options = {}) {
 	return {
 		id,
 		type: 'fill_in_blanks',
@@ -256,7 +271,7 @@ describe('paquet de révision calculé du chapitre', () => {
 		chapterHidden = await chapter(k1.id, 'Masqué PRC', false);
 		chapterOther = await chapter(k2.id, 'Autre classe PRC', true);
 
-		const series = (title: string, categories: (typeof CAT_A)[]) =>
+		const series = (title: string, categories: Category[]) =>
 			insertRow('series', {
 				title,
 				grade: '1_SPE',

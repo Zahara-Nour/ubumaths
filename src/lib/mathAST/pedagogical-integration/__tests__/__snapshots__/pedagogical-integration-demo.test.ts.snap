@@ -8,11 +8,11 @@ Expression: e^x from 0 to 1
 
 ========== LYCEE (summarized) ==========
 - [identify-definite-integral] Identification de l'intégrale définie
-  \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx}
+  \\textcolor{blue}{\\int_{0}^{1} \\exponentialE^x\\,dx}
 - [apply-known-primitive] Primitive usuelle
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [apply-fundamental-theorem] Théorème fondamental du calcul intégral
-  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} \\exponentialE^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
 - [substitute-bounds] Évaluation aux bornes
   \\begin{aligned} & \\textcolor{blue}{\\left[\\exp\\left( x \\right)\\right]_{0}^{1}} \\\\ & = \\exp\\left( 1 \\right) - \\exp\\left( 0 \\right) \\end{aligned}
 - [simplify-bounds-result] Calcul de la valeur
@@ -23,13 +23,13 @@ Value: \\exponentialE - 1
 ========== LYCEE (detailed) ==========
 - [identify-definite-integral] Identification de l'intégrale définie
   · Une intégrale définie ∫_a^b f(x) dx se calcule via une primitive F : on évalue [F(x)]_a^b = F(b) − F(a).
-  \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx}
+  \\textcolor{blue}{\\int_{0}^{1} \\exponentialE^x\\,dx}
 - [apply-known-primitive] Primitive usuelle
   · On reconnaît une primitive de référence (table des primitives usuelles).
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [apply-fundamental-theorem] Théorème fondamental du calcul intégral
   · On note F la primitive trouvée : F(x) = \\exp\\left( x \\right). L'intégrale vaut [F(x)]_a^b.
-  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} \\exponentialE^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
 - [substitute-bounds] Évaluation aux bornes
   · On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = \\exp\\left( x \\right).
   \\begin{aligned} & \\textcolor{blue}{\\left[\\exp\\left( x \\right)\\right]_{0}^{1}} \\\\ & = \\exp\\left( 1 \\right) - \\exp\\left( 0 \\right) \\end{aligned}
@@ -41,9 +41,9 @@ Value: \\exponentialE - 1
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-known-primitive] Primitive
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
-  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} \\exponentialE^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
 - [simplify-bounds-result] Valeur
   \\begin{aligned} & \\textcolor{blue}{\\exp\\left( 1 \\right) - \\exp\\left( 0 \\right)} \\\\ & = \\exponentialE - 1 \\end{aligned}
 Antiderivative: \\exp\\left( x \\right)
@@ -52,10 +52,10 @@ Value: \\exponentialE - 1
 ========== SUPERIEUR (detailed) ==========
 - [apply-known-primitive] Primitive
   · On reconnaît une primitive de référence (table des primitives usuelles).
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
   · On note F la primitive trouvée : F(x) = \\exp\\left( x \\right). L'intégrale vaut [F(x)]_a^b.
-  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} \\exponentialE^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
 - [simplify-bounds-result] Valeur
   · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
   \\begin{aligned} & \\textcolor{blue}{\\exp\\left( 1 \\right) - \\exp\\left( 0 \\right)} \\\\ & = \\exponentialE - 1 \\end{aligned}
@@ -200,46 +200,46 @@ Expression: \\dfrac{1}{x} from 1 to e
 
 ========== LYCEE (summarized) ==========
 - [identify-definite-integral] Identification de l'intégrale définie
-  \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx}
+  \\textcolor{blue}{\\int_{1}^{\\exponentialE} \\dfrac{1}{x}\\,dx}
 - [apply-known-primitive] Primitive usuelle
   \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
 - [apply-fundamental-theorem] Théorème fondamental du calcul intégral
-  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{\\exponentialE} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{\\exponentialE} \\end{aligned}
 - [substitute-bounds] Évaluation aux bornes
-  \\begin{aligned} & \\textcolor{blue}{\\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e}} \\\\ & = \\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{\\exponentialE}} \\\\ & = \\ln\\left( \\left| \\exponentialE \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right) \\end{aligned}
 - [simplify-bounds-result] Calcul de la valeur
-  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| \\exponentialE \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = 1 \\end{aligned}
 Antiderivative: \\ln\\left( \\left| x \\right| \\right)
-Value: \\ln\\left( e \\right)
+Value: 1
 
 ========== LYCEE (detailed) ==========
 - [identify-definite-integral] Identification de l'intégrale définie
   · Une intégrale définie ∫_a^b f(x) dx se calcule via une primitive F : on évalue [F(x)]_a^b = F(b) − F(a).
-  \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx}
+  \\textcolor{blue}{\\int_{1}^{\\exponentialE} \\dfrac{1}{x}\\,dx}
 - [apply-known-primitive] Primitive usuelle
   · On reconnaît une primitive de référence (table des primitives usuelles).
   \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
 - [apply-fundamental-theorem] Théorème fondamental du calcul intégral
   · On note F la primitive trouvée : F(x) = \\ln\\left( \\left| x \\right| \\right). L'intégrale vaut [F(x)]_a^b.
-  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{\\exponentialE} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{\\exponentialE} \\end{aligned}
 - [substitute-bounds] Évaluation aux bornes
   · On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = \\ln\\left( \\left| x \\right| \\right).
-  \\begin{aligned} & \\textcolor{blue}{\\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e}} \\\\ & = \\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{\\exponentialE}} \\\\ & = \\ln\\left( \\left| \\exponentialE \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right) \\end{aligned}
 - [simplify-bounds-result] Calcul de la valeur
   · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
-  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| \\exponentialE \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = 1 \\end{aligned}
 Antiderivative: \\ln\\left( \\left| x \\right| \\right)
-Value: \\ln\\left( e \\right)
+Value: 1
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-known-primitive] Primitive
   \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
 - [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
-  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{\\exponentialE} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{\\exponentialE} \\end{aligned}
 - [simplify-bounds-result] Valeur
-  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| \\exponentialE \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = 1 \\end{aligned}
 Antiderivative: \\ln\\left( \\left| x \\right| \\right)
-Value: \\ln\\left( e \\right)
+Value: 1
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-known-primitive] Primitive
@@ -247,12 +247,12 @@ Value: \\ln\\left( e \\right)
   \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
 - [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
   · On note F la primitive trouvée : F(x) = \\ln\\left( \\left| x \\right| \\right). L'intégrale vaut [F(x)]_a^b.
-  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{\\exponentialE} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{\\exponentialE} \\end{aligned}
 - [simplify-bounds-result] Valeur
   · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
-  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| \\exponentialE \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = 1 \\end{aligned}
 Antiderivative: \\ln\\left( \\left| x \\right| \\right)
-Value: \\ln\\left( e \\right)
+Value: 1
 "
 `;
 
@@ -264,9 +264,9 @@ Expression: 2x e^{x^2}
 
 ========== LYCEE (summarized) ==========
 - [identify-integrand] Identification de la primitive à calculer
-  \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx}
+  \\textcolor{blue}{\\int 2 x \\exponentialE^{x^2}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
-  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x \\exponentialE^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   \\textcolor{blue}{\\exp\\left( x^2 \\right) + C}
 Antiderivative: \\exp\\left( x^2 \\right)
@@ -274,10 +274,10 @@ Antiderivative: \\exp\\left( x^2 \\right)
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
-  \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx}
+  \\textcolor{blue}{\\int 2 x \\exponentialE^{x^2}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
   · On reconnaît la forme u'·e^u avec u = x^2, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x \\exponentialE^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
   \\textcolor{blue}{\\exp\\left( x^2 \\right) + C}
@@ -285,13 +285,13 @@ Antiderivative: \\exp\\left( x^2 \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
-  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x \\exponentialE^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
 Antiderivative: \\exp\\left( x^2 \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
   · On reconnaît la forme u'·e^u avec u = x^2, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x \\exponentialE^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
 Antiderivative: \\exp\\left( x^2 \\right)
 "
 `;
@@ -304,35 +304,35 @@ Expression: e^{2x}
 
 ========== LYCEE (summarized) ==========
 - [identify-integrand] Identification de la primitive à calculer
-  \\textcolor{blue}{\\int e^{2 x}\\,dx}
+  \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
-  \\textcolor{blue}{0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} + C}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\textcolor{blue}{0.5 \\exp\\left( 2 x \\right) + C}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
-  \\textcolor{blue}{\\int e^{2 x}\\,dx}
+  \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
   · On reconnaît la forme u'·e^u avec u = 2 x, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
-  \\textcolor{blue}{0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} + C}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\textcolor{blue}{0.5 \\exp\\left( 2 x \\right) + C}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
   · On reconnaît la forme u'·e^u avec u = 2 x, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
-Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{2 x}\\,dx} \\\\ & = 0.5 \\exp\\left( 2 x \\right) \\end{aligned}
+Antiderivative: 0.5 \\exp\\left( 2 x \\right)
 "
 `;
 
@@ -344,9 +344,9 @@ Expression: e^{3x + 1}
 
 ========== LYCEE (summarized) ==========
 - [identify-integrand] Identification de la primitive à calculer
-  \\textcolor{blue}{\\int e^{3 x + 1}\\,dx}
+  \\textcolor{blue}{\\int \\exponentialE^{3 x + 1}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   \\textcolor{blue}{0.3333333333333333 \\exp\\left( 3 x + 1 \\right) + C}
 Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
@@ -354,10 +354,10 @@ Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
-  \\textcolor{blue}{\\int e^{3 x + 1}\\,dx}
+  \\textcolor{blue}{\\int \\exponentialE^{3 x + 1}\\,dx}
 - [apply-composite-exp] Forme u'·eᵘ
   · On reconnaît la forme u'·e^u avec u = 3 x + 1, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
   \\textcolor{blue}{0.3333333333333333 \\exp\\left( 3 x + 1 \\right) + C}
@@ -365,13 +365,13 @@ Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
 Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-composite-exp] \\int u'e^u\\,dx = e^u
   · On reconnaît la forme u'·e^u avec u = 3 x + 1, dont une primitive est e^u.
-  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
 Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
 "
 `;
@@ -584,11 +584,11 @@ Expression: 5 e^x
 
 ========== LYCEE (summarized) ==========
 - [identify-integrand] Identification de la primitive à calculer
-  \\textcolor{blue}{\\int 5 e^x\\,dx}
+  \\textcolor{blue}{\\int 5 \\exponentialE^x\\,dx}
 - [extract-constant] On sort la constante 5
-  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 \\exponentialE^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
-    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   \\textcolor{blue}{5 \\exp\\left( x \\right) + C}
 Antiderivative: 5 \\exp\\left( x \\right)
@@ -596,13 +596,13 @@ Antiderivative: 5 \\exp\\left( x \\right)
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
-  \\textcolor{blue}{\\int 5 e^x\\,dx}
+  \\textcolor{blue}{\\int 5 \\exponentialE^x\\,dx}
 - [extract-constant] On sort la constante 5
   · Une constante multiplicative sort de l'intégrale : ∫5·f(x) dx = 5·∫f(x) dx.
-  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 \\exponentialE^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
     · On reconnaît une primitive de référence (table des primitives usuelles).
-    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
   \\textcolor{blue}{5 \\exp\\left( x \\right) + C}
@@ -610,18 +610,18 @@ Antiderivative: 5 \\exp\\left( x \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
-  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 \\exponentialE^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive
-    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 Antiderivative: 5 \\exp\\left( x \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
   · Une constante multiplicative sort de l'intégrale : ∫5·f(x) dx = 5·∫f(x) dx.
-  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 \\exponentialE^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive
     · On reconnaît une primitive de référence (table des primitives usuelles).
-    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 Antiderivative: 5 \\exp\\left( x \\right)
 "
 `;
@@ -754,13 +754,13 @@ Expression: x e^x
 
 ========== LYCEE (summarized) ==========
 - [identify-integrand] Identification de la primitive à calculer
-  \\textcolor{blue}{\\int x e^x\\,dx}
+  \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [identify-parts] Intégration par parties
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
-- [choose-u-dv] Choix : u = x, dv = e^x
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
+- [choose-u-dv] Choix : u = x, dv = \\exponentialE^x
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
 - [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
     \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
@@ -770,16 +770,16 @@ Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
-  \\textcolor{blue}{\\int x e^x\\,dx}
+  \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [identify-parts] Intégration par parties
   · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
-- [choose-u-dv] Choix : u = x, dv = e^x
-  · On pose u = x et dv = e^x, d'où du = 1 dx et v = \\exp\\left( x \\right).
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
+- [choose-u-dv] Choix : u = x, dv = \\exponentialE^x
+  · On pose u = x et dv = \\exponentialE^x, d'où du = 1 dx et v = \\exp\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
 - [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
     · On reconnaît une primitive de référence (table des primitives usuelles).
     \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
@@ -790,11 +790,11 @@ Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [identify-parts] \\int u\\,dv
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
-- [choose-u-dv] u = x,\\ dv = e^x
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
+- [choose-u-dv] u = x,\\ dv = \\exponentialE^x
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
 - [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive
     \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
@@ -802,13 +802,13 @@ Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
 ========== SUPERIEUR (detailed) ==========
 - [identify-parts] \\int u\\,dv
   · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
-- [choose-u-dv] u = x,\\ dv = e^x
-  · On pose u = x et dv = e^x, d'où du = 1 dx et v = \\exp\\left( x \\right).
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
+- [choose-u-dv] u = x,\\ dv = \\exponentialE^x
+  · On pose u = x et dv = \\exponentialE^x, d'où du = 1 dx et v = \\exp\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x \\end{aligned}
 - [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
   · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
-  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
   - [apply-known-primitive] Primitive
     · On reconnaît une primitive de référence (table des primitives usuelles).
     \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
@@ -1274,9 +1274,9 @@ Expression: e^x
 
 ========== LYCEE (summarized) ==========
 - [identify-integrand] Identification de la primitive à calculer
-  \\textcolor{blue}{\\int e^x\\,dx}
+  \\textcolor{blue}{\\int \\exponentialE^x\\,dx}
 - [apply-known-primitive] Primitive usuelle
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   \\textcolor{blue}{\\exp\\left( x \\right) + C}
 Antiderivative: \\exp\\left( x \\right)
@@ -1284,10 +1284,10 @@ Antiderivative: \\exp\\left( x \\right)
 ========== LYCEE (detailed) ==========
 - [identify-integrand] Identification de la primitive à calculer
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
-  \\textcolor{blue}{\\int e^x\\,dx}
+  \\textcolor{blue}{\\int \\exponentialE^x\\,dx}
 - [apply-known-primitive] Primitive usuelle
   · On reconnaît une primitive de référence (table des primitives usuelles).
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 - [add-constant] On ajoute la constante d'intégration C
   · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
   \\textcolor{blue}{\\exp\\left( x \\right) + C}
@@ -1295,13 +1295,13 @@ Antiderivative: \\exp\\left( x \\right)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-known-primitive] Primitive
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 Antiderivative: \\exp\\left( x \\right)
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-known-primitive] Primitive
   · On reconnaît une primitive de référence (table des primitives usuelles).
-  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
 Antiderivative: \\exp\\left( x \\right)
 "
 `;

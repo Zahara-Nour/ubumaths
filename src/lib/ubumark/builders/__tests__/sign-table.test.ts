@@ -20,13 +20,22 @@ import {
 	rationalSignTableGrid
 } from '$lib/mathAST/pedagogical-solve';
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import type { RelationNode } from '$lib/mathAST/types';
+import { isRelation } from '$lib/mathAST/guards';
 import type { SignRow } from '$lib/ubumark/types/variation-table';
 
-const ast = (s: string) => (parseCustomSafe(s) as { ast: never }).ast;
+/** L'inéquation lue, AFFIRMÉE comme une relation (`<`, `≥`…) */
+function relation(source: string): RelationNode {
+	const parsed = parseCustomSafe(source);
+	if (parsed.ast === null || !isRelation(parsed.ast)) {
+		throw new Error(`inéquation attendue : ${source}`);
+	}
+	return parsed.ast;
+}
 
 /** La grille du tableau de signes d'une inéquation, telle que mathAST la calcule. */
 function gridOf(source: string) {
-	const steps = generateInequalitySteps(ast(source), { level: 'lycee' });
+	const steps = generateInequalitySteps(relation(source), { level: 'lycee' });
 	const step = steps.find((s) => s.rule.includes('sign-table'));
 	const op = step?.operation;
 	if (op?.kind === 'quadratic-sign-table') return quadraticSignTableGrid(op);

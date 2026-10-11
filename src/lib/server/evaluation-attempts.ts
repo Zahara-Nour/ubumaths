@@ -2,7 +2,7 @@
  * Tentatives d'évaluation corrigées par le serveur (chantier 5, ADR 0015)
  * =======================================================================
  *
- * Décisions Q32-Q39 de David (docs/wip/series-formes-progress.md) :
+ * Décisions Q32-Q39 de David (docs/archive/wip/series-formes-progress.md) :
  * - DÉMARRER (Q32, Q33) : le serveur crée la séance, tire pour chaque question
  *   un modèle et une graine, les enregistre (`evaluation_attempt_questions`,
  *   lisible par service_role seul) et renvoie la version PUBLIQUE des

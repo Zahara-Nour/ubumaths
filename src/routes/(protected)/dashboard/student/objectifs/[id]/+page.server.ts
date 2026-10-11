@@ -8,7 +8,7 @@
  * - Ajout du badge FSRS agrégé calculé via `computePointBadges` à partir
  *   de l'état `srs_card_stats` des templates tagués sur chaque capacité.
  *
- * Spec : docs/wip/srs-fsrs-spec-tdd.md §5
+ * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §5
  */
 
 import type { PageServerLoad } from './$types';

@@ -17,6 +17,7 @@
 	@module components/markdown/nodes/ProbabilityTree
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type {
 		ProbabilityTreeNode,

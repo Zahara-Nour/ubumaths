@@ -6,7 +6,7 @@
  * content itself (statements, corrections, hints) is NEVER rebranded — only
  * the UI "decor" (buttons, navigation, titles, feature labels, notifications).
  *
- * Spec: docs/wip/sprint1-lexique-spec.md
+ * Spec: docs/archive/wip/sprint1-lexique-spec.md
  *
  * Convention: keys in English (code), values in French (UI strings).
  */

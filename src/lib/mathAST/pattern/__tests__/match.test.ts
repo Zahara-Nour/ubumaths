@@ -5,6 +5,9 @@
 import { describe, it, expect } from 'vitest';
 import { match, nodesEqual, tryMatch, matches } from '../match';
 import { P } from '../builder';
+import { getBindingNode } from '../types';
+import type { MatchBindings } from '../types';
+import type { MathNode } from '../../types';
 import {
 	number,
 	variable,
@@ -21,6 +24,16 @@ import {
 	relation,
 	greek
 } from '../../factory';
+
+/** Lit une capture qui doit être un nœud (pas une séquence), en l'affirmant. */
+function boundNode(bindings: MatchBindings, name: string): MathNode {
+	const node = getBindingNode(bindings, name);
+	expect(node).not.toBeNull();
+	if (node === null) {
+		throw new Error(`capture « ${name} » : attendu un nœud`);
+	}
+	return node;
+}
 import { parseLatex } from '../../parser';
 
 describe('Pattern Matching Algorithm', () => {
@@ -96,7 +109,7 @@ describe('Pattern Matching Algorithm', () => {
 				const result = match(pattern, node);
 
 				expect(result.success).toBe(true);
-				expect(nodesEqual(result.bindings.get('expr')!, node)).toBe(true);
+				expect(nodesEqual(boundNode(result.bindings, 'expr'), node)).toBe(true);
 			});
 
 			it('binds to correct name', () => {
@@ -166,7 +179,7 @@ describe('Pattern Matching Algorithm', () => {
 				const result = match(pattern, node);
 
 				expect(result.success).toBe(true);
-				expect(nodesEqual(result.bindings.get('x')!, number('5'))).toBe(true);
+				expect(nodesEqual(boundNode(result.bindings, 'x'), number('5'))).toBe(true);
 			});
 
 			it('fails when same wildcard has different values', () => {
@@ -282,8 +295,8 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, number('1'))).toBe(true);
-			expect(nodesEqual(result.bindings.get('y')!, number('2'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), number('1'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'y'), number('2'))).toBe(true);
 		});
 
 		it('matches with literal on right', () => {
@@ -293,7 +306,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, variable('a'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), variable('a'))).toBe(true);
 		});
 
 		it('matches commutatively (original order)', () => {
@@ -313,7 +326,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, variable('a'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), variable('a'))).toBe(true);
 		});
 
 		it('fails for non-addition node', () => {
@@ -347,8 +360,8 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, number('5'))).toBe(true);
-			expect(nodesEqual(result.bindings.get('y')!, number('3'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'y'), number('3'))).toBe(true);
 		});
 
 		it('is NOT commutative', () => {
@@ -423,8 +436,8 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, number('3'))).toBe(true);
-			expect(nodesEqual(result.bindings.get('y')!, number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), number('3'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'y'), number('5'))).toBe(true);
 		});
 	});
 
@@ -556,8 +569,8 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('a')!, number('5'))).toBe(true);
-			expect(nodesEqual(result.bindings.get('b')!, number('10'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'a'), number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'b'), number('10'))).toBe(true);
 		});
 
 		it('matches nested function', () => {
@@ -576,7 +589,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, variable('x'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), variable('x'))).toBe(true);
 		});
 
 		it('matches function with wildcard power: sin^n(x)', () => {
@@ -586,7 +599,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('n')!, number('3'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'n'), number('3'))).toBe(true);
 		});
 
 		it('fails when pattern expects power but node has none', () => {
@@ -623,7 +636,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, variable('x'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), variable('x'))).toBe(true);
 		});
 	});
 
@@ -785,7 +798,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('a')!, number('2'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'a'), number('2'))).toBe(true);
 		});
 
 		it('matches power of product: (a*b)^n', () => {
@@ -808,8 +821,8 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('c')!, number('5'))).toBe(true);
-			expect(nodesEqual(result.bindings.get('n')!, number('2'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'c'), number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'n'), number('2'))).toBe(true);
 		});
 
 		it('matches trig identity: sin^2(x) + cos^2(x)', () => {
@@ -826,7 +839,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, variable('theta'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), variable('theta'))).toBe(true);
 		});
 
 		it('fails trig identity when x values differ', () => {
@@ -947,7 +960,7 @@ describe('Pattern Matching Algorithm', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('x')!, variable('a'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'x'), variable('a'))).toBe(true);
 		});
 	});
 });

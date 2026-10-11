@@ -1,7 +1,7 @@
 /**
  * `tidy()` — la mise au propre sans développement.
  *
- * Contrat : `docs/wip/tidy-phase0.md`, §A. AST en entrée, AST en sortie.
+ * Contrat : `docs/systeme/mathast/tidy-spec.md`, §A. AST en entrée, AST en sortie.
  *
  * - **valeur conservée** : `areEquivalent(tidy(x), x)` ;
  * - **idempotent** : `tidy(tidy(x))` est structurellement égal à `tidy(x)` ;

@@ -49,7 +49,7 @@ describe('differentiate — PiecewiseNode', () => {
 	it('differentiates a polynomial piecewise { x^2 si x<1, 2x-1 si x>=1 } into { 2x si x<1, 2 si x>=1 }', () => {
 		const poly = piecewise([
 			piecewisePiece(relation('<', x, one), power(x, number('2'))),
-			piecewisePiece(relation('>=', x, one), subtract(multiply(number('2'), x), one))
+			piecewisePiece(relation('>=', x, one), subtract(multiply(number('2'), x, 'implicit'), one))
 		]);
 
 		const result = differentiate(poly);
@@ -114,7 +114,7 @@ describe('differentiate — PiecewiseNode', () => {
 	});
 
 	it('preserves the source PiecewiseNode metadata', () => {
-		const meta = { line: 42 };
+		const meta = { annotation: 'source' };
 		const pw = piecewise([piecewisePiece(relation('<', x, zero), opposite(x))], x, meta);
 
 		const result = differentiate(pw) as PiecewiseNode;

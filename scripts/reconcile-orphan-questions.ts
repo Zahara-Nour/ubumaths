@@ -115,7 +115,7 @@ function generateQuestionHashCorrect(question: OldQuestion): string {
  * Load old questions from JSON cache
  */
 async function loadOldQuestions(): Promise<OldQuestion[]> {
-	const jsonPath = path.resolve(process.cwd(), '.claude/old-questions.json');
+	const jsonPath = path.resolve(process.cwd(), 'data/tinymath/old-questions.json');
 
 	try {
 		const jsonContent = await fs.readFile(jsonPath, 'utf-8');
@@ -497,7 +497,9 @@ pnpm tsx scripts/reconcile-orphan-questions.ts
 	const path = await import('path');
 	const reportPath = path.resolve(
 		process.cwd(),
-		DRY_RUN ? '.claude/reconciliation-report-dry-run.md' : '.claude/reconciliation-report.md'
+		DRY_RUN
+			? 'data/tinymath/reconciliation-report-dry-run.md'
+			: 'data/tinymath/reconciliation-report.md'
 	);
 	await fs.writeFile(reportPath, report, 'utf-8');
 	console.log(`  ✓ Report saved to: ${reportPath}`);

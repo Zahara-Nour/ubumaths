@@ -310,7 +310,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			.from('worksheet_instances')
 			// `accessed_at`, `submitted_at` et `time_spent_seconds` n'existent pas sur
 			// `worksheet_instances` : le suivi de consultation n'a jamais été implémenté
-			// (cf. docs/wip/refonte-referentiel-progress.md). L'avancement se lit sur `status`.
+			// (cf. docs/archive/wip/refonte-referentiel-progress.md). L'avancement se lit sur `status`.
 			.select(
 				`
 				id,

@@ -83,27 +83,6 @@ export function binomialMoments(law: BinomialDistribution): RandomVariableLaw {
 }
 
 /**
- * num/den (positif, au plus 1) arrondi à `places` décimales, demi vers le
- * haut, en entiers. `digits` s'écrit avec un point (`0.850`) ; `exact` : la
- * valeur tombe juste à cette précision.
- */
-export function roundExact(
-	num: bigint,
-	den: bigint,
-	places: number
-): { digits: string; exact: boolean } {
-	const scale = 10n ** BigInt(places);
-	const scaled = num * scale;
-	const quotient = scaled / den;
-	const remainder = scaled % den;
-	// Demi vers le haut : reste ⩾ den / 2
-	const rounded = 2n * remainder >= den ? quotient + 1n : quotient;
-	const text = rounded.toString().padStart(places + 1, '0');
-	const digits = places === 0 ? text : `${text.slice(0, -places)}.${text.slice(-places)}`;
-	return { digits, exact: remainder === 0n };
-}
-
-/**
  * Intervalle I = [a ; b] avec P(X ∈ I) ⩾ `level` (Q140) : le plus petit tel
  * que P(X < a) ⩽ α/2 et P(X > b) ⩽ α/2, α = 1 − level. Le programme n'impose
  * pas de méthode : celle-ci est écrite sous le résultat.

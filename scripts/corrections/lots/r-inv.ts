@@ -2,7 +2,7 @@
  * Lot « r-inv » : opération à trou → opération inverse (36 modèles)
  * =================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, tous les modèles
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, tous les modèles
  * `R-INV` SAUF les six trous chez les relatifs (décision du 2026-09-29) :
  * × et : → N-SIGNES (0b6d749f, a5d4c3ee, faits dans le lot pilote) ;
  * + et − → N-REL-ADD (24331791, 84755a7b, b1550840, 372d4f79, lot à venir).

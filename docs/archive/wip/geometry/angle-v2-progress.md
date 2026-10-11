@@ -32,9 +32,9 @@ Ajout fonctionnel léger :
 ## Documents sources
 
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
-- Étude v2 (finale) : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
+- Étude v2 (finale) : `docs/wip/geometry/study-angle-object-v2.md`
 - Progress V1 : [`docs/wip/geometry/angle-v1-progress.md`](./angle-v1-progress.md)
-- Reference DSL : [`docs/ref/geometry/dsl-builtins.md`](../../ref/geometry/dsl-builtins.md)
+- Reference DSL : [`docs/systeme/geometrie/dsl-builtins.md`](../../../systeme/geometrie/dsl-builtins.md)
 
 ## Statut des phases
 
@@ -266,7 +266,7 @@ Les 3 sites appellent ce helper au lieu de reconstruire le calcul.
 - `src/lib/geometry-core/graph/figure.ts` : helper `findAngleByMeasureScalarId(scalarId): GeoAngle | undefined`.
 - `src/lib/geometry-core/dsl/serializer.ts` : branche `scalarKind: 'angle_measure'` émet `mesure(α)` si lien retrouvé.
 - `src/lib/geometry-core/rendering/__tests__/angle-canonical-cases.test.ts` : ajouts 3 cas par type (`angle(u,v)` 60°, `angle(seg1,seg2)` 90°, `angle(d1,d2)` 45°).
-- `docs/ref/geometry/dsl-builtins.md` : section `angle` étendue avec les 3 overloads.
+- `docs/systeme/geometrie/dsl-builtins.md` : section `angle` étendue avec les 3 overloads.
 - `CHANGELOG.md` : section `[Unreleased]` → `v0.10.0`.
 
 ### Tests (toutes phases)
@@ -477,7 +477,7 @@ L'ancienne forme `angle(A, V, B)` reste, `angle_polaire(O, P)` aussi.
 
 ### Partie C — Documentation V2
 
-- **`docs/ref/geometry/dsl-builtins.md`** :
+- **`docs/systeme/geometrie/dsl-builtins.md`** :
   - Signature `angle()` étendue avec les 3 nouvelles formes.
   - `arcSpacingPx` ajouté à la table des défauts (6 px).
   - Nouvelles sous-sections « V2 — overloads » : `angle(u, v)`, `angle(seg1, seg2)`, `angle(d1, d2)` avec exemple DSL pour chaque + note sur convention angle aigu et erreur structurée pour les parallèles.
@@ -515,7 +515,7 @@ L'ancienne forme `angle(A, V, B)` reste, `angle_polaire(O, P)` aussi.
 - `src/lib/geometry-core/dsl/serializer.ts` — branche `scalarKind: 'angle_measure'` adaptée (B5).
 - `src/lib/geometry-core/dsl/__tests__/builtins-angle.test.ts` — 3 tests B5 activés (2 `.todo` + 1 nouveau pour `unite="deg"`).
 - `src/lib/geometry-core/rendering/__tests__/angle-canonical-cases.test.ts` — 9 tests V2 ajoutés (3 par overload).
-- `docs/ref/geometry/dsl-builtins.md` — section `angle()` étendue V2.
+- `docs/systeme/geometrie/dsl-builtins.md` — section `angle()` étendue V2.
 - `CHANGELOG.md` — entrée `[0.10.0]` ajoutée.
 - `docs/wip/geometry/angle-v2-progress.md` — section P4 (cette section).
 

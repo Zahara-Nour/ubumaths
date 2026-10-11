@@ -83,16 +83,17 @@ describe('la commande `.dériver`', () => {
 
 describe('le repli', () => {
 	/**
-	 * ⚠️ **Le vrai cas de repli est `floor(x)`**, mesuré : le module pédagogique
-	 * ne sait pas la dériver, le moteur si. C'est là que la sortie du moteur
-	 * doit rester — et elle reste.
+	 * ⚠️ **Le vrai cas de repli est `sec(x)`** : le module pédagogique ne sait
+	 * pas la dériver, le moteur si (par sa définition 1/cos). C'est là que la
+	 * sortie du moteur doit rester — et elle reste.
 	 *
-	 * (Ce que le moteur en dit, `d/dx(floor(x)) = floor`, est un défaut qui lui
-	 * appartient et que ce lot ne touche pas.)
+	 * (C'était `floor(x)`, dont le moteur rendait `d/dx(floor(x)) = floor` :
+	 * une dérivée FAUSSE. Depuis le correctif des noms de fonction elle est refusée en français, voir
+	 * `noms-de-fonction.test.ts`.)
 	 */
 	it('le bouton garde la sortie du moteur', () => {
 		const s = session();
-		runInput(s, 'f(x) = floor(x)');
+		runInput(s, 'f(x) = sec(x)');
 
 		const outcome = runAction(s, 'derive', 'f');
 
@@ -104,7 +105,7 @@ describe('le repli', () => {
 	});
 
 	it('la commande aussi', () => {
-		const result = runInput(session(), '.dériver floor(x)');
+		const result = runInput(session(), '.dériver sec(x)');
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;

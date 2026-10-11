@@ -12,6 +12,21 @@ import { describe, it, expect } from 'vitest';
 import { evaluate } from '../evaluate';
 import { parsePratt } from '../../parser/latex/parser-pratt';
 import { toLatex } from '../../latex-generator';
+import type { EvalResult } from '../types';
+
+/** Résultat d'évaluation rétréci au cas « valeur ». */
+type EvalValueResult = Extract<EvalResult, { status: 'value' }>;
+
+/**
+ * Affirme que l'évaluation a abouti à une valeur, puis rétrécit le résultat.
+ */
+function expectValue(result: EvalResult): EvalValueResult {
+	expect(result.status).toBe('value');
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
+	return result;
+}
 
 // =============================================================================
 // Helper Functions
@@ -22,7 +37,7 @@ import { toLatex } from '../../latex-generator';
  */
 function expectFunction(latex: string, name: string) {
 	const ast = parsePratt(latex);
-	const result = evaluate(ast, { mode: 'exact' });
+	const result = expectValue(evaluate(ast, { mode: 'exact' }));
 	expect(result.node.type).toBe('function');
 	if (result.node.type === 'function') {
 		expect(result.node.name).toBe(name);
@@ -34,7 +49,7 @@ function expectFunction(latex: string, name: string) {
  */
 function expectLatex(latex: string, expected: string | RegExp) {
 	const ast = parsePratt(latex);
-	const result = evaluate(ast, { mode: 'exact' });
+	const result = expectValue(evaluate(ast, { mode: 'exact' }));
 	const outputLatex = toLatex(result.node);
 	if (typeof expected === 'string') {
 		expect(outputLatex).toBe(expected);
@@ -131,14 +146,14 @@ describe('mathematical identities (exact mode)', () => {
 	it('operations on rootofunity stay as function', () => {
 		// When we have rootofunity in an expression, it stays symbolic
 		const ast = parsePratt('\\rootofunity(3, 1) + \\rootofunity(3, 2)');
-		const result = evaluate(ast, { mode: 'exact' });
+		const result = expectValue(evaluate(ast, { mode: 'exact' }));
 		// The result should be an addition of two function nodes
 		expect(result.node.type).toBe('addition');
 	});
 
 	it('power of rootofunity stays symbolic', () => {
 		const ast = parsePratt('(\\rootofunity(4, 1))^{2}');
-		const result = evaluate(ast, { mode: 'exact' });
+		const result = expectValue(evaluate(ast, { mode: 'exact' }));
 		// Should be a superscript/power node with function as base
 		expect(result.node.type).toBe('superscript');
 	});

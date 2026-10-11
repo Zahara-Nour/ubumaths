@@ -30,7 +30,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  */
 const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source: string[] }> = {
 	'1_SPE': {
-		md: 'docs/wip/referentiel/1re-spe-programme.md',
+		md: 'docs/systeme/programmes/1re-spe-programme.md',
 		out: 'supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql',
 		prefixe: '1SPE',
 		source: [
@@ -40,7 +40,7 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 		]
 	},
 	'2': {
-		md: 'docs/wip/referentiel/2de-programme.md',
+		md: 'docs/systeme/programmes/2de-programme.md',
 		out: 'supabase/migrations/20260903090000_seed_curriculum_2de.sql',
 		prefixe: '2',
 		source: [
@@ -49,7 +49,7 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 		]
 	},
 	T_SPE: {
-		md: 'docs/wip/referentiel/terminale-spe-programme.md',
+		md: 'docs/systeme/programmes/terminale-spe-programme.md',
 		out: 'supabase/migrations/20261004100000_seed_curriculum_terminale_spe.sql',
 		prefixe: 'TSPE',
 		source: [
@@ -59,7 +59,7 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 		]
 	},
 	T_COMP: {
-		md: 'docs/wip/referentiel/terminale-comp-programme.md',
+		md: 'docs/systeme/programmes/terminale-comp-programme.md',
 		out: 'supabase/migrations/20261004150000_seed_curriculum_terminale_comp.sql',
 		prefixe: 'TCOMP',
 		source: [
@@ -68,7 +68,7 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 		]
 	},
 	T_EXP: {
-		md: 'docs/wip/referentiel/terminale-exp-programme.md',
+		md: 'docs/systeme/programmes/terminale-exp-programme.md',
 		out: 'supabase/migrations/20261004170000_seed_curriculum_terminale_exp.sql',
 		prefixe: 'TEXP',
 		source: [

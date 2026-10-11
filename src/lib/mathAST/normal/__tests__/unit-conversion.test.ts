@@ -1,7 +1,7 @@
 /**
  * Les grandeurs dans `normalize` : équivalentes à conversion près.
  *
- * Contrat : docs/wip/tidy-phase0.md §D.1 (unités de base, coefficients
+ * Contrat : docs/systeme/mathast/tidy-spec.md §D.1 (unités de base, coefficients
  * rationnels exacts) et §D.2 (températures : les règles de `evaluateWithUnits`,
  * sans exception). Décision 2 de David, 2026-09-20.
  */

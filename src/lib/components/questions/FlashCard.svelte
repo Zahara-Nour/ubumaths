@@ -56,6 +56,7 @@
 	import CourseCardBack from './CourseCardBack.svelte';
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
+	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 
 	const logger = createLogger('FlashCard');
 
@@ -100,6 +101,9 @@
 		flippable = true,
 		startFlipped = false
 	}: Props = $props();
+
+	// Mots cliquables dans l'énoncé et la correction
+	provideQuestionLexicon(() => instance.grades);
 
 	// ============================================================================
 	// STATE MANAGEMENT

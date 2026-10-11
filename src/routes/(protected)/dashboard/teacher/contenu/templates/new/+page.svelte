@@ -113,7 +113,7 @@
 						Les niveaux viennent du référentiel commun, comme partout
 						ailleurs : une liste maison laissait choisir « 1ère » et
 						« Terminale », que le serveur refuse, et cachait le primaire
-						comme les filières (spécialité, STMG, expertes).
+						comme les filières (spécialité, techno, expertes).
 					-->
 					<GradeBadgeSelector bind:value={selectedGrades} />
 					<input type="hidden" name="grades" value={selectedGrades.join(',')} />

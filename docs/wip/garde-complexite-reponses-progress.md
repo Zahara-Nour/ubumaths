@@ -20,7 +20,7 @@ Au-delà : `incorrect` (0 point) + « Réponse trop complexe pour être corrigé
 
 ## Mesures
 
-Corpus du dépôt (`docs/relecture` 632 + `scripts/questions` 33 ; 8 tirages par variation + specs) :
+Corpus du dépôt (`data/relecture` 632 + `scripts/questions` 33 ; 8 tirages par variation + specs) :
 18 609 réponses ; max longueur 103, profondeur 3, chiffres d'exposant 2 (`10^{16}`).
 Limites : 400 / 9 / 4. Modèles en base NON rejoués (lecture prod refusée à l'agent).
 

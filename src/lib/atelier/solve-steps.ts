@@ -9,7 +9,7 @@
  * Ce module branche l'atelier sur `pedagogical-solve`, le module pédagogique
  * que les corrections de questions emploient déjà en production.
  *
- * Spécification : `docs/wip/atelier-resolution-etapes-phase0.md`.
+ * Spécification : `docs/archive/wip/atelier-resolution-etapes-phase0.md`.
  *
  * @module atelier/solve-steps
  */
@@ -24,7 +24,14 @@ import {
 	QuadraticEquationRenderer
 } from '$lib/mathAST/pedagogical-solve';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import {
+	DEFAULT_VARIABLE,
+	splitVariableArgument,
+	variableNameOf
+} from '$lib/mathAST/cli/core/variable-argument';
+import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
+import { conclusionAgrees } from './solve-steps-check';
 
 // =============================================================================
 // Constantes
@@ -57,6 +64,9 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 	// dégénérées tombent alors dans `isSolvedForm`, qui les rejette. Le défaut
 	// est versé au lot mathAST.
 ]);
+
+/** Des lettres qui ne sont pas des paramètres : e (Euler), i, π. */
+const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
 /**
  * Ce qu'une résolution donne à afficher : la réponse pour la ligne, les étapes
@@ -117,30 +127,46 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
  *
  * @param argument - L'équation ou l'inéquation, noms d'objets DÉJÀ substitués
  *   (§6 bis), lue telle quelle : `3x+5=14 x` est l'équation `3x+5=14x`, pas
- *   « résoudre `3x+5=14` en x ».
+ *   « résoudre `3x+5=14` en x ». L'inconnue est x, sauf si une autre est
+ *   donnée après un point-virgule (`3 = 2t ; t`) — comme `.solve`, aucune
+ *   devinette (décision de David, 2026-10-06).
  */
 export function solveSteps(argument: string): SolvedSteps | null {
 	try {
 		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
-		// commande.** Le moteur, lui, applique deux conventions de terminal qui
+		// commande.** Le moteur, lui, appliquait deux conventions de terminal qui
 		// n'ont pas leur place devant un élève, et qui lui font résoudre une
 		// autre équation que celle qui est écrite :
-		//   • `<équation> [variable]` : `.solve 3x+5=14 x` ampute le `x` final
-		//     et répond « x = 3 », alors que `3x+5=14x` donne 5/11 ;
+		//   • `<équation> [variable]` : `.solve 3x+5=14 x` amputait le `x` final
+		//     et répondait « x = 3 », alors que `3x+5=14x` donne 5/11 (corrigé
+		//     le 2026-10-06 : la variable se donne après `;`, x par défaut) ;
 		//   • le retrait des options : `.solve 3-v=1` lit `-v` comme un drapeau,
-		//     résout « 3 = 1 » et répond « contradictoire », alors que v = 2.
+		//     résout « 3 = 1 » et répond « contradictoire », alors que v = 2
+		//     (toujours vrai dans le moteur).
 		// Le parseur, lui, lit l'espace comme une multiplication implicite —
 		// mesuré, `3x+5=14 x` donne `3x+5=14x`. C'est ce que l'élève a écrit,
 		// c'est ce qu'on résout. Les étapes réparent donc ces deux défauts au
 		// lieu de les propager.
-		const node = astOf(argument, 'text');
+		const { expression, variable: typedVariable } = splitVariableArgument(argument);
+		const node = astOf(expression, 'text');
 		if (node === null || node.type !== 'relation') return null;
+		// La variable tapée est lue par le même parseur que l'équation
+		const typed = typedVariable === null ? undefined : astOf(typedVariable, 'text');
+		const variable =
+			typed === undefined ? DEFAULT_VARIABLE : typed === null ? null : variableNameOf(typed);
+		if (variable === null) return null;
+		// Une autre lettre que l'inconnue (`b*x+5=14`, ou `3 = 2t` résolue en x) :
+		// équation à paramètre, repli sur le moteur (L3)
+		const others = [...getVariables(node)].filter(
+			(name) => name !== variable && !CONSTANT_NAMES.has(name)
+		);
+		if (others.length > 0) return null;
 
 		const relation: RelationNode = node;
 		const steps =
 			relation.relation === '='
-				? generateEquationSteps(relation, { level: 'college' })
-				: generateInequalitySteps(relation, { level: 'college' });
+				? generateEquationSteps(relation, { level: 'college', variable })
+				: generateInequalitySteps(relation, { level: 'college', variable });
 		if (steps.length === 0) return null;
 
 		// ⚠️ **Le renderer se lit dans les étapes, jamais sur un degré
@@ -169,6 +195,11 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		// mathématique vide, et le texte du moteur jamais affiché.
 		const answer = answerFor(steps[steps.length - 1], rendered[rendered.length - 1]);
 		if (answer === null) return null;
+
+		// ⚠️ **Garde-fou : la conclusion est vérifiée contre le moteur.** Mesuré
+		// le 2026-10-08 — `(2x-4)=0` concluait `x = 0` (le moteur : x = 2). Une
+		// conclusion que les nombres démentent n'est jamais montrée : repli.
+		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
 
 		return { steps: rendered, answer };
 	} catch {

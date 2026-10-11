@@ -293,7 +293,7 @@ describe('generateQuadraticEquationSteps', () => {
 		it('solutions sont x = -3 et x = 3', () => {
 			const steps = generateQuadraticEquationSteps(eqBZeroPositive(), { level: 'lycee' });
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-3', '3']);
 		});
 
@@ -357,7 +357,7 @@ describe('generateQuadraticEquationSteps', () => {
 		it('solutions sont x = 0 et x = -3', () => {
 			const steps = generateQuadraticEquationSteps(eqCZero(), { level: 'lycee' });
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-3', '0']);
 		});
 
@@ -396,7 +396,7 @@ describe('generateQuadraticEquationSteps', () => {
 		it('solutions sont x = 2 et x = -3', () => {
 			const steps = generateQuadraticEquationSteps(eqFactored(), { level: 'lycee' });
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-3', '2']);
 		});
 
@@ -431,7 +431,7 @@ describe('generateQuadraticEquationSteps', () => {
 		it('solutions de x² + 2 = x + 8 sont -2 et 3 (Δ = 25)', () => {
 			const steps = generateQuadraticEquationSteps(eqNonStandard(), { level: 'lycee' });
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-2', '3']);
 		});
 
@@ -533,7 +533,7 @@ describe('generateQuadraticEquationSteps', () => {
 			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee', variable: 't' });
 			const read = findOp(steps, 'read-solutions');
 			expect(read?.variable).toBe('t');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-2', '-3']);
 		});
 	});
@@ -591,7 +591,7 @@ describe('generateQuadraticEquationSteps', () => {
 			);
 			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['2', '3']);
 		});
 
@@ -611,7 +611,7 @@ describe('generateQuadraticEquationSteps', () => {
 			const apply = findOp(steps, 'apply-quadratic-formula');
 			expect(apply?.case).toBe('double');
 			const read = findOp(steps, 'read-solutions');
-			expect(read!.solutions.map(toLatex)).toEqual(['1']);
+			expect(read!.solutions.map((node) => toLatex(node))).toEqual(['1']);
 		});
 
 		it('3x² − 3x − 18 = 0 → factor-gcd then x = -2, x = 3 (V1.1-C: Δ=25 sur eq simplifiée)', () => {
@@ -634,7 +634,7 @@ describe('generateQuadraticEquationSteps', () => {
 			const compute = findOp(steps, 'compute-discriminant');
 			expect(compute?.numericValue).toBe(25);
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-2', '3']);
 		});
 	});
@@ -654,7 +654,7 @@ describe('generateQuadraticEquationSteps', () => {
 			const isolate = findOp(steps, 'isolate-square');
 			expect(toLatex(isolate!.rhs)).toBe('4');
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-2', '2']);
 		});
 	});
@@ -672,7 +672,7 @@ describe('generateQuadraticEquationSteps', () => {
 			);
 			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
 			const read = findOp(steps, 'read-solutions');
-			const latexs = read!.solutions.map(toLatex).sort();
+			const latexs = read!.solutions.map((node) => toLatex(node)).sort();
 			expect(latexs).toEqual(['-1', '5']);
 		});
 	});
@@ -689,8 +689,8 @@ describe('generateQuadraticEquationSteps', () => {
 			expect(simplify!.rawSolutions).toHaveLength(2);
 			expect(simplify!.solutions).toHaveLength(2);
 			// Raw and simplified should differ structurally
-			const rawLatex = simplify!.rawSolutions.map(toLatex);
-			const simpLatex = simplify!.solutions.map(toLatex);
+			const rawLatex = simplify!.rawSolutions.map((node) => toLatex(node));
+			const simpLatex = simplify!.solutions.map((node) => toLatex(node));
 			expect(rawLatex).not.toEqual(simpLatex);
 		});
 
@@ -779,7 +779,7 @@ describe('V1.1 raffinements (B/C/D)', () => {
 			expect(toLatex(isolate!.rhs)).toBe('4');
 			// Solutions ±2 unchanged by GCD.
 			const read = findOp(steps, 'read-solutions');
-			expect(read!.solutions.map(toLatex).sort()).toEqual(['-2', '2']);
+			expect(read!.solutions.map((node) => toLatex(node)).sort()).toEqual(['-2', '2']);
 		});
 
 		it('émis pour c-zero (`2x² + 6x = 0`, gcd=2)', () => {
@@ -816,7 +816,7 @@ describe('V1.1 raffinements (B/C/D)', () => {
 			);
 			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
 			const apply = findOp(steps, 'apply-quadratic-formula');
-			const rawLatex = apply!.solutions.map(toLatex).join(' ');
+			const rawLatex = apply!.solutions.map((node) => toLatex(node)).join(' ');
 			// Avant V1.1-D : `--5` apparaissait. Après : `5` direct.
 			expect(rawLatex).not.toMatch(/--5/);
 			expect(rawLatex).toMatch(/5/);
@@ -825,7 +825,7 @@ describe('V1.1 raffinements (B/C/D)', () => {
 		it('positif b reste préfixé `-` dans les rawSolutions (`x² + 5x + 6 = 0`)', () => {
 			const steps = generateQuadraticEquationSteps(eqStandardPositive(), { level: 'lycee' });
 			const apply = findOp(steps, 'apply-quadratic-formula');
-			const rawLatex = apply!.solutions.map(toLatex).join(' ');
+			const rawLatex = apply!.solutions.map((node) => toLatex(node)).join(' ');
 			expect(rawLatex).toMatch(/-5/); // -b visible dans le numérateur
 		});
 	});

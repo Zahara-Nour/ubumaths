@@ -1,7 +1,7 @@
 /**
  * Les grandeurs dans `tidy` : l'unité adaptée à l'ordre de grandeur, en décimal.
  *
- * Contrat : docs/wip/tidy-phase0.md §D.3 (décision 3 de David, 2026-09-20).
+ * Contrat : docs/systeme/mathast/tidy-spec.md §D.3 (décision 3 de David, 2026-09-20).
  * Une grandeur NUMÉRIQUE est écrite dans l'unité qui place sa valeur entre
  * 0,1 et 1000 ; une grandeur symbolique garde une unité composée mise au propre ;
  * une température garde l'unité écrite.

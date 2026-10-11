@@ -172,32 +172,28 @@ describe('A5 : note sur 20 au demi-point, quart au-dessus', () => {
 describe('gradeQuestion : corrige une vraie instance', () => {
 	it('deux cases justes → 1', () => {
 		const verdict = gradeQuestion(blanksInstance([math('7'), math('8')]), {
-			values: ['7', '8'],
-			latex: ['7', '8']
+			values: ['7', '8']
 		});
 		expect(verdict).toMatchObject({ status: 'correct', points: 1, isCorrect: true });
 	});
 
 	it('une case fausse → 0', () => {
 		const verdict = gradeQuestion(blanksInstance([math('7'), math('8')]), {
-			values: ['7', '9'],
-			latex: ['7', '9']
+			values: ['7', '9']
 		});
 		expect(verdict).toMatchObject({ status: 'incorrect', points: 0, isCorrect: false });
 	});
 
 	it('une case vide sur deux, l’autre juste → ½', () => {
 		const verdict = gradeQuestion(blanksInstance([math('7'), math('8')]), {
-			values: ['7', ''],
-			latex: ['7', '']
+			values: ['7', '']
 		});
 		expect(verdict).toMatchObject({ status: 'unoptimal_form', points: 0.5, isCorrect: false });
 	});
 
 	it('mauvaise forme (400+80 pour 480, forme stricte par défaut) → 0', () => {
 		const verdict = gradeQuestion(blanksInstance([math('480')]), {
-			values: ['400+80'],
-			latex: ['400+80']
+			values: ['400+80']
 		});
 		expect(verdict).toMatchObject({ status: 'bad_form', points: 0 });
 	});
@@ -212,7 +208,7 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 				],
 				{ orderIndependent: true }
 			),
-			{ values: ['1{,}136', '2{,}5'], latex: ['1{,}136', '2{,}5'] }
+			{ values: ['1{,}136', '2{,}5'] }
 		);
 		expect(verdict).toMatchObject({ status: 'bad_form', points: 0, isCorrect: false });
 	});
@@ -220,7 +216,7 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 	it('forme non optimale (form: warn) → ½', () => {
 		const verdict = gradeQuestion(
 			blanksInstance([math('480')], { constraints: { form: 'warn' } }),
-			{ values: ['400+80'], latex: ['400+80'] }
+			{ values: ['400+80'] }
 		);
 		expect(verdict).toMatchObject({ status: 'unoptimal_form', points: 0.5 });
 	});
@@ -257,9 +253,9 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 
 	it('orderIndependent : statut par réponse, cases trouvées par appariement', () => {
 		const instance = blanksInstance([math('7'), math('8')], { orderIndependent: true });
-		expect(gradeQuestion(instance, { values: ['8', '7'], latex: ['8', '7'] }).points).toBe(1);
-		expect(gradeQuestion(instance, { values: ['8', ''], latex: ['8', ''] }).points).toBe(0.5);
-		expect(gradeQuestion(instance, { values: ['9', '7'], latex: ['9', '7'] }).points).toBe(0);
+		expect(gradeQuestion(instance, { values: ['8', '7'] }).points).toBe(1);
+		expect(gradeQuestion(instance, { values: ['8', ''] }).points).toBe(0.5);
+		expect(gradeQuestion(instance, { values: ['9', '7'] }).points).toBe(0);
 	});
 
 	it('QCM : les positions AFFICHÉES sont ramenées aux indices d’origine', () => {

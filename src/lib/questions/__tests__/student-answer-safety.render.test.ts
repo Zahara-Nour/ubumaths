@@ -185,7 +185,7 @@ describe('réponse élève neutralisée rendue par MathLive', () => {
 });
 
 // Corpus : réponses attendues réelles (cf. answer-complexity-corpus.test.ts)
-const RELECTURE_DIR = join(process.cwd(), 'docs/relecture');
+const RELECTURE_DIR = join(process.cwd(), 'data/relecture');
 const SCRIPTS_DIR = join(process.cwd(), 'scripts/questions');
 const SEEDS = [0, 1, 2, 3, 4, 5];
 

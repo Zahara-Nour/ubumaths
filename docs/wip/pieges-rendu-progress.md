@@ -1,6 +1,6 @@
 # Pièges de rendu — progression (branche `fix/pieges-rendu`)
 
-Source : `docs/ref/fiches-exercices.md`, « Pièges de l'écriture d'un modèle ».
+Source : `docs/pratiques/fiches-exercices.md`, « Pièges de l'écriture d'un modèle ».
 
 | #   | Défaut                                                                               | État                                     |
 | --- | ------------------------------------------------------------------------------------ | ---------------------------------------- |

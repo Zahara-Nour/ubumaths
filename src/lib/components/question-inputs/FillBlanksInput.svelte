@@ -30,7 +30,10 @@
 -->
 
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { parseMarkdown } from '$lib/ubumark';
+	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { readLexicon } from '$lib/components/markdown/lexicon-context';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';
 	import type { MathfieldElement } from 'mathlive';
@@ -189,9 +192,16 @@
 			.flat();
 	}
 
+	// Mots cliquables : repérés au niveau de lecture posé par le cadre de la question
+	// (le dictionnaire est chargé au premier besoin)
+	const lexicon = readLexicon();
+	$effect(() => {
+		if (lexicon()) loadLexiconRuntime();
+	});
+
 	// Parse statement to AST and augment expression nodes
 	// In flash mode, skip augmentation (no "= ?" appended to expressions)
-	let augmentedAST = $derived.by(() => {
+	let structuredAST = $derived.by(() => {
 		const ast = parseMarkdown(statement);
 		if (flashMode) return ast;
 		const augmented = augmentASTForExpressions(ast, expressions);
@@ -207,6 +217,14 @@
 			};
 		}
 		return augmented;
+	});
+
+	// Mots repérés en dernier : les positions portent sur le texte affiché (après le
+	// découpage en phrases de `onlyBlanks`)
+	let augmentedAST = $derived.by(() => {
+		const grade = lexicon();
+		const runtime = lexiconRuntime();
+		return grade && runtime ? runtime.linkDocument(structuredAST, grade) : structuredAST;
 	});
 
 	// Build InputState[] from blanks + validationResults (or correction mode)
@@ -291,7 +309,7 @@
 	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false`
 	 * (mesuré au vrai clavier le 2026-10-01 : avec `smartFence`, taper `[` ouvre une
 	 * paire `\left\lbrack…\right\rbrack` refermée d'office, et `[2;3[` devient
-	 * illisible — docs/wip/reponse-intervalles-progress.md). Il retrouve son réglage
+	 * illisible — docs/archive/wip/reponse-intervalles-progress.md). Il retrouve son réglage
 	 * au démontage seulement.
 	 *
 	 * ⚠️ Le réglage se pose AVANT que le clavier ne s'ouvre (`pointerdown` en capture,

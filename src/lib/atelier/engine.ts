@@ -23,7 +23,7 @@ import {
 	clearBindings,
 	clearFunctions
 } from '$lib/mathAST/cli/core/eval-state';
-import { substituteAll } from '$lib/mathAST/eval/substitute';
+import { substitute, substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -184,8 +184,10 @@ function expandDerivatives(
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];
 			if (args.length === 0) return expandDerivatives(derived, functions);
+			// ⚠️ Une seule passe : `f'(2x)` remplace x par 2x, puis plus rien —
+			// itérer donnait cos(1024x) (2026-10-06)
 			return expandDerivatives(
-				substituteAll(derived, { [target.parameters[0] ?? 'x']: args[0] }, substituteFunction),
+				substitute(derived, { [target.parameters[0] ?? 'x']: args[0] }, { maxIterations: 1 }),
 				functions
 			);
 		}
@@ -283,7 +285,7 @@ export function expandInput(atelier: Atelier, text: string): string {
 	// s'évalue pas mais se dérive, et `k'` doit valoir `b`.
 	const { derivableFunctions } = bindingsOf(atelier, '');
 	const expanded = expandDerivatives(ast, derivableFunctions);
-	return toCustom(withPlainEuler(expanded));
+	return toCustom(expanded);
 }
 
 /**
@@ -309,15 +311,14 @@ export function expandCommandArgument(atelier: Atelier, text: string): string | 
 	const substituted = substituteAll(expanded, variables, substituteFunction, {
 		functions: functions satisfies FunctionBindings
 	});
-	return toCustom(withPlainEuler(substituted));
+	return toCustom(substituted);
 }
 
 /**
  * L'ARBRE d'un objet, tous les noms qu'il cite remplacés — voir `expressionOf`.
  *
  * ⚠️ Les suites s'en servent directement : repasser par le texte (`toCustom`
- * puis relecture) perdait des constantes — `e^(-n)` devenait `\\euler^{-n}`,
- * illisible au retour (revue du lot 5b).
+ * puis relecture) perdait des constantes (revue du lot 5b) ; l'arbre ne perd rien.
  */
 export function substitutedAstOf(
 	atelier: Atelier,
@@ -384,29 +385,36 @@ export function substitutedAstOf(
 	return { ok: true, ast: substituted };
 }
 
+/**
+ * L'ARBRE qu'affiche la carte `f′` : la dérivée calculée, noms et paramètres
+ * substitués, mise au propre — sans jamais repasser par le texte.
+ *
+ * ⚠️ La carte relisait `expressionOf` (écriture maison) avec `astOf` : chaque
+ * aller-retour texte rouvrait un défaut (`sin` relu `s i n`, `\\pi x` collé,
+ * `x^{-2/3}/3` en barre oblique). Ici, l'arbre va droit à `toLatex`.
+ *
+ * `tidyTerms` APRÈS la substitution : la dérivée est rangée avant, mais les
+ * paramètres (a = 3) et les fonctions citées (`g(2x)`) n'arrivent qu'ensuite —
+ * sans cette passe, `2 × 2 × 2x` restait tel quel. Même mise au propre que
+ * `.dériver` dans Calcul.
+ */
+export function derivativeAstOf(
+	atelier: Atelier,
+	name: string
+):
+	| { readonly ok: true; readonly ast: MathNode }
+	| { readonly ok: false; readonly message: string } {
+	const result = substitutedAstOf(atelier, name);
+	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
+}
+
 export function expressionOf(
 	atelier: Atelier,
 	name: string,
 	options?: { readonly forDerivation?: boolean }
 ): Substituted {
 	const result = substitutedAstOf(atelier, name, options);
-	return result.ok ? { ok: true, expression: toCustom(withPlainEuler(result.ast)) } : result;
-}
-
-/**
- * Le nombre d'Euler écrit `e`, et non `\euler`.
- *
- * ⚠️ `toCustom` écrit `\euler`, que ni le parseur du grapheur ni le moteur de
- * Calcul ne lisent (« Unknown command: \euler ») : `f(x) = e^x` ne se traçait
- * pas, `.deriver f` rendait une ligne vide (retour de David, 2026-10-05). `e`
- * est un nom réservé de l'atelier : l'écrire `e` ne peut désigner rien d'autre,
- * et les deux le lisent comme Euler.
- */
-function withPlainEuler(ast: MathNode): MathNode {
-	return transformAST(ast, {
-		enterConstant: (node) =>
-			node.constant === 'euler' ? { type: 'variable', name: 'e' } : undefined
-	});
+	return result.ok ? { ok: true, expression: toCustom(result.ast) } : result;
 }
 
 /** `v_n` → `v(n)` pour chaque autre suite explicite liée. */

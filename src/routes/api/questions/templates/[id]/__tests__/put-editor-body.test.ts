@@ -9,13 +9,14 @@
  */
 import { describe, it, expect } from 'vitest';
 import { toTemplatePutBody } from '$lib/questions/template-put-body';
+import { templateMarkdown } from '$lib/ubumark/types/template';
 import { callPut, fakeDb, FIXTURE } from './fake-templates-db';
 
 describe('toTemplatePutBody', () => {
 	it('champ vidable absent → null ; champ présent → inchangé', () => {
 		const body = toTemplatePutBody({
 			title: 'T',
-			variations: [{ statement: 'x' }],
+			variations: [{ statement: templateMarkdown('x') }],
 			grades: ['CE1'],
 			theme: 'Entiers',
 			domain: 'Multiplier',
@@ -100,5 +101,37 @@ describe("PUT depuis l'éditeur : question de cours", () => {
 
 		expect(response.status).toBe(200);
 		expect(db.question_templates[0].options).toEqual({ courseQuestion: true });
+	});
+});
+
+// Publication depuis l'éditeur : le corps complet (champs vidables à null) passe
+// le schéma strict du contrôle de publication (`templatePublicationErrors`)
+describe("PUT depuis l'éditeur : publication", () => {
+	it('corps complet, statut published → 200, publié', async () => {
+		const db = fakeDb();
+		const response = await callPut(
+			db,
+			JSON.parse(
+				JSON.stringify(
+					toTemplatePutBody({
+						title: FIXTURE.title as string,
+						description: FIXTURE.description as string,
+						shared: FIXTURE.shared as never,
+						variations: FIXTURE.variations as never,
+						grades: FIXTURE.grades as never,
+						theme: FIXTURE.theme as string,
+						domain: FIXTURE.domain as string,
+						subdomain: FIXTURE.subdomain as string,
+						level: FIXTURE.level as number,
+						delay: FIXTURE.delay as number,
+						testSpecs: FIXTURE.testSpecs as never,
+						status: 'published'
+					})
+				)
+			)
+		);
+
+		expect(response.status).toBe(200);
+		expect(db.question_templates[0].status).toBe('published');
 	});
 });

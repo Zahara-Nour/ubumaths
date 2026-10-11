@@ -257,7 +257,7 @@ import type { GradeCode } from '$lib/types/grades';
  * Map old grade format to new unified GradeCode format
  *
  * Old system used 'SPE_1', 'SPE_T', 'STMG'
- * New system uses '1_SPE', 'T_SPE', 'T_STMG'
+ * New system uses '1_SPE', 'T_SPE', 'T_TECHNO'
  */
 function mapGrade(oldGrade: OldGrade): GradeCode {
 	const gradeMap: Record<OldGrade, GradeCode> = {
@@ -276,7 +276,7 @@ function mapGrade(oldGrade: OldGrade): GradeCode {
 		SPE_T: 'T_SPE', // Old 'SPE_T' -> New 'T_SPE'
 		T_EXP: 'T_EXP',
 		T_COMP: 'T_COMP',
-		STMG: 'T_STMG' // Old 'STMG' -> New 'T_STMG' (assuming Terminale STMG)
+		STMG: 'T_TECHNO' // Old 'STMG' -> New 'T_TECHNO' (l'ancien code ne couvrait que la Terminale STMG)
 	};
 
 	return gradeMap[oldGrade] || 'CM1'; // Default to CM1 if unknown

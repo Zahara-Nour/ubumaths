@@ -1,7 +1,7 @@
 /**
  * Atelier — la résolution pas à pas
  *
- * Spécification : `docs/wip/atelier-resolution-etapes-phase0.md`.
+ * Spécification : `docs/archive/wip/atelier-resolution-etapes-phase0.md`.
  *
  * ⚠️ Ce que ces tests gardent avant tout : **le repli**. Quand `pedagogical-solve`
  * ne sait pas traiter l'équation, l'élève doit garder la réponse qu'il avait,
@@ -98,8 +98,9 @@ describe('solveSteps lit des MATHÉMATIQUES, pas une ligne de commande', () => {
 		expect(espace!.answer).toBe('x = \\dfrac{5}{11}');
 	});
 
+	// Passé à la nouvelle règle (2026-10-06) : l'inconnue est x sauf « ; v »
 	it('un « -v » est une soustraction, pas une option', () => {
-		const solved = solveSteps('3-v=1');
+		const solved = solveSteps('3-v=1 ; v');
 
 		expect(solved).not.toBeNull();
 		expect(solved!.answer).toBe('v = 2');

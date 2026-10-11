@@ -14,6 +14,7 @@
 import type { Summary } from './describe';
 import type { Fraction } from './fraction';
 import type { RandomVariableLaw } from './random-variable';
+import { roundNumber } from './rounding';
 
 // =============================================================================
 // Types
@@ -40,11 +41,31 @@ export function formatStatNumber(value: number, locale: StatLocale): string {
 	return v < 0 ? `−${decimal}` : decimal;
 }
 
-/** `= 15,75` si la valeur est exacte à 2 décimales, sinon `≈ 14,44` (Q13). */
+/**
+ * `= 15,75` si la valeur est exacte à 2 décimales, sinon `≈ 14,44` (Q13).
+ * Arrondi : la règle unique de `statistics/rounding` (−0,125 → −0,13).
+ */
 export function formatApproxValue(value: number, locale: StatLocale): string {
-	const rounded = Math.round(value * 100) / 100;
+	const rounded = roundNumber(value, 2);
 	const exact = Math.abs(rounded - value) <= 1e-9 * Math.max(1, Math.abs(value));
 	return `${exact ? '=' : '≈'} ${formatStatNumber(rounded, locale)}`;
+}
+
+/**
+ * Comme `formatApproxValue`, mais une valeur sous 0,01 garde deux chiffres
+ * significatifs : σ = 1/1000 s'écrivait « ≈ 0 » (`.normale Y 1000 0,001`,
+ * revue du 2026-10-09). Réservé aux indicateurs d'une loi.
+ */
+export function formatLawApproxValue(value: number, locale: StatLocale): string {
+	if (value === 0 || Math.abs(value) >= 0.01) return formatApproxValue(value, locale);
+	const places = Math.min(20, 1 - Math.floor(Math.log10(Math.abs(value))));
+	const rounded = roundNumber(value, places);
+	const exact = Math.abs(rounded - value) <= 1e-9 * Math.abs(value);
+	const digits = Math.abs(rounded)
+		.toFixed(places)
+		.replace(/\.?0+$/, '');
+	const text = locale === 'en' ? digits : digits.replace('.', ',');
+	return `${exact ? '=' : '≈'} ${rounded < 0 ? '−' : ''}${text}`;
 }
 
 /** Les indicateurs d'une série, une ligne chacun, dans l'ordre du programme. */
@@ -84,7 +105,7 @@ export function formatFraction(value: Fraction): string {
 function exactWithDecimal(value: Fraction, locale: StatLocale): string {
 	const exact = formatFraction(value);
 	if (value.den === 1n) return `= ${exact}`;
-	return `= ${exact} ${formatApproxValue(value.toNumber(), locale)}`;
+	return `= ${exact} ${formatLawApproxValue(value.toNumber(), locale)}`;
 }
 
 /**
@@ -105,7 +126,7 @@ export function formatLawIndicators(
 				return `V(${name}) ${exactWithDecimal(law.variance, locale)}`;
 			case 'ecart-type':
 				return law.exactDeviation === null
-					? `σ(${name}) ${formatApproxValue(law.deviation, locale)}`
+					? `σ(${name}) ${formatLawApproxValue(law.deviation, locale)}`
 					: `σ(${name}) ${exactWithDecimal(law.exactDeviation, locale)}`;
 		}
 	});

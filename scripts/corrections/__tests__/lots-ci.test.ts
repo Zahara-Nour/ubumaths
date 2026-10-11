@@ -3,7 +3,7 @@
  * ===================================================
  *
  * Chaque lot du registre (`lots/index.ts`) a ses propositions commitées dans
- * `docs/corrections/<lot>/<id>.json`, à côté de l'instantané `_modeles.json` des
+ * `data/corrections/<lot>/<id>.json`, à côté de l'instantané `_modeles.json` des
  * lignes de prod. Ce test rejoue le vérificateur (`verifyProposal`) sur chaque
  * proposition, HORS LIGNE : aucune base, seulement les fichiers du dépôt.
  * Une modification du générateur, de mathAST ou du vérificateur qui casse une
@@ -37,7 +37,7 @@ const MINIMUM_LOTS = 13;
 const MINIMUM_PROPOSALS = 230;
 
 /**
- * Dossiers de `docs/corrections/` qui ne sont PAS des lots du registre :
+ * Dossiers de `data/corrections/` qui ne sont PAS des lots du registre :
  * - `retouches` : instantané des retouches ciblées (retouches.test.ts) ;
  * - `vague3-publies` : lot vide (RESUME.md seul) ;
  * - `vague4-cloture` : propositions sans instantané `_modeles.json`, reprises
@@ -65,7 +65,7 @@ const cases = lots.flatMap((lot) => {
 // TESTS
 // ============================================================================
 
-describe('lots de corrections (docs/corrections)', () => {
+describe('lots de corrections (data/corrections)', () => {
 	it(`couvre au moins ${MINIMUM_LOTS} lots et ${MINIMUM_PROPOSALS} propositions`, () => {
 		expect(lots.length).toBeGreaterThanOrEqual(MINIMUM_LOTS);
 		expect(cases.length).toBeGreaterThanOrEqual(MINIMUM_PROPOSALS);

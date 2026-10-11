@@ -43,7 +43,7 @@
 
 	async function handleSave(
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
-	) {
+	): Promise<boolean> {
 		isSubmitting = true;
 
 		try {
@@ -60,22 +60,21 @@
 				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
-				// Check if level was auto-adjusted
-				if (result.levelAdjusted) {
-					toaster.success(
-						`Question créée avec succès. Le niveau a été ajusté à ${result.adjustedLevel} car le niveau ${template.level} existait déjà dans cette catégorie.`
-					);
-				} else {
-					toaster.success('Question créée avec succès');
-				}
+				toaster.success('Question créée avec succès');
 				goto('/dashboard/admin/questions').then(() => {});
+				return true;
 			} else {
-				toaster.error('Erreur lors de la création');
-				console.error('Validation errors:', result.errors);
+				// Raisons du refus (contrôle de publication, catégorie occupée…)
+				const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+				toaster.error('Erreur lors de la création', {
+					description: errors.slice(0, 5).join('\n') || undefined
+				});
+				return false;
 			}
 		} catch (error) {
 			toaster.error('Erreur serveur');
 			console.error('Server error:', error);
+			return false;
 		} finally {
 			isSubmitting = false;
 		}

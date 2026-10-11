@@ -8,7 +8,7 @@
  * Quatre couleurs seulement : sous la contrainte de contraste (≥ 4,5 sur le fond
  * du grapheur), huit couleurs ne peuvent pas rester distinctes pour un élève
  * daltonien. Les courbes 5 à 8 reprennent donc les quatre couleurs en pointillés.
- * Mesures et décisions : docs/wip/grapheur-couleurs-theme-progress.md.
+ * Mesures et décisions : docs/archive/wip/grapheur-couleurs-theme-progress.md.
  *
  * @module geometry-core/rendering/colors
  */

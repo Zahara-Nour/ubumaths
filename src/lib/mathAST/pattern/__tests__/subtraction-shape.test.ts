@@ -11,13 +11,25 @@
 import { describe, it, expect } from 'vitest';
 import { P } from '../builder';
 import { tryMatch, matches } from '../match';
-import { getBindingNode as get } from '../types';
+import { getBindingNode } from '../types';
+import type { MatchBindings } from '../types';
+import type { MathNode } from '../../types';
 import { parseCustom } from '../../parser/custom';
 import { parseLatex } from '../../parser';
 import { toCustom } from '../../custom-generator';
 import { toLatex } from '../../latex-generator';
 import { simplify } from '../../simplify';
 import { add, opposite, variable } from '../../factory';
+
+/** Affirme l'appariement, puis lit une capture qui doit être un nœud. */
+function get(bindings: MatchBindings | undefined, name: string): MathNode {
+	expect(bindings).toBeDefined();
+	if (bindings === undefined) throw new Error('attendu un appariement');
+	const node = getBindingNode(bindings, name);
+	expect(node).not.toBeNull();
+	if (node === null) throw new Error(`capture « ${name} » : attendu un nœud`);
+	return node;
+}
 
 const custom = (s: string) => toCustom(simplify(parseCustom(s)).result);
 const latex = (s: string) => toLatex(simplify(parseLatex(s)).result);
@@ -28,15 +40,15 @@ describe('P.sub — les deux écritures d’une différence', () => {
 	it('apparie une soustraction, dans l’ordre', () => {
 		const b = tryMatch(diff, parseCustom('x-y'));
 		expect(b).toBeDefined();
-		expect(toCustom(get(b!, 'a'))).toBe('x');
-		expect(toCustom(get(b!, 'b'))).toBe('y');
+		expect(toCustom(get(b, 'a'))).toBe('x');
+		expect(toCustom(get(b, 'b'))).toBe('y');
 	});
 
 	it('apparie −b + a comme a − b', () => {
 		const b = tryMatch(diff, parseCustom('-x+1'));
 		expect(b).toBeDefined();
-		expect(toCustom(get(b!, 'a'))).toBe('1');
-		expect(toCustom(get(b!, 'b'))).toBe('x');
+		expect(toCustom(get(b, 'a'))).toBe('1');
+		expect(toCustom(get(b, 'b'))).toBe('x');
 	});
 
 	it('apparie a + (−b) comme a − b', () => {
@@ -45,8 +57,8 @@ describe('P.sub — les deux écritures d’une différence', () => {
 		// retire avant les règles). La forme nue est celle qu'une règle peut produire.
 		const b = tryMatch(diff, add(variable('x'), opposite(variable('y'))));
 		expect(b).toBeDefined();
-		expect(toCustom(get(b!, 'a'))).toBe('x');
-		expect(toCustom(get(b!, 'b'))).toBe('y');
+		expect(toCustom(get(b, 'a'))).toBe('x');
+		expect(toCustom(get(b, 'b'))).toBe('y');
 	});
 
 	it('n’apparie pas une addition sans opposé', () => {

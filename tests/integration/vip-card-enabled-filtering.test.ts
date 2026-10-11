@@ -32,7 +32,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 	// Snapshot of the seeded vip_card_templates.is_enabled state. This suite mutates
 	// the GLOBAL card state, so we restore it in afterAll to avoid contaminating the
 	// other VIP-card suites that rely on the seeded defaults.
-	let originalCardStates: { id: string; is_enabled: boolean | null }[] = [];
+	let originalCardStates: { id: string; is_enabled: boolean }[] = [];
 
 	beforeAll(async () => {
 		serviceClient = createServiceRoleClient();

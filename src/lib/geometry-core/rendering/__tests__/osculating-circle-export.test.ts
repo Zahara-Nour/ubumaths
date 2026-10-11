@@ -74,7 +74,7 @@ describe('GeoOsculatingCircle — TikZ export', () => {
 			)
 		);
 
-		const tikz = exportToTikZ(figure);
+		const tikz = exportToTikZ(figure, viewport);
 
 		// Look for a draw circle with centre (0, 0.5) and radius 0.5 (3 decimals).
 		expect(tikz).toContain('(0, 0.5) circle (0.5)');
@@ -85,7 +85,7 @@ describe('GeoOsculatingCircle — TikZ export', () => {
 			['c = courbe("x = t", "y = t", t_min=-3, t_max=3)', 'oc = cercle_osculateur(c, 0)'].join('\n')
 		);
 
-		const tikz = exportToTikZ(figure);
+		const tikz = exportToTikZ(figure, viewport);
 		// No circle command should appear — only the parametric curve path.
 		expect(tikz).not.toMatch(/circle/);
 	});
@@ -99,7 +99,7 @@ describe('GeoOsculatingCircle — Typst export', () => {
 			)
 		);
 
-		const typst = exportToTypst(figure);
+		const typst = exportToTypst(figure, viewport);
 
 		// Centre (0, 0.5), radius 0.5. Typst format: circle((cx, cy), radius: r, ...).
 		expect(typst).toContain('circle((0, 0.5), radius: 0.5');
@@ -110,7 +110,7 @@ describe('GeoOsculatingCircle — Typst export', () => {
 			['c = courbe("x = t", "y = t", t_min=-3, t_max=3)', 'oc = cercle_osculateur(c, 0)'].join('\n')
 		);
 
-		const typst = exportToTypst(figure);
+		const typst = exportToTypst(figure, viewport);
 		expect(typst).not.toMatch(/circle\(/);
 	});
 });

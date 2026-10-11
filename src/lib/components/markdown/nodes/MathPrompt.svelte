@@ -15,6 +15,7 @@
 	@module components/markdown/nodes/MathPrompt
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type { InputState } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';

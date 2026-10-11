@@ -1,0 +1,5 @@
+{
+	"source": "Lot 2 du lexique (mots cliquables), validé par David le 2026-10-09 (« je valide ») : docs/wip/lexique/lot2-mots-cliquables-spec.md (copie figée). Mesuré sur les 3 212 énoncés publiés : « premier » attrapait « le premier terme », « expression » est dans 511 énoncés (16 %).",
+	"exclus": ["expression"],
+	"synonymesRetires": [{ "term": "nombre premier", "synonym": "premier" }]
+}

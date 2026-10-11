@@ -3,7 +3,7 @@
  * =================================================
  *
  * Refactor « professeur unique » — branche refactor/single-teacher.
- * Doc : docs/wip/single-teacher-refactor.md
+ * Doc : docs/archive/wip/single-teacher-refactor.md
  *
  * En mono-prof, la classe n'est plus une frontière d'accès : le prof unique
  * (et l'admin) voient les données pédagogiques de TOUS les élèves, y compris

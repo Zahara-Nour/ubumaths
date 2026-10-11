@@ -23,7 +23,7 @@
  * (≤ 1 h). The exposure is deliberately minimal: access-token-only (NO refresh
  * token is ever stored), the cookie is httpOnly + secure + SameSite=Strict, and
  * there is a single admin account. We accept this ≤ 1 h leak window rather than
- * add token-revocation infrastructure. See docs/wip/admin-elevation-progress.md.
+ * add token-revocation infrastructure. See docs/archive/wip/admin-elevation-progress.md.
  *
  * Responses:
  * - 200: cookie cleared

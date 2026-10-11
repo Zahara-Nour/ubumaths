@@ -50,10 +50,12 @@ import type {
 	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
+import { GREEK_LETTERS } from './types';
 import { format } from './units/formatter';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesAsRightTerm,
+	needsParenthesesUnderOpposite,
 	needsParenthesesUnderPercent,
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
@@ -93,31 +95,7 @@ export interface CustomGeneratorOptions {
  * parsers as a MathConstant; the rest produce GreekLetter nodes.
  * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
-export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([
-	'alpha',
-	'beta',
-	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega'
-]);
+export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([...GREEK_LETTERS, 'pi']);
 
 /**
  * Supported symbols in custom syntax.
@@ -369,6 +347,30 @@ function startsWithNumberToken(s: string): boolean {
 }
 
 /**
+ * Whether juxtaposing `left` and `right` would glue a command to a letter:
+ * `\pi` then `x` gives `\pix`, an unknown command on reparse. A space keeps
+ * them apart (`\pi x`), as in LaTeX.
+ *
+ * ⚠️ Dans l'atelier, `f(x) = 3\pi x^2` s'écrivait `3\pix^2` à la
+ * substitution : « Dériver » et « Variations » échouaient (oracle des
+ * dérivées, #910).
+ */
+function gluesCommandToLetter(left: string, right: string): boolean {
+	return /\\[a-zA-Z]+$/.test(left) && /^[a-zA-Z]/.test(right);
+}
+
+/**
+ * Whether `left`, a term ending in a number juxtaposed with Euler's `e` (or the
+ * variable `E`), would read as scientific notation once followed by `+`/`-` and
+ * `right`: `2e-3` (2·e − 3) and `2E-3` (2·E − 3) are read back `0.002`. A space
+ * before the sign keeps them apart (`2e -3`) : the tokenizer only reads `e`/`E`
+ * as an exponent when the sign or the digit follows it immediately.
+ */
+function gluesEulerToExponent(left: string, right: string): boolean {
+	return /[0-9.,][eE]$/.test(left) && /^[0-9.,]/.test(right);
+}
+
+/**
  * Whether an emitted fragment begins with a unary sign (`+` or `-`) — i.e. the
  * output of an `opposite` or `positive` node. Juxtaposing such a RHS to a left
  * operand produces text like `x-sin(x)` which the parser silently reads as a
@@ -501,6 +503,19 @@ export class CustomGenerator {
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
+				// La fin du texte de gauche suffit (`2` puis `e`, deux spans) ; le texte
+				// de droite n'est regénéré que si elle finit par `<chiffre>e`.
+				const leftPlain = this.spans
+					.slice(-2)
+					.map((span) => span.text)
+					.join('');
+				if (
+					!wrapRight &&
+					gluesEulerToExponent(leftPlain, '0') &&
+					gluesEulerToExponent(leftPlain, new CustomGenerator().generate(node.right))
+				) {
+					this.emit(' ', node.metadata);
+				}
 				this.emit(node.type === 'addition' ? '+' : '-', node.operatorMetadata ?? node.metadata);
 				if (wrapRight) this.emit('(', node.metadata);
 				this.visitWithSpans(node.right);
@@ -517,7 +532,14 @@ export class CustomGenerator {
 				const groupRight = needsParenthesesUnderSign(node.right);
 				if (wrapLeft) this.emit('{', meta);
 				if (groupLeft) this.emit('(', meta);
+				// Le texte de gauche, relu dans ses spans (sans couleur) : regénérer
+				// le sous-arbre à chaque produit implicite était quadratique
+				const leftStart = this.spans.length;
 				this.visitWithSpans(node.left);
+				const leftPlain = this.spans
+					.slice(leftStart)
+					.map((span) => span.text)
+					.join('');
 				if (groupLeft) this.emit(')', meta);
 				if (wrapLeft) this.emit('}', meta);
 				// Implicit mul safety net (matches generateMultiplication). Two regimes:
@@ -542,6 +564,16 @@ export class CustomGenerator {
 					this.emit(')', meta);
 				} else {
 					this.visitMultiplicationOperatorSpan(node);
+					// `\pi x`, pas `\pix` (même règle que generateMultiplication)
+					if (
+						node.displayStyle === 'implicit' &&
+						!groupRight &&
+						!groupLeft &&
+						!wrapLeft &&
+						gluesCommandToLetter(leftPlain, rhsPlain)
+					) {
+						this.emit(' ', meta);
+					}
 					if (groupRight) this.emit('(', meta);
 					this.visitWithSpans(node.right);
 					if (groupRight) this.emit(')', meta);
@@ -555,7 +587,7 @@ export class CustomGenerator {
 
 			case 'opposite': {
 				// Même parenthésage que generateOpposite : `-(x+2)`, pas `-x+2`.
-				const wrap = needsParenthesesUnderSign(node.operand);
+				const wrap = needsParenthesesUnderOpposite(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
 				if (wrap) this.emit('(', node.metadata);
 				this.visitWithSpans(node.operand);
@@ -606,8 +638,8 @@ export class CustomGenerator {
 				break;
 
 			case 'constant':
-				// In custom syntax, use \euler or \pi
-				this.emit(node.constant === 'euler' ? '\\euler' : '\\pi', node.metadata);
+				// In custom syntax, use e (read back as Euler by parseCustom) or \pi
+				this.emit(node.constant === 'euler' ? 'e' : '\\pi', node.metadata);
 				break;
 
 			case 'composition':
@@ -727,7 +759,7 @@ export class CustomGenerator {
 		if (!SUPPORTED_GREEK.has(node.letter)) {
 			throw new Error(
 				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
-					`Only pi, alpha, beta, gamma, theta are supported.`
+					`See SUPPORTED_GREEK for the supported letters.`
 			);
 		}
 		this.emit(`\\${node.letter}`, node.metadata);
@@ -1059,7 +1091,7 @@ export class CustomGenerator {
 				this.emit('?', effectiveMeta);
 				break;
 			case 'constant':
-				this.emit(node.constant === 'euler' ? '\\euler' : '\\pi', effectiveMeta);
+				this.emit(node.constant === 'euler' ? 'e' : '\\pi', effectiveMeta);
 				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
@@ -1130,7 +1162,7 @@ export class CustomGenerator {
 				content = this.generateHole(node);
 				break;
 			case 'constant':
-				content = node.constant === 'euler' ? '\\euler' : '\\pi';
+				content = node.constant === 'euler' ? 'e' : '\\pi';
 				break;
 			case 'composition':
 				content = this.generateComposition(node);
@@ -1219,7 +1251,7 @@ export class CustomGenerator {
 		if (!SUPPORTED_GREEK.has(node.letter)) {
 			throw new Error(
 				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
-					`Only pi, alpha, beta, gamma, theta are supported.`
+					`See SUPPORTED_GREEK for the supported letters.`
 			);
 		}
 		return `\\${node.letter}`;
@@ -1241,7 +1273,7 @@ export class CustomGenerator {
 		const right = needsParenthesesAsRightTerm(node.right, 'addition')
 			? `(${renderedRight})`
 			: renderedRight;
-		return `${left}+${right}`;
+		return `${left}${gluesEulerToExponent(left, right) ? ' ' : ''}+${right}`;
 	}
 
 	/**
@@ -1268,7 +1300,7 @@ export class CustomGenerator {
 		const right = needsParenthesesAsRightTerm(node.right, 'subtraction')
 			? `(${renderedRight})`
 			: renderedRight;
-		return `${left}-${right}`;
+		return `${left}${gluesEulerToExponent(left, right) ? ' ' : ''}-${right}`;
 	}
 
 	private generateMultiplication(node: MultiplicationNode): string {
@@ -1292,6 +1324,7 @@ export class CustomGenerator {
 				if (startsWithUnarySign(right)) {
 					return `${wrappedLeft}*(${right})`;
 				}
+				if (gluesCommandToLetter(wrappedLeft, right)) return `${wrappedLeft} ${right}`;
 				return `${wrappedLeft}${right}`;
 			}
 			case 'dot':
@@ -1342,7 +1375,7 @@ export class CustomGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderSign(node.operand) ? `-(${operand})` : `-${operand}`;
+		return needsParenthesesUnderOpposite(node.operand) ? `-(${operand})` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {

@@ -9,6 +9,12 @@ import type { MathNode } from '../types';
 import type { DomainViolation } from './types';
 import { getBuiltinDomain, getBuiltinConstraintDescription, hasRestrictedDomain } from './builtins';
 import { containsValue } from './algebra';
+import {
+	isOddRootIndex,
+	oddDenominatorExponent,
+	realNthRoot,
+	realRationalPower
+} from '../eval/real-root';
 
 // =============================================================================
 // Types
@@ -164,13 +170,19 @@ function checkDivisionByZero(
  * Check if a function argument is in the function's domain.
  */
 function checkFunctionDomain(
-	node: { name: string; args: readonly MathNode[] },
+	node: { name: string; args: readonly MathNode[]; base?: MathNode },
 	bindings: Bindings,
 	violations: DomainViolation[]
 ): void {
 	if (node.args.length === 0) return;
 
 	const funcName = node.name.toLowerCase();
+	// Indice impair (`\sqrt[3]{x}`) : racine définie sur ℝ, aucune contrainte.
+	// Indice non évaluable : on ne conclut pas (comme un argument non évaluable).
+	if (funcName === 'sqrt' && node.base !== undefined) {
+		const index = tryEvaluate(node.base, bindings);
+		if (index === null || isOddRootIndex(index)) return;
+	}
 	if (!hasRestrictedDomain(funcName)) return;
 
 	const domain = getBuiltinDomain(funcName);
@@ -220,8 +232,13 @@ function checkPowerDomain(
 		});
 	}
 
-	// Check for negative base with non-integer exponent
-	if (baseValue < 0 && !Number.isInteger(expValue)) {
+	// Base négative, exposant non entier — sauf p/q de dénominateur impair,
+	// défini pour une base négative (décision du 2026-10-08)
+	if (
+		baseValue < 0 &&
+		!Number.isInteger(expValue) &&
+		oddDenominatorExponent(node.superscript) === null
+	) {
 		violations.push({
 			source: 'power',
 			parameter: 'base',
@@ -291,6 +308,10 @@ function tryEvaluate(node: MathNode, bindings: Bindings): number | null {
 
 		case 'superscript': {
 			const base = tryEvaluate(node.base, bindings);
+			const odd = oddDenominatorExponent(node.superscript);
+			if (base !== null && odd !== null) {
+				return realRationalPower(base, Number(odd.n), Number(odd.d));
+			}
 			const exp = tryEvaluate(node.superscript, bindings);
 			if (base === null || exp === null) return null;
 			return Math.pow(base, exp);
@@ -304,6 +325,11 @@ function tryEvaluate(node: MathNode, bindings: Bindings): number | null {
 			const arg = tryEvaluate(node.args[0], bindings);
 			if (arg === null) return null;
 			const lowerName = node.name.toLowerCase();
+			// Racine n-ième : l'indice est porté par `base` (`\sqrt[3]{x}`)
+			if (lowerName === 'sqrt' && node.base !== undefined) {
+				const index = tryEvaluate(node.base, bindings);
+				return index === null ? null : realNthRoot(arg, index);
+			}
 			// Base explicite : log_b(a) = ln(a)/ln(b), b > 0 et b ≠ 1
 			if (node.base !== undefined && (lowerName === 'log' || lowerName === 'ln')) {
 				const base = tryEvaluate(node.base, bindings);
@@ -325,7 +351,7 @@ function evaluateBuiltinFunction(name: string, arg: number): number | null {
 	const funcName = name.toLowerCase();
 	switch (funcName) {
 		case 'sqrt':
-			return arg >= 0 ? Math.sqrt(arg) : null;
+			return realNthRoot(arg, 2);
 		case 'ln':
 			return arg > 0 ? Math.log(arg) : null;
 		// `\log` sans base est décimal (convention du dépôt : `evaluate`, `normalize`)

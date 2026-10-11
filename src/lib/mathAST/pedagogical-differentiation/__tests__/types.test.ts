@@ -134,6 +134,8 @@ describe('pedagogical-differentiation types', () => {
 			'log',
 			'sqrt',
 			'derivative-of-sqrt',
+			'nth-root',
+			'derivative-of-nth-root',
 			'sinh',
 			'cosh',
 			'tanh',
@@ -145,6 +147,6 @@ describe('pedagogical-differentiation types', () => {
 		// Count must match the union; if a rule is added/removed in `types.ts`,
 		// this assertion will fail on the count, prompting the dev to update both
 		// places.
-		expect(allRules).toHaveLength(34);
+		expect(allRules).toHaveLength(36);
 	});
 });

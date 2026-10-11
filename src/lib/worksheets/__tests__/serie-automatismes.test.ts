@@ -12,6 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
+import { correctionForPrint } from '$lib/questions/correction-detail';
 import { parseMarkdown, type ListNode } from '$lib/ubumark';
 import {
 	expressionToRawLatex,
@@ -257,9 +258,10 @@ describe('buildSerie — erreurs (rien ne doit être écrit)', () => {
 });
 
 /**
- * Correction concise / détaillée (ADR 0017) : avant le lot 3 (réglage du
- * corrigé), la fiche prend la version détaillée — jamais de `\detail{` brut,
- * qui ferait échouer Typst pour TOUTE la fiche.
+ * Correction concise / détaillée (ADR 0017), lot 3 (2026-10-11) : la série GARDE
+ * ses marqueurs ; la fiche choisit concise ou détaillée À L'IMPRESSION
+ * (`correctionForPrint`), et aucun marqueur brut n'arrive à Typst — voir
+ * `correction-imprimee.test.ts`. Avant le lot 3, la série figeait la détaillée.
  */
 describe('buildSerie — détails de correction', () => {
 	const marquee = {
@@ -276,12 +278,18 @@ describe('buildSerie — détails de correction', () => {
 		]
 	} as unknown as QuestionTemplate;
 
-	it('la version détaillée, sans marqueur \\detail brut', () => {
+	it('les marqueurs sont gardés ; la version imprimée n’en garde aucun', () => {
 		const serie = buildSerie(new Map([[marquee.id, marquee]]), [
 			{ templateId: 'marquee', seed: 1 }
 		]);
-		expect(serie.solution).not.toContain('\\detail');
-		expect(serie.solution).toContain('2 \\times 1');
+		expect(serie.solution).toContain('\\detail{');
+		expect(serie.solution).toContain('{.rappel}');
+		const detailed = correctionForPrint(serie.solution, 'detailed');
+		expect(detailed).not.toContain('\\detail');
+		expect(detailed).toContain('2 \\times 1');
+		const concise = correctionForPrint(serie.solution, 'concise');
+		expect(concise).not.toContain('2 \\times 1');
+		expect(concise).not.toContain('car on ajoute');
 	});
 });
 
@@ -342,7 +350,10 @@ describe('buildSerie — chaque question garde ses fonctions déclarées', () =>
 			{ templateId: 'derivee', seed: 1 },
 			{ templateId: 'prix', seed: 1 }
 		]);
-		const formules = rendu(serie.statement, serie.genericFunctions);
+		// La série ne porte aucune liste de fonctions : le figé est déjà en LaTeX, lu
+		// comme l'écran et le PDF le lisent, sans liste (`serie.genericFunctions`
+		// n'existe pas, l'appel passait déjà `undefined`)
+		const formules = rendu(serie.statement, undefined);
 		// Question 1 : P' se lit comme la dérivée de la fonction P
 		expect(formules).toContain("P'\\left( 2 \\right)");
 		// Question 2 : P(1+t) reste un produit (espace de produit, pas d'appel)

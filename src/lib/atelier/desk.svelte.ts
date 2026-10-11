@@ -30,7 +30,8 @@ import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/stati
 import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
-import { bivariateFit, roundFraction, type BivariateFit } from '$lib/statistics/bivariate';
+import { bivariateFit, type BivariateFit } from '$lib/statistics/bivariate';
+import { roundFraction } from '$lib/statistics/rounding';
 import type { Fraction } from '$lib/statistics/fraction';
 import {
 	affineExpression,
@@ -75,7 +76,7 @@ export interface Entry {
 	 */
 	readonly steps?: readonly RenderedStep[];
 	/**
-	 * Le tableau de variations, quand l'action en a produit un.
+	 * Le tableau de variations, quand l'action ou `.variations` en a produit un.
 	 *
 	 * Il se dessine sous la ligne — le moteur, lui, n'en rendait qu'une
 	 * description en texte de terminal.
@@ -83,6 +84,11 @@ export interface Entry {
 	readonly table?: VariationTableNode;
 	/** Le graphique d'une simulation (`.fréquence`, `.échantillons`, Q80) */
 	readonly chart?: StatChartScene;
+	/**
+	 * Une indication montrée avec la réponse, même composée en mathématiques
+	 * (`.dériver t^2` : « Calcul par rapport à x… »).
+	 */
+	readonly note?: string;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 	/**
@@ -268,6 +274,10 @@ export class CalcDesk {
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
+			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
+			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
+				? { note: result.note }
+				: {}),
 			failed: result.kind === 'refus',
 			result
 		});
@@ -753,7 +763,9 @@ export class CalcDesk {
 
 		this.#push({
 			label: `${label} ${displayName(name)}`,
-			text: (outcome.ok ? outcome.output : outcome.message) + note,
+			text: outcome.ok ? outcome.output : outcome.message,
+			// À part du texte : visible même quand la réponse est en mathématiques
+			...(note !== null && { note }),
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),

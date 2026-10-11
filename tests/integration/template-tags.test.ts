@@ -13,6 +13,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import { present } from '../helpers/present';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -59,29 +60,29 @@ async function cleanup() {
 
 async function svcPoint(): Promise<{ id: string }> {
 	const { data: theme } = await service
-		.from('curriculum_themes' as never)
+		.from('curriculum_themes')
 		.insert({ grade: TEST_GRADE, name: `Thème ${crypto.randomUUID().slice(0, 8)}` } as never)
 		.select('id')
 		.single();
 	const { data: obj } = await service
-		.from('curriculum_objectives' as never)
+		.from('curriculum_objectives')
 		.insert({
-			theme_id: (theme as { id: string }).id,
+			theme_id: present(theme, 'theme').id,
 			name: `Objectif ${crypto.randomUUID().slice(0, 8)}`
 		} as never)
 		.select('id')
 		.single();
 	const { data, error } = await service
-		.from('curriculum_points' as never)
+		.from('curriculum_points')
 		.insert({
-			objective_id: (obj as { id: string }).id,
+			objective_id: present(obj, 'obj').id,
 			name: `Point ${crypto.randomUUID().slice(0, 8)}`,
 			kind: 'savoir_faire'
 		} as never)
 		.select('id')
 		.single();
 	if (error) throw new Error(error.message);
-	return data as { id: string };
+	return present(data, 'point');
 }
 
 async function svcTemplate(grades: string[] = [TEST_GRADE]): Promise<{ id: string }> {

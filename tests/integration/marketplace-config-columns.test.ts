@@ -13,8 +13,9 @@
  *
  * @vitest-environment node
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
+import type { Tables } from '$lib/types/database';
 
 const db = createServiceRoleClient();
 
@@ -29,11 +30,10 @@ describe('marketplace_config', () => {
 	});
 
 	it('`is_enabled` est bien refusée', async () => {
-		const { error } = await db
-			.from('marketplace_config')
-			// @ts-expect-error - colonne volontairement inexistante
-			.select('id, is_enabled')
-			.limit(1);
+		// postgrest-js ne refuse pas à la compilation un select sur une colonne inconnue
+		// (il type `data` en erreur) : l'absence dans les types se prouve ici.
+		expectTypeOf<Tables<'marketplace_config'>>().not.toHaveProperty('is_enabled');
+		const { error } = await db.from('marketplace_config').select('id, is_enabled').limit(1);
 
 		expect(error).not.toBeNull();
 	});

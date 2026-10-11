@@ -1,5 +1,5 @@
 /**
- * Couleurs des figures interactives (lot 2, docs/wip/figures-interactives-theme-progress.md).
+ * Couleurs des figures interactives (lot 2, docs/archive/wip/figures-interactives-theme-progress.md).
  *
  * `resolveScreenStyle` : ce que GeometryCanvas peint en `style:` (doit suivre
  * le thème, ne jamais laisser passer une chaîne d'auteur non validée).

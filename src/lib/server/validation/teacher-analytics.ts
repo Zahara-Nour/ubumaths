@@ -2,7 +2,7 @@
  * Teacher analytics validation schemas (chantier V2.0).
  *
  * Schemas Zod pour les 7 endpoints `/api/teacher/classes/[classId]/analytics/*`.
- * Cf. `docs/ref/teacher-analytics.md`.
+ * Cf. `docs/systeme/analytique-prof.md`.
  */
 
 import { z } from 'zod';

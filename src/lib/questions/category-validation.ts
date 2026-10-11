@@ -101,58 +101,13 @@ export async function checkCategoryUniqueness(
 }
 
 /**
- * Find the next available level in a category (max level + 1)
- *
- * @param supabase - Supabase client instance
- * @param category - Category (theme, domain, subdomain) to check
- * @returns Promise<number> - Next available level (1 if no templates exist)
- *
- * @example
- * const nextLevel = await getNextAvailableLevel(supabase, {
- *   theme: 'Algèbre',
- *   domain: 'Équations',
- *   subdomain: 'Linéaires'
- * });
- *
- * console.log('Next available level:', nextLevel); // e.g., 5
+ * Refus d'une publication dans une catégorie déjà occupée : jamais de décalage
+ * automatique du niveau (décision de David du 2026-09-29, étendue à la création
+ * le 2026-10-10). Même message pour la création et la modification.
  */
-export async function getNextAvailableLevel(
-	supabase: SupabaseClient<Database>,
-	category: Omit<QuestionCategory, 'level'>
-): Promise<number> {
-	try {
-		// Query for max level among published templates in this category
-		let query = supabase
-			.from('question_templates')
-			.select('level')
-			.eq('status', 'published')
-			.eq('theme', category.theme)
-			.eq('domain', category.domain);
-
-		// Handle subdomain (can be null)
-		if (category.subdomain) {
-			query = query.eq('subdomain', category.subdomain);
-		} else {
-			query = query.is('subdomain', null);
-		}
-
-		const { data, error } = await query.order('level', { ascending: false }).limit(1);
-
-		if (error) {
-			throw error;
-		}
-
-		// If no templates exist in this category, start at level 1
-		if (!data || data.length === 0) {
-			return 1;
-		}
-
-		// Return max level + 1
-		return data[0].level + 1;
-	} catch (error) {
-		console.error('Error getting next available level:', error);
-		throw error;
-	}
+export function categoryTakenMessage(category: QuestionCategory): string {
+	const subdomain = category.subdomain ? `, Sous-domaine: ${category.subdomain}` : '';
+	return `Cette catégorie existe déjà (Thème: ${category.theme}, Domaine: ${category.domain}${subdomain}, Niveau: ${category.level}). Veuillez choisir un niveau différent.`;
 }
 
 /**

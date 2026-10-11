@@ -13,12 +13,18 @@
  */
 
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { MathNode } from '$lib/mathAST/types';
 import {
 	generatePedagogicalDifferentiationSteps,
-	PedagogicalDifferentiationRenderer
+	PedagogicalDifferentiationRenderer,
+	type PedagogicalDifferentiationStep,
+	withTidyStep
 } from '$lib/mathAST/pedagogical-differentiation';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { nodeCount, tidyTerms, withExplicitNumberProducts } from './tidy-terms';
+import {
+	DEFAULT_VARIABLE,
+	indexVariables,
+	variableNameOf
+} from '$lib/mathAST/cli/core/variable-argument';
 import { astOf } from './parse';
 
 // =============================================================================
@@ -55,48 +61,64 @@ export interface DerivedSteps {
  * @param name - Le nom de l'objet, quand il y en a un : la réponse s'écrit
  *   alors `f'(x) = …`. Sans lui — commande tapée à la main — la dérivée est
  *   rendue seule, puisqu'il n'y a rien à nommer.
+ * @param variable - La variable donnée après le point-virgule (`.dériver t^2 ; t`).
+ *   Sans elle : `x`, comme `.diff` — aucune devinette (décision de David,
+ *   2026-10-06) : `.dériver t^3` répond `0`, et la ligne indique comment
+ *   choisir t (`variableHintOf`, côté `calcul.ts`).
  */
-export function deriveSteps(expression: string, name?: string): DerivedSteps | null {
+export function deriveSteps(
+	expression: string,
+	name?: string,
+	variable?: string
+): DerivedSteps | null {
 	try {
-		const node = astOf(expression, 'text');
-		if (node === null) return null;
+		const parsed = astOf(expression, 'text');
+		if (parsed === null) return null;
+		// Variables indicées (`x_1`) réécrites en variables simples, nommées par
+		// leur LaTeX : la dérivation traite un indice en constante. Les étapes
+		// sont rendues en LaTeX, où le nom s'écrit comme l'indice d'origine.
+		const indexed = indexVariables(parsed);
+		const node = indexed.node;
+
+		// La variable tapée est lue par le même parseur que l'expression (`x_1`)
+		const typedVariable = variable === undefined ? undefined : astOf(variable, 'text');
+		const explicit =
+			typedVariable === undefined
+				? undefined
+				: typedVariable === null
+					? null
+					: variableNameOf(typedVariable);
+		if (explicit === null) return null;
+
+		// Sans variable donnée : x (un objet nommé est d'ailleurs une fonction
+		// de l'atelier, en x — sa réponse s'écrit `f'(x) = …`)
+		const derivationVariable = explicit ?? DEFAULT_VARIABLE;
 
 		const result = generatePedagogicalDifferentiationSteps(node, {
-			variable: 'x',
+			variable: derivationVariable,
 			schoolLevel: 'lycee',
 			verbosity: 'detailed'
 		});
 		if (result.steps.length === 0) return null;
 
-		const steps = new PedagogicalDifferentiationRenderer().renderAll(result.steps, {
-			schoolLevel: 'lycee',
-			verbosity: 'detailed'
-		});
+		const steps = new PedagogicalDifferentiationRenderer().renderAll(
+			result.steps.map((step) => restoreStep(step, indexed.restore)),
+			{
+				schoolLevel: 'lycee',
+				verbosity: 'detailed'
+			}
+		);
 		if (steps.length === 0) return null;
 
-		// La dérivée MISE AU PROPRE : la règle de dérivation laisse `3 \cdot 3x^2`
-		// (retour de David). Si `tidy` a quelque chose à faire, c'est une étape de
-		// plus — la réponse ne tombe pas du ciel.
-		// Le membre de gauche avec un × entre deux nombres : `3 3 x^2` se lisait
-		// « 33x² » (revue). L'étape n'apparaît que si la forme se SIMPLIFIE (moins
-		// de nœuds), pas pour un simple déplacement de facteurs.
-		const tidied = tidyTerms(result.derivative);
-		const raw = toLatex(withExplicitNumberProducts(result.derivative));
-		const derivative = toLatex(tidied);
+		// La dérivée MISE AU PROPRE (`tidyTerms`) : si elle change l'écriture de
+		// la dérivée brute (`3 \cdot 3x^2`, retour de David), c'est une étape de
+		// plus — la réponse ne tombe pas du ciel. Étape partagée avec les
+		// corrections de questions (`pedagogical-differentiation/tidy-step.ts`).
+		const { steps: allSteps, derivativeLatex: derivative } = withTidyStep(
+			steps,
+			indexed.restore(result.derivative)
+		);
 		if (derivative.trim() === '') return null;
-		const allSteps: readonly RenderedStep[] =
-			nodeCount(tidied) >= nodeCount(result.derivative) || derivative === toLatex(result.derivative)
-				? steps
-				: [
-						...steps,
-						{
-							id: steps.length + 1,
-							rule: 'simplify',
-							title: 'On simplifie',
-							explanation: 'On calcule les produits et on regroupe les termes.',
-							expressionLatex: `${raw} = ${derivative}`
-						}
-					];
 
 		return {
 			steps: allSteps,
@@ -108,4 +130,28 @@ export function deriveSteps(expression: string, name?: string): DerivedSteps | n
 		// donne.
 		return null;
 	}
+}
+
+/**
+ * Une étape dont les variables indicées réécrites (`indexVariables`) sont
+ * rendues à leur forme d'origine : sans ça, `x_1` s'afficherait
+ * `\mathit{x_1}`.
+ */
+function restoreStep(
+	step: PedagogicalDifferentiationStep,
+	restore: (node: MathNode) => MathNode
+): PedagogicalDifferentiationStep {
+	return {
+		...step,
+		before: restore(step.before),
+		after: restore(step.after),
+		...(step.globalBefore && { globalBefore: restore(step.globalBefore) }),
+		...(step.globalAfter && { globalAfter: restore(step.globalAfter) }),
+		...(step.bindings && {
+			bindings: Object.fromEntries(
+				Object.entries(step.bindings).map(([key, node]) => [key, restore(node)])
+			)
+		}),
+		...(step.subSteps && { subSteps: step.subSteps.map((sub) => restoreStep(sub, restore)) })
+	};
 }

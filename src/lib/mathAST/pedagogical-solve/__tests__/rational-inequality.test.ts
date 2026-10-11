@@ -247,15 +247,16 @@ describe('palier 3 — E. erreurs', () => {
 // =============================================================================
 
 describe('palier 3 — dispatcher integration', () => {
-	it('dispatcher routes (x²-1)/(x-1) < 0 to the polynomial pipeline (canon → x+1)', async () => {
-		// The high-level `generateInequalitySteps` should route this to the
-		// linear pipeline (after canon simplifies to `x + 1 < 0`), not throw.
-		const { generateInequalitySteps } = await import('../index');
-		const steps = generateInequalitySteps(ineq('(x^2 - 1)/(x - 1) < 0'), { level: 'lycee' });
-		const kinds = flatten(steps).map((s) => s.operation?.kind);
-		// Polynomial path emits identify-equation but NO rational-* kinds.
-		expect(kinds).not.toContain('rational-sign-table');
-		expect(kinds).not.toContain('inequality-conclude-rational');
+	it('dispatcher : (x²-1)/(x-1) < 0 ne raconte pas d’étapes fausses du premier degré', async () => {
+		// Le dispatcher l'envoie au pipeline du premier degré (degré de la forme
+		// canonique : 1). Mesuré avant le 2026-10-08 : ce pipeline divisait par
+		// le « coefficient » `(x+1)/x` et concluait `x < 0` — faux (S = ]-∞ ; -1[).
+		// Le terme n'est pas de la forme a·x : il lève désormais, et l'appelant
+		// se replie sur le moteur.
+		const { generateInequalitySteps, UndevelopedLinearForm } = await import('../index');
+		expect(() =>
+			generateInequalitySteps(ineq('(x^2 - 1)/(x - 1) < 0'), { level: 'lycee' })
+		).toThrow(UndevelopedLinearForm);
 	});
 
 	it('dispatcher routes (x³-1)/(x-1) < 0 to the quadratic pipeline (canon → x²+x+1)', async () => {

@@ -162,10 +162,7 @@ describe('Q88 — les actions d’une liste qualitative', () => {
 		]);
 	});
 
-	it.each([
-		['barres', 'barres'],
-		['circulaire', 'circulaire']
-	] as const)('diagramme %s des modalités', (kind) => {
+	it.each(['barres', 'circulaire'] as const)('diagramme %s des modalités', (kind) => {
 		const chart = listChart(atelier, 'L', null, kind);
 
 		expect(chart.ok && chart.node.kind).toBe(kind);

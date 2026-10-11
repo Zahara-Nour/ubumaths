@@ -17,7 +17,7 @@ import type { ConstraintMode, QuestionInstance, QuestionTemplate } from '$lib/qu
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
 // Question réelle #623 « Deviner le terme général » : attendu `a×b^n`
-const SUITE_TEMPLATE = JSON.parse(readFileSync('docs/relecture/suites/623.json', 'utf-8'))
+const SUITE_TEMPLATE = JSON.parse(readFileSync('tests/fixtures/relecture/suites/623.json', 'utf-8'))
 	.template as QuestionTemplate;
 
 function suiteInstance(form?: ConstraintMode): QuestionInstance {
@@ -38,7 +38,8 @@ function simpleInstance(expectedAnswer: string, form?: ConstraintMode): Question
 	return {
 		templateId: 'form-constraint',
 		statement: 'Test' as ResolvedMarkdown,
-		blanks: [{ expectedAnswer }],
+		// Case de maths : le type que le générateur donne à une case `$…$`
+		blanks: [{ expectedAnswer, type: 'math' }],
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',

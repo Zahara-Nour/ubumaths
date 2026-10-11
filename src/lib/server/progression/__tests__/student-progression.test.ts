@@ -7,7 +7,7 @@
  * `student/objectifs/+page.server.ts` — et divergeait sur deux points, que les
  * cas A1/A2 et A5 ci-dessous verrouillent.
  *
- * Spec : docs/wip/progression-eleve-progress.md §Comportements attendus
+ * Spec : docs/archive/wip/progression-eleve-progress.md §Comportements attendus
  */
 
 import { describe, it, expect, vi } from 'vitest';

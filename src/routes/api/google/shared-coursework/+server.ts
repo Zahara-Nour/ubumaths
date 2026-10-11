@@ -43,6 +43,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import {
@@ -59,6 +60,8 @@ import {
  * Supports pagination and filtering by class, course, coursework, and visibility
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can list shared coursework
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -306,6 +309,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Creates shared_coursework records for coursework+class combinations
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -474,6 +479,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  * Deletes shared_coursework records (idempotent)
  */
 export const DELETE: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 

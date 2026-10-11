@@ -1,5 +1,5 @@
 /**
- * Aperçu humain d'un lot : `docs/corrections/<lot>/APERCU.md`
+ * Aperçu humain d'un lot : `data/corrections/<lot>/APERCU.md`
  * ===========================================================
  *
  * Pour chaque modèle : titre, id, code, puis 3 tirages rendus (énoncé, réponse
@@ -94,7 +94,7 @@ export function buildPreview(
 		`> ${description}. Généré par \`pnpm corrections:preview ${lotName}\` : ne pas éditer à la main ` +
 			`(éditer la proposition \`<id>.json\` ou le lot, puis régénérer). ` +
 			`Couleurs : orange = ce que l'on transforme, bleu = étape intermédiaire, vert = conclusion ` +
-			`(cf. docs/ref/corrections-redaction.md).`,
+			`(cf. docs/pratiques/corrections-redaction.md).`,
 		'',
 		...items.map(
 			({ template, proposal }) =>

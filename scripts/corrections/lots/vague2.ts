@@ -2,7 +2,7 @@
  * Lots « vague2-brouillons » / « vague2-publies » : numération et calcul décimal
  * =============================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, codes R-X10,
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, codes R-X10,
  * R-DEC-RANG, N-COMPARER-ENT, N-COMPARER-DEC, N-ESPACES, N-ZEROS, N-DIVEUCL.
  * Répartition selon le statut en prod (lecture seule, 2026-09-29) : `draft` →
  * `vague2-brouillons`, `published` → `vague2-publies`.

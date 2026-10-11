@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Figure } from '$lib/geometry-core/graph/figure';
-import { numeric, type GeoPoint } from '$lib/geometry-core/types/geo-value';
+import { numeric } from '$lib/geometry-core/types/geo-value';
+import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 import {
 	partialSegmentSVG,

@@ -2,164 +2,54 @@
  * Zod validation — Curriculum tracking (suivi du programme)
  * =========================================================
  *
- * Referential tree: Thème → Item → Point. All inputs validated here.
- * Mirrors the DB constraints in migration 20260621100000_curriculum_tracking.sql.
+ * Points de programme (génération neuve, ADR 0020), tags d'exercices, cahier
+ * de texte. L'arbre thème → objectif ne s'édite plus (C5, étape 3) : un point
+ * se crée par migration (le BO fait foi), et seuls son libellé et son
+ * archivage se modifient.
  */
 
 import { z } from 'zod';
-import { gradeCodeSchema } from './grades';
 
 // ---------------------------------------------------------------------------
 // Shared field schemas
 // ---------------------------------------------------------------------------
 
-const nameSchema = z
-	.string()
-	.trim()
-	.min(1, 'Le nom ne peut pas être vide')
-	.max(200, 'Le nom ne peut pas dépasser 200 caractères');
-
 const displayOrderSchema = z.number().int().min(0).max(100000);
 
-const pointKindSchema = z.enum(['connaissance', 'savoir_faire', 'demonstration']);
-const regimeAcquisitionSchema = z.enum(['fluence', 'diversite']);
-const exigenceSchema = z.enum(['attendu', 'approfondissement']);
-const rangSchema = z.number().int().min(1).max(4);
-
 // ---------------------------------------------------------------------------
-// Thème (level 1)
+// Point de programme — renommer, archiver
 // ---------------------------------------------------------------------------
-
-export const createThemeSchema = z.object({
-	grade: gradeCodeSchema,
-	name: nameSchema,
-	display_order: displayOrderSchema.optional()
-});
-
-export const updateThemeSchema = z
-	.object({
-		name: nameSchema.optional(),
-		display_order: displayOrderSchema.optional()
-	})
-	.refine((d) => d.name !== undefined || d.display_order !== undefined, {
-		message: 'Au moins un champ à mettre à jour'
-	});
-
-// ---------------------------------------------------------------------------
-// Item (level 2)
-// ---------------------------------------------------------------------------
-
-export const createItemSchema = z.object({
-	theme_id: z.string().uuid(),
-	name: nameSchema,
-	display_order: displayOrderSchema.optional()
-});
-
-export const updateItemSchema = z
-	.object({
-		name: nameSchema.optional(),
-		display_order: displayOrderSchema.optional()
-	})
-	.refine((d) => d.name !== undefined || d.display_order !== undefined, {
-		message: 'Au moins un champ à mettre à jour'
-	});
-
-// ---------------------------------------------------------------------------
-// Point (level 3, tracking grain)
-// ---------------------------------------------------------------------------
-
-export const createPointSchema = z.object({
-	objective_id: z.string().uuid(),
-	name: nameSchema,
-	display_order: displayOrderSchema.optional(),
-	// `kind` est obligatoire depuis la fusion des référentiels : c'est lui qui
-	// garantit que la liste des connaissances d'un niveau est toujours complète.
-	kind: pointKindSchema,
-	regime_acquisition: regimeAcquisitionSchema.optional(),
-	exigence: exigenceSchema.optional(),
-	rang: rangSchema.nullable().optional()
-});
-
-export const updatePointSchema = z
-	.object({
-		// Déplacer un point sous un autre objectif — y compris d'un thème à
-		// l'autre. Le point garde son id et son code : ses tags d'exercices, sa
-		// couverture et l'acquisition des élèves suivent le déplacement.
-		objective_id: z.string().uuid().optional(),
-		name: nameSchema.optional(),
-		display_order: displayOrderSchema.optional(),
-		kind: pointKindSchema.optional(),
-		regime_acquisition: regimeAcquisitionSchema.optional(),
-		exigence: exigenceSchema.optional(),
-		rang: rangSchema.nullable().optional(),
-		// soft-archive toggle: true → set archived_at = now(), false → clear
-		archived: z.boolean().optional()
-	})
-	.refine((d) => Object.values(d).some((v) => v !== undefined), {
-		message: 'Au moins un champ à mettre à jour'
-	});
 
 /**
- * Réordonnancement d'un objectif entier, en une requête.
- *
- * La liste doit couvrir exactement les points de l'objectif — la fonction PG
- * `reorder_curriculum_points` refuse un sous-ensemble, qui laisserait une partie
- * des positions sur leurs anciennes valeurs. Les points archivés en font partie :
- * l'UI les masque, elle ne les sort pas de l'objectif.
+ * Libellé d'un point. Borne à 500 : les libellés du BO montent à près de 400
+ * caractères (36 points neufs dépassent 200, mesuré le 2026-10-10) ; la borne
+ * de 200 des anciens noms refuserait de les réenregistrer tels quels.
  */
-export const reorderThemesSchema = z.object({
-	grade: gradeCodeSchema,
-	theme_ids: z
-		.array(z.string().uuid())
-		.min(1, 'Aucun thème à réordonner')
-		.max(100, 'Trop de thèmes pour un seul niveau')
-});
+const pointNameSchema = z
+	.string()
+	.trim()
+	.min(1, 'Le libellé ne peut pas être vide')
+	.max(500, 'Le libellé ne peut pas dépasser 500 caractères');
 
-export const reorderObjectivesSchema = z.object({
-	theme_id: z.string().uuid(),
-	objective_ids: z
-		.array(z.string().uuid())
-		.min(1, 'Aucun objectif à réordonner')
-		.max(200, 'Trop d’objectifs pour un seul thème')
-});
+/**
+ * PATCH d'un point : `name` et `archived`, rien d’autre. Un objet strict refuse les
+ * champs retirés (code, nature, exigence, rang, rattachement, ordre) au lieu de
+ * les ignorer en silence.
+ */
+export const updateProgrammePointSchema = z
+	.strictObject(
+		{
+			name: pointNameSchema.optional(),
+			// true → archived_at = now() ; false → restauré
+			archived: z.boolean().optional()
+		},
+		{ error: 'Seuls le libellé et l’archivage d’un point se modifient' }
+	)
+	.refine((d) => d.name !== undefined || d.archived !== undefined, {
+		message: 'Au moins un champ à mettre à jour'
+	});
 
-export const reorderPointsSchema = z.object({
-	objective_id: z.string().uuid(),
-	point_ids: z
-		.array(z.string().uuid())
-		.min(1, 'Aucun point à réordonner')
-		.max(500, 'Trop de points pour un seul objectif')
-});
-
-// ---------------------------------------------------------------------------
-// Query-param schemas (GET filters)
-// ---------------------------------------------------------------------------
-
-export const themeListQuerySchema = z.object({
-	grade: gradeCodeSchema
-});
-
-export const objectiveListQuerySchema = z.object({
-	theme_id: z.string().uuid()
-});
-
-export const pointListQuerySchema = z.object({
-	objective_id: z.string().uuid()
-});
-
-// ---------------------------------------------------------------------------
-// Inferred input types
-// ---------------------------------------------------------------------------
-
-export type CreateThemeInput = z.infer<typeof createThemeSchema>;
-export type UpdateThemeInput = z.infer<typeof updateThemeSchema>;
-export type CreateItemInput = z.infer<typeof createItemSchema>;
-export type UpdateItemInput = z.infer<typeof updateItemSchema>;
-export type CreatePointInput = z.infer<typeof createPointSchema>;
-export type UpdatePointInput = z.infer<typeof updatePointSchema>;
-export type ReorderThemesInput = z.infer<typeof reorderThemesSchema>;
-export type ReorderObjectivesInput = z.infer<typeof reorderObjectivesSchema>;
-export type ReorderPointsInput = z.infer<typeof reorderPointsSchema>;
+export type UpdateProgrammePointInput = z.infer<typeof updateProgrammePointSchema>;
 export type TemplateTagInput = z.infer<typeof templateTagSchema>;
 
 // ---------------------------------------------------------------------------

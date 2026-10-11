@@ -2,19 +2,21 @@
 
 # Reproduit en local les erreurs du job "Lint" de la CI, sans son coût.
 #
-# Le job CI est type-aware (`projectService: true`) : il construit tout le
-# programme TypeScript, soit ~35 s et 1,15 Go pour douze fichiers — d'où le choix
-# de le garder CI-only sur cette machine. Or les trois règles qui l'ont fait
-# rougir sur les 100 derniers runs ne consultent jamais le vérificateur de types :
+# Le job CI construit le programme TypeScript (`projectService: true`, posé sur
+# les fichiers Svelte) : ~35 s et 1,15 Go pour douze fichiers — d'où le choix de
+# le garder CI-only sur cette machine. Or ses règles de niveau erreur ne
+# consultent jamais le vérificateur de types (seule `svelte/no-unused-props`
+# en a besoin, et se tait sans lui) :
 #
-#   no-unused-vars              -> oxlint le couvre à l'identique (Rust, ~1 s)
-#   supabase/require-error-check -> règle AST pure
-#   custom/require-zod-validation -> règle AST pure
-#   no-irregular-whitespace      -> règle de jeton (espace insécable littérale, #762)
+#   no-unused-vars               -> oxlint le couvre (Rust, ~1 s), eslint aussi
+#   js / typescript-eslint / svelte « recommended » -> règles AST ou de jeton
+#     (dont `no-fallthrough`, rouge en CI sur #927, et `no-irregular-whitespace`, #762)
+#   supabase/require-error-check, custom/require-zod-validation -> AST pur
 #
-# Les trois dernières tournent donc sous `eslint.fast.config.js`, sans le service
-# TypeScript : ~2 s et 279 Mo sur le même lot. Vérifié fidèle à la config
-# complète (même verdict, ni raté ni faux positif) sur les 419 routes d'API.
+# `eslint.fast.config.js` reprend donc la config complète sans `projectService` :
+# ~1-2 s sur un lot de 24 fichiers, 33 s et 0 erreur sur tout `src/` (vérifié
+# le 2026-10-07, la CI de main étant verte : ni raté connu ni faux positif).
+# `--quiet` : les `warn` ne font pas échouer la CI, on ne montre que les erreurs.
 #
 # Usage : scripts/lint-fast.sh [ref]   (défaut : ce qui diffère d'origin/main)
 #         scripts/lint-fast.sh --staged
@@ -57,8 +59,8 @@ EXIT=0
 # oxlint : couvre no-unused-vars, en `error` (cf. .oxlintrc.json).
 echo "$FILES" | xargs npx oxlint || EXIT=$?
 
-# eslint réduit aux deux règles maison.
-echo "$FILES" | xargs npx eslint --config eslint.fast.config.js || EXIT=$?
+# eslint : les règles d'erreur de la config complète, sans service TypeScript.
+echo "$FILES" | xargs npx eslint --quiet --config eslint.fast.config.js || EXIT=$?
 
 # Parité des variables d'environnement : une clé importée de `$env/static` mais
 # absente de `.github/ci.env` rend le typecheck vert en local et rouge en CI.

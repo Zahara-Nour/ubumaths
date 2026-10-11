@@ -9,7 +9,8 @@
 		Calculator,
 		Laugh,
 		FlaskConical,
-		Shapes
+		Shapes,
+		KeyRound
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
 	import type { Tables } from '$lib/types/database';
@@ -41,6 +42,8 @@
 			// L'atelier est l'entrée unique du grapheur (`/grapheur` y mène encore,
 			// ouvert sur le Graphe) : décision G1 de David, 2026-10-04.
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
+			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
+			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',

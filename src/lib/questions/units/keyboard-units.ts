@@ -28,7 +28,7 @@ export const UNITS_LAYOUT_ID = 'chiphre-units';
 
 /**
  * Unités courantes au collège, par grandeur, dans l'ordre croissant.
- * Les écritures suivent `docs/ref/notation-unites.md` (lisibles par `parseUnitExpression`).
+ * Les écritures suivent `docs/pratiques/notation-unites.md` (lisibles par `parseUnitExpression`).
  */
 const UNIT_CATALOGUE: readonly (readonly string[])[] = [
 	['mm', 'cm', 'm', 'km'], // longueur

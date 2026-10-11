@@ -1,7 +1,7 @@
 /**
  * « Sur le graphique » — lot 2b du passage de `/grapheur` par l'atelier.
  *
- * Phase 0 `docs/wip/atelier-grapheur-phase0.md` §1 S1 à S5. Les réglages
+ * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §1 S1 à S5. Les réglages
  * s'écrivent dans l'ATELIER (`setDisplay`) ; les nombres affichés (pente,
  * aire, courbure, longueur) sont calculés sur la courbe dessinée.
  */

@@ -849,6 +849,11 @@
 					minHeight="60px"
 					enterToSend
 				/>
+				<!-- RGPD (C10, 2026-10-11) : le texte saisi part tel quel chez le sous-traitant IA. -->
+				<span class="mt-1 block text-xs text-muted-foreground">
+					Ne donne ni ton nom, ni ton adresse, ni aucune information personnelle : tes messages sont
+					envoyés à un service d’intelligence artificielle.
+				</span>
 			{/if}
 		</div>
 	</div>

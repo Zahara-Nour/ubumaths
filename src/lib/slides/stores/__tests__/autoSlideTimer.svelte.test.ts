@@ -7,7 +7,7 @@
  * diapositive dont le compte est déjà arrivé à 0.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { createAutoSlideTimer, type AutoSlideTimer } from '../autoSlideTimer.svelte.js';
 
 interface Input {
@@ -20,13 +20,13 @@ interface Input {
 const base: Input = { key: '0-0', duration: 3000, paused: false, overview: false };
 
 let timer: AutoSlideTimer;
-let onexpire: ReturnType<typeof vi.fn>;
-let onrevisitfinished: ReturnType<typeof vi.fn>;
+let onexpire: Mock<() => void>;
+let onrevisitfinished: Mock<() => void>;
 
 beforeEach(() => {
 	vi.useFakeTimers();
-	onexpire = vi.fn();
-	onrevisitfinished = vi.fn();
+	onexpire = vi.fn<() => void>();
+	onrevisitfinished = vi.fn<() => void>();
 	timer = createAutoSlideTimer({ onexpire, onrevisitfinished });
 });
 

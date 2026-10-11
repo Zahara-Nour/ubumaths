@@ -84,7 +84,9 @@ const TEST_IDS = {
  */
 function setupAuthedSupabase(
 	mockSupabase: ReturnType<typeof mockSupabaseClient>,
-	endpointFrom: unknown | ((table: string) => unknown),
+	// `object` et non `unknown` : `unknown | fn` vaut `unknown` et le `table` des
+	// rappels perdrait son type.
+	endpointFrom: object | ((table: string) => unknown),
 	userId: string = TEST_IDS.user1
 ) {
 	const profileChain = {

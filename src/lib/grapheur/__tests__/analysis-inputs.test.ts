@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { analyzeAllFunctions, toAnalysisInputs } from '../analysis';
 import { createEvaluator, parseFunction } from '../evaluator';
 import type { ExplicitFunction, Plottable, SequencePlottable, Viewport } from '../types';
-import { parseSequence } from '../sequence';
+import { DEFAULT_FIRST_TERM_MAX, DEFAULT_FIRST_TERM_MIN, parseSequence } from '../sequence';
 import { toLatex } from '$lib/mathAST/latex-generator';
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
@@ -17,6 +17,12 @@ function explicit(latex: string, overrides: Partial<ExplicitFunction> = {}): Exp
 		ast: parsed.ast ?? undefined,
 		parseError: parsed.error ?? undefined,
 		variable: 'x',
+		// Aucune analyse affichée : défauts du schéma `explicitFunctionStateSchema`
+		showDerivative: false,
+		tangentAt: null,
+		integral: null,
+		showOsculating: false,
+		showArcLength: false,
 		color: '#0000ff',
 		visible: true,
 		lineWidth: 2,
@@ -39,6 +45,9 @@ function sequence(): SequencePlottable {
 		usesIndex: parsed.usesIndex,
 		firstIndex: 0,
 		firstTerm: null,
+		firstTermParameter: null,
+		firstTermMin: DEFAULT_FIRST_TERM_MIN,
+		firstTermMax: DEFAULT_FIRST_TERM_MAX,
 		representation: 'ranks',
 		cobwebSteps: 10,
 		color: '#ff0000',

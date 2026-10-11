@@ -30,7 +30,8 @@ const LATEX_PARSERS = [
 ] as const;
 
 /** Les composants d'unité d'un nœud grandeur, triés, pour comparer deux écritures. */
-function components(node: MathNode | undefined): string {
+// `ast` vaut null quand le parseur échoue : même verdict que pour une non-grandeur
+function components(node: MathNode | null | undefined): string {
 	if (!node || !isUnit(node)) return 'pas une grandeur';
 	return JSON.stringify([...node.unit.components].sort()) + ` ×${node.unit.coefficient}`;
 }

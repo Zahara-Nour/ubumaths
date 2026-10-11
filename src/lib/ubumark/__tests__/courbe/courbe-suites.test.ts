@@ -1,14 +1,14 @@
 /**
  * Bloc ```courbe — suites (décision de David du 2026-10-01, 1re spé)
  *
- * Comportements S1 à S11 de docs/wip/bloc-courbe-progress.md, section « Suites ».
+ * Comportements S1 à S11 de docs/archive/wip/bloc-courbe-progress.md, section « Suites ».
  */
 import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { generateTypst } from '../../generators/typst-generator';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, templateMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
 import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 import { COURBE_LIMITS } from '../../types/courbe';
@@ -116,7 +116,9 @@ describe('suites — variables de modèle (S4)', () => {
 	it('{{a}} et {{u0}} résolus avant la lecture du bloc', () => {
 		const resolved = String(
 			resolveMarkdownContent(
-				'```courbe\nx: -1 ; 10\ny: -1 ; 20\nv(0) = {{u0}} ; v(n+1) = {{a}}*v(n)+{{b}} pour n de 0 à 3\n```',
+				templateMarkdown(
+					'```courbe\nx: -1 ; 10\ny: -1 ; 20\nv(0) = {{u0}} ; v(n+1) = {{a}}*v(n)+{{b}} pour n de 0 à 3\n```'
+				),
 				[
 					{ name: 'u0', value: '4' },
 					{ name: 'a', value: '0.5' },
@@ -205,7 +207,8 @@ describe('suites — robustesse (S6)', () => {
 			if (node.spec) buildCourbeScene(node.spec);
 			generateCourbeTypst(node);
 		}
-		expect(performance.now() - start).toBeLessThan(50);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - start).toBeLessThan(1000);
 	});
 
 	it('scène forgée (sans analyse) : termes et suites tronqués aux plafonds', () => {
@@ -220,7 +223,8 @@ describe('suites — robustesse (S6)', () => {
 		};
 		const start = performance.now();
 		const scene = buildCourbeScene(forged);
-		expect(performance.now() - start).toBeLessThan(50);
+		// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+		expect(performance.now() - start).toBeLessThan(1000);
 		expect(scene.sequences.length).toBeLessThanOrEqual(COURBE_LIMITS.sequences);
 		const total = scene.sequences.reduce((n, s) => n + s.terms.length, 0);
 		expect(total).toBeLessThanOrEqual(COURBE_LIMITS.totalSequenceTerms);

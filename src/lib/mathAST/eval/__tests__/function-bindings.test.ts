@@ -27,9 +27,23 @@ import {
 	compose
 } from '../../factory';
 import type { FunctionNode, MathNode } from '../../types';
-import type { EvalValue } from '../types';
+import type { EvalResult, EvalValue } from '../types';
 import { isEvalUnevaluable } from '../types';
 import { isNumber } from '../../guards';
+
+/** Résultat d'évaluation rétréci au cas « valeur ». */
+type EvalValueResult = Extract<EvalResult, { status: 'value' }>;
+
+/**
+ * Affirme que l'évaluation a abouti à une valeur, puis rétrécit le résultat.
+ */
+function expectValue(result: EvalResult): EvalValueResult {
+	expect(result.status).toBe('value');
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
+	return result;
+}
 
 // =============================================================================
 // Helper Functions
@@ -393,9 +407,11 @@ describe('evaluate with function bindings', () => {
 	describe('basic evaluation', () => {
 		it('evaluates f(3) = 9 with f(x) = x^2', () => {
 			const ast = parseLatex('f(3)', { genericFunctions: { names: ['f'] } });
-			const result = evaluate(ast, {
-				functions: { f: defFromLatex('x^2', ['x']) }
-			});
+			const result = expectValue(
+				evaluate(ast, {
+					functions: { f: defFromLatex('x^2', ['x']) }
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			const r = getRational(result.value);
@@ -405,14 +421,16 @@ describe('evaluate with function bindings', () => {
 
 		it('evaluates g(2, 3) = 5 with g(x, y) = x + y', () => {
 			const ast = func('g', [number('2'), number('3')]);
-			const result = evaluate(ast, {
-				functions: {
-					g: {
-						expression: add(variable('x'), variable('y')),
-						parameters: ['x', 'y']
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						g: {
+							expression: add(variable('x'), variable('y')),
+							parameters: ['x', 'y']
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			const r = getRational(result.value);
@@ -424,12 +442,14 @@ describe('evaluate with function bindings', () => {
 	describe('nested function evaluation', () => {
 		it('evaluates f(g(2)) = 9 with f(x) = x^2 and g(x) = x + 1', () => {
 			const ast = func('f', [func('g', [number('2')])]);
-			const result = evaluate(ast, {
-				functions: {
-					f: defFromLatex('x^2', ['x']),
-					g: defFromLatex('x + 1', ['x'])
-				}
-			});
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: defFromLatex('x^2', ['x']),
+						g: defFromLatex('x + 1', ['x'])
+					}
+				})
+			);
 
 			// f(g(2)) = f(3) = 9
 			expect(isRational(result.value)).toBe(true);
@@ -474,7 +494,7 @@ describe('evaluate with function bindings', () => {
 	describe('preserves backward compatibility', () => {
 		it('evaluates expressions without function bindings as before', () => {
 			const ast = parseLatex('2+3');
-			const result = evaluate(ast);
+			const result = expectValue(evaluate(ast));
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(5n);
@@ -482,7 +502,7 @@ describe('evaluate with function bindings', () => {
 
 		it('evaluates built-in functions without needing bindings', () => {
 			const ast = parseLatex('\\sqrt{4}');
-			const result = evaluate(ast);
+			const result = expectValue(evaluate(ast));
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(2n);
@@ -555,9 +575,11 @@ describe('function bindings with LaTeX parsing', () => {
 			expect(ast.name).toBe('f');
 		}
 
-		const result = evaluate(ast, {
-			functions: { f: defFromLatex('x^2', ['x']) }
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: { f: defFromLatex('x^2', ['x']) }
+			})
+		);
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(9n);
@@ -571,9 +593,11 @@ describe('function bindings with LaTeX parsing', () => {
 		const substituted = substitute(ast, { x: 2 });
 
 		// Then evaluate with f(t) = t^2
-		const result = evaluate(substituted, {
-			functions: { f: defFromLatex('t^2', ['t']) }
-		});
+		const result = expectValue(
+			evaluate(substituted, {
+				functions: { f: defFromLatex('t^2', ['t']) }
+			})
+		);
 
 		// f(2+1) = f(3) = 9
 		expect(isRational(result.value)).toBe(true);
@@ -583,9 +607,11 @@ describe('function bindings with LaTeX parsing', () => {
 	it('evaluates 2*f(3) + 1 with f(x) = x^2', () => {
 		const ast = parseLatex('2 \\cdot f(3) + 1', { genericFunctions: { names: ['f'] } });
 
-		const result = evaluate(ast, {
-			functions: { f: defFromLatex('x^2', ['x']) }
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: { f: defFromLatex('x^2', ['x']) }
+			})
+		);
 
 		// 2*9 + 1 = 19
 		expect(isRational(result.value)).toBe(true);
@@ -601,9 +627,11 @@ describe('edge cases', () => {
 	it('handles function returning constant', () => {
 		// f(x) = 5 (constant function)
 		const ast = func('f', [number('999')]);
-		const result = evaluate(ast, {
-			functions: { f: { expression: number('5'), parameters: ['x'] } }
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: { f: { expression: number('5'), parameters: ['x'] } }
+			})
+		);
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(5n);
@@ -612,9 +640,11 @@ describe('edge cases', () => {
 	it('handles identity function', () => {
 		// id(x) = x
 		const ast = func('id', [number('42')]);
-		const result = evaluate(ast, {
-			functions: { id: { expression: variable('x'), parameters: ['x'] } }
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: { id: { expression: variable('x'), parameters: ['x'] } }
+			})
+		);
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(42n);
@@ -623,9 +653,11 @@ describe('edge cases', () => {
 	it('handles zero-argument function (constant)', () => {
 		// c() = 7 (no parameters)
 		const ast = func('c', []);
-		const result = evaluate(ast, {
-			functions: { c: { expression: number('7'), parameters: [] } }
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: { c: { expression: number('7'), parameters: [] } }
+			})
+		);
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(7n);
@@ -634,9 +666,11 @@ describe('edge cases', () => {
 	it('substitutes function with complex argument', () => {
 		// f(2+3) with f(x) = x^2 should give (2+3)^2 = 25
 		const ast = func('f', [add(number('2'), number('3'))]);
-		const result = evaluate(ast, {
-			functions: { f: defFromLatex('x^2', ['x']) }
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: { f: defFromLatex('x^2', ['x']) }
+			})
+		);
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(25n);
@@ -646,15 +680,17 @@ describe('edge cases', () => {
 		// f(x) = g(x) + 1, g(x) = x^2
 		// f(3) = g(3) + 1 = 9 + 1 = 10
 		const ast = func('f', [number('3')]);
-		const result = evaluate(ast, {
-			functions: {
-				f: {
-					expression: add(func('g', [variable('x')]), number('1')),
-					parameters: ['x']
-				},
-				g: defFromLatex('x^2', ['x'])
-			}
-		});
+		const result = expectValue(
+			evaluate(ast, {
+				functions: {
+					f: {
+						expression: add(func('g', [variable('x')]), number('1')),
+						parameters: ['x']
+					},
+					g: defFromLatex('x^2', ['x'])
+				}
+			})
+		);
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(10n);
@@ -750,15 +786,17 @@ describe('derivative functions with pre-computed derivatives', () => {
 	describe('evaluate with derivatives', () => {
 		it("evaluates f'(2) = 4 with f(x) = x^2, f'(x) = 2x", () => {
 			const ast = derivativeFunc('f', [number('2')], 1);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x^2'),
-						parameters: ['x'],
-						derivative: parseLatex('2x')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x^2'),
+							parameters: ['x'],
+							derivative: parseLatex('2x')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			const r = getRational(result.value);
@@ -768,15 +806,17 @@ describe('derivative functions with pre-computed derivatives', () => {
 
 		it("evaluates f'(3) = 6 with f(x) = x^2, f'(x) = 2x", () => {
 			const ast = derivativeFunc('f', [number('3')], 1);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x^2'),
-						parameters: ['x'],
-						derivative: parseLatex('2x')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x^2'),
+							parameters: ['x'],
+							derivative: parseLatex('2x')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(6n); // 2*3 = 6
@@ -784,15 +824,17 @@ describe('derivative functions with pre-computed derivatives', () => {
 
 		it("evaluates f'(1) = 3 with f(x) = x^3, f'(x) = 3x^2", () => {
 			const ast = derivativeFunc('f', [number('1')], 1);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x^3'),
-						parameters: ['x'],
-						derivative: parseLatex('3x^2')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x^3'),
+							parameters: ['x'],
+							derivative: parseLatex('3x^2')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(3n); // 3*1^2 = 3
@@ -800,15 +842,17 @@ describe('derivative functions with pre-computed derivatives', () => {
 
 		it("evaluates f'(2) = 12 with f(x) = x^3, f'(x) = 3x^2", () => {
 			const ast = derivativeFunc('f', [number('2')], 1);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x^3'),
-						parameters: ['x'],
-						derivative: parseLatex('3x^2')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x^3'),
+							parameters: ['x'],
+							derivative: parseLatex('3x^2')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(12n); // 3*4 = 12
@@ -897,15 +941,17 @@ describe('inverse functions with pre-computed inverses', () => {
 	describe('evaluate with inverses', () => {
 		it('evaluates f^{-1}(4) = 2 with f(x) = x^2, f^{-1}(x) = sqrt(x)', () => {
 			const ast = inverseFunc('f', [number('4')]);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x^2'),
-						parameters: ['x'],
-						inverse: parseLatex('\\sqrt{x}')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x^2'),
+							parameters: ['x'],
+							inverse: parseLatex('\\sqrt{x}')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			const r = getRational(result.value);
@@ -915,15 +961,17 @@ describe('inverse functions with pre-computed inverses', () => {
 
 		it('evaluates f^{-1}(9) = 3 with f(x) = x^2, f^{-1}(x) = sqrt(x)', () => {
 			const ast = inverseFunc('f', [number('9')]);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x^2'),
-						parameters: ['x'],
-						inverse: parseLatex('\\sqrt{x}')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x^2'),
+							parameters: ['x'],
+							inverse: parseLatex('\\sqrt{x}')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(3n); // sqrt(9) = 3
@@ -931,15 +979,17 @@ describe('inverse functions with pre-computed inverses', () => {
 
 		it('evaluates f^{-1}(5) = 4 with f(x) = x + 1, f^{-1}(x) = x - 1', () => {
 			const ast = inverseFunc('f', [number('5')]);
-			const result = evaluate(ast, {
-				functions: {
-					f: {
-						expression: parseLatex('x + 1'),
-						parameters: ['x'],
-						inverse: parseLatex('x - 1')
+			const result = expectValue(
+				evaluate(ast, {
+					functions: {
+						f: {
+							expression: parseLatex('x + 1'),
+							parameters: ['x'],
+							inverse: parseLatex('x - 1')
+						}
 					}
-				}
-			});
+				})
+			);
 
 			expect(isRational(result.value)).toBe(true);
 			expect(getRational(result.value)?.n).toBe(4n); // 5 - 1 = 4
@@ -963,15 +1013,19 @@ describe('combined derivative and inverse function tests', () => {
 		};
 
 		// Evaluate f(3) = 9
-		const fResult = evaluate(func('f', [number('3')]), { functions: bindings });
+		const fResult = expectValue(evaluate(func('f', [number('3')]), { functions: bindings }));
 		expect(getRational(fResult.value)?.n).toBe(9n);
 
 		// Evaluate f'(3) = 6
-		const fPrimeResult = evaluate(derivativeFunc('f', [number('3')], 1), { functions: bindings });
+		const fPrimeResult = expectValue(
+			evaluate(derivativeFunc('f', [number('3')], 1), { functions: bindings })
+		);
 		expect(getRational(fPrimeResult.value)?.n).toBe(6n);
 
 		// Evaluate f^{-1}(9) = 3
-		const fInvResult = evaluate(inverseFunc('f', [number('9')]), { functions: bindings });
+		const fInvResult = expectValue(
+			evaluate(inverseFunc('f', [number('9')]), { functions: bindings })
+		);
 		expect(getRational(fInvResult.value)?.n).toBe(3n);
 	});
 
@@ -990,7 +1044,7 @@ describe('combined derivative and inverse function tests', () => {
 			add(func('f', [number('2')]), derivativeFunc('f', [number('2')], 1)),
 			inverseFunc('f', [number('4')])
 		);
-		const result = evaluate(expr, { functions: bindings });
+		const result = expectValue(evaluate(expr, { functions: bindings }));
 
 		expect(isRational(result.value)).toBe(true);
 		expect(getRational(result.value)?.n).toBe(10n);

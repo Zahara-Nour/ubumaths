@@ -128,21 +128,15 @@ function tryTranscendentalPatterns(
 		}
 	}
 
-	// Pattern 2: exponential — e^u. Two AST flavours :
-	//   - base = `euler()` constant (manual AST or `\exponentialE^u` LaTeX)
-	//   - base = variable `e` (parser default for `e^u` LaTeX)
-	// The variable-named-`e` form is the common path because `parseLatex('e^x')`
-	// keeps `e` as a regular variable. See `isEulerSuperscript` in
-	// `analysis/expression-classify.ts` for the matching classifier rule.
+	// Pattern 2: exponential — e^u :
+	//   - base = `euler()` constant (`e^u` and `\exponentialE^u` in both parsers).
+	//     See `isEulerSuperscript` in `analysis/expression-classify.ts` for the
+	//     matching classifier rule.
 	//   - la FONCTION `exp(u)` (`.variations exp(x)`, dérivée `exp(x)`) : sans
 	//     elle, `exp(x) = 0` revenait « non supporte » alors que `e^x = 0` a
 	//     sa réponse — et `.variations` doit distinguer ce refus d'une vraie
 	//     absence de zéro.
-	const expPatterns = [
-		P.pow(P.lit(euler()), P._('u')),
-		P.pow(P.var('e'), P._('u')),
-		P.func('exp', [P._('u')])
-	] as const;
+	const expPatterns = [P.pow(P.lit(euler()), P._('u')), P.func('exp', [P._('u')])] as const;
 	for (const target of expPatterns) {
 		const expPattern = P.prod(target, P.___('coeff', freeOfVar));
 		const bindings = tryMatch(expPattern, term);
@@ -740,9 +734,12 @@ function solveTrigonometric(
 	if (Math.abs(absA - 1) < 1e-10) {
 		xPeriodNode = basePeriodNode;
 	} else {
-		xPeriodNode = denormalize(
-			normalize(divide(basePeriodNode, number(absA.toString()), 'fraction'))
-		);
+		// Période EXACTE : 2π / |a| sur le nœud du coefficient. `absA.toString()`
+		// écrivait 1/3 en 0.3333333333333333 : sin(x/3) = 0 recevait une période
+		// 20000000000000000/3333333333333333·π, que l'affichage refusait — et la
+		// réponse perdait son « + 6kπ » (2026-10-09).
+		const absCoeff = aNumeric < 0 ? opposite(coeffNode) : coeffNode;
+		xPeriodNode = denormalize(normalize(divide(basePeriodNode, absCoeff, 'fraction')));
 	}
 
 	// Build periodic solution family

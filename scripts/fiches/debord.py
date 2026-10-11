@@ -13,7 +13,7 @@ Accepte des fichiers PDF et/ou des dossiers (tous leurs .pdf). Refuse de conclur
 sans PDF : une liste vide affichait « 0 débord » sans rien avoir analysé.
 
 Code de sortie : 0 aucun débord, 1 débord(s), 2 aucun PDF trouvé.
-Dépendance : PyMuPDF (`pip install pymupdf`, voir docs/ref/fiches-exercices.md).
+Dépendance : PyMuPDF (`pip install pymupdf`, voir docs/pratiques/fiches-exercices.md).
 
 Usage : python scripts/fiches/debord.py <pdf ou dossier>...
 """

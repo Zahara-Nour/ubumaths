@@ -1,6 +1,6 @@
 /**
  * Rejouer un historique de Calcul exporté en JSON — lot C2 de
- * `docs/wip/atelier-suppression-export-phase0.md` (R1 à R5, E1 à E3).
+ * `docs/archive/wip/atelier-suppression-export-phase0.md` (R1 à R5, E1 à E3).
  *
  * Le fichier vient de DEHORS : il est lu par Zod, borné, et chaque geste est
  * refait par le même chemin que l'élève — rien n'est injecté dans l'atelier.

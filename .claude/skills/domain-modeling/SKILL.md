@@ -44,7 +44,9 @@ deux variations de difficulté inégale.
 Quand David décrit un fonctionnement, **vérifier que le code dit pareil** (grep ciblé, lecture de la
 migration ou de la policy). Contradiction → la montrer : « Le code archive l'élève à la sortie de
 classe, tu viens de dire qu'il perd l'accès. Lequel est juste ? » Chercher un fait est mon travail,
-jamais le sien. Pas de sous-agent qui parcourt tout le dépôt (RAM, cf. CLAUDE.md) : des greps ciblés.
+jamais le sien. Des greps ciblés, pas un sous-agent qui parcourt tout le dépôt (cf. CLAUDE.md §Quand
+utiliser un agent). La doc système de la zone ([docs/README.md](../../../docs/README.md)) dit ce que
+fait le code, vérifié à une date : la confronter aussi.
 
 ### Poser les questions par tours
 

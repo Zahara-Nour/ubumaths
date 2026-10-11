@@ -81,7 +81,7 @@ describe('Courbe — figure', () => {
 		expect(open).not.toBeNull();
 	});
 
-	// Palette commune des figures (docs/wip/palette-figures-progress.md) : la
+	// Palette commune des figures (docs/archive/wip/palette-figures-progress.md) : la
 	// couleur RENDUE, lue dans les deux modes ; le PDF imprime la claire.
 	it('les couleurs suivent la palette commune, en clair comme en sombre', async () => {
 		const node = parseCourbeContent(SOURCE);

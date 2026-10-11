@@ -9,7 +9,7 @@
  * l'entraînement libre (`/automaths/test?categories=…&mode=…`).
  *
  * ⚠️ Toutes ces fonctions passent par le client de la requête, donc SOUS RLS.
- * La RLS échoue en silence (docs/ref/rls-echecs-silencieux.md) : chaque
+ * La RLS échoue en silence (docs/pratiques/rls-echecs-silencieux.md) : chaque
  * écriture relit ses lignes par `.select()` et vérifie qu'il y en a une.
  *
  * @module server/chapter-series

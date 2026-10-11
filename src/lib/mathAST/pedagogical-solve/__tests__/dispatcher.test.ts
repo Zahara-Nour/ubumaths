@@ -47,7 +47,7 @@ function eqCubic(): RelationNode {
 }
 
 function findOpKinds(steps: readonly EquationStep[]): string[] {
-	return steps.map((s) => s.operation?.kind).filter((k): k is string => Boolean(k));
+	return steps.map((s) => s.operation?.kind).filter((k) => k !== undefined);
 }
 
 // =============================================================================

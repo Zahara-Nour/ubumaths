@@ -13,9 +13,13 @@
  *
  * For admins:
  * - Returns default values (not applicable)
+ *
+ * Pour tous : la date pataphysique du jour (fuseau de Paris), affichée dans l'en-tête.
+ * Calculée ici plutôt que dans le navigateur : pas d'écart à l'hydratation.
  */
 
 import type { LayoutServerLoad } from './$types';
+import { toPataphysicalDate } from '$lib/almanach/calendar';
 import { countPendingActivationRequests } from '$lib/server/vip-card-queries';
 import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
 
@@ -49,6 +53,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 	return {
 		pendingVipRequestsCount,
-		marketplaceEnabled
+		marketplaceEnabled,
+		almanachToday: toPataphysicalDate(new Date())
 	};
 };

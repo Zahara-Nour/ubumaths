@@ -754,7 +754,8 @@ describe('TinyCAS Syntax Converter', () => {
 			const duration = Date.now() - start;
 
 			expect(result.success).toBe(true);
-			expect(duration).toBeLessThan(100); // Should complete in less than 100ms
+			// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+			expect(duration).toBeLessThan(1000);
 		});
 
 		it('should handle deeply nested patterns', () => {

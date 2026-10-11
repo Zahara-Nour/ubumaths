@@ -84,10 +84,11 @@ function asStudent(overrides: Record<string, unknown> = {}) {
 	});
 }
 
-async function statusOf(promise: Promise<unknown>): Promise<number> {
+// Un handler SvelteKit rend un MaybePromise<Response>.
+async function statusOf(promise: Response | Promise<Response>): Promise<number> {
 	try {
 		const res = await promise;
-		return (res as Response).status;
+		return res.status;
 	} catch (e) {
 		return (e as { status: number }).status;
 	}

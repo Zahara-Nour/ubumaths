@@ -17,11 +17,17 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { RequestEvent } from '@sveltejs/kit';
+// Le type d'événement de CETTE route (params et id de route exacts), généré par SvelteKit.
+import type { RequestEvent } from '../$types';
 import { PATCH, DELETE } from '../+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 // Mock middleware
+// Les routes sont gardées par l'interrupteur (B8) : on teste leur comportement allumé.
+vi.mock('$lib/config/google-classroom', () => ({
+	GOOGLE_CLASSROOM_ENABLED: true
+}));
+
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireRole: vi.fn()
 }));
@@ -46,11 +52,12 @@ describe('Google Shared Coursework by ID API', () => {
 	 * `.body.message` (and falls back to `.message` for plain `Error`s).
 	 */
 	async function expectRejectsWithMessage(
-		fn: () => Promise<unknown>,
+		// Un handler SvelteKit rend un MaybePromise<Response> : on le normalise en Promise.
+		fn: () => unknown,
 		expected: string | RegExp
 	): Promise<void> {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const err: any = await fn().then(
+		const err: any = await Promise.resolve(fn()).then(
 			() => {
 				throw new Error('Expected function to reject, but it resolved');
 			},
@@ -119,9 +126,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow(
-					'Unauthorized: authentication required'
-				);
+				await expect(PATCH(event)).rejects.toThrow('Unauthorized: authentication required');
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -140,9 +145,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow(
-					'Unauthorized: teacher role required'
-				);
+				await expect(PATCH(event)).rejects.toThrow('Unauthorized: teacher role required');
 			});
 		});
 
@@ -159,10 +162,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
-					'Invalid shared coursework ID'
-				);
+				await expectRejectsWithMessage(() => PATCH(event), 'Invalid shared coursework ID');
 			});
 
 			it('returns 400 when no update fields provided', async () => {
@@ -177,7 +177,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(PATCH(event)).rejects.toThrow();
 			});
 
 			it('returns 400 for invalid categoryId UUID', async () => {
@@ -194,7 +194,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(PATCH(event)).rejects.toThrow();
 			});
 
 			it('returns 400 when descriptionOverride exceeds 2000 characters', async () => {
@@ -211,7 +211,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(PATCH(event)).rejects.toThrow();
 			});
 
 			it('accepts descriptionOverride up to 2000 characters', async () => {
@@ -265,7 +265,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -287,7 +287,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(PATCH(event)).rejects.toThrow();
 			});
 		});
 
@@ -312,7 +312,7 @@ describe('Google Shared Coursework by ID API', () => {
 				} as unknown as RequestEvent;
 
 				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
+					() => PATCH(event),
 					'Shared coursework not found or access denied'
 				);
 			});
@@ -348,10 +348,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
-					'Category not found'
-				);
+				await expectRejectsWithMessage(() => PATCH(event), 'Category not found');
 			});
 
 			it('returns 400 when category does not belong to teacher class', async () => {
@@ -390,7 +387,7 @@ describe('Google Shared Coursework by ID API', () => {
 				} as unknown as RequestEvent;
 
 				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
+					() => PATCH(event),
 					'Category does not belong to one of your classes'
 				);
 			});
@@ -444,7 +441,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -509,7 +506,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -569,7 +566,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -640,7 +637,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -699,7 +696,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -727,10 +724,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
-					'Shared coursework not found'
-				);
+				await expectRejectsWithMessage(() => PATCH(event), 'Shared coursework not found');
 			});
 		});
 
@@ -797,7 +791,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -855,7 +849,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -897,7 +891,7 @@ describe('Google Shared Coursework by ID API', () => {
 				} as unknown as RequestEvent;
 
 				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
+					() => PATCH(event),
 					'Topic does not belong to one of your courses'
 				);
 			});
@@ -932,10 +926,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => PATCH(event as unknown as RequestEvent),
-					'Topic not found'
-				);
+				await expectRejectsWithMessage(() => PATCH(event), 'Topic not found');
 			});
 
 			it('rejects invalid topic UUID format', async () => {
@@ -952,7 +943,7 @@ describe('Google Shared Coursework by ID API', () => {
 
 				// Should fail Zod validation
 
-				await expect(PATCH(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(PATCH(event)).rejects.toThrow();
 			});
 
 			it('does not modify topic when not provided in request', async () => {
@@ -1008,7 +999,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event as unknown as RequestEvent);
+				const response = await PATCH(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1037,9 +1028,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow(
-					'Unauthorized: authentication required'
-				);
+				await expect(DELETE(event)).rejects.toThrow('Unauthorized: authentication required');
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -1054,9 +1043,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow(
-					'Unauthorized: teacher role required'
-				);
+				await expect(DELETE(event)).rejects.toThrow('Unauthorized: teacher role required');
 			});
 		});
 
@@ -1069,10 +1056,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => DELETE(event as unknown as RequestEvent),
-					'Invalid shared coursework ID'
-				);
+				await expectRejectsWithMessage(() => DELETE(event), 'Invalid shared coursework ID');
 			});
 
 			it('returns 400 for null ID param', async () => {
@@ -1083,7 +1067,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(DELETE(event)).rejects.toThrow();
 			});
 
 			it('returns 400 for undefined ID param', async () => {
@@ -1094,7 +1078,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
+				await expect(DELETE(event)).rejects.toThrow();
 			});
 		});
 
@@ -1115,7 +1099,7 @@ describe('Google Shared Coursework by ID API', () => {
 				} as unknown as RequestEvent;
 
 				await expectRejectsWithMessage(
-					() => DELETE(event as unknown as RequestEvent),
+					() => DELETE(event),
 					'Shared coursework not found or access denied'
 				);
 			});
@@ -1147,7 +1131,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await DELETE(event as unknown as RequestEvent);
+				const response = await DELETE(event);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1172,10 +1156,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => DELETE(event as unknown as RequestEvent),
-					'Shared coursework not found'
-				);
+				await expectRejectsWithMessage(() => DELETE(event), 'Shared coursework not found');
 			});
 
 			it('handles database errors during deletion', async () => {
@@ -1207,10 +1188,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => DELETE(event as unknown as RequestEvent),
-					'Failed to delete shared coursework'
-				);
+				await expectRejectsWithMessage(() => DELETE(event), 'Failed to delete shared coursework');
 			});
 		});
 	});

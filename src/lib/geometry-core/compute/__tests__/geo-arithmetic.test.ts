@@ -9,7 +9,7 @@ import {
 	geoFromNumber,
 	geoFromFraction
 } from '../geo-arithmetic';
-import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
+import { exact, numeric, isExact, isNumeric, type GeoValue } from '../../types/geo-value';
 import { geoToNumber } from '../to-number';
 import { geoEqual } from '../compare';
 import { number, opposite, sqrt, fraction } from '$lib/mathAST';
@@ -220,44 +220,53 @@ describe('geoDiv edge cases', () => {
 // =============================================================================
 
 describe('geoSqrt', () => {
+	// Racine d'une valeur positive : le résultat doit exister. On l'affirme,
+	// puis on rétrécit le type pour la suite du test.
+	function sqrtOrFail(value: GeoValue): GeoValue {
+		const result = geoSqrt(value);
+		expect(result).not.toBeNull();
+		if (result === null) throw new Error('geoSqrt a rendu null');
+		return result;
+	}
+
 	it('geoSqrt(exact(0)) -> 0', () => {
-		expect(geoToNumber(geoSqrt(exact(number('0'))))).toBe(0);
+		expect(geoToNumber(sqrtOrFail(exact(number('0'))))).toBe(0);
 	});
 
 	it('geoSqrt(exact(1)) -> 1', () => {
-		expect(geoToNumber(geoSqrt(exact(number('1'))))).toBe(1);
+		expect(geoToNumber(sqrtOrFail(exact(number('1'))))).toBe(1);
 	});
 
 	it('geoSqrt(exact(4)) -> exact(2)', () => {
-		const result = geoSqrt(exact(number('4')));
+		const result = sqrtOrFail(exact(number('4')));
 		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBe(2);
 	});
 
 	it('geoSqrt(exact(9)) -> exact(3)', () => {
-		expect(geoToNumber(geoSqrt(exact(number('9'))))).toBe(3);
+		expect(geoToNumber(sqrtOrFail(exact(number('9'))))).toBe(3);
 	});
 
 	it('geoSqrt(exact(2)) -> exact (symbolic sqrt)', () => {
-		const result = geoSqrt(exact(number('2')));
+		const result = sqrtOrFail(exact(number('2')));
 		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBeCloseTo(Math.SQRT2, 10);
 	});
 
 	it('geoSqrt(exact(1/4)) -> exact(1/2)', () => {
-		const result = geoSqrt(exact(fraction(number('1'), number('4'))));
+		const result = sqrtOrFail(exact(fraction(number('1'), number('4'))));
 		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBe(0.5);
 	});
 
 	it('geoSqrt(numeric(2)) -> numeric', () => {
-		const result = geoSqrt(numeric(2));
+		const result = sqrtOrFail(numeric(2));
 		expect(isNumeric(result)).toBe(true);
 		expect(geoToNumber(result)).toBeCloseTo(Math.SQRT2, 10);
 	});
 
 	it('geoSqrt(numeric(0)) -> numeric(0)', () => {
-		expect(geoToNumber(geoSqrt(numeric(0)))).toBe(0);
+		expect(geoToNumber(sqrtOrFail(numeric(0)))).toBe(0);
 	});
 
 	it('geoSqrt(numeric(-1)) returns null (undefined in real geometry)', () => {
@@ -278,7 +287,7 @@ describe('geoSqrt', () => {
 
 	it('sqrt(a)*sqrt(a) = a (exact round-trip)', () => {
 		const a = exact(number('7'));
-		const sa = geoSqrt(a);
+		const sa = sqrtOrFail(a);
 		const result = geoMul(sa, sa);
 		expect(geoToNumber(result)).toBe(7);
 	});

@@ -1,0 +1,99 @@
+{
+	"globalIndex": 142,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"editNotes": "Conservée de préférence à son doublon (#78/#80) : correction par 2 × moitié = nombre, réponse mise en couleur.",
+	"template": {
+		"title": "Trouver la moitié",
+		"description": "Nombres pairs de $1$ à $40$, $50$, $60$ et $100$",
+		"variations": [
+			{
+				"statement": "Quelle est la moitié de ${{b}}$ ?\n\nLa moitié de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|16..20|25|30|50"
+					},
+					{
+						"name": "b",
+						"expression": "eval:2*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La moitié de ${{b}}$ est {{solution:html}} car $2 \\times \\textcolor{{{color:primary.2}}}{{{a}}}={{b}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				]
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Double et moitié",
+		"level": 7,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "moitié de 50 = 25",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25"
+				},
+				"answers": ["25"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : double",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "moitié de 100 = 50",
+				"variationIndex": 0,
+				"variables": {
+					"a": "50"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "moitié de 2 = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "moitié de 36 = 18",
+				"variationIndex": 0,
+				"variables": {
+					"a": "18"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

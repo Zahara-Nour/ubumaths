@@ -1,42 +1,30 @@
 /**
- * Teacher — Programme (curriculum tree editor) — server load.
+ * Teacher — Programme — server load.
  *
- * Loads the Thème → Item → Point tree for the selected grade (?grade=, default
- * '6'). Mutations happen client-side via the /api/teacher/curriculum endpoints.
+ * Consultation du programme d'un niveau (?grade=, '6' par défaut) dans la
+ * génération NEUVE des points (ADR 0020) : branche > notion > points, dans
+ * l'ordre du BO. Seuls renommer et archiver un point restent possibles (via
+ * PATCH /api/teacher/curriculum/points/[pointId]).
  *
- * This is the one page that asks for archived points: everywhere else they are
- * meant to be invisible, here they must be seen to be restored.
+ * C'est la seule page qui demande les points archivés : ailleurs ils sont
+ * invisibles, ici ils doivent se voir pour être restaurés.
  */
 
 import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { gradeCodeSchema } from '$lib/server/validation/grades';
-import { getCurriculumTree } from '$lib/server/curriculum';
+import { getProgrammeTree } from '$lib/server/programme-tree';
 import { GRADE_CODES, GRADES } from '$lib/types/grades';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
 
-	const rawGrade = url.searchParams.get('grade') ?? '6';
-	const grade = gradeCodeSchema.safeParse(rawGrade).success ? rawGrade : '6';
-
-	// Les deux requêtes partent ensemble ; les `await` séparés (plutôt qu'un
-	// Promise.all déstructuré) gardent le typage du retour RPC.
-	const treeQuery = getCurriculumTree(locals.supabase, grade, { includeArchived: true });
-	// Quels points ne peuvent plus être supprimés sans perte. Une seule requête
-	// pour tout le niveau : les interroger un par un ferait 153 allers-retours.
-	const referencedQuery = locals.supabase.rpc('curriculum_referenced_points', { p_grade: grade });
-
-	const tree = await treeQuery;
-	// `locals.supabase` est déclaré sans le générique `Database` (app.d.ts) : les
-	// retours RPC arrivent en `any`, on les renarrow ici comme ailleurs.
-	const { data: referenced } = await referencedQuery;
-	const referencedRows = (referenced ?? []) as { point_id: string }[];
+	const parsedGrade = gradeCodeSchema.safeParse(url.searchParams.get('grade') ?? '6');
+	const grade = parsedGrade.success ? parsedGrade.data : '6';
 
 	return {
 		grade,
 		gradeOptions: GRADE_CODES.map((code) => ({ value: code, label: GRADES[code].shortName })),
-		tree,
-		referencedPointIds: referencedRows.map((r) => r.point_id)
+		tree: await getProgrammeTree(locals.supabase, grade, { includeArchived: true })
 	};
 };

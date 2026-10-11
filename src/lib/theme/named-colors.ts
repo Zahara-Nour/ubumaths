@@ -7,7 +7,7 @@
  *
  * Le vocabulaire est un contrat avec le contenu stocké en base : un synonyme
  * ajouté ici l'est pour toujours. Décisions et palette :
- * docs/wip/palette-figures-progress.md.
+ * docs/archive/wip/palette-figures-progress.md.
  *
  * @module theme/named-colors
  */

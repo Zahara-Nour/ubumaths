@@ -68,6 +68,7 @@ import { findFirst, mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 import { denormalizeMonomial, denormalizeTerm } from '../denormalize';
 import type { AlgebraicCoefficient, NormalForm, NormalTerm } from '../types';
+import { isInverseNotation } from '../../common/function-power';
 
 // =============================================================================
 // Types
@@ -532,17 +533,6 @@ function expandArcAt(node: MathNode, ctx: ArcExpansionContext): MathNode | null 
 	// `\sin^2(2x)` porte sa puissance sur le nœud fonction : elle se reporte sur
 	// le développement, comme `expandTrigDefinitions` le fait pour `\tan^2`.
 	return node.power === undefined ? expanded : superscript(expanded, node.power);
-}
-
-/**
- * `-1` en exposant d'une fonction nommée : la réciproque, pas l'inverse.
- * La fabrique refuse les littéraux signés, donc `-1` se lit `opposite(1)`.
- */
-function isInverseNotation(power: MathNode): boolean {
-	if (power.type === 'opposite') {
-		return power.operand.type === 'number' && power.operand.value === '1';
-	}
-	return power.type === 'number' && power.value === '-1';
 }
 
 /**

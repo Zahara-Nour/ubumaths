@@ -18,15 +18,19 @@ describe('.diff (moteur)', () => {
 	const diff = (input: string) => new WebReplEngine().execute(`.diff ${input}`).output;
 
 	it('e^x', () => {
-		expect(diff('e^x')).toBe('d/dx(e^x) = e^x\nLaTeX: e^x');
+		expect(diff('e^x')).toBe('d/dx(e^x) = e^x\nLaTeX: \\exponentialE^x');
 	});
 
 	it('x*e^x', () => {
-		expect(diff('x*e^x')).toBe('d/dx(x*e^x) = e^x+xe^x\nLaTeX: e^x + x e^x');
+		expect(diff('x*e^x')).toBe(
+			'd/dx(x*e^x) = e^x+xe^x\nLaTeX: \\exponentialE^x + x \\exponentialE^x'
+		);
 	});
 
+	// Rangé par `tidyTerms` (comme `g = f'` dans l'atelier) : ln(a)·aˣ, la
+	// constante devant, forme des manuels
 	it('2^x garde ln(2)', () => {
-		expect(diff('2^x')).toBe('d/dx(2^x) = 2^xln(2)\nLaTeX: 2^x \\ln\\left( 2 \\right)');
+		expect(diff('2^x')).toBe('d/dx(2^x) = ln(2)*2^x\nLaTeX: \\ln\\left( 2 \\right) \\times 2^x');
 	});
 });
 
@@ -39,7 +43,7 @@ describe('.dériver (étapes)', () => {
 		['2e^(-x)', "f'(x) = -2 \\exponentialE^{-x}"],
 		['e^(x^2)', "f'(x) = 2 x \\exponentialE^{x^2}"],
 		['x*e^x', "f'(x) = \\exponentialE^x + x \\exponentialE^x"],
-		['2^x', "f'(x) = \\ln\\left( 2 \\right) 2^x"]
+		['2^x', "f'(x) = \\ln\\left( 2 \\right) \\times 2^x"]
 	])('%s', (input, expected) => {
 		expect(answer(input)).toBe(expected);
 	});

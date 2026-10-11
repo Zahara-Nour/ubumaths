@@ -1,13 +1,13 @@
 ---
-title: Procès — le cercle de Lobatchevsk accusé de tourner en rond plaide « je n'ai aucun coin où me cacher »
+title: Le carré accuse le cercle de tourner en rond, le cercle trouve le carré un peu trop carré
 date: 2026-12-21
 author: cotice
 lede: Un carré, voisin de l'accusé, lui reproche de « prendre trop de place pour une si petite clôture ». La défense a fait citer la reine Didon. Le verdict a surpris.
 ---
 
-L'audience s'est ouverte lundi devant le tribunal de Lobatchevsk. Sur le banc de la partie civile, un carré de 10 mètres de côté. Sur le banc des accusés, un cercle. Les deux voisins ont exactement la même clôture : 40 mètres. Mais le cercle occupe 127 mètres carrés de terrain, contre 100 pour le carré.
+L'audience s'est ouverte lundi devant le tribunal de Lobatchevsk. Sur le banc de la partie civile, un carré de 10 mètres de côté. Sur le banc des accusés, un cercle. Les deux voisins ont exactement la même longueur de clôture : 40 mètres. Mais le cercle occupe 127 mètres carrés de terrain, contre 100 pour le carré.
 
-« Il tourne en rond toute la journée et il prend toute la place », a plaidé l'avocat du carré. « Avec la même clôture, mon client a quatre beaux coins bien droits et 27 mètres carrés de moins. C'est injuste. » Le cercle, appelé à la barre, s'est défendu sobrement : « Je n'ai aucun coin où me cacher. Je suis comme ça partout. »
+« Il tourne en rond toute la journée et il prend toute la place », a plaidé l'avocat du carré. « Avec la même longueur de clôture, mon client a quatre beaux coins bien droits et 27 mètres carrés de moins. C'est injuste. » Le cercle, appelé à la barre, s'est défendu sobrement : « Je n'y peux rien : sans coins, on gaspille moins de clôture. »
 
 La défense a alors fait citer un témoin inattendu, la reine Didon, venue de Carthage. Elle a raconté qu'on lui avait autrefois promis « autant de terre qu'en pourrait entourer une peau de bœuf ». Elle avait découpé la peau en une très longue lanière, et l'avait disposée en **arc de cercle**. « Le cercle, c'est la forme qui entoure le plus de terre pour une même longueur », a-t-elle expliqué. « Tout le monde le sait, à Carthage. »
 

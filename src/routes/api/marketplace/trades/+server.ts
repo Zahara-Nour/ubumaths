@@ -322,6 +322,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (tradeError) {
+		// Garde « lecture seule » de la base (A2) : le partenaire n'a pas le consentement
+		// parental. Refus lisible, sans dire lequel des deux est concerné.
+		if (tradeError.message?.includes('Consentement parental requis')) {
+			throw error(403, "Cet échange n'est pas possible pour le moment.");
+		}
 		console.error('Error creating trade:', tradeError);
 		throw error(500, "Erreur lors de la création de l'échange");
 	}

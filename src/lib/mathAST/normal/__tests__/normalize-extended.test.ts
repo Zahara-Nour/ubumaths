@@ -131,47 +131,47 @@ describe('normalizeExtended - subtraction', () => {
 
 describe('normalizeExtended - multiplication', () => {
 	it('0 × ∞ = indeterminate 0·∞', () => {
-		const result = normalizeExtended(multiply(zeroPlus(), positiveInfinity()));
+		const result = normalizeExtended(multiply(zeroPlus(), positiveInfinity(), 'cross'));
 		expect(result).toEqual({ type: 'indeterminate', form: '0·∞' });
 	});
 
 	it('∞ × 0 = indeterminate 0·∞', () => {
-		const result = normalizeExtended(multiply(positiveInfinity(), zeroMinus()));
+		const result = normalizeExtended(multiply(positiveInfinity(), zeroMinus(), 'cross'));
 		expect(result).toEqual({ type: 'indeterminate', form: '0·∞' });
 	});
 
 	it('+∞ × +∞ = +∞', () => {
-		const result = normalizeExtended(multiply(positiveInfinity(), positiveInfinity()));
+		const result = normalizeExtended(multiply(positiveInfinity(), positiveInfinity(), 'cross'));
 		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
 	});
 
 	it('+∞ × -∞ = -∞', () => {
-		const result = normalizeExtended(multiply(positiveInfinity(), negativeInfinity()));
+		const result = normalizeExtended(multiply(positiveInfinity(), negativeInfinity(), 'cross'));
 		expect(result).toEqual({ type: 'infinity', sign: 'negative' });
 	});
 
 	it('-∞ × -∞ = +∞', () => {
-		const result = normalizeExtended(multiply(negativeInfinity(), negativeInfinity()));
+		const result = normalizeExtended(multiply(negativeInfinity(), negativeInfinity(), 'cross'));
 		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
 	});
 
 	it('+∞ × 2 = +∞', () => {
-		const result = normalizeExtended(multiply(positiveInfinity(), number('2')));
+		const result = normalizeExtended(multiply(positiveInfinity(), number('2'), 'cross'));
 		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
 	});
 
 	it('+∞ × (-2) = -∞', () => {
-		const result = normalizeExtended(multiply(positiveInfinity(), opposite(number('2'))));
+		const result = normalizeExtended(multiply(positiveInfinity(), opposite(number('2')), 'cross'));
 		expect(result).toEqual({ type: 'infinity', sign: 'negative' });
 	});
 
 	it('0⁺ × 0⁺ = 0⁺', () => {
-		const result = normalizeExtended(multiply(zeroPlus(), zeroPlus()));
+		const result = normalizeExtended(multiply(zeroPlus(), zeroPlus(), 'cross'));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
 	});
 
 	it('0⁺ × 0⁻ = 0⁻', () => {
-		const result = normalizeExtended(multiply(zeroPlus(), zeroMinus()));
+		const result = normalizeExtended(multiply(zeroPlus(), zeroMinus(), 'cross'));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
 	});
 });
@@ -182,57 +182,57 @@ describe('normalizeExtended - multiplication', () => {
 
 describe('normalizeExtended - division', () => {
 	it('0 / 0 = indeterminate 0/0', () => {
-		const result = normalizeExtended(divide(zeroPlus(), zeroMinus()));
+		const result = normalizeExtended(divide(zeroPlus(), zeroMinus(), 'fraction'));
 		expect(result).toEqual({ type: 'indeterminate', form: '0/0' });
 	});
 
 	it('∞ / ∞ = indeterminate ∞/∞', () => {
-		const result = normalizeExtended(divide(positiveInfinity(), negativeInfinity()));
+		const result = normalizeExtended(divide(positiveInfinity(), negativeInfinity(), 'fraction'));
 		expect(result).toEqual({ type: 'indeterminate', form: '∞/∞' });
 	});
 
 	it('5 / 0⁺ = +∞', () => {
-		const result = normalizeExtended(divide(number('5'), zeroPlus()));
+		const result = normalizeExtended(divide(number('5'), zeroPlus(), 'fraction'));
 		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
 	});
 
 	it('5 / 0⁻ = -∞', () => {
-		const result = normalizeExtended(divide(number('5'), zeroMinus()));
+		const result = normalizeExtended(divide(number('5'), zeroMinus(), 'fraction'));
 		expect(result).toEqual({ type: 'infinity', sign: 'negative' });
 	});
 
 	it('(-5) / 0⁺ = -∞', () => {
-		const result = normalizeExtended(divide(opposite(number('5')), zeroPlus()));
+		const result = normalizeExtended(divide(opposite(number('5')), zeroPlus(), 'fraction'));
 		expect(result).toEqual({ type: 'infinity', sign: 'negative' });
 	});
 
 	it('5 / +∞ = 0⁺', () => {
-		const result = normalizeExtended(divide(number('5'), positiveInfinity()));
+		const result = normalizeExtended(divide(number('5'), positiveInfinity(), 'fraction'));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
 	});
 
 	it('5 / -∞ = 0⁻', () => {
-		const result = normalizeExtended(divide(number('5'), negativeInfinity()));
+		const result = normalizeExtended(divide(number('5'), negativeInfinity(), 'fraction'));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'negative' });
 	});
 
 	it('+∞ / 2 = +∞', () => {
-		const result = normalizeExtended(divide(positiveInfinity(), number('2')));
+		const result = normalizeExtended(divide(positiveInfinity(), number('2'), 'fraction'));
 		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
 	});
 
 	it('+∞ / 0⁺ = +∞', () => {
-		const result = normalizeExtended(divide(positiveInfinity(), zeroPlus()));
+		const result = normalizeExtended(divide(positiveInfinity(), zeroPlus(), 'fraction'));
 		expect(result).toEqual({ type: 'infinity', sign: 'positive' });
 	});
 
 	it('0⁺ / 5 = 0⁺', () => {
-		const result = normalizeExtended(divide(zeroPlus(), number('5')));
+		const result = normalizeExtended(divide(zeroPlus(), number('5'), 'fraction'));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
 	});
 
 	it('0⁺ / +∞ = 0⁺', () => {
-		const result = normalizeExtended(divide(zeroPlus(), positiveInfinity()));
+		const result = normalizeExtended(divide(zeroPlus(), positiveInfinity(), 'fraction'));
 		expect(result).toEqual({ type: 'signed-zero', sign: 'positive' });
 	});
 });

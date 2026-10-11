@@ -3,13 +3,10 @@
  *
  * ## Le trou, mesuré
  *
- * Le système a **déjà tranché** que la lettre `e` désigne le nombre d'Euler :
- * `evaluate(parseLatex('e'))` rend `2.718281828459045`. Seul le chemin
- * symbolique l'ignorait. Le parseur lit `e^{x}` comme
- * `superscript(variable e, x)`, alors que la machinerie qui combine les
- * exponentielles — `combineExpInMonomial`, `combineExpInPolynomial`,
- * `combineExpAcrossFraction` — ne reconnaît que les nœuds **fonction** `exp`.
- * Elle ne voyait donc jamais passer `e^{x}`.
+ * Les deux parseurs lisent la lettre `e` comme la constante d'Euler `euler`.
+ * Mais la machinerie qui combine les exponentielles — `combineExpInMonomial`,
+ * `combineExpInPolynomial`, `combineExpAcrossFraction` — ne reconnaît que les
+ * nœuds **fonction** `exp`. Elle ne voyait donc jamais passer `e^{x}`.
  *
  * Résultat : `exp(x)·exp(2x) ≡ exp(3x)` rendait `true`, et `e^x·e^{2x} ≡ e^{3x}`
  * rendait `false`. Deux écritures du même objet qui ne se parlaient pas.
@@ -27,32 +24,12 @@
  * à exposant symbolique reste une base opaque. Les bases numériques
  * strictement positives (`2^{2x}/2^{x}`) sont traitées à part par
  * `general-power.ts` ; les bases variables (`x^a · x^b`) restent opaques.
- *
- * ## La contrepartie assumée
- *
- * Une expression qui utiliserait `e` comme nom de **variable** — la charge
- * élémentaire en physique, par exemple — voit ce `e` compris comme le nombre
- * d'Euler. Ce n'est pas une régression : `evaluate` lui donnait déjà la valeur
- * 2,718, donc cette écriture était déjà cassée partout ailleurs.
  */
 
 import { func, multiply, number } from '../../factory';
-import { isDelimiter, isEulerConstant, isFunction, isNumber, isVariable } from '../../guards';
+import { isDelimiter, isEulerConstant, isFunction, isNumber } from '../../guards';
 import { mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
-
-/**
- * Le nœud est-il le nombre d'Euler : la lettre `e` employée seule, sans indice
- * ni décoration, ou la constante `\exponentialE` (écriture MathLive) ?
- *
- * Les deux écritures doivent aboutir au même `exp` : sinon `e^{2}` (lettre,
- * réécrite en `exp(2)`) et `\exponentialE^{2}` (constante, restée facteur
- * symbolique `euler²`) ne se reconnaissaient pas : une réponse juste était
- * comptée fausse (faux négatif mesuré par `euler-letter-vs-command.test.ts`).
- */
-function isEulerLetter(node: MathNode): boolean {
-	return (isVariable(node) && node.name === 'e') || isEulerConstant(node);
-}
 
 /**
  * Le nœud est-il déjà `exp(1)` ?
@@ -86,7 +63,7 @@ function unwrapDelimiters(node: MathNode): MathNode {
  * `null` quand il n'y a rien à faire.
  */
 function expandEulerPowerAt(node: MathNode): MathNode | null {
-	if (node.type === 'superscript' && (isEulerLetter(node.base) || isExpOfOne(node.base))) {
+	if (node.type === 'superscript' && (isEulerConstant(node.base) || isExpOfOne(node.base))) {
 		return func('exp', [node.superscript]);
 	}
 
@@ -102,8 +79,8 @@ function expandEulerPowerAt(node: MathNode): MathNode | null {
 	}
 
 	// `e` seul vaut `exp(1)` : sans ça, `e^{x+1}/e` ne se simplifierait pas,
-	// le dénominateur restant une variable opaque face à une exponentielle.
-	if (isEulerLetter(node)) {
+	// le dénominateur restant une constante opaque face à une exponentielle.
+	if (isEulerConstant(node)) {
 		return func('exp', [number('1')]);
 	}
 
@@ -119,7 +96,7 @@ function expandEulerPowerAt(node: MathNode): MathNode | null {
  * exposants, il se contente de rendre les exponentielles visibles à celle qui
  * les connaît déjà.
  *
- * Idempotente : le résultat ne contient plus aucune puissance de la lettre `e`.
+ * Idempotente : le résultat ne contient plus aucune puissance de `e`.
  */
 export function expandEulerPowers(node: MathNode): MathNode {
 	return mapNode(node, (current) => expandEulerPowerAt(current) ?? current);

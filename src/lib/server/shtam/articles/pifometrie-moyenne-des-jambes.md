@@ -7,7 +7,7 @@ lede: Selon l'Institut des Statistiques de Bonneteau-sur-Vistule, l'habitant moy
 
 C'est un chiffre qui a fait l'effet d'un coup de croc à phynances. D'après la dernière enquête de l'Institut des Statistiques de Bonneteau-sur-Vistule, le Polonais moyen possède très exactement $1{,}999$ jambe. « Nous sommes en dessous de deux », confirme le directeur de l'Institut. « Ce n'est pas encore alarmant, mais c'est préoccupant. »
 
-La réaction du pouvoir ne s'est pas fait attendre. Mère Ubu a annoncé un « plan de rattrapage des membres inférieurs », financé par une taxe exceptionnelle sur les chaussettes. « Chaque Polonais aura bientôt sa jambe supplémentaire », a-t-elle assuré. « Les chaussettes, elles, seront vendues par trois. »
+La réaction du pouvoir ne s'est pas fait attendre. Mère Ubu a annoncé un « plan de rattrapage des membres inférieurs » : chaque Polonais recevra une jambe supplémentaire, financée par une taxe exceptionnelle sur les chaussettes. La moyenne nationale passerait ainsi à $2{,}999$ jambes, « un net progrès » selon le Cabinet. « Les chaussettes, elles, seront désormais vendues par trois », a-t-elle précisé.
 
 Sur le terrain, l'incompréhension domine. « J'ai deux jambes, ma femme a deux jambes, mon voisin a deux jambes », témoigne un habitant de Bonneteau-sur-Vistule. « Je ne connais personne qui ait 1,999 jambe. » L'Institut confirme : « Personne n'a 1,999 jambe. C'est bien ce qui rend la moyenne si fascinante. »
 
@@ -20,5 +20,6 @@ La **moyenne** n'est pas toujours la valeur « typique ». Il suffit de quelques
 - Sur **1 000** Polonais, si **999** ont deux jambes et **un seul** n'en a qu'une, la moyenne vaut $\frac{999 \times 2 + 1}{1000} = \frac{1999}{1000} = 1{,}999$.
 - Presque tout le monde a donc **plus** de jambes que la moyenne !
 - La **médiane** (la valeur du milieu quand on range les données) vaut ici **2** : elle décrit mieux l'habitant ordinaire.
+- **La moyenne est sensible aux valeurs extrêmes, pas la médiane.** Si ce Polonais n'avait aucune jambe, la moyenne tomberait à $\frac{1998}{1000} = 1{,}998$. La médiane, elle, resterait à **2** : une seule valeur à part ne la fait pas bouger.
 
 C'est pour cela qu'on donne souvent le **salaire médian** plutôt que le salaire moyen : quelques très gros salaires suffisent à tirer la moyenne vers le haut.

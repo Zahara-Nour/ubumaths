@@ -8,7 +8,7 @@
 Le référentiel de compétences prévoyait deux familles : **A** (connaissances et savoir-faire :
 thème → objectif → capacités, « modèle B » inspiré du PDF 2016) et **B** (les six compétences
 mathématiques et leurs composantes). La famille A a été spécifiée en détail (décisions 57 à 72,
-`docs/wip/skills-referentiel-design.md`).
+`docs/archive/wip/skills-referentiel-design.md`).
 
 ## Décision
 

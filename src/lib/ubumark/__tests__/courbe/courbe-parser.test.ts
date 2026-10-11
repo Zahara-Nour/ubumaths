@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { parseCourbeContent, findCourbeBlocks } from '../../parser/courbe-parser';
 import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
 import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
+import { templateMarkdown } from '$lib/ubumark';
 import type { CourbeNode } from '../../types/courbe';
 
 function spec(node: CourbeNode) {
@@ -42,7 +43,9 @@ describe('courbe — bloc minimal (comportement 1)', () => {
 	it('une variable de template est déjà remplacée quand le bloc est lu', () => {
 		const resolved = String(
 			resolveMarkdownContent(
-				'```courbe\nx: -4 ; 6\ny: -8 ; 12\nf(x) = {{a}}*(x-{{x1}})+{{c}}\npoints: A({{x1}};0)\n```',
+				templateMarkdown(
+					'```courbe\nx: -4 ; 6\ny: -8 ; 12\nf(x) = {{a}}*(x-{{x1}})+{{c}}\npoints: A({{x1}};0)\n```'
+				),
 				[
 					{ name: 'a', value: '2' },
 					{ name: 'x1', value: '-2' },

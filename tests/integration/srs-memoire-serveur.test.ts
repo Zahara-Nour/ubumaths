@@ -9,7 +9,7 @@
  *
  * Vrais clients, vraie RLS. Chaque refus est prouvé deux fois : l'erreur
  * renvoyée ET la ligne relue au client service, inchangée (la RLS échoue en
- * silence : une absence d'erreur ne prouve rien, cf. docs/ref/rls-echecs-silencieux.md).
+ * silence : une absence d'erreur ne prouve rien, cf. docs/pratiques/rls-echecs-silencieux.md).
  *
  * Témoins des circuits d'écriture (tous passent par `applyFsrsReview`) :
  *   - `POST /api/srs/review/submit` (route, client de l'élève) ;

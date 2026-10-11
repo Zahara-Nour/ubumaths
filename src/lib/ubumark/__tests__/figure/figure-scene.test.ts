@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { parseFigureContent } from '../../parser/figure-parser';
 import { buildFigureScene } from '../../utils/figure-scene';
 import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
+import { templateMarkdown } from '$lib/ubumark';
 
 function scene(body: string, header = 'fenetre: -1 ; 8 ; -1 ; 6') {
 	return buildFigureScene(parseFigureContent(`${header}\n---\n${body}`));
@@ -29,7 +30,9 @@ describe('figure — comportement 12 : un script de triangle donne une figure', 
 	it('`{{c}}` et `{{b}}` remplacés par le vrai `resolveMarkdownContent`', () => {
 		const resolved = String(
 			resolveMarkdownContent(
-				'```figure\nfenetre: -1 ; 8 ; -1 ; 6\n---\nA = point(0;0)\nB = point({{c}};0)\nC = point(0;{{b}})\np = polygone(A, B, C)\n```',
+				templateMarkdown(
+					'```figure\nfenetre: -1 ; 8 ; -1 ; 6\n---\nA = point(0;0)\nB = point({{c}};0)\nC = point(0;{{b}})\np = polygone(A, B, C)\n```'
+				),
 				[
 					{ name: 'c', value: '5' },
 					{ name: 'b', value: '2.5' }
@@ -77,7 +80,7 @@ describe('figure — comportement 12 : un script de triangle donne une figure', 
 			].join('\n')
 		);
 		expect(result.errors).toEqual([]);
-		const types = new Set(result.scene!.elements.map((e) => e.type));
+		const types = new Set<string>(result.scene!.elements.map((e) => e.type));
 		for (const t of [
 			'segment',
 			'line',

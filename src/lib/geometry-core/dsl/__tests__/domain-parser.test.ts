@@ -264,7 +264,7 @@ describe('parseDomainSuffix — reactive variables (sliders)', () => {
 		const r = parseDomainSuffix('a < x <= b', 'avec', symbols, 1);
 		expect(r.domain.lower).toEqual({ scalarRef: 'sl_a' });
 		expect(r.domain.upper).toEqual({ scalarRef: 'sl_b' });
-		expect(r.dependencies.sort()).toEqual(['sl_a', 'sl_b']);
+		expect([...r.dependencies].sort()).toEqual(['sl_a', 'sl_b']);
 	});
 });
 

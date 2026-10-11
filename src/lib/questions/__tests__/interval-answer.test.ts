@@ -1,7 +1,7 @@
 /**
  * Jugement d'une réponse « intervalles » (ensemble de solutions d'une inéquation).
  * Comportements 17 à 29 et 31 validés par David le 2026-10-01
- * (docs/wip/reponse-intervalles-progress.md).
+ * (docs/archive/wip/reponse-intervalles-progress.md).
  */
 
 import { describe, it, expect } from 'vitest';

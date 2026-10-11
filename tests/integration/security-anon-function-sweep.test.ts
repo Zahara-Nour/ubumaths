@@ -1,7 +1,7 @@
 /**
  * Security — anon SECURITY DEFINER function sweep (needs a running DB)
  * ===================================================================
- * Vague-1 finding H1 (docs/wip/security-audit-2026-08.md).
+ * Vague-1 finding H1 (docs/archive/wip/security-audit-2026-08.md).
  *
  * EXECUTE on SECURITY DEFINER functions is revoked from PUBLIC + anon; only a
  * 3-function whitelist (public logged-out flows) keeps anon EXECUTE. This suite

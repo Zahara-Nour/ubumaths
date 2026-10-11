@@ -1,3 +1,4 @@
+import { toaster } from '$lib/stores/toaster.svelte';
 import { browser } from '$app/environment';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
@@ -216,6 +217,11 @@ class ChatStore {
 	 * Track reconnection attempts per conversation
 	 */
 	private reconnectAttempts = new Map<string, number>();
+	/**
+	 * Vrai si le dernier `sendMessage` a été refusé par la garde « lecture seule » de la
+	 * base : le toast explicite est déjà affiché, l'appelant n'ajoute pas le sien.
+	 */
+	lastSendRefusedForConsent = false;
 
 	/**
 	 * Maximum reconnection attempts before giving up
@@ -769,6 +775,7 @@ class ChatStore {
 			public_url: string;
 		}>
 	): Promise<Message | null> {
+		this.lastSendRefusedForConsent = false;
 		if (!browser || !this.supabase || !this.userId) {
 			logger.warn('Cannot send message: not initialized');
 			return null;
@@ -884,6 +891,15 @@ class ChatStore {
 
 			if (insertError) {
 				logger.error('Failed to insert message to DB:', insertError);
+				// Refus de la garde « lecture seule » de la base (trigger guard_read_only_author) :
+				// reconnu à son texte, car la RLS rend aussi 42501 (élève rendu muet, par exemple).
+				this.lastSendRefusedForConsent =
+					insertError.message?.includes('Consentement parental requis') ?? false;
+				if (this.lastSendRefusedForConsent) {
+					toaster.error(
+						'Consentement parental requis pour envoyer des messages. Contactez votre enseignant.'
+					);
+				}
 				// Remove optimistic message on failure
 				const currentMessages = this.messages.get(conversationId) || [];
 				const rollback = currentMessages.filter((msg) => msg.id !== optimisticId);

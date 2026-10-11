@@ -76,7 +76,7 @@ function poly(coeffs: number[], varName = 'x') {
 		if (c === 1) return xPow;
 		return multiply(number(String(c)), xPow, 'implicit');
 	});
-	let acc = monos[0];
+	let acc: MathNode = monos[0];
 	for (let k = 1; k < monos.length; k++) acc = add(acc, monos[k]);
 	return acc;
 }

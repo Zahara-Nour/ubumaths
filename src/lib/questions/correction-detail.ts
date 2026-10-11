@@ -30,7 +30,8 @@ import {
 	INLINE_DETAIL_REGEX,
 	maskSpans,
 	parseCalloutKind,
-	parseDetailKind
+	parseDetailKind,
+	isLexiconMarkWord
 } from '$lib/ubumark/utils/detail-kinds';
 
 // ============================================================================
@@ -332,6 +333,8 @@ function transformInlineDetails(text: string, mode: Mode, ctx: Context): string 
 	while ((match = regex.exec(masked)) !== null) {
 		const start = match.index;
 		const end = start + match[0].length;
+		// `[mot]{.def}` marque un mot du lexique : il reste dans les deux versions
+		if (isLexiconMarkWord(match[2])) continue;
 		if (!parseDetailKind(match[2])) {
 			ctx.errors.push(
 				`Détail en ligne « {.${match[2]}} » : type inconnu. Types possibles : calcul, rappel, méthode, attention.`
@@ -453,4 +456,18 @@ export function splitCorrectionDetail(markdown: string): CorrectionVersions {
  */
 export function detailedCorrection(markdown: string): string {
 	return splitCorrectionDetail(markdown).detailed;
+}
+
+/**
+ * Version à IMPRIMER selon le réglage de la fiche (D11, lot 3 ; écart D4,
+ * 2026-10-11) : jamais de marqueur brut, que Typst refuserait. Tout est
+ * détail : la concise serait vide, on imprime la détaillée (D6, jamais de
+ * corrigé vide).
+ */
+export function correctionForPrint(
+	markdown: string,
+	detail: 'concise' | 'detailed' = 'detailed'
+): string {
+	const versions = splitCorrectionDetail(markdown);
+	return detail === 'concise' && !versions.conciseEmpty ? versions.concise : versions.detailed;
 }

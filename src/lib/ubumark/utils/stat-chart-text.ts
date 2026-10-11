@@ -90,6 +90,8 @@ interface StatText {
 		/** Lois à densité (PR b) : `[a ; b]` déjà écrit selon la langue */
 		uniformDensity: (interval: string) => string;
 		exponential: (lambda: string) => string;
+		/** N(μ ; σ²) (2026-10-09) */
+		normal: (mu: string, variance: string) => string;
 		/** Après « P(X = 3) = 0 » */
 		pointZero: (variable: string) => string;
 		/** Axe vertical et description de la courbe */
@@ -114,6 +116,8 @@ interface StatText {
 		summary: (draws: string, plural: boolean, mean: string, variable: string, e: string) => string;
 		/** Loi exponentielle : la dernière classe compte ce qui dépasse l'axe */
 		overflow: (bound: string, count: string) => string;
+		/** Loi normale : les deux classes du bord comptent ce qui dépasse μ ± 3σ */
+		overflowBoth: (low: string, below: string, high: string, beyond: string) => string;
 	};
 	/** Nuage de points (```nuage, manche 15) ; nombres déjà écrits selon la langue */
 	scatter: {
@@ -221,6 +225,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			notShown: 'valeurs suivantes non représentées',
 			uniformDensity: (interval) => `loi uniforme sur ${interval}`,
 			exponential: (lambda) => `E(${lambda})`,
+			normal: (mu, variance) => `N(${mu} ; ${variance})`,
 			pointZero: (variable) => `loi à densité : P(${variable} = x) = 0`,
 			density: 'Densité',
 			densityCurve: 'Courbe de densité',
@@ -238,7 +243,9 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			summary: (draws, plural, mean, variable, e) =>
 				`${draws} tirage${plural ? 's' : ''} ; moyenne observée ≈ ${mean} (E(${variable}) = ${e})`,
 			overflow: (bound, count) =>
-				`la dernière classe compte aussi les tirages au-delà de ${bound} (ici ${count})`
+				`la dernière classe compte aussi les tirages au-delà de ${bound} (ici ${count})`,
+			overflowBoth: (low, below, high, beyond) =>
+				`la première classe compte aussi les tirages en deçà de ${low} (ici ${below}), la dernière ceux au-delà de ${high} (ici ${beyond})`
 		},
 		scatter: {
 			title: 'Nuage de points',
@@ -334,6 +341,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			notShown: 'following values not shown',
 			uniformDensity: (interval) => `uniform distribution on ${interval}`,
 			exponential: (lambda) => `Exp(${lambda})`,
+			normal: (mu, variance) => `N(${mu}, ${variance})`,
 			pointZero: (variable) => `continuous distribution: P(${variable} = x) = 0`,
 			density: 'Density',
 			densityCurve: 'Density curve',
@@ -350,7 +358,9 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			summary: (draws, plural, mean, variable, e) =>
 				`${draws} draw${plural ? 's' : ''}; observed mean ≈ ${mean} (E(${variable}) = ${e})`,
 			overflow: (bound, count) =>
-				`the last class also counts the draws beyond ${bound} (here ${count})`
+				`the last class also counts the draws beyond ${bound} (here ${count})`,
+			overflowBoth: (low, below, high, beyond) =>
+				`the first class also counts the draws below ${low} (here ${below}), the last those beyond ${high} (here ${beyond})`
 		},
 		scatter: {
 			title: 'Scatter plot',

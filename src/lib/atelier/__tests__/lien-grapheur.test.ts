@@ -1,6 +1,6 @@
 /**
  * Les liens `/grapheur?f=…` — lot 6 du passage de `/grapheur` par l'atelier
- * (phase 0 `docs/wip/atelier-grapheur-phase0.md` §6 B4 à B6).
+ * (phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §6 B4 à B6).
  *
  * L'entrée « projection » : le prof prépare ses liens, un par courbe ; le lien
  * ouvre un écran propre avec ces seules courbes, sans lire ni écrire l'atelier

@@ -83,6 +83,7 @@ const rowTranslationsSchema = z
  */
 const worksheetConfigObjectSchema = z.object({
 	language: contentLocaleSchema.optional(),
+	correction_detail: z.enum(['concise', 'detailed']).optional(),
 	show_title: z.boolean().optional(),
 	show_date: z.boolean().optional(),
 	show_student_name: z.boolean().optional(),
@@ -993,6 +994,10 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	assignment_id: z.string().uuid(),
 	worksheet_id: z.string().uuid(),
 	title: z.string(),
+	/** Langue de la fiche : contenu et habillage du PDF de l'élève */
+	language: contentLocaleSchema.optional(),
+	/** Corrigé imprimé concis ou détaillé (réglage de la fiche, D11) */
+	correction_detail: z.enum(['concise', 'detailed']).optional(),
 	description: z.string().nullable(),
 	type: worksheetTypeSchema,
 	instructions: z.string().nullable(),

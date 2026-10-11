@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import SequencePlot from '../SequencePlot.svelte';
-import { parseSequence } from '$lib/grapheur/sequence';
+import {
+	DEFAULT_FIRST_TERM_MAX,
+	DEFAULT_FIRST_TERM_MIN,
+	parseSequence
+} from '$lib/grapheur/sequence';
 import { createTransformer } from '$lib/grapheur/viewport';
 import type { SequencePlottable, Viewport } from '$lib/grapheur/types';
 
@@ -30,6 +34,10 @@ describe('SequencePlot', () => {
 			usesIndex: parsed.usesIndex,
 			firstIndex: 0,
 			firstTerm: 8,
+			// Valeurs d'une suite neuve (défauts du schéma `sequenceStateSchema`)
+			firstTermParameter: null,
+			firstTermMin: DEFAULT_FIRST_TERM_MIN,
+			firstTermMax: DEFAULT_FIRST_TERM_MAX,
 			representation: 'cobweb',
 			cobwebSteps: 10,
 			color: '#0000ff',

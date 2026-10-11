@@ -12,20 +12,22 @@
 #   local would report extern errors that CI never can.
 #   (The old `grep -v slides/demo` was dropped: that dir was deleted.)
 #
-# --incremental is load-bearing, not a nicety: without it svelte-check re-transpiles
-# every .svelte file each run — measured ~6x more CPU. Without it, it also dies on
-# Node's DEFAULT heap limit (~4 GB): measured on 2026-09-29 on the Mac mini (Apple
-# M6, 24 GB), a bare `npx svelte-check --tsconfig ./tsconfig.check.json` aborts
-# after 44 s with "JavaScript heap out of memory" (exit 134) while swap stays at 0.
-# That is a V8 limit, not a RAM one: more RAM does not fix it. The
-# disk cache can go stale after DELETING/renaming files and emit a phantom "ghost"
-# error. That is the SAME trigger as the conditional-sync blind spot below, so one
-# switch cures both: `FRESH=1 pnpm check:incremental` clears the cache AND forces a
-# sync. Reach for it after deleting/renaming files, or if an error here disagrees
-# with `pnpm check`.
+# Moteur : --tsgo (TypeScript 7, en Go) depuis le 2026-10-10, à la place de
+# --incremental. Mesuré ce jour-là sur le Mac mini (Apple M6, 24 Go) : 18 s, et
+# 20 s à froid (FRESH=1), contre ~45 s et ~80 s avec --incremental ; plus gros
+# process 6,0 Go RSS (contre 2,9 puis 4,0 Go). La vérification de types tourne
+# dans le binaire Go : le tas V8 de Node, qui tuait un svelte-check nu à ~4 Go,
+# n'est plus le goulot.
+# La CI garde le moteur classique (`pnpm check`) : sur 1 812 erreurs comparées
+# (tests inclus), les deux moteurs concordent à 2 près, dont UN vrai angle mort
+# de tsgo — une erreur sur le type des fonctions exposées d'un composant Svelte
+# passé à `render`. La barrière reste donc au moteur classique.
+# Mêmes limites que --incremental (cf. README de svelte-check). Si une erreur
+# d'ici contredit `pnpm check`, c'est `pnpm check` qui fait foi.
+# `FRESH=1 pnpm check:incremental` force un `svelte-kit sync` (angle mort du sync
+# conditionnel ci-dessous : routes supprimées ou renommées).
 #
-# TWO GUARDS. Measured on 2026-09-29 on the Mac mini (Apple M6, 24 GB): ~45 s warm,
-# ~80 s from a cold cache (FRESH=1), largest process 2.9 GB then 4.0 GB RSS.
+# TWO GUARDS.
 #   1. A lock: a second instance refuses to start while one is running — one big
 #      process at a time, and two runs would only fight over the same cache.
 #   3. A redundancy guard: if nothing that can change the result has changed
@@ -133,16 +135,12 @@ if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
 fi
 
 # Heap cap = 4096 MiB. `--max-old-space-size` caps the V8 HEAP, not the process.
-# Measured on 2026-09-29 on the Mac mini (Apple M6, 24 GB): the largest process
-# peaks at 2.9 GB RSS warm and 4.0 GB RSS from a cold cache (FRESH=1), and both
-# runs pass. RSS also counts code, native buffers and the rest of the process, so
-# the V8 heap itself is smaller than those figures. Kept at 4096 (decided
-# 2026-09-29). The cold run is the one closest to the cap: without --incremental
-# the same program dies at Node's default ~4 GB heap (see the header). If a
-# FRESH=1 run ever fails with "JavaScript heap out of memory", raise the cap and
-# re-measure — don't cargo-cult the number either way.
+# Avec --tsgo, Node ne fait plus que transpiler les .svelte : la vérification
+# tourne dans le binaire Go, hors de ce plafond. Passes à chaud et à froid OK
+# sous 4096 (2026-10-10). Si un run meurt un jour sur "JavaScript heap out of
+# memory", relever le plafond et re-mesurer.
 output=$(NODE_OPTIONS='--max-old-space-size=4096' npx svelte-check \
-	--tsconfig ./tsconfig.check.json --threshold error --incremental --output machine 2>&1)
+	--tsconfig ./tsconfig.check.json --threshold error --tsgo --output machine 2>&1)
 sc_status=$?
 
 # Un svelte-check tué par un signal (Ctrl-C, OOM) rend 128+n : sa sortie est
@@ -180,8 +178,8 @@ if [ -n "$errors" ]; then
 			echo "  $file:$pos $msg"
 		done
 		echo ""
-		echo "(If an error looks like a ghost — deleted file, or 'pnpm check' disagrees —"
-		echo " clear the stale cache: rm -rf .svelte-kit/.svelte-check && pnpm check:incremental)"
+		echo "(Erreur fantôme — route supprimée ou renommée ? FRESH=1 pnpm check:incremental."
+		echo " En cas de désaccord avec 'pnpm check', moteur de la CI, c'est lui qui fait foi.)"
 	)
 	status=1
 else

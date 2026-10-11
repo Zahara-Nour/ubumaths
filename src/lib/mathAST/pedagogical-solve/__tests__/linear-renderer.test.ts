@@ -213,10 +213,13 @@ describe('LinearEquationRenderer', () => {
 			});
 			const addStep = steps.find((s) => s.operation?.kind === 'add-both-sides')!;
 			const r = renderer.render(addStep, { verbosity: 'summarized', schoolLevel: 'college' });
-			expect(r.expressionLatex).toContain('\\begin{aligned}');
-			expect(r.expressionLatex).toContain('\\end{aligned}');
+			const latex = r.expressionLatex;
+			expect(latex).toBeDefined();
+			if (latex === undefined) throw new Error('attendu une expression rendue');
+			expect(latex).toContain('\\begin{aligned}');
+			expect(latex).toContain('\\end{aligned}');
 			// Each line uses `&=` to align on the equality column
-			expect(r.expressionLatex.match(/&=/g)?.length).toBe(2);
+			expect(latex.match(/&=/g)?.length).toBe(2);
 		});
 	});
 });

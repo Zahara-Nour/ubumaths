@@ -8,7 +8,7 @@
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { POST } from '../+server';
-import { createMockSupabase } from '$tests/helpers';
+import { createMockSupabase, type SupabaseResponse } from '$tests/helpers';
 import {
 	createTestUser,
 	createTestListing,
@@ -54,6 +54,23 @@ vi.mock('$lib/server/marketplace/notifications', async (importActual) => {
 		notifyProposalAccepted: vi.fn().mockResolvedValue(undefined),
 		notifyProposalRejected: vi.fn().mockResolvedValue(undefined)
 	};
+});
+
+// Client service : jamais de vrai client en test unitaire. Le handler s'en sert
+// pour le compteur de l'annonce (et la resoumission) ; le vrai client ouvrait une
+// connexion réseau vers Supabase, d'où des tests qui dépassaient 5 s en CI.
+// Chaîne : chaque méthode rend la chaîne, qui est une vraie promesse (`await`
+// rend une ligne) ; `.single()` rend « aucune ligne ».
+vi.mock('$lib/server/serviceRoleClient', () => {
+	const chain = Object.assign(Promise.resolve({ data: [{ id: 'row-1' }], error: null }), {
+		single: () => Promise.resolve({ data: null, error: null })
+	});
+	const chainMethods: Record<string, () => typeof chain> = {};
+	for (const method of ['from', 'update', 'delete', 'eq', 'in', 'select']) {
+		chainMethods[method] = () => chain;
+	}
+	Object.assign(chain, chainMethods);
+	return { createServiceRoleClient: () => chain };
 });
 
 // Valid UUIDs (the handler validates params.id and listing_id as UUIDs).
@@ -514,8 +531,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 			// Both calls resolve (RPC never throws); exactly one carries an error.
 			const settled = results.filter(
-				(r): r is PromiseFulfilledResult<{ data: unknown; error: unknown }> =>
-					r.status === 'fulfilled'
+				(r): r is PromiseFulfilledResult<SupabaseResponse<unknown>> => r.status === 'fulfilled'
 			);
 			expect(settled).toHaveLength(2);
 

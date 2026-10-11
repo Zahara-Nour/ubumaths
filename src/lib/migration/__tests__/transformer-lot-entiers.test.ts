@@ -17,7 +17,7 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 /** Instances de chaque variation sur `seeds` graines ; échec = erreur */
@@ -33,8 +33,11 @@ function instances(index: number, seeds = 20): QuestionInstance[] {
 	);
 }
 
-const valuesOf = (instance: QuestionInstance) =>
-	Object.fromEntries(instance.resolvedVariables.map((v) => [v.name, Number(v.value)]));
+function valuesOf(instance: QuestionInstance): Record<string, number> {
+	const variables = instance.resolvedVariables;
+	if (!variables) throw new Error('variables résolues attendues');
+	return Object.fromEntries(variables.map((v) => [v.name, Number(v.value)]));
+}
 
 describe('lot Entiers', () => {
 	it('#214 : le dernier chiffre rend le nombre divisible par 3 ou non (mod converti)', () => {

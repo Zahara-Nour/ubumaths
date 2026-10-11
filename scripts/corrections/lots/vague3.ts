@@ -3,14 +3,14 @@
  * unités, pourcentages
  * ============================================================================
  *
- * Classement : docs/wip/corrections-manquantes-frontiere.md, codes N-REL-ADD (dont
+ * Classement : docs/archive/wip/corrections-manquantes-frontiere.md, codes N-REL-ADD (dont
  * les 4 trous 24331791, 84755a7b, b1550840, 372d4f79 — décision du 2026-09-29),
  * N-REL-SUB, N-COMPARER-REL, N-REL-DEF, N-OPPOSES, N-REL-ALG, N-FRAC-MULT,
  * N-FRAC-ADD, N-INVERSE, N-UNITES, N-UNITES-VOL, N-UNITES-AIRE, N-POURCENT.
  *
  * Structures relues en prod (lecture seule) le 2026-09-29 ; les 36 modèles sont
  * `draft` → lot `vague3-brouillons`. Aucun n'est `published` : le lot
- * `vague3-publies` est vide (docs/corrections/vague3-publies/RESUME.md).
+ * `vague3-publies` est vide (data/corrections/vague3-publies/RESUME.md).
  *
  * Écartés (voir SKIPPED) : modèles que le vérificateur ne peut pas contrôler ou
  * que le format de proposition ne peut pas porter.

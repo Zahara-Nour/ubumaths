@@ -2,7 +2,7 @@
  * Grade Level → School Level Mapping
  *
  * Bridges the question template's `GradeCode[]` (database identity for French
- * grades CP–T_STMG) to the mathAST pipelines' `SchoolLevel`
+ * grades CP–T_TECHNO) to the mathAST pipelines' `SchoolLevel`
  * (`'primaire' | 'college' | 'lycee' | 'superieur'`).
  *
  * Used by `generateCorrection()` when an author leaves the

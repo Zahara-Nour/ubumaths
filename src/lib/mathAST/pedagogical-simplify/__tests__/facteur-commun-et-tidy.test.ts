@@ -33,8 +33,14 @@ import { toLatex } from '../../index';
 import { parseLatex } from '../../parser';
 import { generatePedagogicalSimplifySteps } from '../pipeline';
 
+// Lycée : le seul niveau où se rencontrent tous les cas ci-dessous, eˣ compris
 const factoriser = (source: string) =>
-	toLatex(generatePedagogicalSimplifySteps(parseLatex(source), { intent: 'factoriser' }).result);
+	toLatex(
+		generatePedagogicalSimplifySteps(parseLatex(source), {
+			intent: 'factoriser',
+			schoolLevel: 'lycee'
+		}).result
+	);
 
 describe('le facteur numérique sort', () => {
 	it.each([
@@ -123,8 +129,9 @@ describe('le signe sort quand tous les termes sont négatifs', () => {
 	});
 
 	it('mais pas quand les signes sont mélangés', () => {
-		expect(factoriser('-x+1')).toBe('-x + 1');
-		expect(factoriser('-2x+4')).toBe('2 \\left( -x + 2 \\right)');
+		// L'ordre de degré 1 met le positif devant (décision du 2026-10-06)
+		expect(factoriser('-x+1')).toBe('1 - x');
+		expect(factoriser('-2x+4')).toBe('2 \\left( 2 - x \\right)');
 	});
 
 	it('et le positif n’est pas touché', () => {

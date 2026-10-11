@@ -1,7 +1,7 @@
 /**
  * Le grapheur attribue à chaque nouveau tracé une place : une couleur et un style.
  *
- * Spécification : docs/wip/grapheur-couleurs-theme-progress.md (points 1-3, 8, 9).
+ * Spécification : docs/archive/wip/grapheur-couleurs-theme-progress.md (points 1-3, 8, 9).
  */
 
 import { describe, it, expect } from 'vitest';

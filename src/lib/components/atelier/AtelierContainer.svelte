@@ -140,7 +140,7 @@
 	// `view` donne la vue de DÉPART — celle qu'une URL demande (`/grapheur`
 	// ouvre sur Graphe, §7 N1). Ensuite l'élève change d'onglet librement, sans
 	// que la prop le ramène en arrière : capture volontaire, pattern documenté
-	// dans `docs/ref/warning-svelte.md` §1.
+	// dans `docs/pratiques/warning-svelte.md` §1.
 	// svelte-ignore state_referenced_locally
 	let activeView = $state<ViewId>(view);
 	let selected = $state<string | null>(null);

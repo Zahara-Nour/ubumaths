@@ -19,7 +19,7 @@ import {
 	isAddition,
 	isSubtraction
 } from '../guards';
-import { number, opposite, multiply, divide, add } from '../factory';
+import { number, opposite, multiply, divide, add, subtract } from '../factory';
 import { numericNode, getNumericValue } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { containsVariable } from '../common/contains-variable';
@@ -342,6 +342,17 @@ export function extractLinearForm(node: MathNode, variable: string): LinearForm 
 		return extractLinearForm(node.content, variable);
 	}
 
+	// Opposé : −(ax + b) = (−a)x + (−b). `sin(−x/3) = 0` perdait sa famille
+	// périodique, l'argument n'étant pas reconnu affine (2026-10-09)
+	if (isOpposite(node)) {
+		const inner = extractLinearForm(node.operand, variable);
+		if (!inner) return null;
+		return {
+			coefficient: opposite(inner.coefficient),
+			offset: inner.offset === null ? null : opposite(inner.offset)
+		};
+	}
+
 	return null;
 }
 
@@ -422,6 +433,18 @@ function extractLinearFromSubtraction(node: MathNode, variable: string): LinearF
 			return {
 				coefficient: leftLinear.coefficient,
 				offset: newOffset
+			};
+		}
+	}
+
+	// b − (a·x + c) = (−a)·x + (b − c). `sin(π/4 − x) = 0` perdait sa famille
+	// périodique : « S = {−3π/4 ; π/4} », sans « + kπ » (revue 2026-10-09)
+	if (rightVars.has(variable) && !leftVars.has(variable)) {
+		const rightLinear = extractLinearForm(node.right, variable);
+		if (rightLinear) {
+			return {
+				coefficient: opposite(rightLinear.coefficient),
+				offset: rightLinear.offset === null ? node.left : subtract(node.left, rightLinear.offset)
 			};
 		}
 	}

@@ -108,7 +108,7 @@ if (process.argv[1] && resolve(process.argv[1]) === import.meta.filename) {
 	if (total > 0) {
 		console.log(`\n❌ ${total} appel(s) à render/unmount/rerender sans \`await\`.`);
 		console.log('   vitest-browser-svelte 3 : écrire `await render(…)`. Un oubli monte quand même');
-		console.log('   le composant — aucun test ne rougirait. Voir docs/ref/tests/architecture.md.');
+		console.log('   le composant — aucun test ne rougirait. Voir docs/pratiques/tests.md.');
 		process.exit(1);
 	}
 	console.log('✅ Tous les render de vitest-browser-svelte sont attendus.');

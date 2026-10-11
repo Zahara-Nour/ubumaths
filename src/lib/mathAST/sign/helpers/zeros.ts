@@ -126,8 +126,14 @@ export function findZerosWithStatus(
 				isFinite(bounds.lower) &&
 				isFinite(bounds.upper)
 			) {
+				// La famille ET les solutions isolées : `x(sin²x − 1/4)` a x = 0
+				// hors de la famille ±π/6 + kπ, `(x − 1)·sin x` a x = 1. Ne
+				// parcourir que la famille les perdait.
 				return {
-					zeros: enumeratePeriodicZeros(result.periodicSolutions, bounds, domain),
+					zeros: mergeZeros(
+						enumeratePeriodicZeros(result.periodicSolutions, bounds, domain),
+						filterSolutionsInDomain(result.solutions, domain)
+					),
 					resolved: true
 				};
 			}
@@ -139,6 +145,27 @@ export function findZerosWithStatus(
 		// Le solveur a levé une exception : f(x) = 0 n'est pas résolue.
 		return { zeros: [], resolved: false };
 	}
+}
+
+/**
+ * Réunion de deux listes de zéros, dédoublonnée sur la valeur numérique et
+ * triée. Un zéro sans valeur numérique est gardé tel quel.
+ *
+ * @internal
+ */
+function mergeZeros(periodic: readonly ZeroInfo[], isolated: readonly ZeroInfo[]): ZeroInfo[] {
+	const merged: ZeroInfo[] = [...periodic];
+	for (const zero of isolated) {
+		const value = zero.approximate;
+		const duplicate =
+			value !== undefined &&
+			merged.some((z) => z.approximate !== undefined && Math.abs(z.approximate - value) < 1e-9);
+		if (!duplicate) merged.push(zero);
+	}
+	return merged.sort(
+		(a, b) =>
+			(a.approximate ?? Number.POSITIVE_INFINITY) - (b.approximate ?? Number.POSITIVE_INFINITY)
+	);
 }
 
 /**

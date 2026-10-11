@@ -39,26 +39,6 @@ export const submit2048ScoreSchema = z
 		}
 	);
 
-/**
- * Schema for 2048 leaderboard query parameters
- * GET /api/games/2048/leaderboard?limit=10
- */
-export const leaderboard2048QuerySchema = z.object({
-	limit: z
-		.string()
-		.optional()
-		.default('10')
-		.transform((val) => {
-			const parsed = parseInt(val, 10);
-			// Validate after parsing
-			if (isNaN(parsed) || parsed < 1 || parsed > 100) {
-				return 10; // Default fallback
-			}
-			return parsed;
-		})
-		.pipe(z.number().int().min(1).max(100))
-});
-
 // ============================================================================
 // RESPONSE SCHEMAS (for output validation)
 // ============================================================================
@@ -112,28 +92,6 @@ export const get2048ScoreResponseSchema = z.object({
 	games_played: z.number().int().nonnegative(),
 	tiles_2048_reached: z.number().int().nonnegative(),
 	tiles_4096_reached: z.number().int().nonnegative()
-});
-
-/**
- * Schema for a single leaderboard entry
- */
-export const leaderboardEntrySchema = z.object({
-	rank: z.number().int().positive(),
-	user_id: z.string().uuid(),
-	name: z.string(),
-	avatar_url: z.string().url().nullable(),
-	best_score: z.number().int().nonnegative(),
-	games_played: z.number().int().nonnegative(),
-	tiles_2048_reached: z.number().int().nonnegative(),
-	tiles_4096_reached: z.number().int().nonnegative()
-});
-
-/**
- * Response schema for GET /api/games/2048/leaderboard
- */
-export const leaderboard2048ResponseSchema = z.object({
-	leaderboard: z.array(leaderboardEntrySchema),
-	user_rank: z.number().int().positive().nullable()
 });
 
 // ============================================================================

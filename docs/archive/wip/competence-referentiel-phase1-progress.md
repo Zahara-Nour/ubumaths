@@ -2,7 +2,7 @@
 
 > **Démarré** : 2026-06-09
 > **Statut** : en cours
-> **Spec** : `docs/wip/skills-referentiel-design.md` (72 décisions actées, dont 58-72 cette session)
+> **Spec** : `docs/archive/wip/skills-referentiel-design.md` (72 décisions actées, dont 58-72 cette session)
 > **Famille A** : `referentiel/6e-savoirs.md` (18 items × 4 capacités = 72 capacités, 6ᵉ uniquement V1)
 > **Famille B** : `referentiel/college-competences.md` (6 compétences × 22 sous-dimensions / 56 observables, collège partagé V1)
 

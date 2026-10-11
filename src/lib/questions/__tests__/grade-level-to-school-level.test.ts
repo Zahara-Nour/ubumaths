@@ -34,8 +34,8 @@ describe('gradeLevelToSchoolLevel', () => {
 			expect(gradeLevelToSchoolLevel(['T_SPE'])).toBe('lycee');
 			expect(gradeLevelToSchoolLevel(['T_EXP'])).toBe('lycee');
 			expect(gradeLevelToSchoolLevel(['T_COMP'])).toBe('lycee');
-			expect(gradeLevelToSchoolLevel(['1_STMG'])).toBe('lycee');
-			expect(gradeLevelToSchoolLevel(['T_STMG'])).toBe('lycee');
+			expect(gradeLevelToSchoolLevel(['1_TECHNO'])).toBe('lycee');
+			expect(gradeLevelToSchoolLevel(['T_TECHNO'])).toBe('lycee');
 		});
 	});
 

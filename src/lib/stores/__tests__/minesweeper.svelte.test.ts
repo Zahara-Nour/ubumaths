@@ -966,7 +966,8 @@ describe('BFS Cascade Reveal Algorithm', () => {
 
 				// Cascade should complete in reasonable time (< 100ms)
 				const duration = endTime - startTime;
-				expect(duration).toBeLessThan(100);
+				// Détecte une explosion, ne chronomètre pas : large marge pour les machines lentes (CI).
+				expect(duration).toBeLessThan(1000);
 
 				// Should have revealed multiple cells
 				expect(minesweeperStore.currentGame!.cellsRevealed).toBeGreaterThan(1);

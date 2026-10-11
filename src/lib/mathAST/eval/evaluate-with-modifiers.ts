@@ -26,7 +26,7 @@ import { divide, number, opposite, withUnit } from '../factory';
 import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
-import { decimalString } from '../tidy/decimal';
+import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units';
@@ -103,16 +103,6 @@ function withSignModifiers(latex: string, modifiers: EvalModifiers): string {
 	return latex;
 }
 
-/** Un nombre non entier écrit dans le calcul (`0.5`) : TinyMath rendait alors un décimal */
-function hasDecimalLiteral(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (n.type === 'number' && !/^-?\d+$/.test(n.value)) found = true;
-		return n;
-	});
-	return found;
-}
-
 /**
  * Résultat exact (`\dfrac{9}{7}`, `2 \sqrt{2}`, `\ln(2)`) → syntaxe maison (`9/7`, `2sqrt(2)`), pour
  * le réutiliser dans un autre calcul. Toute autre valeur est rendue telle quelle.
@@ -120,9 +110,8 @@ function hasDecimalLiteral(node: MathNode): boolean {
 export function evalResultToCustom(value: string): string {
 	if (!value.includes('\\')) return value;
 	try {
-		// `toCustom` écrit e `\euler`, que la syntaxe maison ne relit pas : en syntaxe maison,
-		// e s'écrit `e` (groupé, pour que `2{e}` ne se colle à rien)
-		const custom = toCustom(parseLatex(value)).replace(/\\euler(?![A-Za-z])/g, '{e}');
+		// `toCustom` écrit la constante d'Euler `e`, relue par `parseCustom`
+		const custom = toCustom(parseLatex(value));
 		// Aller-retour vérifié : sinon la valeur reste en LaTeX, comme avant
 		parseCustom(custom);
 		return custom;

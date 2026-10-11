@@ -12,7 +12,7 @@
  * Les deux jeux de chiffres viennent de `$lib/server/progression`, la même
  * source que la tuile du dashboard : c'est ce qui les empêche de diverger.
  *
- * Spec : docs/wip/progression-eleve-progress.md §D
+ * Spec : docs/archive/wip/progression-eleve-progress.md §D
  */
 
 import type { PageServerLoad } from './$types';

@@ -19,6 +19,9 @@ import { toLatex } from '../../latex-generator';
 function expectExact(latex: string, expectedLatex: string) {
 	const ast = parsePratt(latex);
 	const result = evaluate(ast, { mode: 'exact' });
+	if (result.status !== 'value') {
+		throw new Error(`attendu une valeur, reçu ${result.status}`);
+	}
 	const resultLatex = toLatex(result.node);
 	expect(resultLatex).toBe(expectedLatex);
 }

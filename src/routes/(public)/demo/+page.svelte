@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Sparkles, Palette, FileText, Gamepad2, Presentation, Circle } from '@lucide/svelte';
@@ -70,6 +71,13 @@
 			href: '/demo/question-display-demo',
 			icon: Presentation,
 			color: 'from-teal-500 to-green-500'
+		},
+		{
+			title: 'Mots cliquables',
+			description: 'Page de test des mots cliquables et des indices (tablette, téléphone)',
+			href: '/demo/mots-cliquables',
+			icon: FileText,
+			color: 'from-sky-500 to-cyan-500'
 		},
 		{
 			title: 'Test de Thème',

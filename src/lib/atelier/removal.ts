@@ -1,7 +1,7 @@
 /**
  * Atelier — les mots d'une suppression en cascade
  *
- * Lot B de `docs/wip/atelier-suppression-export-phase0.md` : la confirmation
+ * Lot B de `docs/archive/wip/atelier-suppression-export-phase0.md` : la confirmation
  * nomme ce qui partira avec l'objet, le message qui suit dit ce qui est parti.
  *
  * @module atelier/removal

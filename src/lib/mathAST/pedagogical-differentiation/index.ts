@@ -17,6 +17,10 @@ export {
 
 export { PedagogicalDifferentiationRenderer } from './renderer';
 
+export { withTidyStep } from './tidy-step';
+
+export type { TidiedDerivation } from './tidy-step';
+
 export type { DifferentiationNotation, DifferentiationRenderOptions } from './renderer';
 
 export type {

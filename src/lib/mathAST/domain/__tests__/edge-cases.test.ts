@@ -305,9 +305,9 @@ describe('Symbolic bounds edge cases', () => {
 			expect(formatDomainInterval(d)).toBe('ℝ \\ {π}');
 		});
 
-		it('formats ℝ \\ {√2, π, e}', () => {
+		it('formats ℝ \\ {√2 ; π ; e}', () => {
 			const d = excludePoints(universalDomain(), [bound('sqrt(2)'), bound('\\pi'), bound('e')]);
-			expect(formatDomainInterval(d)).toBe('ℝ \\ {√2, π, e}');
+			expect(formatDomainInterval(d)).toBe('ℝ \\ {√2 ; π ; e}');
 		});
 
 		it('containsValue respects symbolic excluded points', () => {
@@ -771,10 +771,9 @@ describe('Domain computation edge cases', () => {
 			expect(containsValue(result.domain, -1)).toBe(false);
 		});
 
-		it('x^(1/3) (cube root) has domain ℝ', () => {
+		it('x^(1/3) : ℝ (dénominateur impair, comme ∛x — décision du 2026-10-08)', () => {
 			const expr = parseLatex('x^{1/3}');
 			const result = computeDomain(expr, 'x');
-			// Odd roots are defined for all reals
 			expect(containsValue(result.domain, 0)).toBe(true);
 			expect(containsValue(result.domain, 8)).toBe(true);
 			expect(containsValue(result.domain, -8)).toBe(true);

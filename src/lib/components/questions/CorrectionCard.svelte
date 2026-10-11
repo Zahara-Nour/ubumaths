@@ -49,6 +49,7 @@
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
 	import CorrectionView from './CorrectionView.svelte';
+	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 
 	// Props
 	interface Props {
@@ -88,6 +89,8 @@
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
 	const instance = $derived(answerResult.instance);
+	// Mots cliquables : la correction se lit après la réponse, évaluation notée comprise
+	provideQuestionLexicon(() => instance.grades);
 	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
 	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');

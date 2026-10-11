@@ -135,7 +135,8 @@ describe('LatexGenerator - Unary Operations', () => {
 
 	it('generates nested opposite', () => {
 		const expr = MathAST.opposite(MathAST.opposite(MathAST.variable('x')));
-		expect(toLatex(expr)).toBe('--x');
+		// Deux signes ne se suivent pas à l'écrit
+		expect(toLatex(expr)).toBe('-\\left( -x \\right)');
 	});
 });
 

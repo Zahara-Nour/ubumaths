@@ -8,8 +8,16 @@
  * @module mathAST/tidy/decimal
  */
 
+import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import { absBigInt } from '../normal/rational';
+import { isNumber } from '../guards';
+import { findNodes } from '../transforms';
+
+/** Un nombre non entier écrit dans le calcul (`0.5`) : le résultat s'écrit alors en décimal. */
+export function hasDecimalLiteral(node: MathNode): boolean {
+	return findNodes(node, (n) => isNumber(n) && !/^-?\d+$/.test(n.value)).length > 0;
+}
 
 /** L'écriture décimale exacte d'un rationnel, ou `null` si elle est infinie. */
 export function decimalString(r: Rational): string | null {

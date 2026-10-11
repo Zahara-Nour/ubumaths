@@ -294,7 +294,7 @@ describe('plein écran réel', () => {
 		['altKey', 'Alt+F']
 	] as const)(
 		'%s : %s reste au navigateur (ni plein écran ni preventDefault)',
-		async (modifier) => {
+		async (modifier, _shortcut) => {
 			const request = vi.spyOn(HTMLElement.prototype, 'requestFullscreen').mockResolvedValue();
 			const { container } = await open({ durations: [undefined] });
 			const wrapper = container.querySelector<HTMLElement>('.deck-wrapper')!;

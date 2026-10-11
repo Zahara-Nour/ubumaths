@@ -14,10 +14,10 @@ import { transformQuestion } from '../question-transformer';
 import { convertTinyCASToNew } from '../syntax-converter';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate } from '$lib/questions/types';
-import type { QuestionWithMigration } from '../types';
+import type { QuestionWithMigration } from '../old-question-types';
 
 const questions = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 ) as QuestionWithMigration[];
 
 function variationsGenerate(index: number): boolean[] {

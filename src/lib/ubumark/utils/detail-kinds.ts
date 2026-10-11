@@ -24,6 +24,19 @@ export const DETAIL_KIND_LABELS: Record<DetailKind, string> = {
 	warning: 'Attention'
 };
 
+/** Libellés en anglais, pour un document en anglais (PDF ; 2026-10-11). */
+export const DETAIL_KIND_LABELS_EN: Record<DetailKind, string> = {
+	calculation: 'Calculation',
+	reminder: 'Reminder',
+	method: 'Method',
+	warning: 'Warning'
+};
+
+/** Libellé d'un type de détail dans la langue du document (français par défaut). */
+export function detailKindLabel(kind: DetailKind, language?: string): string {
+	return (language === 'en' ? DETAIL_KIND_LABELS_EN : DETAIL_KIND_LABELS)[kind];
+}
+
 // Mots d'auteur (sans accent, en minuscules) → type
 const AUTHOR_WORDS: Record<string, DetailKind> = {
 	calcul: 'calculation',
@@ -59,6 +72,19 @@ export const CALLOUT_MARKER_REGEX = /^\s*\[!([^\]\s]*)\]\s?(.*)$/;
  * crochets (`$[0;1]$`) ; le mot est capturé tel quel (validé ensuite).
  */
 export const INLINE_DETAIL_REGEX = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(\p{L}+)\}/gu;
+
+/**
+ * Mot du lexique marqué à la main (lot 2 du lexique) : `[mot]{.def}`,
+ * `[mot]{.def=carré (géométrie)}` (entrée visée) ou `[mot]{.nodef}`. Même
+ * syntaxe que les détails en ligne, mais ce n'est pas un détail de correction.
+ */
+export const LEXICON_MARK_REGEX =
+	/\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(def|nodef)(?:=([^{}\n]+))?\}/gu;
+
+/** `def` / `nodef` : mots réservés au lexique, jamais un type de détail. */
+export function isLexiconMarkWord(raw: string): boolean {
+	return raw === 'def' || raw === 'nodef';
+}
 
 /** Caractère de masquage : ni crochet, ni accolade, ni lettre. */
 const MASK_CHAR = '';

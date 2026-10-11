@@ -7,7 +7,7 @@
  * fichiers .typ : énoncé et corrigé, en français et en anglais (langue de la
  * fiche → point décimal en anglais). Compiler ensuite avec `compile-prod.mjs`.
  *
- * Deux dispositions de dossier (voir docs/ref/fiches-exercices.md) :
+ * Deux dispositions de dossier (voir docs/pratiques/fiches-exercices.md) :
  *  - fiche technique : `titles.txt` (un titre par ligne) et `md/01.md`… ;
  *  - fiche d'applications : `plan.json` (sections, exercices) et
  *    `md/<CLÉ>-guided.md` (+ `-autonomous.md` facultatif).

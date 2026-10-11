@@ -5,7 +5,7 @@
  */
 
 import { promises as fs } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
 	ConversionError,
@@ -45,9 +45,9 @@ export class MigrationStateManager {
 	constructor(options?: { stateFilePath?: string; progressFilePath?: string }) {
 		// Paths relative to project root
 		this.stateFilePath =
-			options?.stateFilePath ?? resolve(process.cwd(), '.claude/migration-state.json');
+			options?.stateFilePath ?? resolve(process.cwd(), 'data/tinymath/migration-state.json');
 		this.progressFilePath =
-			options?.progressFilePath ?? resolve(process.cwd(), '.claude/migration-progress.md');
+			options?.progressFilePath ?? resolve(process.cwd(), 'data/tinymath/migration-progress.md');
 	}
 
 	/**
@@ -513,7 +513,7 @@ export class MigrationStateManager {
 		} catch {
 			// File doesn't exist, create it with initial state
 			const initialState = this.getInitialState();
-			await fs.mkdir(resolve(process.cwd(), '.claude'), { recursive: true });
+			await fs.mkdir(dirname(this.stateFilePath), { recursive: true });
 			await fs.writeFile(this.stateFilePath, JSON.stringify(initialState, null, 2), 'utf-8');
 		}
 	}

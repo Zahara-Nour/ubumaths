@@ -34,6 +34,8 @@ on:
       - 'supabase/**'
       - 'tests/integration/**'
       - 'tests/helpers/**'
+      # jeu de référence figé du dictionnaire, lu par la suite
+      - 'tests/fixtures/lexique/dictionnaire-reference.ts'
       - 'vitest.integration.config.ts'
       - 'vitest.base.config.ts'
       - 'svelte.config.js'
@@ -46,6 +48,7 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       # src/lib : dossiers atteints par la suite
+      - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
       - 'src/lib/mathAST/**'
       - 'src/lib/migration/**'
@@ -71,6 +74,7 @@ on:
       # Chat et échanges : les stores clients tournent contre Realtime local (canal privé)
       - 'src/lib/stores/chat.svelte.ts'
       - 'src/lib/stores/supabaseRealtime.svelte.ts'
+      - 'src/lib/stores/toaster.svelte.ts'
       - 'src/lib/stores/tradeRealtime.svelte.ts'
       - 'src/lib/types/evaluation.ts'
       - 'src/lib/types/question-template.ts'
@@ -89,6 +93,7 @@ on:
       # `pnpm check:integration-paths` (job `paths-filter` ci-dessous).
       - 'src/routes/*/dashboard/teacher/cahier-texte/*/*/*page.server.ts'
       - 'src/routes/*/dashboard/teacher/contenu/worksheets/*/assignments/*/progress/*page.server.ts'
+      - 'src/routes/*/dashboard/teacher/programme/*page.server.ts'
       - 'src/routes/*/presques-evaluations/*page.server.ts'
       - 'src/routes/api/evaluations/assignments/*/start/*server.ts'
       - 'src/routes/api/games/2048/scores/*server.ts'
@@ -110,16 +115,8 @@ on:
       - 'src/routes/api/teacher/curriculum/activities/*/*server.ts'
       - 'src/routes/api/teacher/curriculum/coverage/*server.ts'
       - 'src/routes/api/teacher/curriculum/exercise-tags/*server.ts'
-      - 'src/routes/api/teacher/curriculum/objectives/*server.ts'
-      - 'src/routes/api/teacher/curriculum/objectives/*/*server.ts'
-      - 'src/routes/api/teacher/curriculum/objectives/reorder/*server.ts'
-      - 'src/routes/api/teacher/curriculum/points/*server.ts'
       - 'src/routes/api/teacher/curriculum/points/*/*server.ts'
-      - 'src/routes/api/teacher/curriculum/points/reorder/*server.ts'
       - 'src/routes/api/teacher/curriculum/template-tags/*server.ts'
-      - 'src/routes/api/teacher/curriculum/themes/*server.ts'
-      - 'src/routes/api/teacher/curriculum/themes/*/*server.ts'
-      - 'src/routes/api/teacher/curriculum/themes/reorder/*server.ts'
       - 'src/routes/api/worksheets/*server.ts'
       - 'src/routes/api/worksheets/*/*server.ts'
       - 'src/routes/api/worksheets/*/assignments/*/reports/*/*server.ts'
@@ -152,7 +149,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -176,7 +173,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies

@@ -15,6 +15,7 @@ import type { QuestionTemplate } from '../../types';
 import type { Variable } from '$lib/ubumark';
 import { templateMarkdown, resolveVariables } from '$lib/ubumark';
 import { validateAnswer } from '$lib/utils/answer-validator';
+import { createRandomSource } from '$lib/utils/random';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 
 const A_B: Variable[] = [
@@ -26,7 +27,7 @@ const A_B: Variable[] = [
 function evalOf(expression: string): string {
 	const resolved = resolveVariables(
 		[...A_B, { name: 'r', expression: `{{eval:${expression}}}` }],
-		1
+		createRandomSource(1)
 	);
 	return resolved[resolved.length - 1].value;
 }

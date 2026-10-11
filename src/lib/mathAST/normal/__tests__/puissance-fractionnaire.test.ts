@@ -79,8 +79,12 @@ describe('le domaine : une racine de carré reste une valeur absolue', () => {
 		expect(eq('(x^6)^{\\frac12}', 'x^3')).toBe(false);
 	});
 
-	it('une base négative n’est pas réécrite', () => {
-		expect(eq('(-8)^{\\frac13}', '-2')).toBe(false);
+	it('base négative, dénominateur impair : racine impaire (décision du 2026-10-08)', () => {
+		expect(eq('(-8)^{\\frac13}', '-2')).toBe(true);
+	});
+
+	it('base négative, dénominateur pair : pas réécrite', () => {
+		expect(eq('(-8)^{\\frac12}', '2')).toBe(false);
 	});
 });
 

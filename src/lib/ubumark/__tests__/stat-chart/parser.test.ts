@@ -2,7 +2,7 @@
  * Blocs ```barres et ```circulaire — analyse du texte.
  *
  * Spécification validée par David le 2026-10-01
- * (`docs/wip/outils-statistiques-progress.md`, lot 2).
+ * (`docs/archive/wip/outils-statistiques-progress.md`, lot 2).
  */
 
 import { describe, it, expect } from 'vitest';

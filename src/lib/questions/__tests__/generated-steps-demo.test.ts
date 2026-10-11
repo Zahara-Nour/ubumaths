@@ -11,6 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
+import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import {
 	additionGroupingDemo,
 	arithmeticFromBlankDemo,
@@ -47,23 +48,7 @@ interface StepView {
 	subSteps?: StepView[];
 }
 
-function summarize(step: {
-	id: number;
-	rule: string;
-	title: string;
-	schoolLevel?: string;
-	expressionLatex?: string;
-	explanation?: string;
-	subSteps?: readonly {
-		id: number;
-		rule: string;
-		title: string;
-		schoolLevel?: string;
-		expressionLatex?: string;
-		explanation?: string;
-		subSteps?: readonly never[];
-	}[];
-}): StepView {
+function summarize(step: RenderedStep): StepView {
 	const view: StepView = {
 		id: step.id,
 		rule: step.rule,
@@ -496,6 +481,7 @@ describe('Mode B end-to-end demos', () => {
 	it('1ère spé domain — sqrt+division+intersection on √x/(x-1)', () => {
 		const result = generateInstance(domainSqrtFractionDemo, 1);
 		expect(result.success).toBe(true);
+		if (!result.success) throw new Error('génération attendue en succès');
 
 		const steps = result.instance.correction?._renderedSteps;
 		expect(steps).toBeDefined();

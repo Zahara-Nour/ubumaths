@@ -3,7 +3,7 @@
  * (x ; z) ou (t ; y), relation retrouvée entre x et y, prévisions avec les
  * coefficients EXACTS (pleine précision, décision de David).
  *
- * Valeurs de référence (Python) : `docs/wip/nuage-changement-variable-progress.md`.
+ * Valeurs de référence (Python) : `docs/archive/wip/nuage-changement-variable-progress.md`.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -67,7 +67,9 @@ describe('les huit changements de variable', () => {
 
 	it.each(cases)('%o : y(x) puis x(y) reviennent au point de départ', (change, sign) => {
 		const x = 1.5;
-		const y = relationY(change, fit, x, sign)!;
+		const y = relationY(change, fit, x, sign);
+		// Ni `null` (hors domaine) ni 'overflow' : une valeur numérique finie
+		if (typeof y !== 'number') throw new Error(`y(x) attendu numérique, obtenu ${y}`);
 		expect(Number.isFinite(y)).toBe(true);
 		expect(relationX(change, fit, y, sign)).toBeCloseTo(x, 9);
 	});

@@ -3,7 +3,7 @@
  * =============================================================
  *
  * Liste calculée en prod (lecture seule) le 2026-09-30 : modèles classés R ou N
- * dans `docs/wip/corrections-manquantes-frontiere.md` (avec ses « Décisions ») qui
+ * dans `docs/archive/wip/corrections-manquantes-frontiere.md` (avec ses « Décisions ») qui
  * n'ont encore aucune correction (ni variation, ni `shared`) : 40 modèles.
  *
  * Là où la question ne pose aucun calcul lisible (opération dans la phrase, chiffre

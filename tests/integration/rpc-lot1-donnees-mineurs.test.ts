@@ -22,6 +22,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { present } from '../helpers/present';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
@@ -170,12 +171,12 @@ describe('RPC lot 1 : données des élèves mineurs', () => {
 		});
 
 		const { data: comp, error: compError } = await service
-			.from('math_competences' as never)
+			.from('math_competences')
 			.select('id')
 			.limit(1)
 			.single();
 		expect(compError).toBeNull();
-		competenceId = (comp as { id: string }).id;
+		competenceId = present(comp, 'compétence').id;
 
 		prof = await clientFor(p.email);
 		eleveA = await clientFor(a.email);

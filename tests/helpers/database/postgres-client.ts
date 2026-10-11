@@ -40,6 +40,16 @@ export async function getPostgresClient(): Promise<Client> {
 }
 
 /**
+ * Une connexion de plus, hors du singleton : pour les tests de concurrence, où deux
+ * transactions doivent vivre en même temps. L'appelant la ferme (`end()`).
+ */
+export async function connectPostgresClient(): Promise<Client> {
+	const client = new Client(PG_CONFIG);
+	await client.connect();
+	return client;
+}
+
+/**
  * Close the PostgreSQL client connection
  * Should be called in global test teardown
  */

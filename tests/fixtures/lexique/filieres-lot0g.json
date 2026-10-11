@@ -1,0 +1,174 @@
+{
+	"source": "Lot 0g du lexique (filières parallèles de 1re), validé par David le 2026-10-09 (option 1 « une entrée peut appartenir à plusieurs niveaux », liste 1re générale validée, 1re techno ajoutée à sa demande selon la même règle) : docs/wip/lexique/lot0g-filieres.md (copie figée).",
+	"termes": [
+		{
+			"term": "évènements indépendants",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "épreuve de Bernoulli",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "suite arithmétique",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "suite géométrique",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "récurrence",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "raison",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "seuil",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "fonction polynôme du second degré",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "polynôme",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "racine",
+			"sense": "polynôme",
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "taux de variation",
+			"sense": null,
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "dérivée",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "nombre dérivé",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "tangente",
+			"sense": "courbe",
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "variable aléatoire",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "espérance",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "échantillon",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "formule des probabilités totales",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "condition nécessaire",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "condition suffisante",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "croissance linéaire",
+			"sense": null,
+			"sharedWith": ["1_SPE"]
+		},
+		{
+			"term": "croissance exponentielle",
+			"sense": null,
+			"sharedWith": ["1_SPE"]
+		},
+		{
+			"term": "discret",
+			"sense": null,
+			"sharedWith": ["1_SPE", "1_TECHNO"]
+		},
+		{
+			"term": "interpolation",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "extrapolation",
+			"sense": null,
+			"sharedWith": ["1_TECHNO"]
+		}
+	],
+	"definitions": [
+		{
+			"term": "terme",
+			"sense": "suite",
+			"grade": "1_SPE",
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "rang",
+			"sense": null,
+			"grade": "1_SPE",
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "suite",
+			"sense": null,
+			"grade": "1_SPE",
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "degré",
+			"sense": "équation",
+			"grade": "1_SPE",
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "parabole",
+			"sense": null,
+			"grade": "1_SPE",
+			"sharedWith": ["1_GEN", "1_TECHNO"]
+		},
+		{
+			"term": "liste",
+			"sense": "informatique",
+			"grade": "1_SPE",
+			"sharedWith": ["1_TECHNO"]
+		},
+		{
+			"term": "paramètre",
+			"sense": null,
+			"grade": "1_SPE",
+			"sharedWith": ["1_TECHNO"]
+		}
+	]
+}

@@ -4,7 +4,7 @@
 	 * L'atelier de recherche de l'élève.
 	 *
 	 * Public et sans compte : aucune donnée ne quitte le navigateur (décision
-	 * figée n° 2 du cadrage). Cadrage : `docs/wip/atelier-recherche-eleve.md`.
+	 * figée n° 2 du cadrage). Cadrage : `docs/archive/wip/atelier-recherche-eleve.md`.
 	 *
 	 * ⚠️ Une URL porteuse de contenu (`?a=`, `?f=`) ouvre en **mode éphémère** :
 	 * ce qui est affiché vient du lien, l'atelier personnel n'est ni lu ni écrit.

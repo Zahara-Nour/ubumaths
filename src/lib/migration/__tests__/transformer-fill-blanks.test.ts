@@ -9,7 +9,7 @@
  * - type removed from output
  * - 8 pre-existing test failures fixed
  *
- * Uses concrete examples from .claude/old-questions.json
+ * Uses concrete examples from data/tinymath/old-questions.json
  */
 
 import { describe, it, expect } from 'vitest';

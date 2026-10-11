@@ -19,7 +19,8 @@ import type { MathNode } from '../../../types';
 
 function ast(source: string): MathNode {
 	const parsed = parseCustomSafe(source);
-	if (parsed.ast === undefined) throw new Error(`parse KO : ${source}`);
+	// `ast` vaut null (et non undefined) quand le parseur échoue
+	if (parsed.ast === null) throw new Error(`parse KO : ${source}`);
 	return parsed.ast;
 }
 

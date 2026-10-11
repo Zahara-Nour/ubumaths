@@ -336,10 +336,10 @@ export const GRADE_ADAPTATIONS: Record<GradeCode, GradeAdaptation> = {
 		vocabularyConstraints: ['topologie', 'analyse complexe']
 	},
 
-	// Filière STMG
+	// Voie technologique (maths du tronc commun, toutes séries)
 
-	'1_STMG': {
-		gradeCode: '1_STMG',
+	'1_TECHNO': {
+		gradeCode: '1_TECHNO',
 		languageLevel: 'intermediate',
 		maxSentenceComplexity: 3,
 		useEmoji: false,
@@ -351,8 +351,8 @@ export const GRADE_ADAPTATIONS: Record<GradeCode, GradeAdaptation> = {
 		vocabularyConstraints: ['théorème', 'démonstration', 'dérivée', 'intégrale', 'matrice']
 	},
 
-	T_STMG: {
-		gradeCode: 'T_STMG',
+	T_TECHNO: {
+		gradeCode: 'T_TECHNO',
 		languageLevel: 'intermediate',
 		maxSentenceComplexity: 3,
 		useEmoji: false,

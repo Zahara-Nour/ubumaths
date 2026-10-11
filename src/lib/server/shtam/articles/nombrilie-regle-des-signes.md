@@ -2,16 +2,16 @@
 title: Nombrilie — deux ennemis de Mère Ubu se multiplient, ils deviennent ses meilleurs alliés
 date: 2026-11-05
 author: cotice
-lede: Moins par moins, au Cabinet des Phynances, ça fait plus. Les deux conspirateurs, qui voulaient la renverser, se retrouvent à financer son palais.
+lede: Moins par moins, au Cabinet des Phynances, ça fait plus. Les deux conspirateurs avaient oublié de réviser cette règle de Mathres, apprise dès la Quatr'esme.
 ---
 
-Le complot avait été préparé dans le plus grand secret. Deux opposants à la Gouverneure de Nombrilie, « négatifs depuis toujours » selon leurs proches, s'étaient alliés pour renverser Mère Ubu. Ils ont commis une erreur fatale : au lieu de s'additionner, ils se sont multipliés.
+Le complot avait été préparé dans le plus grand secret. Deux opposants à la Gouverneure de Nombrilie, « négatifs depuis toujours envers elle » selon leurs proches, s'étaient alliés pour renverser Mère Ubu. Sur l'Échelle de Loyauté du Cabinet des Phynances, graduée de $-10$ (« ennemi juré ») à $+10$ (« contribuable modèle »), l'un était noté $-2$, l'autre $-3$. Ils ont commis une erreur fatale : au lieu d'additionner leurs forces, ils les ont multipliées.
 
-« Nous pensions devenir deux fois plus négatifs », raconte l'un d'eux, encore sous le choc. « Et puis, d'un coup, nous étions positifs. Nous avons eu envie de rénover le palais. » Les deux anciens conspirateurs ont signé dans la foulée un don de six mille gidouilles au Cabinet des Phynances.
+« Nous pensions devenir encore plus négatifs », raconte l'un d'eux, encore sous le choc. « Et puis, d'un coup, nous étions à $+6$. » Le soir même, ils se présentaient à la Garde pour dénoncer un dangereux complot contre Mère Ubu : le leur. Ils ont réclamé la peine la plus lourde.
 
-Mère Ubu, qui suivait l'affaire depuis son bureau, se dit « peu surprise ». « Je connais la règle des signes. Je l'ai fait graver au-dessus de la porte. Ceux qui ne savent pas lire finissent toujours par la payer. »
+Mère Ubu, elle, a tout de suite compris l'intérêt de l'affaire. Elle organise désormais chaque vendredi un bal des opposants, où l'on danse obligatoirement par deux.
 
-Par précaution, la Garde a interdit aux opposants restants de se réunir par deux. Ils doivent désormais comploter par trois, ce qui, selon les experts, les rend « à nouveau négatifs, mais très fatigués ».
+Les opposants restants, eux, ont retenu la leçon : ils ne complotent plus qu'en nombre impair. Par trois, par cinq ou par sept, le complot reste négatif.
 
 ## Le vrai du faux
 
@@ -25,3 +25,5 @@ Pourquoi « moins par moins donne plus » ? On peut le voir en prolongeant une s
 - $(-3) \times (-1) = 3$
 
 À chaque ligne, le résultat augmente de 3. Pour que la régularité continue, il faut bien que $(-3) \times (-1)$ vaille $3$. Et avec trois facteurs négatifs, le produit redevient négatif : $(-1) \times (-1) \times (-1) = -1$.
+
+C'est la leçon qu'ont retenue les opposants : un produit de facteurs négatifs est **négatif** quand ils sont en nombre **impair**, et **positif** quand ils sont en nombre **pair**. Chaque paire de facteurs négatifs donne un produit positif ; s'il en reste un tout seul, le produit reste négatif.

@@ -6,8 +6,8 @@
  * À lancer seulement après le FEU VERT de David sur le lot.
  *
  * Usage :
- *   pnpm relecture:verdicts --lot docs/relecture/relatifs                (simulation)
- *   pnpm relecture:verdicts --lot docs/relecture/relatifs --publier      (écrit)
+ *   pnpm relecture:verdicts --lot data/relecture/relatifs                (simulation)
+ *   pnpm relecture:verdicts --lot data/relecture/relatifs --publier      (écrit)
  *
  * Options :
  *   --index 12,13   restreindre à ces questions du lot

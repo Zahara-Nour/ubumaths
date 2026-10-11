@@ -46,8 +46,8 @@ describe('Cycles pédagogiques', () => {
 				'T_SPE',
 				'T_EXP',
 				'T_COMP',
-				'1_STMG',
-				'T_STMG'
+				'1_TECHNO',
+				'T_TECHNO'
 			]);
 		});
 
@@ -97,8 +97,8 @@ describe('Cycles pédagogiques', () => {
 				['T_SPE', 'cycle_terminal'],
 				['T_EXP', 'cycle_terminal'],
 				['T_COMP', 'cycle_terminal'],
-				['1_STMG', 'cycle_terminal'],
-				['T_STMG', 'cycle_terminal']
+				['1_TECHNO', 'cycle_terminal'],
+				['T_TECHNO', 'cycle_terminal']
 			] as const)('returns cycle_terminal for %s', (grade, expectedCycle) => {
 				expect(getCycleForGrade(grade)).toBe(expectedCycle);
 			});
@@ -154,7 +154,7 @@ describe('getGradesAtOrAbove', () => {
 		const eligibles = getGradesAtOrAbove(['2']);
 		expect(eligibles).toContain('2');
 		expect(eligibles).toContain('1_SPE');
-		expect(eligibles).toContain('T_STMG');
+		expect(eligibles).toContain('T_TECHNO');
 	});
 
 	// C’est tout l’objet du garde : une capacité de seconde peut être remobilisée
@@ -171,9 +171,9 @@ describe('getGradesAtOrAbove', () => {
 	// ouvrir les programmes des autres filières du même niveau.
 	it('inclut les filières parallèles de la même année', () => {
 		const depuisLaSpe = getGradesAtOrAbove(['1_SPE']);
-		expect(depuisLaSpe).toContain('1_STMG');
+		expect(depuisLaSpe).toContain('1_TECHNO');
 		expect(depuisLaSpe).toContain('1_GEN');
-		expect(getGradesAtOrAbove(['1_SPE', '1_STMG'])).toEqual(depuisLaSpe);
+		expect(getGradesAtOrAbove(['1_SPE', '1_TECHNO'])).toEqual(depuisLaSpe);
 	});
 
 	// Cas non prévu par l'usage, mais la fonction doit rester définie : on part

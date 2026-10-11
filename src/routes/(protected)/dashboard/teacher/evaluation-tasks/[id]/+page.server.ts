@@ -5,7 +5,7 @@
  * UI prof Phase 4.1 — Édition d'une tâche d'évaluation et déclaration du
  * périmètre (sélection des observables famille B à observer en séance).
  *
- * Spec : docs/wip/skills-referentiel-design.md §3 (périmètre dynamique)
+ * Spec : docs/archive/wip/skills-referentiel-design.md §3 (périmètre dynamique)
  */
 
 import type { PageServerLoad, Actions } from './$types';

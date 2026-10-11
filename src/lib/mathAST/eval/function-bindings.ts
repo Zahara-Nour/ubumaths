@@ -239,8 +239,11 @@ export function applyFunction(funcNode: FunctionNode, bindings: FunctionBindings
 		varBindings[definition.parameters[i]] = funcNode.args[i];
 	}
 
-	// Substitute parameters in the expression
-	return substitute(expressionToUse, varBindings);
+	// Substitute parameters in the expression.
+	// ⚠️ En UNE passe : l'argument vit dans la portée de l'appelant. Itérer
+	// remplaçait aussi le x de l'argument — f(2x) avec f(x) = sin(x) devenait
+	// sin(1024x) (dix passes, 2026-10-06).
+	return substitute(expressionToUse, varBindings, { maxIterations: 1 });
 }
 
 /**

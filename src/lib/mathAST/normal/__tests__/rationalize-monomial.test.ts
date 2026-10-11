@@ -71,9 +71,12 @@ describe('ce qui marchait continue de marcher', () => {
 		expect(eq(a, b)).toBe(true);
 	});
 
+	// ⚠️ Écrit `root(3)(2)` jusqu’au correctif des noms de fonction : ce n'est PAS une racine, mais le
+	// produit r·o·o·t·3·2, lu sans erreur. `root` est désormais refusé
+	// (« Fonction inconnue ») ; la racine cubique s'écrit `sqrt[3](2)`.
 	it('une racine d’indice 3 reste équivalente à elle-même, sans exception', () => {
-		expect(eq('1/root(3)(2)', '1/root(3)(2)')).toBe(true);
-		expect(() => normalize(preprocess(parseCustom('1/root(3)(2)')))).not.toThrow();
+		expect(eq('1/sqrt[3](2)', '1/sqrt[3](2)')).toBe(true);
+		expect(() => normalize(preprocess(parseCustom('1/sqrt[3](2)')))).not.toThrow();
 	});
 
 	it('un dénominateur imaginaire garde son chemin : 1/i ≡ -i', () => {

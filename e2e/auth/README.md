@@ -8,7 +8,7 @@
 
 ## 📚 Full Documentation
 
-**[Authentication & Authorization E2E Tests →](/docs/ref/tests/architecture.md)**
+**[Authentication & Authorization E2E Tests →](/docs/pratiques/tests.md)**
 
 Complete documentation with test details, helper functions, and troubleshooting.
 
@@ -55,4 +55,4 @@ pnpm test:e2e e2e/auth/ --project=chromium
 
 ---
 
-**For complete documentation, see [E2E Auth Tests →](/docs/ref/tests/architecture.md)**
+**For complete documentation, see [E2E Auth Tests →](/docs/pratiques/tests.md)**

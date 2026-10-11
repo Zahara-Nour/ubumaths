@@ -3,7 +3,7 @@
  * =============================================
  *
  * Tests the complete pipeline: transformer → generator → validator → AST rendering
- * using real questions from .claude/old-questions.json.
+ * using real questions from data/tinymath/old-questions.json.
  *
  * Covers 17 globalIndex values across all migration modes:
  * - result_rewrite: 10, 25, 300, 352, 353
@@ -41,7 +41,7 @@ type RawQuestion = Record<string, unknown> & {
 };
 
 const rawQuestions: RawQuestion[] = JSON.parse(
-	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
+	readFileSync(resolve(process.cwd(), 'data/tinymath/old-questions.json'), 'utf-8')
 );
 
 /**
@@ -73,7 +73,7 @@ function transformAndPrepare(globalIndex: number): QuestionTemplate {
 /**
  * Lazy cache: transform + generate once per globalIndex.
  */
-const cache = new Map<number, { template: QuestionTemplate; instance: QuestionInstance }>();
+const cache = new Map<string, { template: QuestionTemplate; instance: QuestionInstance }>();
 
 function getTestData(
 	globalIndex: number,

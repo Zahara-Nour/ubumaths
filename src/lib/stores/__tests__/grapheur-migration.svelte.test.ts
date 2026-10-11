@@ -1,7 +1,7 @@
 /**
  * Un graphique sauvegardé avant la nouvelle palette est traduit au chargement.
  *
- * Spécification : docs/wip/grapheur-couleurs-theme-progress.md (7, 12).
+ * Spécification : docs/archive/wip/grapheur-couleurs-theme-progress.md (7, 12).
  */
 
 import { afterEach, describe, it, expect } from 'vitest';

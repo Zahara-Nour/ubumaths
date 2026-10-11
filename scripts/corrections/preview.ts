@@ -4,7 +4,7 @@
  *
  * Usage : pnpm corrections:preview pilote
  *
- * Écrit `docs/corrections/<lot>/APERCU.md` depuis l'instantané et les
+ * Écrit `data/corrections/<lot>/APERCU.md` depuis l'instantané et les
  * propositions (aucune base).
  */
 

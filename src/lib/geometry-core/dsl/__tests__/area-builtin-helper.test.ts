@@ -155,7 +155,8 @@ b = slider(min=0, max=3, valeur=2)`);
 			name: 'integrale',
 			f: getFn('f'),
 			lowerArg: { type: 'nombre', value: 0 },
-			upperArg: { type: 'element', figureId: bId, elementType: 'slider' },
+			// Le DSL enregistre un curseur comme symbole 'scalar' (handleSlider).
+			upperArg: { type: 'element', figureId: bId, elementType: 'scalar' },
 			signed: true,
 			line: 1,
 			figure

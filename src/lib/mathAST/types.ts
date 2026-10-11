@@ -13,7 +13,7 @@ import type { MatrixType } from './matrix/types';
 // =============================================================================
 
 /**
- * Supported Greek letter names (lowercase only)
+ * Supported Greek letter names
  *
  * Set of Greek letters supported by both LaTeX and Custom parsers. Each value
  * is the LaTeX command name (without the backslash). These letters can be
@@ -21,32 +21,58 @@ import type { MatrixType } from './matrix/types';
  *
  * Note: π is NOT a GreekLetter - it's a MathConstant. Use piConstant() or PI.
  * Similarly, e (Euler's number) is MathConstant('euler'), not a variable.
+ * `\Pi` majuscule, lui, EST une lettre (pas ∏ : c'est `\prod`) ; de même
+ * `\Sigma` n'est pas ∑ (`\sum`) et `\Delta` n'est pas « le discriminant ».
  *
- * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
+ * Omicron is omitted (rendered as the latin letter `o` in LaTeX). Les
+ * majuscules identiques à une lettre latine (A, B, E, Z, H, I, K, M, N, O,
+ * P, T, X) sont absentes : LaTeX n'a pas de commande pour elles.
  */
-export type GreekLetter =
-	| 'alpha'
-	| 'beta'
-	| 'gamma'
-	| 'delta'
-	| 'epsilon'
-	| 'zeta'
-	| 'eta'
-	| 'theta'
-	| 'iota'
-	| 'kappa'
-	| 'lambda'
-	| 'mu'
-	| 'nu'
-	| 'xi'
-	| 'rho'
-	| 'sigma'
-	| 'tau'
-	| 'upsilon'
-	| 'phi'
-	| 'chi'
-	| 'psi'
-	| 'omega';
+export const GREEK_LETTERS = [
+	'alpha',
+	'beta',
+	'gamma',
+	'delta',
+	'epsilon',
+	'zeta',
+	'eta',
+	'theta',
+	'iota',
+	'kappa',
+	'lambda',
+	'mu',
+	'nu',
+	'xi',
+	'rho',
+	'sigma',
+	'tau',
+	'upsilon',
+	'phi',
+	'chi',
+	'psi',
+	'omega',
+	// Variantes
+	'varepsilon',
+	'vartheta',
+	'varpi',
+	'varrho',
+	'varsigma',
+	'varphi',
+	// Majuscules usuelles
+	'Gamma',
+	'Delta',
+	'Theta',
+	'Lambda',
+	'Xi',
+	'Pi',
+	'Sigma',
+	'Upsilon',
+	'Phi',
+	'Psi',
+	'Omega'
+] as const;
+
+export type GreekLetter = (typeof GREEK_LETTERS)[number];
 
 // =============================================================================
 // Mathematical Constants

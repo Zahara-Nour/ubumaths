@@ -1,6 +1,6 @@
 /**
  * Supprimer un objet emporte ceux qui en dépendent, après confirmation, et se
- * rattrape par « Annuler » — lot B de `docs/wip/atelier-suppression-export-phase0.md`
+ * rattrape par « Annuler » — lot B de `docs/archive/wip/atelier-suppression-export-phase0.md`
  * (décision de David, 2026-10-05). Remplace la règle L3 : `f′` et `g` ne
  * restent plus « en attente » quand on supprime `f`.
  */

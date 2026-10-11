@@ -21,11 +21,20 @@ import { browser } from '$app/environment';
 /** Available font sets */
 export type MathFontSet = 'katex' | 'shantell';
 
-/** CSS file paths for each font set */
-const CSS_FILES: Record<MathFontSet, string> = {
-	katex: '/mathlive-fonts-katex.css',
+/**
+ * Feuille qui SURCHARGE les polices KaTeX par défaut. Le jeu `katex` n'en a pas :
+ * ses `@font-face` viennent de `mathlive/static.css`, importé par les composants
+ * qui rendent des maths (`$lib/utils/mathlive-styles`). La surcharge est ajoutée
+ * en fin de `<head>`, donc déclarée après : à descripteurs égaux, la dernière
+ * `@font-face` l'emporte.
+ */
+const OVERRIDE_CSS: Record<MathFontSet, string | null> = {
+	katex: null,
 	shantell: '/mathlive-fonts-shantell.css'
 };
+
+/** Identifiant du `<link>` de surcharge */
+const OVERRIDE_LINK_ID = 'mathlive-fonts-css';
 
 /** Font directories for each set (used by MathLive) */
 const FONT_DIRECTORIES: Record<MathFontSet, string> = {
@@ -48,15 +57,7 @@ export async function switchMathFonts(fontSet: MathFontSet): Promise<void> {
 	// Skip if already using this font set
 	if (currentFontSet === fontSet) return;
 
-	const cssLink = document.getElementById('mathlive-fonts-css') as HTMLLinkElement | null;
-	if (!cssLink) {
-		console.warn('MathLive fonts CSS link not found');
-		return;
-	}
-
-	// Update CSS href
-	const newHref = CSS_FILES[fontSet];
-	cssLink.href = newHref;
+	applyOverrideCss(fontSet);
 
 	// Update MathfieldElement.fontsDirectory for any new mathfields
 	const { MathfieldElement } = await import('mathlive');
@@ -88,11 +89,7 @@ export async function initMathFonts(fontSet: MathFontSet = 'katex'): Promise<voi
 	const { MathfieldElement } = await import('mathlive');
 	MathfieldElement.fontsDirectory = FONT_DIRECTORIES[fontSet];
 
-	// Update CSS if needed
-	const cssLink = document.getElementById('mathlive-fonts-css') as HTMLLinkElement | null;
-	if (cssLink && fontSet !== 'katex') {
-		cssLink.href = CSS_FILES[fontSet];
-	}
+	applyOverrideCss(fontSet);
 
 	currentFontSet = fontSet;
 }
@@ -103,11 +100,27 @@ export async function initMathFonts(fontSet: MathFontSet = 'katex'): Promise<voi
 export async function preloadAllFonts(): Promise<void> {
 	if (!browser) return;
 
-	// Preload the other CSS file
-	const otherSet: MathFontSet = currentFontSet === 'katex' ? 'shantell' : 'katex';
+	// Seule la surcharge Shantell est un fichier à part ; le jeu KaTeX est déjà là
+	const href = OVERRIDE_CSS.shantell;
+	if (currentFontSet === 'shantell' || !href) return;
 	const link = document.createElement('link');
 	link.rel = 'prefetch';
-	link.href = CSS_FILES[otherSet];
+	link.href = href;
 	link.as = 'style';
 	document.head.appendChild(link);
+}
+
+/** Pose ou retire le `<link>` de surcharge des polices selon le jeu choisi */
+function applyOverrideCss(fontSet: MathFontSet): void {
+	const href = OVERRIDE_CSS[fontSet];
+	const existing = document.getElementById(OVERRIDE_LINK_ID) as HTMLLinkElement | null;
+	if (!href) {
+		existing?.remove();
+		return;
+	}
+	const link = existing ?? document.createElement('link');
+	link.id = OVERRIDE_LINK_ID;
+	link.rel = 'stylesheet';
+	link.href = href;
+	if (!existing) document.head.appendChild(link);
 }

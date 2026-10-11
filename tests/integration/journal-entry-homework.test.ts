@@ -44,7 +44,11 @@ const ANON_KEY =
  */
 type Loose = {
 	from: (t: string) => {
-		insert: (rows: unknown) => PromiseLike<{ data: unknown; error: { message: string } | null }> & {
+		// `code` : l'erreur PostgREST le porte toujours (42501 sur un refus de policy).
+		insert: (rows: unknown) => PromiseLike<{
+			data: unknown;
+			error: { message: string; code?: string } | null;
+		}> & {
 			select: () => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>;
 		};
 		delete: () => {

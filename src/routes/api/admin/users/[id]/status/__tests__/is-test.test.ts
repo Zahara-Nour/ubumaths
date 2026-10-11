@@ -89,7 +89,10 @@ describe('approbation et statut « compte de test »', () => {
 		requireRolesMock.mockResolvedValue({ profile: { id: 'prof', role: 'teacher' } });
 		const supabase = fakeClient({ is_test: false });
 
-		await PATCH(evenement({ status: 'approved', is_test: false }, { supabase })).catch(() => {});
+		// PATCH rend un MaybePromise : Promise.resolve permet le .catch.
+		await Promise.resolve(
+			PATCH(evenement({ status: 'approved', is_test: false }, { supabase }))
+		).catch(() => {});
 		expect(supabase.updates[0]).toMatchObject({ status: 'approved', is_test: false });
 	});
 
@@ -98,8 +101,8 @@ describe('approbation et statut « compte de test »', () => {
 		const supabase = fakeClient({ is_test: false });
 		const adminSupabase = fakeClient({ is_test: false });
 
-		await PATCH(
-			evenement({ status: 'approved', is_test: true }, { supabase, adminSupabase })
+		await Promise.resolve(
+			PATCH(evenement({ status: 'approved', is_test: true }, { supabase, adminSupabase }))
 		).catch(() => {});
 		expect(adminSupabase.updates[0]).toMatchObject({ is_test: true });
 		expect(supabase.updates).toEqual([]);

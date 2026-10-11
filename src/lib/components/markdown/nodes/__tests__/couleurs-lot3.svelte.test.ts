@@ -3,7 +3,7 @@
  * arbre de probabilités. On lit la couleur RENDUE (`getComputedStyle`) en basculant
  * `color-scheme` sur <html>, dont dépendent les tokens `light-dark()` d'app.css.
  *
- * Spécification : docs/wip/couleurs-lot3-progress.md.
+ * Spécification : docs/archive/wip/couleurs-lot3-progress.md.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';

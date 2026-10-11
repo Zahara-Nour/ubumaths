@@ -52,9 +52,12 @@
 		class: className = ''
 	}: Props = $props();
 
-	// Resolve relative paths to full Supabase Storage URLs
+	// Adresse complète : telle quelle. Chemin du site (`/shtam/…`, fichier de `static/`) :
+	// tel quel — mais pas `//hôte`, une adresse externe. Nom simple : stockage des questions.
 	let resolvedSrc = $derived(
-		src.includes('://') ? src : getQuestionImageUrl(PUBLIC_SUPABASE_URL, src)
+		src.includes('://') || (src.startsWith('/') && !src.startsWith('//'))
+			? src
+			: getQuestionImageUrl(PUBLIC_SUPABASE_URL, src)
 	);
 
 	// Mode restreint (chat élève) : seule une URL ABSOLUE du stockage Supabase

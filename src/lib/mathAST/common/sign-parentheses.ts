@@ -73,6 +73,7 @@ export function needsParenthesesAsPowerBase(node: MathNode): boolean {
 		case 'multiplication':
 		case 'superscript':
 		case 'unit':
+		case 'limit': // `\lim_{x\to0} x^2` se relirait lim(x²) : portée de \lim
 			return true;
 		default:
 			return false;
@@ -142,6 +143,21 @@ function startsWithSign(node: MathNode): boolean {
  * facteur dont l'écriture commence par un signe. À GAUCHE, `-2x` reste `-2x`.
  */
 export function needsParenthesesAsRightFactor(node: MathNode): boolean {
+	return needsParenthesesUnderSign(node) || startsWithSign(node);
+}
+
+/**
+ * Cette expression doit-elle être parenthésée sous un signe `-` unaire ?
+ *
+ * ⚠️ **Mesuré** (oracle des dérivées) : la règle du quotient sur `-2/(x-4)`
+ * écrivait `--2` dans les étapes, et la carte `f′` de l'atelier
+ * `e^{--0.75 x}` dès qu'un paramètre négatif (`k = -0.75`) était substitué
+ * dans `e^{-kx}`. Deux signes ne se suivent pas à l'écrit : `-(-2)`.
+ *
+ * Une somme ou une différence (le signe ne porterait que sur le premier terme),
+ * et tout ce dont l'écriture commence par un signe.
+ */
+export function needsParenthesesUnderOpposite(node: MathNode): boolean {
 	return needsParenthesesUnderSign(node) || startsWithSign(node);
 }
 

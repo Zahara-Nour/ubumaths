@@ -111,7 +111,12 @@ export async function loginAsStudent(
  */
 export async function createParamExercise(
 	page: Page,
-	data: Partial<ExerciseInsert> & { variables?: Array<{ name: string; expression: string }> }
+	// `tags` n'est plus une colonne d'`exercises`, mais l'API de création l'accepte
+	// toujours (createExerciseSchema) : il est donc déclaré à part.
+	data: Partial<ExerciseInsert> & {
+		variables?: Array<{ name: string; expression: string }>;
+		tags?: string[];
+	}
 ): Promise<Exercise> {
 	const response = await page.request.post('/api/exercises', {
 		data: {

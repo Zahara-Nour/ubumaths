@@ -1,4 +1,5 @@
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 
@@ -7,6 +8,8 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Returns all unique Google Classroom topics across teacher's courses
  */
 export const GET: RequestHandler = async ({ locals }) => {
+	assertGoogleClassroomEnabled();
+
 	const _session = await requireRole(locals, 'teacher');
 
 	try {

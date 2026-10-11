@@ -29,4 +29,4 @@ Décision de produit liée : `(x² − y²)/(x − y) ≡ x + y` est **compté j
 - Un faux positif du décideur compte juste une réponse fausse d'élève : toute réduction
   (ex. division multivariée) est **vérifiée** (recalcul `b·q`) plutôt que prouvée.
 - Hors d'atteinte sans changer la forme normale : exposant symbolique sur base quelconque
-  (`x^a·x^b`). Sens détaillé par domaine : `docs/ref/convention-equivalence.md`.
+  (`x^a·x^b`). Sens détaillé par domaine : `docs/systeme/mathast/convention-equivalence.md`.

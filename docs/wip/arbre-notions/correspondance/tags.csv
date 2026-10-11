@@ -1,0 +1,68 @@
+tag;nb_exercices;decision;cible;raison
+polynômes du second degré;34;notion;Fonctions > Second degré;contenu : le second degré (Fonctions ou Algèbre selon l'énoncé)
+dérivée;21;notion;Fonctions > Dérivation;contenu
+intégration;13;notion;Intégration > Calcul d'intégrales;contenu (branche Intégration)
+exponentielle;12;notion;Fonctions > Fonction exponentielle;contenu
+ensembles;11;notion;Ensembles > Ensembles de nombres;contenu
+nombres;11;notion;Ensembles > Ensembles de nombres > ℕ, ℤ, 𝔻, ℚ, ℝ;contenu, toujours accolé à « ensembles »
+produit scalaire;11;notion;Géométrie > Produit scalaire;contenu
+forme canonique;9;notion;Fonctions > Second degré > formes;contenu
+suites;8;notion;Suites > Généralités sur les suites;contenu trop large : la notion précise vient de l'énoncé
+variations;7;notion;Fonctions > Généralités sur les fonctions > variations;contenu (variations d'une fonction)
+inéquations;7;notion;Algèbre > Inéquations : second degré;"contenu ; ici toujours second degré ou premier degré selon l'exercice"
+primitive;7;notion;Équations différentielles > y′ = f;contenu (primitives = solutions de y′ = f)
+optimisation;7;notion;Fonctions > Dérivation > optimisation;contenu (sous-notion dans l'arbre)
+vecteurs;6;notion;Géométrie > Produit scalaire;"toujours avec produit scalaire ici ; nœud Vecteurs (2de) sans exercice"
+factorisation;5;notion;Algèbre > Calcul littéral > factoriser;contenu
+aire;5;notion;Intégration > Intégrale et aire;"contenu (aire par intégrale) ; aussi Grandeurs > Aires au collège"
+simplification;5;transversal;;geste de calcul présent dans plusieurs notions (fractions, racines, puissances, exp)
+orthogonalité;5;notion;Géométrie > Produit scalaire;"contenu (orthogonalité dans le plan) ; dans l'espace : Orthogonalité"
+intervalle;4;notion;Ensembles > Ensembles de nombres > intervalles;contenu
+racines carrées;4;notion;Nombres et calculs > Racines carrées : sens et écritures;contenu
+équations;4;notion;Algèbre > Équations : produit et quotient;contenu trop large : la notion précise vient de l'énoncé
+convexité;4;notion;Fonctions > Convexité;contenu
+valeur approchée;4;transversal;;forme de réponse, toutes notions
+racine d'un polynôme;4;notion;Fonctions > Second degré > racines;contenu
+suite arithméticogéométrique;3;notion;Suites > Suites arithmético-géométriques;contenu
+python;3;transversal;;"outil (algorithme) ; l'ADR garde les tags des exercices Python"
+position relative;3;notion;Intégration > Intégrale et aire > aire entre deux courbes;"position relative de courbes (étude de signe de f−g) ; pas de nœud dédié"
+fractions;3;notion;Nombres et calculs > Fractions : calculs;contenu
+inégalité;3;transversal;;démontrer une inégalité : geste transversal (convexité, intégrales, exp)
+représentation graphique;3;transversal;;lecture/représentation graphique : transversal
+signe;2;notion;Fonctions > Généralités sur les fonctions > signe;contenu
+contre-exemple;2;notion;Logique > Connecteurs et contre-exemples > contre-exemple;contenu (Logique)
+algorithme;2;transversal;;mot-clé transversal cité par l'ADR
+développement;2;notion;Algèbre > Calcul littéral > développer;contenu
+encadrement;2;transversal;;geste transversal (encadrer x², e, une intégrale)
+TVI;2;notion;Fonctions > Continuité > valeurs intermédiaires;contenu
+limite;2;notion;Fonctions > Limites de fonctions;contenu
+récurrence;2;notion;Suites > Raisonnement par récurrence;contenu
+discriminant;2;notion;Algèbre > Équations : second degré > discriminant;contenu
+polynôme;2;notion;Fonctions > Dérivation > fonctions dérivées;ici « dériver un polynôme » : redondant avec dérivée
+lecture graphique;2;transversal;;mot-clé transversal cité par l'ADR
+nombre dérivé;2;notion;Fonctions > Dérivation > nombre dérivé;contenu
+droite numérique;1;notion;Ensembles > Ensembles de nombres > ℕ, ℤ, 𝔻, ℚ, ℝ;"réels sur la droite numérique (2de) ; à trancher avec Relatifs > droite graduée"
+tangente;1;notion;Fonctions > Dérivation > tangente;contenu
+probabilité conditionnelle;1;notion;Probabilités > Probabilités conditionnelles;contenu
+croissance comparée;1;notion;Fonctions > Limites de fonctions > croissances comparées;contenu
+logarithme;1;notion;Fonctions > Logarithmes;contenu
+suites couplées;1;notion;Matrices > Suites et matrices > suites couplées;contenu, mais l'exercice est en Tle spé (nœud Expertes)
+équation de cercle;1;notion;Géométrie > Géométrie repérée > équation de cercle;contenu
+puissances;1;notion;Nombres et calculs > Puissances : calculs;contenu
+paramètre;1;transversal;;mot-clé transversal cité dans la consigne
+système;1;notion;Algèbre > Équations : second degré > se ramener au second degré;"système cercle/droite ; pas de notion « systèmes » hors Matrices (Expertes)"
+fonctions;1;notion;Fonctions > Généralités sur les fonctions;contenu trop large
+image;1;notion;Fonctions > Généralités sur les fonctions > images et antécédents;contenu
+identité remarquable;1;notion;Algèbre > Calcul littéral > identités remarquables;contenu
+parité;1;notion;Fonctions > Fonctions trigonométriques > parité et périodicité;"seul nœud « parité » de l'arbre ; ici parité de cosh/sinh : pas de nœud parité hors trigo"
+intégration par parties;1;notion;Intégration > Calcul d'intégrales > intégration par parties;contenu
+lieu;1;notion;Géométrie > Produit scalaire > lieux de points;contenu
+Al-Kashi;1;notion;Géométrie > Produit scalaire > angles et longueurs;contenu
+trigonométrie;1;notion;Fonctions > Fonctions trigonométriques;contenu (ici trigo du triangle : pas de nœud)
+coordonnées;1;transversal;;"sert à choisir « avec / sans coordonnées » ; pas une notion en soi"
+otrthogonalité;1;notion;Géométrie > Produit scalaire;faute de frappe de « orthogonalité » : à fusionner puis retirer
+projeté orthogonal;1;notion;Géométrie > Géométrie repérée > projeté orthogonal;contenu
+équation de droite;1;notion;Géométrie > Géométrie repérée > équations de droites;contenu
+volume;1;notion;Grandeurs et mesures > Volumes;contenu (ici volume d'une boîte en optimisation)
+suite arithmétique;1;notion;Suites > Suites arithmétiques;contenu
+suite géométrique;1;notion;Suites > Suites géométriques;contenu

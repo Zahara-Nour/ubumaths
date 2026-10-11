@@ -17,7 +17,7 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		templateId: 'test-percent',
 		statement: 'Calcule' as ResolvedMarkdown,
 		blanks,
-		grades: ['5e'],
+		grades: ['5'],
 		theme: 'Nombres et calculs',
 		domain: 'Proportionnalité',
 		level: 1,

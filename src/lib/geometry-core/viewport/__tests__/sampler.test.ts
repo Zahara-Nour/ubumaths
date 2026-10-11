@@ -15,7 +15,7 @@ import {
 	isAsymptote,
 	DEFAULT_NUM_POINTS
 } from '../sampler';
-import type { Viewport } from '../types';
+import type { Point, Viewport } from '../types';
 
 describe('sampler', () => {
 	const defaultViewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };

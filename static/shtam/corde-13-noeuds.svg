@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" width="560" height="380" font-family="Helvetica, Arial, sans-serif">
+<title>Corde à 13 nœuds tendue en triangle 3-4-5</title>
+<desc>Treize nœuds régulièrement espacés délimitent douze intervalles. Tendue en triangle de 3, 4 et 5 intervalles, la corde forme un angle droit.</desc>
+<rect x="0" y="0" width="560" height="380" rx="18" fill="#ffffff"/>
+<text x="280.0" y="38" text-anchor="middle" font-size="16" fill="#3c4043">13 nœuds, 12 intervalles : 3 + 4 + 5 = 12</text>
+<path d="M190,290 L438,290 L190,104 Z" fill="#fbf3e6" stroke="#b0835a" stroke-width="5" stroke-linejoin="round"/>
+<path d="M216,290 L216,264 L190,264" fill="none" stroke="#d93025" stroke-width="3"/>
+<text x="224" y="256" font-size="15" font-weight="bold" fill="#d93025">angle droit</text>
+<circle cx="190.0" cy="290.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="252.0" cy="290.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="314.0" cy="290.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="376.0" cy="290.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="438.0" cy="290.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="388.4" cy="252.8" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="338.8" cy="215.6" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="289.2" cy="178.4" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="239.6" cy="141.2" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="190.0" cy="104.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="190.0" cy="166.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="190.0" cy="228.0" r="7.5" fill="#8a5a2b" stroke="#5b3a1a" stroke-width="2"/><circle cx="190" cy="290" r="12" fill="none" stroke="#5b3a1a" stroke-width="2"/>
+<text x="314.0" y="322.0" text-anchor="middle" font-size="17" font-weight="bold" fill="#3c4043">4 intervalles</text>
+<text x="166.0" y="203.0" text-anchor="end" font-size="17" font-weight="bold" fill="#3c4043">3 intervalles</text>
+<text x="330.8" y="174.6" font-size="17" font-weight="bold" fill="#3c4043">5 intervalles</text>
+<text x="170" y="318" text-anchor="end" font-size="13" fill="#5f6368">nœuds 1 et 13</text>
+<text x="280.0" y="362" text-anchor="middle" font-size="15" fill="#5f6368">3² + 4² = 9 + 16 = 25 = 5²</text>
+</svg>

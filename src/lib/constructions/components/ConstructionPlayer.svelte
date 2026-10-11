@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	/**
 	 * ConstructionPlayer - Main player component for geometric constructions
 	 *

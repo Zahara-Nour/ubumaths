@@ -2,7 +2,7 @@
  * Stratégies de calcul réfléchi de la vague 1 (générées)
  * ======================================================
  *
- * Une stratégie par code du classement (docs/wip/corrections-manquantes-frontiere.md) :
+ * Une stratégie par code du classement (docs/archive/wip/corrections-manquantes-frontiere.md) :
  * - `R-COMPL`       : compléter par bonds jusqu'aux nombres ronds (29 → 30 ; 7900 → 8000 → 10 000) ;
  * - `R-ECART`, `R-POSE` : une différence est un écart, on avance du petit au grand par bonds ;
  * - `R-RANGPARRANG` : décomposer le 2ᵉ terme selon ses rangs et l'ajouter morceau par morceau ;

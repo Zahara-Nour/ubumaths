@@ -6,7 +6,7 @@
  * verdict (validated_observables + missing_for_next) + observables groupés
  * par sous-dimension A/B/C/D avec leur état acquis/non.
  *
- * Spec : docs/wip/skills-referentiel-design.md §6.1ter + §8
+ * Spec : docs/archive/wip/skills-referentiel-design.md §6.1ter + §8
  */
 
 import type { PageServerLoad } from './$types';

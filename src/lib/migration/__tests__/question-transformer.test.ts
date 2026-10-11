@@ -1085,12 +1085,10 @@ describe('Question Transformer', () => {
 		it('should validate a correct template', () => {
 			const template: QuestionTemplate = {
 				id: 'test-id',
-				type: 'numerical_exact',
 				title: 'Test Question',
 				variations: [
 					{
-						statement: templateMarkdown('Test'),
-						solution: '42'
+						statement: templateMarkdown('Test')
 					}
 				],
 				grades: ['CM1'],
@@ -1131,10 +1129,8 @@ describe('Question Transformer', () => {
 				variations: [
 					{
 						statement: templateMarkdown(''),
-						// MC variation with choices but no solution
-						choices: [{ content: templateMarkdown('A') }],
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						solution: undefined as any
+						// QCM avec des choix mais sans `correctChoiceIndex`
+						choices: [{ content: templateMarkdown('A') }]
 					}
 				],
 				grades: ['CM1'],

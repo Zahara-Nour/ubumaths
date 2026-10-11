@@ -367,9 +367,9 @@ const { data } = await studentClient.rpc('draw_multiple_vip_cards', {...});
 For more information:
 
 - **Feature Documentation**: `docs/features/vip-card-draw-system.md`
-- **Quality Standards**: `docs/claude/quality-standards.md` (Testing section)
-- **Database Schema**: `docs/architecture/database-schema.md`
-- **Supabase Local Development**: https://supabase.com/docs/guides/cli/local-development
+- **Quality Standards**: `docs/pratiques/qualite.md` (Testing section)
+- **Database Schema**: `docs/systeme/base-de-donnees.md`
+- **Supabase Local Development**: https://supabase.com/docs/systeme/cli/local-development
 
 ---
 

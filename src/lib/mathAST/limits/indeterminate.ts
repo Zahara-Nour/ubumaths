@@ -11,8 +11,14 @@
 import type { MathNode } from '../types';
 import type { IndeterminateForm, LimitDirection } from './types';
 import { isInfinity, isDivision, isMultiplication, isSubtraction, isSuperscript } from '../guards';
-import { tryEvaluateLimitExact, isZeroResult, isInfinityResult } from './exact-evaluation';
+import {
+	tryEvaluateLimitExact,
+	isZeroResult,
+	isInfinityResult,
+	isIndeterminateResult
+} from './exact-evaluation';
 import { evaluateNumeric, getNumericValue, ZERO_TOLERANCE, NUMERIC_DELTA } from '../common';
+import { showsNoLimitAtInfinity } from './sign-tracking';
 
 // =============================================================================
 // Limit Value Types
@@ -59,7 +65,17 @@ export function classifyLimitValue(
 ): LimitValueClassification {
 	// If approach is infinity, use infinity analysis
 	if (isInfinity(approach)) {
-		return classifyAtInfinity(expr, varName, approach.sign === 'positive');
+		// Trois échantillons ne prouvent pas un infini ni un zéro : eˣ(1 + sin x)
+		// déborde en 1e6 (« +∞ ») mais retombe à 0 à chaque période. Une preuve
+		// d'absence de limite (oscillation, creux, pic) l'emporte — sinon
+		// (2eˣ(1 + sin x) − 3)/(eˣ(1 + sin x)) était une forme ∞/∞, et
+		// L'Hôpital rendait 2. Le classement fini (ln x : 13,8 ; 18,4 ; 23)
+		// n'est pas touché.
+		const positive = approach.sign === 'positive';
+		const naive = classifyAtInfinity(expr, varName, positive);
+		const decisive = naive.class !== 'finite-nonzero' && naive.class !== 'one';
+		if (decisive && showsNoLimitAtInfinity(expr, varName, positive)) return { class: 'unknown' };
+		return naive;
 	}
 
 	// Otherwise, try direct numerical evaluation
@@ -209,6 +225,22 @@ export function detectIndeterminateForm(
 }
 
 /**
+ * Limite exacte d'un opérande, ou null si elle n'est pas conclue. Un résultat
+ * « indéterminé » n'est NI nul NI infini NI fini : lu comme un fini non nul,
+ * il faisait déclarer « déterminé » (1/x)/(2x/(x²+1)) en +∞ — L'Hôpital
+ * rendait alors ln x / ln(x²+1) → 0 (vrai : 1/2), et ln(x²+1) − 2 ln x → +∞.
+ */
+function determinateExactLimit(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): ReturnType<typeof tryEvaluateLimitExact> {
+	const result = tryEvaluateLimitExact(expr, varName, approach, direction);
+	return result && !isIndeterminateResult(result) ? result : null;
+}
+
+/**
  * Detect indeterminate form using exact arithmetic.
  * Returns null if exact evaluation fails (e.g., for transcendental functions).
  */
@@ -220,8 +252,8 @@ function detectIndeterminateFormExact(
 ): IndeterminateForm | null {
 	// Division: check for 0/0 or ∞/∞
 	if (isDivision(expr)) {
-		const numResult = tryEvaluateLimitExact(expr.numerator, varName, approach, direction);
-		const denResult = tryEvaluateLimitExact(expr.denominator, varName, approach, direction);
+		const numResult = determinateExactLimit(expr.numerator, varName, approach, direction);
+		const denResult = determinateExactLimit(expr.denominator, varName, approach, direction);
 
 		// If exact evaluation succeeded for both
 		if (numResult && denResult) {
@@ -242,8 +274,8 @@ function detectIndeterminateFormExact(
 
 	// Multiplication: check for 0 * ∞
 	if (isMultiplication(expr)) {
-		const leftResult = tryEvaluateLimitExact(expr.left, varName, approach, direction);
-		const rightResult = tryEvaluateLimitExact(expr.right, varName, approach, direction);
+		const leftResult = determinateExactLimit(expr.left, varName, approach, direction);
+		const rightResult = determinateExactLimit(expr.right, varName, approach, direction);
 
 		if (leftResult && rightResult) {
 			if (
@@ -258,8 +290,8 @@ function detectIndeterminateFormExact(
 
 	// Subtraction: check for ∞ - ∞
 	if (isSubtraction(expr)) {
-		const leftResult = tryEvaluateLimitExact(expr.left, varName, approach, direction);
-		const rightResult = tryEvaluateLimitExact(expr.right, varName, approach, direction);
+		const leftResult = determinateExactLimit(expr.left, varName, approach, direction);
+		const rightResult = determinateExactLimit(expr.right, varName, approach, direction);
 
 		if (leftResult && rightResult) {
 			if (isInfinityResult(leftResult) && isInfinityResult(rightResult)) {
@@ -271,8 +303,8 @@ function detectIndeterminateFormExact(
 
 	// Power: check for 0^0, ∞^0, 1^∞
 	if (isSuperscript(expr)) {
-		const baseResult = tryEvaluateLimitExact(expr.base, varName, approach, direction);
-		const expResult = tryEvaluateLimitExact(expr.superscript, varName, approach, direction);
+		const baseResult = determinateExactLimit(expr.base, varName, approach, direction);
+		const expResult = determinateExactLimit(expr.superscript, varName, approach, direction);
 
 		if (baseResult && expResult) {
 			// 0^0

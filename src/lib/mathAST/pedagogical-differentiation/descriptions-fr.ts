@@ -91,6 +91,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	// ---- Radical ----
 	sqrt: () => 'Dérivée de la racine carrée',
 	'derivative-of-sqrt': () => 'Dérivée de √x',
+	'nth-root': (b) => `Dérivée de la racine d'indice ${bind(b, 'n')}`,
+	'derivative-of-nth-root': (b) => `Dérivée de la racine d'indice ${bind(b, 'n')} de x`,
 	// ---- Hyperbolic ----
 	sinh: () => 'Dérivée de sinus hyperbolique',
 	cosh: () => 'Dérivée de cosinus hyperbolique',
@@ -126,6 +128,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	log: () => "(\\log_b u)' = u'/(u\\ln b)",
 	sqrt: () => "(\\sqrt u)' = u'/(2\\sqrt u)",
 	'derivative-of-sqrt': () => "(\\sqrt x)' = 1/(2\\sqrt x)",
+	'nth-root': () => "(\\sqrt[n]{u})' = u'/(n\\sqrt[n]{u^{n-1}})",
+	'derivative-of-nth-root': () => "(\\sqrt[n]{x})' = 1/(n\\sqrt[n]{x^{n-1}})",
 	sinh: () => "(\\sinh u)' = \\cosh(u)\\,u'",
 	cosh: () => "(\\cosh u)' = \\sinh(u)\\,u'",
 	tanh: () => "(\\tanh u)' = u'/\\cosh^2(u)",
@@ -197,6 +201,11 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	// ---- Radical ----
 	sqrt: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sqrt u)' = u'/(2\\sqrt u).`,
 	'derivative-of-sqrt': () => `(\\sqrt x)' = 1/(2\\sqrt x).`,
+	'nth-root': (b) =>
+		`Avec u = ${bind(b, 'u')} et n = ${bind(b, 'n')}, ` +
+		`on a (\\sqrt[n]{u})' = u'/(n\\sqrt[n]{u^{n-1}}).`,
+	'derivative-of-nth-root': (b) =>
+		`Avec n = ${bind(b, 'n')}, on a (\\sqrt[n]{x})' = 1/(n\\sqrt[n]{x^{n-1}}).`,
 	// ---- Hyperbolic ----
 	sinh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sinh u)' = \\cosh(u) \\times u'.`,
 	cosh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cosh u)' = \\sinh(u) \\times u'.`,
@@ -252,6 +261,8 @@ const DEFAULT_DESCRIPTIONS: Record<PedagogicalDifferentiationRule, string> = {
 	log: 'Dérivée de log',
 	sqrt: 'Dérivée de la racine',
 	'derivative-of-sqrt': 'Dérivée de √x',
+	'nth-root': 'Dérivée de la racine n-ième',
+	'derivative-of-nth-root': 'Dérivée de la racine n-ième de x',
 	sinh: 'Dérivée de sinh',
 	cosh: 'Dérivée de cosh',
 	tanh: 'Dérivée de tanh',

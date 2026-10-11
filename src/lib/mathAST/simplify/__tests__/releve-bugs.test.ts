@@ -1,7 +1,7 @@
 /**
  * `simplify()` sur les cas du relevé du 2026-09-20 que les 4 bugs bloquaient.
  *
- * Chaque cas est une ligne du panel de `docs/wip/simplify-reecriture-releve.md`.
+ * Chaque cas est une ligne du panel de `docs/archive/wip/simplify-reecriture-releve.md`.
  */
 
 import { describe, it, expect } from 'vitest';

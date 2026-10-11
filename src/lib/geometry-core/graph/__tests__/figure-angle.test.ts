@@ -173,9 +173,10 @@ describe('figure.createAngle() — V1 factory', () => {
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
 		const id = f.createAngle(a, v, b, { marque: 'aucune' });
-		const el = f.getElementById(id)! as { marque: string };
+		const el = f.getElementById(id);
+		expect(el?.type).toBe('angle');
+		if (!el || !isAngle(el)) throw new Error('angle attendu');
 		expect(el.marque).toBe('aucune');
-		expect(el.type).toBe('angle');
 	});
 
 	// ──────────────────────────────────────────────────────────────────────

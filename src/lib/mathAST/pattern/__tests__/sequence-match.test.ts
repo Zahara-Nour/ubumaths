@@ -9,7 +9,13 @@ import { describe, it, expect } from 'vitest';
 import { match, nodesEqual } from '../match';
 import { P } from '../builder';
 import { instantiate } from '../rule';
-import { isSumSequenceBinding, isProductSequenceBinding, isMathNodeBinding } from '../types';
+import {
+	isSumSequenceBinding,
+	isProductSequenceBinding,
+	isMathNodeBinding,
+	getBindingNode
+} from '../types';
+import type { BindingValue, MatchBindings } from '../types';
 import type { MathNode } from '../../types';
 import {
 	number,
@@ -24,6 +30,16 @@ import {
 	parentheses,
 	func
 } from '../../factory';
+
+/** Lit une capture qui doit être un nœud (pas une séquence), en l'affirmant. */
+function boundNode(bindings: MatchBindings, name: string): MathNode {
+	const node = getBindingNode(bindings, name);
+	expect(node).not.toBeNull();
+	if (node === null) {
+		throw new Error(`capture « ${name} » : attendu un nœud`);
+	}
+	return node;
+}
 
 describe('Sequence Pattern Matching', () => {
 	// ===========================================================================
@@ -185,7 +201,7 @@ describe('Sequence Pattern Matching', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('coeff')!, number('2'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'coeff'), number('2'))).toBe(true);
 
 			const vars = result.bindings.get('vars');
 			expect(isProductSequenceBinding(vars!)).toBe(true);
@@ -291,7 +307,7 @@ describe('Sequence Pattern Matching', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('coeff')!, number('3'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'coeff'), number('3'))).toBe(true);
 		});
 	});
 
@@ -423,7 +439,7 @@ describe('Sequence Pattern Matching', () => {
 			const result = match(pattern, node);
 
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('other')!, variable('x'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'other'), variable('x'))).toBe(true);
 		});
 	});
 
@@ -627,7 +643,7 @@ describe('Sequence Pattern Matching', () => {
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('first')!, number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'first'), number('5'))).toBe(true);
 		});
 	});
 
@@ -651,7 +667,7 @@ describe('Sequence Pattern Matching', () => {
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('a')!, number('2'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'a'), number('2'))).toBe(true);
 		});
 
 		it('matches function calls in sequence', () => {
@@ -819,8 +835,8 @@ describe('Sequence Pattern Matching', () => {
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('n')!, number('5'))).toBe(true);
-			expect(nodesEqual(result.bindings.get('v')!, variable('x'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'n'), number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'v'), variable('x'))).toBe(true);
 		});
 
 		it('finds correct assignment with multiple numbers', () => {
@@ -829,7 +845,7 @@ describe('Sequence Pattern Matching', () => {
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('first')!, variable('x'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'first'), variable('x'))).toBe(true);
 		});
 
 		it('matches any permutation of 3 elements', () => {
@@ -907,7 +923,7 @@ describe('Sequence Pattern Matching', () => {
 	describe('extended edge cases - instantiation errors', () => {
 		it('throws when instantiating empty required sequence', () => {
 			// Manually create bindings with empty required sequence (shouldn't happen normally)
-			const bindings: Map<string, unknown> = new Map([
+			const bindings: MatchBindings = new Map<string, BindingValue>([
 				['first', variable('x')],
 				['rest', { kind: 'sum-sequence', terms: [] }]
 			]);
@@ -915,7 +931,7 @@ describe('Sequence Pattern Matching', () => {
 			const pattern = P._('rest');
 
 			expect(() => {
-				instantiate(pattern, bindings as never);
+				instantiate(pattern, bindings);
 			}).toThrow();
 		});
 
@@ -1126,7 +1142,7 @@ describe('Sequence Pattern Matching', () => {
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('nonzero')!, number('5'))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'nonzero'), number('5'))).toBe(true);
 		});
 
 		it('handles negative numbers in sum', () => {
@@ -1135,7 +1151,7 @@ describe('Sequence Pattern Matching', () => {
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('neg')!, opposite(number('5')))).toBe(true);
+			expect(nodesEqual(boundNode(result.bindings, 'neg'), opposite(number('5')))).toBe(true);
 		});
 
 		it('handles decimal numbers in sum', () => {

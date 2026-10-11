@@ -1,7 +1,7 @@
 /**
  * Les curseurs — lot 4 du passage de `/grapheur` par l'atelier.
  *
- * Phase 0 `docs/wip/atelier-grapheur-phase0.md` §4 (K1 à K3, E1, L1). Solde la
+ * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §4 (K1 à K3, E1, L1). Solde la
  * dette n° 2 du chantier : `build()` recréait le curseur à chaque modification
  * de la définition, et les bornes réglées par l'élève s'effaçaient.
  *

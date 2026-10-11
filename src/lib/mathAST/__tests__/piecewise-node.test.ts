@@ -176,11 +176,11 @@ describe('PiecewiseNode — compilation (first match wins)', () => {
 			piecewisePiece(relation('<', variable('x'), number('0')), opposite(variable('x'))),
 			piecewisePiece(
 				relation('<=', relation('<=', number('0'), variable('x')), number('1')),
-				multiply(variable('x'), variable('x'))
+				multiply(variable('x'), variable('x'), 'implicit')
 			),
 			piecewisePiece(
 				relation('>', variable('x'), number('1')),
-				add(multiply(number('2'), variable('x')), opposite(number('1')))
+				add(multiply(number('2'), variable('x'), 'implicit'), opposite(number('1')))
 			)
 		]);
 		const f = compile(node);

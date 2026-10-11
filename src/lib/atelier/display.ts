@@ -6,7 +6,7 @@
  * `curveDisplaySchema` — sinon un réglage refusé dans la carte pourrait entrer
  * par une URL.
  *
- * Phase 0 : `docs/wip/atelier-grapheur-phase0.md` §1 (S1 à S4).
+ * Phase 0 : `docs/archive/wip/atelier-grapheur-phase0.md` §1 (S1 à S4).
  *
  * @module atelier/display
  */

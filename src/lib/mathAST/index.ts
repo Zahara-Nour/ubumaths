@@ -524,6 +524,7 @@ export {
 	applyRule,
 	applyRuleDeep,
 	applyRules,
+	RuleIterationLimitError,
 	arithmeticRules,
 	powerRules,
 	absRules,

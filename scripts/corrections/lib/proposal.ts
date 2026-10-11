@@ -2,7 +2,7 @@
  * Fichier de proposition de correction
  * ====================================
  *
- * `docs/corrections/<lot>/<id-du-modèle>.json` : une correction en mode A (étapes
+ * `data/corrections/<lot>/<id-du-modèle>.json` : une correction en mode A (étapes
  * markdown à variables) proposée pour UN modèle, à relire avant tout import.
  * Relu depuis le disque : validé par Zod (un fichier édité à la main peut être faux).
  *

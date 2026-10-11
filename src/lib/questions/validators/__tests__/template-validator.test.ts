@@ -925,7 +925,7 @@ describe('validateTemplate - Edge Cases', () => {
 				'2',
 				'1_SPE',
 				'T_SPE',
-				'T_STMG'
+				'T_TECHNO'
 			],
 			theme: 'Test',
 			domain: 'Test',

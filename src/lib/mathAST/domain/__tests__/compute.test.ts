@@ -247,7 +247,7 @@ describe('computeDomain()', () => {
 			const x2 = power(x, number('2'));
 			const x4 = power(x, number('4'));
 			// x^4 - 5x^2 + 4
-			const poly = add(subtract(x4, multiply(number('5'), x2)), number('4'));
+			const poly = add(subtract(x4, multiply(number('5'), x2, 'implicit')), number('4'));
 			const expr = sqrt(poly);
 			const result = computeDomain(expr, 'x');
 

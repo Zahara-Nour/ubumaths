@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	/**
 	 * La vue Calcul de l'atelier.
 	 *
@@ -7,7 +8,7 @@
 	 * (décision D5). Les objets du panneau sont connus du moteur sans que rien
 	 * ne soit redéclaré (Q1, option B).
 	 *
-	 * Spécification : `docs/wip/atelier-vue-calcul-phase0.md`.
+	 * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md`.
 	 */
 	import { convertLatexToMarkup } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
@@ -212,6 +213,10 @@
 					{:else}
 						<span class="texte">{entry.text}</span>
 					{/if}
+					{#if entry.note !== undefined}
+						<!-- Montrée même quand la réponse est composée en mathématiques -->
+						<span class="note">{entry.note}</span>
+					{/if}
 					{#if canKeep(entry)}
 						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
 							Garder…
@@ -357,6 +362,11 @@
 	}
 	.texte {
 		white-space: pre-wrap;
+	}
+	.note {
+		flex-basis: 100%;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
 	}
 
 	/* Un tableau déborde en largeur bien plus qu'une formule : il défile dans

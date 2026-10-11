@@ -55,6 +55,7 @@ function toNumber(value: EvalValue): number {
 	if (isMathNode(value)) {
 		return evaluateNodeToApproximatedNumber(value);
 	}
+	if (typeof value === 'boolean') throw new Error('Boolean value');
 	return value;
 }
 

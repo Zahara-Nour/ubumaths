@@ -16,7 +16,17 @@
 
 import type { MathNode } from '../types';
 import type { LimitDirection } from './types';
-import { isInfinity, isSignedZero as isSignedZeroNode } from '../guards';
+import {
+	isDelimiter,
+	isDivision,
+	isFunction,
+	isInfinity,
+	isMultiplication,
+	isOpposite,
+	isSignedZero as isSignedZeroNode,
+	isSuperscript
+} from '../guards';
+import { containsVariable } from '../common/contains-variable';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
 import { evaluateNumeric, getNumericValue, numericNode } from '../common';
 import {
@@ -31,6 +41,7 @@ import {
 	type IndeterminateForm
 } from '../eval/extended-arithmetic';
 import { tryEvaluateLimitExact, resultToNumber } from './exact-evaluation';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // Types
@@ -71,6 +82,48 @@ export function classifyWithSign(
 	approach: MathNode,
 	direction: LimitDirection
 ): SignedLimitValue {
+	const value = classifyOneWay(expr, varName, approach, direction);
+	if (direction !== 'both' || isInfinity(approach)) return value;
+
+	// Zéro sans signe en bilatéral (cos²x en π/2, zéro exact) : les deux côtés
+	// du même signe le précisent, 1/cos²x → +∞.
+	if (value.type === 'zero') {
+		const left = classifyOneWay(expr, varName, approach, 'left');
+		const right = classifyOneWay(expr, varName, approach, 'right');
+		return left.type === right.type && (left.type === 'zero-plus' || left.type === 'zero-minus')
+			? left
+			: value;
+	}
+	if (!isSignedInfinity(value)) return value;
+
+	// Infini bilatéral en un point : 1/x « vaut » +∞ par substitution, alors
+	// que 0⁻ donne −∞. Les deux côtés connus et différents → pas de limite
+	// (1/x·(x+1) en 0 était rendu +∞). Un côté hors domaine (inconnu) ne
+	// contredit rien : ln x en 0 reste −∞.
+	const left = classifyOneWay(expr, varName, approach, 'left');
+	const right = classifyOneWay(expr, varName, approach, 'right');
+	if (left.type === 'unknown' || right.type === 'unknown') return value;
+	return left.type === right.type ? left : { type: 'unknown' };
+}
+
+function classifyOneWay(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	direction: LimitDirection
+): SignedLimitValue {
+	// Une composée ne conclut jamais d'une sous-limite non établie : g sans
+	// limite → ln g, eᵍ, √g, c/g, c·g, −g sans limite (bijections monotones
+	// de la droite achevée). ln(eˣ(1 + sin x)) était classé +∞ : le
+	// logarithme écrase le creux de eˣ(1 + sin x), que l'échantillonnage ne
+	// voit plus — alors que la fonction tend vers −∞ à chaque zéro.
+	if (isInfinity(approach)) {
+		const inner = monotoneArgument(expr, varName);
+		if (inner !== null && showsNoLimitAtInfinity(inner, varName, approach.sign === 'positive')) {
+			return { type: 'unknown' };
+		}
+	}
+
 	// Try exact evaluation first
 	const exactResult = classifyWithSignExact(expr, varName, approach, direction);
 	if (exactResult !== null) {
@@ -79,6 +132,60 @@ export function classifyWithSign(
 
 	// Fallback to numeric classification
 	return classifyWithSignNumeric(expr, varName, approach, direction);
+}
+
+/** Fonctions strictement monotones et continues sur leur domaine. */
+const MONOTONE_FUNCTIONS = new Set(['ln', 'log', 'exp', 'sqrt']);
+
+/**
+ * L'argument g dont `expr` est une image monotone (ln g, exp g, √g, a^g,
+ * c/g, c·g, g·c, −g, (g)), ou null. c : constante non nulle ; a : constante
+ * positive différente de 1. |g| n'en est PAS une (non injective).
+ */
+function monotoneArgument(expr: MathNode, varName: string): MathNode | null {
+	const isConstant = (node: MathNode) => !containsVariable(node, varName);
+	const isNonZeroConstant = (node: MathNode) => {
+		if (!isConstant(node)) return false;
+		const value = approximateConstant(node);
+		return value !== null && value !== 0;
+	};
+	if (isDelimiter(expr) && (expr.semantic ?? 'grouping') === 'grouping') return expr.content;
+	if (isOpposite(expr)) return expr.operand;
+	if (isFunction(expr) && expr.args.length === 1 && MONOTONE_FUNCTIONS.has(expr.name)) {
+		return expr.args[0];
+	}
+	if (isSuperscript(expr) && isConstant(expr.base) && containsVariable(expr.superscript, varName)) {
+		const base = approximateConstant(expr.base);
+		return base !== null && base > 0 && base !== 1 ? expr.superscript : null;
+	}
+	if (isDivision(expr) && isNonZeroConstant(expr.numerator)) return expr.denominator;
+	if (isMultiplication(expr)) {
+		if (isNonZeroConstant(expr.left)) return expr.right;
+		if (isNonZeroConstant(expr.right)) return expr.left;
+	}
+	return null;
+}
+
+/**
+ * Des valeurs de signes opposés parmi les échantillons, sans tendre vers 0
+ * (x·sin(1/x) en 0 change de signe mais tend vers 0 : ce n'est pas une
+ * oscillation qui empêche la limite).
+ */
+function changesSign(values: readonly number[]): boolean {
+	if (values.every((v) => Math.abs(v) < 1e-3)) return false;
+	return values.some((v) => v > 0) && values.some((v) => v < 0);
+}
+
+/**
+ * Trois valeurs successives d'un même côté se stabilisent-elles ? Une valeur
+ * « finie » qui ne se stabilise pas (sin x en +∞, sin(1/x) en 0) n'est pas une
+ * limite : x·sin x était rendu −∞ parce que sin(1e10) < 0.
+ */
+function isSettled(values: readonly number[]): boolean {
+	if (values.length < 2) return true;
+	const last = values[values.length - 1];
+	const previous = values[values.length - 2];
+	return Math.abs(last - previous) <= 1e-3 * Math.max(1, Math.abs(last));
 }
 
 /**
@@ -141,13 +248,23 @@ function classifyWithSignNumeric(
 		return classifyAtInfinity(expr, varName, approach.sign === 'positive');
 	}
 
-	// Handle finite approach
-	const approachValue = getNumericValue(approach);
+	// Handle finite approach (π/2 : pas un littéral, valeur approchée)
+	const approachValue = getNumericValue(approach) ?? approximateConstant(approach);
 	if (approachValue === null) {
 		return { type: 'unknown' };
 	}
 
 	return classifyAtFinitePoint(expr, varName, approachValue, direction);
+}
+
+/** Valeur approchée d'un point constant (π/2), ou `null`. */
+function approximateConstant(node: MathNode): number | null {
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -177,7 +294,7 @@ function classifyAtFinitePoint(
 	const epsilons = [1e-4, 1e-6, 1e-8];
 
 	// Determine test points based on direction
-	const testResults: { value: number; epsilon: number }[] = [];
+	const testResults: { value: number; epsilon: number; side: 'left' | 'right' }[] = [];
 
 	for (const eps of epsilons) {
 		if (direction === 'right' || direction === 'both') {
@@ -185,7 +302,8 @@ function classifyAtFinitePoint(
 			if (result !== null) {
 				if (result === Infinity) return { type: 'pos-infinity' };
 				if (result === -Infinity) return { type: 'neg-infinity' };
-				if (Number.isFinite(result)) testResults.push({ value: result, epsilon: eps });
+				if (Number.isFinite(result))
+					testResults.push({ value: result, epsilon: eps, side: 'right' });
 			}
 		}
 		if (direction === 'left' || direction === 'both') {
@@ -193,13 +311,21 @@ function classifyAtFinitePoint(
 			if (result !== null) {
 				if (result === Infinity) return { type: 'pos-infinity' };
 				if (result === -Infinity) return { type: 'neg-infinity' };
-				if (Number.isFinite(result)) testResults.push({ value: result, epsilon: eps });
+				if (Number.isFinite(result))
+					testResults.push({ value: result, epsilon: eps, side: 'left' });
 			}
 		}
 	}
 
 	if (testResults.length === 0) {
 		return { type: 'unknown' };
+	}
+
+	// sin(1/x)/x : |f| grandit mais le signe alterne d'un même côté
+	const sideValuesOf = (side: 'left' | 'right') =>
+		testResults.filter((r) => r.side === side).map((r) => r.value);
+	if (changesSign(sideValuesOf('left')) || changesSign(sideValuesOf('right'))) {
+		if (!isZeroAtApproach) return { type: 'unknown' };
 	}
 
 	// Check if values are growing toward infinity (values increase as epsilon decreases)
@@ -217,6 +343,13 @@ function classifyAtFinitePoint(
 	const lastValue = testResults[testResults.length - 1].value;
 	if (Math.abs(lastValue) > 1e10) {
 		return lastValue > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+	}
+
+	// Une oscillation n'est ni une limite finie ni une limite nulle : chaque
+	// côté doit se stabiliser.
+	const settled = isSettled(sideValuesOf('right')) && isSettled(sideValuesOf('left'));
+	if (!settled && !isZeroAtApproach) {
+		return { type: 'unknown' };
 	}
 
 	// Check if values are converging toward 0
@@ -251,27 +384,199 @@ function classifyAtFinitePoint(
 	return { type: 'finite', value: lastValue };
 }
 
+/** Pas et nombre de points de la fenêtre : 16 × 0,5 = 8 > 2π. */
+const OSCILLATION_STEP = 0.5;
+const OSCILLATION_POINTS = 16;
+
+/**
+ * Le signe de f change-t-il sur une fenêtre de longueur 8 (> 2π) après chaque
+ * point d'échantillonnage ? Trois points isolés peuvent tomber, par hasard,
+ * du même côté d'une oscillation (−eˣ·cos 2x) : une période complète, non.
+ * Les débordements (±Infinity) comptent avec leur signe.
+ */
+function oscillatesNear(expr: MathNode, varName: string, testValues: readonly number[]): boolean {
+	for (const start of testValues) {
+		const direction = Math.sign(start);
+		let positiveSeen = false;
+		let negativeSeen = false;
+		for (let i = 0; i < OSCILLATION_POINTS; i++) {
+			const value = evaluateNumeric(expr, varName, start + direction * i * OSCILLATION_STEP);
+			if (value === null || Number.isNaN(value)) continue;
+			if (value > 0) positiveSeen = true;
+			if (value < 0) negativeSeen = true;
+			if (positiveSeen && negativeSeen) return true;
+		}
+	}
+	return false;
+}
+
+/** Fenêtre fine pour les creux : 64 × 0,125 = 8 > 2π. */
+const DIP_STEP = 0.125;
+const DIP_POINTS = 64;
+/** Un point sous 1 % du maximum de |f| de CHAQUE côté : f retombe. */
+const DIP_RATIO = 0.01;
+/**
+ * Départs de la fenêtre quand |f| déborde en 1e6 (eˣ·(1 − sin x)) : le creux
+ * ne se mesure pas sur ±Infinity, il se mesure là où f est encore finie.
+ */
+const OVERFLOW_DIP_STARTS = [100, 300, 600];
+/** Un point au-dessus de 100 × la médiane de |f − L| : f ne converge pas. */
+const SPIKE_RATIO = 100;
+/** Sous ce seuil (relatif à max(1, |L|)), un écart n'est que de l'arrondi. */
+const SPIKE_FLOOR = 1e-12;
+
+/**
+ * |f| retombe-t-il près de 0 sur une fenêtre de longueur 8 (> 2π) après un
+ * point de départ ? x(1 + sin x) garde son signe (`oscillatesNear` ne voit
+ * rien) mais s'annule en −π/2 + 2kπ : trois grandes valeurs ne prouvent pas
+ * +∞. Un creux est un point où |f| tombe sous 1 % du maximum atteint AVANT
+ * lui ET du maximum atteint APRÈS lui dans la fenêtre : une croissance
+ * monotone, même rapide (eˣ, ×3000 sur la fenêtre), n'en a pas. Pas de
+ * 0,125 : au pire un zéro double est manqué de 0,0625, et 1 + sin y vaut
+ * alors ~0,002 — bien sous le seuil. Les fenêtres où f n'est pas finie
+ * partout ne prouvent rien et sont ignorées.
+ */
+function dipsNear(expr: MathNode, varName: string, starts: readonly number[]): boolean {
+	for (const start of starts) {
+		const magnitudes = windowMagnitudes(expr, varName, start, 0);
+		if (magnitudes !== null && hasDip(magnitudes)) return true;
+	}
+	return false;
+}
+
+/**
+ * |f − offset| sur la fenêtre de DIP_POINTS points au pas DIP_STEP partant de
+ * `start` (vers l'infini visé), ou null si f n'y est pas finie partout : une
+ * telle fenêtre ne prouve rien.
+ */
+function windowMagnitudes(
+	expr: MathNode,
+	varName: string,
+	start: number,
+	offset: number
+): number[] | null {
+	const direction = Math.sign(start);
+	const magnitudes: number[] = [];
+	for (let i = 0; i < DIP_POINTS; i++) {
+		const value = evaluateNumeric(expr, varName, start + direction * i * DIP_STEP);
+		if (value === null || !Number.isFinite(value)) return null;
+		magnitudes.push(Math.abs(value - offset));
+	}
+	return magnitudes;
+}
+
+/**
+ * |f − L| « pique-t-il » sur une fenêtre de longueur 8 (> 2π) ? Symétrique de
+ * `dipsNear` : 1/(x(1 + sin x)) garde son signe et ses trois grands
+ * échantillons sont petits, mais |f| explose aux zéros du dénominateur — elle
+ * n'a pas de limite, et exp(1/(x(1 + sin x))) était rendu 1. Un pic est un
+ * point où |f − L| dépasse SPIKE_RATIO × la médiane de la fenêtre : une
+ * convergence monotone (1/x, ×1 sur la fenêtre) ou une oscillation amortie
+ * (sin x / x, max/médiane ≈ 1,4) n'en a pas ; un zéro double manqué de
+ * 0,0625 donne encore 1/(1 + sin y) ≈ 500 contre une médiane ≈ 1. Une
+ * médiane nulle (convergence exacte en flottants) ne prouve rien, et un pic
+ * sous SPIKE_FLOOR × max(1, |L|) n'est que du bruit d'arrondi.
+ */
+function spikesNear(
+	expr: MathNode,
+	varName: string,
+	starts: readonly number[],
+	limit: number
+): boolean {
+	const floor = SPIKE_FLOOR * Math.max(1, Math.abs(limit));
+	for (const start of starts) {
+		const magnitudes = windowMagnitudes(expr, varName, start, limit);
+		if (magnitudes === null) continue;
+		const sorted = [...magnitudes].sort((a, b) => a - b);
+		const median = sorted[Math.floor(sorted.length / 2)];
+		const peak = sorted[sorted.length - 1];
+		if (median > 0 && peak > floor && peak > median * SPIKE_RATIO) return true;
+	}
+	return false;
+}
+
+/** Un point sous DIP_RATIO × le maximum de chaque côté. */
+function hasDip(magnitudes: readonly number[]): boolean {
+	const suffixMax: number[] = Array.from({ length: magnitudes.length }, () => 0);
+	for (let i = magnitudes.length - 2; i >= 0; i--) {
+		suffixMax[i] = Math.max(suffixMax[i + 1], magnitudes[i + 1]);
+	}
+	let prefixMax = 0;
+	for (let i = 0; i < magnitudes.length; i++) {
+		const neighbourMax = Math.min(prefixMax, suffixMax[i]);
+		if (magnitudes[i] < neighbourMax * DIP_RATIO) return true;
+		prefixMax = Math.max(prefixMax, magnitudes[i]);
+	}
+	return false;
+}
+
+/**
+ * Classement en ±∞, avec la RAISON d'un `unknown` : `noLimit` dit que f n'a
+ * pas de limite (signe qui alterne, oscillation, creux, pic) — pas seulement
+ * que l'échantillonnage ne conclut pas (ln x : 13,8 ; 18,4 ; 23 ne se
+ * stabilisent pas, mais rien ne prouve l'absence de limite).
+ */
+interface InfinityClassification {
+	readonly value: SignedLimitValue;
+	readonly noLimit: boolean;
+}
+
+const UNDECIDED: InfinityClassification = { value: { type: 'unknown' }, noLimit: false };
+const NO_LIMIT: InfinityClassification = { value: { type: 'unknown' }, noLimit: true };
+
+function concluded(value: SignedLimitValue): InfinityClassification {
+	return { value, noLimit: false };
+}
+
 /**
  * Classify at infinity.
  */
 function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean): SignedLimitValue {
+	return classifyAtInfinityWithEvidence(expr, varName, positive).value;
+}
+
+function classifyAtInfinityWithEvidence(
+	expr: MathNode,
+	varName: string,
+	positive: boolean
+): InfinityClassification {
 	const testValues = positive ? [1e6, 1e8, 1e10] : [-1e6, -1e8, -1e10];
 	const results: number[] = [];
+	const overflows: number[] = [];
 
 	for (const testVal of testValues) {
 		const result = evaluateNumeric(expr, varName, testVal);
-		if (result === Infinity) return { type: 'pos-infinity' };
-		if (result === -Infinity) return { type: 'neg-infinity' };
-		if (result !== null && Number.isFinite(result)) {
+		if (result === Infinity || result === -Infinity) {
+			overflows.push(result);
+		} else if (result !== null && Number.isFinite(result)) {
 			results.push(result);
 		}
 	}
 
+	// Un débordement (e^(1e6) = Infinity) ne prouve qu'une chose : |f| est
+	// immense. Son signe peut venir d'un facteur qui oscille — eˣ·sin x était
+	// rendu −∞ parce que sin(1e6) < 0. On ne conclut ±∞ que si tous les
+	// échantillons ET une fenêtre plus longue qu'une période gardent le signe.
+	if (overflows.length > 0) {
+		const samples = [...results, ...overflows];
+		const sign = Math.sign(overflows[0]);
+		if (samples.some((v) => Math.sign(v) !== sign)) return NO_LIMIT;
+		if (oscillatesNear(expr, varName, testValues)) return NO_LIMIT;
+		const dipStarts = OVERFLOW_DIP_STARTS.map((start) => (positive ? start : -start));
+		if (dipsNear(expr, varName, dipStarts)) return NO_LIMIT;
+		return concluded(sign > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' });
+	}
+
 	if (results.length === 0) {
-		return { type: 'unknown' };
+		return UNDECIDED;
 	}
 
 	const lastResult = results[results.length - 1];
+
+	// x·sin x : |f| grandit mais le signe alterne — ni +∞ ni −∞
+	if (changesSign(results)) {
+		return NO_LIMIT;
+	}
 
 	// Check if values are growing unboundedly (tending to infinity)
 	// If |last| >> |first| and |last| is very large, it's tending to infinity
@@ -282,17 +587,48 @@ function classifyAtInfinity(expr: MathNode, varName: string, positive: boolean):
 		// If values are growing proportionally with test values, it's tending to infinity
 		// e.g., for f(x) = x, results would be [1e6, 1e8, 1e10] - growing by 100x each time
 		if (lastAbs > 1e8 && lastAbs > firstAbs * 10) {
-			return lastResult > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' };
+			if (oscillatesNear(expr, varName, testValues)) return NO_LIMIT;
+			if (dipsNear(expr, varName, testValues)) return NO_LIMIT;
+			return concluded(lastResult > 0 ? { type: 'pos-infinity' } : { type: 'neg-infinity' });
 		}
 	}
 
+	// 1/(x(1 + sin x)) : petite aux trois échantillons, mais |f| explose aux
+	// zéros du dénominateur — ni 0, ni limite finie.
+	const settledValue = Math.abs(lastResult) < 1e-6 ? 0 : lastResult;
+	if (spikesNear(expr, varName, testValues, settledValue)) return NO_LIMIT;
+
 	// Check if approaching zero
 	if (Math.abs(lastResult) < 1e-6) {
-		return lastResult >= 0 ? { type: 'zero-plus' } : { type: 'zero-minus' };
+		return concluded(lastResult >= 0 ? { type: 'zero-plus' } : { type: 'zero-minus' });
+	}
+
+	// sin x en +∞ : des valeurs bornées qui ne se stabilisent pas. Seule une
+	// oscillation prouve l'absence de limite ; ln x non plus ne se stabilise
+	// pas, mais tend vers +∞.
+	if (!isSettled(results)) {
+		return oscillatesNear(expr, varName, testValues) ? NO_LIMIT : UNDECIDED;
 	}
 
 	// Otherwise it's a finite limit
-	return { type: 'finite', value: lastResult };
+	return concluded({ type: 'finite', value: lastResult });
+}
+
+/**
+ * f n'a-t-elle visiblement PAS de limite en ±∞ ? Preuve positive (signe qui
+ * alterne, oscillation, creux, pic), sur f ou sur l'argument dont elle est
+ * une image monotone : ln(eˣ(1 + sin x)) ne creuse plus (le logarithme écrase
+ * le creux), mais eˣ(1 + sin x), si. Un simple « pas su » (forme
+ * indéterminée, croissance lente) n'en est pas une.
+ */
+export function showsNoLimitAtInfinity(
+	expr: MathNode,
+	varName: string,
+	positive: boolean
+): boolean {
+	const inner = monotoneArgument(expr, varName);
+	if (inner !== null && showsNoLimitAtInfinity(inner, varName, positive)) return true;
+	return classifyAtInfinityWithEvidence(expr, varName, positive).noLimit;
 }
 
 // =============================================================================

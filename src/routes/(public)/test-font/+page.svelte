@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
@@ -318,12 +319,14 @@
 	<div class="mt-4 rounded-lg bg-purple-50 p-4">
 		<h3 class="mb-2 font-semibold text-purple-800">Fonctionnement technique</h3>
 		<ul class="list-inside list-disc space-y-1 text-sm text-purple-700">
-			<li>Change dynamiquement la feuille de style CSS des polices MathLive</li>
 			<li>
-				Deux fichiers CSS: <code>mathlive-fonts-katex.css</code> et
-				<code>mathlive-fonts-shantell.css</code>
+				Polices KaTeX par défaut : <code>mathlive/static.css</code>, importé par les composants de
+				maths
 			</li>
-			<li>Chaque CSS pointe vers un repertoire de polices different</li>
+			<li>
+				Shantell : la feuille <code>mathlive-fonts-shantell.css</code> est ajoutée par-dessus, puis retirée
+				pour revenir à KaTeX
+			</li>
 			<li>Force le re-render des mathfields via une cle Svelte</li>
 		</ul>
 	</div>

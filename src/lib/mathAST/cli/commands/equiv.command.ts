@@ -9,6 +9,7 @@
 
 import chalk from 'chalk';
 import { BaseCommand } from './base-command';
+import { readCommandArguments } from '../core/variable-argument';
 import type { CommandContext, CommandResult } from '../types';
 import { normalize, hashNormalForm, normalFormsEquivalent } from '../../normal';
 import { parse } from '../core/pipeline';
@@ -44,6 +45,20 @@ export class EquivCommand extends BaseCommand {
 
 	execute(ctx: CommandContext): CommandResult {
 		const input = ctx.input.trim();
+
+		// `EXPR et EXPR` (décision de David, 2026-10-08) : le mot-clé sépare les
+		// deux expressions, que l'espace (un produit) ne séparait pas
+		const reading = readCommandArguments('equiv', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		if (reading.args.other !== null) {
+			return this.handleEquivOperator(`${reading.args.expression}===${reading.args.other}`);
+		}
 
 		// Check for === operator syntax
 		if (input.includes('===')) {

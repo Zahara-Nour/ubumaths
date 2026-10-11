@@ -27,6 +27,7 @@ import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/re
 import { parseExerciseSelection } from '$lib/resources/exercise-selection';
 import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
+import { isLegacyPoint } from '$lib/server/curriculum-generation';
 
 type Sb = App.Locals['supabase'];
 
@@ -56,6 +57,7 @@ interface TemplatePointRow {
 	template_id: string;
 	point_id: string;
 	curriculum_points: {
+		objective_id: string | null;
 		curriculum_objectives: { curriculum_themes: { grade: string } | null } | null;
 	} | null;
 }
@@ -78,12 +80,18 @@ async function templatePointIds(
 	const { data, error } = await supabase
 		.from('question_template_points')
 		.select(
-			'template_id, point_id, curriculum_points(curriculum_objectives(curriculum_themes(grade)))'
+			'template_id, point_id, curriculum_points(objective_id, curriculum_objectives(curriculum_themes(grade)))'
 		)
 		.in('template_id', templateIds);
 	if (error) throw new Error(`reconcileAutoCoverage ${context}: ${error.message}`);
 
-	const rows = keepLinksOfGrade((data ?? []) as unknown as TemplatePointRow[], grade, (r) => ({
+	// Filtre provisoire jusqu'à la bascule du code (étape 3 de C5) : la couverture compte les
+	// points de l'ancien référentiel ; un tag de point neuf n'y a pas sa place. Écarté AVANT la
+	// règle du niveau, pour qu'elle tranche exactement comme avant l'étape 2.
+	const legacyRows = ((data ?? []) as unknown as TemplatePointRow[]).filter((r) =>
+		isLegacyPoint(r.curriculum_points)
+	);
+	const rows = keepLinksOfGrade(legacyRows, grade, (r) => ({
 		template_id: r.template_id,
 		grade: r.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
 	}));

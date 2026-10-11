@@ -90,7 +90,7 @@ describe('formatDomainInterval()', () => {
 				[greaterThanInterval(number(0))],
 				[excludedPoint(number(1)), excludedPoint(number(2))]
 			);
-			expect(formatDomainInterval(d)).toBe(']0 ; +∞[ \\ {1, 2}');
+			expect(formatDomainInterval(d)).toBe(']0 ; +∞[ \\ {1 ; 2}');
 		});
 	});
 });

@@ -10,10 +10,28 @@
 import type { MathNode } from '../types';
 import { differentiate } from '../differentiation';
 import { containsVariable } from './rules';
-import { isNumber, isVariable, isDivision, isMultiplication } from '../guards';
+import {
+	isNumber,
+	isVariable,
+	isDivision,
+	isMultiplication,
+	isFunction,
+	isSuperscript,
+	isDelimiter
+} from '../guards';
 import { hashMathNode } from '../normal/hash';
+import { mapNode, findNodes } from '../transforms';
+import { number, variable as variableNode } from '../factory';
 import { normalize } from '../normal/normalize';
-import type { NormalForm, NormalTerm, SymbolicFactor, AlgebraicCoefficient } from '../normal/types';
+import type {
+	NormalForm,
+	NormalTerm,
+	SymbolicFactor,
+	AlgebraicCoefficient,
+	Rational
+} from '../normal/types';
+import { rational, negRational, reciprocal, rationalToNumber, ONE } from '../normal/rational';
+import { extractRational, extractExactRational } from '../common/numeric';
 
 // =============================================================================
 // Types
@@ -31,6 +49,9 @@ export interface USubstitutionMatch {
 
 	/** Constant factor if du appears with a constant multiple */
 	constantFactor?: number;
+
+	/** Le même facteur, en rationnel EXACT (à utiliser pour construire F) */
+	constantRatio?: Rational;
 }
 
 // =============================================================================
@@ -153,7 +174,7 @@ function computeCoefficientRatio(
 	denom1: readonly NormalTerm[],
 	coeff2: AlgebraicCoefficient,
 	denom2: readonly NormalTerm[]
-): number | null {
+): Rational | null {
 	const r1 = getPureRational(coeff1);
 	const r2 = getPureRational(coeff2);
 	const d1 = getDenominatorConstant(denom1);
@@ -169,7 +190,7 @@ function computeCoefficientRatio(
 
 	if (denominator === 0n) return null;
 
-	return Number(numerator) / Number(denominator);
+	return rational(numerator, denominator);
 }
 
 // =============================================================================
@@ -190,7 +211,7 @@ function computeCoefficientRatio(
  * - findProportionalityConstantNormalized(x, y) -> null (different monomials)
  * - findProportionalityConstantNormalized(x+1, x) -> null (multi-term)
  */
-function findProportionalityConstantNormalized(expr1: MathNode, expr2: MathNode): number | null {
+function findProportionalityConstantNormalized(expr1: MathNode, expr2: MathNode): Rational | null {
 	try {
 		const form1 = getCachedNormalForm(expr1);
 		const form2 = getCachedNormalForm(expr2);
@@ -510,6 +531,56 @@ function isExactlyPowerOfU(integrand: MathNode, u: MathNode): boolean {
 	return false;
 }
 
+/** L'intégrande ne dépend de la variable qu'à travers u (et du est un nombre non nul ailleurs) */
+function isPureFunctionOf(integrand: MathNode, u: MathNode, variable: string): boolean {
+	if (!containsSubexpression(integrand, u)) return false;
+	const uHash = hashMathNode(u);
+	const withoutU = mapNode(integrand, (node) =>
+		hashMathNode(node) === uHash ? number('1') : node
+	);
+	return !containsVariable(withoutU, variable);
+}
+
+/** Variable témoin qui remplace u pour inspecter la forme de f(u) */
+const U_PLACEHOLDER = '__u_placeholder__';
+
+function stripDelimiters(node: MathNode): MathNode {
+	return isDelimiter(node) ? stripDelimiters(node.content) : node;
+}
+
+/** `node` contient u autrement que comme u lui-même (après retrait des parenthèses) */
+function containsUOtherwiseThanBare(node: MathNode): boolean {
+	if (!containsVariable(node, U_PLACEHOLDER)) return false;
+	const bare = stripDelimiters(node);
+	return !(isVariable(bare) && bare.name === U_PLACEHOLDER);
+}
+
+/**
+ * f(u) est « plus simple » que l'intégrande d'origine : toute fonction et tout
+ * exposant qui dépendent de u s'appliquent à u LUI-MÊME (sin(u), eᵘ, √u, 1/u²,
+ * 1/cos²(u)). Une composée (ln(sin u), ln(ln u)) rendrait une intégrale en u
+ * aussi difficile que l'originale : la poser relançait parties et
+ * substitutions en cascade sans rien gagner.
+ */
+function isDirectFunctionOfU(integrand: MathNode, u: MathNode): boolean {
+	const uHash = hashMathNode(u);
+	const inU = mapNode(integrand, (node) =>
+		hashMathNode(node) === uHash ? variableNode(U_PLACEHOLDER) : node
+	);
+	const composed = findNodes(
+		inU,
+		(node) =>
+			(isFunction(node) && node.args.some(containsUOtherwiseThanBare)) ||
+			(isSuperscript(node) && containsUOtherwiseThanBare(node.superscript))
+	);
+	return composed.length === 0;
+}
+
+/** Un appariement dont le facteur est porté en rationnel exact (et en nombre, pour l'API) */
+function matchWithRatio(u: MathNode, du: MathNode, ratio: Rational): USubstitutionMatch {
+	return { u, du, constantFactor: rationalToNumber(ratio), constantRatio: ratio };
+}
+
 /**
  * Try u-substitution with a specific u candidate.
  *
@@ -540,9 +611,10 @@ function tryUSubstitution(
 	// because we can't factor out du from the integrand to simplify
 	// Exception: if the integrand is exactly a function of u (handled below)
 	const duContainsVar = containsVariable(du, variable);
-	if (!duContainsVar && !isNumber(du)) {
-		// du = constant, but not a simple number
-		// This case is tricky - reject for now
+	// du constant nul : pas une substitution. Constant non rationnel (π,
+	// √2, paramètre littéral a) : accepté, le facteur 1/du est porté en nœud
+	const duRational = duContainsVar ? null : extractExactRational(du);
+	if (duRational !== null && duRational.n === 0n) {
 		return null;
 	}
 
@@ -551,6 +623,20 @@ function tryUSubstitution(
 	if (isNumber(du) && du.value === '1') {
 		// Only accept if the integrand is exactly u^n for some n
 		// This handles cases like ∫(x-1)^3 dx where u = x-1
+		// ou c/u (c constant) : ∫ a/(x−b) dx = a ln|x−b|
+		const isConstantOverU =
+			isDivision(integrand) &&
+			hashMathNode(integrand.denominator) === hashMathNode(u) &&
+			!containsVariable(integrand.numerator, variable);
+		if (isConstantOverU) return { u, du };
+		// f(x + b) : l'intégrande ne dépend de x qu'à travers u (∛(x+1), 1/(x+m)²)
+		if (
+			!isMultiplication(integrand) &&
+			isPureFunctionOf(integrand, u, variable) &&
+			isDirectFunctionOfU(integrand, u)
+		) {
+			return { u, du };
+		}
 		if (!isExactlyPowerOfU(integrand, u)) {
 			return null;
 		}
@@ -568,9 +654,9 @@ function tryUSubstitution(
 		const denomHash = hashMathNode(denom);
 		if (denomHash === uHash || containsSubexpression(denom, u)) {
 			// Check if numerator is proportional to du
-			const propConst = findProportionalityConstant(num, du);
+			const propConst = findProportionalityRatio(num, du);
 			if (propConst !== null) {
-				return { u, du, constantFactor: propConst };
+				return matchWithRatio(u, du, propConst);
 			}
 		}
 	}
@@ -590,9 +676,9 @@ function tryUSubstitution(
 		) {
 			const denomHash = hashMathNode(integrand.right.denominator);
 			if (denomHash === uHash) {
-				const propConst = findProportionalityConstant(integrand.left, du);
+				const propConst = findProportionalityRatio(integrand.left, du);
 				if (propConst !== null) {
-					return { u, du, constantFactor: propConst };
+					return matchWithRatio(u, du, propConst);
 				}
 			}
 		}
@@ -605,9 +691,9 @@ function tryUSubstitution(
 		) {
 			const denomHash = hashMathNode(integrand.left.denominator);
 			if (denomHash === uHash) {
-				const propConst = findProportionalityConstant(integrand.right, du);
+				const propConst = findProportionalityRatio(integrand.right, du);
 				if (propConst !== null) {
-					return { u, du, constantFactor: propConst };
+					return matchWithRatio(u, du, propConst);
 				}
 			}
 		}
@@ -616,25 +702,40 @@ function tryUSubstitution(
 		// Example: x * e^(x²) with u = x², du = 2x
 		// Left = x (proportional to du = 2x with factor 1/2)
 		// Right = e^(x²) = e^u (function of u only)
-		const leftProp = findProportionalityConstant(integrand.left, du);
+		const leftProp = findProportionalityRatio(integrand.left, du);
 		if (leftProp !== null && containsSubexpression(integrand.right, u)) {
 			// Check that right only contains u (not x directly outside u)
 			// by verifying that replacing u with a constant leaves no x
 			const rightContainsUOnly = containsSubexpression(integrand.right, u);
 			if (rightContainsUOnly) {
-				return { u, du, constantFactor: leftProp };
+				return matchWithRatio(u, du, leftProp);
 			}
 		}
 
-		const rightProp = findProportionalityConstant(integrand.right, du);
+		const rightProp = findProportionalityRatio(integrand.right, du);
 		if (rightProp !== null && containsSubexpression(integrand.left, u)) {
-			return { u, du, constantFactor: rightProp };
+			return matchWithRatio(u, du, rightProp);
 		}
 	}
 
 	// Check if du appears in the integrand (exactly)
 	// But only if the remaining part can be expressed in terms of u
-	if (containsSubexpression(integrand, du)) {
+	// (hors produit, l'intégrande est f(u) SEUL : ce n'est une substitution
+	// que si du est constant — sinon 1/eˣ devenait ln|eˣ|)
+	// ∫ f(ax+b) dx : du constant non nul et intégrande fonction de u SEULE —
+	// la présence littérale de du (« 2 » dans sin(2x)) n'est plus exigée
+	// (e^{-2x} : du = −2 n'apparaît pas tel quel)
+	const fOfUAlone =
+		!duContainsVar && !isMultiplication(integrand) && isPureFunctionOf(integrand, u, variable);
+	// u affine (du constant) et intégrande fonction de u SEULE, quelle que soit
+	// sa forme (k/(ax+b)², √(x/2+1)) : ∫ f(u) dx = (1/u′) ∫ f(u) du
+	if (fOfUAlone && isDirectFunctionOfU(integrand, u)) {
+		return { u, du };
+	}
+	if (
+		(containsSubexpression(integrand, du) || fOfUAlone) &&
+		(isMultiplication(integrand) || !duContainsVar)
+	) {
 		// For multiplication: f(u) * du pattern
 		// We need to verify that the other factor only contains u (not the variable directly)
 		if (isMultiplication(integrand)) {
@@ -709,11 +810,7 @@ function tryUSubstitution(
 	// Try to find du as a factor in multiplication
 	const factor = findConstantFactor(integrand, du);
 	if (factor !== null) {
-		return {
-			u,
-			du,
-			constantFactor: factor
-		};
+		return matchWithRatio(u, du, factor);
 	}
 
 	// Check if the integrand itself equals du (up to constant factor)
@@ -844,7 +941,7 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
  *
  * @internal
  */
-function findConstantFactor(expr: MathNode, target: MathNode): number | null {
+function findConstantFactor(expr: MathNode, target: MathNode): Rational | null {
 	const targetHash = hashMathNode(target);
 
 	// Case 0: Handle opposite (negation) nodes
@@ -853,7 +950,7 @@ function findConstantFactor(expr: MathNode, target: MathNode): number | null {
 	if (target.type === 'opposite') {
 		const innerFactor = findConstantFactor(expr, target.operand);
 		if (innerFactor !== null) {
-			return -innerFactor;
+			return negRational(innerFactor);
 		}
 	}
 
@@ -861,7 +958,7 @@ function findConstantFactor(expr: MathNode, target: MathNode): number | null {
 	if (expr.type === 'opposite') {
 		const innerFactor = findConstantFactor(expr.operand, target);
 		if (innerFactor !== null) {
-			return -innerFactor;
+			return negRational(innerFactor);
 		}
 	}
 
@@ -872,12 +969,12 @@ function findConstantFactor(expr: MathNode, target: MathNode): number | null {
 
 		// Check if left is constant and right is target
 		if (rightHash === targetHash && isNumber(expr.left)) {
-			return parseFloat(expr.left.value);
+			return extractRational(expr.left);
 		}
 
 		// Check if right is constant and left is target
 		if (leftHash === targetHash && isNumber(expr.right)) {
-			return parseFloat(expr.right.value);
+			return extractRational(expr.right);
 		}
 	}
 
@@ -887,7 +984,8 @@ function findConstantFactor(expr: MathNode, target: MathNode): number | null {
 
 		// Check if numerator is target and denominator is constant
 		if (numHash === targetHash && isNumber(expr.denominator)) {
-			return 1 / parseFloat(expr.denominator.value);
+			const d = extractRational(expr.denominator);
+			return d === null || d.n === 0n ? null : reciprocal(d);
 		}
 	}
 
@@ -914,9 +1012,19 @@ function findConstantFactor(expr: MathNode, target: MathNode): number | null {
  * @returns Constant factor if expressions are proportional, null otherwise
  */
 export function findProportionalityConstant(expr1: MathNode, expr2: MathNode): number | null {
+	const ratio = findProportionalityRatio(expr1, expr2);
+	return ratio === null ? null : rationalToNumber(ratio);
+}
+
+/**
+ * Même chose que `findProportionalityConstant`, en rationnel EXACT : c'est
+ * lui qui sert à construire une primitive (un flottant y laisserait
+ * `\frac{3333333333333333}{10000000000000000}`).
+ */
+export function findProportionalityRatio(expr1: MathNode, expr2: MathNode): Rational | null {
 	// Fast path: identical expressions
 	if (hashMathNode(expr1) === hashMathNode(expr2)) {
-		return 1;
+		return ONE;
 	}
 
 	// Use normalization for all other cases

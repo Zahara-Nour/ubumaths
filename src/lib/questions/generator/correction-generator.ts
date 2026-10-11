@@ -32,6 +32,7 @@ import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmet
 import { extractPedagogicalTarget } from '$lib/mathAST/pedagogical-arithmetic/target-extractor';
 import { generatePedagogicalDifferentiationSteps } from '$lib/mathAST/pedagogical-differentiation/pipeline';
 import { PedagogicalDifferentiationRenderer } from '$lib/mathAST/pedagogical-differentiation/renderer';
+import { withTidyStep } from '$lib/mathAST/pedagogical-differentiation/tidy-step';
 import {
 	generatePedagogicalIntegrationSteps,
 	PedagogicalIntegrationNotImplemented,
@@ -621,7 +622,9 @@ function renderDifferentiate({
 
 	const renderer = new PedagogicalDifferentiationRenderer();
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
-	return renderer.renderAll(result.steps, renderOptions);
+	// La dernière ligne est la dérivée RANGÉE : sans cette étape, la correction
+	// finissait sur `e^{3x} 3` ou `\cos x + (-\sin x)` (2026-10-06)
+	return withTidyStep(renderer.renderAll(result.steps, renderOptions), result.derivative).steps;
 }
 
 interface IntegrateDispatch {

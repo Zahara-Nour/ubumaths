@@ -152,7 +152,7 @@ describe('evaluateLimit', () => {
 		it('evaluates 1/x as x → 0⁺ (right limit)', () => {
 			const expr = divide(number('1'), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
-			expect(result.status).toBe('exact');
+			expect(result.status).toBe('infinite');
 			expect(result.technique).toBe('known-limit');
 			expect(result.value).not.toBeNull();
 			expect(result.value && isInfinity(result.value)).toBe(true);
@@ -164,7 +164,7 @@ describe('evaluateLimit', () => {
 		it('evaluates 1/x as x → 0⁻ (left limit)', () => {
 			const expr = divide(number('1'), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'left');
-			expect(result.status).toBe('exact');
+			expect(result.status).toBe('infinite');
 			expect(result.technique).toBe('known-limit');
 			expect(result.value).not.toBeNull();
 			expect(result.value && isInfinity(result.value)).toBe(true);

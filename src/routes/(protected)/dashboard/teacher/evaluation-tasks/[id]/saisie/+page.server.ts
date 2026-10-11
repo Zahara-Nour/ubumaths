@@ -10,7 +10,7 @@
  * réussites ; les non-cochés du périmètre deviennent automatiquement `–`
  * à l'enregistrement ; hors périmètre = ∅ implicite.
  *
- * Spec : docs/wip/skills-referentiel-design.md §3 (saisie par périmètre)
+ * Spec : docs/archive/wip/skills-referentiel-design.md §3 (saisie par périmètre)
  */
 
 import type { PageServerLoad, Actions } from './$types';

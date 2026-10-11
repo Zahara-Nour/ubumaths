@@ -1,15 +1,17 @@
 import { toPataphysicalDate } from '$lib/almanach/calendar';
+import { ambianceMonthIndex } from '$lib/almanach/palettes';
 import { allArticles, pickRandomArticle, publishedArticles } from '$lib/server/shtam/articles';
 import { todayIsoInParis } from '$lib/server/shtam/present';
 import type { PageServerLoad } from './$types';
 
-// Jamais prérendue : la date pataphysique doit être celle du jour de la requête,
-// pas celle du build ; l'article du Shtam est tiré à chaque visite.
+// Jamais prérendue : l'ambiance suit le mois pataphysique du jour de la requête,
+// pas celui du build ; l'article du Shtam est tiré à chaque visite.
 export const prerender = false;
 
 export const load: PageServerLoad = () => {
 	const now = new Date();
-	return { almanach: toPataphysicalDate(now), shtam: pickShtamLink(now) };
+	// Seule l'ambiance du mois est envoyée : la date elle-même vit dans l'en-tête du tableau de bord
+	return { ambianceMonth: ambianceMonthIndex(toPataphysicalDate(now)), shtam: pickShtamLink(now) };
 };
 
 /** Lien décoratif : un article du Shtam mal formé ne doit jamais faire tomber l'accueil */

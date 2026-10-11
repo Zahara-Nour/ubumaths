@@ -2,13 +2,24 @@
  * Taylor Command
  *
  * Computes Taylor series expansion of mathematical expressions.
- * Supports specifying the number of terms and center point.
+ * Supports specifying the order and center point.
  *
- * Syntax: .taylor expr terms [center]
- * - .taylor sin(x) 5 0     -> Taylor series of sin(x), 5 terms, at x=0
- * - .taylor exp(x) 4 0     -> 1 + x + x^2/2 + x^3/6 (4 terms at 0)
- * - .taylor ln(x) 4 1      -> Taylor of ln(x) at x=1
- * - .taylor f 3 0          -> Taylor of f(x) at x=0, if f is defined
+ * Syntax: .taylor expr order [center][ ; variable]
+ *
+ * ⚠️ `order` est l'ORDRE du développement — le degré maximal —, convention des
+ * développements limités (décision de David du 2026-10-06). Ce n'était pas le
+ * cas avant : c'était un nombre de termes (degrés 0 à n−1).
+ *
+ * - .taylor sin(x) 5 0     -> x - x^3/6 + x^5/120 (ordre 5 en 0)
+ * - .taylor exp(x) 4 0     -> 1 + x + x^2/2 + x^3/6 + x^4/24 (ordre 4 en 0)
+ * - .taylor ln(x) 3 1      -> Taylor of ln(x) at x=1, order 3
+ * - .taylor f 2 0          -> Taylor of f(x) at x=0, if f is defined
+ * - .taylor exp(t) 4 ; t   -> en t (= .taylor exp(t) ; t 4)
+ *
+ * ⚠️ La variable est x, sauf si une autre est donnée après un POINT-VIRGULE
+ * (voir `core/variable-argument.ts`, décision de David du 2026-10-06). Plus de
+ * variable devinée dans l'expression (`sin(t)` donnait t). L'ordre et le point
+ * se placent avant ou après `; t`, comme les bornes de `.integrate`.
  */
 
 import chalk from 'chalk';
@@ -17,7 +28,17 @@ import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { toLatex } from '../../latex-generator';
 import { parse } from '../core/pipeline';
-import { taylorExpand, TaylorError, MAX_TAYLOR_TERMS } from '../../taylor';
+import {
+	bareFunctionMessage,
+	bareFunctionName,
+	chosenVariable,
+	guessedVariable,
+	keywordCommandLabel,
+	readCommandArguments,
+	TAYLOR_SHORTCUT_FUNCTIONS
+} from '../core/variable-argument';
+import { taylorExpand, TaylorError, MAX_TAYLOR_ORDER } from '../../taylor';
+import { getVariables } from '../../eval/substitute';
 
 // =============================================================================
 // Taylor Command
@@ -26,8 +47,8 @@ import { taylorExpand, TaylorError, MAX_TAYLOR_TERMS } from '../../taylor';
 /**
  * Taylor command - computes Taylor series expansions.
  *
- * The command parses the input to extract the expression, number of terms,
- * and optional center point. It then computes the Taylor polynomial.
+ * The command parses the input to extract the expression, the order (highest
+ * degree), and optional center point. It then computes the Taylor polynomial.
  *
  * If the expression is a single function name (like 'f' or 'sin') that matches
  * a defined function in the state, it treats it as f(x) with default variable.
@@ -35,25 +56,25 @@ import { taylorExpand, TaylorError, MAX_TAYLOR_TERMS } from '../../taylor';
  * @example
  * ```
  * > .taylor sin(x) 5 0
- * Taylor series of sin(x) at x=0, 5 terms:
+ * Taylor series of sin(x) at x=0, order 5:
  * x - x^3/6 + x^5/120
  * LaTeX: x - \frac{x^{3}}{6} + \frac{x^{5}}{120}
  *
- * > .taylor exp(x) 4
- * Taylor series of exp(x) at x=0, 4 terms:
+ * > .taylor exp(x) 3
+ * Taylor series of exp(x) at x=0, order 3:
  * 1 + x + x^2/2 + x^3/6
  *
  * > .def f(x) = x^2
- * > .taylor f 3
- * Taylor series of f(x) at x=0, 3 terms:
+ * > .taylor f 2
+ * Taylor series of f(x) at x=0, order 2:
  * x^2
  * ```
  */
 export class TaylorCommand extends BaseCommand {
 	readonly name = 'taylor';
 	readonly aliases = ['tay', 'series'] as const;
-	readonly description = 'Compute Taylor series: .taylor expr terms [center]';
-	readonly usage = 'taylor <expression> <terms> [center]';
+	readonly description = 'Compute Taylor series: .taylor expr order [center][ ; variable]';
+	readonly usage = 'taylor <expression> <order> [center][ ; <variable>]';
 	readonly requiresAst = false;
 
 	execute(ctx: CommandContext): CommandResult {
@@ -65,48 +86,59 @@ export class TaylorCommand extends BaseCommand {
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
-					message: 'No expression provided. Usage: .taylor <expression> <terms> [center]'
+					message:
+						'No expression provided. Usage: .taylor <expression> <order> [center][ ; <variable>]'
 				}
 			};
 		}
 
-		// Parse input to extract expression, terms, and optional center
-		const parsed = this.parseInput(input);
+		// Expression, variable après `;`, ordre et point (avant ou après `; t`)
+		const reading = readCommandArguments('taylor', input);
+		if (!reading.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: reading.message }
+			};
+		}
+		const { expression, variable: explicitVariable, order } = reading.args;
+		const center = reading.args.center ?? 0;
 
-		if (!parsed) {
+		if (order === null || expression === '') {
 			return {
 				success: false,
 				output: '',
 				error: {
 					code: 'PARSE_ERROR',
 					message:
-						'Invalid syntax. Usage: .taylor <expression> <terms> [center]\n' +
+						'Invalid syntax. Usage: .taylor <expression> <order> [center][ ; <variable>]\n' +
 						'Example: .taylor sin(x) 5 0'
 				}
 			};
 		}
 
-		const { expression, terms, center, varName } = parsed;
-
-		// Validate terms
-		if (terms < 1) {
+		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
+		const chosen = chosenVariable(explicitVariable, parserOptions);
+		if (!chosen.ok) {
 			return {
 				success: false,
 				output: '',
-				error: {
-					code: 'INVALID_OPTIONS',
-					message: 'Number of terms must be at least 1'
-				}
+				error: { code: 'AMBIGUOUS_VARIABLE', message: chosen.message }
 			};
 		}
+		// Sans variable tapée : x pour le raccourci (`.taylor sin ordre 5`), puis
+		// devinée sur l'expression lue (décision de David, 2026-10-08)
+		let varName = chosen.variable;
 
-		if (terms > MAX_TAYLOR_TERMS) {
+		// L'ordre est un entier ≥ 0 (la lecture n'accepte que des chiffres) :
+		// seule la borne haute est à vérifier. Message pour l'élève, en français.
+		if (order > MAX_TAYLOR_ORDER) {
 			return {
 				success: false,
 				output: '',
 				error: {
-					code: 'INVALID_OPTIONS',
-					message: `Number of terms exceeds maximum of ${MAX_TAYLOR_TERMS}`
+					code: 'TAYLOR_ORDER',
+					message: `L’ordre du développement ne peut pas dépasser ${MAX_TAYLOR_ORDER}.`
 				}
 			};
 		}
@@ -124,14 +156,24 @@ export class TaylorCommand extends BaseCommand {
 				const funcDef = ctx.evalState.functions[funcName];
 				const param = funcDef.parameters[0] || 'x';
 				exprToParse = `${funcName}(${param})`;
-			} else if (['sin', 'cos', 'tan', 'exp', 'ln', 'sqrt', 'log'].includes(funcName)) {
+			} else if (TAYLOR_SHORTCUT_FUNCTIONS.has(funcName)) {
 				// Built-in function without argument
 				exprToParse = `${funcName}(${varName})`;
 			}
 		}
 
+		// `sin x` sans parenthèses : refusé, jamais lu s·i·n·x (décision de
+		// David). Testé APRÈS le raccourci : le nom seul (`sin 5`) reste accepté.
+		const bare = bareFunctionName(exprToParse);
+		if (bare !== null) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'BARE_FUNCTION', message: bareFunctionMessage(bare) }
+			};
+		}
+
 		// Parse the expression with state-aware parser options
-		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
 		const parseResult = parse(exprToParse, parserOptions);
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
@@ -143,32 +185,56 @@ export class TaylorCommand extends BaseCommand {
 			};
 		}
 
+		if (explicitVariable === null) {
+			const guessed = guessedVariable(
+				parseResult.ast,
+				ctx.evalState?.bindings.keys(),
+				keywordCommandLabel('taylor')
+			);
+			if (!guessed.ok) {
+				return {
+					success: false,
+					output: '',
+					error: { code: 'AMBIGUOUS_VARIABLE', message: guessed.message }
+				};
+			}
+			varName = guessed.variable;
+		}
+		// Plus d'indication : la variable est devinée ou exigée (2026-10-08, Q1)
+		const hint: string | null = null;
+
 		try {
 			// Get function bindings from state if available
 			const functions = ctx.evalState?.functions;
 
-			// Compute Taylor series
-			const taylor = taylorExpand(
-				parseResult.ast,
-				{
-					variable: varName,
-					center,
-					terms
-				},
-				functions
-			);
+			// Compute Taylor series. Rien ne dépend de la variable (`exp(t) 4`,
+			// calculé en x) : le développement est l'expression elle-même — comme
+			// `.diff t^2` répond 0 —, là où `taylorExpand` échouait sur la
+			// lettre libre
+			const taylor = getVariables(parseResult.ast).has(varName)
+				? taylorExpand(
+						parseResult.ast,
+						{
+							variable: varName,
+							center,
+							order
+						},
+						functions
+					)
+				: parseResult.ast;
 
 			// Format output
 			const exprCustom = toCustom(parseResult.ast);
 			const taylorCustom = toCustom(taylor);
 			const taylorLatex = toLatex(taylor);
 
-			const centerDesc = center === 0 ? 'x=0 (Maclaurin)' : `x=${center}`;
+			const centerDesc = center === 0 ? `${varName}=0 (Maclaurin)` : `${varName}=${center}`;
 
 			const output = [
-				chalk.bold(`Taylor series of ${exprCustom} at ${centerDesc}, ${terms} terms:`),
+				chalk.bold(`Taylor series of ${exprCustom} at ${centerDesc}, order ${order}:`),
 				chalk.cyan(taylorCustom),
-				chalk.dim('LaTeX:') + ' ' + taylorLatex
+				chalk.dim('LaTeX:') + ' ' + taylorLatex,
+				...(hint === null ? [] : [hint])
 			].join('\n');
 
 			return {
@@ -193,107 +259,5 @@ export class TaylorCommand extends BaseCommand {
 				error: { code: 'UNKNOWN_ERROR', message }
 			};
 		}
-	}
-
-	/**
-	 * Parse the input to extract expression, terms, and optional center.
-	 *
-	 * Supports formats:
-	 * - "sin(x) 5" -> { expression: "sin(x)", terms: 5, center: 0, varName: "x" }
-	 * - "sin(x) 5 0" -> { expression: "sin(x)", terms: 5, center: 0, varName: "x" }
-	 * - "ln(x) 4 1" -> { expression: "ln(x)", terms: 4, center: 1, varName: "x" }
-	 * - "f 3" -> { expression: "f", terms: 3, center: 0, varName: "x" }
-	 *
-	 * @returns Parsed input or null if invalid
-	 */
-	private parseInput(
-		input: string
-	): { expression: string; terms: number; center: number; varName: string } | null {
-		const trimmed = input.trim();
-
-		// Split by whitespace from the end to find numeric arguments
-		const tokens = trimmed.split(/\s+/);
-
-		if (tokens.length < 2) {
-			return null;
-		}
-
-		// Try to find terms and optional center from the end
-		// Last token should be a number (either center or terms)
-		// Second to last could also be a number (terms if center is present)
-
-		const lastToken = tokens[tokens.length - 1];
-		const lastNum = parseFloat(lastToken);
-
-		if (isNaN(lastNum)) {
-			return null;
-		}
-
-		let terms: number;
-		let center = 0;
-		let exprEndIndex: number;
-
-		// Check if second-to-last is also a number
-		if (tokens.length >= 3) {
-			const secondLastToken = tokens[tokens.length - 2];
-			const secondLastNum = parseFloat(secondLastToken);
-
-			if (!isNaN(secondLastNum) && Number.isInteger(secondLastNum)) {
-				// Format: expr terms center
-				terms = secondLastNum;
-				center = lastNum;
-				exprEndIndex = tokens.length - 2;
-			} else {
-				// Format: expr terms (no center, default to 0)
-				if (!Number.isInteger(lastNum)) {
-					return null;
-				}
-				terms = lastNum;
-				exprEndIndex = tokens.length - 1;
-			}
-		} else {
-			// Only 2 tokens: expr terms
-			if (!Number.isInteger(lastNum)) {
-				return null;
-			}
-			terms = lastNum;
-			exprEndIndex = tokens.length - 1;
-		}
-
-		// Everything before the numeric args is the expression
-		const expression = tokens.slice(0, exprEndIndex).join(' ');
-
-		if (!expression) {
-			return null;
-		}
-
-		// Try to detect the variable from the expression
-		const varName = this.detectVariable(expression);
-
-		return { expression, terms, center, varName };
-	}
-
-	/**
-	 * Detect the variable name from an expression.
-	 * Looks for common patterns like f(x), sin(t), etc.
-	 *
-	 * @returns The detected variable name or 'x' as default
-	 */
-	private detectVariable(expression: string): string {
-		// Look for function call pattern: name(var)
-		const funcMatch = expression.match(/\w+\s*\(\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\)/);
-		if (funcMatch) {
-			return funcMatch[1];
-		}
-
-		// Look for power/subscript pattern: var^n or var_n
-		const varMatch = expression.match(/^([a-zA-Z_][a-zA-Z0-9_]*)/);
-		if (varMatch && varMatch[1] !== expression) {
-			// Has something after the variable
-			return varMatch[1];
-		}
-
-		// Default to 'x'
-		return 'x';
 	}
 }

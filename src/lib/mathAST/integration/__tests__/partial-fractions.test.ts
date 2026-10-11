@@ -204,7 +204,8 @@ describe('Repeated Linear Factors', () => {
 		const result = testIntegrate('\\frac{1}{(x-1)^2}');
 
 		expect(result.status).toBe('exact');
-		expect(result.technique).toBe('partial-fractions');
+		// c/(x − r)ⁿ : changement de variable u = x − r (revue de #913)
+		expect(result.technique).toBe('u-substitution');
 
 		// Direct power rule: ∫(x-1)^(-2) dx = -(x-1)^(-1) = -1/(x-1)
 		// After normalization, may appear as 1/(-x+1) which is equivalent

@@ -8,7 +8,7 @@
  * au plus 20 000 combinaisons, sinon sur 5 000 graines ; `--instances N` impose N
  * graines (relecture rapide, ne vaut pas preuve).
  *
- * Travaille sur l'instantané `docs/corrections/<lot>/_modeles.json` (aucune base).
+ * Travaille sur l'instantané `data/corrections/<lot>/_modeles.json` (aucune base).
  * Code de sortie : 0 si toutes les propositions passent, 1 sinon.
  */
 

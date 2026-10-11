@@ -89,7 +89,6 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 
 		const { error } = await service
 			.from('question_templates')
-			// @ts-expect-error - fixture minimale : les colonnes non listées ont un défaut
 			.insert([template(PUBLISHED_ID, 'published'), template(DRAFT_ID, 'draft')]);
 
 		expect(error).toBeNull();
@@ -155,7 +154,7 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 		// anonyme, cet embed doit rester fermé.
 		const { data, error } = await anonClient()
 			.from('question_templates')
-			// @ts-expect-error - embed volontairement hors typage
+			// embed volontairement hors typage (postgrest-js ne le refuse pas à la compilation)
 			.select('id, profiles(*)')
 			.eq('status', 'published');
 
@@ -166,7 +165,6 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 	it('anon ne peut pas créer de template', async () => {
 		const { error } = await anonClient()
 			.from('question_templates')
-			// @ts-expect-error - fixture minimale
 			.insert(template('0a11f0e0-0000-4000-8000-00000000a003', 'published'));
 
 		expect(error).not.toBeNull();
@@ -175,7 +173,6 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 	it('anon ne peut pas modifier un template publié', async () => {
 		await anonClient()
 			.from('question_templates')
-			// @ts-expect-error - mise à jour partielle
 			.update({ title: 'compromis' })
 			.eq('id', PUBLISHED_ID);
 
@@ -213,11 +210,8 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 	});
 
 	it('un administrateur peut toujours modifier un template', async () => {
-		const { error } = await (
-			await clientFor(adminEmail)
-		)
+		const { error } = await (await clientFor(adminEmail))
 			.from('question_templates')
-			// @ts-expect-error - mise à jour partielle
 			.update({ description: 'modifié par admin' })
 			.eq('id', PUBLISHED_ID);
 

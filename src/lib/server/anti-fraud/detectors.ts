@@ -2,7 +2,7 @@
  * Détecteurs anti-fraud SRS — 5 signaux individuels + composite.
  *
  * Fonctions PURES (pas d'I/O DB), testables unitairement.
- * Cf. spec TDD `docs/wip/srs-anti-fraud-spec-tdd.md` §B1..B6.
+ * Cf. spec TDD `docs/archive/wip/srs-anti-fraud-spec-tdd.md` §B1..B6.
  *
  * Chaque fonction retourne `SignalResult | null` :
  *   - `null` si seuil non franchi ou sample_size insuffisant

@@ -25,6 +25,7 @@
 	import type { StudentExerciseView, StudentErrorReportView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 	import { MASTERY_LABELS } from '$lib/types/exercise-mastery';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 
 	interface Props {
 		exercises: StudentExerciseView[];
@@ -209,7 +210,7 @@
 										class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 									>
 										<MarkdownRenderer
-											content={exercise.correction ?? ''}
+											content={detailedCorrection(exercise.correction ?? '')}
 											genericFunctions={exerciseFunctions}
 										/>
 									</div>
@@ -395,7 +396,7 @@
 									class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 								>
 									<MarkdownRenderer
-										content={exercise.correction ?? ''}
+										content={detailedCorrection(exercise.correction ?? '')}
 										genericFunctions={exerciseFunctions}
 									/>
 								</div>

@@ -96,7 +96,7 @@ describe('Stdlib builtins — exactness propagation', () => {
 		const { figure, symbols } = runDsl(
 			['A = point(0, 0)', 'B = point(sqrt(4), 0)', 't = triangle_equilateral(A, B)'].join('\n')
 		);
-		const t = figure.elements.get(symId(symbols, 't'));
+		const t = figure.getElementById(symId(symbols, 't'));
 		if (!t || t.type !== 'polygon') throw new Error('not a polygon');
 		const Cid = t.dependsOn[2];
 		const C = figure.getPosition(Cid);
@@ -118,7 +118,7 @@ describe('Stdlib builtins — exactness propagation', () => {
 				'p = parallelogramme(A, B, C)'
 			].join('\n')
 		);
-		const p = figure.elements.get(symId(symbols, 'p'));
+		const p = figure.getElementById(symId(symbols, 'p'));
 		if (!p || p.type !== 'polygon') throw new Error('not a polygon');
 		const Did = p.dependsOn[3];
 		const D = figure.getPosition(Did);
@@ -157,7 +157,7 @@ describe('Stdlib builtins — dynamic updates on drag', () => {
 			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 4)', 's = mediane(A, B, C)'].join('\n')
 		);
 		// segment s goes from A to midpoint(B, C). Midpoint is initially (3, 2).
-		const segEl = figure.elements.get(symId(symbols, 's'));
+		const segEl = figure.getElementById(symId(symbols, 's'));
 		if (!segEl || segEl.type !== 'segment') throw new Error('not a segment');
 		const endId = segEl.endId;
 		const e0 = figure.getPosition(endId)!;
@@ -173,7 +173,7 @@ describe('Stdlib builtins — dynamic updates on drag', () => {
 		const { figure, symbols } = runDsl(
 			['A = point(0, 0)', 'B = point(2, 0)', 't = triangle_equilateral(A, B)'].join('\n')
 		);
-		const tEl = figure.elements.get(symId(symbols, 't'));
+		const tEl = figure.getElementById(symId(symbols, 't'));
 		if (!tEl || tEl.type !== 'polygon') throw new Error('not a polygon');
 		const Cid = tEl.dependsOn[2];
 		moveAndRecompute(figure, symId(symbols, 'B'), 4, 0);
@@ -192,7 +192,7 @@ describe('Stdlib builtins — dynamic updates on drag', () => {
 				'p = parallelogramme(A, B, C)'
 			].join('\n')
 		);
-		const pEl = figure.elements.get(symId(symbols, 'p'));
+		const pEl = figure.getElementById(symId(symbols, 'p'));
 		if (!pEl || pEl.type !== 'polygon') throw new Error('not a polygon');
 		const Did = pEl.dependsOn[3];
 		const D0 = figure.getPosition(Did)!;
@@ -210,7 +210,7 @@ describe('Stdlib builtins — dynamic updates on drag', () => {
 		const { figure, symbols } = runDsl(
 			['A = point(0, 0)', 'B = point(4, 0)', 'r = rectangle(A, B, largeur=2)'].join('\n')
 		);
-		const rEl = figure.elements.get(symId(symbols, 'r'));
+		const rEl = figure.getElementById(symId(symbols, 'r'));
 		if (!rEl || rEl.type !== 'polygon') throw new Error('not a polygon');
 		const Did = rEl.dependsOn[3];
 		const D0 = figure.getPosition(Did)!;
@@ -253,7 +253,7 @@ describe('Stdlib builtins — dynamic updates on drag', () => {
 		const { figure, symbols } = runDsl(
 			['O = point(0, 0)', 'p = polygone_regulier(O, 1, 6)'].join('\n')
 		);
-		const pEl = figure.elements.get(symId(symbols, 'p'));
+		const pEl = figure.getElementById(symId(symbols, 'p'));
 		if (!pEl || pEl.type !== 'polygon') throw new Error('not a polygon');
 		const P0id = pEl.dependsOn[0];
 		const P0_initial = figure.getPosition(P0id)!;

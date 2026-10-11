@@ -57,6 +57,15 @@ const storedObjectSchema = z.object({
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
 	plotted: z.boolean().optional(),
 	/**
+	 * La lettre d'une fonction (`f(t)`). Abîmée : oubliée, la fonction gardée et
+	 * montrée en x — sa définition rangée l'est déjà.
+	 */
+	letter: z
+		.string()
+		.regex(/^[A-Za-z]$/)
+		.optional()
+		.catch(undefined),
+	/**
 	 * Réglages d'affichage d'une fonction. ⚠️ `.catch(undefined)` : un réglage
 	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
 	 * serait disproportionné. Tracée, elle recevra une couleur neuve.
@@ -99,6 +108,8 @@ export interface StoredObject {
 	readonly kind: ObjectKind;
 	readonly definition: string;
 	readonly plotted?: boolean;
+	/** La lettre de l'élève d'une fonction (`f(t)`), absente pour x. */
+	readonly letter?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
 	readonly mode?: 'explicit' | 'recurrence';

@@ -6,7 +6,7 @@
  * fausse À CAUSE DE L'UNITÉ. Textes figés par la spécification validée
  * (saisie des unités, phase 3) : ne pas les reformuler sans accord produit.
  *
- * Règles d'écriture des unités : `docs/ref/notation-unites.md`.
+ * Règles d'écriture des unités : `docs/pratiques/notation-unites.md`.
  *
  * @module questions/units/feedback
  */

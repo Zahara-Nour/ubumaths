@@ -1,7 +1,7 @@
 /**
  * Tests TDD des détecteurs anti-fraud (Phase 2).
  *
- * Source : `docs/wip/srs-anti-fraud-spec-tdd.md` §B1..B6 (cas limites inclus).
+ * Source : `docs/archive/wip/srs-anti-fraud-spec-tdd.md` §B1..B6 (cas limites inclus).
  *
  * Fonctions PURES → tests unitaires sans mock DB.
  */
