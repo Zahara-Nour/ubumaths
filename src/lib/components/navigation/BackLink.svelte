@@ -11,6 +11,8 @@ Props :
 - label : « Retour aux séries », « Retour à la fiche »… (jamais « Retour » seul)
 - kind : 'back' (défaut) ou 'quit' pour une page où l'élève est en pleine activité
   (test, révision, fiche en cours) : « Quitter » dit qu'on interrompt, pas qu'on navigue
+- confirmLeave : si défini, demande confirmation avant de partir (modifications non
+  enregistrées) ; un refus annule la navigation, le lien reste un vrai lien
 -->
 <script lang="ts">
 	import { ArrowLeft, X } from '@lucide/svelte';
@@ -20,19 +22,26 @@ Props :
 		href,
 		label,
 		kind = 'back',
+		confirmLeave,
 		class: className
 	}: {
 		href: string;
 		label: string;
 		kind?: 'back' | 'quit';
+		confirmLeave?: string;
 		class?: string;
 	} = $props();
+
+	function handleClick(event: MouseEvent) {
+		if (confirmLeave && !confirm(confirmLeave)) event.preventDefault();
+	}
 </script>
 
 <!-- Marge négative : la flèche s'aligne sur le bord gauche du titre, la zone de clic reste large -->
 <a
 	{href}
 	data-sveltekit-preload-data="hover"
+	onclick={handleClick}
 	class={cn(
 		'mb-2 -ml-2 inline-flex min-h-9 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:outline-none',
 		className

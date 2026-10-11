@@ -1,18 +1,13 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
-	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import EvaluationResultsTable from '$lib/components/assessments/EvaluationResultsTable.svelte';
-	import { ArrowLeft, TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
+	import { TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
 	import { formatGrade, formLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
-
-	function handleBack() {
-		goto('/dashboard/teacher/assessments').then(() => {});
-	}
 </script>
 
 <svelte:head>
@@ -21,10 +16,8 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack}>
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/assessments" label="Retour aux contrôles" />
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.evaluation.series.title}</h1>
 			<p class="mt-2 text-muted-foreground">

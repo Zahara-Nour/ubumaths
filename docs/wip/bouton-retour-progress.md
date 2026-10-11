@@ -25,6 +25,20 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 | 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | —                        | à faire  |
 | 4   | Pages publiques + composants partagés (`components/test/`, `srs/`, `student/worksheets/`)          | —                        | à faire  |
 
+## Lot 1 — espace prof (fait)
+
+- 35 pages converties en `BackLink` (flèche seule, `goto()` au clic, libellés « Retour » seuls).
+- 8 sous-pages qui n'avaient aucun retour en reçoivent un : énigmes (édition, création, statistiques, énigme du jour, validations), nouvel exercice, email de bienvenue, tournois de démineur.
+- Exercice sans `?fiche=` : « Retour aux Corvées » (avant : aucun bouton).
+- Fil d'Ariane retiré du cahier de texte (date) et du journal d'un élève.
+- `confirmLeave` ajouté à `BackLink` : l'édition d'un deck SRS demandait déjà confirmation avant de partir avec des modifications non enregistrées ; le lien garde cette garde.
+- Hors règle, laissés tels quels : « Retour » d'un panneau interne (fiche → affectation sélectionnée), « Retour à l'édition » (bascule de mode), « Retour à la période actuelle », « Retour aux Bataillons » en fin d'envoi de l'email de bienvenue (action de fin).
+
 ## Cas douteux à soumettre à David
 
-(aucun pour l'instant)
+- **Journal d'un élève** (`teacher/students/[id]/journal`) : s'ouvre depuis l'accueil, les récompenses et les classes. Le retour mène aux récompenses, comme avant. Faut-il un retour qui suit l'origine (paramètre dans l'adresse) ?
+- **Pages prof sans retour et sans parent évident** — ni dans la navigation, ni dans un onglet :
+  - `teacher/srs/decks` : ouverte depuis l'accueil seulement → « Retour à l'accueil » ?
+  - `teacher/settings/google` : ouverte depuis les classes, la page Google, le tiroir de fichiers du tableau blanc → plusieurs parents.
+  - `teacher/competences/export` : ouverte depuis les analytics d'une classe, mais le lien ne transmet pas la classe (la page accepte `?class=`).
+  - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).

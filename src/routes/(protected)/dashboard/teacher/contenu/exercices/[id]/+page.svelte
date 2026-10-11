@@ -8,6 +8,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -28,8 +29,7 @@
 		Loader2,
 		ListTodo,
 		ChevronRight,
-		ChevronDown,
-		ArrowLeft
+		ChevronDown
 	} from '@lucide/svelte';
 	import { worksheetReturnHref } from '$lib/worksheets/exercise-edit-link';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
@@ -490,12 +490,10 @@
 </svelte:head>
 
 <div class="container mx-auto py-6">
-	{#if worksheetReturn}
-		<Button variant="ghost" size="sm" href={worksheetReturn} class="mb-2 -ml-2">
-			<ArrowLeft class="mr-1 h-4 w-4" />
-			Retour à la fiche
-		</Button>
-	{/if}
+	<BackLink
+		href={worksheetReturn ?? '/dashboard/teacher/contenu/exercices'}
+		label={worksheetReturn ? 'Retour à la fiche' : `Retour aux ${lore.learning.exercise}s`}
+	/>
 	<div class="mb-6 flex items-start justify-between">
 		<div class="flex items-center gap-3">
 			<div>

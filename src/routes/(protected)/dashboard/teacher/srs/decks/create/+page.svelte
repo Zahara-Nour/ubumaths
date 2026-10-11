@@ -16,6 +16,7 @@
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -24,7 +25,7 @@
 	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
 	import TemplateSelector from '$lib/components/srs/TemplateSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Save, Plus, Trash2, BookOpen, ArrowLeft } from '@lucide/svelte';
+	import { Save, Plus, Trash2, BookOpen } from '@lucide/svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
@@ -213,10 +214,7 @@
 <div class="create-deck-page">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button onclick={goBack} variant="ghost" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour
-		</Button>
+		<BackLink href="/dashboard/teacher/srs/decks" label="Retour aux decks" />
 
 		<h1 class="mb-2 text-3xl font-bold">Créer un deck SRS</h1>
 		<p class="text-muted-foreground">

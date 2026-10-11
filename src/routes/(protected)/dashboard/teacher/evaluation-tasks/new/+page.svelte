@@ -7,10 +7,11 @@
 
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ChevronLeft, ClipboardList } from '@lucide/svelte';
+	import { ClipboardList } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {
@@ -34,12 +35,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-2xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/teacher/evaluation-tasks">
-			<ChevronLeft class="h-4 w-4" />
-			Observations
-		</Button>
-	</div>
+	<BackLink href="/dashboard/teacher/evaluation-tasks" label="Retour aux observations" />
 
 	<div class="mb-6 flex items-center gap-3">
 		<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">

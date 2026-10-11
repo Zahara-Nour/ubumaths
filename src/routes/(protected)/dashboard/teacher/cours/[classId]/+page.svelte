@@ -16,6 +16,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
@@ -27,7 +28,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { CHAPTER_ICONS } from '$lib/types/chapters';
 	import {
-		ArrowLeft,
 		Plus,
 		Eye,
 		EyeOff,
@@ -163,13 +163,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
-	<!-- Breadcrumb & Back -->
-	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/teacher/cours" class="mb-2 -ml-2">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux cours
-		</Button>
-	</div>
+	<BackLink href="/dashboard/teacher/cours" label="Retour aux cours" />
 
 	<!-- Header -->
 	<div class="mb-8 flex items-start justify-between gap-4">
