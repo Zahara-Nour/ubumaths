@@ -9,12 +9,13 @@
 	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { calculateBadges, getTierColorClass } from '$lib/utils/riddle-badges';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Progress from '$lib/components/ui/progress';
-	import { BookOpen, ArrowLeft, Trophy, Target, Award } from '@lucide/svelte';
+	import { BookOpen, Trophy, Target, Award } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';
@@ -73,10 +74,7 @@
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/student/riddles" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux énigmes
-		</Button>
+		<BackLink href="/dashboard/student/riddles" label="Retour aux énigmes" />
 
 		<h1 class="flex items-center gap-2 text-3xl font-bold">
 			<BookOpen class="h-8 w-8 text-primary" />

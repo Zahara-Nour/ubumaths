@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import ExerciseValidationResult from '$lib/components/python/exercises/ExerciseValidationResult.svelte';
 	import {
-		ArrowLeft,
 		CheckCircle2,
 		XCircle,
 		ChevronDown,
@@ -70,10 +70,8 @@
 
 <div class="container mx-auto max-w-5xl px-4 py-8">
 	<!-- Header -->
+	<BackLink href={`/python-exercises/${data.exercise.id}/results`} label="Retour aux résultats" />
 	<div class="mb-8 flex items-start gap-4">
-		<Button variant="ghost" size="icon" href="/python-exercises/{data.exercise.id}/results">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
 		<div class="flex-1">
 			<p class="text-sm text-muted-foreground">{data.exercise.title}</p>
 			<h1 class="text-3xl font-bold tracking-tight">{fullName()}</h1>

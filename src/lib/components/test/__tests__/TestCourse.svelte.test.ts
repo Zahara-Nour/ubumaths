@@ -24,6 +24,13 @@ function session(): TestSession {
 	};
 }
 
+/** Lien « Quitter » de l'en-tête (un vrai lien : la destination est écrite dedans) */
+function quitLink(container: HTMLElement): HTMLAnchorElement | undefined {
+	return [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
+		(link) => link.textContent?.trim() === 'Quitter'
+	);
+}
+
 async function finish(inEvaluation: boolean) {
 	const screen = await render(TestCourse, {
 		session: session(),
@@ -50,15 +57,24 @@ describe('TestCourse — fin de la course', () => {
 		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 	});
 
-	it('évaluation : le bouton retour de l’en-tête ne mène pas au panier', async () => {
+	it('évaluation : « Quitter » dans l’en-tête mène à « Mes contrôles », pas au panier', async () => {
 		const { container } = await render(TestCourse, {
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
 			inEvaluation: true
 		});
-		expect(container.querySelector('[aria-label="Retour au panier"]')).toBeNull();
-		expect(container.querySelector('[aria-label="Mes évaluations"]')).not.toBeNull();
+		expect(quitLink(container)?.getAttribute('href')).toBe('/dashboard/student/assessments');
+	});
+
+	it('hors évaluation : « Quitter » dans l’en-tête mène au panier', async () => {
+		const { container } = await render(TestCourse, {
+			session: session(),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: false
+		});
+		expect(quitLink(container)?.getAttribute('href')).toBe('/automaths/panier');
 	});
 });
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 </script>
 
 <svelte:head>
@@ -7,9 +8,7 @@
 
 <div class="container mx-auto max-w-4xl space-y-6 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-			>&larr; Geometry Demos</a
-		>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-2 text-2xl font-bold">Sliders interactifs</h1>
 		<p class="text-muted-foreground">
 			Les sliders permettent de controler dynamiquement les parametres geometriques (rayon, angle,

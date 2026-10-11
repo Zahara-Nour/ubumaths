@@ -15,6 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { invalidate } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -23,7 +24,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Save, Plus, Trash2, ArrowLeft, Sparkles, BookOpen } from '@lucide/svelte';
+	import { Save, Plus, Trash2, Sparkles, BookOpen } from '@lucide/svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { FSRSConfig } from '$lib/srs/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
@@ -206,10 +207,13 @@
 <div class="edit-deck-page">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button onclick={goBack} variant="ghost" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour
-		</Button>
+		<BackLink
+			href="/dashboard/teacher/srs/decks"
+			label="Retour aux decks"
+			confirmLeave={hasChanges
+				? 'Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?'
+				: undefined}
+		/>
 
 		<h1 class="mb-2 text-3xl font-bold">Éditer le deck</h1>
 		<p class="text-muted-foreground">Modifiez les informations et le contenu du deck</p>

@@ -1,8 +1,7 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
@@ -82,11 +81,7 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-6">
-		<Button variant="ghost" onclick={() => goto('/dashboard/student/exercises')}>
-			← Retour aux {lore.learning.exercise}s
-		</Button>
-	</div>
+	<BackLink href="/dashboard/student/exercises" label="Quitter" kind="quit" />
 
 	<!-- Assignment info -->
 	{#if data.assignment}

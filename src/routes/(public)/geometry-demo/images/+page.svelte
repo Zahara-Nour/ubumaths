@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	const freePositionDsl = `A = point(-3, -1, couleur="bleu")
@@ -221,9 +222,7 @@ img2 = transforme(s, img)`;
 
 <div class="container mx-auto max-w-6xl space-y-10 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline">
-			&larr; Geometry Demos
-		</a>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-2 text-2xl font-bold">Images dans les figures</h1>
 		<p class="text-muted-foreground">
 			Placement d'images sur les figures geometriques avec image(). Position libre ou ancree a un

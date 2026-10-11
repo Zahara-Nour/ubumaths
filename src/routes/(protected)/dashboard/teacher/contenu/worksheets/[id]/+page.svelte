@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
@@ -423,11 +424,9 @@
 
 <div class="container mx-auto max-w-5xl py-6">
 	<!-- Header -->
+	<BackLink href="/dashboard/teacher/contenu/worksheets" label="Retour aux fiches" />
 	<div class="mb-6 flex items-start justify-between">
 		<div class="flex items-start gap-4">
-			<Button variant="ghost" size="icon" href="/dashboard/teacher/contenu/worksheets" class="mt-1">
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
 			<div>
 				<div class="flex items-center gap-3">
 					<h1 class="text-3xl font-bold">{worksheet.title || '(Sans titre)'}</h1>

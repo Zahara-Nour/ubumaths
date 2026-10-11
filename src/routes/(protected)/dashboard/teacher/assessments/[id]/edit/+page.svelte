@@ -1,9 +1,8 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import EvaluationConfigForm from '$lib/components/assessments/EvaluationConfigForm.svelte';
@@ -40,7 +39,7 @@
 				toaster.error(outcome.message);
 				return;
 			}
-			toaster.success('Évaluation mise à jour');
+			toaster.success('Contrôle mis à jour');
 			handleBack();
 		} finally {
 			isSubmitting = false;
@@ -49,24 +48,22 @@
 </script>
 
 <svelte:head>
-	<title>Modifier l'évaluation | Chiphre</title>
+	<title>Modifier le contrôle | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux évaluations">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/assessments" label="Retour aux contrôles" />
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Modifier l'évaluation</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Modifier le contrôle</h1>
 			<p class="mt-2 text-muted-foreground">Série « {data.evaluation.series.title} »</p>
 		</div>
 	</div>
 
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Réglages de l'évaluation</Card.Title>
-			<Card.Description>Seules les évaluations en brouillon se modifient</Card.Description>
+			<Card.Title>Réglages du contrôle</Card.Title>
+			<Card.Description>Seuls les contrôles en brouillon se modifient</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<EvaluationConfigForm

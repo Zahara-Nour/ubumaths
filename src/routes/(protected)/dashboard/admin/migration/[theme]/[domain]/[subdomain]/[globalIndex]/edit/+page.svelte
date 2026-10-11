@@ -15,7 +15,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
-	import { ArrowLeft, Home, Loader2, RotateCcw } from '@lucide/svelte';
+	import { Home, Loader2, RotateCcw } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -145,10 +145,6 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-4">
-			<Button variant="outline" onclick={handleCancel} class="gap-2">
-				<ArrowLeft class="h-4 w-4" />
-				Retour
-			</Button>
 			<div>
 				<h1 class="text-3xl font-bold">Modifier Question #{data.globalIndex}</h1>
 				<p class="text-muted-foreground">

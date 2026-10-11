@@ -4,6 +4,7 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import type { PageData } from './$types';
 	import type { CreateRiddleData } from '$lib/types/riddle';
 	import RiddleForm from '$lib/components/riddles/RiddleForm.svelte';
@@ -78,6 +79,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
+	<BackLink href="/dashboard/teacher/contenu/enigmes" label="Retour aux énigmes" />
 	<h1 class="sr-only">Modifier l’énigme n° {data.riddle.riddle_number}</h1>
 	<RiddleForm riddle={data.riddle} onSubmit={handleSubmit} onCancel={handleCancel} {loading} />
 </div>

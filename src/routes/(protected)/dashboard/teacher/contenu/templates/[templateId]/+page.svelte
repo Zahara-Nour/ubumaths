@@ -12,6 +12,7 @@
 	import { goto } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import {
 		Card,
@@ -26,7 +27,6 @@
 	import { Input } from '$lib/components/ui/input';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
-		ArrowLeft,
 		FileText,
 		CheckSquare,
 		BookOpen,
@@ -136,10 +136,7 @@
 <div class="space-y-6">
 	<!-- Header -->
 	<div>
-		<Button variant="ghost" href="/dashboard/teacher/contenu/templates" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux templates
-		</Button>
+		<BackLink href="/dashboard/teacher/contenu/templates" label="Retour aux templates" />
 		<div class="flex items-start justify-between gap-4">
 			<div class="flex-1">
 				<div class="mb-2 flex items-center gap-2">

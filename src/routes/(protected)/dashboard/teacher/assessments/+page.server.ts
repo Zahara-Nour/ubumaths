@@ -28,7 +28,7 @@ export const actions: Actions = {
 	publish: async ({ request, locals }) => {
 		await requireRoles(locals, ['teacher', 'admin']);
 		const id = uuidSchema.safeParse((await request.formData()).get('id'));
-		if (!id.success) return fail(400, { message: 'Évaluation invalide' });
+		if (!id.success) return fail(400, { message: 'Contrôle invalide' });
 
 		try {
 			await setEvaluationStatus(locals.supabase, id.data, 'published');

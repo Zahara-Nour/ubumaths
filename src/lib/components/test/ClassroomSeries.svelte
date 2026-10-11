@@ -23,6 +23,7 @@
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { cn } from '$lib/utils';
 	import {
 		ArrowLeft,
@@ -170,9 +171,8 @@
 							<div
 								class="pointer-events-auto flex items-center gap-2 rounded-lg bg-background/85 p-1.5 pr-3 shadow-sm backdrop-blur"
 							>
-								<Button variant="ghost" size="icon" aria-label="Retour au panier" onclick={onBack}>
-									<ArrowLeft class="h-5 w-5" />
-								</Button>
+								<!-- La forme « En classe » ne s'ouvre que depuis le panier -->
+								<BackLink href="/automaths/panier" label="Quitter" kind="quit" class="mb-0 ml-0" />
 								<span class="text-lg font-semibold" data-testid="classroom-position">
 									Question {deck.getIndices().h + 1} / {items.length}
 								</span>

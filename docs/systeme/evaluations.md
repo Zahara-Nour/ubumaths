@@ -300,8 +300,10 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   contrôle.
 - **En-têtes de code anglais et anciens** : `test.ts`, `TestCourse`, `TestResults`, `test-mode.ts`
   parlent encore de « quiz », « Revision », « assessment ».
-- **Mots affichés en retard sur le glossaire** : les écrans disent encore « évaluation » et « tâche
-  d'évaluation » là où le glossaire dit **contrôle** et **observation** (tranché le 2026-10-11).
+- **Le code garde les anciens noms** : les écrans disent **contrôle** et **observation** depuis le
+  2026-10-11, mais les URL (`/assessments`, `/evaluation-tasks`), les tables et les identifiants
+  (`evaluations`, `EvaluationCard`…) n'ont pas été renommés. Les notifications déjà envoyées et les
+  modèles de messages en base gardent « évaluation ».
 - **Couverture mal rangée** : `grades.ts` (niveaux scolaires) et les signalements de fiches
   (`student/reports`) relèveraient d'autres docs.
 

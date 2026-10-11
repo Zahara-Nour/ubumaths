@@ -198,12 +198,14 @@ describe('ClassroomSeries — projection', () => {
 		expect(activeSlideText(container)).toContain('Énoncé A');
 	});
 
-	it('propose le plein écran et le retour au panier pendant la projection', async () => {
-		const { container, onBack } = await open(threeItems());
+	it('propose le plein écran et « Quitter » (vers le panier) pendant la projection', async () => {
+		const { container } = await open(threeItems());
 
 		expect(button(container, 'Plein écran')).toBeTruthy();
-		click(container, 'Retour au panier');
-		expect(onBack).toHaveBeenCalledTimes(1);
+		const quit = [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
+			(link) => link.textContent?.trim() === 'Quitter'
+		);
+		expect(quit?.getAttribute('href')).toBe('/automaths/panier');
 	});
 });
 
