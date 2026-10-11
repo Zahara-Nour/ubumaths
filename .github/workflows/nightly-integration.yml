@@ -36,6 +36,7 @@ on:
       - 'tests/helpers/**'
       # jeu de référence figé du dictionnaire, lu par la suite
       - 'tests/fixtures/lexique/dictionnaire-reference.ts'
+      - 'tests/fixtures/lexique/mots-lecture-2026-10-11.ts'
       - 'vitest.integration.config.ts'
       - 'vitest.base.config.ts'
       - 'svelte.config.js'
