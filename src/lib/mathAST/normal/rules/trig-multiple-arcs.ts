@@ -51,7 +51,8 @@
 
 import type { AbortChecker } from '../../common/abort';
 import { checkAbort } from '../../common/abort';
-import { add, func, multiply, number, opposite, power, subtract, superscript } from '../../factory';
+import { add, func, multiply, opposite, subtract, superscript } from '../../factory';
+import { polynomialNode } from '../../factor/polynomial-node';
 import {
 	isAddition,
 	isDelimiter,
@@ -207,65 +208,15 @@ const MAX_ARC_TOTAL_TERMS = 2048n;
 const ESTIMATE_SATURATION = MAX_ARC_TOTAL_TERMS + 1n;
 
 // =============================================================================
-// Fonctions — fabrique de nœuds
+// Fonctions — outils
 // =============================================================================
 
-/**
- * Le nœud d'un entier signé. La fabrique refuse les littéraux négatifs :
- * `-3` s'écrit `opposite(number('3'))`.
- */
-function integerNode(value: bigint): MathNode {
-	return value < 0n ? opposite(number((-value).toString())) : number(value.toString());
-}
-
-/**
- * `coefficient · variable^degree`, écrit au plus court.
- */
-function monomialNode(coefficient: bigint, variable: MathNode, degree: number): MathNode {
-	const powerPart =
-		degree === 0 ? null : degree === 1 ? variable : power(variable, number(degree.toString()));
-
-	if (powerPart === null) {
-		return integerNode(coefficient);
-	}
-	if (coefficient === 1n) {
-		return powerPart;
-	}
-	if (coefficient === -1n) {
-		return opposite(powerPart);
-	}
-	const magnitude = multiply(number(absBigInt(coefficient).toString()), powerPart, 'implicit');
-	return coefficient < 0n ? opposite(magnitude) : magnitude;
-}
+// `polynomialNode` (et `monomialNode`, `integerNode`) vit dans `factor/polynomial-node.ts`
+// depuis l'ADR 0024 : le noyau de factorisation écrit ses facteurs avec.
 
 /** Valeur absolue d'un bigint — `Math.abs` ne les accepte pas. */
 function absBigInt(value: bigint): bigint {
 	return value < 0n ? -value : value;
-}
-
-/**
- * Assemble `Σ coefficients[i]·variable^i`, les coefficients nuls omis.
- * Les coefficients négatifs deviennent des soustractions : l'arbre reste lisible
- * et `normalize` n'a pas d'opposés imbriqués à défaire.
- */
-function polynomialNode(coefficients: readonly bigint[], variable: MathNode): MathNode {
-	let result: MathNode | null = null;
-
-	for (let degree = coefficients.length - 1; degree >= 0; degree--) {
-		const coefficient = coefficients[degree];
-		if (coefficient === 0n) continue;
-
-		if (result === null) {
-			result = monomialNode(coefficient, variable, degree);
-		} else if (coefficient < 0n) {
-			result = subtract(result, monomialNode(-coefficient, variable, degree));
-		} else {
-			result = add(result, monomialNode(coefficient, variable, degree));
-		}
-	}
-
-	// Un polynôme de Tchebychev n'est jamais nul, mais la fonction doit rester totale.
-	return result ?? number('0');
 }
 
 // =============================================================================
