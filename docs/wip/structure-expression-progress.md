@@ -29,7 +29,7 @@ Programmes (points en base) : relatifs, opposé, priorités opératoires et ench
 soustractions de relatifs arrivent en **5e** (5-007, 5-012, 5-013, 5-023) ; avant, calculs avec
 parenthèses (CM1-049, CM2-054). D'où la frontière « 6e ou avant ».
 
-## Spécification (à valider avant tout test)
+## Spécification (validée par David le 2026-10-11)
 
 ### A. L'encadré
 
@@ -91,16 +91,20 @@ Texte : « Ajoute des parenthèses pour montrer ce que tu calcules d'abord : (5 
 
 ### D. Accès
 
-Page publique ; rien n'est enregistré ; niveau lu par `readReaderGrade()` (`profiles.grade`).
+Page publique **`/test-structure`** (la démo devient la page, décision de David) ; rien n'est
+enregistré ; niveau lu par `readReaderGrade()` (`profiles.grade`).
 
-## Plan (après validation)
+Points proposés par Claude et acceptés : « x puissance 4 » (B9) ; survol de « sin » = la fonction
+appliquée (A8) ; cadres englobants en pointillés gris (A10).
+
+## Plan
 
 | Lot | Contenu                                                                                       | Agent                   |
 | --- | --------------------------------------------------------------------------------------------- | ----------------------- |
 | 1   | `mathAST` : arbre de structure (aplati, signe à la somme, arguments de fonctions)             | `mathast-expert` (Opus) |
 | 2   | `mathAST` : lecture en français, mots rattachés aux sous-expressions                          | `mathast-expert` (Opus) |
 | 3   | règle « 6e ou avant » et propositions de parenthèses                                          | `mathast-expert` (Opus) |
-| 4   | page publique, encadré, panneau, sens inverse, mots cliquables (`LexiconTerm`)                | `svelte-expert` (Opus)  |
+| 4   | page `/test-structure`, encadré, panneau, sens inverse, mots cliquables (`LexiconTerm`)       | `svelte-expert` (Opus)  |
 | 5   | définitions manquantes du dictionnaire (membre, carré, cube…) : proposées, validées par David | session principale      |
 
 Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
@@ -108,3 +112,5 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
 ## Journal
 
 - 2026-10-11 — démo validée ; Q1-Q15 tranchées ; glossaire à jour (a81a98d56).
+- 2026-10-11 — spécification validée ; page = `/test-structure`. Lot 1 lancé dans le worktree
+  `../ubumaths-wt-structure` (branche `feat/demo-structure-expression`).
