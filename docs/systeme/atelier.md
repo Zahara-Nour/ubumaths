@@ -388,7 +388,10 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
 8. **Plafonds D8** : `MAX_LIST_VALUES` (200) par liste, `MAX_LISTS` (8) listes,
    `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
-10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`).
+10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
+    son arbre, mis au propre par `tidy` (π/3, √2/2 ; un résultat qui porte un décimal ou une variable
+    libre est laissé tel quel — `x/x` ne devient pas 1), unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
+    son texte s'il ne contient que du LaTeX sûr (lot B des grandeurs, 2026-10-11).
     La constante d'Euler y arrive écrite `e` : `toCustom` l'écrit ainsi et tous les
     parseurs la relisent comme Euler (depuis le 2026-10-10 ; `withPlainEuler` et le
     remplacement de `\euler` dans `render.ts` sont retirés). `e` n'est jamais une variable :

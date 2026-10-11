@@ -66,6 +66,7 @@ import {
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
 import { approximateValueLatex } from '../approximation';
+import { tidy } from '../../tidy';
 
 // =============================================================================
 // Constants
@@ -94,7 +95,10 @@ function approximationFields(
 	}
 	// En mode décimal, la ligne montre déjà la valeur décimale : le bouton rend
 	// l'exacte, sauf si c'est un nombre déjà écrit (« ≈ 3 » vaut 3)
-	return canToggle && approximateValueLatex(exact) !== null ? { exactLatex: toLatex(exact) } : {};
+	// … écrite par `tidy`, comme la ligne en mode exact : π/3, pas ⅓ π (revue du lot B)
+	return canToggle && approximateValueLatex(exact) !== null
+		? { exactLatex: toLatex(tidy(exact)) }
+		: {};
 }
 
 /**
