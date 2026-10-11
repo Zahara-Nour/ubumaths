@@ -2,6 +2,7 @@
 couvre:
   - 'src/lib/components/ui/**'
   - 'src/lib/components/{MySelect,MyCheckbox,UserAvatar}.svelte'
+  - 'src/lib/components/navigation/BackLink.svelte'
   - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
   - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
 ---
@@ -100,6 +101,38 @@ Exemples réels : `ScheduleEntryModal.svelte` (single + triggerClass), `Workshee
 ```
 
 Exemples réels : `DisplayOptionsEditor.svelte` (série de checkboxes), `ChecklistSection.svelte` (onCheckedChange sans bind), `PomodoroSettings.svelte` (onchange alias).
+
+---
+
+## BackLink — bouton retour (OBLIGATOIRE)
+
+Règle tranchée par David le 2026-10-11. **Fichier** : `src/lib/components/navigation/BackLink.svelte`.
+
+**Quand le mettre**
+
+- **Pas de bouton retour** sur une page qu'on ouvre depuis la navigation principale (barre latérale, menu mobile) ou depuis un onglet de rubrique (`GroupedRouteLayout` : Contenu, Gamification, Modération) : la navigation joue déjà ce rôle.
+- **Un `BackLink`** sur toute page qu'on ouvre depuis une autre page : détail (`[id]`), création ou modification (`new`, `edit`), résultats, affectation, sous-page (archive, classement…).
+- **Page où l'élève est en pleine activité** (test, révision, fiche en cours, combat) : `kind="quit"`, libellé « Quitter ». Le mot dit qu'on interrompt l'activité ; la destination reste la page parente.
+- **Fil d'Ariane** : seulement pour les arborescences de plus de deux niveaux (migration admin), et **jamais** avec un `BackLink` sur la même page.
+- **Hors règle** : les boutons de fin de parcours (« Retour au panier » sur l'écran de résultats, « Retour au menu » après une partie) sont des actions, pas des boutons retour — ils restent où ils sont. La page d'erreur garde « Page précédente » : elle n'a pas de page parente connue.
+
+**Où** : en haut de la page, **au-dessus du `h1`**, sur sa propre ligne. Le titre reste aligné avec le contenu et rien ne déborde sur mobile.
+
+**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`).
+
+Pourquoi : la destination écrite dans le lien est la même après un lien partagé, dans un nouvel onglet ou après un rechargement, et le libellé peut l'annoncer avant le clic. Revenir là où on était, c'est le rôle du bouton retour du navigateur, que ce lien ne double pas.
+
+**Libellé** : « Retour à… » / « Retour aux… » + la page parente. Jamais « Retour » seul, jamais une flèche seule.
+
+```svelte
+<div>
+	<BackLink href="/dashboard/teacher/series" label="Retour aux séries" />
+	<h1 class="text-3xl font-bold tracking-tight">Modifier la série</h1>
+</div>
+
+<!-- Page en pleine activité -->
+<BackLink href="/automaths/panier" label="Quitter" kind="quit" />
+```
 
 ---
 
