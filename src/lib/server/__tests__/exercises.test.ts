@@ -75,6 +75,7 @@ describe('getExercises', () => {
 				created_by: 'user-123',
 				distribution_mode: 'on_demand',
 				is_public: false,
+				search_indexed: false,
 				variables: {},
 				resources: {},
 				slug: null,
@@ -179,6 +180,7 @@ describe('getExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
+			search_indexed: false,
 			variables: {},
 			resources: {},
 			slug: null,
@@ -248,6 +250,7 @@ describe('createExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
+			search_indexed: false,
 			variables: {},
 			resources: {},
 			slug: null,
@@ -273,6 +276,7 @@ describe('createExercise', () => {
 			distribution_mode: 'on_demand', // Default value
 			variables: undefined, // Empty variables array becomes undefined
 			created_by: 'user-123',
+			search_indexed: false, // « Afficher sur Google » : jamais coché implicitement
 			slug: expect.any(String), // Auto-generated slug
 			shared: undefined, // Passed through (JSONB)
 			variations: newExercise.variations // Passed through (JSONB)
@@ -299,6 +303,7 @@ describe('updateExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
+			search_indexed: false,
 			variables: {},
 			resources: {},
 			slug: null,
@@ -345,6 +350,7 @@ describe('updateExercise', () => {
 			created_by: 'owner-456',
 			distribution_mode: 'on_demand',
 			is_public: false,
+			search_indexed: false,
 			variables: {},
 			resources: {},
 			slug: null,
@@ -385,6 +391,7 @@ describe('deleteExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
+			search_indexed: false,
 			variables: {},
 			resources: {},
 			slug: null,
@@ -435,6 +442,7 @@ describe('deleteExercise', () => {
 			created_by: 'owner-456',
 			distribution_mode: 'on_demand',
 			is_public: false,
+			search_indexed: false,
 			variables: {},
 			resources: {},
 			slug: null,

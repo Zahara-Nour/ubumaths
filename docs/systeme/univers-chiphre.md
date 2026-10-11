@@ -79,7 +79,10 @@ Appelants : `src/routes/(public)/+page.server.ts` (ambiance de l'accueil),
 | `src/routes/(public)/shtam/`              | La une, `[slug]/` (l'article), `ShtamFooter.svelte` (avertissement « gazette parodique »)                                    |
 
 Autres lecteurs : l'accueil (`pickRandomArticle` : un lien vers un article paru) et
-`src/routes/sitemap.xml/+server.ts` (articles parus seulement).
+`src/routes/sitemap.xml/+server.ts` (articles parus seulement). Le même plan liste aussi les
+exercices cochés « Afficher sur Google » (`is_public AND search_indexed`, lus par un client anonyme
+via `src/lib/server/sitemap-exercises.ts`, `lastmod` = `updated_at`) ; une panne de la base le sert
+sans eux, jamais en 500.
 
 ### Lore de l'interface
 
@@ -183,7 +186,7 @@ pour la Patatovie, les seuils de l'Ordre de la Grande Passoire, « Madame la Fin
 | `src/routes/(public)/almanach/__tests__/`         | Chargement serveur, page, convertisseur                                               |
 | `src/lib/server/shtam/__tests__/articles.test.ts` | En-tête, Vrai du faux obligatoire, filtrage brouillon / futur, vrais articles valides |
 | `src/routes/(public)/shtam/__tests__/`            | 404 indiscernable, rendu                                                              |
-| `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur dans le sitemap                                         |
+| `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur ; exercices cochés Google seulement ; panne → sans eux  |
 
 ## Décisions et journaux
 

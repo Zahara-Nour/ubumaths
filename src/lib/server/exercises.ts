@@ -17,6 +17,10 @@ import {
 } from '$lib/exercises/generator/instance-generator';
 import { generateExerciseSlug } from '$lib/exercises/slug-generator';
 import {
+	SearchIndexedRequiresPublicError,
+	consistentSearchIndexed
+} from '$lib/server/exercise-search-indexed';
+import {
 	fetchResourceIdsByAnyTag,
 	fetchResourceTagNames,
 	fetchTagNamesForResources,
@@ -274,6 +278,12 @@ export async function createExercise(
 		};
 	}
 
+	// « Afficher sur Google » exige un exercice public (CHECK 23514 en base) :
+	// refusé ici avec un message lisible plutôt qu'à l'écriture.
+	if (exercise.search_indexed === true && exercise.is_public !== true) {
+		return { data: null, error: new SearchIndexedRequiresPublicError() };
+	}
+
 	// Validate legacy variables (if provided) - backward compatibility
 	// Note: The legacy 'variables' field is separate from variations.variables
 	const variablesValidation = validateVariables(exercise.variables);
@@ -310,6 +320,8 @@ export async function createExercise(
 				: undefined,
 		distribution_mode: distributionMode,
 		created_by: userId,
+		// Jamais coché implicitement : seule une demande explicite sur un exercice public.
+		search_indexed: consistentSearchIndexed(exercise.is_public, exercise.search_indexed),
 		variations: (exercise as { variations?: unknown })
 			.variations as Database['public']['Tables']['exercises']['Row']['variations'],
 		shared: (exercise as { shared?: unknown })
@@ -363,6 +375,18 @@ export async function updateExercise(
 
 	if (existing.created_by !== userId) {
 		return { data: null, error: new Error('Unauthorized') };
+	}
+
+	// « Afficher sur Google » exige un exercice public (CHECK 23514 en base).
+	// Visibilité finale = celle demandée, sinon celle déjà enregistrée.
+	const willBePublic = updates.is_public ?? existing.is_public;
+	if (!willBePublic) {
+		if (updates.search_indexed === true) {
+			return { data: null, error: new SearchIndexedRequiresPublicError() };
+		}
+		// Dépublier décoche Google dans la MÊME écriture, sinon la base refuse
+		// la mise à jour dès que la case était cochée.
+		updates = { ...updates, search_indexed: false };
 	}
 
 	// Validate distribution_mode if provided

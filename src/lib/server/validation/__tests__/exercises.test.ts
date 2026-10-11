@@ -766,6 +766,7 @@ describe('exercise validation schemas', () => {
 				title: 'Linear Equation',
 				variables: { x: 2 },
 				is_public: true,
+				search_indexed: false,
 				created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 				created_at: '2025-01-01T00:00:00.000Z',
 				updated_at: '2025-01-02T00:00:00.000Z'
@@ -782,6 +783,7 @@ describe('exercise validation schemas', () => {
 				solution_md: 'Solution',
 				category: 'application',
 				is_public: false,
+				search_indexed: false,
 				created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 				created_at: '2025-01-01T00:00:00.000Z',
 				updated_at: '2025-01-02T00:00:00.000Z'
@@ -802,6 +804,7 @@ describe('exercise validation schemas', () => {
 						solution_md: 'Solution',
 						category: 'automatisme',
 						is_public: true,
+						search_indexed: false,
 						created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 						created_at: '2025-01-01T00:00:00Z',
 						updated_at: '2025-01-02T00:00:00Z'

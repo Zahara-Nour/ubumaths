@@ -96,6 +96,13 @@ export validé par Zod (`validation.ts`, `markdown-frontmatter.ts`), la traducti
 (`translation-status.ts`, `translation-draft.ts`), les images (`services/`) et l'avertissement
 `bare-greek-warnings.ts` (`~2pi~` lu 2 × p × i). Démarche d'écriture : [fiches-exercices](../pratiques/fiches-exercices.md).
 
+Visibilité (`Exercise.is_public`, `Exercise.search_indexed`) : un exercice public est lisible par
+son lien (`/exercice/[slug]`) ; il n'est proposé à Google (sitemap, pas de `noindex`) que si le
+professeur coche « Afficher sur Google » (`ExerciseVisibilityFields.svelte`, fenêtre d'alerte avant
+de cocher). La case exige « public » : contrainte en base (23514), refine Zod, et toute écriture qui
+rend un exercice privé écrit `search_indexed: false` dans la même requête
+(`src/lib/server/exercise-search-indexed.ts` ; formulaire, restauration, import).
+
 ### `src/lib/validation/` — schémas partagés client / serveur
 
 Seul `series.ts` concerne les questions : composition d'une série (`cartItemSchema`,

@@ -11,7 +11,8 @@
  * public est déjà lisible par qui a son lien ; la colonne suit les droits de la
  * ligne. Seul l'auteur (prof) peut la modifier, par la policy d'UPDATE
  * existante — vérifié ici avec de vrais clients authentifiés : un admin, un
- * élève et un visiteur non connecté n'y touchent pas.
+ * élève et un visiteur non connecté n'y touchent pas. (Un second prof : le
+ * modèle mono-professeur interdit d'en créer un, la base le refuse.)
  *
  * La RLS échoue en SILENCE : une UPDATE refusée rend zéro ligne, sans erreur.
  * D'où `.select()` sur chaque écriture, et la relecture par le service.
@@ -29,31 +30,9 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '$lib/types/database';
+import { fetchIndexedExercises } from '$lib/server/sitemap-exercises';
 
-// ---------------------------------------------------------------------------
-// Typage local : `search_indexed` n'existe pas encore dans `database.ts`
-// (généré depuis la prod, après `db:migrate`). On étend la table `exercises`
-// ici, sans cast. Une fois `db:types` passé, l'intersection reste valide.
-// ---------------------------------------------------------------------------
-type PublicSchema = Database['public'];
-type ExercisesTable = PublicSchema['Tables']['exercises'];
-
-type ExercisesWithSearchIndexed = {
-	Row: ExercisesTable['Row'] & { search_indexed: boolean };
-	Insert: ExercisesTable['Insert'] & { search_indexed?: boolean };
-	Update: ExercisesTable['Update'] & { search_indexed?: boolean };
-	Relationships: ExercisesTable['Relationships'];
-};
-
-type LocalDatabase = Omit<Database, 'public'> & {
-	public: Omit<PublicSchema, 'Tables'> & {
-		Tables: Omit<PublicSchema['Tables'], 'exercises'> & {
-			exercises: ExercisesWithSearchIndexed;
-		};
-	};
-};
-
-type LocalClient = SupabaseClient<LocalDatabase>;
+type LocalClient = SupabaseClient<Database>;
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -64,7 +43,7 @@ const CHECK_VIOLATION = '23514';
 const clientOptions = { auth: { persistSession: false, autoRefreshToken: false } };
 
 /** Service : décor et relecture seulement, jamais pour une assertion d'accès. */
-const service: LocalClient = createClient<LocalDatabase>(
+const service: LocalClient = createClient<Database>(
 	SUPABASE_URL,
 	TEST_SERVICE_ROLE_KEY,
 	clientOptions
@@ -72,7 +51,7 @@ const service: LocalClient = createClient<LocalDatabase>(
 
 /** Visiteur non connecté. */
 function anonClient(): LocalClient {
-	return createClient<LocalDatabase>(SUPABASE_URL, ANON_KEY, clientOptions);
+	return createClient<Database>(SUPABASE_URL, ANON_KEY, clientOptions);
 }
 
 async function clientFor(email: string): Promise<LocalClient> {
@@ -239,5 +218,32 @@ describe('exercises.search_indexed — « Afficher sur Google »', () => {
 				expect(await stored(id)).toEqual({ is_public: true, search_indexed: true });
 			});
 		}
+	});
+
+	it('le plan du site (lecture anonyme) liste les exercices cochés, et eux seuls', async () => {
+		const indexed = await teacherExercise(true);
+		const { data: written, error } = await teacher
+			.from('exercises')
+			.update({ search_indexed: true })
+			.eq('id', indexed)
+			.select('id');
+		expect(error).toBeNull();
+		expect(written).toHaveLength(1);
+		const publicOnly = await teacherExercise(true);
+		const privateOne = await teacherExercise(false);
+
+		const { data: slugs } = await service
+			.from('exercises')
+			.select('id, slug')
+			.in('id', [indexed, publicOnly, privateOne]);
+		const pathOf = (id: string) => {
+			const row = slugs?.find((r) => r.id === id);
+			return `/exercice/${encodeURIComponent(row?.slug ?? id)}`;
+		};
+
+		const paths = (await fetchIndexedExercises(anonClient())).map((e) => e.path);
+		expect(paths).toContain(pathOf(indexed));
+		expect(paths).not.toContain(pathOf(publicOnly));
+		expect(paths).not.toContain(pathOf(privateOne));
 	});
 });

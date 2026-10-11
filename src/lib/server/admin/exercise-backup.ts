@@ -27,6 +27,7 @@ import {
 	validateRestoreOptions
 } from '$lib/server/validation/backup';
 import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
+import { consistentSearchIndexed } from '$lib/server/exercise-search-indexed';
 
 /**
  * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
@@ -249,6 +250,7 @@ export async function exportBackupJSON(
 			grades: ex.grades,
 			topic: ex.topic,
 			is_public: ex.is_public,
+			search_indexed: ex.search_indexed,
 			distribution_mode: ex.distribution_mode,
 			variables: ex.variables,
 			variations: ex.variations,
@@ -380,7 +382,7 @@ export async function exportBackupSQL(
 			// tag-normalization migration); they are emitted as exercise_tags junction rows below.
 			lines.push(`INSERT INTO exercises (
   id, slug, title, source, category,
-  grades, topic, is_public, distribution_mode, variables, variations,
+  grades, topic, is_public, search_indexed, distribution_mode, variables, variations,
   shared, resources, generic_functions, created_at, updated_at, created_by
 ) VALUES (
   ${escapeSQL(ex.id)},
@@ -391,6 +393,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
+  ${consistentSearchIndexed(ex.is_public, ex.search_indexed)},
   ${escapeSQL(ex.distribution_mode)},
   ${escapeSQL(ex.variables)},
   ${escapeSQL(ex.variations)},
@@ -408,6 +411,7 @@ export async function exportBackupSQL(
   grades = EXCLUDED.grades,
   topic = EXCLUDED.topic,
   is_public = EXCLUDED.is_public,
+  search_indexed = EXCLUDED.search_indexed,
   distribution_mode = EXCLUDED.distribution_mode,
   variables = EXCLUDED.variables,
   variations = EXCLUDED.variations,
@@ -710,6 +714,9 @@ async function restoreExercises(
 						grades: record.grades,
 						topic: record.topic,
 						is_public: record.is_public,
+						// Même écriture que is_public : la base refuse « privé + Google »,
+						// et une sauvegarde ne coche jamais Google implicitement.
+						search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 						distribution_mode: record.distribution_mode,
 						variables: record.variables as Json,
 						variations: record.variations as Json | null,
@@ -740,6 +747,7 @@ async function restoreExercises(
 					grades: record.grades,
 					topic: record.topic,
 					is_public: record.is_public,
+					search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 					distribution_mode: record.distribution_mode,
 					variables: record.variables as Json,
 					variations: record.variations as Json | null,
