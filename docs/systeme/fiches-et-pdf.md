@@ -99,7 +99,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 - Professeur : `src/routes/(protected)/dashboard/teacher/contenu/worksheets/` — liste, `new/`,
   `[id]/` (édition + `PdfPreview`), `templates/` (gabarits perso), `[id]/assignments/[assignmentId]/`
   (`preview/` vue élève, `progress/`, `reports/` signalements).
-- Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`).
+- Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`). La liste
+  s'ouvre depuis « Mon travail » (« Toutes mes fiches ») et y revient par « Retour à Mon travail ».
 - Public sans compte : `src/routes/(public)/cahier/[token]/fiche/[id]/` — une fiche **citée** dans
   une séance visible du cahier partagé (`resolveWorksheetByShareToken`, `security definer`) ; même
   404 pour tout refus.
