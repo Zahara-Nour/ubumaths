@@ -136,6 +136,12 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (`riddle_school_leaderboard`)                                                    | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
 
+Les scores qui nourrissent ces classements s'écrivent **par le serveur** : `upsert_2048_score`
+(lot 3, Q141) et `upsert_mathemo_score` (client service depuis `20261016100400` ; garde : client
+service ou l'élève lui-même, EXECUTE retiré à `authenticated` après le deploy — la fonction
+ajoute `p_score` au total sans borne, seule la route le calcule et le borne). Le score reste
+déclaré par le navigateur, puisque le jeu tourne côté client.
+
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
 
 ## Invariants

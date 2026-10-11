@@ -148,7 +148,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'upsert_mathemo_score(p_user_id uuid, p_word_length integer, p_won boolean, p_found_first_try boolean, p_score numeric)':
 		{
 			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_user_id'
+			justification:
+				'refuse sauf client service ou auth.uid() = p_user_id (20261016100400) ; EXECUTE retiré à authenticated après le deploy'
 		},
 	'upsert_user_presence(p_user_id uuid, p_status text)': {
 		categorie: 'compte-appelant',
