@@ -92,6 +92,11 @@ Onglet : « Page introuvable | Chiphre », `noindex`. SvelteKit renvoie le bon c
 - **« Page précédente »** n'apparaît qu'après une navigation interne (`afterNavigate`, `from`) ou
   une arrivée depuis une page du site (`document.referrer`) : `history.length` compte aussi
   l'onglet neuf, et le bouton aurait fait quitter le site.
+- **Exception à la règle `BackLink`** (CLAUDE.md, règle 7 ; [composants-ui.md](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)),
+  confirmée par David le 2026-10-11 : « Page précédente » reste un `history.back()`. L'adresse
+  demandée n'existe pas ou n'est pas ouverte : on n'en peut pas lire une page parente fiable, et
+  l'endroit utile est bien celui d'où l'élève vient (le lien cassé). Les pages parentes passent
+  déjà par « Tu cherchais peut-être… ».
 
 ## La spirale
 
