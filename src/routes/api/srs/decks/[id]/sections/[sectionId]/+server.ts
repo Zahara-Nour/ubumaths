@@ -36,14 +36,14 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
 	}
 	if (!deck) {
-		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+		return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 	}
 
 	let bodyRaw: unknown;
 	try {
 		bodyRaw = await request.json();
 	} catch {
-		return json({ error: 'Invalid JSON body' }, { status: 400 });
+		return json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 
 	const validation = updateSectionSchema.safeParse(bodyRaw);
@@ -58,7 +58,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		updates.display_order = validation.data.display_order;
 
 	if (Object.keys(updates).length === 0) {
-		return json({ error: 'No fields to update' }, { status: 400 });
+		return json({ error: 'Aucun champ à modifier' }, { status: 400 });
 	}
 
 	const { data, error: updateErr } = await locals.supabase
@@ -81,7 +81,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (!data) {
-		return json({ error: 'Section not found' }, { status: 404 });
+		return json({ error: 'Section introuvable' }, { status: 404 });
 	}
 
 	return json({ section: data });
@@ -111,7 +111,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
 	}
 	if (!deck) {
-		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+		return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 	}
 
 	const { data: deletedSections, error: deleteErr } = await locals.supabase

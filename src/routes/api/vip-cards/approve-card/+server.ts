@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
 
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can approve VIP card activation requests');
+		throw error(403, 'Seul le professeur peut valider une demande d’activation de carte VIP');
 	}
 
 	const body = await request.json();
@@ -35,12 +35,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { instanceId, studentId } = validation.data;
 
 	if (!studentId) {
-		throw error(400, 'studentId is required for teachers');
+		throw error(400, 'Identifiant d’élève requis');
 	}
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'You can only approve cards for students in your classes');
+		throw error(403, 'Tu ne peux valider que les cartes VIP des élèves de tes classes');
 	}
 
 	const { data: result, error: rpcError } = await supabase.rpc('approve_vip_card', {
@@ -50,18 +50,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[approve-card] RPC error:', rpcError);
-		throw error(500, 'Failed to approve card');
+		throw error(500, 'Impossible de valider la carte VIP');
 	}
 
 	const rpcResult = result as { success: boolean; error?: string; cardName?: string };
 
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to approve card');
+		throw error(400, rpcResult.error || 'Impossible de valider la carte VIP');
 	}
 
 	return json({
 		success: true,
-		message: 'Card activation approved. Student can now activate the card.',
+		message: 'Activation validée : l’élève peut maintenant activer sa carte VIP.',
 		cardName: rpcResult.cardName
 	});
 };
