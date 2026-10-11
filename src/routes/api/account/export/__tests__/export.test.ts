@@ -175,7 +175,11 @@ function setupMockSupabase() {
 			const terminalResult = createThenable(data);
 
 			// Methods that can be terminal
-			const limitFn = vi.fn().mockReturnValue(terminalResult);
+			// limit() peut être suivi d'un second limit() (table imbriquée, referencedTable)
+			const limitFn = vi.fn().mockReturnValue({
+				...terminalResult,
+				limit: vi.fn().mockReturnValue(terminalResult)
+			});
 			const singleFn = vi.fn().mockReturnValue(terminalResult);
 			const maybeSingleFn = vi.fn().mockReturnValue(terminalResult);
 			const orFn = vi.fn().mockReturnValue(terminalResult);
@@ -342,6 +346,13 @@ describe('GET /api/account/export', () => {
 				(c: unknown[]) => c[0] === 'tutor_conversations'
 			);
 			expect(appel).toBeGreaterThanOrEqual(0);
+			// Seulement les conversations de l'appelant : jamais celles des élèves d'un prof.
+			const chaine = mockSupabase.from.mock.results[appel].value;
+			const eq = chaine.select.mock.results[0].value.eq;
+			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
+			// Les inférences sur l'élève font partie de l'accès (art. 15).
+			expect(chaine.select.mock.calls[0][0]).toContain('cheat_detected');
+			expect(chaine.select.mock.calls[0][0]).toContain('effort_score');
 		});
 
 		test('le profil exporte le consentement parental et la déclaration d’âge', async () => {

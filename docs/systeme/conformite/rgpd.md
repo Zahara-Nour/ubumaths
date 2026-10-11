@@ -295,7 +295,7 @@ CRON_SECRET                   # Secret taches planifiees
 - ~~`private_messages` : Soft delete uniquement~~ **3 ans (HARD delete)**
 - `user_presence` : **30 jours**
 - `friendships` (rejected) : **2 ans**
-- `error_logs` : **90 jours** (resolved)
+- `error_logs` : **30 jours** (tous ; réel `run_cleanup_expired_data`, corrigé le 2026-10-11)
 
 > **Amelioration 2026-01-15** : Implementation de la politique de retention via pg_cron. Job hebdomadaire `rgpd-retention-cleanup` (dimanche 03:00 UTC) nettoie automatiquement les donnees expirees. Audit complet dans `background_job_runs` avec compteurs par table pour preuve de conformite. Messages en HARD delete (pas soft delete) conformement a l'Art. 17.
 
@@ -524,7 +524,7 @@ BEGIN
         )
     ));
 
-    -- 1. Error logs (90 jours, resolved seulement)
+    -- 1. Error logs (historique : 90 jours ; réel aujourd'hui : 30 jours, tous)
     -- 2. User presence (30 jours)
     -- 3. Friendships rejected (2 ans)
     -- 4. Messages chat (3 ans) - HARD delete
@@ -851,7 +851,7 @@ docs/legal/
 - Profils : duree de la scolarite + 5 ans
 - Donnees pedagogiques : 5 ans apres fin d'annee
 - Messages : 3 ans
-- Logs techniques : 90 jours
+- Logs techniques : 30 jours (`audit_logs` : 60 jours)
 
 ## 8. Droits des utilisateurs
 

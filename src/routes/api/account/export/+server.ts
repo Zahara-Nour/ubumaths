@@ -178,11 +178,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('tutor_conversations')
 				.select(
-					'id, exercise_topic, exercise_statement, started_at, ended_at, message_count, created_at, tutor_messages(role, content, created_at)'
+					// Inférences sur l'élève comprises (niveau d'aide, triche détectée, effort) : le
+					// droit d'accès (art. 15) les couvre.
+					'id, exercise_topic, exercise_statement, exercise_correction, started_at, ended_at, message_count, max_help_level_reached, effort_score, topics_covered, created_at, tutor_messages(role, content, help_method_used, help_level, cheat_detected, created_at)'
 				)
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
 				.limit(1000)
+				.limit(5000, { referencedTable: 'tutor_messages' })
 		]);
 
 		// Un export RGPD qui annonce « aucune session » sur une panne de lecture

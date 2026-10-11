@@ -227,15 +227,15 @@
 							<td>Groq</td>
 							<td>
 								Tuteur IA : messages et images saisis par l'eleve, sans nom ni e-mail ajoute par
-								Chiphre ; aucune conservation
+								Chiphre
 							</td>
 							<td>USA</td>
 						</tr>
 						<tr>
 							<td>Hugging Face</td>
 							<td>
-								Recherche dans les cours pour le tuteur (quand elle est activee) : la question de
-								l'eleve est convertie en vecteur
+								Recherche dans les cours pour le tuteur (quand elle est activee) : le texte de la
+								question de l'eleve lui est envoye pour etre converti en vecteur
 							</td>
 							<td>USA</td>
 						</tr>
