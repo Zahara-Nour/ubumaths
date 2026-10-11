@@ -16,6 +16,10 @@ import {
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireRole } from '$lib/server/middleware/auth';
+import {
+	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
+	isSearchIndexedViolation
+} from '$lib/server/exercise-search-indexed';
 
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -103,6 +107,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const validation = validateCreateExercise(body);
 
 	if (!validation.success) {
+		// « Privé + Google » : le message français seul, lisible tel quel par le professeur
+		if (validation.error.issues.some((i) => i.message === SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE)) {
+			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
+		}
 		const errorMsg = validation.error.issues
 			.map(
 				(e: unknown) =>
@@ -118,6 +126,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const result = await createExercise(locals.supabase, data, user.id);
 
 	if (result.error) {
+		// « Privé + Google » : refus métier ou contrainte de la base (23514)
+		if (isSearchIndexedViolation(result.error)) {
+			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
+		}
 		console.error('Failed to create exercise:', result.error);
 		throw error(500, 'Failed to create exercise');
 	}

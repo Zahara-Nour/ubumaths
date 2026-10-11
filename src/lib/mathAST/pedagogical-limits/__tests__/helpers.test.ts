@@ -4,7 +4,6 @@
  * Coverage:
  * - `evaluateAtPoint` returns correct numeric values for polynomial,
  *   rational, transcendental, and unsupported nodes.
- * - `isRootAt` detects polynomial roots within tolerance.
  * - `asPolynomial` extracts coefficients for canonical polynomials and
  *   refuses non-polynomial input.
  * - `divideByCommonRoot` divise N et D par (x − a), exactement (noyau
@@ -38,7 +37,6 @@ import {
 	formatLinearFactor,
 	getSqrtArg,
 	isAtInfinity,
-	isRootAt,
 	isSqrt,
 	normalizeDirection,
 	polyToNode
@@ -95,28 +93,6 @@ describe('helpers — evaluateAtPoint', () => {
 		expect(
 			evaluateAtPoint({ type: 'function', name: 'sqrt', args: [opposite(number('1'))] }, 'x', 0)
 		).toBeNull();
-	});
-});
-
-describe('helpers — isRootAt', () => {
-	it('detects x² − 4 has a root at x = 2', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(isRootAt(expr, 'x', 2)).toBe(true);
-	});
-
-	it('detects x² − 4 has a root at x = −2', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(isRootAt(expr, 'x', -2)).toBe(true);
-	});
-
-	it('detects x² − 4 is NOT zero at x = 1', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(isRootAt(expr, 'x', 1)).toBe(false);
-	});
-
-	it('detects x − 2 is zero at x = 2', () => {
-		const expr = subtract(variable('x'), number('2'));
-		expect(isRootAt(expr, 'x', 2)).toBe(true);
 	});
 });
 

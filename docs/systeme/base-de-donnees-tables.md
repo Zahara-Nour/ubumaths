@@ -254,7 +254,7 @@ Liens : `created_by` → `profiles`
 
 ### `exercises`
 
-`category` · `created_at` · `created_by` · `distribution_mode` · `generic_functions?` · `grades?` · `id` · `is_public` · `resources?` · `shared?` · `slug?` · `source?` · `source_type_id?` · `title?` · `topic?` · `updated_at` · `variables` · `variations?`
+`category` · `created_at` · `created_by` · `distribution_mode` · `generic_functions?` · `grades?` · `id` · `is_public` · `resources?` · `search_indexed` · `shared?` · `slug?` · `source?` · `source_type_id?` · `title?` · `topic?` · `updated_at` · `variables` · `variations?`
 
 Liens : `created_by` → `profiles` · `source_type_id` → `source_types`
 

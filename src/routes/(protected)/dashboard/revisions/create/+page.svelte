@@ -19,19 +19,16 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Save, Plus, Trash2, BookOpen } from '@lucide/svelte';
-	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 
 	// State
 	let deckName = $state('');
 	let deckDescription = $state('');
-	let retentionProfile = $state<keyof typeof RETENTION_PROFILES>('balanced');
 
 	let isSaving = $state(false);
 	let showCustomCardEditor = $state(false);
@@ -63,10 +60,7 @@
 			const deckRequest: CreateDeckRequest = {
 				name: deckName.trim(),
 				description: deckDescription.trim() || undefined,
-				deckType: 'personal',
-				config: {
-					desiredRetention: RETENTION_PROFILES[retentionProfile]
-				}
+				deckType: 'personal'
 			};
 
 			const deckResponse = await fetch('/api/srs/decks', {
@@ -162,9 +156,9 @@
 	</div>
 
 	<!-- Deck Configuration -->
-	<div class="mb-6 grid gap-6 lg:grid-cols-3">
+	<div class="mb-6">
 		<!-- Main Form -->
-		<div class="lg:col-span-2">
+		<div>
 			<Card.Root>
 				<Card.Header>
 					<Card.Title>Informations du deck</Card.Title>
@@ -189,35 +183,6 @@
 							placeholder="Décrivez le contenu du deck..."
 							rows={3}
 						/>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-
-		<!-- Settings -->
-		<div>
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>{lore.nav.settings}</Card.Title>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<div class="space-y-2">
-						<Label for="retention-profile">Intensité de révision</Label>
-						<MySelect
-							type="single"
-							bind:value={retentionProfile}
-							items={[
-								{ value: 'relaxed', label: 'Détendu (80%)' },
-								{ value: 'balanced', label: 'Équilibré (90%)' },
-								{ value: 'high', label: 'Élevé (95%)' },
-								{ value: 'expert', label: 'Expert (97%)' }
-							]}
-							placeholder="Sélectionnez"
-							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-						/>
-						<p class="text-xs text-muted-foreground">
-							Plus le taux est élevé, plus vous aurez de révisions
-						</p>
 					</div>
 				</Card.Content>
 			</Card.Root>

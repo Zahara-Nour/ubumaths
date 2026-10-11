@@ -86,12 +86,12 @@ ON CONFLICT (id) DO UPDATE SET
   template_content = EXCLUDED.template_content,
   placeholders = EXCLUDED.placeholders;
 
--- Evaluation — Mise en page formelle pour evaluation avec section notation
+-- Contrôle — Mise en page formelle pour contrôle avec section notation
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
 VALUES (
   '00000000-0000-4000-8000-000000000002',
-  'Evaluation',
-  'Mise en page formelle pour evaluation avec section notation',
+  'Contrôle',
+  'Mise en page formelle pour contrôle avec section notation',
   '// Configuration de la page
 #set page(
   paper: "a4",

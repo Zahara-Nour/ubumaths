@@ -129,10 +129,16 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 /**
  * Routes dynamiques couvertes par le plan : leurs URL viennent d'une source,
  * pas de cette liste. Un brouillon ou un article à paraître n'y entre jamais
- * (filtre `publishedArticles` dans `routes/sitemap.xml/+server.ts`).
+ * (filtre `publishedArticles` dans `routes/sitemap.xml/+server.ts`), ni un
+ * exercice que son auteur n'a pas coché « Afficher sur Google ».
  */
 export const SITEMAP_DYNAMIC_ROUTES: SitemapDynamicRoute[] = [
-	{ route: '/shtam/[slug]', source: 'articles du Shtam parus (publishedArticles)' }
+	{ route: '/shtam/[slug]', source: 'articles du Shtam parus (publishedArticles)' },
+	{
+		route: '/exercice/[slug]',
+		source:
+			'exercices publics cochés « Afficher sur Google », lus en anonyme (fetchIndexedExercises)'
+	}
 ];
 
 const DEMO = 'démonstration ou mise au point, sans intérêt pour un visiteur';
@@ -191,10 +197,6 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	{
 		pattern: '/python-exercises/[id]',
 		reason: 'route dynamique : aucune source ne liste les corvées publiques'
-	},
-	{
-		pattern: '/exercice/[slug]',
-		reason: 'route dynamique : liste des exercices publics à brancher (accès anonyme à vérifier)'
 	}
 ];
 

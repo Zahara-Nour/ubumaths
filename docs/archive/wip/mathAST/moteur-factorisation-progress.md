@@ -484,7 +484,7 @@ La mise en facteur **par motifs** (A1, A3) ne dépend d'aucune variable ; les li
 
 ## 4. Décisions (ADR 0024)
 
-David a tranché le 2026-10-11 : [ADR 0024](../adr/0024-moteur-commun-de-factorisation.md),
+David a tranché le 2026-10-11 : [ADR 0024](../../../adr/0024-moteur-commun-de-factorisation.md),
 acceptée, amende l'ADR 0007 pour l'intention `factoriser`.
 
 - Un module `mathAST/factor/` en deux couches : un **noyau exact sur ℚ** sans étapes (contenu,
@@ -681,3 +681,127 @@ division · 6 développer pour refactoriser (dernier recours). Le noyau trouve, 
 - La substitution directe pédagogique calcule en flottants : « La limite vaut 1.5 », `-0.25`.
 - `pedagogical-integration/descriptions-fr.ts` (`decompose-rational`) annonce
   `Q(x) = (x − r₁)(x − r₂)` sans le coefficient dominant (faux pour `4x² − 1`).
+
+## 8. Lot 3b — le ménage (2026-10-11)
+
+> Worktree `ubumaths-wt-factorisation`, branche `refactor/factorisation-menage` (base `04c2a6c49`).
+> Interdits respectés : rien de `normal/` ni de `solve/` n'est modifié.
+
+- [x] **Preuve d'absence d'appelant, AVANT suppression** (`src/`, `scripts/`, `tests/`, `.ts`,
+      `.svelte`, `.js`, `.json`, chaînes comprises) :
+  - `grep -rnE "from ['\"][^'\"]*/transform(/[^'\"]*)?['\"]"` hors `transform/` : **0** ; chacun
+    des 26 noms exportés par `transform/` (`factorAlgebraic`, `applyTrigIdentities`,
+    `TRANSFORM_*`…) en `grep -w` hors du dossier : 0, sauf `factorize` (`ciphers/rsa.ts`, autre
+    fonction) et `linearize` (chaîne `'linearize-trig'`, autre chose) ;
+  - `trigFactorizationRules`, `hypFactorizationRules`, `allTrigRules`, `allHyperbolicRules` :
+    lus seulement par leur fichier, le baril `rule-sets/index.ts` et `transform/` ; le baril
+    `rule-sets` n'est importé que pour d'autres noms (`intent-rules.ts`, `pattern/index.ts`,
+    `pattern/__tests__/integration.test.ts`) ; les noms de règles `sin-plus-sin`… ne paraissent
+    que dans `RULE_CATEGORY_MAP` (`intent-rules.ts`), retirés avec elles ;
+  - `isQuadraticForm`, `isFactoredForm`, `hasCommonFactor`, `detectStructure` : leur fichier,
+    `analysis/index.ts`, `mathAST/index.ts`, `analysis/__tests__/structures.test.ts` et deux
+    commentaires (`common-factor.ts`, `facteur-commun.test.ts`) ; aucun import de `$lib/mathAST` ;
+  - `analysis/polynomial-analysis.ts` (`analyzePolynomial`, `getPolynomialCoefficients`,
+    `isMonomial`, `isBinomial`, `isTrinomial`, `getTermCount`, types) : seul lecteur
+    `isQuadraticForm`, puis les barils et son test → mort une fois celui-ci retiré ;
+  - `sign/helpers/interval-sign.ts` `analyzePolynomial` : ré-exporté par `sign/helpers/index.ts`
+    et `sign/index.ts`, importé par personne (`mathAST/index.ts` ré-exporte celui d'`analysis/`) ;
+  - `isRootAt` : sa définition et `pedagogical-limits/__tests__/helpers.test.ts`.
+  - Après : le même grep des 22 noms supprimés rend **1** ligne, le commentaire d'en-tête de
+    `structures.ts` qui dit qu'ils ont été retirés.
+- [x] **Supprimé** : `transform/` (7 fichiers, 2 901 lignes dont 1 967 de tests) ;
+      `analysis/polynomial-analysis.ts` + son test (712) ; dans `structures.ts` les quatre
+      détecteurs, `gcd`, `extractLeadingCoefficient`, `divideByCoefficient`, trois types (et les
+      littéraux `{ type: 'number' }` fabriqués à la main de `hasCommonFactor`) ; les règles
+      somme → produit et les deux agrégats (−170 lignes) ; `analyzePolynomial` de `sign/` ;
+      `isRootAt` et ses 4 tests. Diff de `src/` : **+32 / −4 487** (27 fichiers), docs à part.
+- [x] **Doublons** :
+  - **Δ sur ℚ** : fusionné — `discriminant(a, b, c)` exporté par `factor/quadratic.ts`, lu par
+    `quadraticRootParts` et `analyzeTrinomial` (stratégies), qui le recalculait en `bigint`.
+  - **PGCD de monômes** : 3 → 2 (`hasCommonFactor` supprimé). Gardés : le contenu de
+    `common-factor.ts` (écriture non développée, facteurs non polynomiaux, PGCD entier
+    seulement, ordre d'écriture conservé) et `gcdMonomials` de `normal/` (forme normale, chemin
+    du décideur, interdit). Les fusionner changerait l'ordre des facteurs rendus
+    (`sortSymbolicFactors`).
+  - **Carré parfait** : 3 gardés — `isPerfectSquareTrinomial` (symbolique, plusieurs lettres,
+    `simplify` / `auto`), `polynomialIdentity` (coefficients entiers, lot 2),
+    `tryFactorPerfectSquareTrinomial` (`normal/`, décideur, interdit).
+  - **Divisions** : 4 → 3 (`syntheticDivide`, lot 3a). Gardés : `deflate` / `divideOutRoot`
+    (noyau), `divideUnivariate` et `exactDividePolynomials` (`normal/`, interdits).
+    `partial-fractions.ts` `polynomialDivision` n'est pas une division de plus : il appelle
+    `divideUnivariate`.
+  - **Extracteurs** : 6 → 4 (`quadraticCoefs` au lot 3a ; `analyzePolynomial` d'`analysis/`,
+    mort, supprimé). Gardés : le noyau ; `asPolynomial` (`pedagogical-limits`, flottants, degré
+    non borné, `x^{-1}` refusé, toute parenthèse transparente : `toPolynomial` changerait le
+    domaine lu, donc pas « strictement identique ») ; `toUnivariateView` (`normal/`) ;
+    `extract*Coefficients` (`solve/`, interdits).
+  - **Δ ailleurs**, gardés : `MathNode` affiché (`pedagogical-solve/quadratic.ts`
+    `computeDiscriminantValue`, `solve/solvers/quadratic.ts`), flottants sur coefficients
+    décimaux (`domain/preimage.ts` ×2, `solve/solvers/polynomial.ts`, `quartic.ts` ×2), et la
+    CLI (`cli/commands/solve.command.ts:757`, chaîne reparsée).
+- [x] **Panel de non-régression** (méthode du § 7) : enregistrement par `vi.mock` temporaire
+      dans `vitest-setup-server.ts` (restauré d'une copie) des appels à `simplify`,
+      `generatePedagogicalSimplifySteps`, `categorizeRule`, `analyzeSign` (`sign/`),
+      `generatePedagogicalLimitSteps`, `factorPolynomial`, `quadraticRootParts`, `computeDomain`,
+      `integrate`, `generatePedagogicalIntegrationSteps` faits par les tests de `pattern`,
+      `simplify`, `pedagogical-simplify`, `analysis`, `sign`, `pedagogical-limits`, `factor`,
+      `domain`, `integration`, `pedagogical-integration`, `transform`, `atelier` (219 fichiers,
+      7 361 tests verts) : **3 030 entrées distinctes**, rejouées deux fois avant (sortie
+      identique, 5,9 Mo) puis après : **0 différence** (`cmp`).
+- [x] Vérifications : les mêmes dossiers après, 215 fichiers / 7 094 tests verts (4 fichiers de
+      test supprimés) ; `src/lib/questions` + `src/lib/grapheur` 138 fichiers verts ;
+      `pnpm test:server src/lib/mathAST` une fois : 470 fichiers, 19 864 tests verts (9 ignorés,
+      3 todo) ; `check:incremental` 0 (`FORCE=1`) ; `types:cliquet` tenu (0) ; `lint:fast` rien ;
+      `docs:check-refs --strict`, `docs:check-links`, `docs:check-a-jour` : 0.
+- [x] Doc : README mathAST (carte, état, § Le ménage, points ouverts), `pattern-matching.md`
+      (jeux trigo / hyperboliques) ; `ecarts-a-trier.md` : M21 retiré, M10 réduit.
+
+**Écarts relevés en chemin (non corrigés)** :
+
+- Hors factorisation, morts eux aussi depuis la suppression de `transform/` : les familles
+  trigonométriques et hyperboliques autres que pythagoriciennes et quotients
+  (`trigDoubleAngleRules`, `trigCofunctionRules`, `hypAdditionRules`…, ~20 jeux) n'ont plus
+  d'appelant hors de leur fichier et du baril (un test lit `trigPythagoreanRules`). Laissés :
+  pas de la factorisation. Leurs noms restent dans `RULE_CATEGORY_MAP`.
+- `analysis/structures.ts` `numericPerfectSquareRoot` / `numericPerfectCubeRoot` fabriquent
+  encore `{ type: 'number' }` à la main (invariant 2), et calculent par `parseFloat`.
+- Une douzaine de PGCD d'entiers locaux (`cosmetic-transforms.ts`, `numtype/rules/power.ts`,
+  `analysis/periodicity.ts`, `pattern/rule-sets/trig.ts`, `integration/odd-roots.ts`,
+  `integration/ln-constant.ts`, `common/variable-powers.ts`…) à côté de `gcd` de
+  `normal/rational.ts` ; hors de l'inventaire de la factorisation.
+- `pedagogical-solve/quadratic-inequality.ts:252-255` recopie toujours `buildCZeroCaseSteps`
+  (B4).
+
+## 9. Lot 4 — V18, écriture des primitives (décision de David, 2026-10-11)
+
+« oui, go lot 4 » : quand tous les termes d'une primitive portent la même exponentielle, l'étape
+« On simplifie » développe puis met l'exponentielle en facteur, par les stratégies du lot 2
+(`(x^2-2x+2)e^x`, `(x-1)e^x`, `\dfrac{1}{2}(\sin x-\cos x)e^x` pour V17). Sans exponentielle
+commune, forme développée et rangée. Coefficients fractionnaires : `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}`
+accepté pour l'instant.
+
+- [x] **Tests d'abord** : `pedagogical-integration/__tests__/primitive-ecriture.test.ts`, bloc
+      « exponentielle commune » (entrées parsées, lycée et supérieur, rendu final + `toLatex` de la
+      primitive, F′ = f par `areEquivalent(differentiate(F), f)` sur la primitive, la ligne brute,
+      la développée et la factorisée, chaînage des étapes, ligne développée affichée, non-régressions
+      ∫x cos x, ∫3x cos x, ∫ln x, ∫e^{2x}, ∫3e^{2x}, intégrales définies ∫₀¹xeˣ = `1`,
+      ∫₀¹x²eˣ = `e - 2`, ∫₀¹3xe^{2x}). Vus rouges : **32 / 39** (les 7 verts sont les
+      non-régressions) ; ∫xe^{2x}, ∫xe^{-x}, ∫3xe^{-2x} levaient `NotImplemented`.
+- [x] **Implémentation** : `pushSimplifyStep` → `factorCommonExponential` (`developper` puis
+      `factoriser` de pedagogical-simplify ; exposants comparés par `areEquivalent`, car `-2x` est
+      `opposite(2)·x` ou `opposite(2·x)` selon l'auteur) ; rendu brute = développée = factorisée ;
+      explication « On développe, puis on met e^{u} en facteur. ». L'IPP accepte `e^{ax+b}`
+      (`isAffineOf`, `_helpers.ts`) — nécessaire pour ∫xe^{2x} et ∫xe^{-x}.
+- [x] **Relevés** : ∫x²eˣ → `(x^2-2x+2)e^x` ; ∫3x²eˣ → `3(x^2-2x+2)e^x` ; ∫xeˣ → `(x-1)e^x` ;
+      ∫xe^{2x} → `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}` ; ∫eˣ sin x (V17) →
+      `\left(\dfrac{\sin x}{2}-\dfrac{\cos x}{2}\right)e^x` (le ½ n'est pas sorti : V17 réduit,
+      pas retiré) ; ∫xe^{-x} → `-(x+1)e^{-x}` ; ∫3xe^{-2x} →
+      `-\left(\dfrac{3x}{2}+\dfrac{3}{4}\right)e^{-2x}` ; ∫x³eˣ → `(x^3-3x^2+6x-6)e^x` ;
+      ∫(2x+1)eˣ → `(2x-1)e^x`.
+- [x] **Snapshot changé** : démo `parts-simple` ∫xeˣ (×4 rendus) — nouvelle étape « On simplifie »,
+      primitive `(x-1)e^x`.
+- [x] Vérifications : pedagogical-integration, integration, pedagogical-simplify (44 fichiers,
+      2 083 tests), atelier (100 fichiers, 2 025 tests) ; `pnpm test:server src/lib/mathAST
+src/lib/questions/generator` une fois : 498 fichiers, 20 745 tests verts ;
+      `check:incremental` 0 ; `types:cliquet` tenu (0 erreur, fichier existant) ; `lint:fast` rien.
+- [ ] code-reviewer · [ ] PR

@@ -99,7 +99,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 - Professeur : `src/routes/(protected)/dashboard/teacher/contenu/worksheets/` — liste, `new/`,
   `[id]/` (édition + `PdfPreview`), `templates/` (gabarits perso), `[id]/assignments/[assignmentId]/`
   (`preview/` vue élève, `progress/`, `reports/` signalements).
-- Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`).
+- Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`). La liste
+  s'ouvre depuis « Mon travail » (« Toutes mes fiches ») et y revient par « Retour à Mon travail ».
 - Public sans compte : `src/routes/(public)/cahier/[token]/fiche/[id]/` — une fiche **citée** dans
   une séance visible du cahier partagé (`resolveWorksheetByShareToken`, `security definer`) ; même
   404 pour tout refus.
@@ -381,7 +382,5 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 9. **Libellés des types recopiés** : la table type → libellé existe en neuf exemplaires (constantes,
    `getTypeLabel`, cartes et en-têtes élève, pages prof), avec des variantes (« Feuille d'exercices »,
    « Fiche de travail », « Corvées Domestiques »). Seul « Contrôle » est tenu par un test.
-10. **Nom du modèle système « Evaluation »** : la liste des modèles le lit en base
-    (`worksheet_templates`), pas dans `default-templates.ts` ; il n'est pas renommé.
 
 Vérifié contre le code le 2026-10-11.

@@ -69,7 +69,6 @@ test, ~14 000 cas (`it(`/`test(`).
 | `simplify/`                                                                                                                         | `simplify` : `tidy` + règles + « développer seulement si moins cher » (`computeCost`, `costFunction` injectable)                                                                                                                                                                                                                                                                              |
 | `normal/`                                                                                                                           | `normalize` → `NormalForm` (forme normale rationnelle), `denormalize`, `equivalenceForm`, `hashMathNode`, `nodesEqual`                                                                                                                                                                                                                                                                        |
 | `pattern/`                                                                                                                          | motifs (`P`, `tryMatch`), règles, jeux de règles, `verifyForm` — voir [pattern-matching.md](pattern-matching.md)                                                                                                                                                                                                                                                                              |
-| `transform/`                                                                                                                        | identités algébriques/trigo/hyperboliques en fonctions (`factorAlgebraic`…) — **aucun import hors de ses tests**                                                                                                                                                                                                                                                                              |
 | `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), `e`, `i` jamais variables (`common/reserved-letters.ts`)                                                                                                                                                           |
 | `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                                                                                                                                                                                                       |
 | **Calculer**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -83,7 +82,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `sign/`                                                                                                                             | `analyzeSign` (tableaux de signes)                                                                                                                                                                                                                                                                                                                                                            |
 | `variations/`                                                                                                                       | `computeVariations`                                                                                                                                                                                                                                                                                                                                                                           |
 | `taylor/`                                                                                                                           | développements de Taylor                                                                                                                                                                                                                                                                                                                                                                      |
-| `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, polynômes, classification                                                                                                                                                                                                                                                                                                            |
+| `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, classification, détecteurs d'identités (`structures.ts`, lus par `algebraicFactoringRules`)                                                                                                                                                                                                                                          |
 | `piecewise/`                                                                                                                        | `extractPiecewiseBoundaries` : ruptures d'une fonction par morceaux (consommé par `geometry-core`)                                                                                                                                                                                                                                                                                            |
 | `matrix/`                                                                                                                           | opérations matricielles                                                                                                                                                                                                                                                                                                                                                                       |
 | `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md)                                                                                                                                                                                                                            |
@@ -191,11 +190,14 @@ racine évidente) branchées sur l'intention `factoriser`. Livraison par lots : 
 migration des appelants internes (`limits`, `integration`, `domain`, `normalize`) et suppression
 du code mort → écriture des primitives (V18).
 
-**État au 2026-10-11 : lot 1 (le noyau), lot 2 (les stratégies, branchées sur l'intention
-`factoriser`, donc sur l'atelier) et lot 3a (limites et intégration, voir
-[§ Les appelants](#les-appelants-migrés-lot-3a)) écrits.** `normalize` et `solve` factorisent
-encore comme avant ; `transform/`, les détecteurs morts et les doublons de PGCD attendent le
-lot 3b.
+**État au 2026-10-12 : chantier clos.** Lot 1, le noyau (#1127) ; lot 2, les stratégies branchées
+sur l'intention `factoriser`, donc sur l'atelier (#1134) ; lot 3a, limites et intégration (#1136,
+[§ Les appelants](#les-appelants-migrés-lot-3a)) ; lot 3b, le ménage (#1141,
+[§ Le ménage](#le-ménage-lot-3b)) ; lot 4, l'exponentielle commune d'une primitive mise en facteur
+(#1143, voir « Dérivées et primitives finissent par « On simplifie » » plus bas). `normalize` et
+`solve` factorisent encore comme avant (ADR 0006 : `normalize` est sur le chemin du décideur) :
+leurs doublons sont rattachés à K3. Journal :
+[moteur-factorisation-progress.md](../../archive/wip/mathAST/moteur-factorisation-progress.md).
 
 ### Carte du code
 
@@ -206,7 +208,7 @@ lot 3b.
 | `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                                                                                                                         |
 | `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts` ; `toPolynomial` (dénominateur constant exigé), `divideOutRoot` (division par (x − r) avec multiplicité)       |
 | `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                                                                                                                               |
-| `quadratic.ts`       | `quadraticRootParts` : Δ, racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                                                                       |
+| `quadratic.ts`       | `discriminant` (Δ exact, partagé avec les stratégies) ; `quadraticRootParts` : racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                  |
 | `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels), `linearFactorNode` (`x - r`, `x + 3` si r = −3) |
 
 `factor.ts` exporte aussi `compareFactors` (l'ordre des facteurs, réutilisé par les stratégies) et
@@ -463,7 +465,18 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
   gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
   `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
-  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. L'étape d'IPP écrit `uv - \int v\,du`,
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Exponentielle commune** (lot 4 de
+  l'ADR 0024, `developAndFactor`) : l'étape développe (intention `developper`), puis met en
+  facteur, par `factoriser`, la `e^{u}` que portent au moins deux termes (exposants comparés par
+  `areEquivalent`, écrits partout comme dans la primitive brute) : ∫x²eˣ → `(x^2-2x+2)e^x`,
+  ∫xe^{-x} → `-(x+1)e^{-x}`, ∫xe^{2x} → `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}` (accepté
+  pour l'instant), ∫eˣ sin x → `\left(\dfrac{\sin x}{2}-\dfrac{\cos x}{2}\right)e^x`, ∫x²e^{2x}+x →
+  `(…)e^{2x}+\dfrac{x^2}{2}`. Le rendu montre brute = développée = factorisée, la ligne
+  développée omise (et le texte réduit à « On met eᵘ en facteur ») si elle égale la brute.
+  Sans exponentielle partagée, une parenthèse de `- ∫ v du` est développée puis rangée par `tidy`
+  (∫x² sin x) ; sinon `tidy` seul (∫x cos x, ∫ln x, la parenthèse de u dans ∫(2x+1) sin x). Seul
+  `PedagogicalSimplifyNotImplemented` fait revenir à `tidy` ; les autres erreurs remontent. L'IPP accepte `e^{ax+b}`
+  (`isAffineOf`, `_helpers.ts`), plus seulement `e^x`. L'étape d'IPP écrit `uv - \int v\,du`,
   l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
   (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
   (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
@@ -544,11 +557,45 @@ Tests : `limits/__tests__/factorisation-noyau.test.ts`,
 `integration/__tests__/denominateur-trinome-noyau.test.ts` (F′ = f par `areEquivalent`),
 `pedagogical-integration/__tests__/elements-simples-exacts.test.ts`.
 
+### Le ménage (lot 3b)
+
+Supprimés, faute d'appelant hors de leurs tests (grep sur `src/`, `scripts/`, `tests/`, chaînes
+comprises) : `transform/` entier (`factorAlgebraic`, `factorize`, `factorizeH`…) ; les formules
+somme → produit `trigFactorizationRules`, `hypFactorizationRules` et les agrégats
+`allTrigRules`, `allHyperbolicRules`, lus par `transform/` seul ; dans `analysis/structures.ts`,
+`isQuadraticForm`, `isFactoredForm`, `hasCommonFactor`, `detectStructure` ; avec eux
+`analysis/polynomial-analysis.ts` (`analyzePolynomial`, `getPolynomialCoefficients`…, dont
+`isQuadraticForm` était le seul lecteur) ; `analyzePolynomial` de `sign/helpers/interval-sign.ts` ;
+`isRootAt` de `pedagogical-limits/helpers.ts`.
+
+Doublons qui restent, chacun pour un autre besoin :
+
+- **Carré parfait** : `isPerfectSquareTrinomial` (`analysis/structures.ts`) lit des termes
+  **symboliques** (`sin²x + 2 sin x cos x + cos²x`, plusieurs lettres) pour `simplify` et `auto` ;
+  `polynomialIdentity` (stratégies) des coefficients entiers d'un polynôme d'une lettre ;
+  `tryFactorPerfectSquareTrinomial` (`normal/normalize.ts`) une `NormalForm`, sur le chemin du
+  décideur (ADR 0006).
+- **PGCD de monômes** : le contenu de `common-factor.ts` lit l'écriture sans développer deux
+  sommes, avec des facteurs non polynomiaux (`eˣ`, `(x+1)`) et une politique « PGCD entier
+  seulement » ; `gcdMonomials` (`normal/monomial.ts`) travaille sur la forme normale (chemin du
+  décideur, et `solve`).
+- **Division de polynômes** : `deflate` / `divideOutRoot` (noyau, ℚ, par x − r) ;
+  `divideUnivariate` (coefficients algébriques, utilisée aussi par `partial-fractions.ts` et le
+  grapheur) et `exactDividePolynomials` (multivariée), toutes deux dans `normal/`.
+- **Extracteurs de coefficients** : `toPolynomial` / `toRationalFunction` (noyau, exacts) ;
+  `asPolynomial` (`pedagogical-limits/helpers.ts`, **flottants**, degré non borné, pour la
+  comparaison des termes dominants en ±∞ : passer au noyau changerait le degré lisible et
+  l'écriture du quotient) ; `toUnivariateView` (`normal/`) ;
+  `extract{Quadratic,Cubic,Quartic}Coefficients` (`solve/`, coefficients `MathNode`).
+- **Δ** : un seul calcul exact sur ℚ, `discriminant` (`factor/quadratic.ts`). Les autres
+  calculent en `MathNode` pour l'afficher (`pedagogical-solve/quadratic.ts`, `solve/`) ou en
+  flottants sur des coefficients décimaux (`domain/preimage.ts`, solveurs de degré 3-4 de
+  `solve/`).
+
 ## Points ouverts connus (mesurés le 2026-10-10)
 
 - Fusion des deux moteurs : voir plus haut ; `auto ≡ reduire` sur `(x+1)²`.
-- `ParseCache` exporté, jamais branché ; `transform/` sans consommateur ;
-  `pedagogical-evaluate/` réduit à des types.
+- `ParseCache` exporté, jamais branché ; `pedagogical-evaluate/` réduit à des types.
 - Cycle dans `runPatternLoop` (`pedagogical-simplify/pipeline.ts`) : sur `x(1+1)` et
   `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tirait jusqu'à la limite de
   20 itérations sans point fixe. **Corrigé pour `factoriser` le 2026-10-11** : ses règles

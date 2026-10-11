@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getNavLinks, getZoneTitle } from '../dashboard-nav';
+import { getNavLinks, getZoneTitle, isNavLinkActive } from '../dashboard-nav';
 import { lore } from '$lib/config/lore';
 
 describe('getZoneTitle', () => {
@@ -138,5 +138,43 @@ describe('getNavLinks', () => {
 				lore.nav.logout
 			]);
 		});
+	});
+});
+
+describe('isNavLinkActive', () => {
+	it('surligne « Mon travail » sur les listes complètes qui s’ouvrent depuis lui (#1121)', () => {
+		for (const pathname of [
+			'/dashboard/student/work',
+			'/dashboard/student/worksheets',
+			'/dashboard/student/worksheets/00000000-0000-4000-8000-0000000000a1',
+			'/dashboard/student/assessments',
+			'/dashboard/student/assessments/00000000-0000-4000-8000-0000000000a1/results'
+		]) {
+			expect(isNavLinkActive('/dashboard/student/work', pathname), pathname).toBe(true);
+		}
+	});
+
+	it('ne surligne pas « Mon travail » ailleurs dans l’espace élève', () => {
+		expect(isNavLinkActive('/dashboard/student/work', '/dashboard/student/riddles')).toBe(false);
+		expect(isNavLinkActive('/dashboard/student/work', '/dashboard/student/progression')).toBe(
+			false
+		);
+	});
+
+	it('surligne une rubrique sur ses sous-pages', () => {
+		expect(
+			isNavLinkActive('/dashboard/teacher/contenu', '/dashboard/teacher/contenu/enigmes/new')
+		).toBe(true);
+		expect(isNavLinkActive('/dashboard/admin/debug/database', '/dashboard/admin/debug/cache')).toBe(
+			true
+		);
+	});
+
+	it('demande une adresse exacte pour les autres liens', () => {
+		expect(isNavLinkActive('/dashboard', '/dashboard')).toBe(true);
+		expect(isNavLinkActive('/dashboard', '/dashboard/student/work')).toBe(false);
+		expect(isNavLinkActive('/dashboard/teacher/series', '/dashboard/teacher/series/new')).toBe(
+			false
+		);
 	});
 });

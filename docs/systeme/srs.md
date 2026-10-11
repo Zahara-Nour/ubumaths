@@ -123,7 +123,10 @@ par `requireTeacherOfClass` (rôle `teacher` seul : le compte admin est refusé 
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
-  (0,9). `deck.config` n'est plus lu à la révision (décision du 2026-06-10).
+  (0,9). `deck.config` n'est plus lu à la révision (décision du 2026-06-10) : la mémoire d'une
+  question étant partagée entre paquets, une rétention par paquet n'aurait pas de sens. Aucun écran
+  ne propose donc de la régler (sélecteur retiré le 2026-10-12), et les schémas de création et de
+  modification d'un paquet ne déclarent pas `config`.
 
 ### Note ↔ réussite
 
@@ -303,13 +306,13 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 ## Écarts connus
 
 - **Anti-triche cassé** (voir plus haut) : à réparer avant tout rallumage.
-- **Rétention par paquet sans effet** : `create/` et `teacher/srs/decks/…` enregistrent un profil
-  de `RETENTION_PROFILES` dans `deck.config`, mais toutes les révisions utilisent `new FSRS()`
-  par défaut ; `fsrsConfigSchema` n'est plus importé hors de son fichier.
-- **Révision forcée sans bouton** : `api/srs/review/due` accepte `all=true`, mais aucun écran ne
-  le passe (`decks/[id]/study` ne transmet que `states`).
-- **`chapter_decks` sans écran** : table, policies et tests d'intégration existent, aucune route
-  ni page ne la lit ou ne l'écrit.
+- **Paquets de chapitre et révision forcée : en sommeil, pas morts** (décision de David,
+  2026-10-12). Construits exprès le 2026-09-14 : `chapter_decks` rattache un paquet SOURCE à un
+  chapitre (modes `algorithme` / `force`, publié comme le reste du contenu), et `all=true` sur
+  `api/srs/review/due` rend toutes les cartes d'un paquet, échéance ignorée (« la veille d'un
+  contrôle »). Serveur, policies et tests d'intégration sont en place ; manquent les écrans
+  (rattacher un paquet côté prof, bouton « Tout réviser » côté élève). À construire le jour où un
+  contrôle se prépare avec un paquet de chapitre ; ne pas les supprimer comme code mort.
 - ✅ **Suppressions sans `.select()`** (corrigé le 2026-10-10, E20) : les trois `DELETE` vérifient
   désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
   ou géré automatiquement — Programme, chapitre). Test :

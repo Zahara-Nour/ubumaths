@@ -7,9 +7,9 @@
  * fsrs.reviewCard → UPSERT srs_card_stats` qui était répétée dans les 2
  * endpoints.
  *
- * Chaque endpoint passe sa propre instance `FSRS` (Monde 1 utilise les
- * paramètres par défaut ; Monde 2 lit `deck.config` validé via Zod). Le
- * comportement est strictement équivalent à l'ancien code inline.
+ * Chaque endpoint passe sa propre instance `FSRS`, toujours aux paramètres et
+ * à la rétention par défaut : `deck.config` n'est plus lu (décision du
+ * 2026-06-10). Le comportement est strictement équivalent à l'ancien code inline.
  *
  * Note : la table `srs_card_stats` est partagée entre tous les decks de
  * l'élève contenant le même template (UNIQUE `(user_id, card_reference_type,

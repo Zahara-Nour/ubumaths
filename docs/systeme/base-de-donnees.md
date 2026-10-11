@@ -180,6 +180,11 @@ points neufs d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 - `exercises` (+ `exercise_curriculum_points`, `exercise_classifications`) ; `exercise_assignments`
   (à un élève ou une classe), `exercise_completions`, `student_exercise_mastery` (auto-évaluation
   maîtrisé / à revoir).
+  - `exercises.search_indexed` (« Afficher sur Google », depuis `20261016100000`) : case distincte de
+    `is_public`, fausse par défaut ; elle décidera seule si un exercice public entre dans le sitemap
+    et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
+    pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
+    colonne suit les droits de la ligne (aucune policy ni GRANT propre).
 - `migration_*` : outillage de la migration des questions TinyMath.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
@@ -214,6 +219,14 @@ dans la classe (`is_class_student`) et si le contenu est publié. `chapter_works
 `student_has_worksheet_access` : retirer l'une des deux gardes rouvrirait un canal de distribution
 parallèle. L'élève lit les séances publiées et passées des classes dont il est membre ; les activités
 et la couverture d'une séance sont réservées au professeur.
+
+**Lecture par lien, sans compte** : le cahier (`class_journal_share_tokens`) et le cours
+(`class_course_share_tokens`, [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md)) ont
+chacun leur jeton, un seul actif par classe. `anon` ne lit aucune de ces tables : il passe par des
+fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
+`get_class_course_by_share_token` (plan, documents sans chemin, checklists, séries, fiches publiées
+**et** distribuées à la classe) et `get_course_worksheet_by_share_token` ;
+`get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture

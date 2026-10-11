@@ -55,13 +55,13 @@ import {
 	isZero,
 	mulRational,
 	negRational,
-	powRational,
-	rational
+	powRational
 } from '../normal/rational';
 import { rationalToNode } from '../common/numeric';
 import {
 	MAX_RADICAND,
 	compareFactors,
+	discriminant,
 	factorizationToNode,
 	polynomialNode,
 	quadraticRootParts,
@@ -319,7 +319,7 @@ export interface TrinomialAnalysis {
 /** Δ et racines de `c + b·x + a·x²` (coefficients entiers). */
 export function analyzeTrinomial(coefficients: readonly bigint[]): TrinomialAnalysis {
 	const [c, b, a] = coefficients.map(fromInteger);
-	const delta = rational(coefficients[1] ** 2n - 4n * coefficients[2] * coefficients[0], 1n);
+	const delta = discriminant(a, b, c);
 	const parts = quadraticRootParts(a, b, c, MAX_RADICAND);
 	const roots =
 		parts.kind === 'rational'

@@ -26,7 +26,6 @@
 	import TemplateSelector from '$lib/components/srs/TemplateSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Save, Plus, Trash2, BookOpen } from '@lucide/svelte';
-	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 
@@ -56,7 +55,6 @@
 	let deckName = $state('');
 	let deckDescription = $state('');
 	let deckType = $state<'official' | 'personal'>('official');
-	let retentionProfile = $state<keyof typeof RETENTION_PROFILES>('balanced');
 
 	let isSaving = $state(false);
 	let showCustomCardEditor = $state(false);
@@ -81,10 +79,7 @@
 			const deckRequest: CreateDeckRequest = {
 				name: deckName.trim(),
 				description: deckDescription.trim() || undefined,
-				deckType,
-				config: {
-					desiredRetention: RETENTION_PROFILES[retentionProfile]
-				}
+				deckType
 			};
 
 			const deckResponse = await fetch('/api/srs/decks', {
@@ -223,9 +218,9 @@
 	</div>
 
 	<!-- Deck Configuration -->
-	<div class="mb-6 grid gap-6 lg:grid-cols-3">
+	<div class="mb-6">
 		<!-- Main Form -->
-		<div class="lg:col-span-2">
+		<div>
 			<Card.Root>
 				<Card.Header>
 					<Card.Title>Informations du deck</Card.Title>
@@ -263,33 +258,6 @@
 							<option value="official">Officiel</option>
 							<option value="personal">Personnel</option>
 						</select>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-
-		<!-- Settings -->
-		<div>
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Paramètres FSRS</Card.Title>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<div class="space-y-2">
-						<Label for="retention-profile">Profil de rétention</Label>
-						<select
-							id="retention-profile"
-							bind:value={retentionProfile}
-							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-						>
-							<option value="relaxed">Détendu (80%)</option>
-							<option value="balanced">Équilibré (90%)</option>
-							<option value="high">Élevé (95%)</option>
-							<option value="expert">Expert (97%)</option>
-						</select>
-						<p class="text-xs text-muted-foreground">
-							Taux de rétention souhaité : {RETENTION_PROFILES[retentionProfile] * 100}%
-						</p>
 					</div>
 				</Card.Content>
 			</Card.Root>

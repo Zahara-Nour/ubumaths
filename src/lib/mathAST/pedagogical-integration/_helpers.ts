@@ -695,7 +695,7 @@ export function tryDetectCompositePower(
  * Result of IPP detection : the chosen `u` and `dv` factors.
  *
  * The pedagogical IPP V1 covers ONLY the simple « LIATE-like » template:
- *   - polynomial × (e^x | sin(x) | cos(x))   → u = polynomial, dv = transcendental
+ *   - polynomial × (e^{ax+b} | sin(x) | cos(x)) → u = polynomial, dv = transcendental
  *   - polynomial × ln(x)                     → u = ln(x), dv = polynomial
  *   - bare ln(x)                             → u = ln(x), dv = 1·dx
  *
@@ -735,7 +735,7 @@ export function tryDetectParts(integrand: MathNode, variable: string): PartsMatc
 		return { u: left, dv: right };
 	}
 
-	// Template B : polynomial × transcendental(e^x | sin(x) | cos(x)).
+	// Template B : polynomial × transcendental(e^{ax+b} | sin(x) | cos(x)).
 	if (isPolynomialOf(left, variable) && isTranscendentalOfVariable(right, variable)) {
 		return { u: left, dv: right };
 	}
@@ -799,11 +799,18 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 	if (node.type === 'superscript') {
 		const base = node.base;
 		const isE = base.type === 'constant' && base.constant === 'euler';
-		if (isE && isExactVariable(node.superscript, variable)) {
+		// e^{ax+b} (lot 4 de l'ADR 0024) : v = e^{ax+b}/a par la forme composée
+		if (isE && isAffineOf(node.superscript, variable)) {
 			return true;
 		}
 	}
 	return false;
+}
+
+/** `ax + b`, a ≠ 0 rationnel (`x`, `2x`, `-x`, `2x + 1`). */
+function isAffineOf(node: MathNode, variable: string): boolean {
+	const poly = toPolynomial(node, variable);
+	return poly !== null && poly.length === 2;
 }
 
 // =============================================================================

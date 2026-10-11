@@ -341,6 +341,10 @@
 <svelte:head>
 	<title>{data.exercise.title || lore.learning.exercise} | Chiphre</title>
 	<meta name="description" content={metaDescription} />
+	{#if data.noindex}
+		<!-- Non coché « Afficher sur Google », ou ouvert par jeton -->
+		<meta name="robots" content="noindex" />
+	{/if}
 </svelte:head>
 
 {#if isAuthenticated}

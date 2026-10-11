@@ -179,7 +179,12 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		`On factorise le dénominateur : Q(x) = (x − ${bind(b, 'r1')})(x − ${bind(b, 'r2')}). Puis on décompose P(x)/Q(x) = A/(x − ${bind(b, 'r1')}) + B/(x − ${bind(b, 'r2')}). On trouve A = ${bind(b, 'A')} et B = ${bind(b, 'B')} (méthode des racines : substituer x = ${bind(b, 'r1')} et x = ${bind(b, 'r2')}).`,
 	'apply-partial-fractions': () =>
 		"Chaque terme A/(x − r) s'intègre en A·ln|x − r|. La somme des deux logarithmes donne la primitive cherchée.",
-	'simplify-result': () => 'On écrit le résultat sous une forme simplifiée.',
+	'simplify-result': (b) =>
+		b.exponential
+			? b.developed
+				? `On développe, puis on met ${bind(b, 'exponential')} en facteur.`
+				: `On met ${bind(b, 'exponential')} en facteur.`
+			: 'On écrit le résultat sous une forme simplifiée.',
 	'add-constant': () =>
 		'Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.'
 };
