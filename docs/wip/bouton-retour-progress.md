@@ -68,5 +68,7 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
   - **Notebook Python** (`python-notebook/[id]`) : « Retour aux notebooks », y compris pour l'élève qui le remplit. Faut-il « Quitter » côté élève ?
   - **Liens de retour au style éditorial** : « ← Le Shtam » (article de la gazette) et « ← Le Cabinet Noir de Turingrad » (chiffrement) gardent leur typographie propre. Les passer en `BackLink` ?
   - **Exercice Python partagé** (`python-exercises/[id]`) : ouvert par un lien partagé, pas de page parente → aucun retour.
+  - **Session de révision d'un deck** (`revisions/decks/[id]/study`) : « Quitter » mène à `/dashboard/revisions`, comme avant. La session part de la page du deck ou du Programme : faut-il revenir au deck (et passer l'origine dans l'adresse) ?
+  - **Tournoi de démineur** (élève) : « Retour aux tournois » devient « Quitter » pendant une partie (#1117).
   - **Énigme du jour** (`student/riddles/[id]`) : traitée comme une page de détail (« Retour aux énigmes »), pas comme une activité (« Quitter »).
   - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).
