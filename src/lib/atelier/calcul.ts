@@ -464,6 +464,14 @@ function bracketedListRefusal(name: string, body: string): string | null {
  * ⚠️ Une définition qu'on ne sait pas lire crée quand même l'objet (§2 E1) :
  * il porte son erreur, et l'élève voit son travail plutôt qu'un refus sec.
  */
+/**
+ * Une valeur ARRONDIE (mode décimal) s'écrit avec `≈` à l'écran comme dans le
+ * texte : `≈ 0,7071` (décision Q3 de David, la règle du bouton ≈).
+ */
+function approximatedLatex(result: ReplExecutionResult, latex: string): string {
+	return result.success && result.output.startsWith('≈ ') ? `\\approx ${latex}` : latex;
+}
+
 /** Le refus qui parle d'un nombre sans unité : c'est là qu'une lettre lue comme unité est en cause. */
 const UNITLESS = 'un nombre sans unité';
 
@@ -1549,7 +1557,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		kind: 'calcul',
 		input,
 		output: rendered.text,
-		...(rendered.latex && { latex: rendered.latex }),
+		...(rendered.latex && { latex: approximatedLatex(result, rendered.latex) }),
 		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`)
 		...(result.success &&
 			(result.quantityAst ?? result.ast) !== undefined && {
@@ -1695,7 +1703,7 @@ function computeAction(
 		return {
 			ok: true,
 			output: rendered.text,
-			...(rendered.latex && { latex: rendered.latex }),
+			...(rendered.latex && { latex: approximatedLatex(result, rendered.latex) }),
 			...calculationAlternative(result)
 		};
 	}

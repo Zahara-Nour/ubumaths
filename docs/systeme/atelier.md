@@ -255,7 +255,10 @@ au-delà de 10⁹, ni pour un nombre déjà écrit (`3`, `2,5`), une expression 
 déjà sa valeur approchée). Quand les ÉTAPES donnent la réponse, le bouton approche leurs solutions
 (`SolvedSteps.approximate`), dans leur ordre et leur forme — pas celles du moteur, triées. Mêmes
 boutons sur l'image d'un nombre et « Résoudre f(x) = 0 » des cartes.
-⚠️ `.mode décimal` écrit encore 15 chiffres : l'aligner sur cette règle est une PR à part.
+`.mode décimal` suit la même règle (2026-10-11) : 4 décimales, `≈` à l'écran comme dans le texte
+seulement si la valeur est arrondie (`≈ 0,7071`, `0,25`) ; « Garder » range la valeur pleine
+précision (`quantityAst`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
+plus `{1/3}\pi`) — `/cas` compris.
 
 **Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
 règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu
