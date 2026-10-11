@@ -23,7 +23,8 @@ export type AdviceSegment =
 /**
  * - `chain` : suite de 3 termes ou plus avec une soustraction (C1) ; deux
  *   écritures parenthésées proposées ;
- * - `leading-minus` : « − » en tête sans parenthèses (C2) ; un exemple.
+ * - `leading-minus` : « − » sans parenthèses devant un nombre ou une lettre (C2,
+ *   Q21) ; un exemple quand il commence une somme, `null` ailleurs (Q22).
  * `node` : la sous-expression visée.
  */
 export type ParenthesesAdvice =
@@ -36,12 +37,13 @@ export type ParenthesesAdvice =
 	| {
 			readonly reason: 'leading-minus';
 			readonly node: number;
-			readonly example: string;
+			readonly example: string | null;
 			readonly segments: readonly AdviceSegment[];
 	  };
 
 // Constantes
 const NBSP = ' ';
+const MINUS_SIGN_TEXT = "Le signe − devant un nombre ou une lettre s'apprend en 5e";
 
 // Fonctions
 /**
@@ -56,7 +58,7 @@ export function parenthesesAdvice(structure: ExpressionStructure): ParenthesesAd
 			if (node.signs[0] === '-') return leadingMinusInSum(structure, node);
 			if (isChain(node)) return chainAdvice(structure, node);
 		} else if (node.kind === 'opposite' && !isParenthesized(structure, node)) {
-			return leadingMinusAdvice(node.id, `\\left( ${stripMarkers(node.latex)} \\right)`);
+			return leadingMinusAdvice(node.id, null);
 		}
 	}
 	return null;
@@ -115,20 +117,20 @@ function leadingMinusInSum(
 	return leadingMinusAdvice(sum.id, example);
 }
 
-function leadingMinusAdvice(node: number, example: string): ParenthesesAdvice {
-	return {
-		reason: 'leading-minus',
-		node,
-		example,
-		segments: [
-			{
-				kind: 'text',
-				text: `Un nombre précédé de − arrive en 5e${NBSP}: écris-le entre parenthèses, par exemple `
-			},
-			{ kind: 'formula', latex: example },
-			{ kind: 'text', text: '.' }
-		]
-	};
+/** Avec un exemple si le « − » commence une somme, sans exemple ailleurs (Q22) */
+function leadingMinusAdvice(node: number, example: string | null): ParenthesesAdvice {
+	const segments: AdviceSegment[] =
+		example === null
+			? [{ kind: 'text', text: `${MINUS_SIGN_TEXT}.` }]
+			: [
+					{
+						kind: 'text',
+						text: `${MINUS_SIGN_TEXT}${NBSP}: écris-le entre parenthèses, par exemple `
+					},
+					{ kind: 'formula', latex: example },
+					{ kind: 'text', text: '.' }
+				];
+	return { reason: 'leading-minus', node, example, segments };
 }
 
 /**

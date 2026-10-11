@@ -18,6 +18,7 @@ import {
 
 // Constantes
 const NBSP = ' ';
+const MINUS_MESSAGE = "Le signe − devant un nombre ou une lettre s'apprend en 5e.";
 
 // Fonctions
 function adviceOf(latex: string): ParenthesesAdvice | null {
@@ -35,8 +36,8 @@ function chainMessage(first: string, second: string): string {
 	return `Ajoute des parenthèses pour montrer ce que tu calcules d'abord${NBSP}: $${first}$ ou $${second}$${NBSP}?`;
 }
 
-function leadingMinusMessage(example: string): string {
-	return `Un nombre précédé de − arrive en 5e${NBSP}: écris-le entre parenthèses, par exemple $${example}$.`;
+function sumLeadingMinusMessage(example: string): string {
+	return `Le signe − devant un nombre ou une lettre s'apprend en 5e${NBSP}: écris-le entre parenthèses, par exemple $${example}$.`;
 }
 
 describe('parenthesesAdvice — C1 : suite de 3 termes ou plus avec une soustraction', () => {
@@ -121,52 +122,38 @@ describe('parenthesesAdvice — C1 : suite de 3 termes ou plus avec une soustrac
 	});
 });
 
-describe('parenthesesAdvice — C2 : un « − » en tête sans parenthèses', () => {
-	it('−3 + x', () => {
-		const advice = adviceOf('-3+x');
+describe('parenthesesAdvice — C2 (Q21, Q22) : un « − » sans parenthèses', () => {
+	it.each([
+		['-3+x', '\\left( -3 \\right) + x'],
+		['-x+3', '\\left( -x \\right) + 3'],
+		['-3x+2', '\\left( -3 x \\right) + 2'],
+		['-2x+5', '\\left( -2 x \\right) + 5'],
+		['-3+x-2', '\\left( -3 \\right) + x - 2'],
+		['4\\times(-5+2y)', '\\left( -5 \\right) + 2 y']
+	])('%s commence une somme : exemple %s', (latex, example) => {
+		const advice = adviceOf(latex);
 		expect(advice?.reason).toBe('leading-minus');
 		if (advice?.reason !== 'leading-minus') return;
-		expect(advice.example).toBe('\\left( -3 \\right) + x');
-		expect(render(advice.segments)).toBe(leadingMinusMessage('\\left( -3 \\right) + x'));
+		expect(advice.example).toBe(example);
+		expect(render(advice.segments)).toBe(sumLeadingMinusMessage(example));
 	});
 
-	it('−2x + 5 : le « − » porte sur le produit', () => {
-		const advice = adviceOf('-2x+5');
-		expect(advice?.reason).toBe('leading-minus');
-		if (advice?.reason !== 'leading-minus') return;
-		expect(advice.example).toBe('\\left( -2 x \\right) + 5');
-	});
+	it.each(['-3', '-3x', '-x', '2x=-6', '\\frac{-3}{4}', '10^{-3}', '5\\times\\frac{-2}{7}'])(
+		'%s : ailleurs, message sans exemple',
+		(latex) => {
+			const advice = adviceOf(latex);
+			expect(advice?.reason).toBe('leading-minus');
+			if (advice?.reason !== 'leading-minus') return;
+			expect(advice.example).toBeNull();
+			expect(render(advice.segments)).toBe(MINUS_MESSAGE);
+		}
+	);
 
-	it('−3x seul (décision à valider : message)', () => {
-		const advice = adviceOf('-3x');
-		expect(advice?.reason).toBe('leading-minus');
-		if (advice?.reason !== 'leading-minus') return;
-		expect(advice.example).toBe('\\left( -3 x \\right)');
-	});
-
-	it('−3 seul (décision à valider : message)', () => {
-		const advice = adviceOf('-3');
-		expect(advice?.reason).toBe('leading-minus');
-		if (advice?.reason !== 'leading-minus') return;
-		expect(advice.example).toBe('\\left( -3 \\right)');
-	});
-
-	it('dans un membre : 2x = −6', () => {
-		const advice = adviceOf('2x=-6');
-		expect(advice?.reason).toBe('leading-minus');
-		if (advice?.reason !== 'leading-minus') return;
-		expect(advice.example).toBe('\\left( -6 \\right)');
-	});
-
-	it('−3 + x − 2 : le « − » en tête passe avant la suite', () => {
-		expect(adviceOf('-3+x-2')?.reason).toBe('leading-minus');
-	});
-
-	it('somme imbriquée : 4 × (−5 + 2y)', () => {
-		const advice = adviceOf('4\\times(-5+2y)');
-		expect(advice?.reason).toBe('leading-minus');
-		if (advice?.reason !== 'leading-minus') return;
-		expect(advice.example).toBe('\\left( -5 \\right) + 2 y');
+	it('node désigne le « − » visé : 2x = −6', () => {
+		const result = structureFromLatex('2x=-6');
+		if (result.status !== 'ok') throw new Error(result.status);
+		const advice = parenthesesAdvice(result.structure);
+		expect(advice && result.structure.nodes[advice.node].kind).toBe('opposite');
 	});
 });
 
