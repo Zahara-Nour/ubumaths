@@ -37,9 +37,11 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
    elle, reste introuvable. » (la fin « mais la page… » pour une 404 seulement). Pas d'extrait des
    décimales en clair : le code est déjà coloré dans la spirale.
-5. Pour une 404 : « Tu cherchais peut-être : » et jusqu'à trois pages proches.
-6. Les boutons : « Se connecter » (401), « Réessayer » (5xx, 408, 429), « Retour à l'accueil »
-   (toujours), « Page précédente » (seulement si elle ramène sur Chiphre).
+5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
+   en liens.
+6. Un seul bouton plein : « Se connecter » (401) ou « Réessayer » (5xx, 408, 429), sinon « Retour
+   à l'accueil » (toujours présent) ; « ← Page précédente » en simple lien, seulement s'il ramène
+   sur Chiphre.
 7. Repliés sous « Détails techniques » : le message et le début de la pile d'une erreur
    inattendue côté client (`App.Error.detail`), ou le message d'une erreur 5xx — il peut venir
    brut de la base (noms de tables) et n'a pas à s'afficher en grand devant un élève.

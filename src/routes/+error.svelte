@@ -33,6 +33,12 @@
 	const suggestions = $derived(status === 404 ? suggestPages(page.url.pathname) : []);
 	const technicalDetail = $derived(page.error?.detail ?? copy.technicalDetail);
 
+	// « A », « A ou B », « A, B ou C »
+	function separator(index: number): string {
+		if (index === 0) return '';
+		return index === suggestions.length - 1 ? ' ou ' : ', ';
+	}
+
 	// « Page précédente » seulement si elle ramène sur Chiphre : navigation interne
 	// (`from`), ou arrivée par un lien du site. `history.length` compte aussi
 	// l'onglet neuf. Connu après le montage : le serveur n'a pas d'historique.
@@ -88,26 +94,22 @@
 		{/if}
 
 		{#if suggestions.length > 0}
-			<nav
-				aria-labelledby="suggestions-title"
-				class="flex flex-col items-center gap-2 lg:items-start"
-			>
-				<p id="suggestions-title" class="font-semibold">Tu cherchais peut-être :</p>
-				<ul class="flex flex-wrap justify-center gap-2 lg:justify-start">
-					{#each suggestions as suggestion (suggestion.path)}
-						<li>
-							<Button href={suggestion.path} variant="outline" size="sm">{suggestion.title}</Button>
-						</li>
-					{/each}
-				</ul>
+			<nav aria-label="Pages proches">
+				<p class="text-balance">
+					Tu cherchais peut-être
+					{#each suggestions as suggestion, i (suggestion.path)}{separator(i)}<a
+							href={suggestion.path}
+							class="font-semibold text-amber-600 underline-offset-4 hover:underline dark:text-amber-400"
+							>{suggestion.title}</a
+						>{/each}&nbsp;?
+				</p>
 			</nav>
 		{/if}
 
-		<div class="flex flex-wrap justify-center gap-3 lg:justify-start">
+		<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
 			{#if copy.offerLogin}
 				<Button href={resolve('/auth/login')}>Se connecter</Button>
-			{/if}
-			{#if copy.offerRetry}
+			{:else if copy.offerRetry}
 				<Button onclick={() => location.reload()}>Réessayer</Button>
 			{/if}
 			<Button
@@ -117,7 +119,13 @@
 				Retour à l’accueil
 			</Button>
 			{#if canGoBack}
-				<Button variant="outline" onclick={() => history.back()}>Page précédente</Button>
+				<button
+					type="button"
+					class="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+					onclick={() => history.back()}
+				>
+					← Page précédente
+				</button>
 			{/if}
 		</div>
 
