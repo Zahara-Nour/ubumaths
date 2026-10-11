@@ -181,7 +181,9 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		"Chaque terme A/(x − r) s'intègre en A·ln|x − r|. La somme des deux logarithmes donne la primitive cherchée.",
 	'simplify-result': (b) =>
 		b.exponential
-			? `On développe, puis on met ${bind(b, 'exponential')} en facteur.`
+			? b.developed
+				? `On développe, puis on met ${bind(b, 'exponential')} en facteur.`
+				: `On met ${bind(b, 'exponential')} en facteur.`
 			: 'On écrit le résultat sous une forme simplifiée.',
 	'add-constant': () =>
 		'Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.'

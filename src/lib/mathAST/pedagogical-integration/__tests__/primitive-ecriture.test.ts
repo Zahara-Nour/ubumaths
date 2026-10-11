@@ -509,3 +509,76 @@ describe('IPP : aucun nombre après une lettre (coefficient devant)', () => {
 		);
 	});
 });
+
+// =============================================================================
+// Revue du lot 4 (2) : parenthèse d'IPP développée, exposant stable, texte juste
+// =============================================================================
+
+describe('parenthèse d’IPP sans exponentielle commune à tous les termes', () => {
+	it.each([
+		[
+			'x^2e^{2x}+x',
+			'\\left( \\dfrac{x^2}{2} - \\dfrac{x}{2} + \\dfrac{1}{4} \\right) \\exponentialE^{2 x} + \\dfrac{x^2}{2}'
+		],
+		[
+			'x^2\\sin(x)',
+			'-x^2 \\cos\\left( x \\right) + 2 x \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)'
+		],
+		[
+			'x^2\\cos(x)+x',
+			// ordre de `tidy` (décision de David du 2026-10-11)
+			'x^2 \\sin\\left( x \\right) + 2 x \\cos\\left( x \\right) + \\dfrac{x^2}{2} - 2 \\sin\\left( x \\right)'
+		],
+		// parenthèse venue de u, pas de l'IPP : gardée
+		[
+			'(2x+1)\\sin(x)',
+			'-\\cos\\left( x \\right) \\left( 2 x + 1 \\right) + 2 \\sin\\left( x \\right)'
+		]
+	])('∫ %s dx s’écrit %s', (integrand, expected) => {
+		for (const level of LEVELS) {
+			const { result, rendered } = run(integrand, level, 'summarized');
+			expect(finalPrimitiveLatex(rendered)).toBe(expected);
+			expectExactDerivative(result.antiderivative, integrand);
+		}
+	});
+});
+
+describe('une seule écriture de l’exposant dans l’étape « On simplifie »', () => {
+	it.each([
+		['xe^{x/2}', '2 \\left( x - 2 \\right) \\exponentialE^{x / 2}', '\\dfrac{x}{2}'],
+		['3xe^{\\frac{x}{2}}', '6 \\left( x - 2 \\right) \\exponentialE^{\\dfrac{x}{2}}', 'x / 2']
+	])('∫ %s dx s’écrit %s, sans %s', (integrand, expected, foreign) => {
+		const { result, rendered } = run(integrand, 'lycee', 'detailed');
+		expect(finalPrimitiveLatex(rendered)).toBe(expected);
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(`${simplify?.explanation} ${simplify?.expressionLatex}`).not.toContain(foreign);
+		expectExactDerivative(result.antiderivative, integrand);
+	});
+});
+
+describe('le texte de « On simplifie » ne promet pas une ligne cachée', () => {
+	it.each([
+		['xe^x', 'On met \\exponentialE^x en facteur.'],
+		['3xe^x', 'On met \\exponentialE^x en facteur.'],
+		['x^2e^x', 'On développe, puis on met \\exponentialE^x en facteur.']
+	])('∫ %s dx : « %s »', (integrand, explanation) => {
+		const { rendered } = run(integrand, 'lycee', 'detailed');
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(simplify?.explanation).toBe(explanation);
+		const lines = (simplify?.expressionLatex ?? '').split('= ').length;
+		expect(lines).toBe(explanation.startsWith('On développe') ? 3 : 2);
+	});
+});
+
+describe('IPP : un signe moins devant, pas dans une parenthèse', () => {
+	it.each([
+		['x^2e^{-x}', '-x^2 \\exponentialE^{-x}', 'x^2 \\left( -\\exponentialE^{-x} \\right)'],
+		['x\\sin(x)', '-x \\cos\\left( x \\right)', 'x \\left( -\\cos\\left( x \\right) \\right)']
+	])('∫ %s dx : uv s’écrit %s', (integrand, uv, old) => {
+		const { result, rendered } = run(integrand, 'lycee', 'summarized');
+		const formula = rendered.find((s) => s.rule === 'apply-parts-formula');
+		expect(formula?.expressionLatex).toContain(`& = ${uv} - \\int`);
+		expect(formula?.expressionLatex).not.toContain(old);
+		expectExactDerivative(result.antiderivative, integrand);
+	});
+});

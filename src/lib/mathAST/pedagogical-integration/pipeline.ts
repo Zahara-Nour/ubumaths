@@ -44,6 +44,7 @@
 
 import type { MathNode } from '../types';
 import {
+	add,
 	cos,
 	divide,
 	euler,
@@ -87,6 +88,8 @@ import { isEulerConstant } from '../guards';
 import { nodesEqual } from '../normal/hash';
 import { areEquivalent } from '../equivalence';
 import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyNotImplemented } from '../pedagogical-simplify/types';
+import { mapNode } from '../transforms';
 import {
 	buildStep,
 	checkAbort,
@@ -354,19 +357,19 @@ function pushSimplifyStep(
 ): MathNode {
 	const single = singleCoefficientTerm(raw);
 	if (single?.canonical) return raw;
-	const factoring = single ? null : factorCommonExponential(raw, ctx);
-	if (factoring) {
+	const rewriting = single ? null : developAndFactor(raw, ctx);
+	if (rewriting) {
 		steps.push(
 			buildStep(ctx, {
 				rule: 'simplify-result',
 				before: raw,
-				after: factoring.result,
+				after: rewriting.result,
 				variable: ctx.variable,
-				// le rendu montre la ligne développée ; l'explication nomme e^{u}
-				bindings: { developed: factoring.developed, exponential: factoring.exponential }
+				// `developed` : ligne montrée par le rendu ; `exponential` : nommée par l'explication
+				bindings: rewriting.bindings
 			})
 		);
-		return factoring.result;
+		return rewriting.result;
 	}
 	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
 	// en gardant la forme « k · fonction » ; sinon, `tidy`
@@ -383,38 +386,124 @@ function pushSimplifyStep(
 	return tidied;
 }
 
-interface ExponentialFactoring {
-	readonly developed: MathNode;
-	readonly exponential: MathNode;
+interface SimplifyRewriting {
 	readonly result: MathNode;
+	readonly bindings: IntegrationBindings;
 }
 
 /**
- * Lot 4 de l'ADR 0024 (décision de David du 2026-10-11, V17-V18) : quand tous
- * les termes de la primitive développée portent la même exponentielle e^{u},
- * on la met en facteur — `x^2e^x-2(xe^x-e^x)` → `(x^2-2x+2)e^x`. Pas de moteur
- * propre : `developper` puis `factoriser` de pedagogical-simplify. Rend `null`
- * (et la primitive passe par `tidy`) sans exponentielle commune, ou si
- * `factoriser` ne la sort pas.
+ * Lot 4 de l'ADR 0024 (décision de David du 2026-10-11, V17-V18) : la primitive
+ * est développée (`developper` de pedagogical-simplify), puis l'exponentielle
+ * e^{u} que portent au moins deux termes est mise en facteur sur ces termes
+ * (`factoriser`) : `x^2e^x-2(xe^x-e^x)` → `(x^2-2x+2)e^x`, et
+ * `\dfrac{1}{2}x^2e^{2x}-(…)+\dfrac{x^2}{2}` → `(…)e^{2x}+\dfrac{x^2}{2}`. Sans
+ * exponentielle partagée, la forme développée et rangée (`tidy`) quand la
+ * primitive brute garde une parenthèse d'IPP (`-x^2\cos x+2(x\sin x+\cos x)`) ;
+ * sinon `null`, et la primitive passe par `tidy` seul. Pas de moteur propre.
  */
-function factorCommonExponential(raw: MathNode, ctx: DispatchContext): ExponentialFactoring | null {
-	const schoolLevel = ctx.level;
-	try {
-		const developed = generatePedagogicalSimplifySteps(raw, {
-			intent: 'developper',
-			schoolLevel
-		}).result;
-		const exponential = commonExponential(developed);
-		if (!exponential) return null;
-		const result = generatePedagogicalSimplifySteps(developed, {
-			intent: 'factoriser',
-			schoolLevel
-		}).result;
-		return hasFactor(result, exponential) ? { developed, exponential, result } : null;
-	} catch {
-		// Hors du champ de pedagogical-simplify : la mise au propre de `tidy`
-		return null;
+function developAndFactor(raw: MathNode, ctx: DispatchContext): SimplifyRewriting | null {
+	const developed = runSimplifyIntent(raw, 'developper', ctx);
+	if (!developed) return null;
+	const terms = flattenSum(developed);
+	const exponential = sharedExponential(terms.map(({ term }) => term));
+	if (exponential) {
+		const carries = (term: MathNode) =>
+			exponentialFactors(term).some((f) => sameExponential(f, exponential));
+		const carrying = terms.filter(({ term }) => carries(term));
+		const others = terms.filter(({ term }) => !carries(term));
+		const group = runSimplifyIntent(
+			others.length === 0 ? developed : signedSum(carrying),
+			'factoriser',
+			ctx
+		);
+		if (group && hasFactor(group, exponential)) {
+			const rest = others.map(({ term, sign }) => ({ term: tidyTerms(term), sign }));
+			// Une seule écriture de l'exposant dans l'étape : celle de la primitive brute
+			const result = withExponential(appendTerms(group, rest), exponential);
+			const shown = toLatex(developed) !== toLatex(raw);
+			return {
+				result,
+				bindings: shown
+					? { developed: withExponential(developed, exponential), exponential }
+					: { exponential }
+			};
+		}
 	}
+	if (!hasGroupedSum(raw)) return null;
+	return { result: tidyTerms(developed), bindings: {} };
+}
+
+/**
+ * Une intention de pedagogical-simplify ; `null` sur un refus attendu
+ * (`PedagogicalSimplifyNotImplemented`). Toute autre erreur remonte.
+ */
+function runSimplifyIntent(
+	node: MathNode,
+	intent: 'developper' | 'factoriser',
+	ctx: DispatchContext
+): MathNode | null {
+	try {
+		return generatePedagogicalSimplifySteps(node, { intent, schoolLevel: ctx.level }).result;
+	} catch (error) {
+		if (error instanceof PedagogicalSimplifyNotImplemented) return null;
+		throw error;
+	}
+}
+
+type SignedTerm = { readonly term: MathNode; readonly sign: 1 | -1 };
+
+/** La somme des termes signés, dans l'ordre. */
+function signedSum(terms: readonly SignedTerm[]): MathNode {
+	const [first, ...others] = terms;
+	return appendTerms(first.sign === 1 ? first.term : opposite(first.term), others);
+}
+
+function appendTerms(start: MathNode, terms: readonly SignedTerm[]): MathNode {
+	return terms.reduce<MathNode>(
+		(acc, { term, sign }) => (sign === 1 ? add(acc, term) : subtract(acc, term)),
+		start
+	);
+}
+
+/**
+ * Une somme entre parenthèses multipliée au plus par un nombre, termes et
+ * signes traversés : la parenthèse de `- ∫ v du` (`-2(x\sin x+\cos x)`). Pas
+ * celle d'un facteur littéral (`(2x+1)\cos x`), ni sous une puissance.
+ */
+function hasGroupedSum(node: MathNode): boolean {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+			// `a - (b - c)` : la somme de droite est entre parenthèses, nœud ou pas
+			return isSum(node.right) || hasGroupedSum(node.left) || hasGroupedSum(node.right);
+		case 'opposite':
+		case 'positive':
+		case 'delimiter': {
+			const inner = node.type === 'delimiter' ? node.content : node.operand;
+			return isSum(inner) || hasGroupedSum(inner);
+		}
+		case 'multiplication': {
+			const literal = flattenProductShallow(node)
+				.map(({ factor }) => factor)
+				.filter((factor) => extractExactRational(factor) === null);
+			return literal.length === 1 && (isSum(literal[0]) || hasGroupedSum(literal[0]));
+		}
+		default:
+			return false;
+	}
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
+}
+
+/** Remplace chaque e^{u} équivalente à `exponential` par elle (même exposant écrit). */
+function withExponential(node: MathNode, exponential: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'superscript' && isEulerConstant(n.base) && sameExponential(n, exponential)
+			? exponential
+			: n
+	);
 }
 
 /** Les facteurs e^{u} d'un terme (`\dfrac{1}{2} x e^{2x}`, `\dfrac{x e^x}{2}`). */
@@ -425,16 +514,16 @@ function exponentialFactors(term: MathNode): MathNode[] {
 		.filter((factor) => factor.type === 'superscript' && isEulerConstant(factor.base));
 }
 
-/** L'exponentielle que portent TOUS les termes d'une somme (au moins deux). */
-function commonExponential(sum: MathNode): MathNode | null {
-	const terms = flattenSum(sum).map(({ term }) => term);
+/** La première exponentielle que portent au moins deux termes. */
+function sharedExponential(terms: readonly MathNode[]): MathNode | null {
 	if (terms.length < 2) return null;
-	const [first, ...others] = terms;
-	return (
-		exponentialFactors(first).find((candidate) =>
-			others.every((term) => exponentialFactors(term).some((f) => sameExponential(f, candidate)))
-		) ?? null
-	);
+	for (const candidate of terms.flatMap(exponentialFactors)) {
+		const count = terms.filter((term) =>
+			exponentialFactors(term).some((f) => sameExponential(f, candidate))
+		).length;
+		if (count >= 2) return candidate;
+	}
+	return null;
 }
 
 /** `factor` est un facteur du produit `node` (signe en tête compris). */
@@ -1058,7 +1147,8 @@ function integrateByParts(
  * Le produit u·v de l'IPP, coefficient numérique DEVANT : `\\dfrac{1}{2}xe^{2x}`,
  * `-\\dfrac{3}{2}xe^{-2x}`, et non `x\\dfrac{1}{2}e^{2x}` ni `3x\\left(-\\dfrac{1}{2}e^{-2x}\\right)`
  * (revue du lot 4 de l'ADR 0024 : l'IPP sur e^{ax+b} rendait v = \\dfrac{1}{a}e^{ax+b}).
- * Sans coefficient autre que ±1, le produit reste `simplifiedMultiply(u, v)`.
+ * k = −1 met le signe devant (`-x^2e^{-x}`, pas `x^2\\left(-e^{-x}\\right)`) ; k = 1
+ * garde `simplifiedMultiply(u, v)`.
  */
 function coefficientFirstProduct(u: MathNode, v: MathNode): MathNode {
 	let k: Rational = ONE;
@@ -1072,7 +1162,7 @@ function coefficientFirstProduct(u: MathNode, v: MathNode): MathNode {
 			else k = mulRational(k, value);
 		}
 	}
-	if (isOneRational(absRational(k)) || rest.length === 0) return simplifiedMultiply(u, v);
+	if (isOneRational(k) || rest.length === 0) return simplifiedMultiply(u, v);
 	const product = rest.reduce((acc, factor) => simplifiedMultiply(acc, factor));
 	return withRationalCoefficient(k, product);
 }
