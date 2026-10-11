@@ -92,7 +92,7 @@
 				><StructureReading reading={wholeReading} onhighlight={highlight} /></span
 			>
 		</div>
-		<div class="reading-line" aria-live="polite">
+		<div class="reading-line">
 			<span class="reading-label">Sous-expression survolée&nbsp;:</span>
 			{#if subReading}
 				<span data-reading="hovered"

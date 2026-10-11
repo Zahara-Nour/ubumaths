@@ -10,12 +10,13 @@
 	interface Props {
 		latex: string;
 		readerGrade: string | null;
+		frameLeaves?: boolean;
 	}
 
-	let { latex, readerGrade }: Props = $props();
+	let { latex, readerGrade, frameLeaves = true }: Props = $props();
 
 	provideReaderGrade(() => readerGrade);
 	provideStructureLexicon();
 </script>
 
-<StructureExplorer {latex} />
+<StructureExplorer {latex} {frameLeaves} />

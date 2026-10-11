@@ -160,7 +160,10 @@
 						/>
 						<div class="corpus-caption">
 							{#if hovered !== null && entry.result.structure.nodes[hovered]}
-								<StructureReading reading={readingOf(entry.result.structure, hovered)} />
+								<StructureReading
+									reading={readingOf(entry.result.structure, hovered)}
+									interactive={false}
+								/>
 							{/if}
 						</div>
 					{:else}

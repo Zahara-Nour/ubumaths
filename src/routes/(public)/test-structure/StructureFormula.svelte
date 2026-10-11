@@ -73,8 +73,15 @@
 	/** Zones mesurées des sous-expressions (pas d'état réactif : un cache de mesures) */
 	let rectCache: { latex: string; rects: Map<number, DOMRect> } | null = null;
 
-	/** Sous-expression encadrée : l'imposée d'abord, sinon la survolée */
-	const framedId = $derived(highlightId ?? selectedId);
+	/**
+	 * Sous-expression encadrée : l'imposée d'abord, sinon la survolée. L'imposée
+	 * suit le réglage « nombres et lettres seuls » : décoché, un nombre ou une
+	 * lettre désignés par la lecture n'encadrent rien (pas leur parent : le mot
+	 * survolé ne le désigne pas).
+	 */
+	const framedId = $derived(
+		highlightId !== null ? frameableHighlight(highlightId, frameLeaves) : selectedId
+	);
 	// Les mesures ne sont lues qu'une fois une sous-expression choisie (survol de la formule ou de la lecture)
 	const frames = $derived(computeFrames(framedId, showAncestors));
 
@@ -152,6 +159,12 @@
 		const node = structure.nodes[id];
 		if (!frameLeaves && isLeaf(node) && node.parent !== null) return node.parent;
 		return id;
+	}
+
+	function frameableHighlight(id: number, withLeaves: boolean): number | null {
+		const node = structure.nodes[id];
+		if (!node) return null;
+		return !withLeaves && isLeaf(node) && node.parent !== null ? null : id;
 	}
 
 	/** Rectangle réellement occupé par les caractères et traits d'une sous-expression */

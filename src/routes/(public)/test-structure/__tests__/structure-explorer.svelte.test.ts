@@ -12,6 +12,7 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import { stripMarkers, structureFromLatex } from '$lib/mathAST/structure';
 import StructureExplorerHarness from './StructureExplorerHarness.svelte';
+import StructureReadingHarness from './StructureReadingHarness.svelte';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
 vi.mock('$lib/dictionary/fetch-dictionary', async () => {
@@ -163,5 +164,83 @@ describe('élève de 6e ou avant (section C)', () => {
 			expect(container.querySelector('.structure-stage')).not.toBeNull();
 			expect(wholeReading(container)?.textContent?.replace(/\s+/g, ' ')).toContain('la somme de 5');
 		}
+	});
+});
+
+describe('corpus : lecture courte sans lien (revue du lot 4)', () => {
+	it('interactive={false} : ni mot cliquable, ni arrêt clavier', async () => {
+		// Le dictionnaire est chargé (la lecture interactive souligne ses mots) : l'absence prouve le refus
+		const linked = await render(StructureReadingHarness, { latex: '2+3y' });
+		await expect.poll(() => lexiconButtons(linked.container)).toEqual(['somme', 'produit']);
+		const plain = await render(StructureReadingHarness, { latex: '2+3y', interactive: false });
+		expect(plain.container.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+			'la somme de 2 et du produit de 3 par y'
+		);
+		expect(lexiconButtons(plain.container)).toEqual([]);
+		expect(plain.container.querySelectorAll('[tabindex]')).toHaveLength(0);
+	});
+});
+
+describe('clavier sur la lecture principale (revue du lot 4)', () => {
+	it('Tab atteint texte et formules, nommés par leur texte, et encadre leur sous-expression', async () => {
+		const { container } = await render(StructureExplorerHarness, {
+			latex: '2+3y',
+			readerGrade: null
+		});
+		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		await expect.poll(() => lexiconButtons(container)).toContain('produit');
+		const two = page.getByRole('button', { name: '2', exact: true });
+		await expect.element(two).toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'par', exact: true }))
+			.toBeInTheDocument();
+		// Premier arrêt : « la », qui désigne la somme
+		await userEvent.tab();
+		expect(document.activeElement?.getAttribute('aria-label')).toBe('la');
+		await expect.poll(() => stage?.dataset.framedId).toBe('0');
+		while (document.activeElement !== two.element()) await userEvent.tab();
+		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', '2')));
+	});
+
+	it('Entrée sur « produit » ouvre la fiche ; l’encadré de 3y reste tant qu’elle est ouverte', async () => {
+		const { container } = await render(StructureExplorerHarness, {
+			latex: '2+3y',
+			readerGrade: null
+		});
+		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const product = nodeIdOf('2+3y', '3y');
+		await expect.poll(() => lexiconButtons(container)).toContain('produit');
+		const word = page.getByRole('button', { name: 'produit', exact: true }).first();
+		while (document.activeElement !== word.element()) await userEvent.tab();
+		await expect.poll(() => stage?.dataset.framedId).toBe(String(product));
+		await userEvent.keyboard('{Enter}');
+		await expect.element(page.getByRole('dialog', { name: 'produit' })).toBeInTheDocument();
+		expect(stage?.dataset.framedId).toBe(String(product));
+		await userEvent.keyboard('{Escape}');
+		await expect.poll(() => document.activeElement).toBe(word.element());
+		expect(stage?.dataset.framedId).toBe(String(product));
+	});
+});
+
+describe('réglage « nombres et lettres seuls » (revue du lot 4)', () => {
+	it('décoché : survoler « 2 » dans la lecture n’encadre rien ; « produit » encadre 3y', async () => {
+		const { container } = await render(StructureExplorerHarness, {
+			latex: '2+3y',
+			readerGrade: null,
+			frameLeaves: false
+		});
+		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const two = [...(wholeReading(container)?.querySelectorAll('math-span') ?? [])].find(
+			(f) => f.textContent === '2'
+		);
+		if (!two) throw new Error('formule 2 absente de la lecture');
+		await userEvent.hover(page.elementLocator(two));
+		// Le survol a bien eu lieu (segment survolé), mais rien n'est encadré
+		await expect.poll(() => two.closest('.reading-segment')?.matches(':hover')).toBe(true);
+		expect(stage?.dataset.framedId).toBeUndefined();
+		expect(container.querySelectorAll('.structure-frame')).toHaveLength(0);
+		await expect.poll(() => lexiconButtons(container)).toContain('produit');
+		await userEvent.hover(page.getByRole('button', { name: 'produit', exact: true }));
+		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', '3y')));
 	});
 });
