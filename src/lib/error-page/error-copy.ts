@@ -16,9 +16,12 @@
 
 export interface ErrorCopy {
 	title: string;
-	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 403, 404, 410). */
+	/** Phrase sous le titre, ou `null` quand le titre suffit (401, 403, 404, 410, 429). */
 	explanation: string | null;
-	/** Verbe de la phrase sur π : « Le nombre 401 {verbe} à la 1 197ᵉ décimale de π ». */
+	/**
+	 * Début de la phrase sur π, préposition comprise : « Le nombre 429 {a attendu
+	 * jusqu’à la} 1 229ᵉ décimale de π ».
+	 */
 	piVerb: string;
 	/**
 	 * Chute de la phrase sur π, ponctuation d'attache comprise (« , mais… »,
@@ -43,13 +46,13 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	401: {
 		title: 'Connexion requise',
 		explanation: null,
-		piVerb: 'se présente',
+		piVerb: 'se présente à la',
 		piTwist: '\u00a0; ta page, elle, voudrait que tu en fasses autant'
 	},
 	403: {
 		title: 'Accès refusé',
 		explanation: null,
-		piVerb: 'a été autorisé à s’installer',
+		piVerb: 'a été autorisé à s’installer à la',
 		piTwist: '\u00a0; toi, sur cette page, tu ne l’es pas'
 	},
 	404: {
@@ -60,12 +63,14 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	410: {
 		title: 'Page disparue',
 		explanation: null,
-		piVerb: 'a un bail éternel',
+		piVerb: 'a un bail éternel à la',
 		piTwist: '\u00a0; cette page, elle, a rendu les clés'
 	},
 	429: {
 		title: 'Trop de demandes',
-		explanation: 'Le serveur reçoit trop de demandes d’un coup. Patiente un instant, puis réessaie.'
+		explanation: null,
+		piVerb: 'a attendu jusqu’à la',
+		piTwist: '\u00a0; toi, quelques secondes suffiront'
 	},
 	503: {
 		title: 'Service indisponible',
@@ -117,7 +122,7 @@ export function describeError(status: number, message: string | undefined): Erro
 
 	return {
 		...copy,
-		piVerb: copy.piVerb ?? 'apparaît',
+		piVerb: copy.piVerb ?? 'apparaît à la',
 		piTwist: copy.piTwist ?? null,
 		// Erreur 4xx : le message précis (« Exercice introuvable ») remplace le titre générique
 		title: status < 500 && specific !== null ? specific : copy.title,

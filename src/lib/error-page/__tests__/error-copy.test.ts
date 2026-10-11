@@ -23,25 +23,30 @@ describe('describeError', () => {
 		expect(describeError(401, 'Unauthorized')).toMatchObject({
 			title: 'Connexion requise',
 			explanation: null,
-			piVerb: 'se présente',
+			piVerb: 'se présente à la',
 			piTwist: '\u00a0; ta page, elle, voudrait que tu en fasses autant',
 			offerLogin: true
 		});
 	});
 
-	it('phrase sur π : chute pour 403, 404 et 410, aucune pour un code sans chute', () => {
+	it('phrase sur π : chute pour 403, 404, 410 et 429, aucune pour un code sans chute', () => {
 		expect(describeError(404, undefined).piTwist).toBe(', mais la page, elle, reste introuvable');
 		expect(describeError(403, undefined)).toMatchObject({
 			explanation: null,
-			piVerb: 'a été autorisé à s’installer',
+			piVerb: 'a été autorisé à s’installer à la',
 			piTwist: '\u00a0; toi, sur cette page, tu ne l’es pas'
 		});
 		expect(describeError(410, undefined)).toMatchObject({
 			explanation: null,
-			piVerb: 'a un bail éternel',
+			piVerb: 'a un bail éternel à la',
 			piTwist: '\u00a0; cette page, elle, a rendu les clés'
 		});
-		expect(describeError(429, undefined)).toMatchObject({ piVerb: 'apparaît', piTwist: null });
+		expect(describeError(429, undefined)).toMatchObject({
+			explanation: null,
+			piVerb: 'a attendu jusqu’à la',
+			piTwist: '\u00a0; toi, quelques secondes suffiront'
+		});
+		expect(describeError(503, undefined)).toMatchObject({ piVerb: 'apparaît à la', piTwist: null });
 	});
 
 	it('un code sans texte propre retombe sur sa famille', () => {
