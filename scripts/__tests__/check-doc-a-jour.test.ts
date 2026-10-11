@@ -23,6 +23,7 @@ import {
 	type DocCoverage,
 	type CoverageConfig
 } from '../check-doc-a-jour';
+import { COVERAGE_CONFIG } from '../doc-a-jour.config';
 
 const CONFIG: CoverageConfig = {
 	scope: ['src/lib/**', 'src/routes/**', 'supabase/migrations/**'],
@@ -164,6 +165,37 @@ describe('uncoveredFiles — chaque fichier de code a sa doc', () => {
 				DOCS,
 				CONFIG
 			)
+		).toEqual([]);
+	});
+});
+
+describe('COVERAGE_CONFIG — les fichiers d’environnement sont gardés', () => {
+	// La carte de l'environnement de dev couvre la CI, les hooks, Vercel et les
+	// scripts d'outillage : leur modification doit la réclamer. Doc fictive qui
+	// couvre tout le périmètre (`**` ignorerait les dossiers en point, .github…) :
+	// seul le périmètre décide ici. Aucun test ne lit docs/.
+	const ENV_DOC: DocCoverage = { doc: 'docs/pratiques/env.md', couvre: COVERAGE_CONFIG.scope };
+	const guarded = (files: string[]) =>
+		docsToUpdate(files, [ENV_DOC], COVERAGE_CONFIG).flatMap((m) => m.files);
+
+	it('réclame la doc pour la CI, les hooks, Vercel et les scripts d’outillage', () => {
+		const env = [
+			'.github/workflows/quality.yml',
+			'.github/dependabot.yml',
+			'.husky/pre-push',
+			'vercel.json',
+			'svelte.config.js',
+			'.claude/settings.json',
+			'.claude/hooks/garde-commandes.py',
+			'scripts/deploy-prod.sh',
+			'scripts/check-incremental.sh'
+		];
+		expect(guarded(env)).toEqual(env);
+	});
+
+	it('laisse hors garde les dépendances, les fichiers internes de husky et les autres scripts', () => {
+		expect(
+			guarded(['package.json', 'pnpm-lock.yaml', '.husky/_/pre-push', 'scripts/create-teacher.ts'])
 		).toEqual([]);
 	});
 });

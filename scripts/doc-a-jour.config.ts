@@ -10,7 +10,40 @@
 import type { CoverageConfig } from './check-doc-a-jour';
 
 export const COVERAGE_CONFIG: CoverageConfig = {
-	scope: ['src/lib/**', 'src/routes/**', 'src/hooks*.ts', 'src/app.*', 'supabase/migrations/**'],
+	scope: [
+		'src/lib/**',
+		'src/routes/**',
+		'src/hooks*.ts',
+		'src/app.*',
+		'supabase/migrations/**',
+		// Environnement de dev (2026-10-11) : la carte docs/pratiques/environnement-de-dev.md
+		// doit suivre la CI, les hooks, Vercel et les scripts d'outillage, sinon elle
+		// ment au premier changement. Liste EXPLICITE, pas `scripts/**` : la plupart
+		// des scripts sont des outils ponctuels sans rapport avec l'environnement.
+		// Ni package.json ni pnpm-lock.yaml : Dependabot les touche à chaque montée de
+		// version, la doc deviendrait un frein sans rien dire de neuf.
+		'.github/workflows/**',
+		'.github/dependabot.yml',
+		'.husky/*',
+		'.lintstagedrc.js',
+		'vercel.json',
+		'svelte.config.js',
+		'vite.config.ts',
+		'.nvmrc',
+		'.claude/settings.json',
+		'.claude/hooks/**',
+		'scripts/gros-process.sh',
+		'scripts/check-incremental.sh',
+		'scripts/cliquet-types-tests.ts',
+		'scripts/deploy-prod.sh',
+		'scripts/release.ts',
+		'scripts/lint-fast.sh',
+		'scripts/with-db-lock.sh',
+		'scripts/ci-version-seule.sh',
+		'scripts/vercel-ignore-build.sh',
+		'scripts/releve-web-vitals.ts',
+		'scripts/check-production-health.ts'
+	],
 	excluded: [
 		'**/__tests__/**',
 		'**/*.test.*',
