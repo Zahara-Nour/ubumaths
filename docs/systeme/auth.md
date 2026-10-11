@@ -259,7 +259,7 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
 4. `requireAdmin(locals)` rend `{ supabase, adminUserId }` : le client d'élévation s'il est
    actif, sinon `locals.supabase` pour un vrai login admin ; 401 sans session (même élevé),
    sinon 403
-   « Admin elevation required ». **Les écritures privilégiées utilisent le `supabase` rendu.**
+   « Élévation admin requise ». **Les écritures privilégiées utilisent le `supabase` rendu.**
 5. `POST /api/admin/elevate/revoke` **et `POST /auth/logout`** : `signOut()` best-effort du
    jeton admin, puis effacement du cookie. Sinon, expiration naturelle (≤ 1 h) puis nouvelle
    saisie.
