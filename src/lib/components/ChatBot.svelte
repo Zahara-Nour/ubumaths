@@ -941,5 +941,14 @@
 					: ''}
 			</div>
 		{/if}
+
+		<!-- RGPD (C10, 2026-10-11) : texte et images partent tels quels chez le sous-traitant IA. -->
+		<span
+			class="mt-2 block text-muted-foreground"
+			style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+		>
+			Ne donne ni ton nom, ni ton adresse, ni aucune information personnelle : tes messages et
+			images sont envoyés à un service d’intelligence artificielle.
+		</span>
 	</div>
 </div>

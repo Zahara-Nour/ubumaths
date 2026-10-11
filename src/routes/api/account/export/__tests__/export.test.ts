@@ -69,9 +69,26 @@ const mockProfile = {
 	gidouilles: 100,
 	bonus: 50,
 	vip_cards: 2,
+	consent_required: true,
+	consent_granted_at: null,
+	consent_grace_period_ends: '2024-07-01T00:00:00Z',
+	age_declaration: '15_plus',
+	age_declared_at: '2024-06-15T00:00:00Z',
 	created_at: '2024-01-01T00:00:00Z',
 	updated_at: '2024-06-01T00:00:00Z'
 };
+
+// Conversations avec le tuteur IA, messages imbriqués (C12, 2026-10-11).
+const mockTutorConversations = [
+	{
+		id: 'conv-1',
+		exercise_topic: 'fractions',
+		started_at: '2024-05-01T10:00:00Z',
+		tutor_messages: [
+			{ role: 'user', content: 'Je ne comprends pas', created_at: '2024-05-01T10:00:05Z' }
+		]
+	}
+];
 
 // Pedagogical data now lives in `exercise_completions` (renamed from the old
 // `student_attempts`, which no longer exists in the schema).
@@ -143,6 +160,8 @@ function setupMockSupabase() {
 						return mockCompletions;
 					case 'test_sessions':
 						return mockTestSessions;
+					case 'tutor_conversations':
+						return mockTutorConversations;
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -285,7 +304,7 @@ describe('GET /api/account/export', () => {
 			expect(data._metadata).toBeDefined();
 			expect(data._metadata.exported_at).toBeDefined();
 			expect(data._metadata.user_id).toBe(TEST_USER.id);
-			expect(data._metadata.format_version).toBe('1.3');
+			expect(data._metadata.format_version).toBe('1.4');
 			expect(data._metadata.gdpr_article).toContain('Article 20');
 		});
 
@@ -304,6 +323,7 @@ describe('GET /api/account/export', () => {
 			expect(data.gaming).toBeDefined();
 			expect(data.rewards).toBeDefined();
 			expect(data.classes).toBeDefined();
+			expect(data.tuteur).toBeDefined();
 		});
 	});
 
@@ -312,6 +332,31 @@ describe('GET /api/account/export', () => {
 	// =========================================================================
 
 	describe('Data Content', () => {
+		// C12 (décision de David, 2026-10-11) : le tuteur et la déclaration d'âge manquaient.
+		test('contient les conversations avec le tuteur et leurs messages', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.tuteur.conversations).toEqual(mockTutorConversations);
+			const appel = mockSupabase.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'tutor_conversations'
+			);
+			expect(appel).toBeGreaterThanOrEqual(0);
+		});
+
+		test('le profil exporte le consentement parental et la déclaration d’âge', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.profile).toMatchObject({
+				consent_required: true,
+				consent_granted_at: null,
+				consent_grace_period_ends: '2024-07-01T00:00:00Z',
+				age_declaration: '15_plus',
+				age_declared_at: '2024-06-15T00:00:00Z'
+			});
+		});
+
 		test('includes profile data', async () => {
 			const event = createMockEvent();
 

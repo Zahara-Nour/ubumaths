@@ -608,24 +608,19 @@ Fonctionnalites implementees :
 - **Headers** : Content-Disposition pour telechargement automatique
 - **Securite** : Exclusion des tokens OAuth sensibles
 
-**Categories exportees** :
-| Categorie | Tables | Limite |
-|-----------|--------|--------|
-| `profile` | profiles | - |
-| `learning.attempts` | student_attempts | 1000 derniers |
-| `learning.progress` | student_progress | tout |
-| `learning.submissions` | assignment_submissions | tout |
-| `learning.flashcards` | srs_cards | tout |
-| `communications.messages_sent` | messages | 500 derniers |
-| `communications.private_messages_sent` | private_messages | 500 derniers |
-| `communications.notifications` | notifications | 200 derniers |
-| `social.friendships` | friendships | tout |
-| `gaming.player_stats` | game_players | - |
-| `rewards.inventory` | student_item_inventory | tout |
-| `rewards.gidouilles_history` | gidouilles_history | 500 derniers |
-| `rewards.bonus_history` | bonus_history | 500 derniers |
-| `rewards.purchases` | shop_purchase_history | 200 derniers |
-| `classes.memberships` | class_members | tout |
+**Categories exportees** (format `1.4`, reecrit le 2026-10-11 contre le code — C12) :
+
+| Categorie        | Tables                                                                                          |
+| ---------------- | ----------------------------------------------------------------------------------------------- |
+| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**)     |
+| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts`, `student_observable_state` |
+| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)   |
+| `communications` | `messages`, `private_messages`, `notifications`                                                 |
+| `social`         | `friendships`                                                                                   |
+| `gaming`         | `game_players`                                                                                  |
+| `rewards`        | `reward_events`                                                                                 |
+| `classes`        | `class_members`                                                                                 |
+| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                             |
 
 **Metadata incluses** :
 
@@ -634,7 +629,7 @@ Fonctionnalites implementees :
 	"_metadata": {
 		"exported_at": "ISO timestamp",
 		"user_id": "UUID",
-		"format_version": "1.0",
+		"format_version": "1.4",
 		"gdpr_article": "Article 20 - Droit a la portabilite"
 	}
 }

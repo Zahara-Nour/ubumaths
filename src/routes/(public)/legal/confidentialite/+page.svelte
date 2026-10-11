@@ -218,6 +218,27 @@
 							<td>Authentification, Classroom</td>
 							<td>USA</td>
 						</tr>
+						<tr>
+							<td>Brevo</td>
+							<td>Envoi des e-mails (consentement parental, comptes)</td>
+							<td>Union Europeenne (France)</td>
+						</tr>
+						<tr>
+							<td>Groq</td>
+							<td>
+								Tuteur IA : messages et images saisis par l'eleve, sans nom ni e-mail ajoute par
+								Chiphre ; aucune conservation
+							</td>
+							<td>USA</td>
+						</tr>
+						<tr>
+							<td>Hugging Face</td>
+							<td>
+								Recherche dans les cours pour le tuteur (quand elle est activee) : la question de
+								l'eleve est convertie en vecteur
+							</td>
+							<td>USA</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -252,7 +273,7 @@
 						</tr>
 						<tr>
 							<td>Logs techniques</td>
-							<td>90 jours</td>
+							<td>30 jours</td>
 						</tr>
 					</tbody>
 				</table>

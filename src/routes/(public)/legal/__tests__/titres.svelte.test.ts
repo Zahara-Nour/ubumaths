@@ -33,3 +33,18 @@ describe('intertitres des pages légales, accentués', () => {
 		await expect.element(screen.getByRole('heading', { level: niveau, name: titre })).toBeVisible();
 	});
 });
+
+// C13 (décision de David, 2026-10-11) : la page citait Supabase, Vercel et Google seulement,
+// et annonçait des journaux gardés 90 jours (purgés à 30 par run_cleanup_expired_data).
+describe('confidentialité : sous-traitants et durées réelles', () => {
+	it.each(['Brevo', 'Groq', 'Hugging Face'])('le sous-traitant %s est cité', async (nom) => {
+		const screen = await render(Confidentialite);
+		await expect.element(screen.getByRole('cell', { name: nom, exact: true })).toBeVisible();
+	});
+
+	it('les journaux techniques sont annoncés à 30 jours', async () => {
+		const screen = await render(Confidentialite);
+		const ligne = screen.getByRole('row', { name: /Logs techniques/ });
+		await expect.element(ligne).toHaveTextContent('30 jours');
+	});
+});

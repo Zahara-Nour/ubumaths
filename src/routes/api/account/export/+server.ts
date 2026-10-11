@@ -58,7 +58,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			gamePlayerResult,
 			rewardEventsResult,
 			classMembershipsResult,
-			testSessionsResult
+			testSessionsResult,
+			tutorConversationsResult
 		] = await Promise.all([
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
@@ -171,6 +172,16 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 				.eq('user_id', userId)
 				.order('created_at', { ascending: false })
+				.limit(1000),
+
+			// Tuteur IA : conversations et messages (C12, décision de David du 2026-10-11)
+			supabase
+				.from('tutor_conversations')
+				.select(
+					'id, exercise_topic, exercise_statement, started_at, ended_at, message_count, created_at, tutor_messages(role, content, created_at)'
+				)
+				.eq('student_id', userId)
+				.order('created_at', { ascending: false })
 				.limit(1000)
 		]);
 
@@ -178,6 +189,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// serait faux : on échoue plutôt (500, l'élève peut réessayer).
 		if (testSessionsResult.error) {
 			throw new Error(`test_sessions illisible : ${testSessionsResult.error.message}`);
+		}
+
+		// Même règle : un export qui omettrait le tuteur sur une panne serait faux.
+		if (tutorConversationsResult.error) {
+			throw new Error(`tutor_conversations illisible : ${tutorConversationsResult.error.message}`);
 		}
 
 		// Step 4: Build export object
@@ -198,6 +214,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 			gidouilles: profile.gidouilles,
 			bonus: profile.bonus,
 			vip_cards: profile.vip_cards,
+			// Consentement parental et déclaration d'âge (C12, 2026-10-11)
+			consent_required: profile.consent_required,
+			consent_granted_at: profile.consent_granted_at,
+			consent_grace_period_ends: profile.consent_grace_period_ends,
+			age_declaration: profile.age_declaration,
+			age_declared_at: profile.age_declared_at,
 			created_at: profile.created_at,
 			updated_at: profile.updated_at
 		};
@@ -207,7 +229,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			_metadata: {
 				exported_at: new Date().toISOString(),
 				user_id: userId,
-				format_version: '1.3',
+				format_version: '1.4',
 				gdpr_article: 'Article 20 - Droit a la portabilite',
 				categories: [
 					'profile',
@@ -217,7 +239,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 					'social',
 					'gaming',
 					'rewards',
-					'classes'
+					'classes',
+					'tuteur'
 				]
 			},
 
@@ -260,6 +283,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Rewards & Economy
 			rewards: {
 				events: rewardEventsResult.data || []
+			},
+
+			// Tuteur IA
+			tuteur: {
+				conversations: tutorConversationsResult.data || []
 			},
 
 			// Classes
