@@ -14,8 +14,7 @@
 
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { navigating } from '$app/stores';
-	import { page } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -88,7 +87,7 @@
 
 	// Loading state
 	let isSubmitting = $state(false);
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 
 	// Color options for MySelect
 	// Icon options for MySelect

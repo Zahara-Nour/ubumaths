@@ -318,3 +318,33 @@ describe('rotateCourseShareToken', () => {
 		expect(String(inserted[0].expires_at)).toMatch(/-08-31T23:59:59/);
 	});
 });
+
+describe('buildPublicCourseView — égalités et ordre des chapitres', () => {
+	it('à section_order égal, même ordre que buildChapterPlan : documents, séries, fiches, objectifs', () => {
+		const c = cours();
+		const ch = c.chapters[0];
+		// Tout en « Non classé », section_order 0 partout : le cas par défaut en base.
+		for (const liste of [ch.documents, ch.worksheets, ch.checklist_items, ch.series]) {
+			for (const x of liste) {
+				x.section_id = null;
+				x.section_order = 0;
+			}
+		}
+		const plan = buildPublicCourseView(c).chapters[0].plan;
+		expect(plan).toHaveLength(1);
+		expect(plan[0].items.map((i) => i.kind)).toEqual([
+			'document',
+			'document',
+			'series',
+			'worksheet',
+			'checklist'
+		]);
+	});
+
+	it('range les chapitres par display_order', () => {
+		const c = cours();
+		const second = { ...c.chapters[0], id: 'chap-0', title: 'Avant', display_order: -1 };
+		c.chapters.push(second);
+		expect(buildPublicCourseView(c).chapters.map((x) => x.title)).toEqual(['Avant', 'Fractions']);
+	});
+});

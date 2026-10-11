@@ -12,9 +12,11 @@
  * Duplication assumée avec `journal-share-tokens.ts` pour la gestion des
  * jetons (lecture, rotation, révocation) : les deux tables ont la même forme,
  * mais le client Supabase typé ne sait pas écrire `from(table)` sur une union de
- * noms de table sans transtypage, et ce module-là ne doit pas changer. Les
- * briques communes (`generateShareTokenString`, `endOfSchoolYear`) sont
- * importées, pas recopiées.
+ * noms de table sans transtypage. Les briques communes
+ * (`generateShareTokenString`, `endOfSchoolYear`) sont importées, pas
+ * recopiées. Factoriser obligerait à toucher le module du
+ * cahier, en production et sans test qui le couvre de bout en bout : un
+ * risque sans gain pour trois fonctions de quelques lignes.
  *
  * @module server/course-share-tokens
  */
@@ -251,6 +253,10 @@ function toPublicSeries(s: PublicCourseChapter['series'][number]): PublicCourseS
 function buildPublicChapterPlan(chapter: PublicCourseChapter): PublicPlanSection[] {
 	type Place = { sectionId: string | null; order: number; item: PublicPlanItem };
 
+	// ⚠️ L'ordre d'insertion décide à `section_order` égal (tri stable ; la
+	// colonne vaut 0 par défaut) : documents, séries, fiches, puis objectifs —
+	// le même que `buildChapterPlan`.
+
 	const places: Place[] = [
 		...chapter.documents.map((d) => ({
 			sectionId: d.section_id,
@@ -269,16 +275,16 @@ function buildPublicChapterPlan(chapter: PublicCourseChapter): PublicPlanSection
 				}
 			}
 		})),
+		...chapter.series.map((s) => ({
+			sectionId: s.section_id,
+			order: s.section_order,
+			item: { kind: 'series' as const, series: toPublicSeries(s) }
+		})),
 		...chapter.worksheets.map((w) => ({
 			sectionId: w.section_id,
 			order: w.section_order,
 			// Désignée par `worksheet_id` : c'est ce que la fonction de la fiche attend.
 			item: { kind: 'worksheet' as const, worksheetId: w.worksheet_id, title: w.title }
-		})),
-		...chapter.series.map((s) => ({
-			sectionId: s.section_id,
-			order: s.section_order,
-			item: { kind: 'series' as const, series: toPublicSeries(s) }
 		}))
 	];
 
