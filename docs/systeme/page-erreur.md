@@ -4,6 +4,7 @@ couvre:
   - 'src/lib/error-page/**'
   - 'src/lib/components/error-page/**'
   - 'src/routes/(public)/test-erreur/**'
+  - src/lib/server/maintenance.ts
 ---
 
 # Page d'erreur (404, 403, 500…)
@@ -110,6 +111,22 @@ proportionnel aux chiffres : rien ne se chevauche. Réglages (`DEFAULT_SPIRAL_OP
 que le 404 tombe vers la mi-rayon, encore lisible, et que la spirale s'arrête autour du disque
 de Père Ubu (~1 660 chiffres). Les codes situés au-delà (500 : 6 238ᵉ décimale) ne sont pas
 colorés dans la spirale ; la phrase reste affichée.
+
+## Page de maintenance
+
+Le mode maintenance (`pnpm maintenance:on`, `src/lib/server/maintenance.ts`) ne passe **pas** par
+`+error.svelte` : il coupe la requête avant Supabase et l'authentification, et doit tenir pendant
+qu'on fige la base. Sa page est donc du HTML autonome — ni JS, ni base, ni ressource externe —
+mais de la même famille : spirale de π avec le 503 en ambre (`piSpiralSvg`,
+`src/lib/error-page/pi-spiral-svg.ts`, même géométrie que `PiSpiral.svelte`), Père Ubu intégré
+dans la page (`?inline`, ~45 Ko), « Erreur 503 », « Maintenance en cours », « Le nombre 503 est de
+service à la 837ᵉ décimale de π ; Chiphre, lui, est hors service le temps d'une mise à jour. »,
+l'heure de retour prévue si `MAINTENANCE_UNTIL` est fixé, et « Réessayer » (simple lien vers la
+même adresse). Poids : ~175 Ko, ~64 Ko compressés.
+
+Un élève déjà sur le site au début de la maintenance, qui navigue, voit en revanche la page
+d'erreur 503 de l'application (« …cette page, elle, est hors service pour quelques minutes »),
+sans l'heure de retour.
 
 ## Page de démonstration
 
