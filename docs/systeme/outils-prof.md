@@ -57,7 +57,7 @@ annotations, export PNG / SVG / PDF, modèles de page.
 
 | Fichier                                                | Rôle                                                                                                                                                                                                                                                            |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/routes/(protected)/whiteboard/+page.svelte`       | Page : monte `<Whiteboard />` ; le `+page.server.ts` admet élève, prof et admin                                                                                                                                                                                 |
+| `src/routes/(protected)/whiteboard/+page.svelte`       | Page : monte `<Whiteboard />` ; le `+page.server.ts` admet le prof et l'admin (élève refusé, D5)                                                                                                                                                                |
 | `src/lib/whiteboard/index.ts`                          | Point d'entrée public du module                                                                                                                                                                                                                                 |
 | `src/lib/whiteboard/components/Whiteboard.svelte`      | Composant racine (outils, calques, panneaux)                                                                                                                                                                                                                    |
 | `src/lib/whiteboard/stores/whiteboard.svelte.ts`       | `whiteboardStore` (≈ 5 700 lignes, runes) : document, outils, sélection, historique, autosave                                                                                                                                                                   |
@@ -364,9 +364,11 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 2. **Tableur — alias sans fonction** : `FUNCTION_ALIASES` nomme COUNTBLANK, STDEV, VAR,
    MEDIAN, MODE, TODAY, NOW, YEAR, MONTH, DAY, VLOOKUP, HLOOKUP, INDEX, MATCH, qu'aucun
    fichier n'implémente → `#NAME?`.
-3. **Tableau blanc** : la route admet les élèves, le lien n'est montré qu'au prof (D5, à trancher).
-   Le panneau de fichiers, lui, ne propose plus rien de Google quand le drapeau est éteint
-   (V5, corrigé le 2026-10-11 : test `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`).
+3. **Tableau blanc** : réservé au prof et à l'admin depuis le 2026-10-11 (D5, décision de David :
+   outil de projection mono-utilisateur ; test `src/routes/(protected)/whiteboard/__tests__/page.server.test.ts`).
+   Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test
+   `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`). Un tableau partagé en direct
+   pour les élèves (chat, visio) serait une autre fonctionnalité, à penser avec le projet visio.
 4. **Google** : les routes `/api/google/**` ne testent pas le drapeau (seules les pages le
    font) ; `class_google_classroom_links` n'est lue nulle part dans `src/`.
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.

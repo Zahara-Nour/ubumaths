@@ -2,7 +2,9 @@
  * Whiteboard - Server Load
  *
  * Protected route for the educational whiteboard.
- * Access restricted to students, teachers, and admins.
+ * Réservé au prof et à l'admin (décision D5 de David, 2026-10-11) : outil de
+ * projection en classe, mono-utilisateur, dont le lien n'est montré qu'au prof.
+ * Un tableau partagé en direct pour les élèves serait une autre fonctionnalité.
  *
  * This route inherits authentication from (protected)/+layout.server.ts,
  * so we only need to verify role permissions.
@@ -14,10 +16,9 @@ import { error } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ parent }) => {
 	const { profile } = await parent();
 
-	// Only students, teachers, and admins can access
-	// (Admins included for testing and support purposes)
-	if (profile.role !== 'student' && profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Accès réservé aux élèves, enseignants et administrateurs');
+	// Prof et admin seulement (admin : tests et assistance)
+	if (profile.role !== 'teacher' && profile.role !== 'admin') {
+		throw error(403, 'Accès réservé aux enseignants');
 	}
 
 	return {
