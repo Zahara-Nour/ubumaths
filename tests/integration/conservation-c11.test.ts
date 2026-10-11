@@ -11,7 +11,9 @@
  *
  * Ce que le fichier prouve (sur `run_retention_c11()`, appelée par la purge hebdomadaire) :
  *   1. un élève sans connexion depuis 6 ans est supprimé (profil, compte, audit écrit) ;
- *   2. un élève connecté récemment, un prof inactif depuis 6 ans : gardés ;
+ *   2. un élève connecté récemment, un prof inactif depuis 6 ans, un élève dont la
+ *      dernière ouverture de session a 6 ans mais dont la session a été rafraîchie hier
+ *      (resté connecté) : gardés ;
  *   3. une conversation dont le dernier message a 13 mois est supprimée ; 11 mois : gardée ;
  *   4. une pré-inscription non activée de 13 mois est supprimée ; récente : gardée ;
  *   5. la purge hebdomadaire appelle bien cette fonction.
@@ -75,6 +77,7 @@ describe('conservation : purge C11', () => {
 	let ancien: string;
 	let recent: string;
 	let prof: string;
+	let resteConnecte: string;
 	let convVieille: string;
 	let convRecente: string;
 	const emailVieux = `zz-c11-vieux-${crypto.randomUUID()}@test.local`;
@@ -88,6 +91,16 @@ describe('conservation : purge C11', () => {
 		await derniereConnexion(ancien, '6 years');
 		await derniereConnexion(recent, '2 days');
 		await derniereConnexion(prof, '6 years');
+		// Resté connecté : ouverture de session il y a 6 ans, jeton rafraîchi hier.
+		resteConnecte = (await TestData.profile().withRole('student').create()).id;
+		await derniereConnexion(resteConnecte, '6 years');
+		const pgSession = await getPostgresClient();
+		await pgSession.query(
+			`insert into auth.sessions (id, user_id, created_at, updated_at, refreshed_at)
+			 values (gen_random_uuid(), $1, now() - interval '6 years', now() - interval '1 day',
+			   (now() - interval '1 day') at time zone 'UTC')`,
+			[resteConnecte]
+		);
 		convVieille = await conversation(recent, '13 months');
 		convRecente = await conversation(recent, '11 months');
 		await preInscription(emailVieux, '13 months');
@@ -118,6 +131,10 @@ describe('conservation : purge C11', () => {
 	it('un élève connecté récemment et un prof inactif sont gardés', async () => {
 		expect(await existe('profiles', 'id', recent)).toBe(true);
 		expect(await existe('profiles', 'id', prof)).toBe(true);
+	});
+
+	it('un élève resté connecté (session rafraîchie hier) est gardé', async () => {
+		expect(await existe('profiles', 'id', resteConnecte)).toBe(true);
 	});
 
 	it('conversation avec le tuteur : 13 mois supprimée, 11 mois gardée', async () => {

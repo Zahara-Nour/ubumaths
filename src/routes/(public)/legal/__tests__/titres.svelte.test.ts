@@ -52,7 +52,7 @@ describe('confidentialité : sous-traitants et durées réelles', () => {
 // C11 (décisions de David, 2026-10-11) : les durées annoncées sont celles de la purge.
 describe('confidentialité : durées de conservation appliquées', () => {
 	it.each([
-		['Profil utilisateur (eleve)', 'Supprime 5 ans apres la derniere connexion'],
+		['Profil utilisateur (eleve)', 'Supprime apres 5 ans sans activite'],
 		['Conversations avec le tuteur IA', '1 an apres le dernier message'],
 		['Pre-inscriptions non activees', '1 an']
 	])('%s : %s', async (type, duree) => {

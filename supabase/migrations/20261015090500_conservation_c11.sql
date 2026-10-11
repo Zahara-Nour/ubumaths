@@ -7,8 +7,12 @@
 -- ni comptes inactifs, ni pédagogie, ni messages au tuteur, ni pré-inscriptions.
 --
 -- Décisions de David (2026-10-11) — la purge hebdomadaire supprime désormais :
---   1. les comptes ÉLÈVES sans connexion depuis 5 ans (dernière connexion, ou création si
---      jamais connecté) — suppression complète, comme une suppression de compte
+--   1. les comptes ÉLÈVES sans ACTIVITÉ depuis 5 ans — suppression complète, comme une
+--      suppression de compte. Activité = la plus récente de : dernière ouverture de session
+--      (ou création du compte), dernier rafraîchissement d'une session (auth.sessions),
+--      dernière présence (user_presence). security-auditor : last_sign_in_at seul ne bouge
+--      pas quand une session reste ouverte (jeton rafraîchi) — un élève actif sur une
+--      tablette jamais déconnectée aurait été supprimé. Comptes de test exclus.
 --      (delete_user_account puis auth.users, cascade), tracée dans account_deletion_audit ;
 --      jamais un prof ni un admin ;
 --   2. les conversations avec le tuteur IA 1 an après leur dernier message ;
@@ -34,7 +38,7 @@ CREATE OR REPLACE FUNCTION public.run_retention_c11()
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, extensions, pg_temp
+SET search_path = public, pg_temp
 AS $$
 DECLARE
 	v_run_id uuid;
@@ -54,36 +58,53 @@ BEGIN
 		FROM profiles p
 		JOIN auth.users u ON u.id = p.id
 		WHERE p.role = 'student'
-		  AND coalesce(u.last_sign_in_at, u.created_at) < now() - interval '5 years'
+		  AND NOT coalesce(p.is_test, false)
+		  AND greatest(
+			coalesce(u.last_sign_in_at, u.created_at),
+			u.created_at,
+			(SELECT max(greatest(s.refreshed_at AT TIME ZONE 'UTC', s.updated_at))
+			   FROM auth.sessions s WHERE s.user_id = u.id),
+			(SELECT max(up.updated_at) FROM user_presence up WHERE up.user_id = p.id)
+		  ) < now() - interval '5 years'
 	LOOP
 		BEGIN
 			v_resultat := public.delete_user_account(v_eleve.id);
 			DELETE FROM auth.users WHERE id = v_eleve.id;
 			INSERT INTO account_deletion_audit (user_id, email_hash, status, error_message,
 				cleanup_result, completed_at)
-			VALUES (NULL, encode(digest(lower(trim(coalesce(v_eleve.email, ''))), 'sha256'), 'hex'),
-				'completed', 'Conservation : 5 ans sans connexion (C11)', v_resultat, now());
+			VALUES (NULL, encode(extensions.digest(lower(trim(coalesce(v_eleve.email, ''))), 'sha256'), 'hex'),
+				'completed', 'Conservation : 5 ans sans activité (C11)', v_resultat, now());
 			v_comptes := v_comptes + 1;
 		EXCEPTION WHEN OTHERS THEN
 			v_echecs := v_echecs + 1;
 			INSERT INTO account_deletion_audit (user_id, email_hash, status, error_message, completed_at)
-			VALUES (v_eleve.id, encode(digest(lower(trim(coalesce(v_eleve.email, ''))), 'sha256'), 'hex'),
+			VALUES (v_eleve.id, encode(extensions.digest(lower(trim(coalesce(v_eleve.email, ''))), 'sha256'), 'hex'),
 				'failed', 'Conservation : ' || SQLERRM, now());
 		END;
 	END LOOP;
 
 	-- 2. Conversations avec le tuteur : 1 an après leur dernier message (messages en cascade)
-	DELETE FROM tutor_conversations c
-	WHERE greatest(c.created_at,
-		coalesce((SELECT max(m.created_at) FROM tutor_messages m WHERE m.conversation_id = c.id),
-			c.created_at)) < now() - interval '1 year';
-	GET DIAGNOSTICS v_conversations = ROW_COUNT;
+	BEGIN
+		DELETE FROM tutor_conversations c
+		WHERE greatest(c.created_at,
+			coalesce((SELECT max(m.created_at) FROM tutor_messages m WHERE m.conversation_id = c.id),
+				c.created_at)) < now() - interval '1 year';
+		GET DIAGNOSTICS v_conversations = ROW_COUNT;
+	EXCEPTION WHEN OTHERS THEN
+		v_echecs := v_echecs + 1;
+		RAISE NOTICE 'Retention C11, tuteur : %', SQLERRM;
+	END;
 
 	-- 3. Pré-inscriptions jamais activées : 1 an après leur création
-	DELETE FROM pending_students
-	WHERE NOT coalesce(is_activated, false)
-	  AND created_at < now() - interval '1 year';
-	GET DIAGNOSTICS v_preinscriptions = ROW_COUNT;
+	BEGIN
+		DELETE FROM pending_students
+		WHERE NOT coalesce(is_activated, false)
+		  AND created_at < now() - interval '1 year';
+		GET DIAGNOSTICS v_preinscriptions = ROW_COUNT;
+	EXCEPTION WHEN OTHERS THEN
+		v_echecs := v_echecs + 1;
+		RAISE NOTICE 'Retention C11, pré-inscriptions : %', SQLERRM;
+	END;
 
 	PERFORM complete_job_run(v_run_id,
 		CASE WHEN v_echecs = 0 THEN 'success' ELSE 'failed' END, NULL,

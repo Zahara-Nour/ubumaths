@@ -261,11 +261,11 @@
 					<tbody>
 						<tr>
 							<td>Profil utilisateur (eleve)</td>
-							<td>Supprime 5 ans apres la derniere connexion</td>
+							<td>Supprime apres 5 ans sans activite</td>
 						</tr>
 						<tr>
 							<td>Donnees pedagogiques</td>
-							<td>Supprimees avec le profil, 5 ans apres la derniere connexion</td>
+							<td>Supprimees avec le profil, apres 5 ans sans activite</td>
 						</tr>
 						<tr>
 							<td>Conversations avec le tuteur IA</td>

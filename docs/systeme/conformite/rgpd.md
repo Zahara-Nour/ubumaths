@@ -289,7 +289,7 @@ CRON_SECRET                   # Secret taches planifiees
 > ⚠️ **Realite mesuree le 2026-10-11 (C11)** : la liste ci-dessous etait fausse — rien ne purgeait
 > les profils inactifs ni la pedagogie. Decisions de David : `run_retention_c11()` (appelee par la
 > purge hebdomadaire `run_cleanup_expired_data`, migration `20261015090500`) supprime les comptes
-> **eleves sans connexion depuis 5 ans** (suppression complete, tracee dans
+> **eleves sans activite depuis 5 ans** (connexion, session rafraichie ou presence) (suppression complete, tracee dans
 > `account_deletion_audit`), les **conversations du tuteur 1 an apres leur dernier message**, les
 > **pre-inscriptions non activees apres 1 an**. Les fichiers du storage d'un compte purge ne sont
 > pas retires par le SQL (chemins consignes dans `cleanup_result`). Autres durees reelles :
