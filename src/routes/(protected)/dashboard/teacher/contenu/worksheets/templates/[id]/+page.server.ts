@@ -44,7 +44,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	if (dbError) {
 		if (dbError.code === 'PGRST116') {
-			throw error(404, 'Template not found');
+			throw error(404, 'Modèle introuvable');
 		}
 		console.error('Failed to fetch template:', dbError);
 		throw error(500, 'Failed to fetch template');
@@ -52,7 +52,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// Check access: must be owned by user (no inter-teacher sharing)
 	if (template.created_by !== user.id) {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Can edit if owned by user or admin

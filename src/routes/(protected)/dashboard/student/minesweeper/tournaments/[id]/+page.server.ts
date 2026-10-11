@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 
 	// Must be authenticated student
 	if (!user || !profile || profile.role !== 'student') {
-		throw error(403, 'Acces refuse');
+		throw error(403, 'Accès refusé');
 	}
 
 	const tournamentId = params.id;

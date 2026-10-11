@@ -38,7 +38,7 @@ function toleranceDuDefi(answer: unknown): number | undefined {
 
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
-	if (!user) throw error(401, 'Unauthorized');
+	if (!user) throw error(401, 'Connexion requise');
 
 	const combatId = validateUuidParam(params.combatId, 'combatId');
 
@@ -55,14 +55,14 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.single();
 
 	if (combatError || !combat) {
-		throw error(404, 'Combat not found');
+		throw error(404, 'Combat introuvable');
 	}
 
 	// Verify user is a participant
 	const isParticipant = combat.organizer_id === user.id;
 
 	if (!isParticipant) {
-		throw error(403, 'You are not a participant in this combat');
+		throw error(403, 'Tu ne participes pas à ce combat');
 	}
 
 	// Fetch game player
@@ -137,7 +137,7 @@ export const actions: Actions = {
 	// Select a spell for this turn
 	selectSpell: async ({ request, params, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const combatId = validateUuidParam(params.combatId, 'combatId');
 		const formData = await request.formData();
@@ -221,7 +221,7 @@ export const actions: Actions = {
 	// Submit challenge answer and resolve combat turn
 	submitAnswer: async ({ request, params, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const combatId = validateUuidParam(params.combatId, 'combatId');
 		const formData = await request.formData();

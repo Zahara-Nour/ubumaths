@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const pathSegments = params.path.split('/').filter((s) => s.length > 0);
 
 	if (pathSegments.length < 1) {
-		throw error(400, 'Invalid document path');
+		throw error(400, 'Chemin de document invalide');
 	}
 
 	const category = pathSegments[0];
@@ -44,6 +44,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		};
 	} catch (err) {
 		console.error('Document load error:', err);
-		throw error(404, `Document not found: ${category}/${docPath}`);
+		throw error(404, `Document introuvable : ${category}/${docPath}`);
 	}
 };

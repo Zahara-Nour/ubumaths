@@ -30,10 +30,10 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	if (!response.ok) {
 		if (response.status === 404) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 		if (response.status === 403) {
-			throw error(403, 'Acces refuse');
+			throw error(403, 'Accès refusé');
 		}
 		throw error(500, 'Erreur lors du chargement de la feuille');
 	}

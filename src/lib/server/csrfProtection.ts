@@ -49,7 +49,7 @@ export function validateOrigin(request: Request): void {
 	if (origin) {
 		if (!isAllowedOrigin(origin)) {
 			console.warn(`[CSRF] Blocked request from invalid origin: ${origin}`);
-			throw error(403, 'Invalid origin');
+			throw error(403, 'Origine invalide');
 		}
 		return;
 	}
@@ -59,14 +59,14 @@ export function validateOrigin(request: Request): void {
 		const refererOrigin = extractOriginFromUrl(referer);
 		if (refererOrigin && !isAllowedOrigin(refererOrigin)) {
 			console.warn(`[CSRF] Blocked request from invalid referer: ${referer}`);
-			throw error(403, 'Invalid referer');
+			throw error(403, 'Référent invalide');
 		}
 		return;
 	}
 
 	// Neither origin nor referer present - likely API client or CORS issue
 	console.warn('[CSRF] Request missing both origin and referer headers');
-	throw error(403, 'Missing origin headers');
+	throw error(403, 'En-têtes d’origine manquants');
 }
 
 /**

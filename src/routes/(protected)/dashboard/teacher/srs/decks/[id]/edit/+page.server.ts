@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	const { id: deckId } = params;
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	}
 
 	if (profileData.role !== 'teacher' && profileData.role !== 'admin') {
-		throw error(403, 'Forbidden. Only teachers can access this page.');
+		throw error(403, 'Page réservée aux professeurs');
 	}
 
 	try {
@@ -43,12 +43,12 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 
 		if (deckError || !deck) {
 			console.error('Error fetching deck:', deckError);
-			throw error(404, 'Deck not found');
+			throw error(404, 'Deck introuvable');
 		}
 
 		// Check if deck is assigned (cannot edit)
 		if (deck.is_assigned) {
-			throw error(403, 'Cannot edit assigned deck. Assigned decks are read-only.');
+			throw error(403, 'Un deck déjà affecté ne se modifie plus');
 		}
 
 		// Map deck to camelCase

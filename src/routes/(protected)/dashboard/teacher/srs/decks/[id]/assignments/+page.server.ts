@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	const { id: deckId } = params;
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 
 		if (deckError || !deck) {
 			console.error('Error fetching deck:', deckError);
-			throw error(404, 'Deck not found');
+			throw error(404, 'Deck introuvable');
 		}
 
 		// Map deck to camelCase

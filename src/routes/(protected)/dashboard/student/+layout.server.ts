@@ -42,7 +42,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 	// Must be logged in as student
 	if (!user || !profile || profile.role !== 'student') {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	try {
