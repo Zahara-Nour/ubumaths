@@ -309,3 +309,22 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
   interrupteur distinct à documenter.
 - `db:types` régénéré dans #1079. La vue `riddle_progress` n'a plus de lecteur : `REVOKE` de
   `authenticated` possible dans une PR à part (le `DROP VIEW`, destructif, attendra David).
+
+## Triche aux énigmes, vue du classement, Drive (David, 2026-10-11 : recos retenues)
+
+- **Drive** ne fait pas partie de Classroom : routes `api/whiteboard/drive/*` laissées actives,
+  consigné dans `outils-prof.md` (#1132).
+- **#1132 (mergée, migration `20261016090200` en prod, vérifiée)** : la route de soumission
+  appelle `submit_riddle_attempt` par le client service (justesse calculée par le serveur) ;
+  policy d'insertion directe de l'élève supprimée ; `riddle_progress` fermée ; garde de la
+  fonction explicite (client service ou l'élève lui-même — un appel sans `auth.uid()` passait).
+- ⏳ **Étape 2, APRÈS le `deploy:prod` qui livre #1132** : migration
+  `REVOKE EXECUTE ON FUNCTION submit_riddle_attempt(uuid,uuid,jsonb,boolean) FROM authenticated`
+  (l'ancienne route en prod l'appelle encore avec le client de l'élève). Pas écrite d'avance :
+  un `db push --include-all` d'une autre session l'appliquerait trop tôt.
+- **Nouveaux constats (audit de #1132), antérieurs, à soumettre à David** :
+  1. `riddles.answer` lisible par l'élève (droit de colonne `authenticated`) : il peut lire la
+     réponse attendue d'une énigme à correction automatique. Prod : 0 énigme avec réponse.
+  2. `record_game_reward` exécutable par `authenticated`, garde `auth.uid() = p_student_id`
+     seulement : un élève peut s'attribuer la récompense du jour de chaque type de jeu
+     (2048 et Mathémo l'appellent avec le client de l'élève).
