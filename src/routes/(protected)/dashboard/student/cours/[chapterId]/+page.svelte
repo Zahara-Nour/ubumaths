@@ -17,6 +17,7 @@
 
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import {
 		ChapterProgressIndicator,
@@ -26,7 +27,7 @@
 		ChecklistSection
 	} from '$lib/components/cours';
 	import { getChapterColorClasses } from '$lib/types/chapters';
-	import { ArrowLeft, BookMarked } from '@lucide/svelte';
+	import { BookMarked } from '@lucide/svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -55,10 +56,7 @@
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
 	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/student/cours" class="mb-2 -ml-2">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux cours
-		</Button>
+		<BackLink href="/dashboard/student/cours" label="Retour aux cours" />
 		<p class="text-sm text-muted-foreground">
 			{data.className}
 		</p>

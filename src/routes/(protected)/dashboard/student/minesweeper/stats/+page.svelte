@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import GameStats from '$lib/components/game/minesweeper/GameStats.svelte';
@@ -80,11 +81,9 @@
 </svelte:head>
 
 <div class="space-y-8">
-	<div class="flex items-center justify-between">
+	<div>
+		<BackLink href="/games/minesweeper" label="Retour au démineur" />
 		<h1 class="text-3xl font-bold text-foreground">Démineur - Mes statistiques</h1>
-		<a href="/games/minesweeper">
-			<Button variant="outline">Retour au jeu</Button>
-		</a>
 	</div>
 
 	{#if data.leaderboardRank}

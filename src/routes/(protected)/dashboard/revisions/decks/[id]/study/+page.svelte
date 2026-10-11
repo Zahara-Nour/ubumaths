@@ -11,11 +11,10 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
 
 	const deckId = $derived(page.params.id);
 	const states = $derived(page.url.searchParams.get('states') ?? undefined);
@@ -47,13 +46,7 @@
 
 <div class="study-session-page">
 	<h1 class="sr-only">Session de révision</h1>
-	<!-- Back Button -->
-	<div class="mb-6">
-		<Button onclick={goBack} variant="ghost">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux decks
-		</Button>
-	</div>
+	<BackLink href="/dashboard/revisions" label="Quitter" kind="quit" class="mb-6" />
 
 	<!-- Review Session -->
 	{#if deckId}

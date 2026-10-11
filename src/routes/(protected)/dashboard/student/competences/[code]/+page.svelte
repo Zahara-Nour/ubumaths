@@ -1,12 +1,12 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	/**
 	 * Student Competence Math — detail page
 	 */
 
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { ChevronLeft, Check, Circle } from '@lucide/svelte';
+	import { Check, Circle } from '@lucide/svelte';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
@@ -44,12 +44,10 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/student/progression?onglet=competences">
-			<ChevronLeft class="h-4 w-4" />
-			Mes compétences
-		</Button>
-	</div>
+	<BackLink
+		href="/dashboard/student/progression?onglet=competences"
+		label="Retour à mes compétences"
+	/>
 
 	<!-- Header avec niveau -->
 	<div class="mb-6">

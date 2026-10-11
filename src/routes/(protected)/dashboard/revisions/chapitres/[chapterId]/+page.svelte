@@ -8,11 +8,10 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -29,11 +28,14 @@
 </svelte:head>
 
 <div class="mx-auto max-w-6xl p-4">
-	<div class="mb-6 flex flex-wrap items-center gap-3">
-		<Button onclick={handleBack} variant="ghost">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour au chapitre
-		</Button>
+	<div class="mb-6">
+		<BackLink
+			href={resolve('/(protected)/dashboard/student/cours/[chapterId]', {
+				chapterId: data.chapter.id
+			})}
+			label="Quitter"
+			kind="quit"
+		/>
 		<h1 class="text-xl font-semibold">Réviser : {data.chapter.title}</h1>
 	</div>
 
