@@ -60,6 +60,12 @@ l'ordre** :
 3. sinon **longueur par défaut**. Sur `/test-structure` (aucun contexte) : longueur, avec une case
    pour lire un produit.
 
+**2026-10-12, validation** : David valide la spécification et le plan, avec **toutes** les
+recommandations Q-A à Q-L (Q-A nom de figure gardé, refus au calcul ; Q-C défaut longueur ; Q-D
+primes et indices au lot 1 ; Q-E `A B` = produit ; Q-F plus tard ; Q-G `AB` ; Q-H interrupteur par
+modèle ; Q-I contexte `Graphes et matrices` seul ; Q-J contexte seul pour les exercices ; Q-K sens
+résolu une fois, à la génération de l'instance ; Q-L l'instance garde son sens).
+
 État du code : `mathAST` n'a **aucun nœud longueur ni angle** (`MathNode`, `types.ts`) ; `\angle`
 n'existe que comme symbole. `geometry-core` (DSL de géométrie) connaît segments et angles, mais
 `mathAST` ne s'en sert pas.
@@ -453,3 +459,4 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
   déclarations existantes (`genericFunctions` = rail à copier) ; option `capitalPairs`, V1
   recommandée ; Q-A et Q-C ajustées, Q-B tranchée, Q-H à Q-L ajoutées ; spécification et plan
   mis à jour. Aucun code, aucun test.
+- 2026-10-12 — spécification et plan **validés par David** (Q-A à Q-L) ; lancement du lot 1.
