@@ -146,8 +146,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
    `minesweeper`, `riddle`, `2048`, `mathemo`, et verse `1` à la première victoire du jour **de ce
    type de jeu** (`daily_game_rewards.is_first_win_of_day`), `0` ensuite. ⚠️ L'ancienne doc disait
    le cap « partagé entre jeux » : c'est faux depuis l'ajout de 2048 et Mathémo (commentaire de la
-   fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que l'élève lui-même
-   (`auth.uid() = p_student_id`, rôle `student`) et une récompense théorique entre 0 et 1000. La
+   fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que le **serveur** (client
+   service : routes 2048 et Mathémo) ou l'élève lui-même, refuse l'appel sans identité
+   (`20261016100200`), exige le rôle `student` et une récompense théorique entre 0 et 1000. Tant
+   que l'élève peut l'appeler, il peut s'attribuer la gidouille du jour de chaque type et un
+   meilleur score de semaine forgé : l'EXECUTE est retiré à `authenticated` après le deploy. La
    date et la semaine sont celles du fuseau et de la `week_config` de l'école
    (`calculate_week_boundaries`).
 2. **La récompense théorique ne sert qu'au bonus hebdomadaire.** Chaque partie gagnée met à jour
@@ -267,7 +270,7 @@ demande une décision sur la lecture côté prof.
 - **Nouveau jeu qui rapporte** : ajouter son type à la liste blanche de `record_game_reward`
   (migration), calculer la récompense théorique côté serveur (modèle :
   `src/lib/server/games/reward-2048.ts` + son test), appeler `record_game_reward` depuis la route
-  de score, l'ajouter au libellé de `award_weekly_best_bonuses`. Pour le classement : la liste
+  de score **avec le client service**, l'ajouter au libellé de `award_weekly_best_bonuses`. Pour le classement : la liste
   blanche de `game_leaderboard` **et** `GAME_LEADERBOARD_GAMES` (`src/lib/games/leaderboards.ts`).
 - **Nouvelle carte** : par l'admin (`vip_card_templates`), pas par migration — la prod fait foi.
 - **Tout ce qui relie deux élèves** : borner par `same_school()`, avec un test d'intégration
