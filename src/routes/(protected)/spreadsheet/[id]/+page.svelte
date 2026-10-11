@@ -11,12 +11,11 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import Spreadsheet from '$lib/components/spreadsheet/Spreadsheet.svelte';
 	import { spreadsheetStore } from '$lib/spreadsheet/store.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { ArrowLeft, Save, Loader2 } from '@lucide/svelte';
+	import { Save, Loader2 } from '@lucide/svelte';
 
 	let { data } = $props();
 
@@ -105,13 +104,6 @@
 
 		return time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 	}
-
-	/**
-	 * Navigate back to spreadsheet list
-	 */
-	function goBack() {
-		goto('/spreadsheet');
-	}
 </script>
 
 <svelte:head>
@@ -122,11 +114,8 @@
 	<!-- Header -->
 	<header class="page-header">
 		<div class="header-left">
-			<Button variant="ghost" size="sm" onclick={goBack} class="gap-2">
-				<ArrowLeft class="h-4 w-4" />
-				Retour
-			</Button>
 			<div>
+				<BackLink href="/spreadsheet" label="Retour aux tableurs" class="mb-0" />
 				<h1 class="text-2xl font-bold">{data.spreadsheet?.name ?? 'Sans titre'}</h1>
 				{#if data.spreadsheet?.description}
 					<p class="text-sm text-muted-foreground">{data.spreadsheet.description}</p>

@@ -189,7 +189,12 @@
 	<div class="space-y-4">
 		<div class="flex flex-wrap items-center justify-between gap-4">
 			<div>
-				<BackLink href="/dashboard/student/minesweeper/tournaments" label="Retour aux tournois" />
+				<!-- Partie en cours : « Quitter » dit qu'on interrompt la partie -->
+				<BackLink
+					href="/dashboard/student/minesweeper/tournaments"
+					label={isGameInProgress ? 'Quitter' : 'Retour aux tournois'}
+					kind={isGameInProgress ? 'quit' : 'back'}
+				/>
 				<h1 class="text-3xl font-bold text-foreground">{tournament.name}</h1>
 				{#if tournament.description}
 					<p class="mt-1 text-muted-foreground">{tournament.description}</p>

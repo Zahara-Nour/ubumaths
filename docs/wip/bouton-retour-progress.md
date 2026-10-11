@@ -22,7 +22,7 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 | --- | -------------------------------------------------------------------------------------------------- | ------------------------------ | ------- |
 | 1   | `BackLink` + règle + espace prof (`dashboard/teacher/**`)                                          | `refactor/bouton-retour`       | fait    |
 | 2   | Espace élève (`dashboard/student/**`, `dashboard/revisions/**`, `dashboard/navadra/**`)            | `refactor/bouton-retour-eleve` | fait    |
-| 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | —                              | à faire |
+| 3   | Admin + pages protégées hors dashboard (messages, notebooks, constructions, tableur, organisation) | `refactor/bouton-retour-admin` | fait    |
 | 4   | Pages publiques + composants partagés (`components/test/`, `srs/`, `student/worksheets/`)          | —                              | à faire |
 
 ## Lot 1 — espace prof (fait)
@@ -42,6 +42,13 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
 - Démineur : « Retour au jeu », à droite du titre, devient « Retour au démineur » au-dessus du titre.
 - Hors règle, laissés tels quels : combat Navadra (« Abandonner le combat », « Retour au hub » après la victoire), pagination (`devoirs`, `materials`, `worksheets`).
 
+## Lot 3 — admin et pages protégées hors tableau de bord (fait)
+
+- 18 pages converties : constructions (détail, édition, création, conversion), erreurs, statistiques des templates, questions (édition, création, aperçu), organisation d'une école, démineur multijoueur, messages (message, fil), kanban, notebook Python (notebook, résultats), tableur.
+- **Pages de la navigation principale** : « Signalements » (admin et utilisateur) perdent leur bouton retour.
+- **Fil d'Ariane gardé** (arborescence profonde), boutons retour en double retirés : migration admin (sous-domaine, édition d'une question), documentation admin. Sur la doc, « ← Précédent » (`history.back()`) est retiré ; « Retour à l'index » devient un vrai lien.
+- Messages : « Retour à la boîte de réception » sur un message introuvable devient un vrai lien.
+
 ## Cas douteux à soumettre à David
 
 - **Journal d'un élève** (`teacher/students/[id]/journal`) : s'ouvre depuis l'accueil, les récompenses et les classes. Le retour mène aux récompenses, comme avant. Faut-il un retour qui suit l'origine (paramètre dans l'adresse) ?
@@ -50,5 +57,7 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
   - `teacher/settings/google` : ouverte depuis les classes, la page Google, le tiroir de fichiers du tableau blanc → plusieurs parents.
   - `teacher/competences/export` : ouverte depuis les analytics d'une classe, mais le lien ne transmet pas la classe (la page accepte `?class=`).
   - Espace élève, pages-carrefours sans retour : `student/assessments`, `exercises`, `riddles`, `worksheets`, `devoirs`, `materials`, `classroom`, `journal`, `reports`, `minesweeper/achievements`, `minesweeper/tournaments`, `revisions`, `navadra`. Elles s'ouvrent depuis l'accueil, « Mon travail » ou des notifications → « Retour à l'accueil » / « Retour à mon travail », ou rien ?
+  - Admin et outils sans retour : pages de débogage (`admin/debug/*`), `admin/backup`, `admin/friendships`, `admin/import-students`, `admin/notifications`, `admin/message-templates`, `admin/classes/composer`, `admin/errors`, `admin/migration`, `elevate`, `tutor-stats`, et les outils (`calculatrice`, `whiteboard`, `tuteur`, `organisation/pomodoro`, `games/leaderboards`, `test-exercises`). Parent = le tableau de bord admin / l'accueil ?
+  - **Notebook Python** (`python-notebook/[id]`) : « Retour aux notebooks », y compris pour l'élève qui le remplit. Faut-il « Quitter » côté élève ?
   - **Énigme du jour** (`student/riddles/[id]`) : traitée comme une page de détail (« Retour aux énigmes »), pas comme une activité (« Quitter »).
   - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).

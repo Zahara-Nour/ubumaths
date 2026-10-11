@@ -1,10 +1,10 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	/**
 	 * Student Competence Math — detail page
 	 */
 
 	import * as Card from '$lib/components/ui/card';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Check, Circle } from '@lucide/svelte';
 	import {
