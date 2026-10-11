@@ -401,6 +401,24 @@
 		return styles.join('; ');
 	}
 
+	/**
+	 * La barre d'annotation disparaît quand on quitte la diapositive annotable. Si le
+	 * focus était sur un de ses boutons, il tomberait sur <body> et le clavier ne
+	 * piloterait plus le diaporama : on le rend au deck.
+	 */
+	function returnFocusOnRemove(node: HTMLElement) {
+		return {
+			destroy() {
+				const hadFocus = node.contains(document.activeElement);
+				queueMicrotask(() => {
+					if (hadFocus || document.activeElement === document.body) {
+						wrapperElement?.focus({ preventScroll: true });
+					}
+				});
+			}
+		};
+	}
+
 	// Progress calculation
 	const progressPercent = $derived.by(() => {
 		const total = store.totalH;
@@ -573,19 +591,21 @@
 
 	<!-- Annotation toolbar rendered outside viewport transforms -->
 	{#if slideAnnotationStore.available}
-		<SlideAnnotationToolbar
-			tool={slideAnnotationStore.tool}
-			style={slideAnnotationStore.style}
-			enabled={slideAnnotationStore.enabled}
-			canUndo={slideAnnotationStore.canUndo}
-			canRedo={slideAnnotationStore.canRedo}
-			ontoolchange={(tool) => slideAnnotationStore.setTool(tool)}
-			onstylechange={(style) => slideAnnotationStore.setStyle(style)}
-			ontoggle={() => slideAnnotationStore.toggle()}
-			onclear={() => slideAnnotationStore.clear()}
-			onundo={() => slideAnnotationStore.undo()}
-			onredo={() => slideAnnotationStore.redo()}
-		/>
+		<div class="contents" use:returnFocusOnRemove>
+			<SlideAnnotationToolbar
+				tool={slideAnnotationStore.tool}
+				style={slideAnnotationStore.style}
+				enabled={slideAnnotationStore.enabled}
+				canUndo={slideAnnotationStore.canUndo}
+				canRedo={slideAnnotationStore.canRedo}
+				ontoolchange={(tool) => slideAnnotationStore.setTool(tool)}
+				onstylechange={(style) => slideAnnotationStore.setStyle(style)}
+				ontoggle={() => slideAnnotationStore.toggle()}
+				onclear={() => slideAnnotationStore.clear()}
+				onundo={() => slideAnnotationStore.undo()}
+				onredo={() => slideAnnotationStore.redo()}
+			/>
+		</div>
 	{/if}
 </div>
 
