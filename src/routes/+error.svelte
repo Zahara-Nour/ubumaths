@@ -5,8 +5,10 @@
 	sur les décimales — en rendant la blague vraie : le code d'erreur est situé à
 	sa première apparition dans les décimales de π, et coloré dans la spirale.
 
-	⚠️ SvelteKit précharge ce composant sur TOUTES les pages : il reste léger, et
-	la spirale (1 800 décimales, ~1 700 nœuds SVG) est chargée à la demande.
+	⚠️ SvelteKit précharge ce composant sur TOUTES les pages : il doit rester léger.
+	La spirale y est pourtant importée statiquement, pour être rendue par le serveur
+	et visible dès le HTML (chargée à la demande, elle apparaissait en retard) :
+	1,6 Ko compressé de plus sur le chunk préchargé, mesuré au build.
 
 	Le layout racine masque en-tête et barre latérale sous /dashboard : une erreur
 	y est rendue sans navigation. Les boutons de cette page sont alors la seule
@@ -19,6 +21,7 @@
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
+	import PiSpiral from '$lib/components/error-page/PiSpiral.svelte';
 	import avatarPereUbu from '$lib/assets/images/avatar-pereubu.png';
 	import { describeError } from '$lib/error-page/error-copy';
 	import { frenchOrdinal, piOccurrence } from '$lib/error-page/pi-status';
@@ -41,9 +44,6 @@
 	afterNavigate(({ from }) => {
 		canGoBack = from !== null || document.referrer.startsWith(`${location.origin}/`);
 	});
-
-	// Chargée à la demande : ce composant-ci est préchargé partout
-	const spiral = import('$lib/components/error-page/PiSpiral.svelte');
 </script>
 
 <svelte:head>
@@ -51,14 +51,15 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class="mx-auto flex max-w-2xl flex-col items-center gap-6 px-4 py-8 text-center sm:py-12">
-	<!-- Place réservée d'avance : la spirale arrive sans décaler la page -->
-	<div class="relative aspect-square w-[min(28rem,85vw)]">
-		{#await spiral then { default: PiSpiral }}
-			<div class="absolute inset-0">
-				<PiSpiral highlightPosition={occurrence?.position ?? null} />
-			</div>
-		{/await}
+<!-- Desktop : deux colonnes (spirale | texte), le tout tient dans la hauteur de l'écran.
+	Mobile : une colonne, la spirale au-dessus. -->
+<div
+	class="mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 py-8 sm:py-12 lg:min-h-full lg:flex-row lg:justify-center lg:gap-12"
+>
+	<div class="relative aspect-square w-[min(28rem,85vw)] shrink-0 lg:w-[min(30rem,40vw,70vh)]">
+		<div class="absolute inset-0">
+			<PiSpiral highlightPosition={occurrence?.position ?? null} />
+		</div>
 		<img
 			src={avatarPereUbu}
 			alt=""
@@ -68,67 +69,72 @@
 		/>
 	</div>
 
-	<div class="flex flex-col items-center gap-3">
-		<p class="font-semibold tracking-widest text-muted-foreground uppercase">
-			Erreur {status}
-		</p>
-		<h1 class="text-3xl font-bold text-balance sm:text-4xl">{copy.title}</h1>
-		<p class="text-balance text-muted-foreground">{copy.explanation}</p>
-		{#if copy.detail}
-			<p class="rounded-md bg-muted px-3 py-1">{copy.detail}</p>
-		{/if}
-	</div>
-
-	{#if occurrence}
-		<div class="flex flex-col items-center gap-2">
-			<p class="text-balance">
-				Le nombre {status}, lui, se trouve toujours : il apparaît pour la première fois à la
-				<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π.
+	<div class="flex max-w-xl flex-col items-center gap-6 text-center lg:items-start lg:text-left">
+		<div class="flex flex-col items-center gap-3 lg:items-start">
+			<p class="font-semibold tracking-widest text-muted-foreground uppercase">
+				Erreur {status}
 			</p>
-			<!-- Redit visuellement la phrase précédente : masqué aux lecteurs d'écran -->
-			<p class="font-mono tracking-wider tabular-nums" aria-hidden="true">
-				π = {excerptStart}{occurrence.before}<span
-					class="font-bold text-amber-600 dark:text-amber-400">{status}</span
-				>{occurrence.after}…
-			</p>
+			<h1 class="text-3xl font-bold text-balance sm:text-4xl">{copy.title}</h1>
+			<p class="text-balance text-muted-foreground">{copy.explanation}</p>
+			{#if copy.detail}
+				<p class="rounded-md bg-muted px-3 py-1">{copy.detail}</p>
+			{/if}
 		</div>
-	{/if}
 
-	{#if suggestions.length > 0}
-		<nav aria-labelledby="suggestions-title" class="flex flex-col items-center gap-2">
-			<p id="suggestions-title" class="font-semibold">Tu cherchais peut-être :</p>
-			<ul class="flex flex-wrap justify-center gap-2">
-				{#each suggestions as suggestion (suggestion.path)}
-					<li>
-						<Button href={suggestion.path} variant="outline" size="sm">{suggestion.title}</Button>
-					</li>
-				{/each}
-			</ul>
-		</nav>
-	{/if}
+		{#if occurrence}
+			<div class="flex flex-col items-center gap-2 lg:items-start">
+				<p class="text-balance">
+					Le nombre {status}, lui, se trouve toujours : il apparaît pour la première fois à la
+					<strong>{frenchOrdinal(occurrence.position)} décimale</strong> de π.
+				</p>
+				<!-- Redit visuellement la phrase précédente : masqué aux lecteurs d'écran -->
+				<p class="font-mono tracking-wider tabular-nums" aria-hidden="true">
+					π = {excerptStart}{occurrence.before}<span
+						class="font-bold text-amber-600 dark:text-amber-400">{status}</span
+					>{occurrence.after}…
+				</p>
+			</div>
+		{/if}
 
-	<div class="flex flex-wrap justify-center gap-3">
-		{#if copy.offerLogin}
-			<Button href={resolve('/auth/login')}>Se connecter</Button>
+		{#if suggestions.length > 0}
+			<nav
+				aria-labelledby="suggestions-title"
+				class="flex flex-col items-center gap-2 lg:items-start"
+			>
+				<p id="suggestions-title" class="font-semibold">Tu cherchais peut-être :</p>
+				<ul class="flex flex-wrap justify-center gap-2 lg:justify-start">
+					{#each suggestions as suggestion (suggestion.path)}
+						<li>
+							<Button href={suggestion.path} variant="outline" size="sm">{suggestion.title}</Button>
+						</li>
+					{/each}
+				</ul>
+			</nav>
 		{/if}
-		{#if copy.offerRetry}
-			<Button onclick={() => location.reload()}>Réessayer</Button>
-		{/if}
-		<Button
-			href={resolve('/')}
-			variant={copy.offerLogin || copy.offerRetry ? 'outline' : 'default'}
-		>
-			Retour à l’accueil
-		</Button>
-		{#if canGoBack}
-			<Button variant="outline" onclick={() => history.back()}>Page précédente</Button>
+
+		<div class="flex flex-wrap justify-center gap-3 lg:justify-start">
+			{#if copy.offerLogin}
+				<Button href={resolve('/auth/login')}>Se connecter</Button>
+			{/if}
+			{#if copy.offerRetry}
+				<Button onclick={() => location.reload()}>Réessayer</Button>
+			{/if}
+			<Button
+				href={resolve('/')}
+				variant={copy.offerLogin || copy.offerRetry ? 'outline' : 'default'}
+			>
+				Retour à l’accueil
+			</Button>
+			{#if canGoBack}
+				<Button variant="outline" onclick={() => history.back()}>Page précédente</Button>
+			{/if}
+		</div>
+
+		{#if technicalDetail}
+			<details class="w-full text-left text-sm text-muted-foreground">
+				<summary class="cursor-pointer text-center lg:text-left">Détails techniques</summary>
+				<p class="mt-2 rounded-md bg-muted p-3 font-mono break-all">{technicalDetail}</p>
+			</details>
 		{/if}
 	</div>
-
-	{#if technicalDetail}
-		<details class="w-full text-left text-sm text-muted-foreground">
-			<summary class="cursor-pointer text-center">Détails techniques</summary>
-			<p class="mt-2 rounded-md bg-muted p-3 font-mono break-all">{technicalDetail}</p>
-		</details>
-	{/if}
 </div>

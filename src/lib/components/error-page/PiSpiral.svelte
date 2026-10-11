@@ -3,9 +3,8 @@
 
 	SVG en `currentColor` : suit le thème clair ou sombre, contrairement à l'ancien
 	PNG (chiffres noirs sur fond transparent). Les trois chiffres du code d'erreur
-	sont colorés à leur vraie place. Chargée à la demande par `+error.svelte`, qui
-	est préchargé sur toutes les pages : ses ~1 700 chiffres ne pèsent que sur la
-	page d'erreur.
+	sont colorés à leur vraie place. Rendue par le serveur (~1 660 nœuds `<text>`),
+	elle tourne comme une seule couche déjà dessinée (`will-change`).
 -->
 <script lang="ts">
 	import { PI_DECIMALS } from '$lib/error-page/pi-decimals';
@@ -41,6 +40,8 @@
 		height: 100%;
 		font-variant-numeric: tabular-nums;
 		animation: spin 20s linear infinite;
+		/* Couche à part : le navigateur dessine les chiffres une fois et ne fait que tourner l'image */
+		will-change: transform;
 	}
 
 	/* Mouvement réduit demandé par le système : la spirale reste immobile */
